@@ -165,7 +165,7 @@ from strict_generator_mlx_specialist_routing import (  # noqa: E402
     specialist_route_decode_options,
     specialist_route_record,
 )
-from strict_generator_mlx_pretraining_probe import MlxStrictGenerator  # noqa: E402
+from strict_generator_mlx_pretraining_probe import BODY_ACTION_ROLES, MlxStrictGenerator, body_action_role_id_for_token  # noqa: E402
 from strict_generator_mlx_pretraining_probe import SEMANTIC_SLOT_ROLES  # noqa: E402
 from strict_generator_mlx_decode_plans import (  # noqa: E402
     beam_mentions_allowed_parameter,
@@ -344,6 +344,16 @@ def main() -> int:
         ),
     )
     parser.add_argument("--body-transition-head-blend", type=float, default=0.35)
+    parser.add_argument(
+        "--use-body-action-head",
+        action="store_true",
+        help=(
+            "Bias raw token probabilities with the learned prefix-conditioned body-action role head. "
+            "The head predicts broad structural roles only; it does not render code, call tools, inspect "
+            "tests/solutions, or grant generation credit without candidate-integrity/verifier behavior."
+        ),
+    )
+    parser.add_argument("--body-action-head-blend", type=float, default=0.35)
     parser.add_argument("--prefer-learned-prefix-decision-adequacy", action="store_true")
     parser.add_argument("--prefer-source-condition-adequacy", action="store_true")
     parser.add_argument("--require-source-condition-adequacy", action="store_true")
@@ -440,6 +450,8 @@ def main() -> int:
         enable_learned_expression_token_bias=bool(args.enable_learned_expression_token_bias),
         use_body_transition_head=bool(args.use_body_transition_head),
         body_transition_head_blend=max(0.0, min(1.0, float(args.body_transition_head_blend if args.body_transition_head_blend is not None else 0.35))),
+        use_body_action_head=bool(args.use_body_action_head),
+        body_action_head_blend=max(0.0, min(1.0, float(args.body_action_head_blend if args.body_action_head_blend is not None else 0.35))),
         prefer_learned_prefix_decision_adequacy=bool(args.prefer_learned_prefix_decision_adequacy),
         prefer_source_condition_adequacy=bool(args.prefer_source_condition_adequacy),
         require_source_condition_adequacy=bool(args.require_source_condition_adequacy),
@@ -515,6 +527,8 @@ def run_decode_eval(
     enable_learned_expression_token_bias: bool,
     use_body_transition_head: bool,
     body_transition_head_blend: float,
+    use_body_action_head: bool,
+    body_action_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -553,6 +567,8 @@ def run_decode_eval(
                     "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
                     "use_body_transition_head": bool(use_body_transition_head),
                     "body_transition_head_blend": float(body_transition_head_blend or 0.0),
+                    "use_body_action_head": bool(use_body_action_head),
+                    "body_action_head_blend": float(body_action_head_blend or 0.0),
                     "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
                     "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
                     "require_source_condition_adequacy": bool(require_source_condition_adequacy),
@@ -656,6 +672,8 @@ def run_decode_eval(
             enable_learned_expression_token_bias=enable_learned_expression_token_bias,
             use_body_transition_head=use_body_transition_head,
             body_transition_head_blend=body_transition_head_blend,
+            use_body_action_head=use_body_action_head,
+            body_action_head_blend=body_action_head_blend,
             prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
             prefer_source_condition_adequacy=prefer_source_condition_adequacy,
             require_source_condition_adequacy=require_source_condition_adequacy,
@@ -698,6 +716,8 @@ def run_decode_eval(
             enable_learned_expression_token_bias=enable_learned_expression_token_bias,
             use_body_transition_head=use_body_transition_head,
             body_transition_head_blend=body_transition_head_blend,
+            use_body_action_head=use_body_action_head,
+            body_action_head_blend=body_action_head_blend,
             prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
             prefer_source_condition_adequacy=prefer_source_condition_adequacy,
             require_source_condition_adequacy=require_source_condition_adequacy,
@@ -736,6 +756,8 @@ def run_decode_eval(
                 enable_learned_expression_token_bias=enable_learned_expression_token_bias,
                 use_body_transition_head=use_body_transition_head,
                 body_transition_head_blend=body_transition_head_blend,
+                use_body_action_head=use_body_action_head,
+                body_action_head_blend=body_action_head_blend,
                 prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
                 prefer_source_condition_adequacy=prefer_source_condition_adequacy,
                 require_source_condition_adequacy=require_source_condition_adequacy,
@@ -772,6 +794,8 @@ def run_decode_eval(
                 enable_learned_expression_token_bias=bool(route_options.get("enable_learned_expression_token_bias", enable_learned_expression_token_bias)),
                 use_body_transition_head=bool(route_options.get("use_body_transition_head", use_body_transition_head)),
                 body_transition_head_blend=float(route_options.get("body_transition_head_blend", body_transition_head_blend)),
+                use_body_action_head=bool(route_options.get("use_body_action_head", use_body_action_head)),
+                body_action_head_blend=float(route_options.get("body_action_head_blend", body_action_head_blend)),
                 prefer_learned_prefix_decision_adequacy=bool(route_options["prefer_learned_prefix_decision_adequacy"]),
                 prefer_source_condition_adequacy=bool(route_options["prefer_source_condition_adequacy"]),
                 require_source_condition_adequacy=bool(route_options["require_source_condition_adequacy"]),
@@ -870,6 +894,8 @@ def run_decode_eval(
             "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
             "use_body_transition_head": bool(use_body_transition_head),
             "body_transition_head_blend": float(body_transition_head_blend or 0.0),
+            "use_body_action_head": bool(use_body_action_head),
+            "body_action_head_blend": float(body_action_head_blend or 0.0),
             "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
             "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
             "require_source_condition_adequacy": bool(require_source_condition_adequacy),
@@ -986,7 +1012,7 @@ def load_mlx_checkpoint(
     try:
         model.load_weights(str(checkpoint_path))
     except Exception as exc:
-        if not any(name in str(exc) for name in ("plan_router", "slot_router", "body_transition_router")):
+        if not any(name in str(exc) for name in ("plan_router", "slot_router", "body_transition_router", "body_action_router")):
             raise
         strict_load = False
         model.load_weights(str(checkpoint_path), strict=False)
@@ -1049,6 +1075,8 @@ def evaluate_split(
     enable_learned_expression_token_bias: bool,
     use_body_transition_head: bool,
     body_transition_head_blend: float,
+    use_body_action_head: bool,
+    body_action_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -1171,6 +1199,8 @@ def evaluate_split(
         enable_learned_expression_token_bias=enable_learned_expression_token_bias,
         use_body_transition_head=use_body_transition_head,
         body_transition_head_blend=body_transition_head_blend,
+        use_body_action_head=use_body_action_head,
+        body_action_head_blend=body_action_head_blend,
         prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
         prefer_source_condition_adequacy=prefer_source_condition_adequacy or require_source_condition_adequacy,
         require_source_condition_adequacy=require_source_condition_adequacy,
@@ -1265,6 +1295,22 @@ def evaluate_split(
                     "autoregressive token logits. It is model-derived and prompt/signature-visible only, "
                     "but it is not a renderer, fallback, tool call, template, or promotion claim; behavior "
                     "must still be earned through candidate integrity and private verifier replay."
+                ),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+            },
+            "body_action_head": {
+                "enabled": bool(use_body_action_head and hasattr(model, "body_action_logits")),
+                "requested": bool(use_body_action_head),
+                "blend": float(max(0.0, min(1.0, float(body_action_head_blend or 0.0)))),
+                "roles": list(BODY_ACTION_ROLES),
+                "policy": "learned_prefix_conditioned_body_action_probability_bias_v1",
+                "score_semantics": (
+                    "Biases raw token probabilities with a checkpoint-trained broad body-action role "
+                    "head. It is model-derived and prompt/signature-visible only, but it is not a "
+                    "renderer, fallback, tool call, template, or promotion claim; behavior must still "
+                    "be earned through candidate integrity and private verifier replay."
                 ),
                 "uses_eval_tests_or_solutions": False,
                 "uses_public_data": False,
@@ -1580,6 +1626,8 @@ def generate_candidates_mlx(
     enable_learned_expression_token_bias: bool,
     use_body_transition_head: bool,
     body_transition_head_blend: float,
+    use_body_action_head: bool,
+    body_action_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -1678,14 +1726,29 @@ def generate_candidates_mlx(
             if bool(use_body_transition_head) and transition_blend > 0.0 and hasattr(model, "body_transition_logits"):
                 transition_logits = model.body_transition_logits(src, tgt)[:, -1, :]
                 logits = (logits * (1.0 - transition_blend)) + (transition_logits * transition_blend)
+            action_prob_rows = None
+            action_blend = max(0.0, min(1.0, float(body_action_head_blend or 0.0)))
+            if bool(use_body_action_head) and action_blend > 0.0 and hasattr(model, "body_action_logits"):
+                action_logits = model.body_action_logits(src, tgt)[:, -1, :]
+                action_probs = mx.softmax(action_logits, axis=-1)
+                mx.eval(action_probs)
+                action_prob_rows = np.asarray(action_probs, dtype=np.float64)
             probs = mx.softmax(logits, axis=-1)
             mx.eval(probs)
             prob_rows = np.asarray(probs, dtype=np.float64)
             for row_index, (task_idx, beam, generated) in enumerate(refs):
                 state = states[task_idx]
                 allowed_names = state.get("allowed_names")
+                prob_row = prob_rows[row_index]
+                if action_prob_rows is not None:
+                    prob_row = body_action_biased_probability_row(
+                        prob_row,
+                        action_prob_rows[row_index],
+                        inverse,
+                        blend=action_blend,
+                    )
                 choices = mlx_token_choices(
-                    prob_rows[row_index],
+                    prob_row,
                     inverse,
                     token_to_id,
                     generated,
@@ -2657,6 +2720,31 @@ def top_candidate_indices_desc(arr: Any, candidates: list[int] | set[int], limit
         reverse=True,
     )
     return ranked[: max(0, int(limit or 0))]
+
+
+def body_action_biased_probability_row(
+    token_probs: Any,
+    action_probs: Any,
+    inverse: dict[int, str],
+    *,
+    blend: float,
+) -> np.ndarray:
+    values = np.asarray(token_probs, dtype=np.float64)
+    roles = np.asarray(action_probs, dtype=np.float64)
+    if values.size <= 0 or roles.size <= 0:
+        return values
+    weight = max(0.0, min(1.0, float(blend or 0.0)))
+    if weight <= 0.0:
+        return values
+    biased = np.array(values, dtype=np.float64, copy=True)
+    for idx in range(len(biased)):
+        role_id = body_action_role_id_for_token(str(inverse.get(int(idx), "")))
+        role_prob = float(roles[role_id]) if 0 <= int(role_id) < len(roles) else 0.0
+        biased[idx] = max(float(biased[idx]), 1e-12) * (max(role_prob, 1e-9) ** weight)
+    total = float(np.sum(biased))
+    if not math.isfinite(total) or total <= 0.0:
+        return values
+    return biased / total
 
 
 def learned_expression_token_biased_array(

@@ -314,6 +314,26 @@ diagnostic movement, not capability evidence. The live wall is now narrower:
 after a more compatible first plan, the learned body still cannot construct a
 closed update/finalizer/top-level-return program and stalls in loop bodies
 without coherent state updates.
+The first prefix-conditioned body-action head is now implemented as a separate
+MLX auxiliary head and decode bias. It predicts broad next-action roles
+(`return`, `block_exit`, `branch`, `update_operator`, `close_expr`,
+`identifier`, etc.) over the same private body-continuation mask used by the
+body-transition head. The private adaptation canary
+`reports/strict_generator_mlx_private_adaptation_body_action_state_transition_smoke_20260706.json`
+is `YELLOW`: the head is active over `4027` train and `1013` heldout private
+body-action positions, with zero public rows, external inference, fallback,
+template, router, or tool credit, but heldout action loss worsens
+`3.335786 -> 3.47787` and action accuracy drops `0.06614 -> 0.062192`.
+The paired replay
+`reports/strict_generator_mlx_decode_eval_body_action_state_transition_strict_replay2_20260706.json`
+is still `RED`: strict manifest rows remain `0`, behavior passes remain `0`,
+and nontrivial-return rate remains `0.0`. The verifier path did see `2`
+generated runtime-loaded attempts, both behavior-failing, so this is a slight
+runtime-load shape change but not an admitted learned candidate improvement.
+The current wall is therefore not broad action-role classification either. The
+next material fix must make AST/state-transition and operand/value binding
+specific enough to construct legal update/finalizer/return bodies after a
+compatible plan.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

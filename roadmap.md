@@ -236,6 +236,19 @@ the roadmap:
    therefore not simply first-plan selection; it is trainable body construction
    after a compatible plan: coherent loop state, update expressions, finalizers,
    and top-level returns.
+   The first prefix-conditioned body-action head is now also implemented. It
+   trains and decodes a broad structural next-action classifier over the same
+   private body-continuation mask as the body-transition head. Its adaptation
+   smoke
+   `reports/strict_generator_mlx_private_adaptation_body_action_state_transition_smoke_20260706.json`
+   is `YELLOW`: the head is active with clean no-cheat counters, but heldout
+   action loss and accuracy both worsen. The paired strict replay
+   `reports/strict_generator_mlx_decode_eval_body_action_state_transition_strict_replay2_20260706.json`
+   is still `RED`: strict manifest candidate rows remain `0`, behavior passes
+   remain `0`, and nontrivial-return rate remains `0.0`. The private verifier
+   did observe `2` generated runtime-loaded attempts, both wrong, which is
+   diagnostic only. Broad action roles are therefore not enough; the next body
+   construction surface needs AST/state-transition plus operand/value binding.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 
@@ -2276,10 +2289,12 @@ Current Phase 10/13 delta: the prefix-conditioned body-transition head is now
 real code and real evidence, not a TODO. It improves private transition loss
 but fails strict replay behavior. The prompt-visible source-plan compatibility
 reranker moves first-plan selection in the two-row canary, but also fails
-strict replay behavior. The roadmap should therefore not schedule a bigger
-body-transition/DPO/GRPO/MTP run as the next move. The next implementation
-should make AST/state-transition and body-operand choices depend on
-prompt/signature context strongly enough to emit closed, nontrivial,
+strict replay behavior. The new body-action head trains a broad structural
+role surface, but its heldout action metrics regress and strict replay still
+emits zero manifest rows. The roadmap should therefore not schedule a bigger
+body-transition/body-action/DPO/GRPO/MTP run as the next move. The next
+implementation should make AST/state-transition and body-operand choices
+depend on prompt/signature context strongly enough to emit closed, nontrivial,
 verifier-loadable bodies after a compatible plan. Localized semantic-IR repair
 is the right consumer if it changes replay behavior; it must not become another
 diagnostic-only report.
