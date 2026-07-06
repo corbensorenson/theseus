@@ -2042,7 +2042,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. A first DPO shadow update moved the private policy/reference preference gap, then its private replay failed behaviorally: `0` learned candidate rows and `0/16` heldout passes, with candidate integrity classifying the JSONL rows as fallback/template baselines. The new `strict_direct_body_emission_path_v1` profile activates target-side direct body-emission supervision (`128/128` matched rows, `8054` weighted positions, clean no-cheat counters), but strict replay is still `RED` with `0` accepted learned candidates and `0/8` behavior pass. The next behavior-changing sequence is trainable local-return/finalizer continuation and admitted non-fallback candidate emission first, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation only after non-fallback top-level-return candidates exist. |
+| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode is still not behavior-ready. A first DPO shadow update moved the private policy/reference preference gap, then its private replay failed behaviorally: `0` learned candidate rows and `0/16` heldout passes, with candidate integrity classifying the JSONL rows as fallback/template baselines. The new `strict_direct_body_emission_path_v1` profile activates target-side direct body-emission supervision (`128/128` matched rows, `8054` weighted positions, clean no-cheat counters). The local-return continuation patch moves syntax-only private train replay from total starvation to `8` emitted rows and `8/8` independently verified rows, but strict nontrivial/top-level semantic replay remains `RED` with `0` admitted learned rows and `0` behavior passes. The next behavior-changing sequence is semantic top-level-return quality first, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation only after non-fallback nontrivial top-level-return candidates exist. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Public calibration remains measurement-only. The execution plan keeps it blocked until private semantic behavior improves and a fresh, non-consumed surface passes the proposal gate; exact consumed-surface reruns stay refused. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Partial | Connect semantic IR to real generator failures: failed atom -> localized repair -> dependent obligation replay, with scope-change ledgers when requirements change. |
@@ -2791,11 +2791,14 @@ Implementation status:
   update/finalizer/top-level-return structure under the same no-cheat replay.
 - A first version of that objective now exists as
   `strict_direct_body_emission_path_v1`. It proves the target-side AST span
-  weighting path is live and private-only, but replay still rejects all learned
-  rows before candidate admission. The next patch should therefore target the
-  model/decoder interface for local-return/finalizer continuation and admitted
-  candidate emission, not another report-only profile and not broader RL/fast
-  generation.
+  weighting path is live and private-only. The first local-return continuation
+  decoder patch proves syntax emission is no longer completely starved under a
+  weak private train-replay canary (`8` emitted rows, `8/8` independently
+  integrity verified, no fallback returns), but strict nontrivial/top-level
+  replay still rejects all learned rows before promotion-grade admission. The
+  next patch should therefore improve semantic top-level-return quality and
+  verifier-aligned body behavior, not another report-only profile and not
+  broader RL/fast generation.
 
 ### C. Fast Generation and Runtime Accounting
 

@@ -382,6 +382,96 @@ def expression_closure_guard_choices(
     return choices
 
 
+def direct_local_return_continuation_choices(
+    arr: Any,
+    inverse: dict[int, str],
+    prefix: list[str],
+    *,
+    seen: set[int],
+    token_policy: str,
+    allowed_names: set[str] | None,
+    input_type_hints: dict[str, str] | None,
+    require_nontrivial_return: bool,
+    enabled: bool,
+) -> list[tuple[int, float]]:
+    """Expose task-blind finalizer tokens for already-generated local state.
+
+    This is not a body renderer and not a fallback return. It can only continue
+    a current ``return`` line or start one for a local that the model already
+    bound at top level from visible signature data. It never inspects tests,
+    solutions, target bodies, benchmark labels, or verifier outcomes.
+    """
+
+    if not enabled:
+        return []
+    token_to_id = {text: int(idx) for idx, text in inverse.items()}
+    values = token_values(current_line_tokens(prefix))
+    _lines, current_depth, _current_values = prefix_lines_with_depth(prefix)
+    if current_depth > 0:
+        return []
+    bound_locals = direct_return_parameter_dependent_locals(prefix, allowed_names=allowed_names)
+    if not bound_locals:
+        return []
+
+    choices: list[tuple[int, float]] = []
+
+    def add_token(token_text: str) -> None:
+        idx = token_to_id.get(token_text)
+        if idx is None or idx in seen:
+            return
+        if token_blocked_by_strict_decode_guard(
+            prefix,
+            token_text,
+            require_nontrivial_return=require_nontrivial_return,
+            allowed_names=allowed_names,
+            input_type_hints=input_type_hints,
+        ):
+            return
+        if not token_allowed_by_policy(prefix, token_text, policy=token_policy, allowed_names=allowed_names):
+            return
+        seen.add(idx)
+        choices.append((idx, float(max(arr[idx], 1e-9))))
+
+    if not values:
+        add_token("NAME:return")
+    elif values == ["return"]:
+        for name in bound_locals[:4]:
+            add_token(f"NAME:{name}")
+    elif len(values) == 2 and values[0] == "return" and values[1] in set(bound_locals):
+        add_token("NEWLINE:")
+    return choices
+
+
+def direct_return_parameter_dependent_locals(prefix: list[str], *, allowed_names: set[str] | None) -> list[str]:
+    """Return top-level locals whose completed assignment mentions visible inputs."""
+
+    visible = {str(name) for name in set(allowed_names or set()) if str(name).isidentifier()}
+    if not visible:
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    lines, _current_depth, _current_values = prefix_lines_with_depth(prefix)
+    for depth, values in lines:
+        if depth != 0 or "=" not in values:
+            continue
+        equals = values.index("=")
+        if equals != 1:
+            continue
+        name = str(values[0])
+        if not name.isidentifier() or name in visible or name in {"return", "for", "if", "while", "else", "elif"}:
+            continue
+        rhs = [str(item) for item in values[equals + 1 :]]
+        if not rhs or rhs in (["["], ["{"], ["("]):
+            continue
+        rhs_names = {item for item in rhs if item.isidentifier()}
+        if not (rhs_names & visible):
+            continue
+        if name not in seen:
+            seen.add(name)
+            out.append(name)
+    return out
+
+
 def current_line_expected_closer(values: list[str]) -> str:
     stack: list[str] = []
     pairs = {"(": ")", "[": "]", "{": "}"}

@@ -459,6 +459,16 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
         return assignable_lvalue_tokens(values)
     if kind == "NAME" and value == "in" and values and values[0] not in {"for", "if", "elif", "while", "return"}:
         return False
+    if kind == "NAME" and value == "not" and previous not in {"if", "elif", "while", "return", "and", "or", "("}:
+        return False
+    if kind == "NAME" and value == "as" and not (values and values[0] in {"except", "import", "from", "with"}):
+        return False
+    if kind == "OP" and value in {"&", "|", "^", "<<", ">>"}:
+        return False
+    if kind == "OP" and value in {"&=", "|=", "^=", ":="}:
+        return False
+    if kind == "OP" and value == "{" and values and previous not in {"=", "return", "(", "[", ",", ":"}:
+        return False
     if strict_body_would_extend_pathological_comparison_chain(values, kind=kind, value=value):
         return False
     if strict_body_would_extend_pathological_boolean_chain(values, kind=kind, value=value):
@@ -466,6 +476,12 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
     if kind == "NEWLINE" and values == ["return"]:
         return False
     if line_start(prefix):
+        if (
+            kind == "NAME"
+            and value == "return"
+            and any(depth == 0 and row_values[:1] == ["return"] for depth, row_values in previous_significant_lines_with_depth(prefix))
+        ):
+            return False
         if kind in {"STRING", "NUMBER"}:
             return False
         if kind == "NAME" and value in {"break", "continue"} and not inside_loop_context(prefix):
@@ -511,7 +527,7 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
     if kind == "OP" and value == "(" and previous_kind == "NAME":
         if previous_value in {"return", "yield"}:
             return False
-        if current_line_call_depth(values) >= 3:
+        if current_line_call_depth(values) >= 2:
             return False
         if not previous_name_is_callable(prefix, previous_value, allowed_names=allowed_names):
             return False
@@ -1277,13 +1293,14 @@ def strict_body_would_extend_pathological_boolean_chain(
         return False
     if values[-1] in {"and", "or", "not", "(", "[", "{", ",", ".", "="}:
         return True
-    return sum(1 for item in values if item in {"and", "or"}) >= 4
+    limit = 3 if values and values[0] in {"if", "elif", "while"} else 4
+    return sum(1 for item in values if item in {"and", "or"}) >= limit
 
 
 def strict_body_would_extend_pathological_subscript_chain(values: list[str]) -> bool:
     """Reject deep same-line subscript chains that dominated failed replays."""
 
-    return values.count("[") >= 4
+    return values.count("[") >= 3
 
 
 def strict_body_would_extend_uncalled_method_attribute_chain(values: list[str]) -> bool:

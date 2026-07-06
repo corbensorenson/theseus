@@ -1048,11 +1048,14 @@
         "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json",
         "reports/strict_generator_mlx_private_adaptation_direct_body_emission_path_smoke_20260706.json",
         "reports/strict_generator_mlx_decode_eval_direct_body_emission_path_broad4_replay8_20260706.json",
-        "reports/strict_generator_mlx_decode_eval_direct_body_emission_path_broad4_replay8_20260706_candidates.jsonl"
+        "reports/strict_generator_mlx_decode_eval_direct_body_emission_path_broad4_replay8_20260706_candidates.jsonl",
+        "reports/strict_generator_mlx_decode_eval_local_return_continuation_syntax_canary_20260706.json",
+        "reports/strict_generator_mlx_decode_eval_local_return_continuation_train_replay2_20260706.json",
+        "reports/strict_generator_mlx_decode_eval_local_return_continuation_broad2_replay4_20260706.json"
       ],
       "missing_items": [
-        "DPO shadow replay failed behavior: repair direct learned body emission, local-return completion, and promotion-eligible candidate rows before scaling DPO/IPO/ORPO/KTO/SimPO, GRPO/RLOO/ReMax/RLVR, or claiming behavior lift",
-        "direct body-emission path weighting is now active, but strict replay still emits zero accepted learned candidate rows; next repair target is trainable local-return/finalizer continuation and candidate admission, not another scalar CE-weighting profile",
+        "DPO shadow replay failed behavior: repair direct learned semantic body emission and promotion-eligible nontrivial top-level-return candidates before scaling DPO/IPO/ORPO/KTO/SimPO, GRPO/RLOO/ReMax/RLVR, or claiming behavior lift",
+        "direct body-emission path weighting and local-return continuation are now active; syntax-only private train replay emits 8 generated rows with 8/8 integrity verified, but strict nontrivial/top-level semantic replay still emits zero admitted learned rows and zero behavior passes",
         "offline preference comparison across DPO/IPO/ORPO/KTO/SimPO on the same private accepted/rejected pair split, same reference checkpoint, same optimizer budget, same heldout verifier, and same no-cheat/candidate-integrity audit",
         "bounded GRPO/RLOO/ReMax/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference, reward-present/reward-removed ablation, verifier-cost ledger, reward-hacking probes, and no authority expansion by training side effect",
         "multi-target policy-update leases for planner, router, VCM selector, verifier policy, execution policy, and generation-mode selector; each update names target policy, admissible feedback, reward boundary, authority effect, drift bound, rollback, monitor window, and task-specific heldouts",
@@ -1070,7 +1073,7 @@
         "The direct body-emission profile is training evidence only: it matched 128/128 private rows and 8054 token positions, but strict replay still emitted 0 accepted learned candidate rows and 0/8 behavior passes.",
         "The next governed step is local-return/finalizer continuation repair: make prompt/signature body-token decode produce admitted non-fallback, non-template, top-level-return candidates before preference/RL scaling. DPO/IPO/ORPO/KTO/SimPO and GRPO/RLOO/ReMax/RLVR remain downstream of emission and verifier behavior, not substitutes for it."
       ],
-      "smallest_next_patch": "Do not scale offline preference or verifier-reward RL yet. First repair the model/decoder interface for local-return and finalizer continuation so strict prompt/signature decode emits admitted non-fallback, non-template, top-level-return candidates under the same private replay profile. Use semantic-IR localized repair or generation-mode changes only if candidate integrity and blind-flow remain clean; no public rows, no fallback returns, no renderer/router/tool credit.",
+      "smallest_next_patch": "Do not scale offline preference or verifier-reward RL yet. Syntax-only direct body-token emission now exists under a weak private train-replay canary, but strict prompt/signature replay still needs semantic top-level-return quality: admitted non-fallback, non-template, nontrivial top-level-return candidates that pass candidate integrity and private verifier replay. Use semantic-IR localized repair or generation-mode changes only if candidate integrity and blind-flow remain clean; no public rows, no fallback returns, no renderer/router/tool credit.",
       "integration_smoke": [
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",

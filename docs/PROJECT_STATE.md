@@ -269,6 +269,25 @@ from learned-generation credit. The current wall has therefore narrowed again:
 target-side body-emission supervision is now active, but decode still needs a
 trainable local-return/finalizer continuation mechanism that produces
 admissible non-fallback candidates under the same prompt/signature-only audit.
+The first decoder-interface patch for that wall is now in
+`scripts/strict_generator_mlx_decode_plans.py`,
+`scripts/strict_generator_mlx_decode_eval.py`, and
+`scripts/neural_seed_token_decoder_support.py`: it tightens strict body-token
+legality around malformed bitwise/walrus/set-literal/`not` chains and exposes a
+task-blind local-return continuation choice for already-bound parameter-derived
+locals. The syntax-only private train-replay canary
+`reports/strict_generator_mlx_decode_eval_local_return_continuation_syntax_canary_20260706.json`
+is `YELLOW`, emitting `8` generated rows with `8/8` independently integrity
+verified and `0` fallback returns, `0` public rows, and `0` external inference
+calls. That is syntax-emission evidence only: strict nontrivial/top-level
+semantic canaries
+`reports/strict_generator_mlx_decode_eval_local_return_continuation_train_replay2_20260706.json`
+and
+`reports/strict_generator_mlx_decode_eval_local_return_continuation_broad2_replay4_20260706.json`
+remain `RED` with `0` admitted learned rows and `0` behavior passes. The wall is
+now precise: learned decode can emit some runtime-loadable body-token syntax,
+but it still cannot reliably emit promotion-grade nontrivial top-level-return
+semantics from prompt/signature alone.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with

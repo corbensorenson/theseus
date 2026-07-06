@@ -173,6 +173,7 @@ from strict_generator_mlx_decode_plans import (  # noqa: E402
     learned_prefix_decision_expectation_from_tokens,
     source_condition_exploration_choices,
     expression_closure_guard_choices,
+    direct_local_return_continuation_choices,
     current_line_expected_closer,
     current_line_tail_needs_operand,
     current_line_needs_colon_from_values,
@@ -2327,6 +2328,19 @@ def mlx_token_choices(
     )
     if expression_closure_choices:
         return expression_closure_choices
+    direct_return_choices = direct_local_return_continuation_choices(
+        arr,
+        inverse,
+        body_prefix,
+        seen=set(),
+        token_policy=token_policy,
+        allowed_names=allowed_names,
+        input_type_hints=input_type_hints,
+        require_nontrivial_return=require_nontrivial_return,
+        enabled=enable_expression_closure_guard,
+    )
+    if direct_return_choices:
+        return direct_return_choices
     if source_priority_active:
         return priority_source_choices
     if forced is not None:
@@ -2441,6 +2455,7 @@ def mlx_token_choices(
     )
     choices.extend(loop_plan_choices)
     choices.extend(expression_closure_choices)
+    choices.extend(direct_return_choices)
     choices = filter_loop_plan_blocked_choices(
         body_prefix,
         choices,
