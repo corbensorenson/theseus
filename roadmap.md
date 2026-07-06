@@ -51,6 +51,12 @@ Book sources reviewed:
   localized repair, verifier-capacity routing, VCM transaction certificates,
   Circle/Coil cyclic primitives, belief revision, and procedural-memory
   lookahead.
+- Fifth-pass Claude/AI_book mining packet at
+  `/Users/corbensorenson/.codex/attachments/f08752f6-9be1-440d-9c6c-65169a852670/pasted-text.txt`.
+  This pass confirmed the planned-test coverage above, but tightened the
+  execution order: Chapter 38 policy optimization is a real missing capability
+  lever, yet the already-run DPO shadow update failed strict behavior replay, so
+  direct prompt/signature semantic body construction remains the immediate wall.
 
 Theseus sources checked:
 
@@ -328,6 +334,14 @@ private behavior before larger DPO/GRPO/MTP/diffusion/scale work can be
 interpreted as capability movement. Assisted tools, routers, semantic
 renderers, deterministic repairs, templates, and fallback bodies remain useful
 product machinery, but they cannot become learned-generation evidence.
+
+Operational consequence: the next implementation goal should not be framed as
+"run DPO" or "add MTP" by itself. It should first make the learned generator
+consume semantic-IR/state-transition obligations and emit behavior-positive
+non-fallback bodies under the strict prompt/signature-only contract. Once that
+is true, DPO/IPO/ORPO/KTO/SimPO, GRPO/RLVR, MTP, GVR, lookahead, diffusion, and
+scale experiments become meaningful apples-to-apples improvement levers instead
+of ways to route around a zero-behavior generator.
 
 ## Book Complete Implementation Contract
 
