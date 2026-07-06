@@ -36,6 +36,7 @@ DEFAULT_CURRENT_REPORTS = {
     "training_data_admission": REPORTS / "training_data_admission_v1.json",
     "neural_seed_survival": REPORTS / "neural_seed_survival_readiness_gate.json",
     "resource_mlx_route": REPORTS / "resource_mlx_route_readiness_gate.json",
+    "t2_private_training_smoke": REPORTS / "strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json",
     "assistant_product_lane": REPORTS / "theseus_assistant_product_lane_gate.json",
     "public_calibration_proposal": REPORTS / "public_calibration_proposal_gate.json",
 }
@@ -137,6 +138,7 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
         check_current_data_admission(current),
         check_current_neural_seed_readiness(current),
         check_current_resource_route(current),
+        check_current_t2_training_smoke_if_present(current),
         check_current_assistant_canary(current),
         check_current_public_calibration_status(current),
     ]
@@ -153,6 +155,15 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
     failed_checks = [row for row in checks if not row["passed"]]
     failed_expected_invalid = [row for row in expected_invalid_controls if not row["passed"]]
     trigger_state = "GREEN" if not failed_checks and not failed_expected_invalid else "RED"
+    t2_smoke_passed = current_t2_training_smoke_passed(current)
+    architecture_ready = current["roadmap_pre_training"].get("pre_training_architecture_ready") is True
+    bounded_rung_ready = ready_for_bounded_private_training_rung(
+        plan,
+        current,
+        failed_checks,
+        failed_expected_invalid,
+        t2_smoke_passed=t2_smoke_passed,
+    )
     summary = {
         "plan": rel(plan_path),
         "training_inference_execution_plan_state": trigger_state,
@@ -163,8 +174,17 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
         "blocked_lane_count": sum(1 for lane in list_dicts(plan.get("lanes")) if str(lane.get("status", "")).startswith("blocked")),
         "ready_for_governed_private_training_focus": ready_for_private_training(current, failed_checks, failed_expected_invalid),
         "ready_for_private_training_smoke": ready_for_private_training_smoke(plan, current, failed_checks, failed_expected_invalid),
-        "ready_for_bounded_private_training_rung": False,
-        "bounded_private_training_rung_block_reason": "requires a clean T2 private training smoke checkpoint before longer training",
+        "t2_private_training_smoke_passed": t2_smoke_passed,
+        "ready_for_bounded_private_training_rung": bounded_rung_ready,
+        "bounded_private_training_rung_block_reason": (
+            "none"
+            if bounded_rung_ready
+            else (
+                "pre-training architecture readiness is RED; complete or falsify the partial book-derived implementation phases before making training the primary focus"
+                if not architecture_ready
+                else "requires a clean T2 private training smoke checkpoint before longer training"
+            )
+        ),
         "ready_for_local_assisted_inference_canary": ready_for_local_assisted_inference(current, failed_checks, failed_expected_invalid),
         "ready_for_model_only_general_chat_runtime": False,
         "ready_for_public_calibration": False,
@@ -190,15 +210,35 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
         "hard_gaps": failed_checks + failed_expected_invalid,
         "execution_order": list_value(plan.get("execution_order")),
         "readiness_decision": {
-            "next_allowed_step": "T2_private_training_smoke",
-            "next_allowed_inference_step": "T5_local_assisted_inference_canary",
+            "next_allowed_step": (
+                "T3_bounded_private_training_rung"
+                if bounded_rung_ready
+                else (
+                    "complete_partial_book_derived_phases_before_training_focus"
+                    if not architecture_ready
+                    else "T2_private_training_smoke"
+                )
+            ),
+            "next_allowed_inference_step": (
+                "T5_local_assisted_inference_canary"
+                if ready_for_local_assisted_inference(current, failed_checks, failed_expected_invalid)
+                else "none_until_gate_green"
+            ),
             "next_disallowed_steps": [
                 "model-only general chat serving",
                 "production MLX route",
                 "exact consumed public calibration rerun",
                 "Hive fleet training while peers are unreachable",
             ],
-            "why": "Architecture and governance are ready, but semantic behavior quality and external peer reachability are not yet sufficient for promotion, public calibration, production routing, or distributed training claims.",
+            "why": (
+                "The private MLX smoke checkpoint is clean, so the next training step may advance to a bounded private semantic-quality rung."
+                if bounded_rung_ready
+                else (
+                    "Pre-training architecture readiness is RED because the roadmap now has partial book-derived implementation phases. Resolve or falsify those partial phases before making training or public calibration the primary focus."
+                    if not architecture_ready
+                    else "Architecture and governance are ready, but a clean private smoke checkpoint is required before longer training; semantic behavior quality and external peer reachability are not yet sufficient for promotion, public calibration, production routing, or distributed training claims."
+                )
+            ),
         },
         "non_claims": [
             "This gate does not train a model.",
@@ -381,18 +421,92 @@ def check_current_resource_route(current: dict[str, dict[str, Any]]) -> dict[str
     )
 
 
+def check_current_t2_training_smoke_if_present(current: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    smoke = current["t2_private_training_smoke"]
+    if not smoke:
+        return check("current_t2_private_training_smoke_if_present", True, {"present": False, "state": "not_yet_run"})
+    checkpoint = str(smoke.get("checkpoint") or "")
+    vocab = str(smoke.get("vocab") or "")
+    training_plan = dict_value(smoke.get("training_plan"))
+    target_token_positions = int_value(training_plan.get("target_token_positions"))
+    no_cheat_counts = {
+        "public_training_rows": int_value(smoke.get("public_training_rows")),
+        "public_training_rows_written": int_value(smoke.get("public_training_rows_written")),
+        "external_inference_calls": int_value(smoke.get("external_inference_calls")),
+        "fallback_return_count": int_value(smoke.get("fallback_return_count")),
+        "fallback_template_router_tool_credit_count": int_value(smoke.get("fallback_template_router_tool_credit_count")),
+    }
+    faults = {}
+    if smoke.get("trigger_state") != "GREEN":
+        faults["trigger_state"] = smoke.get("trigger_state")
+    if smoke.get("backend") != "mlx_high_level_transformer":
+        faults["backend"] = smoke.get("backend")
+    if "gpu" not in str(smoke.get("device", "")).lower():
+        faults["device"] = smoke.get("device")
+    if not checkpoint or not resolve(checkpoint).exists():
+        faults["checkpoint"] = checkpoint or None
+    if not vocab or not resolve(vocab).exists():
+        faults["vocab"] = vocab or None
+    if not valid_sha256(smoke.get("checkpoint_sha256")):
+        faults["checkpoint_sha256"] = smoke.get("checkpoint_sha256")
+    if not valid_sha256(smoke.get("vocab_sha256")):
+        faults["vocab_sha256"] = smoke.get("vocab_sha256")
+    dirty_counts = {key: value for key, value in no_cheat_counts.items() if value != 0}
+    if dirty_counts:
+        faults["no_cheat_counts"] = dirty_counts
+    if smoke.get("open_or_pretrained_model_weights_used") is not False:
+        faults["open_or_pretrained_model_weights_used"] = smoke.get("open_or_pretrained_model_weights_used")
+    if target_token_positions <= 0 or int_value(smoke.get("optimizer_token_positions_consumed")) < target_token_positions:
+        faults["optimizer_token_positions_consumed"] = {
+            "consumed": smoke.get("optimizer_token_positions_consumed"),
+            "target": target_token_positions,
+        }
+    if float_value(smoke.get("parameter_update_fraction")) < 0.95:
+        faults["parameter_update_fraction"] = smoke.get("parameter_update_fraction")
+    if float_value(smoke.get("parameter_tensor_update_fraction")) < 0.95:
+        faults["parameter_tensor_update_fraction"] = smoke.get("parameter_tensor_update_fraction")
+    if smoke.get("heldout_lm_improved") is not True:
+        faults["heldout_lm_improved"] = smoke.get("heldout_lm_improved")
+    if float_value(smoke.get("training_tokens_per_second")) <= 0:
+        faults["training_tokens_per_second"] = smoke.get("training_tokens_per_second")
+    return check(
+        "current_t2_private_training_smoke_clean_when_present",
+        not faults,
+        {
+            "present": True,
+            "faults": faults,
+            "checkpoint": checkpoint,
+            "checkpoint_sha256": smoke.get("checkpoint_sha256"),
+            "vocab": vocab,
+            "vocab_sha256": smoke.get("vocab_sha256"),
+            "optimizer_token_positions_consumed": smoke.get("optimizer_token_positions_consumed"),
+            "target_token_positions": target_token_positions,
+            "training_tokens_per_second": smoke.get("training_tokens_per_second"),
+            "heldout_lm_loss_before": smoke.get("heldout_lm_loss_before"),
+            "heldout_lm_loss_after": smoke.get("heldout_lm_loss_after"),
+            "semantic_plan_accuracy_before": smoke.get("semantic_plan_accuracy_before"),
+            "semantic_plan_accuracy_after": smoke.get("semantic_plan_accuracy_after"),
+            "no_cheat_counts": no_cheat_counts,
+        },
+    )
+
+
 def check_current_assistant_canary(current: dict[str, dict[str, Any]]) -> dict[str, Any]:
     assistant = current["assistant_product_lane"]
     return check(
         "current_assisted_local_inference_canary_ready",
         assistant.get("b1_assisted_verified_assistant_product_lane_state") == "GREEN"
-        and assistant.get("b1_empirical_support_ready") is True
+        and assistant.get("b1_synthetic_support_ready") is True
         and int_value(assistant.get("passed_case_count")) >= 4
         and int_value(assistant.get("external_inference_calls")) == 0
         and int_value(assistant.get("public_training_rows_written")) == 0
         and int_value(assistant.get("fallback_return_count")) == 0,
         {
             "state": assistant.get("b1_assisted_verified_assistant_product_lane_state"),
+            "support_state": assistant.get("b1_assisted_verified_assistant_product_lane_support_state"),
+            "b1_synthetic_support_ready": assistant.get("b1_synthetic_support_ready"),
+            "b1_empirical_support_ready": assistant.get("b1_empirical_support_ready"),
+            "b1_empirical_block_reason": assistant.get("b1_empirical_block_reason"),
             "passed_case_count": assistant.get("passed_case_count"),
             "recent_event_count": assistant.get("recent_event_count"),
             "completed_or_accepted_count": assistant.get("completed_or_accepted_count"),
@@ -535,6 +649,25 @@ def ready_for_private_training_smoke(plan: dict[str, Any], current: dict[str, di
     return ready_for_private_training(current, failed_checks, failed_expected_invalid) and lane_by_id(plan, "T2_private_training_smoke").get("status") == "ready"
 
 
+def current_t2_training_smoke_passed(current: dict[str, dict[str, Any]]) -> bool:
+    return check_current_t2_training_smoke_if_present(current)["passed"] and bool(current["t2_private_training_smoke"])
+
+
+def ready_for_bounded_private_training_rung(
+    plan: dict[str, Any],
+    current: dict[str, dict[str, Any]],
+    failed_checks: list[dict[str, Any]],
+    failed_expected_invalid: list[dict[str, Any]],
+    *,
+    t2_smoke_passed: bool,
+) -> bool:
+    return (
+        ready_for_private_training(current, failed_checks, failed_expected_invalid)
+        and t2_smoke_passed
+        and lane_by_id(plan, "T3_bounded_private_training_rung").get("status") in {"ready", "planned"}
+    )
+
+
 def ready_for_local_assisted_inference(current: dict[str, dict[str, Any]], failed_checks: list[dict[str, Any]], failed_expected_invalid: list[dict[str, Any]]) -> bool:
     return (
         not failed_checks
@@ -597,6 +730,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- State: `{report['trigger_state']}`",
         f"- Ready for governed private training focus: `{summary['ready_for_governed_private_training_focus']}`",
         f"- Ready for private training smoke: `{summary['ready_for_private_training_smoke']}`",
+        f"- T2 private training smoke passed: `{summary['t2_private_training_smoke_passed']}`",
+        f"- Ready for bounded private training rung: `{summary['ready_for_bounded_private_training_rung']}`",
         f"- Ready for local assisted inference canary: `{summary['ready_for_local_assisted_inference_canary']}`",
         f"- Ready for model-only general chat runtime: `{summary['ready_for_model_only_general_chat_runtime']}`",
         f"- Ready for public calibration: `{summary['ready_for_public_calibration']}`",
@@ -650,6 +785,11 @@ def float_value(value: Any, default: float = 0.0) -> float:
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def valid_sha256(value: Any) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(char in "0123456789abcdef" for char in text.lower())
 
 
 def resolve(path: str | Path) -> Path:

@@ -67,6 +67,71 @@ complete.
 
 Updated: 2026-07-06
 
+## 2026-07-06 Claude Review Reconciliation
+
+Claude's latest review surfaced three criticisms with enough evidence to change
+the roadmap:
+
+1. `B1_assisted_verified_assistant_product_lane` was over-labeled. The current
+   events prove the assistant product lane wiring, VCM/tool/verifier receipts,
+   metadata-only fixture/e2e dogfood outcomes, and expected-invalid controls.
+   They do **not** yet prove real daily usefulness. B1 is therefore
+   `synthetic-test-backed` until real multi-day user dogfood traces exist.
+2. Report sprawl has regrown and must be governed as a first-class blocker, not
+   a style preference. The hard report-family budget is now implemented through
+   `configs/artifact_retention_budget_policy.json` and
+   `python3 scripts/theseus_artifact_retention.py --budget-gate`: generated
+   report/checkpoint families need registry ownership, retention class,
+   archive/replay policy, and a reason they cannot update an existing flagship
+   claim record. The current budget gate is `GREEN` after archiving and
+   replay-verifying `386` report snapshots; hot reports are under the `1 GiB`
+   cap. The remaining retention wall is warning-level checkpoint bulk, which
+   needs current-reference-aware checkpoint compaction.
+3. The roadmap underweighted concrete ASI Stack Part III capability techniques.
+   The next C1/Phase 10 capability work must test real from-scratch techniques
+   under substrate-adoption discipline: multi-token prediction (MTP) versus a
+   matched single-token control, generate-verify-repair versus one-shot decode
+   with tool-assisted/model-only scores separated, and a dense-vs-sparse-MoE or
+   50-150M scale ablation with matched active compute. These are not new side
+   lanes; they are registered implementation candidates for the practical
+   transformer/hybrid survival lane.
+4. The deeper ASI Stack mining pass adds a stronger correction: the book's
+   Policy Optimization and Learning from Feedback chapter is not optional
+   machinery. Theseus has verifier labels, accepted/rejected private
+   candidates, STS/VCM/router policies, and dogfood metadata, but the live
+   generator has not yet received a governed DPO/IPO preference update or a
+   bounded GRPO/RLVR verifier-reward update that improves heldout behavior.
+   The roadmap must therefore treat policy optimization as the next
+   behavior-changing lever, not as a completed fixture.
+5. Fast generation is broader than the current MLX/beam work. MTP,
+   lookahead/trie continuation from verified procedural memory,
+   sketch-first/diffusion-style repair, early-exit/self-speculative modes, and
+   KV/prefix-cache accounting must be generation-mode records judged by useful
+   verified output per second, not proposed-token throughput.
+6. VCM, claim ledgers, and verification bandwidth need harder mechanics:
+   representation certificates, authority ceilings, copy-on-write context
+   branches, taint/deletion closure, receipt-faithfulness audits, an explicit
+   epistemic trusted-computing-base record, claim-belief revision transitions,
+   verifier-capacity budgets, and governance-tax accounting. These are not
+   product polish; they are the control surfaces that prevent self-improvement
+   from becoming uninspectable.
+7. Claude's later book-mining pass does not add another lane; it sharpens the
+   execution order. The ASI Stack chapter-level `Planned Codex test` lists are
+   the implementation backlog, and Chapter 38 is the fastest real capability
+   lever still missing in behavior: run governed private DPO/IPO over existing
+   accepted/rejected verifier pairs before broader RLVR/GRPO, MTP, diffusion,
+   or scale work. The policy gate/scaffolding is not enough; the next Phase 10
+   claim must be pre/post heldout verifier behavior from a real private policy
+   update, with reward-hacking probes and rollback.
+
+This reconciliation changes claims, not the no-cheat charter. It does not
+authorize public benchmark training rows, runtime external inference,
+fallback/template/router/tool credit as learned generation, or another loose
+marker/slot/guard family. Each capability technique needs a substrate-adoption
+record with baseline, negative control, matched data/compute, falsification
+condition, residuals, and explicit non-claims before it can affect a default
+route.
+
 ## Book Complete Implementation Contract
 
 This roadmap now treats `book_structure.json` as the authoritative inventory of
@@ -196,7 +261,7 @@ remain honestly bounded.
   summary now records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
   `A2_replacement_transaction_kernel=synthetic-test-backed`,
   `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
-  `B1_assisted_verified_assistant_product_lane=empirical-test-backed`, and
+  `B1_assisted_verified_assistant_product_lane=synthetic-test-backed`, and
   `C1_correctness_rl_and_generator_survival_lane=synthetic-test-backed`.
 - `scripts/roadmap_implementation_gate.py` now exposes a strict
   pre-training architecture readiness mode:
@@ -233,7 +298,7 @@ remain honestly bounded.
   confused-deputy denial, Digital SCIF handle proof, expected-invalid controls,
   and clean no-cheat counters. This is a reference authority-membrane fixture,
   not a claim that every runtime route has universal deployed E1 enforcement.
-- The B1 assisted verified assistant product lane is empirical-test-backed:
+- The B1 assisted verified assistant product lane is synthetic-test-backed:
   `reports/theseus_assistant_product_lane_gate.json` verifies the existing
   assistant runtime surface across `4/4` route cases, CLI/memory/feedback
   receipts, VCM readiness, deterministic tool evidence, private verifier
@@ -242,7 +307,10 @@ remain honestly bounded.
   VIEA product trace records, and zero public-training/runtime-external/fallback
   counters. The gate preserves the strict code-generator semantic wall as C1
   negative evidence rather than laundering product usefulness into
-  learned-generation capability.
+  learned-generation capability. It does not claim real daily usefulness or
+  empirical support until real multi-day user dogfood traces exist with raw
+  private text off, verifier receipts retained, and accepted/missed/ignored/
+  corrected/completed outcomes spread across real use days.
 - The C1 correctness/RL/generator survival lane is synthetic-test-backed:
   `reports/correctness_generator_survival_lane_gate.json` verifies one bounded
   private verifier-driven learned body-token experiment under the preregistered
@@ -1011,6 +1079,15 @@ Deliverables:
   correctness-aware objective:
   supervised body tokens plus verifier-labeled preference/ranking or
   rejection-sampling updates.
+- Run the first actual policy-optimization update on private data:
+  DPO-style or IPO-style offline preference learning over accepted/rejected
+  verifier-labeled candidate pairs. It must report pre/post heldout verifier
+  pass, accepted-output quality, drift bound, rollback plan, reward-hacking
+  probes, and no-cheat counters. It is not complete if it only improves LM loss.
+- Add a bounded GRPO/RLVR verifier-reward lane for exact private tasks after
+  the offline preference path is reproducible. Reward is functional verifier
+  evidence plus context/evidence adequacy, not style. Authority expansion by
+  training side effect is forbidden.
 - Extend the negative-replay objective beyond candidate-level CE into
   verifier-stage-aware preference learning: prefer private candidates that
   advance from syntax -> runtime load -> intended behavior, and reject repeated
@@ -1024,17 +1101,63 @@ Deliverables:
   practical assistant lane.
 - Report model-only generation separately from deterministic tool-assisted
   completion.
+- Add multi-token prediction as the first concrete Part III capability
+  technique: next-2/next-4 auxiliary heads on the transformer/hybrid survival
+  lane, verifier-stage-aware accepted-span accounting, and a matched
+  single-token control under the same data, optimizer, active-parameter, and
+  wall-clock budget. MTP is not a speed claim or a promotion claim until it
+  improves heldout private verifier behavior or useful accepted-span rate.
+- Add bounded generate-verify-repair as the first product/capability bridge:
+  one-shot model-only decode, verifier-guided repair, repair cost, fallback
+  count, verifier wall time, and useful solution/sec are reported separately.
+  The verifier may guide repair as a tool-assisted route, but repaired output
+  cannot be credited as unassisted learned generation.
+- Implement generate-verify-repair as a typed state machine:
+  candidate -> verified-exact -> verified-lossy -> repaired-exact ->
+  literal-fallback/noncredit -> quarantined. Every transition needs a verifier
+  receipt, repair cost, residual, and non-claim.
+- Add lookahead/trie retrieval from verified procedural memory and one
+  sketch-first or diffusion-style repair experiment as governed generation
+  modes. They are judged by useful verified output and are noncredit for
+  learned generation unless the same model-only checkpoint improves one-shot
+  behavior.
+- Add semantic-IR localized repair to the generator loop: compile
+  prompt/signature/candidate body into semantic atoms, map verifier failures to
+  failed atoms, repair only affected atoms, and replay dependents. Requirement
+  changes must emit a scope-change ledger entry instead of silently rewriting
+  the task.
+- Add one capacity ablation before more marker/slot churn: either a 50-150M
+  dense transformer/hybrid scale step or a sparse MoE with comparable active
+  compute. The run must compare against the current dense baseline and record
+  router receipts, active parameters, memory, throughput, verifier behavior,
+  residuals, and a falsification condition.
+- Wrap MTP, generate-verify-repair, MoE/scale, STS, VCM, MLX/Metal, and any
+  future substrate change in a substrate-adoption record: baseline, negative
+  control, matched data/compute, consumer axis, fallback/retirement rule,
+  residuals, and non-claims.
 
 Acceptance gates:
 
 - The trained lane beats the current strict private baseline on verifier pass,
   not just syntax, nontrivial return, or lower LM loss.
+- The first DPO/IPO update beats its pre-update checkpoint on private heldout
+  verifier pass or accepted-output quality, and reward-hacking probes pass.
+- GRPO/RLVR does not become a default route until verifier reward improves
+  correctness without increasing shallow identity loops, inert stubs, early
+  returns, latency abuse, context ignoring, or authority creep.
 - At least one held-out private tier has non-zero semantic verifier pass.
 - Family-disjoint behavior improves without answer-identifying metadata.
 - Candidate integrity is GREEN with zero mismatches.
 - Blind information-flow audit is GREEN.
 - No fallback returns, templates, fixed action routers, or deterministic tools
   count as learned generation.
+- MTP only advances if matched-control private verifier behavior, accepted-span
+  quality, or useful solution/sec improves without worse no-cheat, integrity,
+  or fallback counters.
+- Generate-verify-repair only advances as an assisted route unless the same
+  checkpoint also improves one-shot model-only behavior.
+- MoE/scale only advances if matched active-compute private verifier behavior
+  improves or the result is recorded as a falsifying substrate-adoption record.
 
 Do not:
 
@@ -1043,6 +1166,9 @@ Do not:
 - Use public benchmarks as training data.
 - Let semantic renderers or structural adapters support learned-generation
   claims.
+- Start another target-label, slot, vocab, marker, guard, token-bias, or
+  contrast family unless it is inside the registered MTP/GVR/MoE/scale
+  substrate-adoption sequence and has a falsification stop.
 
 ## Phase 5: Claim Ledger, Artifact Graph, and Evidence State
 
@@ -1275,6 +1401,11 @@ Deliverables:
   as local jobs.
 - Add report/checkpoint retention and compaction so training artifacts do not
   choke iteration.
+- Add a hard live-report budget gate: no new report family without a registry
+  owner, retention class, archive/replay policy, and a reason it cannot update
+  an existing flagship claim/evidence record. Current live generated state
+  should be driven below `1G` unless a larger bound is justified by active
+  checkpoint artifacts.
 
 Acceptance gates:
 
@@ -1283,11 +1414,18 @@ Acceptance gates:
 - Non-MLX Macs do not claim MLX.
 - Hive jobs are auditable through the same typed job and artifact graph records
   as local jobs.
+- The report/checkpoint retention gate reports live byte size, file count,
+  largest families, registry owner, retention class, archive pointer, replay
+  hash, and deletion/quarantine decision for every generated family above the
+  threshold.
+- Repeated metric variants update a registered flagship claim record instead
+  of spawning unregistered `_vN` report families.
 
 Do not:
 
 - Spend engineering time on installer/product polish while the generator,
   assistant, registry, and spine remain unhealthy.
+- Treat generated report volume as progress.
 
 ## Phase 13: Authority Kernel, Failure Boundaries, and Runtime Adapter Receipts
 
@@ -1394,6 +1532,13 @@ Acceptance gates:
 - A VCM-assisted assistant answer includes transaction and adequacy records.
 - A public benchmark artifact is tainted calibration-only and cannot flow into
   training context.
+- Each materialized packet has a representation certificate: source refs,
+  omissions, loss contract, permitted uses, authority ceiling, lease, and
+  consumer policy. A summary can never raise the authority ceiling of the
+  source it summarizes.
+- Copy-on-write branches, mounts, read/write sets, taint propagation,
+  contradiction refs, and deletion obligations are replayable. Mandatory misses
+  emit typed faults instead of best-effort context.
 - A stale or contradictory memory read produces a context fault or residual,
   not a confident answer.
 - A deletion fixture can prove closure or emit a clear closure fault.
@@ -1403,6 +1548,9 @@ Do not:
 - Treat "more context" as proof.
 - Let context compression elevate authority or erase taint.
 - Allow deleted data to survive through summaries without an explicit policy.
+- Claim model-native MLX/Metal KV or prefix-cache parity from semantic
+   descriptor-cache evidence. Runtime parity needs a backend-specific replay
+   proof.
 
 ## Phase 16: Resource Budgets, Costed Routes, and Generation Mode Accounting
 
@@ -1797,20 +1945,20 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 0 | Stabilize current truth | Implemented/green registry gate/registered roadmap matrix; cleanup queue `16/16` steward-covered; bounded tmp/smoke cleanup canary complete | Continue governed retention/consolidation in bounded passes for steward-covered cleanup families; do not treat generated evidence history as active source lanes. |
 | 1 | VIEA Execution Spine | Frozen | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records match the dry-plan authority/runtime-adapter/failure/resource contract. |
 | 2 | Stable Capability Fields And Route Authority | Frozen | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records plus route-validator receipt against the shared VIEA contract. |
-| 3 | Virtual Context Memory As Default Context Substrate | Wired | Keep VCM governor/context-transaction receipts mandatory as new task surfaces are promoted; keep model-native MLX KV/prefix lifecycle in Phase 8. |
+| 3 | Virtual Context Memory As Default Context Substrate | Partial | Complete VCM as a transactional context ABI: representation certificates, authority ceilings, copy-on-write snapshots, taint/deletion propagation, mandatory typed faults, and native KV/prefix-cache replay proofs. |
 | 4 | Candidate Integrity And Learned Generation Accounting | Wired | Keep direct learned full-body quality receipts flowing through independent candidate integrity; semantic behavior repair stays in Phase 10. |
 | 5 | Daily-Use Assistant Runtime And Dogfood Trace Loop | Wired | Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane. |
 | 6 | Deterministic Tool And Search Substrate | Wired | Keep tool-assisted public/tool-use measurement ledgers separate from model-only scores as future public adapters are added; do not allow deterministic tool receipts to support learned-generation claims. |
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Wired | Training/inference execution plan is green. Next governed step is T2 private MLX training smoke on the existing transformer/hybrid lane, then T3 bounded private semantic update/final-return training only if the smoke checkpoint is clean. No public/external/fallback/tool/template credit. |
+| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. The next behavior-changing sequence is private DPO/IPO, bounded RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation under substrate-adoption records. No public/external/fallback/tool/template credit. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Public calibration remains measurement-only. The execution plan keeps it blocked until private semantic behavior improves and a fresh, non-consumed surface passes the proposal gate; exact consumed-surface reruns stay refused. |
-| 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Wired | Make future generator/verifier implementations consume these semantic obligation bindings in their native payloads rather than only through the current shared gate. |
-| 14 | Compression, Proof, And Claim Evidence Records | Wired | Keep archive-pointer replay verification mandatory for future retention batches; expand retention only through steward-covered, bounded generated-artifact cleanup passes. |
-| 15 | Procedural Memory And Toolification | Wired | Future procedural candidates must reuse the same guarded adoption transaction, rollback criteria, and route_binding_contract before default routing; no shortcut or learned-generation claim is allowed. |
-| 16 | MoECOT And Octopus Router Integration | Wired | Accumulate more diverse real task-to-arm traces and retrain the sparse head before major route-policy changes; do not route learned-generation claims through Octopus selections. |
+| 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Partial | Connect semantic IR to real generator failures: failed atom -> localized repair -> dependent obligation replay, with scope-change ledgers when requirements change. |
+| 14 | Compression, Proof, And Claim Evidence Records | Partial | Hard report-family budgets are now green with archive-pointer replay verification; continue receipt-faithfulness trap/replay audits, epistemic TCB/auditor records, claim-belief revision transitions, public-safe evidence-pack exports, and current-reference-aware checkpoint compaction. |
+| 15 | Procedural Memory And Toolification | Partial | Verified trajectories must become durable procedural tools and trie/lookahead sources with monitoring, retirement, drift checks, and no learned-generation credit. |
+| 16 | MoECOT And Octopus Router Integration | Partial | Add verifier-capacity budgets, residual-obligation ledgers, governance-tax accounting, and more diverse real task-to-arm traces before major route-policy changes. |
 | 17 | Simulation, Fidelity, And World-Model Contracts | Wired | Expand the same fidelity/counterfactual/world-adapter/failure-boundary semantics from the current bounded planning adapter to future real simulators and resource adapters without turning simulation into deployment evidence. |
 | 18 | Governance Rights, Constitutional Predicates, And Failure Boundaries | Frozen | When a trusted peer is reachable, validate remote Hive artifact endpoint citations through the same operator governance audit, VIEA route-validator, and claim-ledger path. |
 | 19 | Book-To-Theseus Backlog And Evidence Synchronization | Wired | Keep future AI_book source drift sticky until exact source-sync review decisions clear or update the affected phase contracts. |
@@ -1826,8 +1974,10 @@ Out of scope for that goal:
 
 ## Training And Inference Execution Roadmap
 
-The repository is ready to start governed private training focus, not ready to
-claim model-only production inference. The execution contract is:
+The repository has enough clean smoke evidence to preserve the training
+sequence, but it is **not** ready to make governed training the main focus
+again until the strict pre-training architecture gate is green. It is also not
+ready to claim model-only production inference. The execution contract is:
 
 1. `T0_preflight_freeze`: refresh roadmap, registry, data-admission, and
    execution-plan gates.
@@ -1862,8 +2012,19 @@ claim model-only production inference. The execution contract is:
 
 Current gate interpretation:
 
-- Ready now: `T0`, `T1`, `T2`, and `T5`.
-- Planned but not yet ready: `T3`, `T4`, and `T6`.
+- Current `reports/training_inference_execution_plan_gate.json` state is `RED`
+  because strict pre-training architecture readiness is `RED`. This is not a
+  no-cheat failure; it is the roadmap correctly saying that the book-derived
+  partial phases should be implemented or falsified before training/public
+  calibration becomes the main focus again.
+- Completed evidence: `T2` private MLX smoke is `GREEN`; `T3` bounded private
+  adaptation is `GREEN`; `T4` replay ran and is `RED` because direct decode
+  emitted `0` candidate rows.
+- Ready now: roadmap/architecture implementation work on phases `3`, `10`,
+  `13`, `14`, `15`, and `16`; targeted T4 repair analysis belongs under Phase
+  10, but not as a claim that training focus is globally unblocked.
+- Planned but not yet ready: the next full `T3`/`T4` rerun after the T4
+  no-candidate decode fault is repaired, plus `T6`.
 - Correctly blocked: `T7` public calibration and `T8` Hive scaleout.
 - Explicit non-claims: no model-only general chat serving, no public transfer
   win, no production MLX route, no CUDA/MLX/Metal parity claim, and no ASI
@@ -2468,7 +2629,13 @@ Do not:
 
 Implementation status:
 
-- Initial governed policy optimization program is complete as of 2026-06-25.
+- Initial governed policy optimization record/gate scaffolding is complete as
+  of 2026-06-25. This is a lease/evidence gate, not implementation of the
+  chapter's core behavior-change techniques. The actual behavior-changing
+  policy updates are **not** complete yet: no governed DPO/IPO update or
+  GRPO/RLVR verifier-reward update has beaten its pre-update checkpoint on a
+  private heldout verifier surface or been accepted as a default generator
+  improvement.
 - Canonical config: `configs/policy_optimization_program.json`.
 - Gate implementation: `scripts/policy_optimization_gate.py`.
 - Registry integration: the existing `model_governance_gates` surface now
@@ -2494,10 +2661,12 @@ Implementation status:
   `python3 scripts/policy_optimization_gate.py`;
   `python3 scripts/theseus_project_registry.py --gate`;
   `python3 scripts/attd_analyzer.py`.
-- Remaining related work: execute an actual private DPO/IPO-style update only
-  after the generator path supplies eligible private candidate pairs and a
-  pre/post private verifier comparison. The policy program is now the gate for
-  that work; it is not itself a behavior-lift claim.
+- Remaining related work: execute an actual private DPO/IPO-style update from
+  eligible private candidate pairs, then compare pre/post private heldout
+  verifier behavior. If that works, run a bounded GRPO/RLVR exact-private
+  verifier-reward update with reward-hacking probes. This is now the first
+  behavior-changing Phase 10 task. The policy program is the gate for that work;
+  it is not itself a behavior-lift claim.
 
 ### C. Fast Generation and Runtime Accounting
 

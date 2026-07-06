@@ -97,7 +97,7 @@ def main() -> int:
         markdown_path=resolve(args.markdown_out),
         markdown_text=render_markdown(payload),
     )
-    print(json.dumps(payload, indent=2))
+    print(json.dumps(gate_view(payload), indent=2, sort_keys=True))
     return 0 if trigger_state == "GREEN" else 2
 
 
@@ -391,6 +391,16 @@ def render_markdown(payload: dict[str, Any]) -> str:
     for row in payload.get("replay_checks", [])[:40]:
         lines.append(f"- `{row.get('passed')}` `{row.get('original_path')}` -> `{row.get('archive_path')}`")
     return "\n".join(lines) + "\n"
+
+
+def gate_view(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "policy": payload.get("policy"),
+        "trigger_state": payload.get("trigger_state"),
+        "summary": payload.get("summary", {}),
+        "hard_gaps": payload.get("hard_gaps", [])[:10],
+        "failed_replay_checks": [row for row in payload.get("replay_checks", []) if not row.get("passed")][:10],
+    }
 
 
 def gap(kind: str, detail: Any) -> dict[str, Any]:

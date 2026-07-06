@@ -9,6 +9,7 @@ not delete artifacts.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import gzip
 import hashlib
 import json
@@ -35,6 +36,10 @@ ARCHIVE_ROOT = ROOT / "archive" / "report_artifacts"
 DEFAULT_MANIFEST = REPORTS / "theseus_artifact_retention_manifest.json"
 DEFAULT_OUT = REPORTS / "theseus_artifact_retention.json"
 DEFAULT_MARKDOWN = REPORTS / "theseus_artifact_retention.md"
+DEFAULT_BUDGET_POLICY = ROOT / "configs" / "artifact_retention_budget_policy.json"
+DEFAULT_BUDGET_OUT = REPORTS / "theseus_artifact_budget_gate.json"
+DEFAULT_BUDGET_MARKDOWN = REPORTS / "theseus_artifact_budget_gate.md"
+DEFAULT_REGISTRY = ROOT / "configs" / "project_manifest_registry.json"
 MIN_BYTES = 256 * 1024 * 1024
 ARCHIVEABLE_PREFIXES = (
     "student_code_lm_checkpoint_fanout_speed_",
@@ -87,9 +92,29 @@ def main() -> int:
     parser.add_argument("--manifest-out", default=str(DEFAULT_MANIFEST.relative_to(ROOT)))
     parser.add_argument("--out", default=str(DEFAULT_OUT.relative_to(ROOT)))
     parser.add_argument("--markdown-out", default=str(DEFAULT_MARKDOWN.relative_to(ROOT)))
+    parser.add_argument("--budget-gate", action="store_true", help="Audit live generated report/checkpoint budgets and registry ownership.")
+    parser.add_argument("--budget-policy", default=str(DEFAULT_BUDGET_POLICY.relative_to(ROOT)))
+    parser.add_argument("--budget-out", default=str(DEFAULT_BUDGET_OUT.relative_to(ROOT)))
+    parser.add_argument("--budget-markdown-out", default=str(DEFAULT_BUDGET_MARKDOWN.relative_to(ROOT)))
+    parser.add_argument("--registry", default=str(DEFAULT_REGISTRY.relative_to(ROOT)))
     args = parser.parse_args()
 
     started = time.perf_counter()
+    if args.budget_gate:
+        payload = build_budget_gate_report(
+            resolve(args.budget_policy),
+            resolve(args.registry),
+            started=started,
+        )
+        report_evidence_store.write_json_report(
+            resolve(args.budget_out),
+            payload,
+            markdown_path=resolve(args.budget_markdown_out),
+            markdown_text=render_budget_markdown(payload),
+        )
+        print(json.dumps(budget_gate_view(payload), indent=2, sort_keys=True))
+        return 0 if payload["trigger_state"] == "GREEN" else 2
+
     archive_root = resolve(args.archive_root)
     manifest_path = resolve(args.manifest_out)
     existing_manifest = read_json(manifest_path, {})
@@ -219,7 +244,7 @@ def main() -> int:
         markdown_path=resolve(args.markdown_out),
         markdown_text=render_markdown(payload),
     )
-    print(json.dumps(payload, indent=2))
+    print(json.dumps(retention_gate_view(payload), indent=2, sort_keys=True))
     return 0 if payload["trigger_state"] == "GREEN" else 2
 
 
@@ -594,6 +619,320 @@ def render_markdown(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def retention_gate_view(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "policy": payload.get("policy"),
+        "trigger_state": payload.get("trigger_state"),
+        "summary": payload.get("summary", {}),
+        "failed_actions": [row for row in payload.get("actions", []) if row.get("status") == "failed"][:10],
+        "sample_actions": payload.get("actions", [])[:10],
+    }
+
+
+def build_budget_gate_report(policy_path: Path, registry_path: Path, *, started: float) -> dict[str, Any]:
+    policy = read_json(policy_path, {})
+    registry = read_json(registry_path, {})
+    rows = discover_budget_files(policy)
+    surfaces = list_dicts(registry.get("surfaces"))
+    owner_index = build_owner_index(surfaces)
+    for row in rows:
+        owner = owner_for_path(str(row["path"]), owner_index)
+        row["registry_owner_surface_id"] = owner.get("id", "")
+        row["registry_owner_role"] = owner.get("role", "")
+        row["registry_owned"] = bool(owner)
+        row["retention_class"] = retention_class_for_path(str(row["path"]), policy)
+        row["retention_class_declared"] = bool(row["retention_class"])
+        row["budget_scope"] = budget_scope_for_row(row, policy)
+
+    summary = budget_summary(rows, policy)
+    hard_gaps = budget_hard_gaps(summary, rows, policy)
+    warnings = budget_warnings(summary, rows, policy)
+    family_records = budget_family_records(rows)
+    trigger_state = "GREEN" if not hard_gaps else "RED"
+    return {
+        "policy": "project_theseus_artifact_budget_gate_v1",
+        "created_utc": now(),
+        "trigger_state": trigger_state,
+        "summary": {
+            **summary,
+            "hard_gap_count": len(hard_gaps),
+            "warning_count": len(warnings),
+            "runtime_ms": int((time.perf_counter() - started) * 1000),
+        },
+        "inputs": {
+            "budget_policy": rel(policy_path),
+            "registry": rel(registry_path),
+        },
+        "budget_policy": policy,
+        "hard_gaps": hard_gaps,
+        "warnings": warnings,
+        "largest_files": sorted(rows, key=lambda row: -int(row["bytes"]))[:50],
+        "largest_families": sorted(family_records, key=lambda row: -int(row["bytes"]))[:50],
+        "report_family_budget_records": family_records,
+        "rules": {
+            "ownership": "Every generated report/checkpoint file must resolve to a registry surface owner.",
+            "retention_class": "Every generated report/checkpoint file must match a declared retention class.",
+            "hot_reports": "Mutable latest-view reports and unarchived snapshots must stay under the live hot-report byte/file budget.",
+            "active_indexes": "Stateful indexes such as report_evidence_store.sqlite have their own cap and do not hide hot report sprawl.",
+            "archive_pointers": "Archive pointers are retained as replay metadata and counted separately from hot report payload bytes.",
+        },
+        "non_claims": [
+            "artifact budget compliance is repository hygiene evidence, not model capability evidence",
+            "archived pointers do not delete evidence; replay gates must verify exact payload hashes",
+            "checkpoint byte budgets do not prove checkpoint quality or training progress",
+        ],
+        "external_inference_calls": 0,
+        "public_training_rows_written": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def discover_budget_files(policy: dict[str, Any]) -> list[dict[str, Any]]:
+    roots = [str(item) for item in list_values(policy.get("scan_roots"))] or ["reports", "checkpoints"]
+    rows: list[dict[str, Any]] = []
+    for raw_root in roots:
+        root = resolve(raw_root)
+        if not root.exists():
+            continue
+        for path in root.rglob("*"):
+            if not path.is_file():
+                continue
+            rows.append(budget_file_row(path))
+    return rows
+
+
+def budget_file_row(path: Path) -> dict[str, Any]:
+    stat = path.stat()
+    rel_path = rel(path)
+    pointer = read_pointer(path)
+    pointer_policy = pointer.get("policy") if isinstance(pointer, dict) else ""
+    return {
+        "record_type": "artifact_budget_file",
+        "path": rel_path,
+        "bytes": int(stat.st_size),
+        "mtime_utc": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
+        "family": budget_family(path),
+        "is_archive_pointer": pointer_policy == ARCHIVE_POINTER_POLICY,
+        "suffix": path.suffix.lower(),
+    }
+
+
+def budget_family(path: Path) -> str:
+    rel_path = rel(path)
+    parts = Path(rel_path).parts
+    if len(parts) >= 3 and parts[0] == "reports" and parts[1] == "report_snapshots":
+        return f"report_snapshots/{parts[2]}"
+    if parts and parts[0] == "checkpoints":
+        return f"checkpoint/{parts[1] if len(parts) > 1 else 'root'}"
+    return artifact_family(path.name)
+
+
+def build_owner_index(surfaces: list[dict[str, Any]]) -> dict[str, Any]:
+    exact: dict[str, dict[str, Any]] = {}
+    fallback = next((surface for surface in surfaces if str(surface.get("id") or "") == "runtime_generated_state"), {})
+    for surface in surfaces:
+        outputs = [str(item) for item in list_values(surface.get("report_outputs"))]
+        for output in outputs:
+            if not any(char in output for char in "*?[]"):
+                exact.setdefault(output, surface)
+    return {"exact": exact, "fallback": fallback}
+
+
+def owner_for_path(rel_path: str, owner_index: dict[str, Any]) -> dict[str, Any]:
+    exact = owner_index.get("exact") if isinstance(owner_index.get("exact"), dict) else {}
+    if rel_path in exact:
+        return exact[rel_path]
+    if rel_path.startswith(("reports/", "checkpoints/")):
+        fallback = owner_index.get("fallback")
+        return fallback if isinstance(fallback, dict) else {}
+    return {}
+
+
+def retention_class_for_path(rel_path: str, policy: dict[str, Any]) -> str:
+    for row in list_dicts(policy.get("retention_classes")):
+        patterns = [str(item) for item in list_values(row.get("patterns"))]
+        if any(fnmatch.fnmatch(rel_path, pattern) for pattern in patterns):
+            return str(row.get("id") or "")
+    return ""
+
+
+def budget_scope_for_row(row: dict[str, Any], policy: dict[str, Any]) -> str:
+    rel_path = str(row.get("path") or "")
+    if bool(row.get("is_archive_pointer")):
+        return "archive_pointer"
+    for pattern in [str(item) for item in list_values(policy.get("active_index_patterns"))]:
+        if fnmatch.fnmatch(rel_path, pattern):
+            return "active_index"
+    if rel_path.startswith("checkpoints/"):
+        return "checkpoint"
+    if rel_path.startswith("reports/"):
+        return "hot_report"
+    return "other_generated"
+
+
+def budget_summary(rows: list[dict[str, Any]], policy: dict[str, Any]) -> dict[str, Any]:
+    def scope_rows(scope: str) -> list[dict[str, Any]]:
+        return [row for row in rows if row.get("budget_scope") == scope]
+
+    hot = scope_rows("hot_report")
+    active = scope_rows("active_index")
+    pointers = scope_rows("archive_pointer")
+    checkpoints = scope_rows("checkpoint")
+    other = scope_rows("other_generated")
+    unowned = [row for row in rows if not row.get("registry_owned")]
+    no_class = [row for row in rows if not row.get("retention_class_declared")]
+    families = budget_family_records(rows)
+    max_family = int(policy.get("max_single_family_bytes") or 0)
+    over_family = [row for row in families if max_family and int(row.get("bytes") or 0) > max_family and row.get("budget_scope") == "hot_report"]
+    return {
+        "scanned_file_count": len(rows),
+        "scanned_bytes": sum(int(row["bytes"]) for row in rows),
+        "hot_report_file_count": len(hot),
+        "hot_report_bytes": sum(int(row["bytes"]) for row in hot),
+        "active_index_file_count": len(active),
+        "active_index_bytes": sum(int(row["bytes"]) for row in active),
+        "archive_pointer_file_count": len(pointers),
+        "archive_pointer_bytes": sum(int(row["bytes"]) for row in pointers),
+        "checkpoint_file_count": len(checkpoints),
+        "checkpoint_bytes": sum(int(row["bytes"]) for row in checkpoints),
+        "other_generated_file_count": len(other),
+        "other_generated_bytes": sum(int(row["bytes"]) for row in other),
+        "unowned_file_count": len(unowned),
+        "missing_retention_class_count": len(no_class),
+        "family_count": len(families),
+        "hot_families_over_single_family_cap": len(over_family),
+        "max_hot_report_bytes": int(policy.get("max_hot_report_bytes") or 0),
+        "max_hot_report_files": int(policy.get("max_hot_report_files") or 0),
+        "max_active_index_bytes": int(policy.get("max_active_index_bytes") or 0),
+        "max_checkpoint_bytes": int(policy.get("max_checkpoint_bytes") or 0),
+        "max_checkpoint_files": int(policy.get("max_checkpoint_files") or 0),
+        "max_archive_pointer_files": int(policy.get("max_archive_pointer_files") or 0),
+        "max_single_family_bytes": max_family,
+    }
+
+
+def budget_family_records(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, str], dict[str, Any]] = {}
+    for row in rows:
+        key = (str(row.get("family") or ""), str(row.get("budget_scope") or ""))
+        current = grouped.setdefault(
+            key,
+            {
+                "record_type": "report_family_budget_record",
+                "family": key[0],
+                "budget_scope": key[1],
+                "file_count": 0,
+                "bytes": 0,
+                "registry_owner_surface_ids": [],
+                "retention_classes": [],
+                "largest_file": "",
+                "largest_file_bytes": 0,
+                "public_training_rows_written": 0,
+                "external_inference_calls": 0,
+                "fallback_return_count": 0,
+            },
+        )
+        current["file_count"] += 1
+        current["bytes"] += int(row.get("bytes") or 0)
+        owner = str(row.get("registry_owner_surface_id") or "")
+        if owner and owner not in current["registry_owner_surface_ids"]:
+            current["registry_owner_surface_ids"].append(owner)
+        klass = str(row.get("retention_class") or "")
+        if klass and klass not in current["retention_classes"]:
+            current["retention_classes"].append(klass)
+        if int(row.get("bytes") or 0) > int(current.get("largest_file_bytes") or 0):
+            current["largest_file"] = str(row.get("path") or "")
+            current["largest_file_bytes"] = int(row.get("bytes") or 0)
+    return list(grouped.values())
+
+
+def budget_hard_gaps(summary: dict[str, Any], rows: list[dict[str, Any]], policy: dict[str, Any]) -> list[dict[str, Any]]:
+    gaps: list[dict[str, Any]] = []
+    checks = [
+        ("hot_report_bytes_over_budget", "hot_report_bytes", "max_hot_report_bytes"),
+        ("hot_report_file_count_over_budget", "hot_report_file_count", "max_hot_report_files"),
+        ("active_index_bytes_over_budget", "active_index_bytes", "max_active_index_bytes"),
+        ("checkpoint_bytes_over_budget", "checkpoint_bytes", "max_checkpoint_bytes"),
+        ("checkpoint_file_count_over_budget", "checkpoint_file_count", "max_checkpoint_files"),
+        ("archive_pointer_file_count_over_budget", "archive_pointer_file_count", "max_archive_pointer_files"),
+    ]
+    for reason, actual_key, max_key in checks:
+        maximum = int(summary.get(max_key) or 0)
+        if maximum and int(summary.get(actual_key) or 0) > maximum:
+            gaps.append(gap(reason, {"actual": summary.get(actual_key), "max": maximum}))
+    if int(summary.get("unowned_file_count") or 0):
+        gaps.append(gap("generated_artifacts_without_registry_owner", {"count": summary["unowned_file_count"], "examples": rows_with_flag(rows, "registry_owned", False)[:20]}))
+    if int(summary.get("missing_retention_class_count") or 0):
+        gaps.append(gap("generated_artifacts_without_retention_class", {"count": summary["missing_retention_class_count"], "examples": rows_with_flag(rows, "retention_class_declared", False)[:20]}))
+    if int(summary.get("hot_families_over_single_family_cap") or 0):
+        max_family = int(policy.get("max_single_family_bytes") or 0)
+        offenders = [
+            row
+            for row in budget_family_records(rows)
+            if row.get("budget_scope") == "hot_report" and int(row.get("bytes") or 0) > max_family
+        ]
+        gaps.append(gap("hot_report_family_over_budget", {"max_single_family_bytes": max_family, "families": offenders[:20]}))
+    return gaps
+
+
+def budget_warnings(summary: dict[str, Any], rows: list[dict[str, Any]], policy: dict[str, Any]) -> list[dict[str, Any]]:
+    warnings: list[dict[str, Any]] = []
+    checkpoint_warn = int(policy.get("checkpoint_warning_bytes") or 0)
+    if checkpoint_warn and int(summary.get("checkpoint_bytes") or 0) > checkpoint_warn:
+        warnings.append(gap("checkpoint_bytes_above_warning_target", {"actual": summary.get("checkpoint_bytes"), "warning": checkpoint_warn}, severity="warning"))
+    return warnings
+
+
+def rows_with_flag(rows: list[dict[str, Any]], key: str, expected: Any) -> list[dict[str, Any]]:
+    out = []
+    for row in rows:
+        if row.get(key) == expected:
+            out.append({k: row.get(k) for k in ["path", "bytes", "family", "budget_scope", "registry_owner_surface_id", "retention_class"]})
+    return out
+
+
+def render_budget_markdown(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    lines = [
+        "# Theseus Artifact Budget Gate",
+        "",
+        f"- trigger_state: `{payload.get('trigger_state')}`",
+        f"- hot_report_bytes: `{summary.get('hot_report_bytes')}` / `{summary.get('max_hot_report_bytes')}`",
+        f"- hot_report_file_count: `{summary.get('hot_report_file_count')}` / `{summary.get('max_hot_report_files')}`",
+        f"- active_index_bytes: `{summary.get('active_index_bytes')}` / `{summary.get('max_active_index_bytes')}`",
+        f"- checkpoint_bytes: `{summary.get('checkpoint_bytes')}` / `{summary.get('max_checkpoint_bytes')}`",
+        f"- checkpoint_file_count: `{summary.get('checkpoint_file_count')}` / `{summary.get('max_checkpoint_files')}`",
+        f"- archive_pointer_file_count: `{summary.get('archive_pointer_file_count')}` / `{summary.get('max_archive_pointer_files')}`",
+        f"- unowned_file_count: `{summary.get('unowned_file_count')}`",
+        f"- missing_retention_class_count: `{summary.get('missing_retention_class_count')}`",
+        f"- hard_gap_count: `{summary.get('hard_gap_count')}`",
+        "",
+        "## Largest Families",
+        "",
+    ]
+    for row in payload.get("largest_families", [])[:20]:
+        lines.append(
+            f"- `{row.get('budget_scope')}` `{row.get('family')}`: `{row.get('file_count')}` files, `{row.get('bytes')}` bytes, owners `{row.get('registry_owner_surface_ids')}`, classes `{row.get('retention_classes')}`"
+        )
+    if payload.get("hard_gaps"):
+        lines.extend(["", "## Hard Gaps", ""])
+        for row in payload.get("hard_gaps", [])[:20]:
+            lines.append(f"- `{row.get('reason')}` {json.dumps(row.get('detail', {}), sort_keys=True)[:1000]}")
+    return "\n".join(lines) + "\n"
+
+
+def budget_gate_view(payload: dict[str, Any]) -> dict[str, Any]:
+    summary = dict(payload.get("summary") or {})
+    return {
+        "policy": payload.get("policy"),
+        "trigger_state": payload.get("trigger_state"),
+        "summary": summary,
+        "hard_gaps": payload.get("hard_gaps", [])[:10],
+        "warnings": payload.get("warnings", [])[:10],
+        "largest_families": payload.get("largest_families", [])[:10],
+    }
+
+
 def is_pointer(path: Path) -> bool:
     return read_pointer(path).get("policy") == ARCHIVE_POINTER_POLICY
 
@@ -627,6 +966,18 @@ def safe(value: str) -> str:
 
 def stable_id(*parts: Any) -> str:
     return hashlib.sha256("\n".join(str(part) for part in parts).encode("utf-8")).hexdigest()[:24]
+
+
+def gap(reason: str, detail: Any, *, severity: str = "hard") -> dict[str, Any]:
+    return {"reason": reason, "severity": severity, "detail": detail}
+
+
+def list_values(value: Any) -> list[Any]:
+    return value if isinstance(value, list) else []
+
+
+def list_dicts(value: Any) -> list[dict[str, Any]]:
+    return [row for row in list_values(value) if isinstance(row, dict)]
 
 
 def resolve(path: str | Path) -> Path:

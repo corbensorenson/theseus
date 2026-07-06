@@ -130,7 +130,7 @@ def build_report(
         e2e=e2e,
         product=product,
     )
-    empirical_support_ready = (
+    synthetic_support_ready = (
         not hard_gaps
         and int_or(usefulness.get("recent_event_count"), 0) >= 20
         and int_or(usefulness.get("trainable_event_count"), 0) >= 20
@@ -146,15 +146,26 @@ def build_report(
         and no_cheat_clean(e2e, product, trace_rows)
         and learned_claims_separated(trace_rows)
     )
+    real_dogfood_support_ready = (
+        synthetic_support_ready
+        and int_or(usefulness.get("real_user_event_count"), 0) >= 20
+        and int_or(usefulness.get("real_user_day_count"), 0) >= 5
+        and int_or(usefulness.get("real_user_completed_or_accepted_count"), 0) >= 8
+        and bool(usefulness.get("real_user_trace_evidence_ready"))
+    )
     support_state = (
         "empirical-test-backed"
-        if empirical_support_ready
+        if real_dogfood_support_ready
+        else "synthetic-test-backed"
+        if synthetic_support_ready
         else ("prototype-backed" if not hard_gaps else "not_yet_supported")
     )
     summary = {
         "b1_assisted_verified_assistant_product_lane_state": "GREEN" if not hard_gaps else "RED",
         "b1_assisted_verified_assistant_product_lane_support_state": support_state,
-        "b1_empirical_support_ready": empirical_support_ready,
+        "b1_synthetic_support_ready": synthetic_support_ready,
+        "b1_empirical_support_ready": real_dogfood_support_ready,
+        "b1_empirical_block_reason": "none" if real_dogfood_support_ready else "requires real multi-day user dogfood trace evidence, not only synthetic/e2e fixture metadata",
         "b1_expected_invalid_control_count": len(expected_invalid_controls),
         "b1_expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
         "e2e_trigger_state": e2e.get("trigger_state"),
@@ -183,10 +194,16 @@ def build_report(
         "gates": gates,
         "hard_gaps": hard_gaps,
         "support_state_basis": {
-            "empirical_support_ready": empirical_support_ready,
+            "synthetic_support_ready": synthetic_support_ready,
+            "empirical_support_ready": real_dogfood_support_ready,
+            "empirical_block_reason": "none" if real_dogfood_support_ready else "requires real multi-day user dogfood trace evidence, not only synthetic/e2e fixture metadata",
             "recent_event_count": usefulness.get("recent_event_count"),
             "trainable_event_count": usefulness.get("trainable_event_count"),
             "completed_or_accepted_count": usefulness.get("completed_or_accepted_count"),
+            "real_user_event_count": usefulness.get("real_user_event_count"),
+            "real_user_day_count": usefulness.get("real_user_day_count"),
+            "real_user_completed_or_accepted_count": usefulness.get("real_user_completed_or_accepted_count"),
+            "real_user_trace_evidence_ready": usefulness.get("real_user_trace_evidence_ready"),
             "lane_counts": lane_counts,
             "surface_counts": usefulness.get("surface_counts"),
             "outcome_counts": usefulness.get("outcome_counts"),
@@ -206,7 +223,8 @@ def build_report(
         "expected_invalid_controls": expected_invalid_controls,
         "evidence_refs": [rel(resolve(args.e2e)), rel(resolve(args.product)), rel(resolve(args.trace)), rel(resolve(args.schema))],
         "non_claims": [
-            "B1 empirical-test-backed means the assisted local product lane has metadata-only dogfood outcomes and replay receipts, not that Theseus is ChatGPT-level.",
+            "B1 synthetic-test-backed means the assisted local product lane has metadata-only fixture/e2e dogfood outcomes and replay receipts, not proven real daily usefulness.",
+            "B1 empirical-test-backed requires real multi-day user dogfood trace evidence and is not claimed by this fixture-only gate.",
             "Tool-assisted and deterministic outputs are reported separately from learned-generation capability.",
             "The current code generator semantic wall is preserved as C1 negative evidence, not hidden by the product lane.",
             "No public benchmark payloads enter training rows, and runtime external inference remains forbidden.",
@@ -231,7 +249,7 @@ def b1_expected_invalid_controls(
             "control": "no_dogfood_outcomes_blocks_empirical_claim",
             "rejected": int_or(usefulness.get("recent_event_count"), 0) >= 20
             and int_or(usefulness.get("completed_or_accepted_count"), 0) >= 8,
-            "reason": "empirical B1 needs real metadata-only accepted/completed local outcomes, not only wiring smokes",
+            "reason": "synthetic B1 needs metadata-only accepted/completed local outcomes; empirical B1 separately requires real multi-day user trace evidence",
         },
         {
             "control": "missing_lane_coverage_blocks_product_claim",

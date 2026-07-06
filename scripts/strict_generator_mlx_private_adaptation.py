@@ -1588,12 +1588,18 @@ def run_adaptation(
             "adaptation_id": adaptation_id,
             "device": payload["device"],
             "checkpoint": payload["checkpoint"],
+            "checkpoint_sha256": payload["checkpoint_sha256"],
             "vocab": payload["vocab"],
+            "vocab_sha256": payload["vocab_sha256"],
             "train_rows": payload["train_rows"],
             "rehearsal_rows": payload["rehearsal_rows"],
             "heldout_private_train_rows": payload["heldout_private_train_rows"],
             "training_tokens_per_second": payload["training_tokens_per_second"],
             "optimizer_steps_per_second": payload["optimizer_steps_per_second"],
+            "optimizer_step_count": payload["optimizer_step_count"],
+            "optimizer_token_positions_consumed": payload["optimizer_token_positions_consumed"],
+            "heldout_lm_loss_before": payload["heldout_lm_loss_before"],
+            "heldout_lm_loss_after": payload["heldout_lm_loss_after"],
             "heldout_lm_improved": payload["heldout_lm_improved"],
             "parameter_update_fraction": payload["parameter_update_fraction"],
             "parameter_tensor_update_fraction": payload["parameter_tensor_update_fraction"],
@@ -1749,6 +1755,8 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
         if name not in required:
             continue
         item = component(name)
+        if name == "semantic_slot_prefix_weighting" and semantic_slot_prefix_unavailable_for_target_mode(payload):
+            continue
         if not bool(item.get("enabled")) or int(item.get("weighted_token_positions") or 0) <= 0:
             missing.append(name)
     if "source_contrastive_loss" in required:
@@ -1758,13 +1766,42 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
     return sorted(set(missing))
 
 
+def semantic_slot_prefix_unavailable_for_target_mode(payload: dict[str, Any]) -> bool:
+    item = dict_or_empty(payload.get("semantic_slot_prefix_weighting"))
+    skipped = dict_or_empty(item.get("skipped_counts"))
+    rows = int(item.get("rows") or 0)
+    return (
+        str(payload.get("target_mode") or "") == "body_tokens"
+        and bool(item.get("enabled"))
+        and rows > 0
+        and int(item.get("weighted_token_positions") or 0) == 0
+        and int(skipped.get("missing_body_start") or 0) >= rows
+    )
+
+
 def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
     missing_semantic_construction_components = semantic_construction_profile_missing_components(payload)
     semantic_construction_profile = dict_or_empty(payload.get("semantic_construction_repair_profile"))
     semantic_construction_profile_enabled = bool(semantic_construction_profile.get("enabled"))
+    checkpoint_path = resolve(str(payload.get("checkpoint") or ""))
+    vocab_path = resolve(str(payload.get("vocab") or ""))
     return [
         gate("private_training_rows_present", int(payload.get("train_rows") or 0) > 0, "hard", payload.get("train_rows")),
         gate("heldout_private_train_rows_present", int(payload.get("heldout_private_train_rows") or 0) > 0, "hard", payload.get("heldout_private_train_rows")),
+        gate(
+            "checkpoint_artifacts_written_with_digests",
+            checkpoint_path.exists()
+            and vocab_path.exists()
+            and is_sha256(payload.get("checkpoint_sha256"))
+            and is_sha256(payload.get("vocab_sha256")),
+            "hard",
+            {
+                "checkpoint": payload.get("checkpoint"),
+                "checkpoint_sha256": payload.get("checkpoint_sha256"),
+                "vocab": payload.get("vocab"),
+                "vocab_sha256": payload.get("vocab_sha256"),
+            },
+        ),
         gate(
             "family_disjoint_holdout_excluded",
             bool(dict_or_empty(payload.get("family_disjoint_holdout_exclusion")).get("clean", True)),
@@ -1923,10 +1960,15 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             "semantic_slot_prefix_weighting_matched_when_enabled",
             (
                 not bool(dict_or_empty(payload.get("semantic_slot_prefix_weighting")).get("enabled"))
+                or semantic_slot_prefix_unavailable_for_target_mode(payload)
                 or int(dict_or_empty(payload.get("semantic_slot_prefix_weighting")).get("weighted_token_positions") or 0) > 0
             ),
             "soft",
-            dict_or_empty(payload.get("semantic_slot_prefix_weighting")),
+            {
+                **dict_or_empty(payload.get("semantic_slot_prefix_weighting")),
+                "target_mode": payload.get("target_mode"),
+                "abi_unavailable_for_target_mode": semantic_slot_prefix_unavailable_for_target_mode(payload),
+            },
         ),
         gate(
             "loop_expression_synthesis_weighting_matched_when_enabled",
@@ -3670,6 +3712,11 @@ def resolve_checkpoint_paths(args: argparse.Namespace, checkpoint_report: dict[s
 def safe_slug(value: str) -> str:
     cleaned = "".join(ch.lower() if ch.isalnum() else "_" for ch in str(value or "checkpoint"))
     return "_".join(part for part in cleaned.split("_") if part)[:96] or "checkpoint"
+
+
+def is_sha256(value: Any) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(char in "0123456789abcdef" for char in text.lower())
 
 
 def read_json(path: Path) -> dict[str, Any]:

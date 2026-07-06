@@ -3075,8 +3075,8 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             semantic_plan,
         ),
         gate(
-            "semantic_slot_loss_improved_when_enabled",
-            not bool(semantic_slot.get("enabled")) or bool(semantic_slot.get("heldout_slot_improved")),
+            "semantic_slot_loss_improved_when_active",
+            not bool(semantic_slot.get("active")) or bool(semantic_slot.get("heldout_slot_improved")),
             "soft",
             semantic_slot,
         ),

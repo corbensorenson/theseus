@@ -293,7 +293,7 @@
     {
       "phase": 3,
       "title": "Virtual Context Memory As Default Context Substrate",
-      "status": "wired",
+      "status": "partial",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-3",
       "ai_book_source_basis": [
@@ -368,8 +368,13 @@
         "reports/theseus_assistant_vcm_context_abi_smoke.json",
         "reports/theseus_assistant_vcm_context_abi_trace.jsonl"
       ],
-      "missing_items": [],
-      "smallest_next_patch": "Keep VCM governor/context-transaction receipts mandatory as new task surfaces are promoted; route model-native MLX KV/prefix lifecycle and broader cache parity through Phase 8 rather than treating them as Phase 3 context-ABI completion.",
+      "missing_items": [
+        "VCM representation certificates: source refs, omissions, loss contract, permitted uses, authority ceiling, and consumer policy for every materialized context packet",
+        "copy-on-write VCM snapshot branches with read/write sets, taint propagation, deletion closure, contradiction refs, and typed mandatory-miss faults",
+        "native KV/prefix-cache lifecycle proof for the actual MLX/Metal serving path, separated from semantic descriptor-cache and CPU DynamicCache evidence",
+        "context adequacy must fail closed in assistant, verifier, planner, and training/eval packets when required material is stale, tainted, missing, contradictory, or over-compressed"
+      ],
+      "smallest_next_patch": "Complete VCM as a transactional context ABI, not just a useful context governor: add representation certificates, authority ceilings, copy-on-write snapshot branches, taint/deletion propagation, mandatory typed faults, and native KV/prefix-cache replay proofs before claiming runtime parity.",
       "integration_smoke": [
         "python3 scripts/vcm_context_governor_gate.py",
         "reports/vcm_context_governor.json summary.context_abi_fixture_status=ready",
@@ -545,17 +550,17 @@
         "shared assistant_trace/dogfood_outcome schema is registered and consumed by the assistant runtime, VIEA policy_optimization_record, conversation events, and product smoke gates",
         "canonical assistant runtime is GREEN with VCM context ready, assistant VIEA trace complete, dogfood training bridge GREEN, and no public training/external inference/fallback counters",
         "assistant e2e has 4/4 route cases passing, 80 recent trainable events, 66 completed-or-accepted recent events, 397 local dogfood events, and 396 governed dogfood trace training rows",
-        "B1 assisted verified assistant product lane is empirical-test-backed: reports/theseus_assistant_product_lane_gate.json verifies 4/4 assistant route cases, CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence, private verifier receipts, 80 recent metadata-only dogfood events, 66 completed-or-accepted outcomes, 8/8 expected-invalid controls rejected, VIEA product trace records, and no public-training/runtime-external/fallback counters while preserving the code-generator wall as C1 evidence."
+        "B1 assisted verified assistant product lane is synthetic-test-backed: reports/theseus_assistant_product_lane_gate.json verifies 4/4 assistant route cases, CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence, private verifier receipts, metadata-only fixture/e2e dogfood events, expected-invalid controls, VIEA product trace records, and no public-training/runtime-external/fallback counters while preserving the code-generator wall as C1 evidence. Empirical support is intentionally blocked until real multi-day user dogfood trace evidence exists."
       ],
       "missing_items": [],
-      "smallest_next_patch": "Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane.",
+      "smallest_next_patch": "Earn B1 empirical support honestly with real multi-day user dogfood traces, then add a promotion gate that requires real_user_event_count, real_user_day_count, accepted/completed outcomes, verifier receipts, and raw-text-off redaction receipts; do not claim empirical support from fixture/e2e metadata.",
       "integration_smoke": [
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the assistant trace schema and dogfood outcome boundary.\" --intent planning --feedback completed --session-id assistant_trace_schema_smoke --out reports/theseus_assistant_trace_schema_smoke.json --markdown-out reports/theseus_assistant_trace_schema_smoke.md --events-out reports/theseus_assistant_trace_schema_events.jsonl --viea-trace-out reports/theseus_assistant_trace_schema_trace.jsonl --skip-context-refresh",
         "reports/theseus_assistant_trace_schema_smoke.json summary.assistant_trace_schema_ready=true",
         "reports/theseus_assistant_trace_schema_smoke.json gates.assistant_trace_schema_ready.passed=true",
         "reports/theseus_assistant_trace_schema_smoke.json assistant_viea_trace contains policy_optimization_record with assistant_trace_schema",
         "python3 scripts/theseus_assistant_product_lane_gate.py --gate",
-        "reports/theseus_assistant_product_lane_gate.json summary.b1_assisted_verified_assistant_product_lane_support_state=empirical-test-backed"
+        "reports/theseus_assistant_product_lane_gate.json summary.b1_assisted_verified_assistant_product_lane_support_state=synthetic-test-backed"
       ],
       "completion_rule": "Corben can use one daily lane and the trace loop records outcome pressure into governed training metadata.",
       "book_followup_items": [
@@ -941,13 +946,16 @@
     {
       "phase": 10,
       "title": "Practical Neural Seed Survival Lane",
-      "status": "wired",
+      "status": "partial",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-10",
       "ai_book_source_basis": [
         "matched substrate verdict",
         "transformer/hybrid survival lane",
-        "full-body generation"
+        "full-body generation",
+        "policy optimization and learning from feedback",
+        "fast generation architectures",
+        "semantic IR localized repair"
       ],
       "registry_surface_id": "neural_seed_and_decoder",
       "abstraction_id": "candidate_generation_contract",
@@ -959,12 +967,22 @@
         "prompt_signature_input",
         "direct_body_token_generation",
         "grammar_constrained_decode",
-        "verifier_fanout"
+        "verifier_fanout",
+        "private_preference_pair_builder",
+        "policy_optimization_update",
+        "reward_hacking_probe_suite",
+        "generation_mode_selection",
+        "semantic_ir_localized_repair"
       ],
       "required_records": [
         "model_checkpoint_receipt",
         "training_data_provenance",
+        "policy_optimization_record",
+        "substrate_adoption_record",
+        "reward_hacking_probe_record",
         "generation_mode_accounting",
+        "generation_mode_record",
+        "semantic_ir_patch_record",
         "fanout_result",
         "strict_generator_replay_receipt",
         "candidate_integrity_receipt",
@@ -976,7 +994,9 @@
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
         "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
-        "python3 scripts/training_inference_execution_plan_gate.py --gate"
+        "python3 scripts/training_inference_execution_plan_gate.py --gate",
+        "python3 scripts/policy_optimization_gate.py",
+        "python3 scripts/generation_mode_gate.py"
       ],
       "required_docs": [
         "docs/PROJECT_STATE.md",
@@ -1008,16 +1028,27 @@
         "reports/strict_generator_mlx_decode_eval_source_condition_operation_internalization_broad4_v2.json",
         "reports/strict_generator_mlx_private_adaptation_source_condition_operation_integrity_negative_replay_smoke_v1.json",
         "reports/strict_generator_mlx_decode_eval_source_condition_operation_integrity_negative_replay_broad4_v1.json",
-        "reports/strict_generator_mlx_decode_eval_expression_value_isinstance_guard_broad4_v3.json"
+        "reports/strict_generator_mlx_decode_eval_expression_value_isinstance_guard_broad4_v3.json",
+        "reports/strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json",
+        "reports/strict_generator_mlx_private_adaptation_t3_semantic_private_rung_20260706.json",
+        "reports/strict_generator_mlx_decode_eval_t3_semantic_private_rung_broad8_replay16_20260706.json"
       ],
-      "missing_items": [],
+      "missing_items": [
+        "offline DPO/IPO-style preference update over private verifier accepted/rejected candidate pairs with pre/post heldout verifier comparison, drift bound, rollback plan, and reward-hacking probes",
+        "bounded GRPO/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference and no authority expansion by training side effect",
+        "MTP objective/head support with matched single-token control and verifier-stage-aware accepted-span accounting",
+        "bounded generate-verify-repair state machine: candidate -> verified-exact -> verified-lossy -> repaired-exact -> literal-fallback/noncredit -> quarantined, with model-only one-shot, verifier-guided repair, repair cost, fallback count, and useful solution/sec reported separately",
+        "lookahead/trie retrieval from verified procedural memory and sketch-first/diffusion or arbitrary-order repair experiment, both as governed generation modes with useful-solution-per-second accounting",
+        "capacity ablation: dense 50-150M scale step and/or sparse MoE with matched active compute, router receipts, active-parameter accounting, and no router/tool credit as learned generation",
+        "substrate-adoption record for every capability technique: baseline, negative control, matched data/compute, falsification condition, residuals, reward-hacking probes, and non-claims"
+      ],
       "current_non_claims": [
         "Phase 10 is wired as architecture readiness for the practical transformer/hybrid survival lane, not as a model-quality or public-transfer win.",
         "Current direct learned full-body behavior remains weak: fanout behavior is 5/22, C1 selected/pass-if-any is 0.0 on the clean transformer/hybrid private replay, and production route eligibility remains blocked.",
         "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",
         "The next governed step after pre-training readiness is private semantic update/final-return adaptation using only allowed private/licensed rows, private verifier labels, integrity-negative replay, generated-prefix AST/state features, and VCM packets with public calibration taint excluded."
       ],
-      "smallest_next_patch": "After strict pre-training architecture readiness is green, run the governed private semantic update/final-return adaptation pass for the existing transformer/hybrid survival lane. Success must improve the same private heldout behavior without public/external/fallback/tool/template credit, preserve independent candidate integrity, and keep public calibration behind the proposal gate.",
+      "smallest_next_patch": "Run a real behavior-changing policy/generation adoption tranche under substrate-adoption discipline: offline DPO/IPO on private accepted/rejected verifier pairs, then a bounded RLVR/GRPO verifier-reward toy lane, while adding MTP, GVR, lookahead/diffusion generation-mode records, and one scale/MoE ablation only when model-only private verifier behavior is measured before/after. No public training rows, no fallback returns, no renderer/router/tool credit.",
       "integration_smoke": [
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",
@@ -1112,10 +1143,17 @@
         "python3 -m py_compile scripts/code_lm_train_once_fanout.py scripts/neural_seed_strict_generator_fanout_receipt.py scripts/correctness_generator_survival_lane_gate.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_plans.py",
         "scripts/code_lm_train_once_fanout.py contains strict_generator_fanout_receipt_summary closure gate; next refreshed closure report must cite summary.strict_generator_fanout_receipt.ready=true",
         "python3 scripts/training_inference_execution_plan_gate.py --gate",
-        "reports/training_inference_execution_plan_gate.json trigger_state=GREEN",
-        "reports/training_inference_execution_plan_gate.json summary.ready_for_private_training_smoke=true",
+        "reports/training_inference_execution_plan_gate.json trigger_state=RED",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_private_training_smoke=false",
         "reports/training_inference_execution_plan_gate.json summary.ready_for_bounded_private_training_rung=false",
-        "reports/training_inference_execution_plan_gate.json summary.ready_for_model_only_general_chat_runtime=false"
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_model_only_general_chat_runtime=false",
+        "reports/training_inference_execution_plan_gate.json readiness_decision.next_allowed_step=complete_partial_book_derived_phases_before_training_focus",
+        "reports/strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json trigger_state=GREEN",
+        "reports/strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json summary.heldout_lm_loss_after < summary.heldout_lm_loss_before",
+        "reports/strict_generator_mlx_private_adaptation_t3_semantic_private_rung_20260706.json trigger_state=GREEN",
+        "reports/strict_generator_mlx_private_adaptation_t3_semantic_private_rung_20260706.json summary.heldout_lm_loss_after < summary.heldout_lm_loss_before",
+        "reports/strict_generator_mlx_decode_eval_t3_semantic_private_rung_broad8_replay16_20260706.json trigger_state=RED",
+        "reports/strict_generator_mlx_decode_eval_t3_semantic_private_rung_broad8_replay16_20260706.json hard gate candidate_rows_emitted failed with 0 candidate rows"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence."
     },
@@ -1237,7 +1275,7 @@
     {
       "phase": 13,
       "title": "Semantic IR And Substrate-Neutral Reasoning Atoms",
-      "status": "wired",
+      "status": "partial",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-13",
       "ai_book_source_basis": [
@@ -1277,8 +1315,11 @@
         "reports/theseus_plan_compiled_dags.json",
         "reports/semantic_ir_obligation_gate.json"
       ],
-      "missing_items": [],
-      "smallest_next_patch": "Make future generator/verifier implementations consume these semantic obligation bindings in their native payloads rather than only through the current shared gate.",
+      "missing_items": [
+        "semantic IR / AST-plan compiler for strict-generator candidates with atom records for intent, signature, branch condition, loop update, finalizer, verifier obligation, and repair scope",
+        "localized semantic repair fixture over real failed candidate manifests: failed atom -> repair patch -> dependent obligation replay, with scope-change ledger if upstream requirements change"
+      ],
+      "smallest_next_patch": "Connect semantic IR to real generator failures: compile prompt/signature/body candidates into obligation atoms, map verifier failures to failed atoms, and run localized repair that updates only dependent atoms or emits a scope-change ledger entry.",
       "integration_smoke": [
         "python3 scripts/semantic_ir_obligation_gate.py"
       ],
@@ -1287,7 +1328,7 @@
     {
       "phase": 14,
       "title": "Compression, Proof, And Claim Evidence Records",
-      "status": "wired",
+      "status": "partial",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-14",
       "ai_book_source_basis": [
@@ -1326,7 +1367,8 @@
         "python3 scripts/report_evidence_store.py",
         "python3 scripts/theseus_artifact_retention_replay_gate.py",
         "python3 scripts/viea_spine_record_gate.py --gate",
-        "python3 scripts/roadmap_implementation_gate.py --gate"
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/theseus_artifact_retention.py --budget-gate"
       ],
       "required_docs": [
         "docs/PROJECT_REGISTRY.md",
@@ -1350,14 +1392,29 @@
         "reports/theseus_book_importable_evidence_packs_20260706.json",
         "reports/theseus_public_safe_reference_trace_20260706.json",
         "reports/theseus_weekly_focus_20260706.json",
-        "reports/roadmap_implementation_gate.json"
+        "reports/roadmap_implementation_gate.json",
+        "configs/artifact_retention_budget_policy.json",
+        "reports/theseus_artifact_budget_gate.json",
+        "reports/theseus_artifact_budget_gate.md"
       ],
-      "missing_items": [],
-      "smallest_next_patch": "Keep archive-pointer replay verification mandatory for future retention batches; expand retention only through steward-covered, bounded generated-artifact cleanup passes.",
+      "missing_items": [
+        "receipt-faithfulness adversarial audit beyond candidate integrity: trap fixtures, randomized deep replay audits, and cross-component verification for effect receipts, gate reports, and ledger writes",
+        "explicit epistemic trusted-computing-base record naming trust roots, verifier harnesses, blind-flow auditors, digest writers, and verifier-of-verifier rotation or independent audit",
+        "claim-ledger belief revision transitions: downgrade, split, merge, contradiction-link, retire, revision history never overwritten, and dependent surfaces discoverable",
+        "standard book-importable public-safe evidence pack emitter for every citeable GREEN gate: digests, commands, baselines, negative controls, residuals, non-claims, and support state",
+        "checkpoint retention follow-up: budget gate is GREEN, but checkpoint bytes remain above warning target until current-reference-aware checkpoint compaction exists"
+      ],
+      "smallest_next_patch": "Continue Phase 14 evidence hygiene after the hard artifact budget gate: add receipt-faithfulness trap/replay audits, named epistemic TCB/auditor rotation, claim-belief revision transitions, standard public-safe evidence-pack exports, and current-reference-aware checkpoint compaction for the warning-only checkpoint bulk.",
       "integration_smoke": [
         "python3 scripts/theseus_artifact_retention.py --execute --include-report-snapshots --min-bytes 7000000 --max-files 1",
         "python3 scripts/theseus_artifact_retention_replay_gate.py",
-        "python3 scripts/viea_spine_record_gate.py --gate"
+        "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/theseus_artifact_retention.py --budget-gate",
+        "reports/theseus_artifact_budget_gate.json trigger_state=GREEN",
+        "reports/theseus_artifact_budget_gate.json summary.hot_report_bytes <= summary.max_hot_report_bytes",
+        "reports/theseus_artifact_budget_gate.json summary.unowned_file_count=0",
+        "reports/theseus_artifact_budget_gate.json summary.missing_retention_class_count=0",
+        "reports/theseus_artifact_retention_replay_gate.json summary.passed_replay_count=386"
       ],
       "completion_rule": "Every capability claim cites exact artifacts, evidence bundles, assumptions, defeaters, and proof/compression state.",
       "book_followup_items": [
@@ -1367,7 +1424,7 @@
     {
       "phase": 15,
       "title": "Procedural Memory And Toolification",
-      "status": "wired",
+      "status": "partial",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-15",
       "ai_book_source_basis": [
@@ -1432,8 +1489,11 @@
         "scripts/procedural_memory_toolification_gate.py",
         "reports/theseus_assistant_product_lane_gate.json"
       ],
-      "missing_items": [],
-      "smallest_next_patch": "No Phase 15 blocker remains. Future procedural candidates must reuse the same guarded adoption transaction, rollback criteria, and route_binding_contract before default routing.",
+      "missing_items": [
+        "verified procedural trajectories must feed a lookahead/trie retrieval source for generation-mode experiments while staying noncredit for learned generation",
+        "procedural tool records need monitoring, retirement, postcondition drift checks, and rollback triggers for default-route use in real assistant work"
+      ],
+      "smallest_next_patch": "Extend procedural memory from guarded route adoption into a decode/usefulness asset: verified trajectories become durable tools and trie/lookahead sources with preconditions, postconditions, monitoring, retirement, and learned-generation noncredit boundaries.",
       "integration_smoke": [
         "python3 scripts/procedural_memory_toolification_gate.py",
         "reports/procedural_memory_toolification.json summary.assistant_trace_candidate_count=10",
@@ -1468,7 +1528,7 @@
     {
       "phase": 16,
       "title": "MoECOT And Octopus Router Integration",
-      "status": "wired",
+      "status": "partial",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-16",
       "ai_book_source_basis": [
@@ -1533,8 +1593,11 @@
         "reports/viea_spine_record_gate.json",
         "reports/viea_spine_materialized_view.json"
       ],
-      "missing_items": [],
-      "smallest_next_patch": "Accumulate more diverse real task-to-arm traces and retrain the sparse head before major route-policy changes; do not route learned-generation claims through Octopus selections.",
+      "missing_items": [
+        "verification-bandwidth capacity model in fanout/STS/verifier-cascade runs: obligation count, verifier capacity, decomposition contracts, residual obligation ledger, and escalation thresholds",
+        "governance-tax accounting for real runs: per-gate latency/compute/review-load, tax-per-route records, and tax-versus-caught-failure evidence"
+      ],
+      "smallest_next_patch": "Add verification-bandwidth and governance-tax accounting to routing: schedule verifier capacity as a resource, ledger residual obligations, and measure governed-versus-raw overhead alongside caught-failure value.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -1899,20 +1962,20 @@
         15
       ],
       "support_state_target": "empirical-test-backed",
-      "success_test": "A week of local metadata-only dogfood traces shows accepted/missed/ignored/corrected/completed outcomes and replayable verifier receipts without raw private-text training by default."
+      "success_test": "Synthetic support is the green product-lane wiring gate; empirical support requires at least a week or 5 distinct days of real metadata-only user dogfood traces with accepted/missed/ignored/corrected/completed outcomes, verifier receipts, and raw private text disabled by default."
     },
     {
       "track_id": "C_capability_research_survival_lane",
       "name": "Capability Research Survival Lane",
       "status": "bounded_after_book_core",
-      "job": "Push the practical transformer/hybrid generator and keep SymLiquid protected as matched-compute discovery, without letting either claim capability from routers, templates, tools, or hidden labels.",
+      "job": "Push the practical transformer/hybrid generator with concrete Part III techniques from the ASI Stack: offline DPO/IPO preference updates, bounded GRPO/RLVR verifier-reward loops, MTP, generate-verify-repair, lookahead/diffusion generation modes, process/verifier rewards, and dense-vs-sparse-MoE/scale ablations, while keeping SymLiquid protected as a matched-compute discovery comparator and preventing routers/templates/tools from counting as learned generation.",
       "primary_phases": [
         10,
         11,
         12
       ],
       "support_state_target": "synthetic-test-backed",
-      "success_test": "A preregistered private correctness-in-the-loop experiment produces off-zero unassisted learned body-token behavior with causal ablations, or records the wall plainly."
+      "success_test": "A substrate-adoption or policy-update record shows one technique moves private heldout verifier behavior or accepted-output quality under matched controls, or records falsification and stops that technique without spawning another marker/slot/guard family."
     },
     {
       "track_id": "D_repo_stewardship_and_evidence_hygiene",
@@ -1976,7 +2039,7 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One real Theseus task has a support-stated claim ledger, artifact graph, evidence transition, replay command, non-claims, negative-control receipts, and no duplicate report family.",
-      "current_support_state": "synthetic-test-backed",
+        "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/theseus_weekly_focus_20260706.json",
@@ -1989,7 +2052,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-        "synthetic-test-backed A1 is implementation-reference evidence with valid trace replay and expected-invalid controls, not model quality or ASI evidence",
+          "synthetic-test-backed A1 is implementation-reference evidence with valid trace replay and expected-invalid controls, not model quality or ASI evidence",
           "tool-assisted assistant behavior remains separate from learned-generation capability",
           "public benchmark artifacts remain calibration-only and are not training rows"
         ]
@@ -2004,7 +2067,7 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One default route or implementation swap executes through precheck, independent evaluator, regression, residual escrow, rollback/no-rollback record, and support-state transition.",
-      "current_support_state": "synthetic-test-backed",
+        "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/procedural_memory_route_adoption.json",
@@ -2019,7 +2082,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-        "synthetic-test-backed A2 proves one guarded route replacement transaction with prechecks, independent evaluators, rollback guard, residual escrow, and expected-invalid controls only",
+          "synthetic-test-backed A2 proves one guarded route replacement transaction with prechecks, independent evaluators, rollback guard, residual escrow, and expected-invalid controls only",
           "the adopted route is local metadata workflow compression, not learned generation",
           "the transaction does not prove model quality, public transfer, external inference serving, or ASI capability"
         ]
@@ -2035,7 +2098,7 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One side-effecting assistant/tool task emits authority transition, adapter invocation, effect receipt, rollback/no-rollback residual, confused-deputy denial, and fake-secret handle proof.",
-      "current_support_state": "synthetic-test-backed",
+        "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/governance_rights_receipt_suite.json",
@@ -2048,7 +2111,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-        "synthetic-test-backed E1 proves one authority/SCIF/runtime-adapter receipt fixture with expected-invalid controls, not universal deployed runtime enforcement",
+          "synthetic-test-backed E1 proves one authority/SCIF/runtime-adapter receipt fixture with expected-invalid controls, not universal deployed runtime enforcement",
           "Digital SCIF proof exchanges handles and sanitized summaries, not raw secret or private user payloads",
           "assistant/tool receipts remain product/governance evidence and do not support learned-generation claims"
         ]
@@ -2061,9 +2124,9 @@
           5,
           15
         ],
-        "target_support_state": "empirical-test-backed",
-        "minimum_done": "The local assistant is usable on real repo tasks with VCM/tool/verifier receipts and metadata-only dogfood outcomes while separating product usefulness from learned-generation claims.",
-        "current_support_state": "empirical-test-backed",
+        "target_support_state": "synthetic-test-backed",
+        "minimum_done": "The local assistant product lane is wired on real repo surfaces with VCM/tool/verifier receipts and metadata-only fixture/e2e dogfood outcomes while separating product usefulness from learned-generation claims. Empirical daily usefulness is a later promotion target that requires real multi-day user traces.",
+        "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/theseus_assistant_product_lane_gate.json",
@@ -2079,7 +2142,8 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "empirical-test-backed B1 proves the assisted local product lane has metadata-only dogfood outcomes and replay receipts, not ChatGPT-level utility",
+          "synthetic-test-backed B1 proves the assisted local product lane wiring, VCM/tool/verifier receipts, metadata-only fixture/e2e dogfood outcomes, and expected-invalid controls; it does not prove real daily usefulness",
+          "empirical-test-backed B1 is not claimed until real multi-day user dogfood traces exist",
           "tool-assisted, deterministic, and verifier-assisted behavior stays separate from learned-generation capability",
           "the strict learned code-generator semantic wall is preserved as C1 negative evidence rather than hidden by product usefulness"
         ]

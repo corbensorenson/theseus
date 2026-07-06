@@ -17,10 +17,11 @@ records, gates, docs, evidence, and an integration smoke. This prevents the
 roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
-Repository Self-Model/Registry Discipline is `implemented`, phases `3`, `4`,
-`5`, `6`, `7`, `8`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19`
-are `wired`, and phases `1`, `2`, `9`, and `18` are externally frozen until
-trusted peers are reachable. This is roadmap
+Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
+`6`, `7`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `10`,
+`13`, `14`, `15`, and `16` are intentionally back to `partial` after the latest
+ASI Stack/Claude book-mining pass; and phases `1`, `2`, `9`, and `18` are
+externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 roadmap gate now requires active core slices to carry a valid current support
@@ -28,21 +29,27 @@ state and evidence refs. A1 is currently `synthetic-test-backed`; the full core
 slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
 `A2_replacement_transaction_kernel=synthetic-test-backed`,
 `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
-`B1_assisted_verified_assistant_product_lane=empirical-test-backed`, and
+`B1_assisted_verified_assistant_product_lane=synthetic-test-backed`, and
 `C1_correctness_rl_and_generator_survival_lane=synthetic-test-backed`.
 `scripts/roadmap_implementation_gate.py` now has a strict pre-training
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
-work can continue, and strict pre-training architecture readiness is now
-`GREEN` with `0` blockers. The gate remains `YELLOW` only because phases `1`,
-`2`, `9`, and `18` are tracked as external-frozen with current network-doctor evidence:
+work can continue, but strict pre-training architecture readiness is now `RED`
+with one blocker: six book-derived implementation phases are still partial.
+Those partial phases are VCM transactional ABI/runtime parity (`3`), practical
+neural seed survival/policy optimization/generation modes (`10`), semantic IR
+localized repair (`13`), evidence hygiene/receipt faithfulness/claim revision
+(`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and
+verification-bandwidth/governance-tax routing (`16`). The external-frozen
+phases `1`, `2`, `9`, and `18` still cite current network-doctor evidence:
 `coordinator_unreachable`, `registered_peers_unreachable`,
 `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
-Windows coordinator. All five pre-training book-reference core slices now meet
-their target support state. Training or public calibration still needs the
-specific governed command/gate for that lane; this readiness result only means
-the book-derived architecture no longer has a local partial blocker.
+Windows coordinator. All five pre-training book-reference core slices still
+meet their current target support state, but the latest book-mining pass found
+real missing mechanics, so training/public-calibration focus should not be the
+primary roadmap claim until those partial phases are resolved or explicitly
+falsified.
 The post-readiness training/inference execution plan is now represented by
 `configs/training_inference_execution_roadmap.json` and gated with
 `python3 scripts/training_inference_execution_plan_gate.py --gate`. The gate
@@ -57,14 +64,33 @@ peers are unreachable. The plan hard-rejects public benchmark training,
 runtime external inference, exact consumed public-surface reruns,
 fallback/template/router/tool credit as learned generation, raw private user
 text by default, and arbitrary remote execution.
-Current result: `reports/training_inference_execution_plan_gate.json` is
-`GREEN` with `0` failed checks and `0` failed expected-invalid controls.
+Current result: `reports/training_inference_execution_plan_gate.json` is `RED`
+with one failed check: `current_architecture_and_registry_ready`, because the
+strict roadmap architecture gate is now `RED`. The T2 private MLX smoke remains
+clean, but the next allowed training step is
+`complete_partial_book_derived_phases_before_training_focus`, not another
+automatic training rung. This is intentional: the next material project push is
+to implement or falsify the missing book-derived mechanisms rather than declare
+the architecture complete.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
-stale-source phase candidates, `57` public-safe evidence pointers, and `136`
+stale-source phase candidates, `58` public-safe evidence pointers, and `136`
 active source-sync
 review decisions. That keeps book-to-Theseus follow-up visible instead of
 clearing it with superficial steward decisions.
+
+The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
+`configs/artifact_retention_budget_policy.json` defines report/checkpoint
+budgets and retention classes, and
+`python3 scripts/theseus_artifact_retention.py --budget-gate` reports
+`GREEN`: hot reports are under the `1 GiB` cap, active index bytes are under
+cap, unowned generated files are `0`, missing retention classes are `0`, and
+hard gaps are `0`. The execute canary archived `386` report
+snapshots through `reports/theseus_artifact_retention.json`, and
+`reports/theseus_artifact_retention_replay_gate.json` replay-verified all
+`386` archive pointers with `0` failures. The remaining retention issue is a
+warning, not a hard gap: checkpoint bytes are still above the warning target
+until current-reference-aware checkpoint compaction is implemented.
 
 The 2026-07-06 weekly focus implementation pass is now represented by
 `reports/theseus_weekly_focus_20260706.json` (`GREEN`). It refreshed the
@@ -116,9 +142,13 @@ CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence,
 private verifier receipts, `80` recent metadata-only dogfood events, `66`
 completed-or-accepted outcomes, `8/8` expected-invalid controls rejected, VIEA
 product trace records, and zero public-training/runtime-external/fallback
-counters. Its support state is `empirical-test-backed`. The gate preserves the
-strict code generator semantic wall as C1 negative evidence rather than
-laundering product usefulness into learned-generation capability.
+counters. Its support state is `synthetic-test-backed`: current events prove
+fixture/e2e product-lane wiring, not real daily usefulness. Empirical B1 support
+now requires real multi-day user dogfood trace evidence with raw private text
+off, verifier receipts retained, and accepted/missed/ignored/corrected/completed
+outcomes spread across real use days. The gate preserves the strict code
+generator semantic wall as C1 negative evidence rather than laundering product
+usefulness into learned-generation capability.
 
 The C1 correctness/RL/generator survival lane is now represented by
 `reports/correctness_generator_survival_lane_gate.json` (`GREEN`). It proves one
@@ -132,6 +162,25 @@ fallback, public-boundary, or integrity-mismatch counters. Its support state is
 generation-mode, policy, and `9/9` expected-invalid controls while preserving
 the falsifying semantic wall. This is not promotion-grade code generation or
 public-transfer evidence.
+
+The latest local MLX private rung sharpens that wall. T2 private MLX smoke
+`reports/strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json`
+is `GREEN`: Apple Silicon MLX training runs on `Device(gpu, 0)`, writes
+digest-bound checkpoint artifacts, consumes `601431` token positions, lowers
+heldout LM loss from `8.060517` to `4.332259`, and keeps `0` public rows, `0`
+external inference calls, and `0` fallback/tool credit. T3 private adaptation
+`reports/strict_generator_mlx_private_adaptation_t3_semantic_private_rung_20260706.json`
+is also `GREEN`: private heldout LM loss drops from `4.378092` to `2.073871`
+with clean checkpoint/vocab SHA-256 digests and no public/external/fallback
+counters. T4 replay
+`reports/strict_generator_mlx_decode_eval_t3_semantic_private_rung_broad8_replay16_20260706.json`
+is `RED`: the direct MLX decode path emitted `0` candidate rows and failed the
+hard `candidate_rows_emitted` gate. The honest interpretation is therefore
+`trainability/loss improvement proven, direct prompt/signature candidate
+generation still not behaviorally useful`. This is why Phase 10 now prioritizes
+private DPO/IPO, bounded RLVR/GRPO, MTP, GVR, lookahead/diffusion, semantic IR
+localized repair, and scale/MoE ablations under no-cheat accounting rather than
+more scalar CE-only tuning.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with
@@ -388,9 +437,10 @@ gate (`GREEN`). It verifies `4/4` assistant route cases, CLI/memory/feedback
 receipts, VCM readiness, deterministic tool evidence, private verifier
 receipts, metadata-only dogfood pressure, VIEA product trace records, and zero
 public-training/runtime-external/fallback counters. Its support state is
-`prototype-backed`. It explicitly preserves the current strict code-generator
-semantic wall as C1 evidence instead of counting product/tool assistance as
-learned generation.
+`synthetic-test-backed`: fixture and e2e wiring are proven, but empirical daily
+usefulness still requires real multi-day dogfood traces. It explicitly
+preserves the current strict code-generator semantic wall as C1 evidence
+instead of counting product/tool assistance as learned generation.
 `reports/procedural_memory_toolification.json` now contributes
 `procedural_memory_toolification_spine_v1` as a first-class producer profile.
 The gate is `GREEN`: it consumed `397` schema-bound assistant/dogfood trace

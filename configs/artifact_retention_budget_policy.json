@@ -1,0 +1,112 @@
+{
+  "policy": "project_theseus_artifact_retention_budget_policy_v1",
+  "purpose": "Keep generated report and checkpoint state bounded, owned, classed, and replayable without deleting evidence.",
+  "scan_roots": [
+    "reports",
+    "checkpoints"
+  ],
+  "max_hot_report_bytes": 1073741824,
+  "max_hot_report_files": 6000,
+  "max_active_index_bytes": 1073741824,
+  "max_checkpoint_bytes": 12884901888,
+  "checkpoint_warning_bytes": 6442450944,
+  "max_checkpoint_files": 25000,
+  "max_archive_pointer_files": 5000,
+  "max_single_family_bytes": 536870912,
+  "active_index_patterns": [
+    "reports/*.sqlite",
+    "reports/*.sqlite-*"
+  ],
+  "retention_classes": [
+    {
+      "id": "active_state_index",
+      "description": "Mutable local indexes needed for current evidence lookup; capped separately from hot report payloads.",
+      "patterns": [
+        "reports/*.sqlite",
+        "reports/*.sqlite-*"
+      ]
+    },
+    {
+      "id": "archive_pointer",
+      "description": "Tiny replay pointer left at the original path after manifest-backed retention.",
+      "patterns": [
+        "reports/**/*.archive-pointer.json",
+        "reports/**/*.archive-pointer.jsonl",
+        "dist/**/*.archive-pointer.json"
+      ]
+    },
+    {
+      "id": "report_snapshot_archive_candidate",
+      "description": "Immutable report snapshots that should be archived through the retention manifest when they dominate hot report bytes.",
+      "patterns": [
+        "reports/report_snapshots/**/*.json",
+        "reports/report_snapshots/**/*.jsonl"
+      ]
+    },
+    {
+      "id": "hot_latest_report_view",
+      "description": "Current human-readable latest report views; should stay small and update existing flagship families instead of spawning variants.",
+      "patterns": [
+        "reports/*.json",
+        "reports/*.md"
+      ]
+    },
+    {
+      "id": "generated_report_ledger",
+      "description": "Append-only local ledgers and candidate rows; large files must move through archive pointers or an explicit ledger compaction.",
+      "patterns": [
+        "reports/*.jsonl",
+        "reports/**/*.jsonl"
+      ]
+    },
+    {
+      "id": "generated_report_payload",
+      "description": "Generated report subdirectory payloads owned by the runtime-generated-state surface.",
+      "patterns": [
+        "reports/**/*.json",
+        "reports/**/*.md"
+      ]
+    },
+    {
+      "id": "checkpoint_weights",
+      "description": "Digest-bound local model checkpoints; retained live only while referenced by current training/eval reports.",
+      "patterns": [
+        "checkpoints/**/*.npz",
+        "checkpoints/**/*.safetensors",
+        "checkpoints/**/*.pt",
+        "checkpoints/**/*.bin"
+      ]
+    },
+    {
+      "id": "checkpoint_metadata",
+      "description": "Checkpoint vocab/config/digest metadata paired with retained weights.",
+      "patterns": [
+        "checkpoints/**/*.json",
+        "checkpoints/**/*.txt",
+        "checkpoints/**/*.md"
+      ]
+    },
+    {
+      "id": "generated_report_misc",
+      "description": "Generated logs, source replay fixtures, temporary report payloads, locks, flags, and binary sidecars under reports.",
+      "patterns": [
+        "reports/**/*",
+        "reports/*"
+      ]
+    },
+    {
+      "id": "checkpoint_payload",
+      "description": "Checkpoint-adjacent delta, source, fixture, and sidecar payloads that are retained with the checkpoint family.",
+      "patterns": [
+        "checkpoints/**/*"
+      ]
+    }
+  ],
+  "rules": {
+    "delete": false,
+    "archive_before_deletion": true,
+    "large_report_snapshots": "Archive through scripts/theseus_artifact_retention.py with exact replay pointers.",
+    "checkpoints": "Do not move checkpoints needed by current reports unless consumers can follow archive pointers.",
+    "non_claim": "Budget compliance is repo hygiene evidence, not model capability evidence."
+  }
+}
