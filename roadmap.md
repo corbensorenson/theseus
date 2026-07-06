@@ -188,8 +188,8 @@ remain honestly bounded.
 - Machine-readable roadmap state is governed by
   `configs/roadmap_implementation_matrix.json`. The current roadmap gate is
   `YELLOW` with `0` hard gaps: phase `0` is `implemented`; phases `3`, `4`,
-  `5`, `6`, `7`, `8`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19` are
-  `wired`; phase `10` remains partial; phases `1`, `2`, `9`, and `18` are
+  `5`, `6`, `7`, `8`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and
+  `19` are `wired`; phases `1`, `2`, `9`, and `18` are
   externally frozen until trusted peers are reachable. The active flagship core
   slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
   current support state as `synthetic-test-backed`. The core-slice support state
@@ -202,14 +202,15 @@ remain honestly bounded.
   pre-training architecture readiness mode:
   `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
   The normal roadmap gate remains `YELLOW` with no hard gaps for implementation
-  work, but strict readiness is currently `RED` because phase `10` remains the
-  local partial blocker. Phases `1`, `2`, `9`, and `18` are tracked as
+  work, and strict readiness is currently `GREEN` with `0` blockers. Phases
+  `1`, `2`, `9`, and `18` are tracked as
   external-frozen with current network-doctor evidence:
   `coordinator_unreachable`, `registered_peers_unreachable`,
   `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
   Windows coordinator. All five pre-training book-reference core slices now
-  meet their target support state. That means training, public calibration, and
-  score chasing should not become the primary path yet.
+  meet their target support state. Training or public calibration still needs
+  the specific governed command/gate for that lane; this readiness result only
+  means the book-derived architecture no longer has a local partial blocker.
 - The E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed:
   `reports/governance_rights_receipt_suite.json` proves one side-effecting
   assistant/tool fixture through runtime adapter invocation, authority
@@ -262,15 +263,15 @@ remain honestly bounded.
   now hard-gates the weekly-focus reference trace on required trace records,
   support-state transitions, digest replay, source-to-verifier continuity,
   expected-invalid controls, duplicate-family avoidance, and clean no-cheat
-  counters. Phase 1 remains partial only because the live reachable-peer Hive
-  submission proof is separate and still requires a trusted peer.
+  counters. Phase 1 is externally frozen only because the live reachable-peer
+  Hive submission proof is separate and still requires a trusted peer.
 - The VIEA route-validator view is `GREEN` across `31/31` producer profiles
   with `2227` materialized records, including `184` claim/proof entries,
   `8` compression records, and `1` defeater record. The Hive scheduler
   route-validator bootstrap cycle is now explicit and resolved: bootstrap is
   allowed only when required groups are present and no no-cheat counters fault,
   then the scheduler reruns against the green view and records a ready receipt.
-- Phase 2 is partially implemented: typed-job records exist in plan/compiler
+- Phase 2 is externally frozen: typed-job records exist in plan/compiler
   and assistant traces, but the full local work-board and all private work do
   not yet use the artifact graph as the default execution queue. The A2
   replacement-transaction kernel is now prototype-backed through
@@ -278,8 +279,8 @@ remain honestly bounded.
   adoption passes prechecks, independent toolification/canary/registry/steward
   evaluators, regression guard, residual escrow, rollback criteria,
   support-state transition, expected-invalid controls, and clean no-cheat
-  counters. Phase 2 remains partial because the live reachable-peer registered
-  task receipt proof is still separate.
+  counters. The live reachable-peer registered task receipt proof is still
+  separate and requires a trusted peer.
 - Phase 3 is materially improved: `reports/vcm_task_context_bridge.json` is
   `GREEN` with all `9` task families ready, and
   `reports/theseus_assistant_vcm_governor_smoke.json` is `GREEN` with a
@@ -335,10 +336,10 @@ remain honestly bounded.
   transformer/hybrid replay fixture verifies `36` integrity-clean candidates
   across `8` private tasks, selected compile/runtime-load rates of `0.375`, and
   selected/pass-if-any behavior `0.0`. This supports the book-reference C1 slice
-  as a falsification fixture, while leaving Phase 10 partial until the learned
-  generator improves semantic candidate construction without templates, routers,
-  deterministic tools, fallback returns, public data, or hidden answer-derived
-  fields.
+  as a falsification fixture and keeps learned-generation promotion blocked
+  until the generator improves semantic candidate construction without
+  templates, routers, deterministic tools, fallback returns, public data, or
+  hidden answer-derived fields.
 - Phase 10 also now has a named MLX private repair profile:
   `strict_full_body_semantic_construction_v1` in
   `scripts/strict_generator_mlx_private_adaptation.py`. The profile composes
@@ -383,6 +384,16 @@ remain honestly bounded.
   one no-function/syntax mismatch, nontrivial-return rate `0.857143`, and
   behavior `0/4`. That keeps the honest wall semantic candidate quality, while
   making malformed full-body outputs first-class private negative evidence.
+- `reports/neural_seed_survival_readiness_gate.json` now wires Phase 10 as
+  architecture readiness for the next governed private training/adaptation
+  pass. It is `GREEN` with `93` eligible full-body learned candidates,
+  runtime-load task rate `1.0`, current behavior pass rate `0.227273`,
+  top-8 behavior pass rate `0.227273`, C1 selected/pass-if-any behavior `0.0`,
+  `11/11` readiness checks passing, and `8/8` expected-invalid controls
+  passing. This is not a model-quality, public-transfer, or promotion claim, and
+  it does not run training, teacher inference, or public calibration. The next
+  governed step is private semantic update/final-return adaptation on the
+  existing transformer/hybrid survival lane.
 - Phase 12 is wired: `reports/public_calibration_proposal_gate.json` is a
   VIEA-gated public-calibration proposal receipt. It requires candidate
   integrity, training-data firewall, alignment preflight, and exact public
@@ -1769,8 +1780,8 @@ MLX routing, or CUDA/MLX/Metal parity.
 | Phase | Surface | Current state | Next implementation target |
 | --- | --- | --- | --- |
 | 0 | Stabilize current truth | Implemented/green registry gate/registered roadmap matrix; cleanup queue `16/16` steward-covered; bounded tmp/smoke cleanup canary complete | Continue governed retention/consolidation in bounded passes for steward-covered cleanup families; do not treat generated evidence history as active source lanes. |
-| 1 | VIEA Execution Spine | Partial | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records match the dry-plan authority/runtime-adapter/failure/resource contract. |
-| 2 | Stable Capability Fields And Route Authority | Partial | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records plus route-validator receipt against the shared VIEA contract. |
+| 1 | VIEA Execution Spine | Frozen | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records match the dry-plan authority/runtime-adapter/failure/resource contract. |
+| 2 | Stable Capability Fields And Route Authority | Frozen | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records plus route-validator receipt against the shared VIEA contract. |
 | 3 | Virtual Context Memory As Default Context Substrate | Wired | Keep VCM governor/context-transaction receipts mandatory as new task surfaces are promoted; keep model-native MLX KV/prefix lifecycle in Phase 8. |
 | 4 | Candidate Integrity And Learned Generation Accounting | Wired | Keep direct learned full-body quality receipts flowing through independent candidate integrity; semantic behavior repair stays in Phase 10. |
 | 5 | Daily-Use Assistant Runtime And Dogfood Trace Loop | Wired | Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane. |
@@ -1778,7 +1789,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Partial | Expression-value guard now rejects malformed `isinstance(<comparison>, type)` candidates without public/external/fallback credit; behavior remains `0/4`, so the target is learned state/update/final-return synthesis rather than more syntax-only hygiene. |
+| 10 | Practical Neural Seed Survival Lane | Wired | Readiness gate is green for architecture only; next governed step is private semantic update/final-return adaptation on the existing transformer/hybrid lane, with no public/external/fallback/tool/template credit. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Freeze the next genuinely fresh public surface only after direct learned candidate quality improves, then pass the proposal gate before execution and mine failures into private residual rows. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Wired | Make future generator/verifier implementations consume these semantic obligation bindings in their native payloads rather than only through the current shared gate. |
@@ -1786,7 +1797,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 15 | Procedural Memory And Toolification | Wired | Future procedural candidates must reuse the same guarded adoption transaction, rollback criteria, and route_binding_contract before default routing; no shortcut or learned-generation claim is allowed. |
 | 16 | MoECOT And Octopus Router Integration | Wired | Accumulate more diverse real task-to-arm traces and retrain the sparse head before major route-policy changes; do not route learned-generation claims through Octopus selections. |
 | 17 | Simulation, Fidelity, And World-Model Contracts | Wired | Expand the same fidelity/counterfactual/world-adapter/failure-boundary semantics from the current bounded planning adapter to future real simulators and resource adapters without turning simulation into deployment evidence. |
-| 18 | Governance Rights, Constitutional Predicates, And Failure Boundaries | Partial | When a trusted peer is reachable, validate remote Hive artifact endpoint citations through the same operator governance audit, VIEA route-validator, and claim-ledger path. |
+| 18 | Governance Rights, Constitutional Predicates, And Failure Boundaries | Frozen | When a trusted peer is reachable, validate remote Hive artifact endpoint citations through the same operator governance audit, VIEA route-validator, and claim-ledger path. |
 | 19 | Book-To-Theseus Backlog And Evidence Synchronization | Wired | Keep future AI_book source drift sticky until exact source-sync review decisions clear or update the affected phase contracts. |
 
 Out of scope for that goal:

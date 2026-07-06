@@ -941,7 +941,7 @@
     {
       "phase": 10,
       "title": "Practical Neural Seed Survival Lane",
-      "status": "partial",
+      "status": "wired",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-10",
       "ai_book_source_basis": [
@@ -974,7 +974,8 @@
         "python3 scripts/neural_seed_token_decoder_comparator.py",
         "python3 scripts/code_lm_train_once_fanout.py",
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
-        "python3 scripts/correctness_generator_survival_lane_gate.py --gate"
+        "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
+        "python3 scripts/neural_seed_survival_readiness_gate.py --gate"
       ],
       "required_docs": [
         "docs/PROJECT_STATE.md",
@@ -987,6 +988,8 @@
         "reports/neural_seed_strict_generator_fanout_receipt.md",
         "reports/neural_seed_strict_generator_fanout_receipt_budget8_private_probe.json",
         "reports/correctness_generator_survival_lane_gate.json",
+        "reports/neural_seed_survival_readiness_gate.json",
+        "reports/neural_seed_survival_readiness_gate.md",
         "reports/assistant_code_private_replay_probe.json",
         "reports/private_candidate_replay_contract_audit_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
         "reports/candidate_integrity_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
@@ -1003,18 +1006,23 @@
         "reports/strict_generator_mlx_decode_eval_source_condition_operation_integrity_negative_replay_broad4_v1.json",
         "reports/strict_generator_mlx_decode_eval_expression_value_isinstance_guard_broad4_v3.json"
       ],
-      "missing_items": [
-        "strict full-body token candidates now have independent replay/loadability/functionality receipts, but behavior quality remains weak at 5/22 private eval tasks in the current receipt; increasing private replay candidate cap to 8 did not improve behavior, and the blind semantic residual plus selector/oracle diagnosis finds 17 runtime-loaded failures dominated by statically plausible but algorithmically wrong candidates, with baseline rank, prompt/AST-only blind rank, and full-pool pass-if-any oracle all stuck at 5/22",
-        "the strict_full_body_semantic_construction_v1 MLX repair profile now activates the required private semantic-plan/slot/loop/expression/update losses on the semantic-slot checkpoint; body-transition control now removes zero-candidate starvation on the broad4 follow-up with 8 integrity-clean transformer/hybrid rows and 0 zero-candidate tasks, but semantic behavior remains 0/4, nontrivial-return rate remains 0.0, and residuals are dominated by loop_without_decision_or_state_update plus missing_semantic_update_value",
-        "prompt-visible operation conditioning now has a strict no-credit adequacy/evidence path: the v3 broad4 smoke emits 8/8 integrity-clean transformer/hybrid candidates, keeps public training rows, external inference, and fallback/template/router/tool credit at 0, reaches nontrivial-return rate 1.0, and still scores 0/4 because operation evidence is mostly missing and residuals remain type_handling/wrong_answer plus missing_semantic_update_value",
-        "source-condition internalization now upweights private target operation tokens for all currently emitted prompt-visible operation tags inside the existing semantic-construction profile; the v2 96-row MLX smoke improves heldout LM and matches 116 operation-token positions across op_abs_positive_filter/op_clip_to_range/op_gcd_reduce/op_numeric_summary/op_round_values/op_windowed_delta, but the follow-up broad4 decode remains 0/4 with only 6/7 integrity-verified generated rows, so this is training-path coverage evidence rather than a capability win",
-        "integrity-aware negative replay is now wired into the existing strict-generator MLX adaptation path: the private smoke selects 16 failed private-train replay rows, independently recomputes 4 no-function/syntax-invalid integrity-negative rows, keeps public/external/candidate-credit counters at 0, and improves training-path coverage; the paired broad4 heldout smoke still scores 0/4 with 6/7 integrity-verified candidates and one no-function/syntax mismatch, so this remains semantic-quality repair evidence rather than capability evidence",
-        "expression-value hygiene now rejects generated boolean/comparison expressions used as the object passed to isinstance. The focused broad4 smoke removes the accepted isinstance(data in ...) family and records 16 invalid_expression_value guard rejections with zero public/external/fallback credit, but behavior remains 0/4, generated candidates drop to 6, integrity-verified candidates drop to 4/6, and no-function/syntax mismatches rise to 2. The remaining wall is learned state/update/final-return semantics, not this expression-hygiene bug",
-        "the old Rust/template-like fanout inventory remains a separate baseline surface and must not be used as practical learned-generation promotion evidence",
-        "C1 capability research lane now has a bounded verifier-driven learned body-token experiment gate, but the clean transformer/hybrid private replay records a falsifying semantic wall: 36 eligible integrity-verified candidates across 8 private tasks, selected/pass-if-any behavior 0.0, no promotion, and no public/external/fallback counters."
+      "missing_items": [],
+      "current_non_claims": [
+        "Phase 10 is wired as architecture readiness for the practical transformer/hybrid survival lane, not as a model-quality or public-transfer win.",
+        "Current direct learned full-body behavior remains weak: fanout behavior is 5/22, C1 selected/pass-if-any is 0.0 on the clean transformer/hybrid private replay, and production route eligibility remains blocked.",
+        "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",
+        "The next governed step after pre-training readiness is private semantic update/final-return adaptation using only allowed private/licensed rows, private verifier labels, integrity-negative replay, generated-prefix AST/state features, and VCM packets with public calibration taint excluded."
       ],
-      "smallest_next_patch": "Use the expression-hygiene-clean broad4 residuals to train or adapt the existing transformer-hybrid survival lane toward learned state/update/final-return semantics: combine verifier-positive operation/state-transition rows, integrity-negative private replay rows, and generated-prefix AST/state features to teach semantic update choice, branch/value construction, safe add/append/discard/remove mutation, prompt-implied min/max/round/sum/abs use, and parameter-dependent final returns. Do not use tests, solutions, hidden labels, decoder-contract target fields, public data, tools, templates, renderers, or fallback returns.",
+      "smallest_next_patch": "After strict pre-training architecture readiness is green, run the governed private semantic update/final-return adaptation pass for the existing transformer/hybrid survival lane. Success must improve the same private heldout behavior without public/external/fallback/tool/template credit, preserve independent candidate integrity, and keep public calibration behind the proposal gate.",
       "integration_smoke": [
+        "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
+        "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",
+        "reports/neural_seed_survival_readiness_gate.json summary.phase10_survival_lane_support_state=synthetic-test-backed",
+        "reports/neural_seed_survival_readiness_gate.json summary.readiness_scope=architecture_ready_for_next_governed_training_or_adaptation_not_model_quality",
+        "reports/neural_seed_survival_readiness_gate.json summary.failed_check_count=0",
+        "reports/neural_seed_survival_readiness_gate.json summary.failed_expected_invalid_count=0",
+        "reports/neural_seed_survival_readiness_gate.json summary.current_behavior_pass_rate=0.227273",
+        "reports/neural_seed_survival_readiness_gate.json summary.c1_pass_if_any_rate=0.0",
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
         "reports/neural_seed_strict_generator_fanout_receipt.json trigger_state=GREEN",
         "reports/neural_seed_strict_generator_fanout_receipt.json summary.eligible_full_body_candidate_count=93",

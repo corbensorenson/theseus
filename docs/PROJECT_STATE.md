@@ -18,9 +18,9 @@ roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`, phases `3`, `4`,
-`5`, `6`, `7`, `8`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19` are
-`wired`, phase `10` remains partial, and phases `1`, `2`, `9`, and `18` are
-externally frozen until trusted peers are reachable. This is roadmap
+`5`, `6`, `7`, `8`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19`
+are `wired`, and phases `1`, `2`, `9`, and `18` are externally frozen until
+trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 roadmap gate now requires active core slices to carry a valid current support
@@ -34,14 +34,15 @@ slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backe
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
-work can continue, but strict readiness is currently `RED` because phase `10`
-remains the local partial blocker. Phases `1`, `2`, `9`, and `18` are
-tracked as external-frozen with current network-doctor evidence:
+work can continue, and strict pre-training architecture readiness is now
+`GREEN` with `0` blockers. The gate remains `YELLOW` only because phases `1`,
+`2`, `9`, and `18` are tracked as external-frozen with current network-doctor evidence:
 `coordinator_unreachable`, `registered_peers_unreachable`,
 `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
 Windows coordinator. All five pre-training book-reference core slices now meet
-their target support state. Training, public calibration, and score chasing
-should not become the primary path until the local phase blocker is resolved.
+their target support state. Training or public calibration still needs the
+specific governed command/gate for that lane; this readiness result only means
+the book-derived architecture no longer has a local partial blocker.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `54` public-safe evidence pointers, and `136`
@@ -629,8 +630,8 @@ and `production_route_eligible=false` with
 checks and `0` failed expected-invalid controls, so Phase 8 is wired as a
 resource-route readiness surface. This is not a production-route, model-quality,
 or CUDA/MLX/Metal parity claim: production MLX routing remains disabled while
-behavior is zero, parity remains unclaimed, and the remaining local roadmap wall
-is Phase 10 semantic candidate quality.
+behavior is zero, parity remains unclaimed, and semantic candidate quality is
+the next governed training wall rather than a roadmap-architecture blocker.
 
 Teacher/data governance now has a durable share ledger view:
 `reports/teacher_share_ledger_summary.json` is `GREEN` with
