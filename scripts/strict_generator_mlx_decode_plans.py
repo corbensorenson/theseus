@@ -183,8 +183,14 @@ def source_condition_exploration_choices(
 
     truthiness_arg = str(expectation.get("truthiness_arg") or "")
     default_arg = str(expectation.get("default_arg") or "")
+    operation_tags = {str(item) for item in list(expectation.get("operation_tags") or []) if str(item)}
     _lines, current_depth, current_values = prefix_lines_with_depth(prefix)
     progress = source_condition_prefix_progress(prefix, expectation)
+    if operation_tags:
+        for token_text in source_condition_operation_exploration_tokens(values, operation_tags=operation_tags):
+            add_token(token_text)
+        if choices:
+            return choices
     if (
         truthiness_arg
         and bool(expectation.get("requires_truthiness_guard"))
@@ -575,37 +581,43 @@ def source_condition_expectation_from_source_text(source_text: str) -> dict[str,
     text = str(source_text or "")
     lower = text.lower()
     args = visible_argument_names_from_source_text(text)
+    operation_tags = visible_operation_tags_from_source_text(text)
     empty_or_default = any(token in lower for token in ["empty", "non-empty", "nonempty", "non-sequence", "nonsequence", "default"])
-    if not empty_or_default or len(args) < 2:
+    if (not empty_or_default or len(args) < 2) and not operation_tags:
         return {
             "enabled": False,
-            "policy": "prompt_visible_empty_default_condition_expectation_v1",
+            "policy": "prompt_visible_source_condition_expectation_v2",
             "required_features": [],
             "uses_eval_tests_or_solutions": False,
             "uses_public_data": False,
         }
     defaultish = {"default", "fallback", "other", "otherwise", "missing", "empty"}
-    default_arg = next((arg for arg in args[1:] if any(token in arg.lower() for token in defaultish)), args[1])
+    default_arg = next((arg for arg in args[1:] if any(token in arg.lower() for token in defaultish)), args[1]) if len(args) >= 2 else ""
+    has_empty_default = bool(empty_or_default and len(args) >= 2)
     return {
         "enabled": True,
-        "policy": "prompt_visible_empty_default_condition_expectation_v1",
-        "truthiness_arg": args[0],
+        "policy": "prompt_visible_source_condition_expectation_v2",
+        "truthiness_arg": args[0] if args else "",
         "default_arg": default_arg,
         "expected_sequence_types": ["list", "tuple"] if "sequence" in lower else [],
-        "requires_truthiness_guard": "empty" in lower or "non-empty" in lower or "nonempty" in lower,
-        "requires_default_return": "default" in lower or "empty" in lower or "non-sequence" in lower or "nonsequence" in lower,
-        "requires_first_item_return": "first" in lower and ("item" in lower or "sequence" in lower),
-        "requires_sequence_type_guard": "sequence" in lower,
+        "operation_tags": operation_tags,
+        "requires_truthiness_guard": has_empty_default and ("empty" in lower or "non-empty" in lower or "nonempty" in lower),
+        "requires_default_return": has_empty_default and ("default" in lower or "empty" in lower or "non-sequence" in lower or "nonsequence" in lower),
+        "requires_first_item_return": has_empty_default and ("first" in lower and ("item" in lower or "sequence" in lower)),
+        "requires_sequence_type_guard": has_empty_default and "sequence" in lower,
+        "requires_operation_evidence": bool(operation_tags),
         "required_features": [
             "truthiness_guard",
             "sequence_type_guard",
             "guarded_sequence_return",
             "guarded_first_item_return",
             "default_return",
+            "operation_evidence",
         ],
         "score_semantics": (
             "Derived only from strict prompt/signature source text. It captures visible empty/default "
-            "handling expectations for decode search diagnostics and optional guarding; it does not use "
+            "handling expectations and broad operation tags for decode search diagnostics and optional "
+            "ranking; it does not use "
             "tests, solutions, task ids, category labels, verifier output, public benchmark payloads, or "
             "teacher output."
         ),
@@ -623,14 +635,25 @@ def visible_argument_names_from_source_text(source_text: str) -> list[str]:
     return []
 
 
+def visible_operation_tags_from_source_text(source_text: str) -> list[str]:
+    for line in str(source_text or "").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("prompt_operation_hints ") or stripped.startswith("visible_operation_tags "):
+            return [part for part in stripped.split()[1:] if part.startswith("op_")]
+    return []
+
+
 def source_condition_expectations_summary(expectations: list[dict[str, Any]]) -> dict[str, Any]:
     enabled = [row for row in expectations if bool(dict_or_empty(row).get("enabled"))]
     return {
-        "policy": "prompt_visible_empty_default_condition_expectation_summary_v1",
+        "policy": "prompt_visible_source_condition_expectation_summary_v2",
         "row_count": len(expectations),
         "enabled_row_count": len(enabled),
         "truthiness_arg_counts": dict(sorted(Counter(str(row.get("truthiness_arg") or "") for row in enabled).items())),
         "default_arg_counts": dict(sorted(Counter(str(row.get("default_arg") or "") for row in enabled).items())),
+        "operation_tag_counts": dict(
+            sorted(Counter(tag for row in enabled for tag in list(row.get("operation_tags") or [])).items())
+        ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
         "candidate_generation_credit": 0,
@@ -1007,6 +1030,7 @@ def loop_plan_adequacy_for_body(
                                 loop_target_names=loop_target_names,
                                 init_names=init_names,
                                 source_arg=source_arg,
+                                mutation_method=child.func.attr,
                             ):
                                 semantic_update_value_count += 1
 
@@ -1317,6 +1341,7 @@ def body_action_trace_for_body(body: str, expectation: dict[str, Any], *, allowe
                         loop_target_names=loop_targets,
                         init_names=assigned_names,
                         source_arg=source_arg,
+                        mutation_method=node.func.attr,
                     ):
                         semantic_update_value_count += 1
     mismatch_labels: list[str] = []
@@ -1329,8 +1354,9 @@ def body_action_trace_for_body(body: str, expectation: dict[str, Any], *, allowe
         or comparison_count
         or augmented_update_count
         or assignment_transform_count
+        or semantic_update_value_count
         or subscript_assignment_count
-        or any(name in call_counts for name in ["math.gcd", "gcd", "max", "min", "abs", "pop"])
+        or any(name.rsplit(".", 1)[-1] in {"gcd", "max", "min", "abs", "pop", "discard", "remove"} for name in call_counts)
     ):
         mismatch_labels.append("loop_without_decision_or_state_update")
     if shallow_identity_accumulation_count:
@@ -1483,6 +1509,7 @@ def loop_plan_update_arg_is_semantic(
     loop_target_names: set[str],
     init_names: set[str],
     source_arg: str,
+    mutation_method: str = "",
 ) -> bool:
     if expr is None:
         return False
@@ -1490,6 +1517,8 @@ def loop_plan_update_arg_is_semantic(
         return False
     names = expression_load_names(expr)
     semantic_names = names - EXPRESSION_VALUE_BARE_BUILTINS - {"False", "None", "True"}
+    if mutation_method in {"discard", "remove", "pop"} and loop_target_names and semantic_names & loop_target_names:
+        return True
     if names & init_names:
         if isinstance(expr, ast.Name) and expr.id in init_names:
             return False
@@ -2068,6 +2097,8 @@ def loop_plan_update_style(expectation: dict[str, Any]) -> str:
         return "method_add"
     if "append_item" in update_ops:
         return "method_append"
+    if init_shape == "set":
+        return "method_add"
     if init_shape == "number":
         return "assign_transform"
     if "loop_has_assignment" in state_transitions and "update_mutation_call" not in state_transitions:
@@ -2189,6 +2220,7 @@ def source_condition_final_decode_beam_sort_key(
     return (
         int(bool(adequacy.get("adequate"))),
         int(adequacy.get("satisfied_feature_count") or 0),
+        int(bool(adequacy.get("has_operation_evidence"))),
         int(bool(adequacy.get("has_guarded_first_item_return"))),
         int(bool(adequacy.get("has_sequence_type_guard"))),
         int(bool(adequacy.get("has_truthiness_guard"))),
@@ -2229,6 +2261,8 @@ def source_condition_prefix_progress(prefix: list[str], expectation: dict[str, A
         )
     )
     has_branch = int(bool(truthiness_arg and "if " in text and truthiness_arg in text))
+    operation_evidence = source_condition_operation_evidence_for_body(text, expectation)
+    has_operation_evidence = int(bool(operation_evidence.get("has_operation_evidence")))
     return {
         "has_branch": has_branch,
         "has_truthiness_guard": has_truthiness,
@@ -2236,6 +2270,7 @@ def source_condition_prefix_progress(prefix: list[str], expectation: dict[str, A
         "has_sequence_type_guard": has_sequence_type_guard,
         "has_guarded_first_item_return": has_guarded_first_item_return,
         "has_guarded_data_return": has_guarded_data_return,
+        "has_operation_evidence": has_operation_evidence,
         "score": (
             has_branch
             + (2 * has_truthiness)
@@ -2243,6 +2278,7 @@ def source_condition_prefix_progress(prefix: list[str], expectation: dict[str, A
             + (2 * has_default)
             + (2 * has_guarded_data_return)
             + (3 * has_guarded_first_item_return)
+            + (3 * has_operation_evidence)
         ),
     }
 
@@ -2270,6 +2306,7 @@ def source_condition_adequacy_for_body(
     has_sequence_type_guard = source_condition_body_has_sequence_type_guard(body, truthiness_arg, expected_sequence_types)
     has_guarded_first_item_return = source_condition_body_has_guarded_first_item_return(body, truthiness_arg)
     has_guarded_data_return = source_condition_body_has_guarded_data_return(body, truthiness_arg)
+    operation_evidence = source_condition_operation_evidence_for_body(body, expectation)
     missing: list[str] = []
     if bool(expectation.get("requires_truthiness_guard")) and not has_truthiness:
         missing.append("truthiness_guard")
@@ -2281,16 +2318,19 @@ def source_condition_adequacy_for_body(
         missing.append("guarded_sequence_return")
     if bool(expectation.get("requires_first_item_return")) and not has_guarded_first_item_return:
         missing.append("guarded_first_item_return")
+    if bool(expectation.get("requires_operation_evidence")) and not bool(operation_evidence.get("has_operation_evidence")):
+        missing.append("operation_evidence")
     satisfied = (
         int(bool(has_truthiness))
         + int(bool(has_default))
         + int(bool(has_sequence_type_guard))
         + int(bool(has_guarded_data_return))
         + int(bool(has_guarded_first_item_return))
+        + int(bool(operation_evidence.get("has_operation_evidence")))
     )
     return {
         "enabled": True,
-        "policy": "prompt_visible_empty_default_condition_adequacy_v1",
+        "policy": "prompt_visible_source_condition_adequacy_v2",
         "adequate": not missing,
         "missing_features": missing,
         "satisfied_feature_count": satisfied,
@@ -2299,15 +2339,94 @@ def source_condition_adequacy_for_body(
         "has_sequence_type_guard": bool(has_sequence_type_guard),
         "has_guarded_first_item_return": bool(has_guarded_first_item_return),
         "has_guarded_data_return": bool(has_guarded_data_return),
+        "has_operation_evidence": bool(operation_evidence.get("has_operation_evidence")),
+        "operation_evidence": operation_evidence,
         "truthiness_arg": truthiness_arg,
         "default_arg": default_arg,
         "score_semantics": (
-            "Task-blind AST/text adequacy check for prompt-visible empty/default behavior. It sees only "
-            "the decoded body and the source-text-derived expected argument names."
+            "Task-blind AST/text adequacy check for prompt-visible empty/default behavior and broad "
+            "operation tags. It sees only the decoded body and source-text-derived expectations."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
         "candidate_generation_credit": 0,
+    }
+
+
+def source_condition_operation_exploration_tokens(values: tuple[str, ...], *, operation_tags: set[str]) -> list[str]:
+    if not values or not operation_tags:
+        return []
+    if not current_line_tail_needs_operand(list(values)):
+        return []
+    choices: list[str] = []
+    if "op_clip_to_range" in operation_tags:
+        choices.extend(["NAME:min", "NAME:max"])
+    if "op_round_values" in operation_tags:
+        choices.append("NAME:round")
+    if "op_numeric_summary" in operation_tags:
+        choices.extend(["NAME:round", "NAME:abs", "NAME:min", "NAME:max", "NAME:sum"])
+    return list(dict.fromkeys(choices))[:5]
+
+
+def source_condition_operation_evidence_for_body(body: str, expectation: dict[str, Any]) -> dict[str, Any]:
+    operation_tags = {str(item) for item in list(expectation.get("operation_tags") or []) if str(item)}
+    if not operation_tags:
+        return {
+            "enabled": False,
+            "operation_tags": [],
+            "has_operation_evidence": False,
+            "candidate_generation_credit": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+        }
+    function = parsed_decode_guard_function(body, allowed_names=None)
+    call_names: Counter[str] = Counter()
+    comparison_count = 0
+    arithmetic_count = 0
+    branch_count = 0
+    if function is not None:
+        for node in ast.walk(function):
+            if isinstance(node, ast.Call):
+                call_name = action_trace_call_name(node)
+                if call_name:
+                    call_names[call_name] += 1
+            elif isinstance(node, ast.Compare):
+                comparison_count += 1
+            elif isinstance(node, ast.BinOp):
+                arithmetic_count += 1
+            elif isinstance(node, ast.If):
+                branch_count += 1
+    basenames = {name.rsplit(".", 1)[-1] for name in call_names}
+    hit_tags: list[str] = []
+    if "op_clip_to_range" in operation_tags and ({"min", "max"} & basenames or comparison_count or branch_count):
+        hit_tags.append("op_clip_to_range")
+    if "op_round_values" in operation_tags and "round" in basenames:
+        hit_tags.append("op_round_values")
+    if "op_numeric_summary" in operation_tags and ({"round", "abs", "min", "max", "sum", "gcd"} & basenames or arithmetic_count):
+        hit_tags.append("op_numeric_summary")
+    recognized_tags = sorted(operation_tags & {"op_clip_to_range", "op_round_values", "op_numeric_summary"})
+    hit_tag_set = set(hit_tags)
+    missing_tags = [tag for tag in recognized_tags if tag not in hit_tag_set]
+    has_required_operation_evidence = bool(recognized_tags) and not missing_tags
+    return {
+        "enabled": True,
+        "policy": "prompt_visible_operation_evidence_v1",
+        "operation_tags": sorted(operation_tags),
+        "hit_operation_tags": sorted(set(hit_tags)),
+        "recognized_operation_tags": recognized_tags,
+        "missing_operation_tags": missing_tags,
+        "has_operation_evidence": has_required_operation_evidence,
+        "call_counts": dict(sorted(call_names.items())),
+        "comparison_count": comparison_count,
+        "arithmetic_count": arithmetic_count,
+        "branch_count": branch_count,
+        "score_semantics": (
+            "Task-blind operation evidence from decoded candidate AST and prompt-visible operation tags "
+            "only. This is ranking/residual evidence, not a renderer and not candidate-generation credit."
+        ),
+        "candidate_generation_credit": 0,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
     }
 
 

@@ -1297,16 +1297,16 @@ def evaluate_split(
             },
             "source_condition_adequacy": {
                 "enabled": bool(prefer_source_condition_adequacy or require_source_condition_adequacy),
-                "policy": "prompt_visible_empty_default_condition_adequacy_v1",
+                "policy": "prompt_visible_source_condition_adequacy_v2",
                 "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
                 "require_source_condition_adequacy": bool(require_source_condition_adequacy),
                 "expectations": source_condition_expectation_summary,
                 "candidate_summary": source_condition_summary,
                 "score_semantics": (
                     "Uses only prompt/signature source text to identify visible empty/default-handling "
-                    "requirements and to prefer or require decoded bodies that contain corresponding "
-                    "truthiness guards and visible default returns. It does not inspect tests, solutions, "
-                    "public benchmark payloads, teacher output, or candidate templates."
+                    "requirements and broad prompt-operation hints, then prefers or optionally requires "
+                    "decoded bodies with corresponding guards or operation evidence. It does not inspect "
+                    "tests, solutions, public benchmark payloads, teacher output, or candidate templates."
                 ),
                 "uses_eval_tests_or_solutions": False,
                 "uses_public_data": False,

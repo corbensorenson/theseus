@@ -1791,6 +1791,21 @@ Evidence:
   `loop_without_decision_or_state_update=1`, and `missing_gcd_call=1`.
   The current wall is learned stateful update synthesis, not syntax,
   loadability, candidate integrity, or guard plumbing.
+- Prompt-visible operation conditioning is now stricter and better
+  instrumented, but remains no-claim evidence. `scripts/neural_seed_visible_source.py`
+  now surfaces clamp/round operation tags from prompt/signature text, and
+  `scripts/strict_generator_mlx_decode_plans.py` attaches those tags to
+  source-condition adequacy plus operation-evidence residuals without using
+  tests, solutions, public artifacts, teacher output, templates, renderers,
+  tools, or fallback returns. The strict broad4 smoke
+  `reports/strict_generator_mlx_decode_eval_prompt_operation_condition_strict_broad4_v3.json`
+  emits `8` integrity-clean transformer/hybrid candidates, keeps public
+  training rows, external inference, and fallback/template/router/tool credit
+  at `0`, and reaches nontrivial-return rate `1.0`; behavior still remains
+  `0/4`. The dominant residual is no longer emission starvation but missing
+  learned operation/state-transition semantics: operation evidence is mostly
+  absent, type handling fails `6` rows, wrong answers fail `2`, and
+  body-action mismatches still include `missing_semantic_update_value`.
 
 Non-claim: the new loop-plan exploration, adequacy checks, and body-action
 traces are task-blind no-credit scaffolding. They do not use
