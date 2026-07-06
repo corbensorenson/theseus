@@ -2899,8 +2899,17 @@ def source_condition_candidate_summary(rows: list[dict[str, Any]]) -> dict[str, 
     enabled = [row for row in adequacy_rows if bool(row.get("enabled"))]
     adequate = [row for row in enabled if bool(row.get("adequate"))]
     missing_counts: Counter[str] = Counter()
+    operation_tag_counts: Counter[str] = Counter()
+    hit_operation_tag_counts: Counter[str] = Counter()
+    missing_operation_tag_counts: Counter[str] = Counter()
     for row in enabled:
         missing_counts.update(str(item) for item in list(row.get("missing_features") or []))
+        operation_evidence = dict_or_empty(row.get("operation_evidence"))
+        operation_tag_counts.update(str(item) for item in list(operation_evidence.get("operation_tags") or []))
+        hit_operation_tag_counts.update(str(item) for item in list(operation_evidence.get("hit_operation_tags") or []))
+        missing_operation_tag_counts.update(
+            str(item) for item in list(operation_evidence.get("missing_operation_tags") or [])
+        )
     return {
         "policy": "prompt_visible_empty_default_condition_candidate_summary_v1",
         "candidate_rows": len(rows),
@@ -2908,6 +2917,9 @@ def source_condition_candidate_summary(rows: list[dict[str, Any]]) -> dict[str, 
         "adequate_candidate_rows": len(adequate),
         "adequate_candidate_rate": round(len(adequate) / max(1, len(enabled)), 6),
         "missing_feature_counts": dict(sorted(missing_counts.items())),
+        "operation_tag_counts": dict(sorted(operation_tag_counts.items())),
+        "hit_operation_tag_counts": dict(sorted(hit_operation_tag_counts.items())),
+        "missing_operation_tag_counts": dict(sorted(missing_operation_tag_counts.items())),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
         "candidate_generation_credit": 0,

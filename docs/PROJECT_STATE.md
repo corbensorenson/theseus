@@ -145,6 +145,16 @@ prompt-visible operation evidence now requires an `abs(...)` call plus a
 comparison. The next semantic fix is therefore to train/decode actual
 absolute-distance filtering and order-preserving accumulation, not another
 summary-function guard.
+The next evidence-only pass adds aggregate operation residuals to
+`source_condition_candidate_summary`, so prompt-visible operation failures are
+visible at split/report level instead of only inside individual candidates.
+`reports/strict_generator_mlx_decode_eval_source_condition_residual_summary_broad4_20260706.json`
+preserves the prior non-worsened canary shape (`12` generated rows, `16`
+manifest/runtime-loaded verifier attempts including baselines, `0` behavior
+passes) and now reports `missing_operation_tag_counts` with
+`op_abs_tolerance_filter: 4` for the broad4 split. This is not a capability
+promotion; it is a cleaner private residual target for the next trained
+semantic/action construction pass.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.
