@@ -2652,6 +2652,8 @@ def source_condition_operation_exploration_tokens(values: tuple[str, ...], *, op
     choices: list[str] = []
     if "op_gcd_reduce" in operation_tags:
         choices.extend(["NAME:gcd", "NAME:abs"])
+    if "op_abs_tolerance_filter" in operation_tags:
+        choices.append("NAME:abs")
     if "op_abs_positive_filter" in operation_tags:
         choices.append("NAME:abs")
     if "op_windowed_delta" in operation_tags:
@@ -2703,18 +2705,24 @@ def source_condition_operation_evidence_for_body(body: str, expectation: dict[st
         hit_tags.append("op_numeric_summary")
     if "op_gcd_reduce" in operation_tags and "gcd" in basenames:
         hit_tags.append("op_gcd_reduce")
+    if "op_abs_tolerance_filter" in operation_tags and "abs" in basenames and comparison_count:
+        hit_tags.append("op_abs_tolerance_filter")
     if "op_abs_positive_filter" in operation_tags and ("abs" in basenames or comparison_count or branch_count):
         hit_tags.append("op_abs_positive_filter")
     if "op_windowed_delta" in operation_tags and (arithmetic_count or {"abs", "min", "max"} & basenames):
         hit_tags.append("op_windowed_delta")
+    if "op_threshold_filter" in operation_tags and (comparison_count or branch_count):
+        hit_tags.append("op_threshold_filter")
     recognized_tags = sorted(
         operation_tags
         & {
+            "op_abs_tolerance_filter",
             "op_abs_positive_filter",
             "op_clip_to_range",
             "op_gcd_reduce",
             "op_numeric_summary",
             "op_round_values",
+            "op_threshold_filter",
             "op_windowed_delta",
         }
     )

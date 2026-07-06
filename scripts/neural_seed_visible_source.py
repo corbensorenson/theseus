@@ -192,6 +192,11 @@ def visible_prompt_operation_tags(text: str) -> list[str]:
         tags.append("op_run_length_encode")
     if any_has("gcd") and any_has("absolute", "positive", "integer", "integers", "value", "values"):
         tags.append("op_gcd_reduce")
+    if (
+        any_has("absolute", "abs", "distance", "distances", "difference", "differences")
+        and any_has("tolerance", "tolerances", "within", "center", "centre", "epsilon", "eps", "limit")
+    ):
+        tags.append("op_abs_tolerance_filter")
     if any_has("absolute", "abs") and any_has("positive", "integer", "integers"):
         tags.append("op_abs_positive_filter")
     if any_has("longest") and any_has("run") and any_has("even", "odd", "parity"):
@@ -212,6 +217,8 @@ def visible_prompt_operation_tags(text: str) -> list[str]:
     ):
         tags.append("op_numeric_summary")
     if any_has("threshold", "meets") and any_has("filter", "whose", "records", "labels"):
+        tags.append("op_threshold_filter")
+    if any_has("within", "tolerance", "tolerances", "limit") and any_has("values", "whose", "items", "records"):
         tags.append("op_threshold_filter")
     if any_has("top", "frequent", "frequency", "histogram", "count") and any_has("k", "most"):
         tags.append("op_frequency_top_k")

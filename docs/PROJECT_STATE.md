@@ -132,6 +132,19 @@ generated rows, `16` runtime-loaded verifier attempts including baselines, and
 guards is worse for this surface (`4` generated rows, `8` runtime-loaded
 attempts including baselines, `0` behavior passes), so the direct-body
 checkpoint remains the better current strict-generator route.
+The follow-up prompt-visible tolerance/distance hint pass adds
+`op_abs_tolerance_filter` and threshold-filter evidence without reading hidden
+labels, tests, solutions, return-shape fields, or decoder target metadata. The
+focused broad4 canary
+`reports/strict_generator_mlx_decode_eval_prompt_tolerance_hints_broad4_20260706.json`
+stays `YELLOW`: `12` generated rows, `16` manifest/runtime-loaded verifier
+attempts including baselines, and `0` behavior passes. The useful improvement
+is diagnostic rather than behavioral: tolerance-window candidates shaped like
+`max(data)` or guarded numeric summaries are no longer adequate, because the
+prompt-visible operation evidence now requires an `abs(...)` call plus a
+comparison. The next semantic fix is therefore to train/decode actual
+absolute-distance filtering and order-preserving accumulation, not another
+summary-function guard.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.
