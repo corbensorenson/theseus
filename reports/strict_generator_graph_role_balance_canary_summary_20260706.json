@@ -1,0 +1,65 @@
+{
+  "policy": "project_theseus_graph_role_balance_canary_summary_v1",
+  "created_utc": "2026-07-06T21:33:00Z",
+  "purpose": "Test whether graph/state role signal can be retained in the existing strict-generator trainable path without damaging heldout LM, body-transition, body-action, or body-operand objectives.",
+  "code_change": "Added optional train-split inverse-sqrt role-frequency class balancing for body-action and body-operand auxiliary targets. The strict_direct_body_emission_path_v1 profile now enables the balance switch, and reports record role factors.",
+  "source_reports": [
+    {
+      "id": "graph_role_signal_balanced_smoke_20260706",
+      "path": "reports/strict_generator_mlx_private_adaptation_graph_role_signal_balanced_smoke_20260706.json",
+      "sha256": "fb4a19c6b7f73d272f050d83e913b2a7878fa458203d23ce4661b903bc59c832",
+      "trigger_state": "RED",
+      "class_balance_enabled": false,
+      "heldout": {
+        "lm_loss_before": 1.49465,
+        "lm_loss_after": 1.441715,
+        "body_transition_loss_before": 8.056851,
+        "body_transition_loss_after": 8.05741,
+        "body_action_loss_before": 3.064914,
+        "body_action_loss_after": 3.078369,
+        "body_action_accuracy_before": 0.087858,
+        "body_action_accuracy_after": 0.080948,
+        "body_operand_loss_before": 3.016909,
+        "body_operand_loss_after": 3.015661,
+        "body_operand_accuracy_before": 0.047384,
+        "body_operand_accuracy_after": 0.054294
+      }
+    },
+    {
+      "id": "graph_role_signal_class_balanced_smoke_20260706",
+      "path": "reports/strict_generator_mlx_private_adaptation_graph_role_signal_class_balanced_smoke_20260706.json",
+      "sha256": "bff375380b79a7ffb8d83cfea5da97c9ca399be081282c72c3be7c86c8521a8d",
+      "trigger_state": "RED",
+      "class_balance_enabled": true,
+      "class_balance_policy": {
+        "body_action": "private_inverse_sqrt_body_action_role_frequency_v1",
+        "body_operand": "private_inverse_sqrt_body_operand_role_frequency_v1",
+        "min_weight": 0.4,
+        "max_weight": 2.75
+      },
+      "heldout": {
+        "lm_loss_before": 1.49465,
+        "lm_loss_after": 1.441715,
+        "body_transition_loss_before": 8.056851,
+        "body_transition_loss_after": 8.05741,
+        "body_action_loss_before": 3.064914,
+        "body_action_loss_after": 3.078369,
+        "body_action_accuracy_before": 0.087858,
+        "body_action_accuracy_after": 0.080948,
+        "body_operand_loss_before": 3.016909,
+        "body_operand_loss_after": 3.015661,
+        "body_operand_accuracy_before": 0.047384,
+        "body_operand_accuracy_after": 0.054294
+      }
+    }
+  ],
+  "interpretation": [
+    "Lower auxiliary weights keep the base heldout LM improving and retain a small body-operand improvement.",
+    "Body-transition and body-action heads still regress, so neither checkpoint is routeable.",
+    "Class-balanced role factors are computed and recorded, but this one-epoch 64-row canary does not move heldout metrics relative to the lower-weight canary.",
+    "The next implementation should redesign action/transition supervision around localized semantic-IR/state-machine events or run a larger controlled balance sweep before any strict decode replay."
+  ],
+  "no_claim_boundary": "This is not a learned-generation capability win, public-transfer claim, or production-route claim. No public rows, runtime external inference, fallback/template/router/tool credit, or deterministic repair credit is claimed.",
+  "next_required_work": "Do not route either checkpoint. Keep role class balancing as an auditable option, but make body-transition and body-action supervision semantically sharper before strict private replay.",
+  "trigger_state": "RED"
+}

@@ -152,6 +152,19 @@ The action trace now normalizes adjacent visible plan fields (`plan`,
 `source_plan`, `semantic_plan`, `expected_plan`, and `plan_tags`) before graph
 evidence checks, so the same guard fires when a caller carries the graph
 obligation as structured/list plan text rather than only as `plan`.
+The follow-up balance canaries are summarized in
+`reports/strict_generator_graph_role_balance_canary_summary_20260706.json`.
+A lower auxiliary mix fixes the hard LM regression (`1.494650 -> 1.441715`)
+and keeps a small operand improvement (`3.016909 -> 3.015661`,
+`0.047384 -> 0.054294`), but transition loss still worsens
+`8.056851 -> 8.057410` and action loss/accuracy worsens
+`3.064914 -> 3.078369`, `0.087858 -> 0.080948`. The new opt-in
+inverse-sqrt train-split role class balancing records body-action and
+body-operand role factors, but the one-epoch `64`-row class-balanced canary
+does not move those heldout metrics. Both checkpoints were rejected and removed
+from local routeable checkpoint storage. The remaining wall is sharper:
+transition/action supervision needs localized semantic-IR or state-machine
+events, not just lower weights or role-frequency balance.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

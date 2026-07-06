@@ -276,6 +276,12 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
                 "control_body_state_transition,block_exit_to_next_statement,"
                 "top_level_finalizer_return"
             ),
+            "body_action_class_balance": True,
+            "body_action_class_balance_min_weight": 0.35,
+            "body_action_class_balance_max_weight": 3.0,
+            "body_operand_class_balance": True,
+            "body_operand_class_balance_min_weight": 0.35,
+            "body_operand_class_balance_max_weight": 3.0,
             "body_action_loss_weight": 0.08,
             "body_operand_loss_weight": 0.10,
             "loop_semantic_operation_loss_boost": 3.2,
@@ -1011,6 +1017,16 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--body-action-class-balance",
+        action="store_true",
+        help=(
+            "Apply inverse-sqrt private role-frequency weighting to body-action auxiliary targets. "
+            "This is train-split loss balancing only and grants no candidate-generation credit."
+        ),
+    )
+    parser.add_argument("--body-action-class-balance-min-weight", type=float, default=0.35)
+    parser.add_argument("--body-action-class-balance-max-weight", type=float, default=3.0)
+    parser.add_argument(
         "--body-operand-loss-weight",
         type=float,
         default=0.0,
@@ -1021,6 +1037,16 @@ def main() -> int:
             "candidate-generation credit."
         ),
     )
+    parser.add_argument(
+        "--body-operand-class-balance",
+        action="store_true",
+        help=(
+            "Apply inverse-sqrt private role-frequency weighting to body-operand auxiliary targets. "
+            "This is train-split loss balancing only and grants no candidate-generation credit."
+        ),
+    )
+    parser.add_argument("--body-operand-class-balance-min-weight", type=float, default=0.35)
+    parser.add_argument("--body-operand-class-balance-max-weight", type=float, default=3.0)
     parser.add_argument(
         "--semantic-slot-prefix-roles",
         default="",
@@ -1189,9 +1215,27 @@ def main() -> int:
             0.0,
             float(args.body_action_loss_weight if args.body_action_loss_weight is not None else 0.0),
         ),
+        body_action_class_balance=bool(args.body_action_class_balance),
+        body_action_class_balance_min_weight=max(
+            0.0,
+            float(args.body_action_class_balance_min_weight if args.body_action_class_balance_min_weight is not None else 0.35),
+        ),
+        body_action_class_balance_max_weight=max(
+            0.0,
+            float(args.body_action_class_balance_max_weight if args.body_action_class_balance_max_weight is not None else 3.0),
+        ),
         body_operand_loss_weight=max(
             0.0,
             float(args.body_operand_loss_weight if args.body_operand_loss_weight is not None else 0.0),
+        ),
+        body_operand_class_balance=bool(args.body_operand_class_balance),
+        body_operand_class_balance_min_weight=max(
+            0.0,
+            float(args.body_operand_class_balance_min_weight if args.body_operand_class_balance_min_weight is not None else 0.35),
+        ),
+        body_operand_class_balance_max_weight=max(
+            0.0,
+            float(args.body_operand_class_balance_max_weight if args.body_operand_class_balance_max_weight is not None else 3.0),
         ),
         semantic_slot_prefix_roles=str(args.semantic_slot_prefix_roles or ""),
         loop_expression_synthesis_loss_boost=max(
@@ -1315,7 +1359,13 @@ def run_adaptation(
     body_transition_loss_weight: float,
     body_transition_position_boost: float,
     body_action_loss_weight: float,
+    body_action_class_balance: bool,
+    body_action_class_balance_min_weight: float,
+    body_action_class_balance_max_weight: float,
     body_operand_loss_weight: float,
+    body_operand_class_balance: bool,
+    body_operand_class_balance_min_weight: float,
+    body_operand_class_balance_max_weight: float,
     semantic_slot_prefix_roles: str,
     loop_expression_synthesis_loss_boost: float,
     loop_expression_synthesis_roles: str,
@@ -1662,12 +1712,16 @@ def run_adaptation(
         train_body_transition_weights,
         target_vocab=target_vocab,
         target_mode=target_mode,
+        class_balance_enabled=body_action_class_balance,
+        class_balance_min_weight=body_action_class_balance_min_weight,
+        class_balance_max_weight=body_action_class_balance_max_weight,
     )
     eval_body_action_targets, eval_body_action_weights, body_action_eval_summary = body_action_target_rows(
         eval_target_rows,
         eval_body_transition_weights,
         target_vocab=target_vocab,
         target_mode=target_mode,
+        class_balance_enabled=False,
     )
     train_body_operand_targets, train_body_operand_weights, body_operand_train_summary = body_operand_target_rows(
         train_target_rows,
@@ -1675,6 +1729,9 @@ def run_adaptation(
         target_vocab=target_vocab,
         target_mode=target_mode,
         source_texts=train_source_texts,
+        class_balance_enabled=body_operand_class_balance,
+        class_balance_min_weight=body_operand_class_balance_min_weight,
+        class_balance_max_weight=body_operand_class_balance_max_weight,
     )
     eval_body_operand_targets, eval_body_operand_weights, body_operand_eval_summary = body_operand_target_rows(
         eval_target_rows,
@@ -1682,6 +1739,7 @@ def run_adaptation(
         target_vocab=target_vocab,
         target_mode=target_mode,
         source_texts=eval_source_texts,
+        class_balance_enabled=False,
     )
     negative_replay = select_negative_replay_examples(
         config,

@@ -169,6 +169,17 @@ another decode replay or public calibration.
 The graph-evidence trace now normalizes `plan`, `source_plan`, `semantic_plan`,
 `expected_plan`, and `plan_tags`, so structured/list visible plan obligations
 are audited consistently instead of only the legacy scalar `plan` field.
+The balance follow-up in
+`reports/strict_generator_graph_role_balance_canary_summary_20260706.json`
+adds opt-in train-split inverse-sqrt class balancing for body-action and
+body-operand role targets, then runs two bounded `64`-row MLX canaries. The
+lower auxiliary mix improves heldout LM and operand loss, but transition and
+action losses still regress. The class-balanced canary records role factors
+(`update_operator` boosted, common delimiter/identifier roles downweighted)
+but does not move heldout metrics at this scale. Both checkpoints are rejected.
+This keeps the next target at semantic-IR/state-machine event supervision for
+transition/action heads, or a larger controlled balance sweep, before any
+strict replay or public calibration.
 
 ## 2026-07-06 Claude Review Reconciliation
 

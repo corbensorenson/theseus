@@ -2420,6 +2420,9 @@ def body_action_target_rows(
     *,
     target_vocab: dict[str, int],
     target_mode: str,
+    class_balance_enabled: bool = False,
+    class_balance_min_weight: float = 0.35,
+    class_balance_max_weight: float = 3.0,
 ) -> tuple[list[list[int]], list[list[float]], dict[str, Any]]:
     inverse = {int(idx): str(tok) for tok, idx in target_vocab.items()}
     action_rows: list[list[int]] = []
@@ -2445,6 +2448,24 @@ def body_action_target_rows(
             action_row.append(role_id)
         action_rows.append(action_row)
         action_weight_rows.append(action_weight_row)
+    balance_factors: dict[str, float] = {}
+    balance_enabled = bool(class_balance_enabled and active_positions and role_counts)
+    if balance_enabled:
+        mean_count = float(active_positions) / max(1.0, float(len(role_counts)))
+        min_weight = max(0.0, float(class_balance_min_weight if class_balance_min_weight is not None else 0.35))
+        max_weight = max(min_weight, float(class_balance_max_weight if class_balance_max_weight is not None else 3.0))
+        for role, count in role_counts.items():
+            raw = (mean_count / max(1.0, float(count))) ** 0.5
+            balance_factors[role] = max(min_weight, min(max_weight, raw))
+        for row_index, action_row in enumerate(action_rows):
+            for pos, role_id in enumerate(action_row):
+                if row_index >= len(action_weight_rows) or pos >= len(action_weight_rows[row_index]):
+                    continue
+                current = float(action_weight_rows[row_index][pos] or 0.0)
+                if current <= 0.0:
+                    continue
+                role = BODY_ACTION_ROLES[int(role_id)] if 0 <= int(role_id) < len(BODY_ACTION_ROLES) else "other"
+                action_weight_rows[row_index][pos] = current * float(balance_factors.get(role, 1.0))
     return action_rows, action_weight_rows, {
         "enabled": bool(active_positions),
         "policy": "private_prefix_conditioned_body_action_target_rows_v1",
@@ -2454,6 +2475,18 @@ def body_action_target_rows(
         "roles": list(BODY_ACTION_ROLES),
         "active_positions": active_positions,
         "role_counts": dict(sorted(role_counts.items())),
+        "class_balance": {
+            "enabled": balance_enabled,
+            "policy": "private_inverse_sqrt_body_action_role_frequency_v1" if balance_enabled else "not_enabled",
+            "min_weight": float(class_balance_min_weight if class_balance_min_weight is not None else 0.35),
+            "max_weight": float(class_balance_max_weight if class_balance_max_weight is not None else 3.0),
+            "role_weight_factors": dict(sorted((role, round(weight, 6)) for role, weight in balance_factors.items())),
+            "score_semantics": (
+                "Optional train-split-only inverse-sqrt role-frequency weighting over admitted private body "
+                "action targets. It changes auxiliary loss weighting only; it does not render code, inspect "
+                "tests or solutions, use public data, or grant candidate-generation credit."
+            ),
+        },
         "score_semantics": (
             "Maps admitted private/licensed target-body tokens onto broad executable action roles "
             "such as return, branch, block exit, update operator, expression closure, and identifier. "
@@ -2561,6 +2594,9 @@ def body_operand_target_rows(
     target_vocab: dict[str, int],
     target_mode: str,
     source_texts: list[str] | None = None,
+    class_balance_enabled: bool = False,
+    class_balance_min_weight: float = 0.35,
+    class_balance_max_weight: float = 3.0,
 ) -> tuple[list[list[int]], list[list[float]], dict[str, Any]]:
     inverse = {int(idx): str(tok) for tok, idx in target_vocab.items()}
     operand_rows: list[list[int]] = []
@@ -2593,6 +2629,24 @@ def body_operand_target_rows(
             operand_row.append(role_id)
         operand_rows.append(operand_row)
         operand_weight_rows.append(operand_weight_row)
+    balance_factors: dict[str, float] = {}
+    balance_enabled = bool(class_balance_enabled and active_positions and role_counts)
+    if balance_enabled:
+        mean_count = float(active_positions) / max(1.0, float(len(role_counts)))
+        min_weight = max(0.0, float(class_balance_min_weight if class_balance_min_weight is not None else 0.35))
+        max_weight = max(min_weight, float(class_balance_max_weight if class_balance_max_weight is not None else 3.0))
+        for role, count in role_counts.items():
+            raw = (mean_count / max(1.0, float(count))) ** 0.5
+            balance_factors[role] = max(min_weight, min(max_weight, raw))
+        for row_index, operand_row in enumerate(operand_rows):
+            for pos, role_id in enumerate(operand_row):
+                if row_index >= len(operand_weight_rows) or pos >= len(operand_weight_rows[row_index]):
+                    continue
+                current = float(operand_weight_rows[row_index][pos] or 0.0)
+                if current <= 0.0:
+                    continue
+                role = BODY_OPERAND_ROLES[int(role_id)] if 0 <= int(role_id) < len(BODY_OPERAND_ROLES) else "other"
+                operand_weight_rows[row_index][pos] = current * float(balance_factors.get(role, 1.0))
     return operand_rows, operand_weight_rows, {
         "enabled": bool(active_positions),
         "policy": "private_prefix_conditioned_body_operand_target_rows_v1",
@@ -2602,6 +2656,18 @@ def body_operand_target_rows(
         "roles": list(BODY_OPERAND_ROLES),
         "active_positions": active_positions,
         "role_counts": dict(sorted(role_counts.items())),
+        "class_balance": {
+            "enabled": balance_enabled,
+            "policy": "private_inverse_sqrt_body_operand_role_frequency_v1" if balance_enabled else "not_enabled",
+            "min_weight": float(class_balance_min_weight if class_balance_min_weight is not None else 0.35),
+            "max_weight": float(class_balance_max_weight if class_balance_max_weight is not None else 3.0),
+            "role_weight_factors": dict(sorted((role, round(weight, 6)) for role, weight in balance_factors.items())),
+            "score_semantics": (
+                "Optional train-split-only inverse-sqrt role-frequency weighting over admitted private body "
+                "operand targets. It changes auxiliary loss weighting only; it does not render code, inspect "
+                "tests or solutions, use public data, or grant candidate-generation credit."
+            ),
+        },
         "score_semantics": (
             "Maps admitted private/licensed target-body tokens onto operand/value binding roles "
             "such as visible parameter, loop variable, local state, builtin, method, operator, "
