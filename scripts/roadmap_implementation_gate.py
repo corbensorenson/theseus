@@ -70,6 +70,18 @@ REQUIRED_BOOK_CROSSWALK_FIELDS = {
     "required_gate_or_fixture",
     "no_claims",
 }
+REQUIRED_PLANNED_CODEX_BACKLOG_FIELDS = {
+    "backlog_id",
+    "source_basis",
+    "technique_family",
+    "owned_phase_refs",
+    "track_id",
+    "status",
+    "dependency",
+    "acceptance_gate",
+    "support_state_target",
+    "no_claim_boundary",
+}
 HIVE_ARTIFACT_CITATION_REPORTS = [
     "reports/hive_installer_artifacts.json",
     "reports/hive_artifact_index_smoke.json",
@@ -227,6 +239,13 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
             "book_active_core_slice_support_states": book_contract_report["summary"]["active_core_slice_support_states"],
             "book_core_slice_support_states": book_contract_report["summary"]["core_slice_support_states"],
             "book_support_state_ladder_ready": book_contract_report["summary"]["support_state_ladder_ready"],
+            "planned_codex_test_backlog_count": book_contract_report["summary"]["planned_codex_test_backlog_count"],
+            "planned_codex_test_backlog_missing_required_field_count": book_contract_report["summary"][
+                "planned_codex_test_backlog_missing_required_field_count"
+            ],
+            "planned_codex_test_backlog_invalid_ref_count": book_contract_report["summary"][
+                "planned_codex_test_backlog_invalid_ref_count"
+            ],
             "pre_training_architecture_ready": pre_training_readiness["ready"],
             "pre_training_architecture_blocker_count": pre_training_readiness["blocker_count"],
             "pre_training_architecture_warning_count": pre_training_readiness["warning_count"],
@@ -410,6 +429,7 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
     support_ladder = list_dicts(matrix.get("claim_support_ladder"))
     support_states = {str(row.get("state") or "") for row in support_ladder}
     crosswalk = list_dicts(matrix.get("book_chapter_implementation_crosswalk"))
+    planned_backlog = list_dicts(matrix.get("planned_codex_test_backlog"))
     flagship = dict_value(matrix.get("flagship_lane_governance"))
     core = dict_value(matrix.get("book_reference_core_before_training"))
     core_slices = list_dicts(core.get("required_slices"))
@@ -422,6 +442,8 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
         hard_gaps.append(gap("book_implementation_contract", "missing_book_implementation_tracks", {}))
     if not support_ladder:
         hard_gaps.append(gap("book_implementation_contract", "missing_claim_support_ladder", {}))
+    if not planned_backlog:
+        hard_gaps.append(gap("book_implementation_contract", "missing_planned_codex_test_backlog", {}))
     missing_support_states = sorted(REQUIRED_SUPPORT_STATES - support_states)
     if missing_support_states:
         hard_gaps.append(gap("book_implementation_contract", "missing_required_support_states", {"missing": missing_support_states}))
@@ -502,6 +524,8 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
     invalid_track_count = 0
     invalid_support_target_count = 0
     missing_no_claim_count = 0
+    planned_backlog_missing_required_field_count = 0
+    planned_backlog_invalid_ref_count = 0
     for row in crosswalk:
         chapter_id = str(row.get("chapter_id") or "")
         chapter_ids.append(chapter_id)
@@ -540,6 +564,65 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
     if duplicates:
         hard_gaps.append(gap("book_chapter_implementation_crosswalk", "duplicate_chapter_ids", {"duplicates": duplicates}))
 
+    planned_backlog_ids: list[str] = []
+    for row in planned_backlog:
+        backlog_id = str(row.get("backlog_id") or "")
+        planned_backlog_ids.append(backlog_id)
+        missing_fields = sorted(field for field in REQUIRED_PLANNED_CODEX_BACKLOG_FIELDS if empty(row.get(field)))
+        if missing_fields:
+            planned_backlog_missing_required_field_count += len(missing_fields)
+            hard_gaps.append(
+                gap(
+                    "planned_codex_test_backlog",
+                    "backlog_row_missing_required_fields",
+                    {"backlog_id": backlog_id, "missing_fields": missing_fields},
+                )
+            )
+        track_id = str(row.get("track_id") or "")
+        if track_id not in track_ids:
+            planned_backlog_invalid_ref_count += 1
+            hard_gaps.append(
+                gap(
+                    "planned_codex_test_backlog",
+                    "backlog_row_invalid_track",
+                    {"backlog_id": backlog_id, "track_id": track_id},
+                )
+            )
+        target = str(row.get("support_state_target") or "")
+        if target not in support_states:
+            planned_backlog_invalid_ref_count += 1
+            hard_gaps.append(
+                gap(
+                    "planned_codex_test_backlog",
+                    "backlog_row_invalid_support_target",
+                    {"backlog_id": backlog_id, "support_state_target": target},
+                )
+            )
+        phase_refs = [int_or(value, -1) for value in list_values(row.get("owned_phase_refs"))]
+        invalid_phases = [phase for phase in phase_refs if phase not in phases]
+        if invalid_phases:
+            planned_backlog_invalid_ref_count += len(invalid_phases)
+            hard_gaps.append(
+                gap(
+                    "planned_codex_test_backlog",
+                    "backlog_row_invalid_phase_refs",
+                    {"backlog_id": backlog_id, "invalid_phase_refs": invalid_phases},
+                )
+            )
+        if not str(row.get("no_claim_boundary") or "").strip():
+            planned_backlog_missing_required_field_count += 1
+            hard_gaps.append(
+                gap(
+                    "planned_codex_test_backlog",
+                    "backlog_row_missing_no_claim_boundary",
+                    {"backlog_id": backlog_id},
+                )
+            )
+
+    planned_duplicates = sorted(item for item, count in count_values(planned_backlog_ids).items() if item and count > 1)
+    if planned_duplicates:
+        hard_gaps.append(gap("planned_codex_test_backlog", "duplicate_backlog_ids", {"duplicates": planned_duplicates}))
+
     return {
         "policy": "project_theseus_book_implementation_contract_audit_v1",
         "summary": {
@@ -565,6 +648,10 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
             "invalid_support_target_count": invalid_support_target_count,
             "missing_no_claim_count": missing_no_claim_count,
             "duplicate_chapter_id_count": len(duplicates),
+            "planned_codex_test_backlog_count": len(planned_backlog),
+            "planned_codex_test_backlog_missing_required_field_count": planned_backlog_missing_required_field_count,
+            "planned_codex_test_backlog_invalid_ref_count": planned_backlog_invalid_ref_count,
+            "planned_codex_test_backlog_duplicate_id_count": len(planned_duplicates),
         },
         "hard_gaps": hard_gaps,
         "warnings": warnings,
@@ -807,6 +894,9 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Public-safe evidence smoke passed: `{summary.get('public_safe_evidence_smoke_passed', False)}`",
         f"- Book implementation tracks: `{summary.get('book_implementation_track_count', 0)}`",
         f"- Book chapter implementation crosswalk: `{summary.get('book_chapter_implementation_crosswalk_count', 0)}/{summary.get('book_manifest_chapter_count', 0)}`",
+        f"- Planned Codex test backlog: `{summary.get('planned_codex_test_backlog_count', 0)}`",
+        f"- Planned Codex backlog missing fields: `{summary.get('planned_codex_test_backlog_missing_required_field_count', 0)}`",
+        f"- Planned Codex backlog invalid refs: `{summary.get('planned_codex_test_backlog_invalid_ref_count', 0)}`",
         f"- Active flagship lane: `{summary.get('book_active_flagship_lane_id', '')}`",
         f"- Active core slices: `{summary.get('book_active_core_slice_count', 0)}`",
         f"- Active core slice support states: `{summary.get('book_active_core_slice_support_states', {})}`",
@@ -1456,6 +1546,11 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "book_implementation_track_count": summary.get("book_implementation_track_count", 0),
         "book_chapter_implementation_crosswalk_count": summary.get("book_chapter_implementation_crosswalk_count", 0),
         "book_manifest_chapter_count": summary.get("book_manifest_chapter_count", 0),
+        "planned_codex_test_backlog_count": summary.get("planned_codex_test_backlog_count", 0),
+        "planned_codex_test_backlog_missing_required_field_count": summary.get(
+            "planned_codex_test_backlog_missing_required_field_count", 0
+        ),
+        "planned_codex_test_backlog_invalid_ref_count": summary.get("planned_codex_test_backlog_invalid_ref_count", 0),
         "book_active_flagship_lane_id": summary.get("book_active_flagship_lane_id", ""),
         "book_active_core_slice_count": summary.get("book_active_core_slice_count", 0),
         "book_active_core_slice_support_states": summary.get("book_active_core_slice_support_states", {}),

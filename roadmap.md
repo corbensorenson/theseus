@@ -186,6 +186,54 @@ record with baseline, negative control, matched data/compute, falsification
 condition, residuals, and explicit non-claims before it can affect a default
 route.
 
+## 2026-07-06 Planned Codex Test Backlog Hardening
+
+Claude's latest book-mining pass is now represented as machine-readable
+roadmap debt, not only prose. `configs/roadmap_implementation_matrix.json`
+contains `planned_codex_test_backlog`, and
+`scripts/roadmap_implementation_gate.py` now validates that each item has an
+owner phase, implementation track, dependency, acceptance gate, support-state
+target, and no-claim boundary.
+
+This matters because the ASI book's `Planned Codex test` lists are the real
+technique backlog. They are not permission to spawn more lanes. They are
+obligations that must be routed through the existing stack:
+
+- Chapter 38 policy optimization: DPO/IPO/ORPO/KTO/SimPO first as bounded
+  offline preference comparisons, then GRPO/RLOO/ReMax/RLVR only after the
+  direct learned generator emits non-fallback candidates with behavior signal.
+- Multi-target policy updates: generator, planner, router, VCM selector,
+  verifier, executor, and generation-mode policies can change only through
+  behavior-change leases with feedback source, drift bounds, rollback, monitor
+  window, and task-specific heldouts.
+- Fast generation: MTP, Medusa/EAGLE, speculative/self-speculative,
+  early-exit/LayerSkip, lookahead/trie, Mamba/PagedAttention cache policy, and
+  diffusion/LLaDA are generation-mode candidates measured by accepted verified
+  output per second, not raw token speed.
+- GVR and semantic IR: generated candidates must move through typed
+  generated/verified/repaired/fallback/quarantine states, and failing verifier
+  obligations should become localized semantic-atom repair targets rather than
+  whole-body rerolls.
+- VCM and verification bandwidth: context packets need representation
+  certificates, authority ceilings, typed mandatory-miss faults, taint/deletion
+  closure, copy-on-write lineage, verifier-capacity ledgers, and governance-tax
+  accounting.
+- Belief revision and procedural memory: claim ledgers must be able to
+  downgrade/split/merge/contradict/retire claims immutably, and verified
+  repeated trajectories must become monitored procedural tools and optional
+  lookahead/trie sources without learned-generation credit.
+- Circle/Coil/cyclic substrate work stays protected but falsifiable:
+  cyclic-memory, KV-ring-buffer, recurrence, sparse-attention,
+  circulant/block-cyclic mixer, and MultiCoil/RoPE features need matched dense,
+  LoRA, RoPE, and Mamba baselines before any route or parity claim.
+
+The active dependency remains strict: direct prompt/signature body-token
+generation must produce non-fallback, nontrivial, loadable candidates with real
+private behavior before larger DPO/GRPO/MTP/diffusion/scale work can be
+interpreted as capability movement. Assisted tools, routers, semantic
+renderers, deterministic repairs, templates, and fallback bodies remain useful
+product machinery, but they cannot become learned-generation evidence.
+
 ## Book Complete Implementation Contract
 
 This roadmap now treats `book_structure.json` as the authoritative inventory of
