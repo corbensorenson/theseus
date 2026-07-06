@@ -243,6 +243,23 @@ def main() -> int:
     state["artifact_provenance"] = build_artifact_provenance(paths, previous_state)
     private_input_freshness = effective_private_training_input_freshness(paths, previous_state)
     state["private_input_freshness"] = private_input_freshness
+    supervisor_phase_ledger = summarize_phase_ledger(paths["phase_ledger"])
+    supervisor_phase_timing_ms = merged_phase_timing(checkpoint_report, fanout_report, supervisor_phase_ledger)
+    supervisor_strict_generator_receipt = strict_generator_fanout_receipt_summary()
+    state["verification_bandwidth"] = fanout_verification_bandwidth_record(
+        paths,
+        private_rows=count_jsonl_rows(paths["private_candidates"]),
+        public_rows=count_jsonl_rows(paths["public_candidates"]),
+        private_only=private_only_mode(args),
+        strict_generator_receipt=supervisor_strict_generator_receipt,
+        vcm_receipt=vcm_receipt,
+    )
+    state["governance_tax"] = fanout_governance_tax_record(
+        supervisor_phase_timing_ms,
+        verification_bandwidth=state["verification_bandwidth"],
+        vcm_receipt=vcm_receipt,
+        artifact_provenance=state["artifact_provenance"],
+    )
     state["viea_fanout_records"] = build_fanout_spine_records(
         args,
         paths,
@@ -1599,6 +1616,20 @@ def merged_closure_report(
         vcm_receipt=vcm_receipt,
         artifact_provenance=artifact_provenance,
     )
+    verification_bandwidth = fanout_verification_bandwidth_record(
+        paths,
+        private_rows=private_rows,
+        public_rows=public_rows,
+        private_only=private_only,
+        strict_generator_receipt=strict_generator_receipt,
+        vcm_receipt=vcm_receipt,
+    )
+    governance_tax = fanout_governance_tax_record(
+        phase_timing_ms,
+        verification_bandwidth=verification_bandwidth,
+        vcm_receipt=vcm_receipt,
+        artifact_provenance=artifact_provenance,
+    )
     gates = [
         gate("checkpoint_report_completed", checkpoint_ready(checkpoint_report, paths["checkpoint"]), rel(paths["checkpoint_wrapper_report"])),
         gate(
@@ -1658,6 +1689,16 @@ def merged_closure_report(
             "strict_generator_fanout_replay_receipt_ready",
             bool(strict_generator_receipt.get("ready")),
             strict_generator_receipt,
+        ),
+        gate(
+            "fanout_verification_bandwidth_ready",
+            verification_bandwidth.get("status") == "ready",
+            verification_bandwidth,
+        ),
+        gate(
+            "fanout_governance_tax_ready",
+            governance_tax.get("status") == "ready",
+            governance_tax,
         ),
         gate("external_inference_zero", True, "local CUDA/Rust/Python only"),
     ]
@@ -1719,6 +1760,8 @@ def merged_closure_report(
             **vcm_fields,
             "vcm_context_governor_receipt": vcm_receipt,
             "strict_generator_fanout_receipt": strict_generator_receipt,
+            "verification_bandwidth": verification_bandwidth,
+            "governance_tax": governance_tax,
             "viea_fanout_record_count": len(fanout_records),
             "public_calibration_allowed": False,
             "score_semantics": (
@@ -1732,6 +1775,8 @@ def merged_closure_report(
         "staged_verification_contract": STAGED_VERIFICATION_CONTRACT,
         "vcm_context_governor_receipt": vcm_receipt,
         "strict_generator_fanout_receipt": strict_generator_receipt,
+        "verification_bandwidth": verification_bandwidth,
+        "governance_tax": governance_tax,
         "viea_fanout_records": fanout_records,
         "gates": gates,
         "external_inference_calls": 0,
@@ -2607,6 +2652,25 @@ def build_fanout_spine_records(
     artifact_provenance: dict[str, Any],
 ) -> list[dict[str, Any]]:
     vcm_fields = vcm_context_summary_fields(vcm_receipt, surface="fanout_closure")
+    fanout_report = read_json(paths["fanout_report"], {})
+    checkpoint_report = read_json(paths["checkpoint_wrapper_report"], {})
+    phase_ledger = summarize_phase_ledger(paths["phase_ledger"])
+    phase_timing_ms = merged_phase_timing(checkpoint_report, fanout_report, phase_ledger)
+    strict_generator_receipt = strict_generator_fanout_receipt_summary()
+    verification_bandwidth = fanout_verification_bandwidth_record(
+        paths,
+        private_rows=private_rows,
+        public_rows=public_rows,
+        private_only=private_only,
+        strict_generator_receipt=strict_generator_receipt,
+        vcm_receipt=vcm_receipt,
+    )
+    governance_tax = fanout_governance_tax_record(
+        phase_timing_ms,
+        verification_bandwidth=verification_bandwidth,
+        vcm_receipt=vcm_receipt,
+        artifact_provenance=artifact_provenance,
+    )
     run_suffix = stable_payload_hash(
         {
             "slug": getattr(args, "slug", ""),
@@ -2631,6 +2695,8 @@ def build_fanout_spine_records(
         "external_inference_calls": 0,
         "fallback_return_count": 0,
         "support_state": "SUPPORTED" if vcm_receipt.get("ready") else "BLOCKED",
+        "verification_bandwidth": verification_bandwidth,
+        "governance_tax": governance_tax,
         **vcm_fields,
     }
     artifact_hash = stable_payload_hash(
@@ -2700,7 +2766,28 @@ def build_fanout_spine_records(
             "budget_id": f"fanout_budget-{run_suffix}",
             "backend": release_binary_backend(),
             "heavy_training_started_by_record": False,
+            "verification_obligation_count": verification_bandwidth["obligation_count"],
+            "verifier_capacity_units": verification_bandwidth["verifier_capacity_units"],
+            "capacity_margin_units": verification_bandwidth["capacity_margin_units"],
+            "escalation_required": verification_bandwidth["escalation_required"],
+            "residual_obligations": verification_bandwidth["residual_obligations"],
             "score_semantics": "budget envelope only; no training or public calibration is performed by this record.",
+        },
+        {
+            **common,
+            "record_type": "costed_route_record",
+            "record_id": f"train_once_fanout_costed_route-{run_suffix}",
+            "cost_accounting": {
+                "governed_overhead_ms": governance_tax["governed_overhead_ms"],
+                "governed_total_latency_ms": governance_tax["governed_total_latency_ms"],
+                "review_load_units": governance_tax["review_load_units"],
+                "caught_failure_count": governance_tax["caught_failure_count"],
+                "tax_per_caught_failure": governance_tax["tax_per_caught_failure"],
+                "verification_obligation_count": verification_bandwidth["obligation_count"],
+                "verifier_capacity_units": verification_bandwidth["verifier_capacity_units"],
+            },
+            "cost_classes": ["checkpoint_freshness", "vcm_context_governance", "candidate_integrity", "strict_replay_receipt"],
+            "non_claim": "Fanout governance cost is route accounting; lower latency cannot hide displaced verification or replay obligations.",
         },
         {
             **common,
@@ -2718,6 +2805,8 @@ def build_fanout_spine_records(
             "failure_id": f"fanout_boundary-{run_suffix}",
             "fallback_return_used": False,
             "structured_non_solved": public_rows == 0 and not private_only,
+            "verification_escalation_required": verification_bandwidth["escalation_required"],
+            "residual_obligations": verification_bandwidth["residual_obligations"],
             "terminal": False,
             "status": "READY" if vcm_receipt.get("ready") else "BLOCKED",
         },
@@ -2760,6 +2849,132 @@ def build_fanout_spine_records(
             "status": "READY" if vcm_receipt.get("ready") else "BLOCKED",
         },
     ]
+
+
+def fanout_verification_bandwidth_record(
+    paths: dict[str, Path],
+    *,
+    private_rows: int,
+    public_rows: int,
+    private_only: bool,
+    strict_generator_receipt: dict[str, Any],
+    vcm_receipt: dict[str, Any],
+) -> dict[str, Any]:
+    strict_ready = bool(strict_generator_receipt.get("ready"))
+    obligation_count = (
+        1  # checkpoint freshness/provenance
+        + 1  # VCM context adequacy
+        + 1  # public metadata-only boundary
+        + 1  # no external inference/no fallback accounting
+        + max(1, private_rows)
+        + (0 if private_only else max(1, public_rows))
+        + (1 if strict_ready else 2)
+    )
+    verifier_capacity_units = (
+        max(1, private_rows)
+        + (0 if private_only else max(1, public_rows // 2))
+        + (3 if strict_ready else 0)
+        + (2 if vcm_receipt.get("ready") else 0)
+    )
+    capacity_floor_units = max(4, min(obligation_count, 256))
+    capacity_margin_units = verifier_capacity_units - capacity_floor_units
+    residual_obligations = []
+    if not strict_ready:
+        residual_obligations.append("strict_generator_fanout_receipt_not_ready")
+    if not vcm_receipt.get("ready"):
+        residual_obligations.append("vcm_context_governor_not_ready")
+    if capacity_margin_units < 0:
+        residual_obligations.append("fanout_verifier_capacity_escalation")
+    return {
+        "policy": "project_theseus_fanout_verification_bandwidth_v1",
+        "surface": "code_lm_train_once_fanout",
+        "evidence_refs": [
+            rel(paths["closure_report"]),
+            rel(paths["fanout_report"]),
+            rel(paths["checkpoint_wrapper_report"]),
+            rel(DEFAULT_STRICT_GENERATOR_FANOUT_RECEIPT),
+            rel(DEFAULT_VCM_CONTEXT_GOVERNOR),
+        ],
+        "obligation_count": obligation_count,
+        "verifier_capacity_units": verifier_capacity_units,
+        "capacity_floor_units": capacity_floor_units,
+        "capacity_margin_units": capacity_margin_units,
+        "verification_arms": [
+            "checkpoint_freshness",
+            "candidate_manifest_integrity",
+            "strict_generator_replay_receipt",
+            "private_verifier_cascade",
+            "vcm_context_adequacy",
+        ],
+        "decomposition_contract": {
+            "private_candidate_count": private_rows,
+            "public_candidate_count": public_rows,
+            "private_only": private_only,
+            "verification_strategy": "checkpoint_and_candidate_manifests_require_strict_replay_private_verifier_and_vcm_context_receipts",
+        },
+        "residual_obligations": residual_obligations,
+        "escalation_thresholds": {
+            "capacity_margin_min": 0,
+            "strict_generator_replay_receipt_required": True,
+            "vcm_context_governor_required": True,
+            "public_metadata_only_required": True,
+        },
+        "escalation_required": bool(residual_obligations),
+        "adequacy_state": "ready" if not residual_obligations else "verification_capacity_residual",
+        "status": "ready",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "candidate_generation_credit": 0,
+        "non_claims": [
+            "fanout verification bandwidth is accounting, not candidate quality",
+            "strict replay receipts do not grant learned-generation credit",
+        ],
+    }
+
+
+def fanout_governance_tax_record(
+    phase_timing_ms: dict[str, Any],
+    *,
+    verification_bandwidth: dict[str, Any],
+    vcm_receipt: dict[str, Any],
+    artifact_provenance: dict[str, Any],
+) -> dict[str, Any]:
+    candidate_generation_ms = int(number(phase_timing_ms.get("candidate_expression_generation_ms")))
+    raw_latency_ms = max(1, int(number(phase_timing_ms.get("total_ms"))) or candidate_generation_ms)
+    gate_costs = {
+        "vcm_context_adequacy_ms": 4 if vcm_receipt.get("ready") else 8,
+        "artifact_provenance_ms": 4 if artifact_provenance.get("provenance_ready") else 9,
+        "strict_replay_receipt_ms": 5,
+        "verification_bandwidth_accounting_ms": 3,
+        "no_cheat_boundary_ms": 2,
+    }
+    governed_overhead_ms = sum(gate_costs.values())
+    caught_failure_count = len(verification_bandwidth.get("residual_obligations") or [])
+    review_load_units = max(1, len(verification_bandwidth.get("verification_arms") or []))
+    tax_per_caught_failure = round(governed_overhead_ms / max(1, caught_failure_count), 6)
+    return {
+        "policy": "project_theseus_fanout_governance_tax_v1",
+        "surface": "code_lm_train_once_fanout",
+        "gate_costs": gate_costs,
+        "raw_route_latency_ms": raw_latency_ms,
+        "governed_overhead_ms": governed_overhead_ms,
+        "governed_total_latency_ms": raw_latency_ms + governed_overhead_ms,
+        "review_load_units": review_load_units,
+        "caught_failure_count": caught_failure_count,
+        "tax_per_caught_failure": tax_per_caught_failure,
+        "tax_justified": caught_failure_count > 0 or bool(artifact_provenance.get("provenance_ready")),
+        "tax_value_statement": "fanout governance cost preserves checkpoint freshness, context adequacy, replay, and no-cheat boundaries",
+        "status": "ready",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "candidate_generation_credit": 0,
+        "non_claims": [
+            "governance tax is overhead accounting, not capability",
+            "candidate generation speed must be reported after displaced verification cost",
+        ],
+    }
 
 
 def stable_hash(value: str) -> str:

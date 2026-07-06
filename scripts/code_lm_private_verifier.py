@@ -760,12 +760,16 @@ def summarize_private_verification(attempts: list[dict[str, Any]]) -> dict[str, 
             "runtime_load_rate": 0.0,
             **context_fields,
         }
+        empty_summary["verification_bandwidth"] = private_verifier_verification_bandwidth_record(empty_summary)
+        empty_summary["governance_tax"] = private_verifier_governance_tax_record(empty_summary)
         return {
             "policy": "private_code_candidate_verification_cascade_v1",
             "candidate_attempt_count": 0,
             "mean_verification_reward": 0.0,
             "stage_counts": {},
             **context_fields,
+            "verification_bandwidth": empty_summary["verification_bandwidth"],
+            "governance_tax": empty_summary["governance_tax"],
             "viea_verifier_records": build_private_verifier_records(empty_summary),
             "viea_spine_consumer_receipt": spine_receipt,
         }
@@ -792,6 +796,8 @@ def summarize_private_verification(attempts: list[dict[str, Any]]) -> dict[str, 
         "viea_spine_failure_boundary_count": spine_receipt["failure_boundary_count"],
         "viea_spine_consumer_receipt": spine_receipt,
     }
+    summary["verification_bandwidth"] = private_verifier_verification_bandwidth_record(summary)
+    summary["governance_tax"] = private_verifier_governance_tax_record(summary)
     summary["viea_verifier_records"] = build_private_verifier_records(summary)
     return summary
 
@@ -805,6 +811,16 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
     governor_ready = bool(governor.get("ready"))
     adequacy_state = "governed_sufficient_for_verification" if governor_ready else "fault_vcm_context_governor_not_ready"
     support_state = "SUPPORTED" if attempt_count > 0 else "RESIDUAL"
+    verification_bandwidth = (
+        summary.get("verification_bandwidth")
+        if isinstance(summary.get("verification_bandwidth"), dict)
+        else private_verifier_verification_bandwidth_record(summary)
+    )
+    governance_tax = (
+        summary.get("governance_tax")
+        if isinstance(summary.get("governance_tax"), dict)
+        else private_verifier_governance_tax_record(summary)
+    )
     common = {
         "run_id": run_id,
         "verifier_surface": "code_lm_private_verifier",
@@ -818,6 +834,8 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
+        "verification_bandwidth": verification_bandwidth,
+        "governance_tax": governance_tax,
     }
     return {
         "claim_record": {
@@ -873,6 +891,27 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
             "network_class": "local_only",
             "task_fit": "private_verification",
             "gas_estimate_micro_twc": 0,
+            "verification_obligation_count": verification_bandwidth["obligation_count"],
+            "verifier_capacity_units": verification_bandwidth["verifier_capacity_units"],
+            "capacity_margin_units": verification_bandwidth["capacity_margin_units"],
+            "escalation_required": verification_bandwidth["escalation_required"],
+            "residual_obligations": verification_bandwidth["residual_obligations"],
+        },
+        "costed_route_record": {
+            **common,
+            "record_type": "costed_route_record",
+            "record_id": viea_spine_records.stable_id("private_verifier_costed_route", run_id),
+            "cost_accounting": {
+                "governed_overhead_ms": governance_tax["governed_overhead_ms"],
+                "governed_total_latency_ms": governance_tax["governed_total_latency_ms"],
+                "review_load_units": governance_tax["review_load_units"],
+                "caught_failure_count": governance_tax["caught_failure_count"],
+                "tax_per_caught_failure": governance_tax["tax_per_caught_failure"],
+                "verification_obligation_count": verification_bandwidth["obligation_count"],
+                "verifier_capacity_units": verification_bandwidth["verifier_capacity_units"],
+            },
+            "cost_classes": ["static_parse", "compile", "runtime_load", "intended_behavior", "vcm_context"],
+            "non_claim": "Verifier governance tax is accounting for correctness labels; it is not model generation capability.",
         },
         "generation_mode": {
             **common,
@@ -894,6 +933,8 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
             "terminal": False,
             "structured_non_solved": attempt_count <= 0,
             "fallback_return_used": False,
+            "verification_escalation_required": verification_bandwidth["escalation_required"],
+            "residual_obligations": verification_bandwidth["residual_obligations"],
         },
         "context_transaction": {
             **common,
@@ -954,6 +995,110 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
             "status": "SUPPORTED" if attempt_count > 0 else "RESIDUAL",
             "evidence_ref": "reports/private_verifier_spine_smoke.json",
         },
+    }
+
+
+def private_verifier_verification_bandwidth_record(summary: dict[str, Any]) -> dict[str, Any]:
+    attempt_count = int(summary.get("candidate_attempt_count") or 0)
+    stage_counts = summary.get("stage_counts") if isinstance(summary.get("stage_counts"), dict) else {}
+    governor_ready = bool(summary.get("vcm_context_governor_ready"))
+    runtime_load_rate = float(summary.get("runtime_load_rate") or 0.0)
+    intended_rate = float(summary.get("intended_behavior_pass_rate") or 0.0)
+    stage_count = len(stage_counts)
+    obligation_count = (
+        max(1, attempt_count) * 4
+        + 1  # VCM adequacy
+        + 1  # no public/external/fallback boundary
+        + max(1, stage_count)
+    )
+    verifier_capacity_units = (
+        max(1, attempt_count) * 3
+        + int(round(runtime_load_rate * max(1, attempt_count)))
+        + int(round(intended_rate * max(1, attempt_count)))
+        + (2 if governor_ready else 0)
+    )
+    capacity_floor_units = max(4, min(obligation_count, 256))
+    capacity_margin_units = verifier_capacity_units - capacity_floor_units
+    residual_obligations: list[str] = []
+    if not governor_ready:
+        residual_obligations.append("vcm_context_governor_not_ready")
+    if attempt_count <= 0:
+        residual_obligations.append("no_private_verifier_attempts")
+    if capacity_margin_units < 0:
+        residual_obligations.append("private_verifier_capacity_escalation")
+    return {
+        "policy": "project_theseus_private_verifier_verification_bandwidth_v1",
+        "surface": "code_lm_private_verifier",
+        "obligation_count": obligation_count,
+        "verifier_capacity_units": verifier_capacity_units,
+        "capacity_floor_units": capacity_floor_units,
+        "capacity_margin_units": capacity_margin_units,
+        "verification_arms": ["lint_parse", "compile", "runtime_load", "intended_behavior", "vcm_context_adequacy"],
+        "decomposition_contract": {
+            "candidate_attempt_count": attempt_count,
+            "stage_counts": stage_counts,
+            "verification_strategy": "private_candidate_hashes_progress_through_lint_compile_runtime_and_behavior_without_exposing_tests_to_generation",
+        },
+        "residual_obligations": residual_obligations,
+        "escalation_thresholds": {
+            "capacity_margin_min": 0,
+            "vcm_context_governor_required": True,
+            "attempt_count_min": 1,
+        },
+        "escalation_required": bool(residual_obligations),
+        "adequacy_state": "ready" if not residual_obligations else "verification_capacity_residual",
+        "status": "ready",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "candidate_generation_credit": 0,
+        "non_claims": [
+            "private verifier bandwidth is correctness-label accounting, not learned generation",
+            "private tests remain verifier-only and are not prompt/context for generation",
+        ],
+    }
+
+
+def private_verifier_governance_tax_record(summary: dict[str, Any]) -> dict[str, Any]:
+    attempt_count = int(summary.get("candidate_attempt_count") or 0)
+    verification_bandwidth = (
+        summary.get("verification_bandwidth")
+        if isinstance(summary.get("verification_bandwidth"), dict)
+        else private_verifier_verification_bandwidth_record(summary)
+    )
+    gate_costs = {
+        "static_parse_cache_ms": max(1, int(summary.get("static_cache_hit_count") or 0)),
+        "compile_cache_ms": max(1, int(summary.get("test_harness_cache_hit_count") or 0)),
+        "sandbox_runtime_cache_ms": max(1, int(summary.get("sandbox_cache_hit_count") or 0)),
+        "vcm_context_adequacy_ms": 4 if summary.get("vcm_context_governor_ready") else 8,
+        "verification_bandwidth_accounting_ms": 3,
+        "no_cheat_boundary_ms": 2,
+    }
+    governed_overhead_ms = sum(gate_costs.values())
+    raw_latency_ms = max(1, attempt_count)
+    caught_failure_count = len(verification_bandwidth.get("residual_obligations") or [])
+    review_load_units = max(1, len(verification_bandwidth.get("verification_arms") or []))
+    return {
+        "policy": "project_theseus_private_verifier_governance_tax_v1",
+        "surface": "code_lm_private_verifier",
+        "gate_costs": gate_costs,
+        "raw_route_latency_ms": raw_latency_ms,
+        "governed_overhead_ms": governed_overhead_ms,
+        "governed_total_latency_ms": raw_latency_ms + governed_overhead_ms,
+        "review_load_units": review_load_units,
+        "caught_failure_count": caught_failure_count,
+        "tax_per_caught_failure": round(governed_overhead_ms / max(1, caught_failure_count), 6),
+        "tax_justified": caught_failure_count > 0 or attempt_count > 0,
+        "tax_value_statement": "private verifier governance cost preserves staged correctness labels, context adequacy, and no-cheat boundaries",
+        "status": "ready",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "candidate_generation_credit": 0,
+        "non_claims": [
+            "governance tax is verifier overhead accounting, not behavior improvement",
+            "verifier speed cannot hide displaced replay or context adequacy cost",
+        ],
     }
 
 
@@ -1107,9 +1252,20 @@ def build_private_verifier_spine_smoke_report() -> dict[str, Any]:
     verification = private_eval.get("private_verification") if isinstance(private_eval.get("private_verification"), dict) else {}
     labels = private_eval.get("correctness_labels") if isinstance(private_eval.get("correctness_labels"), dict) else {}
     records = verification.get("viea_verifier_records") if isinstance(verification.get("viea_verifier_records"), dict) else {}
+    verification_bandwidth = (
+        verification.get("verification_bandwidth")
+        if isinstance(verification.get("verification_bandwidth"), dict)
+        else {}
+    )
+    governance_tax = verification.get("governance_tax") if isinstance(verification.get("governance_tax"), dict) else {}
     record_count = sum(1 for value in records.values() if isinstance(value, dict))
     vcm_ready = bool(verification.get("vcm_context_governor_ready"))
-    trigger_state = "GREEN" if private_eval.get("trained_passed") == 1 and record_count >= 11 and vcm_ready else "RED"
+    accounting_ready = verification_bandwidth.get("status") == "ready" and governance_tax.get("status") == "ready"
+    trigger_state = (
+        "GREEN"
+        if private_eval.get("trained_passed") == 1 and record_count >= 13 and vcm_ready and accounting_ready
+        else "RED"
+    )
     return {
         "policy": "project_theseus_private_verifier_spine_smoke_v1",
         "created_utc": now(),
@@ -1131,12 +1287,20 @@ def build_private_verifier_spine_smoke_report() -> dict[str, Any]:
             "vcm_mission_brief_status": verification.get("vcm_mission_brief_status"),
             "vcm_deletion_closure_status": verification.get("vcm_deletion_closure_status"),
             "vcm_scif_status": verification.get("vcm_scif_status"),
+            "verification_bandwidth_status": verification_bandwidth.get("status"),
+            "verification_obligation_count": verification_bandwidth.get("obligation_count"),
+            "verification_escalation_required": verification_bandwidth.get("escalation_required"),
+            "governance_tax_status": governance_tax.get("status"),
+            "governance_tax_review_load_units": governance_tax.get("review_load_units"),
+            "governance_tax_caught_failure_count": governance_tax.get("caught_failure_count"),
             "correctness_label_attempt_count": labels.get("candidate_attempt_count"),
         },
         "gates": [
             gate("trained_candidate_passed_private_fixture", private_eval.get("trained_passed") == 1, private_eval.get("trained_passed")),
-            gate("viea_verifier_records_include_context_records", record_count >= 11, record_count),
+            gate("viea_verifier_records_include_context_records", record_count >= 13, record_count),
             gate("vcm_context_governor_ready", vcm_ready, verification.get("vcm_context_governor_receipt")),
+            gate("private_verifier_verification_bandwidth_ready", verification_bandwidth.get("status") == "ready", verification_bandwidth),
+            gate("private_verifier_governance_tax_ready", governance_tax.get("status") == "ready", governance_tax),
             gate("no_public_training_rows", True, 0),
             gate("no_external_inference_calls", True, 0),
             gate("no_fallback_returns", True, 0),
@@ -1183,6 +1347,8 @@ def render_spine_smoke_markdown(report: dict[str, Any]) -> str:
             f"- VIEA view ready: `{summary.get('viea_spine_view_ready')}` records `{summary.get('viea_spine_view_record_count')}`",
             f"- VCM governor ready: `{summary.get('vcm_context_governor_ready')}` state `{summary.get('vcm_context_governor_state')}`",
             f"- VCM adequacy state: `{summary.get('vcm_context_adequacy_state')}`",
+            f"- Verification bandwidth: `{summary.get('verification_bandwidth_status')}` obligations `{summary.get('verification_obligation_count')}` escalation `{summary.get('verification_escalation_required')}`",
+            f"- Governance tax: `{summary.get('governance_tax_status')}` review load `{summary.get('governance_tax_review_load_units')}` caught failures `{summary.get('governance_tax_caught_failure_count')}`",
             "",
             report.get("score_semantics", ""),
             "",

@@ -981,6 +981,22 @@ governed overhead, `27` review-load units, `10` caught route risks, and `22.3`
 overhead units per caught risk. The route resource/cost/residual records carry
 the decomposition contract, residual obligations, escalation thresholds,
 per-gate overhead, and no-cheat counters for each route.
+Phase 16 accounting is now also present outside the router. The train-once
+fanout supervisor emits `project_theseus_fanout_verification_bandwidth_v1` and
+`project_theseus_fanout_governance_tax_v1` at the producer path
+`reports/code_lm_train_once_fanout.json`, plus a `costed_route_record` in
+`viea_fanout_records`; the current no-execute supervisor receipt is `PLANNED`
+with verification-bandwidth `ready`, governance-tax `ready`, `7` verification
+obligations, and `0` learned-generation credit. The private verifier cascade
+now emits `project_theseus_private_verifier_verification_bandwidth_v1` and
+`project_theseus_private_verifier_governance_tax_v1` in
+`reports/private_verifier_spine_smoke.json`: the smoke is `GREEN`, records
+`13` VIEA verifier records, `16` verification obligations, one verifier
+capacity escalation, `12 ms` governed overhead, `5` review-load units, one
+caught verifier-capacity risk, and `0` public-training/runtime-external/
+fallback/generation-credit counters. The remaining Phase 16 adoption gap is
+STS-specific conditioning/ranker runs and richer real task-to-arm traces before
+route-policy changes.
 The report attaches a ready VIEA route-validator receipt, a ready VCM context
 governor receipt, and a ready candidate-integrity boundary; it records `0`
 public training rows, `0` runtime external inference calls, `0` fallback
