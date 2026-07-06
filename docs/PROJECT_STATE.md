@@ -1806,6 +1806,24 @@ Evidence:
   learned operation/state-transition semantics: operation evidence is mostly
   absent, type handling fails `6` rows, wrong answers fail `2`, and
   body-action mismatches still include `missing_semantic_update_value`.
+- The existing semantic-construction repair profile now includes source-condition
+  operation-token internalization. `scripts/strict_generator_mlx_adaptation_weights.py`
+  boosts only admitted private target tokens that satisfy prompt-visible
+  operation tags, such as `min`, `max`, `round`, `sum`, `abs`, or arithmetic
+  operators, and still grants `0` candidate-generation credit. The private
+  MLX smoke
+  `reports/strict_generator_mlx_private_adaptation_source_condition_operation_internalization_smoke_v1.json`
+  matched `93` source-condition rows, found `49` adequate private target rows,
+  weighted `903` source-condition token positions including `45` operation-token
+  positions, improved heldout LM loss, and kept public training rows, external
+  inference, and fallback/template/router/tool credit at `0`. The follow-up
+  broad4 decode
+  `reports/strict_generator_mlx_decode_eval_source_condition_operation_internalization_broad4_v1.json`
+  remains `YELLOW`: `7` generated candidates, `6` integrity-verified
+  transformer/hybrid candidates, nontrivial-return rate `0.857143`, but
+  behavior still `0/4` with `type_handling`, `wrong_answer`, and one
+  compile/parse residual. This is training-path wiring evidence, not a
+  promotion or capability claim.
 
 Non-claim: the new loop-plan exploration, adequacy checks, and body-action
 traces are task-blind no-credit scaffolding. They do not use

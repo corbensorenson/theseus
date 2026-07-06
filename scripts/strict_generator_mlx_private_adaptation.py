@@ -144,6 +144,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
         "required_components": [
             "semantic_plan_auxiliary",
             "semantic_plan_visible_operation_weighting",
+            "source_condition_internalization_weighting",
             "semantic_slot_prefix_weighting",
             "loop_semantic_operation_weighting",
             "loop_expression_synthesis_weighting",
@@ -162,6 +163,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "enable_primary_dataflow_weights": True,
             "primary_dataflow_weight_scale": 1.2,
             "return_expression_loss_boost": 2.0,
+            "source_condition_internalization_loss_boost": 2.4,
             "loop_semantic_operation_loss_boost": 3.0,
             "loop_semantic_operation_roles": "loop_semantic_update,top_level_semantic_finalizer",
             "semantic_slot_prefix_loss_boost": 2.2,

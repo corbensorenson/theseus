@@ -283,8 +283,12 @@ def apply_source_condition_internalization_weights(
     matched_rows = 0
     adequate_rows = 0
     weighted_positions = 0
+    operation_weighted_positions = 0
     missing_feature_counts: dict[str, int] = {}
+    operation_tag_counts: dict[str, int] = {}
+    operation_hit_tag_counts: dict[str, int] = {}
     token_counts: dict[str, int] = {}
+    skipped: dict[str, int] = {}
     for index, target in enumerate(target_rows):
         source_text = source_texts[index] if index < len(source_texts) else ""
         body = bodies[index] if index < len(bodies) else ""
@@ -300,37 +304,60 @@ def apply_source_condition_internalization_weights(
                 name = str(feature)
                 missing_feature_counts[name] = missing_feature_counts.get(name, 0) + 1
             continue
+        operation_evidence = dict_or_empty(adequacy.get("operation_evidence"))
+        operation_tags = {str(tag) for tag in list(expectation.get("operation_tags") or []) if str(tag)}
+        hit_operation_tags = {str(tag) for tag in list(operation_evidence.get("hit_operation_tags") or []) if str(tag)}
+        for tag in operation_tags:
+            operation_tag_counts[tag] = operation_tag_counts.get(tag, 0) + 1
+        for tag in hit_operation_tags:
+            operation_hit_tag_counts[tag] = operation_hit_tag_counts.get(tag, 0) + 1
         expected_arg_names = {
             str(expectation.get("truthiness_arg") or ""),
             str(expectation.get("default_arg") or ""),
         }
-        relevant_token_texts = {
-            "NAME:if",
-            "NAME:isinstance",
-            "NAME:list",
-            "NAME:tuple",
-            "NAME:and",
-            "NAME:return",
-            "OP:(",
-            "OP:)",
-            "OP:,",
-            "OP:[",
-            "OP:]",
-            "OP::",
-            "INDENT:",
-            "DEDENT:",
-            "NEWLINE:",
-            "NUMBER:0",
-        }
-        for arg in expected_arg_names:
-            if arg:
-                relevant_token_texts.add(f"NAME:{arg}")
+        relevant_token_texts: set[str] = set()
+        if (
+            bool(expectation.get("requires_truthiness_guard"))
+            or bool(expectation.get("requires_default_return"))
+            or bool(expectation.get("requires_sequence_type_guard"))
+            or bool(expectation.get("requires_first_item_return"))
+        ):
+            relevant_token_texts.update(
+                {
+                    "NAME:if",
+                    "NAME:isinstance",
+                    "NAME:list",
+                    "NAME:tuple",
+                    "NAME:and",
+                    "NAME:return",
+                    "OP:(",
+                    "OP:)",
+                    "OP:,",
+                    "OP:[",
+                    "OP:]",
+                    "OP::",
+                    "INDENT:",
+                    "DEDENT:",
+                    "NEWLINE:",
+                    "NUMBER:0",
+                }
+            )
+            for arg in expected_arg_names:
+                if arg:
+                    relevant_token_texts.add(f"NAME:{arg}")
+        operation_token_texts = source_condition_operation_weight_token_texts(hit_operation_tags or operation_tags)
+        relevant_token_texts.update(operation_token_texts)
+        if not relevant_token_texts:
+            skipped["no_relevant_source_condition_tokens"] = skipped.get("no_relevant_source_condition_tokens", 0) + 1
+            continue
         for pos, token_id in enumerate(target):
             token_text = inverse.get(int(token_id), "")
             if token_text not in relevant_token_texts:
                 continue
             adjusted[index][pos] = max(float(adjusted[index][pos]), value)
             weighted_positions += 1
+            if token_text in operation_token_texts:
+                operation_weighted_positions += 1
             token_counts[token_text] = token_counts.get(token_text, 0) + 1
     return adjusted, {
         "enabled": True,
@@ -339,11 +366,16 @@ def apply_source_condition_internalization_weights(
         "matched_rows": matched_rows,
         "adequate_target_rows": adequate_rows,
         "weighted_token_positions": weighted_positions,
+        "operation_weighted_token_positions": operation_weighted_positions,
         "weighted_token_counts": dict(sorted(token_counts.items())),
+        "operation_tag_counts": dict(sorted(operation_tag_counts.items())),
+        "operation_hit_tag_counts": dict(sorted(operation_hit_tag_counts.items())),
         "missing_feature_counts": dict(sorted(missing_feature_counts.items())),
+        "skipped_counts": dict(sorted(skipped.items())),
         "score_semantics": (
-            "Boosts supervised CE weight on admitted private target tokens that implement a prompt-visible "
-            "empty/default source-condition contract already present in the source text. It uses the private "
+            "Boosts supervised CE weight on admitted private target tokens that implement prompt-visible "
+            "source-condition contracts already present in the source text, including empty/default guards "
+            "and broad operation tags such as clamp, round, and numeric summary. It uses the private "
             "solution body only as the admitted training target, does not inspect eval tests/solutions, public "
             "benchmark payloads, verifier labels, teacher output, answer metadata, or candidate templates, and "
             "grants no candidate-generation credit. Success must be evaluated separately with this constraint off."
@@ -353,6 +385,17 @@ def apply_source_condition_internalization_weights(
         "uses_answer_metadata": False,
         "candidate_generation_credit": 0,
     }
+
+
+def source_condition_operation_weight_token_texts(operation_tags: set[str]) -> set[str]:
+    tokens: set[str] = set()
+    if "op_clip_to_range" in operation_tags:
+        tokens.update({"NAME:min", "NAME:max", "OP:<", "OP:>", "OP:<=", "OP:>="})
+    if "op_round_values" in operation_tags:
+        tokens.add("NAME:round")
+    if "op_numeric_summary" in operation_tags:
+        tokens.update({"NAME:sum", "NAME:abs", "NAME:min", "NAME:max", "NAME:round", "OP:+", "OP:-", "OP:*", "OP:/"})
+    return tokens
 
 
 def apply_loop_operation_weights(
