@@ -99,6 +99,11 @@ def main() -> int:
     parser.add_argument("--project-steward", default=rel(DEFAULT_PROJECT_STEWARD))
     parser.add_argument("--ai-book-root", default=str(DEFAULT_AI_BOOK_ROOT))
     parser.add_argument("--gate", action="store_true", help="Print compact gate summary.")
+    parser.add_argument(
+        "--require-pre-training-ready",
+        action="store_true",
+        help="Fail closed unless the book-derived architecture is ready for training/public calibration focus.",
+    )
     args = parser.parse_args()
 
     started = time.perf_counter()
@@ -127,6 +132,19 @@ def main() -> int:
     report["summary"]["theseus_to_book_evidence_count"] = crosswalk["summary"]["theseus_to_book_evidence_count"]
     report["summary"]["book_to_theseus_source_sync_smoke_passed"] = crosswalk["summary"]["source_sync_smoke_passed"]
     report["summary"]["public_safe_evidence_smoke_passed"] = crosswalk["summary"]["public_safe_evidence_smoke_passed"]
+    if args.require_pre_training_ready and not report["pre_training_architecture_readiness"]["ready"]:
+        readiness_gap = gap(
+            "pre_training_architecture_readiness",
+            "architecture_not_ready_for_training",
+            {
+                "blocker_count": report["pre_training_architecture_readiness"]["blocker_count"],
+                "ready": False,
+                "rule": "complete book-derived architecture slices before training, public calibration, or score-chasing",
+            },
+        )
+        report["hard_gaps"].append(readiness_gap)
+        report["summary"]["hard_gap_count"] = len(report["hard_gaps"])
+        report["trigger_state"] = "RED"
     report_evidence_store.write_json_report(
         resolve(args.out),
         report,
@@ -157,6 +175,12 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
     for row in phase_reports:
         hard_gaps.extend(row["hard_gaps"])
         warnings.extend(row["warnings"])
+    pre_training_readiness = audit_pre_training_architecture_readiness(
+        matrix=matrix,
+        phase_reports=phase_reports,
+        book_contract_report=book_contract_report,
+        current_hard_gap_count=len(hard_gaps),
+    )
 
     implemented = sum(1 for row in phase_reports if row["status"] in DONE_STATES and not row["hard_gaps"])
     partial = sum(1 for row in phase_reports if row["status"] == "partial")
@@ -195,6 +219,9 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
             "book_active_core_slice_support_states": book_contract_report["summary"]["active_core_slice_support_states"],
             "book_core_slice_support_states": book_contract_report["summary"]["core_slice_support_states"],
             "book_support_state_ladder_ready": book_contract_report["summary"]["support_state_ladder_ready"],
+            "pre_training_architecture_ready": pre_training_readiness["ready"],
+            "pre_training_architecture_blocker_count": pre_training_readiness["blocker_count"],
+            "pre_training_architecture_warning_count": pre_training_readiness["warning_count"],
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "rules": {
@@ -206,6 +233,7 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
         },
         "phase_reports": phase_reports,
         "book_implementation_contract": book_contract_report,
+        "pre_training_architecture_readiness": pre_training_readiness,
         "hive_artifact_citations": artifact_citation_report["reports"],
         "hard_gaps": hard_gaps,
         "warnings": warnings,
@@ -535,6 +563,180 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
     }
 
 
+def audit_pre_training_architecture_readiness(
+    *,
+    matrix: dict[str, Any],
+    phase_reports: list[dict[str, Any]],
+    book_contract_report: dict[str, Any],
+    current_hard_gap_count: int,
+) -> dict[str, Any]:
+    """Decide whether architecture is ready to make training the main focus.
+
+    This is intentionally stricter than the normal roadmap gate. The ordinary
+    gate can be YELLOW with no hard gaps while local work continues; this view
+    answers a different question: are the book-derived implementation surfaces
+    complete enough that training, public calibration, or score chasing should
+    become the main path again?
+    """
+
+    blockers: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
+    phases = list_dicts(matrix.get("phases"))
+    phase_by_id = {int_or(row.get("phase"), -1): row for row in phases}
+    phase_report_by_id = {int_or(row.get("phase"), -1): row for row in phase_reports}
+    support_rank = {
+        str(row.get("state") or ""): idx
+        for idx, row in enumerate(list_dicts(matrix.get("claim_support_ladder")))
+    }
+
+    if current_hard_gap_count:
+        blockers.append(
+            {
+                "kind": "roadmap_hard_gaps_present",
+                "hard_gap_count": current_hard_gap_count,
+                "required_action": "Clear hard roadmap/registry/book-contract gaps before training focus.",
+            }
+        )
+
+    unfinished = [
+        {
+            "phase": int_or(row.get("phase"), -1),
+            "title": str(row.get("title") or ""),
+            "status": str(row.get("status") or ""),
+            "missing_item_count": len(list_values(row.get("missing_items"))),
+            "smallest_next_patch": str(row.get("smallest_next_patch") or ""),
+        }
+        for row in phases
+        if str(row.get("status") or "") not in DONE_STATES
+    ]
+    if unfinished:
+        blockers.append(
+            {
+                "kind": "unfinished_roadmap_phases",
+                "count": len(unfinished),
+                "phases": unfinished,
+                "required_action": "Complete or explicitly external-freeze every implementation phase before making training the primary roadmap focus.",
+            }
+        )
+
+    frozen_without_external_reason = []
+    for row in phases:
+        if str(row.get("status") or "") != "frozen":
+            continue
+        text = " ".join(
+            [
+                str(row.get("smallest_next_patch") or ""),
+                " ".join(str(item) for item in list_values(row.get("missing_items"))),
+            ]
+        ).lower()
+        if not any(term in text for term in ["peer", "reachable", "external", "travel", "network"]):
+            frozen_without_external_reason.append({"phase": int_or(row.get("phase"), -1), "title": str(row.get("title") or "")})
+    if frozen_without_external_reason:
+        blockers.append(
+            {
+                "kind": "frozen_phase_without_external_environment_reason",
+                "phases": frozen_without_external_reason,
+                "required_action": "Frozen phases must name a real external environment blocker rather than hiding unfinished architecture work.",
+            }
+        )
+
+    core = dict_value(matrix.get("book_reference_core_before_training"))
+    core_slices = list_dicts(core.get("required_slices"))
+    core_blockers = []
+    for row in core_slices:
+        current = str(row.get("current_support_state") or "")
+        target = str(row.get("target_support_state") or "")
+        current_rank = support_rank.get(current, -1)
+        target_rank = support_rank.get(target, len(support_rank) + 1)
+        current_evidence = [str(item) for item in list_values(row.get("current_evidence_refs"))]
+        current_commands = [str(item) for item in list_values(row.get("current_validation_commands"))]
+        if current_rank < target_rank or not current_evidence or not current_commands or str(row.get("current_state") or "") != "GREEN":
+            core_blockers.append(
+                {
+                    "slice_id": str(row.get("slice_id") or ""),
+                    "current_state": str(row.get("current_state") or ""),
+                    "current_support_state": current,
+                    "target_support_state": target,
+                    "current_support_rank": current_rank,
+                    "target_support_rank": target_rank,
+                    "evidence_ref_count": len(current_evidence),
+                    "validation_command_count": len(current_commands),
+                    "active": row.get("active") is True,
+                }
+            )
+    if core_blockers:
+        blockers.append(
+            {
+                "kind": "book_reference_core_below_target_support",
+                "count": len(core_blockers),
+                "slices": core_blockers,
+                "required_action": "Raise every pre-training book-reference core slice to its target support state with runnable validation commands and evidence refs.",
+            }
+        )
+
+    out_of_scope = {str(item) for item in list_values(matrix.get("out_of_scope_now"))}
+    required_guards = {
+        "public_benchmark_training",
+        "serve_external_inference",
+        "count_router_as_learned_generation",
+        "count_template_as_learned_generation",
+        "long_training_as_implementation_proof",
+        "training_score_chase_before_book_reference_core",
+        "capability_claim_from_assisted_or_tool_output",
+    }
+    missing_guards = sorted(required_guards - out_of_scope)
+    if missing_guards:
+        blockers.append(
+            {
+                "kind": "missing_pre_training_no_cheat_guards",
+                "missing_guards": missing_guards,
+                "required_action": "Keep training/public-calibration/tool-output boundaries explicit in the roadmap matrix.",
+            }
+        )
+
+    for report in phase_reports:
+        phase_id = int_or(report.get("phase"), -1)
+        phase = phase_by_id.get(phase_id, {})
+        if str(report.get("status") or "") in DONE_STATES:
+            gate_count = len(list_values(phase.get("required_gates")))
+            evidence_count = len(list_values(phase.get("current_evidence")))
+            smoke_count = len(list_values(phase.get("integration_smoke")))
+            if gate_count <= 0 or evidence_count <= 0 or smoke_count <= 0:
+                blockers.append(
+                    {
+                        "kind": "done_phase_missing_training_readiness_evidence",
+                        "phase": phase_id,
+                        "title": str(report.get("title") or ""),
+                        "required_gate_count": gate_count,
+                        "current_evidence_count": evidence_count,
+                        "integration_smoke_count": smoke_count,
+                    }
+                )
+
+    phase_status_counts: dict[str, int] = {}
+    for report in phase_reports:
+        status = str(report.get("status") or "")
+        phase_status_counts[status] = phase_status_counts.get(status, 0) + 1
+
+    return {
+        "policy": "project_theseus_pre_training_architecture_readiness_v1",
+        "ready": not blockers,
+        "blocker_count": len(blockers),
+        "warning_count": len(warnings),
+        "phase_status_counts": phase_status_counts,
+        "core_slice_count": len(core_slices),
+        "support_rank": support_rank,
+        "rules": {
+            "scope": "This gate decides whether architecture is ready for training/public calibration focus; it does not run training.",
+            "training_boundary": "No long training, public calibration, or score chasing should be primary while ready=false.",
+            "external_frozen_exception": "A frozen item can remain only when it names a concrete external-environment blocker such as unreachable trusted peers.",
+            "claim_boundary": "Tools, routers, templates, deterministic solvers, and assisted product traces stay separate from learned-generation claims.",
+        },
+        "blockers": blockers,
+        "warnings": warnings,
+    }
+
+
 def count_ai_book_manifest_chapters(ai_book_root: Path) -> int:
     manifest = ai_book_root / "book_structure.json"
     if not manifest.exists():
@@ -579,6 +781,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Active core slice support states: `{summary.get('book_active_core_slice_support_states', {})}`",
         f"- Core slice support states: `{summary.get('book_core_slice_support_states', {})}`",
         f"- Support-state ladder ready: `{summary.get('book_support_state_ladder_ready', False)}`",
+        f"- Pre-training architecture ready: `{summary.get('pre_training_architecture_ready', False)}`",
+        f"- Pre-training architecture blockers: `{summary.get('pre_training_architecture_blocker_count', 0)}`",
         f"- Book crosswalk missing fields: `{summary.get('book_chapter_crosswalk_missing_required_field_count', 0)}`",
         f"- Book crosswalk invalid phase refs: `{summary.get('book_chapter_invalid_phase_ref_count', 0)}`",
         f"- Hard gaps: `{summary['hard_gap_count']}`",
@@ -599,6 +803,13 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines.extend(["", "## Hard Gaps", ""])
         for item in report["hard_gaps"][:80]:
             lines.append(f"- `{item['id']}`: {item['kind']} {json.dumps(item.get('evidence', {}), sort_keys=True)}")
+    readiness = report.get("pre_training_architecture_readiness")
+    if isinstance(readiness, dict):
+        lines.extend(["", "## Pre-Training Architecture Readiness", ""])
+        lines.append(f"- Ready: `{readiness.get('ready', False)}`")
+        lines.append(f"- Blockers: `{readiness.get('blocker_count', 0)}`")
+        for item in list_dicts(readiness.get("blockers"))[:20]:
+            lines.append(f"- {item.get('kind')}: {json.dumps(item, sort_keys=True)}")
     if report["warnings"]:
         lines.extend(["", "## Warnings", ""])
         for item in report["warnings"][:80]:
@@ -1219,6 +1430,9 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "book_active_core_slice_support_states": summary.get("book_active_core_slice_support_states", {}),
         "book_core_slice_support_states": summary.get("book_core_slice_support_states", {}),
         "book_support_state_ladder_ready": summary.get("book_support_state_ladder_ready", False),
+        "pre_training_architecture_ready": summary.get("pre_training_architecture_ready", False),
+        "pre_training_architecture_blocker_count": summary.get("pre_training_architecture_blocker_count", 0),
+        "pre_training_architecture_warning_count": summary.get("pre_training_architecture_warning_count", 0),
         "book_chapter_crosswalk_missing_required_field_count": summary.get("book_chapter_crosswalk_missing_required_field_count", 0),
         "book_chapter_invalid_phase_ref_count": summary.get("book_chapter_invalid_phase_ref_count", 0),
         "hard_gap_count": summary["hard_gap_count"],

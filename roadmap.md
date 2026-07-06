@@ -189,7 +189,7 @@ remain honestly bounded.
   `configs/roadmap_implementation_matrix.json`. The current roadmap gate is
   `YELLOW` with `0` hard gaps: phase `0` is `implemented`; phases `3`, `4`,
   `5`, `6`, `7`, `11`, `12`, `13`, `14`, `15`, `16`, and `17` are `wired`;
-  phases `1`, `2`, `8`, `10`, `18`, and `19` remain partial; and phase `9`
+  phases `1`, `2`, `8`, `10`, and `18` remain partial; phase `9`
   remains frozen until trusted peers are reachable. The active flagship core
   slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
   current support state as `prototype-backed`. The core-slice support state
@@ -198,6 +198,14 @@ remain honestly bounded.
   `E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
   `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
   `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
+- `scripts/roadmap_implementation_gate.py` now exposes a strict
+  pre-training architecture readiness mode:
+  `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
+  The normal roadmap gate remains `YELLOW` with no hard gaps for implementation
+  work, but strict readiness is currently `RED`: six phases are unfinished or
+  externally frozen, and all five pre-training book-reference core slices are
+  still below their target support state. That means training, public
+  calibration, and score chasing should not become the primary path yet.
 - The E1 authority/SCIF runtime-adapter kernel is prototype-backed:
   `reports/governance_rights_receipt_suite.json` proves one side-effecting
   assistant/tool fixture through runtime adapter invocation, authority
@@ -223,8 +231,8 @@ remain honestly bounded.
   public-training/runtime-external/fallback/boundary counters. This records a
   clean falsifying semantic wall, not a learned-generation win.
 - The AI_book crosswalk is intentionally sticky: it now indexes `1703` AI_book
-  source files, has `41` active backlog items, `0` stale-source phase
-  candidates, `54` public-safe evidence pointers, and `134` active source-sync
+  source files, has `38` active backlog items, `0` stale-source phase
+  candidates, `54` public-safe evidence pointers, and `136` active source-sync
   review decisions. This keeps book-to-Theseus follow-up visible instead of
   clearing it with superficial steward decisions.
 - Phase 0 is implemented: the project registry gate is `GREEN` with no

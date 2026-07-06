@@ -1906,6 +1906,8 @@
     "policy": "book_reference_core_before_training_focus_v1",
     "scope": "Roadmap focus policy, not an artificial ban on small training fixes needed by a registered slice.",
     "rule": "Until these slices are prototype-backed or better, long-running training or score-chasing goals should not be the primary roadmap goal.",
+    "architecture_readiness_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
+    "architecture_readiness_rule": "Training, public calibration, and score-chasing are not the primary path while this strict readiness mode is RED. Normal roadmap YELLOW can still be acceptable for implementation work if hard_gap_count=0.",
     "required_slices": [
       {
         "slice_id": "A1_claim_ledger_trace_kernel",

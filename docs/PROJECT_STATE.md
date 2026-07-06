@@ -30,6 +30,15 @@ slice support summary records `A1_claim_ledger_trace_kernel=prototype-backed`,
 `E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
 `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
 `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
+`scripts/roadmap_implementation_gate.py` now has a strict pre-training
+architecture-readiness mode:
+`python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
+The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
+work can continue, but strict readiness is currently `RED`: six phases are
+unfinished or externally frozen, and all five pre-training book-reference core
+slices are below their target support state. Training, public calibration, and
+score chasing should not become the primary path until this readiness view is
+green.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `54` public-safe evidence pointers, and `136`
