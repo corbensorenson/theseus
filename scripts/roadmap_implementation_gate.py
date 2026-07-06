@@ -246,6 +246,15 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
             "planned_codex_test_backlog_invalid_ref_count": book_contract_report["summary"][
                 "planned_codex_test_backlog_invalid_ref_count"
             ],
+            "planned_codex_test_backlog_status_counts": book_contract_report["summary"][
+                "planned_codex_test_backlog_status_counts"
+            ],
+            "planned_codex_test_backlog_technique_family_counts": book_contract_report["summary"][
+                "planned_codex_test_backlog_technique_family_counts"
+            ],
+            "planned_codex_test_backlog_blocked_or_queued_count": book_contract_report["summary"][
+                "planned_codex_test_backlog_blocked_or_queued_count"
+            ],
             "pre_training_architecture_ready": pre_training_readiness["ready"],
             "pre_training_architecture_blocker_count": pre_training_readiness["blocker_count"],
             "pre_training_architecture_warning_count": pre_training_readiness["warning_count"],
@@ -565,9 +574,15 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
         hard_gaps.append(gap("book_chapter_implementation_crosswalk", "duplicate_chapter_ids", {"duplicates": duplicates}))
 
     planned_backlog_ids: list[str] = []
+    planned_backlog_statuses: list[str] = []
+    planned_backlog_technique_families: list[str] = []
     for row in planned_backlog:
         backlog_id = str(row.get("backlog_id") or "")
+        status = str(row.get("status") or "")
+        technique_family = str(row.get("technique_family") or "")
         planned_backlog_ids.append(backlog_id)
+        planned_backlog_statuses.append(status or "missing_status")
+        planned_backlog_technique_families.append(technique_family or "missing_technique_family")
         missing_fields = sorted(field for field in REQUIRED_PLANNED_CODEX_BACKLOG_FIELDS if empty(row.get(field)))
         if missing_fields:
             planned_backlog_missing_required_field_count += len(missing_fields)
@@ -652,6 +667,13 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
             "planned_codex_test_backlog_missing_required_field_count": planned_backlog_missing_required_field_count,
             "planned_codex_test_backlog_invalid_ref_count": planned_backlog_invalid_ref_count,
             "planned_codex_test_backlog_duplicate_id_count": len(planned_duplicates),
+            "planned_codex_test_backlog_status_counts": count_values(planned_backlog_statuses),
+            "planned_codex_test_backlog_technique_family_counts": count_values(planned_backlog_technique_families),
+            "planned_codex_test_backlog_blocked_or_queued_count": sum(
+                1
+                for status in planned_backlog_statuses
+                if status.startswith("blocked") or status.startswith("queued")
+            ),
         },
         "hard_gaps": hard_gaps,
         "warnings": warnings,
@@ -897,6 +919,9 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Planned Codex test backlog: `{summary.get('planned_codex_test_backlog_count', 0)}`",
         f"- Planned Codex backlog missing fields: `{summary.get('planned_codex_test_backlog_missing_required_field_count', 0)}`",
         f"- Planned Codex backlog invalid refs: `{summary.get('planned_codex_test_backlog_invalid_ref_count', 0)}`",
+        f"- Planned Codex backlog blocked/queued: `{summary.get('planned_codex_test_backlog_blocked_or_queued_count', 0)}`",
+        f"- Planned Codex backlog status counts: `{summary.get('planned_codex_test_backlog_status_counts', {})}`",
+        f"- Planned Codex backlog technique families: `{summary.get('planned_codex_test_backlog_technique_family_counts', {})}`",
         f"- Active flagship lane: `{summary.get('book_active_flagship_lane_id', '')}`",
         f"- Active core slices: `{summary.get('book_active_core_slice_count', 0)}`",
         f"- Active core slice support states: `{summary.get('book_active_core_slice_support_states', {})}`",
@@ -1551,6 +1576,13 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
             "planned_codex_test_backlog_missing_required_field_count", 0
         ),
         "planned_codex_test_backlog_invalid_ref_count": summary.get("planned_codex_test_backlog_invalid_ref_count", 0),
+        "planned_codex_test_backlog_status_counts": summary.get("planned_codex_test_backlog_status_counts", {}),
+        "planned_codex_test_backlog_technique_family_counts": summary.get(
+            "planned_codex_test_backlog_technique_family_counts", {}
+        ),
+        "planned_codex_test_backlog_blocked_or_queued_count": summary.get(
+            "planned_codex_test_backlog_blocked_or_queued_count", 0
+        ),
         "book_active_flagship_lane_id": summary.get("book_active_flagship_lane_id", ""),
         "book_active_core_slice_count": summary.get("book_active_core_slice_count", 0),
         "book_active_core_slice_support_states": summary.get("book_active_core_slice_support_states", {}),
