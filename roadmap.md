@@ -127,6 +127,44 @@ the roadmap:
    without reward-hacking, public rows, fallback rows, renderer credit, router
    credit, or tool credit.
 
+## 2026-07-06 Claude Book-Mining Delta Review
+
+Claude's deeper AI_book mining packet is accepted as a roadmap-quality review,
+not as evidence. Its main value is that it turns the book's `Planned Codex
+test` lists into an implementation backlog. The review does **not** authorize a
+new side lane, a public-training exception, or learned-generation credit for
+routers, tools, renderers, action catalogs, templates, or fallback bodies.
+
+Current reconciliation:
+
+| Claude-mined requirement | Current Theseus state | Roadmap action |
+| --- | --- | --- |
+| DPO / IPO as fastest feedback lever | A first DPO shadow update exists and moved a private preference gap, but strict replay emitted `0` learned candidate rows and `0/16` behavior passes. | Keep DPO quarantined as loss/policy-gap evidence only. Repair direct prompt/signature body-token emission before any larger DPO/IPO run. |
+| GRPO / RLOO / ReMax / RLVR | Policy-optimization records and reward-hacking probes exist, but no verifier-reward update has improved heldout behavior. | Queue only after non-fallback learned candidates exist. Require reward-present/reward-removed ablation, reward-hacking probes, drift bounds, rollback plan, and no authority expansion. |
+| Fast-generation modes: MTP, lookahead/trie, speculative, early-exit, diffusion/sketch-first | Generation-mode registry and runtime accounting exist; current comparisons are negative for accepted verified output. | Treat each mode as a registered generation-mode candidate measured by useful verified output per second, not proposed-token speed. Do not run MTP/diffusion before the direct learned emission wall moves. |
+| Semantic IR / localized repair | Semantic atom and semantic patch gates exist, but generator failures are not yet lowered into atom-level repair obligations. | Connect strict-generator decode failures to semantic atoms: failed atom -> localized repair -> dependent obligation replay -> residual ledger. |
+| Verification bandwidth | VCM/context-governor and verifier-spine records exist, but verifier capacity is not yet a scheduled resource in all fanout/ranking paths. | Add verifier-capacity budgets, residual-obligation ledgers, decomposition contracts, and governance-tax accounting to Phase 16 before route-policy changes. |
+| VCM certificates and context transactions | Context ABI fixtures, mission briefs, deletion closure, and materialized VIEA context records exist. | Promote fixture-level semantics into a deployed resolver/compiler conformance gate, then add model-native MLX KV/prefix-cache lifecycle proof before runtime parity claims. |
+| Circle / Coil / cyclic substrate primitives | Circle/proof-carrying bridge and substrate-adoption records exist as proof-boundary machinery. | Keep cyclic/SymLiquid ideas protected as matched-compute discovery candidates only; no cyclic route can bypass transformer/hybrid baselines or claim quality from structural proofs alone. |
+| Planning control layer and intelligence-arbitrage ledger | VIEA/PlanForge-style records exist; live peer execution remains externally frozen and some arbitrage costs are not yet measured. | Keep local traces canonical; add displaced verification/repair/human-cleanup cost to route decisions before changing default routing. |
+| Claim ledger belief revision | Support states and evidence packs exist, but revision transitions are not universal. | Add downgrade/split/merge/contradiction/retire transitions with immutable revision history under Phase 14. |
+| Procedural memory / loop closure | Procedural-memory gates exist and canary route selection is available; useful real traces are still too thin. | Convert repeated real assistant/repo/generator traces into monitored procedural candidates; use verified procedures as lookahead/trie sources without learned-generation credit. |
+
+The active dependency order after this review is:
+
+1. Preserve the book-derived control substrate and registry gates already
+   present.
+2. Repair direct learned body emission under the strict prompt/signature-only
+   decoder profile.
+3. Only after non-fallback top-level-return candidates exist, rerun bounded
+   DPO/IPO and then one verifier-reward RLVR/GRPO update with ablations.
+4. Then test MTP, GVR/localized semantic repair, lookahead/trie, and
+   sketch-first/diffusion as generation-mode candidates under accepted-output
+   accounting.
+5. Keep the product assistant useful through VCM, deterministic tools,
+   planning, retrieval, and verifier receipts, while labeling that behavior as
+   assisted product capability rather than learned model generation.
+
 This reconciliation changes claims, not the no-cheat charter. It does not
 authorize public benchmark training rows, runtime external inference,
 fallback/template/router/tool credit as learned generation, or another loose
