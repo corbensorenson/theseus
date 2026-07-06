@@ -756,10 +756,31 @@ def build_claim_ledger_trace_kernel(
         hard_gaps.append({"kind": "receipt_faithfulness_not_green", "state": receipt_audit.get("state")})
 
     state = "GREEN" if not hard_gaps else "RED"
+    synthetic_support_ready = (
+        state == "GREEN"
+        and len(expected_invalid_controls) >= 5
+        and all(row["rejected"] for row in expected_invalid_controls)
+        and bool(digest_replay_checks)
+        and all(row["exists"] and row["sha256"] and row["public_safe"] for row in digest_replay_checks)
+        and receipt_audit.get("state") == "GREEN"
+        and not invalid_claims
+        and not missing_record_types
+    )
+    support_state = "synthetic-test-backed" if synthetic_support_ready else ("prototype-backed" if state == "GREEN" else "unsupported")
     return {
         "policy": "project_theseus_a1_claim_ledger_trace_kernel_v1",
         "state": state,
-        "support_state": "prototype-backed" if state == "GREEN" else "unsupported",
+        "support_state": support_state,
+        "support_state_basis": {
+            "valid_reference_trace_present": state == "GREEN",
+            "expected_invalid_control_count": len(expected_invalid_controls),
+            "expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
+            "digest_replay_check_count": len(digest_replay_checks),
+            "digest_replay_all_public_safe": all(row["exists"] and row["sha256"] and row["public_safe"] for row in digest_replay_checks),
+            "receipt_faithfulness_state": receipt_audit.get("state"),
+            "invalid_claim_count": len(invalid_claims),
+            "missing_required_record_type_count": len(missing_record_types),
+        },
         "slice_id": "A1_claim_ledger_trace_kernel",
         "source_task": "weekly_focus_20260706_reference_trace",
         "required_record_types": sorted(REFERENCE_TRACE_REQUIRED_RECORD_TYPES),
@@ -778,7 +799,7 @@ def build_claim_ledger_trace_kernel(
         "receipt_faithfulness_state": receipt_audit.get("state"),
         "hard_gaps": hard_gaps,
         "non_claims": [
-            "A1 prototype-backed means this reference-trace kernel is replayable and support-stated; it is not a learned-generation or ASI claim.",
+            "A1 synthetic-test-backed means this reference-trace kernel has a valid replay trace plus expected-invalid controls; it is not a learned-generation or ASI claim.",
             "Tool-assisted assistant output remains product behavior, not learned model-only capability.",
             "Public benchmark artifacts remain calibration-only and are not training rows.",
         ],

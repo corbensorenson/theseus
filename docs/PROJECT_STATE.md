@@ -24,8 +24,8 @@ remains frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 roadmap gate now requires active core slices to carry a valid current support
-state and evidence refs. A1 is currently `prototype-backed`; the full core
-slice support summary records `A1_claim_ledger_trace_kernel=prototype-backed`,
+state and evidence refs. A1 is currently `synthetic-test-backed`; the full core
+slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
 `A2_replacement_transaction_kernel=prototype-backed`,
 `E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
 `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
@@ -55,11 +55,11 @@ records `10` evidence packs, `7/7` expected-invalid receipt controls rejected,
 residual conservation `GREEN`, verifier capacity `GREEN`, governance-tax
 measurement present, `6` capability-claim dispositions, book-schema
 conformance true, and the A1 claim-ledger trace kernel `GREEN` with
-support state `prototype-backed`. The A1 kernel proves required trace records,
-support-state transitions, digest replay, source-to-verifier continuity,
-expected-invalid controls, duplicate-family avoidance, and clean no-cheat
-counters over the weekly-focus reference trace. It also preregistered exactly
-one bounded correctness-in-the-loop generator experiment in
+support state `synthetic-test-backed`. The A1 kernel proves required trace
+records, support-state transitions, digest replay, source-to-verifier
+continuity, expected-invalid controls, duplicate-family avoidance, and clean
+no-cheat counters over the weekly-focus reference trace. It also preregistered
+exactly one bounded correctness-in-the-loop generator experiment in
 `configs/correctness_in_loop_generator_experiments.json`. This is
 implementation-reference evidence for the book import path, not a model-quality,
 public-benchmark, learned-generation, deployed-readiness, or ASI claim.

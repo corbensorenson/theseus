@@ -181,7 +181,7 @@ remain honestly bounded.
   expected-invalid receipt controls, records residual-conservation,
   verifier-capacity, governance-tax, capability-claim-disposition, and
   book-schema-conformance audits, proves the active
-  `A1_claim_ledger_trace_kernel` as `prototype-backed`, and preregisters
+  `A1_claim_ledger_trace_kernel` as `synthetic-test-backed`, and preregisters
   exactly one bounded correctness-in-the-loop generator experiment in
   `configs/correctness_in_loop_generator_experiments.json`. This is
   implementation-reference evidence, not a model-quality or ASI claim.
@@ -192,8 +192,8 @@ remain honestly bounded.
   phases `1`, `2`, `8`, `10`, and `18` remain partial; phase `9`
   remains frozen until trusted peers are reachable. The active flagship core
   slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
-  current support state as `prototype-backed`. The core-slice support state
-  summary now records `A1_claim_ledger_trace_kernel=prototype-backed`,
+  current support state as `synthetic-test-backed`. The core-slice support state
+  summary now records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
   `A2_replacement_transaction_kernel=prototype-backed`,
   `E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
   `B1_assisted_verified_assistant_product_lane=prototype-backed`, and

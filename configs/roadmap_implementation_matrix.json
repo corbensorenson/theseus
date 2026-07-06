@@ -213,7 +213,7 @@
       ],
       "completion_rule": "A normal Theseus assistant task traverses command contract to artifact graph to claim ledger to verifier to dogfood event without sidecar routing.",
       "implemented_items": [
-        "A1 claim-ledger trace kernel is prototype-backed: reports/theseus_weekly_focus_20260706.json now proves required trace records, support-state transitions, digest replay, source-to-verifier continuity, expected-invalid controls, duplicate-family avoidance, and no-cheat counters for the weekly-focus reference trace."
+        "A1 claim-ledger trace kernel is synthetic-test-backed: reports/theseus_weekly_focus_20260706.json now proves required trace records, support-state transitions, digest replay, source-to-verifier continuity, expected-invalid controls, duplicate-family avoidance, and no-cheat counters for the weekly-focus reference trace."
       ]
     },
     {
@@ -1920,7 +1920,7 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One real Theseus task has a support-stated claim ledger, artifact graph, evidence transition, replay command, non-claims, negative-control receipts, and no duplicate report family.",
-        "current_support_state": "prototype-backed",
+      "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/theseus_weekly_focus_20260706.json",
@@ -1933,7 +1933,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "prototype-backed A1 is implementation-reference evidence, not model quality or ASI evidence",
+        "synthetic-test-backed A1 is implementation-reference evidence with valid trace replay and expected-invalid controls, not model quality or ASI evidence",
           "tool-assisted assistant behavior remains separate from learned-generation capability",
           "public benchmark artifacts remain calibration-only and are not training rows"
         ]

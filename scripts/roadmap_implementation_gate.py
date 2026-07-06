@@ -30,6 +30,8 @@ DEFAULT_MATRIX = ROOT / "configs" / "roadmap_implementation_matrix.json"
 DEFAULT_REGISTRY = ROOT / "configs" / "project_manifest_registry.json"
 DEFAULT_OUT = ROOT / "reports" / "roadmap_implementation_gate.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "roadmap_implementation_gate.md"
+DEFAULT_PRE_TRAINING_OUT = ROOT / "reports" / "roadmap_pre_training_architecture_readiness_gate.json"
+DEFAULT_PRE_TRAINING_MARKDOWN = ROOT / "reports" / "roadmap_pre_training_architecture_readiness_gate.md"
 DEFAULT_CROSSWALK = ROOT / "reports" / "book_to_theseus_crosswalk.json"
 DEFAULT_PROJECT_STEWARD = ROOT / "configs" / "project_steward.json"
 DEFAULT_AI_BOOK_ROOT = ROOT.parent / "AI_book"
@@ -105,6 +107,11 @@ def main() -> int:
         help="Fail closed unless the book-derived architecture is ready for training/public calibration focus.",
     )
     args = parser.parse_args()
+    if args.require_pre_training_ready:
+        if args.out == rel(DEFAULT_OUT):
+            args.out = rel(DEFAULT_PRE_TRAINING_OUT)
+        if args.markdown_out == rel(DEFAULT_MARKDOWN):
+            args.markdown_out = rel(DEFAULT_PRE_TRAINING_MARKDOWN)
 
     started = time.perf_counter()
     matrix_path = resolve(args.matrix)
