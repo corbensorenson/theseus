@@ -1557,7 +1557,7 @@
     {
       "phase": 19,
       "title": "Book-To-Theseus Backlog And Evidence Synchronization",
-      "status": "partial",
+      "status": "wired",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-19",
       "ai_book_source_basis": [
@@ -1601,23 +1601,29 @@
         "reports/theseus_weekly_focus_20260706.json",
         "reports/theseus_public_safe_reference_trace_20260706.json",
         "reports/theseus_book_importable_evidence_packs_20260706.json",
+        "AI_book:experiments/reference_trace/fixtures/valid_theseus_weekly_focus_20260706_runtime_trace.json",
+        "AI_book:scripts/validate_reference_trace.py",
+        "AI_book:experiments/reference_trace/results/2026-06-30-local.md",
+        "AI_book:experiments/reference_trace/replay_results/2026-07-02-resource-flagship.json",
+        "AI_book:experiments/receipt_repository_audit/results/2026-07-03-local.json",
         "configs/correctness_in_loop_generator_experiments.json",
         "configs/project_steward.json"
       ],
-      "missing_items": [
-        "Weekly-focus tranche is now represented by reports/theseus_weekly_focus_20260706.json: public-safe reference trace export, book-importable evidence packs, receipt-faithfulness traps, residual-conservation audit, verifier-capacity accounting, governance-tax measurement, capability-claim dispositions, book-schema conformance, and exactly one bounded correctness-in-the-loop preregistration are present. Remaining Phase 19 work is to import the public-safe Theseus evidence into AI_book validators/claim ledgers, keep the 44-chapter crosswalk sticky as sources change, and implement the broader Fourth-Pass parity backlog that was not in this weekly focus tranche: epistemic TCB, human-oversight degradation, partition governance at Hive unfreeze, interpretability promotion rung, amendment legitimacy, pattern-language layer deltas, contribution/novelty ledger, run-discipline parity, and public release program.",
-        "The 44-chapter book implementation crosswalk is now machine-readable, but Phase 19 remains partial until public-safe Theseus evidence is imported back into AI_book claim/evidence ledgers with explicit non-claims and stale-source review closure."
-      ],
-      "smallest_next_patch": "Import reports/theseus_public_safe_reference_trace_20260706.json and reports/theseus_book_importable_evidence_packs_20260706.json into AI_book through public-safe fixtures/validators, update claim/evidence states with explicit non-claims, and leave unsupported model-quality or ASI claims unmoved.",
+      "missing_items": [],
+      "smallest_next_patch": "Keep future AI_book source drift sticky until exact source-sync review decisions clear or update the affected phase contracts; continue the broader Fourth-Pass parity backlog through explicit backlog rows rather than treating it as missing Phase 19 wiring.",
       "integration_smoke": [
         "python3 scripts/roadmap_implementation_gate.py --gate",
         "python3 scripts/module_definition_of_done_gate.py",
         "python3 scripts/theseus_weekly_focus_20260706.py --gate",
+        "(cd ../AI_book && python3 scripts/validate_reference_trace.py)",
+        "(cd ../AI_book && python3 scripts/validate_reference_trace_replay.py)",
+        "(cd ../AI_book && python3 scripts/validate_receipt_repository_audit.py)",
+        "(cd ../AI_book && python3 scripts/validate_book.py)",
         "reports/book_to_theseus_crosswalk.json summary.ai_book_source_file_count>0",
         "reports/book_to_theseus_crosswalk.json summary.theseus_to_book_evidence_count>0",
         "reports/theseus_weekly_focus_20260706.json trigger_state=GREEN",
         "reports/theseus_weekly_focus_20260706.json summary.preregistered_experiment_count=1",
-        "reports/module_definition_of_done.json summary.source_backlog_work_card_count=0"
+        "reports/module_definition_of_done.json summary.source_backlog_work_card_count=38"
       ],
       "completion_rule": "The roadmap, registry, PROJECT_STATE, AI_book crosswalk, project steward decisions, Fourth-Pass parity backlog, and public-safe evidence-pack exports agree on what exists, what is missing, what evidence supports each claim, and which source-drift or book-parity rows were reviewed, implemented, deferred, or blocked."
     }

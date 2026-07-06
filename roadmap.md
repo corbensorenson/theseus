@@ -1482,12 +1482,18 @@ Acceptance gates:
 - AI_book source gaps do not become Theseus claims until implemented/tested.
 - Theseus evidence exported to AI_book is public-safe and support-state labeled.
 - Current implementation evidence: `reports/book_to_theseus_crosswalk.json`
-  reports `41` active backlog items, `0` stale phases, `134` active
+  reports `38` active roadmap backlog items, `0` stale phases, `136` active
   source-sync review decisions, and `54` public-safe Theseus-to-book evidence
   pointers. The chapter-level implementation contract is now carried in
   `configs/roadmap_implementation_matrix.json` with `44/44` authored chapters
   mapped to Theseus phases, support-state targets, gates, and no-claim
-  boundaries.
+  boundaries. The July 6 weekly-focus public-safe reference trace and
+  book-importable evidence packs are imported into AI_book through the existing
+  reference-trace harness and validated by `python3 scripts/validate_reference_trace.py`,
+  `python3 scripts/validate_reference_trace_replay.py`,
+  `python3 scripts/validate_receipt_repository_audit.py`, and
+  `python3 scripts/validate_book.py`; the import remains a record-shape
+  implementation reference, not a model-quality or ASI claim.
 
 Do not:
 

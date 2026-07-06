@@ -5667,6 +5667,99 @@
       "public_training_rows_written": 0,
       "external_inference_calls": 0,
       "fallback_return_count": 0
+    },
+    {
+      "id": "source_sync.phase5.weekly_focus_reference_trace_reviewed.20260706",
+      "record_type": "source_sync_review_decision",
+      "phase": 5,
+      "phase_title": "Daily-Use Assistant Runtime And Dogfood Trace Loop",
+      "decision": "reviewed_no_contract_change",
+      "status": "active",
+      "reason": "Phase 5 AI_book reference-trace fixture and replay-result drift was reviewed against the current assistant product-spine contract. The July 6 fixture imports the Theseus weekly-focus reference trace and book-importable evidence packs through the existing reference-trace harness with exact digests, public-safety boundaries, expected-invalid controls, residual/verifier/governance-tax evidence terms, and explicit non-claims. This strengthens book-facing import evidence only; it does not change the assistant product-lane implementation contract, prove real assistant usefulness, or create a new dogfood/training lane.",
+      "surface_ids": [
+        "theseus_assistant_runtime",
+        "dogfood_trace_bridge",
+        "active_docs"
+      ],
+      "changed_source_paths": [
+        "experiments/reference_trace/fixtures/valid_theseus_weekly_focus_20260706_runtime_trace.json",
+        "experiments/reference_trace/replay_results/2026-07-02-resource-flagship.json"
+      ],
+      "backlog_ids": [],
+      "evidence_refs": [
+        "reports/theseus_weekly_focus_20260706.json",
+        "reports/theseus_public_safe_reference_trace_20260706.json",
+        "reports/theseus_book_importable_evidence_packs_20260706.json",
+        "AI_book:experiments/reference_trace/fixtures/valid_theseus_weekly_focus_20260706_runtime_trace.json",
+        "AI_book:scripts/validate_reference_trace.py",
+        "AI_book:experiments/reference_trace/replay_results/2026-07-02-resource-flagship.json",
+        "AI_book:experiments/receipt_repository_audit/results/2026-07-03-local.json"
+      ],
+      "validation_commands": [
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/module_definition_of_done_gate.py",
+        "python3 scripts/theseus_project_registry.py --gate",
+        "(cd ../AI_book && python3 scripts/validate_reference_trace.py)",
+        "(cd ../AI_book && python3 scripts/validate_reference_trace_replay.py)",
+        "(cd ../AI_book && python3 scripts/validate_receipt_repository_audit.py)",
+        "(cd ../AI_book && python3 scripts/validate_book.py)"
+      ],
+      "non_claims": [
+        "source drift review is not assistant capability evidence",
+        "book source text is not training data",
+        "reference-trace fixture import does not prove deployed assistant usefulness, route quality, model quality, benchmark performance, safety, ASI, or clean live Theseus replay",
+        "clearing source-sync backlog does not create a new assistant product lane or promote chapter-core support state"
+      ],
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
+    },
+    {
+      "id": "source_sync.phase6.weekly_focus_reference_trace_reviewed.20260706",
+      "record_type": "source_sync_review_decision",
+      "phase": 6,
+      "phase_title": "Deterministic Solver, Search, And Tool-Use Spine",
+      "decision": "reviewed_no_contract_change",
+      "status": "active",
+      "reason": "Phase 6 AI_book reference-trace fixture and replay-result drift was reviewed against the current deterministic tool substrate and evidence-record contract. The July 6 fixture includes deterministic-tool and verifier evidence only as public-safe artifact references inside the existing reference-trace harness. This does not alter the tool substrate contract, does not count tools as learned generation, and does not promote tool-assisted results as model-only capability.",
+      "surface_ids": [
+        "deterministic_tool_substrate",
+        "report_evidence_store",
+        "active_docs"
+      ],
+      "changed_source_paths": [
+        "experiments/reference_trace/fixtures/valid_theseus_weekly_focus_20260706_runtime_trace.json",
+        "experiments/reference_trace/replay_results/2026-07-02-resource-flagship.json"
+      ],
+      "backlog_ids": [],
+      "evidence_refs": [
+        "reports/deterministic_tool_substrate.json",
+        "reports/theseus_weekly_focus_20260706.json",
+        "reports/theseus_public_safe_reference_trace_20260706.json",
+        "reports/theseus_book_importable_evidence_packs_20260706.json",
+        "AI_book:experiments/reference_trace/fixtures/valid_theseus_weekly_focus_20260706_runtime_trace.json",
+        "AI_book:scripts/validate_reference_trace.py",
+        "AI_book:experiments/reference_trace/replay_results/2026-07-02-resource-flagship.json",
+        "AI_book:experiments/receipt_repository_audit/results/2026-07-03-local.json"
+      ],
+      "validation_commands": [
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/module_definition_of_done_gate.py",
+        "python3 scripts/theseus_project_registry.py --gate",
+        "(cd ../AI_book && python3 scripts/validate_reference_trace.py)",
+        "(cd ../AI_book && python3 scripts/validate_reference_trace_replay.py)",
+        "(cd ../AI_book && python3 scripts/validate_receipt_repository_audit.py)",
+        "(cd ../AI_book && python3 scripts/validate_book.py)"
+      ],
+      "non_claims": [
+        "source drift review is not deterministic tool capability evidence",
+        "book source text is not training data",
+        "tool evidence references do not count as learned generation or model-only benchmark performance",
+        "clearing source-sync backlog does not create a new tool-use lane or promote chapter-core support state"
+      ],
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
     }
   ],
   "steward_decisions": [

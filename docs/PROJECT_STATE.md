@@ -18,8 +18,8 @@ roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`, phases `3`, `4`,
-`5`, `6`, `7`, `11`, `12`, `13`, `14`, `15`, `16`, and `17` are `wired`,
-phases `1`, `2`, `8`, `10`, `18`, and `19` remain partial, and phase `9`
+`5`, `6`, `7`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19` are
+`wired`, phases `1`, `2`, `8`, `10`, and `18` remain partial, and phase `9`
 remains frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
@@ -31,8 +31,9 @@ slice support summary records `A1_claim_ledger_trace_kernel=prototype-backed`,
 `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
 `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
-AI_book source files and has `41` active backlog items, `0` stale-source phase
-candidates, `54` public-safe evidence pointers, and `134` active source-sync
+AI_book source files and has `38` active roadmap backlog items, `0`
+stale-source phase candidates, `54` public-safe evidence pointers, and `136`
+active source-sync
 review decisions. That keeps book-to-Theseus follow-up visible instead of
 clearing it with superficial steward decisions.
 
@@ -453,7 +454,7 @@ learned-generation promotion claim.
 
 The roadmap gate now writes `reports/book_to_theseus_crosswalk.json` from the
 governed matrix and refreshes it from `/Users/corbensorenson/Documents/AI_book`
-source checksums. The current authored-source inventory has `430` files; the
+source checksums. The current authored-source inventory has `1703` files; the
 exact manifest hash is gate-owned in
 `reports/book_to_theseus_crosswalk.json` so the human docs do not churn when the
 living book changes. Generated book builds, archives, and Lean build outputs
@@ -461,15 +462,22 @@ are excluded. The crosswalk maps
 all `20` roadmap phases to AI_book source basis, registry surface, abstraction,
 implementation, evidence, missing items, smallest next patch, source-sync
 support state, sticky stale-source backlog rows, and public-safe
-Theseus-to-book evidence pointers without storing raw book text. The
-source-sync smoke passes, public-safe evidence smoke passes, and the current
-crosswalk has `53` public-safe evidence pointers, `0` active sticky backlog rows,
-`134` source-sync review decisions, `0` source-backlog work cards, and `0`
+Theseus-to-book evidence pointers without storing raw book text. The July 6
+weekly-focus reference trace and evidence-pack exports are now imported into
+AI_book through the generic reference-trace fixture
+`experiments/reference_trace/fixtures/valid_theseus_weekly_focus_20260706_runtime_trace.json`
+and validated by `python3 scripts/validate_reference_trace.py`, replayed
+through `python3 scripts/validate_reference_trace_replay.py`, and covered by
+`python3 scripts/validate_receipt_repository_audit.py` plus
+`python3 scripts/validate_book.py`. The source-sync smoke passes,
+public-safe evidence smoke passes, and the current crosswalk has `54`
+public-safe evidence pointers, `38` active roadmap backlog rows, `136`
+source-sync review decisions, `38` module source-backlog work cards, and `0`
 currently stale phases. The sticky-source rule remains in force: future AI_book
 authored-source changes must create carry-forward backlog rows until an exact
-`source_sync_review_decision` either updates the registry-owned matrix or records
-that no implementation-contract change is needed. This is Phase 19 wired
-evidence, not model capability evidence.
+`source_sync_review_decision` either updates the registry-owned matrix or
+records that no implementation-contract change is needed. This is Phase 19
+wired evidence, not model capability evidence.
 
 The project registry now supports manifest-owned per-report freshness policies.
 Long-running immutable MLX checkpoint provenance and hash-addressed 30M-rung
