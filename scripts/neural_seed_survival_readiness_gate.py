@@ -45,6 +45,14 @@ DEFAULT_NEGATIVE_REPLAY_DECODE = (
 DEFAULT_EXPRESSION_GUARD = REPORTS / "strict_generator_mlx_decode_eval_expression_value_isinstance_guard_broad4_v3.json"
 DEFAULT_RESOURCE_ROUTE = REPORTS / "resource_mlx_route_readiness_gate.json"
 DEFAULT_TRAIN_ONCE_FANOUT = REPORTS / "code_lm_train_once_fanout.json"
+DEFAULT_PREFIX_ADEQUACY_DECODE = (
+    REPORTS / "strict_generator_mlx_decode_eval_body_operand_action_state_transition_strict_replay2_prefix_adequacy_20260706.json"
+)
+DEFAULT_SOURCE_CONDITION_RESIDUAL = REPORTS / "strict_generator_mlx_decode_eval_source_condition_residual_summary_broad4_20260706.json"
+DEFAULT_SEMANTIC_OPERATION_VALUE = REPORTS / "strict_generator_mlx_decode_eval_semantic_operation_value_construction_canary_v4_20260706.json"
+DEFAULT_INITIALIZER_OPERATION_DELAY = REPORTS / "strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706.json"
+DEFAULT_LOOP_EXPRESSION_VALUE_GUARD = REPORTS / "strict_generator_mlx_decode_eval_loop_expression_value_guard_cap8_v1.json"
+DEFAULT_VALUE_GUARD_NO_IDENTITY_LOOP = REPORTS / "strict_generator_mlx_decode_eval_value_guard_no_identity_loop_v2.json"
 DEFAULT_OUT = REPORTS / "neural_seed_survival_readiness_gate.json"
 DEFAULT_MARKDOWN = REPORTS / "neural_seed_survival_readiness_gate.md"
 
@@ -77,6 +85,12 @@ def main() -> int:
     parser.add_argument("--expression-guard", default=rel(DEFAULT_EXPRESSION_GUARD))
     parser.add_argument("--resource-route", default=rel(DEFAULT_RESOURCE_ROUTE))
     parser.add_argument("--train-once-fanout", default=rel(DEFAULT_TRAIN_ONCE_FANOUT))
+    parser.add_argument("--prefix-adequacy-decode", default=rel(DEFAULT_PREFIX_ADEQUACY_DECODE))
+    parser.add_argument("--source-condition-residual", default=rel(DEFAULT_SOURCE_CONDITION_RESIDUAL))
+    parser.add_argument("--semantic-operation-value", default=rel(DEFAULT_SEMANTIC_OPERATION_VALUE))
+    parser.add_argument("--initializer-operation-delay", default=rel(DEFAULT_INITIALIZER_OPERATION_DELAY))
+    parser.add_argument("--loop-expression-value-guard", default=rel(DEFAULT_LOOP_EXPRESSION_VALUE_GUARD))
+    parser.add_argument("--value-guard-no-identity-loop", default=rel(DEFAULT_VALUE_GUARD_NO_IDENTITY_LOOP))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     parser.add_argument("--gate", action="store_true")
@@ -94,6 +108,12 @@ def main() -> int:
         "expression_guard": resolve(args.expression_guard),
         "resource_route": resolve(args.resource_route),
         "train_once_fanout": resolve(args.train_once_fanout),
+        "prefix_adequacy_decode": resolve(args.prefix_adequacy_decode),
+        "source_condition_residual": resolve(args.source_condition_residual),
+        "semantic_operation_value": resolve(args.semantic_operation_value),
+        "initializer_operation_delay": resolve(args.initializer_operation_delay),
+        "loop_expression_value_guard": resolve(args.loop_expression_value_guard),
+        "value_guard_no_identity_loop": resolve(args.value_guard_no_identity_loop),
     }
     report = build_report(inputs, started=started)
     report_evidence_store.write_json_report(
@@ -110,6 +130,22 @@ def main() -> int:
 def build_report(inputs: dict[str, Path], *, started: float) -> dict[str, Any]:
     reports = {name: read_json(path) for name, path in inputs.items()}
     summaries = {name: summary(report) for name, report in reports.items()}
+    current_wall = build_current_wall(
+        summaries,
+        {
+            name: path
+            for name, path in inputs.items()
+            if name
+            in {
+                "prefix_adequacy_decode",
+                "source_condition_residual",
+                "semantic_operation_value",
+                "initializer_operation_delay",
+                "loop_expression_value_guard",
+                "value_guard_no_identity_loop",
+            }
+        },
+    )
 
     checks = [
         check_c1_gate(summaries["c1_gate"]),
@@ -122,6 +158,7 @@ def build_report(inputs: dict[str, Path], *, started: float) -> dict[str, Any]:
         check_expression_guard_control(summaries["expression_guard"]),
         check_resource_route_ready_but_blocked(summaries["resource_route"]),
         check_vcm_fanout_context(summaries["train_once_fanout"]),
+        check_current_wall_evidence(current_wall),
         check_all_no_cheat_counters(summaries),
     ]
     expected_invalid_controls = [
@@ -170,6 +207,13 @@ def build_report(inputs: dict[str, Path], *, started: float) -> dict[str, Any]:
             "resource_route_state": resource.get("phase8_resource_mlx_route_state"),
             "resource_route_production_eligible": resource.get("production_route_eligible"),
             "resource_route_block_reason": resource.get("production_route_block_reason"),
+            "current_wall_id": current_wall["wall_id"],
+            "current_wall_report_count": current_wall["evidence_report_count"],
+            "current_wall_generated_candidate_rows": current_wall["generated_candidate_rows"],
+            "current_wall_integrity_verified_candidate_count": current_wall["integrity_verified_candidate_count"],
+            "current_wall_behavior_pass_count": current_wall["behavior_pass_count"],
+            "current_wall_no_cheat_clean": current_wall["no_cheat_clean"],
+            "current_wall_dominant_residuals": current_wall["dominant_residuals"],
             "check_count": len(checks),
             "failed_check_count": len(failed_checks),
             "expected_invalid_count": len(expected_invalid_controls),
@@ -177,6 +221,7 @@ def build_report(inputs: dict[str, Path], *, started: float) -> dict[str, Any]:
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "inputs": {name: rel(path) for name, path in inputs.items()},
+        "current_wall": current_wall,
         "checks": checks,
         "expected_invalid_controls": expected_invalid_controls,
         "hard_gaps": failed_checks + failed_expected_invalid,
@@ -203,7 +248,7 @@ def build_report(inputs: dict[str, Path], *, started: float) -> dict[str, Any]:
         "next_governed_step": {
             "owner_surface": "neural_seed_and_decoder",
             "implementation_id": "impl.neural_seed_strict_token_decoder.v1",
-            "task": "private semantic update/final-return adaptation",
+            "task": "private semantic/action body construction adaptation through trainable AST/state-machine or localized semantic-IR repair",
             "allowed_inputs": [
                 "prompt/signature source text",
                 "governed private/licensed rows",
@@ -215,12 +260,143 @@ def build_report(inputs: dict[str, Path], *, started: float) -> dict[str, Any]:
             "forbidden_inputs": sorted(FORBIDDEN_FIELDS | {"public_benchmark_training_rows", "teacher_runtime_tokens", "fallback_return_templates"}),
             "success_evidence_required_after_training": [
                 "same private heldout split improves behavior without public/external/fallback/tool credit",
+                "strict prompt/signature body-token decode emits non-fallback behavior-positive candidates beyond narrow simple-return replay",
+                "stateful update, operation-bearing transform, finalizer, and local-return closure residuals decrease under private verifier replay",
                 "candidate integrity remains independently clean",
                 "selector/pass-if-any and selected-pass rates improve because candidate semantics improve",
                 "public calibration remains proposal-gated until private evidence justifies it",
             ],
         },
     }
+
+
+def build_current_wall(summaries: dict[str, dict[str, Any]], wall_inputs: dict[str, Path]) -> dict[str, Any]:
+    report_summaries = [
+        summarize_wall_report(name, summaries.get(name, {}), path)
+        for name, path in wall_inputs.items()
+    ]
+    generated = sum(int_value(row.get("generated_candidate_rows")) for row in report_summaries)
+    verified = sum(int_value(row.get("integrity_verified_candidate_count")) for row in report_summaries)
+    mismatches = sum(int_value(row.get("integrity_mismatch_count")) for row in report_summaries)
+    passes = sum(int_value(row.get("behavior_pass_count")) for row in report_summaries)
+    zero_candidate_tasks = sum(int_value(row.get("zero_candidate_task_count")) for row in report_summaries)
+    top_beam_state_counts: dict[str, int] = {}
+    mismatch_label_counts: dict[str, int] = {}
+    no_cheat_faults: dict[str, Any] = {}
+    for row in report_summaries:
+        add_counts(top_beam_state_counts, dict_value(row.get("top_beam_state_counts")))
+        add_counts(mismatch_label_counts, dict_value(row.get("mismatch_label_counts")))
+        if not row.get("no_cheat_clean"):
+            no_cheat_faults[str(row.get("input_name") or row.get("evidence_ref") or "unknown")] = row.get("no_cheat_counters")
+
+    dominant_residuals: dict[str, int] = {}
+    add_counts(dominant_residuals, top_beam_state_counts)
+    add_counts(dominant_residuals, mismatch_label_counts)
+    if zero_candidate_tasks:
+        dominant_residuals["zero_candidate_task"] = zero_candidate_tasks
+
+    return {
+        "wall_id": "phase10_learned_semantic_action_body_construction_zero_behavior_v1",
+        "phase": 10,
+        "support_state": "synthetic-test-backed_negative_behavior_evidence",
+        "evidence_report_count": len(report_summaries),
+        "evidence_refs": [row["evidence_ref"] for row in report_summaries],
+        "report_summaries": report_summaries,
+        "generated_candidate_rows": generated,
+        "integrity_verified_candidate_count": verified,
+        "integrity_mismatch_count": mismatches,
+        "behavior_pass_count": passes,
+        "zero_candidate_task_count": zero_candidate_tasks,
+        "no_cheat_clean": not no_cheat_faults,
+        "no_cheat_faults": no_cheat_faults,
+        "dominant_residuals": dict(sorted(dominant_residuals.items(), key=lambda item: (-item[1], item[0]))[:16]),
+        "not_blocked_by": [
+            "calendar_or_budget_gate",
+            "public_benchmark_training",
+            "runtime_external_inference",
+            "fallback_template_router_tool_credit",
+            "candidate_integrity_on_latest_wall_reports" if mismatches == 0 and verified > 0 else "candidate_integrity_needs_attention",
+        ],
+        "blocked_by": [
+            "semantic/type-handling candidate quality",
+            "stateful update and operation-bearing transform construction",
+            "loop/finalizer/local-return closure after compatible plan selection",
+            "private verifier behavior remains zero on latest strict wall reports",
+        ],
+        "smallest_next_fix": (
+            "Consume semantic-IR/state-transition obligations in a trainable body constructor or localized repair path "
+            "that changes update expressions, field/key access, graph traversal state, operation-bearing transforms, "
+            "finalizers, and top-level returns under private replay. Do not count deterministic repairs, routers, "
+            "tools, templates, fallback bodies, public artifacts, or teacher runtime tokens as learned generation."
+        ),
+    }
+
+
+def summarize_wall_report(input_name: str, report: dict[str, Any], path: Path) -> dict[str, Any]:
+    integrity = dict_value(report.get("candidate_integrity"))
+    split_passes = dict_value(report.get("split_passes"))
+    nontrivial_rates = dict_value(report.get("split_nontrivial_return_rates"))
+    starvation = dict_value(report.get("split_decode_starvation"))
+    split_body_action = dict_value(report.get("split_body_action_trace"))
+    body_action = dict_value(report.get("body_action_trace"))
+    top_beam_state_counts: dict[str, int] = {}
+    for split in starvation.values():
+        add_counts(top_beam_state_counts, dict_value(dict_value(split).get("top_beam_state_counts")))
+    mismatch_label_counts: dict[str, int] = {}
+    add_counts(mismatch_label_counts, dict_value(body_action.get("mismatch_label_counts")))
+    for split in split_body_action.values():
+        add_counts(mismatch_label_counts, dict_value(dict_value(split).get("mismatch_label_counts")))
+    generated = int_value(report.get("generated_candidate_rows"), int_value(integrity.get("generated_candidate_count")))
+    verified = int_value(integrity.get("integrity_verified_candidate_count"))
+    behavior_pass_count = sum_int_values(split_passes)
+    no_cheat_counters = {
+        "public_training_rows": int_value(report.get("public_training_rows_written")) + int_value(report.get("public_training_rows")),
+        "external_inference_calls": int_value(report.get("external_inference_calls")),
+        "fallback_template_router_tool_credit_count": int_value(report.get("fallback_template_router_tool_credit_count"))
+        + int_value(report.get("fallback_return_count"))
+        + int_value(report.get("fallback_return_candidate_count")),
+    }
+    return {
+        "input_name": input_name,
+        "evidence_ref": rel(path),
+        "generated_candidate_rows": generated,
+        "integrity_verified_candidate_count": verified,
+        "integrity_mismatch_count": int_value(integrity.get("integrity_mismatch_count")),
+        "family_counts": dict_value(integrity.get("family_counts")),
+        "split_passes": split_passes,
+        "behavior_pass_count": behavior_pass_count,
+        "split_nontrivial_return_rates": nontrivial_rates,
+        "zero_candidate_task_count": sum(
+            int_value(dict_value(split).get("zero_candidate_task_count"))
+            for split in starvation.values()
+        ),
+        "top_beam_state_counts": top_beam_state_counts,
+        "mismatch_label_counts": mismatch_label_counts,
+        "no_cheat_counters": no_cheat_counters,
+        "no_cheat_clean": all(value == 0 for value in no_cheat_counters.values()),
+    }
+
+
+def check_current_wall_evidence(current_wall: dict[str, Any]) -> dict[str, Any]:
+    return check(
+        "current_wall_names_latest_zero_behavior_semantic_body_construction_blocker",
+        current_wall.get("wall_id") == "phase10_learned_semantic_action_body_construction_zero_behavior_v1"
+        and int_value(current_wall.get("evidence_report_count")) >= 4
+        and int_value(current_wall.get("generated_candidate_rows")) > 0
+        and int_value(current_wall.get("integrity_verified_candidate_count")) > 0
+        and int_value(current_wall.get("behavior_pass_count")) == 0
+        and current_wall.get("no_cheat_clean") is True
+        and bool(current_wall.get("dominant_residuals")),
+        {
+            "wall_id": current_wall.get("wall_id"),
+            "evidence_report_count": current_wall.get("evidence_report_count"),
+            "generated_candidate_rows": current_wall.get("generated_candidate_rows"),
+            "integrity_verified_candidate_count": current_wall.get("integrity_verified_candidate_count"),
+            "behavior_pass_count": current_wall.get("behavior_pass_count"),
+            "dominant_residuals": current_wall.get("dominant_residuals"),
+            "no_cheat_clean": current_wall.get("no_cheat_clean"),
+        },
+    )
 
 
 def check_c1_gate(c1: dict[str, Any]) -> dict[str, Any]:
@@ -539,6 +715,7 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
     return {
         "trigger_state": report["trigger_state"],
         "summary": report["summary"],
+        "current_wall": report["current_wall"],
         "hard_gaps": report["hard_gaps"],
         "non_claims": report["non_claims"],
         "next_governed_step": report["next_governed_step"],
@@ -554,6 +731,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- scope: `{report['summary']['readiness_scope']}`",
         f"- current behavior pass rate: `{report['summary']['current_behavior_pass_rate']}`",
         f"- C1 pass-if-any rate: `{report['summary']['c1_pass_if_any_rate']}`",
+        f"- current wall: `{report['summary']['current_wall_id']}`",
+        f"- current wall generated rows: `{report['summary']['current_wall_generated_candidate_rows']}`",
+        f"- current wall behavior passes: `{report['summary']['current_wall_behavior_pass_count']}`",
+        f"- current wall residuals: `{report['summary']['current_wall_dominant_residuals']}`",
         "",
         "## Checks",
     ]
@@ -583,6 +764,17 @@ def dict_value(value: Any) -> dict[str, Any]:
 
 def list_value(value: Any) -> list[Any]:
     return value if isinstance(value, list) else []
+
+
+def add_counts(target: dict[str, int], source: dict[str, Any]) -> None:
+    for key, value in source.items():
+        count = int_value(value, 0)
+        if count:
+            target[str(key)] = target.get(str(key), 0) + count
+
+
+def sum_int_values(value: dict[str, Any]) -> int:
+    return sum(int_value(item) for item in value.values())
 
 
 def nested(value: Any, *path: str) -> Any:

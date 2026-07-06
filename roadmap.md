@@ -432,6 +432,17 @@ is true, DPO/IPO/ORPO/KTO/SimPO, GRPO/RLVR, MTP, GVR, lookahead, diffusion, and
 scale experiments become meaningful apples-to-apples improvement levers instead
 of ways to route around a zero-behavior generator.
 
+The neural seed survival readiness gate now enforces that dependency with an
+explicit `current_wall` record. Its latest compact evidence names
+`phase10_learned_semantic_action_body_construction_zero_behavior_v1` across six
+strict-generator reports: `49` generated transformer/hybrid rows, `49`
+integrity-verified rows, `0` behavior passes, clean no-cheat counters, and
+dominant residuals in loop/state update, operation-bearing transform,
+finalizer, and local-return closure. The next implementation remains a
+trainable AST/state-machine body constructor or localized semantic-IR repair
+that changes private verifier behavior without crediting deterministic repair,
+router, tool, template, fallback, public, or teacher-runtime output.
+
 ## Book Complete Implementation Contract
 
 This roadmap now treats `book_structure.json` as the authoritative inventory of

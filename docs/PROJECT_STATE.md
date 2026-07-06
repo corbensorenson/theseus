@@ -72,6 +72,18 @@ clean, but the next allowed training step is
 automatic training rung. This is intentional: the next material project push is
 to implement or falsify the missing book-derived mechanisms rather than declare
 the architecture complete.
+The neural seed survival readiness gate now carries the current wall directly
+instead of relying on prose inference:
+`python3 scripts/neural_seed_survival_readiness_gate.py --gate` reports
+`phase10_learned_semantic_action_body_construction_zero_behavior_v1` from six
+strict-generator wall reports. The compact evidence is `49` generated
+transformer/hybrid rows, `49` integrity-verified rows, `0` behavior passes,
+clean public/external/fallback counters, and dominant residuals around missing
+loop decisions/state updates, missing local returns, missing operation-bearing
+updates, finalizers, and shallow accumulators. This keeps the next valid work
+targeted at trainable AST/state-machine or localized semantic-IR body
+construction before DPO/GRPO/MTP/diffusion/scale or public calibration can be
+interpreted as capability movement.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`
