@@ -2735,6 +2735,17 @@ Implementation status:
   after behavior improves should a bounded GRPO/RLVR exact-private
   verifier-reward update run. The policy program is the gate for that work; it
   is not itself a behavior-lift claim.
+- Follow-up syntax-pathology cleanup is now partially implemented in the
+  existing strict body-token legality policy, not as a new lane: malformed
+  comparison/membership chains, augmented assignment in expressions, uncalled
+  method-attribute chains, excessive same-line subscripts, long flat boolean
+  chains, comments, and builtin type objects in returns are blocked before they
+  dominate beam search. Bounded DPO-checkpoint canaries still emit `0` accepted
+  learned candidate rows and score `0/4`, while runtime drops from `74283` ms
+  to roughly `21` seconds. The honest next action is therefore not another
+  scalar DPO/GRPO run and not more guard accumulation; it is a stronger trained
+  state-transition/AST/body-token emission objective that can create valid
+  update/finalizer/top-level-return structure under the same no-cheat replay.
 
 ### C. Fast Generation and Runtime Accounting
 

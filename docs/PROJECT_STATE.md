@@ -222,6 +222,25 @@ is `GREEN` with zero invalid claims or static flow violations. The current
 Phase 10 wall is therefore not "scale DPO"; it is direct learned body emission:
 produce non-fallback, non-template, top-level-return candidates before another
 preference/RL scaling step.
+The first direct syntax-pathology cleanup after that wall is now implemented in
+`scripts/neural_seed_token_decoder_support.py`: the strict body-token policy
+blocks task-blind malformed continuations that dominated failed beams
+(`data in data in data`, augmented assignment inside conditions, uncalled
+method-attribute chains such as `data.get.strip`, excessive same-line
+subscripts, long flat boolean chains, comment tokens, and builtin type objects
+inside returns like `return len(list)`). The bounded canaries
+`reports/strict_generator_mlx_decode_eval_dpo_pairwise_syntax_pathology_guard_broad2_replay4_v2_20260706.json`
+and
+`reports/strict_generator_mlx_decode_eval_dpo_pairwise_syntax_pathology_guard_broad2_replay4_v3_20260706.json`
+still exit `RED` with `candidate_rows_emitted=0`, `0/4` private behavior
+passes, and clean no-cheat counters, but runtime drops from the first
+syntax-pathology canary's `74283` ms to about `21` seconds because malformed
+beams stop earlier. This is decode-hygiene and runtime-pathology evidence
+only. It does not solve direct learned emission, does not support a behavior
+claim, and should not become another guard-churn lane. The next real Phase 10
+patch should be a stronger trainable state-transition/AST/body-token head or
+objective that emits valid update/finalizer/top-level-return structure before
+DPO/GRPO/MTP/diffusion/scale work resumes.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with

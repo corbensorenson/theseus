@@ -272,6 +272,27 @@ STRICT_BODY_CHAINING_OPERATORS = {
     "!=",
 }
 
+STRICT_BODY_COMPARISON_OPERATORS = {
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "==",
+    "!=",
+    "in",
+    "is",
+}
+
+STRICT_BODY_AUGMENTED_ASSIGNMENT_OPERATORS = {
+    "+=",
+    "-=",
+    "*=",
+    "/=",
+    "%=",
+    "//=",
+    "**=",
+}
+
 
 
 def choose_grammar_constrained_token(
@@ -397,6 +418,8 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
         return False
     if kind == "NAME" and value in {"except", "finally", "raise", "try"}:
         return False
+    if kind == "COMMENT":
+        return False
     line = current_line_tokens(prefix)
     values = token_values(line)
     previous = values[-1] if values else ""
@@ -432,7 +455,13 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
                 and values.count(",") < 1
             )
         return False
+    if kind == "OP" and value in STRICT_BODY_AUGMENTED_ASSIGNMENT_OPERATORS:
+        return assignable_lvalue_tokens(values)
     if kind == "NAME" and value == "in" and values and values[0] not in {"for", "if", "elif", "while", "return"}:
+        return False
+    if strict_body_would_extend_pathological_comparison_chain(values, kind=kind, value=value):
+        return False
+    if strict_body_would_extend_pathological_boolean_chain(values, kind=kind, value=value):
         return False
     if kind == "NEWLINE" and values == ["return"]:
         return False
@@ -449,6 +478,8 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
     if values[-2:] in [["len", "("], ["sum", "("], ["sorted", "("], ["list", "("], ["tuple", "("], ["set", "("]]:
         if kind in {"NUMBER", "STRING"}:
             return False
+        if kind == "NAME" and value in STRICT_BODY_BUILTIN_TYPE_NAMES:
+            return False
         if kind == "NAME" and value in {"None", "True", "False"}:
             return False
         if kind == "OP" and value in {"(", "[", "{"}:
@@ -463,6 +494,10 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
     ):
         return False
     if values == ["return"]:
+        if kind == "NAME" and value in {"and", "in", "is", "not", "or"}:
+            return False
+        if kind == "NAME" and value in STRICT_BODY_BUILTIN_TYPE_NAMES:
+            return False
         if kind in {"NUMBER", "STRING"}:
             return False
         if kind == "OP" and value in {"(", "[", "{"}:
@@ -505,11 +540,15 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
     if kind == "OP" and value in {".", "["}:
         if previous_kind == "NAME" and previous_value in STRICT_BODY_BUILTIN_TYPE_NAMES:
             return False
+    if kind == "OP" and value == "[" and strict_body_would_extend_pathological_subscript_chain(values):
+        return False
     if kind == "OP" and value == "[" and previous_kind == "NAME":
         if previous_value in STRICT_BODY_ALLOWED_GLOBAL_NAMES or previous_value in STRICT_BODY_KEYWORD_NAMES:
             return False
     if kind == "OP" and value == ".":
         if previous_kind != "NAME" and previous not in {")", "]"}:
+            return False
+        if strict_body_would_extend_uncalled_method_attribute_chain(values):
             return False
     if kind == "NAME" and previous == ".":
         receiver_type = strict_body_current_attribute_receiver_type(prefix, local_types=local_types)
@@ -1190,6 +1229,69 @@ def assignable_lvalue_tokens(values: list[str]) -> bool:
         if not str(value).isidentifier():
             return False
     return values.count("[") == values.count("]")
+
+
+def strict_body_would_extend_pathological_comparison_chain(
+    values: list[str],
+    *,
+    kind: str,
+    value: str,
+) -> bool:
+    """Reject runaway comparison/membership chains in direct learned decoding.
+
+    This is task-blind syntax hygiene. It only sees the generated current line
+    and blocks patterns that repeatedly dominated failed private replays, such
+    as ``data in data in data`` or comparisons mixed with assignment updates
+    inside an ``if`` expression. It does not choose a return value, inspect
+    prompts/tests/solutions, or add a candidate fallback.
+    """
+
+    if not values:
+        return False
+    if kind == "OP" and value in STRICT_BODY_AUGMENTED_ASSIGNMENT_OPERATORS:
+        return True
+    next_is_comparison = (kind == "OP" and value in STRICT_BODY_COMPARISON_OPERATORS) or (
+        kind == "NAME" and value in {"in", "is"}
+    )
+    if not next_is_comparison:
+        return False
+    if values[0] == "for" and value == "in" and "in" not in values[1:]:
+        return False
+    existing = sum(1 for item in values if item in STRICT_BODY_COMPARISON_OPERATORS)
+    if value in {"in", "is"} and value in values:
+        return True
+    return existing >= 2
+
+
+def strict_body_would_extend_pathological_boolean_chain(
+    values: list[str],
+    *,
+    kind: str,
+    value: str,
+) -> bool:
+    """Reject runaway flat boolean chains in one generated line."""
+
+    if kind != "NAME" or value not in {"and", "or"}:
+        return False
+    if not values:
+        return False
+    if values[-1] in {"and", "or", "not", "(", "[", "{", ",", ".", "="}:
+        return True
+    return sum(1 for item in values if item in {"and", "or"}) >= 4
+
+
+def strict_body_would_extend_pathological_subscript_chain(values: list[str]) -> bool:
+    """Reject deep same-line subscript chains that dominated failed replays."""
+
+    return values.count("[") >= 4
+
+
+def strict_body_would_extend_uncalled_method_attribute_chain(values: list[str]) -> bool:
+    """Reject ``data.get.strip``-style uncalled method attribute chains."""
+
+    if len(values) < 2:
+        return False
+    return values[-2] == "." and values[-1] in STRICT_BODY_ALL_KNOWN_METHODS
 
 
 def previous_significant_lines(prefix: list[str]) -> list[list[str]]:
