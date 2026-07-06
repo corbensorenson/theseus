@@ -2287,6 +2287,19 @@ def mlx_token_choices(
         body_prefix,
         effective_source_condition_expectation,
     )
+    direct_return_choices = direct_local_return_continuation_choices(
+        arr,
+        inverse,
+        body_prefix,
+        seen=set(),
+        token_policy=token_policy,
+        allowed_names=allowed_names,
+        input_type_hints=input_type_hints,
+        require_nontrivial_return=require_nontrivial_return,
+        enabled=enable_expression_closure_guard,
+    )
+    if direct_return_choices:
+        return direct_return_choices
     if source_priority_active and source_condition_preempts_loop_plan(effective_source_condition_expectation):
         return priority_source_choices
     loop_plan_choices = loop_plan_exploration_choices(
@@ -2328,19 +2341,6 @@ def mlx_token_choices(
     )
     if expression_closure_choices:
         return expression_closure_choices
-    direct_return_choices = direct_local_return_continuation_choices(
-        arr,
-        inverse,
-        body_prefix,
-        seen=set(),
-        token_policy=token_policy,
-        allowed_names=allowed_names,
-        input_type_hints=input_type_hints,
-        require_nontrivial_return=require_nontrivial_return,
-        enabled=enable_expression_closure_guard,
-    )
-    if direct_return_choices:
-        return direct_return_choices
     if source_priority_active:
         return priority_source_choices
     if forced is not None:

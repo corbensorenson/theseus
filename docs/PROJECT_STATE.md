@@ -99,11 +99,14 @@ path can emit and pass `2/2` private replay candidates, but broad/private
 replay still admits `0` candidates and passes `0/4`. A follow-up strict decode
 hygiene pass now blocks malformed `isinstance` first-argument chains, bare
 builtin type values used as runtime values, and constant-only control-flow
-conditions; the simple-return replay remains `GREEN`, while the broad/private
-condition-runtime canary remains `RED` with zero generated learned rows and
-noncredit `return None` baselines. This does not weaken the ASI_book backlog;
-it orders it around the live falsifying evidence: broad semantic/action body
-construction is still the wall.
+conditions. A follow-up generated-state return/dependency guard lets the
+decoder finish model-created visible-input accumulators and blocks closing
+top-level returns that ignore visible inputs. The simple-return replay remains
+`GREEN`, while the broad/private return-finalizer-priority canary remains
+`RED` with zero generated learned rows and noncredit `return None` baselines.
+This does not weaken the ASI_book backlog; it orders it around the live
+falsifying evidence: broad semantic/action body construction is still the wall,
+not another narrow return-token or guard-family issue.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

@@ -89,6 +89,12 @@ def token_blocked_by_strict_decode_guard(
         return True
     if values[-1:] == (".",) and kind == "NAME" and value.startswith("__"):
         return True
+    if kind == "NEWLINE" and top_level_return_closes_without_visible_dependency(
+        prefix,
+        values,
+        allowed_names=allowed_names,
+    ):
+        return True
     return False
 
 
@@ -212,6 +218,63 @@ def top_level_comma_seen(values: list[str]) -> bool:
         elif value == "," and depth == 0:
             return True
     return False
+
+
+def top_level_return_closes_without_visible_dependency(
+    prefix: list[str],
+    values: tuple[str, ...],
+    *,
+    allowed_names: set[str] | None,
+) -> bool:
+    """Reject completed top-level returns that ignore visible inputs.
+
+    This is a decode-time version of the final static dependency guard. It only
+    blocks ending a top-level return line when the return expression contains no
+    visible signature name, no visible-loop variable, and no local that was
+    already made dependent by visible input. It does not inspect tests,
+    solutions, target bodies, benchmark labels, or verifier outcomes.
+    """
+
+    if not values or values[0] != "return":
+        return False
+    _lines, current_depth, _current_values = prefix_lines_with_depth(prefix)
+    if current_depth > 0:
+        return False
+    expression_values = [str(item) for item in values[1:] if str(item)]
+    if not expression_values:
+        return True
+    dependent_names = visible_dependency_names_from_prefix(prefix, allowed_names=allowed_names)
+    expression_names = {value for value in expression_values if value.isidentifier()}
+    return not bool(expression_names & dependent_names)
+
+
+def visible_dependency_names_from_prefix(prefix: list[str], *, allowed_names: set[str] | None) -> set[str]:
+    """Names whose current generated prefix proves visible-input dependency."""
+
+    visible = {str(name) for name in set(allowed_names or set()) if str(name).isidentifier()}
+    dependent = set(visible)
+    lines, _current_depth, _current_values = prefix_lines_with_depth(prefix)
+    for _depth, values in lines:
+        if not values:
+            continue
+        if len(values) >= 4 and values[0] == "for" and values[2] == "in":
+            target = str(values[1])
+            source_names = {str(item) for item in values[3:] if str(item).isidentifier()}
+            if target.isidentifier() and source_names & dependent:
+                dependent.add(target)
+            continue
+        if len(values) >= 3 and values[1] in {"=", "+=", "-=", "*=", "/="}:
+            target = str(values[0])
+            rhs_names = {str(item) for item in values[2:] if str(item).isidentifier()}
+            if target.isidentifier() and rhs_names & dependent:
+                dependent.add(target)
+            continue
+        if len(values) >= 5 and values[1] == "." and str(values[0]).isidentifier():
+            receiver = str(values[0])
+            arg_names = {str(item) for item in values[3:] if str(item).isidentifier()}
+            if arg_names & dependent:
+                dependent.add(receiver)
+    return dependent
 
 
 def known_call_prefix_would_be_invalid(

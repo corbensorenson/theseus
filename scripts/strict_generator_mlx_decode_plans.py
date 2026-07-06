@@ -398,8 +398,10 @@ def direct_local_return_continuation_choices(
 
     This is not a body renderer and not a fallback return. It can only continue
     a current ``return`` line or start one for a local that the model already
-    bound at top level from visible signature data. It never inspects tests,
-    solutions, target bodies, benchmark labels, or verifier outcomes.
+    bound at top level from visible signature data, or for a local accumulator
+    the model already updated while looping over visible signature data. It never
+    inspects tests, solutions, target bodies, benchmark labels, or verifier
+    outcomes.
     """
 
     if not enabled:
@@ -409,7 +411,14 @@ def direct_local_return_continuation_choices(
     _lines, current_depth, _current_values = prefix_lines_with_depth(prefix)
     if current_depth > 0:
         return []
-    bound_locals = direct_return_parameter_dependent_locals(prefix, allowed_names=allowed_names)
+    bound_locals = list(
+        dict.fromkeys(
+            [
+                *direct_return_parameter_dependent_locals(prefix, allowed_names=allowed_names),
+                *direct_return_generated_state_locals(prefix, allowed_names=allowed_names),
+            ]
+        )
+    )
     if not bound_locals:
         return []
 
@@ -440,6 +449,34 @@ def direct_local_return_continuation_choices(
     elif len(values) == 2 and values[0] == "return" and values[1] in set(bound_locals):
         add_token("NEWLINE:")
     return choices
+
+
+def direct_return_generated_state_locals(prefix: list[str], *, allowed_names: set[str] | None) -> list[str]:
+    """Return model-created accumulator locals that are visibly stateful.
+
+    The strict decoder often reaches a valid stateful prefix such as
+    ``out = []`` plus ``for item in data: out.append(item)`` and then starves at
+    the top-level return expression. This helper allows only that final local
+    name after the generated body itself proves state and visible-input flow:
+    a top-level local exists, a mutation/update exists, and the loop iterates
+    over a visible callable argument. It does not choose the loop, update, or
+    algorithm.
+    """
+
+    visible = {str(name) for name in set(allowed_names or set()) if str(name).isidentifier()}
+    if not visible:
+        return []
+    body_text = decode_body_tokens(prefix)
+    accumulator = loop_plan_first_assigned_local(body_text)
+    if not accumulator or accumulator in visible or not accumulator.isidentifier():
+        return []
+    if loop_plan_has_local_return(body_text, accumulator=accumulator):
+        return []
+    if not loop_plan_has_update_call(body_text):
+        return []
+    if not any(loop_plan_has_loop_over_source(body_text, source_arg=name) for name in visible):
+        return []
+    return [accumulator]
 
 
 def direct_return_parameter_dependent_locals(prefix: list[str], *, allowed_names: set[str] | None) -> list[str]:
