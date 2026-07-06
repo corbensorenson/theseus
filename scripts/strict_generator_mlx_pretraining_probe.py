@@ -108,6 +108,30 @@ BODY_ACTION_ROLES: tuple[str, ...] = (
 )
 BODY_ACTION_ROLE_TO_ID = {role: index for index, role in enumerate(BODY_ACTION_ROLES)}
 
+BODY_OPERAND_ROLES: tuple[str, ...] = (
+    "ignore",
+    "visible_parameter",
+    "loop_variable",
+    "local_state",
+    "builtin_function",
+    "method_name",
+    "attribute_name",
+    "literal_value",
+    "assignment_operator",
+    "arithmetic_operator",
+    "comparison_operator",
+    "boolean_operator",
+    "call_delimiter",
+    "index_delimiter",
+    "punctuation",
+    "statement_boundary",
+    "return_keyword",
+    "control_keyword",
+    "eos",
+    "other",
+)
+BODY_OPERAND_ROLE_TO_ID = {role: index for index, role in enumerate(BODY_OPERAND_ROLES)}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -427,6 +451,7 @@ class MlxStrictGenerator:
                 self.slot_router = nn.Linear(d_model, target_vocab_size * len(SEMANTIC_SLOT_ROLES))
                 self.body_transition_router = nn.Linear(d_model, target_vocab_size)
                 self.body_action_router = nn.Linear(d_model, len(BODY_ACTION_ROLES))
+                self.body_operand_router = nn.Linear(d_model, len(BODY_OPERAND_ROLES))
 
             def encode_source(self, src: Any) -> tuple[Any, Any]:
                 src_mask = additive_padding_mask(src, mx)
@@ -460,6 +485,9 @@ class MlxStrictGenerator:
 
             def body_action_logits(self, src: Any, tgt_in: Any) -> Any:
                 return self.body_action_router(self.decode_hidden(src, tgt_in))
+
+            def body_operand_logits(self, src: Any, tgt_in: Any) -> Any:
+                return self.body_operand_router(self.decode_hidden(src, tgt_in))
 
             def __call__(self, src: Any, tgt_in: Any) -> Any:
                 return self.output(self.decode_hidden(src, tgt_in))
@@ -1235,6 +1263,27 @@ def body_action_loss_mlx(
     return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
 
 
+def body_operand_loss_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    operand_targets: Any,
+    operand_weights: Any,
+    mx: Any,
+    nn: Any,
+) -> Any:
+    if not hasattr(model, "body_operand_logits"):
+        return mx.array(0.0, dtype=mx.float32)
+    tgt_in = tgt[:, :-1]
+    tgt_out = tgt[:, 1:]
+    logits = model.body_operand_logits(src, tgt_in)
+    targets = operand_targets[:, 1:]
+    losses = nn.losses.cross_entropy(logits, targets, reduction="none")
+    valid = (tgt_out != pad_id).astype(mx.float32) * operand_weights[:, 1:]
+    return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
+
+
 def body_transition_aux_weighted_loss_fn_mlx(
     model: Any,
     src: Any,
@@ -1284,6 +1333,45 @@ def body_action_transition_aux_weighted_loss_fn_mlx(
         loss = loss + (
             float(body_action_weight)
             * body_action_loss_mlx(model, src, tgt, pad_id, action_targets, action_weights, mx, nn)
+        )
+    return loss
+
+
+def body_action_operand_transition_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    mx: Any,
+    nn: Any,
+) -> Any:
+    loss = body_action_transition_aux_weighted_loss_fn_mlx(
+        model,
+        src,
+        tgt,
+        pad_id,
+        token_weights,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        mx,
+        nn,
+    )
+    if float(body_operand_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_operand_weight)
+            * body_operand_loss_mlx(model, src, tgt, pad_id, operand_targets, operand_weights, mx, nn)
         )
     return loss
 
@@ -1373,6 +1461,59 @@ def semantic_body_action_transition_aux_weighted_loss_fn_mlx(
         loss = loss + (
             float(body_action_weight)
             * body_action_loss_mlx(model, src, tgt, pad_id, action_targets, action_weights, mx, nn)
+        )
+    return loss
+
+
+def semantic_body_action_operand_transition_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+) -> Any:
+    loss = semantic_body_action_transition_aux_weighted_loss_fn_mlx(
+        model,
+        src,
+        tgt,
+        pad_id,
+        token_weights,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+    )
+    if float(body_operand_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_operand_weight)
+            * body_operand_loss_mlx(model, src, tgt, pad_id, operand_targets, operand_weights, mx, nn)
         )
     return loss
 
@@ -1486,6 +1627,71 @@ def semantic_body_action_transition_aux_source_contrastive_weighted_loss_fn_mlx(
         loss = loss + (
             float(body_action_weight)
             * body_action_loss_mlx(model, src, tgt, pad_id, action_targets, action_weights, mx, nn)
+        )
+    return loss
+
+
+def semantic_body_action_operand_transition_aux_source_contrastive_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    mismatched_src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    source_contrastive_weight: float,
+    source_contrastive_margin: float,
+    source_contrastive_prefix_tokens: int,
+    source_contrastive_span_mode: str,
+    source_contrastive_body_start_id: int,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+) -> Any:
+    loss = semantic_body_action_transition_aux_source_contrastive_weighted_loss_fn_mlx(
+        model,
+        src,
+        mismatched_src,
+        tgt,
+        pad_id,
+        token_weights,
+        source_contrastive_weight,
+        source_contrastive_margin,
+        source_contrastive_prefix_tokens,
+        source_contrastive_span_mode,
+        source_contrastive_body_start_id,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+    )
+    if float(body_operand_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_operand_weight)
+            * body_operand_loss_mlx(model, src, tgt, pad_id, operand_targets, operand_weights, mx, nn)
         )
     return loss
 
@@ -2337,6 +2543,245 @@ def body_action_role_id_for_token(token_text: str) -> int:
     return BODY_ACTION_ROLE_TO_ID.get(
         body_action_role_for_token_text(token_text),
         BODY_ACTION_ROLE_TO_ID["other"],
+    )
+
+
+def body_operand_target_rows(
+    target_rows: list[list[int]],
+    transition_weight_rows: list[list[float]],
+    *,
+    target_vocab: dict[str, int],
+    target_mode: str,
+    source_texts: list[str] | None = None,
+) -> tuple[list[list[int]], list[list[float]], dict[str, Any]]:
+    inverse = {int(idx): str(tok) for tok, idx in target_vocab.items()}
+    operand_rows: list[list[int]] = []
+    operand_weight_rows: list[list[float]] = []
+    active_positions = 0
+    role_counts: dict[str, int] = {}
+    for row_index, row in enumerate(target_rows):
+        weight_row = transition_weight_rows[row_index] if row_index < len(transition_weight_rows) else []
+        source_text = str(source_texts[row_index] if source_texts and row_index < len(source_texts) else "")
+        allowed_names = allowed_parameter_names_from_source_text(source_text)
+        line_roles = body_operand_roles_for_target_row(row, inverse, allowed_names=allowed_names)
+        operand_row: list[int] = []
+        operand_weight_row: list[float] = []
+        for pos, value in enumerate(row):
+            weight = float(weight_row[pos]) if pos < len(weight_row) else 0.0
+            token_text = inverse.get(int(value), "")
+            role = line_roles.get(pos) or body_operand_role_for_token_text(
+                token_text,
+                allowed_names=allowed_names,
+                generated_tokens=None,
+            )
+            role_id = BODY_OPERAND_ROLE_TO_ID.get(role, BODY_OPERAND_ROLE_TO_ID["other"])
+            if weight <= 0.0:
+                role_id = BODY_OPERAND_ROLE_TO_ID["ignore"]
+                operand_weight_row.append(0.0)
+            else:
+                active_positions += 1
+                role_counts[role] = role_counts.get(role, 0) + 1
+                operand_weight_row.append(weight)
+            operand_row.append(role_id)
+        operand_rows.append(operand_row)
+        operand_weight_rows.append(operand_weight_row)
+    return operand_rows, operand_weight_rows, {
+        "enabled": bool(active_positions),
+        "policy": "private_prefix_conditioned_body_operand_target_rows_v1",
+        "rows": len(target_rows),
+        "target_mode": str(target_mode or ""),
+        "role_count": len(BODY_OPERAND_ROLES),
+        "roles": list(BODY_OPERAND_ROLES),
+        "active_positions": active_positions,
+        "role_counts": dict(sorted(role_counts.items())),
+        "score_semantics": (
+            "Maps admitted private/licensed target-body tokens onto operand/value binding roles "
+            "such as visible parameter, loop variable, local state, builtin, method, operator, "
+            "literal, and statement boundary. Source-visible parameters are taken only from the "
+            "prompt/signature source text used by the model. This trains a learned binding head; "
+            "it does not render code, inspect tests or solutions, use public benchmark data, or "
+            "grant learned-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def body_operand_roles_for_target_row(
+    row: list[int],
+    inverse: dict[int, str],
+    *,
+    allowed_names: set[str],
+) -> dict[int, str]:
+    tokens = [str(inverse.get(int(token_id), "")) for token_id in row]
+    lines = token_lines_with_depth(tokens)
+    loop_names: set[str] = set()
+    local_names: set[str] = set()
+    roles: dict[int, str] = {}
+    for _depth, positions, values in lines:
+        if not values:
+            continue
+        if values[0] == "for":
+            targets = names_before_in(values)
+            loop_names.update(targets)
+            local_names.update(targets)
+            for pos, value in zip(positions, values):
+                if value in targets:
+                    roles[pos] = "loop_variable"
+        assignment_targets = assignment_targets_for_values(values)
+        if assignment_targets:
+            local_names.update(assignment_targets)
+            for pos, value in zip(positions, values):
+                if value in assignment_targets:
+                    roles[pos] = "local_state"
+        for pos, value in zip(positions, values):
+            if pos in roles:
+                continue
+            if value in loop_names:
+                roles[pos] = "loop_variable"
+            elif value in local_names:
+                roles[pos] = "local_state"
+            elif value in allowed_names:
+                roles[pos] = "visible_parameter"
+    return roles
+
+
+def body_operand_role_for_token_text(
+    token_text: str,
+    *,
+    allowed_names: set[str] | None = None,
+    generated_tokens: list[str] | None = None,
+) -> str:
+    token = str(token_text or "")
+    allowed = {str(name) for name in (allowed_names or set()) if str(name)}
+    if token in {"", "<pad>", "<bos>"}:
+        return "ignore"
+    if token == "<eos>":
+        return "eos"
+    if token in {"NEWLINE:", "DEDENT:", "INDENT:"}:
+        return "statement_boundary"
+    if token == "NAME:return":
+        return "return_keyword"
+    if token in {"NAME:for", "NAME:while", "NAME:if", "NAME:elif", "NAME:else", "NAME:try", "NAME:except", "NAME:in"}:
+        return "control_keyword"
+    if token.startswith("NUMBER:") or token.startswith("STRING:"):
+        return "literal_value"
+    if token in {"OP:="} or token in {"OP:+=", "OP:-=", "OP:*=", "OP:/=", "OP:%=", "OP://="}:
+        return "assignment_operator"
+    if token in {"OP:+", "OP:-", "OP:*", "OP:/", "OP:%", "OP://", "OP:**"}:
+        return "arithmetic_operator"
+    if token in {"OP:==", "OP:!=", "OP:<", "OP:<=", "OP:>", "OP:>=", "NAME:is"}:
+        return "comparison_operator"
+    if token in {"NAME:and", "NAME:or", "NAME:not"}:
+        return "boolean_operator"
+    if token in {"OP:(", "OP:)"}:
+        return "call_delimiter"
+    if token in {"OP:[", "OP:]", "OP:{", "OP:}"}:
+        return "index_delimiter"
+    if token in {"OP:.", "OP:,", "OP::"}:
+        return "attribute_name" if token == "OP:." else "punctuation"
+    if token.startswith("NAME:"):
+        name = token.removeprefix("NAME:")
+        context = body_operand_prefix_context(generated_tokens or [], allowed_names=allowed)
+        if (generated_tokens or []) and str((generated_tokens or [""])[-1]) == "OP:.":
+            return "method_name" if name in METHOD_OR_ATTRIBUTE_NAMES else "attribute_name"
+        if name in allowed:
+            return "visible_parameter"
+        if name in context.get("loop_names", set()):
+            return "loop_variable"
+        if name in context.get("local_names", set()):
+            return "local_state"
+        if name in BUILTIN_OPERAND_NAMES:
+            return "builtin_function"
+        if name in METHOD_OR_ATTRIBUTE_NAMES:
+            return "method_name"
+        return "local_state" if not allowed else "other"
+    return "other"
+
+
+BUILTIN_OPERAND_NAMES: set[str] = {
+    "abs",
+    "all",
+    "any",
+    "bool",
+    "dict",
+    "enumerate",
+    "filter",
+    "float",
+    "int",
+    "isinstance",
+    "len",
+    "list",
+    "map",
+    "max",
+    "min",
+    "range",
+    "reversed",
+    "round",
+    "set",
+    "sorted",
+    "str",
+    "sum",
+    "tuple",
+    "zip",
+}
+METHOD_OR_ATTRIBUTE_NAMES: set[str] = {
+    "add",
+    "append",
+    "extend",
+    "get",
+    "items",
+    "keys",
+    "lower",
+    "setdefault",
+    "split",
+    "strip",
+    "update",
+    "upper",
+    "values",
+}
+
+
+def body_operand_prefix_context(
+    generated_tokens: list[str],
+    *,
+    allowed_names: set[str] | None = None,
+) -> dict[str, set[str]]:
+    allowed = {str(name) for name in (allowed_names or set()) if str(name)}
+    lines = token_lines_with_depth([str(token) for token in generated_tokens])
+    loop_names: set[str] = set()
+    local_names: set[str] = set()
+    for _depth, _positions, values in lines:
+        if not values:
+            continue
+        if values[0] == "for":
+            targets = names_before_in(values)
+            loop_names.update(targets)
+            local_names.update(targets)
+        targets = assignment_targets_for_values(values)
+        local_names.update(targets)
+    return {
+        "allowed_names": allowed,
+        "loop_names": loop_names - allowed,
+        "local_names": local_names - allowed,
+    }
+
+
+def body_operand_role_id_for_token(
+    token_text: str,
+    *,
+    allowed_names: set[str] | None = None,
+    generated_tokens: list[str] | None = None,
+) -> int:
+    return BODY_OPERAND_ROLE_TO_ID.get(
+        body_operand_role_for_token_text(
+            token_text,
+            allowed_names=allowed_names,
+            generated_tokens=generated_tokens,
+        ),
+        BODY_OPERAND_ROLE_TO_ID["other"],
     )
 
 
@@ -3402,6 +3847,112 @@ def evaluate_body_action_mlx(
             "Heldout loss/accuracy for a prefix-conditioned body-action head over broad structural "
             "roles such as return, branch, block exit, update operator, and expression closure. It is "
             "trained only from admitted private/licensed body tokens and emits no candidates."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def evaluate_body_operand_mlx(
+    model: Any,
+    source_rows: list[list[int]],
+    target_rows: list[list[int]],
+    operand_target_rows: list[list[int]],
+    operand_weight_rows: list[list[float]],
+    *,
+    batch_size: int,
+    pad_id: int,
+    enabled: bool,
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    if not enabled or not source_rows or not target_rows or not operand_target_rows or not operand_weight_rows:
+        return {
+            "enabled": bool(enabled),
+            "loss": None,
+            "accuracy": None,
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    if not hasattr(model, "body_operand_logits"):
+        return {
+            "enabled": False,
+            "loss": None,
+            "accuracy": None,
+            "reason": "model_has_no_body_operand_head",
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    losses: list[float] = []
+    active_positions = 0
+    correct = 0
+    counted = 0
+    role_correct = {role: 0 for role in BODY_OPERAND_ROLES}
+    role_count = {role: 0 for role in BODY_OPERAND_ROLES}
+    model.eval()
+    for start in range(0, len(source_rows), batch_size):
+        src = mx.array(source_rows[start : start + batch_size], dtype=mx.int32)
+        tgt = mx.array(target_rows[start : start + batch_size], dtype=mx.int32)
+        targets = mx.array(operand_target_rows[start : start + batch_size], dtype=mx.int32)
+        weights = mx.array(operand_weight_rows[start : start + batch_size], dtype=mx.float32)
+        loss = body_operand_loss_mlx(model, src, tgt, pad_id, targets, weights, mx, nn)
+        logits = model.body_operand_logits(src, tgt[:, :-1])
+        pred = mx.argmax(logits, axis=-1)
+        target_out = targets[:, 1:]
+        valid = ((tgt[:, 1:] != pad_id).astype(mx.float32) * weights[:, 1:]) > 0.0
+        hit = (pred == target_out).astype(mx.float32) * valid.astype(mx.float32)
+        batch_correct = mx.sum(hit).astype(mx.float32)
+        batch_count = mx.sum(valid.astype(mx.float32))
+        mx.eval(loss, pred, target_out, valid, batch_correct, batch_count)
+        losses.append(float(loss.item()))
+        active_positions += sum(
+            1
+            for row in operand_weight_rows[start : start + batch_size]
+            for value in row[1:]
+            if float(value or 0.0) > 0.0
+        )
+        if float(batch_count.item()) > 0.0:
+            correct += int(batch_correct.item())
+            counted += int(batch_count.item())
+            pred_rows = pred.tolist()
+            target_rows_local = target_out.tolist()
+            valid_rows = valid.tolist()
+            for row_index, target_row in enumerate(target_rows_local):
+                for col_index, target_id in enumerate(target_row):
+                    if not bool(valid_rows[row_index][col_index]):
+                        continue
+                    role = BODY_OPERAND_ROLES[int(target_id)] if 0 <= int(target_id) < len(BODY_OPERAND_ROLES) else "other"
+                    role_count[role] += 1
+                    if int(pred_rows[row_index][col_index]) == int(target_id):
+                        role_correct[role] += 1
+    model.train()
+    loss = sum(losses) / max(1, len(losses))
+    return {
+        "enabled": True,
+        "policy": "private_prefix_conditioned_body_operand_eval_v1",
+        "loss": round(loss, 6),
+        "accuracy": round(correct / counted, 6) if counted else None,
+        "correct_count": correct,
+        "active_position_count": active_positions,
+        "role_accuracy": {
+            role: {
+                "accuracy": round(role_correct[role] / role_count[role], 6) if role_count[role] else None,
+                "correct_count": role_correct[role],
+                "active_target_count": role_count[role],
+            }
+            for role in BODY_OPERAND_ROLES
+            if role_count[role]
+        },
+        "score_semantics": (
+            "Heldout loss/accuracy for a prefix-conditioned body-operand binding head over "
+            "visible-parameter, loop-variable, local-state, builtin, method, literal, operator, "
+            "and delimiter roles. It is trained only from admitted private/licensed body tokens "
+            "and emits no candidates."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,

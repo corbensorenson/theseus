@@ -249,6 +249,22 @@ the roadmap:
    did observe `2` generated runtime-loaded attempts, both wrong, which is
    diagnostic only. Broad action roles are therefore not enough; the next body
    construction surface needs AST/state-transition plus operand/value binding.
+   The first body-operand/value binding head is now wired through the MLX
+   model, private adaptation loop, strict decode bias, and specialist route
+   options. Its adaptation smoke
+   `reports/strict_generator_mlx_private_adaptation_body_operand_action_state_transition_smoke_20260706.json`
+   is `YELLOW`: heldout LM improves `4.011632 -> 3.650576`, body-action loss
+   improves `3.47787 -> 3.311343`, and operand accuracy improves
+   `0.042448 -> 0.106614`, but body-transition loss worsens
+   `4.000679 -> 4.359434` and operand loss worsens `3.304313 -> 3.318508`.
+   The paired strict replay
+   `reports/strict_generator_mlx_decode_eval_body_operand_action_state_transition_strict_replay2_20260706.json`
+   remains `RED`: strict manifest rows remain `0`, behavior passes remain `0`,
+   and nontrivial-return rate remains `0.0`. The failure shape shifts toward
+   over-opened loops without update/local-return closure, so the next repair is
+   not another broad auxiliary classifier; it needs a semantic-IR or trainable
+   AST/state-machine body constructor that can close initializer, loop update,
+   finalizer, and return obligations after a compatible plan.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 

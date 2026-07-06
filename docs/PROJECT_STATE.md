@@ -334,6 +334,26 @@ The current wall is therefore not broad action-role classification either. The
 next material fix must make AST/state-transition and operand/value binding
 specific enough to construct legal update/finalizer/return bodies after a
 compatible plan.
+The first body-operand/value binding head is now implemented as a private MLX
+auxiliary head and strict decode bias. It predicts operand/value roles such as
+visible parameter, loop variable, local state, builtin, method, operator,
+literal, delimiter, and statement boundary from admitted private body tokens
+plus prompt/signature-visible parameter names. The adaptation smoke
+`reports/strict_generator_mlx_private_adaptation_body_operand_action_state_transition_smoke_20260706.json`
+is `YELLOW`: heldout LM improves `4.011632 -> 3.650576`, body-action loss
+improves `3.47787 -> 3.311343`, and operand accuracy improves
+`0.042448 -> 0.106614`, but body-transition loss worsens
+`4.000679 -> 4.359434` and operand loss worsens `3.304313 -> 3.318508`.
+The paired replay
+`reports/strict_generator_mlx_decode_eval_body_operand_action_state_transition_strict_replay2_20260706.json`
+is still `RED`: strict manifest rows remain `0`, behavior passes remain `0`,
+and nontrivial-return rate remains `0.0`. The failure shape moves from
+malformed `return.values(...)` expressions toward over-opened loop bodies with
+missing updates and missing local-return closure. The current wall is therefore
+now sharper: direct learned generation needs a semantic-IR or trainable
+AST/state-machine body constructor that closes initializer, loop update,
+finalizer, and return obligations after a compatible plan. Another scalar loss
+boost, broad action classifier, or operand classifier alone is not enough.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint
