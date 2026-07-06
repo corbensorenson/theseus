@@ -239,6 +239,21 @@ not the final constructor. The next wall is an explicit executable
 state/action/operand object or localized semantic-IR span constructor that can
 close update/finalizer/return behavior, not another scalar blend of event
 probabilities.
+`reports/strict_generator_executable_span_constructor_smoke_summary_20260706.json`
+then tests the next localized bridge: a private executable-span role head plus
+an opt-in span-to-hidden body constructor. This is wired through the MLX
+strict-generator adaptation and checkpoint loader, but it is not routeable.
+Both bounded `64`-row canaries are `RED`. Constructor scale `0.15` improves
+heldout LM, transition, event, and span losses, but body-action loss/accuracy
+regresses (`2.951064 -> 2.970324`, `0.083909 -> 0.080948`) and tensor-update
+coverage misses the hard gate (`0.860465 < 0.90`). The head-only variant also
+improves LM, transition, event, and span losses, but body-action and
+body-operand losses regress and tensor-update coverage is lower
+(`0.833333`). Both retain clean public/external/fallback/template/router/tool
+counters and both rejected checkpoints were removed after compact hashes were
+retained. The current wall is therefore an action-aware executable-span or
+localized semantic-IR constructor that directly couples traversal, update,
+finalizer, value-expression, and return construction.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

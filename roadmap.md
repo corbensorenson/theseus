@@ -243,6 +243,21 @@ finding is negative evidence that a one-step residual event-probability blend
 is not enough. The next implementation should materialize executable state
 objects or localized semantic-IR spans that supervise/condition update,
 finalizer, and return construction directly.
+The executable-span follow-up in
+`reports/strict_generator_executable_span_constructor_smoke_summary_20260706.json`
+implements that next lower-level bridge as an opt-in auxiliary span head and
+an opt-in span-to-hidden body constructor. The evidence is useful but still
+negative for routing: both private `64`-row canaries improve LM plus
+span/event metrics, the constructor checkpoint reloads, and no public,
+external, fallback, template, router, or tool credit is present. Both
+checkpoints are rejected anyway. The constructor-scale `0.15` run regresses
+body-action metrics and misses the tensor-update hard gate; the head-only run
+regresses body-action and body-operand losses and also misses tensor-update
+coverage. This keeps the immediate wall at an action-aware executable-span or
+localized semantic-IR constructor that directly couples update, finalizer,
+value-expression, and return construction, not another scalar auxiliary,
+residual probability blend, or policy-optimization run ahead of
+behavior-positive learned candidates.
 
 ## 2026-07-06 Claude Review Reconciliation
 

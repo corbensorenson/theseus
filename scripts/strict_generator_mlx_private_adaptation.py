@@ -53,16 +53,22 @@ from strict_generator_mlx_decode_eval import (  # noqa: E402
 from strict_generator_mlx_replay_selection import select_family_disjoint_rows  # noqa: E402
 from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     BODY_ACTION_ROLES,
+    BODY_EXECUTABLE_SPAN_ROLES,
     BODY_OPERAND_ROLES,
     BODY_STATE_EVENT_ROLES,
     body_action_target_rows,
+    body_action_operand_transition_event_span_aux_weighted_loss_fn_mlx,
     body_action_operand_transition_event_aux_weighted_loss_fn_mlx,
     body_action_operand_transition_aux_weighted_loss_fn_mlx,
     body_action_transition_aux_weighted_loss_fn_mlx,
+    body_executable_span_target_rows,
     body_operand_target_rows,
     body_state_event_target_rows,
+    evaluate_body_executable_span_mlx,
     evaluate_body_state_event_consistency_mlx,
     evaluate_body_state_event_mlx,
+    semantic_body_action_operand_transition_event_span_aux_source_contrastive_weighted_loss_fn_mlx,
+    semantic_body_action_operand_transition_event_span_aux_weighted_loss_fn_mlx,
     semantic_body_action_operand_transition_event_aux_source_contrastive_weighted_loss_fn_mlx,
     semantic_body_action_operand_transition_event_aux_weighted_loss_fn_mlx,
     SEMANTIC_SLOT_ROLES,
@@ -1119,6 +1125,30 @@ def main() -> int:
         help="Blend scale for the predicted-state-event body constructor when enabled.",
     )
     parser.add_argument(
+        "--body-executable-span-loss-weight",
+        type=float,
+        default=0.0,
+        help=(
+            "Train a private prefix-conditioned executable-span head over guard/control, traversal, "
+            "state-update, value-expression, return/finalizer, and state-reference spans. It emits no "
+            "candidate and grants no learned-generation credit."
+        ),
+    )
+    parser.add_argument(
+        "--enable-executable-span-body-constructor",
+        action="store_true",
+        help=(
+            "Condition body token/action/operand/transition logits on the model's own predicted "
+            "executable-span distribution. Target span labels are not visible at generation time."
+        ),
+    )
+    parser.add_argument(
+        "--executable-span-body-constructor-scale",
+        type=float,
+        default=0.25,
+        help="Blend scale for the predicted executable-span body constructor when enabled.",
+    )
+    parser.add_argument(
         "--body-state-event-action-consistency-weight",
         type=float,
         default=0.0,
@@ -1381,6 +1411,19 @@ def main() -> int:
                 else 0.35
             ),
         ),
+        body_executable_span_loss_weight=max(
+            0.0,
+            float(args.body_executable_span_loss_weight if args.body_executable_span_loss_weight is not None else 0.0),
+        ),
+        enable_executable_span_body_constructor=bool(args.enable_executable_span_body_constructor),
+        executable_span_body_constructor_scale=max(
+            0.0,
+            float(
+                args.executable_span_body_constructor_scale
+                if args.executable_span_body_constructor_scale is not None
+                else 0.25
+            ),
+        ),
         body_state_event_action_consistency_weight=max(
             0.0,
             float(
@@ -1539,6 +1582,9 @@ def run_adaptation(
     body_state_event_target_none_weight: float,
     enable_coupled_state_body_constructor: bool,
     coupled_state_body_constructor_scale: float,
+    body_executable_span_loss_weight: float,
+    enable_executable_span_body_constructor: bool,
+    executable_span_body_constructor_scale: float,
     body_state_event_action_consistency_weight: float,
     body_state_event_operand_consistency_weight: float,
     semantic_slot_prefix_roles: str,
@@ -1679,6 +1725,9 @@ def run_adaptation(
                     "body_state_event_target_none_weight": float(body_state_event_target_none_weight or 0.0),
                     "enable_coupled_state_body_constructor": bool(enable_coupled_state_body_constructor),
                     "coupled_state_body_constructor_scale": float(coupled_state_body_constructor_scale or 0.0),
+                    "body_executable_span_loss_weight": float(body_executable_span_loss_weight or 0.0),
+                    "enable_executable_span_body_constructor": bool(enable_executable_span_body_constructor),
+                    "executable_span_body_constructor_scale": float(executable_span_body_constructor_scale or 0.0),
                     "body_state_event_action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
                     "body_state_event_operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
                     "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
@@ -1755,6 +1804,16 @@ def run_adaptation(
             if enable_coupled_state_body_constructor
             else None
         ),
+        force_body_executable_span_head=(
+            bool(float(body_executable_span_loss_weight or 0.0) > 0.0 or enable_executable_span_body_constructor)
+            or None
+        ),
+        force_executable_span_body_constructor=bool(enable_executable_span_body_constructor) or None,
+        executable_span_body_constructor_scale=(
+            float(executable_span_body_constructor_scale or 0.0)
+            if enable_executable_span_body_constructor
+            else None
+        ),
     )
     model = loaded["model"]
     pairwise_objective = str(pairwise_replay_objective or "margin").strip().lower() or "margin"
@@ -1771,6 +1830,16 @@ def run_adaptation(
             coupled_state_body_constructor_scale=(
                 float(coupled_state_body_constructor_scale or 0.0)
                 if enable_coupled_state_body_constructor
+                else None
+            ),
+            force_body_executable_span_head=(
+                bool(float(body_executable_span_loss_weight or 0.0) > 0.0 or enable_executable_span_body_constructor)
+                or None
+            ),
+            force_executable_span_body_constructor=bool(enable_executable_span_body_constructor) or None,
+            executable_span_body_constructor_scale=(
+                float(executable_span_body_constructor_scale or 0.0)
+                if enable_executable_span_body_constructor
                 else None
             ),
         )["model"]
@@ -2237,6 +2306,30 @@ def run_adaptation(
         none_weight=body_state_event_target_none_weight,
     )
     (
+        train_body_executable_span_targets,
+        train_body_executable_span_weights,
+        train_body_executable_span_summary,
+    ) = body_executable_span_target_rows(
+        train_body_action_targets,
+        train_body_operand_targets,
+        train_body_state_event_targets,
+        train_body_action_weights,
+        train_body_operand_weights,
+        train_body_state_event_weights,
+    )
+    (
+        eval_body_executable_span_targets,
+        eval_body_executable_span_weights,
+        eval_body_executable_span_summary,
+    ) = body_executable_span_target_rows(
+        eval_body_action_targets,
+        eval_body_operand_targets,
+        eval_body_state_event_targets,
+        eval_body_action_weights,
+        eval_body_operand_weights,
+        eval_body_state_event_weights,
+    )
+    (
         pairwise_positive_weight_rows,
         pairwise_negative_weight_rows,
         pairwise_replay_weight_summary,
@@ -2367,6 +2460,16 @@ def run_adaptation(
         and int(train_body_state_event_summary.get("active_positions") or 0) > 0
         and int(eval_body_state_event_summary.get("active_positions") or 0) > 0
     )
+    body_executable_span_requested = (
+        (float(body_executable_span_loss_weight or 0.0) > 0.0 or bool(enable_executable_span_body_constructor))
+        and hasattr(model, "body_executable_span_logits")
+    )
+    body_executable_span_enabled = (
+        body_executable_span_requested
+        and body_state_event_enabled
+        and int(train_body_executable_span_summary.get("active_positions") or 0) > 0
+        and int(eval_body_executable_span_summary.get("active_positions") or 0) > 0
+    )
     before = parameter_snapshot(model, mlx_utils, mx)
     heldout_before = evaluate_loss_mlx(
         model,
@@ -2460,6 +2563,18 @@ def run_adaptation(
         ),
         mx=mx,
     )
+    body_executable_span_before = evaluate_body_executable_span_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        eval_body_executable_span_targets,
+        eval_body_executable_span_weights,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=body_executable_span_enabled,
+        mx=mx,
+        nn=nn,
+    )
     source_contrastive_active = float(source_contrastive_loss_weight or 0.0) > 0.0
     source_contrastive_span_mode = "prefix"
     source_contrastive_body_start_id = int(target_vocab.get(PLAN_BODY_START_TOKEN, -1))
@@ -2518,6 +2633,11 @@ def run_adaptation(
         if body_state_event_enabled and body_operand_enabled and body_action_enabled
         else None
     )
+    loss_and_grad_body_action_operand_transition_event_span = (
+        nn.value_and_grad(model, body_action_operand_transition_event_span_aux_weighted_loss_fn_mlx)
+        if body_executable_span_enabled and body_state_event_enabled and body_operand_enabled and body_action_enabled
+        else None
+    )
     loss_and_grad_semantic_body_transition = (
         nn.value_and_grad(model, semantic_body_transition_aux_weighted_loss_fn_mlx)
         if body_transition_enabled and semantic_slot_enabled
@@ -2538,6 +2658,15 @@ def run_adaptation(
         if body_state_event_enabled and body_operand_enabled and body_action_enabled and semantic_slot_enabled
         else None
     )
+    loss_and_grad_semantic_body_action_operand_transition_event_span = (
+        nn.value_and_grad(model, semantic_body_action_operand_transition_event_span_aux_weighted_loss_fn_mlx)
+        if body_executable_span_enabled
+        and body_state_event_enabled
+        and body_operand_enabled
+        and body_action_enabled
+        and semantic_slot_enabled
+        else None
+    )
     loss_and_grad_semantic_body_transition_contrast = (
         nn.value_and_grad(model, semantic_body_transition_aux_source_contrastive_weighted_loss_fn_mlx)
         if body_transition_enabled and semantic_slot_enabled and source_contrastive_active
@@ -2556,6 +2685,16 @@ def run_adaptation(
     loss_and_grad_semantic_body_action_operand_transition_event_contrast = (
         nn.value_and_grad(model, semantic_body_action_operand_transition_event_aux_source_contrastive_weighted_loss_fn_mlx)
         if body_state_event_enabled
+        and body_operand_enabled
+        and body_action_enabled
+        and semantic_slot_enabled
+        and source_contrastive_active
+        else None
+    )
+    loss_and_grad_semantic_body_action_operand_transition_event_span_contrast = (
+        nn.value_and_grad(model, semantic_body_action_operand_transition_event_span_aux_source_contrastive_weighted_loss_fn_mlx)
+        if body_executable_span_enabled
+        and body_state_event_enabled
         and body_operand_enabled
         and body_action_enabled
         and semantic_slot_enabled
@@ -2613,6 +2752,16 @@ def run_adaptation(
         if body_state_event_enabled
         else None
     )
+    body_executable_span_target_matrix = (
+        mx.array(train_body_executable_span_targets, dtype=mx.int32)
+        if body_executable_span_enabled
+        else None
+    )
+    body_executable_span_weight_matrix = (
+        mx.array(train_body_executable_span_weights, dtype=mx.float32)
+        if body_executable_span_enabled
+        else None
+    )
     negative_source_matrix = mx.array(negative_source_rows, dtype=mx.int32) if negative_replay_active else None
     negative_target_matrix = mx.array(negative_target_rows, dtype=mx.int32) if negative_replay_active else None
     negative_weight_matrix = mx.array(negative_token_weight_rows, dtype=mx.float32) if negative_replay_active else None
@@ -2635,6 +2784,8 @@ def run_adaptation(
         mx.eval(body_operand_target_matrix, body_operand_weight_matrix)
     if body_state_event_enabled:
         mx.eval(body_state_event_target_matrix, body_state_event_weight_matrix)
+    if body_executable_span_enabled:
+        mx.eval(body_executable_span_target_matrix, body_executable_span_weight_matrix)
     if negative_replay_active:
         mx.eval(negative_source_matrix, negative_target_matrix, negative_weight_matrix)
     if pairwise_replay_active:
@@ -2695,6 +2846,9 @@ def run_adaptation(
             if body_state_event_enabled:
                 body_state_event_targets = body_state_event_target_matrix[batch_indices]
                 body_state_event_weights = body_state_event_weight_matrix[batch_indices]
+            if body_executable_span_enabled:
+                body_executable_span_targets = body_executable_span_target_matrix[batch_indices]
+                body_executable_span_weights = body_executable_span_weight_matrix[batch_indices]
             if negative_replay_active:
                 neg_count = len(negative_source_rows)
                 neg_indices = [
@@ -2877,6 +3031,65 @@ def run_adaptation(
                     float(negative_unlikelihood_cap),
                     mx,
                     nn,
+                )
+            elif (
+                source_contrastive_active
+                and semantic_slot_enabled
+                and body_operand_enabled
+                and body_action_enabled
+                and body_transition_enabled
+                and body_state_event_enabled
+                and body_executable_span_enabled
+                and loss_and_grad_semantic_body_action_operand_transition_event_span_contrast is not None
+            ):
+                shifted_indices = indices[1:] + indices[:1]
+                mismatched_src = source_matrix[mx.array(shifted_indices, dtype=mx.int32)]
+                effective_contrastive_weight = source_contrastive_loss_weight if len(indices) > 1 else 0.0
+                if semantic_plan_enabled:
+                    plan_targets_arg = plan_targets
+                    plan_weights_arg = plan_weights
+                    effective_plan_weight = semantic_plan_loss_weight
+                else:
+                    plan_targets_arg = tgt[:, 0]
+                    plan_weights_arg = weights[:, 0]
+                    effective_plan_weight = 0.0
+                loss, grads = loss_and_grad_semantic_body_action_operand_transition_event_span_contrast(
+                    model,
+                    src,
+                    mismatched_src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    float(effective_contrastive_weight),
+                    float(source_contrastive_margin),
+                    int(source_contrastive_prefix_tokens),
+                    source_contrastive_span_mode,
+                    source_contrastive_body_start_id,
+                    plan_targets_arg,
+                    plan_weights_arg,
+                    float(effective_plan_weight),
+                    slot_targets,
+                    slot_weights,
+                    float(semantic_slot_loss_weight),
+                    body_transition_weights,
+                    float(body_transition_loss_weight),
+                    body_action_targets,
+                    body_action_weights,
+                    float(body_action_loss_weight),
+                    body_operand_targets,
+                    body_operand_weights,
+                    float(body_operand_loss_weight),
+                    body_state_event_targets,
+                    body_state_event_weights,
+                    float(body_state_event_loss_weight),
+                    body_executable_span_targets,
+                    body_executable_span_weights,
+                    float(body_executable_span_loss_weight),
+                    mx,
+                    nn,
+                    semantic_slot_class_id_arrays,
+                    float(body_state_event_action_consistency_weight),
+                    float(body_state_event_operand_consistency_weight),
                 )
             elif (
                 source_contrastive_active
@@ -3150,6 +3363,55 @@ def run_adaptation(
                 and body_action_enabled
                 and body_transition_enabled
                 and body_state_event_enabled
+                and body_executable_span_enabled
+                and loss_and_grad_semantic_body_action_operand_transition_event_span is not None
+            ):
+                if semantic_plan_enabled:
+                    plan_targets_arg = plan_targets
+                    plan_weights_arg = plan_weights
+                    effective_plan_weight = semantic_plan_loss_weight
+                else:
+                    plan_targets_arg = tgt[:, 0]
+                    plan_weights_arg = weights[:, 0]
+                    effective_plan_weight = 0.0
+                loss, grads = loss_and_grad_semantic_body_action_operand_transition_event_span(
+                    model,
+                    src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    plan_targets_arg,
+                    plan_weights_arg,
+                    float(effective_plan_weight),
+                    slot_targets,
+                    slot_weights,
+                    float(semantic_slot_loss_weight),
+                    body_transition_weights,
+                    float(body_transition_loss_weight),
+                    body_action_targets,
+                    body_action_weights,
+                    float(body_action_loss_weight),
+                    body_operand_targets,
+                    body_operand_weights,
+                    float(body_operand_loss_weight),
+                    body_state_event_targets,
+                    body_state_event_weights,
+                    float(body_state_event_loss_weight),
+                    body_executable_span_targets,
+                    body_executable_span_weights,
+                    float(body_executable_span_loss_weight),
+                    mx,
+                    nn,
+                    semantic_slot_class_id_arrays,
+                    float(body_state_event_action_consistency_weight),
+                    float(body_state_event_operand_consistency_weight),
+                )
+            elif (
+                semantic_slot_enabled
+                and body_operand_enabled
+                and body_action_enabled
+                and body_transition_enabled
+                and body_state_event_enabled
                 and loss_and_grad_semantic_body_action_operand_transition_event is not None
             ):
                 if semantic_plan_enabled:
@@ -3337,6 +3599,38 @@ def run_adaptation(
                 body_state_event_enabled
                 and body_operand_enabled
                 and body_action_enabled
+                and body_executable_span_enabled
+                and loss_and_grad_body_action_operand_transition_event_span is not None
+            ):
+                loss, grads = loss_and_grad_body_action_operand_transition_event_span(
+                    model,
+                    src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    body_transition_weights,
+                    float(body_transition_loss_weight),
+                    body_action_targets,
+                    body_action_weights,
+                    float(body_action_loss_weight),
+                    body_operand_targets,
+                    body_operand_weights,
+                    float(body_operand_loss_weight),
+                    body_state_event_targets,
+                    body_state_event_weights,
+                    float(body_state_event_loss_weight),
+                    body_executable_span_targets,
+                    body_executable_span_weights,
+                    float(body_executable_span_loss_weight),
+                    mx,
+                    nn,
+                    float(body_state_event_action_consistency_weight),
+                    float(body_state_event_operand_consistency_weight),
+                )
+            elif (
+                body_state_event_enabled
+                and body_operand_enabled
+                and body_action_enabled
                 and loss_and_grad_body_action_operand_transition_event is not None
             ):
                 loss, grads = loss_and_grad_body_action_operand_transition_event(
@@ -3512,6 +3806,18 @@ def run_adaptation(
         ),
         mx=mx,
     )
+    body_executable_span_after = evaluate_body_executable_span_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        eval_body_executable_span_targets,
+        eval_body_executable_span_weights,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=body_executable_span_enabled,
+        mx=mx,
+        nn=nn,
+    )
     source_contrast_after = evaluate_source_contrast_mlx(
         model,
         eval_source_rows,
@@ -3626,6 +3932,19 @@ def run_adaptation(
                     "admitted private body action/operand roles and emit no candidates."
                 ),
             },
+            "body_executable_span_auxiliary": {
+                "enabled": bool(body_executable_span_enabled),
+                "requested": bool(body_executable_span_requested),
+                "weight": float(body_executable_span_loss_weight or 0.0),
+                "target_mode": target_mode,
+                "train_targets": train_body_executable_span_summary,
+                "eval_targets": eval_body_executable_span_summary,
+                "roles": list(BODY_EXECUTABLE_SPAN_ROLES),
+                "score_semantics": (
+                    "Private executable-span auxiliary head. Targets are derived from admitted private "
+                    "action/operand/state-event roles and emit no candidates."
+                ),
+            },
             "coupled_state_body_constructor": {
                 "enabled": bool(enable_coupled_state_body_constructor),
                 "policy": (
@@ -3649,6 +3968,29 @@ def run_adaptation(
                     "before token/action/operand/transition logits. It emits no candidate by itself and "
                     "does not inspect tests, solutions, public benchmark payloads, tools, templates, or "
                     "fallback bodies."
+                ),
+            },
+            "executable_span_body_constructor": {
+                "enabled": bool(enable_executable_span_body_constructor),
+                "policy": (
+                    "predicted_executable_span_conditioned_body_constructor_v1"
+                    if enable_executable_span_body_constructor
+                    else "not_enabled"
+                ),
+                "scale": float(executable_span_body_constructor_scale or 0.0)
+                if enable_executable_span_body_constructor
+                else 0.0,
+                "loader_receipt": dict_or_empty(loaded.get("loader_reuse_receipt")).get(
+                    "executable_span_body_constructor"
+                ),
+                "span_role_count": len(BODY_EXECUTABLE_SPAN_ROLES),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+                "score_semantics": (
+                    "Opt-in architecture coupling inside the existing strict generator. The model's own "
+                    "predicted executable-span distribution is projected into the shared body hidden state "
+                    "before token/action/operand/transition logits."
                 ),
             },
             "negative_replay": negative_replay_vocab_summary(negative_replay, active=negative_replay_active),
@@ -3738,6 +4080,11 @@ def run_adaptation(
             "coupled_state_body_constructor_scale": float(coupled_state_body_constructor_scale or 0.0)
             if enable_coupled_state_body_constructor
             else 0.0,
+            "body_executable_span_loss_weight": float(body_executable_span_loss_weight or 0.0),
+            "enable_executable_span_body_constructor": bool(enable_executable_span_body_constructor),
+            "executable_span_body_constructor_scale": float(executable_span_body_constructor_scale or 0.0)
+            if enable_executable_span_body_constructor
+            else 0.0,
             "body_state_event_action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
             "body_state_event_operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
             "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
@@ -3810,6 +4157,67 @@ def run_adaptation(
                 "uses predicted state-event probabilities, not target event labels, to condition "
                 "body-token, transition, action, and operand logits. It is architecture/training "
                 "evidence only unless strict decode/verifier replay improves."
+            ),
+        },
+        "body_executable_span_auxiliary": {
+            "enabled": body_executable_span_enabled,
+            "requested": body_executable_span_requested,
+            "policy": (
+                "private_prefix_conditioned_body_executable_span_auxiliary_v1"
+                if body_executable_span_enabled
+                else "not_enabled"
+            ),
+            "weight": float(body_executable_span_loss_weight or 0.0),
+            "target_mode": target_mode,
+            "train_targets": train_body_executable_span_summary,
+            "eval_targets": eval_body_executable_span_summary,
+            "roles": list(BODY_EXECUTABLE_SPAN_ROLES),
+            "heldout_span_loss_before": body_executable_span_before.get("loss"),
+            "heldout_span_loss_after": body_executable_span_after.get("loss"),
+            "heldout_span_accuracy_before": body_executable_span_before.get("accuracy"),
+            "heldout_span_accuracy_after": body_executable_span_after.get("accuracy"),
+            "heldout_span_improved": (
+                body_executable_span_enabled
+                and body_executable_span_before.get("loss") is not None
+                and body_executable_span_after.get("loss") is not None
+                and float(body_executable_span_after["loss"]) < float(body_executable_span_before["loss"])
+            ),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "uses_answer_metadata": False,
+            "served_at_runtime": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Private prefix-conditioned executable-span auxiliary supervision. It trains a learned "
+                "span head for guard/control, traversal/call, state-update, value-expression, "
+                "return/finalizer, state-reference, literal, delimiter, and statement-boundary spans. "
+                "It emits no candidate by itself and grants no learned-generation credit without strict replay."
+            ),
+        },
+        "executable_span_body_constructor": {
+            "enabled": bool(enable_executable_span_body_constructor),
+            "policy": (
+                "predicted_executable_span_conditioned_body_constructor_v1"
+                if enable_executable_span_body_constructor
+                else "not_enabled"
+            ),
+            "scale": float(executable_span_body_constructor_scale or 0.0)
+            if enable_executable_span_body_constructor
+            else 0.0,
+            "loader_receipt": dict_or_empty(loaded.get("loader_reuse_receipt")).get(
+                "executable_span_body_constructor"
+            ),
+            "span_role_count": len(BODY_EXECUTABLE_SPAN_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "uses_answer_metadata": False,
+            "served_at_runtime": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Opt-in architecture coupling inside the existing strict generator. It uses the model's "
+                "own predicted executable-span probabilities, not target span labels, to condition "
+                "body-token, transition, action, and operand logits. It remains non-default unless "
+                "strict decode/verifier replay improves."
             ),
         },
         "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
@@ -4096,6 +4504,41 @@ def run_adaptation(
                 "credit without strict decode/verifier behavior."
             ),
         },
+        "body_executable_span_auxiliary": {
+            "enabled": body_executable_span_enabled,
+            "requested": body_executable_span_requested,
+            "policy": (
+                "private_prefix_conditioned_body_executable_span_auxiliary_v1"
+                if body_executable_span_enabled
+                else "not_enabled"
+            ),
+            "weight": float(body_executable_span_loss_weight or 0.0),
+            "target_mode": target_mode,
+            "train_targets": train_body_executable_span_summary,
+            "eval_targets": eval_body_executable_span_summary,
+            "roles": list(BODY_EXECUTABLE_SPAN_ROLES),
+            "heldout_span_loss_before": body_executable_span_before.get("loss"),
+            "heldout_span_loss_after": body_executable_span_after.get("loss"),
+            "heldout_span_accuracy_before": body_executable_span_before.get("accuracy"),
+            "heldout_span_accuracy_after": body_executable_span_after.get("accuracy"),
+            "heldout_span_improved": (
+                body_executable_span_enabled
+                and body_executable_span_before.get("loss") is not None
+                and body_executable_span_after.get("loss") is not None
+                and float(body_executable_span_after["loss"]) < float(body_executable_span_before["loss"])
+            ),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "uses_answer_metadata": False,
+            "served_at_runtime": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Dedicated prefix-conditioned executable-span auxiliary supervision. It learns span roles "
+                "for guard/control, traversal/call, state-update, value-expression, return/finalizer, "
+                "state-reference, literal, delimiter, and statement-boundary positions using admitted "
+                "private target-body role labels. It emits no candidate by itself."
+            ),
+        },
         "parameter_count": update_summary["parameter_count"],
         "parameter_update_fraction": update_summary["parameter_update_fraction"],
         "parameter_tensor_update_fraction": update_summary["parameter_tensor_update_fraction"],
@@ -4165,6 +4608,8 @@ def run_adaptation(
             "body_action_auxiliary": payload["body_action_auxiliary"],
             "body_operand_auxiliary": payload["body_operand_auxiliary"],
             "body_state_event_auxiliary": payload["body_state_event_auxiliary"],
+            "body_executable_span_auxiliary": payload["body_executable_span_auxiliary"],
+            "executable_span_body_constructor": payload["executable_span_body_constructor"],
             "strict_target_guard": payload["strict_target_guard"],
             "negative_replay_unlikelihood": payload["negative_replay_unlikelihood"],
             "pairwise_replay_preference": payload["pairwise_replay_preference"],
@@ -4785,6 +5230,15 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             dict_or_empty(payload.get("body_state_event_auxiliary")),
         ),
         gate(
+            "body_executable_span_loss_improved_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("body_executable_span_auxiliary")).get("enabled"))
+                or bool(dict_or_empty(payload.get("body_executable_span_auxiliary")).get("heldout_span_improved"))
+            ),
+            "soft",
+            dict_or_empty(payload.get("body_executable_span_auxiliary")),
+        ),
+        gate(
             "coupled_state_body_constructor_loaded_when_enabled",
             (
                 not bool(dict_or_empty(payload.get("coupled_state_body_constructor")).get("enabled"))
@@ -4796,6 +5250,19 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             ),
             "hard",
             dict_or_empty(payload.get("coupled_state_body_constructor")),
+        ),
+        gate(
+            "executable_span_body_constructor_loaded_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("executable_span_body_constructor")).get("enabled"))
+                or bool(
+                    dict_or_empty(
+                        dict_or_empty(payload.get("executable_span_body_constructor")).get("loader_receipt")
+                    ).get("enabled")
+                )
+            ),
+            "hard",
+            dict_or_empty(payload.get("executable_span_body_constructor")),
         ),
         gate(
             "source_contrastive_gap_improved_when_enabled",

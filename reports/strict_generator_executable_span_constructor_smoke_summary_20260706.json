@@ -1,0 +1,145 @@
+{
+  "policy": "project_theseus_strict_generator_executable_span_constructor_smoke_summary_v1",
+  "created_utc": "2026-07-06T22:35:00Z",
+  "purpose": "Compact evidence summary for opt-in executable-span auxiliary supervision and executable-span body-constructor canaries. Full rejected checkpoint artifacts were intentionally not retained.",
+  "source_attachment": "/Users/corbensorenson/.codex/attachments/f08752f6-9be1-440d-9c6c-65169a852670/pasted-text.txt",
+  "trigger_state": "RED",
+  "no_claim_boundary": "This is private trainability and architecture-ablation evidence only. It is not learned-generation promotion evidence, not public-transfer evidence, and not runtime-serving evidence.",
+  "no_cheat_counters": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "candidate_generation_credit": 0,
+    "fallback_credit": 0,
+    "template_credit": 0,
+    "router_credit": 0,
+    "tool_credit": 0
+  },
+  "shared_setup": {
+    "checkpoint_report": "reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_private_rung_20260706.json",
+    "max_train_rows": 64,
+    "max_eval_rows": 16,
+    "epochs": 1,
+    "batch_size": 16,
+    "learning_rate": 0.0002,
+    "semantic_construction_repair_profile": "strict_direct_body_emission_path_v1",
+    "body_executable_span_loss_weight": 0.04,
+    "body_transition_loss_weight": 0.01,
+    "body_action_loss_weight": 0.02,
+    "body_operand_loss_weight": 0.04,
+    "body_state_event_loss_weight": 0.04
+  },
+  "ablation_results": [
+    {
+      "id": "executable_span_constructor_scale015",
+      "report": "reports/strict_generator_mlx_private_adaptation_executable_span_constructor_smoke_20260706.json",
+      "report_sha256": "8b105ba22949b4e1fc4cba674c34552e7d1e28461f4d9e702d43ec13190070a1",
+      "checkpoint_sha256": "9ba0f7bd84f0a48dffe78a03be15660327db831dddb2322160b031033de2c3ba",
+      "vocab_sha256": "1b5816d7175648a3bb45a009b96f0ab6f356dbf20a2d455e29766013c4e0f261",
+      "trigger_state": "RED",
+      "executable_span_body_constructor": {
+        "enabled": true,
+        "scale": 0.15,
+        "loader_receipt": {
+          "enabled": true,
+          "scale": 0.15,
+          "source": "forced"
+        }
+      },
+      "metrics": {
+        "heldout_lm_loss_before": 1.492942,
+        "heldout_lm_loss_after": 1.440619,
+        "body_transition_loss_before": 8.064187,
+        "body_transition_loss_after": 8.056409,
+        "body_action_loss_before": 2.951064,
+        "body_action_loss_after": 2.970324,
+        "body_action_accuracy_before": 0.083909,
+        "body_action_accuracy_after": 0.080948,
+        "body_operand_loss_before": 3.036134,
+        "body_operand_loss_after": 3.03548,
+        "body_operand_accuracy_before": 0.047384,
+        "body_operand_accuracy_after": 0.053307,
+        "body_state_event_loss_before": 2.315528,
+        "body_state_event_loss_after": 2.295625,
+        "body_state_event_accuracy_before": 0.047384,
+        "body_state_event_accuracy_after": 0.055281,
+        "body_executable_span_loss_before": 2.533852,
+        "body_executable_span_loss_after": 2.527141,
+        "body_executable_span_accuracy_before": 0.05232,
+        "body_executable_span_accuracy_after": 0.071076,
+        "parameter_update_fraction": 0.155224,
+        "parameter_tensor_update_fraction": 0.860465
+      },
+      "failed_gates": [
+        "parameter_tensor_update_recorded",
+        "parameter_element_update_meaningful",
+        "body_action_loss_improved_when_enabled"
+      ],
+      "decision": "reject_checkpoint"
+    },
+    {
+      "id": "executable_span_head_only",
+      "report": "reports/strict_generator_mlx_private_adaptation_executable_span_head_only_smoke_20260706.json",
+      "report_sha256": "a58dabb881db70e57e0ad98d82bbc77d4d2c655eef067ab3a6dad243718d11a7",
+      "checkpoint_sha256": "d7e898bd3545199297cb8411e5d087466be6e4e3c8e07e8b553d42740e1fa07c",
+      "vocab_sha256": "91d9af22ef1f9a42d0d7006800c6df6ea7357436156fe145a5390f561e38bb1e",
+      "trigger_state": "RED",
+      "executable_span_body_constructor": {
+        "enabled": false,
+        "scale": 0.0,
+        "loader_receipt": {
+          "enabled": false,
+          "scale": 0.0,
+          "source": "vocab"
+        }
+      },
+      "metrics": {
+        "heldout_lm_loss_before": 1.49465,
+        "heldout_lm_loss_after": 1.441715,
+        "body_transition_loss_before": 8.067903,
+        "body_transition_loss_after": 8.060719,
+        "body_action_loss_before": 2.948527,
+        "body_action_loss_after": 2.968961,
+        "body_action_accuracy_before": 0.087858,
+        "body_action_accuracy_after": 0.080948,
+        "body_operand_loss_before": 3.036583,
+        "body_operand_loss_after": 3.036793,
+        "body_operand_accuracy_before": 0.047384,
+        "body_operand_accuracy_after": 0.054294,
+        "body_state_event_loss_before": 2.315528,
+        "body_state_event_loss_after": 2.295373,
+        "body_state_event_accuracy_before": 0.047384,
+        "body_state_event_accuracy_after": 0.055281,
+        "body_executable_span_loss_before": 2.533852,
+        "body_executable_span_loss_after": 2.530783,
+        "body_executable_span_accuracy_before": 0.05232,
+        "body_executable_span_accuracy_after": 0.056269,
+        "parameter_update_fraction": 0.154968,
+        "parameter_tensor_update_fraction": 0.833333
+      },
+      "failed_gates": [
+        "parameter_tensor_update_recorded",
+        "parameter_element_update_meaningful",
+        "body_action_loss_improved_when_enabled",
+        "body_operand_loss_improved_when_enabled"
+      ],
+      "decision": "reject_checkpoint"
+    }
+  ],
+  "interpretation": {
+    "positive_evidence": [
+      "The dedicated executable-span auxiliary can be trained under the private prompt/signature-only path and improves its own heldout span loss/accuracy in both ablations.",
+      "The loader can reconstruct checkpoints with the new executable-span head and constructor settings."
+    ],
+    "negative_evidence": [
+      "The executable-span constructor at scale 0.15 still regresses body-action metrics and misses the tensor-update hard gate.",
+      "The head-only variant improves LM/transition/event/span metrics but regresses body-action and body-operand losses and misses the tensor-update hard gate.",
+      "No ablation produces behavior-positive strict replay evidence or learned-generation promotion evidence."
+    ],
+    "next_wall": "The next registered improvement should be an action-aware executable-span/state-object constructor or localized semantic-IR constructor that conditions update, finalizer, value-expression, and return construction directly without weakening guards or counting deterministic repair/tool/router/template/fallback output."
+  },
+  "cleanup_policy": {
+    "full_reports_retained": false,
+    "rejected_checkpoints_retained": false,
+    "compact_hashes_retained": true
+  }
+}

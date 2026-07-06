@@ -1019,6 +1019,9 @@ def load_mlx_checkpoint(
     loader_cache: dict[str, Any] | None = None,
     force_coupled_state_body_constructor: bool | None = None,
     coupled_state_body_constructor_scale: float | None = None,
+    force_body_executable_span_head: bool | None = None,
+    force_executable_span_body_constructor: bool | None = None,
+    executable_span_body_constructor_scale: float | None = None,
 ) -> dict[str, Any]:
     load_started = time.perf_counter()
     vocab_sha = stable_hash_file(vocab_path)
@@ -1058,6 +1061,8 @@ def load_mlx_checkpoint(
     target_vocab = dict_or_empty(vocab_payload.get("target_vocab"))
     dims = dict_or_empty(vocab_payload.get("dims"))
     coupled_cfg = dict_or_empty(vocab_payload.get("coupled_state_body_constructor"))
+    executable_span_cfg = dict_or_empty(vocab_payload.get("body_executable_span_auxiliary"))
+    executable_constructor_cfg = dict_or_empty(vocab_payload.get("executable_span_body_constructor"))
     coupled_state_body_constructor = (
         bool(force_coupled_state_body_constructor)
         if force_coupled_state_body_constructor is not None
@@ -1071,6 +1076,28 @@ def load_mlx_checkpoint(
             else (coupled_cfg.get("scale") if coupled_cfg.get("scale") is not None else 0.35)
         ),
     )
+    executable_span_body_constructor = (
+        bool(force_executable_span_body_constructor)
+        if force_executable_span_body_constructor is not None
+        else bool(executable_constructor_cfg.get("enabled"))
+    )
+    body_executable_span_head = (
+        bool(force_body_executable_span_head)
+        if force_body_executable_span_head is not None
+        else bool(executable_span_cfg.get("enabled") or executable_span_body_constructor)
+    )
+    executable_span_body_constructor_scale = max(
+        0.0,
+        float(
+            executable_span_body_constructor_scale
+            if executable_span_body_constructor_scale is not None
+            else (
+                executable_constructor_cfg.get("scale")
+                if executable_constructor_cfg.get("scale") is not None
+                else 0.25
+            )
+        ),
+    )
     model_key_payload = {
         "vocab_sha256": vocab_sha,
         "source_vocab_size": len(source_vocab),
@@ -1081,6 +1108,11 @@ def load_mlx_checkpoint(
         "coupled_state_body_constructor": {
             "enabled": coupled_state_body_constructor,
             "scale": coupled_state_body_constructor_scale if coupled_state_body_constructor else 0.0,
+        },
+        "body_executable_span_head": body_executable_span_head,
+        "executable_span_body_constructor": {
+            "enabled": executable_span_body_constructor,
+            "scale": executable_span_body_constructor_scale if executable_span_body_constructor else 0.0,
         },
     }
     model_key = stable_hash(json.dumps(model_key_payload, sort_keys=True))
@@ -1101,6 +1133,9 @@ def load_mlx_checkpoint(
             dim_feedforward=int(dims.get("dim_feedforward") or 448),
             coupled_state_body_constructor=coupled_state_body_constructor,
             coupled_state_body_constructor_scale=coupled_state_body_constructor_scale,
+            body_executable_span_head=body_executable_span_head,
+            executable_span_body_constructor=executable_span_body_constructor,
+            executable_span_body_constructor_scale=executable_span_body_constructor_scale,
             mx=mx,
             nn=nn,
         ).model
@@ -1123,6 +1158,8 @@ def load_mlx_checkpoint(
                 "body_operand_router",
                 "body_state_event_router",
                 "body_state_event_to_hidden",
+                "body_executable_span_router",
+                "body_executable_span_to_hidden",
             )
         ):
             raise
@@ -1156,6 +1193,15 @@ def load_mlx_checkpoint(
                 "enabled": coupled_state_body_constructor,
                 "scale": coupled_state_body_constructor_scale if coupled_state_body_constructor else 0.0,
                 "source": "forced" if force_coupled_state_body_constructor is not None else "vocab",
+            },
+            "body_executable_span_head": {
+                "enabled": body_executable_span_head,
+                "source": "forced" if force_body_executable_span_head is not None else "vocab",
+            },
+            "executable_span_body_constructor": {
+                "enabled": executable_span_body_constructor,
+                "scale": executable_span_body_constructor_scale if executable_span_body_constructor else 0.0,
+                "source": "forced" if force_executable_span_body_constructor is not None else "vocab",
             },
             "checkpoint_weight_reloaded": True,
             "load_runtime_ms": int((time.perf_counter() - load_started) * 1000),

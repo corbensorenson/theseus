@@ -188,6 +188,21 @@ BODY_STATE_EVENT_OPERAND_COMPATIBILITY_MASK: tuple[tuple[float, ...], ...] = tup
     for event_role in BODY_STATE_EVENT_ROLES
 )
 
+BODY_EXECUTABLE_SPAN_ROLES: tuple[str, ...] = (
+    "ignore",
+    "guard_control_span",
+    "traversal_call_span",
+    "state_update_span",
+    "value_expression_span",
+    "return_finalizer_span",
+    "state_reference_span",
+    "literal_span",
+    "delimiter_span",
+    "statement_boundary_span",
+    "other_span",
+)
+BODY_EXECUTABLE_SPAN_ROLE_TO_ID = {role: index for index, role in enumerate(BODY_EXECUTABLE_SPAN_ROLES)}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -476,6 +491,9 @@ class MlxStrictGenerator:
         dim_feedforward: int,
         coupled_state_body_constructor: bool = False,
         coupled_state_body_constructor_scale: float = 0.35,
+        body_executable_span_head: bool = False,
+        executable_span_body_constructor: bool = False,
+        executable_span_body_constructor_scale: float = 0.25,
         mx: Any,
         nn: Any,
     ) -> None:
@@ -515,6 +533,15 @@ class MlxStrictGenerator:
                 self.coupled_state_body_constructor_scale = float(coupled_state_body_constructor_scale or 0.0)
                 if self.coupled_state_body_constructor_enabled:
                     self.body_state_event_to_hidden = nn.Linear(len(BODY_STATE_EVENT_ROLES), d_model)
+                self.body_executable_span_head_enabled = bool(
+                    body_executable_span_head or executable_span_body_constructor
+                )
+                self.executable_span_body_constructor_enabled = bool(executable_span_body_constructor)
+                self.executable_span_body_constructor_scale = float(executable_span_body_constructor_scale or 0.0)
+                if self.body_executable_span_head_enabled:
+                    self.body_executable_span_router = nn.Linear(d_model, len(BODY_EXECUTABLE_SPAN_ROLES))
+                if self.executable_span_body_constructor_enabled:
+                    self.body_executable_span_to_hidden = nn.Linear(len(BODY_EXECUTABLE_SPAN_ROLES), d_model)
 
             def encode_source(self, src: Any) -> tuple[Any, Any]:
                 src_mask = additive_padding_mask(src, mx)
@@ -545,11 +572,15 @@ class MlxStrictGenerator:
 
             def body_constructor_hidden(self, src: Any, tgt_in: Any) -> Any:
                 hidden = self.decode_hidden(src, tgt_in)
-                if not bool(self.coupled_state_body_constructor_enabled):
-                    return hidden
-                event_probs = mx.softmax(self.body_state_event_router(hidden), axis=-1)
-                event_delta = mx.tanh(self.body_state_event_to_hidden(event_probs))
-                return hidden + float(self.coupled_state_body_constructor_scale) * event_delta
+                if bool(self.coupled_state_body_constructor_enabled):
+                    event_probs = mx.softmax(self.body_state_event_router(hidden), axis=-1)
+                    event_delta = mx.tanh(self.body_state_event_to_hidden(event_probs))
+                    hidden = hidden + float(self.coupled_state_body_constructor_scale) * event_delta
+                if bool(self.executable_span_body_constructor_enabled):
+                    span_probs = mx.softmax(self.body_executable_span_router(hidden), axis=-1)
+                    span_delta = mx.tanh(self.body_executable_span_to_hidden(span_probs))
+                    hidden = hidden + float(self.executable_span_body_constructor_scale) * span_delta
+                return hidden
 
             def body_transition_logits(self, src: Any, tgt_in: Any) -> Any:
                 return self.body_transition_router(self.body_constructor_hidden(src, tgt_in))
@@ -562,6 +593,9 @@ class MlxStrictGenerator:
 
             def body_state_event_logits(self, src: Any, tgt_in: Any) -> Any:
                 return self.body_state_event_router(self.decode_hidden(src, tgt_in))
+
+            def body_executable_span_logits(self, src: Any, tgt_in: Any) -> Any:
+                return self.body_executable_span_router(self.decode_hidden(src, tgt_in))
 
             def __call__(self, src: Any, tgt_in: Any) -> Any:
                 return self.output(self.body_constructor_hidden(src, tgt_in))
@@ -654,6 +688,18 @@ def train_budget_mlx(
         0.0,
         float(coupled_constructor_cfg.get("scale") if coupled_constructor_cfg.get("scale") is not None else 0.35),
     )
+    executable_span_cfg = dict_or_empty(budget.get("body_executable_span_auxiliary"))
+    executable_constructor_cfg = dict_or_empty(budget.get("executable_span_body_constructor"))
+    body_executable_span_head = bool(executable_span_cfg.get("enabled")) or bool(executable_constructor_cfg.get("enabled"))
+    executable_span_body_constructor = bool(executable_constructor_cfg.get("enabled"))
+    executable_span_body_constructor_scale = max(
+        0.0,
+        float(
+            executable_constructor_cfg.get("scale")
+            if executable_constructor_cfg.get("scale") is not None
+            else 0.25
+        ),
+    )
     model = MlxStrictGenerator(
         source_vocab_size=len(source_vocab),
         target_vocab_size=len(target_vocab),
@@ -661,6 +707,9 @@ def train_budget_mlx(
         max_target_len=max_target,
         coupled_state_body_constructor=coupled_state_body_constructor,
         coupled_state_body_constructor_scale=coupled_state_body_constructor_scale,
+        body_executable_span_head=body_executable_span_head,
+        executable_span_body_constructor=executable_span_body_constructor,
+        executable_span_body_constructor_scale=executable_span_body_constructor_scale,
         mx=mx,
         nn=nn,
         **dims,
@@ -891,6 +940,37 @@ def train_budget_mlx(
                 "projects back into the body hidden state before token/action/operand/transition heads. "
                 "It does not receive target event labels during generation and grants no credit without "
                 "strict decode/verifier behavior."
+            ),
+        },
+        "body_executable_span_auxiliary": {
+            "enabled": body_executable_span_head,
+            "policy": "private_executable_span_head_requested_v1" if body_executable_span_head else "not_enabled",
+            "role_count": len(BODY_EXECUTABLE_SPAN_ROLES),
+            "roles": list(BODY_EXECUTABLE_SPAN_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Optional private executable-span role head over target-body positions. It is constructed "
+                "only when requested by a governed budget or adaptation run and emits no candidate by itself."
+            ),
+        },
+        "executable_span_body_constructor": {
+            "enabled": executable_span_body_constructor,
+            "policy": (
+                "predicted_executable_span_conditioned_body_constructor_v1"
+                if executable_span_body_constructor
+                else "not_enabled"
+            ),
+            "scale": executable_span_body_constructor_scale if executable_span_body_constructor else 0.0,
+            "span_role_count": len(BODY_EXECUTABLE_SPAN_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Opt-in architecture coupling: the model's own predicted executable-span distribution "
+                "projects into the body hidden state before body token/action/operand/transition logits. "
+                "It receives no target span labels at generation time and grants no credit without strict replay."
             ),
         },
         "uses_eval_tests_or_solutions": False,
@@ -1238,6 +1318,38 @@ def train_budget_mlx(
                 "benchmark payloads, tools, templates, or fallback bodies."
             ),
         },
+        "body_executable_span_auxiliary": {
+            "enabled": body_executable_span_head,
+            "policy": "private_executable_span_head_requested_v1" if body_executable_span_head else "not_enabled",
+            "role_count": len(BODY_EXECUTABLE_SPAN_ROLES),
+            "roles": list(BODY_EXECUTABLE_SPAN_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Optional private executable-span role head over target-body positions. It is constructed "
+                "only when requested by a governed budget or adaptation run and emits no candidate by itself."
+            ),
+        },
+        "executable_span_body_constructor": {
+            "enabled": executable_span_body_constructor,
+            "policy": (
+                "predicted_executable_span_conditioned_body_constructor_v1"
+                if executable_span_body_constructor
+                else "not_enabled"
+            ),
+            "scale": executable_span_body_constructor_scale if executable_span_body_constructor else 0.0,
+            "span_role_count": len(BODY_EXECUTABLE_SPAN_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Opt-in architecture coupling: predicted executable-span probabilities are projected into "
+                "a shared body-state representation before token/action/operand/transition logits. "
+                "This emits no candidate by itself and does not inspect tests, solutions, public "
+                "benchmark payloads, tools, templates, or fallback bodies."
+            ),
+        },
         "source_contrastive_loss": {
             "enabled": source_contrastive_weight > 0.0,
             "policy": "private_source_mismatch_margin_loss_v1",
@@ -1547,6 +1659,158 @@ def body_state_event_loss_mlx(
     return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
 
 
+def body_executable_span_role_for_roles(action_role: str, operand_role: str, event_role: str) -> str:
+    action = str(action_role or "")
+    operand = str(operand_role or "")
+    event = str(event_role or "")
+    if action == "ignore" and operand == "ignore" and event == "none":
+        return "ignore"
+    if event == "return_finalizer" or action in {"return", "eos"} or operand in {"return_keyword", "eos"}:
+        return "return_finalizer_span"
+    if event == "control_transition" or action in {"loop", "branch", "block_enter", "comparison", "bool_op"}:
+        return "guard_control_span"
+    if event == "traversal_or_call" or action in {"call_or_method", "attribute"} or operand in {
+        "builtin_function",
+        "method_name",
+        "attribute_name",
+    }:
+        return "traversal_call_span"
+    if event == "state_update" or action in {"assignment", "update_operator"} or operand == "assignment_operator":
+        return "state_update_span"
+    if event == "value_expression" or action in {"open_expr", "close_expr"} or operand in {
+        "arithmetic_operator",
+        "comparison_operator",
+        "boolean_operator",
+    }:
+        return "value_expression_span"
+    if operand in {"visible_parameter", "loop_variable", "local_state"}:
+        return "state_reference_span"
+    if operand == "literal_value" or action == "literal":
+        return "literal_span"
+    if operand in {"call_delimiter", "index_delimiter", "punctuation"}:
+        return "delimiter_span"
+    if event == "statement_boundary" or action in {"block_exit", "line_boundary"} or operand == "statement_boundary":
+        return "statement_boundary_span"
+    return "other_span"
+
+
+def body_executable_span_target_rows(
+    action_target_rows: list[list[int]],
+    operand_target_rows: list[list[int]],
+    event_target_rows: list[list[int]],
+    action_weight_rows: list[list[float]],
+    operand_weight_rows: list[list[float]],
+    event_weight_rows: list[list[float]],
+) -> tuple[list[list[int]], list[list[float]], dict[str, Any]]:
+    target_rows: list[list[int]] = []
+    weight_rows: list[list[float]] = []
+    active_positions = 0
+    role_counts = {role: 0 for role in BODY_EXECUTABLE_SPAN_ROLES}
+    row_count = max(
+        len(action_target_rows),
+        len(operand_target_rows),
+        len(event_target_rows),
+        len(action_weight_rows),
+        len(operand_weight_rows),
+        len(event_weight_rows),
+    )
+    for row_index in range(row_count):
+        width = max(
+            len(action_target_rows[row_index]) if row_index < len(action_target_rows) else 0,
+            len(operand_target_rows[row_index]) if row_index < len(operand_target_rows) else 0,
+            len(event_target_rows[row_index]) if row_index < len(event_target_rows) else 0,
+            len(action_weight_rows[row_index]) if row_index < len(action_weight_rows) else 0,
+            len(operand_weight_rows[row_index]) if row_index < len(operand_weight_rows) else 0,
+            len(event_weight_rows[row_index]) if row_index < len(event_weight_rows) else 0,
+        )
+        target_row: list[int] = []
+        weight_row: list[float] = []
+        for pos in range(width):
+            action_id = (
+                int(action_target_rows[row_index][pos])
+                if row_index < len(action_target_rows) and pos < len(action_target_rows[row_index])
+                else 0
+            )
+            operand_id = (
+                int(operand_target_rows[row_index][pos])
+                if row_index < len(operand_target_rows) and pos < len(operand_target_rows[row_index])
+                else 0
+            )
+            event_id = (
+                int(event_target_rows[row_index][pos])
+                if row_index < len(event_target_rows) and pos < len(event_target_rows[row_index])
+                else 0
+            )
+            action_role = BODY_ACTION_ROLES[action_id] if 0 <= action_id < len(BODY_ACTION_ROLES) else "other"
+            operand_role = BODY_OPERAND_ROLES[operand_id] if 0 <= operand_id < len(BODY_OPERAND_ROLES) else "other"
+            event_role = BODY_STATE_EVENT_ROLES[event_id] if 0 <= event_id < len(BODY_STATE_EVENT_ROLES) else "none"
+            role = body_executable_span_role_for_roles(action_role, operand_role, event_role)
+            role_id = BODY_EXECUTABLE_SPAN_ROLE_TO_ID.get(role, BODY_EXECUTABLE_SPAN_ROLE_TO_ID["other_span"])
+            base_weight = max(
+                float(action_weight_rows[row_index][pos] or 0.0)
+                if row_index < len(action_weight_rows) and pos < len(action_weight_rows[row_index])
+                else 0.0,
+                float(operand_weight_rows[row_index][pos] or 0.0)
+                if row_index < len(operand_weight_rows) and pos < len(operand_weight_rows[row_index])
+                else 0.0,
+                float(event_weight_rows[row_index][pos] or 0.0)
+                if row_index < len(event_weight_rows) and pos < len(event_weight_rows[row_index])
+                else 0.0,
+            )
+            if base_weight > 0.0 and role != "ignore":
+                active_positions += 1
+                role_counts[role] = role_counts.get(role, 0) + 1
+                weight = base_weight
+            else:
+                role_id = BODY_EXECUTABLE_SPAN_ROLE_TO_ID["ignore"]
+                weight = 0.0
+            target_row.append(role_id)
+            weight_row.append(round(float(weight), 6))
+        target_rows.append(target_row)
+        weight_rows.append(weight_row)
+    return target_rows, weight_rows, {
+        "enabled": active_positions > 0,
+        "policy": "private_executable_span_target_rows_v1",
+        "rows": row_count,
+        "role_count": len(BODY_EXECUTABLE_SPAN_ROLES),
+        "roles": list(BODY_EXECUTABLE_SPAN_ROLES),
+        "active_positions": active_positions,
+        "role_counts": {role: count for role, count in role_counts.items() if count},
+        "label_source": "admitted_private_body_action_operand_event_roles_only",
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "candidate_generation_credit": 0,
+        "score_semantics": (
+            "Maps admitted private/licensed body tokens into executable span roles such as guard/control, "
+            "traversal/call, state update, value expression, return/finalizer, and state reference. "
+            "Labels are derived from existing private action/operand/event role targets; no tests, "
+            "solutions, public benchmark payloads, tools, templates, or fallback bodies are consulted."
+        ),
+    }
+
+
+def body_executable_span_loss_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    span_targets: Any,
+    span_weights: Any,
+    mx: Any,
+    nn: Any,
+) -> Any:
+    if not hasattr(model, "body_executable_span_logits"):
+        return mx.array(0.0, dtype=mx.float32)
+    tgt_in = tgt[:, :-1]
+    tgt_out = tgt[:, 1:]
+    logits = model.body_executable_span_logits(src, tgt_in)
+    targets = span_targets[:, 1:]
+    losses = nn.losses.cross_entropy(logits, targets, reduction="none")
+    valid = (tgt_out != pad_id).astype(mx.float32) * span_weights[:, 1:]
+    return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
+
+
 def body_state_event_consistency_loss_mlx(
     model: Any,
     src: Any,
@@ -1757,6 +2021,61 @@ def body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
     return loss
 
 
+def body_action_operand_transition_event_span_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    event_targets: Any,
+    event_weights: Any,
+    body_state_event_weight: float,
+    span_targets: Any,
+    span_weights: Any,
+    body_executable_span_weight: float,
+    mx: Any,
+    nn: Any,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
+) -> Any:
+    loss = body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
+        model,
+        src,
+        tgt,
+        pad_id,
+        token_weights,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        operand_targets,
+        operand_weights,
+        body_operand_weight,
+        event_targets,
+        event_weights,
+        body_state_event_weight,
+        mx,
+        nn,
+        body_state_event_action_consistency_weight,
+        body_state_event_operand_consistency_weight,
+    )
+    if float(body_executable_span_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_executable_span_weight)
+            * body_executable_span_loss_mlx(model, src, tgt, pad_id, span_targets, span_weights, mx, nn)
+        )
+    return loss
+
+
 def semantic_body_transition_aux_weighted_loss_fn_mlx(
     model: Any,
     src: Any,
@@ -1927,6 +2246,8 @@ def semantic_body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
     mx: Any,
     nn: Any,
     slot_role_class_ids: list[Any] | None = None,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
 ) -> Any:
     loss = semantic_body_action_operand_transition_aux_weighted_loss_fn_mlx(
         model,
@@ -1968,6 +2289,75 @@ def semantic_body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
             float(body_state_event_action_consistency_weight),
             float(body_state_event_operand_consistency_weight),
             mx,
+        )
+    return loss
+
+
+def semantic_body_action_operand_transition_event_span_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    event_targets: Any,
+    event_weights: Any,
+    body_state_event_weight: float,
+    span_targets: Any,
+    span_weights: Any,
+    body_executable_span_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
+) -> Any:
+    loss = semantic_body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
+        model,
+        src,
+        tgt,
+        pad_id,
+        token_weights,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        operand_targets,
+        operand_weights,
+        body_operand_weight,
+        event_targets,
+        event_weights,
+        body_state_event_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+        body_state_event_action_consistency_weight=body_state_event_action_consistency_weight,
+        body_state_event_operand_consistency_weight=body_state_event_operand_consistency_weight,
+    )
+    if float(body_executable_span_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_executable_span_weight)
+            * body_executable_span_loss_mlx(model, src, tgt, pad_id, span_targets, span_weights, mx, nn)
         )
     return loss
 
@@ -2184,6 +2574,8 @@ def semantic_body_action_operand_transition_event_aux_source_contrastive_weighte
     mx: Any,
     nn: Any,
     slot_role_class_ids: list[Any] | None = None,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
 ) -> Any:
     loss = semantic_body_action_operand_transition_aux_source_contrastive_weighted_loss_fn_mlx(
         model,
@@ -2231,6 +2623,87 @@ def semantic_body_action_operand_transition_event_aux_source_contrastive_weighte
             float(body_state_event_action_consistency_weight),
             float(body_state_event_operand_consistency_weight),
             mx,
+        )
+    return loss
+
+
+def semantic_body_action_operand_transition_event_span_aux_source_contrastive_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    mismatched_src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    source_contrastive_weight: float,
+    source_contrastive_margin: float,
+    source_contrastive_prefix_tokens: int,
+    source_contrastive_span_mode: str,
+    source_contrastive_body_start_id: int,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    event_targets: Any,
+    event_weights: Any,
+    body_state_event_weight: float,
+    span_targets: Any,
+    span_weights: Any,
+    body_executable_span_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
+) -> Any:
+    loss = semantic_body_action_operand_transition_event_aux_source_contrastive_weighted_loss_fn_mlx(
+        model,
+        src,
+        mismatched_src,
+        tgt,
+        pad_id,
+        token_weights,
+        source_contrastive_weight,
+        source_contrastive_margin,
+        source_contrastive_prefix_tokens,
+        source_contrastive_span_mode,
+        source_contrastive_body_start_id,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        operand_targets,
+        operand_weights,
+        body_operand_weight,
+        event_targets,
+        event_weights,
+        body_state_event_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+        body_state_event_action_consistency_weight=body_state_event_action_consistency_weight,
+        body_state_event_operand_consistency_weight=body_state_event_operand_consistency_weight,
+    )
+    if float(body_executable_span_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_executable_span_weight)
+            * body_executable_span_loss_mlx(model, src, tgt, pad_id, span_targets, span_weights, mx, nn)
         )
     return loss
 
@@ -4697,6 +5170,115 @@ def evaluate_body_state_event_mlx(
             "are derived from admitted private action/operand roles and describe traversal/call, state "
             "update, control, finalizer, value-expression, statement-boundary, or none. This head emits "
             "no candidates and grants no learned-generation promotion credit by itself."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def evaluate_body_executable_span_mlx(
+    model: Any,
+    source_rows: list[list[int]],
+    target_rows: list[list[int]],
+    span_target_rows: list[list[int]],
+    span_weight_rows: list[list[float]],
+    *,
+    batch_size: int,
+    pad_id: int,
+    enabled: bool,
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    if not enabled or not source_rows or not target_rows or not span_target_rows or not span_weight_rows:
+        return {
+            "enabled": bool(enabled),
+            "loss": None,
+            "accuracy": None,
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    if not hasattr(model, "body_executable_span_logits"):
+        return {
+            "enabled": False,
+            "loss": None,
+            "accuracy": None,
+            "reason": "model_has_no_body_executable_span_head",
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    losses: list[float] = []
+    active_positions = 0
+    correct = 0
+    counted = 0
+    role_correct = {role: 0 for role in BODY_EXECUTABLE_SPAN_ROLES}
+    role_count = {role: 0 for role in BODY_EXECUTABLE_SPAN_ROLES}
+    model.eval()
+    for start in range(0, len(source_rows), batch_size):
+        src = mx.array(source_rows[start : start + batch_size], dtype=mx.int32)
+        tgt = mx.array(target_rows[start : start + batch_size], dtype=mx.int32)
+        targets = mx.array(span_target_rows[start : start + batch_size], dtype=mx.int32)
+        weights = mx.array(span_weight_rows[start : start + batch_size], dtype=mx.float32)
+        loss = body_executable_span_loss_mlx(model, src, tgt, pad_id, targets, weights, mx, nn)
+        logits = model.body_executable_span_logits(src, tgt[:, :-1])
+        pred = mx.argmax(logits, axis=-1)
+        target_out = targets[:, 1:]
+        valid = ((tgt[:, 1:] != pad_id).astype(mx.float32) * weights[:, 1:]) > 0.0
+        hit = (pred == target_out).astype(mx.float32) * valid.astype(mx.float32)
+        batch_correct = mx.sum(hit).astype(mx.float32)
+        batch_count = mx.sum(valid.astype(mx.float32))
+        mx.eval(loss, pred, target_out, valid, batch_correct, batch_count)
+        losses.append(float(loss.item()))
+        active_positions += sum(
+            1
+            for row in span_weight_rows[start : start + batch_size]
+            for value in row[1:]
+            if float(value or 0.0) > 0.0
+        )
+        if float(batch_count.item()) > 0.0:
+            correct += int(batch_correct.item())
+            counted += int(batch_count.item())
+            pred_rows = pred.tolist()
+            target_rows_local = target_out.tolist()
+            valid_rows = valid.tolist()
+            for row_index, target_row in enumerate(target_rows_local):
+                for col_index, target_id in enumerate(target_row):
+                    if not bool(valid_rows[row_index][col_index]):
+                        continue
+                    role = (
+                        BODY_EXECUTABLE_SPAN_ROLES[int(target_id)]
+                        if 0 <= int(target_id) < len(BODY_EXECUTABLE_SPAN_ROLES)
+                        else "other_span"
+                    )
+                    role_count[role] += 1
+                    if int(pred_rows[row_index][col_index]) == int(target_id):
+                        role_correct[role] += 1
+    model.train()
+    loss = sum(losses) / max(1, len(losses))
+    return {
+        "enabled": True,
+        "policy": "private_prefix_conditioned_body_executable_span_eval_v1",
+        "loss": round(loss, 6),
+        "accuracy": round(correct / counted, 6) if counted else None,
+        "correct_count": correct,
+        "active_position_count": active_positions,
+        "role_accuracy": {
+            role: {
+                "accuracy": round(role_correct[role] / role_count[role], 6) if role_count[role] else None,
+                "correct_count": role_correct[role],
+                "active_target_count": role_count[role],
+            }
+            for role in BODY_EXECUTABLE_SPAN_ROLES
+            if role_count[role]
+        },
+        "score_semantics": (
+            "Heldout loss/accuracy for a prefix-conditioned executable-span head over private "
+            "guard/control, traversal, state-update, value-expression, return/finalizer, and "
+            "state-reference spans. It emits no candidates and grants no learned-generation credit."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
