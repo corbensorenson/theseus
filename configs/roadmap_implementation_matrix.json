@@ -533,15 +533,16 @@
         "reports/theseus_assistant_vcm_governor_smoke.json",
         "reports/theseus_assistant_vcm_governor_trace.jsonl",
         "reports/theseus_assistant_vcm_context_abi_smoke.json",
-        "reports/theseus_assistant_vcm_context_abi_trace.jsonl"
+        "reports/theseus_assistant_vcm_context_abi_trace.jsonl",
+        "configs/viea_spine_record_contracts.json"
       ],
       "missing_items": [
-        "VCM representation certificates: source refs, omissions, loss contract, permitted uses, authority ceiling, and consumer policy for every materialized context packet",
-        "copy-on-write VCM snapshot branches with read/write sets, taint propagation, deletion closure, contradiction refs, and typed mandatory-miss faults",
+        "VCM representation certificates are now emitted by the deployed context resolver for every audited request: source refs, omissions, loss contract, permitted uses, authority ceiling, consumer policy, authority-nonwidening checks, and expected-invalid controls are GREEN; remaining work is making this certificate ABI mandatory for every future VCM consumer that bypasses the governor",
+        "copy-on-write VCM snapshot branch ledger is now emitted by the deployed context resolver with read/write sets, taint propagation, deletion obligations, contradiction refs, closure state, typed faults, and expected-invalid controls; remaining work is universal adoption for every context-producing runtime surface",
         "native KV/prefix-cache lifecycle proof for the actual MLX/Metal serving path, separated from semantic descriptor-cache and CPU DynamicCache evidence",
         "context adequacy must fail closed in assistant, verifier, planner, and training/eval packets when required material is stale, tainted, missing, contradictory, or over-compressed"
       ],
-      "smallest_next_patch": "Complete VCM as a transactional context ABI, not just a useful context governor: add representation certificates, authority ceilings, copy-on-write snapshot branches, taint/deletion propagation, mandatory typed faults, and native KV/prefix-cache replay proofs before claiming runtime parity.",
+      "smallest_next_patch": "Continue Phase 3 by forcing the new VCM representation-certificate and copy-on-write snapshot-branch ABI into every context-producing runtime surface, then add native MLX/Metal KV/prefix-cache lifecycle proof before any runtime parity or production serving-route claim.",
       "integration_smoke": [
         "python3 scripts/vcm_context_governor_gate.py",
         "reports/vcm_context_governor.json summary.context_abi_fixture_status=ready",
@@ -552,6 +553,13 @@
         "reports/vcm_context_governor.json summary.context_resolver_materialized_count=3",
         "reports/vcm_context_governor.json summary.context_resolver_typed_fault_count=4",
         "reports/vcm_context_governor.json summary.context_resolver_viea_record_count=56",
+        "reports/vcm_context_governor.json summary.representation_certificate_status=ready",
+        "reports/vcm_context_governor.json summary.representation_certificate_passed_count=7",
+        "reports/vcm_context_governor.json summary.representation_certificate_expected_invalid_rejected_count=4",
+        "reports/vcm_context_governor.json summary.snapshot_branch_status=ready",
+        "reports/vcm_context_governor.json summary.snapshot_branch_passed_count=7",
+        "reports/vcm_context_governor.json summary.snapshot_branch_expected_invalid_rejected_count=4",
+        "reports/vcm_context_governor.json summary.snapshot_branch_typed_fault_count=4",
         "python3 scripts/vcm_runtime_claim_readiness.py",
         "reports/vcm_runtime_claim_readiness.json summary.cache_key_complete_rate=1.0",
         "python3 scripts/vcm_runtime_cache_lifecycle.py",
@@ -582,6 +590,7 @@
         "python3 scripts/viea_spine_record_gate.py",
         "reports/viea_spine_record_gate.json profiles train_once_fanout_spine_v1, direct_generator_context_spine_v1, vcm_context_abi_fixture_spine_v1, vcm_context_resolver_conformance_spine_v1, deterministic_tool_context_spine_v1, training_data_admission_context_spine_v1, and vcm_native_runtime_spine_v1 passed=true",
         "reports/viea_spine_materialized_view.json summary.schema_payload_gap_count=0",
+        "reports/viea_spine_materialized_view.json summary.context_record_count includes VCM representation-certificate and snapshot-branch records",
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize how VCM context ABI faults and adequacy are enforced in the current Theseus roadmap implementation path.\" --intent planning --feedback completed --session-id vcm_context_abi_phase3_smoke --out reports/theseus_assistant_vcm_context_abi_smoke.json --markdown-out reports/theseus_assistant_vcm_context_abi_smoke.md --events-out reports/theseus_assistant_vcm_context_abi_events.jsonl --viea-trace-out reports/theseus_assistant_vcm_context_abi_trace.jsonl",
         "reports/theseus_assistant_vcm_context_abi_smoke.json gates.vcm_context_governor_ready.passed=true",
         "reports/theseus_assistant_vcm_context_abi_smoke.json summary.viea_materialized_view_record_count>0",

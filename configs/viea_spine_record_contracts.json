@@ -521,7 +521,9 @@
       "required": true,
       "path": "reports/vcm_context_governor.json",
       "record_list_fields": [
-        "viea_context_resolver_records"
+        "viea_context_resolver_records",
+        "viea_vcm_representation_certificate_records",
+        "viea_vcm_snapshot_branch_records"
       ],
       "required_record_types": [
         "context_abi_record",
@@ -542,6 +544,8 @@
         "public benchmark payload mount denial emits typed fault",
         "expired lease reuse is blocked",
         "summary-only context is rejected for verifier-evidence use",
+        "representation_certificate_status=ready",
+        "snapshot_branch_status=ready",
         "public_training_rows_written=0",
         "external_inference_calls=0",
         "fallback_return_count=0"

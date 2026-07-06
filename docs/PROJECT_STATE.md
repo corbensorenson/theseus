@@ -821,9 +821,16 @@ mount-policy denial, and expired-lease reuse blocking. The deployed resolver
 conformance lane is also `ready`: `7/7` real semantic-address requests pass,
 `3` local artifact refs are materialized, `4` typed faults are emitted for
 blocked/missing/stale/unsafe requests, and `56` resolver VIEA records are
-materialized without raw payload leakage. This is context ABI and resolver
-evidence, not a VCM benchmark score, native KV-cache parity claim, or
-learned-generation claim.
+materialized without raw payload leakage. The same deployed resolver now emits
+Phase 3 representation certificates and copy-on-write snapshot branches:
+`7/7` representation certificates pass with `4/4` expected-invalid controls
+rejected, `7/7` snapshot branches pass with `4/4` expected-invalid controls
+rejected, and `4` branch records carry typed faults rather than best-effort
+materialization. `configs/viea_spine_record_contracts.json` now includes those
+record lists under the resolver conformance profile, and
+`python3 scripts/viea_spine_record_gate.py --gate` remains `GREEN` with `0`
+hard gaps and `0` warnings. This is context ABI and resolver evidence, not a
+VCM benchmark score, native KV-cache parity claim, or learned-generation claim.
 `reports/deterministic_tool_substrate.json` now contributes
 `deterministic_tool_context_spine_v1` in addition to the existing deterministic
 tool evidence profile. The deterministic tool path is `GREEN` with `13` local

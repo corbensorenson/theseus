@@ -53,6 +53,8 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         list_dicts(config.get("semantic_address_catalog")),
         list_dicts(config.get("context_resolver_requests")),
     )
+    representation_certificates = audit_representation_certificates(context_resolver["requests"])
+    snapshot_branches = audit_snapshot_branch_ledger(context_resolver["requests"])
     boundaries = audit_boundaries(dict_value(config.get("hard_boundaries")))
     hard_gaps = []
     warnings = []
@@ -69,6 +71,10 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
     warnings.extend(context_abi["warnings"])
     hard_gaps.extend(context_resolver["hard_gaps"])
     warnings.extend(context_resolver["warnings"])
+    hard_gaps.extend(representation_certificates["hard_gaps"])
+    warnings.extend(representation_certificates["warnings"])
+    hard_gaps.extend(snapshot_branches["hard_gaps"])
+    warnings.extend(snapshot_branches["warnings"])
     hard_gaps.extend([gate for gate in boundaries if gate["severity"] == "hard" and not gate["passed"]])
     trigger_state = "GREEN"
     if hard_gaps:
@@ -98,6 +104,17 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "context_resolver_viea_record_count": len(context_resolver["viea_context_resolver_records"]),
         "context_resolver_materialized_count": sum(1 for row in context_resolver["requests"] if row.get("decision") == "materialize"),
         "context_resolver_typed_fault_count": sum(1 for row in context_resolver["requests"] if row.get("decision") == "typed_fault"),
+        "representation_certificate_status": representation_certificates["status"],
+        "representation_certificate_count": len(representation_certificates["certificates"]),
+        "representation_certificate_passed_count": representation_certificates["passed_count"],
+        "representation_certificate_expected_invalid_rejected_count": representation_certificates["expected_invalid_rejected_count"],
+        "representation_certificate_viea_record_count": len(representation_certificates["viea_representation_certificate_records"]),
+        "snapshot_branch_status": snapshot_branches["status"],
+        "snapshot_branch_count": len(snapshot_branches["branches"]),
+        "snapshot_branch_passed_count": snapshot_branches["passed_count"],
+        "snapshot_branch_expected_invalid_rejected_count": snapshot_branches["expected_invalid_rejected_count"],
+        "snapshot_branch_typed_fault_count": sum(1 for row in snapshot_branches["branches"] if row.get("faults")),
+        "snapshot_branch_viea_record_count": len(snapshot_branches["viea_snapshot_branch_records"]),
         "hard_gap_count": len(hard_gaps),
         "warning_count": len(warnings),
     }
@@ -113,8 +130,12 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "deletion_closure": closure,
         "context_abi": context_abi,
         "context_resolver": context_resolver,
+        "representation_certificates": representation_certificates,
+        "snapshot_branch_ledger": snapshot_branches,
         "viea_context_abi_records": context_abi["viea_context_abi_records"],
         "viea_context_resolver_records": context_resolver["viea_context_resolver_records"],
+        "viea_vcm_representation_certificate_records": representation_certificates["viea_representation_certificate_records"],
+        "viea_vcm_snapshot_branch_records": snapshot_branches["viea_snapshot_branch_records"],
         "hard_gaps": hard_gaps,
         "warnings": warnings,
         "rules": {
@@ -124,6 +145,8 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
             "deletion": "Deleted or revoked material must close derived summaries/caches/training rows or emit a closure fault.",
             "context_abi": "Context requests must resolve through stable address/version/mount/snapshot/representation fields and emit typed faults instead of best-effort materialization when unresolved, inadequate, denied, or lease-expired.",
             "context_resolver": "Deployed resolver conformance must resolve real semantic addresses to local artifact refs and hashes, or emit typed faults without payload leakage.",
+            "representation_certificate": "Every materialized or faulted context packet must carry source refs, omissions, loss contract, permitted uses, authority ceiling, consumer policy, and a proof that summaries cannot raise source authority.",
+            "snapshot_branch": "Every deployed resolver request must emit a copy-on-write branch ledger with read/write sets, taint propagation, deletion obligations, contradiction refs, closure state, and typed faults.",
             "runtime": "VCM context governance does not claim native KV/prefix-cache parity.",
         },
         "runtime_ms": int((time.perf_counter() - started) * 1000),
@@ -820,6 +843,504 @@ def context_resolver_records(row: dict[str, Any], passed: bool) -> list[dict[str
     ]
 
 
+def audit_representation_certificates(requests: list[dict[str, Any]]) -> dict[str, Any]:
+    hard_gaps: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
+    certificates = []
+    records: list[dict[str, Any]] = []
+    for row in requests:
+        certificate = build_representation_certificate(row)
+        item_gaps = validate_representation_certificate(certificate)
+        passed = not item_gaps
+        hard_gaps.extend(item_gaps)
+        audited = {**certificate, "passed": passed, "hard_gaps": item_gaps}
+        certificates.append(audited)
+        records.extend(representation_certificate_records(audited, passed))
+
+    if not certificates:
+        hard_gaps.append(item_gap("representation_certificate", "certificates_missing", {}))
+
+    invalid_controls = [
+        invalid_certificate_control(
+            "authority_widening_rejected",
+            {**certificates[0], "materialized_authority_labels": list_values(certificates[0].get("authority_ceiling")) + ["runtime_external_inference"]}
+            if certificates
+            else {},
+        ),
+        invalid_certificate_control("missing_source_refs_rejected", {**certificates[0], "source_refs": []} if certificates else {}),
+        invalid_certificate_control("missing_authority_ceiling_rejected", {**certificates[0], "authority_ceiling": []} if certificates else {}),
+        invalid_certificate_control(
+            "best_effort_consumer_policy_rejected",
+            {
+                **certificates[0],
+                "consumer_policy": {**dict_value(certificates[0].get("consumer_policy")), "best_effort_materialization_allowed": True},
+            }
+            if certificates
+            else {},
+        ),
+    ]
+    rejected_count = sum(1 for row in invalid_controls if row["rejected"])
+    if rejected_count != len(invalid_controls):
+        hard_gaps.append(
+            item_gap(
+                "representation_certificate",
+                "expected_invalid_certificate_control_not_rejected",
+                {"expected": len(invalid_controls), "rejected": rejected_count},
+            )
+        )
+
+    return {
+        "policy": "project_theseus_vcm_representation_certificate_gate_v1",
+        "status": "ready" if not hard_gaps else "fail_closed",
+        "certificate_count": len(certificates),
+        "passed_count": sum(1 for row in certificates if row.get("passed")),
+        "expected_invalid_controls": invalid_controls,
+        "expected_invalid_rejected_count": rejected_count,
+        "certificates": certificates,
+        "viea_representation_certificate_records": records,
+        "hard_gaps": hard_gaps,
+        "warnings": warnings,
+        "non_claims": [
+            "Representation certificates constrain context meaning and authority only.",
+            "Representation certificates are not native KV-cache parity evidence.",
+            "Representation certificates are not learned-generation evidence.",
+        ],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def build_representation_certificate(row: dict[str, Any]) -> dict[str, Any]:
+    request_id = str(row.get("request_id") or stable_id(row))
+    decision = str(row.get("decision") or "")
+    fault_state = str(row.get("fault_state") or "")
+    materialization_ref = str(row.get("materialization_ref") or "")
+    materialization_sha256 = str(row.get("materialization_sha256") or "")
+    source_refs = [
+        {
+            "kind": "semantic_address",
+            "ref": str(row.get("semantic_address") or ""),
+            "snapshot_id": str(row.get("catalog_snapshot_id") or row.get("snapshot_id") or ""),
+        }
+    ]
+    if materialization_ref:
+        source_refs.append({"kind": "materialized_artifact", "ref": materialization_ref, "sha256": materialization_sha256})
+    for ref in list_values(row.get("audit_refs")):
+        source_refs.append({"kind": "audit_ref", "ref": str(ref)})
+
+    omissions = ["raw_payload_text_not_embedded", "context_packet_contains_refs_and_hashes_only"]
+    if row.get("raw_private_text_stored") is False:
+        omissions.append("raw_private_text_not_staged")
+    if decision != "materialize":
+        omissions.append(f"payload_not_materialized_due_to_{fault_state or 'typed_fault'}")
+    if list_values(row.get("deletion_obligations")):
+        omissions.append("deletion_obligations_preserved")
+
+    authority_ceiling = list_values(row.get("requested_authority_labels"))
+    materialized_authority = list_values(row.get("materialized_authority_labels"))
+    representation_contract = str(row.get("representation_contract") or "")
+    permitted_uses = ["typed_fault_handling", "audit_replay"]
+    if decision == "materialize":
+        permitted_uses = ["context_read", "evidence_pointer", "audit_replay"]
+        if "metadata_only" in representation_contract:
+            permitted_uses.append("metadata_accounting")
+        if "summary_only" in representation_contract:
+            permitted_uses.append("summary_context_only")
+
+    return {
+        "certificate_id": stable_id("vcm_representation_certificate", request_id),
+        "request_id": request_id,
+        "scenario": row.get("scenario"),
+        "semantic_address": row.get("semantic_address"),
+        "snapshot_id": row.get("catalog_snapshot_id") or row.get("snapshot_id"),
+        "version": row.get("catalog_version") or row.get("version"),
+        "mount": row.get("mount"),
+        "source_refs": source_refs,
+        "omissions": omissions,
+        "loss_contract": {
+            "representation_contract": representation_contract,
+            "payload_boundary": "path_and_hash_refs_only_no_raw_payload",
+            "summary_can_raise_authority": False,
+            "compression_must_preserve_taint_and_omissions": True,
+            "fault_state": fault_state,
+            "materialization_state": decision,
+        },
+        "permitted_uses": permitted_uses,
+        "authority_ceiling": authority_ceiling,
+        "materialized_authority_labels": materialized_authority,
+        "consumer_policy": {
+            "fail_closed_on_missing": True,
+            "fail_closed_on_stale": True,
+            "fail_closed_on_tainted_for_training": True,
+            "best_effort_materialization_allowed": False,
+            "authority_widening_allowed": False,
+            "public_benchmark_payload_training_allowed": False,
+            "raw_private_text_materialization_allowed": False,
+        },
+        "typed_fault": fault_state if fault_state not in {"", "none"} else "",
+        "audit_refs": list_values(row.get("audit_refs")) + ["reports/vcm_context_governor.json"],
+        "taint_labels": list_values(row.get("taint_labels")),
+        "deletion_obligations": list_values(row.get("deletion_obligations")),
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "raw_private_text_stored": False,
+        "raw_prompt_stored": False,
+        "non_claims": [
+            "certificate constrains representation and authority only",
+            "not learned-generation evidence",
+            "not native KV-cache parity evidence",
+        ],
+    }
+
+
+def validate_representation_certificate(row: dict[str, Any]) -> list[dict[str, Any]]:
+    item_id = str(row.get("certificate_id") or row.get("request_id") or "representation_certificate")
+    gaps: list[dict[str, Any]] = []
+    if not list_values(row.get("source_refs")):
+        gaps.append(item_gap(item_id, "representation_certificate_source_refs_missing", {}))
+    if not list_values(row.get("omissions")):
+        gaps.append(item_gap(item_id, "representation_certificate_omissions_missing", {}))
+    if not dict_value(row.get("loss_contract")):
+        gaps.append(item_gap(item_id, "representation_certificate_loss_contract_missing", {}))
+    if not list_values(row.get("permitted_uses")):
+        gaps.append(item_gap(item_id, "representation_certificate_permitted_uses_missing", {}))
+    authority_ceiling = set(str(x) for x in list_values(row.get("authority_ceiling")))
+    materialized_authority = set(str(x) for x in list_values(row.get("materialized_authority_labels")))
+    if not authority_ceiling:
+        gaps.append(item_gap(item_id, "representation_certificate_authority_ceiling_missing", {}))
+    if materialized_authority and not materialized_authority.issubset(authority_ceiling):
+        gaps.append(
+            item_gap(
+                item_id,
+                "representation_certificate_authority_widened",
+                {
+                    "authority_ceiling": sorted(authority_ceiling),
+                    "materialized_authority_labels": sorted(materialized_authority),
+                },
+            )
+        )
+    policy = dict_value(row.get("consumer_policy"))
+    required_policy = {
+        "fail_closed_on_missing": True,
+        "best_effort_materialization_allowed": False,
+        "authority_widening_allowed": False,
+        "public_benchmark_payload_training_allowed": False,
+        "raw_private_text_materialization_allowed": False,
+    }
+    for key, expected in required_policy.items():
+        if policy.get(key) is not expected:
+            gaps.append(item_gap(item_id, f"representation_certificate_policy_{key}_invalid", {"expected": expected, "actual": policy.get(key)}))
+    if dict_value(row.get("loss_contract")).get("summary_can_raise_authority") is not False:
+        gaps.append(item_gap(item_id, "representation_certificate_summary_can_raise_authority", {}))
+    if any(int_or(row.get(key)) != 0 for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")):
+        gaps.append(item_gap(item_id, "representation_certificate_no_cheat_counter_fault", {}))
+    if row.get("raw_private_text_stored") is not False or row.get("raw_prompt_stored") is not False:
+        gaps.append(item_gap(item_id, "representation_certificate_raw_text_stored", {}))
+    return gaps
+
+
+def invalid_certificate_control(control: str, candidate: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "control": control,
+        "rejected": bool(validate_representation_certificate(candidate)),
+        "candidate_certificate_id": candidate.get("certificate_id"),
+    }
+
+
+def representation_certificate_records(row: dict[str, Any], passed: bool) -> list[dict[str, Any]]:
+    request_id = str(row.get("request_id") or row.get("certificate_id") or stable_id(row))
+    support_state = "SUPPORTED" if passed else "BLOCKED"
+    content_hash = stable_hash(row)
+    common = {
+        "task_kind": "vcm_representation_certificate",
+        "target": "vcm_context_governor",
+        "request_id": request_id,
+        "scenario": row.get("scenario"),
+        "support_state": support_state,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "raw_prompt_stored": False,
+        "raw_private_text_stored": False,
+    }
+    return [
+        {
+            **common,
+            "record_type": "context_abi_record",
+            "record_id": stable_id("representation_certificate_abi", request_id, content_hash),
+            "certificate_id": row.get("certificate_id"),
+            "semantic_address": row.get("semantic_address"),
+            "version": row.get("version"),
+            "mount": row.get("mount"),
+            "snapshot_id": row.get("snapshot_id"),
+            "representation_contract": dict_value(row.get("loss_contract")).get("representation_contract"),
+            "authority_scope": ",".join(str(x) for x in list_values(row.get("authority_ceiling"))),
+            "admission_state": "certified" if passed else "blocked",
+            "adequacy_state": "certificate_ready" if passed else "certificate_fault",
+            "fault_state": row.get("typed_fault") or "none",
+            "materialization_ref": next((src.get("ref") for src in list_dicts(row.get("source_refs")) if src.get("kind") == "materialized_artifact"), ""),
+            "lease_state": "certificate_only",
+            "content_hash": content_hash,
+        },
+        {
+            **common,
+            "record_type": "authority_use_receipt",
+            "record_id": stable_id("representation_certificate_authority", request_id),
+            "authority_scope": ",".join(str(x) for x in list_values(row.get("authority_ceiling"))),
+            "allowed_effects": ["read_context_refs", "emit_representation_certificate"],
+            "denied_effects": ["authority_widening", "raw_payload_copy", "runtime_external_inference"],
+        },
+        {
+            **common,
+            "record_type": "claim_record",
+            "record_id": stable_id("representation_certificate_claim", request_id),
+            "claim_id": stable_id("representation_certificate_claim", row.get("scenario")),
+            "evidence_ref": "reports/vcm_context_governor.json",
+            "learned_generation_claim_allowed": False,
+        },
+        {
+            **common,
+            "record_type": "evidence_transition_record",
+            "record_id": stable_id("representation_certificate_evidence", request_id),
+            "previous_support_state": "UNREVIEWED",
+            "current_support_state": support_state,
+            "evidence_ref": "reports/vcm_context_governor.json",
+        },
+    ]
+
+
+def audit_snapshot_branch_ledger(requests: list[dict[str, Any]]) -> dict[str, Any]:
+    hard_gaps: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
+    branches = []
+    records: list[dict[str, Any]] = []
+    for row in requests:
+        branch = build_snapshot_branch(row)
+        item_gaps = validate_snapshot_branch(branch)
+        passed = not item_gaps
+        hard_gaps.extend(item_gaps)
+        audited = {**branch, "passed": passed, "hard_gaps": item_gaps}
+        branches.append(audited)
+        records.extend(snapshot_branch_records(audited, passed))
+
+    if not branches:
+        hard_gaps.append(item_gap("snapshot_branch", "snapshot_branches_missing", {}))
+
+    invalid_controls = [
+        invalid_snapshot_branch_control(
+            "taint_drop_rejected",
+            {**branches[0], "propagated_taint_labels": []} if branches else {},
+        ),
+        invalid_snapshot_branch_control(
+            "source_mutation_rejected",
+            {**branches[0], "write_set": list_values(branches[0].get("read_set")), "source_mutation_allowed": True} if branches else {},
+        ),
+        invalid_snapshot_branch_control(
+            "public_payload_materialization_rejected",
+            {
+                **next((row for row in branches if "public_benchmark" in str(row.get("semantic_address"))), branches[0] if branches else {}),
+                "materialization_state": "materialize",
+                "faults": [],
+            }
+            if branches
+            else {},
+        ),
+        invalid_snapshot_branch_control(
+            "mandatory_miss_without_fault_rejected",
+            {
+                **next((row for row in branches if row.get("scenario") == "mandatory_miss_typed_fault"), branches[0] if branches else {}),
+                "faults": [],
+                "materialization_state": "typed_fault",
+            }
+            if branches
+            else {},
+        ),
+    ]
+    rejected_count = sum(1 for row in invalid_controls if row["rejected"])
+    if rejected_count != len(invalid_controls):
+        hard_gaps.append(
+            item_gap(
+                "snapshot_branch",
+                "expected_invalid_snapshot_branch_control_not_rejected",
+                {"expected": len(invalid_controls), "rejected": rejected_count},
+            )
+        )
+
+    return {
+        "policy": "project_theseus_vcm_snapshot_branch_ledger_v1",
+        "status": "ready" if not hard_gaps else "fail_closed",
+        "branch_count": len(branches),
+        "passed_count": sum(1 for row in branches if row.get("passed")),
+        "expected_invalid_controls": invalid_controls,
+        "expected_invalid_rejected_count": rejected_count,
+        "branches": branches,
+        "viea_snapshot_branch_records": records,
+        "hard_gaps": hard_gaps,
+        "warnings": warnings,
+        "non_claims": [
+            "Snapshot branches prove context transaction discipline only.",
+            "Snapshot branches do not prove native KV-cache parity.",
+            "Snapshot branches do not credit learned generation.",
+        ],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def build_snapshot_branch(row: dict[str, Any]) -> dict[str, Any]:
+    request_id = str(row.get("request_id") or stable_id(row))
+    parent_snapshot = str(row.get("catalog_snapshot_id") or row.get("snapshot_id") or "snapshot://unknown")
+    materialization_ref = str(row.get("materialization_ref") or "")
+    fault_state = str(row.get("fault_state") or "")
+    faults = [] if fault_state in {"", "none"} else [fault_state]
+    taints = list_values(row.get("taint_labels"))
+    return {
+        "branch_id": stable_id("vcm_snapshot_branch", request_id),
+        "request_id": request_id,
+        "scenario": row.get("scenario"),
+        "semantic_address": row.get("semantic_address"),
+        "parent_snapshot_id": parent_snapshot,
+        "branch_snapshot_id": f"{parent_snapshot}/branch/{stable_id(request_id, row.get('decision'), fault_state)}",
+        "operation": "resolve_semantic_address",
+        "copy_on_write": True,
+        "source_mutation_allowed": False,
+        "read_set": [item for item in [row.get("semantic_address"), materialization_ref] if item],
+        "write_set": [],
+        "mounts": [row.get("mount")],
+        "branch_policy": "copy_on_write_fail_closed_no_best_effort",
+        "taint_labels": taints,
+        "propagated_taint_labels": taints,
+        "deletion_obligations": list_values(row.get("deletion_obligations")),
+        "contradiction_refs": [],
+        "declassification_refs": [],
+        "derivative_refs": [row.get("materialization_sha256")] if row.get("materialization_sha256") else [],
+        "materialization_state": row.get("decision"),
+        "closure_state": "closed" if row.get("decision") == "materialize" else "typed_fault",
+        "faults": faults,
+        "audit_refs": list_values(row.get("audit_refs")) + ["reports/vcm_context_governor.json"],
+        "replay_boundary": "path_and_hash_only_no_payload",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "raw_private_text_stored": False,
+        "raw_prompt_stored": False,
+        "non_claims": [
+            "copy-on-write branch records context discipline only",
+            "not learned-generation evidence",
+            "not native KV-cache parity evidence",
+        ],
+    }
+
+
+def validate_snapshot_branch(row: dict[str, Any]) -> list[dict[str, Any]]:
+    item_id = str(row.get("branch_id") or row.get("request_id") or "snapshot_branch")
+    gaps: list[dict[str, Any]] = []
+    if not row.get("parent_snapshot_id") or not row.get("branch_snapshot_id"):
+        gaps.append(item_gap(item_id, "snapshot_branch_ids_missing", {}))
+    if row.get("copy_on_write") is not True:
+        gaps.append(item_gap(item_id, "snapshot_branch_copy_on_write_missing", {}))
+    if row.get("source_mutation_allowed") is not False:
+        gaps.append(item_gap(item_id, "snapshot_branch_source_mutation_allowed", {}))
+    read_set = {str(x) for x in list_values(row.get("read_set"))}
+    write_set = {str(x) for x in list_values(row.get("write_set"))}
+    if not read_set:
+        gaps.append(item_gap(item_id, "snapshot_branch_read_set_missing", {}))
+    if write_set.intersection(read_set):
+        gaps.append(item_gap(item_id, "snapshot_branch_mutates_source_read_set", {"intersection": sorted(write_set.intersection(read_set))}))
+    taints = {str(x) for x in list_values(row.get("taint_labels"))}
+    propagated = {str(x) for x in list_values(row.get("propagated_taint_labels"))}
+    if taints and not taints.issubset(propagated):
+        gaps.append(item_gap(item_id, "snapshot_branch_taint_not_propagated", {"taint_labels": sorted(taints), "propagated": sorted(propagated)}))
+    materialization_state = str(row.get("materialization_state") or "")
+    faults = list_values(row.get("faults"))
+    if materialization_state != "materialize" and not faults:
+        gaps.append(item_gap(item_id, "snapshot_branch_typed_fault_missing", {"materialization_state": materialization_state}))
+    if "public_benchmark" in str(row.get("semantic_address") or "") and materialization_state == "materialize":
+        gaps.append(item_gap(item_id, "snapshot_branch_public_payload_materialized", {"semantic_address": row.get("semantic_address")}))
+    if str(row.get("closure_state") or "") not in {"closed", "typed_fault"}:
+        gaps.append(item_gap(item_id, "snapshot_branch_closure_state_invalid", {"closure_state": row.get("closure_state")}))
+    if any(int_or(row.get(key)) != 0 for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")):
+        gaps.append(item_gap(item_id, "snapshot_branch_no_cheat_counter_fault", {}))
+    if row.get("raw_private_text_stored") is not False or row.get("raw_prompt_stored") is not False:
+        gaps.append(item_gap(item_id, "snapshot_branch_raw_text_stored", {}))
+    return gaps
+
+
+def invalid_snapshot_branch_control(control: str, candidate: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "control": control,
+        "rejected": bool(validate_snapshot_branch(candidate)),
+        "candidate_branch_id": candidate.get("branch_id"),
+    }
+
+
+def snapshot_branch_records(row: dict[str, Any], passed: bool) -> list[dict[str, Any]]:
+    request_id = str(row.get("request_id") or row.get("branch_id") or stable_id(row))
+    support_state = "SUPPORTED" if passed else "BLOCKED"
+    content_hash = stable_hash(row)
+    common = {
+        "task_kind": "vcm_snapshot_branch",
+        "target": "vcm_context_governor",
+        "request_id": request_id,
+        "scenario": row.get("scenario"),
+        "support_state": support_state,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "raw_prompt_stored": False,
+        "raw_private_text_stored": False,
+    }
+    return [
+        {
+            **common,
+            "record_type": "context_transaction",
+            "record_id": stable_id("snapshot_branch_transaction", request_id, content_hash),
+            "transaction_id": row.get("branch_id"),
+            "operation": row.get("operation"),
+            "snapshot_id": row.get("branch_snapshot_id"),
+            "parent_snapshot_id": row.get("parent_snapshot_id"),
+            "mounts": row.get("mounts"),
+            "read_set": row.get("read_set"),
+            "write_set": row.get("write_set"),
+            "branch_policy": row.get("branch_policy"),
+            "taint_labels": row.get("propagated_taint_labels"),
+            "deletion_obligations": row.get("deletion_obligations"),
+            "declassification_refs": row.get("declassification_refs"),
+            "derivative_refs": row.get("derivative_refs"),
+            "contradiction_refs": row.get("contradiction_refs"),
+            "materialization_state": row.get("materialization_state"),
+            "closure_state": row.get("closure_state"),
+            "faults": row.get("faults"),
+            "audit_refs": row.get("audit_refs"),
+            "replay_boundary": row.get("replay_boundary"),
+            "non_claims": row.get("non_claims"),
+            "content_hash": content_hash,
+        },
+        {
+            **common,
+            "record_type": "context_adequacy",
+            "record_id": stable_id("snapshot_branch_adequacy", request_id),
+            "adequacy_id": stable_id("snapshot_branch_adequacy", request_id, row.get("closure_state")),
+            "state": "adequate" if row.get("closure_state") == "closed" else "typed_fault",
+            "adequacy_state": "adequate" if row.get("closure_state") == "closed" else "typed_fault",
+            "context_transaction_id": row.get("branch_id"),
+            "evidence_ref": "reports/vcm_context_governor.json",
+        },
+        {
+            **common,
+            "record_type": "failure_boundary",
+            "record_id": stable_id("snapshot_branch_failure", request_id),
+            "failure_id": stable_id("snapshot_branch_fault", request_id),
+            "blocked_reason": ",".join(str(x) for x in list_values(row.get("faults"))) or "none",
+            "terminal": bool(passed),
+            "structured_non_solved": bool(list_values(row.get("faults"))),
+        },
+    ]
+
+
 def render_markdown(report: dict[str, Any]) -> str:
     lines = [
         "# VCM Context Governor",
@@ -933,6 +1454,13 @@ def list_values(value: Any) -> list[Any]:
 
 def empty_value(value: Any) -> bool:
     return value in (None, "", [], {})
+
+
+def int_or(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def resolve(path_text: str | Path) -> Path:

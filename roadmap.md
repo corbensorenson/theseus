@@ -1409,6 +1409,12 @@ Acceptance gates:
   training context.
 - Context-on improves at least one practical internal task without regressions
   on leakage or runtime.
+- The deployed resolver emits representation certificates for materialized and
+  faulted packets: source refs, omissions, loss contract, permitted uses,
+  authority ceiling, consumer policy, and authority-nonwidening checks.
+- The deployed resolver emits copy-on-write snapshot branch records with
+  read/write sets, taint propagation, deletion obligations, contradiction refs,
+  closure state, and typed faults.
 
 Do not:
 
@@ -2316,7 +2322,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 0 | Stabilize current truth | Implemented/green registry gate/registered roadmap matrix; cleanup queue `16/16` steward-covered; bounded tmp/smoke cleanup canary complete | Continue governed retention/consolidation in bounded passes for steward-covered cleanup families; do not treat generated evidence history as active source lanes. |
 | 1 | VIEA Execution Spine | Frozen | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records match the dry-plan authority/runtime-adapter/failure/resource contract. |
 | 2 | Stable Capability Fields And Route Authority | Frozen | When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records plus route-validator receipt against the shared VIEA contract. |
-| 3 | Virtual Context Memory As Default Context Substrate | Partial | Complete VCM as a transactional context ABI: representation certificates, authority ceilings, copy-on-write snapshots, taint/deletion propagation, mandatory typed faults, and native KV/prefix-cache replay proofs. |
+| 3 | Virtual Context Memory As Default Context Substrate | Partial | Deployed resolver certificates and copy-on-write snapshot branches are now GREEN with expected-invalid controls. Continue universal adoption across every context-producing runtime surface, fail-closed inadequacy rollout, and native MLX/Metal KV/prefix-cache replay proof before runtime parity claims. |
 | 4 | Candidate Integrity And Learned Generation Accounting | Wired | Keep direct learned full-body quality receipts flowing through independent candidate integrity; semantic behavior repair stays in Phase 10. |
 | 5 | Daily-Use Assistant Runtime And Dogfood Trace Loop | Wired | Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane. |
 | 6 | Deterministic Tool And Search Substrate | Wired | Keep tool-assisted public/tool-use measurement ledgers separate from model-only scores as future public adapters are added; do not allow deterministic tool receipts to support learned-generation claims. |
