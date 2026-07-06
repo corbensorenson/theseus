@@ -1,7 +1,7 @@
 # Project Theseus Public Release Surface
 
 This repository is public at
-`https://github.com/corbensorenson/symliquid-rmi`. It is intended to publish
+`https://github.com/corbensorenson/theseus`. It is intended to publish
 the source, configuration, docs, apps, schemas, and small reproducible
 manifests for Project Theseus so *The ASI Stack* book can link to a stable,
 auditable implementation reference.

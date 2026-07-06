@@ -6,7 +6,7 @@ the Windows CUDA workstation to Apple Silicon Codex.
 ## Git State
 
 - Canonical local branch: `main`
-- Remote: `origin` at `https://github.com/corbensorenson/symliquid-rmi.git`
+- Remote: `origin` at `https://github.com/corbensorenson/theseus.git`
 - Before starting Mac work, follow the newest Windows-forward remote tip:
 
   ```bash

@@ -15,7 +15,7 @@ Hive compute.
 ## Public Source And Book Companion
 
 Public source lives at
-`https://github.com/corbensorenson/symliquid-rmi`. The repository is intended
+`https://github.com/corbensorenson/theseus`. The repository is intended
 to be the implementation companion for *The ASI Stack* book, with public-safe
 source, docs, schemas, apps, and small reproducible fixtures kept in git while
 local reports, checkpoints, runtime state, private traces, and generated
