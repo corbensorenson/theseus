@@ -502,6 +502,22 @@ remain honestly bounded.
   nontrivial-return rate `0.0`, and top learned beams starve inside repeated
   loop-update prefixes with `inside_loop_without_update` and
   `missing_local_return`.
+- Phase 10 now also has the narrower direct-body emission profile
+  `strict_direct_body_emission_path_v1`. It adds private-only supervised
+  weighting for exact AST spans on the reachable body path: top-level state
+  bindings, branch guards, loop headers, loop body state transitions,
+  local-state returns, and nontrivial return expressions. The bounded smoke
+  `reports/strict_generator_mlx_private_adaptation_direct_body_emission_path_smoke_20260706.json`
+  is `YELLOW`: `128/128` private rows matched, `8054` token positions were
+  weighted, heldout LM loss improved from `1.766813` to `1.467117`, semantic
+  plan and source-contrastive metrics improved, and no public/external/fallback
+  counters moved. The required strict replay
+  `reports/strict_generator_mlx_decode_eval_direct_body_emission_path_broad4_replay8_20260706.json`
+  remains `RED`: `0` accepted learned candidate rows and `0/8` behavior pass.
+  This is useful negative evidence. It shows target-side direct body-emission
+  weighting is active, but decode still needs a trainable local-return/
+  finalizer continuation mechanism that admits non-fallback candidates; another
+  scalar CE-weighting profile is not enough by itself.
 - The first body-transition guard follow-up,
   `reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json`,
   removes that starvation mode on the same broad-private slice without public
@@ -2026,7 +2042,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. A first DPO shadow update moved the private policy/reference preference gap, then its private replay failed behaviorally: `0` learned candidate rows and `0/16` heldout passes, with candidate integrity classifying the JSONL rows as fallback/template baselines. The next behavior-changing sequence is direct learned emission repair first, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation only after non-fallback top-level-return candidates exist. |
+| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. A first DPO shadow update moved the private policy/reference preference gap, then its private replay failed behaviorally: `0` learned candidate rows and `0/16` heldout passes, with candidate integrity classifying the JSONL rows as fallback/template baselines. The new `strict_direct_body_emission_path_v1` profile activates target-side direct body-emission supervision (`128/128` matched rows, `8054` weighted positions, clean no-cheat counters), but strict replay is still `RED` with `0` accepted learned candidates and `0/8` behavior pass. The next behavior-changing sequence is trainable local-return/finalizer continuation and admitted non-fallback candidate emission first, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation only after non-fallback top-level-return candidates exist. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Public calibration remains measurement-only. The execution plan keeps it blocked until private semantic behavior improves and a fresh, non-consumed surface passes the proposal gate; exact consumed-surface reruns stay refused. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Partial | Connect semantic IR to real generator failures: failed atom -> localized repair -> dependent obligation replay, with scope-change ledgers when requirements change. |
@@ -2773,6 +2789,13 @@ Implementation status:
   scalar DPO/GRPO run and not more guard accumulation; it is a stronger trained
   state-transition/AST/body-token emission objective that can create valid
   update/finalizer/top-level-return structure under the same no-cheat replay.
+- A first version of that objective now exists as
+  `strict_direct_body_emission_path_v1`. It proves the target-side AST span
+  weighting path is live and private-only, but replay still rejects all learned
+  rows before candidate admission. The next patch should therefore target the
+  model/decoder interface for local-return/finalizer continuation and admitted
+  candidate emission, not another report-only profile and not broader RL/fast
+  generation.
 
 ### C. Fast Generation and Runtime Accounting
 

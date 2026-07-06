@@ -90,6 +90,7 @@ from strict_generator_mlx_adaptation_weights import (  # noqa: E402
     apply_loop_expression_synthesis_weights,
     apply_plan_conditioned_body_semantic_weights,
     apply_update_contract_consistency_weights,
+    apply_direct_body_emission_path_weights,
     loop_expression_synthesis_spans_for_body,
     expression_body_tokens,
     expression_is_plain_loop_identity,
@@ -186,7 +187,67 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "labels, public benchmark data, eval tests, eval solutions, teacher output, or candidate credit. "
             "The resulting checkpoint is private repair evidence only until verifier-passing behavior moves."
         ),
-    }
+    },
+    "strict_direct_body_emission_path_v1": {
+        "policy": "private_strict_direct_body_emission_path_repair_profile_v1",
+        "target_failure_modes": [
+            "strict_decode_emits_zero_candidate_rows",
+            "body_token_transition_after_plan_prefix_never_reaches_top_level_return",
+            "non_loop_task_missing_state_binding_and_return_path",
+            "loop_update_semantics_not_connected_to_final_return",
+            "policy_gap_improves_without_replay_candidate_emission",
+        ],
+        "required_components": [
+            "semantic_plan_auxiliary",
+            "semantic_plan_visible_operation_weighting",
+            "direct_body_emission_path_weighting",
+            "loop_semantic_operation_weighting",
+            "loop_expression_synthesis_weighting",
+            "plan_conditioned_body_weighting",
+            "update_contract_consistency_weighting",
+            "source_contrastive_loss",
+        ],
+        "overrides": {
+            "train_tier": "any",
+            "tier_balanced_sampling": True,
+            "private_residual_repair_split": True,
+            "semantic_plan_loss_weight": 0.08,
+            "semantic_plan_visible_operation_loss_boost": 1.5,
+            "source_contrastive_loss_weight": 0.05,
+            "source_contrastive_prefix_tokens": 48,
+            "enable_primary_dataflow_weights": True,
+            "primary_dataflow_weight_scale": 1.2,
+            "return_expression_loss_boost": 3.0,
+            "direct_body_emission_loss_boost": 4.0,
+            "direct_body_emission_roles": (
+                "top_level_state_binding,top_level_state_update,top_level_branch_guard,"
+                "top_level_loop_statement,loop_source_expression,loop_condition_expression,"
+                "loop_body_state_transition,branch_body_state_transition,top_level_local_state_return,"
+                "top_level_return_expression"
+            ),
+            "loop_semantic_operation_loss_boost": 3.2,
+            "loop_semantic_operation_roles": "loop_semantic_update,top_level_semantic_finalizer",
+            "loop_expression_synthesis_loss_boost": 3.2,
+            "loop_expression_synthesis_roles": (
+                "loop_condition_expression,loop_update_expression,top_level_finalizer_expression"
+            ),
+            "plan_conditioned_body_loss_boost": 3.2,
+            "plan_conditioned_body_roles": (
+                "guard_expression,loop_source_expression,loop_condition_expression,"
+                "loop_update_statement,plan_key_call_expression,final_return_expression"
+            ),
+            "update_contract_consistency_loss_boost": 3.4,
+        },
+        "score_semantics": (
+            "Composes private-only strict-generator objectives around the current zero-candidate wall: "
+            "the direct prompt/signature body-token path must learn top-level state bindings, branch/loop "
+            "guards, loop body updates, and final return statements from admitted private solution bodies. "
+            "It does not add templates, renderers, tools, answer-family labels, public benchmark data, eval "
+            "tests, eval solutions, teacher output, or candidate credit. The checkpoint remains private "
+            "repair evidence only until strict replay emits non-fallback learned candidates and verifier "
+            "behavior moves."
+        ),
+    },
 }
 
 
@@ -369,6 +430,16 @@ def main() -> int:
         ),
     )
     parser.add_argument("--update-contract-consistency-loss-boost", type=float, default=0.0)
+    parser.add_argument("--direct-body-emission-loss-boost", type=float, default=0.0)
+    parser.add_argument(
+        "--direct-body-emission-roles",
+        default="",
+        help=(
+            "Optional comma-separated direct body-emission roles to boost, such as "
+            "top_level_state_binding,top_level_local_state_return,loop_body_state_transition. "
+            "Empty means all extracted roles."
+        ),
+    )
     parser.add_argument("--seed", type=int, default=23017)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
@@ -467,6 +538,11 @@ def main() -> int:
             0.0,
             float(args.update_contract_consistency_loss_boost if args.update_contract_consistency_loss_boost is not None else 0.0),
         ),
+        direct_body_emission_loss_boost=max(
+            0.0,
+            float(args.direct_body_emission_loss_boost if args.direct_body_emission_loss_boost is not None else 0.0),
+        ),
+        direct_body_emission_roles=str(args.direct_body_emission_roles or ""),
         semantic_construction_repair_profile=semantic_construction_repair_profile,
         seed=int(args.seed or 23017),
         execute=bool(args.execute),
@@ -537,6 +613,8 @@ def run_adaptation(
     plan_conditioned_body_loss_boost: float,
     plan_conditioned_body_roles: str,
     update_contract_consistency_loss_boost: float,
+    direct_body_emission_loss_boost: float,
+    direct_body_emission_roles: str,
     semantic_construction_repair_profile: dict[str, Any],
     seed: int,
     execute: bool,
@@ -571,6 +649,8 @@ def run_adaptation(
                     "plan_conditioned_body_loss_boost": float(plan_conditioned_body_loss_boost or 0.0),
                     "plan_conditioned_body_roles": str(plan_conditioned_body_roles or ""),
                     "update_contract_consistency_loss_boost": float(update_contract_consistency_loss_boost or 0.0),
+                    "direct_body_emission_loss_boost": float(direct_body_emission_loss_boost or 0.0),
+                    "direct_body_emission_roles": str(direct_body_emission_roles or ""),
                     "semantic_construction_repair_profile": semantic_construction_repair_profile,
                     "train_tier": train_tier,
                     "tier_balanced_sampling": bool(tier_balanced_sampling),
@@ -905,6 +985,14 @@ def run_adaptation(
         train_bodies,
         target_vocab=target_vocab,
         boost=update_contract_consistency_loss_boost,
+    )
+    token_weight_rows, direct_body_emission_weighting = apply_direct_body_emission_path_weights(
+        token_weight_rows,
+        train_target_rows,
+        train_bodies,
+        target_vocab=target_vocab,
+        boost=direct_body_emission_loss_boost,
+        roles=direct_body_emission_roles,
     )
     (
         pairwise_positive_weight_rows,
@@ -1435,6 +1523,7 @@ def run_adaptation(
             "loop_expression_synthesis_weighting": loop_expression_synthesis_weighting,
             "plan_conditioned_body_weighting": plan_conditioned_body_weighting,
             "update_contract_consistency_weighting": update_contract_consistency_weighting,
+            "direct_body_emission_weighting": direct_body_emission_weighting,
             "negative_replay": negative_replay_vocab_summary(negative_replay, active=negative_replay_active),
             "pairwise_replay_preference": pairwise_replay_vocab_summary(
                 negative_replay,
@@ -1506,6 +1595,8 @@ def run_adaptation(
             "plan_conditioned_body_loss_boost": float(plan_conditioned_body_loss_boost or 0.0),
             "plan_conditioned_body_roles": str(plan_conditioned_body_roles or ""),
             "update_contract_consistency_loss_boost": float(update_contract_consistency_loss_boost or 0.0),
+            "direct_body_emission_loss_boost": float(direct_body_emission_loss_boost or 0.0),
+            "direct_body_emission_roles": str(direct_body_emission_roles or ""),
             "semantic_construction_repair_profile": semantic_construction_repair_profile,
             "semantic_plan_visible_operation_loss_boost": float(semantic_plan_visible_operation_loss_boost or 0.0),
             "private_residual_repair_split": bool(private_residual_repair_split),
@@ -1530,6 +1621,7 @@ def run_adaptation(
         "loop_expression_synthesis_weighting": loop_expression_synthesis_weighting,
         "plan_conditioned_body_weighting": plan_conditioned_body_weighting,
         "update_contract_consistency_weighting": update_contract_consistency_weighting,
+        "direct_body_emission_weighting": direct_body_emission_weighting,
         "semantic_construction_repair_profile": semantic_construction_repair_profile,
         "strict_target_guard": {
             "train": target_guard_summary,
@@ -1707,6 +1799,7 @@ def run_adaptation(
             "loop_expression_synthesis_weighting": payload["loop_expression_synthesis_weighting"],
             "plan_conditioned_body_weighting": payload["plan_conditioned_body_weighting"],
             "update_contract_consistency_weighting": payload["update_contract_consistency_weighting"],
+            "direct_body_emission_weighting": payload["direct_body_emission_weighting"],
             "semantic_construction_repair_profile": payload["semantic_construction_repair_profile"],
             "public_training_rows": 0,
             "external_inference_calls": 0,
@@ -1828,6 +1921,7 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
         "loop_expression_synthesis_weighting",
         "plan_conditioned_body_weighting",
         "update_contract_consistency_weighting",
+        "direct_body_emission_weighting",
     ]:
         if name not in required:
             continue
@@ -2085,6 +2179,15 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             ),
             "soft",
             dict_or_empty(payload.get("update_contract_consistency_weighting")),
+        ),
+        gate(
+            "direct_body_emission_weighting_matched_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("direct_body_emission_weighting")).get("enabled"))
+                or int(dict_or_empty(payload.get("direct_body_emission_weighting")).get("weighted_token_positions") or 0) > 0
+            ),
+            "soft",
+            dict_or_empty(payload.get("direct_body_emission_weighting")),
         ),
         gate(
             "semantic_construction_profile_private_only",

@@ -1068,6 +1068,293 @@ def apply_update_contract_consistency_weights(
     }
 
 
+def apply_direct_body_emission_path_weights(
+    token_weight_rows: list[list[float]],
+    target_rows: list[list[int]],
+    bodies: list[str],
+    *,
+    target_vocab: dict[str, int],
+    boost: float,
+    roles: str,
+) -> tuple[list[list[float]], dict[str, Any]]:
+    value = max(0.0, float(boost if boost is not None else 0.0))
+    allowed_roles = parse_role_filter(roles)
+    if value <= 0.0:
+        return token_weight_rows, {
+            "enabled": False,
+            "policy": "not_enabled",
+            "direct_body_emission_loss_boost": value,
+            "role_filter": sorted(allowed_roles),
+            "matched_rows": 0,
+            "weighted_token_positions": 0,
+            "candidate_generation_credit": 0,
+        }
+
+    inverse = {int(token_id): str(token) for token, token_id in target_vocab.items()}
+    adjusted = [list(row) for row in token_weight_rows]
+    matched_rows = 0
+    weighted_positions = 0
+    role_counts: dict[str, int] = {}
+    token_counts: dict[str, int] = {}
+    skipped: dict[str, int] = {}
+
+    for index, target in enumerate(target_rows):
+        body = bodies[index] if index < len(bodies) else ""
+        extraction = direct_body_emission_path_spans_for_body(body)
+        for key, count in dict_or_empty(extraction.get("skipped_counts")).items():
+            skipped[str(key)] = skipped.get(str(key), 0) + int(count or 0)
+        spans = list(extraction.get("spans") or [])
+        if not bool(extraction.get("matched")) or not spans:
+            reason = str(extraction.get("reason") or "no_direct_body_emission_spans")
+            skipped[reason] = skipped.get(reason, 0) + 1
+            continue
+
+        target_texts = [inverse.get(int(token_id), "") for token_id in target]
+        row_matched = False
+        for span in spans:
+            item = dict_or_empty(span)
+            role = str(item.get("role") or "unknown")
+            if allowed_roles and role not in allowed_roles:
+                skipped[f"role_filtered_{role}"] = skipped.get(f"role_filtered_{role}", 0) + 1
+                continue
+            span_tokens = [str(token) for token in list(item.get("tokens") or []) if str(token)]
+            if not span_tokens:
+                skipped[f"empty_span_tokens_{role}"] = skipped.get(f"empty_span_tokens_{role}", 0) + 1
+                continue
+            matches = find_subsequence_positions(target_texts, span_tokens)
+            if not matches:
+                skipped[f"span_not_found_{role}"] = skipped.get(f"span_not_found_{role}", 0) + 1
+                continue
+            row_matched = True
+            role_counts[role] = role_counts.get(role, 0) + len(matches)
+            for start in matches:
+                for offset, token_text in enumerate(span_tokens):
+                    pos = start + offset
+                    if pos >= len(adjusted[index]):
+                        continue
+                    adjusted[index][pos] = max(float(adjusted[index][pos]), value)
+                    weighted_positions += 1
+                    token_counts[token_text] = token_counts.get(token_text, 0) + 1
+        if row_matched:
+            matched_rows += 1
+
+    return adjusted, {
+        "enabled": True,
+        "policy": "private_direct_body_emission_path_weighting_v1",
+        "direct_body_emission_loss_boost": value,
+        "role_filter": sorted(allowed_roles),
+        "role_filter_active": bool(allowed_roles),
+        "rows": len(token_weight_rows),
+        "matched_rows": matched_rows,
+        "weighted_token_positions": weighted_positions,
+        "weighted_token_counts": dict(sorted(token_counts.items())),
+        "role_match_counts": dict(sorted(role_counts.items())),
+        "skipped_counts": dict(sorted(skipped.items())),
+        "score_semantics": (
+            "Boosts supervised CE weight on exact body-token spans that form the reachable emission path "
+            "in admitted private target bodies: top-level state bindings, branch guards, loop headers, "
+            "loop body updates, local-state returns, and nontrivial return expressions. It fixes a gap in "
+            "loop-only weighting by covering non-loop bodies and direct `return local` finalizers. It uses "
+            "private target bodies only as already-admitted training targets. Generation still sees strict "
+            "prompt/signature source text. It does not render code, inspect eval tests/solutions, use "
+            "public data, use teacher output, route tools, or grant learned-generation candidate credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def direct_body_emission_path_spans_for_body(body: str) -> dict[str, Any]:
+    text = str(body or "")
+    try:
+        parsed = ast.parse("def _candidate(data, other=None):\n" + "\n".join(f"    {line}" for line in text.splitlines()))
+    except SyntaxError as exc:
+        return {
+            "matched": False,
+            "reason": "parse_error",
+            "error": str(exc)[:160],
+            "spans": [],
+            "skipped_counts": {},
+        }
+    function = next((node for node in parsed.body if isinstance(node, ast.FunctionDef)), None)
+    if function is None:
+        return {"matched": False, "reason": "missing_function", "spans": [], "skipped_counts": {}}
+
+    spans: list[dict[str, Any]] = []
+    skipped_counts: dict[str, int] = {}
+    local_bindings = function_local_binding_names(function)
+    parameter_names = {arg.arg for arg in list(function.args.args or []) if str(arg.arg)}
+
+    def skip(reason: str) -> None:
+        skipped_counts[reason] = skipped_counts.get(reason, 0) + 1
+
+    def add_stmt(role: str, stmt: ast.stmt, *, semantic_kind: str = "") -> None:
+        tokens = body_statement_tokens(stmt)
+        if not tokens:
+            skip(f"empty_tokens_{role}")
+            return
+        spans.append(
+            {
+                "role": role,
+                "semantic_kind": semantic_kind or role,
+                "tokens": tokens,
+                "statement": safe_unparse(stmt)[:240],
+            }
+        )
+
+    def add_expr(role: str, expr: ast.AST | None, *, semantic_kind: str, context: str) -> None:
+        if expr is None:
+            skip(f"empty_expr_{role}")
+            return
+        tokens = expression_body_tokens(expr)
+        if not tokens:
+            skip(f"empty_expr_tokens_{role}")
+            return
+        if expression_tokens_are_trivial(tokens):
+            skip(f"trivial_expr_tokens_{role}")
+            return
+        spans.append(
+            {
+                "role": role,
+                "semantic_kind": semantic_kind,
+                "tokens": tokens,
+                "expression": safe_unparse(expr)[:240],
+                "context": context[:240],
+            }
+        )
+
+    for stmt in function.body:
+        if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+            value = stmt.value if isinstance(stmt, (ast.Assign, ast.AnnAssign)) else None
+            if value_has_semantic_operation(value) or ast_load_names(value):
+                add_stmt("top_level_state_binding", stmt, semantic_kind=expression_kind_for_ast(value))
+            else:
+                skip("plain_top_level_binding")
+        elif isinstance(stmt, ast.AugAssign):
+            add_stmt("top_level_state_update", stmt, semantic_kind="augmented_state_update")
+        elif isinstance(stmt, ast.If):
+            add_expr(
+                "top_level_branch_guard",
+                stmt.test,
+                semantic_kind=expression_kind_for_ast(stmt.test),
+                context=safe_unparse(stmt),
+            )
+            for child in list(stmt.body or []) + list(stmt.orelse or []):
+                if isinstance(child, ast.Return):
+                    add_return_span(child, spans, skipped_counts, local_bindings=local_bindings, parameter_names=parameter_names)
+                elif isinstance(child, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.Expr)):
+                    add_stmt("branch_body_state_transition", child, semantic_kind=type(child).__name__)
+        elif isinstance(stmt, (ast.For, ast.While)):
+            add_stmt("top_level_loop_statement", stmt, semantic_kind=type(stmt).__name__)
+            if isinstance(stmt, ast.For):
+                add_expr(
+                    "loop_source_expression",
+                    stmt.iter,
+                    semantic_kind=expression_kind_for_ast(stmt.iter),
+                    context=safe_unparse(stmt),
+                )
+            else:
+                add_expr(
+                    "loop_condition_expression",
+                    stmt.test,
+                    semantic_kind=expression_kind_for_ast(stmt.test),
+                    context=safe_unparse(stmt),
+                )
+            loop_targets = ast_store_names(getattr(stmt, "target", None))
+            for child in semantic_candidate_statements_from_loop(stmt):
+                classification = classify_loop_semantic_statement(child, loop_targets=loop_targets)
+                if bool(classification.get("matched")):
+                    add_stmt(
+                        "loop_body_state_transition",
+                        child,
+                        semantic_kind=str(classification.get("semantic_kind") or "loop_body_state_transition"),
+                    )
+                else:
+                    skip(str(classification.get("reason") or "loop_child_not_semantic"))
+        elif isinstance(stmt, ast.Return):
+            add_return_span(stmt, spans, skipped_counts, local_bindings=local_bindings, parameter_names=parameter_names)
+
+    if not spans:
+        return {
+            "matched": False,
+            "reason": "no_direct_body_emission_spans",
+            "spans": [],
+            "skipped_counts": dict(sorted(skipped_counts.items())),
+        }
+
+    role_counts: dict[str, int] = {}
+    semantic_kind_counts: dict[str, int] = {}
+    for span in spans:
+        role = str(span.get("role") or "unknown")
+        semantic_kind = str(span.get("semantic_kind") or "unknown")
+        role_counts[role] = role_counts.get(role, 0) + 1
+        semantic_kind_counts[semantic_kind] = semantic_kind_counts.get(semantic_kind, 0) + 1
+    return {
+        "matched": True,
+        "policy": "private_direct_body_emission_path_span_extraction_v1",
+        "spans": spans,
+        "role_counts": dict(sorted(role_counts.items())),
+        "semantic_kind_counts": dict(sorted(semantic_kind_counts.items())),
+        "skipped_counts": dict(sorted(skipped_counts.items())),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def add_return_span(
+    stmt: ast.Return,
+    spans: list[dict[str, Any]],
+    skipped_counts: dict[str, int],
+    *,
+    local_bindings: set[str],
+    parameter_names: set[str],
+) -> None:
+    value = stmt.value
+    if value is None:
+        skipped_counts["empty_return"] = skipped_counts.get("empty_return", 0) + 1
+        return
+    if isinstance(value, ast.Constant):
+        skipped_counts["constant_return"] = skipped_counts.get("constant_return", 0) + 1
+        return
+    if isinstance(value, ast.Name) and value.id in parameter_names and value.id not in local_bindings:
+        skipped_counts["direct_parameter_return"] = skipped_counts.get("direct_parameter_return", 0) + 1
+        return
+    role = "top_level_local_state_return" if isinstance(value, ast.Name) and value.id in local_bindings else "top_level_return_expression"
+    tokens = body_statement_tokens(stmt)
+    if not tokens:
+        skipped_counts[f"empty_tokens_{role}"] = skipped_counts.get(f"empty_tokens_{role}", 0) + 1
+        return
+    spans.append(
+        {
+            "role": role,
+            "semantic_kind": expression_kind_for_ast(value),
+            "tokens": tokens,
+            "statement": safe_unparse(stmt)[:240],
+        }
+    )
+
+
+def function_local_binding_names(function: ast.FunctionDef) -> set[str]:
+    names: set[str] = set()
+    for node in ast.walk(function):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                names.update(ast_store_names(target))
+        elif isinstance(node, ast.AnnAssign):
+            names.update(ast_store_names(node.target))
+        elif isinstance(node, ast.AugAssign):
+            names.update(ast_store_names(node.target))
+        elif isinstance(node, ast.For):
+            names.update(ast_store_names(node.target))
+        elif isinstance(node, ast.With):
+            for item in node.items:
+                names.update(ast_store_names(item.optional_vars))
+    return names
+
+
 def update_contract_consistency_spans_for_body(body: str) -> dict[str, Any]:
     text = str(body or "")
     try:

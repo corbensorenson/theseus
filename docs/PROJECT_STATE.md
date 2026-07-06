@@ -246,6 +246,29 @@ claim, and should not become another guard-churn lane. The next real Phase 10
 patch should be a stronger trainable state-transition/AST/body-token head or
 objective that emits valid update/finalizer/top-level-return structure before
 DPO/GRPO/MTP/diffusion/scale work resumes.
+That first trainable objective patch is now present in
+`scripts/strict_generator_mlx_adaptation_weights.py` and
+`scripts/strict_generator_mlx_private_adaptation.py` as
+`strict_direct_body_emission_path_v1`. It adds private-only direct body-emission
+path weighting over admitted target AST spans: top-level state bindings, branch
+guards, loop headers, loop body state transitions, local-state returns, and
+nontrivial return expressions. The bounded smoke
+`reports/strict_generator_mlx_private_adaptation_direct_body_emission_path_smoke_20260706.json`
+is `YELLOW`: direct-body weighting matched `128/128` private rows and `8054`
+token positions, semantic-plan and source-contrastive heldout metrics improved,
+heldout LM loss dropped from `1.766813` to `1.467117`, and no-cheat counters
+remained clean (`0` public rows, `0` external inference calls, `0` fallback/
+template/router/tool credit). The only failed gate is the existing soft
+parameter-element update warning (`0.161285`). The strict replay
+`reports/strict_generator_mlx_decode_eval_direct_body_emission_path_broad4_replay8_20260706.json`
+is still `RED`: it emitted `0` accepted learned candidate rows and `0/8`
+behavior passes, while verifier diagnostics show `4` generated attempts per
+split reached runtime load before final admission rejected them. The candidate
+JSONL contains only `8` private-baseline `return None` rows, correctly excluded
+from learned-generation credit. The current wall has therefore narrowed again:
+target-side body-emission supervision is now active, but decode still needs a
+trainable local-return/finalizer continuation mechanism that produces
+admissible non-fallback candidates under the same prompt/signature-only audit.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with
