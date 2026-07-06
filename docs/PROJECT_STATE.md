@@ -664,9 +664,9 @@ The same gate now also materializes `reports/viea_spine_materialized_view.json`,
 which normalizes assistant, planner, deterministic-tool, and execution-spine
 records into shared claim/proof/evidence, semantic IR, simulation-contract,
 governance-right, constitutional-predicate, artifact, authority, route, and
-failure-boundary groups. The latest spine gate is `GREEN` across `31/31`
-profiles with `2227` materialized records, `184` claim/proof entries, `8`
-compression records, and `1` defeater record.
+failure-boundary groups. The latest spine gate is `GREEN` across `32/32`
+profiles with `6641` materialized records, `587` claim/proof entries, `394`
+compression records, and `772` defeater records.
 The Hive scheduler route-validator bootstrap cycle is now explicit and
 resolved: the scheduler may bootstrap only when required route-validator groups
 are present and no no-cheat counters fault, then it reruns against the green
@@ -964,8 +964,8 @@ smokes are `GREEN` with `procedural_default_route_ready=true`,
 guard armed, learned-generation claims disallowed, `19` assistant VIEA records
 per smoke, and zero public training rows, runtime external inference calls, or
 fallback returns. Those canonical assistant traces are now part of the
-`2227`-record VIEA
-materialized view with `184` claim/proof entries. This is product-route consumption evidence, still not a
+`6641`-record VIEA
+materialized view with `587` claim/proof entries. This is product-route consumption evidence, still not a
 learned-generation or public-transfer claim.
 `reports/octopus_router_report.json` now contributes
 `octopus_moecot_route_spine_v1` as a first-class producer profile. The
@@ -995,8 +995,18 @@ now emits `project_theseus_private_verifier_verification_bandwidth_v1` and
 capacity escalation, `12 ms` governed overhead, `5` review-load units, one
 caught verifier-capacity risk, and `0` public-training/runtime-external/
 fallback/generation-credit counters. The remaining Phase 16 adoption gap is
-STS-specific conditioning/ranker runs and richer real task-to-arm traces before
-route-policy changes.
+now narrower: `scripts/sts_ranker_policy_v1.py` emits
+`project_theseus_sts_ranker_verification_bandwidth_v1`,
+`project_theseus_sts_ranker_governance_tax_v1`, and
+`viea_sts_ranker_records` with a `costed_route_record`, and
+`configs/viea_spine_record_contracts.json` registers
+`sts_ranker_policy_spine_v1` as a shared VIEA producer profile. The refreshed
+local STS ranker rerun is intentionally `YELLOW`, not stale green: the old
+candidate manifests referenced by the ranker are absent in the cleaned local
+state, so the report records `no_admissible_rate=1.0` and a
+`sts_ranker_no_admissible_residual`. The next Phase 16 fix is to regenerate
+current STS candidate manifests through the registered fanout path and then
+collect richer real task-to-arm traces before route-policy changes.
 The report attaches a ready VIEA route-validator receipt, a ready VCM context
 governor receipt, and a ready candidate-integrity boundary; it records `0`
 public training rows, `0` runtime external inference calls, `0` fallback
@@ -1012,7 +1022,7 @@ remains the deterministic bootloader; this is routing-head evidence only.
 The control plane now consumes the view: `reports/theseus_control_plane.json`
 includes a `viea_spine_materialized_view_ready` gate, which passed with `1435`
 records and `129` claim/proof entries before the Octopus route-spine producer
-was added. The current shared VIEA view is `2227` records and `184`
+was added. The current shared VIEA view is `6641` records and `587`
 claim/proof entries after Hive route/execution claim records,
 report-evidence compression records, retention compression records, the
 defeater producer contract, Octopus route-spine records, the learned router-head
@@ -1040,7 +1050,7 @@ summaries now emit producer-side spine records through
 `reports/private_verifier_spine_smoke.json`. The project registry's SCF route
 validator now consumes the same materialized governance/failure/authority/resource
 view before route approval; `reports/theseus_project_registry.json` records
-`route_validator_viea_spine_view_ready=true` with `2227` records and `0` missing
+`route_validator_viea_spine_view_ready=true` with `6641` records and `0` missing
 required groups. The product-facing assistant trace and Hive scheduler route
 records now both attach ready route-validator receipts, so normal route-decision
 records show which governance/failure/authority/resource view approved them.
@@ -1275,7 +1285,7 @@ not a model promotion.
 promotion-integrity receipt. The maturity audit reports
 `promotion_integrity_ready=true`, and public-transfer readiness carries the
 same `176` independently verified promotion candidates plus the current
-`2227`-record
+`6641`-record
 VIEA receipt before any public-transfer readiness state can be considered
 current. This closes a downstream bypass path; the remaining wall is semantic
 public transfer, not candidate-family accounting.

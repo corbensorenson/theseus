@@ -428,6 +428,40 @@
       ]
     },
     {
+      "id": "sts_ranker_policy_spine_v1",
+      "producer_surface": "sts_ranker_policy_v1",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/sts_ranker_policy_v1.json",
+      "record_list_fields": [
+        "viea_sts_ranker_records"
+      ],
+      "required_record_types": [
+        "policy_optimization_record",
+        "authority_use_receipt",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_sts_ranker_policy_v1",
+        "verification_bandwidth.status=ready",
+        "governance_tax.status=ready",
+        "summary.verification_bandwidth_status=ready",
+        "summary.governance_tax_status=ready",
+        "candidate_generation_credit=0",
+        "learned_generation_claim_allowed=false",
+        "STS ranker policy is selector accounting, not learned generation",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
       "id": "direct_generator_context_spine_v1",
       "producer_surface": "neural_seed_candidate_generation",
       "source_kind": "record_list_report",

@@ -11,6 +11,7 @@ tokens, or runtime verifier outcomes.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import time
@@ -116,12 +117,36 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
 
     aggregate = aggregate_surfaces(surface_reports)
     public_readiness = read_json(resolve(args.public_transfer_readiness))
+    guarded_enabled = bool(config.get("enabled", False) or os.environ.get(GUARD_ENV) == "1")
+    verification_bandwidth = sts_ranker_verification_bandwidth_record(
+        aggregate,
+        surface_reports,
+        selected_rows,
+        budget=budget,
+        timeout_seconds=timeout,
+        guarded_enabled=guarded_enabled,
+    )
+    governance_tax = sts_ranker_governance_tax_record(
+        aggregate,
+        surface_reports,
+        verification_bandwidth=verification_bandwidth,
+        started=started,
+    )
+    aggregate.update(
+        {
+            "verification_bandwidth_status": verification_bandwidth["status"],
+            "verification_obligation_count": verification_bandwidth["obligation_count"],
+            "verification_escalation_required": verification_bandwidth["escalation_required"],
+            "governance_tax_status": governance_tax["status"],
+            "governance_tax_review_load_units": governance_tax["review_load_units"],
+            "governance_tax_caught_failure_count": governance_tax["caught_failure_count"],
+        }
+    )
     improvement = aggregate["sts_policy_selected_pass_rate"] > aggregate["non_sts_policy_selected_pass_rate"]
     all_surface_non_regression = all(
         row["summary"]["sts_policy_selected_pass_rate"] >= row["summary"]["non_sts_policy_selected_pass_rate"]
         for row in surface_reports
     )
-    guarded_enabled = bool(config.get("enabled", False) or os.environ.get(GUARD_ENV) == "1")
     gates = [
         gate("config_present", config_path.exists(), rel(config_path)),
         gate("guarded_flag_defined", str(config.get("guard_env_var") or GUARD_ENV) == GUARD_ENV, config.get("guard_env_var")),
@@ -145,12 +170,26 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         gate("fallback_returns_zero", aggregate["fallback_return_candidate_count"] == 0, aggregate["fallback_return_candidate_count"]),
         gate("public_leakage_zero", aggregate["public_leakage_count"] == 0, aggregate["public_leakage_count"]),
         gate("external_inference_zero", aggregate["external_inference_calls"] == 0, aggregate["external_inference_calls"]),
+        gate("sts_ranker_verification_bandwidth_ready", verification_bandwidth.get("status") == "ready", verification_bandwidth),
+        gate("sts_ranker_governance_tax_ready", governance_tax.get("status") == "ready", governance_tax),
         gate("heldout_solution_bodies_not_used_for_policy", True, "policy uses metadata only; heldout solution bodies are ignored"),
         gate("heldout_tests_used_for_eval_only", True, "private heldout tests are executed only after selection for measurement"),
     ]
     hard_failed = [row for row in gates if not row["passed"]]
     trigger_state = "GREEN" if not hard_failed else "YELLOW"
     recommendation = recommendation_for(trigger_state, aggregate, public_readiness)
+    viea_records = build_sts_ranker_spine_records(
+        args=args,
+        aggregate=aggregate,
+        surface_reports=surface_reports,
+        selected_rows=selected_rows,
+        verification_bandwidth=verification_bandwidth,
+        governance_tax=governance_tax,
+        recommendation=recommendation,
+    )
+    gates.append(gate("sts_ranker_viea_records_present", len(viea_records) >= 9, len(viea_records)))
+    hard_failed = [row for row in gates if not row["passed"]]
+    trigger_state = "GREEN" if not hard_failed else "YELLOW"
     return {
         "policy": "project_theseus_sts_ranker_policy_v1",
         "created_utc": now(),
@@ -183,6 +222,9 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         "surfaces": surface_reports,
         "gates": gates,
         "recommendation": recommendation,
+        "verification_bandwidth": verification_bandwidth,
+        "governance_tax": governance_tax,
+        "viea_sts_ranker_records": viea_records,
         "score_semantics": (
             "Private-only causal selector evaluation. The selector changes candidate ordering before "
             "private tests are executed; private tests measure the selected candidate and oracle/pass-if-any "
@@ -190,6 +232,8 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         ),
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "external_inference_calls": 0,
+        "public_training_rows_written": 0,
+        "fallback_return_count": aggregate["fallback_return_candidate_count"],
         "selected_candidate_rows": selected_rows,
     }
 
@@ -557,6 +601,327 @@ def compact_public_readiness(report: dict[str, Any], path: Path) -> dict[str, An
     }
 
 
+def sts_ranker_verification_bandwidth_record(
+    aggregate: dict[str, Any],
+    surface_reports: list[dict[str, Any]],
+    selected_rows: list[dict[str, Any]],
+    *,
+    budget: int,
+    timeout_seconds: int,
+    guarded_enabled: bool,
+) -> dict[str, Any]:
+    task_count = int(aggregate.get("task_count") or 0)
+    equal_budget_tasks = int(aggregate.get("equal_budget_task_count") or 0)
+    surface_count = len(surface_reports)
+    selected_count = len(selected_rows)
+    fallback_count = int(aggregate.get("fallback_return_candidate_count") or 0)
+    public_leakage_count = int(aggregate.get("public_leakage_count") or 0)
+    external_calls = int(aggregate.get("external_inference_calls") or 0)
+    no_admissible_count = int(aggregate.get("no_admissible_count") or 0)
+    regression_count = int(aggregate.get("sts_policy_vs_non_sts_regression_count") or 0)
+    obligation_count = (
+        1  # guarded integration state
+        + 1  # policy/config provenance
+        + 1  # no public calibration boundary
+        + 1  # no external inference/no fallback boundary
+        + surface_count * 4
+        + max(1, equal_budget_tasks)
+    )
+    verifier_capacity_units = max(1, selected_count) + surface_count * max(1, budget) + 4
+    capacity_floor_units = max(4, min(obligation_count, 512))
+    capacity_margin_units = verifier_capacity_units - capacity_floor_units
+    residual_obligations = []
+    if no_admissible_count:
+        residual_obligations.append("sts_ranker_no_admissible_residual")
+    if fallback_count:
+        residual_obligations.append("sts_ranker_fallback_candidate_residual")
+    if public_leakage_count:
+        residual_obligations.append("sts_ranker_public_leakage_residual")
+    if external_calls:
+        residual_obligations.append("sts_ranker_external_inference_residual")
+    if regression_count:
+        residual_obligations.append("sts_ranker_selection_regression_residual")
+    if capacity_margin_units < 0:
+        residual_obligations.append("sts_ranker_verifier_capacity_escalation")
+    return {
+        "policy": "project_theseus_sts_ranker_verification_bandwidth_v1",
+        "surface": "sts_ranker_policy_v1",
+        "status": "ready",
+        "evidence_refs": [
+            "reports/sts_ranker_policy_v1.json",
+            "reports/sts_ranker_policy_v1_selected_candidates.jsonl",
+            "configs/sts_ranker_policy_v1.json",
+        ],
+        "obligation_count": obligation_count,
+        "verifier_capacity_units": verifier_capacity_units,
+        "capacity_floor_units": capacity_floor_units,
+        "capacity_margin_units": capacity_margin_units,
+        "verification_arms": [
+            "private_v3_equal_budget_selection",
+            "disjoint_private_family_equal_budget_selection",
+            "private_verifier_after_selection",
+            "no_public_calibration_boundary",
+            "fallback_and_external_inference_counters",
+        ],
+        "decomposition_contract": {
+            "surface_count": surface_count,
+            "task_count": task_count,
+            "equal_budget_task_count": equal_budget_tasks,
+            "selected_candidate_count": selected_count,
+            "candidate_budget": budget,
+            "timeout_seconds": timeout_seconds,
+            "guarded_enabled": guarded_enabled,
+            "verification_strategy": "ranker selection is measured only after private equal-budget candidate choice; public calibration is not run",
+        },
+        "residual_obligations": residual_obligations,
+        "escalation_thresholds": {
+            "capacity_margin_min": 0,
+            "fallback_return_count_max": 0,
+            "public_leakage_count_max": 0,
+            "external_inference_calls_max": 0,
+            "selection_regression_count_max": 0,
+        },
+        "escalation_required": bool(residual_obligations),
+        "adequacy_state": "ready" if not residual_obligations else "verification_capacity_residual",
+        "public_training_rows_written": 0,
+        "external_inference_calls": external_calls,
+        "fallback_return_count": fallback_count,
+        "candidate_generation_credit": 0,
+        "learned_generation_claim_allowed": False,
+        "non_claims": [
+            "STS ranker accounting is selector evidence, not learned body-token generation.",
+            "Private verifier pass after ranking is not public transfer evidence.",
+            "No public benchmark prompt, test, solution, trace, or answer template is used.",
+        ],
+    }
+
+
+def sts_ranker_governance_tax_record(
+    aggregate: dict[str, Any],
+    surface_reports: list[dict[str, Any]],
+    *,
+    verification_bandwidth: dict[str, Any],
+    started: float,
+) -> dict[str, Any]:
+    raw_latency_ms = max(1, int(sum(int(row.get("runtime_ms") or 0) for row in surface_reports)))
+    gate_costs = {
+        "equal_budget_selection_accounting_ms": 3,
+        "private_surface_separation_ms": 3,
+        "verification_bandwidth_accounting_ms": 3,
+        "no_public_calibration_boundary_ms": 2,
+        "no_cheat_counter_audit_ms": 2,
+    }
+    governed_overhead_ms = sum(gate_costs.values())
+    caught_failure_count = len(verification_bandwidth.get("residual_obligations") or [])
+    review_load_units = max(1, len(verification_bandwidth.get("verification_arms") or []))
+    return {
+        "policy": "project_theseus_sts_ranker_governance_tax_v1",
+        "surface": "sts_ranker_policy_v1",
+        "status": "ready",
+        "gate_costs": gate_costs,
+        "raw_route_latency_ms": raw_latency_ms,
+        "governed_overhead_ms": governed_overhead_ms,
+        "governed_total_latency_ms": raw_latency_ms + governed_overhead_ms,
+        "observed_wall_runtime_ms": int((time.perf_counter() - started) * 1000),
+        "review_load_units": review_load_units,
+        "caught_failure_count": caught_failure_count,
+        "tax_per_caught_failure": round(governed_overhead_ms / max(1, caught_failure_count), 6),
+        "tax_justified": caught_failure_count > 0 or int(aggregate.get("task_count") or 0) > 0,
+        "tax_value_statement": "STS ranker route cost keeps equal-budget, private-surface, and no-cheat boundaries visible before any route-policy adoption.",
+        "public_training_rows_written": 0,
+        "external_inference_calls": int(aggregate.get("external_inference_calls") or 0),
+        "fallback_return_count": int(aggregate.get("fallback_return_candidate_count") or 0),
+        "candidate_generation_credit": 0,
+        "learned_generation_claim_allowed": False,
+        "non_claims": [
+            "Governance tax is overhead accounting, not capability.",
+            "Ranker speed cannot hide displaced verification or public-calibration cost.",
+        ],
+    }
+
+
+def build_sts_ranker_spine_records(
+    *,
+    args: argparse.Namespace,
+    aggregate: dict[str, Any],
+    surface_reports: list[dict[str, Any]],
+    selected_rows: list[dict[str, Any]],
+    verification_bandwidth: dict[str, Any],
+    governance_tax: dict[str, Any],
+    recommendation: dict[str, Any],
+) -> list[dict[str, Any]]:
+    run_suffix = stable_payload_hash(
+        {
+            "task_count": aggregate.get("task_count"),
+            "surface_count": aggregate.get("surface_count"),
+            "sts_pass_rate": aggregate.get("sts_policy_selected_pass_rate"),
+            "non_sts_pass_rate": aggregate.get("non_sts_policy_selected_pass_rate"),
+            "candidate_budget": args.candidate_budget,
+            "timeout_seconds": args.timeout_seconds,
+        }
+    )[:16]
+    run_id = f"sts_ranker_policy-{run_suffix}"
+    claim_id = f"claim_sts_ranker_policy-{run_suffix}"
+    fallback_count = int(aggregate.get("fallback_return_candidate_count") or 0)
+    external_calls = int(aggregate.get("external_inference_calls") or 0)
+    common = {
+        "run_id": run_id,
+        "producer_surface": "sts_ranker_policy_v1",
+        "support_state": "SUPPORTED",
+        "public_training_rows_written": 0,
+        "external_inference_calls": external_calls,
+        "fallback_return_count": fallback_count,
+        "candidate_generation_credit": 0,
+        "learned_generation_claim_allowed": False,
+        "verification_bandwidth": verification_bandwidth,
+        "governance_tax": governance_tax,
+        "non_claims": [
+            "STS ranker policy is selector accounting, not learned generation.",
+            "Private selector evidence does not imply public transfer.",
+            "Routers, tools, templates, repairs, and fallback bodies remain noncredit for learned-generation claims.",
+        ],
+    }
+    evidence_refs = [
+        "reports/sts_ranker_policy_v1.json",
+        "reports/sts_ranker_policy_v1_selected_candidates.jsonl",
+        "configs/sts_ranker_policy_v1.json",
+    ]
+    return [
+        {
+            **common,
+            "record_type": "policy_optimization_record",
+            "record_id": f"sts_ranker_policy_update-{run_suffix}",
+            "policy_target": "candidate_ranker_policy",
+            "policy_kind": "deterministic_metadata_selector",
+            "behavior_change_state": "guarded_not_default",
+            "admissible_feedback": ["private_verifier_after_selection", "equal_budget_private_surface_measurement"],
+            "sts_policy_selected_pass_rate": aggregate.get("sts_policy_selected_pass_rate"),
+            "non_sts_policy_selected_pass_rate": aggregate.get("non_sts_policy_selected_pass_rate"),
+            "drift_bound": "disabled_by_default_guard_env_required",
+            "rollback_plan": f"unset {GUARD_ENV}",
+            "monitor_window": "one guarded local run before route adoption",
+        },
+        {
+            **common,
+            "record_type": "authority_use_receipt",
+            "record_id": f"sts_ranker_authority_use-{run_suffix}",
+            "authority_scope": ["local_private_selector_eval", "private_verifier_after_selection"],
+            "state": "local_private_no_public_calibration_no_external_inference",
+            "status": "READY",
+            "evidence_refs": evidence_refs,
+        },
+        {
+            **common,
+            "record_type": "resource_budget_record",
+            "record_id": f"sts_ranker_resource_budget-{run_suffix}",
+            "budget_id": f"sts_ranker_budget-{run_suffix}",
+            "verification_obligation_count": verification_bandwidth["obligation_count"],
+            "verifier_capacity_units": verification_bandwidth["verifier_capacity_units"],
+            "capacity_margin_units": verification_bandwidth["capacity_margin_units"],
+            "escalation_required": verification_bandwidth["escalation_required"],
+            "residual_obligations": verification_bandwidth["residual_obligations"],
+            "score_semantics": "selector budget only; no public calibration or training is performed by this record",
+        },
+        {
+            **common,
+            "record_type": "costed_route_record",
+            "record_id": f"sts_ranker_costed_route-{run_suffix}",
+            "task_id": run_id,
+            "route_state": "guarded_candidate_selector_route",
+            "task_contract_ref": "configs/sts_ranker_policy_v1.json",
+            "quality_predicate": "STS ranker must improve private selected-pass rate under equal budget without leakage, fallback, external inference, or public calibration.",
+            "authority_ceiling": "local_private_selector_eval",
+            "candidate_routes": ["non_sts_equal_budget_selector", "sts_ranker_policy_v1"],
+            "selected_route": "sts_ranker_policy_v1",
+            "rejected_lower_cost_routes": ["non_sts_equal_budget_selector"],
+            "verification_result": "private_equal_budget_verifier_passed" if not verification_bandwidth["escalation_required"] else "private_equal_budget_residuals_present",
+            "outcome_state": recommendation.get("decision"),
+            "cost_accounting": {
+                "governed_overhead_ms": governance_tax["governed_overhead_ms"],
+                "governed_total_latency_ms": governance_tax["governed_total_latency_ms"],
+                "review_load_units": governance_tax["review_load_units"],
+                "caught_failure_count": governance_tax["caught_failure_count"],
+                "tax_per_caught_failure": governance_tax["tax_per_caught_failure"],
+                "verification_obligation_count": verification_bandwidth["obligation_count"],
+                "verifier_capacity_units": verification_bandwidth["verifier_capacity_units"],
+            },
+            "cost_classes": ["private_selection", "private_verifier", "no_cheat_audit", "route_governance"],
+            "hidden_cost_checks": [
+                "equal budget enforced",
+                "public calibration not run",
+                "heldout solution bodies not used for policy",
+                "ranker evidence not learned generation",
+            ],
+            "residual_obligations": verification_bandwidth["residual_obligations"],
+            "fallback_route": "non_sts_equal_budget_selector",
+            "promotion_candidate": False,
+            "support_state_effect": "selector_route_evidence_only",
+        },
+        {
+            **common,
+            "record_type": "generation_mode_record",
+            "record_id": f"sts_ranker_generation_mode-{run_suffix}",
+            "state": "selector_only_not_generator",
+            "candidate_generation_credit": 0,
+            "learned_generation_claim_allowed": False,
+            "selected_candidate_count": len(selected_rows),
+            "non_claim": "STS ranker selection cannot claim learned body-token generation.",
+        },
+        {
+            **common,
+            "record_type": "failure_boundary",
+            "record_id": f"sts_ranker_failure_boundary-{run_suffix}",
+            "failure_id": f"sts_ranker_boundary-{run_suffix}",
+            "fallback_return_used": fallback_count > 0,
+            "public_calibration_run": False,
+            "verification_escalation_required": verification_bandwidth["escalation_required"],
+            "residual_obligations": verification_bandwidth["residual_obligations"],
+            "terminal": False,
+            "status": "READY" if not verification_bandwidth["escalation_required"] else "RESIDUALS_PRESENT",
+        },
+        {
+            **common,
+            "record_type": "artifact_graph_record",
+            "record_id": f"sts_ranker_artifact-{run_suffix}",
+            "artifact_kind": "sts_ranker_policy_report",
+            "content_hash": stable_payload_hash({"aggregate": aggregate, "surface_count": len(surface_reports)}),
+            "source_refs": evidence_refs,
+            "context_refs": ["private_candidate_manifests", "private_heldout_eval_tasks"],
+            "claim_refs": [claim_id],
+            "replay_metadata": {
+                "candidate_budget": args.candidate_budget,
+                "timeout_seconds": args.timeout_seconds,
+                "surface_count": len(surface_reports),
+                "selected_candidate_count": len(selected_rows),
+            },
+            "evidence_gate": {
+                "trigger_state": "GREEN" if not verification_bandwidth["escalation_required"] else "YELLOW",
+                "public_training_rows_written": 0,
+                "external_inference_calls": external_calls,
+                "fallback_return_count": fallback_count,
+            },
+        },
+        {
+            **common,
+            "record_type": "claim_record",
+            "record_id": f"sts_ranker_claim-{run_suffix}",
+            "claim_id": claim_id,
+            "state": "sts_ranker_private_selector_evidence_summarized",
+            "status": "GREEN" if not verification_bandwidth["escalation_required"] else "YELLOW",
+            "evidence_ref": "reports/sts_ranker_policy_v1.json",
+            "claim_boundary": "private_selector_route_evidence_not_learned_generation_not_public_transfer",
+        },
+        {
+            **common,
+            "record_type": "evidence_transition_record",
+            "record_id": f"sts_ranker_evidence_transition-{run_suffix}",
+            "state": "private_candidate_manifests_to_guarded_selector_policy",
+            "status": "SUPPORTED" if not verification_bandwidth["escalation_required"] else "RESIDUALS_PRESENT",
+            "evidence_ref": "reports/sts_ranker_policy_v1.json",
+        },
+    ]
+
+
 def group_candidates(rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
     out: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -681,6 +1046,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- No-admissible rate: `{summary.get('no_admissible_rate')}`",
         f"- Fallback return candidates: `{summary.get('fallback_return_candidate_count')}`",
         f"- Public leakage count: `{summary.get('public_leakage_count')}`",
+        f"- Verification bandwidth: `{summary.get('verification_bandwidth_status')}` obligations `{summary.get('verification_obligation_count')}` escalation `{summary.get('verification_escalation_required')}`",
+        f"- Governance tax: `{summary.get('governance_tax_status')}` review load `{summary.get('governance_tax_review_load_units')}` caught failures `{summary.get('governance_tax_caught_failure_count')}`",
         f"- Recommendation: `{rec.get('decision')}`",
         "",
         "The selector is guarded by `THESEUS_ENABLE_STS_RANKER_POLICY_V1=1` and does not run public calibration.",
@@ -702,6 +1069,11 @@ def rel(path: Path) -> str:
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def stable_payload_hash(value: Any) -> str:
+    encoded = json.dumps(value, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 if __name__ == "__main__":

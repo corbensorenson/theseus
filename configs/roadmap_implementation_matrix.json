@@ -1851,14 +1851,15 @@
         "reports/octopus_router_head_gate.json",
         "reports/code_lm_train_once_fanout.json",
         "reports/private_verifier_spine_smoke.json",
+        "reports/sts_ranker_policy_v1.json",
         "reports/viea_spine_record_gate.json",
         "reports/viea_spine_materialized_view.json"
       ],
       "missing_items": [
-        "Octopus routing, train-once fanout, and the private verifier cascade now emit verification-bandwidth capacity accounting with obligation count, verifier capacity, decomposition contracts, residual-obligation ledger, and escalation thresholds; remaining work is adopting the same capacity model in STS-specific conditioning/ranker runs",
-        "Octopus routing, train-once fanout, and the private verifier cascade now emit governance-tax accounting with per-gate overhead, review load, tax-per-caught-risk, and caught verification-capacity escalation evidence; remaining work is richer real task-to-arm traces and broader STS/ranker adoption"
+        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit verification-bandwidth capacity accounting with obligation count, verifier capacity, decomposition contracts, residual-obligation ledger, and escalation thresholds; current STS rerun honestly exposes a no-admissible residual because the old candidate manifests are not present in the cleaned local state",
+        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit governance-tax accounting with per-gate overhead, review load, tax-per-caught-risk, and caught verification-capacity/residual evidence; remaining work is regenerating current STS candidate inputs through the registered fanout path and collecting richer real task-to-arm traces"
       ],
-      "smallest_next_patch": "Extend the verification-bandwidth and governance-tax receipts into STS-specific conditioning/ranker runs, then collect more diverse real task-to-arm traces before changing major route policy.",
+      "smallest_next_patch": "Regenerate current STS candidate manifests through the registered fanout path so the STS ranker accounting can evaluate live admissible candidates again, then collect more diverse real task-to-arm traces before changing major route policy.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -1887,10 +1888,16 @@
         "reports/private_verifier_spine_smoke.json summary.verification_bandwidth_status=ready",
         "reports/private_verifier_spine_smoke.json summary.governance_tax_status=ready",
         "reports/private_verifier_spine_smoke.json private_verification.viea_verifier_records contains costed_route_record",
+        "python3 scripts/sts_ranker_policy_v1.py --candidate-budget 4 --timeout-seconds 2",
+        "reports/sts_ranker_policy_v1.json verification_bandwidth.status=ready",
+        "reports/sts_ranker_policy_v1.json governance_tax.status=ready",
+        "reports/sts_ranker_policy_v1.json viea_sts_ranker_records contains costed_route_record",
+        "reports/sts_ranker_policy_v1.json summary.no_admissible_rate documents current candidate-manifest availability",
         "python3 scripts/viea_spine_record_gate.py --gate",
         "reports/viea_spine_record_gate.json profiles octopus_moecot_route_spine_v1 passed=true",
         "reports/viea_spine_record_gate.json profiles train_once_fanout_spine_v1 passed=true",
         "reports/viea_spine_record_gate.json profiles private_verifier_spine_v1 passed=true",
+        "reports/viea_spine_record_gate.json profiles sts_ranker_policy_spine_v1 passed=true",
         "reports/viea_spine_record_gate.json profiles octopus_router_head_training_spine_v1 passed=true"
       ],
       "completion_rule": "Octopus routing becomes a registry-validated capability selector that improves execution without laundering unsupported claims."
