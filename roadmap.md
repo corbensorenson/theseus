@@ -211,6 +211,21 @@ remain honestly bounded.
   meet their target support state. Training or public calibration still needs
   the specific governed command/gate for that lane; this readiness result only
   means the book-derived architecture no longer has a local partial blocker.
+- Post-readiness execution is now governed by
+  `configs/training_inference_execution_roadmap.json` and checked by
+  `python3 scripts/training_inference_execution_plan_gate.py --gate`. This is
+  the canonical bridge from "architecture ready" to actual training and
+  inference work. It marks governed private training focus and a private MLX
+  training smoke as ready; marks local assisted inference canaries as ready
+  under honest labels; keeps bounded longer training planned until the smoke
+  produces a clean checkpoint; keeps model-only general chat serving, public
+  calibration, production MLX routing, and Hive fleet training blocked until
+  their evidence conditions are met. The plan explicitly rejects public
+  benchmark training, runtime external inference, exact consumed public-surface
+  reruns, fallback/template/router/tool credit as learned generation, raw
+  private user text by default, and arbitrary remote execution.
+  Current result: `reports/training_inference_execution_plan_gate.json` is
+  `GREEN` with `0` failed checks and `0` failed expected-invalid controls.
 - The E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed:
   `reports/governance_rights_receipt_suite.json` proves one side-effecting
   assistant/tool fixture through runtime adapter invocation, authority
@@ -241,7 +256,7 @@ remain honestly bounded.
   a learned-generation win.
 - The AI_book crosswalk is intentionally sticky: it now indexes `1703` AI_book
   source files, has `38` active backlog items, `0` stale-source phase
-  candidates, `54` public-safe evidence pointers, and `136` active source-sync
+  candidates, `57` public-safe evidence pointers, and `136` active source-sync
   review decisions. This keeps book-to-Theseus follow-up visible instead of
   clearing it with superficial steward decisions.
 - Phase 0 is implemented: the project registry gate is `GREEN` with no
@@ -1533,7 +1548,7 @@ Acceptance gates:
 - Theseus evidence exported to AI_book is public-safe and support-state labeled.
 - Current implementation evidence: `reports/book_to_theseus_crosswalk.json`
   reports `38` active roadmap backlog items, `0` stale phases, `136` active
-  source-sync review decisions, and `54` public-safe Theseus-to-book evidence
+  source-sync review decisions, and `57` public-safe Theseus-to-book evidence
   pointers. The chapter-level implementation contract is now carried in
   `configs/roadmap_implementation_matrix.json` with `44/44` authored chapters
   mapped to Theseus phases, support-state targets, gates, and no-claim
@@ -1681,12 +1696,12 @@ source count plus manifest hash gate-owned in
 `reports/book_to_theseus_crosswalk.json`, so the human roadmap does not churn
 when the living book changes. Generated
 book builds, archives, and Lean build outputs are excluded. It also emits
-`54` public-safe Theseus-to-book evidence pointers, carries `41` active sticky
-roadmap backlog rows in the crosswalk with `134` source-sync review decisions,
+`57` public-safe Theseus-to-book evidence pointers, carries `38` active sticky
+roadmap backlog rows in the crosswalk with `136` source-sync review decisions,
 `0` newly cleared backlog rows against the latest source inventory, and `0`
 currently stale phases. The module
-DoD gate keeps raw source-drift review routed into `41` module work cards and
-`41` steward-decision candidates through
+DoD gate keeps raw source-drift review routed into `38` module work cards and
+`38` steward-decision candidates through
 `reports/book_to_theseus_backlog_work_cards.jsonl`.
 This is the current machine-readable book-to-implementation sync point, not a
 completion claim.
@@ -1789,9 +1804,9 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Wired | Readiness gate is green for architecture only; next governed step is private semantic update/final-return adaptation on the existing transformer/hybrid lane, with no public/external/fallback/tool/template credit. |
+| 10 | Practical Neural Seed Survival Lane | Wired | Training/inference execution plan is green. Next governed step is T2 private MLX training smoke on the existing transformer/hybrid lane, then T3 bounded private semantic update/final-return training only if the smoke checkpoint is clean. No public/external/fallback/tool/template credit. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
-| 12 | Public Calibration And Residual Mining Discipline | Wired | Freeze the next genuinely fresh public surface only after direct learned candidate quality improves, then pass the proposal gate before execution and mine failures into private residual rows. |
+| 12 | Public Calibration And Residual Mining Discipline | Wired | Public calibration remains measurement-only. The execution plan keeps it blocked until private semantic behavior improves and a fresh, non-consumed surface passes the proposal gate; exact consumed-surface reruns stay refused. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Wired | Make future generator/verifier implementations consume these semantic obligation bindings in their native payloads rather than only through the current shared gate. |
 | 14 | Compression, Proof, And Claim Evidence Records | Wired | Keep archive-pointer replay verification mandatory for future retention batches; expand retention only through steward-covered, bounded generated-artifact cleanup passes. |
 | 15 | Procedural Memory And Toolification | Wired | Future procedural candidates must reuse the same guarded adoption transaction, rollback criteria, and route_binding_contract before default routing; no shortcut or learned-generation claim is allowed. |
@@ -1808,6 +1823,51 @@ Out of scope for that goal:
 - New strict-generator target modes, marker families, or decode guards.
 - Claims that a roadmap item is complete without a registered surface and a
   runnable integration path.
+
+## Training And Inference Execution Roadmap
+
+The repository is ready to start governed private training focus, not ready to
+claim model-only production inference. The execution contract is:
+
+1. `T0_preflight_freeze`: refresh roadmap, registry, data-admission, and
+   execution-plan gates.
+2. `T1_data_and_context_manifest`: materialize the exact admitted
+   private/licensed rows, governed teacher rows if available, dogfood metadata,
+   and VCM context packets. Public benchmark taint is excluded from training.
+3. `T2_private_training_smoke`: run a short private MLX transformer/hybrid
+   smoke that writes a digest-bound checkpoint, reports throughput, and keeps
+   all no-cheat counters at zero.
+4. `T3_bounded_private_training_rung`: only after T2 passes, run the longer
+   private stateful-update/finalizer semantic repair rung against the current
+   wall: `missing_semantic_update_value`, `type_handling`, `wrong_answer`, and
+   `missing_finalizer`.
+5. `T4_private_eval_and_candidate_integrity`: replay the checkpoint through
+   independent candidate integrity, blind-flow audit, private verifier,
+   selector ablation, VCM-on/off, and STS-on/off under equal candidate budget.
+6. `T5_local_assisted_inference_canary`: use the assistant runtime locally with
+   VCM, deterministic tools, planning, uncertainty, evidence refs, and
+   accepted/missed/ignored/corrected/completed feedback. This is assisted local
+   inference, not a model-only ChatGPT-grade claim.
+7. `T6_dogfood_feedback_to_training_rows`: convert real outcomes into
+   metadata-first training pressure and procedural-memory candidates with raw
+   private text disabled by default.
+8. `T7_fresh_public_calibration_proposal`: only after private semantic
+   behavior improves, propose a fresh frozen public calibration surface. The
+   proposal gate must pass; consumed exact surfaces must not rerun; public
+   artifacts never become training rows.
+9. `T8_hive_fleet_training_scaleout`: keep blocked while trusted peers are
+   unreachable. When unblocked, use only registered bounded Hive tasks with
+   input/output artifacts, backend, owner node, score, merge result, and stale
+   lease recovery.
+
+Current gate interpretation:
+
+- Ready now: `T0`, `T1`, `T2`, and `T5`.
+- Planned but not yet ready: `T3`, `T4`, and `T6`.
+- Correctly blocked: `T7` public calibration and `T8` Hive scaleout.
+- Explicit non-claims: no model-only general chat serving, no public transfer
+  win, no production MLX route, no CUDA/MLX/Metal parity claim, and no ASI
+  capability claim.
 
 ## Current Generator Wall
 

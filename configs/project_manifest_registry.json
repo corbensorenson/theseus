@@ -6695,8 +6695,10 @@
         "scripts/maturity_integrity_audit.py",
         "scripts/model_growth_gate.py",
         "scripts/candidate_promotion_gate.py",
+        "scripts/training_inference_execution_plan_gate.py",
         "configs/generation_mode_registry.json",
-        "configs/*policy*.json"
+        "configs/*policy*.json",
+        "configs/training_inference_execution_roadmap.json"
       ],
       "canonical": "scripts/maturity_integrity_audit.py",
       "report_outputs": [
@@ -6705,9 +6707,11 @@
         "reports/policy_optimization_program.json",
         "reports/policy_optimization_program.md",
         "reports/generation_mode_registry.json",
-        "reports/generation_mode_registry.md"
+        "reports/generation_mode_registry.md",
+        "reports/training_inference_execution_plan_gate.json",
+        "reports/training_inference_execution_plan_gate.md"
       ],
-      "verification_command": "python3 scripts/maturity_integrity_audit.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
+      "verification_command": "python3 scripts/maturity_integrity_audit.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py && python3 scripts/training_inference_execution_plan_gate.py --gate",
       "cleanup_policy": "gates protect evidence quality; do not add artificial locks unrelated to leakage, reruns, provenance, or runtime safety",
       "abstraction_id": "candidate_integrity_contract",
       "major_surface": true,

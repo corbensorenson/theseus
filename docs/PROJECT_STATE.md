@@ -43,9 +43,25 @@ Windows coordinator. All five pre-training book-reference core slices now meet
 their target support state. Training or public calibration still needs the
 specific governed command/gate for that lane; this readiness result only means
 the book-derived architecture no longer has a local partial blocker.
+The post-readiness training/inference execution plan is now represented by
+`configs/training_inference_execution_roadmap.json` and gated with
+`python3 scripts/training_inference_execution_plan_gate.py --gate`. The gate
+is designed to be the handoff from architecture readiness to actual work:
+governed private training focus, the T2 private MLX training smoke, and local
+assisted inference canaries are allowed next; longer bounded private training
+waits for a clean smoke checkpoint; public calibration waits for positive
+private semantic behavior plus a fresh non-consumed surface; production MLX
+routing remains fail-closed on behavior quality; model-only ChatGPT-grade
+serving is not claimed; Hive fleet training remains blocked while trusted
+peers are unreachable. The plan hard-rejects public benchmark training,
+runtime external inference, exact consumed public-surface reruns,
+fallback/template/router/tool credit as learned generation, raw private user
+text by default, and arbitrary remote execution.
+Current result: `reports/training_inference_execution_plan_gate.json` is
+`GREEN` with `0` failed checks and `0` failed expected-invalid controls.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
-stale-source phase candidates, `54` public-safe evidence pointers, and `136`
+stale-source phase candidates, `57` public-safe evidence pointers, and `136`
 active source-sync
 review decisions. That keeps book-to-Theseus follow-up visible instead of
 clearing it with superficial steward decisions.
@@ -528,7 +544,7 @@ and validated by `python3 scripts/validate_reference_trace.py`, replayed
 through `python3 scripts/validate_reference_trace_replay.py`, and covered by
 `python3 scripts/validate_receipt_repository_audit.py` plus
 `python3 scripts/validate_book.py`. The source-sync smoke passes,
-public-safe evidence smoke passes, and the current crosswalk has `54`
+public-safe evidence smoke passes, and the current crosswalk has `57`
 public-safe evidence pointers, `38` active roadmap backlog rows, `136`
 source-sync review decisions, `38` module source-backlog work cards, and `0`
 currently stale phases. The sticky-source rule remains in force: future AI_book

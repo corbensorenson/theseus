@@ -1,0 +1,469 @@
+{
+  "policy": "project_theseus_training_inference_execution_roadmap_v1",
+  "purpose": "Define the post-architecture-readiness execution order for private training, local inference canaries, dogfood learning, public calibration, and later Hive scaling without creating side lanes or weakening no-cheat boundaries.",
+  "owner_surface": "model_governance_gates",
+  "registry_bindings": {
+    "training_surface": "neural_seed_and_decoder",
+    "assistant_surface": "theseus_assistant_runtime",
+    "data_surface": "teacher_and_data_governance",
+    "resource_surface": "resource_and_acceleration",
+    "public_calibration_surface": "public_calibration_registry"
+  },
+  "rules": {
+    "public_benchmarks_calibration_only": true,
+    "fresh_public_surfaces_authorized_when_governed": true,
+    "exact_consumed_public_surface_rerun_allowed": false,
+    "public_benchmark_payloads_allowed_in_training": false,
+    "licensed_open_nonbenchmark_training_allowed_with_provenance": true,
+    "external_runtime_inference_allowed": false,
+    "teacher_training_rows_allowed_only_through_distillation_gate": true,
+    "teacher_tokens_allowed_at_runtime_serving": false,
+    "fallback_template_router_tool_credit_as_learned_generation": false,
+    "deterministic_tool_results_count_as_tool_assisted_not_model_only": true,
+    "arbitrary_remote_execution_allowed": false,
+    "raw_private_user_text_training_default": false,
+    "candidate_integrity_independent_audit_required": true,
+    "vcm_public_calibration_taint_excluded_from_training": true
+  },
+  "execution_order": [
+    "T0_preflight_freeze",
+    "T1_data_and_context_manifest",
+    "T2_private_training_smoke",
+    "T3_bounded_private_training_rung",
+    "T4_private_eval_and_candidate_integrity",
+    "T5_local_assisted_inference_canary",
+    "T6_dogfood_feedback_to_training_rows",
+    "T7_fresh_public_calibration_proposal",
+    "T8_hive_fleet_training_scaleout"
+  ],
+  "lanes": [
+    {
+      "id": "T0_preflight_freeze",
+      "title": "Preflight Freeze",
+      "status": "ready",
+      "goal": "Freeze the current source, roadmap, registry, and no-cheat state before any training run.",
+      "entry_criteria": [
+        "workspace has no unreviewed source changes that affect training or inference",
+        "pre-training architecture readiness is GREEN",
+        "project registry is GREEN",
+        "training data admission hard gates pass"
+      ],
+      "required_gates": [
+        "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
+        "python3 scripts/theseus_project_registry.py --gate",
+        "python3 scripts/training_data_admission_v1.py",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate"
+      ],
+      "allowed_inputs": [
+        "registered source",
+        "registered configs",
+        "generated evidence reports",
+        "local system/resource facts"
+      ],
+      "forbidden_inputs": [
+        "public benchmark solutions",
+        "public hidden tests",
+        "teacher runtime tokens",
+        "unregistered generated source"
+      ],
+      "evidence_outputs": [
+        "reports/roadmap_pre_training_architecture_readiness_gate.json",
+        "reports/theseus_project_registry.json",
+        "reports/training_data_admission_v1.json",
+        "reports/training_inference_execution_plan_gate.json"
+      ],
+      "exit_criteria": [
+        "all hard no-cheat counters are zero",
+        "current public calibration state is known",
+        "training checkpoint and data manifest targets are selected"
+      ],
+      "rollback_or_stop": "Stop before training if registry, data admission, architecture readiness, or this plan gate is RED.",
+      "no_claims": [
+        "does not claim model quality",
+        "does not claim public transfer",
+        "does not run training"
+      ]
+    },
+    {
+      "id": "T1_data_and_context_manifest",
+      "title": "Data And Context Manifest",
+      "status": "ready",
+      "goal": "Materialize the exact private/licensed training rows and VCM context packets the first training rungs may consume.",
+      "entry_criteria": [
+        "T0 passes",
+        "training rows are provenance-tagged",
+        "public benchmark taint is excluded",
+        "teacher rows are admitted only by the distillation gate"
+      ],
+      "required_gates": [
+        "python3 scripts/training_data_admission_v1.py",
+        "python3 scripts/vcm_context_governor_gate.py",
+        "python3 scripts/teacher_distillation_gate.py"
+      ],
+      "allowed_inputs": [
+        "private generated residual rows",
+        "licensed non-benchmark open code rows",
+        "governed teacher-distillation rows accepted by verifier",
+        "metadata-only dogfood outcomes",
+        "VCM context packets with taint receipts"
+      ],
+      "forbidden_inputs": [
+        "public benchmark prompts as training rows",
+        "public benchmark tests or hidden tests",
+        "public benchmark solutions or answer templates",
+        "raw private user text by default",
+        "teacher proposals not accepted by the distillation gate"
+      ],
+      "evidence_outputs": [
+        "reports/training_data_admission_v1.json",
+        "reports/vcm_context_governor.json",
+        "reports/teacher_distillation_gate.json",
+        "reports/teacher_share_ledger_summary.json"
+      ],
+      "exit_criteria": [
+        "training row manifest has exact row counts and provenance",
+        "heldout/private eval split is frozen",
+        "VCM context adequacy is sufficient or explicitly partial"
+      ],
+      "rollback_or_stop": "Quarantine any row family with public benchmark taint, missing provenance, or teacher gate failure.",
+      "no_claims": [
+        "does not claim teacher output is runtime output",
+        "does not claim licensed public non-benchmark data is benchmark training"
+      ]
+    },
+    {
+      "id": "T2_private_training_smoke",
+      "title": "Private Training Smoke",
+      "status": "ready",
+      "goal": "Run a short private-only transformer/hybrid MLX adaptation smoke that proves the training command, checkpoint writing, VCM context, and no-cheat counters before a longer rung.",
+      "entry_criteria": [
+        "T1 manifest passes",
+        "MLX route readiness is GREEN but production route remains disabled",
+        "baseline checkpoint digest is recorded"
+      ],
+      "required_gates": [
+        "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
+        "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
+        "python3 scripts/strict_generator_mlx_pretraining_probe.py --help"
+      ],
+      "allowed_inputs": [
+        "prompt text",
+        "callable signatures",
+        "admitted private/licensed rows",
+        "private verifier labels attached after generation",
+        "VCM packets approved by context governor"
+      ],
+      "forbidden_inputs": [
+        "tests",
+        "hidden_tests",
+        "solutions",
+        "answer templates",
+        "public benchmark payloads",
+        "fallback return templates",
+        "deterministic tool outputs as learned-generation targets"
+      ],
+      "evidence_outputs": [
+        "reports/strict_generator_mlx_pretraining_probe_*.json",
+        "reports/resource_mlx_route_readiness_gate.json",
+        "reports/neural_seed_survival_readiness_gate.json"
+      ],
+      "exit_criteria": [
+        "checkpoint artifact written with digest",
+        "public training rows written equals zero",
+        "external inference calls equals zero",
+        "fallback/template/router/tool credit equals zero",
+        "loss and throughput are recorded"
+      ],
+      "rollback_or_stop": "Delete or quarantine checkpoint if any no-cheat counter is nonzero or checkpoint provenance is missing.",
+      "no_claims": [
+        "loss improvement alone is not capability progress",
+        "smoke does not authorize public calibration"
+      ]
+    },
+    {
+      "id": "T3_bounded_private_training_rung",
+      "title": "Bounded Private Training Rung",
+      "status": "planned",
+      "goal": "Train the practical transformer/hybrid survival lane against the current stateful-update semantic wall with verifier-positive and verifier-negative private evidence.",
+      "entry_criteria": [
+        "T2 smoke passes",
+        "baseline replay is frozen",
+        "data manifest and heldout split are frozen"
+      ],
+      "required_gates": [
+        "python3 scripts/strict_generator_mlx_pretraining_probe.py",
+        "python3 scripts/code_lm_train_once_fanout.py",
+        "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate"
+      ],
+      "allowed_inputs": [
+        "private residual categories: missing_semantic_update_value, type_handling, wrong_answer, missing_finalizer",
+        "accepted/rejected verifier stage labels",
+        "family-disjoint private heldout",
+        "governed teacher rows if distillation manifest becomes ready"
+      ],
+      "forbidden_inputs": [
+        "public benchmark payloads",
+        "public test-derived return_shape/type_family/required_constructs",
+        "hand-authored fixed update renderers counted as learned generation",
+        "structural adapters counted as learned generation"
+      ],
+      "evidence_outputs": [
+        "reports/strict_generator_mlx_private_adaptation_*.json",
+        "reports/code_lm_train_once_fanout.json",
+        "reports/neural_seed_strict_generator_fanout_receipt.json"
+      ],
+      "exit_criteria": [
+        "same private heldout split is evaluated before and after",
+        "semantic verifier pass improves over baseline or a falsifying wall is recorded",
+        "candidate integrity remains GREEN",
+        "checkpoint size, load time, throughput, and memory are reported"
+      ],
+      "rollback_or_stop": "Do not promote if improvement is only syntax, nontrivial-return rate, lower LM loss, or wider fanout without behavior.",
+      "no_claims": [
+        "does not claim production routing",
+        "does not claim public transfer",
+        "does not claim SymLiquid verdict"
+      ]
+    },
+    {
+      "id": "T4_private_eval_and_candidate_integrity",
+      "title": "Private Eval And Candidate Integrity",
+      "status": "planned",
+      "goal": "Replay the trained checkpoint through independent candidate integrity, blind information-flow, private verifier, selector, and VCM-on/off ablations.",
+      "entry_criteria": [
+        "T3 produced a checkpoint with clean provenance",
+        "candidate files and reports are replayable"
+      ],
+      "required_gates": [
+        "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
+        "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
+        "python3 scripts/neural_seed_survival_readiness_gate.py --gate"
+      ],
+      "allowed_inputs": [
+        "generated candidate files",
+        "private verifier results",
+        "candidate source code",
+        "allowed prompt/signature context",
+        "VCM packet metadata"
+      ],
+      "forbidden_inputs": [
+        "candidate self-declared learned flags",
+        "candidate self-declared contamination flags",
+        "solution-derived family labels",
+        "public benchmark payloads"
+      ],
+      "evidence_outputs": [
+        "reports/candidate_integrity_*.json",
+        "reports/blind_information_flow_audit_*.json",
+        "reports/neural_seed_strict_generator_fanout_receipt.json",
+        "reports/correctness_generator_survival_lane_gate.json"
+      ],
+      "exit_criteria": [
+        "integrity mismatch count is zero or treated as negative evidence",
+        "pass-if-any and selected-pass rates are reported",
+        "VCM-on/off and STS-on/off effects are separated under equal candidate budgets",
+        "no deterministic tool or adapter result is counted as learned generation"
+      ],
+      "rollback_or_stop": "Block promotion and public calibration if integrity, blind-flow, or semantic behavior evidence is weak.",
+      "no_claims": [
+        "does not turn tool-assisted success into model-only success",
+        "does not accept self-declared candidate provenance"
+      ]
+    },
+    {
+      "id": "T5_local_assisted_inference_canary",
+      "title": "Local Assisted Inference Canary",
+      "status": "ready",
+      "goal": "Use the existing assistant runtime as an honest local canary with VCM, deterministic tools, planning, evidence refs, uncertainty, and dogfood feedback.",
+      "entry_criteria": [
+        "assistant product lane gate is GREEN",
+        "external runtime inference remains disabled",
+        "model-only code generation wall is visible to the user"
+      ],
+      "required_gates": [
+        "python3 scripts/theseus_assistant_e2e.py",
+        "python3 scripts/theseus_assistant_product_lane_gate.py --gate"
+      ],
+      "allowed_inputs": [
+        "local project state",
+        "VCM memory packets",
+        "deterministic tool receipts",
+        "registered report evidence",
+        "metadata-only feedback events"
+      ],
+      "forbidden_inputs": [
+        "external inference tokens served to user",
+        "unsupported model-only capability claims",
+        "raw private user text written as training rows by default"
+      ],
+      "evidence_outputs": [
+        "reports/theseus_assistant_product_lane_gate.json",
+        "reports/theseus_assistant_runtime.json",
+        "reports/theseus_assistant_conversation_events.jsonl",
+        "reports/theseus_assistant_viea_trace.jsonl"
+      ],
+      "exit_criteria": [
+        "answers cite evidence or uncertainty",
+        "accepted/missed/ignored/corrected/completed outcomes are captured",
+        "tool-assisted and model-only behavior remain separately labeled"
+      ],
+      "rollback_or_stop": "Disable or restrict any route that silently serves external tokens or overclaims model-only generation.",
+      "no_claims": [
+        "does not claim ChatGPT-grade model-only inference",
+        "does not claim public benchmark competence"
+      ]
+    },
+    {
+      "id": "T6_dogfood_feedback_to_training_rows",
+      "title": "Dogfood Feedback To Training Rows",
+      "status": "planned",
+      "goal": "Convert real use outcomes into governed metadata-first training pressure and procedural-memory candidates.",
+      "entry_criteria": [
+        "T5 canary records useful events",
+        "feedback schema validates accepted/missed/ignored/corrected/completed outcomes"
+      ],
+      "required_gates": [
+        "python3 scripts/dogfood_trace_training_bridge.py",
+        "python3 scripts/procedural_memory_route_adoption.py",
+        "python3 scripts/training_data_admission_v1.py"
+      ],
+      "allowed_inputs": [
+        "metadata-only task outcomes",
+        "patch/verifier results",
+        "artifact refs",
+        "VCM context refs",
+        "operator feedback labels"
+      ],
+      "forbidden_inputs": [
+        "raw private user text by default",
+        "external runtime inference output",
+        "public benchmark traces",
+        "public benchmark payloads"
+      ],
+      "evidence_outputs": [
+        "reports/dogfood_trace_training_bridge.json",
+        "reports/procedural_memory_route_adoption.json",
+        "reports/training_data_admission_v1.json"
+      ],
+      "exit_criteria": [
+        "accepted/missed/ignored/corrected/completed counts are reported",
+        "admitted rows cite source events and privacy treatment",
+        "failed or ignored tasks create residual categories"
+      ],
+      "rollback_or_stop": "Quarantine any feedback row with raw private text or missing source-event provenance.",
+      "no_claims": [
+        "does not claim dogfood metadata alone improves public transfer",
+        "does not claim raw private text training"
+      ]
+    },
+    {
+      "id": "T7_fresh_public_calibration_proposal",
+      "title": "Fresh Public Calibration Proposal",
+      "status": "blocked_until_private_quality_positive",
+      "goal": "Run a fresh frozen public calibration only after private learned candidate quality improves, then mine failures into private residual categories without training on public artifacts.",
+      "entry_criteria": [
+        "T4 shows positive private semantic behavior improvement",
+        "surface slug is fresh and not consumed",
+        "proposal gate authorizes execution",
+        "training firewall is GREEN"
+      ],
+      "required_gates": [
+        "python3 scripts/public_calibration_proposal_gate.py",
+        "python3 scripts/operator_bounded_public_calibration.py",
+        "python3 scripts/one_shot_public_transfer_calibration_failure_mining_v1.py"
+      ],
+      "allowed_inputs": [
+        "public benchmark prompts for calibration execution only",
+        "generated candidates",
+        "public verifier results retained as calibration evidence"
+      ],
+      "forbidden_inputs": [
+        "public benchmark prompts as training rows",
+        "public tests or hidden tests as training rows",
+        "public solutions, traces, or answer templates as training rows",
+        "exact consumed public surface rerun"
+      ],
+      "evidence_outputs": [
+        "reports/public_calibration_proposal_gate.json",
+        "reports/public_benchmark_run_registry.jsonl",
+        "reports/bounded_public_transfer_residual_mining_*.json"
+      ],
+      "exit_criteria": [
+        "per-card scores are reported",
+        "failure categories are mined into private-only residual plan",
+        "public artifacts remain excluded from training",
+        "surface is marked consumed"
+      ],
+      "rollback_or_stop": "Stop if proposal gate refuses the surface, if contamination checks fail, or if the run would repeat an exact consumed surface.",
+      "no_claims": [
+        "public calibration is measurement, not training",
+        "a single public run does not prove general ASI capability"
+      ]
+    },
+    {
+      "id": "T8_hive_fleet_training_scaleout",
+      "title": "Hive Fleet Training Scaleout",
+      "status": "blocked_external_peers_unreachable",
+      "goal": "Scale training across trusted Hive nodes only after local training/inference contracts are clean and live peers are reachable.",
+      "entry_criteria": [
+        "local T2-T5 pass",
+        "trusted peers are reachable",
+        "Hive registered-task policy is active",
+        "resource routes are current per node"
+      ],
+      "required_gates": [
+        "python3 scripts/theseus_cli.py hive network-doctor",
+        "python3 scripts/hive_training_link_doctor.py",
+        "python3 scripts/hive_training_orchestrator.py"
+      ],
+      "allowed_inputs": [
+        "registered bounded Hive tasks",
+        "node capability reports",
+        "artifact manifests",
+        "training checkpoints with provenance"
+      ],
+      "forbidden_inputs": [
+        "arbitrary remote shell",
+        "public gateway operation",
+        "unbounded self-update",
+        "untrusted peer training rows"
+      ],
+      "evidence_outputs": [
+        "reports/hive_network_doctor.json",
+        "reports/hive_training_link_doctor.json",
+        "reports/hive_training_orchestrator.json"
+      ],
+      "exit_criteria": [
+        "each worker chunk has input artifact, output artifact, score, owner node, backend, and merge result",
+        "stale leases recover without stranding work",
+        "artifact sync preserves provenance"
+      ],
+      "rollback_or_stop": "Keep scaleout disabled while the current trusted Windows coordinator is unreachable from this Mac.",
+      "no_claims": [
+        "does not claim distributed work is proven while peers are unreachable",
+        "does not authorize arbitrary remote execution"
+      ]
+    }
+  ],
+  "success_metrics": {
+    "private_semantic_behavior_delta": "must improve over frozen baseline before promotion or public calibration",
+    "candidate_integrity_mismatch_count": 0,
+    "public_benchmark_training_rows_written": 0,
+    "external_runtime_inference_calls": 0,
+    "fallback_template_router_tool_credit_count": 0,
+    "teacher_share_metric": "reported every cycle and trends down as self-generated verified data improves",
+    "assistant_usefulness": "accepted/completed dogfood outcomes increase while missed/ignored residuals are mined",
+    "inference_latency_and_memory": "reported separately for assisted local runtime and model-only routes",
+    "mlx_route_state": "mechanically ready, production disabled until private behavior quality is positive",
+    "public_calibration_state": "fresh frozen measurement only, exact consumed reruns refused"
+  },
+  "next_concrete_sequence": [
+    "Run T0 gate bundle.",
+    "Refresh T1 data/context manifest.",
+    "Run T2 private MLX training smoke.",
+    "If T2 is clean, run T3 bounded private stateful-update training rung.",
+    "Run T4 private replay and integrity ablations.",
+    "Run T5 assisted local inference canary for real daily-use tasks.",
+    "Only propose T7 public calibration if T4 shows genuine private semantic behavior improvement."
+  ]
+}

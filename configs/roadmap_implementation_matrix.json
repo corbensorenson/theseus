@@ -975,7 +975,8 @@
         "python3 scripts/code_lm_train_once_fanout.py",
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
         "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
-        "python3 scripts/neural_seed_survival_readiness_gate.py --gate"
+        "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate"
       ],
       "required_docs": [
         "docs/PROJECT_STATE.md",
@@ -990,6 +991,9 @@
         "reports/correctness_generator_survival_lane_gate.json",
         "reports/neural_seed_survival_readiness_gate.json",
         "reports/neural_seed_survival_readiness_gate.md",
+        "configs/training_inference_execution_roadmap.json",
+        "reports/training_inference_execution_plan_gate.json",
+        "reports/training_inference_execution_plan_gate.md",
         "reports/assistant_code_private_replay_probe.json",
         "reports/private_candidate_replay_contract_audit_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
         "reports/candidate_integrity_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
@@ -1106,7 +1110,12 @@
         "reports/strict_generator_mlx_decode_eval_expression_value_isinstance_guard_broad4_v3.json summary.fallback_template_router_tool_credit_count=0",
         "reports/strict_generator_mlx_decode_eval_expression_value_isinstance_guard_broad4_v3_candidates.jsonl accepted bodies contain 0 instances of isinstance(data in ...)",
         "python3 -m py_compile scripts/code_lm_train_once_fanout.py scripts/neural_seed_strict_generator_fanout_receipt.py scripts/correctness_generator_survival_lane_gate.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_plans.py",
-        "scripts/code_lm_train_once_fanout.py contains strict_generator_fanout_receipt_summary closure gate; next refreshed closure report must cite summary.strict_generator_fanout_receipt.ready=true"
+        "scripts/code_lm_train_once_fanout.py contains strict_generator_fanout_receipt_summary closure gate; next refreshed closure report must cite summary.strict_generator_fanout_receipt.ready=true",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate",
+        "reports/training_inference_execution_plan_gate.json trigger_state=GREEN",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_private_training_smoke=true",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_bounded_private_training_rung=false",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_model_only_general_chat_runtime=false"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence."
     },
@@ -1201,7 +1210,8 @@
       "required_gates": [
         "python3 scripts/public_calibration_proposal_gate.py",
         "python3 scripts/operator_bounded_public_calibration.py",
-        "python3 scripts/theseus_benchmark_measurement.py"
+        "python3 scripts/theseus_benchmark_measurement.py",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate"
       ],
       "required_docs": [
         "docs/TRAINING_EVALS_BENCHMARKS.md",
@@ -1210,12 +1220,17 @@
       "current_evidence": [
         "reports/public_benchmark_run_registry.jsonl",
         "reports/public_calibration_proposal_gate.json",
-        "reports/public_transfer_readiness_refresh_v1.json"
+        "reports/public_transfer_readiness_refresh_v1.json",
+        "configs/training_inference_execution_roadmap.json",
+        "reports/training_inference_execution_plan_gate.json"
       ],
       "missing_items": [],
       "smallest_next_patch": "Freeze the next genuinely fresh public surface only after direct learned candidate quality improves, then pass the proposal gate before execution and mine failures into private residual rows.",
       "integration_smoke": [
-        "python3 scripts/public_calibration_proposal_gate.py"
+        "python3 scripts/public_calibration_proposal_gate.py",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_public_calibration=false",
+        "reports/training_inference_execution_plan_gate.json readiness_decision.next_disallowed_steps includes exact consumed public calibration rerun"
       ],
       "completion_rule": "Fresh public measurement can run without arbitrary monthly locks, but never trains on public payloads and never reruns consumed exact surfaces."
     },
@@ -1720,7 +1735,8 @@
       ],
       "required_gates": [
         "python3 scripts/module_definition_of_done_gate.py",
-        "python3 scripts/roadmap_implementation_gate.py --gate"
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate"
       ],
       "required_docs": [
         "roadmap.md",
@@ -1742,6 +1758,8 @@
         "AI_book:experiments/reference_trace/replay_results/2026-07-02-resource-flagship.json",
         "AI_book:experiments/receipt_repository_audit/results/2026-07-03-local.json",
         "configs/correctness_in_loop_generator_experiments.json",
+        "configs/training_inference_execution_roadmap.json",
+        "reports/training_inference_execution_plan_gate.json",
         "configs/project_steward.json"
       ],
       "missing_items": [],
@@ -1758,7 +1776,9 @@
         "reports/book_to_theseus_crosswalk.json summary.theseus_to_book_evidence_count>0",
         "reports/theseus_weekly_focus_20260706.json trigger_state=GREEN",
         "reports/theseus_weekly_focus_20260706.json summary.preregistered_experiment_count=1",
-        "reports/module_definition_of_done.json summary.source_backlog_work_card_count=38"
+        "reports/module_definition_of_done.json summary.source_backlog_work_card_count=38",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_governed_private_training_focus=true"
       ],
       "completion_rule": "The roadmap, registry, PROJECT_STATE, AI_book crosswalk, project steward decisions, Fourth-Pass parity backlog, and public-safe evidence-pack exports agree on what exists, what is missing, what evidence supports each claim, and which source-drift or book-parity rows were reviewed, implemented, deferred, or blocked."
     }

@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-07-06T05:32:56.858743+00:00",
+  "created_utc": "2026-07-06T10:43:16.362971+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -1257,7 +1257,7 @@
     "teacher_rows_admitted_outside_distillation_gate": false,
     "teacher_used": false,
     "vcm_context_governor_ready": true,
-    "vcm_context_governor_receipt_id": "64c793b2332955c9",
+    "vcm_context_governor_receipt_id": "f1f6caf711867fd1",
     "vcm_context_governor_state": "GREEN",
     "vcm_context_resolver_passed_count": 7,
     "vcm_context_resolver_request_count": 7,
@@ -4675,9 +4675,9 @@
       "public_open_training_allowed_by_policy": true,
       "raw_user_text_count": 0,
       "rejection_reasons": [],
-      "row_count": 430,
+      "row_count": 444,
       "sampled_row_count": 256,
-      "sha256": "cedf7a084c7a8c0d09d7dae36c44f1edd1f088d835869830865df9eeefa1efec",
+      "sha256": "0c9a01ca2476493c3bed63cf87cca6e545ed127d045f8c0dd8cbdfd7469e6566",
       "source_family_tags": [
         "assistant",
         "chat",
@@ -4703,7 +4703,7 @@
       ],
       "source_id": "01c9d950f8b9e938",
       "source_kind": "dogfood_metadata",
-      "split_hash": "f8e4316e597fb3d4e07590496efb21434eff59086d72ae4074c6ed72a7027dde",
+      "split_hash": "8499c117fa04c61c68d620531d8dbd67e59d19fe2fd1445c8d116b8a4d464a05",
       "teacher_row_count": 0,
       "training_use": "allowed"
     },
@@ -9308,7 +9308,7 @@
     "context_resolver_status": "ready",
     "context_resolver_typed_fault_count": 4,
     "context_resolver_viea_record_count": 56,
-    "created_utc": "2026-07-06T05:31:08.155773Z",
+    "created_utc": "2026-07-06T10:16:46.106786Z",
     "external_inference_calls": 0,
     "fallback_return_count": 0,
     "hard_gap_count": 0,
@@ -9316,7 +9316,7 @@
     "path": "reports/vcm_context_governor.json",
     "public_training_rows_written": 0,
     "ready": true,
-    "receipt_id": "64c793b2332955c9",
+    "receipt_id": "f1f6caf711867fd1",
     "record_type": "vcm_context_governor_receipt",
     "required_escalation": "none",
     "required_for": "training_data_admission",
