@@ -1,4 +1,4 @@
-"""Real-training preflight for SymLiquid RMI.
+"""Real-training preflight for Project Theseus.
 
 This gate keeps long training from starting until the ratchet, CUDA path,
 public/private benchmarks, and promotion rules are visible and measurable.

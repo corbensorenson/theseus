@@ -1,9 +1,9 @@
-# Project Theseus / SymLiquid RMI
+# Project Theseus
 
-Rust-first reference prototype for **Ratcheting Modular Intelligence**:
-continuous-state SymLiquid substrate, Octopus-routed specialist arms,
-SparkStream autonomy, Theseus Hive distributed runtime, and governed
-self-improvement loops.
+Rust-first reference prototype for **Project Theseus**: a private,
+locally trained AI system with Octopus-routed specialist arms, VCM memory,
+Stable Capability Fields, SparkStream autonomy, Theseus Hive distributed
+runtime, and governed self-improvement loops.
 
 This repository is a research implementation, not a foundation model and not a
 production runtime. It is designed to make the architecture testable through
@@ -53,13 +53,13 @@ As of the 2026-07-06 public-source pass:
   mostly parse/load in private receipts, but semantic behavior is not yet
   promotion-grade or public-transfer proof.
 
-Theseus is currently a local Ratcheting Modular Intelligence prototype with a
-real Code LM learning lane, SymLiquid substrate, SparkStream autonomy,
-Octopus-routed specialist arms, Hive distributed runtime, governed personality
-context, report-backed control plane, and explicit CUDA/MLX/CPU execution
-contracts. It is not a foundation model or production runtime yet; it is a
-research machine with proof, privacy, licensing, teacher-use, data-ingress, and
-promotion boundaries.
+Theseus is currently a local AI research system with a real Code LM learning
+lane, transformer/hybrid survival path, protected SymLiquid discovery
+comparator, SparkStream autonomy, Octopus-routed specialist arms, Hive
+distributed runtime, governed personality context, report-backed control
+plane, and explicit CUDA/MLX/CPU execution contracts. It is not a foundation
+model or production runtime yet; it is a research machine with proof, privacy,
+licensing, teacher-use, data-ingress, and promotion boundaries.
 
 Read these first:
 

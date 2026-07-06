@@ -520,14 +520,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "symliquid-fep"
-version = "0.1.0"
-dependencies = [
- "symliquid-core",
- "symliquid-cuda",
-]
-
-[[package]]
 name = "symliquid-ffi"
 version = "0.1.0"
 dependencies = [
@@ -558,6 +550,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "theseus"
+version = "0.1.0"
+dependencies = [
+ "symliquid-core",
+ "symliquid-cuda",
 ]
 
 [[package]]

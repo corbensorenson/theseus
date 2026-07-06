@@ -1,4 +1,4 @@
-//! Workspace-level re-export for the SymLiquid FEP-Net reference prototype.
+//! Workspace-level re-export for Project Theseus core components.
 
 pub use symliquid_core as core;
 

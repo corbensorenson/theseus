@@ -1,9 +1,9 @@
 [package]
-name = "symliquid-fep"
+name = "theseus"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-description = "Rust-first reference prototype for SymLiquid FEP-Net."
+description = "Rust-first reference prototype for Project Theseus."
 
 [workspace]
 members = [
