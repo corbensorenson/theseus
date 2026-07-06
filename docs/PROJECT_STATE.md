@@ -355,6 +355,25 @@ AST/state-machine body constructor that closes initializer, loop update,
 finalizer, and return obligations after a compatible plan. Another scalar loss
 boost, broad action classifier, or operand classifier alone is not enough.
 
+The next strict-generator canary corrected the execution profile before adding
+another modeling component. With the existing learned-prefix adequacy route
+enabled alongside semantic plan/slot, body-transition, body-action, and
+body-operand heads,
+`reports/strict_generator_mlx_decode_eval_body_operand_action_state_transition_strict_replay2_prefix_adequacy_20260706.json`
+is `YELLOW`: the same checkpoint emits `4` integrity-verified
+transformer/hybrid rows, nontrivial-return rate is `1.0`, and private verifier
+labels attach, but behavior passes remain `0`. The rung sweep path now forwards
+the full canonical strict decode contract instead of hard-coding the old weak
+route. Its two-row broad-private canary,
+`reports/strict_generator_mlx_rung_decode_sweep_prefix_adequacy_canary_20260706.json`,
+is infrastructure `GREEN` with child decode `YELLOW`: generated rows `4`,
+integrity mismatches `0`, nontrivial-return rate `1.0`, and passes `0/2`.
+Production route eligibility now fails closed as
+`fail_closed_behavior_quality_zero` with recommended next action
+`repair_semantic_candidate_quality_before_production_route`. The current wall
+has moved from candidate starvation to semantic/type-handling quality in legal
+full-body token candidates.
+
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint
 budgets and retention classes, and

@@ -51,6 +51,23 @@ def main() -> int:
     parser.add_argument("--require-nontrivial-return", action="store_true")
     parser.add_argument("--require-top-level-return", action="store_true")
     parser.add_argument("--use-semantic-plan-head-prefix", action="store_true")
+    parser.add_argument("--prefer-source-plan-compatibility", action="store_true")
+    parser.add_argument("--use-semantic-slot-head-prefix", action="store_true")
+    parser.add_argument("--enable-learned-expression-token-bias", action="store_true")
+    parser.add_argument("--use-body-transition-head", action="store_true")
+    parser.add_argument("--body-transition-head-blend", type=float, default=0.35)
+    parser.add_argument("--use-body-action-head", action="store_true")
+    parser.add_argument("--body-action-head-blend", type=float, default=0.35)
+    parser.add_argument("--use-body-operand-head", action="store_true")
+    parser.add_argument("--body-operand-head-blend", type=float, default=0.35)
+    parser.add_argument("--prefer-learned-prefix-decision-adequacy", action="store_true")
+    parser.add_argument("--prefer-source-condition-adequacy", action="store_true")
+    parser.add_argument("--require-source-condition-adequacy", action="store_true")
+    parser.add_argument("--block-shallow-loop-identity-update", action="store_true")
+    parser.add_argument("--enable-loop-progress-guard", action="store_true")
+    parser.add_argument("--enable-expression-closure-guard", action="store_true")
+    parser.add_argument("--enable-expression-value-guard", action="store_true")
+    parser.add_argument("--require-binding-prefix-groups", action="store_true")
     parser.add_argument("--resource-budget-ms", type=int, default=0, help="Optional total decode/eval runtime budget. Zero records observation only.")
     parser.add_argument("--max-child-decode-eval-ms", type=int, default=0, help="Optional per-checkpoint decode/eval runtime budget. Zero records observation only.")
     parser.add_argument("--min-eval-rows-per-second", type=float, default=0.0, help="Optional all-rung replay throughput floor. Zero records observation only.")
@@ -77,6 +94,23 @@ def main() -> int:
         require_nontrivial_return=bool(args.require_nontrivial_return),
         require_top_level_return=bool(args.require_top_level_return),
         use_semantic_plan_head_prefix=bool(args.use_semantic_plan_head_prefix),
+        prefer_source_plan_compatibility=bool(args.prefer_source_plan_compatibility),
+        use_semantic_slot_head_prefix=bool(args.use_semantic_slot_head_prefix),
+        enable_learned_expression_token_bias=bool(args.enable_learned_expression_token_bias),
+        use_body_transition_head=bool(args.use_body_transition_head),
+        body_transition_head_blend=max(0.0, min(1.0, float(args.body_transition_head_blend or 0.0))),
+        use_body_action_head=bool(args.use_body_action_head),
+        body_action_head_blend=max(0.0, min(1.0, float(args.body_action_head_blend or 0.0))),
+        use_body_operand_head=bool(args.use_body_operand_head),
+        body_operand_head_blend=max(0.0, min(1.0, float(args.body_operand_head_blend or 0.0))),
+        prefer_learned_prefix_decision_adequacy=bool(args.prefer_learned_prefix_decision_adequacy),
+        prefer_source_condition_adequacy=bool(args.prefer_source_condition_adequacy),
+        require_source_condition_adequacy=bool(args.require_source_condition_adequacy),
+        block_shallow_loop_identity_update=bool(args.block_shallow_loop_identity_update),
+        enable_loop_progress_guard=bool(args.enable_loop_progress_guard),
+        enable_expression_closure_guard=bool(args.enable_expression_closure_guard),
+        enable_expression_value_guard=bool(args.enable_expression_value_guard),
+        require_binding_prefix_groups=bool(args.require_binding_prefix_groups),
         resource_budget_ms=max(0, int(args.resource_budget_ms or 0)),
         max_child_decode_eval_ms=max(0, int(args.max_child_decode_eval_ms or 0)),
         min_eval_rows_per_second=max(0.0, float(args.min_eval_rows_per_second or 0.0)),
@@ -105,6 +139,23 @@ def run_sweep(
     require_nontrivial_return: bool,
     require_top_level_return: bool,
     use_semantic_plan_head_prefix: bool,
+    prefer_source_plan_compatibility: bool,
+    use_semantic_slot_head_prefix: bool,
+    enable_learned_expression_token_bias: bool,
+    use_body_transition_head: bool,
+    body_transition_head_blend: float,
+    use_body_action_head: bool,
+    body_action_head_blend: float,
+    use_body_operand_head: bool,
+    body_operand_head_blend: float,
+    prefer_learned_prefix_decision_adequacy: bool,
+    prefer_source_condition_adequacy: bool,
+    require_source_condition_adequacy: bool,
+    block_shallow_loop_identity_update: bool,
+    enable_loop_progress_guard: bool,
+    enable_expression_closure_guard: bool,
+    enable_expression_value_guard: bool,
+    require_binding_prefix_groups: bool,
     resource_budget_ms: int,
     max_child_decode_eval_ms: int,
     min_eval_rows_per_second: float,
@@ -132,6 +183,29 @@ def run_sweep(
                 "resource_budget_ms": int(resource_budget_ms or 0),
                 "max_child_decode_eval_ms": int(max_child_decode_eval_ms or 0),
                 "min_eval_rows_per_second": float(min_eval_rows_per_second or 0.0),
+                "decode_options": rung_decode_options_receipt(
+                    require_parameter_use=require_parameter_use,
+                    require_nontrivial_return=require_nontrivial_return,
+                    require_top_level_return=require_top_level_return,
+                    use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
+                    prefer_source_plan_compatibility=prefer_source_plan_compatibility,
+                    use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
+                    enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+                    use_body_transition_head=use_body_transition_head,
+                    body_transition_head_blend=body_transition_head_blend,
+                    use_body_action_head=use_body_action_head,
+                    body_action_head_blend=body_action_head_blend,
+                    use_body_operand_head=use_body_operand_head,
+                    body_operand_head_blend=body_operand_head_blend,
+                    prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
+                    prefer_source_condition_adequacy=prefer_source_condition_adequacy,
+                    require_source_condition_adequacy=require_source_condition_adequacy,
+                    block_shallow_loop_identity_update=block_shallow_loop_identity_update,
+                    enable_loop_progress_guard=enable_loop_progress_guard,
+                    enable_expression_closure_guard=enable_expression_closure_guard,
+                    enable_expression_value_guard=enable_expression_value_guard,
+                    require_binding_prefix_groups=require_binding_prefix_groups,
+                ),
                 "public_training_rows": 0,
                 "external_inference_calls": 0,
             },
@@ -175,16 +249,23 @@ def run_sweep(
             require_nontrivial_return=require_nontrivial_return,
             require_top_level_return=require_top_level_return,
             use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
-            use_semantic_slot_head_prefix=False,
-            enable_learned_expression_token_bias=False,
-            prefer_learned_prefix_decision_adequacy=False,
-            prefer_source_condition_adequacy=False,
-            require_source_condition_adequacy=False,
-            block_shallow_loop_identity_update=False,
-            enable_loop_progress_guard=False,
-            enable_expression_closure_guard=False,
-            enable_expression_value_guard=False,
-            require_binding_prefix_groups=False,
+            prefer_source_plan_compatibility=prefer_source_plan_compatibility,
+            use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
+            enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+            use_body_transition_head=use_body_transition_head,
+            body_transition_head_blend=body_transition_head_blend,
+            use_body_action_head=use_body_action_head,
+            body_action_head_blend=body_action_head_blend,
+            use_body_operand_head=use_body_operand_head,
+            body_operand_head_blend=body_operand_head_blend,
+            prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
+            prefer_source_condition_adequacy=prefer_source_condition_adequacy,
+            require_source_condition_adequacy=require_source_condition_adequacy,
+            block_shallow_loop_identity_update=block_shallow_loop_identity_update,
+            enable_loop_progress_guard=enable_loop_progress_guard,
+            enable_expression_closure_guard=enable_expression_closure_guard,
+            enable_expression_value_guard=enable_expression_value_guard,
+            require_binding_prefix_groups=require_binding_prefix_groups,
             execute=True,
             preselected_splits=preselected_splits,
             checkpoint_loader_cache=checkpoint_loader_cache,
@@ -269,6 +350,29 @@ def run_sweep(
             "performance": performance,
             "resource_budget": resource_budget,
             "route_eligibility": route_eligibility,
+            "decode_options": rung_decode_options_receipt(
+                require_parameter_use=require_parameter_use,
+                require_nontrivial_return=require_nontrivial_return,
+                require_top_level_return=require_top_level_return,
+                use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
+                prefer_source_plan_compatibility=prefer_source_plan_compatibility,
+                use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
+                enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+                use_body_transition_head=use_body_transition_head,
+                body_transition_head_blend=body_transition_head_blend,
+                use_body_action_head=use_body_action_head,
+                body_action_head_blend=body_action_head_blend,
+                use_body_operand_head=use_body_operand_head,
+                body_operand_head_blend=body_operand_head_blend,
+                prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
+                prefer_source_condition_adequacy=prefer_source_condition_adequacy,
+                require_source_condition_adequacy=require_source_condition_adequacy,
+                block_shallow_loop_identity_update=block_shallow_loop_identity_update,
+                enable_loop_progress_guard=enable_loop_progress_guard,
+                enable_expression_closure_guard=enable_expression_closure_guard,
+                enable_expression_value_guard=enable_expression_value_guard,
+                require_binding_prefix_groups=require_binding_prefix_groups,
+            ),
             "best_checkpoint_by_private_passes": rows_sorted[0] if rows_sorted else None,
             "rows": rows,
             "public_training_rows": 0,
@@ -285,6 +389,68 @@ def run_sweep(
         ),
         "runtime_ms": int((time.perf_counter() - started) * 1000),
 }
+
+
+def rung_decode_options_receipt(
+    *,
+    require_parameter_use: bool,
+    require_nontrivial_return: bool,
+    require_top_level_return: bool,
+    use_semantic_plan_head_prefix: bool,
+    prefer_source_plan_compatibility: bool,
+    use_semantic_slot_head_prefix: bool,
+    enable_learned_expression_token_bias: bool,
+    use_body_transition_head: bool,
+    body_transition_head_blend: float,
+    use_body_action_head: bool,
+    body_action_head_blend: float,
+    use_body_operand_head: bool,
+    body_operand_head_blend: float,
+    prefer_learned_prefix_decision_adequacy: bool,
+    prefer_source_condition_adequacy: bool,
+    require_source_condition_adequacy: bool,
+    block_shallow_loop_identity_update: bool,
+    enable_loop_progress_guard: bool,
+    enable_expression_closure_guard: bool,
+    enable_expression_value_guard: bool,
+    require_binding_prefix_groups: bool,
+) -> dict[str, Any]:
+    return {
+        "policy": "strict_generator_mlx_rung_decode_options_v2",
+        "require_parameter_use": bool(require_parameter_use),
+        "require_nontrivial_return": bool(require_nontrivial_return),
+        "require_top_level_return": bool(require_top_level_return),
+        "use_semantic_plan_head_prefix": bool(use_semantic_plan_head_prefix),
+        "prefer_source_plan_compatibility": bool(prefer_source_plan_compatibility),
+        "use_semantic_slot_head_prefix": bool(use_semantic_slot_head_prefix),
+        "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
+        "use_body_transition_head": bool(use_body_transition_head),
+        "body_transition_head_blend": max(0.0, min(1.0, float(body_transition_head_blend or 0.0))),
+        "use_body_action_head": bool(use_body_action_head),
+        "body_action_head_blend": max(0.0, min(1.0, float(body_action_head_blend or 0.0))),
+        "use_body_operand_head": bool(use_body_operand_head),
+        "body_operand_head_blend": max(0.0, min(1.0, float(body_operand_head_blend or 0.0))),
+        "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
+        "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
+        "require_source_condition_adequacy": bool(require_source_condition_adequacy),
+        "block_shallow_loop_identity_update": bool(block_shallow_loop_identity_update),
+        "enable_loop_progress_guard": bool(enable_loop_progress_guard),
+        "enable_expression_closure_guard": bool(enable_expression_closure_guard),
+        "enable_expression_value_guard": bool(enable_expression_value_guard),
+        "require_binding_prefix_groups": bool(require_binding_prefix_groups),
+        "score_semantics": (
+            "Rung sweep decode option receipt. These options are task-blind decoder/search settings "
+            "forwarded to strict_generator_mlx_decode_eval.py; they do not inspect tests, solutions, "
+            "public benchmark payloads, verifier labels, or answer templates, and they grant zero "
+            "candidate-generation credit."
+        ),
+        "uses_eval_tests_or_solutions_for_generation": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+        "external_inference_calls": 0,
+        "public_training_rows": 0,
+        "fallback_template_router_tool_credit_count": 0,
+    }
 
 
 def build_checkpoint_loader_cache(checkpoints: list[dict[str, Any]]) -> dict[str, Any]:
@@ -784,15 +950,15 @@ def route_eligibility_summary(
     elif not integrity_ok:
         route_state = "fail_closed_candidate_integrity_mismatch"
         recommended_next_action = "repair_candidate_integrity_before_route_review"
+    elif not quality_ok:
+        route_state = "fail_closed_behavior_quality_zero"
+        recommended_next_action = "repair_semantic_candidate_quality_before_production_route"
     elif not resource_enforced:
         route_state = "observation_only_no_resource_thresholds"
         recommended_next_action = "rerun_with_explicit_resource_thresholds_before_production_route"
     elif not resource_ok:
         route_state = "fail_closed_resource_budget"
         recommended_next_action = "optimize_or_route_around_slow_mlx_rung_before_production_route"
-    elif not quality_ok:
-        route_state = "fail_closed_behavior_quality_zero"
-        recommended_next_action = "repair_semantic_candidate_quality_before_production_route"
     else:
         route_state = "eligible_for_policy_review"
         recommended_next_action = "broaden_private_replay_rows_and_compare_against_cpu_cuda_reference_before_default_route"

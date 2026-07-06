@@ -265,6 +265,25 @@ the roadmap:
    not another broad auxiliary classifier; it needs a semantic-IR or trainable
    AST/state-machine body constructor that can close initializer, loop update,
    finalizer, and return obligations after a compatible plan.
+   A follow-up canary exposed that the zero-candidate replay was partly an
+   orchestration/profile issue: enabling the existing learned-prefix adequacy
+   route with the semantic plan/slot, body-transition, body-action, and
+   body-operand heads moves the same checkpoint off starvation. The direct
+   replay
+   `reports/strict_generator_mlx_decode_eval_body_operand_action_state_transition_strict_replay2_prefix_adequacy_20260706.json`
+   is `YELLOW`: it emits `4` integrity-verified transformer/hybrid rows, has
+   `1.0` nontrivial-return rate, attaches private verifier labels, and still
+   scores `0` behavior passes. The patched rung sweep
+   `reports/strict_generator_mlx_rung_decode_sweep_prefix_adequacy_canary_20260706.json`
+   now forwards the full canonical strict decode contract and records the same
+   current wall on a two-row broad-private canary: child decode `YELLOW`,
+   generated rows `4`, integrity mismatches `0`, nontrivial-return rate `1.0`,
+   and passes `0/2`. Production route eligibility correctly fails closed as
+   `fail_closed_behavior_quality_zero` with next action
+   `repair_semantic_candidate_quality_before_production_route`. The immediate
+   blocker is therefore no longer manifest-row starvation under the canonical
+   route; it is shallow semantic/type-handling candidate quality after legal
+   full-body emission.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 
