@@ -153,6 +153,22 @@ features are now explicit (`graph_walk_evidence: 6`,
 capability win. The next implementation must make the learned generator emit
 real traversal/update/finalizer/return bodies that satisfy those visible
 obligations, not relax the guard or count deterministic repair/tool output.
+The follow-up graph role-signal patch strengthens the existing trainable
+body-action/body-operand ABI instead of creating a new route. Traversal
+methods (`setdefault`, `pop`, `popleft`, `discard`, `remove`, `insert`,
+`splitlines`) are now method/call roles, graph state names (`graph`, `queue`,
+`visited`, `seen`, `frontier`, `dist`) are local-state operand roles, and the
+action trace emits `missing_graph_walk_evidence` for graph/hops/path plans that
+lack traversal-shaped AST evidence. The bounded MLX smoke
+`reports/strict_generator_graph_role_signal_smoke_summary_20260706.json`
+proves the signal is consumed by the training path but rejects the checkpoint:
+heldout LM, transition, and action losses all worsen while only operand
+loss/accuracy improve. This keeps the next target at multi-loss balance or a
+stronger trainable state-machine/localized semantic-IR body constructor before
+another decode replay or public calibration.
+The graph-evidence trace now normalizes `plan`, `source_plan`, `semantic_plan`,
+`expected_plan`, and `plan_tags`, so structured/list visible plan obligations
+are audited consistently instead of only the legacy scalar `plan` field.
 
 ## 2026-07-06 Claude Review Reconciliation
 

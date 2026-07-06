@@ -2522,11 +2522,19 @@ def body_action_role_for_token_text(token_text: str) -> str:
             "append",
             "extend",
             "add",
+            "discard",
             "get",
+            "insert",
             "items",
             "keys",
+            "pop",
+            "popleft",
+            "remove",
+            "setdefault",
+            "update",
             "values",
             "split",
+            "splitlines",
             "join",
             "strip",
             "lower",
@@ -2693,6 +2701,8 @@ def body_operand_role_for_token_text(
             return "loop_variable"
         if name in context.get("local_names", set()):
             return "local_state"
+        if name in GRAPH_STATE_NAMES or any(part in name.lower() for part in ("queue", "visit", "frontier", "neighbor", "dist")):
+            return "local_state"
         if name in BUILTIN_OPERAND_NAMES:
             return "builtin_function"
         if name in METHOD_OR_ATTRIBUTE_NAMES:
@@ -2730,17 +2740,40 @@ BUILTIN_OPERAND_NAMES: set[str] = {
 METHOD_OR_ATTRIBUTE_NAMES: set[str] = {
     "add",
     "append",
+    "clear",
+    "discard",
     "extend",
     "get",
+    "insert",
     "items",
     "keys",
     "lower",
+    "pop",
+    "popleft",
+    "remove",
     "setdefault",
     "split",
+    "splitlines",
     "strip",
     "update",
     "upper",
     "values",
+}
+
+GRAPH_STATE_NAMES: set[str] = {
+    "adj",
+    "dist",
+    "distance",
+    "distances",
+    "edges",
+    "frontier",
+    "graph",
+    "neighbors",
+    "next_nodes",
+    "queue",
+    "seen",
+    "stack",
+    "visited",
 }
 
 

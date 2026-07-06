@@ -1797,7 +1797,16 @@ def body_action_trace_for_body(body: str, expectation: dict[str, Any], *, allowe
                     ):
                         semantic_update_value_count += 1
     mismatch_labels: list[str] = []
-    plan = str(expectation.get("plan") or "").lower()
+    plan_fragments: list[str] = []
+    for plan_key in ("plan", "source_plan", "semantic_plan", "expected_plan", "plan_tags"):
+        value = expectation.get(plan_key)
+        if isinstance(value, (list, tuple, set)):
+            plan_fragments.extend(str(item) for item in value if str(item))
+        elif isinstance(value, dict):
+            plan_fragments.extend(f"{key}:{item}" for key, item in value.items() if str(key) or str(item))
+        elif value:
+            plan_fragments.append(str(value))
+    plan = " ".join(plan_fragments).lower()
     update_ops = {str(item) for item in list(expectation.get("update_ops") or [])}
     finalizers = {str(item) for item in list(expectation.get("finalizers") or [])}
     return_shapes = {str(item) for item in list(expectation.get("return_shapes") or [])}
@@ -1851,6 +1860,13 @@ def body_action_trace_for_body(body: str, expectation: dict[str, Any], *, allowe
         mismatch_labels.append("missing_windowed_finalizer")
     if "rle" in plan and not (subscript_assignment_count or branch_count):
         mismatch_labels.append("missing_rle_branch_or_update")
+    graph_plan = any(marker in plan for marker in ("graph", "hops", "path", "component", "bfs", "dfs", "shortest"))
+    graph_walk_evidence = source_condition_graph_walk_evidence_for_body(
+        body,
+        {"requires_graph_walk_evidence": graph_plan},
+    )
+    if graph_plan and not bool(graph_walk_evidence.get("has_graph_walk_evidence")):
+        mismatch_labels.append("missing_graph_walk_evidence")
     return {
         "enabled": True,
         "parse_ok": True,
@@ -1874,6 +1890,7 @@ def body_action_trace_for_body(body: str, expectation: dict[str, Any], *, allowe
         "semantic_update_value_count": semantic_update_value_count,
         "append_whole_source_argument_count": append_whole_source_argument_count,
         "self_accumulator_append_count": self_accumulator_append_count,
+        "graph_walk_evidence": graph_walk_evidence,
         "return_dependency": dependency,
         "expression_value_quality": value_quality,
         "mismatch_labels": mismatch_labels,

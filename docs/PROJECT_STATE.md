@@ -130,6 +130,28 @@ runtime-loadable but wrong rows to `0` admitted rows under
 guard/admission improvement, not a behavior win; the next generator work must
 produce traversal, state-update, finalizer, and return bodies that satisfy the
 visible obligations without fallback/template/tool/deterministic-repair credit.
+The next trainable-path patch expands the existing body-action/body-operand
+role ABI for graph traversal rather than adding a new lane. Graph traversal
+methods (`setdefault`, `pop`, `popleft`, `discard`, `remove`, `insert`,
+`splitlines`) now map to call/method roles, graph state names such as `graph`,
+`queue`, `visited`, `seen`, `frontier`, and `dist` map to local-state operand
+roles, and the action trace can emit `missing_graph_walk_evidence` for
+graph/hops/path plans that lack traversal-shaped AST evidence. The bounded MLX
+smoke summarized in
+`reports/strict_generator_graph_role_signal_smoke_summary_20260706.json`
+confirms the signal is consumed (`local_state: 401`, `method_name: 77` train
+operand positions; weighted graph tokens include `NAME:graph`,
+`NAME:setdefault`, `NAME:seen`, and `NAME:pop`) but rejects the checkpoint:
+heldout LM worsened `1.494650 -> 1.521904`, transition loss worsened
+`8.050225 -> 8.067245`, and action loss worsened
+`3.065686 -> 3.077885`; only operand loss/accuracy improved
+`3.026730 -> 3.011751` and `0.047384 -> 0.062192`. The next fix is therefore
+multi-loss balance or a stronger state-machine/localized semantic-IR body
+constructor before any strict decode replay from this patch.
+The action trace now normalizes adjacent visible plan fields (`plan`,
+`source_plan`, `semantic_plan`, `expected_plan`, and `plan_tags`) before graph
+evidence checks, so the same guard fires when a caller carries the graph
+obligation as structured/list plan text rather than only as `plan`.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

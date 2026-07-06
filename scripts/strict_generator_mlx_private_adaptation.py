@@ -5473,6 +5473,60 @@ def action_trace_positive_replay_tokens(labels: list[str]) -> set[str]:
         tokens.update({"NAME:not", "NAME:return", "NAME:stack"})
     if "missing_rle_branch_or_update" in label_set:
         tokens.update({"NAME:if", "NAME:else", "OP:[", "OP:]", "OP:==", "OP:+", "NUMBER:1", "NAME:append"})
+    if "missing_graph_walk_evidence" in label_set or "graph_walk_evidence" in label_set:
+        tokens.update(
+            {
+                "NAME:graph",
+                "NAME:queue",
+                "NAME:visited",
+                "NAME:seen",
+                "NAME:dist",
+                "NAME:frontier",
+                "NAME:for",
+                "NAME:while",
+                "NAME:if",
+                "NAME:in",
+                "NAME:return",
+                "NAME:get",
+                "NAME:setdefault",
+                "NAME:append",
+                "NAME:add",
+                "NAME:pop",
+                "OP:.",
+                "OP:[",
+                "OP:]",
+                "OP:==",
+                "OP:!=",
+                "OP:+",
+                "NUMBER:0",
+                "NUMBER:1",
+            }
+        )
+    if "operation_evidence" in label_set:
+        tokens.update(
+            {
+                "NAME:if",
+                "NAME:for",
+                "NAME:return",
+                "NAME:abs",
+                "NAME:max",
+                "NAME:min",
+                "NAME:round",
+                "NAME:range",
+                "NAME:len",
+                "NAME:append",
+                "NAME:add",
+                "NAME:get",
+                "NAME:setdefault",
+                "OP:+",
+                "OP:-",
+                "OP:<",
+                "OP:<=",
+                "OP:>",
+                "OP:>=",
+                "OP:==",
+            }
+        )
     if "early_return_inside_loop" in label_set:
         tokens.update({"DEDENT:", "NAME:return"})
     if "unreachable_loop_update_after_control_flow" in label_set:
@@ -5505,6 +5559,10 @@ def action_trace_negative_replay_tokens(labels: list[str]) -> set[str]:
         tokens.update({"NAME:append", "OP:.", "NAME:return"})
     if "loop_without_decision_or_state_update" in label_set:
         tokens.update({"NAME:return"})
+    if "missing_graph_walk_evidence" in label_set or "graph_walk_evidence" in label_set:
+        tokens.update({"NAME:isinstance", "NAME:abs", "NAME:max", "NAME:min"})
+    if "operation_evidence" in label_set:
+        tokens.update({"NAME:isinstance", "NAME:None"})
     if "candidate_integrity_syntax_invalid" in label_set:
         tokens.update({"OP:{", "OP:}", "OP:.", "NAME:else", "NAME:elif"})
     if "candidate_integrity_no_function_def" in label_set:
