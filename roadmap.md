@@ -194,6 +194,25 @@ record with baseline, negative control, matched data/compute, falsification
 condition, residuals, and explicit non-claims before it can affect a default
 route.
 
+Latest packet coverage audit:
+
+- Claude's new packet does not add a missing book chapter that is absent from
+  the roadmap; it confirms the `planned_codex_test_backlog` entries already
+  required by Chapter 38, fast generation, GVR, semantic IR, verification
+  bandwidth, VCM transactions, Circle/Coil, belief revision, and procedural
+  memory.
+- Its strongest recommendation, DPO over accepted/rejected verifier pairs, has
+  already been attempted once as a governed shadow update. The result moved
+  loss/preference-gap metrics but failed behaviorally under strict replay, so
+  the immediate wall is now lower-level: direct prompt/signature semantic body
+  construction must emit non-fallback, non-template learned candidates before
+  another DPO/IPO/ORPO/KTO/SimPO or GRPO/RLVR run can mean capability.
+- The roadmap therefore treats the Claude-mined technique catalog as complete
+  coverage obligations, not permission to skip the live blocker. The next
+  capability implementation should repair broad semantic/action body-token
+  generation, then map failures through semantic IR, then retry bounded
+  preference/RL and fast-generation modes under matched controls.
+
 ## 2026-07-06 Planned Codex Test Backlog Hardening
 
 Claude's latest book-mining pass is now represented as machine-readable
@@ -207,9 +226,10 @@ This matters because the ASI book's `Planned Codex test` lists are the real
 technique backlog. They are not permission to spawn more lanes. They are
 obligations that must be routed through the existing stack:
 
-- Chapter 38 policy optimization: DPO/IPO/ORPO/KTO/SimPO first as bounded
-  offline preference comparisons, then GRPO/RLOO/ReMax/RLVR only after the
-  direct learned generator emits non-fallback candidates with behavior signal.
+- Chapter 38 policy optimization: DPO/IPO/ORPO/KTO/SimPO are the first
+  policy-optimization family after the direct learned generator emits
+  non-fallback candidates with behavior signal; then GRPO/RLOO/ReMax/RLVR can
+  test verifier-reward learning.
 - Multi-target policy updates: generator, planner, router, VCM selector,
   verifier, executor, and generation-mode policies can change only through
   behavior-change leases with feedback source, drift bounds, rollback, monitor

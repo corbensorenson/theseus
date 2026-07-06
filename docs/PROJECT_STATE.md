@@ -88,6 +88,13 @@ non-claims. Its strongest recommendation, DPO on existing accepted/rejected
 verifier pairs, is no longer a missing implementation: the shadow DPO update
 ran and improved private preference-gap/loss metrics, then failed strict
 private replay with `0` learned candidate rows and `0/16` behavior passes. The
+matrix now carries an explicit `latest_claude_mining_reconciliation` record so
+future goal construction treats Claude/AI_book technique recommendations as
+coverage obligations, not permission to skip clean negative behavior evidence.
+The ordered capability sequence is direct semantic/action body-token generation
+first, semantic-IR failure localization second, and only then bounded
+DPO/IPO/ORPO/KTO/SimPO, GRPO/RLVR, MTP/GVR/lookahead/diffusion, or scale
+experiments under matched controls. The
 current wall is therefore lower-level than offline preference optimization
 (`DPO/IPO/ORPO/KTO/SimPO`), verifier-reward RL
 (`GRPO/RLOO/ReMax/RLVR`), MTP, Medusa/EAGLE/speculative/LayerSkip generation,
