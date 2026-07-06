@@ -376,10 +376,38 @@ def build_authority_runtime_adapter_kernel(
         hard_gaps.append({"kind": "expected_invalid_control_not_rejected", "controls": expected_invalid_controls})
 
     state = "GREEN" if not hard_gaps else "RED"
+    synthetic_support_ready = (
+        state == "GREEN"
+        and len(expected_invalid_controls) >= 6
+        and all(row["rejected"] for row in expected_invalid_controls)
+        and side_effecting_task["runtime_adapter_present"]
+        and side_effecting_task["authority_transition_present"]
+        and side_effecting_task["authority_use_receipt_present"]
+        and side_effecting_task["effect_receipt_count"] > 0
+        and scif_proof["handle_count"] > 0
+        and not scif_proof["raw_secret_visible"]
+        and confused_deputy_denial["fork_denial_fixture_passed"]
+        and confused_deputy_denial["authority_widening_denied_by_vcm"]
+        and (rollback_or_residual["rollback_handle_present"] or bool(rollback_or_residual["no_rollback_residual"]))
+    )
+    support_state = "synthetic-test-backed" if synthetic_support_ready else ("prototype-backed" if state == "GREEN" else "unsupported")
     return {
         "policy": "project_theseus_e1_authority_scif_runtime_adapter_kernel_v1",
         "state": state,
-        "support_state": "prototype-backed" if state == "GREEN" else "unsupported",
+        "support_state": support_state,
+        "support_state_basis": {
+            "valid_authority_fixture_present": state == "GREEN",
+            "expected_invalid_control_count": len(expected_invalid_controls),
+            "expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
+            "runtime_adapter_present": side_effecting_task["runtime_adapter_present"],
+            "authority_transition_present": side_effecting_task["authority_transition_present"],
+            "authority_use_receipt_present": side_effecting_task["authority_use_receipt_present"],
+            "effect_receipt_count": side_effecting_task["effect_receipt_count"],
+            "scif_handle_count": scif_proof["handle_count"],
+            "raw_secret_visible": scif_proof["raw_secret_visible"],
+            "confused_deputy_denial_present": confused_deputy_denial["fork_denial_fixture_passed"] and confused_deputy_denial["authority_widening_denied_by_vcm"],
+            "rollback_or_no_rollback_present": rollback_or_residual["rollback_handle_present"] or bool(rollback_or_residual["no_rollback_residual"]),
+        },
         "slice_id": "E1_authority_scif_runtime_adapter_kernel",
         "side_effecting_task": side_effecting_task,
         "scif_proof": scif_proof,
@@ -388,7 +416,7 @@ def build_authority_runtime_adapter_kernel(
         "expected_invalid_controls": expected_invalid_controls,
         "support_state_transition": {
             "from_state": "argument",
-            "to_state": "prototype-backed" if state == "GREEN" else "unsupported",
+            "to_state": support_state,
             "evidence_refs": [
                 rel(assistant_path),
                 rel(vcm_path),
@@ -397,7 +425,7 @@ def build_authority_runtime_adapter_kernel(
         },
         "hard_gaps": hard_gaps,
         "non_claims": [
-            "E1 prototype-backed proves one local authority/SCIF/runtime-adapter fixture chain only.",
+            "E1 synthetic-test-backed proves one local authority/SCIF/runtime-adapter fixture chain plus expected-invalid controls only.",
             "It is not legal compliance, deployed security certification, learned generation, public transfer, or ASI evidence.",
             "SCIF handles and redaction receipts are evidence boundaries, not permission to expose raw secrets.",
         ],

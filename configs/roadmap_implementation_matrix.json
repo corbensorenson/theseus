@@ -1948,7 +1948,7 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One default route or implementation swap executes through precheck, independent evaluator, regression, residual escrow, rollback/no-rollback record, and support-state transition.",
-        "current_support_state": "prototype-backed",
+      "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/procedural_memory_route_adoption.json",
@@ -1963,7 +1963,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "prototype-backed A2 proves one guarded route replacement transaction only",
+        "synthetic-test-backed A2 proves one guarded route replacement transaction with prechecks, independent evaluators, rollback guard, residual escrow, and expected-invalid controls only",
           "the adopted route is local metadata workflow compression, not learned generation",
           "the transaction does not prove model quality, public transfer, external inference serving, or ASI capability"
         ]
@@ -1979,7 +1979,7 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One side-effecting assistant/tool task emits authority transition, adapter invocation, effect receipt, rollback/no-rollback residual, confused-deputy denial, and fake-secret handle proof.",
-        "current_support_state": "prototype-backed",
+      "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/governance_rights_receipt_suite.json",
@@ -1992,7 +1992,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "prototype-backed E1 proves one authority/SCIF/runtime-adapter receipt fixture, not universal deployed runtime enforcement",
+        "synthetic-test-backed E1 proves one authority/SCIF/runtime-adapter receipt fixture with expected-invalid controls, not universal deployed runtime enforcement",
           "Digital SCIF proof exchanges handles and sanitized summaries, not raw secret or private user payloads",
           "assistant/tool receipts remain product/governance evidence and do not support learned-generation claims"
         ]

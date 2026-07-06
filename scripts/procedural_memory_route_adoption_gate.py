@@ -507,10 +507,32 @@ def build_replacement_transaction_kernel(
         hard_gaps.append({"kind": "expected_invalid_control_not_rejected", "controls": expected_invalid_controls})
 
     state = "GREEN" if not hard_gaps else "RED"
+    synthetic_support_ready = (
+        state == "GREEN"
+        and len(expected_invalid_controls) >= 5
+        and all(row["rejected"] for row in expected_invalid_controls)
+        and bool(precheck_receipts)
+        and all(row["passed"] for row in precheck_receipts)
+        and bool(independent_evaluators)
+        and rollback_receipt["rollback_or_no_rollback_state"] == "rollback_guard_available"
+        and bool(residual_escrow["known_residuals"])
+    )
+    support_state = "synthetic-test-backed" if synthetic_support_ready else ("prototype-backed" if state == "GREEN" else "unsupported")
+    support_state_transition["support_state"] = support_state
     return {
         "policy": "project_theseus_a2_replacement_transaction_kernel_v1",
         "state": state,
-        "support_state": "prototype-backed" if state == "GREEN" else "unsupported",
+        "support_state": support_state,
+        "support_state_basis": {
+            "valid_replacement_transaction_present": state == "GREEN",
+            "precheck_receipt_count": len(precheck_receipts),
+            "precheck_receipt_passed_count": sum(1 for row in precheck_receipts if row["passed"]),
+            "independent_evaluator_count": len(independent_evaluators),
+            "expected_invalid_control_count": len(expected_invalid_controls),
+            "expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
+            "rollback_or_no_rollback_state": rollback_receipt["rollback_or_no_rollback_state"],
+            "residual_escrow_count": len(residual_escrow["known_residuals"]),
+        },
         "slice_id": "A2_replacement_transaction_kernel",
         "transaction_id": transaction.get("transaction_id"),
         "decision": transaction.get("decision"),
@@ -522,7 +544,7 @@ def build_replacement_transaction_kernel(
         "expected_invalid_controls": expected_invalid_controls,
         "hard_gaps": hard_gaps,
         "non_claims": [
-            "A2 prototype-backed means one guarded route replacement transaction passed; it is not model-quality or ASI evidence.",
+            "A2 synthetic-test-backed means one guarded route replacement transaction passed valid and expected-invalid fixtures; it is not model-quality or ASI evidence.",
             "The adopted route is local metadata workflow compression only.",
             "The transaction cannot support learned-generation claims, public-transfer claims, or external inference serving.",
         ],

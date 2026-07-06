@@ -26,8 +26,8 @@ claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 roadmap gate now requires active core slices to carry a valid current support
 state and evidence refs. A1 is currently `synthetic-test-backed`; the full core
 slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
-`A2_replacement_transaction_kernel=prototype-backed`,
-`E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
+`A2_replacement_transaction_kernel=synthetic-test-backed`,
+`E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
 `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
 `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
 `scripts/roadmap_implementation_gate.py` now has a strict pre-training
@@ -69,19 +69,25 @@ The A2 replacement-transaction kernel is now represented by
 guarded default-route adoption through policy prechecks, independent
 toolification/canary/registry/steward evaluators, regression guard, residual
 escrow, rollback criteria, support-state transition, expected-invalid controls,
-and clean no-cheat counters. Its support state is `prototype-backed`. The
-adopted route is local metadata workflow compression only; it is not learned
-generation, model quality, public transfer, external inference serving, or ASI
-evidence.
+and clean no-cheat counters. Its support state is `synthetic-test-backed`:
+`32/32` prechecks pass, `4` independent evaluators are recorded, `5/5`
+expected-invalid controls are rejected, rollback guard is available, and
+residual escrow is retained. The adopted route is local metadata workflow
+compression only; it is not learned generation, model quality, public transfer,
+external inference serving, or ASI evidence.
 
 The E1 authority/SCIF runtime-adapter kernel is now represented by
 `reports/governance_rights_receipt_suite.json` (`GREEN`). It proves one
 side-effecting assistant/tool fixture through runtime adapter invocation,
 authority transition/use receipts, effect receipt, rollback/no-rollback
 boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid
-controls, and clean no-cheat counters. Its support state is `prototype-backed`.
-This is a reference fixture for the authority membrane, not a claim that every
-runtime route is fully deployed under the E1 adapter.
+controls, and clean no-cheat counters. Its support state is
+`synthetic-test-backed`: the fixture records runtime adapter, authority
+transition/use, `11` effect receipts, SCIF handle with raw secret absent,
+confused-deputy denial, rollback/no-rollback boundary, and `6/6`
+expected-invalid controls rejected. This is a reference fixture for the
+authority membrane, not a claim that every runtime route is fully deployed under
+the E1 adapter.
 
 The C1 correctness/RL/generator survival lane is now represented by
 `reports/correctness_generator_survival_lane_gate.json` (`GREEN`). It proves one

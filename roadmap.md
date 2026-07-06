@@ -194,8 +194,8 @@ remain honestly bounded.
   slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
   current support state as `synthetic-test-backed`. The core-slice support state
   summary now records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
-  `A2_replacement_transaction_kernel=prototype-backed`,
-  `E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
+  `A2_replacement_transaction_kernel=synthetic-test-backed`,
+  `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
   `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
   `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
 - `scripts/roadmap_implementation_gate.py` now exposes a strict
