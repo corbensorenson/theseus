@@ -132,7 +132,12 @@ the roadmap:
    10 must repair direct prompt/signature body-token emission before broader
    RLVR/GRPO, MTP, diffusion, or scale work. Accepted output quality must move
    without reward-hacking, public rows, fallback rows, renderer credit, router
-   credit, or tool credit.
+   credit, or tool credit. The latest strict decode hygiene pass removes
+   malformed `isinstance` first-argument chains, bare builtin type values used
+   as runtime values, and constant-only control-flow conditions, but the broad
+   private canary still emits zero learned rows and falls back to noncredit
+   `return None` baselines; this confirms the remaining wall is semantic/action
+   body construction, not another narrow malformed-token family.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 
@@ -2090,7 +2095,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode is still not broadly behavior-ready. A first DPO shadow update moved the private policy/reference preference gap, then its private replay failed behaviorally: `0` learned candidate rows and `0/16` heldout passes, with candidate integrity classifying the JSONL rows as fallback/template baselines. The new `strict_direct_body_emission_path_v1` profile activates target-side direct body-emission supervision (`128/128` matched rows, `8054` weighted positions, clean no-cheat counters). Local-return continuation plus a narrow guarded/default static-guard correction now gets simple-return private replay to `GREEN` with `2` emitted transformer/hybrid rows, `2/2` intended-behavior passes, and clean no-cheat counters. Broad/private replay remains `RED` with `0` admitted candidates and `0/4` behavior passes from malformed expression/semantic construction. The next behavior-changing sequence is broad semantic expression/body construction first, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation only after non-fallback nontrivial candidates exist beyond the narrow simple-return replay. |
+| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode is still not broadly behavior-ready. A first DPO shadow update moved the private policy/reference preference gap, then its private replay failed behaviorally: `0` learned candidate rows and `0/16` heldout passes, with candidate integrity classifying the JSONL rows as fallback/template baselines. The new `strict_direct_body_emission_path_v1` profile activates target-side direct body-emission supervision (`128/128` matched rows, `8054` weighted positions, clean no-cheat counters). Local-return continuation plus a narrow guarded/default static-guard correction now gets simple-return private replay to `GREEN` with `2` emitted transformer/hybrid rows, `2/2` intended-behavior passes, and clean no-cheat counters. Follow-up strict decode hygiene blocks malformed `isinstance` first-argument chains, bare builtin type values used as runtime values, and constant-only control-flow conditions, but broad/private replay remains `RED` with `0` generated/admitted learned rows and `0/4` behavior passes, falling back to noncredit `return None` baselines. The next behavior-changing sequence is broad semantic/action body construction first, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation only after non-fallback nontrivial candidates exist beyond the narrow simple-return replay. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Public calibration remains measurement-only. The execution plan keeps it blocked until private semantic behavior improves and a fresh, non-consumed surface passes the proposal gate; exact consumed-surface reruns stay refused. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Partial | Connect semantic IR to real generator failures: failed atom -> localized repair -> dependent obligation replay, with scope-change ledgers when requirements change. |
@@ -2847,6 +2852,15 @@ Implementation status:
   next patch should therefore improve semantic top-level-return quality and
   verifier-aligned body behavior, not another report-only profile and not
   broader RL/fast generation.
+- The newest strict decode hygiene pass blocks runaway `isinstance((data) and
+  ...` first-argument chains, bare builtin type values such as `max(list)`, and
+  constant-only branch conditions such as `if -1:`. The narrow train-replay
+  canary stays `GREEN` with `2/2` behavior passes, but the paired broad canary
+  remains `RED` with `0` generated learned rows, `0/4` behavior passes, and
+  only noncredit `return None` baseline JSONL rows. This is useful
+  pathology-removal evidence, not a behavior claim; Phase 10 should now move
+  toward stronger semantic/action body construction rather than accumulating
+  more one-off decode guards.
 
 ### C. Fast Generation and Runtime Accounting
 

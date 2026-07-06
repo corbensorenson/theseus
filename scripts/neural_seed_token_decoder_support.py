@@ -587,6 +587,14 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
             return False
     if kind == "OP" and value == ":" and line_iterates_known_noniterable(values, local_types=local_types):
         return False
+    if (
+        kind == "OP"
+        and value == ":"
+        and values
+        and values[0] in {"if", "elif", "while"}
+        and strict_body_condition_lacks_runtime_signal(values, allowed_names=allowed_names)
+    ):
+        return False
     if kind == "OP" and value == "," and (not values or values[-1] in {"return", "yield", "if", "elif", "while", "for", "(", "[", "{", ","}):
         return False
     return True
@@ -617,6 +625,29 @@ def pending_unassigned_statement_lvalue(prefix: list[str], *, allowed_names: set
     if allowed_names is not None and value in allowed_names:
         return False
     if value in assigned_names_in_prefix(prefix):
+        return False
+    return True
+
+
+def strict_body_condition_lacks_runtime_signal(values: list[str], *, allowed_names: set[str] | None = None) -> bool:
+    """Return true for constant/builtin-only control-flow conditions."""
+
+    if not values or values[0] not in {"if", "elif", "while"}:
+        return False
+    visible = {str(name) for name in set(allowed_names or set()) if str(name)}
+    runtime_names = {
+        value
+        for value in values[1:]
+        if value.isidentifier()
+        and value not in STRICT_BODY_KEYWORD_NAMES
+        and value not in STRICT_BODY_ALLOWED_GLOBAL_NAMES
+        and value not in STRICT_BODY_BUILTIN_TYPE_NAMES
+    }
+    if visible and runtime_names & visible:
+        return False
+    # Locals such as item/out are meaningful runtime signals too; they are
+    # excluded from globals/types above.
+    if runtime_names - visible:
         return False
     return True
 

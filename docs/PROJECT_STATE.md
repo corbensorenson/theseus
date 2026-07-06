@@ -96,8 +96,14 @@ body-token decode must emit non-fallback, non-template candidates that work
 beyond the narrow simple-return replay before those methods can honestly
 matter. The newest guarded/default static correction proves the simple-return
 path can emit and pass `2/2` private replay candidates, but broad/private
-replay still admits `0` candidates and passes `0/4`. This does not weaken the
-ASI_book backlog; it orders it around the live falsifying evidence.
+replay still admits `0` candidates and passes `0/4`. A follow-up strict decode
+hygiene pass now blocks malformed `isinstance` first-argument chains, bare
+builtin type values used as runtime values, and constant-only control-flow
+conditions; the simple-return replay remains `GREEN`, while the broad/private
+condition-runtime canary remains `RED` with zero generated learned rows and
+noncredit `return None` baselines. This does not weaken the ASI_book backlog;
+it orders it around the live falsifying evidence: broad semantic/action body
+construction is still the wall.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint
@@ -306,6 +312,22 @@ still exits `RED` with `0` admitted candidates and `0/4` behavior passes; its
 top beams are malformed long expression chains. The wall has therefore moved
 from "strict simple-return replay starves" to "broad prompt/signature semantic
 and expression construction still fails."
+A follow-up task-blind decode hygiene pass in
+`scripts/strict_generator_mlx_decode_guards.py` and
+`scripts/neural_seed_token_decoder_support.py` blocks three more malformed
+families that dominated those broad beams: runaway `isinstance((data) and ...`
+first-argument chains, bare builtin type names used where runtime values are
+required such as `max(list)`, and constant/builtin-only branch conditions such
+as `if -1:`. The narrow canary
+`reports/strict_generator_mlx_decode_eval_condition_runtime_guard_train_replay2_20260706.json`
+remains `GREEN` with `2` generated learned rows and `2/2` private train-replay
+passes. The paired broad canary
+`reports/strict_generator_mlx_decode_eval_condition_runtime_guard_broad2_replay4_20260706.json`
+is still `RED`: `generated_candidate_rows=0`, `0/4` behavior passes, and the
+candidate JSONL contains only noncredit `return None` baselines. This is
+decode-hygiene evidence only. It removes a few invalid beam attractors, but it
+does not solve broad learned generation and should not become another
+guard-churn lane.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with

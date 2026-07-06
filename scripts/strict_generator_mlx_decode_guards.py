@@ -67,6 +67,10 @@ def token_blocked_by_strict_decode_guard(
         return True
     if kind == "NAME" and method_receiver_known_invalid(prefix, values, value):
         return True
+    if isinstance_first_arg_continuation_invalid(values, tok, allowed_names=allowed_names):
+        return True
+    if bare_builtin_type_value_argument_invalid(values, tok):
+        return True
     if known_call_prefix_would_be_invalid(prefix, tok, input_type_hints=input_type_hints):
         return True
     if condition_prefix_is_only_negation(values):
@@ -85,6 +89,128 @@ def token_blocked_by_strict_decode_guard(
         return True
     if values[-1:] == (".",) and kind == "NAME" and value.startswith("__"):
         return True
+    return False
+
+
+def bare_builtin_type_value_argument_invalid(values: tuple[str, ...], tok: str) -> bool:
+    """Reject bare type descriptors where a runtime value argument is needed."""
+
+    kind, _, value = tok.partition(":")
+    builtin_type_names = {"bool", "bytes", "dict", "float", "int", "list", "set", "str", "tuple"}
+    if kind != "NAME" or value not in builtin_type_names:
+        return False
+    line_values = list(values)
+    open_index = innermost_open_paren_index(line_values)
+    if open_index <= 0:
+        if line_values[:1] == ["return"]:
+            return True
+        return False
+    callee = line_values[open_index - 1]
+    is_method = open_index >= 2 and line_values[open_index - 2] == "."
+    current_args = line_values[open_index + 1 :]
+    if callee == "isinstance" and top_level_comma_seen(current_args):
+        return False
+    if callee in builtin_type_names and not is_method:
+        # Constructors like list(data) are legal; their own invalid nested type
+        # argument is handled by existing call-prefix checks.
+        return False
+    return True
+
+
+def isinstance_first_arg_continuation_invalid(
+    values: tuple[str, ...],
+    tok: str,
+    *,
+    allowed_names: set[str] | None,
+) -> bool:
+    """Reject runaway boolean/arithmetic first arguments to isinstance().
+
+    The strict generator often tries to turn ``isinstance(`` into
+    ``isinstance((data) and ...``. That is grammar-shaped noise, not a useful
+    learned branch. This guard is task-blind: it only constrains the first
+    argument position of an already-generated ``isinstance`` call.
+    """
+
+    kind, _, value = tok.partition(":")
+    line_values = list(values)
+    open_index = innermost_open_paren_index(line_values)
+    if open_index <= 0 or line_values[open_index - 1] != "isinstance":
+        return False
+    current_args = line_values[open_index + 1 :]
+    if top_level_comma_seen(current_args):
+        return False
+    visible_names = {str(name) for name in set(allowed_names or set()) if str(name)}
+    if not current_args:
+        if kind == "OP" and value in {"(", "{", "["}:
+            return True
+        if kind == "NAME" and value in {"None", "True", "False", "list", "tuple", "dict", "set", "str", "int", "float", "bool"}:
+            return True
+        return False
+    if kind == "NAME" and value in {"and", "or", "not", "in", "is"}:
+        return True
+    if kind == "OP" and value in {
+        "+",
+        "-",
+        "*",
+        "/",
+        "//",
+        "%",
+        "&",
+        "|",
+        "^",
+        "<<",
+        ">>",
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "==",
+        "!=",
+    }:
+        return True
+    if kind == "OP" and value == "(":
+        return True
+    if kind == "NAME" and visible_names and value not in visible_names and not any(arg in {".", "["} for arg in current_args):
+        # The first argument should be a visible object or a simple access from
+        # one. Type names and builtins belong after the comma.
+        builtin_names = {
+            "abs",
+            "all",
+            "any",
+            "bool",
+            "bytes",
+            "dict",
+            "enumerate",
+            "filter",
+            "float",
+            "int",
+            "len",
+            "list",
+            "map",
+            "max",
+            "min",
+            "range",
+            "reversed",
+            "round",
+            "set",
+            "sorted",
+            "str",
+            "sum",
+            "tuple",
+        }
+        return value in builtin_names
+    return False
+
+
+def top_level_comma_seen(values: list[str]) -> bool:
+    depth = 0
+    for value in values:
+        if value in {"(", "[", "{"}:
+            depth += 1
+        elif value in {")", "]", "}"}:
+            depth = max(0, depth - 1)
+        elif value == "," and depth == 0:
+            return True
     return False
 
 
