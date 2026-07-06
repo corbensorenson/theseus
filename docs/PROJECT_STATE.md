@@ -197,6 +197,22 @@ credit remain `0`. The current wall is therefore no longer "add
 state-machine event weighting"; it is a trainable localized semantic-IR or
 state-machine action objective that changes behavior without deterministic
 repair credit.
+The dedicated state-event auxiliary head follow-up sharpens that wall again.
+`reports/strict_generator_state_event_head_smoke_summary_20260706.json`
+records a registered `body_state_event_router` over the same private event
+roles. The head itself is trainable: heldout event loss/accuracy improved
+`2.315528 -> 2.295373` and `0.047384 -> 0.055281`, while heldout LM and
+transition loss also improved. But the adaptation remains `RED` because
+body-action and body-operand metrics still regress and tensor-update coverage
+misses the hard gate. The paired decode ablation is the decisive negative
+result: with direct state-event decode bias enabled, private replay emits `0`
+manifest candidates and is `RED`; with the same checkpoint and event bias off,
+the replay emits `2` syntax-valid integrity-clean candidates but still scores
+`0/4` and is `YELLOW`. The state-event signal is therefore useful diagnostic
+supervision but harmful as a direct token-probability bias at this scale. The
+next valid implementation target is coupled action/operand/state architecture
+or localized semantic-IR body construction, not another event-weighting
+variant or a direct-bias retry.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

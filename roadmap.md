@@ -206,6 +206,20 @@ no routeable checkpoint is kept. This means the next wall is not another
 target-weighting variant. The generator needs a trainable localized
 semantic-IR/state-machine action objective or architecture that can represent
 the event transitions themselves.
+The dedicated state-event auxiliary head follow-up in
+`reports/strict_generator_state_event_head_smoke_summary_20260706.json`
+confirms that conclusion. A registered `body_state_event_router` improves its
+own heldout event metric (`2.315528 -> 2.295373` loss,
+`0.047384 -> 0.055281` accuracy), but coupling the head into decode as a
+direct probability bias is behavior-negative. On the same private replay and
+same checkpoint, event-bias-on emits `0` manifest candidates and fails `RED`;
+event-bias-off emits `2` syntax-valid integrity-clean candidates but still
+passes `0/4` and remains `YELLOW`. This falsifies direct state-event token
+bias as the next capability lever. The next implementation should make the
+event signal part of a coupled action/operand/state architecture or localized
+semantic-IR body constructor that emits verifier-positive update/finalizer/
+return bodies, with DPO/GRPO/MTP/diffusion still queued behind nonzero
+behavior-quality evidence.
 
 ## 2026-07-06 Claude Review Reconciliation
 

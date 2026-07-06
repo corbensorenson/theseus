@@ -168,9 +168,11 @@ from strict_generator_mlx_specialist_routing import (  # noqa: E402
 from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     BODY_ACTION_ROLES,
     BODY_OPERAND_ROLES,
+    BODY_STATE_EVENT_ROLES,
     MlxStrictGenerator,
     body_action_role_id_for_token,
     body_operand_role_id_for_token,
+    body_state_event_role_id_for_token,
 )
 from strict_generator_mlx_pretraining_probe import SEMANTIC_SLOT_ROLES  # noqa: E402
 from strict_generator_mlx_decode_plans import (  # noqa: E402
@@ -370,6 +372,17 @@ def main() -> int:
         ),
     )
     parser.add_argument("--body-operand-head-blend", type=float, default=0.35)
+    parser.add_argument(
+        "--use-body-state-event-head",
+        action="store_true",
+        help=(
+            "Bias raw token probabilities with the learned prefix-conditioned body state-event head. "
+            "The head predicts coarse state-machine event roles only; it does not render code, call "
+            "tools, inspect tests/solutions, or grant generation credit without candidate-integrity/"
+            "verifier behavior."
+        ),
+    )
+    parser.add_argument("--body-state-event-head-blend", type=float, default=0.35)
     parser.add_argument("--prefer-learned-prefix-decision-adequacy", action="store_true")
     parser.add_argument("--prefer-source-condition-adequacy", action="store_true")
     parser.add_argument("--require-source-condition-adequacy", action="store_true")
@@ -480,6 +493,8 @@ def main() -> int:
         body_action_head_blend=max(0.0, min(1.0, float(args.body_action_head_blend if args.body_action_head_blend is not None else 0.35))),
         use_body_operand_head=bool(args.use_body_operand_head),
         body_operand_head_blend=max(0.0, min(1.0, float(args.body_operand_head_blend if args.body_operand_head_blend is not None else 0.35))),
+        use_body_state_event_head=bool(args.use_body_state_event_head),
+        body_state_event_head_blend=max(0.0, min(1.0, float(args.body_state_event_head_blend if args.body_state_event_head_blend is not None else 0.35))),
         prefer_learned_prefix_decision_adequacy=bool(args.prefer_learned_prefix_decision_adequacy),
         prefer_source_condition_adequacy=bool(args.prefer_source_condition_adequacy),
         require_source_condition_adequacy=bool(args.require_source_condition_adequacy),
@@ -560,6 +575,8 @@ def run_decode_eval(
     body_action_head_blend: float,
     use_body_operand_head: bool,
     body_operand_head_blend: float,
+    use_body_state_event_head: bool,
+    body_state_event_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -603,6 +620,8 @@ def run_decode_eval(
                     "body_action_head_blend": float(body_action_head_blend or 0.0),
                     "use_body_operand_head": bool(use_body_operand_head),
                     "body_operand_head_blend": float(body_operand_head_blend or 0.0),
+                    "use_body_state_event_head": bool(use_body_state_event_head),
+                    "body_state_event_head_blend": float(body_state_event_head_blend or 0.0),
                     "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
                     "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
                     "require_source_condition_adequacy": bool(require_source_condition_adequacy),
@@ -711,6 +730,8 @@ def run_decode_eval(
             body_action_head_blend=body_action_head_blend,
             use_body_operand_head=use_body_operand_head,
             body_operand_head_blend=body_operand_head_blend,
+            use_body_state_event_head=use_body_state_event_head,
+            body_state_event_head_blend=body_state_event_head_blend,
             prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
             prefer_source_condition_adequacy=prefer_source_condition_adequacy,
             require_source_condition_adequacy=require_source_condition_adequacy,
@@ -758,6 +779,8 @@ def run_decode_eval(
             body_action_head_blend=body_action_head_blend,
             use_body_operand_head=use_body_operand_head,
             body_operand_head_blend=body_operand_head_blend,
+            use_body_state_event_head=use_body_state_event_head,
+            body_state_event_head_blend=body_state_event_head_blend,
             prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
             prefer_source_condition_adequacy=prefer_source_condition_adequacy,
             require_source_condition_adequacy=require_source_condition_adequacy,
@@ -801,6 +824,8 @@ def run_decode_eval(
                 body_action_head_blend=body_action_head_blend,
                 use_body_operand_head=use_body_operand_head,
                 body_operand_head_blend=body_operand_head_blend,
+                use_body_state_event_head=use_body_state_event_head,
+                body_state_event_head_blend=body_state_event_head_blend,
                 prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
                 prefer_source_condition_adequacy=prefer_source_condition_adequacy,
                 require_source_condition_adequacy=require_source_condition_adequacy,
@@ -842,6 +867,8 @@ def run_decode_eval(
                 body_action_head_blend=float(route_options.get("body_action_head_blend", body_action_head_blend)),
                 use_body_operand_head=bool(route_options.get("use_body_operand_head", use_body_operand_head)),
                 body_operand_head_blend=float(route_options.get("body_operand_head_blend", body_operand_head_blend)),
+                use_body_state_event_head=bool(route_options.get("use_body_state_event_head", use_body_state_event_head)),
+                body_state_event_head_blend=float(route_options.get("body_state_event_head_blend", body_state_event_head_blend)),
                 prefer_learned_prefix_decision_adequacy=bool(route_options["prefer_learned_prefix_decision_adequacy"]),
                 prefer_source_condition_adequacy=bool(route_options["prefer_source_condition_adequacy"]),
                 require_source_condition_adequacy=bool(route_options["require_source_condition_adequacy"]),
@@ -945,6 +972,8 @@ def run_decode_eval(
             "body_action_head_blend": float(body_action_head_blend or 0.0),
             "use_body_operand_head": bool(use_body_operand_head),
             "body_operand_head_blend": float(body_operand_head_blend or 0.0),
+            "use_body_state_event_head": bool(use_body_state_event_head),
+            "body_state_event_head_blend": float(body_state_event_head_blend or 0.0),
             "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
             "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
             "require_source_condition_adequacy": bool(require_source_condition_adequacy),
@@ -1062,7 +1091,17 @@ def load_mlx_checkpoint(
     try:
         model.load_weights(str(checkpoint_path))
     except Exception as exc:
-        if not any(name in str(exc) for name in ("plan_router", "slot_router", "body_transition_router", "body_action_router", "body_operand_router")):
+        if not any(
+            name in str(exc)
+            for name in (
+                "plan_router",
+                "slot_router",
+                "body_transition_router",
+                "body_action_router",
+                "body_operand_router",
+                "body_state_event_router",
+            )
+        ):
             raise
         strict_load = False
         model.load_weights(str(checkpoint_path), strict=False)
@@ -1129,6 +1168,8 @@ def evaluate_split(
     body_action_head_blend: float,
     use_body_operand_head: bool,
     body_operand_head_blend: float,
+    use_body_state_event_head: bool,
+    body_state_event_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -1256,6 +1297,8 @@ def evaluate_split(
         body_action_head_blend=body_action_head_blend,
         use_body_operand_head=use_body_operand_head,
         body_operand_head_blend=body_operand_head_blend,
+        use_body_state_event_head=use_body_state_event_head,
+        body_state_event_head_blend=body_state_event_head_blend,
         prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
         prefer_source_condition_adequacy=prefer_source_condition_adequacy or require_source_condition_adequacy,
         require_source_condition_adequacy=require_source_condition_adequacy,
@@ -1385,6 +1428,24 @@ def evaluate_split(
                     "method, operator, literal, or delimiter. It is not a renderer, fallback, tool "
                     "call, template, or promotion claim; behavior must still be earned through "
                     "candidate integrity and private verifier replay."
+                ),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+            },
+            "body_state_event_head": {
+                "enabled": bool(use_body_state_event_head and hasattr(model, "body_state_event_logits")),
+                "requested": bool(use_body_state_event_head),
+                "blend": float(max(0.0, min(1.0, float(body_state_event_head_blend or 0.0)))),
+                "roles": list(BODY_STATE_EVENT_ROLES),
+                "policy": "learned_prefix_conditioned_body_state_event_probability_bias_v1",
+                "score_semantics": (
+                    "Biases raw token probabilities with a checkpoint-trained coarse state-machine "
+                    "event head. It uses only model state, generated prefix tokens, and visible "
+                    "signature names to classify candidate tokens as traversal/call, state update, "
+                    "control transition, finalizer, value expression, statement boundary, or none. "
+                    "It is not a renderer, fallback, tool call, template, or promotion claim; "
+                    "behavior must still be earned through candidate integrity and private verifier replay."
                 ),
                 "uses_eval_tests_or_solutions": False,
                 "uses_public_data": False,
@@ -1717,6 +1778,8 @@ def generate_candidates_mlx(
     body_action_head_blend: float,
     use_body_operand_head: bool,
     body_operand_head_blend: float,
+    use_body_state_event_head: bool,
+    body_state_event_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -1830,6 +1893,17 @@ def generate_candidates_mlx(
                 operand_probs = mx.softmax(operand_logits, axis=-1)
                 mx.eval(operand_probs)
                 operand_prob_rows = np.asarray(operand_probs, dtype=np.float64)
+            state_event_prob_rows = None
+            state_event_blend = max(0.0, min(1.0, float(body_state_event_head_blend or 0.0)))
+            if (
+                bool(use_body_state_event_head)
+                and state_event_blend > 0.0
+                and hasattr(model, "body_state_event_logits")
+            ):
+                state_event_logits = model.body_state_event_logits(src, tgt)[:, -1, :]
+                state_event_probs = mx.softmax(state_event_logits, axis=-1)
+                mx.eval(state_event_probs)
+                state_event_prob_rows = np.asarray(state_event_probs, dtype=np.float64)
             probs = mx.softmax(logits, axis=-1)
             mx.eval(probs)
             prob_rows = np.asarray(probs, dtype=np.float64)
@@ -1852,6 +1926,15 @@ def generate_candidates_mlx(
                         generated,
                         allowed_names=set(allowed_names or []),
                         blend=operand_blend,
+                    )
+                if state_event_prob_rows is not None:
+                    prob_row = body_state_event_biased_probability_row(
+                        prob_row,
+                        state_event_prob_rows[row_index],
+                        inverse,
+                        generated,
+                        allowed_names=set(allowed_names or []),
+                        blend=state_event_blend,
                     )
                 choices = mlx_token_choices(
                     prob_row,
@@ -2917,6 +3000,38 @@ def body_operand_biased_probability_row(
             generated_tokens=generated_tokens,
         )
         role_prob = float(roles[role_id]) if 0 <= int(role_id) < len(roles) else 0.0
+        biased[idx] = max(float(biased[idx]), 1e-12) * (max(role_prob, 1e-9) ** weight)
+    total = float(np.sum(biased))
+    if not math.isfinite(total) or total <= 0.0:
+        return values
+    return biased / total
+
+
+def body_state_event_biased_probability_row(
+    token_probs: Any,
+    event_probs: Any,
+    inverse: dict[int, str],
+    generated: list[int],
+    *,
+    allowed_names: set[str],
+    blend: float,
+) -> np.ndarray:
+    values = np.asarray(token_probs, dtype=np.float64)
+    roles = np.asarray(event_probs, dtype=np.float64)
+    if values.size <= 0 or roles.size <= 0:
+        return values
+    weight = max(0.0, min(1.0, float(blend or 0.0)))
+    if weight <= 0.0:
+        return values
+    generated_tokens = [str(inverse.get(int(idx), "")) for idx in list(generated or [])]
+    biased = np.array(values, dtype=np.float64, copy=True)
+    for idx in range(len(biased)):
+        event_id = body_state_event_role_id_for_token(
+            str(inverse.get(int(idx), "")),
+            allowed_names=allowed_names,
+            generated_tokens=generated_tokens,
+        )
+        role_prob = float(roles[event_id]) if 0 <= int(event_id) < len(roles) else 0.0
         biased[idx] = max(float(biased[idx]), 1e-12) * (max(role_prob, 1e-9) ** weight)
     total = float(np.sum(biased))
     if not math.isfinite(total) or total <= 0.0:

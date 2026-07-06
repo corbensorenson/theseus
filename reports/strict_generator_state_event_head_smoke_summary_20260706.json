@@ -1,0 +1,153 @@
+{
+  "policy": "project_theseus_strict_generator_state_event_head_smoke_summary_v1",
+  "created_utc": "2026-07-06T21:52:00Z",
+  "trigger_state": "RED",
+  "source_reports": {
+    "adaptation": {
+      "path": "reports/strict_generator_mlx_private_adaptation_state_event_head_smoke_20260706.json",
+      "sha256": "e7fd6c0d57eeb65bbe2d092961c778bed00d7df994d9d16b12a7bad813f4eb87",
+      "trigger_state": "RED",
+      "checkpoint_path": "checkpoints/strict_generator_mlx_state_event_head_smoke_20260706/strict_generator_mlx_state_event_head_smoke_20260706.npz",
+      "checkpoint_sha256": "fb24d4df1edf007f3fbe7197db54b596a0eabf6bff638f22389e0cd57ed06b3d"
+    },
+    "decode_with_state_event_bias": {
+      "path": "reports/strict_generator_mlx_decode_eval_state_event_head_private_replay4_20260706.json",
+      "sha256": "d004129253a9d5992a2e92de225c9e14e0f81ee655361272109761631273874d",
+      "trigger_state": "RED"
+    },
+    "decode_without_state_event_bias_ablation": {
+      "path": "reports/strict_generator_mlx_decode_eval_state_event_head_no_event_ablation_private_replay4_20260706.json",
+      "sha256": "c30f3e952cb8cc8de3f55a1c19a0d99d7863be94cac2b89534359e0c4da16ae5",
+      "trigger_state": "YELLOW"
+    }
+  },
+  "implementation_delta": {
+    "registered_surface": "strict_generator_mlx_private_adaptation",
+    "files_changed": [
+      "scripts/strict_generator_mlx_pretraining_probe.py",
+      "scripts/strict_generator_mlx_private_adaptation.py",
+      "scripts/strict_generator_mlx_decode_eval.py",
+      "scripts/strict_generator_mlx_specialist_routing.py"
+    ],
+    "new_trainable_component": "body_state_event_router",
+    "event_roles": [
+      "none",
+      "traversal_or_call",
+      "state_update",
+      "control_transition",
+      "return_finalizer",
+      "value_expression",
+      "statement_boundary"
+    ],
+    "decode_policy": "learned_prefix_conditioned_body_state_event_probability_bias_v1",
+    "candidate_generation_credit": 0
+  },
+  "adaptation_result": {
+    "train_rows": 64,
+    "heldout_private_train_rows": 16,
+    "heldout_lm_loss_before": 1.49465,
+    "heldout_lm_loss_after": 1.441715,
+    "heldout_lm_improved": true,
+    "heldout_body_transition_loss_before": 8.067903,
+    "heldout_body_transition_loss_after": 8.060719,
+    "heldout_body_transition_improved": true,
+    "heldout_body_action_loss_before": 2.948527,
+    "heldout_body_action_loss_after": 2.968961,
+    "heldout_body_action_accuracy_before": 0.087858,
+    "heldout_body_action_accuracy_after": 0.080948,
+    "heldout_body_operand_loss_before": 3.036583,
+    "heldout_body_operand_loss_after": 3.036793,
+    "heldout_body_operand_accuracy_before": 0.047384,
+    "heldout_body_operand_accuracy_after": 0.054294,
+    "heldout_body_state_event_loss_before": 2.315528,
+    "heldout_body_state_event_loss_after": 2.295373,
+    "heldout_body_state_event_accuracy_before": 0.047384,
+    "heldout_body_state_event_accuracy_after": 0.055281,
+    "heldout_body_state_event_improved": true,
+    "parameter_tensor_update_fraction": 0.853659,
+    "parameter_update_fraction": 0.154989,
+    "failed_gates": [
+      "parameter_tensor_update_recorded",
+      "parameter_element_update_meaningful",
+      "body_action_loss_improved_when_enabled",
+      "body_operand_loss_improved_when_enabled"
+    ]
+  },
+  "event_targets": {
+    "train": {
+      "active_positions": 4120,
+      "event_positions": 1904,
+      "event_position_rate": 0.462136,
+      "role_counts": {
+        "control_transition": 516,
+        "none": 2216,
+        "return_finalizer": 147,
+        "state_update": 143,
+        "statement_boundary": 621,
+        "traversal_or_call": 415,
+        "value_expression": 62
+      }
+    },
+    "heldout": {
+      "active_positions": 1013,
+      "event_positions": 466,
+      "event_position_rate": 0.46002,
+      "role_counts": {
+        "control_transition": 123,
+        "none": 547,
+        "return_finalizer": 38,
+        "state_update": 36,
+        "statement_boundary": 147,
+        "traversal_or_call": 105,
+        "value_expression": 17
+      }
+    }
+  },
+  "decode_ablation": {
+    "with_state_event_bias": {
+      "state_event_head_enabled": true,
+      "state_event_head_blend": 0.25,
+      "candidate_rows": 0,
+      "manifest_candidate_rows": 0,
+      "syntax_pass_count": 0,
+      "syntax_pass_rate": 0.0,
+      "nontrivial_return_rate": 0.0,
+      "trained_passed": 0,
+      "trained_pass_if_any_passed": 0,
+      "failed_gates": [
+        "candidate_rows_emitted",
+        "inline_candidate_integrity_verified_rows_present",
+        "functional_pass_moved_above_zero",
+        "nontrivial_return_rate_nonzero"
+      ]
+    },
+    "without_state_event_bias": {
+      "state_event_head_enabled": false,
+      "candidate_rows": 2,
+      "manifest_candidate_rows": 2,
+      "syntax_pass_count": 2,
+      "syntax_pass_rate": 1.0,
+      "nontrivial_return_rate": 1.0,
+      "trained_passed": 0,
+      "trained_pass_if_any_passed": 0,
+      "failed_gates": [
+        "functional_pass_moved_above_zero"
+      ]
+    },
+    "finding": "The dedicated state-event auxiliary head learns a measurable heldout event signal, but direct decode probability biasing with the head is harmful on this private replay canary: candidate emission drops from 2 integrity-clean rows without the event bias to 0 rows with it enabled."
+  },
+  "no_cheat_evidence": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit_count": 0,
+    "uses_eval_tests_or_solutions_for_generation": false,
+    "uses_public_data": false,
+    "candidate_generation_credit": 0
+  },
+  "no_claim_boundary": "This report does not claim behavior improvement, promotion readiness, public transfer, or learned-generation capability progress. It records a useful negative result: event-head supervision is trainable, but direct token-probability bias is not the right coupling mechanism.",
+  "next_required_work": [
+    "Replace direct state-event probability bias with a coupled action/operand/state architecture or localized semantic-IR body constructor.",
+    "Use verifier labels from emitted private candidates as preference/reward signal only after candidate emission remains nonzero and integrity-clean.",
+    "Keep DPO/GRPO/MTP/diffusion queued until direct prompt/signature body-token generation produces behavior-positive private replay evidence."
+  ]
+}

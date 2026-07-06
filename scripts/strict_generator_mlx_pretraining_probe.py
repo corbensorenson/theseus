@@ -132,6 +132,46 @@ BODY_OPERAND_ROLES: tuple[str, ...] = (
 )
 BODY_OPERAND_ROLE_TO_ID = {role: index for index, role in enumerate(BODY_OPERAND_ROLES)}
 
+BODY_STATE_EVENT_ROLES: tuple[str, ...] = (
+    "none",
+    "traversal_or_call",
+    "state_update",
+    "control_transition",
+    "return_finalizer",
+    "value_expression",
+    "statement_boundary",
+)
+BODY_STATE_EVENT_ROLE_TO_ID = {role: index for index, role in enumerate(BODY_STATE_EVENT_ROLES)}
+
+ACTION_STATE_EVENT_ROLE_BY_ACTION_ROLE: dict[str, str] = {
+    "return": "return_finalizer",
+    "block_exit": "statement_boundary",
+    "block_enter": "control_transition",
+    "loop": "control_transition",
+    "branch": "control_transition",
+    "assignment": "state_update",
+    "update_operator": "state_update",
+    "comparison": "control_transition",
+    "bool_op": "control_transition",
+    "call_or_method": "traversal_or_call",
+    "attribute": "traversal_or_call",
+    "line_boundary": "statement_boundary",
+    "eos": "return_finalizer",
+}
+
+OPERAND_STATE_EVENT_ROLE_BY_OPERAND_ROLE: dict[str, str] = {
+    "builtin_function": "traversal_or_call",
+    "method_name": "traversal_or_call",
+    "attribute_name": "traversal_or_call",
+    "assignment_operator": "state_update",
+    "arithmetic_operator": "value_expression",
+    "comparison_operator": "control_transition",
+    "boolean_operator": "control_transition",
+    "return_keyword": "return_finalizer",
+    "control_keyword": "control_transition",
+    "eos": "return_finalizer",
+}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -452,6 +492,7 @@ class MlxStrictGenerator:
                 self.body_transition_router = nn.Linear(d_model, target_vocab_size)
                 self.body_action_router = nn.Linear(d_model, len(BODY_ACTION_ROLES))
                 self.body_operand_router = nn.Linear(d_model, len(BODY_OPERAND_ROLES))
+                self.body_state_event_router = nn.Linear(d_model, len(BODY_STATE_EVENT_ROLES))
 
             def encode_source(self, src: Any) -> tuple[Any, Any]:
                 src_mask = additive_padding_mask(src, mx)
@@ -488,6 +529,9 @@ class MlxStrictGenerator:
 
             def body_operand_logits(self, src: Any, tgt_in: Any) -> Any:
                 return self.body_operand_router(self.decode_hidden(src, tgt_in))
+
+            def body_state_event_logits(self, src: Any, tgt_in: Any) -> Any:
+                return self.body_state_event_router(self.decode_hidden(src, tgt_in))
 
             def __call__(self, src: Any, tgt_in: Any) -> Any:
                 return self.output(self.decode_hidden(src, tgt_in))
@@ -1284,6 +1328,149 @@ def body_operand_loss_mlx(
     return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
 
 
+def body_state_event_role_id_for_roles(action_role: str, operand_role: str) -> int:
+    event_role = (
+        ACTION_STATE_EVENT_ROLE_BY_ACTION_ROLE.get(str(action_role or ""))
+        or OPERAND_STATE_EVENT_ROLE_BY_OPERAND_ROLE.get(str(operand_role or ""))
+        or "none"
+    )
+    return int(BODY_STATE_EVENT_ROLE_TO_ID.get(event_role, 0))
+
+
+def body_state_event_role_id_for_token(
+    token_text: str,
+    *,
+    allowed_names: set[str] | None = None,
+    generated_tokens: list[str] | None = None,
+) -> int:
+    """Map a candidate token to the coarse state-machine event role.
+
+    This is used only for task-blind probability biasing from a learned
+    auxiliary head. It derives the role from the same token-local action and
+    operand classifiers used by the training targets; it does not inspect
+    solutions, tests, verifier labels, or benchmark metadata.
+    """
+
+    action_role_id = body_action_role_id_for_token(str(token_text or ""))
+    action_role = BODY_ACTION_ROLES[action_role_id] if 0 <= int(action_role_id) < len(BODY_ACTION_ROLES) else "other"
+    operand_role_id = body_operand_role_id_for_token(
+        str(token_text or ""),
+        allowed_names=allowed_names,
+        generated_tokens=generated_tokens,
+    )
+    operand_role = (
+        BODY_OPERAND_ROLES[operand_role_id]
+        if 0 <= int(operand_role_id) < len(BODY_OPERAND_ROLES)
+        else "other_operand"
+    )
+    return body_state_event_role_id_for_roles(action_role, operand_role)
+
+
+def body_state_event_target_rows(
+    action_target_rows: list[list[int]],
+    operand_target_rows: list[list[int]],
+    action_weight_rows: list[list[float]],
+    operand_weight_rows: list[list[float]],
+    *,
+    event_weight: float = 1.0,
+    none_weight: float = 0.20,
+) -> tuple[list[list[int]], list[list[float]], dict[str, Any]]:
+    event_weight = max(0.0, float(event_weight if event_weight is not None else 1.0))
+    none_weight = max(0.0, float(none_weight if none_weight is not None else 0.20))
+    target_rows: list[list[int]] = []
+    weight_rows: list[list[float]] = []
+    active_positions = 0
+    event_positions = 0
+    none_positions = 0
+    role_counts = {role: 0 for role in BODY_STATE_EVENT_ROLES}
+    row_count = max(len(action_target_rows), len(operand_target_rows), len(action_weight_rows), len(operand_weight_rows))
+    for row_index in range(row_count):
+        width = max(
+            len(action_target_rows[row_index]) if row_index < len(action_target_rows) else 0,
+            len(operand_target_rows[row_index]) if row_index < len(operand_target_rows) else 0,
+            len(action_weight_rows[row_index]) if row_index < len(action_weight_rows) else 0,
+            len(operand_weight_rows[row_index]) if row_index < len(operand_weight_rows) else 0,
+        )
+        target_row: list[int] = []
+        weight_row: list[float] = []
+        for pos in range(width):
+            action_id = (
+                int(action_target_rows[row_index][pos])
+                if row_index < len(action_target_rows) and pos < len(action_target_rows[row_index])
+                else 0
+            )
+            operand_id = (
+                int(operand_target_rows[row_index][pos])
+                if row_index < len(operand_target_rows) and pos < len(operand_target_rows[row_index])
+                else 0
+            )
+            action_role = BODY_ACTION_ROLES[action_id] if 0 <= action_id < len(BODY_ACTION_ROLES) else "other"
+            operand_role = BODY_OPERAND_ROLES[operand_id] if 0 <= operand_id < len(BODY_OPERAND_ROLES) else "other"
+            event_id = body_state_event_role_id_for_roles(action_role, operand_role)
+            action_weight = (
+                float(action_weight_rows[row_index][pos] or 0.0)
+                if row_index < len(action_weight_rows) and pos < len(action_weight_rows[row_index])
+                else 0.0
+            )
+            operand_weight = (
+                float(operand_weight_rows[row_index][pos] or 0.0)
+                if row_index < len(operand_weight_rows) and pos < len(operand_weight_rows[row_index])
+                else 0.0
+            )
+            base_weight = max(action_weight, operand_weight)
+            if base_weight > 0.0:
+                active_positions += 1
+                role = BODY_STATE_EVENT_ROLES[event_id] if 0 <= event_id < len(BODY_STATE_EVENT_ROLES) else "none"
+                role_counts[role] = role_counts.get(role, 0) + 1
+                if event_id == 0:
+                    none_positions += 1
+                    weight = base_weight * none_weight
+                else:
+                    event_positions += 1
+                    weight = base_weight * event_weight
+            else:
+                weight = 0.0
+            target_row.append(event_id)
+            weight_row.append(round(float(weight), 6))
+        target_rows.append(target_row)
+        weight_rows.append(weight_row)
+    return target_rows, weight_rows, {
+        "enabled": active_positions > 0,
+        "policy": "private_body_state_event_target_rows_v1",
+        "active_positions": active_positions,
+        "event_positions": event_positions,
+        "none_positions": none_positions,
+        "event_position_rate": round(event_positions / max(1, active_positions), 6),
+        "event_weight": event_weight,
+        "none_weight": none_weight,
+        "role_counts": {role: count for role, count in role_counts.items() if count},
+        "candidate_generation_credit": 0,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+    }
+
+
+def body_state_event_loss_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    event_targets: Any,
+    event_weights: Any,
+    mx: Any,
+    nn: Any,
+) -> Any:
+    if not hasattr(model, "body_state_event_logits"):
+        return mx.array(0.0, dtype=mx.float32)
+    tgt_in = tgt[:, :-1]
+    tgt_out = tgt[:, 1:]
+    logits = model.body_state_event_logits(src, tgt_in)
+    targets = event_targets[:, 1:]
+    losses = nn.losses.cross_entropy(logits, targets, reduction="none")
+    valid = (tgt_out != pad_id).astype(mx.float32) * event_weights[:, 1:]
+    return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
+
+
 def body_transition_aux_weighted_loss_fn_mlx(
     model: Any,
     src: Any,
@@ -1372,6 +1559,51 @@ def body_action_operand_transition_aux_weighted_loss_fn_mlx(
         loss = loss + (
             float(body_operand_weight)
             * body_operand_loss_mlx(model, src, tgt, pad_id, operand_targets, operand_weights, mx, nn)
+        )
+    return loss
+
+
+def body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    event_targets: Any,
+    event_weights: Any,
+    body_state_event_weight: float,
+    mx: Any,
+    nn: Any,
+) -> Any:
+    loss = body_action_operand_transition_aux_weighted_loss_fn_mlx(
+        model,
+        src,
+        tgt,
+        pad_id,
+        token_weights,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        operand_targets,
+        operand_weights,
+        body_operand_weight,
+        mx,
+        nn,
+    )
+    if float(body_state_event_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_state_event_weight)
+            * body_state_event_loss_mlx(model, src, tgt, pad_id, event_targets, event_weights, mx, nn)
         )
     return loss
 
@@ -1514,6 +1746,65 @@ def semantic_body_action_operand_transition_aux_weighted_loss_fn_mlx(
         loss = loss + (
             float(body_operand_weight)
             * body_operand_loss_mlx(model, src, tgt, pad_id, operand_targets, operand_weights, mx, nn)
+        )
+    return loss
+
+
+def semantic_body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    event_targets: Any,
+    event_weights: Any,
+    body_state_event_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+) -> Any:
+    loss = semantic_body_action_operand_transition_aux_weighted_loss_fn_mlx(
+        model,
+        src,
+        tgt,
+        pad_id,
+        token_weights,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        operand_targets,
+        operand_weights,
+        body_operand_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+    )
+    if float(body_state_event_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_state_event_weight)
+            * body_state_event_loss_mlx(model, src, tgt, pad_id, event_targets, event_weights, mx, nn)
         )
     return loss
 
@@ -1692,6 +1983,77 @@ def semantic_body_action_operand_transition_aux_source_contrastive_weighted_loss
         loss = loss + (
             float(body_operand_weight)
             * body_operand_loss_mlx(model, src, tgt, pad_id, operand_targets, operand_weights, mx, nn)
+        )
+    return loss
+
+
+def semantic_body_action_operand_transition_event_aux_source_contrastive_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    mismatched_src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    source_contrastive_weight: float,
+    source_contrastive_margin: float,
+    source_contrastive_prefix_tokens: int,
+    source_contrastive_span_mode: str,
+    source_contrastive_body_start_id: int,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    action_targets: Any,
+    action_weights: Any,
+    body_action_weight: float,
+    operand_targets: Any,
+    operand_weights: Any,
+    body_operand_weight: float,
+    event_targets: Any,
+    event_weights: Any,
+    body_state_event_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+) -> Any:
+    loss = semantic_body_action_operand_transition_aux_source_contrastive_weighted_loss_fn_mlx(
+        model,
+        src,
+        mismatched_src,
+        tgt,
+        pad_id,
+        token_weights,
+        source_contrastive_weight,
+        source_contrastive_margin,
+        source_contrastive_prefix_tokens,
+        source_contrastive_span_mode,
+        source_contrastive_body_start_id,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        transition_weights,
+        body_transition_weight,
+        action_targets,
+        action_weights,
+        body_action_weight,
+        operand_targets,
+        operand_weights,
+        body_operand_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+    )
+    if float(body_state_event_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_state_event_weight)
+            * body_state_event_loss_mlx(model, src, tgt, pad_id, event_targets, event_weights, mx, nn)
         )
     return loss
 
@@ -4052,6 +4414,112 @@ def evaluate_body_operand_mlx(
             "visible-parameter, loop-variable, local-state, builtin, method, literal, operator, "
             "and delimiter roles. It is trained only from admitted private/licensed body tokens "
             "and emits no candidates."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def evaluate_body_state_event_mlx(
+    model: Any,
+    source_rows: list[list[int]],
+    target_rows: list[list[int]],
+    event_target_rows: list[list[int]],
+    event_weight_rows: list[list[float]],
+    *,
+    batch_size: int,
+    pad_id: int,
+    enabled: bool,
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    if not enabled or not source_rows or not target_rows or not event_target_rows or not event_weight_rows:
+        return {
+            "enabled": bool(enabled),
+            "loss": None,
+            "accuracy": None,
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    if not hasattr(model, "body_state_event_logits"):
+        return {
+            "enabled": False,
+            "loss": None,
+            "accuracy": None,
+            "reason": "model_has_no_body_state_event_head",
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    losses: list[float] = []
+    active_positions = 0
+    correct = 0
+    counted = 0
+    role_correct = {role: 0 for role in BODY_STATE_EVENT_ROLES}
+    role_count = {role: 0 for role in BODY_STATE_EVENT_ROLES}
+    model.eval()
+    for start in range(0, len(source_rows), batch_size):
+        src = mx.array(source_rows[start : start + batch_size], dtype=mx.int32)
+        tgt = mx.array(target_rows[start : start + batch_size], dtype=mx.int32)
+        targets = mx.array(event_target_rows[start : start + batch_size], dtype=mx.int32)
+        weights = mx.array(event_weight_rows[start : start + batch_size], dtype=mx.float32)
+        loss = body_state_event_loss_mlx(model, src, tgt, pad_id, targets, weights, mx, nn)
+        logits = model.body_state_event_logits(src, tgt[:, :-1])
+        pred = mx.argmax(logits, axis=-1)
+        target_out = targets[:, 1:]
+        valid = ((tgt[:, 1:] != pad_id).astype(mx.float32) * weights[:, 1:]) > 0.0
+        hit = (pred == target_out).astype(mx.float32) * valid.astype(mx.float32)
+        batch_correct = mx.sum(hit).astype(mx.float32)
+        batch_count = mx.sum(valid.astype(mx.float32))
+        mx.eval(loss, pred, target_out, valid, batch_correct, batch_count)
+        losses.append(float(loss.item()))
+        active_positions += sum(
+            1
+            for row in event_weight_rows[start : start + batch_size]
+            for value in row[1:]
+            if float(value or 0.0) > 0.0
+        )
+        if float(batch_count.item()) > 0.0:
+            correct += int(batch_correct.item())
+            counted += int(batch_count.item())
+            pred_rows = pred.tolist()
+            target_rows_local = target_out.tolist()
+            valid_rows = valid.tolist()
+            for row_index, target_row in enumerate(target_rows_local):
+                for col_index, target_id in enumerate(target_row):
+                    if not bool(valid_rows[row_index][col_index]):
+                        continue
+                    role = BODY_STATE_EVENT_ROLES[int(target_id)] if 0 <= int(target_id) < len(BODY_STATE_EVENT_ROLES) else "none"
+                    role_count[role] += 1
+                    if int(pred_rows[row_index][col_index]) == int(target_id):
+                        role_correct[role] += 1
+    model.train()
+    loss = sum(losses) / max(1, len(losses))
+    return {
+        "enabled": True,
+        "policy": "private_prefix_conditioned_body_state_event_eval_v1",
+        "loss": round(loss, 6),
+        "accuracy": round(correct / counted, 6) if counted else None,
+        "correct_count": correct,
+        "active_position_count": active_positions,
+        "role_accuracy": {
+            role: {
+                "accuracy": round(role_correct[role] / role_count[role], 6) if role_count[role] else None,
+                "correct_count": role_correct[role],
+                "active_target_count": role_count[role],
+            }
+            for role in BODY_STATE_EVENT_ROLES
+            if role_count[role]
+        },
+        "score_semantics": (
+            "Heldout loss/accuracy for a prefix-conditioned body state-machine event head. Event labels "
+            "are derived from admitted private action/operand roles and describe traversal/call, state "
+            "update, control, finalizer, value-expression, statement-boundary, or none. This head emits "
+            "no candidates and grants no learned-generation promotion credit by itself."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
