@@ -3,8 +3,8 @@
 
 This gate is deliberately narrow. It records whether a bounded private
 verifier-driven learned body-token experiment is clean enough to count as C1
-prototype evidence. A clean falsifying wall is acceptable evidence here; it is
-not a promotion, public-transfer, or learned-generation success claim.
+architecture evidence. A clean falsifying wall is acceptable evidence here; it
+is not a promotion, public-transfer, or learned-generation success claim.
 """
 
 from __future__ import annotations
@@ -137,10 +137,42 @@ def build_report(
         gate("no_public_external_fallback_or_boundary_faults", all(value == 0 for value in no_cheat.values()), no_cheat),
     ]
     hard_gaps = [row for row in gates if not row["passed"]]
+    expected_invalid_controls = c1_expected_invalid_controls(
+        experiments_summary=experiments_summary,
+        replay_summary=replay_summary,
+        replay_rules=replay_rules,
+        integrity=integrity,
+        integrity_summary=integrity_summary,
+        blind_audit=blind_audit,
+        blind_summary=blind_summary,
+        forbidden_fields=forbidden_fields,
+        eligible_families=eligible_families,
+        replayed_families=replayed_families,
+        integrity_families=integrity_families,
+        semantic_wall=semantic_wall,
+        generation_mode=generation_mode,
+        generation_summary=generation_summary,
+        no_cheat=no_cheat,
+    )
+    synthetic_support_ready = (
+        not hard_gaps
+        and all(row["rejected"] for row in expected_invalid_controls)
+        and semantic_wall["measured"]
+        and (semantic_wall["improved"] or semantic_wall["falsifying_wall_recorded"])
+        and all(value == 0 for value in no_cheat.values())
+    )
     state = "GREEN" if not hard_gaps else "RED"
+    support_state = (
+        "synthetic-test-backed"
+        if synthetic_support_ready
+        else ("prototype-backed" if state == "GREEN" else "not_yet_supported")
+    )
     summary = {
         "c1_correctness_generator_survival_lane_state": state,
-        "c1_correctness_generator_survival_lane_support_state": "prototype-backed" if state == "GREEN" else "not_yet_supported",
+        "c1_correctness_generator_survival_lane_support_state": support_state,
+        "c1_synthetic_support_ready": synthetic_support_ready,
+        "c1_expected_invalid_control_count": len(expected_invalid_controls),
+        "c1_expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
         "experiment_preregistered": experiments.get("trigger_state") == "GREEN",
         "replay_trigger_state": replay.get("trigger_state"),
         "eligible_candidate_count": replay_summary.get("eligible_candidate_count"),
@@ -171,10 +203,28 @@ def build_report(
         "gates": gates,
         "hard_gaps": hard_gaps,
         "evidence_refs": evidence_refs,
+        "support_state_basis": {
+            "synthetic_support_ready": synthetic_support_ready,
+            "expected_invalid_control_count": len(expected_invalid_controls),
+            "expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
+            "eligible_families": sorted(eligible_families),
+            "replayed_families": sorted(replayed_families),
+            "integrity_families": sorted(integrity_families),
+            "task_count": replay_summary.get("task_count"),
+            "eligible_candidate_count": replay_summary.get("eligible_candidate_count"),
+            "selected_compile_pass_rate": replay_summary.get("selected_compile_pass_rate"),
+            "selected_runtime_load_rate": replay_summary.get("selected_runtime_load_rate"),
+            "selected_intended_behavior_pass_rate": replay_summary.get("selected_intended_behavior_pass_rate"),
+            "pass_if_any_rate": replay_summary.get("pass_if_any_rate"),
+            "functional_promotion_rate": replay_summary.get("functional_promotion_rate"),
+            "semantic_wall": semantic_wall,
+            "no_cheat_counters": no_cheat,
+        },
+        "expected_invalid_controls": expected_invalid_controls,
         "semantic_wall": semantic_wall,
         "no_cheat_counters": no_cheat,
         "non_claims": [
-            "C1 prototype-backed means one bounded private verifier-driven learned body-token experiment is governed and replayed; it does not claim promotion-grade code generation.",
+            "C1 synthetic-test-backed means one bounded private verifier-driven learned body-token experiment has replay, integrity, blind-flow, generation-mode, policy, and expected-invalid controls; it does not claim promotion-grade code generation.",
             "The current replay records a falsifying semantic wall: integrity-clean transformer/hybrid candidates compile/load sometimes, but selected/pass-if-any functional behavior remains zero on this probe.",
             "Routers, templates, ngrams, semantic renderers, deterministic tools, and fallback returns are not eligible learned-generation credit.",
             "Public benchmark payloads remain calibration-only and no public prompts/tests/solutions/traces are written as training rows.",
@@ -192,6 +242,93 @@ def build_report(
             ],
         },
     }
+
+
+def c1_expected_invalid_controls(
+    *,
+    experiments_summary: dict[str, Any],
+    replay_summary: dict[str, Any],
+    replay_rules: dict[str, Any],
+    integrity: dict[str, Any],
+    integrity_summary: dict[str, Any],
+    blind_audit: dict[str, Any],
+    blind_summary: dict[str, Any],
+    forbidden_fields: set[str],
+    eligible_families: set[str],
+    replayed_families: set[str],
+    integrity_families: set[str],
+    semantic_wall: dict[str, Any],
+    generation_mode: dict[str, Any],
+    generation_summary: dict[str, Any],
+    no_cheat: dict[str, int],
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "control": "missing_preregistration_blocks_c1_synthetic",
+            "rejected": int_or(experiments_summary.get("experiment_count"), 0) >= 1
+            and experiments_summary.get("public_benchmark_training_allowed") is False
+            and experiments_summary.get("fallback_credit_allowed") is False,
+            "reason": "synthetic C1 evidence must be preregistered and must forbid public-training and fallback-credit shortcuts",
+        },
+        {
+            "control": "public_or_external_or_fallback_fault_blocks_c1",
+            "rejected": all(value == 0 for value in no_cheat.values())
+            and replay_rules.get("private_only") is True
+            and replay_rules.get("public_calibration_run") is False,
+            "reason": "C1 cannot pass with public-training rows, runtime external inference, boundary violations, fallback returns, or constant-return shortcuts",
+        },
+        {
+            "control": "forbidden_family_credit_blocks_c1",
+            "rejected": bool(eligible_families)
+            and eligible_families.issubset(ALLOWED_ELIGIBLE_FAMILIES)
+            and not (eligible_families & FORBIDDEN_LEARNED_CREDIT_FAMILIES)
+            and bool(replayed_families)
+            and replayed_families.issubset(ALLOWED_ELIGIBLE_FAMILIES),
+            "reason": "tools, templates, routers, ngrams, adapters, and unknown families cannot count as learned body-token evidence",
+        },
+        {
+            "control": "integrity_mismatch_blocks_c1",
+            "rejected": integrity.get("trigger_state") == "GREEN"
+            and eligible_families.issubset(integrity_families)
+            and int_or(integrity_summary.get("integrity_mismatch_count"), -1) == 0
+            and int_or(replay_summary.get("candidate_integrity_mismatch_count"), -1) == 0,
+            "reason": "candidate family and learned-generation eligibility must be recomputed by independent integrity audit",
+        },
+        {
+            "control": "blind_information_flow_violation_blocks_c1",
+            "rejected": blind_audit.get("trigger_state") == "GREEN"
+            and int_or(blind_summary.get("static_information_flow_violation_count"), -1) == 0
+            and int_or(blind_summary.get("config_information_flow_violation_count"), -1) == 0
+            and FORBIDDEN_INFERENCE_FIELDS.issubset(forbidden_fields),
+            "reason": "generation and ranking must not see answer-identifying fields or hidden target metadata",
+        },
+        {
+            "control": "missing_loadability_measurement_blocks_c1",
+            "rejected": float_or(replay_summary.get("selected_compile_pass_rate"), 0.0) > 0.0
+            and float_or(replay_summary.get("selected_runtime_load_rate"), 0.0) > 0.0,
+            "reason": "C1 needs actual learned body-token candidate loadability measurement, not a manifest-only claim",
+        },
+        {
+            "control": "missing_semantic_measurement_blocks_c1",
+            "rejected": bool(semantic_wall.get("measured"))
+            and (bool(semantic_wall.get("improved")) or bool(semantic_wall.get("falsifying_wall_recorded"))),
+            "reason": "C1 must either record private behavior improvement or retain a falsifying semantic wall",
+        },
+        {
+            "control": "promotion_laundering_blocks_c1",
+            "rejected": generation_mode.get("trigger_state") in {"GREEN", "YELLOW"}
+            and int_or(generation_summary.get("promotable_comparison_count"), -1) == 0
+            and float_or(replay_summary.get("functional_promotion_rate"), -1.0) == 0.0,
+            "reason": "a falsifying-wall run cannot be laundered into a promotion or generation-mode claim",
+        },
+        {
+            "control": "too_thin_private_fixture_blocks_c1",
+            "rejected": int_or(replay_summary.get("task_count"), 0) >= 8
+            and int_or(replay_summary.get("eligible_candidate_count"), 0) > 0
+            and int_or(replay_summary.get("tasks_with_manifest_candidates"), 0) == int_or(replay_summary.get("task_count"), -1),
+            "reason": "C1 synthetic evidence needs enough private fixture coverage to exercise the survival-lane contract",
+        },
+    ]
 
 
 def semantic_wall_summary(replay_summary: dict[str, Any], fanout_summary: dict[str, Any]) -> dict[str, Any]:

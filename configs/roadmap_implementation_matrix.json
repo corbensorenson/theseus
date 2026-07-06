@@ -2038,7 +2038,7 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One bounded private verifier-driven generator experiment improves unassisted learned body-token behavior or records a falsifying wall; public benchmarks remain calibration-only.",
-        "current_support_state": "prototype-backed",
+        "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/correctness_generator_survival_lane_gate.json",
@@ -2057,7 +2057,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "prototype-backed C1 proves one clean bounded private verifier-driven learned body-token experiment, not promotion-grade code generation",
+          "synthetic-test-backed C1 proves one clean bounded private verifier-driven learned body-token experiment with replay, integrity, blind-flow, generation-mode, policy, and expected-invalid controls; it is not promotion-grade code generation",
           "the current transformer/hybrid replay is a falsifying semantic wall: selected/pass-if-any behavior remains zero on the strict private probe",
           "routers, templates, private ngrams, semantic renderers, deterministic tools, and fallback returns remain non-credit for learned generation",
           "public benchmarks remain calibration-only and no public benchmark artifacts enter training rows"

@@ -29,16 +29,16 @@ slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backe
 `A2_replacement_transaction_kernel=synthetic-test-backed`,
 `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
 `B1_assisted_verified_assistant_product_lane=empirical-test-backed`, and
-`C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
+`C1_correctness_rl_and_generator_survival_lane=synthetic-test-backed`.
 `scripts/roadmap_implementation_gate.py` now has a strict pre-training
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
-work can continue, but strict readiness is currently `RED`: six phases are
-unfinished or externally frozen, and `C1_correctness_rl_and_generator_survival_lane`
-is the remaining pre-training book-reference core slice below its target support
-state. Training, public calibration, and score chasing should not become the
-primary path until this readiness view is green.
+work can continue, but strict readiness is currently `RED` because six phases
+are unfinished or externally frozen: phases `1`, `2`, `8`, `9`, `10`, and
+`18`. All five pre-training book-reference core slices now meet their target
+support state. Training, public calibration, and score chasing should not
+become the primary path until the unfinished/frozen phase blocker is resolved.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `54` public-safe evidence pointers, and `136`
@@ -108,8 +108,10 @@ candidates across `8` private tasks, independent integrity recomputation,
 selected compile/runtime-load rates of `0.375`, selected/pass-if-any behavior
 `0.0`, no functional promotion, and zero public-training, runtime-external,
 fallback, public-boundary, or integrity-mismatch counters. Its support state is
-`prototype-backed` because it records the falsifying semantic wall cleanly; it is
-not promotion-grade code generation or public-transfer evidence.
+`synthetic-test-backed`: the gate now requires replay, integrity, blind-flow,
+generation-mode, policy, and `9/9` expected-invalid controls while preserving
+the falsifying semantic wall. This is not promotion-grade code generation or
+public-transfer evidence.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with

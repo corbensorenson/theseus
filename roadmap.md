@@ -197,16 +197,16 @@ remain honestly bounded.
   `A2_replacement_transaction_kernel=synthetic-test-backed`,
   `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
   `B1_assisted_verified_assistant_product_lane=empirical-test-backed`, and
-  `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
+  `C1_correctness_rl_and_generator_survival_lane=synthetic-test-backed`.
 - `scripts/roadmap_implementation_gate.py` now exposes a strict
   pre-training architecture readiness mode:
   `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
   The normal roadmap gate remains `YELLOW` with no hard gaps for implementation
-  work, but strict readiness is currently `RED`: six phases are unfinished or
-  externally frozen, and `C1_correctness_rl_and_generator_survival_lane` is the
-  remaining pre-training book-reference core slice below its target support
-  state. That means training, public calibration, and score chasing should not
-  become the primary path yet.
+  work, but strict readiness is currently `RED` because six phases are
+  unfinished or externally frozen: phases `1`, `2`, `8`, `9`, `10`, and `18`.
+  All five pre-training book-reference core slices now meet their target
+  support state. That means training, public calibration, and score chasing
+  should not become the primary path yet.
 - The E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed:
   `reports/governance_rights_receipt_suite.json` proves one side-effecting
   assistant/tool fixture through runtime adapter invocation, authority
@@ -224,15 +224,17 @@ remain honestly bounded.
   counters. The gate preserves the strict code-generator semantic wall as C1
   negative evidence rather than laundering product usefulness into
   learned-generation capability.
-- The C1 correctness/RL/generator survival lane is prototype-backed:
+- The C1 correctness/RL/generator survival lane is synthetic-test-backed:
   `reports/correctness_generator_survival_lane_gate.json` verifies one bounded
   private verifier-driven learned body-token experiment under the preregistered
   correctness-in-the-loop contract. The fixture has `36` eligible
   transformer/hybrid candidates over `8` private tasks, independent integrity
   recomputation, selected compile/runtime-load rates of `0.375`, zero
   selected/pass-if-any functional behavior, zero promotion, and zero
-  public-training/runtime-external/fallback/boundary counters. This records a
-  clean falsifying semantic wall, not a learned-generation win.
+  public-training/runtime-external/fallback/boundary counters. The gate now
+  requires replay, integrity, blind-flow, generation-mode, policy, and `9/9`
+  expected-invalid controls. This records a clean falsifying semantic wall, not
+  a learned-generation win.
 - The AI_book crosswalk is intentionally sticky: it now indexes `1703` AI_book
   source files, has `38` active backlog items, `0` stale-source phase
   candidates, `54` public-safe evidence pointers, and `136` active source-sync
