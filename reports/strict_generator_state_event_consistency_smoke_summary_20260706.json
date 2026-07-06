@@ -1,0 +1,89 @@
+{
+  "policy": "project_theseus_strict_generator_state_event_consistency_smoke_summary_v1",
+  "created_utc": "2026-07-06T22:04:00Z",
+  "trigger_state": "RED",
+  "source_reports": {
+    "plan_smoke": {
+      "path": "reports/strict_generator_mlx_private_adaptation_state_event_consistency_plan_smoke_20260706.json",
+      "trigger_state": "PLANNED"
+    },
+    "adaptation": {
+      "path": "reports/strict_generator_mlx_private_adaptation_state_event_consistency_smoke_20260706.json",
+      "sha256": "8a41bf853afb60fe1fa4cf7edc06b1ecf017b13e4960a5f9cfdaaa32e86edbe9",
+      "trigger_state": "RED",
+      "checkpoint_path": "checkpoints/strict_generator_mlx_state_event_consistency_smoke_20260706/strict_generator_mlx_state_event_consistency_smoke_20260706.npz",
+      "checkpoint_sha256": "072cd9dd9fde006e00eb37899f8b40a4376bc85f3eb55a0cd6892db568e1ad60"
+    }
+  },
+  "implementation_delta": {
+    "registered_surface": "strict_generator_mlx_private_adaptation",
+    "files_changed": [
+      "scripts/strict_generator_mlx_pretraining_probe.py",
+      "scripts/strict_generator_mlx_private_adaptation.py"
+    ],
+    "new_objective": "private_body_state_event_action_operand_consistency_loss_v1",
+    "default_route_enabled": false,
+    "candidate_generation_credit": 0
+  },
+  "objective": {
+    "description": "Softly couple the body-action and body-operand heads to private state-machine event targets by rewarding probability mass on event-compatible roles.",
+    "action_consistency_weight": 0.03,
+    "operand_consistency_weight": 0.03,
+    "uses_eval_tests_or_solutions": false,
+    "uses_public_data": false,
+    "candidate_generation_credit": 0
+  },
+  "adaptation_result": {
+    "train_rows": 64,
+    "heldout_private_train_rows": 16,
+    "heldout_lm_loss_before": 1.49465,
+    "heldout_lm_loss_after": 1.441715,
+    "heldout_lm_improved": true,
+    "heldout_body_transition_loss_before": 8.067903,
+    "heldout_body_transition_loss_after": 8.060719,
+    "heldout_body_transition_improved": true,
+    "heldout_body_action_loss_before": 2.948527,
+    "heldout_body_action_loss_after": 2.968961,
+    "heldout_body_action_accuracy_before": 0.087858,
+    "heldout_body_action_accuracy_after": 0.080948,
+    "heldout_body_operand_loss_before": 3.036583,
+    "heldout_body_operand_loss_after": 3.036793,
+    "heldout_body_operand_accuracy_before": 0.047384,
+    "heldout_body_operand_accuracy_after": 0.054294,
+    "heldout_body_state_event_loss_before": 2.315528,
+    "heldout_body_state_event_loss_after": 2.295373,
+    "heldout_body_state_event_accuracy_before": 0.047384,
+    "heldout_body_state_event_accuracy_after": 0.055281,
+    "heldout_action_compatible_loss_before": 2.023355,
+    "heldout_action_compatible_loss_after": 2.026658,
+    "heldout_action_compatible_mass_before": 0.145821,
+    "heldout_action_compatible_mass_after": 0.145479,
+    "heldout_operand_compatible_loss_before": 2.194007,
+    "heldout_operand_compatible_loss_after": 2.203506,
+    "heldout_operand_compatible_mass_before": 0.123916,
+    "heldout_operand_compatible_mass_after": 0.123011,
+    "failed_gates": [
+      "parameter_tensor_update_recorded",
+      "parameter_element_update_meaningful",
+      "body_action_loss_improved_when_enabled",
+      "body_operand_loss_improved_when_enabled",
+      "body_state_event_action_consistency_improved_when_enabled",
+      "body_state_event_operand_consistency_improved_when_enabled"
+    ]
+  },
+  "finding": "The opt-in consistency objective is implemented and measurable, but this bounded private canary rejects it. It preserves the same LM and event-head improvements seen before, while action and operand exact-role metrics still regress and compatible event-role mass also worsens. This should not become a default profile setting.",
+  "no_cheat_evidence": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit_count": 0,
+    "uses_eval_tests_or_solutions_for_generation": false,
+    "uses_public_data": false,
+    "candidate_generation_credit": 0
+  },
+  "no_claim_boundary": "This report does not claim behavior improvement, promotion readiness, public transfer, or learned-generation capability progress. It records another useful negative result: simple soft compatibility coupling is not enough.",
+  "next_required_work": [
+    "Move beyond parallel auxiliary heads plus soft compatibility loss.",
+    "Build a genuinely coupled state/action/operand architecture or localized semantic-IR body constructor that conditions token generation on a shared executable state representation.",
+    "Only run DPO/GRPO/MTP/diffusion after non-fallback learned candidates show behavior-positive private replay evidence."
+  ]
+}

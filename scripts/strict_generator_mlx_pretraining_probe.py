@@ -172,6 +172,22 @@ OPERAND_STATE_EVENT_ROLE_BY_OPERAND_ROLE: dict[str, str] = {
     "eos": "return_finalizer",
 }
 
+BODY_STATE_EVENT_ACTION_COMPATIBILITY_MASK: tuple[tuple[float, ...], ...] = tuple(
+    tuple(
+        1.0 if ACTION_STATE_EVENT_ROLE_BY_ACTION_ROLE.get(action_role) == event_role else 0.0
+        for action_role in BODY_ACTION_ROLES
+    )
+    for event_role in BODY_STATE_EVENT_ROLES
+)
+
+BODY_STATE_EVENT_OPERAND_COMPATIBILITY_MASK: tuple[tuple[float, ...], ...] = tuple(
+    tuple(
+        1.0 if OPERAND_STATE_EVENT_ROLE_BY_OPERAND_ROLE.get(operand_role) == event_role else 0.0
+        for operand_role in BODY_OPERAND_ROLES
+    )
+    for event_role in BODY_STATE_EVENT_ROLES
+)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -1471,6 +1487,65 @@ def body_state_event_loss_mlx(
     return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
 
 
+def body_state_event_consistency_loss_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    event_targets: Any,
+    event_weights: Any,
+    action_consistency_weight: float,
+    operand_consistency_weight: float,
+    mx: Any,
+) -> Any:
+    """Softly couple action/operand heads to the state-event target.
+
+    For an event such as ``state_update`` or ``return_finalizer``, this loss
+    rewards probability mass on action/operand roles compatible with that event
+    instead of forcing a single exact role. It is a private target-side
+    auxiliary objective only; it emits no candidates and cannot count as
+    learned-generation evidence by itself.
+    """
+
+    if not hasattr(model, "body_action_logits") or not hasattr(model, "body_operand_logits"):
+        return mx.array(0.0, dtype=mx.float32)
+    action_weight = max(0.0, float(action_consistency_weight or 0.0))
+    operand_weight = max(0.0, float(operand_consistency_weight or 0.0))
+    if action_weight <= 0.0 and operand_weight <= 0.0:
+        return mx.array(0.0, dtype=mx.float32)
+    tgt_in = tgt[:, :-1]
+    tgt_out = tgt[:, 1:]
+    targets = event_targets[:, 1:]
+    base_valid = (tgt_out != pad_id).astype(mx.float32) * event_weights[:, 1:]
+    eps = mx.array(1e-9, dtype=mx.float32)
+    total = mx.array(0.0, dtype=mx.float32)
+    if action_weight > 0.0:
+        action_masks = mx.array(BODY_STATE_EVENT_ACTION_COMPATIBILITY_MASK, dtype=mx.float32)
+        action_compat = mx.take(action_masks, targets, axis=0)
+        action_valid = base_valid * (mx.sum(action_compat, axis=-1) > 0.0).astype(mx.float32)
+        action_probs = mx.softmax(model.body_action_logits(src, tgt_in), axis=-1)
+        action_mass = mx.sum(action_probs * action_compat, axis=-1)
+        action_losses = -mx.log(mx.maximum(action_mass, eps))
+        total = total + (
+            action_weight
+            * mx.sum(action_losses * action_valid)
+            / mx.maximum(mx.sum(action_valid), mx.array(1.0, dtype=mx.float32))
+        )
+    if operand_weight > 0.0:
+        operand_masks = mx.array(BODY_STATE_EVENT_OPERAND_COMPATIBILITY_MASK, dtype=mx.float32)
+        operand_compat = mx.take(operand_masks, targets, axis=0)
+        operand_valid = base_valid * (mx.sum(operand_compat, axis=-1) > 0.0).astype(mx.float32)
+        operand_probs = mx.softmax(model.body_operand_logits(src, tgt_in), axis=-1)
+        operand_mass = mx.sum(operand_probs * operand_compat, axis=-1)
+        operand_losses = -mx.log(mx.maximum(operand_mass, eps))
+        total = total + (
+            operand_weight
+            * mx.sum(operand_losses * operand_valid)
+            / mx.maximum(mx.sum(operand_valid), mx.array(1.0, dtype=mx.float32))
+        )
+    return total
+
+
 def body_transition_aux_weighted_loss_fn_mlx(
     model: Any,
     src: Any,
@@ -1582,6 +1657,8 @@ def body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
     body_state_event_weight: float,
     mx: Any,
     nn: Any,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
 ) -> Any:
     loss = body_action_operand_transition_aux_weighted_loss_fn_mlx(
         model,
@@ -1605,6 +1682,18 @@ def body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
             float(body_state_event_weight)
             * body_state_event_loss_mlx(model, src, tgt, pad_id, event_targets, event_weights, mx, nn)
         )
+    if float(body_state_event_action_consistency_weight or 0.0) > 0.0 or float(body_state_event_operand_consistency_weight or 0.0) > 0.0:
+        loss = loss + body_state_event_consistency_loss_mlx(
+            model,
+            src,
+            tgt,
+            pad_id,
+            event_targets,
+            event_weights,
+            float(body_state_event_action_consistency_weight),
+            float(body_state_event_operand_consistency_weight),
+            mx,
+        )
     return loss
 
 
@@ -1625,6 +1714,8 @@ def semantic_body_transition_aux_weighted_loss_fn_mlx(
     mx: Any,
     nn: Any,
     slot_role_class_ids: list[Any] | None = None,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
 ) -> Any:
     loss = semantic_aux_weighted_loss_fn_mlx(
         model,
@@ -1806,6 +1897,18 @@ def semantic_body_action_operand_transition_event_aux_weighted_loss_fn_mlx(
             float(body_state_event_weight)
             * body_state_event_loss_mlx(model, src, tgt, pad_id, event_targets, event_weights, mx, nn)
         )
+    if float(body_state_event_action_consistency_weight or 0.0) > 0.0 or float(body_state_event_operand_consistency_weight or 0.0) > 0.0:
+        loss = loss + body_state_event_consistency_loss_mlx(
+            model,
+            src,
+            tgt,
+            pad_id,
+            event_targets,
+            event_weights,
+            float(body_state_event_action_consistency_weight),
+            float(body_state_event_operand_consistency_weight),
+            mx,
+        )
     return loss
 
 
@@ -1832,6 +1935,8 @@ def semantic_body_transition_aux_source_contrastive_weighted_loss_fn_mlx(
     mx: Any,
     nn: Any,
     slot_role_class_ids: list[Any] | None = None,
+    body_state_event_action_consistency_weight: float = 0.0,
+    body_state_event_operand_consistency_weight: float = 0.0,
 ) -> Any:
     loss = semantic_aux_source_contrastive_weighted_loss_fn_mlx(
         model,
@@ -2054,6 +2159,18 @@ def semantic_body_action_operand_transition_event_aux_source_contrastive_weighte
         loss = loss + (
             float(body_state_event_weight)
             * body_state_event_loss_mlx(model, src, tgt, pad_id, event_targets, event_weights, mx, nn)
+        )
+    if float(body_state_event_action_consistency_weight or 0.0) > 0.0 or float(body_state_event_operand_consistency_weight or 0.0) > 0.0:
+        loss = loss + body_state_event_consistency_loss_mlx(
+            model,
+            src,
+            tgt,
+            pad_id,
+            event_targets,
+            event_weights,
+            float(body_state_event_action_consistency_weight),
+            float(body_state_event_operand_consistency_weight),
+            mx,
         )
     return loss
 
@@ -4520,6 +4637,116 @@ def evaluate_body_state_event_mlx(
             "are derived from admitted private action/operand roles and describe traversal/call, state "
             "update, control, finalizer, value-expression, statement-boundary, or none. This head emits "
             "no candidates and grants no learned-generation promotion credit by itself."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def evaluate_body_state_event_consistency_mlx(
+    model: Any,
+    source_rows: list[list[int]],
+    target_rows: list[list[int]],
+    event_target_rows: list[list[int]],
+    event_weight_rows: list[list[float]],
+    *,
+    batch_size: int,
+    pad_id: int,
+    enabled: bool,
+    mx: Any,
+) -> dict[str, Any]:
+    if not enabled or not source_rows or not target_rows or not event_target_rows or not event_weight_rows:
+        return {
+            "enabled": bool(enabled),
+            "action_compatible_loss": None,
+            "operand_compatible_loss": None,
+            "action_compatible_mass": None,
+            "operand_compatible_mass": None,
+            "candidate_generation_credit": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+        }
+    if not hasattr(model, "body_action_logits") or not hasattr(model, "body_operand_logits"):
+        return {
+            "enabled": False,
+            "reason": "model_missing_action_or_operand_head",
+            "action_compatible_loss": None,
+            "operand_compatible_loss": None,
+            "action_compatible_mass": None,
+            "operand_compatible_mass": None,
+            "candidate_generation_credit": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+        }
+    action_masks = mx.array(BODY_STATE_EVENT_ACTION_COMPATIBILITY_MASK, dtype=mx.float32)
+    operand_masks = mx.array(BODY_STATE_EVENT_OPERAND_COMPATIBILITY_MASK, dtype=mx.float32)
+    eps = mx.array(1e-9, dtype=mx.float32)
+    totals = {
+        "action_loss": 0.0,
+        "action_mass": 0.0,
+        "action_count": 0.0,
+        "operand_loss": 0.0,
+        "operand_mass": 0.0,
+        "operand_count": 0.0,
+    }
+    model.eval()
+    for start in range(0, len(source_rows), batch_size):
+        src = mx.array(source_rows[start : start + batch_size], dtype=mx.int32)
+        tgt = mx.array(target_rows[start : start + batch_size], dtype=mx.int32)
+        targets = mx.array(event_target_rows[start : start + batch_size], dtype=mx.int32)
+        weights = mx.array(event_weight_rows[start : start + batch_size], dtype=mx.float32)
+        tgt_in = tgt[:, :-1]
+        target_out = targets[:, 1:]
+        base_valid = (tgt[:, 1:] != pad_id).astype(mx.float32) * weights[:, 1:]
+
+        action_compat = mx.take(action_masks, target_out, axis=0)
+        action_valid = base_valid * (mx.sum(action_compat, axis=-1) > 0.0).astype(mx.float32)
+        action_probs = mx.softmax(model.body_action_logits(src, tgt_in), axis=-1)
+        action_mass = mx.sum(action_probs * action_compat, axis=-1)
+        action_losses = -mx.log(mx.maximum(action_mass, eps))
+        action_loss_sum = mx.sum(action_losses * action_valid)
+        action_mass_sum = mx.sum(action_mass * action_valid)
+        action_count = mx.sum(action_valid)
+
+        operand_compat = mx.take(operand_masks, target_out, axis=0)
+        operand_valid = base_valid * (mx.sum(operand_compat, axis=-1) > 0.0).astype(mx.float32)
+        operand_probs = mx.softmax(model.body_operand_logits(src, tgt_in), axis=-1)
+        operand_mass = mx.sum(operand_probs * operand_compat, axis=-1)
+        operand_losses = -mx.log(mx.maximum(operand_mass, eps))
+        operand_loss_sum = mx.sum(operand_losses * operand_valid)
+        operand_mass_sum = mx.sum(operand_mass * operand_valid)
+        operand_count = mx.sum(operand_valid)
+        mx.eval(
+            action_loss_sum,
+            action_mass_sum,
+            action_count,
+            operand_loss_sum,
+            operand_mass_sum,
+            operand_count,
+        )
+        totals["action_loss"] += float(action_loss_sum.item())
+        totals["action_mass"] += float(action_mass_sum.item())
+        totals["action_count"] += float(action_count.item())
+        totals["operand_loss"] += float(operand_loss_sum.item())
+        totals["operand_mass"] += float(operand_mass_sum.item())
+        totals["operand_count"] += float(operand_count.item())
+    model.train()
+    action_count = max(0.0, totals["action_count"])
+    operand_count = max(0.0, totals["operand_count"])
+    return {
+        "enabled": True,
+        "policy": "private_body_state_event_action_operand_consistency_eval_v1",
+        "action_compatible_loss": round(totals["action_loss"] / action_count, 6) if action_count > 0.0 else None,
+        "operand_compatible_loss": round(totals["operand_loss"] / operand_count, 6) if operand_count > 0.0 else None,
+        "action_compatible_mass": round(totals["action_mass"] / action_count, 6) if action_count > 0.0 else None,
+        "operand_compatible_mass": round(totals["operand_mass"] / operand_count, 6) if operand_count > 0.0 else None,
+        "action_active_position_count": int(round(action_count)),
+        "operand_active_position_count": int(round(operand_count)),
+        "score_semantics": (
+            "Heldout compatibility mass for action/operand heads under the private state-event target. "
+            "It rewards probability mass on event-compatible roles, not exact bodies, and emits no "
+            "candidate by itself."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,

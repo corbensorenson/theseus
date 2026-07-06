@@ -220,6 +220,17 @@ event signal part of a coupled action/operand/state architecture or localized
 semantic-IR body constructor that emits verifier-positive update/finalizer/
 return bodies, with DPO/GRPO/MTP/diffusion still queued behind nonzero
 behavior-quality evidence.
+The follow-up soft compatibility test in
+`reports/strict_generator_state_event_consistency_smoke_summary_20260706.json`
+confirms that this is not just a weighting problem. Opt-in action/operand
+compatibility losses against the private state-event target are implemented,
+recorded, and rejected: LM and event-head metrics improve, but action/operand
+losses regress and compatible-role mass worsens. The route is not a default
+profile setting and carries `candidate_generation_credit=0`. The next C1/Phase
+10 implementation target is therefore a shared executable state/action/operand
+body constructor or localized semantic-IR constructor, not another auxiliary
+loss, direct state-event bias, or DPO/GRPO/MTP/diffusion run ahead of
+behavior-positive learned candidates.
 
 ## 2026-07-06 Claude Review Reconciliation
 

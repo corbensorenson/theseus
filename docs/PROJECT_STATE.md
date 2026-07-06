@@ -213,6 +213,18 @@ supervision but harmful as a direct token-probability bias at this scale. The
 next valid implementation target is coupled action/operand/state architecture
 or localized semantic-IR body construction, not another event-weighting
 variant or a direct-bias retry.
+`reports/strict_generator_state_event_consistency_smoke_summary_20260706.json`
+then tests the obvious follow-up: softly coupling body-action and body-operand
+heads to private state-machine event targets by rewarding event-compatible role
+mass. That objective is now implemented and measurable, but the bounded canary
+is `RED`. Heldout LM and event metrics keep improving, while exact
+body-action/body-operand metrics regress and compatible-role mass worsens
+(`action 0.145821 -> 0.145479`, `operand 0.123916 -> 0.123011`). The detailed
+adaptation report and checkpoint were removed after the compact negative
+summary was written, and the route remains opt-in only. This rules out simple
+soft compatibility coupling as another near-term lever; the wall is now a
+shared executable state/action/operand body constructor or localized
+semantic-IR constructor that changes private verifier behavior.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

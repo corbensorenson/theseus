@@ -61,6 +61,7 @@ from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     body_action_transition_aux_weighted_loss_fn_mlx,
     body_operand_target_rows,
     body_state_event_target_rows,
+    evaluate_body_state_event_consistency_mlx,
     evaluate_body_state_event_mlx,
     semantic_body_action_operand_transition_event_aux_source_contrastive_weighted_loss_fn_mlx,
     semantic_body_action_operand_transition_event_aux_weighted_loss_fn_mlx,
@@ -1103,6 +1104,24 @@ def main() -> int:
     parser.add_argument("--body-state-event-target-event-weight", type=float, default=1.0)
     parser.add_argument("--body-state-event-target-none-weight", type=float, default=0.20)
     parser.add_argument(
+        "--body-state-event-action-consistency-weight",
+        type=float,
+        default=0.0,
+        help=(
+            "Softly require the body-action head to place probability mass on roles compatible with "
+            "the private state-event target. This is train-time auxiliary pressure only."
+        ),
+    )
+    parser.add_argument(
+        "--body-state-event-operand-consistency-weight",
+        type=float,
+        default=0.0,
+        help=(
+            "Softly require the body-operand head to place probability mass on roles compatible with "
+            "the private state-event target. This is train-time auxiliary pressure only."
+        ),
+    )
+    parser.add_argument(
         "--semantic-slot-prefix-roles",
         default="",
         help=(
@@ -1338,6 +1357,22 @@ def main() -> int:
                 else 0.20
             ),
         ),
+        body_state_event_action_consistency_weight=max(
+            0.0,
+            float(
+                args.body_state_event_action_consistency_weight
+                if args.body_state_event_action_consistency_weight is not None
+                else 0.0
+            ),
+        ),
+        body_state_event_operand_consistency_weight=max(
+            0.0,
+            float(
+                args.body_state_event_operand_consistency_weight
+                if args.body_state_event_operand_consistency_weight is not None
+                else 0.0
+            ),
+        ),
         semantic_slot_prefix_roles=str(args.semantic_slot_prefix_roles or ""),
         loop_expression_synthesis_loss_boost=max(
             0.0,
@@ -1478,6 +1513,8 @@ def run_adaptation(
     body_state_event_loss_weight: float,
     body_state_event_target_event_weight: float,
     body_state_event_target_none_weight: float,
+    body_state_event_action_consistency_weight: float,
+    body_state_event_operand_consistency_weight: float,
     semantic_slot_prefix_roles: str,
     loop_expression_synthesis_loss_boost: float,
     loop_expression_synthesis_roles: str,
@@ -1614,6 +1651,8 @@ def run_adaptation(
                     "body_state_event_loss_weight": float(body_state_event_loss_weight or 0.0),
                     "body_state_event_target_event_weight": float(body_state_event_target_event_weight or 0.0),
                     "body_state_event_target_none_weight": float(body_state_event_target_none_weight or 0.0),
+                    "body_state_event_action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
+                    "body_state_event_operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
                     "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
                     "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
                     "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -2264,7 +2303,11 @@ def run_adaptation(
         and int(body_operand_eval_summary.get("active_positions") or 0) > 0
     )
     body_state_event_requested = (
-        float(body_state_event_loss_weight or 0.0) > 0.0
+        (
+            float(body_state_event_loss_weight or 0.0) > 0.0
+            or float(body_state_event_action_consistency_weight or 0.0) > 0.0
+            or float(body_state_event_operand_consistency_weight or 0.0) > 0.0
+        )
         and hasattr(model, "body_state_event_logits")
     )
     body_state_event_enabled = (
@@ -2351,6 +2394,21 @@ def run_adaptation(
         enabled=body_state_event_enabled,
         mx=mx,
         nn=nn,
+    )
+    body_state_event_consistency_before = evaluate_body_state_event_consistency_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        eval_body_state_event_targets,
+        eval_body_state_event_weights,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=body_state_event_enabled
+        and (
+            float(body_state_event_action_consistency_weight or 0.0) > 0.0
+            or float(body_state_event_operand_consistency_weight or 0.0) > 0.0
+        ),
+        mx=mx,
     )
     source_contrastive_active = float(source_contrastive_loss_weight or 0.0) > 0.0
     source_contrastive_span_mode = "prefix"
@@ -2822,6 +2880,8 @@ def run_adaptation(
                     mx,
                     nn,
                     semantic_slot_class_id_arrays,
+                    float(body_state_event_action_consistency_weight),
+                    float(body_state_event_operand_consistency_weight),
                 )
             elif (
                 source_contrastive_active
@@ -3076,6 +3136,8 @@ def run_adaptation(
                     mx,
                     nn,
                     semantic_slot_class_id_arrays,
+                    float(body_state_event_action_consistency_weight),
+                    float(body_state_event_operand_consistency_weight),
                 )
             elif (
                 semantic_slot_enabled
@@ -3246,6 +3308,8 @@ def run_adaptation(
                     float(body_state_event_loss_weight),
                     mx,
                     nn,
+                    float(body_state_event_action_consistency_weight),
+                    float(body_state_event_operand_consistency_weight),
                 )
             elif body_operand_enabled and body_action_enabled and loss_and_grad_body_action_operand_transition is not None:
                 loss, grads = loss_and_grad_body_action_operand_transition(
@@ -3383,6 +3447,21 @@ def run_adaptation(
         mx=mx,
         nn=nn,
     )
+    body_state_event_consistency_after = evaluate_body_state_event_consistency_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        eval_body_state_event_targets,
+        eval_body_state_event_weights,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=body_state_event_enabled
+        and (
+            float(body_state_event_action_consistency_weight or 0.0) > 0.0
+            or float(body_state_event_operand_consistency_weight or 0.0) > 0.0
+        ),
+        mx=mx,
+    )
     source_contrast_after = evaluate_source_contrast_mlx(
         model,
         eval_source_rows,
@@ -3486,6 +3565,8 @@ def run_adaptation(
                 "enabled": bool(body_state_event_enabled),
                 "requested": bool(body_state_event_requested),
                 "weight": float(body_state_event_loss_weight or 0.0),
+                "action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
+                "operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
                 "target_mode": target_mode,
                 "train_targets": train_body_state_event_summary,
                 "eval_targets": eval_body_state_event_summary,
@@ -3578,6 +3659,8 @@ def run_adaptation(
             "body_state_event_loss_weight": float(body_state_event_loss_weight or 0.0),
             "body_state_event_target_event_weight": float(body_state_event_target_event_weight or 0.0),
             "body_state_event_target_none_weight": float(body_state_event_target_none_weight or 0.0),
+            "body_state_event_action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
+            "body_state_event_operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
             "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
             "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
             "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -3863,6 +3946,8 @@ def run_adaptation(
             "requested": body_state_event_requested,
             "policy": "private_prefix_conditioned_body_state_event_auxiliary_v1" if body_state_event_enabled else "not_enabled",
             "weight": float(body_state_event_loss_weight or 0.0),
+            "action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
+            "operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
             "target_mode": target_mode,
             "train_targets": train_body_state_event_summary,
             "eval_targets": eval_body_state_event_summary,
@@ -3876,6 +3961,22 @@ def run_adaptation(
                 and body_state_event_before.get("loss") is not None
                 and body_state_event_after.get("loss") is not None
                 and float(body_state_event_after["loss"]) < float(body_state_event_before["loss"])
+            ),
+            "heldout_consistency_before": body_state_event_consistency_before,
+            "heldout_consistency_after": body_state_event_consistency_after,
+            "heldout_action_compatible_loss_improved": (
+                body_state_event_enabled
+                and body_state_event_consistency_before.get("action_compatible_loss") is not None
+                and body_state_event_consistency_after.get("action_compatible_loss") is not None
+                and float(body_state_event_consistency_after["action_compatible_loss"])
+                < float(body_state_event_consistency_before["action_compatible_loss"])
+            ),
+            "heldout_operand_compatible_loss_improved": (
+                body_state_event_enabled
+                and body_state_event_consistency_before.get("operand_compatible_loss") is not None
+                and body_state_event_consistency_after.get("operand_compatible_loss") is not None
+                and float(body_state_event_consistency_after["operand_compatible_loss"])
+                < float(body_state_event_consistency_before["operand_compatible_loss"])
             ),
             "uses_eval_tests_or_solutions": False,
             "uses_public_data": False,
@@ -4554,6 +4655,26 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             (
                 not bool(dict_or_empty(payload.get("body_state_event_auxiliary")).get("enabled"))
                 or bool(dict_or_empty(payload.get("body_state_event_auxiliary")).get("heldout_event_improved"))
+            ),
+            "soft",
+            dict_or_empty(payload.get("body_state_event_auxiliary")),
+        ),
+        gate(
+            "body_state_event_action_consistency_improved_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("body_state_event_auxiliary")).get("enabled"))
+                or float(dict_or_empty(payload.get("body_state_event_auxiliary")).get("action_consistency_weight") or 0.0) <= 0.0
+                or bool(dict_or_empty(payload.get("body_state_event_auxiliary")).get("heldout_action_compatible_loss_improved"))
+            ),
+            "soft",
+            dict_or_empty(payload.get("body_state_event_auxiliary")),
+        ),
+        gate(
+            "body_state_event_operand_consistency_improved_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("body_state_event_auxiliary")).get("enabled"))
+                or float(dict_or_empty(payload.get("body_state_event_auxiliary")).get("operand_consistency_weight") or 0.0) <= 0.0
+                or bool(dict_or_empty(payload.get("body_state_event_auxiliary")).get("heldout_operand_compatible_loss_improved"))
             ),
             "soft",
             dict_or_empty(payload.get("body_state_event_auxiliary")),
