@@ -38,6 +38,7 @@ from neural_seed_code_proposer_comparator import (  # noqa: E402
     stable_hash,
 )
 from neural_seed_token_decoder_support import PLAN_BODY_START_TOKEN, encode_target_rows, semantic_plan_from_body, target_tokens  # noqa: E402
+from candidate_integrity import recompute_candidate_integrity  # noqa: E402
 from strict_generator_mlx_decode_eval import (  # noqa: E402
     checkpoint_source_text_style,
     load_mlx_checkpoint,
@@ -2524,6 +2525,12 @@ def select_negative_replay_examples(
     stage_counts: dict[str, int] = {}
     residual_counts: dict[str, int] = {}
     action_trace_mismatch_counts: dict[str, int] = {}
+    integrity_mismatch_counts: dict[str, int] = {}
+    integrity_label_counts: dict[str, int] = {}
+    integrity_family_counts: dict[str, int] = {}
+    raw_code_negative_body_rows = 0
+    integrity_unverified_rows = 0
+    integrity_verified_rows = 0
     reward_sum = 0.0
     candidate_rows_read = 0
     private_train_only = True
@@ -2567,13 +2574,34 @@ def select_negative_replay_examples(
         if source_row is None:
             increment(skipped, "missing_private_source_row")
             continue
+        candidate_code = str(candidate.get("code") or "")
+        integrity_audit = recompute_candidate_integrity(candidate)
+        integrity_family = str(integrity_audit.get("recomputed_candidate_family") or "unknown")
+        integrity_family_counts[integrity_family] = integrity_family_counts.get(integrity_family, 0) + 1
+        if bool(integrity_audit.get("integrity_verified")):
+            integrity_verified_rows += 1
+        else:
+            integrity_unverified_rows += 1
+        integrity_labels = integrity_negative_replay_labels(integrity_audit)
+        for mismatch in list(integrity_audit.get("integrity_mismatches") or []):
+            mismatch_key = str(mismatch)
+            integrity_mismatch_counts[mismatch_key] = integrity_mismatch_counts.get(mismatch_key, 0) + 1
+        for integrity_label in integrity_labels:
+            integrity_label_counts[integrity_label] = integrity_label_counts.get(integrity_label, 0) + 1
+
         body = candidate_body_from_code(
-            str(candidate.get("code") or ""),
+            candidate_code,
             str(candidate.get("entry_point") or source_row.get("entry_point") or "solve"),
         )
         if not body.strip():
-            increment(skipped, "missing_candidate_body")
-            continue
+            if not integrity_labels:
+                increment(skipped, "missing_candidate_body")
+                continue
+            body = candidate_code.strip()
+            if not body:
+                increment(skipped, "missing_candidate_code")
+                continue
+            raw_code_negative_body_rows += 1
         source_text = strict_generator_decode_source_text(
             source_row,
             source_fields,
@@ -2593,6 +2621,7 @@ def select_negative_replay_examples(
         residual_counts[residual_class] = residual_counts.get(residual_class, 0) + 1
         action_trace = dict_or_empty(candidate.get("body_action_trace"))
         action_trace_mismatches = [str(item) for item in list(action_trace.get("mismatch_labels") or [])]
+        replay_mismatch_labels = list(dict.fromkeys(action_trace_mismatches + integrity_labels))
         for mismatch in action_trace_mismatches:
             action_trace_mismatch_counts[mismatch] = action_trace_mismatch_counts.get(mismatch, 0) + 1
         reward_sum += float(label.get("verification_reward") or 0.0)
@@ -2607,9 +2636,19 @@ def select_negative_replay_examples(
                 "verification_stage": stage,
                 "verification_reward": float(label.get("verification_reward") or 0.0),
                 "residual_class": residual_class,
-                "body_action_trace_mismatch_labels": action_trace_mismatches,
+                "body_action_trace_mismatch_labels": replay_mismatch_labels,
                 "body_action_trace_policy": str(action_trace.get("policy") or ""),
-                "policy": "private_train_replay_failed_candidate_negative_unlikelihood_row_v1",
+                "candidate_integrity": {
+                    "policy": str(integrity_audit.get("policy") or ""),
+                    "recomputed_candidate_family": integrity_family,
+                    "integrity_verified": bool(integrity_audit.get("integrity_verified")),
+                    "pure_learned_generation": bool(integrity_audit.get("pure_learned_generation")),
+                    "integrity_mismatches": [str(item) for item in list(integrity_audit.get("integrity_mismatches") or [])],
+                    "code_shape": dict_or_empty(integrity_audit.get("code_shape")),
+                    "replay_labels": integrity_labels,
+                    "candidate_generation_credit": 0,
+                },
+                "policy": "private_train_replay_failed_candidate_integrity_negative_unlikelihood_row_v2",
             }
         )
         if len(examples) >= max_rows:
@@ -2618,7 +2657,7 @@ def select_negative_replay_examples(
     return {
         "enabled": True,
         "active": bool(examples),
-        "policy": "private_train_replay_failed_candidate_negative_unlikelihood_v1",
+        "policy": "private_train_replay_failed_candidate_integrity_negative_unlikelihood_v2",
         "candidate_path": rel(candidate_path),
         "report": report_summary,
         "candidate_rows_read": candidate_rows_read,
@@ -2629,6 +2668,13 @@ def select_negative_replay_examples(
         "verification_stage_counts": dict(sorted(stage_counts.items())),
         "residual_class_counts": dict(sorted(residual_counts.items())),
         "body_action_trace_mismatch_counts": dict(sorted(action_trace_mismatch_counts.items())),
+        "candidate_integrity_family_counts": dict(sorted(integrity_family_counts.items())),
+        "candidate_integrity_mismatch_counts": dict(sorted(integrity_mismatch_counts.items())),
+        "candidate_integrity_replay_label_counts": dict(sorted(integrity_label_counts.items())),
+        "candidate_integrity_verified_rows": integrity_verified_rows,
+        "candidate_integrity_unverified_rows": integrity_unverified_rows,
+        "raw_code_negative_body_rows": raw_code_negative_body_rows,
+        "uses_independent_candidate_integrity_audit": True,
         "mean_verification_reward": round(reward_sum / max(1, len(examples)), 6),
         "private_train_replay_only": private_train_only,
         "all_selected_examples_failed_intended_behavior": all_failed and bool(examples),
@@ -2643,10 +2689,32 @@ def select_negative_replay_examples(
         "score_semantics": (
             "Negative replay consumes only failed private-train replay candidates with attached private "
             "verifier labels. Source text is rebuilt from the original private prompt/signature row; "
-            "candidate code supplies only the body to be downweighted. This is private training pressure, "
-            "not heldout evidence, not public calibration, and not a learned-generation promotion claim."
+            "candidate code supplies only the body to be downweighted. Candidate integrity is recomputed "
+            "independently so syntax/no-function/full-body mismatches become private replay labels instead "
+            "of candidate credit. This is private training pressure, not heldout evidence, not public "
+            "calibration, and not a learned-generation promotion claim."
         ),
     }
+
+
+def integrity_negative_replay_labels(integrity_audit: dict[str, Any]) -> list[str]:
+    labels: list[str] = []
+    shape = dict_or_empty(integrity_audit.get("code_shape"))
+    for mismatch in list(integrity_audit.get("integrity_mismatches") or []):
+        clean = str(mismatch or "").strip()
+        if clean:
+            labels.append(f"candidate_integrity_{clean}")
+    if not bool(shape.get("syntax_valid")):
+        labels.append("candidate_integrity_syntax_invalid")
+    if not bool(shape.get("has_function")):
+        labels.append("candidate_integrity_no_function_def")
+    if bool(shape.get("inert_stub_like")):
+        labels.append("candidate_integrity_inert_stub_like")
+    if bool(shape.get("unconditional_trivial_return")):
+        labels.append("candidate_integrity_trivial_return")
+    if not bool(integrity_audit.get("integrity_verified")):
+        labels.append("candidate_integrity_not_verified")
+    return list(dict.fromkeys(labels))
 
 
 def replay_private_row_index(private_rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -3169,6 +3237,10 @@ def action_trace_positive_replay_tokens(labels: list[str]) -> set[str]:
         tokens.update({"NAME:if", "NAME:else", "OP:==", "OP:!=", "OP:+=", "OP:+", "OP:-", "NAME:append", "NAME:max", "NAME:min"})
     if "shallow_identity_accumulation" in label_set:
         tokens.update({"NAME:if", "NAME:else", "OP:==", "OP:!=", "OP:+", "OP:-", "OP:+=", "NAME:max", "NAME:min", "NAME:gcd", "NAME:range", "NAME:len"})
+    if "candidate_integrity_syntax_invalid" in label_set or "candidate_integrity_no_function_def" in label_set:
+        tokens.update({"NAME:return", "NEWLINE:", "DEDENT:", "OP:)", "OP:]", "OP:}"})
+    if "candidate_integrity_inert_stub_like" in label_set or "candidate_integrity_trivial_return" in label_set:
+        tokens.update({"NAME:if", "NAME:for", "NAME:return", "NAME:len", "NAME:range", "NAME:max", "NAME:min", "NAME:sum", "OP:+", "OP:-", "OP:*", "OP:/"})
     return tokens
 
 
@@ -3189,6 +3261,12 @@ def action_trace_negative_replay_tokens(labels: list[str]) -> set[str]:
         tokens.update({"NAME:append", "OP:.", "NAME:return"})
     if "loop_without_decision_or_state_update" in label_set:
         tokens.update({"NAME:return"})
+    if "candidate_integrity_syntax_invalid" in label_set:
+        tokens.update({"OP:{", "OP:}", "OP:.", "NAME:else", "NAME:elif"})
+    if "candidate_integrity_no_function_def" in label_set:
+        tokens.update({"NAME:def", "OP::"})
+    if "candidate_integrity_inert_stub_like" in label_set or "candidate_integrity_trivial_return" in label_set:
+        tokens.update({"NAME:None", "NUMBER:0", "NUMBER:1", "NAME:return"})
     return tokens
 
 

@@ -354,6 +354,19 @@ remain honestly bounded.
   The next patch is learned semantic update choice and nontrivial local-return
   synthesis, not another selector, fanout-width, or generic semantic-weighting
   pass.
+- Phase 10 negative replay now consumes independent candidate-integrity
+  failures as private repair pressure. The patch extends the existing
+  strict-generator MLX adaptation path rather than adding a new lane:
+  `reports/strict_generator_mlx_private_adaptation_source_condition_operation_integrity_negative_replay_smoke_v1.json`
+  is `GREEN` with `16` failed private-train replay rows, `4` recomputed
+  no-function/syntax-invalid integrity-negative rows, `12` integrity-verified
+  failed rows, `0` public training rows, `0` external inference, and `0`
+  candidate-generation credit. The paired broad-private heldout smoke
+  `reports/strict_generator_mlx_decode_eval_source_condition_operation_integrity_negative_replay_broad4_v1.json`
+  remains `YELLOW`: `6/7` integrity-verified transformer/hybrid candidates,
+  one no-function/syntax mismatch, nontrivial-return rate `0.857143`, and
+  behavior `0/4`. That keeps the honest wall semantic candidate quality, while
+  making malformed full-body outputs first-class private negative evidence.
 - Phase 12 is wired: `reports/public_calibration_proposal_gate.json` is a
   VIEA-gated public-calibration proposal receipt. It requires candidate
   integrity, training-data firewall, alignment preflight, and exact public

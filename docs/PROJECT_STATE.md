@@ -196,6 +196,23 @@ nontrivial-return rate remains `0.0`, and the new residual labels are
 `loop_without_decision_or_state_update` and `missing_semantic_update_value`.
 The next Phase 10 target is therefore learned semantic update choice and
 nontrivial local-return synthesis, not more generic semantic weighting.
+The next private replay patch now wires independent candidate-integrity
+failures into that same training path instead of creating a side lane:
+`scripts/strict_generator_mlx_private_adaptation.py` recomputes candidate
+integrity for failed private-train replay candidates and turns syntax,
+no-function, inert, and full-body mismatch findings into private negative
+replay labels. The bounded smoke
+`reports/strict_generator_mlx_private_adaptation_source_condition_operation_integrity_negative_replay_smoke_v1.json`
+is `GREEN`: it selects `16` failed private-train replay rows, records `4`
+no-function/syntax-invalid integrity-negative rows, keeps `0` public training
+rows, `0` external inference, and `0` candidate-generation credit, and runs
+pairwise replay with integrity-aware token weighting. The follow-up
+`reports/strict_generator_mlx_decode_eval_source_condition_operation_integrity_negative_replay_broad4_v1.json`
+is still `YELLOW`: `7` generated transformer/hybrid rows, `6/7`
+integrity-verified, `1` no-function/syntax mismatch, nontrivial-return rate
+`0.857143`, and broad-private behavior `0/4`. This is useful Phase 10
+training-path coverage and negative-evidence plumbing, not a capability win or
+promotion claim.
 `reports/semantic_ir_obligation_gate.json` now contributes
 `semantic_ir_obligation_spine_v1`. It binds candidate-integrity,
 private-verifier, and direct-generator obligations to the materialized semantic
