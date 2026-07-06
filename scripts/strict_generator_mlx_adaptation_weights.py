@@ -389,6 +389,12 @@ def apply_source_condition_internalization_weights(
 
 def source_condition_operation_weight_token_texts(operation_tags: set[str]) -> set[str]:
     tokens: set[str] = set()
+    if "op_gcd_reduce" in operation_tags:
+        tokens.update({"NAME:gcd", "NAME:math", "NAME:abs", "OP:.", "OP:(", "OP:)"})
+    if "op_abs_positive_filter" in operation_tags:
+        tokens.update({"NAME:abs", "OP:>", "OP:<", "OP:>=", "OP:<=", "NUMBER:0"})
+    if "op_windowed_delta" in operation_tags:
+        tokens.update({"NAME:abs", "NAME:min", "NAME:max", "NAME:range", "NAME:len", "OP:-", "OP:+", "OP:<", "OP:>"})
     if "op_clip_to_range" in operation_tags:
         tokens.update({"NAME:min", "NAME:max", "OP:<", "OP:>", "OP:<=", "OP:>="})
     if "op_round_values" in operation_tags:

@@ -1810,19 +1810,22 @@ Evidence:
   operation-token internalization. `scripts/strict_generator_mlx_adaptation_weights.py`
   boosts only admitted private target tokens that satisfy prompt-visible
   operation tags, such as `min`, `max`, `round`, `sum`, `abs`, or arithmetic
-  operators, and still grants `0` candidate-generation credit. The private
+  operators, and still grants `0` candidate-generation credit. The v2 private
   MLX smoke
-  `reports/strict_generator_mlx_private_adaptation_source_condition_operation_internalization_smoke_v1.json`
-  matched `93` source-condition rows, found `49` adequate private target rows,
-  weighted `903` source-condition token positions including `45` operation-token
+  `reports/strict_generator_mlx_private_adaptation_source_condition_operation_internalization_smoke_v2.json`
+  now covers every prompt-visible operation tag the source tagger emits:
+  `op_abs_positive_filter`, `op_clip_to_range`, `op_gcd_reduce`,
+  `op_numeric_summary`, `op_round_values`, and `op_windowed_delta`. It matched
+  `93` source-condition rows, found `49` adequate private target rows, weighted
+  `974` source-condition token positions including `116` operation-token
   positions, improved heldout LM loss, and kept public training rows, external
   inference, and fallback/template/router/tool credit at `0`. The follow-up
   broad4 decode
-  `reports/strict_generator_mlx_decode_eval_source_condition_operation_internalization_broad4_v1.json`
+  `reports/strict_generator_mlx_decode_eval_source_condition_operation_internalization_broad4_v2.json`
   remains `YELLOW`: `7` generated candidates, `6` integrity-verified
   transformer/hybrid candidates, nontrivial-return rate `0.857143`, but
   behavior still `0/4` with `type_handling`, `wrong_answer`, and one
-  compile/parse residual. This is training-path wiring evidence, not a
+  compile/parse residual. This is training-path coverage evidence, not a
   promotion or capability claim.
 
 Non-claim: the new loop-plan exploration, adequacy checks, and body-action

@@ -2359,6 +2359,12 @@ def source_condition_operation_exploration_tokens(values: tuple[str, ...], *, op
     if not current_line_tail_needs_operand(list(values)):
         return []
     choices: list[str] = []
+    if "op_gcd_reduce" in operation_tags:
+        choices.extend(["NAME:gcd", "NAME:abs"])
+    if "op_abs_positive_filter" in operation_tags:
+        choices.append("NAME:abs")
+    if "op_windowed_delta" in operation_tags:
+        choices.extend(["NAME:abs", "NAME:min", "NAME:max"])
     if "op_clip_to_range" in operation_tags:
         choices.extend(["NAME:min", "NAME:max"])
     if "op_round_values" in operation_tags:
@@ -2404,7 +2410,23 @@ def source_condition_operation_evidence_for_body(body: str, expectation: dict[st
         hit_tags.append("op_round_values")
     if "op_numeric_summary" in operation_tags and ({"round", "abs", "min", "max", "sum", "gcd"} & basenames or arithmetic_count):
         hit_tags.append("op_numeric_summary")
-    recognized_tags = sorted(operation_tags & {"op_clip_to_range", "op_round_values", "op_numeric_summary"})
+    if "op_gcd_reduce" in operation_tags and "gcd" in basenames:
+        hit_tags.append("op_gcd_reduce")
+    if "op_abs_positive_filter" in operation_tags and ("abs" in basenames or comparison_count or branch_count):
+        hit_tags.append("op_abs_positive_filter")
+    if "op_windowed_delta" in operation_tags and (arithmetic_count or {"abs", "min", "max"} & basenames):
+        hit_tags.append("op_windowed_delta")
+    recognized_tags = sorted(
+        operation_tags
+        & {
+            "op_abs_positive_filter",
+            "op_clip_to_range",
+            "op_gcd_reduce",
+            "op_numeric_summary",
+            "op_round_values",
+            "op_windowed_delta",
+        }
+    )
     hit_tag_set = set(hit_tags)
     missing_tags = [tag for tag in recognized_tags if tag not in hit_tag_set]
     has_required_operation_evidence = bool(recognized_tags) and not missing_tags
