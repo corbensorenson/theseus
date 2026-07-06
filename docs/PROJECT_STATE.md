@@ -974,6 +974,13 @@ VIEA-normalized MoECOT route records across route decisions, specialist
 semantic nodes, authority receipts, VCM context transactions and adequacy,
 runtime adapters, resource budgets, costed routes, generation-mode boundaries,
 failure boundaries, artifacts, claims, evidence transitions, and residuals.
+Those route records now include Phase 16 verification-bandwidth and
+governance-tax accounting: `119` route verification obligations, `78`
+verifier-capacity units, `10` verification-capacity escalations, `223 ms`
+governed overhead, `27` review-load units, `10` caught route risks, and `22.3`
+overhead units per caught risk. The route resource/cost/residual records carry
+the decomposition contract, residual obligations, escalation thresholds,
+per-gate overhead, and no-cheat counters for each route.
 The report attaches a ready VIEA route-validator receipt, a ready VCM context
 governor receipt, and a ready candidate-integrity boundary; it records `0`
 public training rows, `0` runtime external inference calls, `0` fallback

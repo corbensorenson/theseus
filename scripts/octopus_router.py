@@ -776,6 +776,22 @@ def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]
             and not arm_map[name].get("registry_route", {}).get("routing_eligible")
         ]
         passed = not missing and high_risk_ok and not registry_blocked
+        verification_bandwidth = build_verification_bandwidth_record(
+            case=case,
+            selected_arms=decision["selected_arms"],
+            missing_expected=missing,
+            registry_blocked=registry_blocked,
+            risk_routing_passed=high_risk_ok,
+        )
+        governance_tax = build_governance_tax_record(
+            case=case,
+            selected_arms=decision["selected_arms"],
+            missing_expected=missing,
+            unnecessary_arms=unnecessary,
+            registry_blocked=registry_blocked,
+            passed=passed,
+            verification_bandwidth=verification_bandwidth,
+        )
         decisions.append(
             {
                 **case,
@@ -789,6 +805,8 @@ def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]
                 "registry_blocked_arms": registry_blocked,
                 "risk_routing_passed": high_risk_ok,
                 "registry_routing_passed": not registry_blocked,
+                "verification_bandwidth": verification_bandwidth,
+                "governance_tax": governance_tax,
                 "passed": passed,
             }
         )
@@ -813,10 +831,171 @@ def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]
             "registry_gate_passed": bool(registry_context.get("registry_gate_passed")),
             "stable_capability_field_gate_passed": bool(registry_context.get("stable_capability_field_gate_passed")),
             "external_inference_calls": 0,
+            "verification_bandwidth": summarize_verification_bandwidth(decisions),
+            "governance_tax": summarize_governance_tax(decisions),
         },
         "project_registry": registry_context,
         "dynamic_loading_metrics": dynamic.metrics(),
         "decisions": decisions,
+    }
+
+
+def build_verification_bandwidth_record(
+    *,
+    case: dict[str, Any],
+    selected_arms: list[str],
+    missing_expected: list[str],
+    registry_blocked: list[str],
+    risk_routing_passed: bool,
+) -> dict[str, Any]:
+    risk = str(case.get("risk") or "low")
+    pattern = str(case.get("pattern") or "sequential")
+    risk_units = {"low": 1, "medium": 2, "high": 4, "critical": 6}.get(risk, 2)
+    pattern_units = {"single_or_parallel": 1, "parallel": 2, "sequential": 3, "verification": 4, "reflex": 5}.get(pattern, 2)
+    expected = [str(item) for item in case.get("expected", [])]
+    selected = [str(item) for item in selected_arms]
+    verifier_arms = [
+        name
+        for name in selected
+        if name in {"safety_reflex_arm", "residual_governance_arm", "benchmark_ratchet_arm", "public_calibration_arm", "loop_closure_tool_arm"}
+    ]
+    obligation_count = len(expected) + risk_units + pattern_units + len(registry_blocked)
+    decomposition_contract = {
+        "task_contract": case.get("task_id"),
+        "risk_tier": risk,
+        "routing_pattern": pattern,
+        "expected_arm_count": len(expected),
+        "selected_arm_count": len(selected),
+        "verification_strategy": "risk_weighted_arm_receipts_plus_registry_vcm_candidate_integrity",
+    }
+    verifier_capacity_units = (2 * len(verifier_arms)) + (2 if risk_routing_passed else 0)
+    escalation_required = bool(verifier_capacity_units < min(obligation_count, 8) or registry_blocked or missing_expected)
+    residual_obligations = []
+    if missing_expected:
+        residual_obligations.append("missing_expected_arm_replay")
+    if registry_blocked:
+        residual_obligations.append("registry_route_repair")
+    if not risk_routing_passed:
+        residual_obligations.append("safety_reflex_escalation")
+    if verifier_capacity_units < min(obligation_count, 8):
+        residual_obligations.append("verifier_capacity_escalation")
+    return {
+        "policy": "project_theseus_route_verification_bandwidth_v1",
+        "route_id": case.get("task_id"),
+        "obligation_count": obligation_count,
+        "verifier_capacity_units": verifier_capacity_units,
+        "capacity_floor_units": min(obligation_count, 8),
+        "capacity_margin_units": verifier_capacity_units - min(obligation_count, 8),
+        "verification_arms": verifier_arms,
+        "decomposition_contract": decomposition_contract,
+        "residual_obligations": residual_obligations,
+        "escalation_thresholds": {
+            "capacity_margin_min": 0,
+            "missing_expected_arm_count_max": 0,
+            "registry_blocked_arm_count_max": 0,
+            "critical_requires_safety_reflex": True,
+        },
+        "escalation_required": escalation_required,
+        "adequacy_state": "verification_capacity_sufficient" if not escalation_required else "verification_capacity_residual",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "non_claims": [
+            "verification bandwidth is route accounting, not execution success",
+            "verification capacity is not learned-generation evidence",
+        ],
+    }
+
+
+def build_governance_tax_record(
+    *,
+    case: dict[str, Any],
+    selected_arms: list[str],
+    missing_expected: list[str],
+    unnecessary_arms: list[str],
+    registry_blocked: list[str],
+    passed: bool,
+    verification_bandwidth: dict[str, Any],
+) -> dict[str, Any]:
+    gate_costs = {
+        "registry_route_validation_ms": 3,
+        "vcm_context_adequacy_ms": 4,
+        "candidate_integrity_boundary_ms": 3,
+        "route_validator_receipt_ms": 2,
+        "verification_bandwidth_accounting_ms": 2,
+    }
+    review_load_units = (
+        len(missing_expected)
+        + len(registry_blocked)
+        + len(unnecessary_arms)
+        + (1 if verification_bandwidth.get("escalation_required") else 0)
+    )
+    caught_failure_count = (
+        len(missing_expected)
+        + len(registry_blocked)
+        + (0 if passed else 1)
+        + (1 if verification_bandwidth.get("escalation_required") else 0)
+    )
+    raw_route_latency_ms = 5 + len(selected_arms)
+    governed_overhead_ms = sum(gate_costs.values()) + review_load_units
+    return {
+        "policy": "project_theseus_route_governance_tax_v1",
+        "route_id": case.get("task_id"),
+        "gate_costs": gate_costs,
+        "raw_route_latency_ms": raw_route_latency_ms,
+        "governed_overhead_ms": governed_overhead_ms,
+        "governed_total_latency_ms": raw_route_latency_ms + governed_overhead_ms,
+        "review_load_units": review_load_units,
+        "caught_failure_count": caught_failure_count,
+        "tax_per_caught_failure": round(governed_overhead_ms / max(1, caught_failure_count), 4),
+        "tax_justified": bool(caught_failure_count > 0 or passed),
+        "tax_value_statement": "governance cost is retained because it catches route misses/registry faults or preserves no-cheat route evidence",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "non_claims": [
+            "governance tax is route overhead accounting, not model capability",
+            "lower raw route latency cannot hide displaced verification or review cost",
+        ],
+    }
+
+
+def summarize_verification_bandwidth(decisions: list[dict[str, Any]]) -> dict[str, Any]:
+    receipts = [row.get("verification_bandwidth", {}) for row in decisions if isinstance(row.get("verification_bandwidth"), dict)]
+    obligation_count = sum(int(row.get("obligation_count") or 0) for row in receipts)
+    capacity_units = sum(int(row.get("verifier_capacity_units") or 0) for row in receipts)
+    escalation_count = sum(1 for row in receipts if row.get("escalation_required"))
+    residual_obligations = sorted({item for row in receipts for item in row.get("residual_obligations", [])})
+    return {
+        "policy": "project_theseus_route_verification_bandwidth_summary_v1",
+        "route_count": len(receipts),
+        "obligation_count": obligation_count,
+        "verifier_capacity_units": capacity_units,
+        "escalation_required_count": escalation_count,
+        "residual_obligation_kinds": residual_obligations,
+        "status": "ready",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def summarize_governance_tax(decisions: list[dict[str, Any]]) -> dict[str, Any]:
+    receipts = [row.get("governance_tax", {}) for row in decisions if isinstance(row.get("governance_tax"), dict)]
+    governed_overhead_ms = sum(int(row.get("governed_overhead_ms") or 0) for row in receipts)
+    caught_failure_count = sum(int(row.get("caught_failure_count") or 0) for row in receipts)
+    review_load_units = sum(int(row.get("review_load_units") or 0) for row in receipts)
+    return {
+        "policy": "project_theseus_route_governance_tax_summary_v1",
+        "route_count": len(receipts),
+        "governed_overhead_ms": governed_overhead_ms,
+        "review_load_units": review_load_units,
+        "caught_failure_count": caught_failure_count,
+        "tax_per_caught_failure": round(governed_overhead_ms / max(1, caught_failure_count), 4),
+        "status": "ready",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
     }
 
 
@@ -1306,6 +1485,8 @@ def build_moecot_route_records(
         unnecessary = list(decision.get("unnecessary_arms", []))
         registry_blocked = list(decision.get("registry_blocked_arms", []))
         passed = bool(decision.get("passed"))
+        verification_bandwidth = decision.get("verification_bandwidth", {}) if isinstance(decision.get("verification_bandwidth"), dict) else {}
+        governance_tax = decision.get("governance_tax", {}) if isinstance(decision.get("governance_tax"), dict) else {}
         task_hash = stable_id("octopus_task", route_id, decision.get("task"), decision.get("risk"), decision.get("pattern"))
         total_memory = 0
         total_latency = 0
@@ -1341,6 +1522,8 @@ def build_moecot_route_records(
                     "registry_blocked_arms": registry_blocked,
                     "routing_pattern": decision.get("routing_pattern"),
                     "risk": decision.get("risk"),
+                    "verification_bandwidth": verification_bandwidth,
+                    "governance_tax": governance_tax,
                     "passed": passed,
                 },
                 {
@@ -1392,6 +1575,10 @@ def build_moecot_route_records(
                     "worker_limit": len(selected),
                     "estimated_latency_ms": total_latency,
                     "memory_mb": total_memory,
+                    "verification_obligation_count": verification_bandwidth.get("obligation_count"),
+                    "verifier_capacity_units": verification_bandwidth.get("verifier_capacity_units"),
+                    "verifier_capacity_margin_units": verification_bandwidth.get("capacity_margin_units"),
+                    "verification_escalation_required": verification_bandwidth.get("escalation_required"),
                     "support_state": "SUPPORTED",
                 },
                 {
@@ -1402,6 +1589,26 @@ def build_moecot_route_records(
                     "network_class": "local_metadata_only",
                     "gas_estimate_micro_twc": 0,
                     "provider_payout_micro_twc": 0,
+                    "cost_accounting": {
+                        "estimated_latency_ms": total_latency,
+                        "governance_overhead_ms": governance_tax.get("governed_overhead_ms"),
+                        "governed_total_latency_ms": governance_tax.get("governed_total_latency_ms"),
+                        "review_load_units": governance_tax.get("review_load_units"),
+                        "verification_obligation_count": verification_bandwidth.get("obligation_count"),
+                        "verifier_capacity_units": verification_bandwidth.get("verifier_capacity_units"),
+                        "caught_failure_count": governance_tax.get("caught_failure_count"),
+                        "tax_per_caught_failure": governance_tax.get("tax_per_caught_failure"),
+                    },
+                    "cost_classes": [
+                        "routing",
+                        "registry validation",
+                        "VCM context adequacy",
+                        "candidate integrity boundary",
+                        "verification bandwidth",
+                        "governance tax",
+                        "residual review",
+                    ],
+                    "residual_obligations": verification_bandwidth.get("residual_obligations", []),
                     "support_state": "SUPPORTED",
                 },
                 {
@@ -1462,6 +1669,10 @@ def build_moecot_route_records(
                     "missing_expected": missing,
                     "unnecessary_arms": unnecessary,
                     "registry_blocked_arms": registry_blocked,
+                    "verification_bandwidth": verification_bandwidth,
+                    "governance_tax": governance_tax,
+                    "residual_obligations": verification_bandwidth.get("residual_obligations", []),
+                    "escalation_required": verification_bandwidth.get("escalation_required"),
                 },
             ]
         )
@@ -1536,6 +1747,8 @@ def build_report(
         candidate_integrity_context=candidate_integrity_context,
         route_validator_receipt=route_validator_receipt,
     )
+    verification_bandwidth_summary = router_eval.get("metrics", {}).get("verification_bandwidth", {})
+    governance_tax_summary = router_eval.get("metrics", {}).get("governance_tax", {})
     matrix = ora_implementation_matrix(
         arms,
         router_eval,
@@ -1549,6 +1762,8 @@ def build_report(
         candidate_integrity_context,
         route_validator_receipt,
         moecot_route_records,
+        verification_bandwidth_summary,
+        governance_tax_summary,
     )
     registry_health = {
         "active": sum(1 for arm in arms if str(arm.get("lifecycle_status", "")).startswith("active")),
@@ -1597,10 +1812,18 @@ def build_report(
             "candidate_integrity_ready": candidate_integrity_context.get("ready") is True,
             "candidate_generation_credit": 0,
             "learned_generation_claim_allowed": False,
+            "verification_bandwidth_status": verification_bandwidth_summary.get("status"),
+            "verification_obligation_count": verification_bandwidth_summary.get("obligation_count"),
+            "verification_escalation_required_count": verification_bandwidth_summary.get("escalation_required_count"),
+            "governance_tax_status": governance_tax_summary.get("status"),
+            "governance_tax_review_load_units": governance_tax_summary.get("review_load_units"),
+            "governance_tax_caught_failure_count": governance_tax_summary.get("caught_failure_count"),
             "public_training_rows_written": 0,
             "external_inference_calls": 0,
             "fallback_return_count": 0,
         },
+        "verification_bandwidth": verification_bandwidth_summary,
+        "governance_tax": governance_tax_summary,
         "viea_moecot_route_records": moecot_route_records,
         "arm_registry": {
             "path": "reports/arm_registry.json",
@@ -1673,6 +1896,8 @@ def ora_implementation_matrix(
     candidate_integrity_context: dict[str, Any],
     route_validator_receipt: dict[str, Any],
     moecot_route_records: list[dict[str, Any]],
+    verification_bandwidth_summary: dict[str, Any],
+    governance_tax_summary: dict[str, Any],
 ) -> list[dict[str, Any]]:
     dynamic = router_eval.get("dynamic_loading_metrics", {})
     learned_ok = learned_head.get("promotion_gate_passed", False)
@@ -1718,6 +1943,16 @@ def ora_implementation_matrix(
             and bool(candidate_integrity_context.get("ready"))
             and required_spine_types.issubset(observed_spine_types),
             "Octopus routing emits VIEA-normalized route, specialist, authority, VCM, runtime-adapter, resource, cost, generation-mode, failure, artifact, claim, evidence-transition, and residual records.",
+        ),
+        component(
+            "verification_bandwidth_and_governance_tax",
+            verification_bandwidth_summary.get("status") == "ready"
+            and int(verification_bandwidth_summary.get("route_count") or 0) == len(router_eval.get("decisions", []))
+            and int(verification_bandwidth_summary.get("obligation_count") or 0) > 0
+            and governance_tax_summary.get("status") == "ready"
+            and int(governance_tax_summary.get("route_count") or 0) == len(router_eval.get("decisions", []))
+            and int(governance_tax_summary.get("review_load_units") or 0) >= 0,
+            "Router decisions carry verifier-capacity obligations, residual-obligation ledgers, escalation thresholds, governance overhead, review load, and tax-per-caught-failure accounting.",
         ),
         component(
             "learned_router_training",

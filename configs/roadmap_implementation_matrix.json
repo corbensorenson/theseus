@@ -1853,10 +1853,10 @@
         "reports/viea_spine_materialized_view.json"
       ],
       "missing_items": [
-        "verification-bandwidth capacity model in fanout/STS/verifier-cascade runs: obligation count, verifier capacity, decomposition contracts, residual obligation ledger, and escalation thresholds",
-        "governance-tax accounting for real runs: per-gate latency/compute/review-load, tax-per-route records, and tax-versus-caught-failure evidence"
+        "Octopus routing now emits verification-bandwidth capacity accounting with obligation count, verifier capacity, decomposition contracts, residual-obligation ledger, and escalation thresholds; remaining work is adopting the same capacity model in fanout, STS, and verifier-cascade runs",
+        "Octopus routing now emits governance-tax accounting for route decisions with per-gate overhead, review load, tax-per-caught-risk, and caught verification-capacity escalation evidence; remaining work is richer real task-to-arm traces and broader non-router run adoption"
       ],
-      "smallest_next_patch": "Add verification-bandwidth and governance-tax accounting to routing: schedule verifier capacity as a resource, ledger residual obligations, and measure governed-versus-raw overhead alongside caught-failure value.",
+      "smallest_next_patch": "Extend the new Octopus verification-bandwidth and governance-tax receipts into fanout, STS, and verifier-cascade runs, then collect more diverse real task-to-arm traces before changing major route policy.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -1869,6 +1869,12 @@
         "reports/octopus_router_report.json moecot_spine.route_validator_ready=true",
         "reports/octopus_router_report.json moecot_spine.vcm_context_ready=true",
         "reports/octopus_router_report.json moecot_spine.candidate_integrity_ready=true",
+        "reports/octopus_router_report.json moecot_spine.verification_bandwidth_status=ready",
+        "reports/octopus_router_report.json moecot_spine.verification_obligation_count=119",
+        "reports/octopus_router_report.json moecot_spine.verification_escalation_required_count=10",
+        "reports/octopus_router_report.json moecot_spine.governance_tax_status=ready",
+        "reports/octopus_router_report.json moecot_spine.governance_tax_caught_failure_count=10",
+        "reports/octopus_router_report.json implementation_matrix contains verification_bandwidth_and_governance_tax=implemented",
         "reports/octopus_router_report.json moecot_spine.candidate_generation_credit=0",
         "reports/octopus_router_report.json implementation_matrix contains viea_moecot_route_receipts=implemented",
         "python3 scripts/viea_spine_record_gate.py --gate",
