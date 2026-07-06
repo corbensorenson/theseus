@@ -196,31 +196,34 @@ remain honestly bounded.
   summary now records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
   `A2_replacement_transaction_kernel=synthetic-test-backed`,
   `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
-  `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
+  `B1_assisted_verified_assistant_product_lane=empirical-test-backed`, and
   `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
 - `scripts/roadmap_implementation_gate.py` now exposes a strict
   pre-training architecture readiness mode:
   `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
   The normal roadmap gate remains `YELLOW` with no hard gaps for implementation
   work, but strict readiness is currently `RED`: six phases are unfinished or
-  externally frozen, and all five pre-training book-reference core slices are
-  still below their target support state. That means training, public
-  calibration, and score chasing should not become the primary path yet.
-- The E1 authority/SCIF runtime-adapter kernel is prototype-backed:
+  externally frozen, and `C1_correctness_rl_and_generator_survival_lane` is the
+  remaining pre-training book-reference core slice below its target support
+  state. That means training, public calibration, and score chasing should not
+  become the primary path yet.
+- The E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed:
   `reports/governance_rights_receipt_suite.json` proves one side-effecting
   assistant/tool fixture through runtime adapter invocation, authority
   transition/use receipts, effect receipt, rollback/no-rollback boundary,
   confused-deputy denial, Digital SCIF handle proof, expected-invalid controls,
   and clean no-cheat counters. This is a reference authority-membrane fixture,
   not a claim that every runtime route has universal deployed E1 enforcement.
-- The B1 assisted verified assistant product lane is prototype-backed:
+- The B1 assisted verified assistant product lane is empirical-test-backed:
   `reports/theseus_assistant_product_lane_gate.json` verifies the existing
   assistant runtime surface across `4/4` route cases, CLI/memory/feedback
   receipts, VCM readiness, deterministic tool evidence, private verifier
-  receipts, metadata-only dogfood pressure, VIEA product trace records, and
-  zero public-training/runtime-external/fallback counters. The gate preserves
-  the strict code-generator semantic wall as C1 negative evidence rather than
-  laundering product usefulness into learned-generation capability.
+  receipts, `80` recent metadata-only dogfood events, `66`
+  completed-or-accepted outcomes, `8/8` expected-invalid controls rejected,
+  VIEA product trace records, and zero public-training/runtime-external/fallback
+  counters. The gate preserves the strict code-generator semantic wall as C1
+  negative evidence rather than laundering product usefulness into
+  learned-generation capability.
 - The C1 correctness/RL/generator survival lane is prototype-backed:
   `reports/correctness_generator_survival_lane_gate.json` verifies one bounded
   private verifier-driven learned body-token experiment under the preregistered

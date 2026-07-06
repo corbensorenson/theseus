@@ -119,9 +119,44 @@ def build_report(
         gate("learned_generation_claims_separated", learned_claims_separated(trace_rows), trace_claim_summary(trace_rows)),
     ]
     hard_gaps = [row for row in gates if not row["passed"]]
+    expected_invalid_controls = b1_expected_invalid_controls(
+        e2e_summary=e2e_summary,
+        usefulness=usefulness,
+        product_summary=product_summary,
+        trace_rows=trace_rows,
+        trace_counts=trace_counts,
+        code_wall=code_wall,
+        gates=gates,
+        e2e=e2e,
+        product=product,
+    )
+    empirical_support_ready = (
+        not hard_gaps
+        and int_or(usefulness.get("recent_event_count"), 0) >= 20
+        and int_or(usefulness.get("trainable_event_count"), 0) >= 20
+        and int_or(usefulness.get("completed_or_accepted_count"), 0) >= 8
+        and REQUIRED_LANES.issubset(set(lane_counts))
+        and int_or(e2e_summary.get("dogfood_training_rows_written"), 0) > 0
+        and bool(e2e_summary.get("posthoc_feedback_case_passed"))
+        and bool(e2e_summary.get("session_memory_case_passed"))
+        and bool(e2e_summary.get("user_facing_cli_case_passed"))
+        and product.get("trigger_state") == "GREEN"
+        and bool(product_summary.get("assistant_viea_trace_complete"))
+        and all(row["rejected"] for row in expected_invalid_controls)
+        and no_cheat_clean(e2e, product, trace_rows)
+        and learned_claims_separated(trace_rows)
+    )
+    support_state = (
+        "empirical-test-backed"
+        if empirical_support_ready
+        else ("prototype-backed" if not hard_gaps else "not_yet_supported")
+    )
     summary = {
         "b1_assisted_verified_assistant_product_lane_state": "GREEN" if not hard_gaps else "RED",
-        "b1_assisted_verified_assistant_product_lane_support_state": "prototype-backed" if not hard_gaps else "not_yet_supported",
+        "b1_assisted_verified_assistant_product_lane_support_state": support_state,
+        "b1_empirical_support_ready": empirical_support_ready,
+        "b1_expected_invalid_control_count": len(expected_invalid_controls),
+        "b1_expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
         "e2e_trigger_state": e2e.get("trigger_state"),
         "product_spine_trigger_state": product.get("trigger_state"),
         "passed_case_count": e2e_summary.get("passed_case_count"),
@@ -147,14 +182,101 @@ def build_report(
         "summary": summary,
         "gates": gates,
         "hard_gaps": hard_gaps,
+        "support_state_basis": {
+            "empirical_support_ready": empirical_support_ready,
+            "recent_event_count": usefulness.get("recent_event_count"),
+            "trainable_event_count": usefulness.get("trainable_event_count"),
+            "completed_or_accepted_count": usefulness.get("completed_or_accepted_count"),
+            "lane_counts": lane_counts,
+            "surface_counts": usefulness.get("surface_counts"),
+            "outcome_counts": usefulness.get("outcome_counts"),
+            "dogfood_training_rows_written": e2e_summary.get("dogfood_training_rows_written"),
+            "posthoc_feedback_case_passed": e2e_summary.get("posthoc_feedback_case_passed"),
+            "session_memory_case_passed": e2e_summary.get("session_memory_case_passed"),
+            "user_facing_cli_case_passed": e2e_summary.get("user_facing_cli_case_passed"),
+            "vcm_ready_case_count": usefulness.get("vcm_ready_case_count"),
+            "required_lane_count": len(REQUIRED_LANES),
+            "trace_record_count": len(trace_rows),
+            "trace_required_record_type_count": len(REQUIRED_TRACE_RECORDS),
+            "expected_invalid_control_count": len(expected_invalid_controls),
+            "expected_invalid_rejected_count": sum(1 for row in expected_invalid_controls if row["rejected"]),
+            "no_cheat_counters": no_cheat_counters(e2e, product, trace_rows),
+            "raw_text_training_allowed": usefulness.get("raw_text_training_allowed"),
+        },
+        "expected_invalid_controls": expected_invalid_controls,
         "evidence_refs": [rel(resolve(args.e2e)), rel(resolve(args.product)), rel(resolve(args.trace)), rel(resolve(args.schema))],
         "non_claims": [
-            "B1 prototype-backed means the assisted local product lane is wired and receipt-backed, not that Theseus is ChatGPT-level.",
+            "B1 empirical-test-backed means the assisted local product lane has metadata-only dogfood outcomes and replay receipts, not that Theseus is ChatGPT-level.",
             "Tool-assisted and deterministic outputs are reported separately from learned-generation capability.",
             "The current code generator semantic wall is preserved as C1 negative evidence, not hidden by the product lane.",
             "No public benchmark payloads enter training rows, and runtime external inference remains forbidden.",
         ],
     }
+
+
+def b1_expected_invalid_controls(
+    *,
+    e2e_summary: dict[str, Any],
+    usefulness: dict[str, Any],
+    product_summary: dict[str, Any],
+    trace_rows: list[dict[str, Any]],
+    trace_counts: Counter,
+    code_wall: dict[str, Any],
+    gates: list[dict[str, Any]],
+    e2e: dict[str, Any],
+    product: dict[str, Any],
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "control": "no_dogfood_outcomes_blocks_empirical_claim",
+            "rejected": int_or(usefulness.get("recent_event_count"), 0) >= 20
+            and int_or(usefulness.get("completed_or_accepted_count"), 0) >= 8,
+            "reason": "empirical B1 needs real metadata-only accepted/completed local outcomes, not only wiring smokes",
+        },
+        {
+            "control": "missing_lane_coverage_blocks_product_claim",
+            "rejected": REQUIRED_LANES.issubset(set(dict_value(usefulness.get("lane_counts")))),
+            "reason": "assistant product evidence must cover chat, code, tool, and planning lanes",
+        },
+        {
+            "control": "raw_text_training_blocks_b1",
+            "rejected": usefulness.get("raw_text_training_allowed") is False
+            and all(row.get("raw_prompt_stored") is False for row in trace_rows),
+            "reason": "B1 dogfood pressure is metadata-only; raw prompt text cannot be training evidence",
+        },
+        {
+            "control": "tool_or_router_overclaim_blocks_b1",
+            "rejected": learned_claims_separated(trace_rows),
+            "reason": "tool-assisted/product usefulness must stay separate from learned-generation claims",
+        },
+        {
+            "control": "hidden_code_wall_blocks_b1",
+            "rejected": bool(code_wall)
+            and int_or(code_wall.get("candidate_integrity_mismatch_count"), -1) == 0
+            and int_or(code_wall.get("public_boundary_violation_count"), -1) == 0
+            and bool(code_wall.get("semantic_pass_currently_zero")),
+            "reason": "B1 cannot hide the C1 learned-generator wall behind product usefulness",
+        },
+        {
+            "control": "missing_vcm_tool_verifier_trace_blocks_b1",
+            "rejected": int_or(usefulness.get("vcm_ready_case_count"), -1) >= 4
+            and e2e_summary.get("tool_evidence_state") == "GREEN"
+            and float_or(e2e_summary.get("tool_evidence_tool_on_solve_rate"), 0.0) >= 1.0
+            and bool(product_summary.get("private_verifier_spine_ready"))
+            and REQUIRED_TRACE_RECORDS.issubset({kind for kind, count in trace_counts.items() if count > 0}),
+            "reason": "empirical assistant evidence must still carry VCM/tool/verifier/VIEA receipts",
+        },
+        {
+            "control": "public_external_fallback_fault_blocks_b1",
+            "rejected": no_cheat_clean(e2e, product, trace_rows),
+            "reason": "B1 cannot pass with public-training, runtime-external-inference, or fallback-return counters",
+        },
+        {
+            "control": "failed_product_gate_blocks_b1",
+            "rejected": all(row["passed"] for row in gates),
+            "reason": "empirical support cannot override a failed product-lane gate",
+        },
+    ]
 
 
 def no_cheat_clean(e2e: dict[str, Any], product: dict[str, Any], trace_rows: list[dict[str, Any]]) -> bool:

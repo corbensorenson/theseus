@@ -273,8 +273,8 @@
       "integration_smoke": [],
       "completion_rule": "Every routable implementation can emit a fail-closed authority receipt and exact content-bound route receipt.",
       "implemented_items": [
-        "A2 replacement transaction kernel is prototype-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters.",
-        "E1 authority/SCIF runtime-adapter kernel is prototype-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
+        "A2 replacement transaction kernel is synthetic-test-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters.",
+        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
       ]
     },
     {
@@ -532,7 +532,7 @@
         "shared assistant_trace/dogfood_outcome schema is registered and consumed by the assistant runtime, VIEA policy_optimization_record, conversation events, and product smoke gates",
         "canonical assistant runtime is GREEN with VCM context ready, assistant VIEA trace complete, dogfood training bridge GREEN, and no public training/external inference/fallback counters",
         "assistant e2e has 4/4 route cases passing, 80 recent trainable events, 66 completed-or-accepted recent events, 397 local dogfood events, and 396 governed dogfood trace training rows",
-        "B1 assisted verified assistant product lane is prototype-backed: reports/theseus_assistant_product_lane_gate.json verifies 4/4 assistant route cases, CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence, private verifier receipts, metadata-only dogfood pressure, VIEA product trace records, and no public-training/runtime-external/fallback counters while preserving the code-generator wall as C1 evidence."
+        "B1 assisted verified assistant product lane is empirical-test-backed: reports/theseus_assistant_product_lane_gate.json verifies 4/4 assistant route cases, CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence, private verifier receipts, 80 recent metadata-only dogfood events, 66 completed-or-accepted outcomes, 8/8 expected-invalid controls rejected, VIEA product trace records, and no public-training/runtime-external/fallback counters while preserving the code-generator wall as C1 evidence."
       ],
       "missing_items": [],
       "smallest_next_patch": "Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane.",
@@ -542,7 +542,7 @@
         "reports/theseus_assistant_trace_schema_smoke.json gates.assistant_trace_schema_ready.passed=true",
         "reports/theseus_assistant_trace_schema_smoke.json assistant_viea_trace contains policy_optimization_record with assistant_trace_schema",
         "python3 scripts/theseus_assistant_product_lane_gate.py --gate",
-        "reports/theseus_assistant_product_lane_gate.json summary.b1_assisted_verified_assistant_product_lane_support_state=prototype-backed"
+        "reports/theseus_assistant_product_lane_gate.json summary.b1_assisted_verified_assistant_product_lane_support_state=empirical-test-backed"
       ],
       "completion_rule": "Corben can use one daily lane and the trace loop records outcome pressure into governed training metadata.",
       "book_followup_items": [
@@ -1650,7 +1650,7 @@
       ],
       "completion_rule": "Every material route has explicit rights, authority, hard vetoes, typed failure boundaries, and incident/abstention behavior.",
       "implemented_items": [
-        "E1 authority/SCIF runtime-adapter kernel is prototype-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
+        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
       ]
     },
     {
@@ -2007,7 +2007,7 @@
         ],
         "target_support_state": "empirical-test-backed",
         "minimum_done": "The local assistant is usable on real repo tasks with VCM/tool/verifier receipts and metadata-only dogfood outcomes while separating product usefulness from learned-generation claims.",
-        "current_support_state": "prototype-backed",
+        "current_support_state": "empirical-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/theseus_assistant_product_lane_gate.json",
@@ -2023,7 +2023,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "prototype-backed B1 proves the assisted local product lane is wired and receipt-backed, not ChatGPT-level utility",
+          "empirical-test-backed B1 proves the assisted local product lane has metadata-only dogfood outcomes and replay receipts, not ChatGPT-level utility",
           "tool-assisted, deterministic, and verifier-assisted behavior stays separate from learned-generation capability",
           "the strict learned code-generator semantic wall is preserved as C1 negative evidence rather than hidden by product usefulness"
         ]
