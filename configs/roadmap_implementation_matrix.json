@@ -1646,11 +1646,11 @@
       "missing_items": [
         "receipt-faithfulness adversarial audit beyond candidate integrity: trap fixtures, randomized deep replay audits, and cross-component verification for effect receipts, gate reports, and ledger writes",
         "explicit epistemic trusted-computing-base record naming trust roots, verifier harnesses, blind-flow auditors, digest writers, and verifier-of-verifier rotation or independent audit",
-        "claim-ledger belief revision transitions: downgrade, split, merge, contradiction-link, retire, revision history never overwritten, and dependent surfaces discoverable",
+        "claim-ledger belief revision transitions are implemented for weekly-focus/A1 with downgrade, split, merge, contradiction-link, retire, append-only history, and expected-invalid controls; remaining work is dependent-surface discovery and rollout across every material claim-emitting run family",
         "standard book-importable public-safe evidence pack emitter for every citeable GREEN gate: digests, commands, baselines, negative controls, residuals, non-claims, and support state",
         "checkpoint retention follow-up: budget gate is GREEN, but checkpoint bytes remain above warning target until current-reference-aware checkpoint compaction exists"
       ],
-      "smallest_next_patch": "Continue Phase 14 evidence hygiene after the hard artifact budget gate: add receipt-faithfulness trap/replay audits, named epistemic TCB/auditor rotation, claim-belief revision transitions, standard public-safe evidence-pack exports, and current-reference-aware checkpoint compaction for the warning-only checkpoint bulk.",
+      "smallest_next_patch": "Continue Phase 14 evidence hygiene after the hard artifact budget gate and weekly-focus belief-revision ledger: add named epistemic TCB/auditor rotation, expand claim-belief revision/dependent-surface discovery beyond the weekly-focus trace, standardize evidence-pack exports for every citeable GREEN gate, and implement current-reference-aware checkpoint compaction for the warning-only checkpoint bulk.",
       "integration_smoke": [
         "python3 scripts/theseus_artifact_retention.py --execute --include-report-snapshots --min-bytes 7000000 --max-files 1",
         "python3 scripts/theseus_artifact_retention_replay_gate.py",
@@ -1658,6 +1658,10 @@
         "python3 scripts/theseus_artifact_retention.py --budget-gate",
         "reports/theseus_artifact_budget_gate.json trigger_state=GREEN",
         "reports/theseus_artifact_budget_gate.json summary.hot_report_bytes <= summary.max_hot_report_bytes",
+        "python3 scripts/theseus_weekly_focus_20260706.py --no-refresh-assistant --gate",
+        "reports/theseus_weekly_focus_20260706.json summary.claim_belief_revision_state=GREEN",
+        "reports/theseus_weekly_focus_20260706.json summary.claim_belief_revision_transition_type_count=5",
+        "reports/theseus_weekly_focus_20260706.json summary.claim_belief_revision_expected_invalid_rejected_count=6",
         "reports/theseus_artifact_budget_gate.json summary.unowned_file_count=0",
         "reports/theseus_artifact_budget_gate.json summary.missing_retention_class_count=0",
         "reports/theseus_artifact_retention_replay_gate.json summary.passed_replay_count=386"
@@ -2087,7 +2091,9 @@
         "reports/theseus_weekly_focus_20260706.json summary.preregistered_experiment_count=1",
         "reports/module_definition_of_done.json summary.source_backlog_work_card_count=38",
         "python3 scripts/training_inference_execution_plan_gate.py --gate",
-        "reports/training_inference_execution_plan_gate.json summary.ready_for_governed_private_training_focus=true"
+        "reports/training_inference_execution_plan_gate.json trigger_state=RED",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_governed_private_training_focus=false",
+        "reports/training_inference_execution_plan_gate.json readiness_decision.next_allowed_step=complete_partial_book_derived_phases_before_training_focus"
       ],
       "completion_rule": "The roadmap, registry, PROJECT_STATE, AI_book crosswalk, project steward decisions, Fourth-Pass parity backlog, and public-safe evidence-pack exports agree on what exists, what is missing, what evidence supports each claim, and which source-drift or book-parity rows were reviewed, implemented, deferred, or blocked."
     }

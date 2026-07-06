@@ -113,6 +113,7 @@ def main() -> int:
     verifier_capacity = build_verifier_capacity_accounting(assistant_report, spine_gate, evidence_packs)
     governance_tax = build_governance_tax_accounting(assistant_report, refresh, started)
     claim_dispositions = build_capability_claim_dispositions(reference_trace_record, evidence_packs, residual_audit)
+    claim_belief_revision = build_claim_belief_revision_ledger(claim_dispositions, evidence_packs, residual_audit)
     schema_conformance = build_book_schema_conformance(reference_trace_record)
     preregistration = build_correctness_preregistration(resolve(args.preregistration_out))
 
@@ -173,6 +174,7 @@ def main() -> int:
         verifier_capacity=verifier_capacity,
         governance_tax=governance_tax,
         claim_dispositions=claim_dispositions,
+        claim_belief_revision=claim_belief_revision,
         claim_ledger_trace_kernel=claim_ledger_trace_kernel,
         schema_conformance=schema_conformance,
         preregistration=preregistration,
@@ -203,6 +205,9 @@ def main() -> int:
             "verifier_capacity_state": verifier_capacity["state"],
             "governance_tax_measured": governance_tax["measured"],
             "capability_claim_disposition_count": len(claim_dispositions["claims"]),
+            "claim_belief_revision_state": claim_belief_revision["state"],
+            "claim_belief_revision_transition_type_count": len(claim_belief_revision["transition_types_supported"]),
+            "claim_belief_revision_expected_invalid_rejected_count": claim_belief_revision["expected_invalid_rejected_count"],
             "claim_ledger_trace_kernel_state": claim_ledger_trace_kernel["state"],
             "claim_ledger_trace_kernel_support_state": claim_ledger_trace_kernel["support_state"],
             "preregistered_experiment_count": len(preregistration["experiments"]),
@@ -222,6 +227,7 @@ def main() -> int:
         "verifier_capacity": verifier_capacity,
         "governance_tax": governance_tax,
         "capability_claim_dispositions": claim_dispositions,
+        "claim_belief_revision": claim_belief_revision,
         "claim_ledger_trace_kernel": claim_ledger_trace_kernel,
         "book_schema_conformance": schema_conformance,
         "correctness_experiment_preregistration": preregistration,
@@ -609,6 +615,202 @@ def build_capability_claim_dispositions(reference_trace_record: dict[str, Any], 
     }
 
 
+def build_claim_belief_revision_ledger(
+    claim_dispositions: dict[str, Any],
+    evidence_packs: list[dict[str, Any]],
+    residual_audit: dict[str, Any],
+) -> dict[str, Any]:
+    """Build a public-safe claim revision ledger with expected-invalid traps."""
+
+    claims = list_dicts(claim_dispositions.get("claims"))
+    claim_ids = {str(row.get("claim_id") or "") for row in claims}
+    evidence_ref = "reports/theseus_weekly_focus_20260706.json"
+    transitions = [
+        revision_transition(
+            "rev.downgrade.public_transfer_overclaim",
+            "downgrade",
+            "theseus.learned_generation.public_transfer",
+            from_state="argument",
+            to_state="unsupported",
+            evidence_refs=[evidence_ref, "reports/roadmap_implementation_gate.json"],
+            reason="Current roadmap/public-transfer evidence does not support a positive broad-transfer claim.",
+            affected_surface_refs=["roadmap.md", "docs/PROJECT_STATE.md"],
+        ),
+        revision_transition(
+            "rev.split.assistant_vs_learned_generation",
+            "split",
+            "theseus.assistant_product_spine.integrated",
+            from_state="prototype-backed",
+            to_state="prototype-backed",
+            evidence_refs=[evidence_ref],
+            reason="Assistant product trace support and learned-generation support must remain separate claims.",
+            child_claim_ids=[
+                "theseus.assistant_product_spine.integrated",
+                "theseus.learned_generation.public_transfer",
+            ],
+            affected_surface_refs=["roadmap.md", "configs/roadmap_implementation_matrix.json"],
+        ),
+        revision_transition(
+            "rev.merge.reference_trace_exports",
+            "merge",
+            "theseus.implementation_reference_exports.current",
+            from_state="argument",
+            to_state="prototype-backed",
+            evidence_refs=[pack["pack_id"] for pack in evidence_packs[:4]],
+            reason="Reference trace and evidence-pack exports are one implementation-reference export family.",
+            merged_claim_ids=[
+                "theseus.public_safe_reference_trace.current",
+                "theseus.book_importable_evidence_packs.standard",
+            ],
+            affected_surface_refs=["reports/theseus_public_safe_reference_trace_20260706.json"],
+        ),
+        revision_transition(
+            "rev.contradiction_link.asi_nonclaim",
+            "contradiction_link",
+            "theseus.asi_capability",
+            from_state="unsupported",
+            to_state="unsupported",
+            evidence_refs=[evidence_ref],
+            reason="North-star ASI language remains linked to current unsupported status and explicit non-claims.",
+            contradiction_refs=["theseus.current_evidence_does_not_support_asi_claim"],
+            affected_surface_refs=["README.md", "roadmap.md", "docs/PROJECT_STATE.md"],
+        ),
+        revision_transition(
+            "rev.retire.unscoped_green_status",
+            "retire",
+            "theseus.unscoped_green_status",
+            from_state="argument",
+            to_state="retired",
+            evidence_refs=[evidence_ref],
+            reason="Unscoped green status is retired in favor of support-stated claim records with non-claims.",
+            replacement_claim_id="theseus.public_safe_reference_trace.current",
+            affected_surface_refs=["docs/PROJECT_STATE.md"],
+        ),
+    ]
+    invalid_controls = [
+        invalid_revision_control("promotion_without_evidence", dict(transitions[0], to_state="empirical-test-backed", evidence_refs=[])),
+        invalid_revision_control("overwrite_history", {**transitions[0], "revision_history_policy": "overwrite_previous"}),
+        invalid_revision_control("split_without_children", {**transitions[1], "child_claim_ids": []}),
+        invalid_revision_control("merge_without_sources", {**transitions[2], "merged_claim_ids": []}),
+        invalid_revision_control("contradiction_without_link", {**transitions[3], "contradiction_refs": []}),
+        invalid_revision_control("retire_without_replacement_or_reason", {**transitions[4], "replacement_claim_id": "", "reason": ""}),
+    ]
+    transition_errors = [
+        {"transition_id": row.get("transition_id"), "errors": errors}
+        for row in transitions
+        if (errors := validate_revision_transition(row, claim_ids=claim_ids, allow_fixture_claims=True))
+    ]
+    rejected_count = sum(1 for row in invalid_controls if row["rejected"])
+    state = "GREEN" if not transition_errors and rejected_count == len(invalid_controls) else "RED"
+    return {
+        "policy": "project_theseus_claim_belief_revision_ledger_v1",
+        "state": state,
+        "support_state": "synthetic-test-backed" if state == "GREEN" else "unsupported",
+        "transition_types_supported": sorted({str(row.get("transition_type")) for row in transitions}),
+        "claim_count": len(claims),
+        "revision_transition_count": len(transitions),
+        "expected_invalid_control_count": len(invalid_controls),
+        "expected_invalid_rejected_count": rejected_count,
+        "transition_errors": transition_errors,
+        "revision_transitions": transitions,
+        "expected_invalid_controls": invalid_controls,
+        "residual_conservation_ref": residual_audit.get("state"),
+        "revision_history_policy": "append_only_never_overwrite",
+        "non_claims": [
+            "Belief revision records are support-state mechanics, not model-quality evidence.",
+            "Fixture transitions prove the ledger can represent revision types; they do not promote unsupported live claims.",
+            "Contradictions stay linked instead of being erased by newer green reports.",
+        ],
+        **clean_counters(),
+    }
+
+
+def revision_transition(
+    transition_id: str,
+    transition_type: str,
+    claim_id: str,
+    *,
+    from_state: str,
+    to_state: str,
+    evidence_refs: list[str],
+    reason: str,
+    affected_surface_refs: list[str],
+    child_claim_ids: list[str] | None = None,
+    merged_claim_ids: list[str] | None = None,
+    contradiction_refs: list[str] | None = None,
+    replacement_claim_id: str = "",
+) -> dict[str, Any]:
+    return {
+        "transition_id": transition_id,
+        "transition_type": transition_type,
+        "claim_id": claim_id,
+        "from_state": from_state,
+        "to_state": to_state,
+        "evidence_refs": evidence_refs,
+        "reason": reason,
+        "affected_surface_refs": affected_surface_refs,
+        "child_claim_ids": child_claim_ids or [],
+        "merged_claim_ids": merged_claim_ids or [],
+        "contradiction_refs": contradiction_refs or [],
+        "replacement_claim_id": replacement_claim_id,
+        "revision_history_policy": "append_only_never_overwrite",
+        "support_state_effect": "record_shape_only",
+        "public_safe": True,
+        "non_claims": [
+            "belief revision transition only",
+            "not learned-generation evidence",
+            "not public benchmark evidence",
+        ],
+        **clean_counters(),
+    }
+
+
+def invalid_revision_control(control: str, candidate: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "control": control,
+        "rejected": bool(validate_revision_transition(candidate, claim_ids=set(), allow_fixture_claims=True)),
+        "candidate_transition_type": candidate.get("transition_type"),
+    }
+
+
+def validate_revision_transition(
+    row: dict[str, Any],
+    *,
+    claim_ids: set[str],
+    allow_fixture_claims: bool,
+) -> list[str]:
+    errors: list[str] = []
+    transition_type = str(row.get("transition_type") or "")
+    if transition_type not in {"downgrade", "split", "merge", "contradiction_link", "retire"}:
+        errors.append("unknown_transition_type")
+    claim_id = str(row.get("claim_id") or "")
+    if not claim_id:
+        errors.append("missing_claim_id")
+    elif not allow_fixture_claims and claim_id not in claim_ids:
+        errors.append("unknown_claim_id")
+    if not row.get("reason"):
+        errors.append("missing_reason")
+    if not list_values(row.get("evidence_refs")):
+        errors.append("missing_evidence_refs")
+    if row.get("revision_history_policy") != "append_only_never_overwrite":
+        errors.append("revision_history_not_append_only")
+    if str(row.get("to_state")) in {"prototype-backed", "synthetic-test-backed", "empirical-test-backed", "replayable-reference-backed"} and not list_values(row.get("evidence_refs")):
+        errors.append("positive_state_without_evidence")
+    if transition_type == "split" and len(list_values(row.get("child_claim_ids"))) < 2:
+        errors.append("split_requires_two_children")
+    if transition_type == "merge" and len(list_values(row.get("merged_claim_ids"))) < 2:
+        errors.append("merge_requires_two_sources")
+    if transition_type == "contradiction_link" and not list_values(row.get("contradiction_refs")):
+        errors.append("contradiction_requires_link")
+    if transition_type == "retire" and not row.get("replacement_claim_id") and not row.get("reason"):
+        errors.append("retire_requires_replacement_or_reason")
+    if any(int_or(row.get(key)) != 0 for key in NO_CHEAT_COUNTERS):
+        errors.append("no_cheat_counter_fault")
+    if not row.get("non_claims"):
+        errors.append("missing_non_claims")
+    return errors
+
+
 def build_claim_ledger_trace_kernel(
     *,
     assistant_report: dict[str, Any],
@@ -910,6 +1112,7 @@ def build_gates(**kwargs: Any) -> list[dict[str, Any]]:
     verifier_capacity = kwargs["verifier_capacity"]
     governance_tax = kwargs["governance_tax"]
     claim_dispositions = kwargs["claim_dispositions"]
+    claim_belief_revision = kwargs["claim_belief_revision"]
     claim_ledger_trace_kernel = kwargs["claim_ledger_trace_kernel"]
     schema_conformance = kwargs["schema_conformance"]
     preregistration = kwargs["preregistration"]
@@ -928,6 +1131,7 @@ def build_gates(**kwargs: Any) -> list[dict[str, Any]]:
         gate("verifier_capacity_accounted", verifier_capacity["state"] == "GREEN", "hard", verifier_capacity),
         gate("governance_tax_measured", governance_tax["measured"] is True, "hard", governance_tax),
         gate("claim_dispositions_present", len(claim_dispositions["claims"]) >= 5, "hard", len(claim_dispositions["claims"])),
+        gate("claim_belief_revision_green", claim_belief_revision["state"] == "GREEN", "hard", claim_belief_revision),
         gate("claim_ledger_trace_kernel_green", claim_ledger_trace_kernel["state"] == "GREEN", "hard", claim_ledger_trace_kernel),
         gate("exactly_one_preregistered_experiment", len(preregistration.get("experiments") or []) == 1, "hard", preregistration.get("summary")),
         gate("roadmap_gate_no_hard_gaps", int_or((roadmap_gate.get("summary") or {}).get("hard_gap_count")) == 0, "warning", roadmap_gate.get("trigger_state")),
@@ -1108,6 +1312,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Residual conservation: `{summary['residual_conservation_state']}`",
         f"- Verifier capacity: `{summary['verifier_capacity_state']}`",
         f"- Governance tax measured: `{summary['governance_tax_measured']}`",
+        f"- Claim belief revision: `{summary.get('claim_belief_revision_state')}` (`{summary.get('claim_belief_revision_expected_invalid_rejected_count')}` invalid controls rejected)",
         f"- A1 claim-ledger trace kernel: `{summary.get('claim_ledger_trace_kernel_state')}` (`{summary.get('claim_ledger_trace_kernel_support_state')}`)",
         f"- Preregistered experiments: `{summary['preregistered_experiment_count']}`",
         "",

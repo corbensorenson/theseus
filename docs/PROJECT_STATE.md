@@ -440,13 +440,18 @@ registered assistant product-spine run and exported
 `reports/theseus_book_importable_evidence_packs_20260706.json`. The gate
 records `10` evidence packs, `7/7` expected-invalid receipt controls rejected,
 residual conservation `GREEN`, verifier capacity `GREEN`, governance-tax
-measurement present, `6` capability-claim dispositions, book-schema
-conformance true, and the A1 claim-ledger trace kernel `GREEN` with
-support state `synthetic-test-backed`. The A1 kernel proves required trace
-records, support-state transitions, digest replay, source-to-verifier
+measurement present, `6` capability-claim dispositions, claim-belief revision
+`GREEN` with `5` transition types and `6/6` expected-invalid controls rejected,
+book-schema conformance true, and the A1 claim-ledger trace kernel `GREEN`
+with support state `synthetic-test-backed`. The A1 kernel proves required
+trace records, support-state transitions, digest replay, source-to-verifier
 continuity, expected-invalid controls, duplicate-family avoidance, and clean
-no-cheat counters over the weekly-focus reference trace. It also preregistered
-exactly one bounded correctness-in-the-loop generator experiment in
+no-cheat counters over the weekly-focus reference trace. The belief-revision
+ledger supports downgrade, split, merge, contradiction-link, and retire
+transitions with append-only history and non-claim boundaries; it is
+record-shape evidence for the weekly-focus trace, not universal rollout across
+all claim surfaces yet. It also preregistered exactly one bounded
+correctness-in-the-loop generator experiment in
 `configs/correctness_in_loop_generator_experiments.json`. This is
 implementation-reference evidence for the book import path, not a model-quality,
 public-benchmark, learned-generation, deployed-readiness, or ASI claim.
