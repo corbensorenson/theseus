@@ -241,6 +241,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "body_action_auxiliary",
             "body_operand_auxiliary",
             "body_aux_semantic_event_weighting",
+            "body_state_machine_event_weighting",
             "loop_semantic_operation_weighting",
             "loop_expression_synthesis_weighting",
             "plan_conditioned_body_weighting",
@@ -286,6 +287,11 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "body_aux_semantic_event_weighting": True,
             "body_aux_semantic_event_min_factor": 1.0,
             "body_aux_semantic_event_max_factor": 3.0,
+            "body_state_machine_event_weighting": True,
+            "body_state_machine_event_factor": 2.25,
+            "body_state_machine_non_event_scale": 0.35,
+            "body_state_machine_operand_event_factor": 1.25,
+            "body_state_machine_operand_non_event_scale": 1.0,
             "body_action_loss_weight": 0.08,
             "body_operand_loss_weight": 0.10,
             "loop_semantic_operation_loss_boost": 3.2,
@@ -1063,6 +1069,19 @@ def main() -> int:
     parser.add_argument("--body-aux-semantic-event-min-factor", type=float, default=1.0)
     parser.add_argument("--body-aux-semantic-event-max-factor", type=float, default=3.0)
     parser.add_argument(
+        "--body-state-machine-event-weighting",
+        action="store_true",
+        help=(
+            "Sharpen body transition/action/operand auxiliary losses around private state-machine event roles "
+            "such as traversal calls, state updates, control transitions, finalizers, and statement boundaries. "
+            "This changes target weights only and grants no candidate-generation credit."
+        ),
+    )
+    parser.add_argument("--body-state-machine-event-factor", type=float, default=2.25)
+    parser.add_argument("--body-state-machine-non-event-scale", type=float, default=0.35)
+    parser.add_argument("--body-state-machine-operand-event-factor", type=float, default=1.25)
+    parser.add_argument("--body-state-machine-operand-non-event-scale", type=float, default=1.0)
+    parser.add_argument(
         "--semantic-slot-prefix-roles",
         default="",
         help=(
@@ -1261,6 +1280,23 @@ def main() -> int:
             1.0,
             float(args.body_aux_semantic_event_max_factor if args.body_aux_semantic_event_max_factor is not None else 3.0),
         ),
+        body_state_machine_event_weighting=bool(args.body_state_machine_event_weighting),
+        body_state_machine_event_factor=max(
+            1.0,
+            float(args.body_state_machine_event_factor if args.body_state_machine_event_factor is not None else 2.25),
+        ),
+        body_state_machine_non_event_scale=max(
+            0.0,
+            float(args.body_state_machine_non_event_scale if args.body_state_machine_non_event_scale is not None else 0.35),
+        ),
+        body_state_machine_operand_event_factor=max(
+            1.0,
+            float(args.body_state_machine_operand_event_factor if args.body_state_machine_operand_event_factor is not None else 1.25),
+        ),
+        body_state_machine_operand_non_event_scale=max(
+            0.0,
+            float(args.body_state_machine_operand_non_event_scale if args.body_state_machine_operand_non_event_scale is not None else 1.0),
+        ),
         semantic_slot_prefix_roles=str(args.semantic_slot_prefix_roles or ""),
         loop_expression_synthesis_loss_boost=max(
             0.0,
@@ -1393,6 +1429,11 @@ def run_adaptation(
     body_aux_semantic_event_weighting: bool,
     body_aux_semantic_event_min_factor: float,
     body_aux_semantic_event_max_factor: float,
+    body_state_machine_event_weighting: bool,
+    body_state_machine_event_factor: float,
+    body_state_machine_non_event_scale: float,
+    body_state_machine_operand_event_factor: float,
+    body_state_machine_operand_non_event_scale: float,
     semantic_slot_prefix_roles: str,
     loop_expression_synthesis_loss_boost: float,
     loop_expression_synthesis_roles: str,
@@ -1521,6 +1562,11 @@ def run_adaptation(
                     "body_transition_position_boost": float(body_transition_position_boost or 0.0),
                     "body_action_loss_weight": float(body_action_loss_weight or 0.0),
                     "body_operand_loss_weight": float(body_operand_loss_weight or 0.0),
+                    "body_state_machine_event_weighting": bool(body_state_machine_event_weighting),
+                    "body_state_machine_event_factor": float(body_state_machine_event_factor or 0.0),
+                    "body_state_machine_non_event_scale": float(body_state_machine_non_event_scale or 0.0),
+                    "body_state_machine_operand_event_factor": float(body_state_machine_operand_event_factor or 0.0),
+                    "body_state_machine_operand_non_event_scale": float(body_state_machine_operand_non_event_scale or 0.0),
                     "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
                     "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
                     "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -1974,6 +2020,62 @@ def run_adaptation(
         min_factor=body_aux_semantic_event_min_factor,
         max_factor=body_aux_semantic_event_max_factor,
     )
+    (
+        train_body_transition_weights,
+        train_body_action_weights,
+        train_body_operand_weights,
+        train_state_machine_event_summary,
+    ) = apply_body_state_machine_event_weights(
+        train_body_transition_weights,
+        train_body_action_weights,
+        train_body_operand_weights,
+        train_body_action_targets,
+        train_body_operand_targets,
+        enabled=body_state_machine_event_weighting,
+        event_factor=body_state_machine_event_factor,
+        non_event_scale=body_state_machine_non_event_scale,
+        operand_event_factor=body_state_machine_operand_event_factor,
+        operand_non_event_scale=body_state_machine_operand_non_event_scale,
+        split="train",
+    )
+    (
+        eval_body_transition_weights,
+        eval_body_action_weights,
+        eval_body_operand_weights,
+        eval_state_machine_event_summary,
+    ) = apply_body_state_machine_event_weights(
+        eval_body_transition_weights,
+        eval_body_action_weights,
+        eval_body_operand_weights,
+        eval_body_action_targets,
+        eval_body_operand_targets,
+        enabled=body_state_machine_event_weighting,
+        event_factor=body_state_machine_event_factor,
+        non_event_scale=body_state_machine_non_event_scale,
+        operand_event_factor=body_state_machine_operand_event_factor,
+        operand_non_event_scale=body_state_machine_operand_non_event_scale,
+        split="heldout_private_train",
+    )
+    body_state_machine_event_weighting_summary = {
+        "enabled": bool(body_state_machine_event_weighting),
+        "policy": (
+            "private_body_state_machine_event_weighting_v1"
+            if body_state_machine_event_weighting
+            else "not_enabled"
+        ),
+        "train": train_state_machine_event_summary,
+        "heldout_private_train": eval_state_machine_event_summary,
+        "candidate_generation_credit": 0,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "score_semantics": (
+            "Event-focused auxiliary target policy over existing body-transition, body-action, and "
+            "body-operand heads. It emphasizes traversal/call, state-update, control-transition, "
+            "return/finalizer, value-expression, and statement-boundary roles in admitted private rows. "
+            "It changes only loss/eval weights and grants no generated-code, renderer, fallback, tool, "
+            "or router credit."
+        ),
+    }
     (
         pairwise_positive_weight_rows,
         pairwise_negative_weight_rows,
@@ -3099,6 +3201,7 @@ def run_adaptation(
             "local_return_closure_weighting": local_return_closure_weighting,
             "closed_state_transition_weighting": closed_state_transition_weighting,
             "body_aux_semantic_event_weighting": body_aux_semantic_event_weighting_summary,
+            "body_state_machine_event_weighting": body_state_machine_event_weighting_summary,
             "body_action_auxiliary": {
                 "enabled": bool(body_action_enabled),
                 "requested": bool(body_action_requested),
@@ -3192,6 +3295,11 @@ def run_adaptation(
             "body_aux_semantic_event_weighting": bool(body_aux_semantic_event_weighting),
             "body_aux_semantic_event_min_factor": float(body_aux_semantic_event_min_factor or 0.0),
             "body_aux_semantic_event_max_factor": float(body_aux_semantic_event_max_factor or 0.0),
+            "body_state_machine_event_weighting": bool(body_state_machine_event_weighting),
+            "body_state_machine_event_factor": float(body_state_machine_event_factor or 0.0),
+            "body_state_machine_non_event_scale": float(body_state_machine_non_event_scale or 0.0),
+            "body_state_machine_operand_event_factor": float(body_state_machine_operand_event_factor or 0.0),
+            "body_state_machine_operand_non_event_scale": float(body_state_machine_operand_non_event_scale or 0.0),
             "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
             "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
             "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -3237,6 +3345,7 @@ def run_adaptation(
         "local_return_closure_weighting": local_return_closure_weighting,
         "closed_state_transition_weighting": closed_state_transition_weighting,
         "body_aux_semantic_event_weighting": body_aux_semantic_event_weighting_summary,
+        "body_state_machine_event_weighting": body_state_machine_event_weighting_summary,
         "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
         "semantic_construction_repair_profile": semantic_construction_repair_profile,
         "strict_target_guard": {
@@ -3559,6 +3668,7 @@ def run_adaptation(
             "local_return_closure_weighting": payload["local_return_closure_weighting"],
             "closed_state_transition_weighting": payload["closed_state_transition_weighting"],
             "body_aux_semantic_event_weighting": payload["body_aux_semantic_event_weighting"],
+            "body_state_machine_event_weighting": payload["body_state_machine_event_weighting"],
             "semantic_construction_repair_profile": payload["semantic_construction_repair_profile"],
             "public_training_rows": 0,
             "external_inference_calls": 0,
@@ -3742,6 +3852,159 @@ def apply_body_aux_semantic_event_weights(
     }
 
 
+ACTION_EVENT_CLASS_BY_ROLE: dict[str, str] = {
+    "return": "return_finalizer",
+    "block_exit": "statement_boundary",
+    "block_enter": "control_transition",
+    "loop": "control_transition",
+    "branch": "control_transition",
+    "assignment": "state_update",
+    "update_operator": "state_update",
+    "comparison": "control_transition",
+    "bool_op": "control_transition",
+    "call_or_method": "traversal_or_call",
+    "attribute": "traversal_or_call",
+    "line_boundary": "statement_boundary",
+    "eos": "return_finalizer",
+}
+
+
+OPERAND_EVENT_CLASS_BY_ROLE: dict[str, str] = {
+    "builtin_function": "traversal_or_call",
+    "method_name": "traversal_or_call",
+    "attribute_name": "traversal_or_call",
+    "assignment_operator": "state_update",
+    "arithmetic_operator": "value_expression",
+    "comparison_operator": "control_transition",
+    "boolean_operator": "control_transition",
+    "return_keyword": "return_finalizer",
+    "control_keyword": "control_transition",
+    "eos": "return_finalizer",
+}
+
+
+def apply_body_state_machine_event_weights(
+    transition_weights: list[list[float]],
+    action_weights: list[list[float]],
+    operand_weights: list[list[float]],
+    action_targets: list[list[int]],
+    operand_targets: list[list[int]],
+    *,
+    enabled: bool,
+    event_factor: float,
+    non_event_scale: float,
+    operand_event_factor: float,
+    operand_non_event_scale: float,
+    split: str,
+) -> tuple[list[list[float]], list[list[float]], list[list[float]], dict[str, Any]]:
+    if not enabled:
+        return transition_weights, action_weights, operand_weights, {
+            "enabled": False,
+            "policy": "not_enabled",
+            "split": split,
+            "reason": "body_state_machine_event_weighting_not_requested",
+            "candidate_generation_credit": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+        }
+    event_factor = max(1.0, float(event_factor if event_factor is not None else 2.25))
+    operand_event_factor = max(1.0, float(operand_event_factor if operand_event_factor is not None else 1.25))
+    non_event_scale = max(0.0, min(1.0, float(non_event_scale if non_event_scale is not None else 0.35)))
+    operand_non_event_scale = max(0.0, min(1.0, float(operand_non_event_scale if operand_non_event_scale is not None else 1.0)))
+
+    def clone(rows: list[list[float]]) -> list[list[float]]:
+        return [[float(value or 0.0) for value in row] for row in rows]
+
+    def role_name(targets: list[list[int]], roles: tuple[str, ...], row_index: int, pos: int) -> str:
+        if row_index >= len(targets) or pos >= len(targets[row_index]):
+            return "ignore"
+        role_id = int(targets[row_index][pos])
+        if 0 <= role_id < len(roles):
+            return roles[role_id]
+        return "other"
+
+    transition_out = clone(transition_weights)
+    action_out = clone(action_weights)
+    operand_out = clone(operand_weights)
+    active_positions = 0
+    event_positions = 0
+    non_event_positions = 0
+    event_class_counts: dict[str, int] = {}
+    action_role_counts: dict[str, int] = {}
+    operand_role_counts: dict[str, int] = {}
+    transition_scale_sum = 0.0
+    action_scale_sum = 0.0
+    operand_scale_sum = 0.0
+
+    row_count = max(len(transition_out), len(action_out), len(operand_out))
+    for row_index in range(row_count):
+        width = max(
+            len(transition_out[row_index]) if row_index < len(transition_out) else 0,
+            len(action_out[row_index]) if row_index < len(action_out) else 0,
+            len(operand_out[row_index]) if row_index < len(operand_out) else 0,
+        )
+        for pos in range(width):
+            transition_weight = transition_out[row_index][pos] if row_index < len(transition_out) and pos < len(transition_out[row_index]) else 0.0
+            action_weight = action_out[row_index][pos] if row_index < len(action_out) and pos < len(action_out[row_index]) else 0.0
+            operand_weight = operand_out[row_index][pos] if row_index < len(operand_out) and pos < len(operand_out[row_index]) else 0.0
+            if max(transition_weight, action_weight, operand_weight) <= 0.0:
+                continue
+            action_role = role_name(action_targets, BODY_ACTION_ROLES, row_index, pos)
+            operand_role = role_name(operand_targets, BODY_OPERAND_ROLES, row_index, pos)
+            event_class = ACTION_EVENT_CLASS_BY_ROLE.get(action_role) or OPERAND_EVENT_CLASS_BY_ROLE.get(operand_role) or ""
+            active_positions += 1
+            action_role_counts[action_role] = action_role_counts.get(action_role, 0) + 1
+            operand_role_counts[operand_role] = operand_role_counts.get(operand_role, 0) + 1
+            if event_class:
+                event_positions += 1
+                event_class_counts[event_class] = event_class_counts.get(event_class, 0) + 1
+                transition_scale = event_factor
+                action_scale = event_factor
+                operand_scale = operand_event_factor
+            else:
+                non_event_positions += 1
+                transition_scale = non_event_scale
+                action_scale = non_event_scale
+                operand_scale = operand_non_event_scale
+            transition_scale_sum += transition_scale
+            action_scale_sum += action_scale
+            operand_scale_sum += operand_scale
+            if row_index < len(transition_out) and pos < len(transition_out[row_index]) and transition_out[row_index][pos] > 0.0:
+                transition_out[row_index][pos] *= transition_scale
+            if row_index < len(action_out) and pos < len(action_out[row_index]) and action_out[row_index][pos] > 0.0:
+                action_out[row_index][pos] *= action_scale
+            if row_index < len(operand_out) and pos < len(operand_out[row_index]) and operand_out[row_index][pos] > 0.0:
+                operand_out[row_index][pos] *= operand_scale
+    return transition_out, action_out, operand_out, {
+        "enabled": True,
+        "policy": "private_body_state_machine_event_weighting_v1",
+        "split": split,
+        "active_positions": active_positions,
+        "event_positions": event_positions,
+        "non_event_positions": non_event_positions,
+        "event_position_rate": round(event_positions / max(1, active_positions), 6),
+        "event_factor": event_factor,
+        "non_event_scale": non_event_scale,
+        "operand_event_factor": operand_event_factor,
+        "operand_non_event_scale": operand_non_event_scale,
+        "mean_transition_scale": round(transition_scale_sum / max(1, active_positions), 6),
+        "mean_action_scale": round(action_scale_sum / max(1, active_positions), 6),
+        "mean_operand_scale": round(operand_scale_sum / max(1, active_positions), 6),
+        "event_class_counts": dict(sorted(event_class_counts.items())),
+        "action_role_counts": dict(sorted(action_role_counts.items())),
+        "operand_role_counts": dict(sorted(operand_role_counts.items())),
+        "score_semantics": (
+            "Private state-machine event weighting over existing auxiliary heads. Event classes are "
+            "derived from admitted private target action/operand roles, not tests, solutions, public "
+            "benchmark payloads, teacher output, generated verifier labels, or hidden answer metadata. "
+            "This changes only loss/eval weights and grants no candidate-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def semantic_construction_profile_missing_components(payload: dict[str, Any]) -> list[str]:
     profile = dict_or_empty(payload.get("semantic_construction_repair_profile"))
     if not bool(profile.get("enabled")):
@@ -3774,6 +4037,7 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
         "local_return_closure_weighting",
         "closed_state_transition_weighting",
         "body_aux_semantic_event_weighting",
+        "body_state_machine_event_weighting",
     ]:
         if name not in required:
             continue
@@ -3782,6 +4046,11 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
             continue
         if name == "body_aux_semantic_event_weighting":
             if not bool(item.get("enabled")) or int(item.get("boosted_positions") or 0) <= 0:
+                missing.append(name)
+            continue
+        if name == "body_state_machine_event_weighting":
+            train = dict_or_empty(item.get("train"))
+            if not bool(item.get("enabled")) or int(train.get("event_positions") or 0) <= 0:
                 missing.append(name)
             continue
         if not bool(item.get("enabled")) or int(item.get("weighted_token_positions") or 0) <= 0:

@@ -192,6 +192,20 @@ techniques from the book, but the immediate implementation wall is no longer
 "add more loss weight." The next registered improvement needs event-level
 semantic-IR/state-machine supervision for traversal, update, finalizer, return
 closure, value expression, and verifier-obligation transitions.
+The state-machine event target follow-up is now implemented and measured in
+`reports/strict_generator_state_machine_event_smoke_summary_20260706.json`.
+It adds a sharper private event policy over the existing transition/action/
+operand heads and activates `1904/4120` train positions plus `466/1013`
+heldout positions around traversal, update, control, finalizer, value, and
+statement-boundary events. The canary is still `RED`: heldout LM improves
+`1.494650 -> 1.441715` and transition loss improves `8.067903 -> 8.060719`,
+but body-action loss/accuracy regresses `2.948527 -> 2.968961` /
+`0.087858 -> 0.080948`, body-operand loss regresses
+`3.036583 -> 3.036793`, tensor-update coverage stays below the hard gate, and
+no routeable checkpoint is kept. This means the next wall is not another
+target-weighting variant. The generator needs a trainable localized
+semantic-IR/state-machine action objective or architecture that can represent
+the event transitions themselves.
 
 ## 2026-07-06 Claude Review Reconciliation
 

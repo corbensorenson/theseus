@@ -1,0 +1,104 @@
+{
+  "policy": "project_theseus_strict_generator_state_machine_event_smoke_summary_v1",
+  "created_utc": "2026-07-06T00:00:00Z",
+  "scope": "compact local summary for private MLX state-machine event target canaries",
+  "source_reports": [
+    {
+      "path": "reports/strict_generator_mlx_private_adaptation_state_machine_event_smoke_20260706.json",
+      "sha256": "ef613e11797d9a815d626c09ffbe08ab0f37937b7d0867e1e6dc5dac2fb9d21f",
+      "trigger_state": "RED"
+    },
+    {
+      "path": "reports/strict_generator_mlx_private_adaptation_state_machine_event_action_smoke_20260706.json",
+      "sha256": "cb8c54e6d99dd14e56997124ed592f55152311c4c23158de118394ad1c14f6b8",
+      "trigger_state": "RED"
+    }
+  ],
+  "implementation_delta": {
+    "script": "scripts/strict_generator_mlx_private_adaptation.py",
+    "added_policy": "private_body_state_machine_event_weighting_v1",
+    "description": "Adds opt-in event-focused weighting over existing body-transition, body-action, and body-operand heads for traversal/call, state-update, control-transition, return/finalizer, value-expression, and statement-boundary roles.",
+    "profile_integration": "strict_direct_body_emission_path_v1 now requires body_state_machine_event_weighting evidence when the profile is used.",
+    "candidate_generation_credit": 0,
+    "fallback_template_router_tool_credit": 0
+  },
+  "canary_result": {
+    "train_rows": 64,
+    "heldout_rows": 16,
+    "heldout_lm_loss_before": 1.49465,
+    "heldout_lm_loss_after": 1.441715,
+    "heldout_lm_improved": true,
+    "heldout_body_transition_loss_before": 8.067903,
+    "heldout_body_transition_loss_after": 8.060719,
+    "heldout_body_transition_improved": true,
+    "heldout_body_action_loss_before": 2.948527,
+    "heldout_body_action_loss_after": 2.968961,
+    "heldout_body_action_accuracy_before": 0.087858,
+    "heldout_body_action_accuracy_after": 0.080948,
+    "heldout_body_action_improved": false,
+    "heldout_body_operand_loss_before": 3.036583,
+    "heldout_body_operand_loss_after": 3.036793,
+    "heldout_body_operand_accuracy_before": 0.047384,
+    "heldout_body_operand_accuracy_after": 0.054294,
+    "heldout_body_operand_improved": false,
+    "parameter_tensor_update_fraction": 0.875,
+    "parameter_element_update_fraction": 0.155002
+  },
+  "event_target_summary": {
+    "train_event_positions": 1904,
+    "train_active_positions": 4120,
+    "train_event_position_rate": 0.462136,
+    "heldout_event_positions": 466,
+    "heldout_active_positions": 1013,
+    "heldout_event_position_rate": 0.46002,
+    "event_class_counts_train": {
+      "control_transition": 516,
+      "return_finalizer": 147,
+      "state_update": 143,
+      "statement_boundary": 621,
+      "traversal_or_call": 415,
+      "value_expression": 62
+    },
+    "event_class_counts_heldout_private_train": {
+      "control_transition": 123,
+      "return_finalizer": 38,
+      "state_update": 36,
+      "statement_boundary": 147,
+      "traversal_or_call": 105,
+      "value_expression": 17
+    }
+  },
+  "failed_gates": [
+    {
+      "severity": "hard",
+      "name": "parameter_tensor_update_recorded",
+      "actual": 0.875,
+      "minimum": 0.9
+    },
+    {
+      "severity": "soft",
+      "name": "parameter_element_update_meaningful",
+      "actual": 0.155002
+    },
+    {
+      "severity": "soft",
+      "name": "body_action_loss_improved_when_enabled"
+    },
+    {
+      "severity": "soft",
+      "name": "body_operand_loss_improved_when_enabled"
+    }
+  ],
+  "no_cheat_counters": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit_count": 0
+  },
+  "claim_boundary": {
+    "promotion_claim": false,
+    "behavior_claim": false,
+    "routeable_checkpoint": false,
+    "interpretation": "The event target is a sharper registered training signal than broad semantic-event weighting. It improves LM and transition loss in this bounded private canary, but action/operand targets still regress and the checkpoint remains rejected.",
+    "next_required_work": "Replace pure target weighting with a trainable localized semantic-IR/state-machine action objective or architecture that can model traversal, update, finalizer, return closure, value expression, and verifier-obligation transitions without fallback/template/tool/router credit."
+  }
+}

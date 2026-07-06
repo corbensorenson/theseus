@@ -182,6 +182,21 @@ evidence shape, but the checkpoint remains rejected and removed. This
 falsifies another pure weighting fix: the next implementation needs localized
 semantic-IR/state-machine event targets for traversal, update, finalizer,
 return closure, value expression, and verifier-obligation transitions.
+The state-machine event target policy has now been implemented and canaried in
+`reports/strict_generator_state_machine_event_smoke_summary_20260706.json`.
+It is a sharper private target policy than the broad semantic-event bridge:
+`1904/4120` train positions and `466/1013` heldout positions are tagged as
+traversal/call, state-update, control-transition, return/finalizer,
+value-expression, or statement-boundary events. The canary still rejects the
+checkpoint. Heldout LM improves `1.494650 -> 1.441715` and transition loss
+improves `8.067903 -> 8.060719`, but body-action loss/accuracy regresses
+`2.948527 -> 2.968961` / `0.087858 -> 0.080948`, body-operand loss regresses
+`3.036583 -> 3.036793`, tensor-update coverage is below the hard gate, and
+public training rows, external inference, and fallback/template/router/tool
+credit remain `0`. The current wall is therefore no longer "add
+state-machine event weighting"; it is a trainable localized semantic-IR or
+state-machine action objective that changes behavior without deterministic
+repair credit.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`
