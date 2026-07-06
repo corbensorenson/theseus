@@ -226,6 +226,26 @@ mismatches while explicitly retaining syntax-invalid learned rows as negative
 candidate evidence. The next behavior-changing implementation is still a
 trainable AST/state-transition head or localized semantic-IR body-construction
 path that consumes the new repair atoms and improves strict private replay.
+The first trainable semantic-slot consumption patch is now in the registered
+MLX private adaptation path rather than a side lane:
+`scripts/strict_generator_mlx_private_adaptation.py` can train/evaluate the
+existing source-conditioned semantic-slot head when a checkpoint target
+vocabulary contains `SLOT:*` labels. The backward-compatibility smoke
+`reports/strict_generator_mlx_private_adaptation_semantic_slot_aux_noop_smoke_20260706.json`
+is `GREEN` on the current `body_tokens` checkpoint and correctly leaves the
+slot auxiliary inactive. A tiny semantic-slot checkpoint smoke,
+`reports/strict_generator_mlx_pretraining_probe_semantic_slot_smoke_20260706.json`,
+is `GREEN`: target mode `plan_semantic_slots_body_tokens_v1`, heldout LM loss
+`7.977254 -> 6.251445`, plan loss `8.106359 -> 6.817652`, and slot loss
+`2.727118 -> 2.204776`, with zero public rows, external inference, fallback,
+template, router, or tool credit. The paired active adaptation smoke
+`reports/strict_generator_mlx_private_adaptation_semantic_slot_aux_active_smoke_20260706.json`
+is intentionally `YELLOW`: it improves heldout LM loss `6.651568 -> 5.230507`
+and plan loss `3.590698 -> 3.4865`, but semantic-slot heldout loss regresses
+`2.250886 -> 2.315585` and accuracy drops `0.307692 -> 0.25`. This means the
+slot-head consumption path is real, but the next wall is balancing/adapting
+semantic-slot supervision so it improves heldout structure instead of
+overfitting the tiny train slice.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

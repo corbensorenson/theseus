@@ -51,17 +51,24 @@ from strict_generator_mlx_decode_eval import (  # noqa: E402
 )
 from strict_generator_mlx_replay_selection import select_family_disjoint_rows  # noqa: E402
 from strict_generator_mlx_pretraining_probe import (  # noqa: E402
+    SEMANTIC_SLOT_ROLES,
     evaluate_loss_mlx,
     evaluate_semantic_plan_mlx,
+    evaluate_semantic_slot_mlx,
     evaluate_source_contrast_mlx,
     allowed_parameter_names_from_source_text,
     parameter_snapshot,
     parameter_update_summary,
+    semantic_aux_source_contrastive_weighted_loss_fn_mlx,
+    semantic_aux_weighted_loss_fn_mlx,
     semantic_plan_sample_weights,
     semantic_plan_target_ids,
     semantic_plan_source_contrastive_weighted_loss_fn_mlx,
     apply_primary_dataflow_weight_override,
     selected_budget,
+    semantic_slot_role_class_summary,
+    semantic_slot_sample_weights,
+    semantic_slot_target_ids,
     semantic_plan_weighted_loss_fn_mlx,
     source_contrastive_weighted_loss_fn_mlx,
     target_loss_weight_rows,
@@ -148,6 +155,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
         ],
         "required_components": [
             "semantic_plan_auxiliary",
+            "semantic_slot_auxiliary",
             "semantic_plan_visible_operation_weighting",
             "source_condition_internalization_weighting",
             "semantic_slot_prefix_weighting",
@@ -163,6 +171,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "private_residual_repair_split": True,
             "source_condition_operation_coverage_min_rows": 2,
             "semantic_plan_loss_weight": 0.08,
+            "semantic_slot_loss_weight": 0.06,
             "semantic_plan_visible_operation_loss_boost": 1.5,
             "source_contrastive_loss_weight": 0.05,
             "source_contrastive_prefix_tokens": 48,
@@ -643,6 +652,15 @@ def main() -> int:
     )
     parser.add_argument("--semantic-slot-prefix-loss-boost", type=float, default=0.0)
     parser.add_argument(
+        "--semantic-slot-loss-weight",
+        type=float,
+        default=0.0,
+        help=(
+            "Private AST-derived semantic slot auxiliary loss weight. This trains the existing "
+            "source-conditioned slot head when the checkpoint target vocabulary contains SLOT:* labels."
+        ),
+    )
+    parser.add_argument(
         "--semantic-slot-prefix-roles",
         default="",
         help=(
@@ -794,6 +812,10 @@ def main() -> int:
             0.0,
             float(args.semantic_slot_prefix_loss_boost if args.semantic_slot_prefix_loss_boost is not None else 0.0),
         ),
+        semantic_slot_loss_weight=max(
+            0.0,
+            float(args.semantic_slot_loss_weight if args.semantic_slot_loss_weight is not None else 0.0),
+        ),
         semantic_slot_prefix_roles=str(args.semantic_slot_prefix_roles or ""),
         loop_expression_synthesis_loss_boost=max(
             0.0,
@@ -894,6 +916,7 @@ def run_adaptation(
     loop_semantic_operation_loss_boost: float,
     loop_semantic_operation_roles: str,
     semantic_slot_prefix_loss_boost: float,
+    semantic_slot_loss_weight: float,
     semantic_slot_prefix_roles: str,
     loop_expression_synthesis_loss_boost: float,
     loop_expression_synthesis_roles: str,
@@ -945,6 +968,7 @@ def run_adaptation(
                     "loop_semantic_operation_loss_boost": float(loop_semantic_operation_loss_boost or 0.0),
                     "loop_semantic_operation_roles": str(loop_semantic_operation_roles or ""),
                     "semantic_slot_prefix_loss_boost": float(semantic_slot_prefix_loss_boost or 0.0),
+                    "semantic_slot_loss_weight": float(semantic_slot_loss_weight or 0.0),
                     "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
                     "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
                     "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -1202,6 +1226,7 @@ def run_adaptation(
             "candidate_generation_credit": 0,
         }
     semantic_plan_enabled = float(semantic_plan_loss_weight or 0.0) > 0.0 and hasattr(model, "semantic_plan_logits")
+    semantic_slot_requested = float(semantic_slot_loss_weight or 0.0) > 0.0 and hasattr(model, "semantic_slot_logits")
     train_examples = [{"source_text": text} for text in train_source_texts]
     loss_weight_budget: dict[str, Any] = {}
     if enable_primary_dataflow_weights:
@@ -1357,6 +1382,15 @@ def run_adaptation(
         if semantic_plan_enabled and semantic_plan_class_ids
         else None
     )
+    semantic_slot_class_summary = semantic_slot_role_class_summary(target_vocab)
+    semantic_slot_class_id_arrays = (
+        [
+            mx.array(list(row.get("class_ids") or []), dtype=mx.int32)
+            for row in semantic_slot_class_summary
+        ]
+        if semantic_slot_requested
+        else None
+    )
     train_plan_targets, train_plan_summary = semantic_plan_target_ids(
         [{"body": body} for body in train_bodies],
         target_vocab=target_vocab,
@@ -1390,6 +1424,38 @@ def run_adaptation(
         pad_id=pad_id,
         boost=semantic_plan_visible_operation_loss_boost,
     )
+    train_slot_targets, train_slot_summary = semantic_slot_target_ids(
+        [{"body": body} for body in train_bodies],
+        target_vocab=target_vocab,
+        pad_id=pad_id,
+        target_mode=target_mode,
+        enabled=semantic_slot_requested,
+    )
+    eval_slot_targets, eval_slot_summary = semantic_slot_target_ids(
+        [{"body": body} for body in eval_bodies],
+        target_vocab=target_vocab,
+        pad_id=pad_id,
+        target_mode=target_mode,
+        enabled=semantic_slot_requested,
+    )
+    train_slot_weights, slot_balance_summary = semantic_slot_sample_weights(
+        train_slot_targets,
+        target_summary=train_slot_summary,
+        pad_id=pad_id,
+        config={
+            "enabled": semantic_slot_requested,
+            "class_balance_enabled": True,
+            "class_balance_policy": "private_adaptation_inverse_sqrt_slot_frequency_by_role_v1",
+            "class_balance_min_weight": 0.25,
+            "class_balance_max_weight": 5.0,
+            "expression_role_weight": 1.75,
+        },
+    )
+    semantic_slot_enabled = (
+        semantic_slot_requested
+        and int(train_slot_summary.get("active_target_count") or 0) > 0
+        and int(eval_slot_summary.get("active_target_count") or 0) > 0
+    )
     before = parameter_snapshot(model, mlx_utils, mx)
     heldout_before = evaluate_loss_mlx(
         model,
@@ -1410,6 +1476,17 @@ def run_adaptation(
         nn=nn,
         plan_class_ids=semantic_plan_class_id_array,
     ) if semantic_plan_enabled else {"loss": None, "accuracy": None, "active_target_count": 0}
+    semantic_slot_before = evaluate_semantic_slot_mlx(
+        model,
+        eval_source_rows,
+        eval_slot_targets,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=semantic_slot_enabled,
+        mx=mx,
+        nn=nn,
+        slot_role_class_ids=semantic_slot_class_id_arrays,
+    )
     source_contrastive_active = float(source_contrastive_loss_weight or 0.0) > 0.0
     source_contrastive_span_mode = "prefix"
     source_contrastive_body_start_id = int(target_vocab.get(PLAN_BODY_START_TOKEN, -1))
@@ -1436,6 +1513,16 @@ def run_adaptation(
     loss_and_grad_plan_contrast = (
         nn.value_and_grad(model, semantic_plan_source_contrastive_weighted_loss_fn_mlx)
         if source_contrastive_active and semantic_plan_enabled
+        else None
+    )
+    loss_and_grad_semantic_aux = (
+        nn.value_and_grad(model, semantic_aux_weighted_loss_fn_mlx)
+        if semantic_slot_enabled
+        else None
+    )
+    loss_and_grad_semantic_aux_contrast = (
+        nn.value_and_grad(model, semantic_aux_source_contrastive_weighted_loss_fn_mlx)
+        if source_contrastive_active and semantic_slot_enabled
         else None
     )
     loss_and_grad_negative_plain = (
@@ -1468,6 +1555,8 @@ def run_adaptation(
     weight_matrix = mx.array(token_weight_rows, dtype=mx.float32)
     plan_target_matrix = mx.array(train_plan_targets, dtype=mx.int32) if semantic_plan_enabled else None
     plan_weight_matrix = mx.array(train_plan_weights, dtype=mx.float32) if semantic_plan_enabled else None
+    slot_target_matrix = mx.array(train_slot_targets, dtype=mx.int32) if semantic_slot_enabled else None
+    slot_weight_matrix = mx.array(train_slot_weights, dtype=mx.float32) if semantic_slot_enabled else None
     negative_source_matrix = mx.array(negative_source_rows, dtype=mx.int32) if negative_replay_active else None
     negative_target_matrix = mx.array(negative_target_rows, dtype=mx.int32) if negative_replay_active else None
     negative_weight_matrix = mx.array(negative_token_weight_rows, dtype=mx.float32) if negative_replay_active else None
@@ -1480,6 +1569,8 @@ def run_adaptation(
     mx.eval(source_matrix, target_matrix, weight_matrix)
     if semantic_plan_enabled:
         mx.eval(plan_target_matrix, plan_weight_matrix)
+    if semantic_slot_enabled:
+        mx.eval(slot_target_matrix, slot_weight_matrix)
     if negative_replay_active:
         mx.eval(negative_source_matrix, negative_target_matrix, negative_weight_matrix)
     if pairwise_replay_active:
@@ -1526,6 +1617,9 @@ def run_adaptation(
             if semantic_plan_enabled:
                 plan_targets = plan_target_matrix[batch_indices]
                 plan_weights = plan_weight_matrix[batch_indices]
+            if semantic_slot_enabled:
+                slot_targets = slot_target_matrix[batch_indices]
+                slot_weights = slot_weight_matrix[batch_indices]
             if negative_replay_active:
                 neg_count = len(negative_source_rows)
                 neg_indices = [
@@ -1709,6 +1803,40 @@ def run_adaptation(
                     mx,
                     nn,
                 )
+            elif source_contrastive_active and semantic_slot_enabled and loss_and_grad_semantic_aux_contrast is not None:
+                shifted_indices = indices[1:] + indices[:1]
+                mismatched_src = source_matrix[mx.array(shifted_indices, dtype=mx.int32)]
+                effective_contrastive_weight = source_contrastive_loss_weight if len(indices) > 1 else 0.0
+                if semantic_plan_enabled:
+                    plan_targets_arg = plan_targets
+                    plan_weights_arg = plan_weights
+                    effective_plan_weight = semantic_plan_loss_weight
+                else:
+                    plan_targets_arg = tgt[:, 0]
+                    plan_weights_arg = weights[:, 0]
+                    effective_plan_weight = 0.0
+                loss, grads = loss_and_grad_semantic_aux_contrast(
+                    model,
+                    src,
+                    mismatched_src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    float(effective_contrastive_weight),
+                    float(source_contrastive_margin),
+                    int(source_contrastive_prefix_tokens),
+                    source_contrastive_span_mode,
+                    source_contrastive_body_start_id,
+                    plan_targets_arg,
+                    plan_weights_arg,
+                    float(effective_plan_weight),
+                    slot_targets,
+                    slot_weights,
+                    float(semantic_slot_loss_weight),
+                    mx,
+                    nn,
+                    semantic_slot_class_id_arrays,
+                )
             elif source_contrastive_active and semantic_plan_enabled and loss_and_grad_plan_contrast is not None:
                 shifted_indices = indices[1:] + indices[:1]
                 mismatched_src = source_matrix[mx.array(shifted_indices, dtype=mx.int32)]
@@ -1765,6 +1893,31 @@ def run_adaptation(
                     nn,
                     semantic_plan_class_id_array,
                 )
+            elif semantic_slot_enabled and loss_and_grad_semantic_aux is not None:
+                if semantic_plan_enabled:
+                    plan_targets_arg = plan_targets
+                    plan_weights_arg = plan_weights
+                    effective_plan_weight = semantic_plan_loss_weight
+                else:
+                    plan_targets_arg = tgt[:, 0]
+                    plan_weights_arg = weights[:, 0]
+                    effective_plan_weight = 0.0
+                loss, grads = loss_and_grad_semantic_aux(
+                    model,
+                    src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    plan_targets_arg,
+                    plan_weights_arg,
+                    float(effective_plan_weight),
+                    slot_targets,
+                    slot_weights,
+                    float(semantic_slot_loss_weight),
+                    mx,
+                    nn,
+                    semantic_slot_class_id_arrays,
+                )
             else:
                 loss, grads = loss_and_grad_plain(model, src, tgt, pad_id, weights, mx, nn)
             optimizer.update(model, grads)
@@ -1798,6 +1951,17 @@ def run_adaptation(
         nn=nn,
         plan_class_ids=semantic_plan_class_id_array,
     ) if semantic_plan_enabled else {"loss": None, "accuracy": None, "active_target_count": 0}
+    semantic_slot_after = evaluate_semantic_slot_mlx(
+        model,
+        eval_source_rows,
+        eval_slot_targets,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=semantic_slot_enabled,
+        mx=mx,
+        nn=nn,
+        slot_role_class_ids=semantic_slot_class_id_arrays,
+    )
     source_contrast_after = evaluate_source_contrast_mlx(
         model,
         eval_source_rows,
@@ -1861,6 +2025,15 @@ def run_adaptation(
             "loop_statement_action_weighting": loop_statement_action_weighting,
             "loop_semantic_operation_weighting": loop_semantic_operation_weighting,
             "semantic_slot_prefix_weighting": semantic_slot_prefix_weighting,
+            "semantic_slot_auxiliary": {
+                "enabled": bool(semantic_slot_enabled),
+                "requested": bool(semantic_slot_requested),
+                "weight": float(semantic_slot_loss_weight or 0.0),
+                "target_mode": target_mode,
+                "train_targets": train_slot_summary,
+                "eval_targets": eval_slot_summary,
+                "class_balance": slot_balance_summary,
+            },
             "loop_expression_synthesis_weighting": loop_expression_synthesis_weighting,
             "plan_conditioned_body_weighting": plan_conditioned_body_weighting,
             "update_contract_consistency_weighting": update_contract_consistency_weighting,
@@ -1934,6 +2107,7 @@ def run_adaptation(
             "loop_semantic_operation_loss_boost": float(loop_semantic_operation_loss_boost or 0.0),
             "loop_semantic_operation_roles": str(loop_semantic_operation_roles or ""),
             "semantic_slot_prefix_loss_boost": float(semantic_slot_prefix_loss_boost or 0.0),
+            "semantic_slot_loss_weight": float(semantic_slot_loss_weight or 0.0),
             "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
             "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
             "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -2049,6 +2223,24 @@ def run_adaptation(
             "uses_public_data": False,
             "candidate_generation_credit": 0,
         },
+        "semantic_slot_label_space": {
+            "policy": "semantic_slot_role_prefix_subspace_v1",
+            "enabled": bool(
+                semantic_slot_requested
+                and any(int(row.get("class_count") or 0) > 0 for row in semantic_slot_class_summary)
+            ),
+            "role_count": len(SEMANTIC_SLOT_ROLES),
+            "role_class_summary": semantic_slot_class_summary,
+            "score_semantics": (
+                "Semantic-slot auxiliary loss and eval are restricted to SLOT:* role prefixes already present "
+                "in the checkpoint target vocabulary. For body-token checkpoints this remains inactive rather "
+                "than manufacturing labels. It does not render code, inspect tests/solutions, use public data, "
+                "call tools, or grant candidate-generation credit."
+            ),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        },
         "semantic_plan_auxiliary": {
             "enabled": semantic_plan_enabled,
             "policy": "private_task_contract_plan_auxiliary_adaptation_v1" if semantic_plan_enabled else "not_enabled",
@@ -2071,6 +2263,36 @@ def run_adaptation(
             "uses_answer_metadata": False,
             "served_at_runtime": False,
             "candidate_generation_credit": 0,
+        },
+        "semantic_slot_auxiliary": {
+            "enabled": semantic_slot_enabled,
+            "requested": semantic_slot_requested,
+            "policy": "private_task_contract_slot_auxiliary_adaptation_v1" if semantic_slot_enabled else "not_enabled",
+            "weight": float(semantic_slot_loss_weight or 0.0),
+            "target_mode": target_mode,
+            "train_targets": train_slot_summary,
+            "eval_targets": eval_slot_summary,
+            "class_balance": slot_balance_summary,
+            "heldout_slot_loss_before": semantic_slot_before.get("loss"),
+            "heldout_slot_loss_after": semantic_slot_after.get("loss"),
+            "heldout_slot_accuracy_before": semantic_slot_before.get("accuracy"),
+            "heldout_slot_accuracy_after": semantic_slot_after.get("accuracy"),
+            "heldout_slot_improved": (
+                semantic_slot_enabled
+                and semantic_slot_before.get("loss") is not None
+                and semantic_slot_after.get("loss") is not None
+                and float(semantic_slot_after["loss"]) < float(semantic_slot_before["loss"])
+            ),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "uses_answer_metadata": False,
+            "served_at_runtime": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Private target-body-derived source-to-slot auxiliary supervision only. It trains the existing "
+                "semantic slot head when SLOT:* labels are present in the checkpoint vocabulary and emits no "
+                "candidate, renderer output, fallback, public-training row, or learned-generation promotion claim."
+            ),
         },
         "parameter_count": update_summary["parameter_count"],
         "parameter_update_fraction": update_summary["parameter_update_fraction"],
@@ -2267,6 +2489,8 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
 
     if "semantic_plan_auxiliary" in required and not bool(component("semantic_plan_auxiliary").get("enabled")):
         missing.append("semantic_plan_auxiliary")
+    if "semantic_slot_auxiliary" in required and not bool(component("semantic_slot_auxiliary").get("enabled")):
+        missing.append("semantic_slot_auxiliary")
     if "semantic_plan_visible_operation_weighting" in required:
         item = component("semantic_plan_visible_operation_weighting")
         if not bool(item.get("enabled")) or int(item.get("boosted_rows") or 0) <= 0:
@@ -2407,6 +2631,37 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             ),
             "hard",
             dict_or_empty(payload.get("semantic_plan_label_space")),
+        ),
+        gate(
+            "semantic_slot_loss_improved_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("semantic_slot_auxiliary")).get("enabled"))
+                or bool(dict_or_empty(payload.get("semantic_slot_auxiliary")).get("heldout_slot_improved"))
+            ),
+            "soft",
+            dict_or_empty(payload.get("semantic_slot_auxiliary")),
+        ),
+        gate(
+            "semantic_slot_label_space_active_when_requested",
+            (
+                not bool(dict_or_empty(payload.get("semantic_slot_auxiliary")).get("requested"))
+                or not bool(dict_or_empty(payload.get("semantic_slot_auxiliary")).get("enabled"))
+                or bool(dict_or_empty(payload.get("semantic_slot_label_space")).get("enabled"))
+            ),
+            "hard",
+            {
+                "semantic_slot_auxiliary": dict_or_empty(payload.get("semantic_slot_auxiliary")),
+                "semantic_slot_label_space": dict_or_empty(payload.get("semantic_slot_label_space")),
+            },
+        ),
+        gate(
+            "semantic_slot_auxiliary_active_when_requested",
+            (
+                not bool(dict_or_empty(payload.get("semantic_slot_auxiliary")).get("requested"))
+                or bool(dict_or_empty(payload.get("semantic_slot_auxiliary")).get("enabled"))
+            ),
+            "soft",
+            dict_or_empty(payload.get("semantic_slot_auxiliary")),
         ),
         gate(
             "source_contrastive_gap_improved_when_enabled",
