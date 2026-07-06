@@ -18,9 +18,9 @@ roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`, phases `3`, `4`,
-`5`, `6`, `7`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19` are
-`wired`, phases `8` and `10` remain partial, and phases `1`, `2`, `9`, and
-`18` are externally frozen until trusted peers are reachable. This is roadmap
+`5`, `6`, `7`, `8`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19` are
+`wired`, phase `10` remains partial, and phases `1`, `2`, `9`, and `18` are
+externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 roadmap gate now requires active core slices to carry a valid current support
@@ -34,8 +34,8 @@ slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backe
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
-work can continue, but strict readiness is currently `RED` because phases `8`
-and `10` remain local partial blockers. Phases `1`, `2`, `9`, and `18` are
+work can continue, but strict readiness is currently `RED` because phase `10`
+remains the local partial blocker. Phases `1`, `2`, `9`, and `18` are
 tracked as external-frozen with current network-doctor evidence:
 `coordinator_unreachable`, `registered_peers_unreachable`,
 `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
@@ -624,9 +624,13 @@ correctly failed closed with `route_state=fail_closed_resource_budget` because
 receipt therefore proves resource-threshold accounting and route fail-closed
 behavior on a larger private replay, but still records `0/10` behavior passes
 and `production_route_eligible=false` with
-`route_state=fail_closed_behavior_quality_zero`. Phase 8 remains partial until
-semantic quality becomes positive and the CUDA/MLX/Metal parity claim is backed
-by comparable real hot-loop evidence.
+`route_state=fail_closed_behavior_quality_zero`.
+`reports/resource_mlx_route_readiness_gate.json` is now `GREEN` with `0` failed
+checks and `0` failed expected-invalid controls, so Phase 8 is wired as a
+resource-route readiness surface. This is not a production-route, model-quality,
+or CUDA/MLX/Metal parity claim: production MLX routing remains disabled while
+behavior is zero, parity remains unclaimed, and the remaining local roadmap wall
+is Phase 10 semantic candidate quality.
 
 Teacher/data governance now has a durable share ledger view:
 `reports/teacher_share_ledger_summary.json` is `GREEN` with

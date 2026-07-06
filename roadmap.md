@@ -188,8 +188,8 @@ remain honestly bounded.
 - Machine-readable roadmap state is governed by
   `configs/roadmap_implementation_matrix.json`. The current roadmap gate is
   `YELLOW` with `0` hard gaps: phase `0` is `implemented`; phases `3`, `4`,
-  `5`, `6`, `7`, `11`, `12`, `13`, `14`, `15`, `16`, and `17` are `wired`;
-  phases `8` and `10` remain partial; phases `1`, `2`, `9`, and `18` are
+  `5`, `6`, `7`, `8`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19` are
+  `wired`; phase `10` remains partial; phases `1`, `2`, `9`, and `18` are
   externally frozen until trusted peers are reachable. The active flagship core
   slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
   current support state as `synthetic-test-backed`. The core-slice support state
@@ -202,8 +202,8 @@ remain honestly bounded.
   pre-training architecture readiness mode:
   `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
   The normal roadmap gate remains `YELLOW` with no hard gaps for implementation
-  work, but strict readiness is currently `RED` because phases `8` and `10`
-  remain local partial blockers. Phases `1`, `2`, `9`, and `18` are tracked as
+  work, but strict readiness is currently `RED` because phase `10` remains the
+  local partial blocker. Phases `1`, `2`, `9`, and `18` are tracked as
   external-frozen with current network-doctor evidence:
   `coordinator_unreachable`, `registered_peers_unreachable`,
   `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
@@ -1743,9 +1743,9 @@ budget, and 0.2 eval rows/sec floor: `budget_ok=true`,
 The new route-eligibility receipt still fail-closes production routing with
 `production_route_eligible=false` and
 `route_state=fail_closed_behavior_quality_zero` because the replay remains
-`0/5` on private behavior. The next Phase 8 patch is broader private replay
-plus semantic candidate-quality repair under explicit resource and no-cheat
-thresholds before any production MLX route claim.
+`0/5` on private behavior. The next resource-route step was the broader replay
+and readiness gate below; semantic candidate-quality repair is now Phase 10
+work before any production MLX route claim.
 
 The broader private MLX replay
 `reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json`
@@ -1761,6 +1761,10 @@ correctly failed closed at a 20s child budget because `rung_25000000` took
 fail-closed behavior over more private rows, not learned capability: behavior
 is still `0/10`, `production_route_eligible=false`, and
 `route_state=fail_closed_behavior_quality_zero`.
+`reports/resource_mlx_route_readiness_gate.json` is now `GREEN` with `0` failed
+checks and `0` failed expected-invalid controls, so Phase 8 is wired as a
+resource-route readiness surface. This does not claim model quality, production
+MLX routing, or CUDA/MLX/Metal parity.
 
 | Phase | Surface | Current state | Next implementation target |
 | --- | --- | --- | --- |
@@ -1772,7 +1776,7 @@ is still `0/10`, `production_route_eligible=false`, and
 | 5 | Daily-Use Assistant Runtime And Dogfood Trace Loop | Wired | Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane. |
 | 6 | Deterministic Tool And Search Substrate | Wired | Keep tool-assisted public/tool-use measurement ledgers separate from model-only scores as future public adapters are added; do not allow deterministic tool receipts to support learned-generation claims. |
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
-| 8 | Resource, Cost, And Mac Acceleration Routing | Partial | Use the broader resource-green MLX replay to drive semantic candidate-quality repair; keep production routing disabled until behavior is positive under latency, no-cheat, integrity, and parity thresholds. |
+| 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
 | 10 | Practical Neural Seed Survival Lane | Partial | Expression-value guard now rejects malformed `isinstance(<comparison>, type)` candidates without public/external/fallback credit; behavior remains `0/4`, so the target is learned state/update/final-return synthesis rather than more syntax-only hygiene. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |

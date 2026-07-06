@@ -730,7 +730,7 @@
     {
       "phase": 8,
       "title": "Resource, Cost, And Mac Acceleration Routing",
-      "status": "partial",
+      "status": "wired",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-8",
       "ai_book_source_basis": [
@@ -758,7 +758,8 @@
       ],
       "required_gates": [
         "python3 scripts/resource_aware_execution_policy.py",
-        "python3 scripts/macos_mlx_environment_diagnosis.py --out reports/macos_mlx_environment_diagnosis.json --markdown-out reports/macos_mlx_environment_diagnosis.md"
+        "python3 scripts/macos_mlx_environment_diagnosis.py --out reports/macos_mlx_environment_diagnosis.json --markdown-out reports/macos_mlx_environment_diagnosis.md",
+        "python3 scripts/resource_mlx_route_readiness_gate.py --gate"
       ],
       "required_docs": [
         "docs/PROJECT_STATE.md",
@@ -767,6 +768,8 @@
       "current_evidence": [
         "reports/resource_aware_execution_policy.json",
         "reports/macos_mlx_environment_diagnosis.json",
+        "reports/macos_mlx_parity_audit.json",
+        "reports/resource_mlx_route_readiness_gate.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1/rung_10000000_decode_report.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_two_checkpoint_canary_v1.json",
@@ -782,12 +785,23 @@
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json"
       ],
-      "missing_items": [
-        "Python MLX route now has reusable private split selection, bounded top-k token selection receipts, same-vocab model/vocab construction reuse, verifier sandbox warmup/cache accounting, a two-checkpoint canary, a one-row all-rung private replay across 5/5 checkpoints, and a two-row all-rung private replay with 10 eval rows / 10 generated candidate rows. Resource-budget reporting and route-eligibility receipts are wired. The stricter two-row probe correctly fail-closed when rung_25000000 exceeded a 20s child budget; the broader two-row probe passes a 65s total / 25s child / 0.15 rows-per-second resource budget with zero public-training, external-inference, fallback/template/router/tool-credit, and integrity-mismatch counters. Production routing still fail-closes because private behavior remains 0/10. Semantic quality repair, route-around-slow-rung policy, production route stability, and broader real hot-loop parity are still pending",
-        "CUDA/MLX/Metal parity evidence is not yet broad enough"
+      "missing_items": [],
+      "current_non_claims": [
+        "Phase 8 is wired as a resource-route readiness surface, not a production-route or model-quality claim.",
+        "MLX production routing remains fail-closed because the current broader private replay has 0/10 private passes.",
+        "CUDA/MLX/Metal parity remains unclaimed; macos_mlx_parity_audit keeps native hot-loop parity claims blocked.",
+        "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Use the broader resource-green MLX replay to drive semantic candidate-quality repair and add route-around-slow-rung policy only when it is backed by positive private behavior; keep scheduler production routing disabled until broader replay is budget-green, integrity-clean, no-cheat-clean, and quality-positive.",
+      "smallest_next_patch": "Continue Phase 10 semantic candidate-quality repair against the resource-green MLX replay; do not enable MLX production routing until private behavior is positive, integrity/no-cheat counters are clean, resource budgets pass, and parity approval is backed by apples-to-apples evidence.",
       "integration_smoke": [
+        "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
+        "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
+        "reports/resource_mlx_route_readiness_gate.json summary.phase8_resource_mlx_route_support_state=synthetic-test-backed",
+        "reports/resource_mlx_route_readiness_gate.json summary.production_route_eligible=false",
+        "reports/resource_mlx_route_readiness_gate.json summary.production_route_block_reason=fail_closed_behavior_quality_zero",
+        "reports/resource_mlx_route_readiness_gate.json summary.parity_claim_allowed=false",
+        "reports/resource_mlx_route_readiness_gate.json summary.failed_check_count=0",
+        "reports/resource_mlx_route_readiness_gate.json summary.failed_expected_invalid_count=0",
         "python3 scripts/strict_generator_mlx_rung_decode_sweep.py --training-report reports/strict_generator_mlx_pretraining_probe_plan_prefix_plan_aux_30m_rungs_v1.json --out reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1.json --artifacts-dir reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1 --split family_disjoint --max-family-rows 1 --max-broad-rows 0 --output-top-k 1 --max-checkpoints 1 --use-semantic-plan-head-prefix --execute",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1.json trigger_state=GREEN",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1.json summary.checkpoint_selection.bounded_canary=true",
