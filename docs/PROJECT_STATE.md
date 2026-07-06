@@ -26,8 +26,10 @@ claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 roadmap gate now requires active core slices to carry a valid current support
 state and evidence refs. A1 is currently `prototype-backed`; the full core
 slice support summary records `A1_claim_ledger_trace_kernel=prototype-backed`,
-`A2_replacement_transaction_kernel=prototype-backed`, and `E1`, `B1`, and `C1`
-as `not_yet_supported`.
+`A2_replacement_transaction_kernel=prototype-backed`,
+`E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
+`B1_assisted_verified_assistant_product_lane=prototype-backed`, and
+`C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `41` active backlog items, `0` stale-source phase
 candidates, `54` public-safe evidence pointers, and `134` active source-sync
@@ -61,6 +63,26 @@ and clean no-cheat counters. Its support state is `prototype-backed`. The
 adopted route is local metadata workflow compression only; it is not learned
 generation, model quality, public transfer, external inference serving, or ASI
 evidence.
+
+The E1 authority/SCIF runtime-adapter kernel is now represented by
+`reports/governance_rights_receipt_suite.json` (`GREEN`). It proves one
+side-effecting assistant/tool fixture through runtime adapter invocation,
+authority transition/use receipts, effect receipt, rollback/no-rollback
+boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid
+controls, and clean no-cheat counters. Its support state is `prototype-backed`.
+This is a reference fixture for the authority membrane, not a claim that every
+runtime route is fully deployed under the E1 adapter.
+
+The C1 correctness/RL/generator survival lane is now represented by
+`reports/correctness_generator_survival_lane_gate.json` (`GREEN`). It proves one
+bounded private verifier-driven learned body-token experiment under the
+preregistered correctness-in-the-loop contract: `36` eligible transformer/hybrid
+candidates across `8` private tasks, independent integrity recomputation,
+selected compile/runtime-load rates of `0.375`, selected/pass-if-any behavior
+`0.0`, no functional promotion, and zero public-training, runtime-external,
+fallback, public-boundary, or integrity-mismatch counters. Its support state is
+`prototype-backed` because it records the falsifying semantic wall cleanly; it is
+not promotion-grade code generation or public-transfer evidence.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with
@@ -133,6 +155,14 @@ That makes the wall candidate-pool semantic quality, not just selector quality
 or fanout width. No public training rows, runtime external inference, fallback
 returns, fixed renderers, routers, tools, or body templates are credited as
 learned generation.
+`reports/correctness_generator_survival_lane_gate.json` now binds that wall to
+the book-reference C1 slice. The stricter assistant replay fixture filters the
+same generator family to integrity-verified transformer/hybrid body-token
+candidates only; it has `36` eligible candidates over `8` private tasks, but
+selected/pass-if-any/functional-promotion rates remain `0.0`. That is a
+reference falsification fixture, not a capability win, and the next private
+repair target stays semantic candidate construction before any public
+calibration spend.
 `scripts/strict_generator_mlx_private_adaptation.py` now has a named private
 repair profile, `strict_full_body_semantic_construction_v1`, that composes the
 existing source-contrastive, semantic-plan, semantic-slot, loop-update,
@@ -278,6 +308,14 @@ schema ready, dogfood metadata written, VCM/context-governor ready, private
 verifier receipt ready, and `0` public training rows/runtime external
 inference/fallback returns. This is product trace cohesion, not a usefulness
 training claim.
+`reports/theseus_assistant_product_lane_gate.json` is now the B1 product-lane
+gate (`GREEN`). It verifies `4/4` assistant route cases, CLI/memory/feedback
+receipts, VCM readiness, deterministic tool evidence, private verifier
+receipts, metadata-only dogfood pressure, VIEA product trace records, and zero
+public-training/runtime-external/fallback counters. Its support state is
+`prototype-backed`. It explicitly preserves the current strict code-generator
+semantic wall as C1 evidence instead of counting product/tool assistance as
+learned generation.
 `reports/procedural_memory_toolification.json` now contributes
 `procedural_memory_toolification_spine_v1` as a first-class producer profile.
 The gate is `GREEN`: it consumed `397` schema-bound assistant/dogfood trace

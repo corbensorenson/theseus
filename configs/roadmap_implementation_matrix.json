@@ -261,7 +261,10 @@
         "reports/candidate_integrity_audit.json",
         "reports/procedural_memory_route_adoption.json",
         "reports/procedural_memory_toolification.json",
-        "reports/procedural_memory_canary_execution.json"
+        "reports/procedural_memory_canary_execution.json",
+        "reports/governance_rights_receipt_suite.json",
+        "reports/vcm_context_governor.json",
+        "reports/theseus_assistant_product_spine_smoke.json"
       ],
       "missing_items": [
         "authority and adapter records are normalized across assistant, planner, execution-spine, Hive scheduler route records, Hive task-submission execution receipt schema smoke, candidate-integrity audit records, private verifier records, project registry SCF route validator, and assistant/Hive runtime route-decision receipt traces; remaining work is a real reachable-peer registered-task receipt proof"
@@ -270,7 +273,8 @@
       "integration_smoke": [],
       "completion_rule": "Every routable implementation can emit a fail-closed authority receipt and exact content-bound route receipt.",
       "implemented_items": [
-        "A2 replacement transaction kernel is prototype-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters."
+        "A2 replacement transaction kernel is prototype-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters.",
+        "E1 authority/SCIF runtime-adapter kernel is prototype-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
       ]
     },
     {
@@ -497,7 +501,9 @@
       ],
       "required_gates": [
         "python3 scripts/theseus_assistant_runtime.py",
-        "python3 scripts/personality_runtime_audit.py"
+        "python3 scripts/personality_runtime_audit.py",
+        "python3 scripts/theseus_assistant_e2e.py",
+        "python3 scripts/theseus_assistant_product_lane_gate.py --gate"
       ],
       "required_docs": [
         "docs/PROJECT_STATE.md",
@@ -519,12 +525,14 @@
         "reports/theseus_assistant_trace_schema_smoke.json",
         "reports/theseus_assistant_trace_schema_trace.jsonl",
         "runtime/dogfood/daily_use_events.jsonl",
-        "data/training_data/high_transfer/private_train/dogfood_daily_use_trace_training_rows.jsonl"
+        "data/training_data/high_transfer/private_train/dogfood_daily_use_trace_training_rows.jsonl",
+        "reports/theseus_assistant_product_lane_gate.json"
       ],
       "implemented_items": [
         "shared assistant_trace/dogfood_outcome schema is registered and consumed by the assistant runtime, VIEA policy_optimization_record, conversation events, and product smoke gates",
         "canonical assistant runtime is GREEN with VCM context ready, assistant VIEA trace complete, dogfood training bridge GREEN, and no public training/external inference/fallback counters",
-        "assistant e2e has 4/4 route cases passing, 80 recent trainable events, 66 completed-or-accepted recent events, 397 local dogfood events, and 396 governed dogfood trace training rows"
+        "assistant e2e has 4/4 route cases passing, 80 recent trainable events, 66 completed-or-accepted recent events, 397 local dogfood events, and 396 governed dogfood trace training rows",
+        "B1 assisted verified assistant product lane is prototype-backed: reports/theseus_assistant_product_lane_gate.json verifies 4/4 assistant route cases, CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence, private verifier receipts, metadata-only dogfood pressure, VIEA product trace records, and no public-training/runtime-external/fallback counters while preserving the code-generator wall as C1 evidence."
       ],
       "missing_items": [],
       "smallest_next_patch": "Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane.",
@@ -532,7 +540,9 @@
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the assistant trace schema and dogfood outcome boundary.\" --intent planning --feedback completed --session-id assistant_trace_schema_smoke --out reports/theseus_assistant_trace_schema_smoke.json --markdown-out reports/theseus_assistant_trace_schema_smoke.md --events-out reports/theseus_assistant_trace_schema_events.jsonl --viea-trace-out reports/theseus_assistant_trace_schema_trace.jsonl --skip-context-refresh",
         "reports/theseus_assistant_trace_schema_smoke.json summary.assistant_trace_schema_ready=true",
         "reports/theseus_assistant_trace_schema_smoke.json gates.assistant_trace_schema_ready.passed=true",
-        "reports/theseus_assistant_trace_schema_smoke.json assistant_viea_trace contains policy_optimization_record with assistant_trace_schema"
+        "reports/theseus_assistant_trace_schema_smoke.json assistant_viea_trace contains policy_optimization_record with assistant_trace_schema",
+        "python3 scripts/theseus_assistant_product_lane_gate.py --gate",
+        "reports/theseus_assistant_product_lane_gate.json summary.b1_assisted_verified_assistant_product_lane_support_state=prototype-backed"
       ],
       "completion_rule": "Corben can use one daily lane and the trace loop records outcome pressure into governed training metadata.",
       "book_followup_items": [
@@ -909,7 +919,8 @@
       "required_gates": [
         "python3 scripts/neural_seed_token_decoder_comparator.py",
         "python3 scripts/code_lm_train_once_fanout.py",
-        "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate"
+        "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
+        "python3 scripts/correctness_generator_survival_lane_gate.py --gate"
       ],
       "required_docs": [
         "docs/PROJECT_STATE.md",
@@ -921,6 +932,11 @@
         "reports/neural_seed_strict_generator_fanout_receipt.json",
         "reports/neural_seed_strict_generator_fanout_receipt.md",
         "reports/neural_seed_strict_generator_fanout_receipt_budget8_private_probe.json",
+        "reports/correctness_generator_survival_lane_gate.json",
+        "reports/assistant_code_private_replay_probe.json",
+        "reports/private_candidate_replay_contract_audit_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
+        "reports/candidate_integrity_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
+        "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
         "reports/strict_generator_mlx_private_adaptation_semantic_construction_profile_semantic_slot_private_smoke_v1.json",
         "reports/strict_generator_mlx_decode_eval_semantic_construction_profile_broad4_v1.json"
       ],
@@ -928,7 +944,7 @@
         "strict full-body token candidates now have independent replay/loadability/functionality receipts, but behavior quality remains weak at 5/22 private eval tasks in the current receipt; increasing private replay candidate cap to 8 did not improve behavior, and the blind semantic residual plus selector/oracle diagnosis finds 17 runtime-loaded failures dominated by statically plausible but algorithmically wrong candidates, with baseline rank, prompt/AST-only blind rank, and full-pool pass-if-any oracle all stuck at 5/22",
         "the strict_full_body_semantic_construction_v1 MLX repair profile now activates the required private semantic-plan/slot/loop/expression/update losses on the semantic-slot checkpoint, but the follow-up broad-private decode still scores 0/4 with zero accepted strict candidate rows and learned beams starving inside repeated loop-update prefixes without local returns",
         "the old Rust/template-like fanout inventory remains a separate baseline surface and must not be used as practical learned-generation promotion evidence",
-        "C1 capability research lane must be bounded to a verifier-driven learned body-token experiment with causal ablations; do not count templates, routers, tools, semantic renderers, or public data as learned generation."
+        "C1 capability research lane now has a bounded verifier-driven learned body-token experiment gate, but the clean transformer/hybrid private replay records a falsifying semantic wall: 36 eligible integrity-verified candidates across 8 private tasks, selected/pass-if-any behavior 0.0, no promotion, and no public/external/fallback counters."
       ],
       "smallest_next_patch": "Improve learned loop exit/local-return synthesis and body-transition control in the transformer/hybrid strict full-body generator: use only prompt/signature/private licensed training rows plus generated-prefix AST/state features to teach when to close loop-update calls, leave loops, and emit nontrivial local returns; do not use tests, solutions, hidden labels, decoder-contract target fields, public data, tools, templates, renderers, or fallback returns.",
       "integration_smoke": [
@@ -946,7 +962,16 @@
         "reports/neural_seed_strict_generator_fanout_receipt.json summary.selector_ablation.baseline_to_oracle_pass_delta=0",
         "reports/neural_seed_strict_generator_fanout_receipt.json summary.selector_ablation.selector_diagnosis=candidate_pool_semantic_quality_gap",
         "reports/neural_seed_strict_generator_fanout_receipt_budget8_private_probe.json summary.combined.intended_behavior_pass_rate=0.227273",
-        "python3 -m py_compile scripts/code_lm_train_once_fanout.py scripts/neural_seed_strict_generator_fanout_receipt.py",
+        "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
+        "reports/correctness_generator_survival_lane_gate.json trigger_state=GREEN",
+        "reports/correctness_generator_survival_lane_gate.json summary.eligible_candidate_count=36",
+        "reports/correctness_generator_survival_lane_gate.json summary.selected_intended_behavior_pass_rate=0.0",
+        "reports/correctness_generator_survival_lane_gate.json summary.pass_if_any_rate=0.0",
+        "reports/correctness_generator_survival_lane_gate.json summary.falsifying_wall_recorded=true",
+        "reports/correctness_generator_survival_lane_gate.json summary.public_training_rows_written=0",
+        "reports/correctness_generator_survival_lane_gate.json summary.external_inference_calls=0",
+        "reports/correctness_generator_survival_lane_gate.json summary.fallback_return_count=0",
+        "python3 -m py_compile scripts/code_lm_train_once_fanout.py scripts/neural_seed_strict_generator_fanout_receipt.py scripts/correctness_generator_survival_lane_gate.py",
         "scripts/code_lm_train_once_fanout.py contains strict_generator_fanout_receipt_summary closure gate; next refreshed closure report must cite summary.strict_generator_fanout_receipt.ready=true"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence."
@@ -1255,7 +1280,8 @@
         "reports/viea_verified_procedural_tools.json",
         "scripts/procedural_memory_canary_executor.py",
         "scripts/procedural_memory_route_adoption_gate.py",
-        "scripts/procedural_memory_toolification_gate.py"
+        "scripts/procedural_memory_toolification_gate.py",
+        "reports/theseus_assistant_product_lane_gate.json"
       ],
       "missing_items": [],
       "smallest_next_patch": "No Phase 15 blocker remains. Future procedural candidates must reuse the same guarded adoption transaction, rollback criteria, and route_binding_contract before default routing.",
@@ -1499,11 +1525,12 @@
         "reports/hive_artifact_index_smoke.json",
         "reports/hive_artifact_sync.json",
         "reports/hive_artifact_merge_summary.json",
-        "reports/roadmap_implementation_gate.json"
+        "reports/roadmap_implementation_gate.json",
+        "reports/theseus_assistant_product_spine_smoke.json",
+        "reports/vcm_context_governor.json"
       ],
       "missing_items": [
-        "trusted-peer Hive artifact endpoint proof remains pending until a trusted peer is reachable; local operator audit/export receipts and local artifact payload citations are now live and VIEA-gated",
-        "E1 authority/SCIF runtime-adapter kernel still needs a side-effecting assistant task with authority transition, adapter invocation, effect receipt, rollback/no-rollback residual, confused-deputy denial, and fake-secret handle proof."
+        "trusted-peer Hive artifact endpoint proof remains pending until a trusted peer is reachable; local operator audit/export receipts and local artifact payload citations are now live and VIEA-gated"
       ],
       "smallest_next_patch": "When a trusted peer is reachable, validate remote `/api/hive/artifacts` and `/api/hive/artifact` payload citations through the same operator governance audit, VIEA route-validator, and claim-ledger path.",
       "integration_smoke": [
@@ -1522,7 +1549,10 @@
         "reports/viea_spine_record_gate.json profiles governance_rights_receipt_spine_v1 passed=true",
         "reports/viea_spine_record_gate.json profiles hive_operator_governance_audit_spine_v1 passed=true"
       ],
-      "completion_rule": "Every material route has explicit rights, authority, hard vetoes, typed failure boundaries, and incident/abstention behavior."
+      "completion_rule": "Every material route has explicit rights, authority, hard vetoes, typed failure boundaries, and incident/abstention behavior.",
+      "implemented_items": [
+        "E1 authority/SCIF runtime-adapter kernel is prototype-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
+      ]
     },
     {
       "phase": 19,
@@ -1841,7 +1871,24 @@
           18
         ],
         "target_support_state": "synthetic-test-backed",
-        "minimum_done": "One side-effecting assistant/tool task emits authority transition, adapter invocation, effect receipt, rollback/no-rollback residual, confused-deputy denial, and fake-secret handle proof."
+        "minimum_done": "One side-effecting assistant/tool task emits authority transition, adapter invocation, effect receipt, rollback/no-rollback residual, confused-deputy denial, and fake-secret handle proof.",
+        "current_support_state": "prototype-backed",
+        "current_state": "GREEN",
+        "current_evidence_refs": [
+          "reports/governance_rights_receipt_suite.json",
+          "reports/theseus_assistant_product_spine_smoke.json",
+          "reports/vcm_context_governor.json"
+        ],
+        "current_validation_commands": [
+          "python3 scripts/governance_rights_receipt_suite.py",
+          "python3 scripts/vcm_context_governor_gate.py",
+          "python3 scripts/roadmap_implementation_gate.py --gate"
+        ],
+        "current_non_claims": [
+          "prototype-backed E1 proves one authority/SCIF/runtime-adapter receipt fixture, not universal deployed runtime enforcement",
+          "Digital SCIF proof exchanges handles and sanitized summaries, not raw secret or private user payloads",
+          "assistant/tool receipts remain product/governance evidence and do not support learned-generation claims"
+        ]
       },
       {
         "slice_id": "B1_assisted_verified_assistant_product_lane",
@@ -1852,7 +1899,27 @@
           15
         ],
         "target_support_state": "empirical-test-backed",
-        "minimum_done": "The local assistant is usable on real repo tasks with VCM/tool/verifier receipts and metadata-only dogfood outcomes while separating product usefulness from learned-generation claims."
+        "minimum_done": "The local assistant is usable on real repo tasks with VCM/tool/verifier receipts and metadata-only dogfood outcomes while separating product usefulness from learned-generation claims.",
+        "current_support_state": "prototype-backed",
+        "current_state": "GREEN",
+        "current_evidence_refs": [
+          "reports/theseus_assistant_product_lane_gate.json",
+          "reports/theseus_assistant_e2e.json",
+          "reports/theseus_assistant_product_spine_smoke.json",
+          "reports/theseus_assistant_product_spine_trace.jsonl",
+          "configs/assistant_trace_schema.json"
+        ],
+        "current_validation_commands": [
+          "python3 scripts/theseus_assistant_e2e.py",
+          "python3 scripts/theseus_assistant_product_lane_gate.py --gate",
+          "python3 scripts/viea_spine_record_gate.py --gate",
+          "python3 scripts/roadmap_implementation_gate.py --gate"
+        ],
+        "current_non_claims": [
+          "prototype-backed B1 proves the assisted local product lane is wired and receipt-backed, not ChatGPT-level utility",
+          "tool-assisted, deterministic, and verifier-assisted behavior stays separate from learned-generation capability",
+          "the strict learned code-generator semantic wall is preserved as C1 negative evidence rather than hidden by product usefulness"
+        ]
       },
       {
         "slice_id": "C1_correctness_rl_and_generator_survival_lane",
@@ -1863,7 +1930,31 @@
           12
         ],
         "target_support_state": "synthetic-test-backed",
-        "minimum_done": "One bounded private verifier-driven generator experiment improves unassisted learned body-token behavior or records a falsifying wall; public benchmarks remain calibration-only."
+        "minimum_done": "One bounded private verifier-driven generator experiment improves unassisted learned body-token behavior or records a falsifying wall; public benchmarks remain calibration-only.",
+        "current_support_state": "prototype-backed",
+        "current_state": "GREEN",
+        "current_evidence_refs": [
+          "reports/correctness_generator_survival_lane_gate.json",
+          "reports/assistant_code_private_replay_probe.json",
+          "reports/private_candidate_replay_contract_audit_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
+          "reports/candidate_integrity_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
+          "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
+          "reports/neural_seed_strict_generator_fanout_receipt.json",
+          "configs/correctness_in_loop_generator_experiments.json"
+        ],
+        "current_validation_commands": [
+          "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
+          "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
+          "python3 scripts/policy_optimization_gate.py",
+          "python3 scripts/generation_mode_gate.py",
+          "python3 scripts/roadmap_implementation_gate.py --gate"
+        ],
+        "current_non_claims": [
+          "prototype-backed C1 proves one clean bounded private verifier-driven learned body-token experiment, not promotion-grade code generation",
+          "the current transformer/hybrid replay is a falsifying semantic wall: selected/pass-if-any behavior remains zero on the strict private probe",
+          "routers, templates, private ngrams, semantic renderers, deterministic tools, and fallback returns remain non-credit for learned generation",
+          "public benchmarks remain calibration-only and no public benchmark artifacts enter training rows"
+        ]
       }
     ]
   },

@@ -194,8 +194,34 @@ remain honestly bounded.
   slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
   current support state as `prototype-backed`. The core-slice support state
   summary now records `A1_claim_ledger_trace_kernel=prototype-backed`,
-  `A2_replacement_transaction_kernel=prototype-backed`, and leaves `E1`, `B1`,
-  and `C1` explicitly `not_yet_supported`.
+  `A2_replacement_transaction_kernel=prototype-backed`,
+  `E1_authority_scif_runtime_adapter_kernel=prototype-backed`,
+  `B1_assisted_verified_assistant_product_lane=prototype-backed`, and
+  `C1_correctness_rl_and_generator_survival_lane=prototype-backed`.
+- The E1 authority/SCIF runtime-adapter kernel is prototype-backed:
+  `reports/governance_rights_receipt_suite.json` proves one side-effecting
+  assistant/tool fixture through runtime adapter invocation, authority
+  transition/use receipts, effect receipt, rollback/no-rollback boundary,
+  confused-deputy denial, Digital SCIF handle proof, expected-invalid controls,
+  and clean no-cheat counters. This is a reference authority-membrane fixture,
+  not a claim that every runtime route has universal deployed E1 enforcement.
+- The B1 assisted verified assistant product lane is prototype-backed:
+  `reports/theseus_assistant_product_lane_gate.json` verifies the existing
+  assistant runtime surface across `4/4` route cases, CLI/memory/feedback
+  receipts, VCM readiness, deterministic tool evidence, private verifier
+  receipts, metadata-only dogfood pressure, VIEA product trace records, and
+  zero public-training/runtime-external/fallback counters. The gate preserves
+  the strict code-generator semantic wall as C1 negative evidence rather than
+  laundering product usefulness into learned-generation capability.
+- The C1 correctness/RL/generator survival lane is prototype-backed:
+  `reports/correctness_generator_survival_lane_gate.json` verifies one bounded
+  private verifier-driven learned body-token experiment under the preregistered
+  correctness-in-the-loop contract. The fixture has `36` eligible
+  transformer/hybrid candidates over `8` private tasks, independent integrity
+  recomputation, selected compile/runtime-load rates of `0.375`, zero
+  selected/pass-if-any functional behavior, zero promotion, and zero
+  public-training/runtime-external/fallback/boundary counters. This records a
+  clean falsifying semantic wall, not a learned-generation win.
 - The AI_book crosswalk is intentionally sticky: it now indexes `1703` AI_book
   source files, has `41` active backlog items, `0` stale-source phase
   candidates, `54` public-safe evidence pointers, and `134` active source-sync
@@ -288,6 +314,15 @@ remain honestly bounded.
   semantic construction rather than fanout width or selector quality. No public data, teacher calls, fallback returns,
   fixed renderers, routers, tools, or templates are credited as learned
   generation.
+- C1 is now explicitly bound to that wall by
+  `reports/correctness_generator_survival_lane_gate.json`. The stricter
+  transformer/hybrid replay fixture verifies `36` integrity-clean candidates
+  across `8` private tasks, selected compile/runtime-load rates of `0.375`, and
+  selected/pass-if-any behavior `0.0`. This supports the book-reference C1 slice
+  as a falsification fixture, while leaving Phase 10 partial until the learned
+  generator improves semantic candidate construction without templates, routers,
+  deterministic tools, fallback returns, public data, or hidden answer-derived
+  fields.
 - Phase 10 also now has a named MLX private repair profile:
   `strict_full_body_semantic_construction_v1` in
   `scripts/strict_generator_mlx_private_adaptation.py`. The profile composes

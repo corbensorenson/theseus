@@ -2391,7 +2391,8 @@
       "required_evidence": [
         "assistant runtime status",
         "assistant e2e report",
-        "dogfood event log"
+        "dogfood event log",
+        "assistant product lane gate"
       ],
       "canonical_implementation_id": "impl.theseus_assistant_runtime.v1",
       "io_contract": {
@@ -3734,7 +3735,7 @@
       "canonical_entrypoint": "scripts/neural_seed_token_decoder_comparator.py",
       "swappable_under_contract": true,
       "replacement_policy": "Successors must keep prompt/signature-only input, independent integrity audit, private replay verification, and no fallback/template/router credit.",
-      "verification_command": "python3 scripts/blind_information_flow_audit.py && python3 scripts/candidate_integrity.py --candidates reports/neural_seed_token_decoder_candidates_strict_body_tokens.jsonl --out reports/candidate_integrity_strict_body_tokens.json --markdown-out reports/candidate_integrity_strict_body_tokens.md && python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_visible_source.py scripts/neural_seed_static_coherence.py scripts/neural_seed_expression_value_guard.py scripts/neural_seed_decode_static_guard.py scripts/neural_seed_candidate_evidence_summary.py scripts/neural_seed_teacher_distillation_rows.py scripts/neural_seed_full_state_pretraining.py scripts/neural_seed_token_model_backend.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/neural_seed_route_memory.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_guards.py scripts/strict_generator_mlx_decode_plans.py scripts/strict_generator_mlx_source_text.py scripts/strict_generator_mlx_decode_reporting.py scripts/strict_generator_mlx_specialist_routing.py scripts/strict_generator_mlx_private_adaptation.py scripts/strict_generator_mlx_adaptation_weights.py scripts/strict_generator_mlx_adaptation_selection.py scripts/strict_generator_mlx_replay_selection.py scripts/strict_generator_mlx_pretraining_probe.py scripts/strict_generator_mlx_rung_decode_sweep.py scripts/strict_generator_pretraining_spine.py scripts/trainable_transformer_hybrid_code_generator_v1.py scripts/code_lm_private_verifier.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/neural_seed_token_decoder_comparator.py && python3 scripts/code_lm_private_verifier.py --spine-smoke && python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate && python3 scripts/viea_spine_record_gate.py --gate",
+      "verification_command": "python3 scripts/blind_information_flow_audit.py && python3 scripts/candidate_integrity.py --candidates reports/neural_seed_token_decoder_candidates_strict_body_tokens.jsonl --out reports/candidate_integrity_strict_body_tokens.json --markdown-out reports/candidate_integrity_strict_body_tokens.md && python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_visible_source.py scripts/neural_seed_static_coherence.py scripts/neural_seed_expression_value_guard.py scripts/neural_seed_decode_static_guard.py scripts/neural_seed_candidate_evidence_summary.py scripts/neural_seed_teacher_distillation_rows.py scripts/neural_seed_full_state_pretraining.py scripts/neural_seed_token_model_backend.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/neural_seed_route_memory.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_guards.py scripts/strict_generator_mlx_decode_plans.py scripts/strict_generator_mlx_source_text.py scripts/strict_generator_mlx_decode_reporting.py scripts/strict_generator_mlx_specialist_routing.py scripts/strict_generator_mlx_private_adaptation.py scripts/strict_generator_mlx_adaptation_weights.py scripts/strict_generator_mlx_adaptation_selection.py scripts/strict_generator_mlx_replay_selection.py scripts/strict_generator_mlx_pretraining_probe.py scripts/strict_generator_mlx_rung_decode_sweep.py scripts/strict_generator_pretraining_spine.py scripts/trainable_transformer_hybrid_code_generator_v1.py scripts/code_lm_private_verifier.py scripts/correctness_generator_survival_lane_gate.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/neural_seed_token_decoder_comparator.py && python3 scripts/code_lm_private_verifier.py --spine-smoke && python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate && python3 scripts/correctness_generator_survival_lane_gate.py --gate && python3 scripts/viea_spine_record_gate.py --gate",
       "role": "survival",
       "trust_tier": "governed_training_candidate",
       "dependencies": [
@@ -3762,13 +3763,15 @@
         "scripts/strict_generator_mlx_adaptation_selection.py",
         "scripts/strict_generator_mlx_replay_selection.py",
         "scripts/neural_seed_strict_generator_fanout_receipt.py",
-        "scripts/code_lm_train_once_fanout.py"
+        "scripts/code_lm_train_once_fanout.py",
+        "scripts/correctness_generator_survival_lane_gate.py"
       ],
       "evidence_outputs": [
         "reports/private_verifier_spine_smoke.json",
         "reports/private_verifier_spine_smoke.md",
         "reports/neural_seed_strict_generator_fanout_receipt.json",
-        "reports/neural_seed_strict_generator_fanout_receipt.md"
+        "reports/neural_seed_strict_generator_fanout_receipt.md",
+        "reports/correctness_generator_survival_lane_gate.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -4978,7 +4981,7 @@
       "canonical_entrypoint": "scripts/theseus_assistant_runtime.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve zero external runtime inference and dogfood outcome event semantics.",
-      "verification_command": "python3 scripts/theseus_assistant_e2e.py",
+      "verification_command": "python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
       "role": "runtime_serving",
       "trust_tier": "local_runtime_only",
       "dependencies": [
@@ -4993,7 +4996,8 @@
         "scripts/neural_seed_full_state_pretraining.py",
         "scripts/neural_seed_token_model_backend.py",
         "scripts/neural_seed_candidate_generation.py",
-        "scripts/neural_seed_report_io.py"
+        "scripts/neural_seed_report_io.py",
+        "scripts/theseus_assistant_product_lane_gate.py"
       ],
       "evidence_outputs": [
         "reports/theseus_assistant_runtime.json",
@@ -5019,7 +5023,8 @@
         "reports/assistant_code_private_replay_probe.json",
         "reports/assistant_code_private_replay_probe.md",
         "reports/theseus_assistant_state_report.json",
-        "reports/theseus_assistant_state_report.md"
+        "reports/theseus_assistant_state_report.md",
+        "reports/theseus_assistant_product_lane_gate.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -5073,7 +5078,8 @@
             "scripts/viea_spine_records.py",
             "configs/assistant_trace_schema.json",
             "configs/vcm_context_governor.json",
-            "scripts/vcm_context_governor_gate.py"
+            "scripts/vcm_context_governor_gate.py",
+            "scripts/theseus_assistant_product_lane_gate.py"
           ],
           "writes": [
             "reports/theseus_assistant_runtime.json",
@@ -5099,7 +5105,8 @@
             "reports/assistant_code_private_replay_probe.json",
             "reports/assistant_code_private_replay_probe.md",
             "reports/theseus_assistant_state_report.json",
-            "reports/theseus_assistant_state_report.md"
+            "reports/theseus_assistant_state_report.md",
+            "reports/theseus_assistant_product_lane_gate.json"
           ],
           "migration_required": false,
           "rollback_mode": "route_containment_plus_registered_successor_or_prior_evidence_view"
@@ -6753,6 +6760,7 @@
         "scripts/trainable_transformer_hybrid_code_generator_v1.py",
         "scripts/canonical_survival_lane_ablation_v1.py",
         "scripts/strict_generator_mlx_*.py",
+        "scripts/correctness_generator_survival_lane_gate.py",
         "scripts/strict_generator_pretraining_spine.py",
         "scripts/student_*candidate*.py",
         "scripts/*candidate*generator*.py",
@@ -6769,7 +6777,8 @@
         "reports/private_verifier_spine_smoke.json",
         "reports/private_verifier_spine_smoke.md",
         "reports/neural_seed_strict_generator_fanout_receipt.json",
-        "reports/neural_seed_strict_generator_fanout_receipt.md"
+        "reports/neural_seed_strict_generator_fanout_receipt.md",
+        "reports/correctness_generator_survival_lane_gate.json"
       ],
       "max_report_age_hours": 168,
       "report_output_policies": {
@@ -7180,7 +7189,8 @@
         "scripts/theseus_assistant_e2e.py",
         "scripts/theseus_assistant_state_report.py",
         "configs/assistant_trace_schema.json",
-        "configs/theseus_assistant_runtime.json"
+        "configs/theseus_assistant_runtime.json",
+        "scripts/theseus_assistant_product_lane_gate.py"
       ],
       "canonical": "scripts/theseus_assistant_runtime.py",
       "report_outputs": [
@@ -7211,9 +7221,10 @@
         "reports/assistant_code_private_replay_probe.json",
         "reports/assistant_code_private_replay_probe.md",
         "reports/theseus_assistant_state_report.json",
-        "reports/theseus_assistant_state_report.md"
+        "reports/theseus_assistant_state_report.md",
+        "reports/theseus_assistant_product_lane_gate.json"
       ],
-      "verification_command": "python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl",
+      "verification_command": "python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
       "cleanup_policy": "canonical user-facing assistant loop; must compose checkpoint session memory, VCM context, dogfood feedback, deterministic tools, planning, and practical code routing rather than creating parallel chat lanes",
       "abstraction_id": "assistant_runtime_contract",
       "major_surface": true,
