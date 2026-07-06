@@ -893,8 +893,11 @@ def source_condition_expectation_from_source_text(source_text: str) -> dict[str,
     lower = text.lower()
     args = visible_argument_names_from_source_text(text)
     operation_tags = visible_operation_tags_from_source_text(text)
+    type_tags = set(visible_tags_from_source_text(text, "visible_type_shape_tags "))
+    intent_tags = set(visible_tags_from_source_text(text, "visible_intent_tags "))
     empty_or_default = any(token in lower for token in ["empty", "non-empty", "nonempty", "non-sequence", "nonsequence", "default"])
-    if (not empty_or_default or len(args) < 2) and not operation_tags:
+    graph_visible = bool("shape_graph" in type_tags or "intent_graph" in intent_tags or "op_graph_walk" in operation_tags)
+    if (not empty_or_default or len(args) < 2) and not operation_tags and not graph_visible:
         return {
             "enabled": False,
             "policy": "prompt_visible_source_condition_expectation_v2",
@@ -917,6 +920,7 @@ def source_condition_expectation_from_source_text(source_text: str) -> dict[str,
         "requires_first_item_return": has_empty_default and ("first" in lower and ("item" in lower or "sequence" in lower)),
         "requires_sequence_type_guard": has_empty_default and "sequence" in lower,
         "requires_operation_evidence": bool(operation_tags),
+        "requires_graph_walk_evidence": graph_visible,
         "required_features": [
             "truthiness_guard",
             "sequence_type_guard",
@@ -924,11 +928,12 @@ def source_condition_expectation_from_source_text(source_text: str) -> dict[str,
             "guarded_first_item_return",
             "default_return",
             "operation_evidence",
+            "graph_walk_evidence",
         ],
         "score_semantics": (
             "Derived only from strict prompt/signature source text. It captures visible empty/default "
-            "handling expectations and broad operation tags for decode search diagnostics and optional "
-            "ranking; it does not use "
+            "handling expectations, graph-walk obligations from visible graph intent/type tags, and broad "
+            "operation tags for decode search diagnostics and optional ranking; it does not use "
             "tests, solutions, task ids, category labels, verifier output, public benchmark payloads, or "
             "teacher output."
         ),
@@ -2871,6 +2876,7 @@ def source_condition_adequacy_for_body(
     has_guarded_first_item_return = source_condition_body_has_guarded_first_item_return(body, truthiness_arg)
     has_guarded_data_return = source_condition_body_has_guarded_data_return(body, truthiness_arg)
     operation_evidence = source_condition_operation_evidence_for_body(body, expectation)
+    graph_walk_evidence = source_condition_graph_walk_evidence_for_body(body, expectation)
     missing: list[str] = []
     if bool(expectation.get("requires_truthiness_guard")) and not has_truthiness:
         missing.append("truthiness_guard")
@@ -2884,6 +2890,8 @@ def source_condition_adequacy_for_body(
         missing.append("guarded_first_item_return")
     if bool(expectation.get("requires_operation_evidence")) and not bool(operation_evidence.get("has_operation_evidence")):
         missing.append("operation_evidence")
+    if bool(expectation.get("requires_graph_walk_evidence")) and not bool(graph_walk_evidence.get("has_graph_walk_evidence")):
+        missing.append("graph_walk_evidence")
     satisfied = (
         int(bool(has_truthiness))
         + int(bool(has_default))
@@ -2891,6 +2899,7 @@ def source_condition_adequacy_for_body(
         + int(bool(has_guarded_data_return))
         + int(bool(has_guarded_first_item_return))
         + int(bool(operation_evidence.get("has_operation_evidence")))
+        + int(bool(graph_walk_evidence.get("has_graph_walk_evidence")))
     )
     return {
         "enabled": True,
@@ -2905,11 +2914,13 @@ def source_condition_adequacy_for_body(
         "has_guarded_data_return": bool(has_guarded_data_return),
         "has_operation_evidence": bool(operation_evidence.get("has_operation_evidence")),
         "operation_evidence": operation_evidence,
+        "has_graph_walk_evidence": bool(graph_walk_evidence.get("has_graph_walk_evidence")),
+        "graph_walk_evidence": graph_walk_evidence,
         "truthiness_arg": truthiness_arg,
         "default_arg": default_arg,
         "score_semantics": (
             "Task-blind AST/text adequacy check for prompt-visible empty/default behavior and broad "
-            "operation tags. It sees only the decoded body and source-text-derived expectations."
+            "operation or graph-walk tags. It sees only the decoded body and source-text-derived expectations."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
@@ -3157,6 +3168,95 @@ def source_condition_operation_exploration_tokens(
     return list(dict.fromkeys(choices))[:5]
 
 
+def source_condition_graph_walk_evidence_for_body(body: str, expectation: dict[str, Any]) -> dict[str, Any]:
+    if not bool(expectation.get("requires_graph_walk_evidence")):
+        return {
+            "enabled": False,
+            "has_graph_walk_evidence": False,
+            "candidate_generation_credit": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+        }
+    function = parsed_decode_guard_function(body, allowed_names=None)
+    loop_count = 0
+    comparison_count = 0
+    branch_count = 0
+    subscript_count = 0
+    mutation_call_count = 0
+    traversal_call_count = 0
+    graph_state_name_count = 0
+    graph_state_names = {
+        "adj",
+        "edges",
+        "frontier",
+        "graph",
+        "neighbors",
+        "next_nodes",
+        "queue",
+        "seen",
+        "stack",
+        "visited",
+        "dist",
+        "distance",
+        "distances",
+    }
+    call_names: Counter[str] = Counter()
+    assigned_names: Counter[str] = Counter()
+    if function is not None:
+        for node in ast.walk(function):
+            if isinstance(node, (ast.For, ast.While, ast.comprehension)):
+                loop_count += 1
+            elif isinstance(node, ast.Compare):
+                comparison_count += 1
+            elif isinstance(node, ast.If):
+                branch_count += 1
+            elif isinstance(node, ast.Subscript):
+                subscript_count += 1
+            elif isinstance(node, ast.Call):
+                call_name = action_trace_call_name(node)
+                if call_name:
+                    call_names[call_name] += 1
+                    basename = call_name.rsplit(".", 1)[-1]
+                    if basename in LOOP_PLAN_MUTATION_METHODS:
+                        mutation_call_count += 1
+                    if basename in {"append", "add", "extend", "get", "items", "pop", "popleft", "setdefault", "update"}:
+                        traversal_call_count += 1
+            elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                assigned_names[node.id] += 1
+                lowered = node.id.lower()
+                if lowered in graph_state_names or any(part in lowered for part in ("queue", "visit", "frontier", "neighbor", "dist")):
+                    graph_state_name_count += 1
+    has_state = bool(
+        graph_state_name_count
+        or mutation_call_count
+        or traversal_call_count
+        or {"get", "items", "pop", "popleft"} & {name.rsplit(".", 1)[-1] for name in call_names}
+    )
+    has_walk_shape = bool(loop_count and has_state and (branch_count or comparison_count or subscript_count or traversal_call_count))
+    return {
+        "enabled": True,
+        "policy": "prompt_visible_graph_walk_evidence_v1",
+        "has_graph_walk_evidence": has_walk_shape,
+        "loop_count": loop_count,
+        "comparison_count": comparison_count,
+        "branch_count": branch_count,
+        "subscript_count": subscript_count,
+        "mutation_call_count": mutation_call_count,
+        "traversal_call_count": traversal_call_count,
+        "graph_state_name_count": graph_state_name_count,
+        "assigned_graph_state_names": dict(sorted(assigned_names.items())),
+        "call_counts": dict(sorted(call_names.items())),
+        "score_semantics": (
+            "Task-blind graph-walk evidence from decoded candidate AST and prompt-visible graph intent/type "
+            "tags only. It requires traversal-shaped control flow plus graph state or queue/visited-style "
+            "operations. It is ranking/residual evidence, not a renderer and not candidate-generation credit."
+        ),
+        "candidate_generation_credit": 0,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+    }
+
+
 def source_condition_operation_evidence_for_body(body: str, expectation: dict[str, Any]) -> dict[str, Any]:
     operation_tags = {str(item) for item in list(expectation.get("operation_tags") or []) if str(item)}
     if not operation_tags:
@@ -3173,21 +3273,30 @@ def source_condition_operation_evidence_for_body(body: str, expectation: dict[st
     comparison_count = 0
     arithmetic_count = 0
     branch_count = 0
+    loop_count = 0
+    subscript_count = 0
+    mutation_call_count = 0
     if function is not None:
         for node in ast.walk(function):
             if isinstance(node, ast.Call):
                 call_name = action_trace_call_name(node)
                 if call_name:
                     call_names[call_name] += 1
+                    if call_name.rsplit(".", 1)[-1] in {"add", "append", "extend", "setdefault", "update"}:
+                        mutation_call_count += 1
             elif isinstance(node, ast.Compare):
                 comparison_count += 1
             elif isinstance(node, ast.BinOp):
                 arithmetic_count += 1
             elif isinstance(node, ast.If):
                 branch_count += 1
+            elif isinstance(node, (ast.For, ast.While, ast.comprehension)):
+                loop_count += 1
+            elif isinstance(node, ast.Subscript):
+                subscript_count += 1
     basenames = {name.rsplit(".", 1)[-1] for name in call_names}
     hit_tags: list[str] = []
-    if "op_clip_to_range" in operation_tags and ({"min", "max"} & basenames or comparison_count or branch_count):
+    if "op_clip_to_range" in operation_tags and ({"min", "max"} <= basenames or comparison_count or branch_count):
         hit_tags.append("op_clip_to_range")
     if "op_round_values" in operation_tags and "round" in basenames:
         hit_tags.append("op_round_values")
@@ -3199,19 +3308,36 @@ def source_condition_operation_evidence_for_body(body: str, expectation: dict[st
         hit_tags.append("op_abs_tolerance_filter")
     if "op_abs_positive_filter" in operation_tags and ("abs" in basenames or comparison_count or branch_count):
         hit_tags.append("op_abs_positive_filter")
-    if "op_windowed_delta" in operation_tags and (arithmetic_count or {"abs", "min", "max"} & basenames):
+    if (
+        "op_windowed_delta" in operation_tags
+        and (arithmetic_count or "abs" in basenames)
+        and (subscript_count or loop_count or {"range", "zip", "enumerate"} & basenames)
+    ):
         hit_tags.append("op_windowed_delta")
     if "op_threshold_filter" in operation_tags and (comparison_count or branch_count):
         hit_tags.append("op_threshold_filter")
+    if "op_query_key_value_parse" in operation_tags and {"split", "splitlines", "parse_qs"} & basenames:
+        hit_tags.append("op_query_key_value_parse")
+    if "op_run_length_encode" in operation_tags and loop_count and (comparison_count or branch_count) and mutation_call_count:
+        hit_tags.append("op_run_length_encode")
+    if "op_graph_walk" in operation_tags:
+        graph_expectation = dict(expectation)
+        graph_expectation["requires_graph_walk_evidence"] = True
+        graph_evidence = source_condition_graph_walk_evidence_for_body(body, graph_expectation)
+        if bool(graph_evidence.get("has_graph_walk_evidence")):
+            hit_tags.append("op_graph_walk")
     recognized_tags = sorted(
         operation_tags
         & {
             "op_abs_tolerance_filter",
             "op_abs_positive_filter",
             "op_clip_to_range",
+            "op_graph_walk",
             "op_gcd_reduce",
             "op_numeric_summary",
+            "op_query_key_value_parse",
             "op_round_values",
+            "op_run_length_encode",
             "op_threshold_filter",
             "op_windowed_delta",
         }
@@ -3231,6 +3357,9 @@ def source_condition_operation_evidence_for_body(body: str, expectation: dict[st
         "comparison_count": comparison_count,
         "arithmetic_count": arithmetic_count,
         "branch_count": branch_count,
+        "loop_count": loop_count,
+        "subscript_count": subscript_count,
+        "mutation_call_count": mutation_call_count,
         "score_semantics": (
             "Task-blind operation evidence from decoded candidate AST and prompt-visible operation tags "
             "only. This is ranking/residual evidence, not a renderer and not candidate-generation credit."

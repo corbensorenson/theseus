@@ -117,6 +117,19 @@ remain `wrong_answer` and `type_handling`. The wall is therefore semantic/value
 body construction and verifier-positive update/finalizer/return closure, not
 another narrow malformed-token guard, sample-coverage fix, target-weighting
 family, or DPO loss-only movement.
+The follow-up source-condition adequacy pass tightens this wall rather than
+claiming progress around it:
+`reports/strict_generator_mlx_operation_graph_adequacy_summary_20260706.json`
+shows prompt-visible graph/type obligations are now active. Graph prompts with
+`shape_graph` or `intent_graph` require task-blind graph-walk AST evidence, and
+clip/window operation evidence no longer accepts shallow one-function numeric
+summaries. The same private train replay moved from `4` admitted
+runtime-loadable but wrong rows to `0` admitted rows under
+`--require-source-condition-adequacy`, with missing features now explicit:
+`graph_walk_evidence: 6` and `operation_evidence: 6`. This is a fail-closed
+guard/admission improvement, not a behavior win; the next generator work must
+produce traversal, state-update, finalizer, and return bodies that satisfy the
+visible obligations without fallback/template/tool/deterministic-repair credit.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

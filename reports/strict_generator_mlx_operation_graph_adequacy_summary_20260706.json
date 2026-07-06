@@ -1,0 +1,247 @@
+{
+  "after": {
+    "candidate_rows": 0,
+    "gates": {
+      "candidate_rows_emitted": false,
+      "external_inference_zero": true,
+      "functional_pass_moved_above_zero": false,
+      "inline_candidate_integrity_clean_for_green": true,
+      "inline_candidate_integrity_verified_rows_present": false,
+      "no_fallback_returns": true,
+      "no_inert_learned_candidate_mismatches": true,
+      "no_public_or_eval_generation_visibility": true,
+      "nontrivial_return_rate_nonzero": false,
+      "private_verifier_correctness_labels_attached": true,
+      "private_verifier_ran": true,
+      "public_training_rows_zero": true,
+      "requested_splits_active": true,
+      "strict_source_text_audit_clean": true
+    },
+    "missing_feature_counts": {
+      "graph_walk_evidence": 6,
+      "operation_evidence": 6
+    },
+    "private_verifier": {
+      "candidate_attempt_count": 24,
+      "generated_candidate_attempt_count": 8,
+      "intended_behavior_pass_count": 0,
+      "max_verification_reward": 0.7,
+      "mean_verification_reward": 0.233333,
+      "runtime_load_count": 8,
+      "stage_counts": {
+        "no_candidate": 16,
+        "runtime_loaded": 8
+      }
+    },
+    "report": "reports/strict_generator_mlx_decode_eval_semantic_ir_obligation_train_replay8_graph_adequacy_20260706.json",
+    "sha256": "340665e448274c672008d6763c55f792230d2ccfa9d0cf6d57a9bb0b5d40e0f9",
+    "source_condition_examples": [
+      {
+        "graph_walk_evidence": {
+          "assigned_graph_state_names": {
+            "score": 1
+          },
+          "branch_count": 1,
+          "call_counts": {
+            "abs": 1,
+            "isinstance": 2
+          },
+          "candidate_generation_credit": 0,
+          "comparison_count": 0,
+          "enabled": true,
+          "graph_state_name_count": 0,
+          "has_graph_walk_evidence": false,
+          "loop_count": 0,
+          "mutation_call_count": 0,
+          "policy": "prompt_visible_graph_walk_evidence_v1",
+          "score_semantics": "Task-blind graph-walk evidence from decoded candidate AST and prompt-visible graph intent/type tags only. It requires traversal-shaped control flow plus graph state or queue/visited-style operations. It is ranking/residual evidence, not a renderer and not candidate-generation credit.",
+          "subscript_count": 2,
+          "traversal_call_count": 0,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        },
+        "has_graph_walk_evidence": false,
+        "missing_features": [
+          "graph_walk_evidence"
+        ],
+        "operation_evidence": {
+          "candidate_generation_credit": 0,
+          "enabled": false,
+          "has_operation_evidence": false,
+          "operation_tags": [],
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        }
+      },
+      {
+        "graph_walk_evidence": {
+          "assigned_graph_state_names": {
+            "score": 1
+          },
+          "branch_count": 1,
+          "call_counts": {
+            "abs": 1,
+            "isinstance": 2
+          },
+          "candidate_generation_credit": 0,
+          "comparison_count": 0,
+          "enabled": true,
+          "graph_state_name_count": 0,
+          "has_graph_walk_evidence": false,
+          "loop_count": 0,
+          "mutation_call_count": 0,
+          "policy": "prompt_visible_graph_walk_evidence_v1",
+          "score_semantics": "Task-blind graph-walk evidence from decoded candidate AST and prompt-visible graph intent/type tags only. It requires traversal-shaped control flow plus graph state or queue/visited-style operations. It is ranking/residual evidence, not a renderer and not candidate-generation credit.",
+          "subscript_count": 2,
+          "traversal_call_count": 0,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        },
+        "has_graph_walk_evidence": false,
+        "missing_features": [
+          "graph_walk_evidence"
+        ],
+        "operation_evidence": {
+          "candidate_generation_credit": 0,
+          "enabled": false,
+          "has_operation_evidence": false,
+          "operation_tags": [],
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        }
+      },
+      {
+        "graph_walk_evidence": {
+          "assigned_graph_state_names": {
+            "score": 1
+          },
+          "branch_count": 1,
+          "call_counts": {
+            "abs": 1,
+            "isinstance": 2
+          },
+          "candidate_generation_credit": 0,
+          "comparison_count": 0,
+          "enabled": true,
+          "graph_state_name_count": 0,
+          "has_graph_walk_evidence": false,
+          "loop_count": 0,
+          "mutation_call_count": 0,
+          "policy": "prompt_visible_graph_walk_evidence_v1",
+          "score_semantics": "Task-blind graph-walk evidence from decoded candidate AST and prompt-visible graph intent/type tags only. It requires traversal-shaped control flow plus graph state or queue/visited-style operations. It is ranking/residual evidence, not a renderer and not candidate-generation credit.",
+          "subscript_count": 2,
+          "traversal_call_count": 0,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        },
+        "has_graph_walk_evidence": false,
+        "missing_features": [
+          "graph_walk_evidence"
+        ],
+        "operation_evidence": {
+          "candidate_generation_credit": 0,
+          "enabled": false,
+          "has_operation_evidence": false,
+          "operation_tags": [],
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        }
+      },
+      {
+        "graph_walk_evidence": {
+          "candidate_generation_credit": 0,
+          "enabled": false,
+          "has_graph_walk_evidence": false,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        },
+        "has_graph_walk_evidence": false,
+        "missing_features": [
+          "operation_evidence"
+        ],
+        "operation_evidence": {
+          "arithmetic_count": 0,
+          "branch_count": 0,
+          "call_counts": {
+            "max": 1
+          },
+          "candidate_generation_credit": 0,
+          "comparison_count": 0,
+          "enabled": true,
+          "has_operation_evidence": false,
+          "hit_operation_tags": [
+            "op_numeric_summary"
+          ],
+          "loop_count": 0,
+          "missing_operation_tags": [
+            "op_clip_to_range",
+            "op_windowed_delta"
+          ],
+          "mutation_call_count": 0,
+          "operation_tags": [
+            "op_clip_to_range",
+            "op_numeric_summary",
+            "op_windowed_delta"
+          ],
+          "policy": "prompt_visible_operation_evidence_v1",
+          "recognized_operation_tags": [
+            "op_clip_to_range",
+            "op_numeric_summary",
+            "op_windowed_delta"
+          ],
+          "score_semantics": "Task-blind operation evidence from decoded candidate AST and prompt-visible operation tags only. This is ranking/residual evidence, not a renderer and not candidate-generation credit.",
+          "subscript_count": 0,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false
+        }
+      }
+    ],
+    "trigger_state": "RED"
+  },
+  "before": {
+    "candidate_rows": 4,
+    "gates": {
+      "candidate_rows_emitted": true,
+      "external_inference_zero": true,
+      "functional_pass_moved_above_zero": false,
+      "inline_candidate_integrity_clean_for_green": true,
+      "inline_candidate_integrity_verified_rows_present": true,
+      "no_fallback_returns": true,
+      "no_inert_learned_candidate_mismatches": true,
+      "no_public_or_eval_generation_visibility": true,
+      "nontrivial_return_rate_nonzero": true,
+      "private_verifier_correctness_labels_attached": true,
+      "private_verifier_ran": true,
+      "public_training_rows_zero": true,
+      "requested_splits_active": true,
+      "strict_source_text_audit_clean": true
+    },
+    "private_verifier": {
+      "candidate_attempt_count": 27,
+      "generated_candidate_attempt_count": 12,
+      "intended_behavior_pass_count": 0,
+      "max_verification_reward": 0.7,
+      "mean_verification_reward": 0.311111,
+      "runtime_load_count": 12,
+      "stage_counts": {
+        "no_candidate": 15,
+        "runtime_loaded": 12
+      }
+    },
+    "report": "reports/strict_generator_mlx_decode_eval_semantic_ir_obligation_train_replay8_strict_operation_adequacy_20260706.json",
+    "sha256": "efd0f225e738269db874240a2b8913cda14618b3efeceaae8b007422d70ccfeb",
+    "trigger_state": "YELLOW"
+  },
+  "code_change": "Added prompt-visible graph/type-shape source-condition obligations and task-blind graph-walk AST evidence; tightened clip/window operation evidence so shallow summaries no longer satisfy operation adequacy.",
+  "created_utc": "2026-07-06T20:40:13Z",
+  "interpretation": [
+    "The old shallow graph/type candidates no longer survive require-source-condition-adequacy because graph prompts now require graph-walk evidence.",
+    "The replay moves from emitted-but-wrong rows to zero admitted rows under the stricter contract, preserving no-public/no-external/no-fallback boundaries.",
+    "The remaining wall is trainable semantic/type-handling body construction for graph traversal and operation-bearing updates, not another proof that DPO/MTP/GRPO should be run immediately."
+  ],
+  "next_required_work": "Trainable AST/state-machine or localized semantic-IR body construction must generate traversal/update/finalizer/return structure that satisfies prompt-visible source obligations and private verifier behavior without templates, fallback returns, deterministic repair credit, public rows, or runtime external inference.",
+  "no_claim_boundary": "This is guard/admission and residual evidence only. It is not learned-generation capability, not a public benchmark result, and not product usefulness evidence.",
+  "policy": "project_theseus_strict_generator_operation_graph_adequacy_summary_v1",
+  "roadmap_reconciliation": "Claude packet coverage is already represented in roadmap.md and configs/roadmap_implementation_matrix.json; this evidence attacks the active direct semantic body-construction wall named there.",
+  "source_attachment": "/Users/corbensorenson/.codex/attachments/f08752f6-9be1-440d-9c6c-65169a852670/pasted-text.txt"
+}

@@ -140,6 +140,19 @@ uncalled-attribute value closure, but the remaining residuals are still
 `wrong_answer` and `type_handling`. This confirms the wall is semantic/value
 body construction and verifier-positive local update/finalizer/return closure,
 not another sample-coverage, target-weighting, or malformed-token hygiene pass.
+Follow-up guard evidence in
+`reports/strict_generator_mlx_operation_graph_adequacy_summary_20260706.json`
+then tightened prompt-visible source-condition adequacy for graph prompts and
+operation tags. `shape_graph` / `intent_graph` now require task-blind
+graph-walk evidence from the decoded AST, and shallow summary bodies such as
+`max(data)` no longer satisfy clip/window operation evidence. The exact
+private train replay moved from `4` emitted, runtime-loadable but wrong rows
+to `0` admitted rows under `--require-source-condition-adequacy`; missing
+features are now explicit (`graph_walk_evidence: 6`,
+`operation_evidence: 6`). This is a fail-closed hygiene improvement, not a
+capability win. The next implementation must make the learned generator emit
+real traversal/update/finalizer/return bodies that satisfy those visible
+obligations, not relax the guard or count deterministic repair/tool output.
 
 ## 2026-07-06 Claude Review Reconciliation
 

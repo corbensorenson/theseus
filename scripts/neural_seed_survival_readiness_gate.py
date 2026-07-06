@@ -53,6 +53,7 @@ DEFAULT_SEMANTIC_OPERATION_VALUE = REPORTS / "strict_generator_mlx_decode_eval_s
 DEFAULT_INITIALIZER_OPERATION_DELAY = REPORTS / "strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706.json"
 DEFAULT_LOOP_EXPRESSION_VALUE_GUARD = REPORTS / "strict_generator_mlx_decode_eval_loop_expression_value_guard_cap8_v1.json"
 DEFAULT_VALUE_GUARD_NO_IDENTITY_LOOP = REPORTS / "strict_generator_mlx_decode_eval_value_guard_no_identity_loop_v2.json"
+DEFAULT_OPERATION_GRAPH_ADEQUACY = REPORTS / "strict_generator_mlx_operation_graph_adequacy_summary_20260706.json"
 DEFAULT_OUT = REPORTS / "neural_seed_survival_readiness_gate.json"
 DEFAULT_MARKDOWN = REPORTS / "neural_seed_survival_readiness_gate.md"
 
@@ -91,6 +92,7 @@ def main() -> int:
     parser.add_argument("--initializer-operation-delay", default=rel(DEFAULT_INITIALIZER_OPERATION_DELAY))
     parser.add_argument("--loop-expression-value-guard", default=rel(DEFAULT_LOOP_EXPRESSION_VALUE_GUARD))
     parser.add_argument("--value-guard-no-identity-loop", default=rel(DEFAULT_VALUE_GUARD_NO_IDENTITY_LOOP))
+    parser.add_argument("--operation-graph-adequacy", default=rel(DEFAULT_OPERATION_GRAPH_ADEQUACY))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     parser.add_argument("--gate", action="store_true")
@@ -114,6 +116,7 @@ def main() -> int:
         "initializer_operation_delay": resolve(args.initializer_operation_delay),
         "loop_expression_value_guard": resolve(args.loop_expression_value_guard),
         "value_guard_no_identity_loop": resolve(args.value_guard_no_identity_loop),
+        "operation_graph_adequacy": resolve(args.operation_graph_adequacy),
     }
     report = build_report(inputs, started=started)
     report_evidence_store.write_json_report(
@@ -143,6 +146,7 @@ def build_report(inputs: dict[str, Path], *, started: float) -> dict[str, Any]:
                 "initializer_operation_delay",
                 "loop_expression_value_guard",
                 "value_guard_no_identity_loop",
+                "operation_graph_adequacy",
             }
         },
     )
@@ -333,6 +337,35 @@ def build_current_wall(summaries: dict[str, dict[str, Any]], wall_inputs: dict[s
 
 
 def summarize_wall_report(input_name: str, report: dict[str, Any], path: Path) -> dict[str, Any]:
+    if report.get("policy") == "project_theseus_strict_generator_operation_graph_adequacy_summary_v1":
+        after = dict_value(report.get("after"))
+        missing_features = dict_value(after.get("missing_feature_counts"))
+        gates = dict_value(after.get("gates"))
+        return {
+            "input_name": input_name,
+            "evidence_ref": rel(path),
+            "generated_candidate_rows": int_value(after.get("candidate_rows")),
+            "integrity_verified_candidate_count": 0,
+            "integrity_mismatch_count": 0,
+            "family_counts": {},
+            "split_passes": {"private_train_replay": 0},
+            "behavior_pass_count": 0,
+            "split_nontrivial_return_rates": {"private_train_replay": 0.0},
+            "zero_candidate_task_count": 0,
+            "top_beam_state_counts": {},
+            "mismatch_label_counts": missing_features,
+            "no_cheat_counters": {
+                "public_training_rows": 0,
+                "external_inference_calls": 0,
+                "fallback_template_router_tool_credit_count": 0,
+            },
+            "no_cheat_clean": bool(
+                gates.get("public_training_rows_zero", True)
+                and gates.get("external_inference_zero", True)
+                and gates.get("no_fallback_returns", True)
+                and gates.get("no_public_or_eval_generation_visibility", True)
+            ),
+        }
     integrity = dict_value(report.get("candidate_integrity"))
     split_passes = dict_value(report.get("split_passes"))
     nontrivial_rates = dict_value(report.get("split_nontrivial_return_rates"))
