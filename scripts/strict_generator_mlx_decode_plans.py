@@ -416,6 +416,7 @@ def direct_local_return_continuation_choices(
             [
                 *direct_return_parameter_dependent_locals(prefix, allowed_names=allowed_names),
                 *direct_return_generated_state_locals(prefix, allowed_names=allowed_names),
+                *direct_return_visible_updated_state_locals(prefix, allowed_names=allowed_names),
             ]
         )
     )
@@ -467,6 +468,9 @@ def direct_return_generated_state_locals(prefix: list[str], *, allowed_names: se
     if not visible:
         return []
     body_text = decode_body_tokens(prefix)
+    function = parsed_decode_guard_function(body_text, allowed_names=None)
+    if function is not None and function_has_top_level_valued_return(function):
+        return []
     accumulator = loop_plan_first_assigned_local(body_text)
     if not accumulator or accumulator in visible or not accumulator.isidentifier():
         return []
@@ -479,11 +483,120 @@ def direct_return_generated_state_locals(prefix: list[str], *, allowed_names: se
     return [accumulator]
 
 
+def direct_return_visible_updated_state_locals(prefix: list[str], *, allowed_names: set[str] | None) -> list[str]:
+    """Return model-created locals updated from visible input/control flow.
+
+    This is a finalizer-only helper for prefixes such as ``out = []`` followed
+    by generated statements like ``if data: out.append(0)`` or
+    ``out.append(data)``. It does not pick the local, mutation, branch, loop, or
+    value; those must already exist in the generated prefix. It refuses to add a
+    second top-level return and only returns locals that were definitely bound
+    at top level before visible-input-dependent updates.
+    """
+
+    visible = {str(name) for name in set(allowed_names or set()) if str(name).isidentifier()}
+    if not visible:
+        return []
+    body_text = decode_body_tokens(prefix)
+    function = parsed_decode_guard_function(body_text, allowed_names=None)
+    if function is None or function_has_top_level_valued_return(function):
+        return []
+
+    top_level_locals = top_level_bound_locals(function, visible=visible)
+    if not top_level_locals:
+        return []
+
+    candidates: list[str] = []
+    seen: set[str] = set()
+
+    def remember(name: str) -> None:
+        if name in top_level_locals and name not in seen:
+            seen.add(name)
+            candidates.append(name)
+
+    def statement_visible_names(stmt: ast.AST | None) -> set[str]:
+        return expression_load_names(stmt) & visible if stmt is not None else set()
+
+    def visit_statements(statements: list[ast.stmt], *, visible_control: bool) -> None:
+        for stmt in statements:
+            if isinstance(stmt, ast.If):
+                nested_visible = visible_control or bool(statement_visible_names(stmt.test))
+                visit_statements(list(stmt.body or []), visible_control=nested_visible)
+                visit_statements(list(stmt.orelse or []), visible_control=nested_visible)
+                continue
+            if isinstance(stmt, (ast.For, ast.While)):
+                control_expr = stmt.iter if isinstance(stmt, ast.For) else stmt.test
+                nested_visible = visible_control or bool(statement_visible_names(control_expr))
+                visit_statements(list(stmt.body or []), visible_control=nested_visible)
+                visit_statements(list(getattr(stmt, "orelse", []) or []), visible_control=nested_visible)
+                continue
+            if isinstance(stmt, ast.AugAssign):
+                targets = expression_store_names(stmt.target)
+                if visible_control or bool(statement_visible_names(stmt.value)):
+                    for name in targets:
+                        remember(name)
+                continue
+            if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+                value = stmt.value if isinstance(stmt, (ast.Assign, ast.AnnAssign)) else None
+                if visible_control or bool(statement_visible_names(value)):
+                    targets: set[str] = set()
+                    if isinstance(stmt, ast.Assign):
+                        for target in stmt.targets:
+                            targets.update(expression_store_names(target))
+                    else:
+                        targets.update(expression_store_names(stmt.target))
+                    for name in targets:
+                        remember(name)
+            for child in ast.walk(stmt):
+                if not isinstance(child, ast.Call) or not isinstance(child.func, ast.Attribute):
+                    continue
+                method = str(child.func.attr or "")
+                if method not in LOOP_PLAN_MUTATION_METHODS:
+                    continue
+                receiver_names = expression_load_names(child.func.value)
+                if not receiver_names & top_level_locals:
+                    continue
+                argument_visible = any(bool(statement_visible_names(arg)) for arg in list(child.args or []))
+                keyword_visible = any(bool(statement_visible_names(keyword.value)) for keyword in list(child.keywords or []))
+                if not (visible_control or argument_visible or keyword_visible):
+                    continue
+                for name in sorted(receiver_names & top_level_locals):
+                    remember(name)
+
+    visit_statements(list(function.body or []), visible_control=False)
+    return candidates
+
+
+def top_level_bound_locals(function: ast.FunctionDef, *, visible: set[str]) -> set[str]:
+    out: set[str] = set()
+    for stmt in function.body:
+        targets: set[str] = set()
+        if isinstance(stmt, ast.Assign):
+            for target in stmt.targets:
+                targets.update(expression_store_names(target))
+        elif isinstance(stmt, ast.AnnAssign):
+            targets.update(expression_store_names(stmt.target))
+        elif isinstance(stmt, ast.AugAssign):
+            targets.update(expression_store_names(stmt.target))
+        for name in targets:
+            if name.isidentifier() and name not in visible:
+                out.add(name)
+    return out
+
+
+def function_has_top_level_valued_return(function: ast.FunctionDef) -> bool:
+    return any(isinstance(stmt, ast.Return) and stmt.value is not None for stmt in function.body)
+
+
 def direct_return_parameter_dependent_locals(prefix: list[str], *, allowed_names: set[str] | None) -> list[str]:
     """Return top-level locals whose completed assignment mentions visible inputs."""
 
     visible = {str(name) for name in set(allowed_names or set()) if str(name).isidentifier()}
     if not visible:
+        return []
+    body_text = decode_body_tokens(prefix)
+    function = parsed_decode_guard_function(body_text, allowed_names=None)
+    if function is not None and function_has_top_level_valued_return(function):
         return []
     out: list[str] = []
     seen: set[str] = set()
@@ -1897,6 +2010,8 @@ def token_blocked_by_expression_value_guard(
             return True
         if current_line_expected_closer(values):
             return True
+        if current_return_line_has_invalid_expression_value(values):
+            return True
         if len(values) >= 2 and values[0] == "return" and values[-1] in EXPRESSION_VALUE_BARE_BUILTINS:
             return True
         if expression_value_inside_update_call(values):
@@ -1913,6 +2028,16 @@ def token_blocked_by_expression_value_guard(
     if token_value == "not" and expression_value_has_pathological_not_run(values):
         return True
     return False
+
+
+def current_return_line_has_invalid_expression_value(values: list[str]) -> bool:
+    """Use the existing task-blind value checker before closing a return line."""
+
+    if len(values) < 2 or values[0] != "return":
+        return False
+    line = " ".join(values)
+    summary = expression_value_quality_summary(line, allowed_names=None)
+    return bool(summary.get("parse_ok")) and int(summary.get("invalid_expression_value_count") or 0) > 0
 
 
 def token_value_for_guard(token: str) -> str:

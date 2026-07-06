@@ -138,7 +138,10 @@ the roadmap:
    generated-state return/dependency guard preserves the narrow simple-return
    GREEN path and blocks closing top-level returns that ignore visible inputs,
    but the broad return-finalizer-priority canary still emits zero learned rows
-   and falls back to noncredit `return None` baselines; this confirms the
+   and falls back to noncredit `return None` baselines. The follow-up
+   invalid-return-value closure guard blocks closing task-blind malformed return
+   expressions, but the focused broad2 canary still stalls in
+   `current_line_starts_return` and `missing_local_return`; this confirms the
    remaining wall is semantic/action body construction, not another narrow
    malformed-token or local-return family.
 

@@ -111,6 +111,10 @@ decoder finish model-created visible-input accumulators and blocks closing
 top-level returns that ignore visible inputs. The simple-return replay remains
 `GREEN`, while the broad/private return-finalizer-priority canary remains
 `RED` with zero generated learned rows and noncredit `return None` baselines.
+An additional invalid-return-value closure guard now blocks closing task-blind
+invalid return expressions such as `return max(0)`, but the focused broad2
+canary still emits zero learned rows and stalls in `current_line_starts_return`
+and `missing_local_return` states.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.
