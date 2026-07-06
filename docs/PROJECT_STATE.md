@@ -155,6 +155,25 @@ passes) and now reports `missing_operation_tag_counts` with
 `op_abs_tolerance_filter: 4` for the broad4 split. This is not a capability
 promotion; it is a cleaner private residual target for the next trained
 semantic/action construction pass.
+The next private adaptation pass fixes the training-coverage side of that wall
+without claiming a behavior win. `strict_direct_body_emission_path_v1` now
+requires source-condition internalization, the source-condition token weighter
+knows `op_abs_tolerance_filter` and `op_threshold_filter`, and
+`configs/neural_seed_token_decoder_comparator.json` adds the existing admitted
+private residual-repair v3 train JSONL as an adaptation-only supplemental source.
+`reports/strict_generator_mlx_private_adaptation_direct_body_source_condition_coverage_smoke_20260706.json`
+is `GREEN`: it loads `960` supplemental private rows (`3960` total), keeps
+public/external/fallback counters at zero, improves heldout LM loss
+`1.732673 -> 1.730853`, and records prompt-visible operation coverage after
+sampling with `op_abs_tolerance_filter: 3`; source-condition internalization
+then hits `op_abs_tolerance_filter: 3` and weights `1363` source-condition
+token positions. The paired strict broad4 decode remains negative:
+`reports/strict_generator_mlx_decode_eval_direct_body_source_condition_coverage_broad4_20260706.json`
+is `RED` with `0` emitted candidate rows, `0` behavior passes, no public
+training rows, no external inference, and no fallback returns. The current wall
+therefore moved from "the tolerance residual is not in the private adaptation
+sample" to "the model sees and trains on the residual but still fails to close
+coherent local-return bodies under strict decode."
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.

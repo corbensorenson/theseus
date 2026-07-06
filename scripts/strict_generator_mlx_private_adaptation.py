@@ -35,6 +35,7 @@ from neural_seed_code_proposer_comparator import (  # noqa: E402
     load_private_rows,
     rel,
     resolve,
+    row_id,
     stable_hash,
 )
 from neural_seed_token_decoder_support import PLAN_BODY_START_TOKEN, encode_target_rows, semantic_plan_from_body, target_tokens  # noqa: E402
@@ -158,6 +159,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "train_tier": "any",
             "tier_balanced_sampling": True,
             "private_residual_repair_split": True,
+            "source_condition_operation_coverage_min_rows": 2,
             "semantic_plan_loss_weight": 0.08,
             "semantic_plan_visible_operation_loss_boost": 1.5,
             "source_contrastive_loss_weight": 0.05,
@@ -195,11 +197,13 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "body_token_transition_after_plan_prefix_never_reaches_top_level_return",
             "non_loop_task_missing_state_binding_and_return_path",
             "loop_update_semantics_not_connected_to_final_return",
+            "prompt_visible_source_condition_operation_not_internalized",
             "policy_gap_improves_without_replay_candidate_emission",
         ],
         "required_components": [
             "semantic_plan_auxiliary",
             "semantic_plan_visible_operation_weighting",
+            "source_condition_internalization_weighting",
             "direct_body_emission_path_weighting",
             "loop_semantic_operation_weighting",
             "loop_expression_synthesis_weighting",
@@ -211,6 +215,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "train_tier": "any",
             "tier_balanced_sampling": True,
             "private_residual_repair_split": True,
+            "source_condition_operation_coverage_min_rows": 2,
             "semantic_plan_loss_weight": 0.08,
             "semantic_plan_visible_operation_loss_boost": 1.5,
             "source_contrastive_loss_weight": 0.05,
@@ -218,6 +223,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "enable_primary_dataflow_weights": True,
             "primary_dataflow_weight_scale": 1.2,
             "return_expression_loss_boost": 3.0,
+            "source_condition_internalization_loss_boost": 2.6,
             "direct_body_emission_loss_boost": 4.0,
             "direct_body_emission_roles": (
                 "top_level_state_binding,top_level_state_update,top_level_branch_guard,"
@@ -241,11 +247,11 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
         "score_semantics": (
             "Composes private-only strict-generator objectives around the current zero-candidate wall: "
             "the direct prompt/signature body-token path must learn top-level state bindings, branch/loop "
-            "guards, loop body updates, and final return statements from admitted private solution bodies. "
-            "It does not add templates, renderers, tools, answer-family labels, public benchmark data, eval "
-            "tests, eval solutions, teacher output, or candidate credit. The checkpoint remains private "
-            "repair evidence only until strict replay emits non-fallback learned candidates and verifier "
-            "behavior moves."
+            "guards, prompt-visible source-condition operations, loop body updates, and final return "
+            "statements from admitted private solution bodies. It does not add templates, renderers, tools, "
+            "answer-family labels, public benchmark data, eval tests, eval solutions, teacher output, or "
+            "candidate credit. The checkpoint remains private repair evidence only until strict replay emits "
+            "non-fallback learned candidates and verifier behavior moves."
         ),
     },
 }
@@ -302,6 +308,219 @@ def apply_semantic_construction_repair_profile(args: argparse.Namespace) -> dict
     }
 
 
+def string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value] if value.strip() else []
+    if isinstance(value, list):
+        return [str(item) for item in value if str(item).strip()]
+    return [str(value)] if str(value).strip() else []
+
+
+def load_adaptation_private_train_rows(
+    data_cfg: dict[str, Any],
+    *,
+    supplemental_private_train_jsonl: list[Path],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    primary_path = resolve(str(data_cfg.get("train_jsonl") or ""))
+    primary_rows = load_private_rows(primary_path, data_cfg)
+    rows: list[dict[str, Any]] = list(primary_rows)
+    seen = {row_id(row) for row in rows}
+    configured_paths = [resolve(path) for path in string_list(data_cfg.get("adaptation_supplemental_train_jsonl"))]
+    requested_paths = [resolve(path) for path in supplemental_private_train_jsonl]
+    supplemental_paths: list[Path] = []
+    supplemental_seen: set[str] = set()
+    for path in [*configured_paths, *requested_paths]:
+        key = str(path)
+        if key in supplemental_seen:
+            continue
+        supplemental_seen.add(key)
+        supplemental_paths.append(path)
+
+    source_reports: list[dict[str, Any]] = []
+    duplicate_row_count = 0
+    added_row_count = 0
+    for path in supplemental_paths:
+        loaded = load_private_rows(path, data_cfg)
+        path_added = 0
+        path_duplicate = 0
+        for row in loaded:
+            key = row_id(row)
+            if key in seen:
+                duplicate_row_count += 1
+                path_duplicate += 1
+                continue
+            seen.add(key)
+            rows.append(row)
+            added_row_count += 1
+            path_added += 1
+        source_reports.append(
+            {
+                "path": rel(path),
+                "loaded_rows": len(loaded),
+                "added_rows": path_added,
+                "duplicate_rows": path_duplicate,
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+            }
+        )
+
+    audit = {
+        "enabled": bool(supplemental_paths),
+        "policy": "private_adaptation_supplemental_train_jsonl_v1",
+        "primary_path": rel(primary_path),
+        "primary_rows": len(primary_rows),
+        "supplemental_sources": source_reports,
+        "supplemental_source_count": len(supplemental_paths),
+        "supplemental_added_rows": added_row_count,
+        "supplemental_duplicate_rows": duplicate_row_count,
+        "total_rows": len(rows),
+        "score_semantics": (
+            "Loads additional admitted private-training JSONL files into the existing strict-generator "
+            "adaptation pool. The same forbidden public-row flag checks apply to every supplemental row. "
+            "This changes private training coverage only; generation remains prompt/signature-only, and "
+            "the report is public-calibration-ineligible until heldout replay behavior improves."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+    return rows, audit
+
+
+def source_condition_operation_tags_for_row(
+    row: dict[str, Any],
+    *,
+    source_fields: list[Any],
+    source_text_style: str,
+    source_vocab: dict[str, int],
+) -> set[str]:
+    source_text = strict_generator_decode_source_text(
+        row,
+        source_fields,
+        source_text_style=source_text_style,
+        source_vocab=source_vocab,
+    )
+    expectation = source_condition_expectation_from_source_text(source_text)
+    return {str(tag) for tag in list(expectation.get("operation_tags") or []) if str(tag)}
+
+
+def apply_source_condition_operation_coverage_sampling(
+    selected: list[dict[str, Any]],
+    pool: list[dict[str, Any]],
+    *,
+    requested_rows: int,
+    min_rows_per_tag: int,
+    seed: int,
+    source_fields: list[Any],
+    source_text_style: str,
+    source_vocab: dict[str, int],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    target = max(0, int(min_rows_per_tag or 0))
+    if target <= 0 or not selected:
+        return selected, {
+            "enabled": False,
+            "policy": "not_enabled",
+            "min_rows_per_tag": target,
+            "candidate_generation_credit": 0,
+        }
+
+    selected_rows = list(selected)
+    selected_keys = {row_id(row) for row in selected_rows}
+    row_tags: dict[str, set[str]] = {}
+    pool_by_tag: dict[str, list[dict[str, Any]]] = {}
+    for row in pool:
+        key = row_id(row)
+        tags = source_condition_operation_tags_for_row(
+            row,
+            source_fields=source_fields,
+            source_text_style=source_text_style,
+            source_vocab=source_vocab,
+        )
+        row_tags[key] = tags
+        for tag in tags:
+            pool_by_tag.setdefault(tag, []).append(row)
+
+    def tag_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for row in rows:
+            for tag in row_tags.get(row_id(row), set()):
+                counts[tag] = counts.get(tag, 0) + 1
+        return counts
+
+    inserted_rows: list[dict[str, Any]] = []
+    before_counts = tag_counts(selected_rows)
+    for tag in sorted(pool_by_tag):
+        current_count = before_counts.get(tag, 0) + sum(1 for row in inserted_rows if tag in row_tags.get(row_id(row), set()))
+        need = max(0, target - current_count)
+        if need <= 0:
+            continue
+        candidates = [row for row in pool_by_tag[tag] if row_id(row) not in selected_keys]
+        for row in deterministic_sample(candidates, need, seed + stable_int(tag)):
+            key = row_id(row)
+            if key in selected_keys:
+                continue
+            selected_keys.add(key)
+            inserted_rows.append(row)
+
+    if inserted_rows:
+        selected_rows.extend(inserted_rows)
+    requested = max(0, int(requested_rows or len(selected_rows)))
+    dropped_rows: list[dict[str, Any]] = []
+    if requested and len(selected_rows) > requested:
+        protected = {row_id(row) for row in inserted_rows}
+        selected_rows.sort(key=lambda row: stable_hash(f"source-condition-coverage:{seed}:{row_id(row)}"))
+        while len(selected_rows) > requested:
+            drop_index = next(
+                (
+                    index
+                    for index in range(len(selected_rows) - 1, -1, -1)
+                    if row_id(selected_rows[index]) not in protected
+                ),
+                len(selected_rows) - 1,
+            )
+            dropped_rows.append(selected_rows.pop(drop_index))
+
+    after_counts = tag_counts(selected_rows)
+    selected_rows.sort(key=lambda row: stable_hash(f"source-condition-coverage-final:{seed}:{row_id(row)}"))
+    return selected_rows, {
+        "enabled": True,
+        "policy": "private_prompt_visible_source_condition_operation_coverage_sampling_v1",
+        "min_rows_per_tag": target,
+        "requested_rows": requested_rows,
+        "pool_rows": len(pool),
+        "selected_rows_before": len(selected),
+        "selected_rows_after": len(selected_rows),
+        "inserted_rows": len(inserted_rows),
+        "dropped_rows": len(dropped_rows),
+        "operation_tag_counts_before": dict(sorted(before_counts.items())),
+        "operation_tag_counts_after": dict(sorted(after_counts.items())),
+        "pool_operation_tag_counts": {
+            tag: len(rows)
+            for tag, rows in sorted(pool_by_tag.items())
+        },
+        "inserted_row_ids": [row_id(row) for row in inserted_rows[:24]],
+        "dropped_row_ids": [row_id(row) for row in dropped_rows[:24]],
+        "score_semantics": (
+            "Deterministically ensures rare prompt-visible operation contracts are represented in the "
+            "private adaptation sample. Tags are derived only from strict prompt/signature source text, "
+            "not from hidden tests, eval solutions, verifier labels, answer-family labels, public data, "
+            "or target-derived decoder metadata. This is data coverage for supervised private training, "
+            "not candidate-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def stable_int(text: str) -> int:
+    return int(stable_hash(text)[:8], 16)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=rel(DEFAULT_CONFIG))
@@ -313,6 +532,15 @@ def main() -> int:
     parser.add_argument("--adaptation-id", default="private_train_adapt_smoke")
     parser.add_argument("--max-train-rows", type=int, default=512)
     parser.add_argument("--max-eval-rows", type=int, default=128)
+    parser.add_argument(
+        "--supplemental-private-train-jsonl",
+        action="append",
+        default=[],
+        help=(
+            "Additional admitted private-training JSONL file to append before adaptation sampling. "
+            "May be repeated. Forbidden public-row flags are still enforced for every row."
+        ),
+    )
     parser.add_argument(
         "--train-tier",
         choices=["any", "simple_return", "loop_accumulate", "algorithmic_small"],
@@ -382,6 +610,7 @@ def main() -> int:
     parser.add_argument("--default-parameter-return-loss-boost", type=float, default=0.0)
     parser.add_argument("--truthiness-guard-loss-boost", type=float, default=0.0)
     parser.add_argument("--source-condition-internalization-loss-boost", type=float, default=0.0)
+    parser.add_argument("--source-condition-operation-coverage-min-rows", type=int, default=0)
     parser.add_argument("--loop-operation-loss-boost", type=float, default=0.0)
     parser.add_argument("--loop-statement-action-loss-boost", type=float, default=0.0)
     parser.add_argument(
@@ -458,6 +687,9 @@ def main() -> int:
         adaptation_id=str(args.adaptation_id or "private_train_adapt_smoke"),
         max_train_rows=max(1, int(args.max_train_rows or 1)),
         max_eval_rows=max(1, int(args.max_eval_rows or 1)),
+        supplemental_private_train_jsonl=[
+            resolve(path) for path in list(args.supplemental_private_train_jsonl or []) if str(path).strip()
+        ],
         train_tier=str(args.train_tier or "any"),
         tier_balanced_sampling=bool(args.tier_balanced_sampling),
         private_residual_repair_split=bool(args.private_residual_repair_split),
@@ -507,6 +739,14 @@ def main() -> int:
         source_condition_internalization_loss_boost=max(
             0.0,
             float(args.source_condition_internalization_loss_boost if args.source_condition_internalization_loss_boost is not None else 0.0),
+        ),
+        source_condition_operation_coverage_min_rows=max(
+            0,
+            int(
+                args.source_condition_operation_coverage_min_rows
+                if args.source_condition_operation_coverage_min_rows is not None
+                else 0
+            ),
         ),
         loop_operation_loss_boost=max(0.0, float(args.loop_operation_loss_boost if args.loop_operation_loss_boost is not None else 0.0)),
         loop_statement_action_loss_boost=max(
@@ -563,6 +803,7 @@ def run_adaptation(
     adaptation_id: str,
     max_train_rows: int,
     max_eval_rows: int,
+    supplemental_private_train_jsonl: list[Path],
     train_tier: str,
     tier_balanced_sampling: bool,
     private_residual_repair_split: bool,
@@ -601,6 +842,7 @@ def run_adaptation(
     default_parameter_return_loss_boost: float,
     truthiness_guard_loss_boost: float,
     source_condition_internalization_loss_boost: float,
+    source_condition_operation_coverage_min_rows: int,
     loop_operation_loss_boost: float,
     loop_statement_action_loss_boost: float,
     loop_statement_action_roles: str,
@@ -620,6 +862,14 @@ def run_adaptation(
     execute: bool,
 ) -> dict[str, Any]:
     started = time.perf_counter()
+    data_cfg = dict_or_empty(config.get("data"))
+    configured_supplemental_train_jsonl = [
+        resolve(path) for path in string_list(data_cfg.get("adaptation_supplemental_train_jsonl"))
+    ]
+    effective_supplemental_train_jsonl = [
+        *configured_supplemental_train_jsonl,
+        *list(supplemental_private_train_jsonl or []),
+    ]
     if not execute:
         return {
             "policy": "project_theseus_strict_generator_mlx_private_adaptation_v1",
@@ -637,6 +887,9 @@ def run_adaptation(
                     "default_parameter_return_loss_boost": float(default_parameter_return_loss_boost or 0.0),
                     "truthiness_guard_loss_boost": float(truthiness_guard_loss_boost or 0.0),
                     "source_condition_internalization_loss_boost": float(source_condition_internalization_loss_boost or 0.0),
+                    "source_condition_operation_coverage_min_rows": int(
+                        source_condition_operation_coverage_min_rows or 0
+                    ),
                     "loop_operation_loss_boost": float(loop_operation_loss_boost or 0.0),
                     "loop_statement_action_loss_boost": float(loop_statement_action_loss_boost or 0.0),
                     "loop_statement_action_roles": str(loop_statement_action_roles or ""),
@@ -655,6 +908,9 @@ def run_adaptation(
                     "train_tier": train_tier,
                     "tier_balanced_sampling": bool(tier_balanced_sampling),
                     "private_residual_repair_split": bool(private_residual_repair_split),
+                    "supplemental_private_train_jsonl": [
+                        rel(path) for path in effective_supplemental_train_jsonl
+                    ],
                     "negative_replay_requested": bool(negative_replay_candidates),
                     "negative_starvation_replay_requested": bool(negative_starvation_report),
                     "negative_unlikelihood_weight": float(negative_unlikelihood_weight or 0.0),
@@ -713,11 +969,13 @@ def run_adaptation(
     max_target = int(vocab_payload.get("max_target") or 160)
     target_mode = str(vocab_payload.get("target_mode") or get_path(config, ["body_structure_decoder", "target_mode"], "body_tokens"))
     source_text_style = checkpoint_source_text_style(config, vocab_payload)
-    data_cfg = dict_or_empty(config.get("data"))
     matched_budget = dict_or_empty(config.get("matched_budget"))
     text_views = dict_or_empty(config.get("text_views"))
     source_fields = list(text_views.get("sts_on") or [])
-    all_rows = load_private_rows(resolve(str(data_cfg.get("train_jsonl") or "")), data_cfg)
+    all_rows, supplemental_train_audit = load_adaptation_private_train_rows(
+        data_cfg,
+        supplemental_private_train_jsonl=supplemental_private_train_jsonl,
+    )
     all_rows, holdout_exclusion = exclude_family_disjoint_holdout_rows(
         config,
         all_rows,
@@ -743,6 +1001,17 @@ def run_adaptation(
             "uses_public_data": False,
             "candidate_generation_credit": 0,
         }
+    selected, source_condition_coverage_sampling = apply_source_condition_operation_coverage_sampling(
+        selected,
+        all_rows,
+        requested_rows=max_train_rows + max_eval_rows,
+        min_rows_per_tag=source_condition_operation_coverage_min_rows,
+        seed=seed,
+        source_fields=source_fields,
+        source_text_style=source_text_style,
+        source_vocab=source_vocab,
+    )
+    tier_selection["source_condition_operation_coverage_sampling"] = source_condition_coverage_sampling
     eval_rows = selected[: min(max_eval_rows, max(1, len(selected) // 5))]
     train_rows = selected[len(eval_rows) : len(eval_rows) + max_train_rows]
     if not train_rows or not eval_rows:
@@ -756,6 +1025,8 @@ def run_adaptation(
                 "selected_rows": len(selected),
                 "train_rows": len(train_rows),
                 "eval_rows": len(eval_rows),
+                "supplemental_private_train_audit": supplemental_train_audit,
+                "source_condition_operation_coverage_sampling": source_condition_coverage_sampling,
                 "public_training_rows": 0,
                 "external_inference_calls": 0,
             },
@@ -1511,6 +1782,7 @@ def run_adaptation(
             "semantic_plan_visible_operation_weighting": visible_operation_plan_weighting,
             "semantic_construction_repair_profile": semantic_construction_repair_profile,
             "family_disjoint_holdout_exclusion": holdout_exclusion,
+            "supplemental_private_train_audit": supplemental_train_audit,
             "private_train_tier_selection": private_train_tier_vocab_summary(tier_selection),
             "return_expression_weighting": return_expression_weighting,
             "default_parameter_return_weighting": default_parameter_return_weighting,
@@ -1570,6 +1842,7 @@ def run_adaptation(
         "family_disjoint_evidence": not private_residual_repair_split,
         "public_calibration_eligible": False,
         "family_disjoint_holdout_exclusion": holdout_exclusion,
+        "supplemental_private_train_audit": supplemental_train_audit,
         "private_train_tier_selection": private_train_tier_summary(tier_selection),
         "batch_size": batch_size,
         "epochs": epochs,
@@ -1583,6 +1856,7 @@ def run_adaptation(
             "default_parameter_return_loss_boost": float(default_parameter_return_loss_boost or 0.0),
             "truthiness_guard_loss_boost": float(truthiness_guard_loss_boost or 0.0),
             "source_condition_internalization_loss_boost": float(source_condition_internalization_loss_boost or 0.0),
+            "source_condition_operation_coverage_min_rows": int(source_condition_operation_coverage_min_rows or 0),
             "loop_operation_loss_boost": float(loop_operation_loss_boost or 0.0),
             "loop_statement_action_loss_boost": float(loop_statement_action_loss_boost or 0.0),
             "loop_statement_action_roles": str(loop_statement_action_roles or ""),
@@ -1600,6 +1874,9 @@ def run_adaptation(
             "semantic_construction_repair_profile": semantic_construction_repair_profile,
             "semantic_plan_visible_operation_loss_boost": float(semantic_plan_visible_operation_loss_boost or 0.0),
             "private_residual_repair_split": bool(private_residual_repair_split),
+            "supplemental_private_train_jsonl": [
+                rel(path) for path in effective_supplemental_train_jsonl
+            ],
             "negative_starvation_report": rel(negative_starvation_report) if negative_starvation_report is not None else "",
             "max_negative_starvation_rows": int(max_negative_starvation_rows or 0),
             "pairwise_replay_loss_weight": float(pairwise_replay_loss_weight or 0.0),

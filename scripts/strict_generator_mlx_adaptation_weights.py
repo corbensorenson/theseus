@@ -375,10 +375,11 @@ def apply_source_condition_internalization_weights(
         "score_semantics": (
             "Boosts supervised CE weight on admitted private target tokens that implement prompt-visible "
             "source-condition contracts already present in the source text, including empty/default guards "
-            "and broad operation tags such as clamp, round, and numeric summary. It uses the private "
-            "solution body only as the admitted training target, does not inspect eval tests/solutions, public "
-            "benchmark payloads, verifier labels, teacher output, answer metadata, or candidate templates, and "
-            "grants no candidate-generation credit. Success must be evaluated separately with this constraint off."
+            "and broad operation tags such as clamp, threshold filtering, tolerance-window filtering, round, "
+            "and numeric summary. It uses the private solution body only as the admitted training target, "
+            "does not inspect eval tests/solutions, public benchmark payloads, verifier labels, teacher "
+            "output, answer metadata, or candidate templates, and grants no candidate-generation credit. "
+            "Success must be evaluated separately with this constraint off."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
@@ -393,6 +394,10 @@ def source_condition_operation_weight_token_texts(operation_tags: set[str]) -> s
         tokens.update({"NAME:gcd", "NAME:math", "NAME:abs", "OP:.", "OP:(", "OP:)"})
     if "op_abs_positive_filter" in operation_tags:
         tokens.update({"NAME:abs", "OP:>", "OP:<", "OP:>=", "OP:<=", "NUMBER:0"})
+    if "op_abs_tolerance_filter" in operation_tags:
+        tokens.update({"NAME:abs", "NAME:float", "OP:-", "OP:+", "OP:<=", "OP:(", "OP:)", "NUMBER:0"})
+    if "op_threshold_filter" in operation_tags:
+        tokens.update({"NAME:if", "OP::", "OP:>", "OP:>=", "OP:<", "OP:<=", "NUMBER:0"})
     if "op_windowed_delta" in operation_tags:
         tokens.update({"NAME:abs", "NAME:min", "NAME:max", "NAME:range", "NAME:len", "OP:-", "OP:+", "OP:<", "OP:>"})
     if "op_clip_to_range" in operation_tags:

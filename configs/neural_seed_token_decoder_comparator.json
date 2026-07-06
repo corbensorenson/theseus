@@ -324,6 +324,9 @@
   },
   "data": {
     "train_jsonl": "data/training_data/high_transfer/private_train/broad_private_generalization_ladder_v1_code_lm_tasks.jsonl",
+    "adaptation_supplemental_train_jsonl": [
+      "data/training_data/high_transfer/private_train/private_residual_repair_v3_code_lm_tasks.jsonl"
+    ],
     "eval_jsonl": "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
     "max_train_rows": 3000,
     "max_eval_rows": 24,
