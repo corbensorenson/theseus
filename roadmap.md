@@ -189,8 +189,8 @@ remain honestly bounded.
   `configs/roadmap_implementation_matrix.json`. The current roadmap gate is
   `YELLOW` with `0` hard gaps: phase `0` is `implemented`; phases `3`, `4`,
   `5`, `6`, `7`, `11`, `12`, `13`, `14`, `15`, `16`, and `17` are `wired`;
-  phases `1`, `2`, `8`, `10`, and `18` remain partial; phase `9`
-  remains frozen until trusted peers are reachable. The active flagship core
+  phases `8` and `10` remain partial; phases `1`, `2`, `9`, and `18` are
+  externally frozen until trusted peers are reachable. The active flagship core
   slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
   current support state as `synthetic-test-backed`. The core-slice support state
   summary now records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
@@ -202,11 +202,14 @@ remain honestly bounded.
   pre-training architecture readiness mode:
   `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
   The normal roadmap gate remains `YELLOW` with no hard gaps for implementation
-  work, but strict readiness is currently `RED` because six phases are
-  unfinished or externally frozen: phases `1`, `2`, `8`, `9`, `10`, and `18`.
-  All five pre-training book-reference core slices now meet their target
-  support state. That means training, public calibration, and score chasing
-  should not become the primary path yet.
+  work, but strict readiness is currently `RED` because phases `8` and `10`
+  remain local partial blockers. Phases `1`, `2`, `9`, and `18` are tracked as
+  external-frozen with current network-doctor evidence:
+  `coordinator_unreachable`, `registered_peers_unreachable`,
+  `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
+  Windows coordinator. All five pre-training book-reference core slices now
+  meet their target support state. That means training, public calibration, and
+  score chasing should not become the primary path yet.
 - The E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed:
   `reports/governance_rights_receipt_suite.json` proves one side-effecting
   assistant/tool fixture through runtime adapter invocation, authority

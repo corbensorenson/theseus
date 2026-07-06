@@ -19,8 +19,8 @@ late AI_book phases instead of deleting them for a cosmetic green state.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`, phases `3`, `4`,
 `5`, `6`, `7`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and `19` are
-`wired`, phases `1`, `2`, `8`, `10`, and `18` remain partial, and phase `9`
-remains frozen until trusted peers are reachable. This is roadmap
+`wired`, phases `8` and `10` remain partial, and phases `1`, `2`, `9`, and
+`18` are externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 roadmap gate now requires active core slices to carry a valid current support
@@ -34,11 +34,14 @@ slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backe
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
-work can continue, but strict readiness is currently `RED` because six phases
-are unfinished or externally frozen: phases `1`, `2`, `8`, `9`, `10`, and
-`18`. All five pre-training book-reference core slices now meet their target
-support state. Training, public calibration, and score chasing should not
-become the primary path until the unfinished/frozen phase blocker is resolved.
+work can continue, but strict readiness is currently `RED` because phases `8`
+and `10` remain local partial blockers. Phases `1`, `2`, `9`, and `18` are
+tracked as external-frozen with current network-doctor evidence:
+`coordinator_unreachable`, `registered_peers_unreachable`,
+`peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
+Windows coordinator. All five pre-training book-reference core slices now meet
+their target support state. Training, public calibration, and score chasing
+should not become the primary path until the local phase blocker is resolved.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `54` public-safe evidence pointers, and `136`

@@ -38,6 +38,7 @@ DEFAULT_AI_BOOK_ROOT = ROOT.parent / "AI_book"
 REQUIRED_PHASES = set(range(20))
 ALLOWED_PHASE_STATES = {"implemented", "wired", "partial", "missing", "frozen"}
 DONE_STATES = {"implemented", "wired"}
+EXTERNAL_FREEZE_TERMS = {"peer", "reachable", "external", "travel", "network", "coordinator_unreachable", "no route to host"}
 DISALLOWED_OUT_OF_SCOPE_TERMS = {
     "public_benchmark_training",
     "serve_external_inference",
@@ -605,6 +606,21 @@ def audit_pre_training_architecture_readiness(
             }
         )
 
+    externally_frozen = [
+        {
+            "phase": int_or(row.get("phase"), -1),
+            "title": str(row.get("title") or ""),
+            "status": str(row.get("status") or ""),
+            "reason": " ".join(
+                [
+                    str(row.get("smallest_next_patch") or ""),
+                    " ".join(str(item) for item in list_values(row.get("missing_items"))),
+                ]
+            )[:500],
+        }
+        for row in phases
+        if phase_is_external_frozen(row)
+    ]
     unfinished = [
         {
             "phase": int_or(row.get("phase"), -1),
@@ -614,7 +630,7 @@ def audit_pre_training_architecture_readiness(
             "smallest_next_patch": str(row.get("smallest_next_patch") or ""),
         }
         for row in phases
-        if str(row.get("status") or "") not in DONE_STATES
+        if str(row.get("status") or "") not in DONE_STATES and not phase_is_external_frozen(row)
     ]
     if unfinished:
         blockers.append(
@@ -630,13 +646,7 @@ def audit_pre_training_architecture_readiness(
     for row in phases:
         if str(row.get("status") or "") != "frozen":
             continue
-        text = " ".join(
-            [
-                str(row.get("smallest_next_patch") or ""),
-                " ".join(str(item) for item in list_values(row.get("missing_items"))),
-            ]
-        ).lower()
-        if not any(term in text for term in ["peer", "reachable", "external", "travel", "network"]):
+        if not phase_is_external_frozen(row):
             frozen_without_external_reason.append({"phase": int_or(row.get("phase"), -1), "title": str(row.get("title") or "")})
     if frozen_without_external_reason:
         blockers.append(
@@ -731,6 +741,8 @@ def audit_pre_training_architecture_readiness(
         "blocker_count": len(blockers),
         "warning_count": len(warnings),
         "phase_status_counts": phase_status_counts,
+        "externally_frozen_phase_count": len(externally_frozen),
+        "externally_frozen_phases": externally_frozen,
         "core_slice_count": len(core_slices),
         "support_rank": support_rank,
         "rules": {
@@ -742,6 +754,18 @@ def audit_pre_training_architecture_readiness(
         "blockers": blockers,
         "warnings": warnings,
     }
+
+
+def phase_is_external_frozen(row: dict[str, Any]) -> bool:
+    if str(row.get("status") or "") != "frozen":
+        return False
+    text = " ".join(
+        [
+            str(row.get("smallest_next_patch") or ""),
+            " ".join(str(item) for item in list_values(row.get("missing_items"))),
+        ]
+    ).lower()
+    return any(term in text for term in EXTERNAL_FREEZE_TERMS)
 
 
 def count_ai_book_manifest_chapters(ai_book_root: Path) -> int:

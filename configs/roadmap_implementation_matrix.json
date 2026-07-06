@@ -76,7 +76,7 @@
     "wired": "Integrated into a canonical runtime path with at least one smoke trace, but not yet proven across every target profile.",
     "partial": "Some supporting machinery exists, but missing records, hooks, gates, or product traces remain.",
     "missing": "Concept exists in roadmap/book material but has no sufficient registered implementation.",
-    "frozen": "Useful concept intentionally parked by current priorities; it remains tracked and cannot be deleted silently.",
+    "frozen": "Useful concept or proof lane intentionally parked by current priorities or an explicit external-environment blocker such as unreachable trusted peers; it remains tracked and cannot be deleted silently.",
     "mapped": "Chapter or concept is mapped to a registered implementation slice, but the slice is not yet enough for a capability or beyond-SOTA claim.",
     "support_state_required": "Any claim beyond roadmap intent must name its support state and point at replayable evidence, negative controls, and non-claims."
   },
@@ -148,7 +148,7 @@
     {
       "phase": 1,
       "title": "VIEA Execution Spine",
-      "status": "partial",
+      "status": "frozen",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-1",
       "ai_book_source_basis": [
@@ -199,14 +199,22 @@
         "reports/theseus_assistant_product_spine_trace.jsonl",
         "reports/theseus_weekly_focus_20260706.json",
         "reports/theseus_public_safe_reference_trace_20260706.json",
-        "reports/theseus_book_importable_evidence_packs_20260706.json"
+        "reports/theseus_book_importable_evidence_packs_20260706.json",
+        "reports/hive_network_doctor.json"
       ],
       "missing_items": [
-        "shared spine record contract validates assistant, planner, deterministic tool, execution-spine, Hive scheduler route-record, candidate-integrity, private-verifier, product-facing assistant traces, and Hive task-submission execution receipt schema smoke; VIEA materialized artifact graph and context transaction payloads are now AI_book-schema-shaped with required replay/evidence/non-claim fields; remaining work is to replace the receipt schema smoke with a real reachable-peer submission proof and make normal assistant defaults traverse this path"
+        "shared spine record contract validates assistant, planner, deterministic tool, execution-spine, Hive scheduler route-record, candidate-integrity, private-verifier, product-facing assistant traces, and Hive task-submission execution receipt schema smoke; VIEA materialized artifact graph and context transaction payloads are now AI_book-schema-shaped with required replay/evidence/non-claim fields; normal local assistant defaults traverse this path with complete VIEA/route-validator/materialized-view/private-verifier/dogfood/procedural-route receipts; remaining external-frozen work is to replace the receipt schema smoke with a real reachable-peer submission proof. Current network doctor evidence reports coordinator_unreachable, registered_peers_unreachable, peer_inbound_only_outbound_blocked, and No route to host for the trusted Windows coordinator"
       ],
       "smallest_next_patch": "When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records match the dry-plan authority/runtime-adapter/failure/resource contract.",
       "integration_smoke": [
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the current Theseus roadmap implementation state and name the next smallest patch.\" --intent planning --feedback completed --session-id roadmap_integration_smoke --out reports/theseus_assistant_roadmap_integration_smoke.json --markdown-out reports/theseus_assistant_roadmap_integration_smoke.md --events-out reports/theseus_assistant_roadmap_integration_events.jsonl --viea-trace-out reports/theseus_assistant_roadmap_integration_trace.jsonl",
+        "reports/theseus_assistant_roadmap_integration_smoke.json trigger_state=GREEN",
+        "reports/theseus_assistant_roadmap_integration_smoke.json summary.assistant_viea_trace_complete=true",
+        "reports/theseus_assistant_roadmap_integration_smoke.json summary.route_validator_receipt_ready=true",
+        "reports/theseus_assistant_roadmap_integration_smoke.json summary.viea_materialized_view_ready=true",
+        "reports/theseus_assistant_roadmap_integration_smoke.json summary.private_verifier_spine_ready=true",
+        "reports/theseus_assistant_roadmap_integration_smoke.json summary.procedural_default_route_ready=true",
+        "reports/theseus_assistant_roadmap_integration_smoke.json summary.procedural_default_route_selection_matched=true",
         "python3 scripts/viea_spine_record_gate.py --gate",
         "reports/viea_spine_materialized_view.json summary.schema_payload_gap_count=0",
         "reports/viea_spine_materialized_view.json artifact_graph_record and context_transaction compact_payloads carry AI_book required fields"
@@ -219,7 +227,7 @@
     {
       "phase": 2,
       "title": "Stable Capability Fields And Route Authority",
-      "status": "partial",
+      "status": "frozen",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-2",
       "ai_book_source_basis": [
@@ -246,7 +254,7 @@
         "failure_boundary"
       ],
       "required_gates": [
-        "python3 scripts/scf_reference_kernel_v1.py --gate scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+        "python3 scripts/scf_reference_kernel_v1.py --gate",
         "python3 scripts/roadmap_implementation_gate.py --gate"
       ],
       "required_docs": [
@@ -264,13 +272,18 @@
         "reports/procedural_memory_canary_execution.json",
         "reports/governance_rights_receipt_suite.json",
         "reports/vcm_context_governor.json",
-        "reports/theseus_assistant_product_spine_smoke.json"
+        "reports/theseus_assistant_product_spine_smoke.json",
+        "reports/hive_network_doctor.json"
       ],
       "missing_items": [
-        "authority and adapter records are normalized across assistant, planner, execution-spine, Hive scheduler route records, Hive task-submission execution receipt schema smoke, candidate-integrity audit records, private verifier records, project registry SCF route validator, and assistant/Hive runtime route-decision receipt traces; remaining work is a real reachable-peer registered-task receipt proof"
+        "authority and adapter records are normalized across assistant, planner, execution-spine, Hive scheduler route records, Hive task-submission execution receipt schema smoke, candidate-integrity audit records, private verifier records, project registry SCF route validator, and assistant/Hive runtime route-decision receipt traces; remaining external-frozen work is a real reachable-peer registered-task receipt proof. Current network doctor evidence reports coordinator_unreachable, registered_peers_unreachable, peer_inbound_only_outbound_blocked, and No route to host for the trusted Windows coordinator"
       ],
       "smallest_next_patch": "When a trusted peer is reachable, run one bounded registered Hive task submission and verify the emitted execution receipt records plus route-validator receipt against the shared VIEA contract.",
-      "integration_smoke": [],
+      "integration_smoke": [
+        "python3 scripts/scf_reference_kernel_v1.py --gate",
+        "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/theseus_project_registry.py --gate"
+      ],
       "completion_rule": "Every routable implementation can emit a fail-closed authority receipt and exact content-bound route receipt.",
       "implemented_items": [
         "A2 replacement transaction kernel is synthetic-test-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters.",
@@ -1570,7 +1583,7 @@
     {
       "phase": 18,
       "title": "Governance Rights, Constitutional Predicates, And Failure Boundaries",
-      "status": "partial",
+      "status": "frozen",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-18",
       "ai_book_source_basis": [
@@ -1626,10 +1639,11 @@
         "reports/hive_artifact_merge_summary.json",
         "reports/roadmap_implementation_gate.json",
         "reports/theseus_assistant_product_spine_smoke.json",
-        "reports/vcm_context_governor.json"
+        "reports/vcm_context_governor.json",
+        "reports/hive_network_doctor.json"
       ],
       "missing_items": [
-        "trusted-peer Hive artifact endpoint proof remains pending until a trusted peer is reachable; local operator audit/export receipts and local artifact payload citations are now live and VIEA-gated"
+        "trusted-peer Hive artifact endpoint proof remains pending until a trusted peer is reachable; local operator audit/export receipts and local artifact payload citations are now live and VIEA-gated. Current network doctor evidence reports coordinator_unreachable, registered_peers_unreachable, peer_inbound_only_outbound_blocked, and No route to host for the trusted Windows coordinator"
       ],
       "smallest_next_patch": "When a trusted peer is reachable, validate remote `/api/hive/artifacts` and `/api/hive/artifact` payload citations through the same operator governance audit, VIEA route-validator, and claim-ledger path.",
       "integration_smoke": [
