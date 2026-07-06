@@ -85,8 +85,9 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
         "examples": examples,
         "score_semantics": (
             "Task-blind AST value hygiene over generated expressions. It rejects bare builtin/type "
-            "objects used as runtime values and obvious call argument type errors. It does not inspect "
-            "tests, solutions, public benchmark payloads, or hidden target metadata."
+            "objects used as runtime values, obvious call argument type errors, and boolean/comparison "
+            "expressions used as the object passed to isinstance. It does not inspect tests, solutions, "
+            "public benchmark payloads, or hidden target metadata."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
@@ -124,6 +125,8 @@ def ast_call_first_arg_type_invalid(node: ast.Call, *, local_types: dict[str, st
     first = node.args[0]
     if expression_value_has_bare_builtin_value(first):
         return True
+    if callee == "isinstance" and ast_expr_is_bool_or_comparison(first):
+        return True
     inferred = ast_static_type(first, local_types=local_types)
     if callee in {"max", "min"}:
         return len(node.args) == 1 and inferred in {"bool", "float", "int"}
@@ -138,6 +141,20 @@ def ast_call_first_arg_type_invalid(node: ast.Call, *, local_types: dict[str, st
             or expression_value_has_bare_builtin_value(arg)
             for arg in node.args
         )
+    return False
+
+
+def ast_expr_is_bool_or_comparison(expr: ast.AST | None) -> bool:
+    """Return true for boolean/test expressions used as runtime values."""
+
+    if expr is None:
+        return False
+    if isinstance(expr, (ast.BoolOp, ast.Compare)):
+        return True
+    if isinstance(expr, ast.UnaryOp) and isinstance(expr.op, ast.Not):
+        return True
+    if isinstance(expr, ast.Constant) and isinstance(expr.value, bool):
+        return True
     return False
 
 

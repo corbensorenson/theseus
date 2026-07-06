@@ -1863,22 +1863,40 @@ Evidence:
   behavior still `0/4` with `type_handling`, `wrong_answer`, and one
   compile/parse residual. This is training-path coverage evidence, not a
   promotion or capability claim.
+- The expression-value guard now rejects a concrete generated-expression
+  pathology that was polluting the Phase 10 candidate pool:
+  `isinstance(<boolean/comparison expression>, type)`. This is implemented in
+  `scripts/strict_generator_mlx_decode_guards.py`,
+  `scripts/strict_generator_mlx_decode_plans.py`,
+  `scripts/neural_seed_expression_value_guard.py`, and consumed by
+  `scripts/strict_generator_mlx_decode_eval.py` as task-blind generated-prefix
+  and post-decode hygiene. It does not render code, inspect tests/solutions,
+  use public data, or grant learned-generation credit. The focused v3 smoke
+  `reports/strict_generator_mlx_decode_eval_expression_value_isinstance_guard_broad4_v3.json`
+  keeps public training rows, external inference, and
+  fallback/template/router/tool credit at `0`; it records `16`
+  `invalid_expression_value` guard rejections and the accepted candidate file
+  has `0` `isinstance(data in ...)` style bodies. This is a guard repair, not a
+  capability win: behavior remains `0/4`, generated candidates drop to `6`,
+  integrity-verified candidates drop to `4/6`, nontrivial-return rate drops to
+  `0.333333`, and no-function/syntax mismatches rise to `2`.
 
 Non-claim: the new loop-plan exploration, adequacy checks, and body-action
 traces are task-blind no-credit scaffolding. They do not use
 tests/solutions/public artifacts and do not count as learned generation or
 semantic capability.
 
-Next concrete wall: learned loop-body action ordering is improving but remains
-semantic-shallow. Prompt-only operation hints, semantic-slot prefix weighting,
-decode-starvation replay, loop-progress guarding, expression-synthesis target
-weighting, expression closure/value guards, state/binding slots, and
-specialist-head routing are all implemented and audited. Together they recover
-loadable candidates and make failures precise, but they still do not produce
-stateful semantic updates. The next repair should keep the routed survival
-architecture and improve the loop specialist itself: a larger/fresher
-transformer-hybrid checkpoint for stateful loops, a verifier-positive
-operand-span/state-transition objective, or a loop-specific head for statement
-sequencing that does not render fixed updates. Do not reintroduce a fixed
-update renderer or count trace scaffolding/search constraints as learned
-generation.
+Next concrete wall: learned loop-body action ordering and expression hygiene are
+now better isolated, but the model remains semantic-shallow. Prompt-only
+operation hints, semantic-slot prefix weighting, decode-starvation replay,
+loop-progress guarding, expression-synthesis target weighting, expression
+closure/value guards, state/binding slots, and specialist-head routing are all
+implemented and audited. Together they recover loadable candidates and make
+failures precise, but they still do not produce stateful semantic updates or
+useful final returns. The next repair should keep the routed survival
+architecture and improve the learned loop/update/finalizer specialist itself: a
+larger/fresher transformer-hybrid checkpoint for stateful loops, a
+verifier-positive operand-span/state-transition objective, or a loop-specific
+head for statement sequencing that does not render fixed updates. Do not
+reintroduce a fixed update renderer or count trace scaffolding/search
+constraints as learned generation.

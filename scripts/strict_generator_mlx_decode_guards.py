@@ -115,6 +115,8 @@ def known_call_prefix_would_be_invalid(
     current_args = line_values[open_index + 1 :]
     argc_before = call_arg_count(current_args)
     if value == ",":
+        if callee == "isinstance" and isinstance_first_arg_values_invalid(first_call_argument_values(current_args)):
+            return True
         max_args = known_positional_max_args(callee, is_method=is_method, receiver_type=receiver_type)
         if max_args is not None and argc_before >= max_args:
             return True
@@ -198,12 +200,40 @@ def known_builtin_first_arg_type_invalid(
         inferred = local_types.get(first_arg[0], "")
     if not inferred and strict_body_expression_is_likely_noniterable(first_arg, local_types=local_types):
         inferred = "int"
+    if callee == "isinstance":
+        return isinstance_first_arg_values_invalid(first_arg)
     iterable_builtins = {"all", "any", "enumerate", "len", "list", "max", "min", "reversed", "set", "sorted", "sum", "tuple"}
     if callee in iterable_builtins:
         return inferred in {"bool", "float", "int"}
     numeric_scalar_builtins = {"abs", "round"}
     if callee in numeric_scalar_builtins:
         return inferred in {"dict", "list", "set", "str", "tuple"}
+    return False
+
+
+def isinstance_first_arg_values_invalid(values: list[str]) -> bool:
+    """Reject bool/comparison expressions as the object tested by isinstance.
+
+    This is generated-prefix hygiene only. A learned body can still choose
+    which object to test from visible prompt/signature context, but
+    `isinstance(data in xs and ..., list)` is almost always a syntax-shaped
+    hallucination that passes parsing while destroying branch semantics.
+    """
+
+    if not values:
+        return False
+    depth = 0
+    comparison_tokens = {"<", "<=", ">", ">=", "==", "!=", "is", "in"}
+    bool_tokens = {"and", "or", "not"}
+    for value in values:
+        if value in {"(", "[", "{"}:
+            depth += 1
+            continue
+        if value in {")", "]", "}"}:
+            depth = max(0, depth - 1)
+            continue
+        if depth == 0 and value in comparison_tokens | bool_tokens:
+            return True
     return False
 
 

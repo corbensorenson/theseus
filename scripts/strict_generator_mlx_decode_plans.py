@@ -42,6 +42,8 @@ from neural_seed_expression_value_guard import (
     expression_value_quality_summary,
 )
 from strict_generator_mlx_decode_guards import (
+    first_call_argument_values,
+    isinstance_first_arg_values_invalid,
     prefix_lines_with_depth,
     prefix_mentions_allowed_parameter,
     token_blocked_by_strict_decode_guard,
@@ -1755,6 +1757,14 @@ def token_blocked_by_expression_value_guard(
             if expression_value_arg_is_empty_literal(arg_values):
                 return True
 
+    if token_value in {",", ")"} and expression_value_inside_isinstance_call(values):
+        arg_values = expression_value_current_call_arg_values(values)
+        first_arg = first_call_argument_values(arg_values)
+        if token_value == "," and "," not in arg_values and isinstance_first_arg_values_invalid(first_arg):
+            return True
+        if token_value == ")" and isinstance_first_arg_values_invalid(first_arg):
+            return True
+
     if token_value == "NEWLINE" and values:
         if current_line_tail_needs_operand(values):
             return True
@@ -1842,6 +1852,16 @@ def expression_value_inside_update_call(values: list[str]) -> bool:
         values[index : index + 3] in [[".", method, "("] for method in LOOP_PLAN_MUTATION_METHODS]
         for index in range(max(0, len(values) - 8), max(0, len(values) - 2))
     )
+
+
+def expression_value_inside_isinstance_call(values: list[str]) -> bool:
+    for index in range(len(values) - 2, -1, -1):
+        if values[index] != "(":
+            continue
+        if index > 0 and values[index - 1] == "isinstance":
+            return True
+        return False
+    return False
 
 
 def expression_value_current_call_arg_values(values: list[str]) -> list[str]:

@@ -1255,7 +1255,8 @@ def evaluate_split(
                 "score_semantics": (
                     "Rejects generated-prefix-only expression value pathologies such as empty "
                     "update-call arguments, direct set literals in mutation calls, and bare "
-                    "builtin function/class objects closed as values. It does not choose an "
+                    "builtin function/class objects closed as values, plus comparison/boolean "
+                    "expressions used as the object tested by isinstance. It does not choose an "
                     "algorithm, render a body, inspect tests/solutions, use public data, or grant "
                     "candidate-generation credit."
                 ),
@@ -1743,6 +1744,21 @@ def generate_candidates_mlx(
                         }
                     )
                 continue
+            expression_value_quality = expression_value_quality_summary(body, allowed_names=allowed_names)
+            if enable_expression_value_guard and int(expression_value_quality.get("invalid_expression_value_count") or 0) > 0:
+                state["guard_rejection_counts"].update(["invalid_expression_value"])
+                examples = state.get("guard_rejection_examples")
+                if isinstance(examples, list) and len(examples) < 3:
+                    examples.append(
+                        {
+                            "failures": ["invalid_expression_value"],
+                            "decoded_token_count": len(generated) - 1,
+                            "decoded_token_tail": decoded_tokens[-80:],
+                            "body_preview": body[:240],
+                            "expression_value_quality": expression_value_quality,
+                        }
+                    )
+                continue
             body_sha = (
                 stable_hash(normalize_body_text(body))
                 if body_like_target_mode(target_mode)
@@ -1783,6 +1799,7 @@ def generate_candidates_mlx(
                     "beam_source": str(beam.get("completion_source") or "mlx_batched_grammar_constrained_token_beam"),
                     "plan_prefix_source": str(state.get("plan_prefix_source") or "decoder_first_token"),
                     "decode_static_guard": guard,
+                    "expression_value_quality": expression_value_quality,
                     "source_condition_expectation": dict_or_empty(state.get("source_condition_expectation")),
                     "source_condition_adequacy": condition_adequacy,
                 }
