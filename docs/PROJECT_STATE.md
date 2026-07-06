@@ -181,6 +181,18 @@ generation still not behaviorally useful`. This is why Phase 10 now prioritizes
 private DPO/IPO, bounded RLVR/GRPO, MTP, GVR, lookahead/diffusion, semantic IR
 localized repair, and scale/MoE ablations under no-cheat accounting rather than
 more scalar CE-only tuning.
+The first DPO shadow update for this lane now exists:
+`reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json`
+is `YELLOW` with a frozen reference checkpoint, heldout LM loss improvement
+from `1.419164` to `0.459953`, and a private accepted-vs-rejected
+policy/reference gap delta of `+0.628971`. No-cheat counters stayed clean:
+`public_training_rows=0`, `external_inference_calls=0`, and
+fallback/template/router/tool credit `0`. The only failed gate is the soft
+`parameter_element_update_meaningful` warning (`0.149228`). This is a real
+policy-update receipt, but it is not a behavior-lift claim, not default
+routing, not public transfer, and not learned-generation promotion. The next
+Phase 10 proof is private decode/candidate-integrity/verifier replay of this
+DPO checkpoint against the pre-update checkpoint.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with

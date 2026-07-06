@@ -98,11 +98,12 @@ the roadmap:
 4. The deeper ASI Stack mining pass adds a stronger correction: the book's
    Policy Optimization and Learning from Feedback chapter is not optional
    machinery. Theseus has verifier labels, accepted/rejected private
-   candidates, STS/VCM/router policies, and dogfood metadata, but the live
-   generator has not yet received a governed DPO/IPO preference update or a
-   bounded GRPO/RLVR verifier-reward update that improves heldout behavior.
-   The roadmap must therefore treat policy optimization as the next
-   behavior-changing lever, not as a completed fixture.
+   candidates, STS/VCM/router policies, and dogfood metadata. The live
+   generator now has a first governed DPO shadow update with a frozen reference
+   checkpoint, but it has not yet proven heldout decode/verifier behavior or
+   earned any default route. The roadmap must therefore treat policy
+   optimization as the next behavior-changing lever, not as a completed
+   fixture.
 5. Fast generation is broader than the current MLX/beam work. MTP,
    lookahead/trie continuation from verified procedural memory,
    sketch-first/diffusion-style repair, early-exit/self-speculative modes, and
@@ -117,12 +118,14 @@ the roadmap:
    from becoming uninspectable.
 7. Claude's later book-mining pass does not add another lane; it sharpens the
    execution order. The ASI Stack chapter-level `Planned Codex test` lists are
-   the implementation backlog, and Chapter 38 is the fastest real capability
-   lever still missing in behavior: run governed private DPO/IPO over existing
-   accepted/rejected verifier pairs before broader RLVR/GRPO, MTP, diffusion,
-   or scale work. The policy gate/scaffolding is not enough; the next Phase 10
-   claim must be pre/post heldout verifier behavior from a real private policy
-   update, with reward-hacking probes and rollback.
+   the implementation backlog, and Chapter 38 remains the fastest real
+   capability lever. The first DPO shadow update exists now, so the next Phase
+   10 claim must replay that checkpoint through private decode,
+   candidate-integrity, and verifier behavior checks against the pre-update
+   checkpoint before broader RLVR/GRPO, MTP, diffusion, or scale work. The
+   policy gate/scaffolding and policy-gap movement are not enough; accepted
+   output quality must move without reward-hacking, public rows, or fallback
+   credit.
 
 This reconciliation changes claims, not the no-cheat charter. It does not
 authorize public benchmark training rows, runtime external inference,
@@ -252,13 +255,14 @@ remain honestly bounded.
   implementation-reference evidence, not a model-quality or ASI claim.
 - Machine-readable roadmap state is governed by
   `configs/roadmap_implementation_matrix.json`. The current roadmap gate is
-  `YELLOW` with `0` hard gaps: phase `0` is `implemented`; phases `3`, `4`,
-  `5`, `6`, `7`, `8`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, and
-  `19` are `wired`; phases `1`, `2`, `9`, and `18` are
-  externally frozen until trusted peers are reachable. The active flagship core
-  slice is `A1_claim_ledger_trace_kernel`, and the gate now enforces its
-  current support state as `synthetic-test-backed`. The core-slice support state
-  summary now records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
+  `YELLOW` with `0` hard gaps: phase `0` is `implemented`; phases `4`, `5`,
+  `6`, `7`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `10`,
+  `13`, `14`, `15`, and `16` are `partial`; and phases `1`, `2`, `9`, and
+  `18` are externally frozen until trusted peers are reachable. The active
+  flagship core slice is `A1_claim_ledger_trace_kernel`, and the gate now
+  enforces its current support state as `synthetic-test-backed`. The core-slice
+  support state summary now records
+  `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
   `A2_replacement_transaction_kernel=synthetic-test-backed`,
   `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
   `B1_assisted_verified_assistant_product_lane=synthetic-test-backed`, and
@@ -267,15 +271,19 @@ remain honestly bounded.
   pre-training architecture readiness mode:
   `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
   The normal roadmap gate remains `YELLOW` with no hard gaps for implementation
-  work, and strict readiness is currently `GREEN` with `0` blockers. Phases
-  `1`, `2`, `9`, and `18` are tracked as
-  external-frozen with current network-doctor evidence:
+  work, while strict readiness is currently `RED` because six book-derived
+  phases remain partial: VCM transactional ABI/runtime parity (`3`), practical
+  neural seed survival/policy optimization/generation modes (`10`), semantic
+  IR localized repair (`13`), evidence hygiene/receipt faithfulness/claim
+  revision (`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and
+  verification-bandwidth/governance-tax routing (`16`). Phases `1`, `2`, `9`,
+  and `18` are tracked as external-frozen with current network-doctor evidence:
   `coordinator_unreachable`, `registered_peers_unreachable`,
   `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
-  Windows coordinator. All five pre-training book-reference core slices now
-  meet their target support state. Training or public calibration still needs
-  the specific governed command/gate for that lane; this readiness result only
-  means the book-derived architecture no longer has a local partial blocker.
+  Windows coordinator. All five pre-training book-reference core slices still
+  meet their current target support state, but the latest book-mining pass
+  found real missing mechanics that must be implemented or falsified before
+  the architecture is called ready for general training focus.
 - Post-readiness execution is now governed by
   `configs/training_inference_execution_roadmap.json` and checked by
   `python3 scripts/training_inference_execution_plan_gate.py --gate`. This is
@@ -285,7 +293,8 @@ remain honestly bounded.
   under honest labels; keeps bounded longer training planned until the smoke
   produces a clean checkpoint; keeps model-only general chat serving, public
   calibration, production MLX routing, and Hive fleet training blocked until
-  their evidence conditions are met. The plan explicitly rejects public
+  their evidence conditions are met. The latest gate result is `RED` because
+  strict architecture readiness is still `RED`. The plan explicitly rejects public
   benchmark training, runtime external inference, exact consumed public-surface
   reruns, fallback/template/router/tool credit as learned generation, raw
   private user text by default, and arbitrary remote execution.
@@ -1952,7 +1961,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. The next behavior-changing sequence is private DPO/IPO, bounded RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation under substrate-adoption records. No public/external/fallback/tool/template credit. |
+| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. A first DPO shadow update now moves the private policy/reference preference gap without public/external/fallback/tool/template credit, but it has not yet proved heldout decode/verifier behavior. The next behavior-changing sequence is DPO checkpoint replay, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation under substrate-adoption records. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Public calibration remains measurement-only. The execution plan keeps it blocked until private semantic behavior improves and a fresh, non-consumed surface passes the proposal gate; exact consumed-surface reruns stay refused. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Partial | Connect semantic IR to real generator failures: failed atom -> localized repair -> dependent obligation replay, with scope-change ledgers when requirements change. |
@@ -2631,11 +2640,21 @@ Implementation status:
 
 - Initial governed policy optimization record/gate scaffolding is complete as
   of 2026-06-25. This is a lease/evidence gate, not implementation of the
-  chapter's core behavior-change techniques. The actual behavior-changing
-  policy updates are **not** complete yet: no governed DPO/IPO update or
-  GRPO/RLVR verifier-reward update has beaten its pre-update checkpoint on a
-  private heldout verifier surface or been accepted as a default generator
-  improvement.
+  chapter's core behavior-change techniques.
+- The first real DPO shadow update ran on 2026-07-06 through
+  `scripts/strict_generator_mlx_private_adaptation.py` using a frozen
+  reference checkpoint and private accepted/rejected replay pairs. Report
+  `reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json`
+  is `YELLOW`: heldout LM loss improved from `1.419164` to `0.459953`, the
+  policy-minus-reference accepted-vs-rejected gap moved by `+0.628971`, and
+  no-cheat counters stayed clean (`public_training_rows=0`,
+  `external_inference_calls=0`, fallback/template/router/tool credit `0`).
+  This is policy-update evidence only. It is not a behavior-lift claim, not a
+  default route, not public transfer, and not learned-generation promotion.
+- The actual behavior-changing policy updates are **not** complete yet: no
+  governed DPO/IPO update or GRPO/RLVR verifier-reward update has beaten its
+  pre-update checkpoint on private heldout decode/verifier behavior or been
+  accepted as a default generator improvement.
 - Canonical config: `configs/policy_optimization_program.json`.
 - Gate implementation: `scripts/policy_optimization_gate.py`.
 - Registry integration: the existing `model_governance_gates` surface now
@@ -2661,12 +2680,14 @@ Implementation status:
   `python3 scripts/policy_optimization_gate.py`;
   `python3 scripts/theseus_project_registry.py --gate`;
   `python3 scripts/attd_analyzer.py`.
-- Remaining related work: execute an actual private DPO/IPO-style update from
-  eligible private candidate pairs, then compare pre/post private heldout
-  verifier behavior. If that works, run a bounded GRPO/RLVR exact-private
-  verifier-reward update with reward-hacking probes. This is now the first
-  behavior-changing Phase 10 task. The policy program is the gate for that work;
-  it is not itself a behavior-lift claim.
+- Remaining related work: replay the DPO shadow checkpoint through the private
+  decode, candidate-integrity, blind-information-flow, and verifier harness
+  against the same pre-update checkpoint. If behavior is flat or worse, keep
+  the checkpoint quarantined and mine the residuals; if behavior improves,
+  scale the private DPO/IPO tranche with reward-hacking probes before any
+  default review. Only after that should a bounded GRPO/RLVR exact-private
+  verifier-reward update run. The policy program is the gate for that work; it
+  is not itself a behavior-lift claim.
 
 ### C. Fast Generation and Runtime Accounting
 

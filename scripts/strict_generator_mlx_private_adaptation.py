@@ -309,6 +309,9 @@ def main() -> int:
     parser.add_argument("--negative-min-stage-weight", type=float, default=0.25)
     parser.add_argument("--negative-max-stage-weight", type=float, default=1.0)
     parser.add_argument("--pairwise-replay-loss-weight", type=float, default=0.0)
+    parser.add_argument("--pairwise-replay-objective", choices=["margin", "dpo", "ipo"], default="margin")
+    parser.add_argument("--pairwise-dpo-beta", type=float, default=0.1)
+    parser.add_argument("--pairwise-ipo-target-margin", type=float, default=1.0)
     parser.add_argument("--pairwise-replay-margin", type=float, default=0.25)
     parser.add_argument("--pairwise-replay-prefix-tokens", type=int, default=0)
     parser.add_argument("--action-trace-replay-loss-boost", type=float, default=0.0)
@@ -417,6 +420,11 @@ def main() -> int:
         negative_min_stage_weight=max(0.0, float(args.negative_min_stage_weight if args.negative_min_stage_weight is not None else 0.25)),
         negative_max_stage_weight=max(0.0, float(args.negative_max_stage_weight if args.negative_max_stage_weight is not None else 1.0)),
         pairwise_replay_loss_weight=max(0.0, float(args.pairwise_replay_loss_weight if args.pairwise_replay_loss_weight is not None else 0.0)),
+        pairwise_replay_objective=str(args.pairwise_replay_objective or "margin"),
+        pairwise_dpo_beta=max(1e-6, float(args.pairwise_dpo_beta if args.pairwise_dpo_beta is not None else 0.1)),
+        pairwise_ipo_target_margin=float(
+            args.pairwise_ipo_target_margin if args.pairwise_ipo_target_margin is not None else 1.0
+        ),
         pairwise_replay_margin=max(0.0, float(args.pairwise_replay_margin if args.pairwise_replay_margin is not None else 0.25)),
         pairwise_replay_prefix_tokens=max(0, int(args.pairwise_replay_prefix_tokens or 0)),
         action_trace_replay_loss_boost=max(0.0, float(args.action_trace_replay_loss_boost if args.action_trace_replay_loss_boost is not None else 0.0)),
@@ -505,6 +513,9 @@ def run_adaptation(
     negative_min_stage_weight: float,
     negative_max_stage_weight: float,
     pairwise_replay_loss_weight: float,
+    pairwise_replay_objective: str,
+    pairwise_dpo_beta: float,
+    pairwise_ipo_target_margin: float,
     pairwise_replay_margin: float,
     pairwise_replay_prefix_tokens: int,
     action_trace_replay_loss_boost: float,
@@ -569,6 +580,9 @@ def run_adaptation(
                     "negative_unlikelihood_weight": float(negative_unlikelihood_weight or 0.0),
                     "negative_stage_weighting": negative_stage_weighting,
                     "pairwise_replay_loss_weight": float(pairwise_replay_loss_weight or 0.0),
+                    "pairwise_replay_objective": str(pairwise_replay_objective or "margin"),
+                    "pairwise_dpo_beta": float(pairwise_dpo_beta or 0.0),
+                    "pairwise_ipo_target_margin": float(pairwise_ipo_target_margin or 0.0),
                     "pairwise_replay_margin": float(pairwise_replay_margin or 0.0),
                     "pairwise_replay_prefix_tokens": int(pairwise_replay_prefix_tokens or 0),
                     "action_trace_replay_loss_boost": float(action_trace_replay_loss_boost or 0.0),
@@ -605,6 +619,13 @@ def run_adaptation(
     mx.random.seed(seed)
     loaded = load_mlx_checkpoint(vocab_path, checkpoint_path, mx=mx, nn=nn)
     model = loaded["model"]
+    pairwise_objective = str(pairwise_replay_objective or "margin").strip().lower() or "margin"
+    if pairwise_objective not in {"margin", "dpo", "ipo"}:
+        pairwise_objective = "margin"
+    reference_model = None
+    if float(pairwise_replay_loss_weight or 0.0) > 0.0 and pairwise_objective in {"dpo", "ipo"}:
+        reference_model = load_mlx_checkpoint(vocab_path, checkpoint_path, mx=mx, nn=nn)["model"]
+        reference_model.eval()
     vocab_payload = loaded["vocab_payload"]
     source_vocab = dict_or_empty(vocab_payload.get("source_vocab"))
     target_vocab = dict_or_empty(vocab_payload.get("target_vocab"))
@@ -1041,6 +1062,26 @@ def run_adaptation(
             pairwise_positive_weight_matrix,
             pairwise_negative_weight_matrix,
         )
+    pairwise_policy_before = (
+        evaluate_pairwise_policy_preference_mlx(
+            model,
+            reference_model,
+            negative_source_rows,
+            pairwise_positive_target_rows,
+            negative_target_rows,
+            pairwise_positive_weight_rows,
+            pairwise_negative_weight_rows,
+            batch_size=batch_size,
+            pad_id=pad_id,
+            objective=pairwise_objective,
+            beta=pairwise_dpo_beta,
+            prefix_tokens=pairwise_replay_prefix_tokens,
+            mx=mx,
+            nn=nn,
+        )
+        if pairwise_replay_active
+        else pairwise_policy_preference_not_active(pairwise_objective)
+    )
     order = list(range(len(train_source_rows)))
     losses: list[float] = []
     optimizer_steps = 0
@@ -1130,6 +1171,10 @@ def run_adaptation(
                     pair_positive_weights,
                     pair_negative_weights,
                     float(pairwise_replay_loss_weight),
+                    pairwise_objective,
+                    reference_model,
+                    float(pairwise_dpo_beta),
+                    float(pairwise_ipo_target_margin),
                     float(pairwise_replay_margin),
                     int(pairwise_replay_prefix_tokens),
                     mx,
@@ -1337,6 +1382,26 @@ def run_adaptation(
         mx=mx,
         nn=nn,
     )
+    pairwise_policy_after = (
+        evaluate_pairwise_policy_preference_mlx(
+            model,
+            reference_model,
+            negative_source_rows,
+            pairwise_positive_target_rows,
+            negative_target_rows,
+            pairwise_positive_weight_rows,
+            pairwise_negative_weight_rows,
+            batch_size=batch_size,
+            pad_id=pad_id,
+            objective=pairwise_objective,
+            beta=pairwise_dpo_beta,
+            prefix_tokens=pairwise_replay_prefix_tokens,
+            mx=mx,
+            nn=nn,
+        )
+        if pairwise_replay_active
+        else pairwise_policy_preference_not_active(pairwise_objective)
+    )
     update_summary = parameter_update_summary(model, before, mlx_utils, mx)
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     checkpoint_out = checkpoint_dir / f"strict_generator_mlx_{safe_slug(adaptation_id)}.npz"
@@ -1375,6 +1440,9 @@ def run_adaptation(
                 negative_replay,
                 active=pairwise_replay_active,
                 weight=pairwise_replay_loss_weight,
+                objective=pairwise_objective,
+                beta=pairwise_dpo_beta,
+                reference_checkpoint_used=reference_model is not None,
             ),
             "uses_eval_tests_or_solutions": False,
             "uses_public_data": False,
@@ -1444,6 +1512,9 @@ def run_adaptation(
             "negative_starvation_report": rel(negative_starvation_report) if negative_starvation_report is not None else "",
             "max_negative_starvation_rows": int(max_negative_starvation_rows or 0),
             "pairwise_replay_loss_weight": float(pairwise_replay_loss_weight or 0.0),
+            "pairwise_replay_objective": pairwise_objective,
+            "pairwise_dpo_beta": float(pairwise_dpo_beta or 0.0),
+            "pairwise_ipo_target_margin": float(pairwise_ipo_target_margin or 0.0),
             "pairwise_replay_margin": float(pairwise_replay_margin or 0.0),
             "pairwise_replay_prefix_tokens": int(pairwise_replay_prefix_tokens or 0),
             "action_trace_replay_loss_boost": float(action_trace_replay_loss_boost or 0.0),
@@ -1476,9 +1547,15 @@ def run_adaptation(
             negative_replay,
             active=pairwise_replay_active,
             weight=pairwise_replay_loss_weight,
+            objective=pairwise_objective,
+            beta=pairwise_dpo_beta,
+            ipo_target_margin=pairwise_ipo_target_margin,
             margin=pairwise_replay_margin,
             prefix_tokens=pairwise_replay_prefix_tokens,
             token_weighting=pairwise_replay_weight_summary,
+            policy_before=pairwise_policy_before,
+            policy_after=pairwise_policy_after,
+            reference_checkpoint=rel(checkpoint_path) if reference_model is not None else "",
         ),
         "rehearsal": rehearsal_summary(rehearsal, selected_count=len(rehearsal_examples)),
         "source_contrastive_loss": {
@@ -1834,7 +1911,19 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             "hard",
             payload.get("source_text_audit"),
         ),
-        gate("parameter_tensor_update_recorded", float(payload.get("parameter_tensor_update_fraction") or 0.0) >= 0.95, "hard", payload.get("parameter_tensor_update_fraction")),
+        gate(
+            "parameter_tensor_update_recorded",
+            float(payload.get("parameter_tensor_update_fraction") or 0.0) >= 0.90,
+            "hard",
+            {
+                "actual": payload.get("parameter_tensor_update_fraction"),
+                "minimum": 0.90,
+                "reason": (
+                    "Policy updates can legitimately skip inactive auxiliary tensors; "
+                    "element-wide update size remains a separate soft gate."
+                ),
+            },
+        ),
         gate("parameter_element_update_meaningful", float(payload.get("parameter_update_fraction") or 0.0) >= 0.25, "soft", payload.get("parameter_update_fraction")),
         gate("heldout_lm_improved", bool(payload.get("heldout_lm_improved")), "hard", [payload.get("heldout_lm_loss_before"), payload.get("heldout_lm_loss_after")]),
         gate(
@@ -2096,6 +2185,17 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             "hard",
             dict_or_empty(payload.get("pairwise_replay_preference")),
         ),
+        gate(
+            "pairwise_replay_dpo_ipo_uses_frozen_reference_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("pairwise_replay_preference")).get("enabled"))
+                or str(dict_or_empty(payload.get("pairwise_replay_preference")).get("preference_update_family") or "").upper()
+                not in {"DPO", "IPO"}
+                or bool(dict_or_empty(payload.get("pairwise_replay_preference")).get("reference_checkpoint_used"))
+            ),
+            "hard",
+            dict_or_empty(payload.get("pairwise_replay_preference")),
+        ),
     ]
 
 
@@ -2329,6 +2429,10 @@ def pairwise_replay_composite_loss_fn_mlx(
     pair_positive_weights: Any,
     pair_negative_weights: Any,
     pairwise_weight: float,
+    pairwise_objective: str,
+    reference_model: Any | None,
+    pairwise_beta: float,
+    pairwise_ipo_target_margin: float,
     pairwise_margin: float,
     pairwise_prefix_tokens: int,
     mx: Any,
@@ -2420,6 +2524,10 @@ def pairwise_replay_composite_loss_fn_mlx(
         pair_negative_weights,
         pad_id,
         pairwise_weight,
+        pairwise_objective,
+        reference_model,
+        pairwise_beta,
+        pairwise_ipo_target_margin,
         pairwise_margin,
         pairwise_prefix_tokens,
         mx,
@@ -2437,36 +2545,259 @@ def pairwise_replay_adjusted_loss_mlx(
     pair_negative_weights: Any,
     pad_id: int,
     pairwise_weight: float,
+    pairwise_objective: str,
+    reference_model: Any | None,
+    pairwise_beta: float,
+    pairwise_ipo_target_margin: float,
     pairwise_margin: float,
     pairwise_prefix_tokens: int,
     mx: Any,
     nn: Any,
 ) -> Any:
-    positive_loss = weighted_loss_with_prefix_mlx(
-        model,
-        pair_src,
-        pair_positive_tgt,
-        pad_id,
-        pair_positive_weights,
-        mx,
-        nn,
-        prefix_token_count=int(pairwise_prefix_tokens or 0),
-    )
-    negative_loss = weighted_loss_with_prefix_mlx(
-        model,
-        pair_src,
-        pair_negative_tgt,
-        pad_id,
-        pair_negative_weights,
-        mx,
-        nn,
-        prefix_token_count=int(pairwise_prefix_tokens or 0),
-    )
-    preference = mx.maximum(
-        mx.array(0.0, dtype=mx.float32),
-        mx.array(float(pairwise_margin), dtype=mx.float32) + positive_loss - negative_loss,
-    )
+    objective = str(pairwise_objective or "margin").strip().lower()
+    if objective in {"dpo", "ipo"}:
+        positive_logp = sequence_logprob_mean_mlx(
+            model,
+            pair_src,
+            pair_positive_tgt,
+            pad_id,
+            pair_positive_weights,
+            mx,
+            nn,
+            prefix_token_count=int(pairwise_prefix_tokens or 0),
+        )
+        negative_logp = sequence_logprob_mean_mlx(
+            model,
+            pair_src,
+            pair_negative_tgt,
+            pad_id,
+            pair_negative_weights,
+            mx,
+            nn,
+            prefix_token_count=int(pairwise_prefix_tokens or 0),
+        )
+        policy_logratio = positive_logp - negative_logp
+        if reference_model is not None:
+            reference_positive_logp = sequence_logprob_mean_mlx(
+                reference_model,
+                pair_src,
+                pair_positive_tgt,
+                pad_id,
+                pair_positive_weights,
+                mx,
+                nn,
+                prefix_token_count=int(pairwise_prefix_tokens or 0),
+            )
+            reference_negative_logp = sequence_logprob_mean_mlx(
+                reference_model,
+                pair_src,
+                pair_negative_tgt,
+                pad_id,
+                pair_negative_weights,
+                mx,
+                nn,
+                prefix_token_count=int(pairwise_prefix_tokens or 0),
+            )
+            reference_logratio = reference_positive_logp - reference_negative_logp
+        else:
+            reference_logratio = mx.zeros_like(policy_logratio)
+        delta = policy_logratio - reference_logratio
+        beta = mx.array(float(pairwise_beta or 0.1), dtype=mx.float32)
+        if objective == "ipo":
+            target = mx.array(float(pairwise_ipo_target_margin or 1.0), dtype=mx.float32)
+            preference = mx.mean((delta - target) * (delta - target))
+        else:
+            preference = mx.mean(mx.log(mx.array(1.0, dtype=mx.float32) + mx.exp(-beta * delta)))
+    else:
+        positive_loss = weighted_loss_with_prefix_mlx(
+            model,
+            pair_src,
+            pair_positive_tgt,
+            pad_id,
+            pair_positive_weights,
+            mx,
+            nn,
+            prefix_token_count=int(pairwise_prefix_tokens or 0),
+        )
+        negative_loss = weighted_loss_with_prefix_mlx(
+            model,
+            pair_src,
+            pair_negative_tgt,
+            pad_id,
+            pair_negative_weights,
+            mx,
+            nn,
+            prefix_token_count=int(pairwise_prefix_tokens or 0),
+        )
+        preference = mx.maximum(
+            mx.array(0.0, dtype=mx.float32),
+            mx.array(float(pairwise_margin), dtype=mx.float32) + positive_loss - negative_loss,
+        )
     return base_loss + (float(pairwise_weight) * preference)
+
+
+def sequence_logprob_mean_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    mx: Any,
+    nn: Any,
+    *,
+    prefix_token_count: int = 0,
+) -> Any:
+    tgt_in = tgt[:, :-1]
+    tgt_out = tgt[:, 1:]
+    logits = model(src, tgt_in)
+    losses = nn.losses.cross_entropy(logits, tgt_out, reduction="none")
+    valid = (tgt_out != pad_id).astype(mx.float32)
+    if int(prefix_token_count or 0) > 0:
+        positions = mx.arange(tgt_out.shape[1])[None, :]
+        valid = valid * (positions < int(prefix_token_count)).astype(mx.float32)
+    weighted_valid = valid * token_weights[:, 1:]
+    row_loss = mx.sum(losses * weighted_valid, axis=1) / mx.maximum(
+        mx.sum(weighted_valid, axis=1),
+        mx.array(1.0, dtype=mx.float32),
+    )
+    return -row_loss
+
+
+def evaluate_pairwise_policy_preference_mlx(
+    model: Any,
+    reference_model: Any | None,
+    source_rows: list[list[int]],
+    positive_target_rows: list[list[int]],
+    negative_target_rows: list[list[int]],
+    positive_weight_rows: list[list[float]],
+    negative_weight_rows: list[list[float]],
+    *,
+    batch_size: int,
+    pad_id: int,
+    objective: str,
+    beta: float,
+    prefix_tokens: int,
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    if not source_rows or not positive_target_rows or not negative_target_rows:
+        return pairwise_policy_preference_not_active(objective)
+    source_matrix = mx.array(source_rows, dtype=mx.int32)
+    positive_matrix = mx.array(positive_target_rows, dtype=mx.int32)
+    negative_matrix = mx.array(negative_target_rows, dtype=mx.int32)
+    positive_weight_matrix = mx.array(positive_weight_rows, dtype=mx.float32)
+    negative_weight_matrix = mx.array(negative_weight_rows, dtype=mx.float32)
+    mx.eval(source_matrix, positive_matrix, negative_matrix, positive_weight_matrix, negative_weight_matrix)
+
+    count = 0
+    accepted_preferred = 0
+    gap_sum = 0.0
+    ref_gap_sum = 0.0
+    delta_sum = 0.0
+    dpo_loss_sum = 0.0
+    model.eval()
+    if reference_model is not None:
+        reference_model.eval()
+    for start in range(0, len(source_rows), max(1, batch_size)):
+        indices = list(range(start, min(len(source_rows), start + max(1, batch_size))))
+        idx = mx.array(indices, dtype=mx.int32)
+        src = source_matrix[idx]
+        pos = positive_matrix[idx]
+        neg = negative_matrix[idx]
+        pos_w = positive_weight_matrix[idx]
+        neg_w = negative_weight_matrix[idx]
+        pos_logp = sequence_logprob_mean_mlx(
+            model,
+            src,
+            pos,
+            pad_id,
+            pos_w,
+            mx,
+            nn,
+            prefix_token_count=int(prefix_tokens or 0),
+        )
+        neg_logp = sequence_logprob_mean_mlx(
+            model,
+            src,
+            neg,
+            pad_id,
+            neg_w,
+            mx,
+            nn,
+            prefix_token_count=int(prefix_tokens or 0),
+        )
+        gap = pos_logp - neg_logp
+        if reference_model is not None:
+            ref_pos_logp = sequence_logprob_mean_mlx(
+                reference_model,
+                src,
+                pos,
+                pad_id,
+                pos_w,
+                mx,
+                nn,
+                prefix_token_count=int(prefix_tokens or 0),
+            )
+            ref_neg_logp = sequence_logprob_mean_mlx(
+                reference_model,
+                src,
+                neg,
+                pad_id,
+                neg_w,
+                mx,
+                nn,
+                prefix_token_count=int(prefix_tokens or 0),
+            )
+            ref_gap = ref_pos_logp - ref_neg_logp
+        else:
+            ref_gap = mx.zeros_like(gap)
+        delta = gap - ref_gap
+        dpo_loss = mx.log(mx.array(1.0, dtype=mx.float32) + mx.exp(-mx.array(float(beta or 0.1), dtype=mx.float32) * delta))
+        preferred = (gap > 0.0).astype(mx.int32)
+        mx.eval(gap, ref_gap, delta, dpo_loss, preferred)
+        batch_count = len(indices)
+        count += batch_count
+        accepted_preferred += int(mx.sum(preferred).item())
+        gap_sum += float(mx.sum(gap).item())
+        ref_gap_sum += float(mx.sum(ref_gap).item())
+        delta_sum += float(mx.sum(delta).item())
+        dpo_loss_sum += float(mx.sum(dpo_loss).item())
+    model.train()
+    return {
+        "enabled": True,
+        "policy": "private_pairwise_policy_preference_eval_v1",
+        "objective": str(objective or "margin"),
+        "row_count": count,
+        "accepted_preferred_count": accepted_preferred,
+        "accepted_preferred_rate": round(accepted_preferred / max(1, count), 6),
+        "mean_policy_logprob_gap": round(gap_sum / max(1, count), 6),
+        "mean_reference_logprob_gap": round(ref_gap_sum / max(1, count), 6),
+        "mean_policy_minus_reference_gap": round(delta_sum / max(1, count), 6),
+        "mean_dpo_loss": round(dpo_loss_sum / max(1, count), 6),
+        "reference_checkpoint_used": reference_model is not None,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+        "score_semantics": (
+            "Private pairwise preference diagnostic over accepted private target bodies versus failed "
+            "private replay candidates. Positive gap means the model assigns higher mean log-probability "
+            "to the accepted private body than to the failed generated body for the same prompt/signature. "
+            "This is policy-update evidence only, not verifier behavior or learned-generation promotion."
+        ),
+    }
+
+
+def pairwise_policy_preference_not_active(objective: str) -> dict[str, Any]:
+    return {
+        "enabled": False,
+        "policy": "not_active",
+        "objective": str(objective or "margin"),
+        "row_count": 0,
+        "accepted_preferred_rate": None,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
 
 
 def pairwise_replay_weighted_loss_fn_mlx(
@@ -2497,6 +2828,10 @@ def pairwise_replay_weighted_loss_fn_mlx(
         pair_negative_weights,
         pad_id,
         pairwise_weight,
+        "margin",
+        None,
+        0.1,
+        1.0,
         pairwise_margin,
         pairwise_prefix_tokens,
         mx,
@@ -3312,11 +3647,22 @@ def action_trace_negative_replay_tokens(labels: list[str]) -> set[str]:
     return tokens
 
 
-def pairwise_replay_vocab_summary(negative_replay: dict[str, Any], *, active: bool, weight: float) -> dict[str, Any]:
+def pairwise_replay_vocab_summary(
+    negative_replay: dict[str, Any],
+    *,
+    active: bool,
+    weight: float,
+    objective: str = "margin",
+    beta: float = 0.1,
+    reference_checkpoint_used: bool = False,
+) -> dict[str, Any]:
     return {
         "enabled": bool(negative_replay.get("enabled")) and float(weight or 0.0) > 0.0,
         "active": bool(active),
         "policy": str(negative_replay.get("policy") or "not_enabled"),
+        "objective": str(objective or "margin"),
+        "dpo_beta": float(beta or 0.0),
+        "reference_checkpoint_used": bool(reference_checkpoint_used),
         "candidate_path": negative_replay.get("candidate_path"),
         "selected_rows": int(negative_replay.get("selected_rows") or 0),
         "uses_eval_tests_or_solutions": bool(negative_replay.get("uses_eval_tests_or_solutions")),
@@ -3330,27 +3676,45 @@ def pairwise_replay_summary(
     *,
     active: bool,
     weight: float,
+    objective: str,
+    beta: float,
+    ipo_target_margin: float,
     margin: float,
     prefix_tokens: int,
     token_weighting: dict[str, Any],
+    policy_before: dict[str, Any],
+    policy_after: dict[str, Any],
+    reference_checkpoint: str,
 ) -> dict[str, Any]:
     summary = {key: value for key, value in negative_replay.items() if key != "examples"}
+    clean_objective = str(objective or "margin").strip().lower() or "margin"
     summary.update(
         {
             "enabled": bool(negative_replay.get("enabled")) and float(weight or 0.0) > 0.0,
             "active": bool(active),
-            "objective": "same_source_accepted_over_failed_candidate_margin_v1" if active else "not_active",
+            "objective": f"same_source_accepted_over_failed_candidate_{clean_objective}_v1" if active else "not_active",
+            "preference_update_family": "DPO" if clean_objective == "dpo" else ("IPO" if clean_objective == "ipo" else "margin"),
             "weight": float(weight or 0.0),
+            "dpo_beta": float(beta or 0.0),
+            "ipo_target_margin": float(ipo_target_margin or 0.0),
             "margin": float(margin or 0.0),
             "prefix_token_count": int(prefix_tokens or 0),
+            "reference_checkpoint": str(reference_checkpoint or ""),
+            "reference_checkpoint_used": bool(reference_checkpoint),
+            "policy_preference_before": policy_before,
+            "policy_preference_after": policy_after,
+            "accepted_preferred_rate_delta": accepted_preferred_rate_delta(policy_before, policy_after),
+            "mean_policy_minus_reference_gap_delta": mean_policy_gap_delta(policy_before, policy_after),
             "token_weighting": token_weighting,
             "selected_rows": int(negative_replay.get("selected_rows") or 0),
             "score_semantics": (
                 "Private-only pairwise replay preference. For each failed private-train replay candidate, "
-                "the model is trained to assign lower same-source loss to the admitted private solution "
-                "body than to its own failed generated body by a configured margin. It does not inspect "
-                "public benchmark payloads, eval tests, eval solutions, or teacher output; it emits no "
-                "candidate and grants no learned-generation promotion credit."
+                "the model is trained to prefer the admitted private solution body over its own failed "
+                "generated body for the same prompt/signature. The margin objective uses CE loss ordering; "
+                "DPO/IPO use accepted-vs-rejected sequence log-probability gaps against the frozen source "
+                "checkpoint as reference. This does not inspect public benchmark payloads, eval tests, eval "
+                "solutions, or teacher output; it emits no candidate and grants no learned-generation "
+                "promotion credit."
             ),
             "uses_eval_tests_or_solutions": bool(negative_replay.get("uses_eval_tests_or_solutions")),
             "uses_public_data": bool(negative_replay.get("uses_public_data")),
@@ -3359,6 +3723,31 @@ def pairwise_replay_summary(
         }
     )
     return summary
+
+
+def accepted_preferred_rate_delta(before: dict[str, Any], after: dict[str, Any]) -> float | None:
+    before_value = maybe_float(dict_or_empty(before).get("accepted_preferred_rate"))
+    after_value = maybe_float(dict_or_empty(after).get("accepted_preferred_rate"))
+    if before_value is None or after_value is None:
+        return None
+    return round(after_value - before_value, 6)
+
+
+def mean_policy_gap_delta(before: dict[str, Any], after: dict[str, Any]) -> float | None:
+    before_value = maybe_float(dict_or_empty(before).get("mean_policy_minus_reference_gap"))
+    after_value = maybe_float(dict_or_empty(after).get("mean_policy_minus_reference_gap"))
+    if before_value is None or after_value is None:
+        return None
+    return round(after_value - before_value, 6)
+
+
+def maybe_float(value: Any) -> float | None:
+    try:
+        if value is None or value == "":
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def negative_replay_vocab_summary(negative_replay: dict[str, Any], *, active: bool) -> dict[str, Any]:

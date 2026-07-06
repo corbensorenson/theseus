@@ -59,6 +59,7 @@
         ]
       },
       "evaluation_refs": [
+        "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json",
         "reports/strict_generator_mlx_private_adaptation_simple_return_pairwise_value_v1.json",
         "reports/strict_generator_mlx_decode_eval_simple_return_pairwise_value_v1.json",
         "reports/candidate_integrity_audit.json",
@@ -69,7 +70,8 @@
       "residuals": [
         "LM loss can improve while verifier pass stays flat",
         "pairwise negatives may overfit shallow failure signatures",
-        "behavior lift must be measured on private heldout rows, not public calibration"
+        "behavior lift must be measured on private heldout rows, not public calibration",
+        "DPO shadow update now moves private accepted-vs-rejected policy/reference gap, but behavior replay remains unproven until a private decode/verifier report improves."
       ],
       "reward_hacking_probes": [
         "shallow_identity_loop",
@@ -93,7 +95,8 @@
         "This is not public benchmark transfer.",
         "This is not learned-code-generation promotion by itself.",
         "This is not evidence that SymLiquid or the transformer substrate won.",
-        "This does not allow fallback/template/router/tool credit as learned generation."
+        "This does not allow fallback/template/router/tool credit as learned generation.",
+        "The DPO smoke is policy-update evidence only; it is not default routing, verifier behavior lift, public transfer, or learned-generation promotion."
       ]
     },
     {
