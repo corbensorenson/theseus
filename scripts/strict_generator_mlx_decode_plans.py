@@ -1978,6 +1978,9 @@ def token_blocked_by_expression_value_guard(
     if not token_value:
         return False
 
+    if current_return_line_has_invalid_expression_value(values):
+        return True
+
     # Empty literals remain legal for initializers such as "out = []"; they are
     # blocked only when the prefix is in an expression/update-call value slot.
     if token_value in {")", "]", "}"} and current_line_tail_needs_operand(values):

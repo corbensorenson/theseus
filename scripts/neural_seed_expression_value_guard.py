@@ -44,7 +44,41 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
     examples: list[dict[str, Any]] = []
     bare_builtin_value_argument_count = 0
     invalid_call_argument_type_count = 0
+    invalid_attribute_receiver_count = 0
+    invalid_literal_subscript_count = 0
+    invalid_membership_container_count = 0
     for node in ast.walk(function):
+        if isinstance(node, ast.Attribute) and expression_is_bare_builtin_name(node.value):
+            invalid_attribute_receiver_count += 1
+            if len(examples) < 8:
+                examples.append(
+                    {
+                        "label": "invalid_attribute_receiver",
+                        "receiver": ast_text(node.value)[:80],
+                        "attribute": str(node.attr or ""),
+                        "expression": ast_text(node)[:160],
+                    }
+                )
+        if isinstance(node, ast.Subscript) and expression_is_literal_subscript_base(node.value):
+            invalid_literal_subscript_count += 1
+            if len(examples) < 8:
+                examples.append(
+                    {
+                        "label": "invalid_literal_subscript",
+                        "expression": ast_text(node)[:160],
+                    }
+                )
+        if isinstance(node, ast.Compare):
+            for op, comparator in zip(node.ops, node.comparators):
+                if isinstance(op, (ast.In, ast.NotIn)) and expression_is_noniterable_literal(comparator):
+                    invalid_membership_container_count += 1
+                    if len(examples) < 8:
+                        examples.append(
+                            {
+                                "label": "invalid_membership_container",
+                                "expression": ast_text(node)[:160],
+                            }
+                        )
         if not isinstance(node, ast.Call):
             continue
         callee = expression_call_name(node)
@@ -76,18 +110,29 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
                         "expression": ast_text(node)[:160],
                     }
                 )
-    invalid_expression_value_count = bare_builtin_value_argument_count + invalid_call_argument_type_count
+    invalid_expression_value_count = (
+        bare_builtin_value_argument_count
+        + invalid_call_argument_type_count
+        + invalid_attribute_receiver_count
+        + invalid_literal_subscript_count
+        + invalid_membership_container_count
+    )
     return {
         "parse_ok": True,
         "invalid_expression_value_count": invalid_expression_value_count,
         "bare_builtin_value_argument_count": bare_builtin_value_argument_count,
         "invalid_call_argument_type_count": invalid_call_argument_type_count,
+        "invalid_attribute_receiver_count": invalid_attribute_receiver_count,
+        "invalid_literal_subscript_count": invalid_literal_subscript_count,
+        "invalid_membership_container_count": invalid_membership_container_count,
         "examples": examples,
         "score_semantics": (
             "Task-blind AST value hygiene over generated expressions. It rejects bare builtin/type "
-            "objects used as runtime values, obvious call argument type errors, and boolean/comparison "
-            "expressions used as the object passed to isinstance. It does not inspect tests, solutions, "
-            "public benchmark payloads, or hidden target metadata."
+            "objects used as runtime values, obvious call argument type errors, builtin/type objects used "
+            "as attribute receivers, literal constant/container subscripts, impossible membership tests "
+            "against non-iterable literals, and boolean/comparison expressions used as the object passed "
+            "to isinstance. It does not inspect tests, solutions, public benchmark payloads, or hidden "
+            "target metadata."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
@@ -97,6 +142,36 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
 
 def expression_value_has_bare_builtin_value(expr: ast.AST | None) -> bool:
     return bool(expression_bare_builtin_value_names(expr))
+
+
+def expression_is_bare_builtin_name(expr: ast.AST | None) -> bool:
+    return isinstance(expr, ast.Name) and isinstance(expr.ctx, ast.Load) and expr.id in EXPRESSION_VALUE_BARE_BUILTINS
+
+
+def expression_is_literal_value(expr: ast.AST | None) -> bool:
+    if isinstance(expr, ast.Constant):
+        return True
+    if isinstance(expr, ast.UnaryOp) and isinstance(expr.operand, ast.Constant):
+        return True
+    if isinstance(expr, (ast.List, ast.Tuple, ast.Set, ast.Dict)):
+        return True
+    return False
+
+
+def expression_is_literal_subscript_base(expr: ast.AST | None) -> bool:
+    if expression_is_literal_value(expr):
+        return True
+    if isinstance(expr, ast.Subscript):
+        return expression_is_literal_subscript_base(expr.value)
+    return False
+
+
+def expression_is_noniterable_literal(expr: ast.AST | None) -> bool:
+    if isinstance(expr, ast.Constant):
+        return not isinstance(expr.value, (str, bytes))
+    if isinstance(expr, ast.UnaryOp) and isinstance(expr.operand, ast.Constant):
+        return not isinstance(expr.operand.value, (str, bytes))
+    return False
 
 
 def expression_bare_builtin_value_names(expr: ast.AST | None) -> set[str]:

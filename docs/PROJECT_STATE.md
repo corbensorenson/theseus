@@ -115,6 +115,14 @@ An additional invalid-return-value closure guard now blocks closing task-blind
 invalid return expressions such as `return max(0)`, but the focused broad2
 canary still emits zero learned rows and stalls in `current_line_starts_return`
 and `missing_local_return` states.
+The next invalid-return continuation prune moves the broad/private canary from
+zero learned rows to emitted learned rows: broad2 emits `4` generated rows and
+broad4 emits `12` generated rows, all non-fallback and runtime-loadable, but
+behavior remains `0` passes. A follow-up expression-value hygiene extension
+blocks builtin-attribute receivers, literal/container subscript chains, and
+impossible membership tests; the broad4 v2 canary emits `8` generated rows with
+no syntax warnings, `12` runtime-loaded verifier attempts including baselines,
+and still `0` behavior passes.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.

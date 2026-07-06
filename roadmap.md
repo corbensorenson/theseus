@@ -141,9 +141,14 @@ the roadmap:
    and falls back to noncredit `return None` baselines. The follow-up
    invalid-return-value closure guard blocks closing task-blind malformed return
    expressions, but the focused broad2 canary still stalls in
-   `current_line_starts_return` and `missing_local_return`; this confirms the
-   remaining wall is semantic/action body construction, not another narrow
-   malformed-token or local-return family.
+   `current_line_starts_return` and `missing_local_return`. The invalid-return
+   continuation prune then moves broad/private canaries from zero learned rows
+   to non-fallback learned rows (`4` generated rows on broad2, `12` on broad4),
+   and the expression-value hygiene extension removes builtin-attribute,
+   literal/container-subscript, and impossible-membership warnings while
+   preserving learned row emission (`8` generated rows on broad4 v2). Functional
+   behavior remains `0`, confirming the remaining wall is semantic/action body
+   construction, not another narrow malformed-token or local-return family.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 
