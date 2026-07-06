@@ -1,0 +1,89 @@
+{
+  "policy": "project_theseus_installer_manifest_v0",
+  "native_entrypoint": "theseus-supervisor",
+  "release_artifacts": {
+    "windows": {
+      "format": "clickable-exe-or-zip-plus-tray-operator-and-scheduled-update-task",
+      "binary": "target/release/theseus-supervisor.exe",
+      "installer_script": "scripts/package_theseus_windows.ps1",
+      "icon": "assets/windows/theseus-hive.ico",
+      "notification_script": "scripts/theseus_windows_notify.ps1",
+      "signing_script": "scripts/sign_theseus_windows_artifacts.ps1",
+      "signing_required": true,
+      "publisher_config": "release-local only; set THESEUS_WINDOWS_SIGNING_CERT_THUMBPRINT or THESEUS_WINDOWS_SIGNING_CERT_PATH; do not commit private signing material"
+    },
+    "macos": {
+      "format": "notarized-dmg-app-or-pkg",
+      "binary": "target/release/theseus-supervisor",
+      "installer_script": "scripts/package_theseus_macos.sh",
+      "universal_usb_writer": "scripts/hive_usb_writer.py",
+      "usb_bundle_builder": "scripts/build_macos_usb_bundle.py",
+      "usb_install_entrypoint": "scripts/install_theseus_hive_macos.sh",
+      "signing_required": true,
+      "notarization_required": true,
+      "codesign_identity_env": "THESEUS_MACOS_CODESIGN_IDENTITY",
+      "installer_identity_env": "THESEUS_MACOS_INSTALLER_IDENTITY",
+      "notary_profile_env": "THESEUS_NOTARYTOOL_PROFILE"
+    },
+    "linux": {
+      "format": "tarball-cli-now-appimage-deb-rpm-later-plus-systemd-user-service",
+      "binary": "target/release/theseus-supervisor",
+      "installer_script": "scripts/package_theseus_linux.sh",
+      "signing_required": true
+    }
+  },
+  "install_contract": [
+    "run supervisor doctor",
+    "initialize runtime paths",
+    "verify Python and Rust toolchain",
+    "verify CUDA on NVIDIA hosts and MLX on supported hosts",
+    "create or reuse Project Theseus venv",
+    "launch setup wizard",
+    "install user-level autostart service only after explicit user action"
+  ],
+  "macos_install_contract": [
+    "copy payload from USB/source checkout into ~/Library/Application Support/Project Theseus Hive/app/current",
+    "create user-visible apps in /Applications when writable, otherwise ~/Applications",
+    "store mutable reports/checkpoints/build outputs under Application Support and Caches",
+    "create or reuse .venv-puffer under the installed payload",
+    "install numpy and MLX on Apple Silicon when dependency bootstrap is enabled",
+    "emit a DMG and installer artifact manifest on a Mac builder",
+    "apply invite JSON and optional coordinator/relay URLs",
+    "run Hive probe and scheduler after install"
+  ],
+  "hive_version_convergence_contract": [
+    "coordinator publishes reports/hive_verified_version.json and reports/hive_update_catalog.json",
+    "nodes check the private /api/hive/update-catalog endpoint at startup and on a timer",
+    "nodes auto-install soft metadata updates only",
+    "hard source/app replacement requires a verified package or explicit hard-update flow",
+    "installer artifacts are advertised through reports/hive_installer_artifacts.json and private Hive artifact sync"
+  ],
+  "macos_usb_bundle_contract": [
+    "build from Windows, macOS, or Linux through scripts/hive_usb_writer.py without following reports/checkpoints/target junctions",
+    "exclude virtualenvs, local caches, generated runtime outputs, large ROM/game files, and local secret configs",
+    "normalize shell scripts and launchers to LF line endings",
+    "embed an invite for the active local Hive token unless an explicit invite is supplied",
+    "include a double-click .command launcher, .app wrapper, CLI fallback, manifest, and zip with executable modes"
+  ],
+  "universal_usb_bundle_contract": [
+    "one payload is shared by Windows, macOS, and Linux installers",
+    "setup wizard and CLI can list removable drives before writing",
+    "USB writes require selected target confirmation by label or explicit yes flag",
+    "Windows launcher copies payload to %LOCALAPPDATA% before installing and starting Hive",
+    "macOS launcher copies payload to ~/Library/Application Support before installing and starting Hive",
+    "Linux launcher copies payload to ~/.local/share before installing and starting Hive",
+    "embedded invite uses the active Hive id and join token by default",
+    "new Hive mode creates a fresh local Hive credential set and can activate it on the coordinator",
+    "public worker mode configures public contribution without embedding a private Hive token",
+    "root launchers and autorun metadata are included, while acknowledging that modern OSes require a user gesture",
+    "Windows installers create a user-session tray operator and Start Menu shortcuts by default unless -NoTray is requested",
+    "Windows tray surfaces report-aware notifications for training improvement, blocked actions, teacher-needed states, and promotion readiness",
+    "Windows release signing is wired through Authenticode/signtool and local-only certificate environment variables",
+    "bundle can be written from the setup wizard or the theseus usb write CLI command"
+  ],
+  "secrets_policy": {
+    "never_commit_signing_keys": true,
+    "never_commit_hive_join_tokens": true,
+    "local_config_suffix": ".local.json"
+  }
+}

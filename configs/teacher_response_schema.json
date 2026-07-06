@@ -1,0 +1,348 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reason_for_call",
+    "wall_type",
+    "blocked_gate",
+    "residual_family",
+    "local_evidence_used",
+    "diagnosis",
+    "recommended_intervention",
+    "implementation_plan",
+    "local_executor_inputs",
+    "private_eval_plan",
+    "public_calibration_plan",
+    "verification_steps",
+    "promotion_gates",
+    "promotion_rollback_rule",
+    "risks",
+    "evidence_gaps",
+    "anti_goals_acknowledged",
+    "forbidden_actions_acknowledged",
+    "experiment_spec",
+    "confidence",
+    "distill_into_local_rules",
+    "distillation_training_row"
+  ],
+  "properties": {
+    "reason_for_call": {
+      "type": "string"
+    },
+    "wall_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "blocked_gate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "residual_family": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "local_evidence_used": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "diagnosis": {
+      "type": "string"
+    },
+    "recommended_intervention": {
+      "type": "string"
+    },
+    "implementation_plan": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "local_executor_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "private_eval_plan": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "public_calibration_plan": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verification_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "promotion_gates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "promotion_rollback_rule": {
+      "type": "string"
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_gaps": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "anti_goals_acknowledged": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "forbidden_actions_acknowledged": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "experiment_spec": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "hypothesis",
+        "target_files",
+        "private_eval",
+        "public_calibration",
+        "rollback_plan",
+        "success_metric"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "hypothesis": {
+          "type": "string"
+        },
+        "target_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "private_eval": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "public_calibration": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rollback_plan": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "success_metric": {
+          "type": "string"
+        }
+      }
+    },
+    "confidence": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        null
+      ]
+    },
+    "distill_into_local_rules": {
+      "type": "boolean"
+    },
+    "distillation_training_row": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "row_id",
+        "source_kind",
+        "task_family",
+        "input_text",
+        "target_text",
+        "target_hash",
+        "license_spdx",
+        "provenance",
+        "public_benchmark",
+        "public_prompt",
+        "public_overlap_hits",
+        "holdout_overlap_hits",
+        "runtime_serving",
+        "admission_checks",
+        "notes"
+      ],
+      "properties": {
+        "row_id": {
+          "type": "string"
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "teacher_distillation"
+          ]
+        },
+        "task_family": {
+          "type": "string"
+        },
+        "input_text": {
+          "type": "string"
+        },
+        "target_text": {
+          "type": "string"
+        },
+        "target_hash": {
+          "type": "string"
+        },
+        "license_spdx": {
+          "type": "string"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "created_utc",
+            "evidence_paths",
+            "policy",
+            "local_verifier"
+          ],
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "created_utc": {
+              "type": "string"
+            },
+            "evidence_paths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "policy": {
+              "type": "string"
+            },
+            "local_verifier": {
+              "type": "string"
+            }
+          }
+        },
+        "public_benchmark": {
+          "type": "boolean",
+          "const": false
+        },
+        "public_prompt": {
+          "type": "boolean",
+          "const": false
+        },
+        "public_overlap_hits": {
+          "type": "integer",
+          "const": 0
+        },
+        "holdout_overlap_hits": {
+          "type": "integer",
+          "const": 0
+        },
+        "runtime_serving": {
+          "type": "string",
+          "enum": [
+            "forbidden"
+          ]
+        },
+        "admission_checks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provenance_retained",
+            "license_checked",
+            "leakage_audited",
+            "verifier_accepted",
+            "runtime_serving_forbidden",
+            "public_benchmark_excluded"
+          ],
+          "properties": {
+            "provenance_retained": {
+              "type": "boolean",
+              "const": true
+            },
+            "license_checked": {
+              "type": "boolean",
+              "const": true
+            },
+            "leakage_audited": {
+              "type": "boolean",
+              "const": true
+            },
+            "verifier_accepted": {
+              "type": "boolean",
+              "const": true
+            },
+            "runtime_serving_forbidden": {
+              "type": "boolean",
+              "const": true
+            },
+            "public_benchmark_excluded": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

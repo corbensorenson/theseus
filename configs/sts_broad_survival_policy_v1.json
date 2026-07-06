@@ -1,0 +1,75 @@
+{
+  "action": "disable_sts_for_broad_body_template_selector",
+  "applies_to": [
+    "project_theseus_broad_capability_survival_lane_comparator_v1",
+    "private_train_body_template_selector"
+  ],
+  "created_utc": "2026-06-19T21:52:34.844261+00:00",
+  "disabled_or_deweighted_fields": [
+    "decoder_contract.argument_roles",
+    "decoder_contract.required_constructs",
+    "decoder_contract.generation_plan.skeleton_bias",
+    "decoder_contract.generation_plan.repair_strategy",
+    "decoder_contract.return_shape",
+    "decoder_contract.return_contract.shape",
+    "decoder_contract.return_contract.empty_or_invalid_behavior",
+    "decoder_contract.return_contract.must_preserve_container_shape",
+    "decoder_contract.type_family",
+    "decoder_contract.visible_arg_count_hint"
+  ],
+  "effective_sts_on_fields": [
+    "prompt",
+    "metamorphic_properties"
+  ],
+  "evidence": {
+    "root_cause": {
+      "candidate_generation_mode": "private_train_body_template_selector",
+      "extra_sts_fields": [
+        "decoder_contract.argument_roles",
+        "decoder_contract.required_constructs",
+        "decoder_contract.generation_plan.skeleton_bias",
+        "decoder_contract.generation_plan.repair_strategy",
+        "decoder_contract.return_shape",
+        "decoder_contract.return_contract.shape",
+        "decoder_contract.return_contract.empty_or_invalid_behavior",
+        "decoder_contract.return_contract.must_preserve_container_shape",
+        "decoder_contract.type_family",
+        "decoder_contract.visible_arg_count_hint"
+      ],
+      "harmed_arms": [
+        "symliquid_style",
+        "transformer_control"
+      ],
+      "reason": "sts_extra_fields_shift_body_template_selection_to_lower_semantic_fit",
+      "regression_top_template_change_rates": {
+        "symliquid_style": 0.933333,
+        "transformer_control": 1.0
+      },
+      "root_cause_call": "The broad run is still a private train body-template selector. STS adds decoder-contract fields to the selector input, and on this slice those fields changed template ranking more often than they improved semantic fit. Until a structural/full-body generator consumes STS causally, broad survival scoring should gate STS off or deweight the harmful fields."
+    },
+    "symliquid_style_sts_delta": -0.0625,
+    "transformer_control_sts_delta": -0.03125
+  },
+  "external_inference_calls": 0,
+  "original_sts_on_fields": [
+    "prompt",
+    "metamorphic_properties",
+    "decoder_contract.argument_roles",
+    "decoder_contract.required_constructs",
+    "decoder_contract.generation_plan.skeleton_bias",
+    "decoder_contract.generation_plan.repair_strategy",
+    "decoder_contract.return_shape",
+    "decoder_contract.return_contract.shape",
+    "decoder_contract.return_contract.empty_or_invalid_behavior",
+    "decoder_contract.return_contract.must_preserve_container_shape",
+    "decoder_contract.type_family",
+    "decoder_contract.visible_arg_count_hint"
+  ],
+  "policy": "project_theseus_sts_broad_survival_policy_v1",
+  "promotion_rule": "Broad survival-lane promotion must not rely on STS-on if equal-budget STS-off outperforms it. STS may be re-enabled only after a fresh private broad audit shows non-negative transformer control delta and no harmed family requiring deweighting.",
+  "public_calibration_allowed": false,
+  "sts_off_fields": [
+    "prompt",
+    "metamorphic_properties"
+  ]
+}

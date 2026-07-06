@@ -1,0 +1,65 @@
+{
+  "source_id": "ultrachat_200k_offset_500",
+  "dataset": "HuggingFaceH4/ultrachat_200k",
+  "url": "https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k",
+  "license_spdx": "mit",
+  "expected_license_normalized": "mit",
+  "enabled": true,
+  "format": "messages",
+  "config": "default",
+  "split": "train_sft",
+  "offset": 500,
+  "length": 100,
+  "why": "MIT licensed multi-turn instruction data for conversational pressure and assistant-response modeling.",
+  "use": "private_conversation_sft_and_sts_pressure",
+  "checks": [
+    {
+      "gate": "source_enabled",
+      "passed": true,
+      "evidence": "True"
+    },
+    {
+      "gate": "source_kind_huggingface_dataset",
+      "passed": true,
+      "evidence": "huggingface_dataset"
+    },
+    {
+      "gate": "license_expected_allowlisted",
+      "passed": true,
+      "evidence": "mit"
+    },
+    {
+      "gate": "hf_license_matches_expected",
+      "passed": true,
+      "evidence": "mit"
+    },
+    {
+      "gate": "sample_rows_present",
+      "passed": true,
+      "evidence": "samples=96"
+    },
+    {
+      "gate": "bounded_sample_rows",
+      "passed": true,
+      "evidence": "samples=96 length=100"
+    },
+    {
+      "gate": "train_rows_present_or_not_required",
+      "passed": true,
+      "evidence": "train=96"
+    },
+    {
+      "gate": "sts_rows_present_or_not_required",
+      "passed": true,
+      "evidence": "sts=96"
+    }
+  ],
+  "status": "sampled",
+  "conversation_samples": 96,
+  "private_train_rows": 96,
+  "sts_rows": 96,
+  "external_inference_calls": 0,
+  "hf_license_normalized": "mit",
+  "decision": "tiny_sample_materialized",
+  "num_rows_total": 207865
+}

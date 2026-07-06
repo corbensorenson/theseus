@@ -1,0 +1,79 @@
+{
+  "policy": "sparkstream_synthetic_data_policy_v0",
+  "default_mode": "residual_targeted_local",
+  "enabled": true,
+  "external_inference_default": "runtime_forbidden_training_teacher_governed",
+  "teacher_generation_default": "governed_training_enabled",
+  "autonomous_training_ingest_default": "governed_private_public_teacher_dogfood",
+  "collapse_guard": {
+    "synthetic_only_training_allowed": false,
+    "max_synthetic_ratio": 0.12,
+    "max_external_pair_ratio": 0.6,
+    "min_real_ratio": 0.4,
+    "require_real_seed_data": true,
+    "require_holdout_exclusion": true,
+    "require_public_and_private_eval_delta": true,
+    "require_provenance": true
+  },
+  "quality_gates": {
+    "min_quality_score": 0.7,
+    "min_mean_quality_score": 0.76,
+    "max_exact_pair_overlap": 0,
+    "max_exact_sentence_overlap": 0,
+    "max_rule_share": 0.18,
+    "min_targeted_share": 0.55
+  },
+  "babylm": {
+    "count": 6400,
+    "seed": 2055,
+    "blend_total": 50000,
+    "max_target_rules": 18,
+    "sources": [
+      "data/babylm_blimp_filtered_train.jsonl",
+      "data/public_blimp_train.jsonl"
+    ],
+    "excludes": [
+      "data/babylm_blimp_filtered_eval.jsonl",
+      "data/public_blimp_eval.jsonl",
+      "data/babylm_mutated_holdout_seed31.jsonl",
+      "data/babylm_mutated_holdout_seed37.jsonl",
+      "data/babylm_mutated_holdout_seed43.jsonl",
+      "data/babylm_mutated_holdout_seed49.jsonl",
+      "data/babylm_mutated_holdout_seed55.jsonl",
+      "benchmarks/bridges/babylm_wh_gap_bridge.jsonl"
+    ],
+    "synthetic_out": "data/synthetic/babylm_residual_targeted_current.jsonl",
+    "blend_out": "data/synthetic/babylm_train_plus_synthetic_current.jsonl",
+    "dataset_card_out": "data/synthetic/babylm_residual_targeted_current.dataset_card.json",
+    "external_pairs_report": "reports/training_data_sampler.json"
+  },
+  "allowed_strategies": [
+    "residual_targeted_template",
+    "lexical_feature_preserving",
+    "bridge_benchmark_neighbor",
+    "teacher_proposed_pending_verification",
+    "teacher_distillation_verified_governed"
+  ],
+  "teacher_distillation": {
+    "policy_file": "configs/teacher_distillation_policy.json",
+    "gate_report": "reports/teacher_distillation_gate.json",
+    "default_state": "governed_training_enabled",
+    "training_time_only": true,
+    "runtime_serving_external_tokens": "forbidden",
+    "requires_neural_seed": true,
+    "requires_retained_manifest": true,
+    "requires_verifier_pass": true,
+    "requires_public_and_holdout_exclusion": true,
+    "max_initial_training_ratio": 0.8
+  },
+  "blocked_without_human_approval": [
+    "bulk_web_distillation",
+    "training_on_copied_lookup_pages",
+    "teacher_output_runtime_serving",
+    "teacher_rows_without_governed_manifest",
+    "teacher_rows_without_verifier_pass",
+    "teacher_rows_without_leakage_audit",
+    "license_uncertain_source_use",
+    "synthetic_ratio_above_policy"
+  ]
+}

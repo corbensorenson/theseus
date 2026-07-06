@@ -1,0 +1,230 @@
+{
+  "policy": "sparkstream_self_evolution_policy_v0",
+  "purpose": "Govern teacher-assisted self-editing, benchmark adapter creation, and architecture search without bloating the local SymLiquid/RMI system.",
+  "default_enabled": true,
+  "small_model_principle": {
+    "rule": "Do not add parameters or architecture until lower-cost interventions have failed under benchmark and regression evidence.",
+    "intervention_order": [
+      "benchmark_audit",
+      "data_or_synthetic_bridge",
+      "training_profile_or_optimizer",
+      "inference_or_tooling",
+      "loop_closure_tool",
+      "benchmark_adapter_or_bridge",
+      "minimal_architecture_change",
+      "parameter_growth"
+    ],
+    "parameter_growth_requires": [
+      "frontier_wall_type_is_architecture_training_wall",
+      "regressions_hold",
+      "residual_cluster_recurs_across_frontiers",
+      "teacher_oracle_recommends_minimal_mechanism",
+      "resource_governor_accepts_cost"
+    ]
+  },
+  "guarded_self_edit": {
+    "enabled": true,
+    "auto_apply_enabled": true,
+    "teacher_mode": "apply",
+    "teacher_model": "gpt-5.5",
+    "teacher_reasoning_effort": "xhigh",
+    "requires_clean_worktree": true,
+    "auto_commit_dirty_worktree": true,
+    "auto_stage_untracked": true,
+    "auto_commit_message": "Preserve workspace before guarded self-evolution",
+    "branch_prefix": "codex/self-evolution/",
+    "teacher_trace_path": "reports/teacher_self_edit_traces.jsonl",
+    "workflow_trace_path": "reports/workflow_routing_traces.jsonl",
+    "max_apply_calls_per_day": 1,
+    "max_files_changed_per_patch": 12,
+    "max_total_patch_bytes": 65536,
+    "default_target_scope": [
+      "scripts",
+      "configs",
+      "docs",
+      "tests",
+      "crates",
+      "adapters",
+      "benchmarks/cards"
+    ],
+    "forbidden_target_scope": [
+      ".git",
+      "data/local_roms",
+      "games",
+      "reports",
+      "checkpoints/materialized",
+      "target"
+    ],
+    "merge_policy": "branch_only_until_gates_pass",
+    "rollback_policy": "never_destructive_reset; leave failing branch and report exact files/tests",
+    "trigger_wall_types": [
+      "architecture_training_wall",
+      "state_or_rollout_wall",
+      "evaluation_frontier_wall"
+    ],
+    "trigger_failed_gates": [
+      "candidate_profile_evidence_complete",
+      "active_frontier_clears_floor",
+      "active_diagnostic_delta_bounded",
+      "max_residual_delta_bounded"
+    ],
+    "required_checks": [
+      {
+        "name": "python_compile_core_scripts",
+        "command": [
+          "python",
+          "-m",
+          "py_compile",
+          "scripts/autonomy_cycle.py",
+          "scripts/teacher_oracle.py",
+          "scripts/self_evolution_governor.py",
+          "scripts/benchmark_adapter_factory.py",
+          "scripts/architecture_experiment_governor.py",
+          "scripts/loop_closure_harvester.py",
+          "scripts/personality_core.py",
+          "scripts/personality_context_builder.py",
+          "scripts/personality_drift_eval.py",
+          "scripts/belief_update_governor.py",
+          "scripts/coherence_delirium_gate.py",
+          "scripts/attd_dirty_workspace_checkpoint.py",
+          "scripts/legacy_port_runtime_enforcer.py",
+          "scripts/teacher_self_edit_runner.py"
+        ],
+        "timeout_seconds": 120
+      },
+      {
+        "name": "attd_analyzer",
+        "command": [
+          "python",
+          "scripts/attd_analyzer.py",
+          "--out",
+          "reports/attd_report.json",
+          "--packets-out",
+          "reports/attd_maintenance_packets.json"
+        ],
+        "timeout_seconds": 120,
+        "allow_failure": true
+      },
+      {
+        "name": "attd_dirty_workspace_checkpoint",
+        "command": [
+          "python",
+          "scripts/attd_dirty_workspace_checkpoint.py",
+          "--out",
+          "reports/attd_dirty_workspace_checkpoint.json",
+          "--rerun-attd",
+          "--rerun-runtime-enforcement"
+        ],
+        "timeout_seconds": 360,
+        "allow_failure": true
+      },
+      {
+        "name": "coherence_delirium_gate",
+        "command": [
+          "python",
+          "scripts/coherence_delirium_gate.py",
+          "--out",
+          "reports/coherence_delirium_gate.json"
+        ],
+        "timeout_seconds": 120,
+        "allow_failure": true
+      },
+      {
+        "name": "legacy_port_runtime_enforcement",
+        "command": [
+          "python",
+          "scripts/legacy_port_runtime_enforcer.py",
+          "--out",
+          "reports/legacy_port_runtime_enforcement.json"
+        ],
+        "timeout_seconds": 180,
+        "allow_failure": true
+      },
+      {
+        "name": "external_inference_audit",
+        "command": [
+          "python",
+          "scripts/external_inference_audit.py",
+          "--out",
+          "reports/external_inference_audit.json"
+        ],
+        "timeout_seconds": 120
+      },
+      {
+        "name": "teacher_distillation_gate",
+        "command": [
+          "python",
+          "scripts/teacher_distillation_gate.py",
+          "--out",
+          "reports/teacher_distillation_gate.json",
+          "--markdown-out",
+          "reports/teacher_distillation_gate.md"
+        ],
+        "timeout_seconds": 120
+      },
+      {
+        "name": "candidate_gate_smoke",
+        "command": [
+          "python",
+          "scripts/candidate_promotion_gate.py",
+          "--out",
+          "reports/candidate_promotion_gate.json"
+        ],
+        "timeout_seconds": 120,
+        "allow_failure": true
+      },
+      {
+        "name": "autonomy_launch_readiness",
+        "command": [
+          "python",
+          "scripts/autonomy_launch_readiness.py",
+          "--profile",
+          "smoke",
+          "--out",
+          "reports/autonomy_launch_readiness.json"
+        ],
+        "timeout_seconds": 120,
+        "allow_failure": true
+      }
+    ]
+  },
+  "attd_maintenance": {
+    "enabled": true,
+    "teacher_reason": "attd_maintenance",
+    "auto_apply_on_yellow": true,
+    "auto_apply_on_red": true,
+    "max_packets_per_patch": 3,
+    "prefer_verified_simplification": true,
+    "distill_teacher_traces": true,
+    "trace_path": "reports/teacher_self_edit_traces.jsonl",
+    "objective": "Consume the highest-priority ATTD maintenance packets and make the smallest verified simplification that lowers or contains repository debt without changing model behavior."
+  },
+  "benchmark_adapter_factory": {
+    "enabled": true,
+    "write_cards_by_default": true,
+    "card_root": "benchmarks/cards",
+    "max_new_cards_per_cycle": 8,
+    "license_gate": "approved_or_local_user_supplied_only",
+    "smoke_before_frontier": true
+  },
+  "architecture_search": {
+    "enabled": true,
+    "experiment_queue_report": "reports/architecture_experiment_governance.json",
+    "prefer_zero_param_first": true,
+    "max_parallel_experiments": 1,
+    "required_evidence": [
+      "frontier_report",
+      "regression_report",
+      "residual_delta",
+      "resource_cost",
+      "external_inference_audit"
+    ]
+  },
+  "loop_closure": {
+    "enabled": true,
+    "aggressive_harvesting": true,
+    "minimum_recurrence": 3,
+    "auto_register_candidate_tools": false,
+    "candidate_report": "reports/loop_closure_harvester.json"
+  }
+}

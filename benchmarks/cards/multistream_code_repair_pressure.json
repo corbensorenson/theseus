@@ -1,0 +1,264 @@
+{
+  "id": "multistream_code_repair_pressure",
+  "name": "Multi-Stream Code Repair Pressure",
+  "category": "multi_stream_coding_benchmark",
+  "family": "coding_local_sandbox",
+  "runner_family": "multi_stream_code_pressure",
+  "status": "adapter_smoke_passed",
+  "decision": "multi_stream_local_generated",
+  "license_allowed": true,
+  "license_spdx": "local-generated-provenance-only",
+  "case_manifest": "data/multi_stream_benchmarks/multistream_code_repair_pressure.jsonl",
+  "required_arms": [
+    "benchmark_ratchet_arm",
+    "code_repair_verifier",
+    "residual_governance_arm",
+    "monitorability_audit_arm",
+    "planforge_critical_path_scheduler"
+  ],
+  "schema": "sparkstream_benchmark_card_v0",
+  "source_id": "multistream_code_repair_pressure",
+  "resource_pantry_path": "data/multi_stream_benchmarks/multistream_code_repair_pressure.jsonl",
+  "staged_path": "data/multi_stream_benchmarks/multistream_code_repair_pressure.jsonl",
+  "public_comparator_use": "forbidden",
+  "contamination_risk": "private_multistream_pressure_do_not_train_on_eval_cases",
+  "permission_envelope": {
+    "network": "forbidden_during_scoring",
+    "external_inference": "forbidden",
+    "hardware": "forbidden_without_explicit_human_approval"
+  },
+  "multi_stream_benchmark": {
+    "mode": "code_repair_stream_table",
+    "case_count": 18,
+    "streams": [
+      "system_policy_stream",
+      "context_stream",
+      "solver_stream",
+      "tool_test_stream",
+      "critic_audit_stream",
+      "patch_stream",
+      "residual_stream",
+      "visible_report_stream"
+    ],
+    "score_semantics": "private_multistream_pressure_correctness_monitorability_and_critical_path",
+    "case_index": [
+      {
+        "case_id": "multistream_synthetic_code_repair_mutation_chunked_02",
+        "task_id": "synthetic_code_repair_mutation_chunked_02",
+        "source_case_id": "synthetic_code_repair_mutation_chunked_02",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_code_repair_mutation_parse_ints_03",
+        "task_id": "synthetic_code_repair_mutation_parse_ints_03",
+        "source_case_id": "synthetic_code_repair_mutation_parse_ints_03",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_code_repair_mutation_safe_head_01",
+        "task_id": "synthetic_code_repair_mutation_safe_head_01",
+        "source_case_id": "synthetic_code_repair_mutation_safe_head_01",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_code_repair_mutation_safe_ratio_05",
+        "task_id": "synthetic_code_repair_mutation_safe_ratio_05",
+        "source_case_id": "synthetic_code_repair_mutation_safe_ratio_05",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_code_repair_mutation_stable_dedupe_00",
+        "task_id": "synthetic_code_repair_mutation_stable_dedupe_00",
+        "source_case_id": "synthetic_code_repair_mutation_stable_dedupe_00",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_code_repair_mutation_window_sums_04",
+        "task_id": "synthetic_code_repair_mutation_window_sums_04",
+        "source_case_id": "synthetic_code_repair_mutation_window_sums_04",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_chunked_06",
+        "task_id": "synthetic_cross_arm_code_memory_chunked_06",
+        "source_case_id": "synthetic_cross_arm_code_memory_chunked_06",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_latest_goal_00",
+        "task_id": "synthetic_cross_arm_code_memory_latest_goal_00",
+        "source_case_id": "synthetic_cross_arm_code_memory_latest_goal_00",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_parse_ints_04",
+        "task_id": "synthetic_cross_arm_code_memory_parse_ints_04",
+        "source_case_id": "synthetic_cross_arm_code_memory_parse_ints_04",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_reject_decoys_05",
+        "task_id": "synthetic_cross_arm_code_memory_reject_decoys_05",
+        "source_case_id": "synthetic_cross_arm_code_memory_reject_decoys_05",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_safe_head_01",
+        "task_id": "synthetic_cross_arm_code_memory_safe_head_01",
+        "source_case_id": "synthetic_cross_arm_code_memory_safe_head_01",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_safe_ratio_03",
+        "task_id": "synthetic_cross_arm_code_memory_safe_ratio_03",
+        "source_case_id": "synthetic_cross_arm_code_memory_safe_ratio_03",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_stable_dedupe_02",
+        "task_id": "synthetic_cross_arm_code_memory_stable_dedupe_02",
+        "source_case_id": "synthetic_cross_arm_code_memory_stable_dedupe_02",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_code_memory_window_sums_07",
+        "task_id": "synthetic_cross_arm_code_memory_window_sums_07",
+        "source_case_id": "synthetic_cross_arm_code_memory_window_sums_07",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_tool_safety_chunked_05",
+        "task_id": "synthetic_cross_arm_tool_safety_chunked_05",
+        "source_case_id": "synthetic_cross_arm_tool_safety_chunked_05",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_tool_safety_parse_ints_02",
+        "task_id": "synthetic_cross_arm_tool_safety_parse_ints_02",
+        "source_case_id": "synthetic_cross_arm_tool_safety_parse_ints_02",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_tool_safety_permission_summary_04",
+        "task_id": "synthetic_cross_arm_tool_safety_permission_summary_04",
+        "source_case_id": "synthetic_cross_arm_tool_safety_permission_summary_04",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      },
+      {
+        "case_id": "multistream_synthetic_cross_arm_tool_safety_safe_head_06",
+        "task_id": "synthetic_cross_arm_tool_safety_safe_head_06",
+        "source_case_id": "synthetic_cross_arm_tool_safety_safe_head_06",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "residual_governance_arm",
+          "monitorability_audit_arm",
+          "planforge_critical_path_scheduler"
+        ]
+      }
+    ]
+  },
+  "external_inference_calls": 0
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_longbench_v2",
+  "source_id": "longbench_v2",
+  "name": "THUDM/LongBench v2",
+  "category": "long_context_memory_benchmark",
+  "priority": "medium",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/THUDM/LongBench",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_context_recovery_local",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "VCM context recovery, long-context retrieval/reasoning, temporal/session memory, evidence grounding, and stale/deletion rejection",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "metadata": "public benchmark card or private analogue manifest",
+    "context": "long local/private semantic pages, sessions, or document chunks",
+    "query": "context recovery, multi-hop, temporal update, or abstention question",
+    "evidence": "required page ids and provenance, never public answer templates for training",
+    "memory_system": "VCM or baseline memory resolver under equal context budget"
+  },
+  "output_contract": {
+    "answer_accuracy": "exact or verifier-scored response correctness",
+    "evidence_precision_recall": "selected evidence page quality under budget",
+    "abstention": "unknown, stale, and deleted-memory rejection behavior",
+    "latency": "local retrieval and graph traversal cost",
+    "residuals": "missed retrieval, stale page use, bad update handling, or insufficient evidence"
+  },
+  "smoke_steps": [
+    "read repository metadata and license",
+    "record long-context reasoning categories",
+    "verify no public rows enter training"
+  ],
+  "promotion_gates": [
+    "license_allowed_or_metadata_only",
+    "public_calibration_only",
+    "no_public_training_rows",
+    "no_external_inference",
+    "private_analogue_suite_present",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "Public long-context/memory benchmarks are calibration metadata only. Training pressure must come from private analogues, dogfood traces, or governed teacher rows; never train on public prompts, contexts, answers, traces, or templates.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "public_calibration_unlock",
+      "public_data_training_use",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

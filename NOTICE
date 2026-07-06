@@ -1,0 +1,13 @@
+Ratcheting Modular Intelligence / SymLiquid FEP-Net
+Copyright 2026 Corben Sorenson
+
+This repository contains first-party source code, configuration, documentation,
+and small local benchmark fixtures for the SymLiquid/SparkStream research
+prototype. The project code is licensed under the Apache License, Version 2.0.
+
+Third-party datasets, benchmark repositories, generated reports, generated
+checkpoints, model weights, caches, and imported external artifacts are not
+covered by this repository license unless explicitly stated in their own files.
+Those artifacts are intentionally ignored or referenced by path/hash when
+possible. Review the upstream license and usage terms before training on or
+redistributing any external data.

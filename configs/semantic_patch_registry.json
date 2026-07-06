@@ -1,0 +1,246 @@
+{
+  "policy": "project_theseus_semantic_patch_registry_v1",
+  "purpose": "Semantic atom and semantic patch records for Theseus repo changes. This lets code/gate repairs point to localized obligations instead of whole-task failure labels.",
+  "hard_boundaries": {
+    "syntactic_patch_success_discharges_obligations": false,
+    "unbounded_effects_allowed": false,
+    "replay_effect_log_required": true,
+    "scope_change_requires_ledger": true,
+    "public_benchmark_training_allowed": false,
+    "runtime_external_inference_allowed": false
+  },
+  "semantic_atoms": [
+    {
+      "id": "atom.generation_mode.boundary.raw_throughput",
+      "type": "verifier_obligation",
+      "artifact": "configs/generation_mode_registry.json",
+      "source_anchor": "\"promote_on_raw_throughput_only\": false",
+      "obligation_ids": [
+        "obligation.raw_throughput_not_promotable",
+        "obligation.no_public_training",
+        "obligation.no_runtime_external_inference"
+      ],
+      "repair_scope": [
+        "configs/generation_mode_registry.json",
+        "scripts/generation_mode_gate.py",
+        "roadmap.md"
+      ],
+      "authority_boundary": "model_governance_accounting_only"
+    },
+    {
+      "id": "atom.generation_mode.metric.accepted_output",
+      "type": "semantic_node",
+      "artifact": "scripts/generation_mode_gate.py",
+      "source_anchor": "\"accepted_span_per_second\"",
+      "obligation_ids": [
+        "obligation.separate_proposed_accepted_success_metrics",
+        "obligation.useful_solution_per_second_recorded"
+      ],
+      "repair_scope": [
+        "scripts/generation_mode_gate.py",
+        "configs/generation_mode_registry.json",
+        "roadmap.md"
+      ],
+      "authority_boundary": "reporting_only_no_route_promotion"
+    },
+    {
+      "id": "atom.generation_mode.comparison.promotion",
+      "type": "branch_condition",
+      "artifact": "scripts/generation_mode_gate.py",
+      "source_anchor": "promotable = all([",
+      "obligation_ids": [
+        "obligation.pass_non_regression",
+        "obligation.integrity_non_regression",
+        "obligation.fallback_non_regression",
+        "obligation.speed_lift_not_raw_only"
+      ],
+      "repair_scope": [
+        "scripts/generation_mode_gate.py",
+        "configs/generation_mode_registry.json",
+        "roadmap.md"
+      ],
+      "authority_boundary": "can_warn_or_block_promotions_only"
+    },
+    {
+      "id": "atom.policy_optimization.boundary.loss_only",
+      "type": "verifier_obligation",
+      "artifact": "scripts/policy_optimization_gate.py",
+      "source_anchor": "\"loss_only_promotion_forbidden\"",
+      "obligation_ids": [
+        "obligation.loss_not_capability",
+        "obligation.behavior_lift_required_for_default"
+      ],
+      "repair_scope": [
+        "scripts/policy_optimization_gate.py",
+        "configs/policy_optimization_program.json",
+        "roadmap.md"
+      ],
+      "authority_boundary": "policy_gate_only_no_training_execution"
+    },
+    {
+      "id": "atom.project_steward.work_contract",
+      "type": "repair_scope",
+      "artifact": "configs/project_steward.json",
+      "source_anchor": "\"roadmap.generation_mode_runtime_accounting_v1\"",
+      "obligation_ids": [
+        "obligation.roadmap_work_contract_before_execution",
+        "obligation.allowed_files_declared",
+        "obligation.validation_commands_declared"
+      ],
+      "repair_scope": [
+        "configs/project_steward.json",
+        "configs/project_manifest_registry.json",
+        "roadmap.md"
+      ],
+      "authority_boundary": "registry_governance_only"
+    }
+  ],
+  "semantic_patches": [
+    {
+      "id": "patch.policy_optimization_gate_v1",
+      "artifact": "scripts/policy_optimization_gate.py",
+      "affected_atoms": [
+        "atom.policy_optimization.boundary.loss_only"
+      ],
+      "obligations": [
+        "loss-only improvement cannot promote policy",
+        "default policy requires behavior evidence",
+        "public benchmark rows and runtime external inference remain forbidden"
+      ],
+      "validation_commands": [
+        "python3 -m py_compile scripts/policy_optimization_gate.py",
+        "python3 scripts/policy_optimization_gate.py"
+      ],
+      "side_effects": [
+        "writes reports/policy_optimization_program.json",
+        "writes reports/policy_optimization_program.md"
+      ],
+      "rollback_notes": "Remove the script/config from model_governance_gates and keep generated reports as historical evidence if the gate misclassifies policy updates.",
+      "effect_log_refs": [
+        "effect.policy_optimization_gate_validation"
+      ],
+      "non_claims": [
+        "This patch does not train a model.",
+        "This patch does not prove public transfer."
+      ]
+    },
+    {
+      "id": "patch.generation_mode_gate_v1",
+      "artifact": "scripts/generation_mode_gate.py",
+      "affected_atoms": [
+        "atom.generation_mode.boundary.raw_throughput",
+        "atom.generation_mode.metric.accepted_output",
+        "atom.generation_mode.comparison.promotion",
+        "atom.project_steward.work_contract"
+      ],
+      "obligations": [
+        "raw proposed throughput is reported separately from accepted output",
+        "useful verified solutions per second is reported separately",
+        "same-suite faster route cannot promote when verifier pass remains zero",
+        "no-cheat counters remain zero"
+      ],
+      "validation_commands": [
+        "python3 -m py_compile scripts/generation_mode_gate.py",
+        "python3 scripts/generation_mode_gate.py",
+        "python3 scripts/theseus_project_registry.py --gate"
+      ],
+      "side_effects": [
+        "writes reports/generation_mode_registry.json",
+        "writes reports/generation_mode_registry.md",
+        "updates roadmap implementation status"
+      ],
+      "rollback_notes": "Remove generation-mode report outputs from model_governance_gates and keep the negative comparison report as historical evidence if the accounting contract is replaced.",
+      "effect_log_refs": [
+        "effect.generation_mode_gate_validation",
+        "effect.project_registry_gate_after_generation_mode"
+      ],
+      "non_claims": [
+        "This patch does not improve generator semantics by itself.",
+        "This patch does not claim native KV-cache parity.",
+        "This patch does not make a speed route promotable."
+      ]
+    }
+  ],
+  "effect_logs": [
+    {
+      "id": "effect.policy_optimization_gate_validation",
+      "command": "python3 scripts/policy_optimization_gate.py",
+      "inputs": [
+        "configs/policy_optimization_program.json"
+      ],
+      "outputs": [
+        "reports/policy_optimization_program.json",
+        "reports/policy_optimization_program.md"
+      ],
+      "allowed_effects": [
+        "write governed reports"
+      ],
+      "forbidden_effects": [
+        "train model",
+        "run public benchmark",
+        "serve external inference"
+      ],
+      "replay_status": "passed_current_run"
+    },
+    {
+      "id": "effect.generation_mode_gate_validation",
+      "command": "python3 scripts/generation_mode_gate.py",
+      "inputs": [
+        "configs/generation_mode_registry.json"
+      ],
+      "outputs": [
+        "reports/generation_mode_registry.json",
+        "reports/generation_mode_registry.md"
+      ],
+      "allowed_effects": [
+        "write governed reports"
+      ],
+      "forbidden_effects": [
+        "train model",
+        "run public benchmark",
+        "promote route"
+      ],
+      "replay_status": "passed_current_run"
+    },
+    {
+      "id": "effect.project_registry_gate_after_generation_mode",
+      "command": "python3 scripts/theseus_project_registry.py --gate",
+      "inputs": [
+        "configs/project_manifest_registry.json",
+        "configs/project_steward.json"
+      ],
+      "outputs": [
+        "reports/theseus_project_registry.json",
+        "reports/theseus_project_registry.md"
+      ],
+      "allowed_effects": [
+        "write registry reports"
+      ],
+      "forbidden_effects": [
+        "modify source",
+        "train model",
+        "run public benchmark"
+      ],
+      "replay_status": "passed_current_run"
+    }
+  ],
+  "localized_repair_fixtures": [
+    {
+      "id": "fixture.raw_throughput_boundary_repair_v1",
+      "broken_atom_id": "atom.generation_mode.boundary.raw_throughput",
+      "simulated_breakage": "remove or flip promote_on_raw_throughput_only=false in configs/generation_mode_registry.json",
+      "repair_scope": [
+        "configs/generation_mode_registry.json",
+        "scripts/generation_mode_gate.py",
+        "roadmap.md"
+      ],
+      "current_repair_evidence": [
+        "configs/generation_mode_registry.json contains \"promote_on_raw_throughput_only\": false",
+        "scripts/generation_mode_gate.py emits raw_throughput_only_promotion_forbidden",
+        "reports/generation_mode_registry.json reports \"promotable_comparison_count\": 0"
+      ],
+      "scope_change_ledger": [],
+      "expected_scope_result": "inside_declared_repair_scope"
+    }
+  ]
+}

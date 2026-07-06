@@ -1,0 +1,300 @@
+{
+  "policy": "sparkstream_minimal_architecture_search_v0",
+  "objective": "Improve transfer and agentic capability while keeping the local SymLiquid system as small as possible.",
+  "global_gates": [
+    "external_inference_audit_ok",
+    "architecture_gate_green",
+    "public_comparator_no_regression",
+    "seed49_regression_holds",
+    "active_frontier_improves_or_residual_target_improves",
+    "resource_cost_reported",
+    "residual_delta_bounded"
+  ],
+  "intervention_ladder": [
+    "benchmark_audit",
+    "data_improvement",
+    "training_improvement",
+    "inference_improvement",
+    "loop_closure",
+    "bridge_benchmark",
+    "minimal_architecture_change"
+  ],
+  "experiment_families": [
+    {
+      "id": "residual_bridge_data",
+      "kind": "zero_param",
+      "priority": "highest",
+      "hypothesis": "Residual-targeted local synthetic bridges can improve BabyLM mutation tails without adding parameters.",
+      "profile": "inner_loop",
+      "commands": [
+        "python scripts/synthetic_data_curator.py --policy configs/synthetic_data_policy.json --blend-total 50000 --out reports/synthetic_data_curator.json",
+        "python scripts/run_training_ratchet_profile.py --profile inner_loop --out reports/training_ratchet_profile_run.json"
+      ],
+      "promotion_gates": [
+        "synthetic_ratio_capped",
+        "leakage_clear",
+        "seed55_or_active_frontier_improves",
+        "public_comparator_no_regression"
+      ]
+    },
+    {
+      "id": "loop_closure_tooling",
+      "kind": "zero_param",
+      "priority": "high",
+      "hypothesis": "Repeated benchmark ingestion, residual analysis, and ROM wrapper setup should become verified tools before adding model capacity.",
+      "profile": "smoke",
+      "commands": [
+        "python scripts/loop_closure_harvester.py --out reports/loop_closure_harvester.json"
+      ],
+      "promotion_gates": [
+        "tool_candidate_recurrence_met",
+        "verification_plan_written",
+        "risk_tier_not_high_without_safety_arm"
+      ]
+    },
+    {
+      "id": "genesis_artifact_substrate",
+      "kind": "zero_param",
+      "priority": "highest",
+      "hypothesis": "Genesis should compile live Theseus evidence into typed artifacts, claim ledgers, critiques, primitives, release manifests, artifact debt, and feedback plans before model growth.",
+      "profile": "smoke",
+      "commands": [
+        "python scripts/genesis_kernel.py ingest-theseus --out reports/genesis_kernel/report.json --bundle-dir reports/genesis_kernel/latest_release"
+      ],
+      "promotion_gates": [
+        "artifact_graph_written",
+        "claim_ledger_written",
+        "critique_log_written",
+        "primitive_candidates_written",
+        "release_manifest_written",
+        "feedback_plan_written",
+        "hard_release_gates_clear"
+      ]
+    },
+    {
+      "id": "code_residual_forge",
+      "kind": "zero_param",
+      "priority": "highest",
+      "hypothesis": "Every code frontier run should classify residuals, export repair traces, write reusable transfer artifacts, and rotate within the programming family before any model growth.",
+      "profile": "inner_loop",
+      "commands": [
+        "python scripts/code_residual_forge.py --out reports/code_residual_forge.json --transfer-out reports/code_transfer_artifacts.json --rotation-out reports/code_frontier_rotation.json --trace-out reports/code_repair_traces.jsonl"
+      ],
+      "promotion_gates": [
+        "code_reports_loaded",
+        "residuals_classified",
+        "repair_traces_written",
+        "transfer_artifacts_written",
+        "rotation_decision_written",
+        "external_inference_zero",
+        "student_growth_blocked"
+      ]
+    },
+    {
+      "id": "synthetic_benchmark_factory",
+      "kind": "zero_param",
+      "priority": "highest",
+      "hypothesis": "Local synthetic benchmark mutations and cross-arm hybrid tasks can keep fresh private pressure available without treating generated scores as public truth.",
+      "profile": "smoke",
+      "commands": [
+        "python scripts/synthetic_benchmark_factory.py --policy configs/synthetic_benchmark_policy.json --write-cards --out reports/synthetic_benchmark_factory.json --markdown-out reports/synthetic_benchmark_factory.md"
+      ],
+      "promotion_gates": [
+        "source_benchmarks_loaded",
+        "residual_clusters_loaded",
+        "cases_generated",
+        "cross_arm_cases_generated",
+        "case_manifests_written",
+        "cards_written",
+        "provenance_preserved",
+        "no_copied_public_items",
+        "external_inference_zero",
+        "public_comparator_quarantined"
+      ]
+    },
+    {
+      "id": "multi_stream_code_pressure",
+      "kind": "zero_param_runtime_experiment",
+      "priority": "highest",
+      "hypothesis": "Coding pressure should compare causally verified parallel context/solver/test/critic/patch/residual streams against the single-stream repair organism before model or substrate growth.",
+      "profile": "inner_loop",
+      "commands": [
+        "python scripts/multi_stream_trace_factory.py --policy configs/multi_stream_policy.json --write-cards --out reports/multi_stream_trace_factory.json --markdown-out reports/multi_stream_trace_factory.md",
+        "python scripts/multi_stream_code_pressure_runner.py --card-id multistream_code_repair_pressure --seed 41 --case-manifest data/multi_stream_benchmarks/multistream_code_repair_pressure.jsonl --code-transfer-artifacts reports/code_transfer_artifacts.json --out reports/multi_stream_code_pressure_multistream_code_repair_pressure_seed41.json",
+        "python scripts/multi_stream_monitorability_probe.py --out reports/multi_stream_monitorability_probe.json",
+        "python scripts/multi_stream_candidate_gate.py --out reports/multi_stream_candidate_gate.json"
+      ],
+      "promotion_gates": [
+        "trace_factory_green",
+        "causal_verifier_green",
+        "apples_to_apples_case_overlap",
+        "single_stream_baseline_ran",
+        "monitorability_probe_green",
+        "private_pressure_candidate_gate_green",
+        "external_inference_zero"
+      ]
+    },
+    {
+      "id": "local_code_repair_organism",
+      "kind": "zero_param",
+      "priority": "highest",
+      "hypothesis": "Coding frontiers should run a native repair loop that consumes transfer artifacts and proves a heredity delta before promotion.",
+      "profile": "inner_loop",
+      "commands": [
+        "python scripts/local_code_repair_organism.py --card-id source_livecodebench --seed 14 --source-path resource_pantry/git/livecodebench --transfer-artifacts reports/code_transfer_artifacts.json --out reports/local_code_repair_organism_source_livecodebench_seed14.json"
+      ],
+      "promotion_gates": [
+        "sandbox_patch_tests_ran",
+        "transfer_artifacts_loaded",
+        "transfer_altered_behavior",
+        "patch_trace_written",
+        "external_inference_zero"
+      ]
+    },
+    {
+      "id": "self_edit_experiment_lane",
+      "kind": "zero_param",
+      "priority": "highest",
+      "hypothesis": "Theseus should turn residual clusters into bounded source-patch experiments with verification and rollback plans before any architecture growth.",
+      "profile": "smoke",
+      "commands": [
+        "python scripts/self_edit_experiment_lane.py --out reports/self_edit_experiment_lane.json"
+      ],
+      "promotion_gates": [
+        "residual_to_patch_contracts_written",
+        "source_patch_scope_bounded",
+        "verification_commands_passed",
+        "rollback_plan_written",
+        "external_inference_zero"
+      ]
+    },
+    {
+      "id": "long_horizon_memory_probe",
+      "kind": "zero_param",
+      "priority": "high",
+      "hypothesis": "Autonomy should prove it can recover the right goals and reject stale decoys from compacted traces over simulated hour/day horizons.",
+      "profile": "smoke",
+      "commands": [
+        "python scripts/long_horizon_memory_probe.py --out reports/long_horizon_memory_probe.json"
+      ],
+      "promotion_gates": [
+        "goal_recall_passes",
+        "fact_precision_passes",
+        "decoy_rejection_passes",
+        "next_action_consistent",
+        "external_inference_zero"
+      ]
+    },
+    {
+      "id": "benchmark_adapter_factory",
+      "kind": "zero_param",
+      "priority": "high",
+      "hypothesis": "New frontiers should be ingestible through benchmark cards and smoke adapters without teacher bespoke work.",
+      "profile": "smoke",
+      "commands": [
+        "python scripts/benchmark_adapter_factory.py --write-cards --out reports/benchmark_adapter_factory.json"
+      ],
+      "promotion_gates": [
+        "license_gate_passed",
+        "adapter_card_written",
+        "smoke_plan_written"
+      ]
+    },
+    {
+      "id": "cuda_hot_loop_ownership",
+      "kind": "compute_efficiency",
+      "priority": "high",
+      "hypothesis": "Keeping more state/reward/policy scoring in Rust/CUDA raises examples/sec without changing the model.",
+      "profile": "inner_loop",
+      "commands": [
+        "python scripts/profile_vram_stress.py --profile inner_loop --out reports/profile_vram_stress_report.json"
+      ],
+      "promotion_gates": [
+        "cuda_no_fallback",
+        "examples_per_second_improves",
+        "vram_within_2060super_limit"
+      ]
+    },
+    {
+      "id": "token_superposition_training",
+      "kind": "training_improvement",
+      "priority": "high",
+      "hypothesis": "A governed Rust/CUDA token-superposition phase can reduce early token training cost before any parameter growth.",
+      "profile": "inner_loop",
+      "commands": [
+        "python scripts/token_superposition_training.py --config configs/token_superposition_training.json --out reports/token_superposition_training.json"
+      ],
+      "promotion_gates": [
+        "normal_recovery_loss_beats_baseline",
+        "code_proxy_loss_improves",
+        "nominal_training_speedup_present",
+        "measured_cuda_train_speedup_present",
+        "standard_ar_recovery_completed",
+        "no_permanent_architecture_change"
+      ]
+    },
+    {
+      "id": "drone_controller_transfer_adapter",
+      "kind": "minimal_param_or_adapter",
+      "priority": "high",
+      "hypothesis": "A tiny local hover/waypoint controller adapter can transfer low-level control structure into later drone racing tasks before adding broad model capacity.",
+      "profile": "inner_loop",
+      "commands": [
+        "python scripts/pressure_runner.py --card-id source_gym_pybullet_drones --frontier-family drone_rl --seed 1 --episodes 2 --steps 128 --out reports/pressure_source_gym_pybullet_drones_seed1.json"
+      ],
+      "promotion_gates": [
+        "drone_rl_frontier_improves",
+        "hardware_remains_approval_gated",
+        "external_inference_zero",
+        "residual_escrow_updates_control_failures"
+      ]
+    },
+    {
+      "id": "learned_sequence_state_probe",
+      "kind": "minimal_param_or_state_training",
+      "priority": "medium",
+      "hypothesis": "A small learned state update may reduce long-distance grammar residuals if residual bridges saturate.",
+      "profile": "candidate",
+      "commands": [
+        "python scripts/run_ablation_matrix.py --out reports/ablation_matrix_rtx2060super_report.json"
+      ],
+      "promotion_gates": [
+        "matched_ablation_improves_frontier",
+        "worst_task_delta_bounded",
+        "cost_within_profile",
+        "regression_holds"
+      ]
+    },
+    {
+      "id": "vsa_residual_adapter",
+      "kind": "minimal_param_or_adapter",
+      "priority": "medium",
+      "hypothesis": "A small residual adapter can capture recurring role/filler or grammar tail structure without full model growth.",
+      "profile": "candidate",
+      "commands": [
+        "python scripts/run_ablation_matrix.py --out reports/ablation_matrix_rtx2060super_report.json"
+      ],
+      "promotion_gates": [
+        "residual_adapter_probe_beats_shared_head",
+        "worst_task_delta_bounded",
+        "public_private_delta_green"
+      ]
+    },
+    {
+      "id": "kan_lite_readout_sweep",
+      "kind": "minimal_architecture_change",
+      "priority": "low",
+      "hypothesis": "A small inspectable KAN-style readout may help nonlinear compression after cheaper steps fail.",
+      "profile": "seed_sweep",
+      "commands": [
+        "python scripts/run_ablation_matrix.py --out reports/ablation_matrix_rtx2060super_report.json"
+      ],
+      "promotion_gates": [
+        "teacher_recommended_after_ladder",
+        "frontier_improves",
+        "resource_cost_reported",
+        "regression_holds"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "policy": "project_theseus_policy_optimization_program_v1",
+  "purpose": "Governed policy-update ledger for generator, ranker, router, VCM, verifier, and generation-mode changes. This records what is being optimized, what feedback is allowed, how reward hacking is probed, when defaults may change, and what is not claimed.",
+  "hard_boundaries": {
+    "public_benchmark_training_allowed": false,
+    "runtime_external_inference_allowed": false,
+    "authority_expansion_allowed": false,
+    "fallback_template_router_tool_credit_as_learned_generation": false,
+    "loss_only_promotion_allowed": false
+  },
+  "required_reward_hacking_probes": [
+    "shallow_identity_loop",
+    "early_return_stub",
+    "inert_stub",
+    "prompt_label_shortcut",
+    "verifier_only_hack",
+    "excessive_reasoning_or_latency",
+    "context_ignoring_answer",
+    "public_payload_leakage",
+    "fallback_template_credit"
+  ],
+  "policy_update_records": [
+    {
+      "id": "strict_generator_pairwise_replay_preference_v1",
+      "target_layer": "candidate_generator",
+      "policy_family": "offline_private_preference",
+      "feedback_source": {
+        "kind": "private_candidate_pair",
+        "allowed_fields": [
+          "prompt",
+          "signature",
+          "candidate_body",
+          "private_verifier_stage",
+          "candidate_integrity_class",
+          "runtime_cost"
+        ],
+        "forbidden_fields": [
+          "public benchmark prompts/tests/solutions/traces/templates",
+          "hidden tests",
+          "answer-identifying category labels",
+          "solution_body",
+          "externally generated runtime tokens"
+        ]
+      },
+      "update_constraint": {
+        "method": "DPO_or_IPO_style_pairwise_loss_first",
+        "allowed_training_rows": "private_and_licensed_only",
+        "promotion_metric": "private_behavioral_verifier_pass_or_accepted_output_quality",
+        "loss_only_promotion_allowed": false,
+        "deterministic_renderer_credit_allowed": false
+      },
+      "drift_bound": {
+        "max_default_scope": "shadow_until_behavior_lift",
+        "must_preserve": [
+          "candidate integrity GREEN",
+          "blind information-flow GREEN",
+          "public_training_rows=0",
+          "runtime_external_inference=0"
+        ]
+      },
+      "evaluation_refs": [
+        "reports/strict_generator_mlx_private_adaptation_simple_return_pairwise_value_v1.json",
+        "reports/strict_generator_mlx_decode_eval_simple_return_pairwise_value_v1.json",
+        "reports/candidate_integrity_audit.json",
+        "reports/blind_information_flow_audit.json"
+      ],
+      "governance_gate": "reports/policy_optimization_program.json",
+      "rollback_plan": "Keep prior strict-generator checkpoint as default; retain failed update as residual and do not route it as default until private verifier behavior lifts without leakage.",
+      "residuals": [
+        "LM loss can improve while verifier pass stays flat",
+        "pairwise negatives may overfit shallow failure signatures",
+        "behavior lift must be measured on private heldout rows, not public calibration"
+      ],
+      "reward_hacking_probes": [
+        "shallow_identity_loop",
+        "early_return_stub",
+        "inert_stub",
+        "prompt_label_shortcut",
+        "verifier_only_hack",
+        "excessive_reasoning_or_latency",
+        "context_ignoring_answer",
+        "public_payload_leakage",
+        "fallback_template_credit"
+      ],
+      "authority_boundary": {
+        "public_training_rows_allowed": false,
+        "runtime_external_inference_allowed": false,
+        "authority_expansion_allowed": false
+      },
+      "default_allowed": false,
+      "status": "shadow",
+      "non_claims": [
+        "This is not public benchmark transfer.",
+        "This is not learned-code-generation promotion by itself.",
+        "This is not evidence that SymLiquid or the transformer substrate won.",
+        "This does not allow fallback/template/router/tool credit as learned generation."
+      ]
+    },
+    {
+      "id": "sts_ranker_policy_v1",
+      "target_layer": "candidate_ranker",
+      "policy_family": "offline_private_selector",
+      "feedback_source": {
+        "kind": "private_candidate_selection_replay",
+        "allowed_fields": [
+          "prompt-visible STS features",
+          "candidate provenance",
+          "candidate syntax status",
+          "private heldout verifier result after selection"
+        ],
+        "forbidden_fields": [
+          "public benchmark payloads",
+          "hidden solution labels",
+          "self-declared learned-generation flags",
+          "answer-identifying metadata"
+        ]
+      },
+      "update_constraint": {
+        "method": "guarded_selector_policy",
+        "allowed_training_rows": "private_replay_only",
+        "promotion_metric": "selected_pass_rate_under_equal_candidate_budget",
+        "loss_only_promotion_allowed": false,
+        "deterministic_renderer_credit_allowed": false
+      },
+      "drift_bound": {
+        "max_default_scope": "guarded_flag_only",
+        "must_preserve": [
+          "fallback_returns_zero",
+          "public_leakage_zero",
+          "equal_candidate_budget"
+        ]
+      },
+      "evaluation_refs": [
+        "reports/sts_ranker_policy_v1.json",
+        "reports/post_distillation_public_transfer_readiness_v1.json"
+      ],
+      "governance_gate": "reports/policy_optimization_program.json",
+      "rollback_plan": "Disable THESEUS_ENABLE_STS_RANKER_POLICY_V1 and route to the prior selector if selected-pass rate regresses or leakage/fallback probes fail.",
+      "residuals": [
+        "STS helped some thin slices and regressed others",
+        "selector evidence must stay separate from generator evidence"
+      ],
+      "reward_hacking_probes": [
+        "shallow_identity_loop",
+        "early_return_stub",
+        "inert_stub",
+        "prompt_label_shortcut",
+        "verifier_only_hack",
+        "excessive_reasoning_or_latency",
+        "context_ignoring_answer",
+        "public_payload_leakage",
+        "fallback_template_credit"
+      ],
+      "authority_boundary": {
+        "public_training_rows_allowed": false,
+        "runtime_external_inference_allowed": false,
+        "authority_expansion_allowed": false
+      },
+      "default_allowed": false,
+      "status": "guarded",
+      "non_claims": [
+        "Selector lift is not generator lift.",
+        "Private heldout selector lift is not public transfer.",
+        "STS features may not include answer-identifying metadata."
+      ]
+    },
+    {
+      "id": "vcm_context_policy_v1",
+      "target_layer": "context_memory",
+      "policy_family": "context_packet_selection",
+      "feedback_source": {
+        "kind": "private_context_recovery_and_task_trace",
+        "allowed_fields": [
+          "typed semantic page metadata",
+          "evidence coverage",
+          "page-fault outcome",
+          "accepted/missed/ignored local events"
+        ],
+        "forbidden_fields": [
+          "public benchmark payloads as training rows",
+          "raw private user text by default",
+          "quoted untrusted text as instructions"
+        ]
+      },
+      "update_constraint": {
+        "method": "policy-scored context compilation",
+        "allowed_training_rows": "local_metadata_and_governed_private_rows_only",
+        "promotion_metric": "context_recovery_accuracy_and_task_success",
+        "loss_only_promotion_allowed": false,
+        "deterministic_renderer_credit_allowed": false
+      },
+      "drift_bound": {
+        "max_default_scope": "context_compiler_shadow_or_canary",
+        "must_preserve": [
+          "authority non-escalation",
+          "compression certificate",
+          "taint-aware external text handling"
+        ]
+      },
+      "evaluation_refs": [
+        "reports/vcm_release_conformance_audit.json",
+        "reports/vcm_context_recovery_benchmark.json",
+        "reports/vcm_task_context_bridge.json"
+      ],
+      "governance_gate": "reports/policy_optimization_program.json",
+      "rollback_plan": "Route back to baseline VCM compiler and retain failed packet-selection policy as residual if context adequacy or latency regresses.",
+      "residuals": [
+        "LongMemEval exact-answer quality remains weak on failed rows",
+        "VCM runtime cache parity remains a separate non-claim"
+      ],
+      "reward_hacking_probes": [
+        "shallow_identity_loop",
+        "early_return_stub",
+        "inert_stub",
+        "prompt_label_shortcut",
+        "verifier_only_hack",
+        "excessive_reasoning_or_latency",
+        "context_ignoring_answer",
+        "public_payload_leakage",
+        "fallback_template_credit"
+      ],
+      "authority_boundary": {
+        "public_training_rows_allowed": false,
+        "runtime_external_inference_allowed": false,
+        "authority_expansion_allowed": false
+      },
+      "default_allowed": false,
+      "status": "candidate",
+      "non_claims": [
+        "VCM semantic cache success is not native KV-cache parity.",
+        "Context recovery lift is not code-generation lift."
+      ]
+    },
+    {
+      "id": "octopus_router_policy_v1",
+      "target_layer": "planning_router",
+      "policy_family": "registry_gated_route_selection",
+      "feedback_source": {
+        "kind": "workboard_and_plan_trace",
+        "allowed_fields": [
+          "registered surface id",
+          "route role",
+          "verification result",
+          "runtime cost",
+          "typed failure"
+        ],
+        "forbidden_fields": [
+          "unregistered tool execution",
+          "self-declared capability claims",
+          "public benchmark answer metadata"
+        ]
+      },
+      "update_constraint": {
+        "method": "route policy improvement under registry eligibility",
+        "allowed_training_rows": "registered_private_trace_metadata_only",
+        "promotion_metric": "verified_completion_rate_and_cost_without_authority_expansion",
+        "loss_only_promotion_allowed": false,
+        "deterministic_renderer_credit_allowed": false
+      },
+      "drift_bound": {
+        "max_default_scope": "registry_gated_canary",
+        "must_preserve": [
+          "registered route eligibility",
+          "no arbitrary remote shell",
+          "typed failure or abstention"
+        ]
+      },
+      "evaluation_refs": [
+        "reports/theseus_plan_compiler.json",
+        "reports/octopus_router_report.json",
+        "reports/theseus_project_registry.json"
+      ],
+      "governance_gate": "reports/policy_optimization_program.json",
+      "rollback_plan": "Pin to canonical plan compiler route if the router expands authority, increases duplicate work, or lowers verified completion.",
+      "residuals": [
+        "Router success must not mask weak generator quality",
+        "Tool or renderer success must be reported separately from learned-generation claims"
+      ],
+      "reward_hacking_probes": [
+        "shallow_identity_loop",
+        "early_return_stub",
+        "inert_stub",
+        "prompt_label_shortcut",
+        "verifier_only_hack",
+        "excessive_reasoning_or_latency",
+        "context_ignoring_answer",
+        "public_payload_leakage",
+        "fallback_template_credit"
+      ],
+      "authority_boundary": {
+        "public_training_rows_allowed": false,
+        "runtime_external_inference_allowed": false,
+        "authority_expansion_allowed": false
+      },
+      "default_allowed": false,
+      "status": "candidate",
+      "non_claims": [
+        "Better routing is not a substrate win.",
+        "Tool success is not learned-generation promotion."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "created_utc": "2026-07-06T06:41:08.329381Z",
+  "experiments": [
+    {
+      "allowed_data": [
+        "private/licensed/governed training rows",
+        "metadata-only dogfood outcome rows that passed admission",
+        "governed teacher-distillation rows with provenance, license, verifier, and leakage checks"
+      ],
+      "candidate_families_allowed": [
+        "learned_full_body_token",
+        "transformer_hybrid_direct_body"
+      ],
+      "candidate_families_forbidden_for_learned_credit": [
+        "tools",
+        "templates",
+        "routers",
+        "semantic_renderers",
+        "fallbacks",
+        "private_ngrams"
+      ],
+      "experiment_id": "strict_generator_correctness_in_loop_private_v1_20260706",
+      "external_inference_calls": 0,
+      "external_inference_runtime_allowed": false,
+      "fallback_return_count": 0,
+      "falsification_stops": [
+        "candidate_integrity_mismatch_count > 0",
+        "public_boundary_violation_count > 0",
+        "fallback_return_count > 0",
+        "selected_pass_rate fails to beat current private direct-body baseline on preregistered heldout",
+        "teacher rows fail provenance/license/verifier/leakage admission"
+      ],
+      "fixed_before_run": {
+        "dataset_manifest": "to_be_written_before_execution",
+        "heldout_manifest": "to_be_written_before_execution",
+        "max_runtime_minutes": 180,
+        "max_train_rows": 20000,
+        "seed_set": [
+          13,
+          29,
+          41
+        ]
+      },
+      "forbidden_data": [
+        "public benchmark prompts/tests/solutions/traces/answer templates",
+        "hidden tests",
+        "raw private prompts"
+      ],
+      "metrics": [
+        "loadable_candidate_rate",
+        "syntax_valid_rate",
+        "behavior_pass_rate",
+        "pass_if_any_rate",
+        "selected_pass_rate",
+        "candidate_integrity_mismatch_count",
+        "fallback_return_count",
+        "public_boundary_violation_count",
+        "verifier_cost_units"
+      ],
+      "outputs_planned": [
+        "candidate manifest",
+        "candidate integrity report",
+        "private verifier report",
+        "residual taxonomy",
+        "no-promotion decision if improvement is insufficient"
+      ],
+      "public_benchmark_execution_allowed": false,
+      "public_benchmark_training_allowed": false,
+      "public_training_rows_written": 0,
+      "purpose": "Improve direct learned body-token generator semantic correctness under independent verifier feedback without counting tools, templates, routers, or fallback returns as learned generation.",
+      "status": "preregistered_not_run",
+      "teacher_mode_allowed": "governed_training_only"
+    }
+  ],
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "non_claims": [
+    "Preregistration is not a training result.",
+    "Preregistration is not a public benchmark result.",
+    "Preregistration does not promote learned generation."
+  ],
+  "policy": "project_theseus_correctness_in_loop_generator_experiment_registry_v1",
+  "public_training_rows_written": 0,
+  "summary": {
+    "experiment_count": 1,
+    "fallback_credit_allowed": false,
+    "preregistered_not_run_count": 1,
+    "public_benchmark_training_allowed": false
+  },
+  "trigger_state": "GREEN"
+}

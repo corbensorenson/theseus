@@ -1,0 +1,559 @@
+{
+  "policy": "sparkstream_benchmark_adapter_factory_v0",
+  "card_root": "benchmarks/cards",
+  "default_status": "adapter_card_ready",
+  "license_gate": {
+    "exclude_non_permissive_or_uncleared_sources": true,
+    "allowed_decisions": [
+      "approved_for_catalog_import",
+      "metadata_written",
+      "metadata_already_present",
+      "source_archive_present",
+      "local_user_supplied_private_rom"
+    ],
+    "exclude_decisions": [
+      "excluded_non_permissive_or_uncleared",
+      "queued_only",
+      "blocked_pending_license_audit",
+      "blocked_license",
+      "license_uncertain"
+    ],
+    "blocked_decisions": [
+      "queued_only",
+      "blocked_license",
+      "license_uncertain",
+      "failed_import"
+    ]
+  },
+  "card_write_policy": {
+    "delete_excluded_cards": true
+  },
+  "adapter_templates": {
+    "language_benchmark_framework": {
+      "adapter_type": "language_eval_adapter",
+      "runner_family": "language_local_scoring",
+      "runtime_tier": "E2",
+      "risk_tier": "low",
+      "smoke_steps": [
+        "read source metadata",
+        "load one tiny task or sample manifest",
+        "score with local SymLiquid interface only",
+        "write contamination and regression policy report"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "local_loader_smoke_passes",
+        "no_external_inference",
+        "contamination_check_written",
+        "public_calibration_not_private_frontier"
+      ]
+    },
+    "language_benchmark_suite": {
+      "adapter_type": "language_suite_adapter",
+      "runner_family": "language_local_scoring",
+      "runtime_tier": "E2",
+      "risk_tier": "low",
+      "smoke_steps": [
+        "index tasks",
+        "select tiny non-contaminating smoke subset",
+        "score one local model checkpoint",
+        "write suite task card"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "task_subset_recorded",
+        "no_external_inference",
+        "regression_policy_written"
+      ]
+    },
+    "long_context_memory_benchmark": {
+      "adapter_type": "vcm_context_recovery_adapter",
+      "runner_family": "vcm_context_recovery_local",
+      "runtime_tier": "E2",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "read benchmark metadata and license only",
+        "record public-calibration firewall and no-training policy",
+        "map task family to a private context-recovery analogue",
+        "run local private VCM-vs-baseline smoke without public items"
+      ],
+      "promotion_gates": [
+        "license_allowed_or_metadata_only",
+        "public_calibration_only",
+        "no_public_training_rows",
+        "no_external_inference",
+        "private_analogue_suite_present",
+        "vcm_baseline_comparison_written"
+      ]
+    },
+    "coding_benchmark": {
+      "adapter_type": "sandboxed_code_eval_adapter",
+      "runner_family": "coding_local_sandbox",
+      "runtime_tier": "E3",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "load one prompt and unit test",
+        "run generated patch in sandbox only",
+        "record timeout and filesystem permissions",
+        "write public calibration card"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "sandbox_smoke_passes",
+        "network_disabled_during_eval",
+        "no_external_inference"
+      ]
+    },
+    "coding_agent_benchmark": {
+      "adapter_type": "coding_agent_harness_adapter",
+      "runner_family": "coding_agent_local",
+      "runtime_tier": "E3",
+      "risk_tier": "high",
+      "smoke_steps": [
+        "read benchmark or task manifest",
+        "verify local repo patch/task contract",
+        "disable provider judges and provider model calls",
+        "record sandbox, timeout, filesystem, and network-off policy",
+        "write local trace contract for Theseus/OpenAI-compatible endpoint only"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "task_manifest_or_harness_present",
+        "sandbox_policy_recorded",
+        "provider_judges_disabled",
+        "network_disabled_during_eval",
+        "no_external_inference"
+      ]
+    },
+    "coding_agent_framework": {
+      "adapter_type": "coding_agent_framework_adapter",
+      "runner_family": "coding_agent_local",
+      "runtime_tier": "E3",
+      "risk_tier": "high",
+      "smoke_steps": [
+        "read package or project manifest",
+        "verify local endpoint adapter path",
+        "audit provider/API-key paths as forbidden during scoring",
+        "record sandbox and repo-mutation contract",
+        "write harness integration notes"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "framework_manifest_present",
+        "local_endpoint_contract_recorded",
+        "provider_calls_disabled",
+        "sandbox_policy_recorded",
+        "no_external_inference"
+      ]
+    },
+    "tool_use_benchmark": {
+      "adapter_type": "tool_use_agent_adapter",
+      "runner_family": "tool_use_local_simulator",
+      "runtime_tier": "E2",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "read tool/function schema manifest",
+        "verify stateful tool simulator or offline grader path",
+        "disable provider backends, hosted judges, and networked tools",
+        "record call trace schema and argument validation policy",
+        "write public-calibration contamination policy"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "tool_schema_or_call_trace_manifest_present",
+        "local_simulator_or_offline_grader_present",
+        "provider_judges_disabled",
+        "network_disabled_during_eval",
+        "no_external_inference"
+      ]
+    },
+    "tool_dialogue_agent_benchmark": {
+      "adapter_type": "tool_dialogue_agent_adapter",
+      "runner_family": "tool_use_local_simulator",
+      "runtime_tier": "E2",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "read domain policy and tool schemas",
+        "verify local user/environment simulator contract",
+        "disable external LLM user simulators and provider backends",
+        "record policy adherence scoring contract",
+        "write multi-turn residual taxonomy"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "domain_policy_present",
+        "tool_schema_manifest_present",
+        "local_user_simulator_or_replay_path_present",
+        "provider_judges_disabled",
+        "no_external_inference"
+      ]
+    },
+    "rl_benchmark": {
+      "adapter_type": "gymnasium_or_native_rl_adapter",
+      "runner_family": "rl_local",
+      "runtime_tier": "E3",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "install or stage source metadata",
+        "reset environment",
+        "step fixed random policy for 32 steps",
+        "record reward/done/observation schema"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "reset_step_smoke_passes",
+        "reward_schema_recorded",
+        "resource_governor_accepts"
+      ]
+    },
+    "rl_environment": {
+      "adapter_type": "gymnasium_or_native_rl_adapter",
+      "runner_family": "rl_local",
+      "runtime_tier": "E3",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "reset environment",
+        "step fixed policy",
+        "record observation and reward schema",
+        "write benchmark card"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "reset_step_smoke_passes",
+        "deterministic_seed_recorded"
+      ]
+    },
+    "emulator_rl_environment": {
+      "adapter_type": "emulator_rl_adapter",
+      "runner_family": "emulator_rl_local",
+      "runtime_tier": "E3",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "resolve user-supplied ROM from ignored local registry",
+        "boot emulator for deterministic frames",
+        "step no-op/random policy",
+        "record observation shape and shaped reward hooks"
+      ],
+      "promotion_gates": [
+        "user_supplied_rom_only",
+        "rom_file_ignored_by_git",
+        "wrapper_smoke_passes",
+        "no_commercial_rom_download"
+      ]
+    },
+    "emulator_runtime_dependency": {
+      "adapter_type": "emulator_runtime_dependency_adapter",
+      "runner_family": "emulator_runtime_local",
+      "runtime_tier": "E3",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "resolve native emulator source",
+        "verify isolated emulator Python runtime",
+        "import required Python bindings",
+        "verify required CFFI symbols/types"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "native_source_present",
+        "python_binding_imports",
+        "required_symbols_available",
+        "no_commercial_rom_download"
+      ]
+    },
+    "minecraft_rl_environment": {
+      "adapter_type": "minecraft_rl_adapter",
+      "runner_family": "minecraft_rl_local",
+      "runtime_tier": "E3",
+      "risk_tier": "high",
+      "smoke_steps": [
+        "read Minecraft RL source metadata",
+        "verify local Minecraft license/install policy",
+        "probe Java and known harness modules without launching public-server gameplay",
+        "run Crafter/Craftax bridge reset-step when available",
+        "record observation/action/reward/done and world mutation safety schema"
+      ],
+      "promotion_gates": [
+        "license_allowed_or_metadata_only_until_runtime_approval",
+        "local_user_minecraft_license_for_full_runtime",
+        "bridge_world_smoke_passes_or_full_harness_runtime_ready",
+        "deterministic_seed_recorded",
+        "no_public_server_or_credential_storage",
+        "no_external_inference"
+      ]
+    },
+    "drone_rl_environment": {
+      "adapter_type": "drone_rl_adapter",
+      "runner_family": "drone_rl_local",
+      "runtime_tier": "E3",
+      "risk_tier": "high",
+      "smoke_steps": [
+        "resolve source metadata or source archive",
+        "import simulator package when installed",
+        "reset one simulation-only hover/waypoint environment",
+        "step a bounded no-op or random policy",
+        "record observation, action, reward, done, timing, and safety schema"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "simulation_only_by_default",
+        "reset_step_smoke_passes_or_runtime_blocked_with_reason",
+        "deterministic_seed_recorded",
+        "no_live_hardware_without_explicit_human_approval",
+        "safety_reflex_contract_written"
+      ]
+    },
+    "drone_racing_simulator": {
+      "adapter_type": "drone_racing_sitl_adapter",
+      "runner_family": "drone_sitl_local",
+      "runtime_tier": "E3",
+      "risk_tier": "high",
+      "smoke_steps": [
+        "read AI Grand Prix or simulator technical specification",
+        "probe Python/runtime compatibility",
+        "verify MAVSDK/MAVLink UDP endpoint contract",
+        "decode one 30 Hz vision packet when simulator is running",
+        "record heartbeat, command-rate, and no-human-interaction compliance"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "spec_contract_recorded",
+        "python_runtime_compatibility_checked",
+        "simulator_endpoint_health_passes_or_runtime_blocked",
+        "command_rate_under_limit",
+        "no_live_hardware_without_explicit_human_approval",
+        "human_interaction_forbidden_during_submitted_run"
+      ]
+    },
+    "drone_control_api": {
+      "adapter_type": "drone_control_api_adapter",
+      "runner_family": "drone_sitl_control",
+      "runtime_tier": "E4",
+      "risk_tier": "critical",
+      "smoke_steps": [
+        "import control API without connecting to live hardware",
+        "verify UDP loopback or simulator-only endpoint policy",
+        "record arm/disarm/takeoff commands as forbidden unless simulator flag is true",
+        "write geofence, emergency stop, and human approval contract"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "no_live_endpoint_by_default",
+        "real_hardware_requires_human_approval",
+        "geofence_and_emergency_stop_policy_present",
+        "no_external_inference_in_control_loop"
+      ]
+    },
+    "training_data": {
+      "adapter_type": "governed_data_sampler",
+      "runner_family": "training_data_sampler",
+      "runtime_tier": "E2",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "read dataset card or metadata",
+        "stream tiny licensed sample only",
+        "dedupe and leakage check against evals",
+        "write dataset card and ratio cap"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "tiny_sample_only",
+        "leakage_clear",
+        "synthetic_or_external_ratio_capped",
+        "no_teacher_generated_training_data"
+      ]
+    },
+    "voice_benchmark": {
+      "adapter_type": "native_voice_eval_adapter",
+      "runner_family": "voice_local",
+      "runtime_tier": "E3",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "load local sample metadata",
+        "verify native voice policy and head/router audio packet contract",
+        "record WER/MOS-style metric plan without provider inference",
+        "write privacy policy"
+      ],
+      "promotion_gates": [
+        "license_allowed",
+        "native_theseus_voice_model_only",
+        "head_router_voice_io_contract",
+        "privacy_policy_written",
+        "no_external_inference"
+      ]
+    },
+    "web_agent_benchmark": {
+      "adapter_type": "self_hosted_web_agent_adapter",
+      "runner_family": "web_agent_local",
+      "runtime_tier": "E3",
+      "risk_tier": "medium",
+      "smoke_steps": [
+        "start self-hosted benchmark target",
+        "run one no-op/local agent trace",
+        "record browser actions as packets",
+        "write account/network isolation policy"
+      ],
+      "promotion_gates": [
+        "self_hosted_only",
+        "no_real_accounts",
+        "network_scope_recorded",
+        "no_external_inference"
+      ]
+    },
+    "desktop_agent_benchmark": {
+      "adapter_type": "sandboxed_desktop_eval_adapter",
+      "runner_family": "desktop_agent_local",
+      "runtime_tier": "E3",
+      "risk_tier": "high",
+      "smoke_steps": [
+        "run in VM or sandbox",
+        "execute harmless local task",
+        "record action trace",
+        "verify rollback/isolation"
+      ],
+      "promotion_gates": [
+        "sandbox_or_vm_required",
+        "no_host_mutation_without_approval",
+        "rollback_verified",
+        "no_external_inference"
+      ]
+    }
+  },
+  "source_overrides": {
+    "human_eval": {
+      "category": "coding_benchmark",
+      "priority": "high"
+    },
+    "mbpp": {
+      "category": "coding_benchmark",
+      "priority": "high"
+    },
+    "swe_bench": {
+      "category": "coding_agent_benchmark",
+      "priority": "medium"
+    },
+    "bsuite": {
+      "category": "rl_benchmark",
+      "priority": "high"
+    },
+    "minigrid": {
+      "category": "rl_benchmark",
+      "priority": "high"
+    },
+    "craftax": {
+      "category": "minecraft_rl_environment",
+      "priority": "high"
+    },
+    "crafter": {
+      "category": "minecraft_rl_environment",
+      "priority": "high"
+    },
+    "minerl": {
+      "category": "minecraft_rl_environment",
+      "priority": "high"
+    },
+    "minedojo": {
+      "category": "minecraft_rl_environment",
+      "priority": "high"
+    },
+    "malmo": {
+      "category": "minecraft_rl_environment",
+      "priority": "high"
+    },
+    "voyager_minecraft": {
+      "category": "minecraft_rl_environment",
+      "priority": "medium"
+    },
+    "pyflyt": {
+      "category": "drone_rl_environment",
+      "priority": "high"
+    },
+    "gym_pybullet_drones": {
+      "category": "drone_rl_environment",
+      "priority": "high"
+    },
+    "airsim_drone_racing_lab": {
+      "category": "drone_racing_simulator",
+      "priority": "high"
+    },
+    "mavsdk_python": {
+      "category": "drone_control_api",
+      "priority": "high"
+    },
+    "aerial_gym_simulator": {
+      "category": "drone_rl_environment",
+      "priority": "medium"
+    },
+    "airsim": {
+      "category": "drone_racing_simulator",
+      "priority": "medium"
+    },
+    "px4_sitl": {
+      "category": "drone_control_api",
+      "priority": "medium"
+    },
+    "pygba": {
+      "category": "emulator_rl_environment",
+      "priority": "high"
+    },
+    "gymboy": {
+      "category": "emulator_rl_environment",
+      "priority": "high"
+    },
+    "webarena": {
+      "category": "web_agent_benchmark",
+      "priority": "high"
+    },
+    "browsergym": {
+      "category": "web_agent_benchmark",
+      "priority": "medium"
+    },
+    "osworld": {
+      "category": "desktop_agent_benchmark",
+      "priority": "high"
+    },
+    "common_voice": {
+      "category": "voice_benchmark",
+      "priority": "medium"
+    },
+    "librispeech": {
+      "category": "voice_benchmark",
+      "priority": "medium"
+    },
+    "ruler": {
+      "category": "long_context_memory_benchmark",
+      "priority": "high"
+    },
+    "babilong": {
+      "category": "long_context_memory_benchmark",
+      "priority": "high"
+    },
+    "needlebench_opencompass": {
+      "category": "long_context_memory_benchmark",
+      "priority": "high"
+    },
+    "locomo": {
+      "category": "long_context_memory_benchmark",
+      "priority": "medium"
+    },
+    "longmemeval": {
+      "category": "long_context_memory_benchmark",
+      "priority": "high"
+    },
+    "longmemeval_v2": {
+      "category": "long_context_memory_benchmark",
+      "priority": "high"
+    },
+    "helmet": {
+      "category": "long_context_memory_benchmark",
+      "priority": "medium"
+    },
+    "longbench_v2": {
+      "category": "long_context_memory_benchmark",
+      "priority": "medium"
+    },
+    "infinitebench": {
+      "category": "long_context_memory_benchmark",
+      "priority": "medium"
+    }
+  }
+}

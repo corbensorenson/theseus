@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="theseus_bg">#101214</color>
+    <color name="theseus_panel">#171B20</color>
+    <color name="theseus_accent">#4E9BD8</color>
+    <color name="theseus_icon_background">#101214</color>
+</resources>

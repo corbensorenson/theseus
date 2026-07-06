@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Project Theseus Setup
+Comment=Set up or join a Project Theseus Hive
+Exec=sh -c 'cd "$(dirname "$1")/.." && python3 scripts/theseus_setup_wizard.py --open' sh %k
+Terminal=false
+Categories=Utility;Development;

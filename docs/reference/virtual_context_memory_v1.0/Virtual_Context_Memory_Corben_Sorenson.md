@@ -1,0 +1,1687 @@
+---
+title: "Virtual Context Memory"
+subtitle: "A Proof-Carrying, Planner-Guided Memory Hierarchy for Long-Horizon Language-Model Agents"
+author: "Corben Sorenson"
+date: "June 2026"
+abstract: |
+  Long-horizon language-model agents are constrained not only by finite context windows, but by the absence of a principled memory-management layer. Flat transcripts, rolling summaries, retrieval-augmented generation, and fixed memory tiers each solve part of the problem, yet none provides a complete contract for deciding what should become active context, in which representation, at what time, under what evidence and security obligations, and with what recovery path when compression is insufficient. This paper proposes **Virtual Context Memory (VCM)**: an addressable, compressed, proof-carrying memory hierarchy in which the model's finite attention window is treated as a dynamically compiled working set rather than the totality of agent memory. Durable interaction history, task state, decisions, evidence, preferences, procedures, corrections, and rejected branches are stored as typed semantic pages in a versioned context ledger. A Context Memory Management Unit resolves stable semantic addresses, enforces capabilities and provenance policy, predicts future page demand from an explicit task plan, stages and decompresses likely-needed pages before use, handles semantic page faults, and evicts or recompresses pages according to task-relative value and risk. Derived representations range from routing capsules to evidence-bound summaries, exact excerpts, raw sources, and model-specific token or key-value-cache forms. Every lossy representation carries a compression certificate declaring its sources, scope, omissions, validity, contradictions, and permitted uses. VCM therefore does not claim to create an infinite architectural context window. It aims to create a much larger **effective working context across time** by placing the right verified context in the right representation at the right moment. The paper specifies the architecture, formal objectives, consistency model, security and privacy controls, failure responses, deployment paths, and a comprehensive evaluation agenda for testing whether virtualized context improves continuity, fidelity, latency, safety, and cost in long-horizon agents.
+keywords: [language-model agents, agent memory, long context, virtual memory, semantic paging, context compression, retrieval, KV cache, provenance, memory security]
+---
+
+**Keywords—** language-model agents; agent memory; long context; virtual memory; semantic paging; context compression; retrieval; KV cache; provenance; memory security.
+
+*Preprint — Conceptual architecture and research agenda. This paper specifies testable mechanisms and evaluation protocols; it does not report empirical results.*
+
+# 1. Introduction
+
+A language-model agent may interact with a person, codebase, institution, or environment for months while its model can attend to only a bounded sequence of tokens at any one inference step. The standard response is to enlarge the context window, retrieve older text, or summarize the transcript. These mechanisms are useful, but they leave a deeper systems problem unresolved: **context is usually treated as text to be appended rather than memory to be managed**.
+
+A long interaction history does not consist of interchangeable tokens. It contains hard constraints, current task state, decisions, corrections, evidence, user preferences, temporary assumptions, rejected designs, tool outputs, stale facts, malicious instructions quoted from external sources, and disposable conversational residue. A flat transcript gives these objects similar structural status. Top-*k* retrieval ranks them mainly by query similarity. A rolling summary can collapse them into a single narrative whose omissions and distortions are difficult to audit. A large context window can hold more material, yet relevant information may still be position-sensitive, diluted by distractors, or expensive to process [@liu2024lost; @hsieh2024ruler; @bai2025longbenchv2]. Recent work further indicates that increasing supplied context can degrade performance even when retrieval is perfect, suggesting that capacity and usable context are not equivalent [@du2025contextlength].
+
+This paper begins from a different premise:
+
+> **The context window is a working cache, not the agent's memory. Working context should be compiled, not merely accumulated.**
+
+We propose **Virtual Context Memory (VCM)**, an end-to-end memory hierarchy for long-horizon language-model agents. VCM exposes a large logical address space of typed semantic pages while keeping only a task-conditioned working set resident in the model's active context. Pages can be mounted by stable address, fetched from compressed backing storage, expanded to the minimum sufficient level of detail, promoted through security and freshness gates, materialized as text or reusable model-runtime state, and evicted or recompressed when their marginal value falls. Context switching is therefore a change of mounted namespaces and resident working set, not a replay of an entire transcript.
+
+The operating-systems analogy is useful but incomplete. Conventional virtual memory manages syntactic byte pages whose meaning is irrelevant to the memory manager. VCM manages **semantic, evidential, temporal, and governed pages**. A page may summarize a decision, bind claims to source spans, encode the scope of a user preference, preserve a rejected branch to prevent repetition, or represent a tool result that must never be interpreted as an executable instruction. Page replacement cannot be based on recency alone; it must account for task relevance, failure-prevention value, dependency closure, contradiction risk, privacy, provenance, compression loss, and predicted reuse. Page decompression cannot safely invent a plausible reconstruction; it must either provide a certified derived representation or fault back to authoritative evidence.
+
+The architecture combines and extends several lines of work. Retrieval-augmented generation externalizes knowledge [@lewis2020rag], while active and interleaved retrieval systems make access conditional on ongoing generation or reasoning [@jiang2023flare; @trivedi2022ircot; @asai2023selfrag]. Agent-memory systems maintain persistent state, tiers, notes, or learned memory operations [@park2023generative; @packer2023memgpt; @kang2025memoryos; @chhikara2025mem0; @xu2025amem; @li2025memos; @liu2026simplemem; @yu2026agemem]. Demand-paging proposals bring the virtual-memory metaphor closer to semantic context [@mason2026pichay; @chen2026neuralpaging]. Prompt-compression methods reduce the cost of supplied text [@jiang2023llmlingua; @jiang2023longllmlingua; @mu2023gist; @xu2024recomp]. At the serving layer, PagedAttention, vAttention, RadixAttention, and workflow-aware prefix caching manage key-value (KV) and prefix state efficiently [@kwon2023pagedattention; @prabhu2024vattention; @zheng2024sglang; @pan2025kvflow; @yu2026pythia]. Provenance-aware memory and recent security research expose the dangers of lossy summarization, role collapse, persistent poisoning, stale memories, and over-personalization [@zhu2026verified; @jin2026memir; @ouyang2026memlineage; @dong2025minja; @srivastava2025memorygraft; @xu2026mcfa; @hu2026opbench; @chao2026stale].
+
+The literature reviewed through June 2026 supplies important pieces, but not a single end-to-end contract that jointly specifies semantic addressing, task-conditioned residency, predictive semantic prefetch, proof-carrying compression, consistency and invalidation, model-runtime cache integration, and capability-based governance. VCM is proposed as that contract.
+
+## 1.1 Contributions
+
+This paper makes the following conceptual and systems contributions:
+
+1. **Virtual semantic address space.** It defines stable, versioned addresses and mountable context roots for typed memory pages, separating logical identity from physical residency and representation.
+2. **Task-conditioned working sets.** It replaces fixed “hot/warm/cold” semantic rings with dynamic residency driven by the current task, explicit plan, dependencies, risks, and predicted future use.
+3. **Proof-carrying compression.** It requires each lossy representation to carry provenance, atomic claims, scope, validity, contradictions, omissions, lineage, and a declared-loss contract, with a recoverable path to authoritative sources.
+4. **Planner-guided prefetch.** It uses an explicit task-plan graph to forecast context demand and asynchronously fetch or expand pages into a non-influential staging area before they are needed.
+5. **Context compilation.** It specifies a Context Memory Management Unit (CMMU) and compiler that combine policy, task state, constraints, decisions, evidence, corrections, and optional background under a finite token and latency budget.
+6. **Transactional context semantics.** It introduces immutable event history, versioned materialized views, task snapshots, copy-on-write branches, contradiction and supersession relations, atomic memory commits, and cache invalidation.
+7. **Governed paging.** It treats capability, provenance role, taint, temporal validity, privacy purpose, and deletion closure as memory-management primitives rather than after-the-fact filters.
+8. **Cross-layer residency.** It relates semantic pages to raw sources, summaries, embeddings, tokens, latent forms, and model-versioned KV or prefix caches without treating any model-specific cache as authoritative memory.
+9. **Evaluation framework.** It proposes VCM-Bench, a set of behavioral, systems, security, privacy, and provenance tests intended to distinguish effective virtual context from mere recall or token capacity.
+
+## 1.2 Scope and non-claims
+
+VCM is a proposed architecture and research agenda. It does **not** claim that arbitrary semantic information can be compressed losslessly, that paging can replace tasks requiring simultaneous global attention, or that a finite-window model can be made equivalent to one with an unbounded native context. It also does not assume access to a model's private reasoning trace. Planner-guided prefetch operates on explicit, inspectable task plans, tool schedules, dependency graphs, and declared subgoals.
+
+The strongest intended claim is narrower and testable: under workloads with semantic and temporal locality, a governed virtual context system should let a finite-window agent use a much larger body of history with higher value per active token, lower page-fault latency, better constraint and evidence preservation, and stronger security boundaries than transcript accumulation, similarity-only retrieval, or unverified rolling summaries.
+
+# 2. Problem Statement, System Model, and Requirements
+
+## 2.1 Context as a managed resource
+
+Let an agent operate over discrete interaction steps $t=1,2,\ldots$. At step $t$, it receives a task state $T_t$, environment state $E_t$, current user request $U_t$, policy set $P_t$, and access to a durable memory substrate $M_t$. The underlying model accepts an active context of at most $B_t$ tokens and may additionally use model-runtime caches with bounded accelerator and host memory.
+
+The naïve objective is to select text that appears relevant. The actual objective is multi-dimensional: the active context must preserve mandatory instructions, expose sufficient task state, include evidence needed for claims, avoid stale or poisoned memory, respect privacy and capabilities, remain internally coherent, and fit within token and latency budgets. Context assembly is therefore a constrained resource-allocation and verification problem.
+
+We use **memory** for the durable, addressable state available to the agent and **working context** for the finite, role-labeled representation supplied to a particular model call. A long-horizon agent can have large memory while maintaining a small working context. Conversely, a large context window can be poorly managed memory.
+
+## 2.2 System model
+
+VCM assumes the following logical components:
+
+- a base language model or model ensemble;
+- an explicit task planner that emits inspectable subgoals and dependencies;
+- a durable context ledger containing immutable source events and versioned semantic pages;
+- indexes for semantic, symbolic, temporal, dependency, and provenance retrieval;
+- a CMMU that resolves addresses and manages residency;
+- a context compiler that produces model-ready working packets;
+- a governance kernel that enforces authorization, provenance role, privacy, freshness, and deletion policy;
+- optional integration with tokenizer, prefix, latent, and KV-cache runtimes.
+
+The architecture supports three implementation regimes. A **black-box regime** can assemble textual context around an external model API. A **cooperative regime** can control prefix caching, structured attention, or hidden-state adapters. A **native regime** can expose page-aware attention, interruptible context faults, and hardware/runtime scheduling. These regimes differ in efficiency, not in the logical memory contract.
+
+## 2.3 Threat model
+
+The memory system must remain useful under both benign error and adversarial pressure. Threats include:
+
+- malicious instructions embedded in webpages, files, tool outputs, or prior dialogue;
+- direct or indirect attempts to write persistent behavioral instructions into memory;
+- compromised or low-trust agents sharing memory;
+- stale facts and superseded decisions;
+- incorrect assistant-generated memories that become self-reinforcing;
+- privacy leakage caused by unnecessary retrieval or speculative prefetch;
+- summary drift, omission of negation, and hallucinated reconstruction;
+- unauthorized resurrection of sealed or purpose-limited pages;
+- address substitution, rollback, or alias poisoning;
+- cache confusion across users, models, tokenizers, policies, or task snapshots;
+- partial writes and inconsistent reads during multi-agent execution.
+
+We assume a small trusted computing base comprising the governance kernel, cryptographic primitives, immutable log integrity, and system-level policy. The language model itself is not trusted to enforce access control, classify all attacks correctly, or accurately remember the provenance of text after it is merged into an undifferentiated prompt.
+
+## 2.4 Design requirements
+
+A final VCM system should satisfy the following requirements.
+
+**R1 — Addressability.** Every durable memory object must have a stable logical address independent of its current storage location or representation.
+
+**R2 — Typed semantics.** Constraints, decisions, evidence, preferences, procedures, tool outputs, and quoted untrusted text must remain distinguishable through ingestion, compression, retrieval, and compilation.
+
+**R3 — Reversible derivation.** Derived pages must retain a navigable lineage to authoritative source material or explicitly state when the source cannot be retained.
+
+**R4 — Declared loss.** Lossy compression must declare what classes of information may have been omitted; it may not masquerade as exact recovery.
+
+**R5 — Dynamic residency.** A page may move directly from archival storage to active context when relevant; physical tiers must not impose fixed semantic rings.
+
+**R6 — Predictive access.** The system should use explicit plans and dependency forecasts to hide fetch and decompression latency without allowing speculative data to influence generation before promotion.
+
+**R7 — Mandatory preservation.** Active policy, current objectives, hard constraints, recent corrections, unresolved commitments, and evidence obligations must receive protected capacity.
+
+**R8 — Consistent views.** A task must reason over a coherent versioned snapshot, observe its own committed writes, and not silently combine incompatible page versions.
+
+**R9 — Least privilege.** Memory reads, writes, mounts, promotions, and tool-affecting interpretations must be capability-checked and purpose-limited.
+
+**R10 — Contestability.** A user or auditor should be able to inspect why a page was remembered, why it entered working context, which sources support it, and how to correct or delete it.
+
+**R11 — Cross-layer coherence.** Text, latent, token, prefix, and KV representations must be invalidated when their source, model, tokenizer, policy, or permissions change.
+
+**R12 — Graceful failure.** When evidence, permission, freshness, or decompression fidelity is insufficient, the system should fault explicitly, degrade to a safer representation, ask for clarification, or decline to rely on the page rather than silently guess.
+
+# 3. Related Work and the Missing Contract
+
+VCM lies at the intersection of long-context modeling, retrieval, agent memory, prompt compression, virtual memory, model serving, and memory security. The proposal is best understood as an attempt to connect these layers without collapsing their distinct responsibilities.
+
+## 3.1 Long context is capacity, not governance
+
+Long-context models can process far more tokens than early transformer systems, yet benchmark results show that nominal length does not equal reliable use. “Lost in the Middle” demonstrated position-dependent use of relevant information [@liu2024lost]. RULER and LongBench v2 evaluate increasingly realistic and difficult forms of long-context use rather than simple retrieval [@hsieh2024ruler; @bai2025longbenchv2]. Work showing degradation despite perfect retrieval further suggests that irrelevant or excessive supplied context can itself burden reasoning [@du2025contextlength].
+
+These findings do not imply that longer windows are undesirable. They imply that long windows and memory management are complementary. Native attention is valuable when many facts must be compared simultaneously; VCM is valuable when the complete durable history is much larger than the information needed at one reasoning stage.
+
+## 3.2 Retrieval-augmented and active retrieval systems
+
+Retrieval-augmented generation externalizes documents and retrieves relevant passages at inference time [@lewis2020rag]. Active retrieval, self-reflective retrieval, and interleaved retrieval-reasoning systems improve on one-shot query retrieval by deciding when to search or by coupling retrieval to intermediate reasoning [@jiang2023flare; @asai2023selfrag; @trivedi2022ircot]. These systems establish that retrieval can be dynamic rather than a fixed prelude.
+
+VCM retains retrieval but gives it a wider role. It retrieves not only semantically similar facts, but typed constraints, decisions, corrections, negative memories, temporal states, and dependency closures. It also distinguishes retrieval from **residency**: a fetched page can remain staged, be promoted at a selected representation level, be pinned across calls, be materialized as a cached prefix, or be evicted with a known resurrection path.
+
+## 3.3 Persistent agent memory
+
+Generative Agents combined observations, reflections, and planning in a persistent memory stream [@park2023generative]. MemGPT explicitly framed context management using an operating-system analogy and tiered memory [@packer2023memgpt]. MemoryOS and MemOS develop operating-system-like abstractions for agent memory [@kang2025memoryos; @li2025memos]. Mem0 emphasizes scalable production memory, A-MEM builds dynamically linked memory notes, SimpleMem focuses on efficient lifelong memory, and Agentic Memory learns unified memory operations [@chhikara2025mem0; @xu2025amem; @liu2026simplemem; @yu2026agemem].
+
+Recent surveys likewise emphasize that agent memory now spans representation, operation, evaluation, and governance rather than a simple short-term/long-term split [@hu2025memoryage]. These systems motivate VCM, but persistent storage and retrieval are not by themselves a complete virtual-memory contract. The final architecture must specify stable addresses, page representations, consistency, invalidation, predictive prefetch, role-preserving compilation, privilege boundaries, and behavior under stale, contradictory, poisoned, or deleted memory.
+
+## 3.4 Semantic demand paging
+
+Recent proposals make demand paging explicit for LLM context. The Missing Memory Hierarchy describes demand paging for context windows, and Neural Paging explores learned context-management policies [@mason2026pichay; @chen2026neuralpaging]. These works are close conceptual neighbors. VCM extends the paging frame in four directions: proof-carrying and declared-loss representations; plan-guided asynchronous prefetch; transactional, contradiction-aware memory views; and governance that treats memory as a potential control-flow channel.
+
+## 3.5 Prompt and retrieval compression
+
+LLMLingua and LongLLMLingua compress prompts to reduce inference cost and improve long-context use, while gist tokens learn compressed prompt representations [@jiang2023llmlingua; @jiang2023longllmlingua; @mu2023gist]. RECOMP selectively compresses retrieved documents before augmentation [@xu2024recomp]. These methods show that the useful information in context can often be represented more compactly.
+
+VCM generalizes compression from a one-call optimization to a versioned memory lifecycle. It requires multiple representation levels, future-query contracts, provenance, update invalidation, and raw-source fallback. A compact representation that is sufficient for routing may be insufficient for legal wording, source attribution, exact code, or resolving a contradiction.
+
+## 3.6 Model-runtime memory and cache scheduling
+
+At the serving layer, PagedAttention manages KV-cache blocks with virtual-memory-inspired techniques [@kwon2023pagedattention], while vAttention uses virtual memory to retain contiguous virtual addressing [@prabhu2024vattention]. SGLang's RadixAttention reuses shared prefixes across structured programs [@zheng2024sglang]. KVFlow and Pythia exploit workflow structure and predictability to prefetch or schedule reusable state [@pan2025kvflow; @yu2026pythia]. H2O and StreamingLLM address KV retention and streaming attention under constrained memory [@zhang2023h2o; @xiao2023streamingllm].
+
+These systems manage **physical inference state**, whereas agent-memory systems manage **semantic state**. VCM joins them through a strict boundary: semantic pages are authoritative logical objects; token, prefix, latent, and KV forms are disposable, model-versioned materializations. Planner-guided semantic prefetch can therefore inform runtime prefix or KV prefetch, but runtime caches cannot silently become durable memory.
+
+## 3.7 Provenance, security, staleness, and personalization
+
+Provenance-aware tiered memory, typed representation, and lineage enforcement address failures introduced by lossy or role-collapsing memory [@zhu2026verified; @jin2026memir; @ouyang2026memlineage]. Memory-injection, experience-poisoning, and memory-control-flow attacks demonstrate that persistent memory can become a durable attack surface rather than a passive database [@dong2025minja; @srivastava2025memorygraft; @xu2026mcfa; @sunil2026poisoning]. OP-Bench focuses on over-personalization, STALE on invalid memories, and MemPrivacy on privacy-preserving personalized memory [@hu2026opbench; @chao2026stale; @chen2026memprivacy].
+
+VCM treats these concerns as architectural constraints. A retrieved page retains an execution class and provenance role; it cannot elevate itself from quoted data to instruction. Speculative prefetch is subject to purpose and privacy checks. Preferences require scope, confidence, counterexamples, and validity. Deletion must propagate through summaries, embeddings, staged pages, and model-runtime caches.
+
+## 3.8 Comparative position
+
+Table 1 summarizes the distinction at a high level. The entries describe primary emphasis rather than absolute capability; individual systems may support additional features.
+
+| Approach | Durable semantic state | Dynamic access | Predictive prefetch | Proof / lineage | Consistency and invalidation | Security-governed residency |
+|---|---:|---:|---:|---:|---:|---:|
+| Long native context | No external hierarchy | N/A | No | Source-dependent | Prompt-local | Prompt-role dependent |
+| Top-*k* RAG | Document store | Query-triggered | Rare | Usually document-level | Index-dependent | Usually external |
+| Rolling summaries | Yes, compressed | Sequential | No | Usually weak | Often overwrite-based | Usually weak |
+| Agent memory systems | Yes | Reactive / learned | Limited | Emerging | System-dependent | Emerging |
+| Semantic paging proposals | Yes | Demand-paged | Emerging | Limited / emerging | Limited / emerging | Limited / emerging |
+| KV/prefix systems | Runtime state | Yes | Increasingly | Not semantic | Model/runtime keyed | Infrastructure-level |
+| **VCM** | **Typed ledger** | **Demand + plan** | **Semantic and runtime** | **Required certificates** | **Snapshots + causal invalidation** | **Capabilities, taint, purpose, freshness** |
+
+Table: **Table 1.** High-level comparison of context and memory approaches.
+
+The intended contribution is therefore not a new vector store, summarizer, or cache replacement. It is the architectural contract that lets these mechanisms compose safely.
+
+# 4. Core Abstractions and Formal Model
+
+## 4.1 Context cell, semantic page, and virtual address
+
+A **context cell** is an atomic typed assertion or event unit. Examples include “decision D was accepted at time $t$,” “source S supports claim C,” “the user stated preference P within scope Q,” or “branch B was rejected for reason R.” Cells are deliberately smaller than arbitrary text chunks so that constraints, provenance roles, and temporal validity can be preserved independently.
+
+A **semantic page** is the smallest independently addressable and loadable bundle of cells intended to preserve a coherent unit of use. Page boundaries are semantic rather than fixed-byte. A page may contain a project overview, a decision record, an evidence bundle, a procedure, a user-preference capsule, a code symbol neighborhood, or a theorem and its dependencies. Pages may be grouped into larger co-accessed “huge pages” and split when fault patterns show that granularity is poor.
+
+A page has a stable logical address such as:
+
+```text
+vcm://principal/namespace/object-id@version#view?level=L2
+```
+
+The principal identifies the owning trust domain; the namespace identifies a mounted context space; the object identifier is stable; the version resolves to an immutable page manifest; the view selects a projection; and the requested level indicates a representation preference rather than an entitlement. Human-readable aliases may point to immutable content-addressed versions, but alias resolution is audited and protected against rollback.
+
+A **context root** is a manifest that names a coherent address space, such as a project, relationship, case, codebase, research corpus, or agent role. Mounting a root makes its namespace and routing metadata available; it does not load every member page. A single root address can therefore initiate a context switch while preserving fine-grained demand paging.
+
+## 4.2 Page state
+
+For each page $p_i$, VCM records:
+
+- logical identity and immutable version;
+- page type and execution class;
+- authoritative source references;
+- dependency, contradiction, supersession, and causal links;
+- importance and risk vectors;
+- validity interval and freshness policy;
+- capability and purpose requirements;
+- available representations and their certificates;
+- physical residency and cache keys;
+- access, promotion, update, and deletion history.
+
+Let $a_i$ be its address, $\tau_i$ its type, $x_i$ its authoritative payload, $G_i$ its graph relations, $V_i$ its temporal validity, $K_i$ its capability policy, and $R_i=\{r_{i0},\ldots,r_{im}\}$ its available representations.
+
+## 4.3 Representation ladder
+
+A semantic page can be materialized at several levels:
+
+| Level | Representation | Typical purpose | Authority |
+|---|---|---|---|
+| L0 | Handle and minimal metadata | Awareness, routing, dependency planning | Derived index |
+| L1 | Routing capsule | Page selection and prefetch | Derived, coarse |
+| L2 | Structured summary | Most task reasoning | Derived, lossy |
+| L3 | Evidence-bound summary | Claims, decisions, careful synthesis | Derived with citations |
+| L4 | Exact source excerpts | Quotation, wording, dispute resolution | Extractive |
+| L5 | Full raw source or event set | Audit, re-derivation, complete local analysis | Authoritative where retained |
+| L6 | Tokens, latent state, prefix or KV page | Runtime acceleration | Disposable cache |
+
+Table: **Table 2.** Representation ladder for a semantic page.
+
+Higher level numbers do not imply a strict quality order for every task. L4 exact excerpts may be more reliable for a quoted claim than an L3 synthesis; L6 may be faster but is valid only for a particular model, tokenizer, prefix, policy, and snapshot. The CMMU selects the least expensive representation that satisfies the task's fidelity and governance constraints.
+
+![**Figure 1.** Semantic page identity, representation levels, and dynamic physical residency.](../vcm_paper_assets/figure2_page_residency.png){width=96%}
+
+## 4.4 Importance and risk are vectors
+
+A scalar “importance” label is too coarse. VCM represents page value as a task-conditioned vector:
+
+$$
+\mathbf{i}_i(t)=\big[
+\text{task relevance},
+\text{future utility},
+\text{constraint weight},
+\text{decision weight},
+\text{evidence value},
+\text{failure-prevention value},
+\text{stability},
+\text{recency},
+\text{reuse probability},
+\text{resurrection value}
+\big].
+$$
+
+It also records a risk vector:
+
+$$
+\mathbf{r}_i(t)=\big[
+\text{source uncertainty},
+\text{contradiction risk},
+\text{staleness},
+\text{privacy sensitivity},
+\text{poisoning risk},
+\text{role-confusion risk},
+\text{compression-loss risk},
+\text{context-pollution risk}
+\big].
+$$
+
+Both vectors are conditioned on task, user, time, policy, and snapshot. A dormant page about a project can become critical when that project resumes; a recent but irrelevant detail can be evicted immediately. Importance is therefore a price under current demand, not an intrinsic permanent rank.
+
+## 4.5 Query-relative sufficiency and declared loss
+
+Arbitrary semantic compression cannot be assumed lossless. Let $x_i$ be the authoritative page payload, $r_{ik}$ a derived representation, and $\mathcal{Q}$ a declared family of anticipated queries or uses. We call $r_{ik}$ **$(\epsilon,\mathcal{Q})$-sufficient** when
+
+$$
+\mathbb{E}_{q\sim\mathcal{Q}}
+\left[
+\mathcal{L}\big(f(q,x_i),f(q,r_{ik})\big)
+\right]
+\le \epsilon,
+$$
+
+where $f$ is the downstream answer or decision procedure and $\mathcal{L}$ measures task-relevant loss. This definition is deliberately relative: a one-line routing capsule may be sufficient for deciding whether to open a page but not for quoting it, verifying a numerical claim, or applying a precise procedure.
+
+Each lossy representation includes a **loss manifest** that states its intended query family, known omissions, unsupported uses, and fallback path. If a requested use lies outside the declared contract, the system generates a semantic page fault and loads a stronger representation.
+
+## 4.6 Working-context compilation
+
+At step $t$, the compiler chooses a set of page representations $W_t$ under token, latency, capability, consistency, and risk constraints. An idealized objective is
+
+$$
+W_t^*=
+\arg\max_{W\in\mathcal{F}_t}
+\mathbb{E}\left[Q(Y_t\mid W,T_t,E_t)\right]
+-\lambda C(W)
+-\mu \mathcal{R}(W),
+$$
+
+where $Q$ is expected task quality, $C$ includes token, I/O, decompression, prefill, and energy cost, $\mathcal{R}$ aggregates security, privacy, staleness, contradiction, and contamination risk, and $\mathcal{F}_t$ enforces:
+
+- the active token budget;
+- mandatory system policy and current user request;
+- protected task state, hard constraints, and unresolved commitments;
+- access capabilities and purpose restrictions;
+- dependency and conflict closure;
+- task-snapshot consistency;
+- evidence and exactness requirements for planned claims or actions.
+
+Exact optimization is generally intractable and the quality function is only partially observable. VCM therefore uses constrained marginal bids, learned estimates, and hard invariants. A page's approximate bid can be written as
+
+$$
+b_{ik}=
+U_{ik}^{\text{task}}
++U_{ik}^{\text{failure prevention}}
++U_{ik}^{\text{evidence}}
++U_{ik}^{\text{reuse}}
+-C_{ik}^{\text{tokens}}
+-C_{ik}^{\text{latency}}
+-C_{ik}^{\text{pollution}}
+-C_{ik}^{\text{security/privacy}}
+-C_{ik}^{\text{drift}}.
+$$
+
+Protected classes do not participate in a pure auction: policy, current objective, hard constraints, and required evidence receive reserved lanes. Within the remaining budget, the compiler chooses representations with positive marginal contribution while closing dependencies and surfacing conflicts.
+
+## 4.7 Effective working context
+
+VCM does not enlarge the model's architectural context. It enlarges the body of information that can be made available across a task horizon within bounded fault latency and fidelity. We define the **effective working context** over horizon $H$ as the set of pages that can be resolved, authorized, materialized at a sufficient representation, and promoted before their deadlines:
+
+$$
+\mathrm{EWC}(H;\delta,\epsilon)
+=\left\{p_i:
+\Pr[L_i\le\delta]\ge\rho
+\land r_i\text{ is }(\epsilon,\mathcal Q_i)\text{-sufficient}
+\right\}.
+$$
+
+Here $L_i$ is page-availability latency, $\delta$ is the task deadline, and $\rho$ is a reliability threshold. This metric prevents a dormant archive from being counted as useful memory merely because it exists.
+
+Two additional systems metrics are useful:
+
+- **Context Value Density:** expected useful and failure-preventing information per active token.
+- **Effective Context Bandwidth:** verified, task-relevant context promoted per unit time, adjusted for fidelity and rejected-page pollution.
+
+These metrics make explicit that capacity, retrieval, verification, and latency jointly determine usable memory.
+
+# 5. Virtual Context Memory Architecture
+
+VCM separates memory into three planes: a **data plane** that stores authoritative and derived state, a **control plane** that predicts and manages context demand, and a **governance plane** that decides whether and how memory may influence the agent. Figure 2 shows the full architecture.
+
+![**Figure 2.** End-to-end Virtual Context Memory architecture.](../vcm_paper_assets/figure1_architecture.png){width=96%}
+
+## 5.1 Data plane: immutable events and the context ledger
+
+The data plane contains two complementary substrates.
+
+First, an **immutable event log** records user messages, agent outputs, tool calls, tool results, external documents, policy changes, memory edits, permissions, and deletion events. Events are content-addressed, timestamped, provenance-labeled, and ordered causally where possible. The event log is not dumped into prompts. It is the durable substrate from which memory can be re-derived, audited, or disputed.
+
+Second, the **context ledger** contains typed, versioned pages derived from events and other pages. The ledger is a graph rather than a bag of embeddings. Its edges include:
+
+- `supports`: evidence supports a claim or decision;
+- `derived_from`: a representation or page descends from sources;
+- `depends_on`: a task, theorem, plan, or procedure requires another page;
+- `contradicts`: two pages make incompatible assertions within overlapping scope;
+- `supersedes`: a newer decision or fact replaces an older one;
+- `qualifies`: one page narrows the scope or certainty of another;
+- `rejected_because`: a rejected branch records its rationale;
+- `caused_by`: an action or observation has an explicit causal predecessor;
+- `shared_with`: a capability-limited relation to another principal or agent;
+- `invalidates`: an update makes a derived representation or cache stale.
+
+Embeddings, keyword indexes, temporal indexes, symbolic fields, and graph neighborhoods are all materialized views over the ledger. No single index is the memory itself.
+
+## 5.2 Page taxonomy
+
+Page type determines default invariants, compression behavior, and retrieval channels. Table 3 gives a representative taxonomy.
+
+| Page type | Required fields | Default residency / retention rule | Typical faults |
+|---|---|---|---|
+| Policy / hard constraint | issuer, precedence, scope, validity | Pinned while applicable; never merged into ordinary summary | version, conflict, capability |
+| Task state | objective, status, dependencies, owner | Resident while task is active; checkpoint on switch | dependency, freshness |
+| Decision | choice, alternatives, rationale, status | Preserve until superseded; retrieve by task and consequence | rationale, supersession |
+| Correction | corrected claim, prior version, evidence | High failure-prevention value; invalidates descendants | contradiction, exactness |
+| Evidence | source, claim map, trust, timestamp | Load to claim-required fidelity; retain provenance | exactness, freshness |
+| Scoped preference | subject, scope, confidence, counterexamples | Retain only with bounded scope and review policy | scope, consent, validity |
+| Procedure | preconditions, steps, permissions, version | Materialize exactly for execution; do not paraphrase critical steps silently | version, authorization |
+| Episodic event | actors, time, event, uncertainty | Compress by default; retain raw source pointer | temporal, identity |
+| Open question / commitment | owner, due state, dependencies | Protected while unresolved | status, dependency |
+| Rejected / obsolete branch | proposal, reason, scope, status | Retrieve to prevent repetition, not as active recommendation | scope, supersession |
+| Tool output / external text | tool/source identity, role, trust | Data-only unless separately authorized; often quarantined | integrity, taint |
+| Runtime cache page | model, tokenizer, prefix, snapshot | Disposable; invalidated aggressively | compatibility |
+
+Table: **Table 3.** Representative semantic-page taxonomy and default lifecycle rules.
+
+This taxonomy is extensible. A medical agent may define consent, medication, and observation pages; a coding agent may define repository, symbol, test, patch, and build pages. The crucial property is that page type survives compression and controls interpretation.
+
+## 5.3 Virtual namespace and mounting
+
+A VCM namespace is a hierarchical map of stable addresses. Example roots might include:
+
+```text
+vcm://user/preferences/research-communication
+vcm://project/alpha/root@42
+vcm://project/alpha/decision/architecture@7
+vcm://corpus/papers/agent-memory/root@2026-06
+vcm://tool/session/8f1a/result/17
+```
+
+A **mount table** maps a task-local path to a context root, capability set, snapshot, and default representation policy. A mount may be read-only, writable, sealed, quarantined, or shared. Mounting a root brings its manifest, routing capsules, and access policy into the CMMU's translation cache. It does not make all descendant content active.
+
+A context switch proceeds by checkpointing dirty task state, switching the task snapshot and mount table, loading root manifests, and prefetching the predicted initial working set. This makes project-scale switching an address operation rather than a transcript-replay operation. Old pages can move directly from archive to active context if the new task demands them; no semantic “ring promotion” sequence is required.
+
+## 5.4 Context Memory Management Unit
+
+The **Context Memory Management Unit (CMMU)** is the control-plane component analogous to an operating-system memory manager and MMU, but it resolves semantic rather than byte addresses. Its responsibilities include:
+
+1. resolving aliases to immutable page versions;
+2. checking capabilities, purpose, provenance role, temporal validity, and taint;
+3. selecting a representation level and physical source;
+4. consulting a context translation lookaside buffer (C-TLB);
+5. initiating asynchronous fetch, verification, expansion, tokenization, or KV materialization;
+6. staging speculative pages outside the model-visible context;
+7. handling semantic page faults;
+8. maintaining task working sets and anti-thrashing state;
+9. invalidating representations and caches after updates;
+10. recording why a page was promoted, pinned, evicted, denied, or deleted.
+
+The **C-TLB** caches mappings from semantic addresses and task snapshots to the best currently valid resident representation. A C-TLB entry includes the immutable version, capability decision, freshness state, representation certificate, physical location, token cost, expected load latency, and model/runtime compatibility. Unlike a CPU TLB, it may cache a denial or quarantine decision so that the agent cannot repeatedly probe a protected page through slightly different prompts.
+
+## 5.5 Context compiler
+
+The compiler converts a task snapshot and candidate pages into a role-labeled working packet. It uses reserved lanes:
+
+1. constitutional and system policy;
+2. current user request and environment observation;
+3. active task objective and plan frontier;
+4. hard constraints, recent corrections, and unresolved commitments;
+5. decisions and procedures needed for the next actions;
+6. evidence required for claims or tool calls;
+7. scoped user preferences relevant to this task;
+8. optional background selected by marginal value.
+
+Candidates are retrieved through multiple channels rather than one similarity search: semantic relevance, task dependency, decision history, constraint match, correction and contradiction, temporal validity, evidence need, procedural precondition, rejection memory, and predicted future use. The compiler computes dependency closure, surfaces unresolved conflicts instead of merging them, chooses the least costly sufficient representation, labels provenance role, and packs the final packet under budget.
+
+![**Figure 3.** The context compiler uses protected lanes and promotion gates rather than a single similarity ranking.](../vcm_paper_assets/figure5_compiler_lanes.png){width=96%}
+
+The compiler may emit a compact **context map** in addition to loaded content. The map lists nearby handles, expected expansion costs, and fault triggers. This lets the model know that relevant dormant context exists without paying the cost of loading it. A map entry is metadata, not an invitation to invent the missing page.
+
+## 5.6 Governance kernel
+
+The governance plane is logically independent of model judgment. Its inputs include principal identity, task purpose, page sensitivity, source trust, provenance role, capability tokens, jurisdiction or organizational policy, validity, and deletion state. Its output is not merely “allow” or “deny.” It can require:
+
+- a weaker representation;
+- redaction or aggregation;
+- user confirmation;
+- fresh external verification;
+- quarantine and data-only rendering;
+- no prefetch, but on-demand access;
+- local execution rather than cloud processing;
+- audit logging or dual authorization;
+- denial with a non-revealing explanation.
+
+A governance decision accompanies the page through staging and compilation. Text from a low-trust source cannot shed its taint simply because a language model summarized it.
+
+## 5.7 Physical residency hierarchy
+
+Logical pages may reside in several physical forms:
+
+- active, role-labeled prompt text;
+- active structured state outside natural-language text, where the model interface permits it;
+- accelerator-resident prefix or KV pages;
+- host-DRAM expanded pages;
+- host-DRAM compressed or latent pages;
+- SSD or object-store compressed pages;
+- authoritative raw event or document storage;
+- sealed encrypted storage;
+- quarantine storage with restricted processing.
+
+Residency is many-to-many: a page can simultaneously have an L1 capsule in DRAM, an L3 summary in a task cache, an L5 source on object storage, and an L6 KV materialization in accelerator memory. The CMMU tracks coherence across these forms.
+
+The physical policy follows a semantic working-set model inspired by classical virtual-memory research [@denning1968working]. Replacement may use learned predictors, but it is constrained by protected classes and correctness requirements. Belady's optimal policy is unattainable online because future references are unknown [@belady1966replacement]; VCM partially reduces this uncertainty by using the task plan as a demand forecast.
+
+# 6. Proof-Carrying Compression and the Page Lifecycle
+
+Compression is not a one-time summarization step. It is a versioned transformation whose outputs can influence future behavior. VCM therefore treats compression as a governed compilation process.
+
+## 6.1 Write path
+
+A new interaction or observation enters VCM through a transactional write path:
+
+1. **Capture.** Store the immutable raw event, provenance role, timestamp, principal, and cryptographic digest.
+2. **Segment.** Extract candidate context cells without discarding the original event.
+3. **Type.** Classify each cell as policy, constraint, decision, evidence, preference, procedure, event, question, rejection, tool output, or another declared type.
+4. **Bind provenance.** Link claims and actions to exact source spans or tool records.
+5. **Deduplicate and relate.** Identify existing pages that the cells support, contradict, qualify, or supersede.
+6. **Assign provisional state.** New inferred memories begin as provisional, especially behavioral preferences or agent-generated conclusions.
+7. **Generate representations.** Produce one or more summaries, routing capsules, indexes, and runtime forms.
+8. **Verify and certify.** Check atomic claim coverage, negation, scope, temporal fields, contradiction handling, and loss declarations.
+9. **Apply governance.** Determine sensitivity, retention, sharing, purpose, and execution class.
+10. **Commit atomically.** Append page versions and graph edges, update indexes, and invalidate stale descendants and caches.
+
+The language model may propose cells and summaries, but it does not alone decide that a behavioral instruction is durable or privileged. High-impact memories require stronger corroboration, explicit user statement, trusted system origin, or independent verification.
+
+## 6.2 Compression certificates
+
+Every derived representation includes a **compression certificate**. The certificate is not a mathematical proof of semantic truth. It is an auditable contract containing:
+
+- immutable parent hashes and source spans;
+- extracted atomic claims and their support links;
+- page type and provenance role;
+- scope, subject, temporal validity, and certainty mode;
+- known omissions and declared-loss categories;
+- contradictions, dissenting sources, and supersession status;
+- intended query family and unsupported uses;
+- compression model, prompt or procedure, version, and timestamp;
+- verifier identities, tests, and outcomes;
+- policy and capability constraints;
+- permitted expansion and downstream-use modes.
+
+For a scoped preference, the certificate may say that the user explicitly requested exhaustive treatment for research-architecture discussions, that this does not imply a general preference for verbosity, and that later contradictory statements should trigger review. For a decision, it may preserve the rejected alternatives and rationale. For evidence, it may distinguish an author's claim from an independently verified fact.
+
+![**Figure 4.** Compression lineage preserves a reversible path from active context to authoritative evidence.](../vcm_paper_assets/figure4_proof_lineage.png){width=96%}
+
+## 6.3 Verification passes
+
+A high-assurance compressor applies type-specific verification. Candidate passes include:
+
+- **atomic coverage:** each retained claim has a parent span;
+- **negation preservation:** prohibitions and rejected options remain negative;
+- **quantifier and modality preservation:** “may,” “must,” “usually,” and “never” are not conflated;
+- **scope preservation:** a project-specific preference does not become a global personality trait;
+- **temporal preservation:** dates, ordering, deadlines, and validity intervals survive;
+- **decision-force preservation:** an accepted or rejected decision is not reduced to a topic mention;
+- **provenance-role preservation:** quoted external instructions remain data, not policy;
+- **uncertainty preservation:** inference, user statement, source assertion, and external verification remain distinct;
+- **conflict preservation:** disagreement is represented as a conflict set rather than averaged into false consensus;
+- **round-trip query testing:** type-relevant test questions are answered from the derived representation and compared with the source;
+- **adversarial omission testing:** checks target credentials, exceptions, exclusions, numbers, names, and safety-critical qualifiers.
+
+Where the cost is justified, an independent model or deterministic extractor verifies the summary. Verification confidence affects permitted use. A low-confidence routing capsule may help decide what to load, but it cannot authorize a tool action or support a precise factual claim.
+
+## 6.4 Multi-level representations
+
+VCM generates representations for distinct future purposes rather than one universal summary.
+
+A decision page may have:
+
+- an L1 capsule naming the decision and status;
+- an L2 record with choice, rationale, alternatives, and consequences;
+- an L3 evidence bundle linking the decision to user statements and analyses;
+- L4 exact excerpts for disputed wording;
+- L5 raw turns and attached artifacts;
+- L6 token or KV forms for a stable task prefix.
+
+A code page may instead use a symbol graph, function contract, tests, recent diffs, and exact source ranges. A proof page may use theorem statement, assumptions, dependency graph, proof status, and exact derivation. A privacy-sensitive page may offer an aggregate L2 view while keeping L4–L5 sealed.
+
+“Decompression” therefore means materializing a stronger or more task-appropriate representation. It does not necessarily mean generating prose that resembles the original. When exactness matters, the only safe decompression is extractive loading or source replay.
+
+## 6.5 Revaluation and memory evolution
+
+Page importance changes when the task changes, a decision is revisited, new evidence arrives, a correction is issued, or a page repeatedly prevents failure. VCM periodically and event-triggeredly revalues pages. Signals include:
+
+- explicit task dependencies and plan references;
+- successful and unsuccessful retrieval outcomes;
+- whether omission caused an error or clarification request;
+- reuse across tasks;
+- contradiction or correction frequency;
+- age relative to validity policy;
+- user inspection, confirmation, rejection, or deletion;
+- observed context pollution when the page was included;
+- counterfactual evaluation of whether the answer would differ without it.
+
+Attention weights or model self-assessment alone are insufficient signals: a model can be confidently wrong or overvalue familiar memories. High-impact revaluation should use outcome tests, external verification, and user feedback where available.
+
+## 6.6 Contradiction, supersession, and the rejection ledger
+
+VCM never silently overwrites a conflicting memory. A correction creates a new page version and a relation to the corrected claim. A superseding decision marks the previous decision inactive within a declared scope and time, while preserving its history. If two sources disagree without adjudication, the compiler loads the conflict set or chooses a source according to an explicit trust and freshness rule.
+
+A **rejection ledger** records proposals, assumptions, procedures, and interpretations that were explicitly rejected or found to fail. This is not negative sentiment memory. It is structured anti-repetition state. Each entry includes the rejected object, reason, scope, evidence, and expiration or reconsideration conditions. The retrieval system consults rejection pages when generating alternatives so that an agent does not repeatedly reintroduce a discarded path.
+
+## 6.7 Update and invalidation
+
+When an authoritative source changes, the system traverses `derived_from` and `depends_on` edges. Descendant summaries are marked dirty, relevant task snapshots are notified, and model-runtime caches are invalidated. Whether a descendant must be recomputed immediately depends on risk and demand. A routing capsule can remain usable if its changed fields are irrelevant to routing; an evidence summary used for an imminent claim cannot.
+
+Invalidation keys for L6 runtime pages include at least:
+
+```text
+(page version, representation version, model weights,
+ tokenizer, prompt template, role layout, policy snapshot,
+ task snapshot, capability view, redaction view)
+```
+
+A cache match that ignores any semantically relevant key risks cross-task or cross-principal contamination.
+
+## 6.8 Deletion closure
+
+Deletion is a graph operation, not removal from one database row. A deletion request or retention policy must address:
+
+- authoritative payloads, where legally and operationally permitted;
+- derived summaries and indexes;
+- embeddings and learned local adapters;
+- staged and resident pages;
+- replicated and shared copies;
+- prefix and KV caches;
+- backup and audit obligations;
+- downstream pages that contain the deleted information.
+
+An append-only ledger appears to conflict with deletion. VCM resolves this by storing sensitive payloads under independently erasable encryption keys. The immutable log can retain a non-revealing tombstone, integrity metadata, and deletion event after cryptographic erasure of the content. Where retention law requires a source, policy must disclose that deletion is constrained rather than promising impossible erasure.
+
+# 7. Predictive Semantic Paging and Runtime Operation
+
+## 7.1 From query-triggered retrieval to plan-triggered residency
+
+A user request often under-specifies the context needed to complete it. “Write the final architecture section” may require a prior project decision, a rejected alternative, source evidence, formatting preferences, and a threat model even though none is lexically prominent. A planner can anticipate these dependencies before the generator reaches them.
+
+VCM requires the planner to emit an explicit task-directed acyclic graph (DAG) or other inspectable schedule. Nodes name subgoals, anticipated claims, tool calls, decisions, and deadlines. Edges identify data and context dependencies. The CMMU converts the plan into a **context demand forecast** containing candidate addresses, required representation levels, latest useful arrival times, confidence, and fallback behavior.
+
+This plan is not a private chain-of-thought transcript. It is an operational artifact analogous to a workflow graph or query plan: compact, inspectable, and limited to externally meaningful dependencies.
+
+## 7.2 Prefetch objective
+
+For candidate page $p_i$ over horizon $h$, let $q_{i,h}$ be the probability that the page will be required, $L_i^{\mathrm{fault}}$ the latency avoided by early loading, $C_i^{\mathrm{fetch+expand}}$ the resource cost, $C_i^{\mathrm{pollution}}$ the expected cost of occupying cache or influencing selection, and $C_i^{\mathrm{exposure}}$ the privacy or security cost of staging it. An approximate prefetch value is
+
+$$
+\mathrm{EV}_{i,h}
+= q_{i,h} L_i^{\mathrm{fault}}
+-C_i^{\mathrm{fetch+expand}}
+-\alpha C_i^{\mathrm{pollution}}
+-\beta C_i^{\mathrm{exposure}}.
+$$
+
+A page is prefetched only if expected value is positive, capabilities permit access, purpose limitation permits speculative loading, and resource quotas allow it. High-latency pages with modest need probability may outrank cheap pages with high probability. Pages on mutually exclusive branches are tagged so that losing branches can be canceled and purged promptly.
+
+## 7.3 Non-influential staging
+
+Prefetched pages enter a **staging cache** that is not visible to the generator. Before promotion, each page passes gates for:
+
+1. address integrity and version;
+2. capability and purpose;
+3. provenance role and taint;
+4. temporal freshness and task snapshot;
+5. representation sufficiency;
+6. dependency and conflict closure;
+7. relevance to the active plan frontier;
+8. available token or runtime budget.
+
+This separation is critical. Otherwise, an incorrect forecast can pollute reasoning before relevance is confirmed, and a malicious page can exploit speculative loading as an instruction channel.
+
+![**Figure 5.** Planner-guided prefetch overlaps semantic page preparation with useful work.](../vcm_paper_assets/figure3_prefetch_timeline.png){width=96%}
+
+## 7.4 Promotion and deadlines
+
+The planner attaches a deadline to each predicted page. The scheduler can choose among:
+
+- loading only the L1 capsule by the next planning step;
+- expanding to L2 in host memory;
+- verifying and loading L3 before a claim is drafted;
+- fetching exact L4 excerpts before quotation;
+- materializing an L6 prefix or KV page before repeated model calls;
+- deferring or canceling the page if the plan branch becomes unlikely.
+
+Promotion is incremental. A routing capsule can arrive quickly and help decide whether further expansion is warranted. The system should not block on full raw-source loading when a certified summary is sufficient, nor rely on a summary when exact wording is required.
+
+## 7.5 Semantic page faults
+
+A **semantic page fault** occurs when the active task requires a page, relation, fidelity level, or authorization state not currently resident. Fault types include:
+
+- **identity fault:** the correct page or entity has not been resolved;
+- **detail fault:** a loaded summary lacks required detail;
+- **evidence fault:** a claim lacks source-bound support;
+- **exactness fault:** exact wording, code, number, or procedure is needed;
+- **temporal fault:** the page may be stale or outside its validity interval;
+- **contradiction fault:** relevant pages disagree or a supersession edge is unresolved;
+- **capability fault:** authorization is absent or expired;
+- **integrity fault:** hashes, signatures, or cache keys do not match;
+- **dependency fault:** a required prerequisite page is missing;
+- **privacy fault:** requested use exceeds the page's allowed purpose.
+
+The model or a deterministic checker can raise a fault. A fault handler resolves the address, requests permission or verification if needed, chooses a representation, and resumes from a checkpoint. In native systems, inference may suspend at a structured fault boundary. In black-box systems, the orchestrator performs another model call with the newly compiled packet.
+
+## 7.6 Context switch protocol
+
+A context switch between task roots follows this protocol:
+
+1. quiesce or checkpoint the current plan frontier;
+2. commit dirty task state atomically or retain a private branch;
+3. record unresolved commitments and pending tool operations;
+4. unpin pages whose protection was task-local;
+5. mount the destination root at a selected snapshot;
+6. load the root manifest and L0–L1 routing map;
+7. evaluate capabilities, purpose, and sealed-page policy;
+8. build the initial plan and semantic working-set forecast;
+9. prefetch likely pages into staging;
+10. compile the first destination working packet;
+11. retain a compact return continuation for rapid switching back.
+
+The destination root can be one address. Its manifest provides the namespace and dependency topology needed to discover descendants. This is the semantic equivalent of entering a process address space, not of copying its entire memory into RAM.
+
+## 7.7 Eviction and recompression
+
+Least-recently-used replacement is insufficient because a rarely accessed hard constraint may be catastrophic to lose, while a recently retrieved irrelevant page may be safe to evict. An approximate eviction pressure for representation $r_{ik}$ is
+
+$$
+E_{ik}=
+C_{ik}^{\mathrm{resident}}
++C_{ik}^{\mathrm{pollution}}
++C_{ik}^{\mathrm{privacy}}
+-
+\left(
+q_{i,h}C_i^{\mathrm{future fault}}
++U_i^{\mathrm{constraint}}
++U_i^{\mathrm{evidence}}
++U_i^{\mathrm{dependency}}
++U_i^{\mathrm{commitment}}
+\right).
+$$
+
+High $E_{ik}$ favors eviction or replacement by a cheaper representation. Protected pages are pinned according to scope and deadline, not forever. Eviction can demote an L3 summary to L1, discard an L6 KV materialization while retaining text, or remove all resident forms while leaving the durable address intact.
+
+Recompression occurs when multiple pages are repeatedly co-accessed, when a task closes, or when a page's future query family becomes clearer. The system may create a project checkpoint page that captures decisions, open loops, and source links while releasing verbose episodic detail. The checkpoint does not replace authoritative history; it becomes a certified entry point for future mounts.
+
+## 7.8 Thrashing control
+
+A VCM agent can thrash if its working set exceeds available context or if the planner alternates between branches faster than pages can be reused. Symptoms include high fault rate, repeated loading of the same pages, low prefetch precision, and growing latency with little task progress.
+
+Anti-thrashing mechanisms include:
+
+- a sliding-window estimate of the semantic working set;
+- minimum residency and promotion hysteresis;
+- fault-driven pinning of repeatedly required pages;
+- adaptive page granularity, including co-accessed huge pages;
+- branch stabilization before loading expensive representations;
+- admission control for concurrent tasks;
+- increasing the active-context budget when available;
+- switching to a larger-context model when simultaneous attention is necessary;
+- pausing and asking the user to narrow the task when no coherent working set fits.
+
+The system must recognize a fundamental limit: paging cannot efficiently solve a phase whose true working set is larger than the available active context. The correct response is not endless swapping, but decomposition, a larger window, external computation, or an explicit statement that the task cannot currently be represented faithfully.
+
+## 7.9 Outcome-driven adaptation
+
+After a response or action, VCM records which pages were loaded, used, cited, ignored, faulted, or implicated in an error. The planner and replacement policy can learn from these traces. However, learned policies remain inside a safety envelope:
+
+- hard constraints cannot be evicted because a learned model predicts low use;
+- a poisoned page cannot gain privilege through repeated retrieval;
+- privacy cannot be traded for latency without policy authorization;
+- an unverified summary cannot become authoritative because it improved a benchmark score;
+- system invariants remain deterministic and auditable.
+
+An especially useful signal is counterfactual replay: for selected tasks, rerun or score the outcome with a page removed, weakened, or replaced by raw evidence. This estimates marginal utility and detects pages that merely correlate with success.
+
+## 7.10 End-to-end operational trace
+
+Consider an agent resuming a complex research project after several months.
+
+1. The user references the project by name. Alias resolution identifies `vcm://project/research-x/root@latest` but resolves `latest` to an immutable version under rollback protection.
+2. The CMMU mounts the root read-write under the user's principal and loads its L1 manifest.
+3. The manifest reveals an active decision record, two open questions, a rejected approach, a source corpus, and a prior correction.
+4. The planner emits subgoals: recover current thesis, check whether a key source is still current, compare alternatives, and draft a section.
+5. The CMMU prefetches the decision L2, correction L3, rejection L2, and source routing capsules. A stale source page triggers an external verification task.
+6. While the tool checks the source, the model can reason over the decision and open questions. The fetched source remains staged.
+7. The source returns with a newer version that contradicts part of the old summary. The ledger records the contradiction and marks affected descendants dirty.
+8. The context compiler loads both versions plus a conflict note rather than presenting one blended statement.
+9. Before a precise citation, an evidence fault promotes exact source excerpts.
+10. The agent drafts the section, cites evidence, and records a new provisional synthesis.
+11. On task completion, VCM commits the synthesis, updates the open-question state, creates a certified checkpoint, evicts model-specific caches, and leaves a compact return continuation.
+
+At no point is the entire project transcript loaded. The agent nonetheless has a coherent, source-bound view and can fault to deeper history when necessary.
+
+# 8. Consistency, Concurrency, and Multi-Agent Memory
+
+Long-horizon agents modify memory while using it. Without a consistency model, an agent can reason from one decision version, cite evidence from another, and write a summary that corresponds to neither. VCM therefore treats memory updates as transactions over a versioned graph.
+
+## 8.1 Event sourcing and materialized views
+
+Authoritative events are append-only records; semantic pages and indexes are materialized views. This separation provides three benefits. First, page representations can be re-derived when compression improves. Second, audit does not depend on the continued correctness of a summary. Third, conflicting interpretations can coexist without rewriting history.
+
+Event sourcing does not mean every event remains accessible forever. Sensitive payloads can be encrypted under erasable keys, access-controlled, redacted, or deleted subject to policy. The immutable layer preserves ordering and integrity metadata without requiring indefinite plaintext retention.
+
+## 8.2 Task snapshots
+
+Each active task reads from a **task snapshot**: a coherent set of page versions, policies, permissions, and mounts. The task receives snapshot isolation for cognition:
+
+- repeated reads of an address resolve to the same version unless the task explicitly advances;
+- the task observes its own committed writes;
+- a background update can mark a page stale without silently changing the task's premises;
+- advancing the snapshot triggers conflict checks and recompilation of affected working context;
+- tool authorization is checked against current policy even when the semantic snapshot is older.
+
+This balances reproducibility and freshness. A research synthesis can be reproduced against its original evidence snapshot, while a financial or medical action may require a fresh read before execution.
+
+## 8.3 Atomic commits and rollback
+
+A memory transaction may create page versions, graph edges, summaries, embeddings, caches, and audit entries. These updates commit atomically or not at all. A failed verifier, canceled task, or interrupted tool call leaves provisional pages on an isolated branch rather than partially updating durable memory.
+
+A commit includes:
+
+- the source event set;
+- new immutable page manifests;
+- relation updates;
+- representation certificates;
+- governance labels;
+- invalidation set;
+- index-update intents;
+- cache-purge intents;
+- audit record and principal signature where applicable.
+
+Indexes may update asynchronously after the logical commit, but reads either consult the log/graph directly or know that an index is behind. The system must never treat index freshness as implicit.
+
+## 8.4 Causal ordering and distributed agents
+
+In a multi-agent system, wall-clock timestamps are insufficient to order concurrent observations and decisions. VCM records causal metadata inspired by distributed-systems clocks [@lamport1978time]. Pages can be concurrent, ordered, or causally dependent. A merge routine cannot declare one page newer merely because a machine clock is ahead.
+
+When agents share memory:
+
+- shared roots are capability-limited and usually read-only;
+- agents annotate shared pages through copy-on-write branches;
+- behavioral or policy pages require explicit authority to modify;
+- conflict-aware merges preserve dissenting evidence and agent identity;
+- provenance labels identify whether content was observed, inferred, proposed, or approved;
+- one agent's private task plan does not automatically become another agent's instruction;
+- cache pages are partitioned by principal, policy, and snapshot unless explicitly safe to share.
+
+A shared semantic page can have multiple task-local representations. Agents need not agree on a lossy summary as long as they share the authoritative source and can inspect each other's certificates.
+
+## 8.5 Copy-on-write task branches
+
+Exploratory reasoning often benefits from hypothetical context. VCM supports copy-on-write branches in which an agent can tentatively assume a premise, revise a plan, or generate a synthesis without contaminating durable memory. Branch pages are marked hypothetical and cannot be cited as established facts unless promoted through verification and commit.
+
+Branching also supports alternative compression policies. One task can use a concise project checkpoint while another loads a detailed evidence view. Both derive from the same immutable sources and can be compared.
+
+## 8.6 Cache coherence
+
+Semantic updates propagate through a dependency-aware invalidation graph. VCM distinguishes:
+
+- **hard invalidation:** the representation is unsafe to use because its source, permission, or model key changed;
+- **soft invalidation:** the representation may still route correctly but must not support exact claims;
+- **temporal expiration:** the page requires fresh verification before a declared use;
+- **policy invalidation:** a change in purpose or permission makes a previously valid cached view inaccessible;
+- **branch invalidation:** a plan branch was canceled, requiring staged pages to be purged or declassified.
+
+The C-TLB and physical caches subscribe to invalidation events. A context compiler refuses stale entries for uses outside their remaining certificate.
+
+## 8.7 Checkpoints and recovery
+
+A task checkpoint contains the active plan frontier, mounted roots, task snapshot, dirty-page branch, unresolved commitments, staged-page manifest, and a compact continuation summary. It does not need to contain the full active prompt because the prompt can be recompiled from addresses and versions.
+
+After failure, the runtime restores the checkpoint, validates current capabilities, re-resolves aliases, discards incompatible runtime caches, and resumes. Deterministic replay is possible to the extent that model outputs, tools, random seeds, and external states were captured; otherwise VCM provides provenance-aware reconstruction rather than claiming exact replay.
+
+# 9. Security, Privacy, and Memory Governance
+
+Memory changes the attack surface of an agent. A malicious prompt that would ordinarily disappear after one session can become a persistent steering mechanism if written into memory. Security must therefore mediate both **what is stored** and **how stored content may influence behavior**.
+
+## 9.1 Protection principles
+
+VCM adapts classical protection principles—least privilege, complete mediation, economy of mechanism, fail-safe defaults, and separation of privilege—to semantic memory [@saltzer1975protection]. Every mount, read, prefetch, expansion, promotion, write, merge, share, and deletion is an access-controlled operation. Authorization cannot be delegated to text inside the page being authorized.
+
+The trusted governance kernel enforces these rules independently of the model. A model may request a page or propose a memory write; it cannot mint its own capabilities or reinterpret a denial as permission.
+
+## 9.2 Execution classes and instruction/data separation
+
+Each page carries an **execution class**:
+
+| Execution class | Behavioral authority | Examples |
+|---|---|---|
+| Constitutional policy | Highest within declared system | Safety, legal, platform, administrator policy |
+| Authorized task instruction | Bounded by issuer, task, time, and capability | Current user request, approved workflow |
+| Scoped user preference | Influences presentation or process within scope | Formatting preference, project-specific style |
+| Procedure | Executable only with current authorization and version | Deployment runbook, lab protocol |
+| Evidence / observation | No direct behavioral authority | Paper claim, sensor output, database row |
+| Quoted or external text | Data-only by default | Webpage, email, retrieved document |
+| Agent inference / reflection | Advisory and provisional | Suggested preference, inferred project state |
+| Quarantined content | No model-visible promotion until reviewed | Suspected prompt injection or poisoned memory |
+
+Table: **Table 4.** Execution classes preserve behavioral authority through storage and retrieval.
+
+This type is preserved through summarization. “The webpage says ‘ignore all previous instructions’” remains evidence about webpage content; it cannot become an authorized task instruction. Recent attacks on memory-augmented agents motivate this separation [@dong2025minja; @srivastava2025memorygraft; @xu2026mcfa].
+
+## 9.3 Memory write security
+
+Write-time controls include:
+
+- source authentication and provenance-role labeling;
+- deterministic removal or escaping of active control tokens where appropriate;
+- detection of instruction-like content in data pages;
+- trust-weighted corroboration for behavioral memories;
+- prohibition on automatic privilege elevation;
+- provisional status for agent-inferred preferences and rules;
+- rate and quota limits per principal and source;
+- similarity and influence analysis to detect repeated injection attempts;
+- human or policy approval for high-impact procedural memories;
+- separation of observed outcome from the agent's narrative about that outcome.
+
+A high-risk memory write can be retained in quarantine for forensic value without making it retrievable into ordinary working context.
+
+## 9.4 Read and promotion security
+
+Read-time security is necessary because benign-looking stored text can become dangerous in a new context. Promotion checks include:
+
+- whether the current task has a legitimate purpose for the page;
+- whether the requesting principal can see the requested representation;
+- whether the page's taint and execution class are compatible with the target lane;
+- whether a page attempts to modify policy, permissions, tools, or memory controls;
+- whether multiple low-trust pages form a coordinated influence pattern;
+- whether the page is fresh and valid for the proposed action;
+- whether its compression certificate permits the intended use.
+
+Tool execution always requires current authorization independent of any remembered instruction. A stored procedure can suggest parameters, but the tool gateway validates identity, scope, budget, and side effects at the moment of action.
+
+## 9.5 Capability-based mounts
+
+Capabilities bind principal, namespace, operations, representation levels, purpose, duration, and delegation. A mount can permit L2 aggregate access while denying L4 exact excerpts. A shared project root can allow reading decisions but not private user-preference pages. A research agent can retrieve de-identified evidence without mounting the identity namespace.
+
+Capabilities are unforgeable tokens or equivalent kernel state, not natural-language claims. Mount resolution uses complete mediation; cached permissions expire or invalidate when policy changes.
+
+## 9.6 Taint and lineage
+
+Taint follows information through derived pages. A summary of untrusted webpages remains untrusted evidence even if the summary is fluent and internally consistent. A page can accumulate multiple taints: external-source, personal-sensitive, unverified-inference, export-controlled, or prompt-injection-suspected. Sanitization changes the representation and creates a certificate; it does not erase history.
+
+Lineage enforcement allows downstream policies such as:
+
+- “do not use externally supplied procedural text in the instruction lane”;
+- “do not transmit pages derived from sealed health data to a cloud model”;
+- “require two independent sources before creating a durable behavioral rule”;
+- “purge all descendants of a deleted source.”
+
+Typed provenance helps prevent role collapse in long-term memory [@jin2026memir], while explicit lineage supports enforcement and audit [@ouyang2026memlineage].
+
+## 9.7 Privacy-aware prefetch
+
+Predictive prefetch creates a subtle privacy risk: loading a page can expose it to memory, logs, or infrastructure even if it never reaches the final prompt. VCM therefore distinguishes **address visibility**, **encrypted staging**, **expanded staging**, and **model-visible promotion**.
+
+A privacy-sensitive page may be:
+
+- represented only by a non-sensitive L0 handle until demand is certain;
+- prefetched as ciphertext but decrypted only after a purpose check;
+- expanded locally on trusted hardware;
+- denied speculative prefetch and loaded only on explicit fault;
+- redacted or aggregated before leaving a principal's device;
+- purged immediately when a plan branch is canceled.
+
+Prefetch evaluation includes exposure cost, not merely latency and cache pollution. Personalized-memory research increasingly treats privacy as a primary design dimension [@chen2026memprivacy].
+
+## 9.8 Scoped personalization
+
+Persistent agents can overgeneralize a situational statement into a global profile. VCM represents a preference as a scoped, contestable page containing:
+
+- the subject and preferred behavior;
+- task, domain, audience, and temporal scope;
+- whether it was explicitly stated or inferred;
+- confidence and supporting events;
+- counterexamples and exceptions;
+- review or expiry conditions;
+- permitted influence lanes;
+- user-visible edit and deletion controls.
+
+A statement such as “use exhaustive analysis for this architecture paper” must not become “the user always wants long responses.” OP-Bench's focus on over-personalization illustrates why memory quality includes restraint, not only recall [@hu2026opbench].
+
+## 9.9 Staleness and external truth
+
+Memories can be internally faithful yet externally obsolete. Pages therefore distinguish event truth (“the user said X on date D”), state claims (“X is currently true”), and predictions. State claims have validity intervals, freshness requirements, and verification sources. When the required freshness exceeds the page's certificate, the compiler raises a temporal fault and invokes a current source.
+
+A stale page is not necessarily deleted: it may be valuable historical evidence. It is prevented from masquerading as current state. Benchmarks such as STALE motivate explicit invalidity detection rather than blind retrieval [@chao2026stale].
+
+## 9.10 User control and contestability
+
+A user-facing VCM should expose:
+
+- what durable pages exist about the user or their projects;
+- which pages are explicit statements versus inferences;
+- why a page was loaded for a response;
+- which sources support a summary;
+- who accessed or modified it;
+- its scope, validity, and sharing policy;
+- correction, narrowing, sealing, export, and deletion controls;
+- consequences of deletion, including legally required retention.
+
+The explanation should refer to inspectable metadata and source spans, not a fabricated narrative of the model's hidden reasoning. Contestability is both a trust feature and a source of high-quality correction signals.
+
+## 9.11 Governance invariants
+
+The following invariants should hold regardless of learned policy:
+
+1. memory content cannot grant itself authority;
+2. a data page cannot enter an instruction lane without an authorized transformation;
+3. a lower-trust source cannot silently overwrite a higher-trust active constraint;
+4. a deleted or sealed page cannot remain usable through an untracked derivative cache;
+5. a stale state claim cannot support a freshness-critical action without revalidation;
+6. a tool call requires current authorization and cannot rely solely on remembered permission;
+7. model-specific caches are disposable and cannot serve as sole provenance;
+8. a lossy summary cannot claim exactness outside its certificate;
+9. conflicts are represented or adjudicated, never silently averaged;
+10. speculative prefetch cannot influence generation before promotion.
+
+# 10. Failure Modes and Design Responses
+
+A credible context architecture must specify how it can fail. Table 5 summarizes major failure modes and VCM's intended response.
+
+| Failure mode | Why naïve systems fail | VCM response | Residual risk |
+|---|---|---|---|
+| Summary drift | Repeated summaries lose qualifiers and negation | Parent hashes, atomic claims, loss manifests, re-derive from source | Verifiers can miss semantic loss |
+| Hallucinated decompression | Model invents plausible missing detail | Load certified representation or exact source; fault outside contract | Source may be unavailable |
+| Constraint loss | Topic summaries omit decision force | Protected constraint lane and type-specific verification | Incorrect typing at ingestion |
+| Similarity blindness | Critical correction is not query-similar | Multi-channel retrieval and dependency closure | Channel weights can still be wrong |
+| Static importance | Old page is ignored when task resumes | Task-conditioned revaluation and mount-triggered promotion | Forecast uncertainty |
+| Wrong prefetch | Irrelevant pages bias the model | Non-influential staging and promotion gates | Cache and exposure cost remain |
+| Thrashing | Working set exceeds active capacity | Hysteresis, pinning, adaptive pages, decomposition, larger model | Some phases are inherently global |
+| Address rot / rollback | Alias points to stale or substituted object | Immutable IDs, content hashes, signed alias history | Key compromise |
+| Contradictory pages | Retriever merges incompatible claims | Conflict graph, snapshot semantics, explicit adjudication | Model may still mishandle conflict |
+| Stale memory | Accurate history is used as current fact | Validity intervals and temporal faults | Verification source can be wrong |
+| Over-personalization | Temporary preference becomes identity | Scope, evidence, exceptions, expiry, user control | Subtle social inference remains hard |
+| Memory poisoning | Malicious text becomes durable steering | Execution classes, taint, quarantine, capability checks | Novel attacks and classifier evasion |
+| Self-reinforcing false memory | Agent-generated claim is later treated as evidence | Provisional status and source-role separation | Correlated verifier models |
+| Privacy leakage by prefetch | Sensitive page is loaded unnecessarily | Purpose-aware encrypted staging, no-prefetch policies | Metadata can reveal existence |
+| Cross-user cache leak | Runtime cache reused under wrong identity | Principal/policy/snapshot cache keys and partitioning | Infrastructure bugs |
+| Incomplete deletion | Embeddings or caches retain deleted data | Graph-based deletion closure and cryptographic erasure | Backups and trained weights |
+| Plan manipulation | Attacker steers prefetch through task graph | Plan provenance, resource caps, taint, purpose validation | Adversarial but valid-looking plans |
+| Oversized page | One semantic page consumes budget | Adaptive splitting and view-specific representations | Loss of cross-page relations |
+| Excessively small pages | Fault overhead dominates | Co-access clustering and huge pages | Dynamic granularity cost |
+| Learned-policy opacity | Optimizer trades safety for benchmark gain | Hard invariants, audit logs, interpretable features, safe fallback | Performance gap versus unconstrained policy |
+
+Table: **Table 5.** Major failure modes, architectural responses, and residual risks.
+
+## 10.1 Epistemic failure: no universal semantic codec
+
+The deepest limitation is that meaning is not a byte string with a universal reversible compression function. What can be omitted depends on future questions, and those questions may be unknown. VCM addresses this by retaining authoritative sources where policy allows, declaring query-relative sufficiency, storing multiple representations, and faulting to stronger forms. This mitigates but does not abolish information loss.
+
+A system that deletes raw history and keeps only generated summaries has accepted irreversibility. VCM permits that choice under cost or privacy constraints, but the certificate must mark the loss and narrow permitted use. “Compressed” must never be a euphemism for “the model can probably reconstruct it.”
+
+## 10.2 Planning failure
+
+Planner-guided prefetch assumes that the task has predictable structure. Open-ended conversation, surprise tool results, and adversarial environments reduce forecast accuracy. VCM remains demand-paged when prediction fails; prefetch is an optimization, not a correctness dependency. Forecast calibration, branch probabilities, and cancellation cost must be measured separately from answer quality.
+
+## 10.3 Global-attention phases
+
+Some tasks require simultaneous comparison across a large corpus or proof state. Sequentially paging small subsets can hide interactions and produce myopic reasoning. VCM should detect high cross-page dependency density and choose one of four responses: compile a larger evidence matrix, invoke external computation, switch to a model with a larger native window, or decompose the problem with validated intermediate results. It should not claim that rapid swapping is equivalent to global attention.
+
+## 10.4 Verifier correlation
+
+A summary and its verifier may share the same model biases. High-assurance settings should use diverse verification methods: deterministic extraction, schema checks, independent models, source-specific parsers, human review, and downstream query tests. Proof-carrying summaries improve traceability; they do not make language-model verification infallible.
+
+## 10.5 Economic and energy overhead
+
+The ledger, indexes, verification, multiple representations, encryption, and cache coherence consume storage and computation. VCM is justified only when its gains in task success, latency, token cost, or risk exceed this overhead. Policies should adapt assurance level to consequence: a casual recollection need not receive the same verification as a legal citation or production deployment.
+
+# 11. End-State Implementation Architecture
+
+VCM is defined as a logical contract that can span several generations of model and hardware capability. This section describes the intended end state rather than a minimal implementation.
+
+## 11.1 Service decomposition
+
+A full deployment comprises the following services or trusted modules:
+
+- **Event Gateway:** captures messages, files, observations, tool records, and policy changes with provenance.
+- **Semantic Ingestor:** segments, types, and links cells while preserving raw source references.
+- **Ledger Store:** maintains immutable page manifests, graph relations, versions, snapshots, and tombstones.
+- **Representation Fabric:** creates and verifies L0–L6 representations according to page-specific codecs.
+- **Index Fabric:** maintains semantic, lexical, temporal, entity, dependency, contradiction, and provenance indexes.
+- **Task Planner:** emits explicit subgoals, dependencies, deadlines, and anticipated context needs.
+- **CMMU:** resolves addresses, predicts demand, manages staging and residency, and handles faults.
+- **Context Compiler:** builds role-labeled working packets and model-runtime prefixes.
+- **Governance Kernel:** enforces capabilities, purpose, taint, privacy, freshness, and deletion.
+- **Runtime Cache Manager:** controls token, prefix, latent, and KV pages across accelerators and hosts.
+- **Audit and Control Plane:** exposes inspection, correction, deletion, replay, and policy administration.
+- **Evaluation Telemetry:** records page-level decisions and outcomes without storing private hidden reasoning.
+
+These modules can be co-located for privacy or distributed for scale. The interfaces, not the process boundaries, define the architecture.
+
+## 11.2 Storage layout
+
+The durable ledger favors append-only, content-addressed objects and explicit manifests. Large raw files can remain in external object stores and be memory-mapped through signed references. Small typed cells and graph edges benefit from a transactional graph or relational core. Indexes are replaceable accelerators.
+
+A page manifest should be compact enough to keep large namespace maps in memory. The payload can be split into separately encrypted facets so that an L1 capsule is visible while L4 excerpts remain sealed. Co-access statistics guide physical placement without changing logical addresses.
+
+## 11.3 Hardware mapping
+
+A high-performance VCM runtime maps semantic operations onto the hardware hierarchy:
+
+- object storage or HDD/SSD holds raw and compressed durable pages;
+- non-volatile or host memory holds routing maps, compressed summaries, and staged expansions;
+- pinned host buffers prepare tokenized pages;
+- accelerator HBM holds active tokens, prefix state, and KV pages;
+- interconnect scheduling overlaps page transfer with tool calls and model computation;
+- hardware enclaves or local accelerators handle sealed-page expansion when required.
+
+Planner deadlines inform I/O priority. A page needed for a tool authorization in 20 milliseconds outranks a speculative background page even if the latter has higher semantic relevance.
+
+## 11.4 Native model interface
+
+The strongest VCM implementation would expose structured runtime primitives:
+
+```text
+MOUNT(root, snapshot, capability)
+RESOLVE(address, required_use)
+PREFETCH(address, level, deadline)
+PROMOTE(address, role_lane)
+FAULT(address, fault_type, required_level)
+PIN(address, horizon)
+EVICT(address, target_level)
+CHECKPOINT(task)
+COMMIT(transaction)
+ROLLBACK(branch)
+UNMOUNT(root)
+```
+
+A native model need not see these as textual tool calls. The runtime can expose a context map, structured page identifiers, and fault tokens. Attention can reference stable page boundaries, enabling precise attribution and cache reuse. The model can request exact evidence without generating a natural-language retrieval query.
+
+## 11.5 Cooperative prefix and KV materialization
+
+When a stable set of pages is repeatedly compiled in the same role order, VCM can create a canonical prefix object and reuse its runtime state through mechanisms such as paged KV blocks or radix-prefix caches [@kwon2023pagedattention; @zheng2024sglang]. Workflow predictions can initiate prefix or KV transfer before a model call, extending ideas in KVFlow and Pythia [@pan2025kvflow; @yu2026pythia].
+
+Semantic and physical page sizes need not match. A semantic evidence page may compile into several KV blocks; several tiny constraints may share one canonical prefix block. The mapping table records which semantic versions contributed to each runtime block so that invalidation remains exact.
+
+## 11.6 Learned policies inside a verified envelope
+
+Several decisions benefit from learning:
+
+- future page probability;
+- best representation level;
+- co-access clustering and page size;
+- likely fault cost;
+- summary codec selection;
+- eviction and prefetch ranking;
+- when external verification is worthwhile.
+
+However, learning operates inside deterministic constraints. The optimizer cannot bypass capabilities, omit mandatory lanes, reinterpret provenance roles, or suppress a known contradiction. Policy decisions are logged with features and counterfactual estimates so that performance and bias can be audited.
+
+A promising direction is constrained reinforcement learning on long-horizon outcomes, where rewards include task quality, latency, proof coverage, privacy exposure, security failures, and user corrections. Training data should include adversarial and stale-memory episodes, not only successful recall.
+
+## 11.7 Open interoperability contract
+
+For VCM to become a research substrate rather than a monolithic product, page manifests and certificates should have an open schema. Interoperability requires agreement on:
+
+- stable address and version semantics;
+- provenance and execution classes;
+- representation-level contracts;
+- capability and purpose labels;
+- contradiction and supersession edges;
+- invalidation and deletion events;
+- model/runtime cache keys;
+- telemetry for faults, promotion, and eviction;
+- benchmark trace formats.
+
+A portable page should not require trusting the sender's summary. The receiver can verify hashes, inspect lineage, recompute representations, and apply stricter governance.
+
+## 11.8 Deployment regimes
+
+**Black-box VCM** compiles text around a closed model API. It can implement typed memory, proofs, snapshots, mounts, staging, and security, but page faults require additional calls and KV integration is limited.
+
+**Cooperative VCM** controls server-side prefix caching, structured prompts, tokenizer-aware pages, and perhaps latent adapters. It can overlap I/O with tool calls and reuse stable context efficiently.
+
+**Native VCM** integrates semantic fault handling, page-aware attention, model-runtime cache movement, and hardware scheduling. It offers the best latency and attribution but requires model and serving-stack changes.
+
+The architecture should be evaluated across all three. A benefit that appears only in a hypothetical native runtime may still be scientifically interesting, but it should be distinguished from benefits available today.
+
+# 12. Evaluation: VCM-Bench
+
+A systems proposal becomes useful to research only when its claims can be falsified. VCM-Bench should evaluate not just whether an agent recalls a fact, but whether it maintains correct behavior, evidence, permissions, and latency across changing tasks.
+
+## 12.1 Research questions
+
+The evaluation should answer seven primary questions:
+
+- **RQ1 — Continuity:** Does VCM preserve constraints, decisions, corrections, commitments, and scoped preferences over long horizons better than competing memory methods?
+- **RQ2 — Efficiency:** Does it improve task quality per active token and reduce end-to-end cost relative to long-context replay or reactive retrieval?
+- **RQ3 — Latency:** Does planner-guided prefetch lower semantic page-fault stalls without excessive cache pollution or privacy exposure?
+- **RQ4 — Fidelity:** Do proof-carrying representations reduce summary drift, unsupported reconstruction, and source-attribution errors?
+- **RQ5 — Adaptation:** Does task-conditioned revaluation retrieve old but newly relevant context while avoiding irrelevant historical residue?
+- **RQ6 — Safety:** Do type, taint, capability, and provenance controls reduce memory poisoning, control-flow manipulation, stale-memory use, and over-personalization?
+- **RQ7 — Systems scaling:** How do benefits change with memory size, task locality, page granularity, model context size, storage latency, concurrent agents, and model-runtime cache support?
+
+## 12.2 Hypotheses
+
+A preregistered evaluation can test the following hypotheses:
+
+- **H1:** At equal active-token budgets, VCM improves long-horizon task success and constraint retention over truncation, rolling summaries, and similarity-only RAG.
+- **H2:** Proof-carrying summaries reduce unsupported atomic claims and source-attribution errors relative to unverified recursive summaries.
+- **H3:** Plan-guided prefetch lowers p50 and p95 task-stall latency relative to demand-only paging when the plan has measurable predictive structure.
+- **H4:** Non-influential staging preserves the latency benefit of prefetch while reducing irrelevant-context performance loss relative to direct speculative prompt insertion.
+- **H5:** Typed retrieval channels improve correction, rejection, and decision recall beyond dense similarity at matched retrieval volume.
+- **H6:** Governance invariants reduce persistent memory-attack success and excess sensitive-page exposure relative to memory systems that treat retrieved content as undifferentiated prompt text.
+- **H7:** Cross-layer semantic-to-KV mapping reduces repeated prefill cost for stable mounted contexts without increasing stale-cache or cross-principal errors.
+
+## 12.3 Baselines
+
+Evaluation should include strong and diverse baselines:
+
+1. full native context where the complete history fits;
+2. sliding-window truncation;
+3. recursive rolling summary;
+4. top-*k* lexical, dense, and hybrid RAG;
+5. active or interleaved retrieval;
+6. persistent agent-memory systems such as MemGPT, Mem0, A-MEM, MemoryOS, MemOS, or comparable reproducible implementations;
+7. learned memory-operation policies such as Agentic Memory;
+8. semantic demand-paging systems where code is available;
+9. prompt-compression systems such as LongLLMLingua or RECOMP;
+10. prefix/KV-aware serving systems for the runtime track;
+11. oracle variants with perfect page identity, perfect future-reference knowledge, or perfect summaries to establish upper bounds.
+
+Baselines must use the same underlying model, tool set, source corpus, and active-token budget where possible. Results should separately report algorithmic gains and gains caused by a more capable base model.
+
+## 12.4 Evaluation tracks
+
+### Track A: Long-term conversational continuity
+
+Use and extend LongMemEval, LoCoMo, and related memory benchmarks [@wu2025longmemeval; @maharana2024locomo]. Add project-specific preferences, corrections, commitments, and superseded facts. Measure whether the agent recalls not merely an answer but the current valid state and appropriate interaction policy.
+
+### Track B: Incremental agent tasks
+
+Use MemoryAgentBench, MemoryArena, and MemBench-style interactions that require memory updates across dependent sessions [@hu2025memoryagentbench; @he2026memoryarena; @tan2025membench]. Add tool state, rejected plans, branching tasks, and delayed consequences.
+
+### Track C: Multi-project context switching
+
+Construct workloads with several large projects, each containing decisions, source corpora, unresolved issues, and private namespaces. Switch tasks unpredictably. The complete memory should exceed the model window by orders of magnitude while each task phase has a bounded semantic working set. Measure mount latency, return-continuation quality, wrong-project contamination, and context-switch thrashing.
+
+### Track D: Evidence and exactness
+
+Require long-form synthesis, quotations, code edits, mathematical claims, and procedure execution. Score atomic factual precision using methods related to FActScore and retrieval-grounding metrics such as RAGAS [@min2023factscore; @es2023ragas], augmented with source-span accuracy, certificate coverage, and exactness-fault behavior.
+
+### Track E: Temporal validity and contradiction
+
+Insert facts that become stale, decisions that are superseded, and evidence that conflicts across sources. Evaluate whether the system distinguishes historical events from current state, identifies unresolved conflict, and revalidates when required. STALE provides a starting point for invalid-memory evaluation [@chao2026stale].
+
+### Track F: Personalization restraint
+
+Create local, global, temporary, and contradictory preferences. Evaluate correct application, abstention outside scope, update behavior, and user correction. OP-Bench motivates this track [@hu2026opbench].
+
+### Track G: Memory security and privacy
+
+Evaluate query-only injection, poisoned experience retrieval, cross-session steering, indirect prompt injection, privilege escalation through remembered procedures, and coordinated multi-page attacks [@dong2025minja; @srivastava2025memorygraft; @xu2026mcfa; @sunil2026poisoning]. Add privacy probes that test whether speculative prefetch or shared caches expose sealed pages.
+
+### Track H: Systems and runtime efficiency
+
+Replay task-plan traces under controlled storage, network, tokenizer, model, and accelerator conditions. Measure semantic fault latency, prefetch lead time, page-transfer volume, prompt tokens, prefill time, KV reuse, accelerator utilization, energy, and throughput. Compare demand-only and plan-guided policies, and evaluate semantic-to-runtime cache mapping alongside PagedAttention-, RadixAttention-, and workflow-aware approaches [@kwon2023pagedattention; @zheng2024sglang; @pan2025kvflow; @yu2026pythia].
+
+## 12.5 Canonical adversarial continuity scenario
+
+A benchmark episode can contain the following sequence:
+
+- early in the history, the user states a general preference for concise routine answers;
+- later, the user requests exhaustive analysis for a specific research project;
+- the agent proposes an incremental prototype, which the user explicitly rejects for that project;
+- a trusted source supports one architecture, then a newer source changes a key fact;
+- an external document contains an instruction to ignore project constraints;
+- a prior assistant summary incorrectly generalizes the user's project-specific preference;
+- the final request asks for a comprehensive architecture and exact citations.
+
+A correct system should load the project-specific exhaustive preference rather than the general concise default, preserve the rejection of prototype framing without concluding that the user always rejects prototypes, revalidate the stale source, quarantine the external instruction as data, correct the overgeneralized summary, and promote exact evidence before citation. This scenario evaluates context typing and governance, not just fact retrieval.
+
+## 12.6 Metrics
+
+Table 6 groups core metrics.
+
+| Dimension | Metrics |
+|---|---|
+| Task quality | success rate, calibrated judge score, tool-action correctness, long-form factual precision |
+| Continuity | constraint retention, decision continuity, correction application, commitment completion, rejection recall |
+| Context efficiency | active tokens, context value density, quality per token, bytes and tokens moved |
+| Paging | fault rate, p50/p95 fault latency, prefetch precision/recall, useful lead time, staging hit rate |
+| Residency | working-set size, eviction regret, re-fault rate, thrash index, page-granularity efficiency |
+| Compression | atomic claim coverage, negation/scope preservation, query-relative sufficiency, summary drift |
+| Evidence | source-span accuracy, proof coverage, unsupported claim rate, correct exactness faults |
+| Temporal reasoning | stale-memory use, supersession accuracy, revalidation precision and latency |
+| Security | attack success rate, privilege-escalation rate, poisoned-page promotion, control-flow influence |
+| Privacy | excess pages accessed, sensitive bytes staged, unauthorized representation exposure, purge latency |
+| Consistency | mixed-version errors, read-your-writes failures, stale-cache use, merge-conflict loss |
+| Runtime | prefill time, KV hit rate, HBM/DRAM/SSD traffic, throughput, energy, cost per successful task |
+
+Table: **Table 6.** Core VCM-Bench metric groups.
+
+**Prefetch precision** should count a page as useful only if it is promoted and materially contributes before its deadline. Merely being semantically related is insufficient. **Pollution cost** measures performance loss or budget displacement caused by staged or promoted pages that were not needed. **Thrash index** can combine repeated re-faults, residency turnover, and time spent moving pages relative to task progress.
+
+**Proof coverage** is the fraction of atomic claims in the final output that are supported by loaded evidence pages whose certificates permit that use. This can be stratified by claim risk. **Deletion closure** measures whether a deleted fact remains recoverable through summaries, embeddings, logs, shared pages, or runtime caches after the stated purge deadline.
+
+## 12.7 Ablation studies
+
+Ablations should remove one architectural feature at a time:
+
+- scalar rather than vector importance;
+- no protected lanes;
+- dense similarity only;
+- no rejection ledger;
+- no contradiction graph;
+- no temporal validity;
+- no compression certificates;
+- recursive summary without raw anchors;
+- demand paging without plan prefetch;
+- prefetch directly into model-visible context;
+- no staging taint gate;
+- LRU rather than semantic replacement;
+- no task snapshots;
+- no capability-based mounts;
+- no semantic-to-KV mapping;
+- no counterfactual utility feedback.
+
+Interactions matter. For example, prefetch may look harmful without staging, while staging may appear unnecessary without adversarial or low-precision forecasts. Factorial experiments should identify such dependencies.
+
+## 12.8 Experimental protocol
+
+A rigorous protocol should:
+
+- preregister hypotheses and primary metrics;
+- release task traces, memory events, page manifests, and ground-truth dependency graphs where privacy permits;
+- fix active-token budgets and separately sweep them;
+- test several model families and context lengths;
+- report confidence intervals and paired comparisons across identical episodes;
+- separate offline memory construction cost from online latency;
+- include cold-cache, warm-cache, and context-switch conditions;
+- evaluate under multiple storage and network latencies;
+- test benign, stale, contradictory, and adversarial histories;
+- report governance denials and clarification requests as outcomes rather than hiding them;
+- audit judge-model bias with human and deterministic checks;
+- publish failure traces, not only averages.
+
+The architecture should be considered successful only if it improves meaningful long-horizon outcomes at acceptable overhead and does not obtain efficiency by weakening evidence, privacy, or security guarantees.
+
+# 13. Discussion
+
+## 13.1 From retrieval to residency
+
+Retrieval asks, “Which chunks are similar to the current query?” VCM asks a broader question: “Which verified semantic objects should be resident, at what fidelity, for how long, under which authority, given the task's likely future?” Retrieval remains a mechanism inside the system, but residency adds planning, lifecycle, and resource semantics.
+
+This distinction matters because critical context is often behaviorally important rather than lexically salient. A recent correction, a hard prohibition, or a rejected design may share few words with the current request. A context compiler retrieves by role and dependency, then decides whether to keep the page resident across several model calls.
+
+## 13.2 From transcript to state
+
+A transcript is an event record. Agent state is a typed interpretation of events. Conflating them produces two opposite errors: replaying too much irrelevant history, or compressing away the structure needed for correct behavior. VCM preserves both levels. The immutable event substrate supports audit and re-derivation; the context ledger supports efficient task state.
+
+This resembles the distinction between a database log and its materialized views. A view is useful because it is structured for a query, but it must be invalidated when sources change and cannot be treated as the sole ground truth.
+
+## 13.3 From larger windows to effective working context
+
+Native context growth remains valuable. VCM does not oppose it. A larger window raises the maximum feasible working-set size and reduces fault frequency. VCM improves how that capacity is allocated. The combined system can use a large native window for globally coupled phases and virtualize the much larger history surrounding them.
+
+The critical scientific question is not whether VCM can “simulate infinite context,” but how quality scales as the ratio of durable memory to active window grows, and how that scaling depends on semantic locality, plan predictability, compression fidelity, and page-fault cost.
+
+## 13.4 Context allocation as a constrained market
+
+The context compiler can be viewed as a market in which pages bid for scarce active capacity. This metaphor highlights opportunity cost: loading one page displaces another. Yet a pure market is unsafe because mandatory policy and constraints could be outbid. VCM therefore combines protected constitutional lanes with marginal-value allocation in the discretionary remainder.
+
+This framework may enable useful diagnostics. A page with high token cost and low marginal utility should be compressed or evicted. A page with low immediate utility but high catastrophic-loss prevention should be pinned. A privacy-sensitive page may have high task value but still be denied because exposure cost dominates.
+
+## 13.5 Memory as a control-flow substrate
+
+Persistent memory is not passive. It shapes future planning, retrieval, and tool use. Memory systems must therefore be analyzed like control-flow systems. A poisoned page that changes which tools are called or which evidence is trusted can have effects far beyond an incorrect answer. This motivates execution classes, capability checks, taint propagation, and independent tool authorization.
+
+Security evaluation should measure not only whether an attack string is repeated, but whether it changes plan topology, page promotion, permission requests, or durable memory writes.
+
+## 13.6 Proof-carrying memory and epistemic humility
+
+Proof-carrying summaries address a structural problem: once a summary is fluent, future models may treat it as established truth. A certificate keeps the distinction between evidence and interpretation visible. It also permits graded use. A low-cost summary can guide routing while a high-stakes answer faults to exact evidence.
+
+The term “proof-carrying” should not be misunderstood. Natural-language evidence rarely proves a claim in the formal sense. The certificate proves lineage and records verification obligations; the substantive claim can remain uncertain, disputed, or source-relative. This explicit humility is a strength.
+
+## 13.7 Open research problems
+
+Several problems remain open.
+
+**Future-query modeling.** How should a compressor define the query family for which a representation is sufficient, especially before future tasks are known?
+
+**Learned semantic page boundaries.** How can pages adapt to co-access patterns without destroying human-understandable identity and auditability?
+
+**Faithful latent representations.** Can learned latent pages provide large compression gains while retaining interpretable certificates and reliable fault paths?
+
+**Plan calibration.** How should a planner express uncertainty, and how should prefetch policies remain robust when the plan changes rapidly?
+
+**Causal memory utility.** Can the system estimate whether a page caused a better outcome rather than merely being present?
+
+**Global reasoning detection.** Can an agent recognize when paging will be inadequate because the task requires simultaneous attention to a large set?
+
+**Multi-model coherence.** How should pages and caches remain valid across models with different tokenizers, capabilities, or interpretations?
+
+**Privacy-preserving addressing.** Can a root reveal that relevant memory exists without leaking sensitive namespace structure or access patterns?
+
+**Memory policy verification.** Which governance invariants can be formally verified across language-model, database, and serving-stack boundaries?
+
+**Forgetting and unlearning.** How can deletion closure include learned adapters or models influenced by memory without retraining the entire system?
+
+**Human mental models.** What interface lets users understand mounts, scopes, summaries, and deletion without exposing overwhelming implementation detail?
+
+**Benchmark realism.** How can long-term memory be evaluated over months or years without relying exclusively on synthetic histories or expensive human studies?
+
+## 13.8 Broader implications
+
+If VCM-like systems succeed, agents could maintain durable project continuity without continuously replaying private history; resume complex work from source-bound checkpoints; switch among many contexts with bounded latency; share read-only evidence while preserving private annotations; and audit how remembered information influenced an action. The same mechanisms could improve coding agents, research assistants, enterprise workflows, tutoring systems, and multi-agent coordination.
+
+The risks are equally broad. A high-fidelity memory system can create deeper surveillance, more persistent manipulation, and stronger lock-in if users cannot inspect or control it. Memory quality cannot be separated from memory governance. A technically effective VCM that maximizes recall while minimizing user agency would be a research failure.
+
+# 14. Conclusion
+
+Long-horizon language-model agents need more than larger context windows, vector retrieval, or rolling summaries. They need a memory hierarchy that distinguishes durable state from active context and treats selection, compression, timing, consistency, provenance, security, and privacy as one systems problem.
+
+Virtual Context Memory proposes such a hierarchy. It stores interaction and task state as typed, versioned semantic pages in a durable context ledger; exposes them through stable mountable addresses; creates multiple certified representations; forecasts demand from explicit plans; stages and promotes pages under governance; compiles a protected working set into the finite context window; and links semantic memory to model-runtime prefix and KV caches without confusing cache state for truth. It preserves a recoverable path from compressed context to evidence, represents contradictions and rejected branches directly, and uses transactional snapshots to keep long-running tasks coherent.
+
+The central reframing is simple:
+
+> **A long-horizon agent should not carry all of its history. It should maintain a governed virtual context space and make the right verified working set resident at the right time.**
+
+VCM does not make context infinite. It makes context managed. Whether that architecture improves real agents is an empirical question. The formal objectives, failure modes, invariants, interfaces, and VCM-Bench agenda in this paper are intended to make that question answerable.
+
+# Appendix A. Canonical Semantic Page Schema
+
+The following illustrative schema shows the fields required for a portable page. Implementations may use binary or normalized storage, but the semantic contract should remain explicit.
+
+```yaml
+page:
+  address: vcm://principal/project/object-id@version
+  content_hash: sha256:...
+  immutable_version: 17
+  alias_history:
+    - alias: vcm://principal/project/object-id@latest
+      resolved_at: 2026-06-18T20:00:00Z
+      resolver_signature: ...
+
+  type: decision
+  execution_class: authorized_task_state
+  status: active
+  subject: project-x
+  scope:
+    task: architecture-paper
+    domain: research
+    temporal:
+      valid_from: 2026-06-18T00:00:00Z
+      valid_until: null
+
+  authoritative_sources:
+    - event_hash: sha256:...
+      source_role: explicit_user_statement
+      spans:
+        - start: 114
+          end: 392
+      trust: high
+
+  claims:
+    - id: claim-1
+      text: "The current project should target the final architecture rather than an incremental prototype."
+      support:
+        - event_hash: sha256:...
+          span: [114, 392]
+      certainty: explicitly_stated
+
+  relations:
+    depends_on: []
+    supports: []
+    contradicts: []
+    supersedes: []
+    rejected_because: []
+    invalidates: []
+
+  importance:
+    task_relevance: 0.98
+    failure_prevention: 0.91
+    decision_weight: 0.95
+    future_utility: 0.72
+    stability: 0.74
+    reuse_probability: 0.68
+
+  risk:
+    staleness: 0.05
+    contradiction: 0.10
+    privacy_sensitivity: 0.12
+    poisoning: 0.03
+    compression_loss: 0.20
+    context_pollution: 0.04
+
+  governance:
+    owner: principal:user-123
+    capabilities_required:
+      read: [project-x-member]
+      write: [project-x-owner]
+    allowed_purposes: [research, drafting]
+    prefetch_policy: allowed_to_encrypted_staging
+    sharing: private
+    retention: until_project_deletion
+    deletion_key_id: key-7f9a
+
+  representations:
+    L1:
+      object_hash: sha256:...
+      token_estimate: 31
+      intended_uses: [routing, prefetch]
+      forbidden_uses: [quotation, tool_authorization]
+      certificate: cert:l1-17
+    L2:
+      object_hash: sha256:...
+      token_estimate: 146
+      intended_uses: [planning, drafting]
+      forbidden_uses: [exact_quotation]
+      certificate: cert:l2-17
+    L4:
+      object_hash: sha256:...
+      token_estimate: 278
+      intended_uses: [exact_wording, dispute_resolution]
+      certificate: cert:l4-17
+
+  residency:
+    task_snapshot: snap:project-x-93
+    locations:
+      - tier: dram_compressed
+        representation: L2
+      - tier: object_store
+        representation: L5
+    pinned_until: null
+    last_accessed: 2026-06-18T20:12:09Z
+
+  audit:
+    created_by: memory-ingestor-v4
+    verified_by: [scope-checker-v2, claim-span-checker-v3]
+    created_at: 2026-06-18T20:00:01Z
+    last_revalued: 2026-06-18T20:12:09Z
+```
+
+# Appendix B. Reference Algorithms
+
+## B.1 Compile working context
+
+```text
+COMPILE_CONTEXT(task, snapshot, budget):
+    packet <- empty role-labeled packet
+
+    packet.add(current_system_policy(snapshot), lane=POLICY)
+    packet.add(current_user_request(task), lane=REQUEST)
+    packet.add(task.objective_and_plan_frontier(), lane=TASK)
+
+    mandatory <- union(
+        active_constraints(task, snapshot),
+        recent_corrections(task, snapshot),
+        unresolved_commitments(task, snapshot),
+        required_procedures(task.next_actions),
+        evidence_obligations(task.planned_claims)
+    )
+
+    for page in mandatory:
+        rep <- resolve_minimum_sufficient_representation(page, task.use)
+        rep <- GOVERN_AND_FAULT_IF_NEEDED(rep, task, snapshot)
+        packet.add(rep, lane=page.protected_lane)
+
+    candidates <- multi_channel_retrieve(
+        semantic=task.query,
+        dependencies=task.plan_frontier,
+        decisions=task.active_decision_scope,
+        corrections=task.entities,
+        contradictions=packet.claims,
+        rejections=task.proposed_alternatives,
+        temporal=task.freshness_requirements,
+        preferences=task.interaction_scope,
+        predictions=task.context_demand_forecast
+    )
+
+    candidates <- dependency_and_conflict_closure(candidates, snapshot)
+    candidates <- remove_denied_or_invalid(candidates, task)
+    bids <- estimate_marginal_value(candidates, packet, task, budget)
+
+    while packet.has_discretionary_capacity():
+        page, rep <- highest_positive_feasible_bid(bids)
+        if none: break
+        packet.add(rep, lane=page.role_lane)
+        update_bids_for_redundancy_and_dependencies(bids, packet)
+
+    packet.add(context_map_for_nearby_handles(task, packet), lane=MAP)
+    return verify_packet_invariants(packet, task, snapshot, budget)
+```
+
+## B.2 Planner-guided prefetch
+
+```text
+PREFETCH_FROM_PLAN(plan, snapshot, resource_budget):
+    forecast <- derive_context_demand(plan)
+
+    for demand in forecast.sorted_by_deadline():
+        page <- resolve_address(demand.address, snapshot)
+        if not capability_allows_prefetch(page, demand.purpose):
+            continue
+
+        expected_value <- demand.probability * page.fault_latency(demand.level)
+        expected_cost <- fetch_expand_cost(page, demand.level)
+        expected_cost += pollution_cost(page, plan)
+        expected_cost += privacy_exposure_cost(page, demand.purpose)
+
+        if expected_value <= expected_cost:
+            continue
+
+        token <- reserve_staging_capacity(page, demand.deadline)
+        async_fetch_and_expand(page, demand.level, token)
+        mark_non_influential(page, token)
+
+    on_plan_frontier_change:
+        cancel_losing_branch_fetches()
+        purge_disallowed_staging_pages()
+        promote_ready_pages_that_pass_all_gates()
+```
+
+## B.3 Transactional memory commit
+
+```text
+COMMIT_MEMORY(transaction, task_snapshot):
+    assert transaction.sources_are_immutable()
+    typed_cells <- segment_and_type(transaction.events)
+    provisional_pages <- build_or_update_pages(typed_cells, task_snapshot)
+    relations <- detect_support_conflict_supersession(provisional_pages)
+    representations <- generate_required_representations(provisional_pages)
+    certificates <- verify_and_certify(representations)
+    governance <- classify_and_authorize(provisional_pages, certificates)
+
+    if any hard verification or governance failure:
+        rollback_to_private_branch(transaction)
+        return FAILURE
+
+    invalidation_set <- trace_affected_descendants(provisional_pages, relations)
+
+    atomic_write(
+        page_versions=provisional_pages,
+        graph_relations=relations,
+        certificates=certificates,
+        governance=governance,
+        invalidations=invalidation_set,
+        audit=transaction.audit_record
+    )
+
+    asynchronously_refresh_indexes()
+    purge_or_mark_stale_runtime_caches(invalidation_set)
+    return COMMITTED_VERSION_SET
+```
+
+# Appendix C. VCM Invariants Checklist
+
+A conforming implementation should be testable against the following checklist:
+
+1. Every model-visible durable memory span resolves to an immutable page version and provenance role.
+2. Every lossy page representation exposes a certificate and fallback path.
+3. Every task uses a named snapshot and receives read-your-writes behavior.
+4. Every conflict is represented, adjudicated, or explicitly excluded with a reason.
+5. Every prefetch enters non-influential staging before promotion.
+6. Every promotion passes capability, purpose, taint, freshness, and sufficiency gates.
+7. Every tool action receives current authorization independent of memory text.
+8. Every runtime cache is keyed by model, tokenizer, role layout, policy, principal, and semantic versions as required.
+9. Every page deletion initiates graph-based descendant and cache handling.
+10. Every user preference records scope, evidence mode, confidence, and correction controls.
+11. Every context switch checkpoints dirty state and mounts a versioned root.
+12. Every page-fault denial or failure produces a safe fallback rather than unsupported reconstruction.
+
+# Appendix D. Glossary
+
+**Active context:** The finite model-visible representation used for one inference step or tightly coupled group of steps.
+
+**CMMU:** Context Memory Management Unit; the resolver, fault handler, residency manager, and prefetch controller for semantic pages.
+
+**C-TLB:** Context translation lookaside buffer; a cache mapping semantic addresses and task snapshots to valid resident representations or denial states.
+
+**Compression certificate:** Metadata that binds a derived representation to sources, claims, scope, omissions, verification, and permitted uses.
+
+**Context cell:** An atomic typed memory unit such as a constraint, claim, decision, correction, or event.
+
+**Context compiler:** The component that selects, verifies, role-labels, and packs page representations into working context.
+
+**Context ledger:** The versioned graph of semantic pages, provenance, dependencies, conflicts, and lifecycle events.
+
+**Context root:** A mountable manifest defining a coherent namespace and entry point, such as a project or corpus.
+
+**Declared-loss compression:** Compression that explicitly identifies omitted information and restricts downstream use accordingly.
+
+**Effective working context:** The set of pages that can be made sufficiently available within task deadlines and reliability bounds, not merely the contents of storage.
+
+**Execution class:** The authority category that determines whether content may influence behavior, serve as evidence, or remain data-only.
+
+**Rejection ledger:** Structured memory of rejected, obsolete, disproven, or unsafe branches and the reasons for their status.
+
+**Semantic page:** The smallest independently addressable, loadable, and governed bundle of context cells.
+
+**Semantic page fault:** A request for a missing identity, detail, evidence, exactness, freshness, capability, integrity, or dependency state.
+
+**Staging cache:** A non-model-visible area in which predicted pages can be fetched and expanded before relevance and governance checks permit promotion.
+
+**Task snapshot:** A coherent versioned view of pages, mounts, permissions, and policies used by a running task.
+
+**Virtual context address:** A stable logical identifier for a semantic page, independent of physical storage and representation.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

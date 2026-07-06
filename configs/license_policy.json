@@ -1,0 +1,207 @@
+{
+  "policy": "project_theseus_license_policy_v0",
+  "enabled": true,
+  "terms_version": "theseus-product-terms-v0",
+  "purpose": "Gate Project Theseus app, Hive, company, and public-network features through local registration plus signed paid licenses while keeping the issuer private key out of the repository.",
+  "paths": {
+    "registration": "configs/theseus_registration.local.json",
+    "license": "configs/theseus_license.local.json",
+    "status": "reports/license_status.json",
+    "events": "reports/license_events.jsonl",
+    "request": "reports/license_request.json"
+  },
+  "issuer": {
+    "name": "Project Theseus",
+    "signature_algorithm": "ed25519",
+    "signature_public_keys": {},
+    "key_rotation_note": "Add public verification keys here in release builds. Never commit private issuing keys."
+  },
+  "community_registration": {
+    "enabled": true,
+    "requires_terms_acceptance": true,
+    "noncommercial_only": true,
+    "max_nodes": 12,
+    "max_users": 12,
+    "allowed_usage": [
+      "personal_homelab",
+      "research",
+      "startup_free"
+    ],
+    "allowed_features": [
+      "local_research",
+      "private_hive",
+      "friends_family_hive",
+      "distributed_worker_chunks",
+      "teacher_bootstrap",
+      "public_contribution_worker",
+      "compute_market_accounting",
+      "compute_rental_client",
+      "public_work_accounting",
+      "update_install"
+    ]
+  },
+  "paid_tiers": {
+    "team": {
+      "display_name": "Team / Small Company",
+      "commercial_use": true,
+      "default_max_nodes": 50,
+      "default_max_users": 50,
+      "features": [
+        "local_research",
+        "private_hive",
+        "friends_family_hive",
+        "company_hive",
+        "distributed_worker_chunks",
+        "teacher_bootstrap",
+        "public_contribution_worker",
+        "compute_market_accounting",
+        "compute_rental_client",
+        "public_work_accounting",
+        "update_install"
+      ]
+    },
+    "business": {
+      "display_name": "Business",
+      "commercial_use": true,
+      "default_max_nodes": 250,
+      "default_max_users": 250,
+      "features": [
+        "local_research",
+        "private_hive",
+        "friends_family_hive",
+        "company_hive",
+        "distributed_worker_chunks",
+        "teacher_bootstrap",
+        "public_contribution_worker",
+        "compute_market_accounting",
+        "compute_rental_client",
+        "public_work_accounting",
+        "multi_network_company_relay",
+        "update_install"
+      ]
+    },
+    "enterprise": {
+      "display_name": "Enterprise",
+      "commercial_use": true,
+      "default_max_nodes": 10000,
+      "default_max_users": 10000,
+      "features": [
+        "local_research",
+        "private_hive",
+        "friends_family_hive",
+        "company_hive",
+        "distributed_worker_chunks",
+        "teacher_bootstrap",
+        "public_contribution_worker",
+        "compute_market_accounting",
+        "compute_rental_client",
+        "public_work_accounting",
+        "multi_network_company_relay",
+        "update_install",
+        "private_update_channel"
+      ]
+    },
+    "public_operator": {
+      "display_name": "Public Hive Operator",
+      "commercial_use": true,
+      "default_max_nodes": 1000000,
+      "default_max_users": 1000000,
+      "features": [
+        "local_research",
+        "company_hive",
+        "distributed_worker_chunks",
+        "public_contribution_worker",
+        "public_hive_gateway",
+        "compute_market_accounting",
+        "compute_rental_client",
+        "update_install",
+        "public_work_accounting"
+      ]
+    }
+  },
+  "feature_rules": {
+    "local_status": {
+      "registration_required": false
+    },
+    "local_research": {
+      "registration_required": true
+    },
+    "private_hive": {
+      "registration_required": true
+    },
+    "friends_family_hive": {
+      "registration_required": true
+    },
+    "company_hive": {
+      "requires_paid_tier": true
+    },
+    "multi_network_company_relay": {
+      "requires_paid_tier": true
+    },
+    "distributed_worker_chunks": {
+      "registration_required": true
+    },
+    "teacher_bootstrap": {
+      "registration_required": true
+    },
+    "public_contribution_worker": {
+      "registration_required": true
+    },
+    "compute_market_accounting": {
+      "registration_required": true
+    },
+    "compute_rental_client": {
+      "registration_required": true
+    },
+    "public_work_accounting": {
+      "registration_required": true
+    },
+    "update_install": {
+      "registration_required": true
+    },
+    "private_update_channel": {
+      "requires_paid_tier": true,
+      "allowed_paid_tiers": [
+        "enterprise"
+      ]
+    },
+    "public_hive_gateway": {
+      "requires_paid_tier": true,
+      "allowed_paid_tiers": [
+        "public_operator",
+        "enterprise"
+      ]
+    },
+    "commercial_use": {
+      "requires_paid_tier": true
+    }
+  },
+  "enforcement": {
+    "block_unregistered_hive_create": true,
+    "block_unregistered_remote_tasks": true,
+    "block_unlicensed_company_hive": true,
+    "block_unlicensed_public_gateway": true,
+    "block_over_free_node_limit": true,
+    "block_commercial_without_paid_license": true,
+    "warn_if_signature_backend_missing": true
+  },
+  "license_file_format": {
+    "required_fields": [
+      "policy",
+      "license_id",
+      "tier",
+      "issued_utc",
+      "expires_utc",
+      "customer",
+      "limits",
+      "features",
+      "signature"
+    ],
+    "canonicalization": "JSON without signature, sorted keys, compact separators",
+    "signature": {
+      "alg": "ed25519",
+      "key_id": "release-key-id",
+      "value": "base64url signature over canonical payload"
+    }
+  }
+}

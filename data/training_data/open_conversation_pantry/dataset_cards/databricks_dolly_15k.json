@@ -1,0 +1,38 @@
+{
+  "source_id": "databricks_dolly_15k",
+  "dataset": "databricks/databricks-dolly-15k",
+  "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+  "license_spdx": "cc-by-sa-3.0",
+  "expected_license_normalized": "cc-by-sa-3.0",
+  "enabled": false,
+  "format": "instruction_response",
+  "config": "default",
+  "split": "train",
+  "offset": 0,
+  "length": 0,
+  "why": "Open instruction data, but share-alike obligations are not in the automatic training allowlist.",
+  "use": "queued_license_review",
+  "checks": [
+    {
+      "gate": "source_enabled",
+      "passed": false,
+      "evidence": "False"
+    },
+    {
+      "gate": "source_kind_huggingface_dataset",
+      "passed": true,
+      "evidence": "huggingface_dataset"
+    },
+    {
+      "gate": "license_expected_allowlisted",
+      "passed": false,
+      "evidence": "cc-by-sa-3.0"
+    }
+  ],
+  "status": "metadata_only",
+  "conversation_samples": 0,
+  "private_train_rows": 0,
+  "sts_rows": 0,
+  "external_inference_calls": 0,
+  "decision": "disabled_by_policy"
+}

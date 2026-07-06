@@ -1,0 +1,293 @@
+:root {
+  color-scheme: dark;
+  --bg: #101214;
+  --panel: #171b1f;
+  --panel-2: #1f252b;
+  --text: #e8edf2;
+  --muted: #98a4af;
+  --line: #303942;
+  --accent: #78d4c8;
+  --accent-2: #f2c14e;
+  --bad: #f06b6b;
+  --good: #7ad67a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(16, 18, 20, 0.96);
+}
+
+h1, h2, p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 15px;
+  font-weight: 650;
+}
+
+#status-line {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.toolbar.compact {
+  justify-content: flex-start;
+  margin-top: 8px;
+}
+
+.toolbar.compact input {
+  flex: 1 1 220px;
+}
+
+button, select, input, textarea {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+}
+
+button {
+  min-height: 34px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+select, input {
+  min-height: 34px;
+  padding: 0 10px;
+}
+
+.small-input {
+  width: 78px;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.layout {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 14px;
+  min-width: 0;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.metric {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px;
+  background: var(--panel-2);
+}
+
+.metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.chart-panel canvas {
+  width: 100%;
+  height: 360px;
+  display: block;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.item {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  background: var(--panel-2);
+}
+
+.item-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.item-meta {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.item-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.item-actions button {
+  min-height: 28px;
+  padding: 0 10px;
+}
+
+.inline-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.inline-controls select {
+  width: 100px;
+}
+
+.checkpoint-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.hint {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.pill {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.good {
+  color: var(--good);
+}
+
+.bad {
+  color: var(--bad);
+}
+
+.warn {
+  color: var(--accent-2);
+}
+
+.reports {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 260px;
+  overflow: auto;
+  color: var(--muted);
+  background: #0c0e10;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero,
+  .grid,
+  .checkpoint-tools {
+    grid-template-columns: 1fr;
+  }
+}

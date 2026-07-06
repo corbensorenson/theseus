@@ -1,0 +1,80 @@
+{
+  "policy": "sparkstream_autoresearch_loop_policy_v0",
+  "purpose": "Import the useful governance invariants from karpathy/autoresearch without collapsing SparkStream/RMI into a one-file benchmark toy.",
+  "source_repo": "https://github.com/karpathy/autoresearch",
+  "source_observations": [
+    "Keep the autonomous research surface small and explicit.",
+    "Use a fixed evaluation harness and a fixed wall-clock experiment budget.",
+    "Record every experiment in a compact result ledger with commit, metric, memory, status, and description.",
+    "Keep winners and discard losers according to measured improvement.",
+    "Redirect verbose logs to files and read only compact metric summaries.",
+    "Prefer simpler code when metric quality is equal or nearly equal.",
+    "Treat crashes as experiment outcomes with bounded repair attempts."
+  ],
+  "mapping_to_sparkstream": {
+    "editable_surface": "configs/self_evolution_policy.json guarded_self_edit default_target_scope and forbidden_target_scope",
+    "fixed_harness": "reports/benchmark_ledger.json, reports/candidate_promotion_gate.json, and benchmark cards define the evaluation contract",
+    "fixed_budget": "configs/training_profiles_rtx2060super.json profile expected_runtime_minutes plus configs/autonomy_policy.json command_timeouts_seconds",
+    "experiment_ledger": "reports/autoresearch_experiment_ledger.jsonl",
+    "simplicity_gate": "configs/attd_policy.json plus small_model_principle and ATTD maintenance packets",
+    "keep_discard_gate": "candidate promotion gates plus experiment outcome status"
+  },
+  "experiment_outcome_ledger": {
+    "enabled": true,
+    "path": "reports/autoresearch_experiment_ledger.jsonl",
+    "required_fields": [
+      "run_id",
+      "created_utc",
+      "branch",
+      "start_commit",
+      "end_commit",
+      "profile",
+      "primary_metric_name",
+      "primary_metric_value",
+      "memory_gb",
+      "status",
+      "description",
+      "report_paths",
+      "attd_delta",
+      "regression_delta",
+      "residual_delta"
+    ],
+    "status_values": [
+      "baseline",
+      "keep",
+      "discard",
+      "crash",
+      "simplification_keep",
+      "needs_more_evidence"
+    ],
+    "baseline_required_before_mutation": true,
+    "append_only": true,
+    "tracked_by_git": false
+  },
+  "comparability_gates": {
+    "profile_budget_required": true,
+    "resource_cost_required": true,
+    "primary_metric_required": true,
+    "regression_delta_required": true,
+    "residual_delta_required": true,
+    "attd_delta_required_for_source_edits": true,
+    "log_redirection_required": true
+  },
+  "crash_policy": {
+    "max_repair_attempts_per_idea": 3,
+    "status_after_repair_limit": "crash",
+    "record_crash_tail_chars": 4000
+  },
+  "simplicity_policy": {
+    "near_tie_metric_epsilon": 0.001,
+    "prefer_lower_attd_score_on_tie": true,
+    "prefer_lower_patch_bytes_on_tie": true,
+    "prefer_fewer_changed_files_on_tie": true
+  },
+  "governance": {
+    "block_long_autonomy_when_audit_missing": false,
+    "block_teacher_apply_when_audit_red": false,
+    "warn_when_no_experiment_ledger": true,
+    "create_baseline_recommendation_when_ledger_empty": true
+  }
+}

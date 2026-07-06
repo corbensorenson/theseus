@@ -1,0 +1,86 @@
+{
+  "policy": "project_theseus_checkpoint_backup_policy_v0",
+  "purpose": "Back up accepted candidates off-machine without leaking ignored datasets, ROMs, generated reports, or large local checkpoint blobs by default.",
+  "trigger": {
+    "only_when_candidate_promotes": true,
+    "candidate_gate": "reports/candidate_promotion_gate.json",
+    "checkpoint_last": "reports/checkpoint_last.json",
+    "checkpoint_registry": "reports/checkpoint_registry.json",
+    "require_checkpoint_status": "promoted",
+    "require_clean_git_for_push": true
+  },
+  "backup_scope": {
+    "github": "tracked_source_plus_backup_manifest",
+    "google_drive": "queued_manifest_and_small_checkpoint_metadata_until_connector_or_cli_is_configured",
+    "include_checkpoint_manifest": true,
+    "include_checkpoint_artifact_manifest": true,
+    "include_checkpoint_workspace_snapshot": false,
+    "include_reports": false,
+    "include_training_data": false,
+    "include_roms_or_games": false,
+    "include_model_binaries": false
+  },
+  "forbidden_paths": [
+    "games/**",
+    "data/local_roms/**",
+    "data/public_benchmarks/**",
+    "data/external_benchmark_candidates/**",
+    "data/synthetic/**",
+    "reports/**",
+    "target/**",
+    ".venv*/**",
+    "checkpoints/materialized/**",
+    "*.pt",
+    "*.pth",
+    "*.ckpt",
+    "*.safetensors",
+    "*.onnx",
+    "*.bin",
+    "*.gb",
+    "*.gbc",
+    "*.gba",
+    "*.nds",
+    "*.z64",
+    "*.n64",
+    "*.iso",
+    "*.chd",
+    "*.cue"
+  ],
+  "providers": {
+    "github": {
+      "enabled": true,
+      "remote": "origin",
+      "branch": "current",
+      "push_on_accept": true,
+      "commit_manifest": true,
+      "manifest_root": "backup_manifests/accepted_candidates",
+      "commit_message_template": "backup: accepted candidate {checkpoint_id}",
+      "tag_on_accept": false,
+      "tag_prefix": "theseus-candidate/"
+    },
+    "google_drive": {
+      "enabled": false,
+      "queue_only_by_default": true,
+      "queue_path": "reports/google_drive_backup_queue.jsonl",
+      "folder_name": "Project Theseus Accepted Candidates",
+      "max_payload_bytes": 8388608,
+      "notes": "The local Python runner cannot call the Codex Google Drive connector directly. It writes a queue item and manifest; a future app connector worker can upload it."
+    }
+  },
+  "reports": {
+    "last": "reports/checkpoint_backup_last.json",
+    "history": "reports/checkpoint_backup_history.jsonl"
+  },
+  "update_offer": {
+    "enabled": true,
+    "report": "reports/update_offer_current.json",
+    "description": "Every accepted-candidate backup pass also emits an installable update offer tied to the promoted checkpoint."
+  },
+  "safety": {
+    "dry_run_default": true,
+    "never_commit_forbidden_paths": true,
+    "never_upload_roms_or_unlicensed_data": true,
+    "never_backup_unpromoted_candidate_as_accepted": true,
+    "external_inference_calls": 0
+  }
+}

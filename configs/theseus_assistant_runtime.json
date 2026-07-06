@@ -1,0 +1,163 @@
+{
+  "policy": "project_theseus_assistant_runtime_v0",
+  "purpose": "Canonical local assistant path for multi-turn Theseus interaction, VCM context, deterministic tool evidence, dogfood feedback, and practical code-task routing.",
+  "default_session_id": "local_assistant",
+  "checkpoint_id": "live",
+  "assistant_trace_schema": "configs/assistant_trace_schema.json",
+  "metadata_only_dogfood_feedback": true,
+  "raw_text_training_allowed": false,
+  "public_benchmark_training_allowed": false,
+  "external_inference_at_runtime_allowed": false,
+  "fallback_returns_allowed": false,
+  "refresh_context_by_default": true,
+  "procedural_memory_default_route": {
+    "enabled": true,
+    "report": "reports/procedural_memory_route_adoption.json",
+    "required_for_intents": [
+      "planning"
+    ],
+    "eligible_intents": [
+      "planning"
+    ],
+    "mode": "guarded_metadata_route_only",
+    "selection_mode": "route_binding_contract",
+    "required_runtime_consumer": "theseus_assistant_runtime",
+    "non_claims": [
+      "Procedural default routes are workflow compression, not learned generation.",
+      "Default route adoption does not support public transfer or model promotion claims.",
+      "Route use is local metadata routing only and must fail closed if the regression guard is absent."
+    ]
+  },
+  "context_refresh_commands": [
+    {
+      "id": "vcm_task_context_bridge",
+      "command": [
+        "python3",
+        "scripts/vcm_task_context_bridge.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "vcm_context_governor",
+      "command": [
+        "python3",
+        "scripts/vcm_context_governor_gate.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "deterministic_tool_registry",
+      "command": [
+        "python3",
+        "scripts/theseus_deterministic_tool_substrate.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "plan_compiler",
+      "command": [
+        "python3",
+        "scripts/theseus_plan_compiler.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "private_verifier_spine_smoke",
+      "command": [
+        "python3",
+        "scripts/code_lm_private_verifier.py",
+        "--spine-smoke"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "intent_routes": {
+    "chat": {
+      "assistant_lane": "chat_checkpoint",
+      "vcm_task_family": "operator_chat",
+      "runtime": "scripts/checkpoint_chat.py"
+    },
+    "code": {
+      "assistant_lane": "code_assistant",
+      "vcm_task_family": "code_training",
+      "practical_generator": "transformer_or_hybrid_structural_full_body_student",
+      "generator_entrypoint": "scripts/student_token_code_candidate_generator.py",
+      "verifier": "scripts/real_code_benchmark_graduation.py",
+      "symliquid_role": "matched_compute_discovery_comparator_not_default_survival_lane",
+      "private_probe": {
+        "enabled": true,
+        "id": "assistant_code_private_replay_probe",
+        "timeout_seconds": 180,
+        "command": [
+          "python3",
+          "scripts/private_candidate_replay_contract_audit_v1.py",
+          "--heldout",
+          "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
+          "--candidates",
+          "reports/strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1_candidates.jsonl",
+          "--candidate-task-scope",
+          "present",
+          "--family-filter",
+          "transformer_hybrid",
+          "--task-limit",
+          "8",
+          "--max-candidates-per-task",
+          "8",
+          "--out",
+          "reports/assistant_code_private_replay_probe.json",
+          "--markdown-out",
+          "reports/assistant_code_private_replay_probe.md"
+        ],
+        "out": "reports/assistant_code_private_replay_probe.json",
+        "markdown": "reports/assistant_code_private_replay_probe.md"
+      }
+    },
+    "tool": {
+      "assistant_lane": "tool_assistant",
+      "vcm_task_family": "operator_chat",
+      "tool_registry": "reports/deterministic_tool_registry.json",
+      "tool_evidence": {
+        "enabled": true,
+        "id": "assistant_deterministic_tool_evidence",
+        "timeout_seconds": 180,
+        "command": [
+          "python3",
+          "scripts/theseus_deterministic_tool_substrate.py",
+          "--run-smoke",
+          "--run-ablation",
+          "--out",
+          "reports/assistant_deterministic_tool_evidence.json",
+          "--markdown-out",
+          "reports/assistant_deterministic_tool_evidence.md",
+          "--registry-out",
+          "reports/assistant_deterministic_tool_registry.json",
+          "--trace-out",
+          "reports/assistant_deterministic_tool_trace.jsonl",
+          "--ablation-out",
+          "reports/assistant_deterministic_tool_ablation.json",
+          "--dogfood-out",
+          "reports/assistant_deterministic_tool_dogfood_events.jsonl",
+          "--loop-candidates-out",
+          "reports/assistant_deterministic_tool_loop_closure_candidates.json",
+          "--artifact-graph-out",
+          "reports/assistant_deterministic_tool_artifact_graph.json"
+        ],
+        "out": "reports/assistant_deterministic_tool_evidence.json",
+        "markdown": "reports/assistant_deterministic_tool_evidence.md",
+        "trace": "reports/assistant_deterministic_tool_trace.jsonl",
+        "ablation": "reports/assistant_deterministic_tool_ablation.json",
+        "artifact_graph": "reports/assistant_deterministic_tool_artifact_graph.json"
+      }
+    },
+    "planning": {
+      "assistant_lane": "planning_assistant",
+      "vcm_task_family": "autonomy_governance",
+      "planner": "scripts/theseus_plan_compiler.py"
+    }
+  },
+  "outputs": {
+    "report": "reports/theseus_assistant_runtime.json",
+    "markdown": "reports/theseus_assistant_runtime.md",
+    "conversation_events": "reports/theseus_assistant_conversation_events.jsonl"
+  }
+}

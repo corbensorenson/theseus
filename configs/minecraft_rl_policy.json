@@ -1,0 +1,76 @@
+{
+  "policy": "project_theseus_minecraft_rl_policy_v0",
+  "updated_utc": "2026-05-13",
+  "role": "licensed_local_minecraft_open_world_rl_and_player_coop_frontier",
+  "user_license": {
+    "required": true,
+    "user_reported_license_for_this_machine": true,
+    "attestation_note": "The user stated on 2026-05-13 that Minecraft is installed and licensed on this machine. Theseus still probes local runtime readiness and never stores launcher credentials."
+  },
+  "allowed_modes": [
+    "local_singleplayer_world",
+    "local_headless_or_loopback_harness",
+    "local_lan_server_with_explicit_human_approval",
+    "open_source_minecraft_like_bridge_worlds"
+  ],
+  "forbidden_modes": [
+    "public_server_autonomy_by_default",
+    "commercial_asset_download",
+    "credential_storage",
+    "external_model_gameplay_solver",
+    "autonomous_marketplace_or_account_actions"
+  ],
+  "local_install_paths": [
+    "%APPDATA%/.minecraft",
+    "%LOCALAPPDATA%/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang",
+    "%USERPROFILE%/AppData/Roaming/.minecraft"
+  ],
+  "runtime_contracts": {
+    "minerl": {
+      "role": "historical Minecraft RL task API and dataset reference",
+      "license_gate": "NOASSERTION upstream license metadata; metadata-only until compatibility is explicitly approved",
+      "requires_local_minecraft_license": true
+    },
+    "minedojo": {
+      "role": "open-ended Minecraft task and knowledge benchmark harness",
+      "requires_local_minecraft_license": true
+    },
+    "malmo": {
+      "role": "local Minecraft mission/control API for research tasks",
+      "requires_local_minecraft_license": true
+    },
+    "crafter": {
+      "role": "MIT Minecraft-like survival/crafting bridge that does not require commercial game assets",
+      "requires_local_minecraft_license": false
+    },
+    "craftax": {
+      "role": "fast JAX Minecraft-like survival/crafting bridge for scaled open-ended RL pressure",
+      "requires_local_minecraft_license": false
+    }
+  },
+  "training_contract": {
+    "teacher_role": "proposal_only_for_adapter_or_architecture_walls",
+    "student_solver": "local_theseus_model_and_local_controller_only",
+    "external_inference": "forbidden_except_teacher_governance",
+    "trace_outputs": [
+      "state_action_reward_done_jsonl",
+      "inventory_event_packets",
+      "goal_completion_packets",
+      "residual_clusters"
+    ],
+    "transfer_artifacts": [
+      "navigation_policy_prior",
+      "crafting_skill_schema",
+      "inventory_state_features",
+      "player_instruction_packet_schema",
+      "world_model_trace_capsule"
+    ]
+  },
+  "safety": {
+    "network": "forbidden_during_scoring_except_explicit_local_loopback_harness",
+    "credentials": "never_store_or_read_launcher_credentials",
+    "world_mutation": "use disposable local worlds only",
+    "player_coop": "human_visible_and_interruptible",
+    "external_inference_calls": 0
+  }
+}

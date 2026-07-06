@@ -1,0 +1,83 @@
+{
+  "policy": "project_theseus_neural_seed_experiment_policy_v0",
+  "purpose": "Define the first measured neural seed experiment without launching training, spending public calibration, or calling the teacher.",
+  "experiment_id": "neural_seed_symliquid_vs_matched_control",
+  "objective": "Measure whether a small SymLiquid-style proposer improves private residual code proposal quality over a parameter/compute-matched transformer control when both are constrained by the existing verifier, fanout, and STS harness.",
+  "default_execute_allowed": false,
+  "student_ready_default": false,
+  "data_contract": {
+    "allowed_train_sources": [
+      "private residual code curriculum",
+      "verified self-generated private traces",
+      "STS control rows",
+      "private transfer artifacts with no public solutions or tests"
+    ],
+    "allowed_eval_sources": [
+      "private heldout residual rows",
+      "private transfer matrix cards",
+      "adapter smoke reports with public scoring disabled"
+    ],
+    "forbidden_sources": [
+      "public benchmark prompts as training rows",
+      "public benchmark tests or solutions",
+      "hidden tests",
+      "teacher-generated rows without explicit operator unlock and retained manifest",
+      "uncertain-license bulk data"
+    ],
+    "public_calibration": "locked; one-shot only after private gate and operator unlock",
+    "teacher_distillation": "locked; not part of this spec run"
+  },
+  "matched_budget": {
+    "budget_id": "tiny_private_code_proposer_v0",
+    "parameter_match_rule": "Report estimated trainable parameter count for both arms and keep within +/-5 percent before any capability comparison is trusted.",
+    "compute_match_rule": "Use the same private row count, sequence/token budget, optimizer steps, batch size, seed list, and wall-clock cap for both arms; report any early-stop or backend divergence.",
+    "initial_caps": {
+      "max_train_rows": 512,
+      "max_eval_rows": 128,
+      "max_optimizer_steps": 2000,
+      "max_sequence_tokens": 256,
+      "max_wall_clock_minutes_per_arm": 60,
+      "seed_count": 3
+    }
+  },
+  "arms": [
+    {
+      "id": "symliquid_proposer",
+      "student_type": "small_liquid_or_ssm_code_lm",
+      "substrate": "SymLiquid continuous-state proposer",
+      "role": "candidate proposer only; verifier, fanout, parser masks, and STS context remain external gates",
+      "matched_budget_id": "tiny_private_code_proposer_v0"
+    },
+    {
+      "id": "matched_transformer_control",
+      "student_type": "small_transformer_code_lm",
+      "substrate": "minimal transformer decoder baseline",
+      "role": "candidate proposer only; same verifier, fanout, parser masks, and STS context",
+      "matched_budget_id": "tiny_private_code_proposer_v0"
+    }
+  ],
+  "measurement_contract": [
+    "same private train rows, eval rows, seeds, and STS on/off controls for both arms",
+    "same fanout count, parser mask, verifier, ranker, and acceptance policy",
+    "report accepted candidate rate, verifier pass rate, syntax pass rate, residual-family movement, regressions, wall-clock, memory, backend, and examples/sec",
+    "report STS-on and STS-off rows so STS benefit is visible and not confused with model capacity",
+    "no promotion, public calibration, or teacher distillation from this report alone"
+  ],
+  "macos_constraints": {
+    "apple_silicon": "Prefer MLX for tensor/proposer training and report MLX version, unified-memory pressure, thermal/battery state, and fallback reason if CPU is used.",
+    "intel_mac": "CPU/storage/operator only for this lane unless a separate non-MLX backend is explicitly implemented and profiled.",
+    "cross_platform": "Windows CUDA and Linux CPU/CUDA may run comparable arms later, but this first Mac spec must not assume CUDA on macOS."
+  },
+  "promotion_boundary": {
+    "neural_student_ready_requires": [
+      "both arms train under matched budget",
+      "both arms evaluate on the same private heldout rows",
+      "SymLiquid arm beats matched control on predeclared private metrics without worse regressions",
+      "external inference calls remain zero",
+      "teacher distillation remains locked unless separately operator-unlocked",
+      "public calibration remains locked until private gate passes"
+    ],
+    "model_growth_gate": "reports/model_growth_gate.json",
+    "teacher_distillation_gate": "reports/teacher_distillation_gate.json"
+  }
+}

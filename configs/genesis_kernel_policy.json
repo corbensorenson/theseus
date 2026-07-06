@@ -1,0 +1,132 @@
+{
+  "policy": "project_theseus_genesis_kernel_policy_v0",
+  "purpose": "Compile live Theseus/SparkStream evidence into a Genesis-style typed artifact graph so invention, training, governance, and release state become durable and auditable.",
+  "release_type": "self_hosting_internal_snapshot",
+  "principles": [
+    "human_intent_remains_sovereign",
+    "speculation_is_allowed_unlabeled_speculation_is_not",
+    "agents_operate_on_artifacts_not_vibes",
+    "successful_patterns_become_primitives_only_after_evidence",
+    "reality_feedback_updates_future_work"
+  ],
+  "source_reports": {
+    "frontier_policy": "reports/frontier_policy_status.json",
+    "candidate_gate": "reports/candidate_promotion_gate.json",
+    "benchmark_ledger": "reports/benchmark_ledger.json",
+    "residual_escrow": "reports/residual_escrow.json",
+    "benchmaxx_curriculum": "reports/benchmaxx_curriculum.json",
+    "model_growth_gate": "reports/model_growth_gate.json",
+    "architecture_governance": "reports/architecture_experiment_governance.json",
+    "code_residual_forge": "reports/code_residual_forge.json",
+    "code_transfer_artifacts": "reports/code_transfer_artifacts.json",
+    "code_frontier_rotation": "reports/code_frontier_rotation.json",
+    "local_code_repair_organism": "reports/local_code_repair_organism_source_livecodebench_seed14.json",
+    "self_edit_experiment_lane": "reports/self_edit_experiment_lane.json",
+    "long_horizon_memory_probe": "reports/long_horizon_memory_probe.json",
+    "token_superposition": "reports/token_superposition_training.json",
+    "loop_closure_harvester": "reports/loop_closure_harvester.json",
+    "loop_closure_tool_promoter": "reports/loop_closure_tool_promoter.json",
+    "tool_registry": "reports/tool_registry.json",
+    "hive_scheduler": "reports/hive_scheduler.json",
+    "performance_optimizer": "reports/performance_optimizer.json",
+    "resource_governor": "reports/resource_governor.json",
+    "training_profile": "reports/training_ratchet_profile_run.json",
+    "training_budget": "reports/training_budget_plan.json",
+    "teacher_oracle": "reports/teacher_oracle_last.json",
+    "reality_manipulator": "reports/reality_manipulator.json",
+    "autonomy_watchdog": "reports/autonomy_watchdog.json",
+    "sparkstream_status": "reports/sparkstream_status.json"
+  },
+  "required_reports": [
+    "frontier_policy",
+    "candidate_gate",
+    "benchmark_ledger",
+    "residual_escrow",
+    "benchmaxx_curriculum",
+    "model_growth_gate",
+    "architecture_governance",
+    "code_residual_forge",
+    "code_transfer_artifacts",
+    "local_code_repair_organism",
+    "self_edit_experiment_lane",
+    "long_horizon_memory_probe",
+    "tool_registry"
+  ],
+  "core_primitives": [
+    {
+      "name": "Artifact Graph",
+      "primitive_type": "architecture",
+      "summary": "Typed, addressable artifacts and edges preserve invention lineage."
+    },
+    {
+      "name": "Claim Ledger",
+      "primitive_type": "epistemic",
+      "summary": "Truth-bearing claims carry support state, risk, evidence, objections, and usage."
+    },
+    {
+      "name": "Critique Tribunal",
+      "primitive_type": "workflow",
+      "summary": "Open objections survive the conversation and must be resolved, waived, or disclosed."
+    },
+    {
+      "name": "Patch-Based AI Labor",
+      "primitive_type": "agent",
+      "summary": "Autonomous changes remain bounded by proposals, patches, tests, and release gates."
+    },
+    {
+      "name": "Release Manifest",
+      "primitive_type": "release",
+      "summary": "Every release records included artifacts, claims, limitations, gates, and feedback plans."
+    },
+    {
+      "name": "Artifact Debt",
+      "primitive_type": "governance",
+      "summary": "Unsupported claims, open critiques, orphan artifacts, and unmeasured deployments become visible debt."
+    },
+    {
+      "name": "Reality Feedback Loop",
+      "primitive_type": "evaluation",
+      "summary": "Benchmarks, deployments, and user outcomes update primitive trust and future workflow choices."
+    },
+    {
+      "name": "Reality Manipulator World Kernel",
+      "primitive_type": "architecture",
+      "summary": "Raw intent is compiled into eight-limb spells, portal worlds, artifacts, claims, critiques, compile targets, release gates, residuals, and feedback plans."
+    },
+    {
+      "name": "Grimoire Spell Contract",
+      "primitive_type": "interface",
+      "summary": "Structured commands use Role, Objective, Context, Constraints, Procedure, Output Contract, Verification, and Failure Behavior so vague intent becomes auditable work."
+    },
+    {
+      "name": "Code Residual Forge",
+      "primitive_type": "workflow",
+      "summary": "Programming benchmark failures are classified into reusable repair traces, synthesized tests, transfer artifacts, and rotation hints before model growth."
+    },
+    {
+      "name": "Local Code Repair Organism",
+      "primitive_type": "workflow",
+      "summary": "Code pressure runs consume transfer artifacts through local candidate generation, sandbox tests, patch traces, residual classification, and heredity deltas."
+    },
+    {
+      "name": "Bounded Self-Edit Experiment Lane",
+      "primitive_type": "governance",
+      "summary": "Residual clusters become small source-patch experiments with verification and rollback notes instead of broad unsupervised self-modification."
+    },
+    {
+      "name": "Long-Horizon Memory Probe",
+      "primitive_type": "evaluation",
+      "summary": "Compacted autonomy traces are tested for goal recall, fact precision, decoy rejection, and next-action continuity."
+    }
+  ],
+  "release_gates": [
+    "source_reports_loaded",
+    "claim_ledger_written",
+    "critique_log_written",
+    "primitive_candidates_written",
+    "release_manifest_written",
+    "feedback_plan_written",
+    "high_risk_unsupported_claims_accounted",
+    "candidate_promotion_not_passing_with_missing_gates"
+  ]
+}

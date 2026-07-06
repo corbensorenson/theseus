@@ -1,0 +1,43 @@
+{
+  "policy": "sparkstream_arm_lifecycle_policy_v0",
+  "mode": "report_only",
+  "protected_arms": [
+    "head_router",
+    "safety_reflex_arm"
+  ],
+  "safe_auto_apply": false,
+  "allowed_without_teacher": [
+    "refresh_metrics",
+    "monitor_unused_arm",
+    "queue_register_unknown_arm"
+  ],
+  "requires_teacher_or_human_review": [
+    "split_arm",
+    "merge_arms",
+    "deprecate_arm",
+    "change_permission_tier",
+    "increase_runtime_tier"
+  ],
+  "requires_human_approval": [
+    "delete_arm",
+    "grant_network",
+    "grant_external_inference",
+    "grant_high_risk_side_effects"
+  ],
+  "split_thresholds": {
+    "bloat_index": 20,
+    "watch_residual_count": 6,
+    "watch_bloat_index": 15
+  },
+  "deprecation_thresholds": {
+    "min_unused_real_trace_window": 20,
+    "low_reliability": 0.45
+  },
+  "teacher_escalation": {
+    "high_priority_kinds": [
+      "split_arm",
+      "register_arm",
+      "deprecate_arm"
+    ]
+  }
+}

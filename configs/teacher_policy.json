@@ -1,0 +1,102 @@
+{
+  "policy": "sparkstream_teacher_oracle_v0",
+  "provider": "codex_cli",
+  "model": "gpt-5.5",
+  "reasoning_effort": "xhigh",
+  "default_mode": "proposal",
+  "proposal_sandbox": "read-only",
+  "apply_sandbox": "workspace-write",
+  "approval_policy": "never",
+  "timeout_seconds": 1800,
+  "codex_command": "codex",
+  "codex_command_mirror": "C:/Users/corbe/.codex/external-bin/codex.exe",
+  "output_schema": "configs/teacher_response_schema.json",
+  "log_path": "reports/teacher_calls.jsonl",
+  "request_queue": "reports/teacher_request_queue.jsonl",
+  "queue_last_path": "reports/teacher_queue_last.json",
+  "last_message_path": "reports/teacher_last_message.md",
+  "budget_block_path": "reports/teacher_budget_last.json",
+  "preserve_last_completed_on_queue": true,
+  "preserve_last_completed_on_budget_block": true,
+  "budget": {
+    "max_calls_per_cycle": 1,
+    "max_calls_per_day": "unlimited",
+    "cooldown_seconds": 0,
+    "critical_cooldown_seconds": 0,
+    "subscription_budget_hint": {
+      "source": "user_codex_subscription",
+      "posture": "Use teacher calls sparingly, but do not let stale proposal-only budget gates block architecture-wall diagnosis while real training would otherwise continue blind.",
+      "hard_limits": [
+        "proposal-only guidance",
+        "no benchmark answers",
+        "no hidden tests",
+        "no teacher apply mode",
+        "local verification decides promotion"
+      ]
+    },
+    "critical_reasons_bypass_cooldown": [
+      "attd_maintenance",
+      "architecture_wall",
+      "bigcodebench_execution_wall",
+      "benchmark_frontier_design",
+      "frontier_exhausted"
+    ],
+    "max_critical_calls_per_day": "unlimited",
+    "reason_overrides": {
+      "architecture_wall": {
+        "max_calls_per_day": "unlimited",
+        "max_critical_calls_per_day": "unlimited",
+        "critical_cooldown_seconds": 0
+      },
+      "bigcodebench_execution_wall": {
+        "max_calls_per_day": "unlimited",
+        "max_critical_calls_per_day": "unlimited",
+        "critical_cooldown_seconds": 0
+      }
+    },
+    "blocked_log_cooldown_seconds": 900,
+    "requires_local_wall_evidence": true,
+    "proposal_only_no_distillation": false,
+    "distillation_training_enabled": true,
+    "apply_mode_enabled": false,
+    "distillation_training_policy": {
+      "policy_file": "configs/teacher_distillation_policy.json",
+      "gate_report": "reports/teacher_distillation_gate.json",
+      "default_state": "governed_training_enabled",
+      "allowed_only_through_gate": true,
+      "runtime_serving_external_tokens": "forbidden"
+    }
+  },
+  "allowed_reasons": [
+    "attd_maintenance",
+    "architecture_wall",
+    "bigcodebench_execution_wall",
+    "benchmark_frontier_design",
+    "frontier_exhausted",
+    "residual_conflict",
+    "promotion_gate_blocked",
+    "user_requested_benchmark",
+    "safety_or_governance_uncertainty",
+    "checkpoint_chat_escalation"
+  ],
+  "teacher_prompt_contract": {
+    "must_return_json": true,
+    "must_include_reason_specific_intent": true,
+    "must_include_compact_wall_packet": true,
+    "must_reference_local_evidence": true,
+    "must_acknowledge_anti_goals": true,
+    "must_define_verification_steps": true,
+    "must_define_promotion_gates": true,
+    "must_recommend_one_small_experiment": true,
+    "must_not_claim_training_was_run": true,
+    "must_not_emit_training_rows": false,
+    "must_not_emit_training_rows_in_proposal_mode": true,
+    "may_emit_distillation_training_row_in_distillation_mode": true,
+    "must_not_emit_benchmark_answers_or_templates": true,
+    "must_keep_public_data_calibration_only": false,
+    "must_keep_public_eval_payloads_heldout": true,
+    "must_keep_teacher_proposal_only": false,
+    "must_route_training_distillation_to_governed_gate": true,
+    "must_not_use_network_unless_requested": true
+  }
+}

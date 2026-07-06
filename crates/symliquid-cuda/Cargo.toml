@@ -1,0 +1,15 @@
+[package]
+name = "symliquid-cuda"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Optional CUDA backend surface for SymLiquid FEP-Net."
+
+[dependencies]
+cudarc = { version = "0.18", default-features = false, features = ["std", "driver", "nvrtc", "dynamic-loading", "cuda-version-from-build-system"], optional = true }
+rand = { workspace = true }
+symliquid-core = { workspace = true }
+
+[features]
+default = []
+cuda = ["dep:cudarc"]

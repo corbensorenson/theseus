@@ -1,0 +1,23 @@
+# Public baseline scores for comparison only.
+#
+# Do not call external model APIs from the SymLiquid benchmark workflow.
+# If another team/model has already published a score on the same benchmark,
+# record the citation, benchmark version, score, and date here.
+
+[metadata]
+current_as_of = "2026-05-10"
+policy = "public scores may be referenced; proprietary or third-party inference must not be run as part of SymLiquid evaluation"
+
+[[baseline]]
+name = "placeholder_babylm_public_score"
+benchmark = "BabyLM official evaluation"
+score = "fill_from_public_leaderboard"
+source = "fill_with_public_url"
+notes = "Use only when SymLiquid runs the same official evaluation contract."
+
+[[baseline]]
+name = "placeholder_parameter_golf_public_score"
+benchmark = "Parameter Golf FineWeb validation BPB"
+score = "fill_from_public_leaderboard"
+source = "fill_with_public_url"
+notes = "Use only when SymLiquid runs the same artifact/training/eval contract."

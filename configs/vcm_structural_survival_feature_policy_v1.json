@@ -1,0 +1,77 @@
+{
+  "action": "enable_vcm_for_promoted_transformer_structural_path",
+  "audit_only_features": [
+    "vcm_context.selected_context_hash",
+    "vcm_context.selected_page_titles",
+    "vcm_context.selected_page_sources"
+  ],
+  "created_utc": "2026-06-19T23:47:10.191495+00:00",
+  "default_serving_allowed": false,
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "feature_contract": "project_theseus_structural_action_vcm_feature_contract_v2",
+  "model_visible_features": [
+    "vcm_context.task_family_id",
+    "vcm_context.selected_page_lanes",
+    "vcm_context.retrieval_confidence_bucket",
+    "vcm_context.task_family_memory_lane",
+    "vcm_context.selected_page_count"
+  ],
+  "policy": "project_theseus_vcm_structural_survival_feature_policy_v1",
+  "promoted_transformer_vcm_mode": "on",
+  "public_calibration_allowed": false,
+  "public_training_rows": 0,
+  "rationale": "VCM-on is neutral or better for transformer structural-only and augmented scores.",
+  "symliquid_discovery_vcm_mode": "on",
+  "symliquid_style": {
+    "summary": {
+      "augmented_delta": 0.005208,
+      "augmented_off": 0.901042,
+      "augmented_on": 0.90625,
+      "baseline_delta": 0.0,
+      "baseline_off": 0.744792,
+      "baseline_on": 0.744792,
+      "compatibility_rerank": "on",
+      "fallback_return_rows_on": 0,
+      "rank_pool_size": 48,
+      "structural_only_delta": 0.020833,
+      "structural_only_off": 0.869792,
+      "structural_only_on": 0.890625,
+      "syntax_pass_rate_on": 1.0
+    }
+  },
+  "teacher_used": false,
+  "transformer_control": {
+    "disabled_families": [
+      "contract_blind_unit_0206",
+      "contract_blind_unit_0208",
+      "merge_intervals_then_interval_coverage",
+      "parse_signed_ints_then_longest_even_run"
+    ],
+    "enabled_families": [
+      "action_memory_rollup",
+      "contract_blind_unit_0009",
+      "contract_blind_unit_0040",
+      "contract_blind_unit_0045",
+      "contract_blind_unit_0110",
+      "contract_blind_unit_0127",
+      "contract_blind_unit_0158",
+      "contract_blind_unit_0174"
+    ],
+    "summary": {
+      "augmented_delta": 0.026042,
+      "augmented_off": 0.859375,
+      "augmented_on": 0.885417,
+      "baseline_delta": 0.0,
+      "baseline_off": 0.796875,
+      "baseline_on": 0.796875,
+      "compatibility_rerank": "on",
+      "fallback_return_rows_on": 0,
+      "rank_pool_size": 48,
+      "structural_only_delta": 0.020834,
+      "structural_only_off": 0.848958,
+      "structural_only_on": 0.869792,
+      "syntax_pass_rate_on": 1.0
+    }
+  }
+}

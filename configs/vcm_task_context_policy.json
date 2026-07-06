@@ -1,0 +1,124 @@
+{
+  "policy": "project_theseus_vcm_task_context_policy_v1",
+  "purpose": "Make Virtual Context Memory (VCM) the shared memory/context substrate for every major Theseus task family, not a sidecar benchmark lane.",
+  "local_only": true,
+  "external_inference_calls": 0,
+  "teacher_solving_calls": 0,
+  "public_training_rows_allowed": false,
+  "fallback_returns_allowed": false,
+  "runtime_profile_claimed": false,
+  "defaults": {
+    "max_selected_pages": 12,
+    "min_selected_pages": 3,
+    "include_protected_minimum": true,
+    "require_snapshot": true,
+    "require_training_admission_green": true,
+    "require_vcm_probe_green_or_yellow": true,
+    "write_back_event_kinds": [
+      "accepted",
+      "missed",
+      "ignored",
+      "operator"
+    ]
+  },
+  "required_guards": [
+    "policy_boundaries",
+    "snapshot_boundaries",
+    "training_admission",
+    "public_calibration_firewall",
+    "teacher_runtime_firewall",
+    "fallback_return_firewall",
+    "fault_visibility",
+    "usage_writeback"
+  ],
+  "task_families": [
+    {
+      "id": "operator_chat",
+      "label": "Operator Chat And Daily Use",
+      "priority": "high",
+      "query_terms": ["personality", "belief", "project state", "launch readiness", "operator", "checkpoint", "memory", "context"],
+      "preferred_lanes": ["policy", "constraints_corrections", "task_state", "evidence"],
+      "required_writebacks": ["accepted", "missed", "ignored"],
+      "notes": "User-facing chat must receive VCM state, personality context, current project state, and correction-memory writeback."
+    },
+    {
+      "id": "autonomy_governance",
+      "label": "Autonomy Loop And Governance",
+      "priority": "high",
+      "query_terms": ["autonomy", "launch readiness", "coherence", "governance", "candidate promotion", "frontier", "watchdog"],
+      "preferred_lanes": ["policy", "constraints_corrections", "task_state", "evidence"],
+      "required_writebacks": ["operator", "accepted", "missed"],
+      "notes": "Autonomy cycles must load VCM before deciding task pressure, teacher use, training, or promotion state."
+    },
+    {
+      "id": "code_training",
+      "label": "Code Repair, Decoder, And Training",
+      "priority": "high",
+      "query_terms": ["training", "residual", "code", "transfer_code_repair", "candidate promotion", "training data", "decoder"],
+      "preferred_lanes": ["task_state", "evidence", "constraints_corrections"],
+      "required_writebacks": ["accepted", "missed"],
+      "notes": "Training and decoder work may use VCM as context only; training rows still require the VCM training-admission bridge."
+    },
+    {
+      "id": "public_calibration",
+      "label": "Public Calibration And Anti-Cheat Review",
+      "priority": "high",
+      "query_terms": ["public", "benchmark", "calibration", "long context", "transfer_long_context_recovery", "benchmark ledger", "no fallback"],
+      "preferred_lanes": ["policy", "constraints_corrections", "evidence", "task_state"],
+      "required_writebacks": ["operator"],
+      "notes": "Public benchmark content is calibration-only; VCM may expose aggregate/hashes/categories, never public training rows."
+    },
+    {
+      "id": "teacher_governance",
+      "label": "Teacher Proposal Governance",
+      "priority": "high",
+      "query_terms": ["teacher", "external inference", "self_evolution_governance", "teacher_self_edit", "distillation", "proposal"],
+      "preferred_lanes": ["policy", "constraints_corrections", "evidence"],
+      "required_writebacks": ["operator", "missed"],
+      "notes": "Teacher use remains architecture/proposal only unless governed distillation gates explicitly allow training-time use."
+    },
+    {
+      "id": "hive_storage_routing",
+      "label": "Hive Nodes, Storage, And File Routing",
+      "priority": "medium",
+      "query_terms": ["hive", "storage", "scheduler", "resource", "node", "artifact", "file"],
+      "preferred_lanes": ["task_state", "evidence"],
+      "required_writebacks": ["accepted", "missed", "ignored"],
+      "min_selected_pages": 1,
+      "notes": "Hive/storage coverage is still thin in the current VCM index; this task family must stay visible until node/storage reports become first-class VCM pages."
+    },
+    {
+      "id": "voice_spatial",
+      "label": "Voice, Spatial, And Room-Aware Operation",
+      "priority": "medium",
+      "query_terms": ["voice", "spatial", "room", "native_voice", "speaker", "microphone", "operator"],
+      "preferred_lanes": ["task_state", "evidence", "architecture_memory"],
+      "required_writebacks": ["accepted", "missed", "ignored"],
+      "min_selected_pages": 2,
+      "notes": "Voice-following and spatial operation should consume VCM summaries and capability pages, not raw always-on audio/video."
+    },
+    {
+      "id": "runtime_mlx_metal",
+      "label": "Runtime, MLX, Metal, And Accelerator Routing",
+      "priority": "high",
+      "query_terms": ["runtime", "mlx", "metal", "mac", "legacy port", "scheduler", "resource", "training ratchet"],
+      "preferred_lanes": ["constraints_corrections", "task_state", "evidence", "architecture_memory"],
+      "required_writebacks": ["accepted", "missed"],
+      "notes": "Mac runtime work can use semantic materialization descriptors, but VCM-Runtime native KV/cache behavior remains not claimed."
+    },
+    {
+      "id": "docs_project_state",
+      "label": "Documentation And Project State",
+      "priority": "high",
+      "query_terms": ["project state", "context and virtual context memory", "documentation", "replication", "operating charter"],
+      "preferred_lanes": ["policy", "architecture_memory", "task_state"],
+      "required_writebacks": ["operator"],
+      "notes": "Docs should reflect the same VCM task-context contract used by runtime gates."
+    }
+  ],
+  "outputs": {
+    "report": "reports/vcm_task_context_bridge.json",
+    "markdown": "reports/vcm_task_context_bridge.md",
+    "contexts": "reports/vcm_task_contexts.json"
+  }
+}

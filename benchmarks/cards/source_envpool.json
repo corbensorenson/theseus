@@ -1,0 +1,67 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_envpool",
+  "source_id": "envpool",
+  "name": "sail-sg/envpool",
+  "category": "rl_environment",
+  "priority": "medium",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/sail-sg/envpool",
+  "license_spdx": "apache-2.0",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "gymnasium_or_native_rl_adapter",
+  "runner_family": "rl_local",
+  "runtime_tier": "E3",
+  "risk_tier": "medium",
+  "capability_target": "open-ended RL control and planning",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "env_id": "local environment id",
+    "seed": "deterministic seed",
+    "policy": "local learner only"
+  },
+  "output_contract": {
+    "reward": "episode score",
+    "steps": "count",
+    "events": "event trace",
+    "residuals": "failure clusters"
+  },
+  "smoke_steps": [
+    "metadata_scan",
+    "package_import_or_build_probe",
+    "batched_cartpole_smoke"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "reset_step_smoke_passes",
+    "deterministic_seed_recorded"
+  ],
+  "contamination_policy": "Record source provenance and keep generated frontiers separate from training samples.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

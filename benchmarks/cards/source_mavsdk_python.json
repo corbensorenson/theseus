@@ -1,0 +1,73 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_mavsdk_python",
+  "source_id": "mavsdk_python",
+  "name": "mavlink/MAVSDK-Python",
+  "category": "drone_control_api",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/mavlink/MAVSDK-Python",
+  "license_spdx": "bsd-3-clause",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "drone_control_api_adapter",
+  "runner_family": "drone_sitl_control",
+  "runtime_tier": "E4",
+  "risk_tier": "critical",
+  "capability_target": "governed MAVLink/MAVSDK/PX4 control interfaces with simulator-first safety gates",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "endpoint": "simulator or loopback endpoint",
+    "commands": "arm/disarm/takeoff/position/attitude setpoints",
+    "approval": "required for any live hardware target"
+  },
+  "output_contract": {
+    "connection": "sim-only connection health",
+    "rate": "command/heartbeat timing",
+    "safety": "approval/failsafe status"
+  },
+  "smoke_steps": [
+    "mavsdk_import",
+    "no_live_endpoint_by_default",
+    "heartbeat_and_command_rate_contract"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "no_live_endpoint_by_default",
+    "real_hardware_requires_human_approval",
+    "geofence_and_emergency_stop_policy_present",
+    "no_external_inference_in_control_loop"
+  ],
+  "contamination_policy": "Treat public simulator tasks as calibration until private tracks, held-out seeds, and race-specific course variants are generated.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E4",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "open_simulator_udp_loopback",
+      "write_drone_event_logs"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "forbidden_without_explicit_human_approval",
+    "approval_required_for": [
+      "arm_or_takeoff_command",
+      "destructive",
+      "financial",
+      "hardware_in_loop",
+      "legal",
+      "live_drone_endpoint",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

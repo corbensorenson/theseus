@@ -1,0 +1,90 @@
+# External benchmark/workspace targets for SymLiquid transfer.
+#
+# These point at local research workspaces on this machine. Paths are absolute
+# because the workspaces are intentionally separate projects with their own
+# tooling, data caches, and git histories.
+
+[metadata]
+current_as_of = "2026-05-11"
+purpose = "Use prior BabyLM and Parameter Golf work as serious language-model efficiency benchmarks for SymLiquid-derived architectures, while keeping external knowledge sources gated by license, robots, and provenance review."
+
+[babylm_2026]
+workspace = "C:/Users/corbe/Documents/babylm-candidate"
+official_eval_repo = "C:/Users/corbe/Documents/babylm-candidate/external/babylm-eval"
+official_eval_commit = "467793f"
+primary_docs = [
+  "README.md",
+  "BABYLM_2026_COMPETITION_GUIDE.md",
+  "GOLF_TO_BABYLM_TRANSFER_REVIEW.md",
+  "docs/WINNING_DECODER_RECIPE.md",
+  "docs/CANDIDATE_STRATEGY.md",
+  "docs/EVALUATION_SETUP.md",
+  "ledgers/candidate_registry.csv",
+]
+tracks = [
+  "strict_small_10m_words",
+  "strict_100m_words",
+  "multilingual_eng_nld_zho",
+]
+local_best_notes = "Stable local floor appears to be the C120/C130/C135 family around fastavg 53.54 and full-available zero-shot 52.48; C153 has higher single-seed WordPiece signal but failed seed validation."
+symliquid_transfer_lanes = [
+  "vsa_entity_slot_memory",
+  "liquid_or_route_aware_recurrence",
+  "reservoir_or_depth_reuse_hidden_expansion",
+  "kan_lite_train_only_morph_grammar_auxiliary",
+  "fep_residual_driven_masking_or_curriculum",
+]
+
+[parameter_golf]
+workspace = "C:/Users/corbe/Documents/golf"
+official_control = "C:/Users/corbe/Documents/golf/control/parameter-golf-official-main"
+submission_clean = "C:/Users/corbe/Documents/golf/submission-clean"
+primary_docs = [
+  "what_we_have_learned.md",
+  "task_list.md",
+  "control/parameter-golf-official-main/README.md",
+  "submission-clean/records",
+]
+score = "bits_per_byte_on_fineweb_validation"
+constraints = [
+  "16MB artifact",
+  "10 minutes on 8xH100 SXM for official track",
+  "post-quantization int8+zlib roundtrip score",
+]
+symliquid_transfer_lanes = [
+  "route_aware_recurrence",
+  "token_interface_before_width",
+  "artifact_and_residual_accounting",
+  "quantization_aware_export_honesty",
+  "promotion_ladders",
+]
+
+[grokipedia]
+source_type = "knowledge_source"
+url = "https://grokipedia.com/"
+terms_url = "https://x.ai/legal/terms-of-service/"
+status = "lookup_only_pending_terms_robots_license_audit"
+added_utc = "2026-05-11T08:55:00Z"
+requested_by = "user"
+intended_uses = [
+  "interactive_lookup",
+  "claim_checking",
+  "topic_seed_generation",
+  "benchmark_candidate_discovery",
+  "manual_distillation_notes_with_provenance",
+]
+blocked_uses_without_permission_or_license_audit = [
+  "bulk_scraping",
+  "automated_corpus_download",
+  "training_on_copied_pages",
+  "model_distillation_from_output",
+  "circumventing_rate_limits_or_robots",
+]
+required_gates = [
+  "robots_txt_checked",
+  "terms_reviewed",
+  "per_page_or_dataset_license_recorded",
+  "provenance_logged",
+  "human_approval_for_training_use",
+]
+notes = "Treat as a lookup and benchmark-discovery candidate, not a bulk training source. xAI consumer terms cover Grokipedia and restrict scraping, distilling model data, and using the service/output to develop competing models without permission."

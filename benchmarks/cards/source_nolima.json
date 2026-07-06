@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_nolima",
+  "source_id": "nolima",
+  "name": "Adobe Research NoLiMa",
+  "category": "long_context_memory_benchmark",
+  "priority": "high",
+  "status": "blocked_noncommercial_license",
+  "url": "https://github.com/adobe-research/NoLiMa",
+  "paper_url": "https://arxiv.org/abs/2502.05167",
+  "license_spdx": "adobe-research-license-noncommercial",
+  "license_allowed": false,
+  "decision": "queued_for_metadata_and_private_analogue_only",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "high",
+  "capability_target": "Lexical-disconnect long-context retrieval where the question and evidence intentionally share little or no literal overlap.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "context_recovery",
+  "input_contract": {
+    "metadata": "official source card plus private analogue manifest",
+    "context": "long private distractor contexts with explicit alias/cue bridge facts",
+    "query": "minimal-overlap lookup question",
+    "evidence": "alias bridge row plus answer row",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "exact local answer match",
+    "evidence_precision_recall": "alias bridge and answer-row support",
+    "abstention": "unknown alias or missing bridge rejection",
+    "latency": "local evidence selection and compaction cost",
+    "residuals": "alias miss, wrong bridge, answer extraction failure, or stale cue use"
+  },
+  "smoke_steps": [
+    "record official repository and non-commercial license",
+    "block public payload staging under current license policy",
+    "run private lexical-disconnect analogue without public payloads"
+  ],
+  "promotion_gates": [
+    "public_payload_not_staged_until_license_allowed",
+    "private_analogue_suite_present",
+    "no_public_training_rows",
+    "no_external_inference",
+    "no_fallback_returns",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "NoLiMa public data is calibration-only and currently not staged because the repository license prohibits commercial use. Private analogues may mirror failure categories only, never public needles, haystacks, prompts, answers, or templates.",
+  "regression_policy": "If private lexical-disconnect recovery is mastered, keep it as a regression lane and leave public NoLiMa queued until license admission changes.",
+  "permission_envelope": {
+    "memory": "private analogue contexts only",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving. Teacher may only help diagnose private adapter bugs through governed training lanes.",
+  "external_inference_calls": 0
+}

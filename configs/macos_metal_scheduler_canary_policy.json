@@ -1,0 +1,70 @@
+{
+  "policy": "project_theseus_macos_metal_scheduler_canary_policy_v0",
+  "purpose": "Allow exactly one reviewed local train-rollout-metal scheduler canary while keeping production routing disabled.",
+  "command": "train-rollout-metal",
+  "task_kind": "train_rollout_metal_local_canary",
+  "parity_for": "train-rollout-cuda",
+  "backend": "apple_metal",
+  "route_state": "reviewed_local_canary_only",
+  "local_only": true,
+  "remote_task_submitted": false,
+  "registers_worker_chunk": false,
+  "production_scheduler_routing_enabled": false,
+  "does_not_change_hive_remote_task_scope": true,
+  "no_arbitrary_remote_execution": true,
+  "bounds": {
+    "cases_per_task": 12,
+    "epochs": 3,
+    "samples_per_launch": 4,
+    "rollout_batch": 4,
+    "obs_dim": 5,
+    "hidden_dim": 8,
+    "reservoir_dim": 10,
+    "hv_dim": 24,
+    "seq_len": 5,
+    "output_dim": 5,
+    "tolerance": 0.0005,
+    "max_kernel_launches": 192
+  },
+  "requires": {
+    "macos_metal_route_policy_present": true,
+    "macos_metal_scheduler_dry_run_ok": true,
+    "macos_metal_parity_ladder_ok": true,
+    "macos_mlx_parity_audit_counts_ladder": true,
+    "canonical_readout_artifact": true,
+    "scheduler_routing_enabled_in_report": false,
+    "model_promotion_allowed": false,
+    "train_rollout_parity_claim_allowed": false,
+    "native_hot_loop_parity_claim_allowed": false,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_training_rows": 0,
+    "no_fallback_returns": true
+  },
+  "required_reports": [
+    "reports/macos_metal_scheduler_dry_run.json",
+    "reports/macos_metal_parity_ladder.json",
+    "reports/macos_mlx_parity_audit.json"
+  ],
+  "output_reports": [
+    "reports/macos_metal_scheduler_canary.json",
+    "reports/macos_metal_scheduler_canary_train_report.json",
+    "reports/macos_metal_scheduler_canary_readout_artifact.json"
+  ],
+  "rollback_guardrails": [
+    "canary_preflight_failure",
+    "artifact_equivalence_failure",
+    "external_inference_or_teacher_or_public_training_rows",
+    "fallback_return_detected",
+    "promotion_or_parity_claim_enabled",
+    "scheduler_route_enabled_without_operator_review",
+    "remote_task_submission_detected",
+    "worker_scope_changed"
+  ],
+  "next_allowed_step": "operator-reviewed policy change only; do not enable production routing from this canary automatically",
+  "notes": [
+    "This policy exists to measure local scheduler canary behavior, not to route production work.",
+    "The canary task kind must remain local-only and must not be added to Hive remote worker task scopes.",
+    "A GREEN canary is still not a full CUDA-equivalent parity claim."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "policy": "project_theseus_macos_metal_token_superposition_route_policy_v0",
+  "purpose": "Declare the approved bounded local production route contract for train-token-superposition-metal.",
+  "command": "train-token-superposition-metal",
+  "parity_for": "train-token-superposition-cuda",
+  "backend": "apple_metal",
+  "route_state": "approved_bounded_local_production",
+  "bounded_ladder_route_enabled": true,
+  "production_scheduler_routing_enabled": true,
+  "does_not_change_hive_remote_task_scope": true,
+  "no_arbitrary_remote_execution": true,
+  "allowed_input_scope": [
+    "data/training_data/high_transfer/private_train"
+  ],
+  "requires": {
+    "train_token_superposition_metal_contract_ok": true,
+    "scheduler_routing_enabled_in_report": false,
+    "model_promotion_allowed": false,
+    "train_token_superposition_parity_claim_allowed": false,
+    "native_hot_loop_parity_claim_allowed": false,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_training_rows": 0,
+    "no_fallback_returns": true,
+    "public_calibration_not_run": true
+  },
+  "required_reports": [
+    "reports/token_superposition_metal_training.json",
+    "reports/macos_metal_token_superposition_ladder.json",
+    "reports/macos_mlx_parity_audit.json"
+  ],
+  "rollback_guardrails": [
+    "ladder_tier_failure",
+    "public_or_non_private_input_detected",
+    "external_inference_or_teacher_or_public_training_rows",
+    "fallback_return_detected",
+    "promotion_or_parity_claim_enabled",
+    "scheduler_route_enabled_without_operator_review",
+    "remote_task_submission_detected",
+    "worker_scope_changed"
+  ],
+  "next_allowed_step": "bounded_local_production_routing_allowed_for_this_surface_only",
+  "notes": [
+    "This is an approved local production route, not a parity claim.",
+    "The scheduler may route bounded local token-superposition work to Metal under the production-route approval artifact.",
+    "Do not train on public benchmark prompts, tests, hidden tests, solutions, traces, or answer templates."
+  ]
+}

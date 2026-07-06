@@ -1,0 +1,239 @@
+{
+  "policy": "project_theseus_deterministic_tool_substrate_v1",
+  "purpose": "Registry-owned local deterministic solver/search/tool substrate for VIEA execution spine tasks.",
+  "schema_version": "0.1",
+  "strict_no_fallback_returns": true,
+  "public_benchmark_training_allowed": false,
+  "external_inference_allowed": false,
+  "tool_timeout_seconds": {
+    "logic.lean_check": 8
+  },
+  "tool_cards": [
+    {
+      "id": "math.sympy_exact",
+      "capability": ["exact_symbolic_math", "simplification", "algebraic_solving"],
+      "trust_tier": "deterministic_verified_local",
+      "cost_tier": "low",
+      "dependency": "sympy",
+      "failure_behavior": "emit TOOL_UNAVAILABLE, UNSOLVED, or TOOL_FAULT; never synthesize an answer"
+    },
+    {
+      "id": "math.numeric_interval",
+      "capability": ["interval_arithmetic", "numeric_bounds"],
+      "trust_tier": "deterministic_verified_local",
+      "cost_tier": "low",
+      "dependency": "python_decimal",
+      "failure_behavior": "emit UNSOLVED or TOOL_FAULT; never collapse uncertainty into a point answer"
+    },
+    {
+      "id": "math.linear_algebra",
+      "capability": ["linear_solve", "matrix_rank", "numeric_verification"],
+      "trust_tier": "deterministic_verified_local",
+      "cost_tier": "low",
+      "dependency": "numpy",
+      "failure_behavior": "emit TOOL_UNAVAILABLE, UNSOLVED, or TOOL_FAULT; never fabricate a vector"
+    },
+    {
+      "id": "math.numeric_verify",
+      "capability": ["numeric_verification", "root_finding", "bounded_float_check", "scipy_cross_check"],
+      "trust_tier": "deterministic_verified_local",
+      "cost_tier": "low",
+      "dependency": "scipy",
+      "failure_behavior": "emit TOOL_UNAVAILABLE, UNSOLVED, or TOOL_FAULT; never round an unverified result into a claim"
+    },
+    {
+      "id": "math.mpmath_verify",
+      "capability": ["high_precision_numeric_verification", "mpmath_eval", "bounded_float_check"],
+      "trust_tier": "deterministic_verified_local",
+      "cost_tier": "low",
+      "dependency": "mpmath",
+      "failure_behavior": "emit TOOL_UNAVAILABLE, UNSOLVED, or TOOL_FAULT; never round an unverified result into a claim"
+    },
+    {
+      "id": "logic.lean_check",
+      "capability": ["formal_checking", "proof_kernel_health"],
+      "trust_tier": "formal_checker_when_available",
+      "cost_tier": "medium",
+      "dependency": "lean",
+      "failure_behavior": "emit TOOL_UNAVAILABLE, UNSOLVED, or TOOL_FAULT; no proof means no claim"
+    },
+    {
+      "id": "logic.z3_smt",
+      "capability": ["smt_solving", "constraint_satisfaction", "model_checking"],
+      "trust_tier": "smt_solver_when_available",
+      "cost_tier": "medium",
+      "dependency": "z3",
+      "failure_behavior": "emit TOOL_UNAVAILABLE when z3 is missing; no model means no claim"
+    },
+    {
+      "id": "rewrite.egraph_minimal",
+      "capability": ["expression_rewrite", "equality_saturation_minimal", "normalization"],
+      "trust_tier": "deterministic_rewrite_local",
+      "cost_tier": "low",
+      "dependency": "python_standard_library",
+      "failure_behavior": "emit UNSOLVED or TOOL_FAULT; never claim equivalence outside the registered rewrite rules"
+    },
+    {
+      "id": "rewrite.equality_saturation",
+      "capability": ["bounded_equality_saturation", "expression_rewrite", "cost_based_normalization"],
+      "trust_tier": "deterministic_rewrite_local",
+      "cost_tier": "medium",
+      "dependency": "sympy",
+      "failure_behavior": "emit TOOL_UNAVAILABLE, UNSOLVED, or TOOL_FAULT; never claim equivalence outside the saturated candidate set"
+    },
+    {
+      "id": "search.local_bm25",
+      "capability": ["local_sparse_search", "repo_retrieval", "evidence_lookup"],
+      "trust_tier": "deterministic_retrieval_local",
+      "cost_tier": "low",
+      "dependency": "python_standard_library",
+      "failure_behavior": "emit UNKNOWN when the corpus is empty or no result is found"
+    },
+    {
+      "id": "search.local_hybrid",
+      "capability": ["local_sparse_search", "phrase_boosted_search", "field_weighted_repo_retrieval", "snippet_evidence_lookup"],
+      "trust_tier": "deterministic_retrieval_local",
+      "cost_tier": "low",
+      "dependency": "python_standard_library",
+      "failure_behavior": "emit UNKNOWN when the corpus is empty or no result is found"
+    },
+    {
+      "id": "search.vcm_hybrid",
+      "capability": ["vcm_context_retrieval", "hybrid_sparse_structured_search"],
+      "trust_tier": "deterministic_vcm_retrieval_local",
+      "cost_tier": "low",
+      "dependency": "reports/vcm_task_contexts.json",
+      "failure_behavior": "emit UNKNOWN when VCM context reports are missing or no page is selected"
+    },
+    {
+      "id": "tool.trace_replay",
+      "capability": ["trace_replay", "checksum_verification", "tool_result_audit"],
+      "trust_tier": "deterministic_audit_local",
+      "cost_tier": "low",
+      "dependency": "deterministic_tool_trace_rows",
+      "failure_behavior": "emit UNSOLVED when replay checksums or state contracts are missing"
+    }
+  ],
+  "private_smoke_cases": [
+    {
+      "case_id": "sympy_simplify_zero_identity",
+      "task_family": "private_exact_math",
+      "tool_id": "math.sympy_exact",
+      "operation": "simplify",
+      "expression": "(x + 1)**2 - (x**2 + 2*x + 1)",
+      "expected": "0"
+    },
+    {
+      "case_id": "sympy_solve_quadratic_roots",
+      "task_family": "private_exact_math",
+      "tool_id": "math.sympy_exact",
+      "operation": "solve",
+      "expression": "x**2 - 4",
+      "variable": "x",
+      "expected": ["-2", "2"]
+    },
+    {
+      "case_id": "interval_add_private",
+      "task_family": "private_numeric_bounds",
+      "tool_id": "math.numeric_interval",
+      "operation": "add",
+      "left": ["1", "2"],
+      "right": ["3", "4"],
+      "expected": ["4", "6"]
+    },
+    {
+      "case_id": "interval_multiply_positive_private",
+      "task_family": "private_numeric_bounds",
+      "tool_id": "math.numeric_interval",
+      "operation": "multiply",
+      "left": ["2", "3"],
+      "right": ["4", "5"],
+      "expected": ["8", "15"]
+    },
+    {
+      "case_id": "linear_solve_2x2_private",
+      "task_family": "private_linear_algebra",
+      "tool_id": "math.linear_algebra",
+      "operation": "solve",
+      "matrix": [[2, 1], [1, -1]],
+      "rhs": [5, 1],
+      "expected": [2, 1]
+    },
+    {
+      "case_id": "numeric_root_private",
+      "task_family": "private_numeric_verification",
+      "tool_id": "math.numeric_verify",
+      "operation": "root_scalar",
+      "expression": "x**2 - 2",
+      "variable": "x",
+      "bracket": ["1", "2"],
+      "expected": "1.414214"
+    },
+    {
+      "case_id": "mpmath_high_precision_private",
+      "task_family": "private_numeric_verification",
+      "tool_id": "math.mpmath_verify",
+      "operation": "eval_expr",
+      "expression": "sqrt(2)",
+      "precision": 50,
+      "digits": 10,
+      "expected": "1.4142135624"
+    },
+    {
+      "case_id": "lean_trivial_kernel_private",
+      "task_family": "private_formal_check",
+      "tool_id": "logic.lean_check",
+      "operation": "check",
+      "source": "theorem theseus_tool_smoke : True := by\n  trivial\n",
+      "expected": "accepted"
+    },
+    {
+      "case_id": "z3_linear_sat_private",
+      "task_family": "private_smt_constraint",
+      "tool_id": "logic.z3_smt",
+      "operation": "linear_sat",
+      "constraints": ["x > 1", "x < 3"],
+      "expected": "sat"
+    },
+    {
+      "case_id": "egraph_minimal_identity_private",
+      "task_family": "private_expression_rewrite",
+      "tool_id": "rewrite.egraph_minimal",
+      "operation": "normalize",
+      "expression": "((x + 0) * 1)",
+      "expected": "x"
+    },
+    {
+      "case_id": "equality_saturation_factor_private",
+      "task_family": "private_expression_rewrite",
+      "tool_id": "rewrite.equality_saturation",
+      "operation": "saturate",
+      "expression": "x*y + x*0 + 0",
+      "expected": "x*y"
+    },
+    {
+      "case_id": "local_bm25_registry_lookup_private",
+      "task_family": "private_repo_search",
+      "tool_id": "search.local_bm25",
+      "operation": "search",
+      "query": "registry source of truth deterministic tool substrate",
+      "expected_min_results": 1
+    },
+    {
+      "case_id": "local_hybrid_viea_lookup_private",
+      "task_family": "private_repo_search",
+      "tool_id": "search.local_hybrid",
+      "operation": "search",
+      "query": "VIEA execution spine deterministic tool substrate",
+      "expected_min_results": 1
+    },
+    {
+      "case_id": "vcm_hybrid_planning_context_private",
+      "task_family": "private_vcm_search",
+      "tool_id": "search.vcm_hybrid",
+      "operation": "search",
+      "query": "planning context constraint capsules",
+      "expected_min_results": 1
+    }
+  ]
+}

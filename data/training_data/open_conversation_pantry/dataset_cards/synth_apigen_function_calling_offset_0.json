@@ -1,0 +1,65 @@
+{
+  "source_id": "synth_apigen_function_calling_offset_0",
+  "dataset": "argilla/Synth-APIGen-v0.1",
+  "url": "https://huggingface.co/datasets/argilla/Synth-APIGen-v0.1",
+  "license_spdx": "apache-2.0",
+  "expected_license_normalized": "apache-2.0",
+  "enabled": true,
+  "format": "tool_calling_rows",
+  "config": "default",
+  "split": "train",
+  "offset": 0,
+  "length": 60,
+  "why": "Apache-2.0 synthetic function-call rows with query, tools, and answer fields for interface-grounded tool-use pressure.",
+  "use": "private_tool_schema_and_function_call_pressure",
+  "checks": [
+    {
+      "gate": "source_enabled",
+      "passed": true,
+      "evidence": "True"
+    },
+    {
+      "gate": "source_kind_huggingface_dataset",
+      "passed": true,
+      "evidence": "huggingface_dataset"
+    },
+    {
+      "gate": "license_expected_allowlisted",
+      "passed": true,
+      "evidence": "apache-2.0"
+    },
+    {
+      "gate": "hf_license_matches_expected",
+      "passed": true,
+      "evidence": "apache-2.0"
+    },
+    {
+      "gate": "sample_rows_present",
+      "passed": true,
+      "evidence": "samples=60"
+    },
+    {
+      "gate": "bounded_sample_rows",
+      "passed": true,
+      "evidence": "samples=60 length=60"
+    },
+    {
+      "gate": "train_rows_present_or_not_required",
+      "passed": true,
+      "evidence": "train=60"
+    },
+    {
+      "gate": "sts_rows_present_or_not_required",
+      "passed": true,
+      "evidence": "sts=60"
+    }
+  ],
+  "status": "sampled",
+  "conversation_samples": 60,
+  "private_train_rows": 60,
+  "sts_rows": 60,
+  "external_inference_calls": 0,
+  "hf_license_normalized": "apache-2.0",
+  "decision": "tiny_sample_materialized",
+  "num_rows_total": null
+}

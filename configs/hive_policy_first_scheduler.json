@@ -1,0 +1,207 @@
+{
+  "policy": "project_theseus_hive_policy_first_scheduler_v1",
+  "purpose": "Personal Hive scheduling records where authority, trust, battery, thermal, data class, latency, and physical-risk policy filter nodes before scoring performance.",
+  "hard_boundaries": {
+    "reachability_implies_authority": false,
+    "arbitrary_remote_shell_allowed": false,
+    "public_gateway_allowed": false,
+    "raw_private_data_to_untrusted_node_allowed": false,
+    "spending_without_receipt_allowed": false,
+    "federation_leases_default_enabled": false
+  },
+  "device_resource_cards": [
+    {
+      "id": "device.local_mac_apple_silicon",
+      "class": "mac",
+      "trust_tier": "private_owned",
+      "reachable": true,
+      "roles": [
+        "operator",
+        "training",
+        "vcm",
+        "storage_client"
+      ],
+      "accelerators": [
+        "mlx_apple",
+        "metal"
+      ],
+      "battery_state": "plugged_in",
+      "thermal_state": "nominal",
+      "latency_ms": 1,
+      "data_classes_allowed": [
+        "local_private_metadata",
+        "licensed_private_training",
+        "operator_status"
+      ],
+      "tool_classes_allowed": [
+        "registered_hive_task",
+        "mlx_training_chunk",
+        "vcm_context_compile",
+        "storage_index"
+      ],
+      "physical_risk_allowed": false,
+      "operator_presence_required": false
+    },
+    {
+      "id": "device.home_windows_coordinator_last_seen",
+      "class": "windows_pc",
+      "trust_tier": "private_owned_stale_reachability",
+      "reachable": false,
+      "roles": [
+        "coordinator",
+        "cuda_training"
+      ],
+      "accelerators": [
+        "cuda"
+      ],
+      "battery_state": "mains",
+      "thermal_state": "unknown",
+      "latency_ms": 9999,
+      "data_classes_allowed": [
+        "operator_status"
+      ],
+      "tool_classes_allowed": [
+        "registered_hive_task"
+      ],
+      "physical_risk_allowed": false,
+      "operator_presence_required": false
+    },
+    {
+      "id": "device.phone_operator_cellular",
+      "class": "iphone",
+      "trust_tier": "private_owned_operator",
+      "reachable": true,
+      "roles": [
+        "operator",
+        "approval_portal"
+      ],
+      "accelerators": [],
+      "battery_state": "mobile_battery",
+      "thermal_state": "nominal",
+      "latency_ms": 70,
+      "data_classes_allowed": [
+        "operator_status",
+        "approval_receipt",
+        "sanitized_preview"
+      ],
+      "tool_classes_allowed": [
+        "operator_approval",
+        "chat_control"
+      ],
+      "physical_risk_allowed": false,
+      "operator_presence_required": true
+    },
+    {
+      "id": "device.nas_storage_extension",
+      "class": "nas",
+      "trust_tier": "private_storage_extension",
+      "reachable": true,
+      "roles": [
+        "storage"
+      ],
+      "accelerators": [],
+      "battery_state": "mains",
+      "thermal_state": "nominal",
+      "latency_ms": 4,
+      "data_classes_allowed": [
+        "bulk_private_artifacts",
+        "archive_manifest"
+      ],
+      "tool_classes_allowed": [
+        "storage_index",
+        "artifact_sync"
+      ],
+      "physical_risk_allowed": false,
+      "operator_presence_required": false
+    }
+  ],
+  "portal_cards": [
+    {
+      "id": "portal.iphone_app",
+      "device_id": "device.phone_operator_cellular",
+      "allowed_permissions": [
+        "approve_one_job",
+        "view_status",
+        "pause_resume"
+      ],
+      "max_approval_window_seconds": 900
+    },
+    {
+      "id": "portal.local_desktop",
+      "device_id": "device.local_mac_apple_silicon",
+      "allowed_permissions": [
+        "approve_one_job",
+        "run_local_private_task",
+        "view_reports"
+      ],
+      "max_approval_window_seconds": 3600
+    }
+  ],
+  "job_contracts": [
+    {
+      "id": "job.low_latency_operator_chat",
+      "data_class": "operator_status",
+      "tool_class": "chat_control",
+      "latency_class": "interactive",
+      "requires_operator_presence": true,
+      "requires_accelerator": "",
+      "physical_risk": false,
+      "spending_risk": false,
+      "max_latency_ms": 150,
+      "approval_required": false
+    },
+    {
+      "id": "job.long_private_mlx_training_chunk",
+      "data_class": "licensed_private_training",
+      "tool_class": "mlx_training_chunk",
+      "latency_class": "batch",
+      "requires_operator_presence": false,
+      "requires_accelerator": "mlx_apple",
+      "physical_risk": false,
+      "spending_risk": false,
+      "max_latency_ms": 5000,
+      "approval_required": false
+    },
+    {
+      "id": "job.bulk_artifact_storage_index",
+      "data_class": "bulk_private_artifacts",
+      "tool_class": "storage_index",
+      "latency_class": "batch",
+      "requires_operator_presence": false,
+      "requires_accelerator": "",
+      "physical_risk": false,
+      "spending_risk": false,
+      "max_latency_ms": 1000,
+      "approval_required": false
+    },
+    {
+      "id": "job.remote_cuda_private_training",
+      "data_class": "licensed_private_training",
+      "tool_class": "cuda_training_chunk",
+      "latency_class": "batch",
+      "requires_operator_presence": false,
+      "requires_accelerator": "cuda",
+      "physical_risk": false,
+      "spending_risk": false,
+      "max_latency_ms": 5000,
+      "approval_required": false
+    }
+  ],
+  "approval_receipts": [
+    {
+      "id": "approval.phone_one_job_fixture",
+      "portal_id": "portal.iphone_app",
+      "job_id": "job.low_latency_operator_chat",
+      "permission": "view_status",
+      "valid_seconds": 300,
+      "revocable": true,
+      "bound_to_single_job": true
+    }
+  ],
+  "federation_lease_policy": {
+    "enabled_by_default": false,
+    "requires_sandbox_test": true,
+    "requires_revocation_test": true,
+    "max_initial_scope": "status_only"
+  }
+}

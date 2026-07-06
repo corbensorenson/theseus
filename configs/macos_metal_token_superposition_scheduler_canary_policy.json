@@ -1,0 +1,83 @@
+{
+  "policy": "project_theseus_macos_metal_token_superposition_scheduler_canary_policy_v0",
+  "purpose": "Allow exactly one reviewed local train-token-superposition-metal scheduler canary while keeping production routing disabled.",
+  "command": "train-token-superposition-metal",
+  "task_kind": "train_token_superposition_metal_local_canary",
+  "parity_for": "train-token-superposition-cuda",
+  "backend": "apple_metal",
+  "route_state": "reviewed_local_canary_only",
+  "local_only": true,
+  "remote_task_submitted": false,
+  "registers_worker_chunk": false,
+  "production_scheduler_routing_enabled": false,
+  "does_not_change_hive_remote_task_scope": true,
+  "no_arbitrary_remote_execution": true,
+  "input_scope": [
+    "data/training_data/high_transfer/private_train"
+  ],
+  "inputs": [
+    "data/training_data/high_transfer/private_train/targeted_private_residual_curriculum_v2_residual_code_lm_tasks.jsonl",
+    "data/training_data/high_transfer/private_train/algorithmic_planning_residual_code_lm_tasks.jsonl",
+    "data/training_data/high_transfer/private_train/parsing_encoding_v1_private_residual_curriculum_residual_code_lm_tasks.jsonl"
+  ],
+  "bounds": {
+    "train_seed": 2026061405,
+    "max_language_rows": 128,
+    "max_code_files": 0,
+    "max_chars_per_doc": 6000,
+    "max_vocab": 48,
+    "hv_dim": 96,
+    "train_samples": 128,
+    "eval_samples": 48,
+    "baseline_epochs": 2,
+    "bag_sizes": "4,8",
+    "recovery_ratios": "0.25,0.5",
+    "samples_per_launch": 8,
+    "gate_tolerance": 0.002,
+    "max_kernel_launches": 192
+  },
+  "requires": {
+    "macos_metal_token_superposition_route_policy_present": true,
+    "macos_metal_token_superposition_ladder_ok": true,
+    "macos_mlx_parity_audit_counts_token_ladder": true,
+    "macos_mlx_parity_audit_counts_token_artifact": true,
+    "canonical_readout_artifact": true,
+    "scheduler_routing_enabled_in_report": false,
+    "model_promotion_allowed": false,
+    "train_token_superposition_parity_claim_allowed": false,
+    "native_hot_loop_parity_claim_allowed": false,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_training_rows": 0,
+    "no_fallback_returns": true,
+    "public_calibration_not_run": true
+  },
+  "required_reports": [
+    "reports/token_superposition_metal_training.json",
+    "reports/macos_metal_token_superposition_readout_artifact.json",
+    "reports/macos_metal_token_superposition_ladder.json",
+    "reports/macos_mlx_parity_audit.json"
+  ],
+  "output_reports": [
+    "reports/macos_metal_token_superposition_scheduler_canary.json",
+    "reports/macos_metal_token_superposition_scheduler_canary_train_report.json",
+    "reports/macos_metal_token_superposition_scheduler_canary_readout_artifact.json"
+  ],
+  "rollback_guardrails": [
+    "canary_preflight_failure",
+    "artifact_equivalence_failure",
+    "public_or_non_private_input_detected",
+    "external_inference_or_teacher_or_public_training_rows",
+    "fallback_return_detected",
+    "promotion_or_parity_claim_enabled",
+    "scheduler_route_enabled_without_operator_review",
+    "remote_task_submission_detected",
+    "worker_scope_changed"
+  ],
+  "next_allowed_step": "operator-reviewed policy change only; do not enable production routing from this canary automatically",
+  "notes": [
+    "This policy exists to measure local scheduler canary behavior, not to route production work.",
+    "The canary task kind must remain local-only and must not be added to Hive remote worker task scopes.",
+    "A GREEN canary is still not a full CUDA-equivalent parity claim."
+  ]
+}

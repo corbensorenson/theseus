@@ -1,0 +1,66 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "local_rom_gba_pokemon_emerald",
+  "source_id": "gba_pokemon_emerald",
+  "name": "Local ROM RL profile: gba_pokemon_emerald",
+  "category": "emulator_rl_environment",
+  "priority": "high",
+  "status": "blocked_missing_user_supplied_rom",
+  "url": "",
+  "license_spdx": "user-supplied-private-asset",
+  "license_allowed": false,
+  "decision": "awaiting_user_asset",
+  "staged": false,
+  "staged_path": "",
+  "adapter_type": "emulator_rl_adapter",
+  "runner_family": "emulator_rl_local",
+  "runtime_tier": "E3",
+  "risk_tier": "medium",
+  "capability_target": "pixel/control RL, exploration, planning, and delayed reward using user-owned local game assets.",
+  "input_contract": {
+    "rom_profile_id": "gba_pokemon_emerald",
+    "rom_resolution": "runtime resolves ignored ROM path from reports/local_rom_registry.json",
+    "actions": "adapter-defined discrete controls"
+  },
+  "output_contract": {
+    "score": "episodic_reward_or_task_progress",
+    "trace": "eventized emulator steps",
+    "residuals": "stalls, deaths, loops, invalid actions, wrapper failures"
+  },
+  "smoke_steps": [
+    "resolve user-supplied ROM from ignored local registry",
+    "boot emulator for deterministic frames",
+    "step no-op/random policy",
+    "record observation shape and shaped reward hooks"
+  ],
+  "promotion_gates": [
+    "user_supplied_rom_only",
+    "rom_file_ignored_by_git",
+    "wrapper_smoke_passes",
+    "no_commercial_rom_download"
+  ],
+  "contamination_policy": "No ROM bytes or hashes are tracked in cards; only ignored local registry resolves private assets.",
+  "regression_policy": "Promote stable wrapper tasks to regression after deterministic smoke and shaped reward validation.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "recommended_adapter": "pygba_mgba",
+  "next_step": "No matching local ROM found yet. If you own one, place it under data/local_roms, set SPARKSTREAM_ROM_ROOTS, or pass --rom-root.",
+  "external_inference_calls": 0
+}

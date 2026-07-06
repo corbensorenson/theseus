@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_facts_grounding",
+  "source_id": "facts_grounding",
+  "name": "FACTS Grounding",
+  "category": "long_context_memory_benchmark",
+  "priority": "medium",
+  "status": "blocked_model_judge_and_private_leaderboard",
+  "url": "https://www.kaggle.com/facts-leaderboard",
+  "paper_url": "https://arxiv.org/abs/2501.03200",
+  "license_spdx": "unknown",
+  "license_allowed": false,
+  "decision": "queued_until_local_deterministic_proxy_and_terms_review",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "high",
+  "capability_target": "Long-form grounded response control over document evidence, without hallucinating outside supplied context.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "grounded_context_response",
+  "input_contract": {
+    "metadata": "leaderboard/paper card only until terms and scoring path are admitted",
+    "context": "private documents with exact answer spans",
+    "query": "grounded request requiring document-only evidence",
+    "evidence": "support spans and forbidden distractors",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "private exact support-span answer, not model-judge score",
+    "evidence_precision_recall": "selected support span quality",
+    "abstention": "insufficient support rejection",
+    "latency": "local evidence selection cost",
+    "residuals": "unsupported answer, wrong support, or false abstention"
+  },
+  "smoke_steps": [
+    "record benchmark as model-judge/private-leaderboard blocked",
+    "do not approximate public score with external inference",
+    "use private deterministic grounded-answer analogues only"
+  ],
+  "promotion_gates": [
+    "local_deterministic_proxy_before_any_public_claim",
+    "no_model_judge_external_inference",
+    "no_public_training_rows",
+    "no_fallback_returns",
+    "private_analogue_suite_present",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "FACTS public/private leaderboard material is calibration-only and not used for training. Model-judge scoring is blocked unless a local, governed deterministic proxy is explicitly admitted.",
+  "regression_policy": "Private grounded-answer rows may become regression; public FACTS remains queued unless terms and evaluator path are approved.",
+  "permission_envelope": {
+    "memory": "private deterministic grounded-answer analogues only",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "leaderboard_submission",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No model-judge or teacher substitution for FACTS scoring.",
+  "external_inference_calls": 0
+}

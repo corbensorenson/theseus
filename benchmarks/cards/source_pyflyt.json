@@ -1,0 +1,77 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_pyflyt",
+  "source_id": "pyflyt",
+  "name": "jjshoots/PyFlyt",
+  "category": "drone_rl_environment",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/jjshoots/PyFlyt",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "drone_rl_adapter",
+  "runner_family": "drone_rl_local",
+  "runtime_tier": "E3",
+  "risk_tier": "high",
+  "capability_target": "simulation-first drone control, hover, waypoint, perception, and racing policy pressure",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "env_id": "simulation-only drone environment id",
+    "seed": "deterministic seed",
+    "policy": "local learner/controller only",
+    "safety": "no live hardware endpoint"
+  },
+  "output_contract": {
+    "reward": "episode/race score",
+    "gates": "gates passed or waypoint progress",
+    "safety_events": "collisions, boundary hits, failsafe triggers",
+    "latency": "control and vision timing",
+    "residuals": "failure clusters"
+  },
+  "smoke_steps": [
+    "PyFlyt_import",
+    "PyFlyt/QuadX-Hover-v2_reset_step",
+    "drone_safety_contract_present"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "simulation_only_by_default",
+    "reset_step_smoke_passes_or_runtime_blocked_with_reason",
+    "deterministic_seed_recorded",
+    "no_live_hardware_without_explicit_human_approval",
+    "safety_reflex_contract_written"
+  ],
+  "contamination_policy": "Treat public simulator tasks as calibration until private tracks, held-out seeds, and race-specific course variants are generated.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "open_simulator_udp_loopback",
+      "write_drone_event_logs"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "forbidden_without_explicit_human_approval",
+    "approval_required_for": [
+      "arm_or_takeoff_command",
+      "destructive",
+      "financial",
+      "hardware_in_loop",
+      "legal",
+      "live_drone_endpoint",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_voyager_minecraft",
+  "source_id": "voyager_minecraft",
+  "name": "MineDojo/Voyager",
+  "category": "minecraft_rl_environment",
+  "priority": "medium",
+  "status": "adapter_smoke_passed",
+  "url": "https://github.com/MineDojo/Voyager",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": true,
+  "staged_path": "data/external_benchmark_candidates/git_clones/voyager_minecraft",
+  "resource_pantry_path": "data/external_benchmark_candidates/git_clones/voyager_minecraft",
+  "adapter_type": "minecraft_rl_adapter",
+  "runner_family": "minecraft_rl_local",
+  "runtime_tier": "E3",
+  "risk_tier": "high",
+  "capability_target": "licensed local Minecraft and Minecraft-like open-world RL, crafting, navigation, and player-coop pressure",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "env_id": "local Minecraft/Minecraft-like environment id",
+    "seed": "deterministic seed",
+    "policy": "local Theseus learner/controller only",
+    "world": "disposable local world or open-source bridge world",
+    "license": "user-owned local Minecraft runtime required for full Minecraft harnesses"
+  },
+  "output_contract": {
+    "reward": "episode/goal score",
+    "steps": "environment steps",
+    "inventory": "inventory and crafting events",
+    "world_events": "blocks, mobs, damage, navigation, goal progress",
+    "residuals": "navigation, survival, crafting, recovery, and player-instruction failures"
+  },
+  "smoke_steps": [
+    "metadata_scan",
+    "skill_schema_extract",
+    "external_llm_calls_forbidden",
+    "local_teacher_proposal_only"
+  ],
+  "promotion_gates": [
+    "license_allowed_or_metadata_only_until_runtime_approval",
+    "local_user_minecraft_license_for_full_runtime",
+    "bridge_world_smoke_passes_or_full_harness_runtime_ready",
+    "deterministic_seed_recorded",
+    "no_public_server_or_credential_storage",
+    "no_external_inference"
+  ],
+  "contamination_policy": "Treat public Minecraft tasks as calibration. Keep local disposable worlds and held-out seeds separate from any training traces.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "write_disposable_world_metadata",
+      "write_gameplay_trace_logs"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "account_or_credential_access",
+      "destructive",
+      "financial",
+      "legal",
+      "persistent_world_mutation",
+      "production",
+      "public_server_access",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

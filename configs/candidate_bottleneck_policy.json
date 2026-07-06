@@ -1,0 +1,186 @@
+{
+  "policy": "theseus_candidate_bottleneck_policy_v0",
+  "purpose": "Turn repeated candidate/runtime blockers into local setup work so the teacher is reserved for real architecture walls.",
+  "safe_auto_fix": {
+    "enabled": true,
+    "only_isolated_venvs": true,
+    "no_bulk_downloads": true,
+    "no_live_hardware": true,
+    "no_external_inference": true,
+    "refresh_reports_after_fix": true
+  },
+  "runtime_remediation": {
+    "source_pyflyt": {
+      "kind": "isolated_python_runtime",
+      "safe_auto": true,
+      "command": [
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts\\setup_drone_runtime.ps1",
+        "-Lane",
+        "pyflyt",
+        "-SkipSmoke"
+      ],
+      "expected_to_clear": [
+        "PyFlyt_import_available",
+        "pyflyt_drone_reset_step"
+      ]
+    },
+    "source_gym_pybullet_drones": {
+      "kind": "isolated_python_runtime",
+      "safe_auto": true,
+      "command": [
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts\\setup_drone_runtime.ps1",
+        "-Lane",
+        "gym-pybullet",
+        "-SkipSmoke"
+      ],
+      "expected_to_clear": [
+        "gym_pybullet_drones_import_available",
+        "gym_pybullet_drones_drone_reset_step"
+      ]
+    },
+    "source_mavsdk_python": {
+      "kind": "isolated_python_runtime",
+      "safe_auto": true,
+      "command": [
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts\\setup_drone_runtime.ps1",
+        "-Lane",
+        "control-client",
+        "-SkipSmoke"
+      ],
+      "expected_to_clear": [
+        "mavsdk_import_available"
+      ]
+    },
+    "local_rom_gba_pokemon_emerald": {
+      "kind": "manual_native_emulator_runtime",
+      "safe_auto": false,
+      "reason": "User-supplied ROM is present and the isolated setup script now installs PyGBA plus attempts a patched Windows mGBA CFFI rebuild, but the remaining MSVC mGBA build/link conflict requires deeper native remediation or a Linux/WSL emulator lane."
+    },
+    "source_gymboy": {
+      "kind": "isolated_python_runtime",
+      "safe_auto": true,
+      "command": [
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts\\setup_emulator_runtime.ps1",
+        "-Lane",
+        "gb-gbc",
+        "-SkipSmoke"
+      ],
+      "expected_to_clear": [
+        "gymboy_import_available",
+        "pyboy_import_available"
+      ]
+    },
+    "source_pygba": {
+      "kind": "manual_native_emulator_runtime",
+      "safe_auto": false,
+      "reason": "PyGBA source and mGBA source are staged, and scripts\\setup_emulator_runtime.ps1 -Lane gba performs best-effort PyGBA install plus Windows mGBA CFFI patching. If mGBA symbols/types still fail, treat it as a native runtime gate rather than benchmark plumbing."
+    },
+    "source_mgba": {
+      "kind": "manual_native_emulator_runtime",
+      "safe_auto": false,
+      "reason": "mGBA source is staged and the setup script attempts a patched Visual Studio CFFI rebuild. Current Windows builds still hit native mGBA/winsock/externpy conflicts before a usable _pylib is installed; prefer GB/GBC GymBoy pressure or a Linux/WSL mGBA lane until repaired."
+    },
+    "source_stable_retro": {
+      "kind": "manual_native_emulator_runtime",
+      "safe_auto": false,
+      "reason": "stable-retro source is staged, but local Windows wheel/build is unresolved. Prefer gymboy/PyBoy for GB/GBC pressure and PyGBA once mGBA CFFI is repaired."
+    },
+    "source_procgen": {
+      "kind": "manual_native_rl_runtime",
+      "safe_auto": false,
+      "reason": "Procgen is useful pressure, but Windows support is native-runtime dependent; prefer already-smoked local RL lanes until a Linux/WSL/container runtime is selected."
+    },
+    "source_airsim_drone_racing_lab": {
+      "kind": "isolated_python_runtime_plus_simulator",
+      "safe_auto": false,
+      "reason": "Python client can be installed in isolation, but the simulator endpoint still requires explicit local simulator setup.",
+      "command": [
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts\\setup_drone_runtime.ps1",
+        "-Lane",
+        "racing-client",
+        "-SkipSmoke"
+      ]
+    },
+    "source_airsim": {
+      "kind": "isolated_python_runtime_plus_simulator",
+      "safe_auto": false,
+      "reason": "AirSim is archived/heavy; keep metadata until a local simulator install is explicitly prepared."
+    },
+    "source_px4_sitl": {
+      "kind": "sitl_endpoint",
+      "safe_auto": false,
+      "reason": "Requires PX4 SITL binary/container and a running simulator endpoint; never starts flight-control endpoints implicitly."
+    },
+    "source_aerial_gym_simulator": {
+      "kind": "heavy_gpu_simulator",
+      "safe_auto": false,
+      "reason": "Requires Isaac/Aerial Gym stack; keep metadata-only until the target GPU/runtime is selected."
+    }
+  },
+  "refresh_commands": [
+    [
+      "python",
+      "scripts\\benchmark_adapter_smoke.py",
+      "--out",
+      "reports\\benchmark_adapter_smoke_status.json",
+      "--markdown-out",
+      "reports\\benchmark_adapter_smoke_status.md"
+    ],
+    [
+      "python",
+      "scripts\\benchmark_adapter_factory.py",
+      "--config",
+      "configs\\benchmark_adapter_factory.json",
+      "--out",
+      "reports\\benchmark_adapter_factory.json",
+      "--markdown-out",
+      "reports\\benchmark_adapter_factory.md",
+      "--write-cards"
+    ],
+    [
+      "python",
+      "scripts\\rl_benchmark_registry.py",
+      "--refresh-local",
+      "--out",
+      "reports\\rl_benchmark_registry.json"
+    ],
+    [
+      "python",
+      "scripts\\benchmaxx_curriculum.py",
+      "--config",
+      "configs\\benchmaxx_curriculum.json",
+      "--out",
+      "reports\\benchmaxx_curriculum.json",
+      "--markdown-out",
+      "reports\\benchmaxx_curriculum.md"
+    ],
+    [
+      "python",
+      "scripts\\capability_matrix.py",
+      "--out",
+      "reports\\capability_matrix.json",
+      "--markdown-out",
+      "reports\\capability_matrix.md"
+    ]
+  ]
+}

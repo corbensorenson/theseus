@@ -1,0 +1,146 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "synthetic_cross_arm_code_memory",
+  "name": "Synthetic Cross-Arm Code and Memory Pressure",
+  "category": "synthetic_coding_benchmark",
+  "family": "coding_local_sandbox",
+  "source_id": "synthetic_cross_arm_code_memory",
+  "runner_family": "synthetic_benchmark_local",
+  "status": "adapter_smoke_passed",
+  "decision": "synthetic_local_generated",
+  "license_allowed": true,
+  "license_spdx": "local-generated-provenance-only",
+  "resource_pantry_path": "data/synthetic_benchmarks/synthetic_cross_arm_code_memory.jsonl",
+  "staged_path": "data/synthetic_benchmarks/synthetic_cross_arm_code_memory.jsonl",
+  "case_manifest": "data/synthetic_benchmarks/synthetic_cross_arm_code_memory.jsonl",
+  "public_comparator_use": "forbidden",
+  "contamination_risk": "private_synthetic_pressure_do_not_train_on_eval_cases",
+  "required_arms": [
+    "benchmark_ratchet_arm",
+    "code_repair_verifier",
+    "context_packet_memory_arm",
+    "head_router"
+  ],
+  "arm_activation_contract": {
+    "required_arms": [
+      "benchmark_ratchet_arm",
+      "code_repair_verifier",
+      "context_packet_memory_arm",
+      "head_router"
+    ],
+    "available_required_arms": [
+      "benchmark_ratchet_arm",
+      "code_repair_verifier",
+      "context_packet_memory_arm",
+      "head_router"
+    ],
+    "must_report_activation": true
+  },
+  "synthetic_benchmark": {
+    "mode": "cross_arm_hybrid",
+    "case_count": 8,
+    "case_index": [
+      {
+        "case_id": "synthetic_cross_arm_code_memory_latest_goal_00",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "wh_vs_that_with_gap",
+        "source_benchmark": "transfer_web_task"
+      },
+      {
+        "case_id": "synthetic_cross_arm_code_memory_safe_head_01",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "drone_rl:runtime",
+        "source_benchmark": "transfer_rl_control"
+      },
+      {
+        "case_id": "synthetic_cross_arm_code_memory_stable_dedupe_02",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "animate_subject_trans",
+        "source_benchmark": "native_voice_io"
+      },
+      {
+        "case_id": "synthetic_cross_arm_code_memory_safe_ratio_03",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "tough_vs_raising_1",
+        "source_benchmark": "transfer_voice_io"
+      },
+      {
+        "case_id": "synthetic_cross_arm_code_memory_parse_ints_04",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "matrix_question_npi_licensor_present",
+        "source_benchmark": "asi_transfer_suite"
+      },
+      {
+        "case_id": "synthetic_cross_arm_code_memory_reject_decoys_05",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "coordinate_structure_constraint_object_extraction",
+        "source_benchmark": "transfer_self_debugging"
+      },
+      {
+        "case_id": "synthetic_cross_arm_code_memory_chunked_06",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "ellipsis_n_bar_1",
+        "source_benchmark": "transfer_code_repair"
+      },
+      {
+        "case_id": "synthetic_cross_arm_code_memory_window_sums_07",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "context_packet_memory_arm",
+          "head_router"
+        ],
+        "residual_target": "causative",
+        "source_benchmark": "transfer_long_context_recovery"
+      }
+    ],
+    "score_semantics": "private_pressure_readiness_and_unit_test_pass_rate_not_public_comparator_accuracy",
+    "promotion_rule": "requires transfer artifact consumption plus real benchmark regression gate"
+  },
+  "permission_envelope": {
+    "network": "forbidden_during_scoring",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "side_effects": [
+      "read_case_manifest",
+      "write_reports",
+      "sandbox_python_unit_tests"
+    ]
+  },
+  "external_inference_calls": 0
+}

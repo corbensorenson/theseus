@@ -1,0 +1,69 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_libritts",
+  "source_id": "libritts",
+  "name": "OpenSLR SLR60 LibriTTS",
+  "category": "training_data",
+  "priority": "medium",
+  "status": "needs_adapter_smoke",
+  "url": "https://www.openslr.org/60/",
+  "license_spdx": "cc-by-4.0",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "governed_data_sampler",
+  "runner_family": "training_data_sampler",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "governed data ingestion, leakage-safe sampling, and residual-targeted learning pressure",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "metadata": "dataset card",
+    "sample": "tiny governed stream",
+    "eval_overlap": "required"
+  },
+  "output_contract": {
+    "accepted_rows": "count",
+    "rejections": "reasons",
+    "leakage": "overlap report"
+  },
+  "smoke_steps": [
+    "read dataset card or metadata",
+    "stream tiny licensed sample only",
+    "dedupe and leakage check against evals",
+    "write dataset card and ratio cap"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "tiny_sample_only",
+    "leakage_clear",
+    "synthetic_or_external_ratio_capped",
+    "no_teacher_generated_training_data"
+  ],
+  "contamination_policy": "Run exact-pair and sentence-level overlap checks against every private/frontier eval before training use.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

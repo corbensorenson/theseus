@@ -1,0 +1,15 @@
+[package]
+name = "symliquid-bench"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Small benchmark harness for SymLiquid FEP-Net CPU reference kernels."
+
+[dependencies]
+rand = { workspace = true }
+symliquid-core = { workspace = true }
+symliquid-cuda = { workspace = true, optional = true }
+
+[features]
+default = []
+cuda = ["dep:symliquid-cuda", "symliquid-cuda/cuda"]

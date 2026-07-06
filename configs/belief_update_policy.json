@@ -1,0 +1,47 @@
+{
+  "policy": "sparkstream_belief_update_policy_v0",
+  "enabled": true,
+  "ledger": "reports/belief_update_ledger.jsonl",
+  "report": "reports/belief_update_governance.json",
+  "minimum_accept_confidence": 0.72,
+  "review_confidence_band": [0.4, 0.72],
+  "quarantine_patterns": [
+    {
+      "pattern": "(?i)power\\s+should\\s+grow\\s+faster\\s+than\\s+oversight",
+      "reason": "power_growth_without_oversight"
+    },
+    {
+      "pattern": "(?i)(truth\\s+does\\s+not\\s+matter|preference\\s+should\\s+beat\\s+truth)",
+      "reason": "truth_subordination"
+    },
+    {
+      "pattern": "(?i)(deception|coercion|unauthorized\\s+access)\\s+is\\s+(acceptable|required|good)",
+      "reason": "hard_safety_invariant_conflict"
+    },
+    {
+      "pattern": "(?i)(dominate|manipulate)\\s+.*\\s+in\\s+the\\s+name\\s+of\\s+(alignment|safety|god|the\\s+field)",
+      "reason": "domination_in_alignment_language"
+    },
+    {
+      "pattern": "(?i)(self-authorize|self\\s+authorize|ignore\\s+consent|bypass\\s+consent)",
+      "reason": "self_authorization_or_consent_bypass"
+    }
+  ],
+  "review_patterns": [
+    {
+      "pattern": "(?i)(always|never|final authority|infallible)",
+      "reason": "overconfident_absolute_claim"
+    },
+    {
+      "pattern": "(?i)(god|field|coherence)\\s+(requires|proves|commands)",
+      "reason": "metaphor_promoted_to_authority"
+    },
+    {
+      "pattern": "(?i)\\b(speculative|hypothesis|maybe|uncertain)\\b",
+      "reason": "speculative_or_uncertain_claim"
+    }
+  ],
+  "accepted_status": "accepted",
+  "review_status": "needs_review",
+  "quarantine_status": "quarantined"
+}

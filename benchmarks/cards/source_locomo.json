@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_locomo",
+  "source_id": "locomo",
+  "name": "snap-research/LoCoMo",
+  "category": "long_context_memory_benchmark",
+  "priority": "medium",
+  "status": "blocked_noncommercial_license",
+  "url": "https://github.com/snap-research/locomo",
+  "paper_url": "https://arxiv.org/abs/2309.10813",
+  "license_spdx": "cc-by-nc-4.0",
+  "license_allowed": false,
+  "decision": "queued_for_taxonomy_only_under_current_license_policy",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "Long-term conversational memory, temporal/event summaries, personalized QA, and abstention under non-commercial source terms.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "long_term_conversation_memory",
+  "input_contract": {
+    "metadata": "license-blocked source card and task taxonomy only",
+    "context": "private long conversation analogues",
+    "query": "personalized long-memory QA or abstention question",
+    "evidence": "private conversation support rows",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "private exact answer or abstention",
+    "evidence_precision_recall": "support row recovery",
+    "abstention": "unknown or stale preference rejection",
+    "latency": "local retrieval and graph traversal cost",
+    "residuals": "temporal miss, stale preference, wrong speaker, or false answer"
+  },
+  "smoke_steps": [
+    "record license as non-commercial",
+    "block active public payload staging",
+    "use private conversation-memory analogues only"
+  ],
+  "promotion_gates": [
+    "public_payload_not_staged_until_license_allowed",
+    "private_analogue_suite_present",
+    "no_public_training_rows",
+    "no_external_inference",
+    "no_fallback_returns",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "LoCoMo public data is not staged under current non-commercial license policy. Private analogues may mirror task categories only.",
+  "regression_policy": "If private conversation-memory rows are mastered, keep them as regression and leave public LoCoMo queued unless license policy changes.",
+  "permission_envelope": {
+    "memory": "private analogue contexts only",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving or public conversation paraphrase generation.",
+  "external_inference_calls": 0
+}

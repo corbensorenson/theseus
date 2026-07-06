@@ -1,0 +1,55 @@
+{
+  "policy": "project_theseus_viea_execution_spine_v1",
+  "purpose": "Safe private execute-mode runtime for compiled VIEA execution packets.",
+  "schema_version": "0.1",
+  "default_lease_seconds": 300,
+  "max_attempts_per_node": 2,
+  "public_benchmark_training_allowed": false,
+  "external_inference_allowed": false,
+  "fallback_returns_allowed": false,
+  "allowed_execution_modes": [
+    "compiled_viea_local_deterministic_tool",
+    "old_direct_local_tool_baseline"
+  ],
+  "no_context_required_reasons": [
+    "pure_trace_replay_over_prior_same_run_tool_events"
+  ],
+  "benchmark_adapter_readiness": [
+    {
+      "id": "planbench",
+      "public_role": "calibration_only",
+      "local_private_dry_run_scorer": "private_symbolic_action_sequence_goal_check",
+      "train_allowed": false
+    },
+    {
+      "id": "travelplanner",
+      "public_role": "calibration_only",
+      "local_private_dry_run_scorer": "private_constraint_plan_consistency_check",
+      "train_allowed": false
+    },
+    {
+      "id": "bfcl_gorilla",
+      "public_role": "calibration_only",
+      "local_private_dry_run_scorer": "private_function_call_schema_exact_match",
+      "train_allowed": false
+    },
+    {
+      "id": "webarena_browsergym",
+      "public_role": "calibration_only",
+      "local_private_dry_run_scorer": "private_web_navigation_state_check",
+      "train_allowed": false
+    },
+    {
+      "id": "osworld",
+      "public_role": "calibration_only",
+      "local_private_dry_run_scorer": "private_os_action_schema_check",
+      "train_allowed": false
+    },
+    {
+      "id": "theagentcompany",
+      "public_role": "calibration_only",
+      "local_private_dry_run_scorer": "private_enterprise_workflow_state_check",
+      "train_allowed": false
+    }
+  ]
+}

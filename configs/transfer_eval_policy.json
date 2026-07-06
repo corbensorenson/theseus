@@ -1,0 +1,50 @@
+{
+  "policy": "project_theseus_transfer_eval_policy_v0",
+  "external_inference_allowed": false,
+  "mastery_threshold": 0.9,
+  "floor_threshold": 0.7,
+  "task_families": [
+    {
+      "id": "code_repair",
+      "capability": "repair a small local code defect and preserve tests",
+      "runner": "local_toy_sandbox",
+      "risk_tier": "low"
+    },
+    {
+      "id": "tool_use",
+      "capability": "select and call a local tool with schema-constrained arguments",
+      "runner": "local_schema_fixture",
+      "risk_tier": "low"
+    },
+    {
+      "id": "web_task",
+      "capability": "complete a self-hosted browser task without real accounts",
+      "runner": "local_fixture_pending",
+      "risk_tier": "medium"
+    },
+    {
+      "id": "long_context_recovery",
+      "capability": "recover high-importance facts after context packet compaction",
+      "runner": "context_packet_fixture",
+      "risk_tier": "low"
+    },
+    {
+      "id": "rl_control",
+      "capability": "improve a local control policy from deterministic simulator reward",
+      "runner": "local_rl_fixture",
+      "risk_tier": "medium"
+    },
+    {
+      "id": "self_debugging",
+      "capability": "detect a failed autonomy cycle, diagnose the cause, and apply a bounded local fix",
+      "runner": "autonomy_watchdog_fixture",
+      "risk_tier": "medium"
+    },
+    {
+      "id": "voice_io",
+      "capability": "route speech through native Theseus head/router voice I/O without installed or provider STT/TTS inference",
+      "runner": "native_voice_head_router_fixture",
+      "risk_tier": "medium"
+    }
+  ]
+}

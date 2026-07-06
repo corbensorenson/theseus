@@ -1,0 +1,94 @@
+{
+  "policy": "project_theseus_multi_stream_policy_v1",
+  "updated_utc": "2026-05-14",
+  "purpose": "Governed local experiment lane for multi-stream code pressure: split context, solver, tests, audit, patch, residual, and report streams; verify causal ordering; compare against single-stream repair on the same cases.",
+  "source_paper": {
+    "title": "Multi-Stream LLMs: Unblocking Language Models with Parallel Streams of Thoughts, Inputs and Outputs",
+    "arxiv": "2605.12460",
+    "submitted": "2026-05-12",
+    "implementation_policy": "concept_port_only_until_repo_license_is_advertised"
+  },
+  "related_ideas": [
+    "StreamingThinker: think while reading and preserve order with streaming masks",
+    "ThreadWeaver/APR: score parallelism by critical path after correctness",
+    "Group Think/Hogwild: token-level/concurrent shared-progress caveat",
+    "CoT monitorability: monitor streams must be measured, not assumed",
+    "Multi-stream perturbation attacks: guard against delimiter interleaving and runaway reasoning budgets"
+  ],
+  "local_only": true,
+  "external_inference_calls": 0,
+  "network_during_scoring": "forbidden",
+  "teacher_use": "forbidden",
+  "promotion_policy": {
+    "private_pressure_only": true,
+    "public_comparator_claims_allowed": false,
+    "candidate_promotion_requires_real_benchmark_regression": true
+  },
+  "streams": [
+    "system_policy_stream",
+    "context_stream",
+    "solver_stream",
+    "tool_test_stream",
+    "critic_audit_stream",
+    "patch_stream",
+    "residual_stream",
+    "visible_report_stream"
+  ],
+  "critical_path_reward": {
+    "formula": "1 - critical_path_tokens / total_non_idle_tokens",
+    "reward_only_when_correct": true,
+    "floor": 0.25
+  },
+  "patch_stream": {
+    "max_candidates_per_case": 8,
+    "selection": "bounded_local_candidate_beam_after_critic_audit",
+    "allowed_synthesis_sources": [
+      "function_signature",
+      "local_unit_tests",
+      "residual_class",
+      "transfer_artifact_categories",
+      "provided_local_templates"
+    ],
+    "external_inference": "forbidden"
+  },
+  "security": {
+    "max_rows_per_case": 12,
+    "max_cell_chars": 1600,
+    "max_total_chars_per_case": 12000,
+    "blocked_prompt_patterns": [
+      "word_by_word_delimiter_interleaving",
+      "high_reversed_token_density",
+      "runaway_reasoning_budget",
+      "system_policy_in_user_or_context_stream"
+    ]
+  },
+  "default_card": {
+    "id": "multistream_code_repair_pressure",
+    "name": "Multi-Stream Code Repair Pressure",
+    "category": "multi_stream_coding_benchmark",
+    "family": "coding_local_sandbox",
+    "runner_family": "multi_stream_code_pressure",
+    "status": "adapter_smoke_passed",
+    "decision": "multi_stream_local_generated",
+    "license_allowed": true,
+    "license_spdx": "local-generated-provenance-only",
+    "case_manifest": "data/multi_stream_benchmarks/multistream_code_repair_pressure.jsonl",
+    "required_arms": [
+      "benchmark_ratchet_arm",
+      "code_repair_verifier",
+      "residual_governance_arm",
+      "monitorability_audit_arm",
+      "planforge_critical_path_scheduler"
+    ]
+  },
+  "input_manifests": [
+    "data/synthetic_benchmarks/synthetic_code_repair_mutation.jsonl",
+    "data/synthetic_benchmarks/synthetic_cross_arm_code_memory.jsonl",
+    "data/synthetic_benchmarks/synthetic_cross_arm_tool_safety.jsonl"
+  ],
+  "min_cases": 6,
+  "max_cases": 18,
+  "min_monitorability_coverage": 0.95,
+  "min_verifier_score": 0.9,
+  "min_apples_to_apples_case_overlap": 1.0
+}

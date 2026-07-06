@@ -1,0 +1,10 @@
+[package]
+name = "theseus-supervisor"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Native supervisor and installer entrypoint for Project Theseus Hive."
+
+[dependencies]
+clap = { workspace = true }
+serde_json = { workspace = true }

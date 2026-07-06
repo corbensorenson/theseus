@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_mtrag",
+  "source_id": "mtrag",
+  "name": "IBM MTRAG",
+  "category": "long_context_memory_benchmark",
+  "priority": "medium",
+  "status": "needs_license_and_evaluator_review",
+  "url": "https://github.com/ibm/mt-rag-benchmark",
+  "paper_url": "https://arxiv.org/abs/2501.03468",
+  "license_spdx": "unknown",
+  "license_allowed": false,
+  "decision": "queued_until_license_and_deterministic_scoring_verified",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "Multi-turn RAG memory with later-turn, non-standalone, unanswerable, and multi-domain questions.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "multi_turn_rag_memory",
+  "input_contract": {
+    "metadata": "official source card and domain/task taxonomy",
+    "context": "private multi-turn conversation and corpus snippets",
+    "query": "follow-up or non-standalone RAG question",
+    "evidence": "retrieved support and prior-turn bridge rows",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "exact local answer or abstention for private fixtures",
+    "evidence_precision_recall": "prior-turn and corpus support recovery",
+    "abstention": "unanswerable/underspecified detection",
+    "latency": "local retrieval and bridge cost",
+    "residuals": "turn bridge miss, wrong domain, false answer, or underspecification miss"
+  },
+  "smoke_steps": [
+    "verify repository license and data terms",
+    "admit deterministic answerable/unanswerable scoring lanes only",
+    "run private multi-turn RAG analogues first"
+  ],
+  "promotion_gates": [
+    "license_review_before_payload_stage",
+    "deterministic_scorer_present",
+    "no_public_training_rows",
+    "no_external_inference",
+    "private_analogue_suite_present",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "MTRAG public conversations/corpora are calibration-only. Do not train on public turns, retrieved passages, answers, or task templates.",
+  "regression_policy": "If mastered, keep private multi-turn RAG rows as regression.",
+  "permission_envelope": {
+    "memory": "private analogues until license/evaluator admission",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving or LLM-as-judge substitution.",
+  "external_inference_calls": 0
+}

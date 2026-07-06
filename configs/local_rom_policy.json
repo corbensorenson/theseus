@@ -1,0 +1,91 @@
+{
+  "policy": "sparkstream_local_rom_policy_v0",
+  "usage": "user_supplied_private_assets_only",
+  "default_roots": [
+    "data/local_roms"
+  ],
+  "environment_variable": "SPARKSTREAM_ROM_ROOTS",
+  "allowed_extensions": [
+    ".gb",
+    ".gbc",
+    ".gba"
+  ],
+  "never_git_track_roms": true,
+  "autonomous_rom_download": "forbidden",
+  "autonomous_training_use": "allowed_only_after_local_inventory_and_user_rights_attestation",
+  "rights_attestation": "User states they obtained their ROM collection ethically and may use it for personal local training.",
+  "manifest_privacy": {
+    "store_relative_paths_for_project_local_roms": true,
+    "redact_external_absolute_paths": true,
+    "store_sha256": true,
+    "store_file_names": true
+  },
+  "priority_rom_profiles": [
+    {
+      "profile_id": "gba_pokemon_emerald",
+      "system": "gba",
+      "priority": "high",
+      "filename_keywords": [
+        "emerald"
+      ],
+      "why": "PyGBA currently has a Pokemon Emerald reward wrapper, making this the fastest GBA ROM path to a shaped RL benchmark.",
+      "adapter": "pygba_mgba"
+    },
+    {
+      "profile_id": "gbc_pokemon_red_blue_yellow",
+      "system": "gb_gbc",
+      "priority": "high",
+      "filename_keywords": [
+        "pokemon red",
+        "pokemon blue",
+        "pokemon yellow"
+      ],
+      "why": "PyBoy/Gymboy-style wrappers and recent Pokemon RL work make early-game navigation and anti-loop benchmarks practical.",
+      "adapter": "pyboy_or_gymboy"
+    },
+    {
+      "profile_id": "gb_tetris",
+      "system": "gb_gbc",
+      "priority": "high",
+      "filename_keywords": [
+        "tetris"
+      ],
+      "why": "Tetris provides a compact long-horizon planning/control benchmark with simple observations and score-based rewards.",
+      "adapter": "pyboy_or_gymboy"
+    },
+    {
+      "profile_id": "gbc_platformer_action",
+      "system": "gb_gbc",
+      "priority": "medium",
+      "filename_keywords": [
+        "kirby",
+        "mario land",
+        "wario",
+        "metroid"
+      ],
+      "why": "Platformers add pixel control, sparse rewards, hazard avoidance, and exploration pressure.",
+      "adapter": "pyboy_or_stable_retro"
+    },
+    {
+      "profile_id": "gba_strategy_or_tactics",
+      "system": "gba",
+      "priority": "medium",
+      "filename_keywords": [
+        "advance wars",
+        "fire emblem",
+        "tactics"
+      ],
+      "why": "Turn-based strategy ROMs are useful later for planning, memory, and delayed-credit benchmarks once wrappers exist.",
+      "adapter": "custom_memory_reward_wrapper"
+    }
+  ],
+  "integration_requirements": [
+    "local ROM inventory present",
+    "no ROM files tracked by git",
+    "wrapper smoke passes with deterministic seed",
+    "reward source is documented",
+    "save-state reset policy is documented",
+    "runtime profile and frame throughput are reported",
+    "promotion creates regression benchmark rather than rerunning saturated games forever"
+  ]
+}

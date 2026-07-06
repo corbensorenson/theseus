@@ -1,0 +1,111 @@
+{
+  "policy": "project_theseus_compute_market_policy_v0",
+  "enabled": true,
+  "purpose": "Meter Hive compute as auditable work receipts and internal gas credits so weak clients can rent stronger Hive workers and contributors can be rewarded for verified work.",
+  "legal_posture": {
+    "mode": "internal_accounting_only",
+    "tradable_token_enabled": false,
+    "exchange_enabled": false,
+    "custody_enabled": false,
+    "fiat_onramp_enabled": false,
+    "note": "This policy records work and internal credits only. A tradable token, exchange, fiat on/off-ramp, or custodial wallet requires a separate legal/compliance release."
+  },
+  "paths": {
+    "wallet": "configs/compute_market_wallet.local.json",
+    "status": "reports/compute_market_status.json",
+    "ledger": "reports/compute_market_ledger.jsonl",
+    "receipts": "reports/compute_market_receipts.jsonl",
+    "last_quote": "reports/compute_market_quote_last.json",
+    "last_settlement": "reports/compute_market_settlement_last.json",
+    "rent_plan": "reports/compute_market_rent_plan.json"
+  },
+  "currency": {
+    "symbol": "TWC",
+    "display_name": "Theseus Work Credit",
+    "smallest_unit": "micro_twc",
+    "micro_units_per_credit": 1000000,
+    "public_chain_symbol_reserved": "THS",
+    "claim": "TWC is an internal metering unit until a public-chain token and exchange are explicitly launched."
+  },
+  "pricing": {
+    "default_base_micro_twc_per_million_work_units": 12,
+    "protocol_fee_bps": 200,
+    "minimum_gas_micro_twc": 1,
+    "task_kind_rates": {
+      "resource_probe": 1,
+      "capability_refresh": 1,
+      "readiness_check": 2,
+      "checkpoint_chat": 3,
+      "training_smoke": 8,
+      "cuda_eval_chunk": 16,
+      "cuda_training_chunk": 34,
+      "cuda_rollout_chunk": 40,
+      "mlx_eval_chunk": 14,
+      "mlx_training_chunk": 28,
+      "mlx_rollout_chunk": 32,
+      "public_training_smoke": 5,
+      "public_eval_shard": 14,
+      "public_synthetic_quality_vote": 4
+    },
+    "backend_multipliers": {
+      "cpu": 1.0,
+      "rust_cuda": 1.45,
+      "nvidia_cuda": 1.45,
+      "apple_mlx": 1.25,
+      "mlx_apple": 1.25,
+      "mlx_cuda": 1.35,
+      "checkpoint_chat_gateway": 1.1
+    },
+    "difficulty_multipliers": {
+      "smoke": 1.0,
+      "inner_loop": 1.35,
+      "candidate": 1.85,
+      "seed_sweep": 1.5,
+      "public": 1.2
+    }
+  },
+  "work_units": {
+    "default_units": 1000000,
+    "max_claimed_units_per_receipt": 100000000000,
+    "payload_fields": {
+      "cases_per_task": 4,
+      "epochs": 1,
+      "steps": 1,
+      "samples_per_launch": 64,
+      "hv_dim": 512,
+      "train_limit": 128,
+      "eval_limit": 128,
+      "rollout_batch": 4,
+      "seq_len": 8
+    }
+  },
+  "settlement": {
+    "allow_protocol_rewards_without_consumer": true,
+    "duplicate_receipt_policy": "reject_duplicate",
+    "require_receipt_accepted": true,
+    "require_registered_task_kind": true,
+    "require_provider_account": false,
+    "local_private_hive_receipts_are_accounting_only": true,
+    "anti_cheat_required_for_public_rewards": [
+      "signed_worker_manifest",
+      "deterministic_replay_or_spot_check",
+      "sandbox_attestation",
+      "result_consensus_or_holdout_verification"
+    ]
+  },
+  "rental": {
+    "enabled": true,
+    "default_max_gas_micro_twc": 100000,
+    "allow_negative_local_test_balance": true,
+    "weak_client_policy": "quote_first_then_route_to_best_authorized_peer",
+    "public_market_policy": "disabled_until_signed_gateway_and_abuse_controls"
+  },
+  "risk_controls": {
+    "never_share_private_data_for_payment": true,
+    "never_pay_for_teacher_calls": true,
+    "never_accept_arbitrary_shell_work": true,
+    "license_feature_for_public_gateway": "public_hive_gateway",
+    "license_feature_for_accounting": "public_work_accounting",
+    "operator_review_required_before_exchange": true
+  }
+}

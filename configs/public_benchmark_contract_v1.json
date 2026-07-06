@@ -1,0 +1,193 @@
+{
+  "policy": "project_theseus_public_benchmark_contract_v1",
+  "status": "frozen_next_surface_contract",
+  "frozen_utc": "2026-06-21T00:25:00Z",
+  "purpose": "Define apples-to-apples public calibration surfaces and authorize non-fishing execution through the guarded run registry.",
+  "global_rules": {
+    "public_benchmarks_are_calibration_only": true,
+    "train_on_public_prompts_tests_solutions_traces_or_scores": false,
+    "external_inference_during_scoring": false,
+    "public_execution_default": "governed_measurement_run_registry",
+    "execute_requires": [
+      "active readiness report with hard gates clear",
+      "frozen run id and benchmark surface contract",
+      "guarded runner duplicate-surface check against reports/public_benchmark_run_registry.jsonl",
+      "candidate manifest and contamination audit paths declared",
+      "code/config hash snapshot recorded",
+      "surface marked consumed after any execute attempt"
+    ],
+    "benchmark_run_registry": {
+      "run_registry": "reports/public_benchmark_run_registry.jsonl",
+      "per_surface_max_runs": 1,
+      "time_period_run_cap_enabled": false,
+      "calendar_throttle_enabled": false,
+      "fresh_surface_execution_policy": "run_immediately_when_frozen_registry_surface_is_clean",
+      "run_registry_semantics": "Fresh measurement surfaces are not throttled by a calendar budget; exact consumed surfaces still cannot be rerun for score fishing",
+      "rerun_consumed_surface_for_score_fishing": false
+    },
+    "consumed_surface_do_not_rerun": {
+      "slug": "wide_public_seed23_5x32_interface_floor_v1",
+      "report": "reports/real_code_benchmark_graduation_wide_public_seed23_5x32_interface_floor_v1.json",
+      "score": 0.2125,
+      "task_count": 160,
+      "registry": "reports/public_benchmark_run_registry.jsonl"
+    }
+  },
+  "contract_snapshot": {
+    "theseus_branch": "codex/circle-ai-contract-consumers",
+    "theseus_git_head": "96eb0f5b40cb1ed04bb924cb868e19060cd57852",
+    "harness_files_sha256": {
+      "scripts/real_code_benchmark_graduation.py": "cfb680969f380bf6abf9574dbb46a4c0fbb561be2a4d3b8e93637b19f2eaa96c",
+      "scripts/broad_transfer_closure_runner.py": "8cdf46ee05783ab21970e6fb56846cb75e48702fd871346840d978dd524e5e16",
+      "scripts/operator_bounded_public_calibration.py": "c25e0f20050796963609d76adfb9ae64a59eb0635f14b37e09eff6e45a770427",
+      "scripts/public_calibration_readiness_packet.py": "370e19c96a09aec482d2091cc97823dee9fd30a2dfe176e626be8a1517084bc9",
+      "scripts/public_calibration_alignment_preflight.py": "c31888ab9a1848856e601b8139561ce4d392d37e2efc35c9f0ab0d67991aa2f2",
+      "scripts/public_transfer_readiness_refresh_v1.py": "5c66864dbcddbb5d17a761028db873a371a40c1a9892b2784ad1733b50d9e6a3",
+      "scripts/private_residual_target_consumer_v1.py": "3506788797a70c5fff76ef6f6bcd23e4d78d778fb5a7542bcfee244f6a9708bb",
+      "crates/symliquid-cli/src/code_token_generator.rs": "c1ca7e296a30bddea0a45070bdde56b718cc2ddc4f996f2fb14295ec9616184c"
+    },
+    "public_source_time_window_policy": "Use only local resource_pantry snapshots pinned by this contract. LiveCodeBench and other time-sensitive rows must not include future rows or newly fetched rows unless a new contract is frozen before execution.",
+    "harness_time_window_policy": "The guarded public run must use this Theseus harness snapshot or a new frozen contract with updated harness hashes before approval.",
+    "operator_lock_policy": "The old operator lock is a circuit breaker only. The active authorization path is the governed run registry."
+  },
+  "primary_metric_contract": {
+    "metric": "pass_at_1_selected_candidate",
+    "secondary_metrics": [
+      "oracle_pass_if_any_under_equal_candidate_budget",
+      "same_seed_non_sts_selected_pass_rate",
+      "selected_candidate_runtime_ms",
+      "no_admissible_rate",
+      "regression_count"
+    ],
+    "candidate_budget_policy": "STS and non-STS controls must receive equal candidate budgets. STS may rank/select; it may not get extra generated candidates.",
+    "fallback_policy": "fallback return candidates, template solvers, hardcoded benchmark candidates, and public-derived answer templates are disallowed for promotion or public claims"
+  },
+  "stage_1_code_generation_surface": {
+    "slug": "industry_code_transfer_seed14_5x64_v1",
+    "status": "contracted_not_executed",
+    "runner_family": "real_code_benchmark_graduation",
+    "capacity_dry_run_report": "reports/broad_transfer_closure_runner_public_contract_capacity_dry_run.json",
+    "cards": [
+      "source_mbpp",
+      "source_evalplus",
+      "source_bigcodebench",
+      "source_human_eval",
+      "source_livecodebench"
+    ],
+    "seed": 14,
+    "cases_per_card": 64,
+    "total_task_count": 320,
+    "case_manifest": "reports/public_wide_slice_manifest_industry_code_transfer_seed14_5x64_v1.jsonl",
+    "case_manifest_report": "reports/public_wide_slice_selector_industry_code_transfer_seed14_5x64_v1.json",
+    "time_window": {
+      "benchmark_rows": "pinned_local_snapshots_only",
+      "livecodebench_rows": "no rows newer than the local snapshot used by the capacity dry run unless a replacement contract is frozen",
+      "rerun_policy": "do not rerun the consumed 160-task surface; this is a new seed14 5x64 contract only"
+    },
+    "compute_budget": {
+      "runner_timeout_seconds": 21600,
+      "public_timeout_seconds": 10800,
+      "rust_timeout_seconds": 21600,
+      "sts_timeout_seconds": 10800,
+      "operator_wrapper_timeout_seconds": 7200,
+      "max_rust_work_steps": 4000000,
+      "external_inference_calls": 0,
+      "candidate_budget": "equal for STS and non-STS controls"
+    },
+    "command_after_run_registry_check": [
+      "python3",
+      "scripts/real_code_benchmark_graduation.py",
+      "--cards",
+      "source_mbpp,source_evalplus,source_bigcodebench,source_human_eval,source_livecodebench",
+      "--seed",
+      "14",
+      "--max-cases-per-card",
+      "64",
+      "--case-manifest",
+      "reports/public_wide_slice_manifest_industry_code_transfer_seed14_5x64_v1.jsonl",
+      "--student-candidate-generator",
+      "token",
+      "--student-candidate-manifest",
+      "reports/student_code_candidates_industry_code_transfer_seed14_5x64_v1.jsonl",
+      "--out",
+      "reports/real_code_benchmark_graduation_industry_code_transfer_seed14_5x64_v1.json",
+      "--trace-out",
+      "reports/real_code_benchmark_traces_industry_code_transfer_seed14_5x64_v1.jsonl",
+      "--transfer-artifact-out",
+      "reports/transfer_artifacts/code/real_code_benchmark_graduation_industry_code_transfer_seed14_5x64_v1_transfer_artifact.json"
+    ],
+    "command_after_unlock_only": [
+      "python3",
+      "scripts/real_code_benchmark_graduation.py",
+      "--cards",
+      "source_mbpp,source_evalplus,source_bigcodebench,source_human_eval,source_livecodebench",
+      "--seed",
+      "14",
+      "--max-cases-per-card",
+      "64",
+      "--case-manifest",
+      "reports/public_wide_slice_manifest_industry_code_transfer_seed14_5x64_v1.jsonl",
+      "--student-candidate-generator",
+      "token",
+      "--student-candidate-manifest",
+      "reports/student_code_candidates_industry_code_transfer_seed14_5x64_v1.jsonl",
+      "--out",
+      "reports/real_code_benchmark_graduation_industry_code_transfer_seed14_5x64_v1.json",
+      "--trace-out",
+      "reports/real_code_benchmark_traces_industry_code_transfer_seed14_5x64_v1.jsonl",
+      "--transfer-artifact-out",
+      "reports/transfer_artifacts/code/real_code_benchmark_graduation_industry_code_transfer_seed14_5x64_v1_transfer_artifact.json"
+    ],
+    "mandatory_after_run": [
+      "append reports/public_benchmark_run_registry.jsonl with consumed status",
+      "run broad_transfer_matrix for the new report",
+      "run public_code_transfer_residual_report for residual categories only",
+      "do not train on public traces, prompts, tests, solutions, or score labels"
+    ]
+  },
+  "stage_2_agentic_repo_repair_surface": {
+    "slug": "swe_bench_verified_contract_v1",
+    "status": "adapter_contract_only_not_in_next_public_measurement",
+    "benchmark_family": "SWE-bench-style repository repair",
+    "minimum_surface": "SWE-bench Verified or Lite using official harness semantics",
+    "time_window": "No SWE-bench issue, patch, trace, hidden test, or public solution may enter training. Exact split, task count, seed, harness commit, and sandbox limits must be frozen in a later contract before any execution.",
+    "blocked_until": [
+      "official harness staged locally with pinned commit",
+      "sandbox/network policy audited",
+      "patch-generation candidate contract produces a single selected patch",
+      "no public issue solutions, traces, or test labels enter training data"
+    ]
+  },
+  "official_source_pins_observed": {
+    "human_eval": {
+      "url": "https://github.com/openai/human-eval",
+      "head": "6d43fb980f9fee3c892a914eda09951f772ad10d",
+      "license_expected": "MIT"
+    },
+    "evalplus": {
+      "url": "https://github.com/evalplus/evalplus",
+      "head": "26d6d00bb1fd0fa37f39c99d5290da67891d1c5e",
+      "license_expected": "Apache-2.0"
+    },
+    "mbpp_google_research": {
+      "url": "https://github.com/google-research/google-research",
+      "head": "4fde028f6017e16aefcbc2b6d3f77f70b9f6b421",
+      "license_expected": "Apache-2.0"
+    },
+    "bigcodebench": {
+      "url": "https://github.com/bigcode-project/bigcodebench",
+      "head": "09dd993f46c3fbf3a799465bb96d524edcb0b199",
+      "license_expected": "Apache-2.0"
+    },
+    "livecodebench": {
+      "url": "https://github.com/LiveCodeBench/LiveCodeBench",
+      "head": "28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24",
+      "license_expected": "MIT"
+    },
+    "swe_bench": {
+      "url": "https://github.com/SWE-bench/SWE-bench",
+      "head": "f7bbbb2ccdf479001d6467c9e34af59e44a840f9",
+      "license_expected": "MIT"
+    }
+  }
+}

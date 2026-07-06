@@ -1,0 +1,49 @@
+{
+  "source_id": "openassistant_oasst1_offset_100",
+  "dataset": "OpenAssistant/oasst1",
+  "url": "https://huggingface.co/datasets/OpenAssistant/oasst1",
+  "license_spdx": "apache-2.0",
+  "expected_license_normalized": "apache-2.0",
+  "enabled": true,
+  "format": "oasst_message_rows",
+  "config": "default",
+  "split": "train",
+  "offset": 100,
+  "length": 100,
+  "why": "Apache-2.0 human-annotated assistant conversation tree rows; sampled as provenance-bearing messages until a graph assembler is promoted.",
+  "use": "metadata_and_message_pressure_only_until_tree_reconstruction",
+  "checks": [
+    {
+      "gate": "source_enabled",
+      "passed": true,
+      "evidence": "True"
+    },
+    {
+      "gate": "source_kind_huggingface_dataset",
+      "passed": true,
+      "evidence": "huggingface_dataset"
+    },
+    {
+      "gate": "license_expected_allowlisted",
+      "passed": true,
+      "evidence": "apache-2.0"
+    },
+    {
+      "gate": "hf_license_matches_expected",
+      "passed": true,
+      "evidence": "apache-2.0"
+    },
+    {
+      "gate": "hf_rows_fetch",
+      "passed": false,
+      "evidence": "HTTP 429: <!DOCTYPE html>\n<html class=\"\" lang=\"en\">\n<head>\n    <meta charset=\"utf-8\" />\n    <meta\n            name=\"viewport\"\n            content=\"width=device-width, initial-scale=1.0, user-scalable=no\"\n    />\n    <meta\n            name=\"description\"\n            content=\"We're on a journey to advance and democratize artificial intelligence through open source and open science.\"\n    />\n    <meta property=\"fb:app_id\" content=\"1321688464574422\" />\n    <meta name=\"twitter:card\" content=\"summary_lar"
+    }
+  ],
+  "status": "metadata_verified",
+  "conversation_samples": 0,
+  "private_train_rows": 0,
+  "sts_rows": 0,
+  "external_inference_calls": 0,
+  "hf_license_normalized": "apache-2.0",
+  "decision": "rows_fetch_rate_limited_deferred"
+}

@@ -1,0 +1,129 @@
+{
+  "policy": "project_theseus_native_voice_training_policy_v0",
+  "purpose": "Govern licensed speech data for native Project Theseus STT/TTS learning without external speech inference.",
+  "updated_utc": "2026-05-13",
+  "owner": "octopus_head_router_io_layer",
+  "external_inference": "forbidden_except_teacher_architecture_proposals",
+  "autonomous_manifest_refresh": true,
+  "autonomous_tiny_audio_samples": true,
+  "bulk_downloads": "forbidden_without_explicit_user_approval",
+  "storage_root": "data/external_benchmark_candidates/native_voice_samples",
+  "manifest_artifact": "data/external_benchmark_candidates/native_voice_samples/native_voice_training_manifest.jsonl",
+  "allowed_licenses": [
+    "cc0-1.0",
+    "cc-by-4.0",
+    "public-domain",
+    "odc-by"
+  ],
+  "caps": {
+    "max_sources_per_cycle": 8,
+    "max_clips_per_cycle": 8,
+    "max_clips_per_source": 4,
+    "max_bytes_per_clip": 5000000,
+    "max_total_audio_bytes_per_cycle": 25000000,
+    "max_rows_per_hf_request": 8
+  },
+  "roles": {
+    "stt_train": "Audio with transcript for native speech-to-text learning.",
+    "stt_eval": "Held-out audio/transcript for WER/CER evaluation.",
+    "tts_train": "Text/audio pairs for native speech synthesis learning.",
+    "tts_eval": "Held-out text/audio pairs for reconstruction and intelligibility proxies.",
+    "voice_router_eval": "Voice packet, turn, and intent-preservation pressure for the head/router."
+  },
+  "sources": [
+    {
+      "source_id": "librispeech",
+      "display_name": "LibriSpeech ASR corpus",
+      "roles": [
+        "stt_train",
+        "stt_eval",
+        "tts_train",
+        "voice_router_eval"
+      ],
+      "license_spdx": "cc-by-4.0",
+      "license_evidence_url": "https://www.openslr.org/12/",
+      "source_url": "https://huggingface.co/datasets/openslr/librispeech_asr",
+      "hf_dataset": "openslr/librispeech_asr",
+      "hf_config": "clean",
+      "hf_split": "validation",
+      "audio_field": "audio",
+      "text_field": "text",
+      "speaker_field": "speaker_id",
+      "id_field": "id",
+      "autonomous_tiny_audio": true,
+      "recommended_initial_use": "Bootstrap native STT and audio/text alignment with tiny governed shards, then use larger train-clean subsets only after disk/runtime approval."
+    },
+    {
+      "source_id": "libritts",
+      "display_name": "LibriTTS corpus",
+      "roles": [
+        "tts_train",
+        "tts_eval",
+        "stt_train"
+      ],
+      "license_spdx": "cc-by-4.0",
+      "license_evidence_url": "https://www.openslr.org/60/",
+      "source_url": "https://www.openslr.org/60/",
+      "autonomous_tiny_audio": false,
+      "recommended_initial_use": "Primary native TTS pressure source after an approved shard plan; OpenSLR archives are large, so keep metadata-only until a shard downloader is approved."
+    },
+    {
+      "source_id": "ljspeech",
+      "display_name": "LJ Speech Dataset",
+      "roles": [
+        "tts_train",
+        "tts_eval"
+      ],
+      "license_spdx": "public-domain",
+      "license_evidence_url": "https://keithito.com/LJ-Speech-Dataset/",
+      "source_url": "https://keithito.com/LJ-Speech-Dataset/",
+      "hf_dataset": "keithito/lj_speech",
+      "audio_field": "audio",
+      "text_field": "normalized_text",
+      "id_field": "id",
+      "autonomous_tiny_audio": false,
+      "recommended_initial_use": "Single-speaker native TTS baseline after a small shard fetcher is approved."
+    },
+    {
+      "source_id": "common_voice",
+      "display_name": "Mozilla Common Voice",
+      "roles": [
+        "stt_train",
+        "stt_eval",
+        "voice_router_eval"
+      ],
+      "license_spdx": "cc0-1.0",
+      "license_evidence_url": "https://mozilladatacollective.com/datasets/cmn1pv5hi00uto1072y1074y7",
+      "source_url": "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0",
+      "hf_dataset": "mozilla-foundation/common_voice_17_0",
+      "audio_field": "audio",
+      "text_field": "sentence",
+      "speaker_field": "client_id",
+      "id_field": "path",
+      "autonomous_tiny_audio": false,
+      "recommended_initial_use": "Large multilingual STT pressure source after locale, consent, and storage policy choose an approved shard."
+    },
+    {
+      "source_id": "vctk",
+      "display_name": "CSTR VCTK Corpus",
+      "roles": [
+        "tts_train",
+        "tts_eval",
+        "speaker_conditioning_eval"
+      ],
+      "license_spdx": "odc-by",
+      "license_evidence_url": "https://opendatacommons.org/licenses/by/1-0/",
+      "source_url": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "autonomous_tiny_audio": false,
+      "recommended_initial_use": "Queued for speaker-diverse TTS only after direct source-card review and attribution requirements are recorded."
+    }
+  ],
+  "promotion_gates": [
+    "voice_training_policy_present",
+    "native_voice_policy_forbids_external_stt_tts",
+    "at_least_one_stt_source_license_allowed",
+    "at_least_one_tts_source_license_allowed",
+    "tiny_manifest_materialized_or_planned",
+    "external_inference_calls_zero"
+  ]
+}

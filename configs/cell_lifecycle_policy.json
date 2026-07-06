@@ -1,0 +1,92 @@
+{
+  "policy": "project_theseus_cell_lifecycle_policy_v1",
+  "mode": "report_only",
+  "purpose": "Apply governed cell-death/evolution pressure to arms, suckers, tools, systems, and mastered training data without silently deleting useful lineage.",
+  "default_ttl_days": {
+    "arm": 14,
+    "sucker": 10,
+    "grammar_sucker": 10,
+    "verifier_sucker": 10,
+    "tool": 21,
+    "system": 7,
+    "training_data": 21
+  },
+  "protected_cells": [
+    "head_router",
+    "safety_reflex_arm",
+    "benchmark_ratchet_arm",
+    "residual_governance_arm",
+    "python_grammar_sucker",
+    "sbl_semantic_backbone_sucker",
+    "deterministic_taming_stack",
+    "learning_scoreboard",
+    "architecture_guidance_loop"
+  ],
+  "renewal": {
+    "renew_score_threshold": 0.7,
+    "improve_score_floor": 0.7,
+    "minimum_usage_for_renew": 1,
+    "stale_after_days": 3,
+    "high_bloat_index": 15,
+    "critical_bloat_index": 20
+  },
+  "allowed_decisions": [
+    "protect",
+    "renew",
+    "improve",
+    "split_or_compress",
+    "observe",
+    "probation",
+    "retire_candidate"
+  ],
+  "data_pruning": {
+    "enabled": true,
+    "mode": "plan_only",
+    "never_delete_without_human_approval": true,
+    "quarantine_root": "runtime/quarantine/cell_lifecycle",
+    "min_bytes_for_archive_candidate": 1048576,
+    "recent_use_grace_days": 7,
+    "mastered_score_threshold": 0.9,
+    "protected_roles": [
+      "public_benchmark_asset",
+      "evaluation_data",
+      "frontier_holdout",
+      "bridge_benchmark",
+      "old_project_redacted_benchmark_case_manifest",
+      "old_project_training_source_manifest",
+      "training_data_candidate_metadata",
+      "permissive_open_code_source_archive",
+      "permissive_open_code_source_sample",
+      "permissive_open_conversation_source_card",
+      "permissive_open_conversation_source_sample",
+      "rl_environment_source_archive",
+      "language_benchmark_source_archive",
+      "configuration",
+      "support_asset"
+    ],
+    "prunable_roots": [
+      "data/residual_code_curriculum",
+      "data/open_code_pantry/private_train",
+      "data/open_conversation_pantry/private_train",
+      "data/open_conversation_pantry/sts_streams",
+      "data/synthetic",
+      "data/sts_learning"
+    ],
+    "archive_not_delete_roles": [
+      "synthetic_training_data",
+      "sts_parallel_stream_train_eval_data",
+      "cognitive_context_sts_train_eval_data",
+      "private_residual_code_train_only",
+      "permissive_open_code_train_only",
+      "permissive_open_conversation_train_only",
+      "permissive_open_conversation_sts_streams"
+    ]
+  },
+  "governance": {
+    "delete_arm_requires_human": true,
+    "delete_sucker_requires_human": true,
+    "delete_training_data_requires_human": true,
+    "teacher_role": "diagnose expired or low-performing cells and propose architecture experiments only; never solve benchmark tasks",
+    "external_inference_calls": 0
+  }
+}

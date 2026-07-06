@@ -1,0 +1,10 @@
+{
+  "name": "Project Theseus",
+  "short_name": "Theseus",
+  "description": "Project Theseus Hive operator dashboard.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101214",
+  "theme_color": "#101214"
+}

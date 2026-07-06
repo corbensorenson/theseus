@@ -1,0 +1,78 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_bfcl",
+  "source_id": "bfcl",
+  "name": "ShishirPatil/gorilla:berkeley-function-call-leaderboard",
+  "category": "tool_use_benchmark",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/ShishirPatil/gorilla",
+  "license_spdx": "apache-2.0",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "tool_use_agent_adapter",
+  "runner_family": "tool_use_local_simulator",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "function/tool-call fidelity, stateful tool use, and argument/schema robustness",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "prompt_or_dialogue": "public calibration item or private holdout",
+    "tool_schema": "available function/tool definitions",
+    "state": "local synthetic/tool simulator state when applicable",
+    "agent": "local Theseus/OpenAI-compatible endpoint only"
+  },
+  "output_contract": {
+    "call_accuracy": "schema/argument/function selection score",
+    "trace": "tool-call and validation packets",
+    "state_errors": "state dependency or canonicalization failures",
+    "residuals": "tool selection, argument, format, and policy clusters"
+  },
+  "smoke_steps": [
+    "bfcl_directory_scan",
+    "test_category_inventory",
+    "local_endpoint_contract",
+    "provider_path_audit",
+    "web_search_category_gate"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "tool_schema_or_call_trace_manifest_present",
+    "local_simulator_or_offline_grader_present",
+    "provider_judges_disabled",
+    "network_disabled_during_eval",
+    "no_external_inference"
+  ],
+  "contamination_policy": "Public benchmark is calibration/diagnostic unless private holdouts or live variants are generated.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "write_tool_trace_logs",
+      "write_policy_simulator_reports"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "live_customer_or_account_data",
+      "network_during_scoring",
+      "production",
+      "provider_api_key_use",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

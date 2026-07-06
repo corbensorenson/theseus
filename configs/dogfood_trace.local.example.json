@@ -1,0 +1,18 @@
+{
+  "policy": "project_theseus_dogfood_trace_local_consent_v0",
+  "capture_enabled": false,
+  "explicit_capture_consent_utc": "",
+  "training_enabled": false,
+  "explicit_training_consent_utc": "",
+  "raw_text_capture_enabled": false,
+  "trace_jsonl": "runtime/dogfood/daily_use_events.jsonl",
+  "training_rows_jsonl": "data/training_data/high_transfer/private_train/dogfood_daily_use_trace_training_rows.jsonl",
+  "notes": [
+    "Copy this file to configs/dogfood_trace.local.json to opt in locally.",
+    "Consent timestamps must be explicit UTC ISO-8601 values such as 2026-06-14T12:00:00Z.",
+    "Training consent must be a separate deliberate timestamp from capture consent.",
+    "Capture is metadata-only by default. Do not enable raw_text_capture_enabled unless a future audited path exists.",
+    "Training row export requires both capture consent and training consent.",
+    "Allowed metadata outcomes are accepted, missed, ignored, corrected, and completed."
+  ]
+}

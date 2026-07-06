@@ -1,0 +1,18 @@
+[package]
+name = "symliquid-metal"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Apple Metal proof surfaces for SymLiquid hot loops."
+build = "build.rs"
+
+[dependencies]
+rand = { workspace = true }
+serde_json = { workspace = true }
+symliquid-core = { workspace = true }
+symliquid-cuda = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+metal = "0.32"
+
+[build-dependencies]

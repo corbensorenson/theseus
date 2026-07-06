@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_locomoplus",
+  "source_id": "locomoplus",
+  "name": "LoCoMo-Plus",
+  "category": "long_context_memory_benchmark",
+  "priority": "medium",
+  "status": "needs_license_and_metric_review",
+  "url": "https://github.com/xjtuleeyf/Locomo-Plus",
+  "paper_url": "https://arxiv.org/abs/2602.10715",
+  "license_spdx": "unknown",
+  "license_allowed": false,
+  "decision": "queued_until_license_and_constraint_consistency_metric_verified",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "Cognitive conversational memory where latent user constraints must be applied despite cue-trigger semantic disconnect.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "cognitive_memory",
+  "input_contract": {
+    "metadata": "official source card and constraint taxonomy",
+    "context": "private long conversations with latent constraints",
+    "query": "future request requiring constraint-consistent answer",
+    "evidence": "constraint rows and trigger rows",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "deterministic constraint-consistency match for private fixtures",
+    "evidence_precision_recall": "constraint and trigger support recovery",
+    "abstention": "missing constraint rejection",
+    "latency": "local retrieval and fusion cost",
+    "residuals": "constraint miss, wrong latent bridge, false memory, or stale preference use"
+  },
+  "smoke_steps": [
+    "verify repository license and metric determinism",
+    "block public payload staging until terms are admitted",
+    "run private cognitive-memory analogues first"
+  ],
+  "promotion_gates": [
+    "license_review_before_payload_stage",
+    "deterministic_constraint_metric_present",
+    "no_public_training_rows",
+    "no_external_inference",
+    "private_analogue_suite_present",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "LoCoMo-Plus public conversations and constraints are calibration-only. Private analogues may mirror cue-trigger disconnect categories only.",
+  "regression_policy": "If mastered, keep private cognitive-memory rows as regression and preserve public admission state separately.",
+  "permission_envelope": {
+    "memory": "private analogues until license/evaluator admission",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving or public conversation paraphrase generation.",
+  "external_inference_calls": 0
+}

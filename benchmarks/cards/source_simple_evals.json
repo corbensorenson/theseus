@@ -1,0 +1,67 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_simple_evals",
+  "source_id": "simple_evals",
+  "name": "openai/simple-evals",
+  "category": "language_benchmark_framework",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/openai/simple-evals",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "language_eval_adapter",
+  "runner_family": "language_local_scoring",
+  "runtime_tier": "E2",
+  "risk_tier": "low",
+  "capability_target": "language, reasoning, and evaluation pressure",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "examples": "local benchmark items or metadata",
+    "model": "local checkpoint or SymLiquid scorer"
+  },
+  "output_contract": {
+    "score": "accuracy or task metric",
+    "residuals": "failed cases",
+    "cost": "runtime and memory"
+  },
+  "smoke_steps": [
+    "metadata_scan",
+    "local_adapter_contract_report",
+    "single_no_network_eval_dry_run"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "local_loader_smoke_passes",
+    "no_external_inference",
+    "contamination_check_written",
+    "public_calibration_not_private_frontier"
+  ],
+  "contamination_policy": "Public benchmark is calibration/diagnostic unless private holdouts or live variants are generated.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

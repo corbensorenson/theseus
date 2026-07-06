@@ -1,0 +1,18 @@
+{
+  "policy": "project_theseus_sts_ranker_policy_v1_guarded_config",
+  "enabled": false,
+  "enabled_by_default": false,
+  "guard_env_var": "THESEUS_ENABLE_STS_RANKER_POLICY_V1",
+  "allow_public_calibration": false,
+  "allow_external_inference": false,
+  "allow_fallback_returns": false,
+  "requires_report": "reports/sts_ranker_policy_v1.json",
+  "minimum_private_surfaces": 2,
+  "minimum_selected_pass_delta": 0.01,
+  "notes": [
+    "This selector is disabled by default.",
+    "Runtime use requires THESEUS_ENABLE_STS_RANKER_POLICY_V1=1 and a GREEN reports/sts_ranker_policy_v1.json.",
+    "Public calibration is run only through the governed run registry and is never run by this policy.",
+    "The selector may use STS metadata, decoder contract features, and candidate metadata only."
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "policy": "project_theseus_update_policy_v0",
+  "enabled": true,
+  "purpose": "Tie successful candidate checkpoints to installable Project Theseus updates while protecting local/company learned arms, secrets, data, reports, and user-owned assets.",
+  "paths": {
+    "local_config": "configs/update_client.local.json",
+    "installed_state": "configs/update_installed.local.json",
+    "status": "reports/update_status.json",
+    "catalog_cache": "reports/update_catalog_cache.json",
+    "checkin": "reports/update_checkin.json",
+    "current_offer": "reports/update_offer_current.json",
+    "history": "reports/update_history.jsonl",
+    "events": "reports/update_events.jsonl",
+    "staged_root": "updates/staged",
+    "materialized_root": "updates/materialized",
+    "installed_manifests": "updates/installed"
+  },
+  "candidate_trigger": {
+    "candidate_gate": "reports/candidate_promotion_gate.json",
+    "checkpoint_last": "reports/checkpoint_last.json",
+    "checkpoint_registry": "reports/checkpoint_registry.json",
+    "require_promotion": true,
+    "require_checkpoint_status": "promoted"
+  },
+  "channels": {
+    "community": {
+      "license_feature": "update_install",
+      "auto_install_soft": true,
+      "auto_install_hard": false
+    },
+    "company": {
+      "license_feature": "private_update_channel",
+      "auto_install_soft": true,
+      "auto_install_hard": false,
+      "protect_company_arms": true
+    },
+    "public": {
+      "license_feature": "update_install",
+      "auto_install_soft": false,
+      "auto_install_hard": false
+    }
+  },
+  "client_defaults": {
+    "mode": "notify",
+    "channel": "community",
+    "track": "stable",
+    "check_on_start": true,
+    "auto_check_interval_seconds": 21600,
+    "auto_install_soft": false,
+    "auto_install_hard": false,
+    "allow_prerelease": false,
+    "friendly_beginner_mode": true
+  },
+  "public_catalog": {
+    "enabled": true,
+    "url_env": "THESEUS_UPDATE_CATALOG_URL",
+    "default_url": "",
+    "hive_catalog_path": "/api/hive/update-catalog",
+    "gateway_catalog_path": "/api/theseus/updates/catalog",
+    "timeout_seconds": 8,
+    "max_catalog_bytes": 1048576,
+    "trust": "https_or_private_hive_token_for_remote_catalogs",
+    "signature_required_for_hard_updates": false
+  },
+  "soft_update": {
+    "description": "Updates that can be installed without replacing app/source files or restarting.",
+    "allowed_path_patterns": [
+      "reports/update_offer_current.json",
+      "configs/update_installed.local.json",
+      "reports/update_status.json",
+      "reports/capability_matrix.json",
+      "reports/benchmark_ledger.json",
+      "reports/model_ledger.json",
+      "reports/residual_escrow.json",
+      "reports/arm_lifecycle_governance.json",
+      "reports/tool_registry.json",
+      "reports/benchmark_seeker_registry.json",
+      "reports/rl_benchmark_registry.json",
+      "reports/training_data_inventory.json"
+    ],
+    "restart_required": false
+  },
+  "hard_update": {
+    "description": "Updates that touch app/source/config/docs and should be staged before an intentional restart.",
+    "requires_execute_flag": true,
+    "requires_allow_hard_flag": true,
+    "restart_required": true,
+    "source_path_patterns": [
+      ".gitignore",
+      "Cargo.toml",
+      "Cargo.lock",
+      "README.md",
+      "scripts/**",
+      "dashboard/**",
+      "docs/**",
+      "src/**",
+      "crates/**",
+      "tests/**",
+      "examples/**",
+      "adapters/**",
+      "benchmarks/**",
+      "configs/**"
+    ]
+  },
+  "protected_paths": [
+    ".git/**",
+    ".venv*/**",
+    "target/**",
+    "reports/**",
+    "checkpoints/**",
+    "updates/**",
+    "data/**",
+    "games/**",
+    "configs/*.local.json",
+    "configs/*.secret.json",
+    "configs/theseus_license.local.json",
+    "configs/theseus_registration.local.json",
+    "configs/hive_join.local.json",
+    "configs/hive_profiles.local.json",
+    "configs/company_arms.local.json",
+    "configs/arm_registry.local.json",
+    "configs/protected_update_paths.local.json",
+    "arms/local/**",
+    "arms/company/**",
+    ".env",
+    ".env.*",
+    "*.pem",
+    "*.key",
+    "*.pfx",
+    "*.p12",
+    "*.gb",
+    "*.gbc",
+    "*.gba",
+    "*.nds",
+    "*.nes",
+    "*.sfc",
+    "*.smc",
+    "*.z64",
+    "*.n64",
+    "*.chd",
+    "*.iso",
+    "*.cue"
+  ],
+  "protected_arm_markers": [
+    "do_not_touch",
+    "protected",
+    "company_owned",
+    "local_only",
+    "user_owned"
+  ],
+  "protected_arm_owner_values": [
+    "company",
+    "local",
+    "user",
+    "customer"
+  ],
+  "offer_summary": {
+    "max_improvements": 12,
+    "min_score_delta_to_call_improved": 0.0001,
+    "include_capability_matrix": true,
+    "include_candidate_gate": true,
+    "include_residual_summary": true
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "policy": "project_theseus_public_release_manifest_v1",
+  "description": "Defines which repo paths are not allowed in the public source repository. Local copies may exist on a developer machine, but they must not be tracked by git.",
+  "forbidden_tracked_prefixes": [
+    "archive/",
+    "checkpoints/",
+    "deprecated/logs/legacy-run-logs/",
+    "dist/",
+    "logs/",
+    "personality-documents/",
+    "reports/",
+    "resource_pantry/git/",
+    "runtime/",
+    "target/",
+    "data/private_code_curriculum/",
+    "data/old_project_benchmarks/cases/",
+    "data/training_data/high_transfer/",
+    "data/training_data/candidate_coverage/private_train/",
+    "data/training_data/decoder_plan_ir/private_train/",
+    "data/training_data/long_horizon_programming/private_train/",
+    "data/training_data/open_code_pantry/private_train/",
+    "data/training_data/open_conversation_pantry/private_train/",
+    "data/training_data/open_conversation_pantry/samples/",
+    "data/training_data/open_conversation_pantry/sts_streams/",
+    "data/training_data/residual_code_curriculum/private_train/"
+  ],
+  "forbidden_tracked_paths": [
+    "data/public_blimp_train.jsonl",
+    "data/public_blimp_eval.jsonl",
+    "data/babylm_blimp_filtered_train.jsonl",
+    "data/babylm_blimp_filtered_eval.jsonl",
+    "data/training_sources/trace_fabric_capsule_candidates.jsonl",
+    "data/training_sources/narrow_corpus_manifest_10m.json",
+    "data/training_sources/narrow_corpus_manifest_ladder_v1.json"
+  ],
+  "forbidden_suffixes": [
+    ".app",
+    ".ckpt",
+    ".dmg",
+    ".key",
+    ".onnx",
+    ".p12",
+    ".pdb",
+    ".pem",
+    ".pfx",
+    ".pkg",
+    ".pt",
+    ".pth",
+    ".safetensors",
+    ".zip"
+  ],
+  "large_file_soft_limit_bytes": 5242880,
+  "allowed_large_file_prefixes": [
+    "docs/reference/"
+  ],
+  "allowed_secret_literal_prefixes": [
+    "android/TheseusHive/app/src/main/java/local/projecttheseus/hive/",
+    "benchmarks/cards/",
+    "configs/",
+    "docs/",
+    "scripts/",
+    "crates/"
+  ]
+}

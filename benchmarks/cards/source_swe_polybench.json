@@ -1,0 +1,78 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_swe_polybench",
+  "source_id": "swe_polybench",
+  "name": "amazon-science/SWE-PolyBench",
+  "category": "coding_agent_benchmark",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/amazon-science/SWE-PolyBench",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "coding_agent_harness_adapter",
+  "runner_family": "coding_agent_local",
+  "runtime_tier": "E3",
+  "risk_tier": "high",
+  "capability_target": "repo-level coding-agent evaluation, issue-to-patch behavior, terminal/tool use, and self-debugging pressure",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "repo": "sandboxed repository or task fixture",
+    "issue": "task statement or bug report",
+    "tests": "local verification command",
+    "agent": "local Theseus/OpenAI-compatible endpoint only"
+  },
+  "output_contract": {
+    "pass_rate": "repo tasks passed",
+    "patches": "accepted or rejected local diffs",
+    "tool_trace": "terminal/file/action trace packets",
+    "residuals": "failed issue, test, planning, and tool-use clusters"
+  },
+  "smoke_steps": [
+    "task_manifest_scan",
+    "language_inventory",
+    "sandboxed_build_contract",
+    "local_patch_contract"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "task_manifest_or_harness_present",
+    "sandbox_policy_recorded",
+    "provider_judges_disabled",
+    "network_disabled_during_eval",
+    "no_external_inference"
+  ],
+  "contamination_policy": "Public benchmark is calibration/diagnostic unless private holdouts or live variants are generated.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "write_sandbox_repo_copies",
+      "write_patch_artifacts",
+      "write_tool_trace_logs"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "host_repo_mutation",
+      "legal",
+      "network_during_scoring",
+      "production",
+      "provider_api_key_use",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

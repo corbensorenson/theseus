@@ -1,0 +1,747 @@
+{
+  "policy": "project_theseus_generation_mode_registry_v1",
+  "purpose": "Governed generation-mode accounting for decode, fanout, verifier repair, VCM runtime, and tool-assisted completion. Speed claims are accepted-output and verifier-success claims, not proposed-token claims.",
+  "hard_boundaries": {
+    "public_benchmark_training_allowed": false,
+    "runtime_external_inference_allowed": false,
+    "fallback_template_router_tool_credit_as_learned_generation": false,
+    "promote_on_raw_throughput_only": false,
+    "mix_raw_accepted_and_success_metrics": false
+  },
+  "required_accounting_fields": [
+    "proposed_tokens_or_spans",
+    "accepted_tokens_or_spans",
+    "verifier_wall_time_ms",
+    "repair_or_fallback_count",
+    "runtime_memory_mib",
+    "task_pass_count",
+    "task_count",
+    "integrity_mismatch_count",
+    "public_training_rows",
+    "external_inference_calls"
+  ],
+  "mode_records": [
+    {
+      "id": "baseline_mlx_ar_beam_strict_generator_v1",
+      "family": "baseline_autoregressive_beam",
+      "status": "baseline",
+      "route": "strict_generator_mlx_decode_eval",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_decode_eval_prompt_signature_tags_clean_adapted_no_plan_broad8_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "baseline only",
+        "not a speedup claim",
+        "not a learned-generation promotion claim"
+      ],
+      "non_claims": [
+        "Raw decode runtime is not capability.",
+        "Zero-pass output cannot be promoted because it is faster."
+      ]
+    },
+    {
+      "id": "semantic_head_prefix_guided_mlx_decode_v1",
+      "family": "verifier_preserving_prefix_guided_decode",
+      "status": "candidate",
+      "route": "strict_generator_mlx_decode_eval_semantic_head",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_decode_eval_prompt_signature_tags_clean_adapted_semantic_head_broad8_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "must not reduce task_pass_rate versus baseline on the same suite",
+        "must improve useful_solution_per_second or accepted_span_per_second without increasing fallback burden",
+        "must preserve candidate integrity and no-cheat counters"
+      ],
+      "non_claims": [
+        "Semantic prefix guidance is not a public-transfer claim.",
+        "Prefix/ranker constraints carry candidate_generation_credit=0 unless independently learned generation proves behavior."
+      ]
+    },
+    {
+      "id": "plan_aux_clean_no_head_mlx_decode_broad4_v1",
+      "family": "plan_aux_autoregressive_beam_control",
+      "status": "diagnostic_baseline",
+      "route": "strict_generator_mlx_decode_eval",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_decode_eval_plan_aux_starvation_conservative_clean_no_head_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "diagnostic paired-control only",
+        "not promotable without verified task pass",
+        "must remain no-cheat clean"
+      ],
+      "non_claims": [
+        "This no-head control is not a production route.",
+        "A RED no-candidate report is negative evidence, not a capability claim."
+      ]
+    },
+    {
+      "id": "plan_aux_clean_semantic_head_mlx_decode_broad4_v1",
+      "family": "learned_plan_head_prefix_guided_decode",
+      "status": "diagnostic_candidate",
+      "route": "strict_generator_mlx_decode_eval_semantic_head",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_decode_eval_plan_aux_starvation_conservative_clean_head_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "must improve verified task pass before promotion",
+        "candidate coverage lift is diagnostic only until behavior improves",
+        "must preserve candidate integrity and no-cheat counters"
+      ],
+      "non_claims": [
+        "Learned plan-head prefix guidance is not a semantic correctness claim by itself.",
+        "Two runtime-loaded wrong-answer candidates do not clear the public-transfer wall."
+      ]
+    },
+    {
+      "id": "plan_aux_body_semantics_head_mlx_decode_broad4_v1",
+      "family": "plan_conditioned_body_semantics_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_private_adaptation_plan_aux_body_semantics_conservative_v1.json",
+        "reports/strict_generator_mlx_decode_eval_plan_aux_body_semantics_conservative_head_broad4_v1.json",
+        "reports/candidate_integrity_plan_aux_body_semantics_conservative_head_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "heldout LM or semantic-plan loss improvement is not a behavior claim",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "non_claims": [
+        "Plan-conditioned body semantic weighting does not render code and grants no candidate-generation credit.",
+        "The current decode matched prior two-candidate coverage but did not improve functional task pass."
+      ]
+    },
+    {
+      "id": "plan_semantic_slots_dataflow_mlx_decode_broad4_v5",
+      "family": "plan_semantic_slots_dataflow_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_pretraining_probe_plan_semantic_slots_dataflow_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_plan_semantic_slots_dataflow_head_broad4_v5.json",
+        "reports/candidate_integrity_plan_semantic_slots_dataflow_head_broad4_v5.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable with zero verified learned candidates",
+        "richer learned prefix dataflow is diagnostic until it emits executable body candidates",
+        "guard hygiene cannot count as learned code generation"
+      ],
+      "non_claims": [
+        "The richer target mode improved private pretraining loss but did not emit learned candidate rows on this smoke.",
+        "The current wall is learned update-token selection after an incompatible INIT_NUMBER plus UPDATE_CALL prefix."
+      ]
+    },
+    {
+      "id": "plan_semantic_slots_update_contract_mlx_decode_broad4_v1",
+      "family": "plan_semantic_slots_update_contract_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_private_adaptation_update_contract_consistency_private_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_update_contract_consistency_broad4_v1.json",
+        "reports/candidate_integrity_update_contract_consistency_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "update-contract guards and weights carry candidate_generation_credit=0",
+        "runtime loadability is not semantic correctness"
+      ],
+      "non_claims": [
+        "This fixes an incoherent numeric UPDATE_CALL-to-method-mutation path and restores verified candidate emission.",
+        "The generated candidates still collapse to sum-like loops and do not prove broad transfer behavior."
+      ]
+    },
+    {
+      "id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "family": "plan_semantic_slots_semantic_plan_subspace_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_private_adaptation_semantic_plan_subspace_private_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_block_identity_broad4_v1.json",
+        "reports/candidate_integrity_semantic_plan_subspace_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "semantic-plan-token subspace loss is training evidence, not behavior evidence",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "non_claims": [
+        "Restricting semantic-plan loss/eval to SLOT:PLAN_* classes fixed the label-space mismatch and improved heldout plan metrics.",
+        "Decode recovered diverse learned plan prefixes, but candidates remained shallow sum/list continuations and did not pass the verifier."
+      ]
+    },
+    {
+      "id": "plan_semantic_slots_body_action_mlx_decode_broad4_v1",
+      "family": "plan_semantic_slots_body_action_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_private_adaptation_semantic_body_action_private_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_body_action_broad4_v1.json",
+        "reports/candidate_integrity_semantic_body_action_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "heldout plan accuracy improvement cannot hide decode coverage regression",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "non_claims": [
+        "Guard/condition/finalizer weighting improved heldout semantic-plan accuracy but did not produce verifier-passing bodies.",
+        "This checkpoint regressed broad4 learned candidate coverage and introduced repeated shallow body continuations, so it is negative evidence for promotion."
+      ]
+    },
+    {
+      "id": "plan_semantic_slots_algorithmic_replay_mlx_decode_broad4_v1",
+      "family": "private_replay_conditioned_plan_semantic_slots_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_v1.json",
+        "reports/strict_generator_mlx_private_adaptation_semantic_plan_subspace_algorithmic_replay_private_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_block_identity_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "private replay training evidence does not count as heldout capability evidence",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "non_claims": [
+        "Private algorithmic replay improved heldout LM loss and kept candidate integrity clean, but broad4 functional pass remained zero.",
+        "Identity-update blocking reduced one shallow failure family but exposed weak operand binding such as max(value)/int(value), not semantic task solving."
+      ]
+    },
+    {
+      "id": "plan_semantic_slots_algorithmic_escape_replay_mlx_decode_broad4_v1",
+      "family": "private_replay_and_starvation_conditioned_plan_semantic_slots_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_block_identity_train_v1.json",
+        "reports/strict_generator_mlx_private_adaptation_semantic_plan_subspace_algorithmic_replay_escape_private_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_escape_block_identity_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "decode-starvation replay is repair pressure only and grants no generation credit",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "non_claims": [
+        "Escape replay improved private LM loss again but reduced broad4 completed candidate coverage under the stricter identity guard.",
+        "The current wall is learned body continuation and operand/finalizer binding, not semantic-plan classification or candidate loadability."
+      ]
+    },
+    {
+      "id": "plan_semantic_stmt_slots_algorithmic_mlx_decode_broad4_v1",
+      "family": "statement_slot_prefixed_transformer_hybrid_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_pretraining_statement_slots_private_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_statement_slots_broad4_v1.json",
+        "reports/strict_generator_mlx_private_adaptation_statement_slots_algorithmic_private_v1.json",
+        "reports/strict_generator_mlx_decode_eval_statement_slots_algorithmic_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "statement-slot prefixes are target-side private metadata and grant no renderer or learned-generation credit by themselves",
+        "loadable candidate count improvement must convert into verifier pass before any survival-lane promotion"
+      ],
+      "non_claims": [
+        "Statement-slot pretraining improved heldout LM loss and produced syntax-valid, integrity-clean candidates, but broad4 functional pass remained zero.",
+        "Algorithmic private adaptation increased loadable candidate coverage from 4 to 7 rows, but the generated bodies still collapsed to generic loop/update patterns and did not clear semantic behavior."
+      ]
+    },
+    {
+      "id": "plan_semantic_stmt_slots_action_trace_pairwise_mlx_decode_broad4_v1",
+      "family": "statement_slot_private_action_trace_pairwise_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_decode_eval_statement_slots_algorithmic_train_replay16_v1.json",
+        "reports/strict_generator_mlx_private_adaptation_statement_slots_action_trace_pairwise_private_v1.json",
+        "reports/strict_generator_mlx_decode_eval_statement_slots_action_trace_pairwise_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_statement_slots_pairwise_simple_replay16_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "private-train replay labels may shape repair pressure but are not heldout capability evidence",
+        "pairwise accepted-over-failed preference must improve verifier behavior before survival-lane routing"
+      ],
+      "non_claims": [
+        "Private-train replay produced 28 runtime-loaded wrong generated candidates and zero verifier-passed self-generated positives.",
+        "Action-trace pairwise adaptation improved private LM loss and preserved no-cheat counters, but broad4 remained zero-pass and still showed shallow/incorrect update semantics.",
+        "A follow-up simple_return private replay probe also produced zero verifier-passed generated positives and over-routed into WINDOWED_DELTAS-style loop bodies."
+      ]
+    },
+    {
+      "id": "train_once_rust_cpu_sparse_fanout_v1",
+      "family": "checkpoint_then_fanout",
+      "status": "baseline_or_infrastructure",
+      "route": "code_lm_train_once_fanout",
+      "execution_backend": "rust_cpu_fast_sparse_readout",
+      "report_refs": [
+        "reports/code_lm_train_once_fanout_runtime_compact_sts_baseline_guard_private_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "private_candidate_count",
+        "accepted_tokens_or_spans_source": "private_candidate_count",
+        "task_pass_count_source": "not_verified_in_this_report",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "throughput only affects infrastructure routing",
+        "candidate quality still requires verifier reports",
+        "checkpoint size/load must be reported separately"
+      ],
+      "non_claims": [
+        "Fanout candidate count is not verifier success.",
+        "STS conditioning throughput is not public transfer."
+      ]
+    },
+    {
+      "id": "vcm_mlx_tensor_prefix_descriptor_v1",
+      "family": "kv_prefix_descriptor_runtime",
+      "status": "runtime_metadata_ready_not_native_kv_claim",
+      "route": "vcm_native_runtime_probe",
+      "execution_backend": "mlx_core_tensor_prefix_descriptor",
+      "report_refs": [
+        "reports/vcm_native_runtime_probe.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "mlx_tensor_descriptor_append_seq_length",
+        "accepted_tokens_or_spans_source": "mlx_tensor_descriptor_append_seq_length",
+        "task_pass_count_source": "native_prefix_lifecycle_pass_only",
+        "verifier_wall_time_ms_source": "runtime_ms",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "do not claim native model KV cache parity",
+        "scheduler route can use descriptor metadata only",
+        "separate semantic cache lifecycle from native model cache"
+      ],
+      "non_claims": [
+        "This is not vLLM/PagedAttention parity.",
+        "This is not MLX/CUDA/Metal KV-cache parity."
+      ]
+    },
+    {
+      "id": "speculative_draft_decode_research_v1",
+      "family": "speculative_draft",
+      "status": "planned",
+      "route": "none",
+      "execution_backend": "not_implemented",
+      "report_refs": [],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "required_before_execution",
+        "accepted_tokens_or_spans_source": "required_before_execution",
+        "task_pass_count_source": "required_before_execution",
+        "verifier_wall_time_ms_source": "required_before_execution",
+        "runtime_memory_mib_source": "required_before_execution"
+      },
+      "promotion_rules": [
+        "must compare to baseline on same private suite",
+        "must record draft acceptance rate separately from task success",
+        "must not hide verifier regressions behind token throughput"
+      ],
+      "non_claims": [
+        "No speculative speedup is claimed yet."
+      ]
+    },
+    {
+      "id": "plan_semantic_stmt_slots_source_slot_head_mlx_decode_broad4_v1",
+      "family": "source_conditioned_slot_head_transformer_hybrid_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_plan_and_slot_head",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_pretraining_semantic_slot_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_slot_checkpoint_plan_only_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_slot_head_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_semantic_slot_full_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_slot_full_smoke_broad4_v1.json",
+        "reports/strict_generator_mlx_private_adaptation_semantic_slot_body_expression_repair_private_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_slot_body_expression_repair_broad4_v1.json",
+        "reports/strict_generator_mlx_private_adaptation_semantic_construction_profile_semantic_slot_private_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_semantic_construction_profile_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "source-conditioned semantic slot heads may guide prefix tokens but grant no renderer/template/tool credit",
+        "slot and plan accuracy improvements must convert into verifier-passing body behavior before survival-lane routing"
+      ],
+      "non_claims": [
+        "Plan-only decode on the same checkpoint starved with zero emitted candidates, while plan-plus-slot decode emitted loadable candidates.",
+        "The full smoke improved heldout source-contrastive gap, semantic-plan accuracy, and semantic-slot accuracy, and emitted seven integrity-clean runtime-loaded candidates on broad4.",
+        "A stronger private body-expression adaptation lowered heldout LM loss but did not improve broad4 functional pass and reduced completed candidate coverage.",
+        "Functional pass remained zero; generated bodies still collapse to generic accumulator loops or malformed nested branch/update continuations, so the current wall is prompt-conditioned semantic expression/body choice.",
+        "The strict_full_body_semantic_construction_v1 profile now composes source-contrastive, semantic-plan, semantic-slot, loop-update, expression-synthesis, plan-conditioned body, update-contract, return-expression, and primary-dataflow losses without renderer/template/tool credit. It passes GREEN on the semantic-slot checkpoint, but the follow-up broad4 decode still scores 0/4 with no accepted strict candidate rows.",
+        "The latest decode starvation is sharper: learned beams repeatedly enter loop-update prefixes and fail to synthesize an exit/local return, so the next repair target is body-transition control rather than another generic semantic-weighting pass."
+      ]
+    },
+    {
+      "id": "plan_semantic_stmt_expression_slots_vocab_guard_mlx_decode_broad4_v1",
+      "family": "expression_slot_prefixed_transformer_hybrid_decode",
+      "status": "negative_evidence_not_promotable",
+      "route": "strict_generator_mlx_decode_eval_semantic_plan_and_slot_head",
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "report_refs": [
+        "reports/strict_generator_mlx_pretraining_expression_slot_full_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_full_smoke_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_slot_vocab_mode_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_vocab_mode_smoke_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_vocab_mode_smoke_paren_guard_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_vocab_mode_smoke_expression_guard_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_slot_subspace_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_subspace_smoke_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_slot_subspace_full_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_subspace_full_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_not_guard_full_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_token_bias_full_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_slot_canonical_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_canonical_smoke_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_slot_canonical_smoke_token_bias_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_transition_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_transition_smoke_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_transition_medium_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_transition_medium_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_transition_body_contrast_smoke_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_transition_body_contrast_smoke_broad4_v1.json",
+        "reports/strict_generator_mlx_pretraining_expression_transition_body_contrast_medium_v1.json",
+        "reports/strict_generator_mlx_decode_eval_expression_transition_body_contrast_medium_broad4_v1.json"
+      ],
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "manifest_candidate_rows",
+        "accepted_tokens_or_spans_source": "candidate_rows",
+        "task_pass_count_source": "sum(summary.split_passes)",
+        "verifier_wall_time_ms_source": "not_separated_yet",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "semantic slot vocab closure, role-subspace auxiliary loss, and task-blind expression guards do not count as learned body semantics",
+        "expression-call, expression-update, and expression-return roles must improve enough to emit completed verifier-loaded candidates before this route can replace the prior slot-head smoke",
+        "slot-role accuracy movement is diagnostic only until body-token decode produces verifier-passing candidates under the same no-cheat source contract"
+      ],
+      "non_claims": [
+        "Expression-intent slots are private/licensed target-side auxiliary labels and grant no renderer/template/tool credit.",
+        "The vocab-closure patch eliminated missing semantic-slot labels on the explicit target-mode smoke, but expression-call, expression-update, and expression-return heldout role accuracies remained zero.",
+        "The role-prefix subspace/class-balance smoke improved heldout semantic-slot accuracy from 0.094044 to 0.376176, but broad4 decode emitted zero completed candidates.",
+        "The larger role-prefix subspace run consumed 606261 private/licensed token positions on MLX GPU, improved heldout LM loss from 8.589429 to 4.621592, and moved expression-update to 2/18 and expression-return to 3/18, but expression-call stayed 0/31 and semantic-slot loss worsened.",
+        "The larger broad4 decode emitted six completed candidates with zero verifier passes and zero nontrivial-return rate; candidates still collapse into malformed expression-call/update continuations such as pathological not-runs or builtin/type loop sources.",
+        "The stricter unary-not value guard and the optional model-generated expression-slot soft token bias both emitted only two completed candidates on the same broad4 split, with zero verifier passes and zero nontrivial-return rate.",
+        "The soft expression-token bias is explicitly decode assistance with candidate_generation_credit=0; it did not improve candidate coverage or correctness and is not a promoted route.",
+        "Canonical expression-call slot labeling collapsed the role vocabulary from 635 raw expression-call labels to 32 canonical call families and the total semantic-slot vocabulary from 1472 to 667, improving heldout slot accuracy from 0.081505 to 0.39185 on the smoke; this is auxiliary-label simplification only and grants no renderer/template/tool credit.",
+        "Canonical broad4 decode emitted four integrity-clean runtime-loaded transformer/hybrid candidates, but kept task pass at 0/4 and nontrivial-return rate at 0.0; all generated bodies collapsed to the same invalid additive list loop, items = items + value.",
+        "The canonical soft expression-token-bias A/B produced the same 0/4 pass and 0.0 nontrivial-return outcome, so token-level call-family bias is not enough to repair body semantics.",
+        "The expression-transition target mode inserts stripped TRACE:EXPR_* body markers after SLOT:BODY_START to train statement/expression boundaries without rendering code. The markers are derived only from admitted private/licensed target-body ASTs, are capped by the grammar, stripped before compilation, and grant no learned-generation credit.",
+        "The transition smoke improved heldout semantic-slot accuracy from 0.037618 to 0.432602 but starved decode with zero emitted candidates on broad4.",
+        "The transition medium rung improved heldout LM loss from 8.246911 to 5.521098 and recovered four integrity-clean runtime-loaded candidates, but pass remained 0/4 and nontrivial-return rate remained 0.0; generated bodies still collapse to items = 0 followed by items = items + value.",
+        "The after-body-start source-contrastive span mode compares correct-prompt versus in-batch mismatched-prompt loss only after SLOT:BODY_START, using admitted private/licensed rows. It is training pressure and report evidence only; it does not inspect tests, solutions, public data, or verifier labels.",
+        "The body-span contrast smoke moved the heldout source gap from -0.002314 to 0.000391 and semantic-slot accuracy from 0.037618 to 0.438871, but broad4 decode still scored 0/4 with 0.0 nontrivial-return rate and generated values = values + value loops instead of call updates.",
+        "The body-span contrast medium rung improved heldout LM loss to 5.49157 and training throughput to 4961.895 token positions/second, but the heldout source gap remained tiny at 0.000345 and broad4 decode still scored 0/4 with items = 0 followed by items = items + value.",
+        "The current wall is source-conditioned learned expression-value/call-argument selection, loop update semantics, and body-token transition behavior, not target-vocab closure, guard hygiene, token bias, or auxiliary slot accounting."
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "broad8_no_plan_vs_semantic_head_v1",
+      "suite": "broad_private_heldout_smoke8",
+      "baseline_mode_id": "baseline_mlx_ar_beam_strict_generator_v1",
+      "candidate_mode_id": "semantic_head_prefix_guided_mlx_decode_v1",
+      "promotion_decision": "not_promotable_until_behavior_nonregression_and_speed_lift",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_plan_aux_no_head_vs_semantic_head_v1",
+      "suite": "broad_private_heldout_smoke4_same_checkpoint",
+      "baseline_mode_id": "plan_aux_clean_no_head_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_aux_clean_semantic_head_mlx_decode_broad4_v1",
+      "promotion_decision": "coverage_lift_observed_but_not_promotable_until_functional_pass_moves_above_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_plan_aux_head_vs_body_semantics_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_aux_clean_semantic_head_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_aux_body_semantics_head_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_lm_and_plan_loss_improved_but_functional_pass_still_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_body_semantics_vs_plan_semantic_slots_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_aux_body_semantics_head_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_slots_dataflow_mlx_decode_broad4_v5",
+      "promotion_decision": "not_promotable_richer_prefix_regressed_to_zero_verified_learned_candidates",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_plan_semantic_slots_vs_update_contract_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_slots_dataflow_mlx_decode_broad4_v5",
+      "candidate_mode_id": "plan_semantic_slots_update_contract_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_candidate_emission_and_runtime_load_recovered_but_task_pass_count_remains_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_update_contract_vs_plan_subspace_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_slots_update_contract_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_plan_prefix_diversity_and_plan_loss_improved_but_functional_pass_remains_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_plan_subspace_vs_body_action_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_slots_body_action_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_body_action_weighting_improved_plan_accuracy_but_regressed_decode_coverage_and_kept_zero_pass",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_plan_subspace_vs_algorithmic_replay_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_slots_algorithmic_replay_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_private_replay_lowered_lm_loss_but_broad_functional_pass_stayed_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_algorithmic_replay_vs_escape_replay_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_slots_algorithmic_replay_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_slots_algorithmic_escape_replay_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_escape_replay_shifted_failure_shape_to_decode_starvation_and_zero_pass",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_escape_replay_vs_statement_slots_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_slots_algorithmic_escape_replay_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_stmt_slots_algorithmic_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_statement_slots_recovered_candidate_coverage_but_broad_functional_pass_stayed_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_statement_slots_vs_action_trace_pairwise_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_stmt_slots_algorithmic_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_stmt_slots_action_trace_pairwise_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_action_trace_pairwise_reduced_candidate_count_and_kept_broad_functional_pass_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_action_trace_pairwise_vs_source_slot_head_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_stmt_slots_action_trace_pairwise_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_stmt_slots_source_slot_head_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_source_slot_head_improved_emitted_loadable_candidate_coverage_but_kept_functional_pass_zero",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "broad4_source_slot_head_vs_expression_vocab_guard_v1",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "baseline_mode_id": "plan_semantic_stmt_slots_source_slot_head_mlx_decode_broad4_v1",
+      "candidate_mode_id": "plan_semantic_stmt_expression_slots_vocab_guard_mlx_decode_broad4_v1",
+      "promotion_decision": "not_promotable_expression_slot_canonicalization_improved_auxiliary_accuracy_but_kept_functional_pass_zero_and_body_semantics_collapsed",
+      "required_non_regression": [
+        "task_pass_rate",
+        "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    }
+  ]
+}

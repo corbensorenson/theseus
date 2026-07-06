@@ -1,0 +1,65 @@
+{
+  "source_id": "open_orca_offset_500",
+  "dataset": "Open-Orca/OpenOrca",
+  "url": "https://huggingface.co/datasets/Open-Orca/OpenOrca",
+  "license_spdx": "mit",
+  "expected_license_normalized": "mit",
+  "enabled": true,
+  "format": "instruction_response",
+  "config": "default",
+  "split": "train",
+  "offset": 500,
+  "length": 80,
+  "why": "MIT licensed broad instruction-response corpus with RDF, QA, reasoning, extraction, and summarization pressure.",
+  "use": "private_instruction_following_and_response_shape_pressure",
+  "checks": [
+    {
+      "gate": "source_enabled",
+      "passed": true,
+      "evidence": "True"
+    },
+    {
+      "gate": "source_kind_huggingface_dataset",
+      "passed": true,
+      "evidence": "huggingface_dataset"
+    },
+    {
+      "gate": "license_expected_allowlisted",
+      "passed": true,
+      "evidence": "mit"
+    },
+    {
+      "gate": "hf_license_matches_expected",
+      "passed": true,
+      "evidence": "mit"
+    },
+    {
+      "gate": "sample_rows_present",
+      "passed": true,
+      "evidence": "samples=80"
+    },
+    {
+      "gate": "bounded_sample_rows",
+      "passed": true,
+      "evidence": "samples=80 length=80"
+    },
+    {
+      "gate": "train_rows_present_or_not_required",
+      "passed": true,
+      "evidence": "train=80"
+    },
+    {
+      "gate": "sts_rows_present_or_not_required",
+      "passed": true,
+      "evidence": "sts=80"
+    }
+  ],
+  "status": "sampled",
+  "conversation_samples": 80,
+  "private_train_rows": 80,
+  "sts_rows": 80,
+  "external_inference_calls": 0,
+  "hf_license_normalized": "mit",
+  "decision": "tiny_sample_materialized",
+  "num_rows_total": 2942029
+}

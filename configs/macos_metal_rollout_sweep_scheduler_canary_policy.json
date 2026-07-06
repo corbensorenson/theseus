@@ -1,0 +1,78 @@
+{
+  "policy": "project_theseus_macos_metal_rollout_sweep_scheduler_canary_policy_v0",
+  "purpose": "Allow exactly one reviewed local train-rollout-metal-sweep scheduler canary while keeping production routing disabled.",
+  "command": "train-rollout-metal-sweep",
+  "task_kind": "train_rollout_metal_sweep_local_canary",
+  "parity_for": "train-rollout-cuda-sweep",
+  "backend": "apple_metal",
+  "route_state": "reviewed_local_canary_only",
+  "local_only": true,
+  "remote_task_submitted": false,
+  "registers_worker_chunk": false,
+  "production_scheduler_routing_enabled": false,
+  "does_not_change_hive_remote_task_scope": true,
+  "no_arbitrary_remote_execution": true,
+  "bounds": {
+    "train_seeds": "2026061502",
+    "eval_seed_base": 2026061602,
+    "cases_per_task": 4,
+    "epochs": 2,
+    "state_epochs": "0,1",
+    "state_lrs": "0.0,0.01",
+    "samples_per_launch": 4,
+    "probe_cases_per_task": 0,
+    "rollout_batch": 4,
+    "obs_dim": 4,
+    "hidden_dim": 5,
+    "reservoir_dim": 6,
+    "hv_dim": 16,
+    "seq_len": 4,
+    "lr": 0.03,
+    "output_dim": 4,
+    "tolerance": 0.0001,
+    "expected_child_runs": 3,
+    "max_kernel_launches": 128
+  },
+  "requires": {
+    "macos_metal_rollout_sweep_route_policy_present": true,
+    "macos_mlx_parity_audit_counts_sweep_artifacts": true,
+    "canonical_readout_artifacts": true,
+    "state_training_native_ported": false,
+    "cuda_state_training_parity_claim_allowed": false,
+    "scheduler_routing_enabled_in_report": false,
+    "model_promotion_allowed": false,
+    "train_rollout_sweep_parity_claim_allowed": false,
+    "native_hot_loop_parity_claim_allowed": false,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_training_rows": 0,
+    "no_fallback_returns": true,
+    "public_calibration_not_run": true
+  },
+  "required_reports": [
+    "reports/symliquid_rollout_metal_sweep.json",
+    "reports/macos_mlx_parity_audit.json"
+  ],
+  "output_reports": [
+    "reports/macos_metal_rollout_sweep_scheduler_canary.json",
+    "reports/macos_metal_rollout_sweep_scheduler_canary_train_report.json",
+    "reports/macos_metal_rollout_sweep_scheduler_canary_artifacts"
+  ],
+  "rollback_guardrails": [
+    "canary_preflight_failure",
+    "child_artifact_equivalence_failure",
+    "state_training_parity_claim_enabled",
+    "external_inference_or_teacher_or_public_training_rows",
+    "fallback_return_detected",
+    "promotion_or_parity_claim_enabled",
+    "scheduler_route_enabled_without_operator_review",
+    "remote_task_submission_detected",
+    "worker_scope_changed"
+  ],
+  "next_allowed_step": "operator-reviewed policy change only; do not enable production routing from this canary automatically",
+  "notes": [
+    "This policy exists to measure local scheduler canary behavior, not to route production work.",
+    "The canary task kind must remain local-only and must not be added to Hive remote worker task scopes.",
+    "A GREEN canary is still not a CUDA state-training optimizer parity claim."
+  ]
+}

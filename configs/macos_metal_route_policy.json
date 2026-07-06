@@ -1,0 +1,45 @@
+{
+  "policy": "project_theseus_macos_metal_route_policy_v0",
+  "purpose": "Declare the approved bounded local production route contract for train-rollout-metal.",
+  "command": "train-rollout-metal",
+  "parity_for": "train-rollout-cuda",
+  "backend": "apple_metal",
+  "route_state": "approved_bounded_local_production",
+  "bounded_smoke_route_enabled": true,
+  "production_scheduler_routing_enabled": true,
+  "does_not_change_hive_remote_task_scope": true,
+  "no_arbitrary_remote_execution": true,
+  "requires": {
+    "macos_mlx_parity_audit_artifact_equivalence_ok": true,
+    "canonical_readout_artifact": true,
+    "scheduler_routing_enabled_in_report": false,
+    "model_promotion_allowed": false,
+    "train_rollout_parity_claim_allowed": false,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_training_rows": 0,
+    "no_fallback_returns": true
+  },
+  "required_reports": [
+    "reports/macos_mlx_parity_audit.json",
+    "reports/symliquid_rollout_metal_train_report.json",
+    "reports/macos_metal_train_rollout_readout_artifact.json",
+    "reports/macos_metal_scheduler_dry_run.json",
+    "reports/macos_metal_parity_ladder.json",
+    "reports/macos_metal_scheduler_canary.json"
+  ],
+  "rollback_guardrails": [
+    "artifact_equivalence_failure",
+    "external_inference_or_teacher_or_public_training_rows",
+    "promotion_or_parity_claim_enabled",
+    "missing_runtime_profile_or_work_receipt",
+    "scheduler_report_regression",
+    "operator_lock_or_policy_scope_change"
+  ],
+  "next_allowed_step": "bounded_local_production_routing_allowed_for_this_surface_only",
+  "notes": [
+    "This is an approved local production route, not a parity claim.",
+    "The scheduler may route bounded local rollout work to Metal under the production-route approval artifact.",
+    "Do not add arbitrary shell, public gateway operation, or unbounded self-update behavior."
+  ]
+}

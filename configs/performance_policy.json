@@ -1,0 +1,87 @@
+{
+  "policy": "project_theseus_performance_policy_v0",
+  "purpose": "Keep SymLiquid and Theseus Hive training/inference on the fastest safe local backend, with CPU used only as orchestration or fallback.",
+  "backend_priority": {
+    "training": [
+      "rust_cuda",
+      "apple_mlx",
+      "rust_cpu"
+    ],
+    "inference": [
+      "apple_mlx",
+      "rust_cuda",
+      "rust_cpu",
+      "best_authorized_hive_peer"
+    ],
+    "weak_client": "run tiny local arms and proxy larger checkpoint/live-model work to the best authorized Hive peer"
+  },
+  "cuda": {
+    "required_for_windows_nvidia_hot_path": true,
+    "prefer_release_binary": true,
+    "prefer_target_cpu_native": true,
+    "worker_chunk_kinds": [
+      "cuda_eval_chunk",
+      "cuda_training_chunk",
+      "cuda_rollout_chunk"
+    ],
+    "throughput_targets": {
+      "standalone_examples_per_second_min": 150.0,
+      "rollout_examples_per_second_min": 50.0,
+      "rollout_runtime_ms_max_smoke": 120000
+    },
+    "optimization_rules": [
+      "reuse cached CUDA context, PTX modules, kernels, and streams",
+      "keep feature/weight/state buffers resident across repeated launches when the runner supports it",
+      "batch enough samples per launch to amortize H2D, kernel, and D2H costs",
+      "treat CUDA fallback as a blocker for training profiles",
+      "record kernel launches, H2D, kernel, D2H, examples/sec, GPU name, VRAM, and utilization for every run"
+    ]
+  },
+  "mlx": {
+    "required_for_apple_silicon_hot_path": true,
+    "worker_chunk_kinds": [
+      "mlx_eval_chunk",
+      "mlx_training_chunk",
+      "mlx_rollout_chunk"
+    ],
+    "feature_cache": {
+      "enabled": true,
+      "root": "reports/hive_chunks/mlx_feature_cache",
+      "format": "npz_float32",
+      "key_includes": [
+        "input_path",
+        "mtime_ns",
+        "file_size",
+        "limit",
+        "feature_dim",
+        "encoder_version"
+      ]
+    },
+    "optimization_rules": [
+      "cache hashed BabyLM pair features before converting to MLX tensors",
+      "keep arrays float32 and avoid Python list-to-MLX conversion when numpy is available",
+      "report cache hit rate, feature build time, MLX transfer time, train time, and eval time",
+      "use MLX for Mac training/inference chunks and keep external inference forbidden"
+    ]
+  },
+  "hive": {
+    "schedule_all_real_worker_chunk_types": true,
+    "default_smoke_chunks": [
+      "cuda_eval_chunk",
+      "cuda_training_chunk",
+      "cuda_rollout_chunk",
+      "mlx_eval_chunk",
+      "mlx_training_chunk",
+      "mlx_rollout_chunk"
+    ],
+    "resource_first_routing": true,
+    "single_machine_policy": "do not run concurrent heavy chunks unless resource governor says the profile is safe"
+  },
+  "autonomy": {
+    "report": "reports/performance_optimizer.json",
+    "markdown_report": "reports/performance_optimizer.md",
+    "refresh_each_cycle": true,
+    "teacher_escalation": "only after local performance evidence shows an architecture wall",
+    "speed_principle": "Faster training/inference is effective extra lifetime for the local model, but never bypass safety, license, or leakage gates."
+  }
+}

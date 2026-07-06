@@ -1,0 +1,37 @@
+{
+  "policy": "project_theseus_old_project_registry_port_policy_v1",
+  "enabled": true,
+  "old_project_root": "data/old_projects/corbens-trainer",
+  "registry_root": "data/old_projects/corbens-trainer/registry",
+  "benchmark_case_out_dir": "data/old_project_benchmarks/cases",
+  "training_source_out": "data/training_sources/old_project_registry_training_sources.json",
+  "card_root": "benchmarks/cards",
+  "redact_reference_answers": true,
+  "copy_training_data": false,
+  "copy_benchmark_answers": false,
+  "public_comparator_use": "forbidden_for_old_custom_cards_metadata_only_for_public_cards",
+  "external_inference": "forbidden",
+  "network": "forbidden",
+  "teacher_generation": "forbidden",
+  "training_use_policy": {
+    "require_train_allowed": true,
+    "require_local_file": true,
+    "require_sha256_match": true,
+    "require_not_public_claim_evidence": true,
+    "bulk_copy_requires_human_approval": true
+  },
+  "benchmark_use_policy": {
+    "custom_corben_cards_are_private_pressure": true,
+    "public_benchmark_cards_are_metadata_only_when_existing_cards_cover_the_source": true,
+    "reference_answers_redacted_from_case_manifests": true,
+    "promotion_requires_student_checkpoint_and_fresh_private_or_public_regression": true
+  },
+  "near_term_priority_ids": [
+    "benchmark.corben.coding_agent.native.v1",
+    "benchmark.corben.task_execution.native.v1",
+    "benchmark.corben.shortcut_resistant_compositional.v1",
+    "benchmark.corben.math_verifier.native.v1",
+    "benchmark.bfcl.v1",
+    "benchmark.terminal_bench_core.v1"
+  ]
+}

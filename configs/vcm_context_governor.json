@@ -1,0 +1,509 @@
+{
+  "policy": "project_theseus_vcm_context_governor_v1",
+  "purpose": "Fail-closed context adequacy, verification bandwidth, mission brief, taint, and deletion-closure checks for Theseus VCM use.",
+  "hard_boundaries": {
+    "larger_context_substitutes_for_verified_context": false,
+    "compressed_summary_may_drop_taint_or_omissions": false,
+    "untrusted_context_can_self_pin": false,
+    "speculative_prefetch_may_influence_generation": false,
+    "deleted_material_can_remain_silent": false,
+    "runtime_external_inference_allowed": false
+  },
+  "context_chunks": [
+    {
+      "id": "chunk.current_request",
+      "type": "task_objective",
+      "source": "operator_request",
+      "relevance": 1.0,
+      "entropy": 0.2,
+      "criticality": 1.0,
+      "goal_similarity": 1.0,
+      "taint": "trusted_operator_control",
+      "clearance": "authorized",
+      "eviction_state": "pinned",
+      "summary": "Current task objective and hard constraints.",
+      "omissions": [],
+      "compression_loss": 0.0
+    },
+    {
+      "id": "chunk.no_cheat_policy",
+      "type": "policy",
+      "source": "AGENTS.md",
+      "relevance": 0.95,
+      "entropy": 0.1,
+      "criticality": 1.0,
+      "goal_similarity": 0.9,
+      "taint": "trusted_project_policy",
+      "clearance": "authorized",
+      "eviction_state": "pinned",
+      "summary": "Public benchmarks are calibration-only; no fallback/template/router/tool credit as learned generation.",
+      "omissions": [
+        "full policy text"
+      ],
+      "compression_loss": 0.05
+    },
+    {
+      "id": "chunk.external_review_note",
+      "type": "external_model_note",
+      "source": "browser_or_external_model_note",
+      "relevance": 0.45,
+      "entropy": 0.8,
+      "criticality": 0.4,
+      "goal_similarity": 0.5,
+      "taint": "untrusted_advisory_text",
+      "clearance": "summary_only",
+      "eviction_state": "evictable",
+      "summary": "External critique can inform residuals only after taint-aware summarization.",
+      "omissions": [
+        "verbatim instruction-like text",
+        "unverified claims"
+      ],
+      "compression_loss": 0.35
+    },
+    {
+      "id": "chunk.stale_result",
+      "type": "old_report",
+      "source": "reports/old_result.json",
+      "relevance": 0.35,
+      "entropy": 0.6,
+      "criticality": 0.3,
+      "goal_similarity": 0.4,
+      "taint": "stale_generated_report",
+      "clearance": "evidence_ref_only",
+      "eviction_state": "frozen",
+      "summary": "Historical negative result retained for comparison but not current routing.",
+      "omissions": [
+        "obsolete score details"
+      ],
+      "compression_loss": 0.2
+    }
+  ],
+  "mission_brief_fixture": {
+    "id": "mission.current_roadmap_slice",
+    "objective": "Continue roadmap implementation without expanding authority or training on public benchmark payloads.",
+    "required_chunks": [
+      "chunk.current_request",
+      "chunk.no_cheat_policy"
+    ],
+    "optional_chunks": [
+      "chunk.external_review_note",
+      "chunk.stale_result"
+    ],
+    "token_budget": 420,
+    "must_record_omissions": true,
+    "must_record_authority_limits": true,
+    "must_fail_closed_if_missing_required": true
+  },
+  "digital_scif_fixture": {
+    "id": "scif.private_user_trace_handle_v1",
+    "raw_sensitive_context_visible_to_generator": false,
+    "handles": [
+      "vcm://local/private/dogfood_trace_metadata"
+    ],
+    "sanitized_outputs": [
+      "accepted/missed/ignored metadata only"
+    ],
+    "zeroize_policy": "raw_text_not_staged",
+    "residual_leak_risk_recorded": true
+  },
+  "deletion_closure_fixture": {
+    "id": "delete.external_note_revocation_v1",
+    "revoked_material": "chunk.external_review_note",
+    "derived_artifacts": [
+      {
+        "kind": "summary",
+        "path": "mission_brief",
+        "closure_state": "sanitized"
+      },
+      {
+        "kind": "embedding",
+        "path": "runtime/vcm_runtime_cache/external_review_note.embedding",
+        "closure_state": "not_materialized"
+      },
+      {
+        "kind": "cache",
+        "path": "runtime/vcm_runtime_cache/external_review_note.cache",
+        "closure_state": "not_materialized"
+      },
+      {
+        "kind": "training_row",
+        "path": "data/training_data/private/external_review_note.jsonl",
+        "closure_state": "not_admitted"
+      }
+    ],
+    "fault_on_open_descendant": true
+  },
+  "semantic_address_catalog": [
+    {
+      "semantic_address": "vcm://theseus/project/roadmap_gate@current",
+      "source_path": "reports/roadmap_implementation_gate.json",
+      "mount": "mount://theseus/local/project_state",
+      "snapshot_id": "snapshot://theseus/local/project_state/current",
+      "version": "latest_view_hash_checked_at_resolution",
+      "representation_contracts": [
+        "json_summary_with_hash_refs",
+        "evidence_pointer"
+      ],
+      "authority_labels": [
+        "local_project_read"
+      ],
+      "admission_policy": "admit",
+      "lease_state": "active",
+      "support_state": "evidence"
+    },
+    {
+      "semantic_address": "vcm://theseus/project/registry@current",
+      "source_path": "configs/project_manifest_registry.json",
+      "mount": "mount://theseus/local/project_state",
+      "snapshot_id": "snapshot://theseus/local/project_state/current",
+      "version": "latest_view_hash_checked_at_resolution",
+      "representation_contracts": [
+        "json_summary_with_hash_refs",
+        "evidence_pointer"
+      ],
+      "authority_labels": [
+        "local_project_read"
+      ],
+      "admission_policy": "admit",
+      "lease_state": "active",
+      "support_state": "evidence"
+    },
+    {
+      "semantic_address": "vcm://theseus/private/dogfood/metadata@current",
+      "source_path": "runtime/dogfood/daily_use_events.jsonl",
+      "mount": "mount://theseus/local/private_metadata",
+      "snapshot_id": "snapshot://theseus/local/private_metadata/current",
+      "version": "latest_view_hash_checked_at_resolution",
+      "representation_contracts": [
+        "metadata_only_event_counts",
+        "evidence_pointer"
+      ],
+      "authority_labels": [
+        "local_private_metadata_only"
+      ],
+      "admission_policy": "admit",
+      "lease_state": "active",
+      "support_state": "metadata"
+    },
+    {
+      "semantic_address": "vcm://theseus/reports/summary_only/public_transfer@current",
+      "source_path": "reports/vcm_mission_brief.json",
+      "mount": "mount://theseus/local/reports",
+      "snapshot_id": "snapshot://theseus/local/reports/current",
+      "version": "latest_view_hash_checked_at_resolution",
+      "representation_contracts": [
+        "summary_only_not_citation_or_verifier_evidence"
+      ],
+      "authority_labels": [
+        "local_report_read"
+      ],
+      "admission_policy": "admit",
+      "lease_state": "active",
+      "support_state": "summary"
+    },
+    {
+      "semantic_address": "vcm://theseus/public_benchmark/payload/hidden_tests",
+      "source_path": "",
+      "mount": "mount://theseus/public_calibration_firewall",
+      "snapshot_id": "snapshot://theseus/public_calibration_firewall/current",
+      "version": "forbidden",
+      "representation_contracts": [
+        "calibration_pointer_only_no_training_payload"
+      ],
+      "authority_labels": [
+        "calibration_pointer_only"
+      ],
+      "admission_policy": "deny",
+      "lease_state": "not_issued",
+      "support_state": "forbidden"
+    },
+    {
+      "semantic_address": "vcm://theseus/reports/stale_route_decision@old",
+      "source_path": "reports/theseus_project_registry.json",
+      "mount": "mount://theseus/local/reports",
+      "snapshot_id": "snapshot://theseus/local/reports/old",
+      "version": "stale_latest_view",
+      "representation_contracts": [
+        "route_decision_current_only"
+      ],
+      "authority_labels": [
+        "local_report_read"
+      ],
+      "admission_policy": "admit",
+      "lease_state": "expired",
+      "support_state": "stale"
+    }
+  ],
+  "context_resolver_requests": [
+    {
+      "scenario": "real_artifact_materialization",
+      "request_id": "ctxresolve.roadmap_gate.current.v1",
+      "task_id": "phase3_deployed_context_resolver",
+      "semantic_address": "vcm://theseus/project/roadmap_gate@current",
+      "mount": "mount://theseus/local/project_state",
+      "snapshot_id": "snapshot://theseus/local/project_state/current",
+      "representation_contract": "json_summary_with_hash_refs",
+      "requested_authority_labels": [
+        "local_project_read"
+      ],
+      "required_support_state": "evidence",
+      "audit_refs": [
+        "reports/roadmap_implementation_gate.json",
+        "reports/vcm_context_governor.json"
+      ],
+      "taint_labels": [
+        "local_generated_report"
+      ],
+      "deletion_obligations": [],
+      "expected_decision": "materialize",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "real_artifact_materialization",
+      "request_id": "ctxresolve.registry.current.v1",
+      "task_id": "phase3_deployed_context_resolver",
+      "semantic_address": "vcm://theseus/project/registry@current",
+      "mount": "mount://theseus/local/project_state",
+      "snapshot_id": "snapshot://theseus/local/project_state/current",
+      "representation_contract": "json_summary_with_hash_refs",
+      "requested_authority_labels": [
+        "local_project_read"
+      ],
+      "required_support_state": "evidence",
+      "audit_refs": [
+        "configs/project_manifest_registry.json",
+        "reports/vcm_context_governor.json"
+      ],
+      "taint_labels": [
+        "local_project_config"
+      ],
+      "deletion_obligations": [],
+      "expected_decision": "materialize",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "metadata_only_private_trace",
+      "request_id": "ctxresolve.dogfood.metadata.current.v1",
+      "task_id": "phase3_deployed_context_resolver",
+      "semantic_address": "vcm://theseus/private/dogfood/metadata@current",
+      "mount": "mount://theseus/local/private_metadata",
+      "snapshot_id": "snapshot://theseus/local/private_metadata/current",
+      "representation_contract": "metadata_only_event_counts",
+      "requested_authority_labels": [
+        "local_private_metadata_only"
+      ],
+      "required_support_state": "metadata",
+      "audit_refs": [
+        "runtime/dogfood/daily_use_events.jsonl",
+        "reports/vcm_context_governor.json"
+      ],
+      "taint_labels": [
+        "private_metadata_only",
+        "raw_text_not_staged"
+      ],
+      "deletion_obligations": [
+        "raw_private_text_must_remain_unmaterialized"
+      ],
+      "expected_decision": "materialize",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "mandatory_miss_typed_fault",
+      "request_id": "ctxresolve.missing.required.v1",
+      "task_id": "phase3_deployed_context_resolver",
+      "semantic_address": "vcm://theseus/private/raw_user_text/unavailable@required",
+      "mount": "mount://theseus/local/private",
+      "snapshot_id": "snapshot://theseus/local/private/current",
+      "representation_contract": "raw_text_forbidden_metadata_only",
+      "requested_authority_labels": [
+        "local_private_metadata_only"
+      ],
+      "audit_refs": [
+        "reports/vcm_context_governor.json"
+      ],
+      "taint_labels": [
+        "private_missing_required"
+      ],
+      "deletion_obligations": [
+        "do_not_materialize_raw_private_text"
+      ],
+      "expected_decision": "typed_fault",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "mount_policy_denied",
+      "request_id": "ctxresolve.public_payload.denied.v1",
+      "task_id": "phase3_deployed_context_resolver",
+      "semantic_address": "vcm://theseus/public_benchmark/payload/hidden_tests",
+      "mount": "mount://theseus/public_calibration_firewall",
+      "snapshot_id": "snapshot://theseus/public_calibration_firewall/current",
+      "representation_contract": "calibration_pointer_only_no_training_payload",
+      "requested_authority_labels": [
+        "calibration_pointer_only"
+      ],
+      "audit_refs": [
+        "AGENTS.md",
+        "reports/vcm_context_governor.json"
+      ],
+      "taint_labels": [
+        "public_benchmark_payload_forbidden"
+      ],
+      "deletion_obligations": [],
+      "expected_decision": "typed_fault",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "lease_expired_reuse_blocked",
+      "request_id": "ctxresolve.stale_route.expired.v1",
+      "task_id": "phase3_deployed_context_resolver",
+      "semantic_address": "vcm://theseus/reports/stale_route_decision@old",
+      "mount": "mount://theseus/local/reports",
+      "snapshot_id": "snapshot://theseus/local/reports/old",
+      "representation_contract": "route_decision_current_only",
+      "requested_authority_labels": [
+        "local_report_read"
+      ],
+      "audit_refs": [
+        "reports/theseus_project_registry.json",
+        "reports/vcm_context_governor.json"
+      ],
+      "taint_labels": [
+        "stale_generated_report"
+      ],
+      "deletion_obligations": [],
+      "expected_decision": "typed_fault",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "inadequate_verification_support",
+      "request_id": "ctxresolve.summary_only.inadequate.v1",
+      "task_id": "phase3_deployed_context_resolver",
+      "semantic_address": "vcm://theseus/reports/summary_only/public_transfer@current",
+      "mount": "mount://theseus/local/reports",
+      "snapshot_id": "snapshot://theseus/local/reports/current",
+      "representation_contract": "summary_only_not_citation_or_verifier_evidence",
+      "requested_authority_labels": [
+        "local_report_read"
+      ],
+      "required_support_state": "verifier_evidence",
+      "audit_refs": [
+        "reports/vcm_mission_brief.json",
+        "reports/vcm_context_governor.json"
+      ],
+      "taint_labels": [
+        "summary_only_context"
+      ],
+      "deletion_obligations": [],
+      "expected_decision": "typed_fault",
+      "best_effort_materialization": false
+    }
+  ],
+  "context_abi_fixtures": [
+    {
+      "scenario": "valid_leased_materialization",
+      "request_id": "ctxabi.valid_materialization.v1",
+      "task_id": "vcm_context_governor_phase3_fixture",
+      "semantic_address": "vcm://theseus/roadmap/current_objective",
+      "version": "sha256:roadmap-current-objective-v1",
+      "mount": "mount://theseus/local/project_state",
+      "snapshot_id": "snapshot://theseus/local/project_state/current",
+      "representation_contract": "mission_brief_summary_with_artifact_refs",
+      "authority_labels": ["local_project_read"],
+      "requested_authority_labels": ["local_project_read"],
+      "materialized_authority_labels": ["local_project_read"],
+      "admission_state": "admitted",
+      "adequacy_state": "adequate",
+      "fault_state": "none",
+      "materialization_ref": "reports/vcm_mission_brief.json",
+      "audit_refs": ["reports/vcm_context_governor.json", "reports/vcm_mission_brief.json"],
+      "lease_state": "active",
+      "expected_decision": "materialize",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "mandatory_miss_typed_fault",
+      "request_id": "ctxabi.mandatory_miss.v1",
+      "task_id": "vcm_context_governor_phase3_fixture",
+      "semantic_address": "vcm://theseus/private/raw_user_text/unavailable",
+      "version": "required",
+      "mount": "mount://theseus/local/private",
+      "snapshot_id": "snapshot://theseus/local/private/current",
+      "representation_contract": "raw_text_forbidden_metadata_only",
+      "authority_labels": ["local_private_metadata_only"],
+      "requested_authority_labels": ["local_private_metadata_only"],
+      "materialized_authority_labels": [],
+      "admission_state": "unresolved",
+      "adequacy_state": "missing",
+      "fault_state": "mandatory_miss",
+      "materialization_ref": "",
+      "audit_refs": ["reports/vcm_context_governor.json"],
+      "lease_state": "not_issued",
+      "expected_decision": "typed_fault",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "inadequate_verification_support",
+      "request_id": "ctxabi.inadequate_verification.v1",
+      "task_id": "vcm_context_governor_phase3_fixture",
+      "semantic_address": "vcm://theseus/reports/summary_only/public_transfer",
+      "version": "sha256:summary-only-v1",
+      "mount": "mount://theseus/local/reports",
+      "snapshot_id": "snapshot://theseus/local/reports/current",
+      "representation_contract": "summary_only_not_citation_or_verifier_evidence",
+      "authority_labels": ["local_report_read"],
+      "requested_authority_labels": ["local_report_read"],
+      "materialized_authority_labels": ["local_report_read"],
+      "admission_state": "admitted",
+      "adequacy_state": "inadequate_for_verification",
+      "fault_state": "inadequate_verification_support",
+      "materialization_ref": "reports/vcm_mission_brief.json",
+      "audit_refs": ["reports/vcm_context_governor.json", "reports/vcm_mission_brief.json"],
+      "lease_state": "active",
+      "expected_decision": "reject_for_verification",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "mount_policy_denied",
+      "request_id": "ctxabi.mount_denied.v1",
+      "task_id": "vcm_context_governor_phase3_fixture",
+      "semantic_address": "vcm://theseus/public_benchmark/payload/hidden_tests",
+      "version": "forbidden",
+      "mount": "mount://theseus/public_calibration_firewall",
+      "snapshot_id": "snapshot://theseus/public_calibration_firewall/current",
+      "representation_contract": "calibration_pointer_only_no_training_payload",
+      "authority_labels": ["calibration_pointer_only"],
+      "requested_authority_labels": ["calibration_pointer_only"],
+      "materialized_authority_labels": [],
+      "admission_state": "denied",
+      "adequacy_state": "unsafe",
+      "fault_state": "mount_policy_denied",
+      "materialization_ref": "",
+      "audit_refs": ["AGENTS.md", "reports/vcm_context_governor.json"],
+      "lease_state": "not_issued",
+      "expected_decision": "typed_fault",
+      "best_effort_materialization": false
+    },
+    {
+      "scenario": "lease_expired_reuse_blocked",
+      "request_id": "ctxabi.lease_expired_reuse.v1",
+      "task_id": "vcm_context_governor_phase3_fixture",
+      "semantic_address": "vcm://theseus/reports/stale_route_decision",
+      "version": "sha256:stale-route-v1",
+      "mount": "mount://theseus/local/reports",
+      "snapshot_id": "snapshot://theseus/local/reports/old",
+      "representation_contract": "route_decision_current_only",
+      "authority_labels": ["local_report_read"],
+      "requested_authority_labels": ["local_report_read"],
+      "materialized_authority_labels": [],
+      "admission_state": "denied",
+      "adequacy_state": "stale",
+      "fault_state": "lease_expired",
+      "materialization_ref": "",
+      "audit_refs": ["reports/vcm_context_governor.json"],
+      "lease_state": "expired",
+      "expected_decision": "block_reuse",
+      "reuse_attempt": true,
+      "best_effort_materialization": false
+    }
+  ]
+}

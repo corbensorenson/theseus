@@ -1,0 +1,123 @@
+{
+  "policy": "project_theseus_permissive_growth_policy_v1",
+  "purpose": "Let Theseus train aggressively on admissible public/open, private, dogfood, and teacher-distilled data while preserving meaningful heldout measurement.",
+  "mode": "governed_permissive_growth",
+  "runtime_external_inference": "forbidden",
+  "fallback_returns": "forbidden_for_training_credit_and_public_claims",
+  "public_open_training_data": {
+    "default": "allowed_when_governed",
+    "allowed_source_classes": [
+      "open_license_public_corpora",
+      "public_documentation",
+      "public_code",
+      "curated_public_educational_material",
+      "locally_materialized_open_conversation_samples"
+    ],
+    "required_metadata": [
+      "source_id",
+      "source_url_or_local_path",
+      "license_spdx",
+      "source_hash",
+      "provenance",
+      "benchmark_decontamination"
+    ],
+    "license_allowlist": [
+      "apache-2.0",
+      "mit",
+      "bsd-2-clause",
+      "bsd-3-clause",
+      "mpl-2.0",
+      "cc0-1.0",
+      "unlicense",
+      "public-domain",
+      "odc-by",
+      "cc-by-4.0",
+      "project-internal",
+      "project_generated",
+      "private_generated"
+    ]
+  },
+  "heldout_firewall": {
+    "train_on_exact_public_benchmark_prompts": false,
+    "train_on_exact_public_benchmark_tests": false,
+    "train_on_public_hidden_tests": false,
+    "train_on_public_solutions": false,
+    "train_on_public_traces": false,
+    "train_on_public_answer_templates": false,
+    "train_on_public_score_labels": false,
+    "exact_text_fingerprint_overlap_max": 0
+  },
+  "public_benchmarks": {
+    "execution_default": "governed_measurement_run_registry",
+    "run_registry": "reports/public_benchmark_run_registry.jsonl",
+    "per_surface_max_runs": 1,
+    "time_period_run_cap_enabled": false,
+    "calendar_throttle_enabled": false,
+    "fresh_surface_execution_policy": "run_immediately_when_frozen_registry_surface_is_clean",
+    "run_registry_semantics": "Fresh measurement surfaces are not throttled by a calendar budget; exact consumed surfaces still cannot be rerun for score fishing",
+    "require_frozen_run_id": true,
+    "require_candidate_manifest": true,
+    "require_contamination_audit": true,
+    "require_code_and_config_hashes": true,
+    "record_consumed_after_execute_attempt": true,
+    "no_rerun_same_consumed_surface_for_score_fishing": true
+  },
+  "teacher": {
+    "proposal_mode_default": "enabled_governed",
+    "distillation_default": "enabled_when_rows_pass_gate",
+    "runtime_serving_external_tokens": "forbidden",
+    "teacher_apply_mode": "forbidden",
+    "required_for_training_rows": [
+      "retained_row",
+      "provenance",
+      "license_status",
+      "leakage_audit",
+      "verifier_acceptance",
+      "runtime_serving_forbidden",
+      "teacher_share_accounting"
+    ],
+    "initial_teacher_share_cap": 0.8,
+    "downward_schedule": [
+      {
+        "phase": "bootstrap",
+        "max_teacher_share": 0.8
+      },
+      {
+        "phase": "student_replay",
+        "max_teacher_share": 0.5
+      },
+      {
+        "phase": "self_generated_majority",
+        "max_teacher_share": 0.2
+      },
+      {
+        "phase": "graduation",
+        "max_teacher_share": 0.05
+      }
+    ]
+  },
+  "architecture_selection": {
+    "compare_under_matched_compute_and_data": [
+      "symliquid",
+      "transformer",
+      "hybrid"
+    ],
+    "promote_best_evidence_path": true,
+    "do_not_protect_losing_survival_path": true,
+    "keep_symliquid_discovery_track": true
+  },
+  "mac_execution": {
+    "apple_silicon_routes": [
+      "mlx",
+      "metal",
+      "cpu"
+    ],
+    "intel_routes": [
+      "cpu",
+      "storage",
+      "operator"
+    ],
+    "hidden_fallback_returns_allowed": false,
+    "resource_reports_required": true
+  }
+}

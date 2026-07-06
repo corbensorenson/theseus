@@ -1,0 +1,16 @@
+{
+  "policy": "project_theseus_macos_metal_production_route_approval_v1",
+  "approved": true,
+  "max_surfaces": 3,
+  "approved_surfaces": [
+    "standalone_readout_cli",
+    "rollout_cli",
+    "token_superposition_cli"
+  ],
+  "evidence_sha256": "38e017ecbac4c15f79a0212a4ffb8f8314385ace6ccb383f910e3378a8bc1d1e",
+  "allow_remote_task_scope_change": false,
+  "allow_public_training_rows": false,
+  "created_utc": "2026-06-15T05:51:00Z",
+  "operator_delegation": "configs/operator_delegation.local.json",
+  "operator_note": "Approved under local operator delegation for bounded local Mac Metal production-route review only. No arbitrary remote execution, no public training rows, no teacher, no external inference, no fallback returns, and no parity claim."
+}

@@ -1,0 +1,41 @@
+{
+  "policy": "sparkstream_python_runtime_policy_v0",
+  "updated_utc": "2026-05-13",
+  "purpose": "Keep Python runtimes isolated by arm so competition, RL, and orchestration requirements do not fight each other.",
+  "default_install_policy": "detect_and_report_only",
+  "runtime_arms": [
+    {
+      "id": "default_orchestration",
+      "role": "SparkStream orchestration, dashboards, reports, and conservative Python tooling.",
+      "required_python_prefix": "3.11",
+      "preferred_venv": ".venv-puffer",
+      "fallback_allowed": true,
+      "risk": "low"
+    },
+    {
+      "id": "puffer_rl_cpu_orchestration",
+      "role": "Puffer/Ocean Python orchestration only; Rust/CUDA owns hot loops.",
+      "required_python_prefix": "3.11",
+      "preferred_venv": ".venv-puffer",
+      "fallback_allowed": false,
+      "risk": "medium"
+    },
+    {
+      "id": "ai_grand_prix_drone",
+      "role": "AI Grand Prix MAVSDK/MAVLink contestant-control compatibility lane.",
+      "required_python_prefix": "3.14",
+      "known_good_python": "3.14.2",
+      "preferred_venv": ".venv-drone-py314",
+      "fallback_allowed": true,
+      "fallback_note": "Spec allows other environments, but Python 3.14.2 is the known-good baseline.",
+      "os_target": "Windows 11",
+      "safety": {
+        "simulator_only_by_default": true,
+        "live_hardware_requires_explicit_human_approval": true,
+        "no_external_inference_in_control_loop": true,
+        "command_endpoint_default": "udp_loopback_or_simulator_only"
+      },
+      "risk": "high"
+    }
+  ]
+}

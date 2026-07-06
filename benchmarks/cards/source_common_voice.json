@@ -1,0 +1,68 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_common_voice",
+  "source_id": "common_voice",
+  "name": "mozilla-foundation/common_voice_17_0",
+  "category": "voice_benchmark",
+  "priority": "medium",
+  "status": "needs_adapter_smoke",
+  "url": "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0",
+  "license_spdx": "cc0-1.0",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "native_voice_eval_adapter",
+  "runner_family": "voice_local",
+  "runtime_tier": "E3",
+  "risk_tier": "medium",
+  "capability_target": "native local speech and audio interaction",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "examples": "local benchmark items or metadata",
+    "model": "local checkpoint or SymLiquid scorer"
+  },
+  "output_contract": {
+    "score": "accuracy or task metric",
+    "residuals": "failed cases",
+    "cost": "runtime and memory"
+  },
+  "smoke_steps": [
+    "load local sample metadata",
+    "verify native voice policy and head/router audio packet contract",
+    "record WER/MOS-style metric plan without provider inference",
+    "write privacy policy"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "native_theseus_voice_model_only",
+    "head_router_voice_io_contract",
+    "privacy_policy_written",
+    "no_external_inference"
+  ],
+  "contamination_policy": "Record source provenance and keep generated frontiers separate from training samples.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

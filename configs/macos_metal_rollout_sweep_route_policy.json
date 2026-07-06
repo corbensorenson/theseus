@@ -1,0 +1,47 @@
+{
+  "policy": "project_theseus_macos_metal_rollout_sweep_route_policy_v0",
+  "purpose": "Declare the guarded route contract for train-rollout-metal-sweep without enabling production scheduler routing.",
+  "command": "train-rollout-metal-sweep",
+  "parity_for": "train-rollout-cuda-sweep",
+  "backend": "apple_metal",
+  "route_state": "guarded_canary_only",
+  "bounded_canary_route_enabled": true,
+  "production_scheduler_routing_enabled": false,
+  "does_not_change_hive_remote_task_scope": true,
+  "no_arbitrary_remote_execution": true,
+  "requires": {
+    "train_rollout_metal_sweep_contract_ok": true,
+    "state_training_native_ported": false,
+    "cuda_state_training_parity_claim_allowed": false,
+    "scheduler_routing_enabled_in_report": false,
+    "model_promotion_allowed": false,
+    "train_rollout_sweep_parity_claim_allowed": false,
+    "native_hot_loop_parity_claim_allowed": false,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_training_rows": 0,
+    "no_fallback_returns": true,
+    "public_calibration_not_run": true
+  },
+  "required_reports": [
+    "reports/symliquid_rollout_metal_sweep.json",
+    "reports/macos_mlx_parity_audit.json"
+  ],
+  "rollback_guardrails": [
+    "rollout_sweep_canary_preflight_failure",
+    "child_artifact_equivalence_failure",
+    "state_training_parity_claim_enabled",
+    "external_inference_or_teacher_or_public_training_rows",
+    "fallback_return_detected",
+    "promotion_or_parity_claim_enabled",
+    "scheduler_route_enabled_without_operator_review",
+    "remote_task_submission_detected",
+    "worker_scope_changed"
+  ],
+  "next_allowed_step": "reviewed_local_canary_only; do not enable production routing from this policy automatically",
+  "notes": [
+    "This is route evidence, not production parity.",
+    "The state-training grid is recorded and varied, but CUDA state-training optimizer parity remains explicitly unclaimed.",
+    "The scheduler must not route production rollout-sweep work to Metal from this policy alone."
+  ]
+}

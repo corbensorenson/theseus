@@ -1,0 +1,69 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_chess_rl",
+  "source_id": "local_chess_rl",
+  "name": "Local Chess RL / Elo Ratchet",
+  "category": "board_game_rl_environment",
+  "priority": "high",
+  "status": "adapter_smoke_passed",
+  "url": "local:scripts/board_game_rl_benchmark.py",
+  "license_spdx": "gpl-3.0",
+  "license_allowed": true,
+  "decision": "approved_for_local_board_game_rl_lane",
+  "staged": true,
+  "staged_path": "scripts/board_game_rl_benchmark.py",
+  "adapter_type": "local_board_game_rl_adapter",
+  "runner_family": "rl_local",
+  "runtime_tier": "E3",
+  "risk_tier": "low",
+  "capability_target": "long-horizon tactical planning, legal-action masking, sparse reward self-play, and Elo trend evidence",
+  "current_curriculum_stage": "board_game_rl_transfer",
+  "next_frontier_family": "rl_local_strategic_games",
+  "input_contract": {
+    "game": "chess",
+    "seed": "deterministic seed",
+    "policy": "local policy or learner only",
+    "max_plies": "bounded plies per game"
+  },
+  "output_contract": {
+    "rating": "rolling local Elo-style rating",
+    "matches": "seeded self-play match ledger",
+    "diagnostics": "legal move and tactical capture gates",
+    "traces": "bounded move traces for residual analysis"
+  },
+  "smoke_steps": [
+    "python-chess import",
+    "legal move smoke",
+    "capture tactic diagnostic",
+    "seeded self-play Elo update"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "legal_move_smoke_passes",
+    "capture_tactic_floor_passes",
+    "rating_delta_recorded",
+    "external_inference_calls_zero"
+  ],
+  "contamination_policy": "Chess self-play and diagnostics are local. Do not train on public benchmark solutions or engine lines as answer data without a separate license and contamination review.",
+  "regression_policy": "Once the tactical diagnostic is stable, preserve it as regression and rotate harder self-play opponents or longer-horizon positions.",
+  "permission_envelope": {
+    "memory": "benchmark-local ratings, traces, and residuals only",
+    "tools": "local python runner and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "append_trace_jsonl",
+      "update_local_elo_ratings"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "external_engine_download",
+      "bulk_dataset_import",
+      "public_gateway_operation"
+    ]
+  },
+  "teacher_role": "Only diagnose environment, policy, or curriculum design failures. Do not provide chess benchmark answer lines or engine-distilled solution data.",
+  "external_inference_calls": 0
+}

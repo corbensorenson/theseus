@@ -1,0 +1,551 @@
+{
+  "policy": "sparkstream_capability_market_baseline_v0",
+  "last_reviewed_utc": "2026-05-11T00:00:00Z",
+  "purpose": "Provide a source-backed market baseline for the live SparkStream capability matrix. This config is intentionally descriptive: current local reports decide SparkStream status, while this file records what the broader market appears to offer.",
+  "refresh_policy": {
+    "cadence": "weekly_or_before_public_claims",
+    "allowed_sources": [
+      "official_vendor_docs",
+      "official_vendor_product_pages",
+      "peer_reviewed_or_primary_research_for_nonproduct_baselines"
+    ],
+    "teacher_use": "proposal_only_unless_human_approved",
+    "notes": "Do not turn market comparison into a benchmark target by itself. Use it to spot product gaps, governance gaps, and differentiated research opportunities."
+  },
+  "market_systems": [
+    {
+      "id": "openai_codex",
+      "name": "OpenAI Codex",
+      "source_url": "https://developers.openai.com/codex/cloud",
+      "source_checked_utc": "2026-05-11T00:00:00Z",
+      "capability_notes": [
+        "Coding agent that can read, edit, and run code.",
+        "Codex cloud can work on tasks in the background, including in parallel, in its own cloud environment.",
+        "Can connect to GitHub repositories and create pull requests."
+      ],
+      "comparison_tags": [
+        "coding_agent",
+        "background_tasks",
+        "parallel_agents",
+        "cloud_sandbox",
+        "pull_requests",
+        "automation"
+      ]
+    },
+    {
+      "id": "anthropic_claude_code",
+      "name": "Anthropic Claude Code",
+      "source_url": "https://code.claude.com/docs/en/overview",
+      "source_checked_utc": "2026-05-11T00:00:00Z",
+      "capability_notes": [
+        "Agentic coding tool that reads a codebase, edits files, runs commands, and integrates with developer tools.",
+        "Available across terminal, IDE, desktop app, and browser surfaces.",
+        "Understands codebases and can work across multiple files and tools."
+      ],
+      "comparison_tags": [
+        "coding_agent",
+        "terminal_agent",
+        "ide_agent",
+        "codebase_context",
+        "multi_file_editing"
+      ]
+    },
+    {
+      "id": "google_gemini_cli",
+      "name": "Google Gemini CLI",
+      "source_url": "https://google-gemini.github.io/gemini-cli/",
+      "source_checked_utc": "2026-05-11T00:00:00Z",
+      "capability_notes": [
+        "Open-source AI agent that brings Gemini into the terminal.",
+        "Includes Google Search grounding, file operations, shell commands, and web fetching.",
+        "Supports MCP integrations, custom context files, conversation checkpointing, and a large context window."
+      ],
+      "comparison_tags": [
+        "terminal_agent",
+        "open_source",
+        "web_grounding",
+        "shell_tools",
+        "mcp",
+        "checkpointing"
+      ]
+    },
+    {
+      "id": "github_copilot_cloud_agent",
+      "name": "GitHub Copilot Cloud Agent",
+      "source_url": "https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent",
+      "source_checked_utc": "2026-05-11T00:00:00Z",
+      "capability_notes": [
+        "Can work independently in the background on repository tasks.",
+        "Can research a repository, create implementation plans, fix bugs, implement incremental features, improve tests, update docs, address technical debt, and resolve merge conflicts.",
+        "Runs in an ephemeral GitHub Actions-powered development environment with access to tests and linters."
+      ],
+      "comparison_tags": [
+        "coding_agent",
+        "cloud_agent",
+        "github_native",
+        "background_tasks",
+        "tests",
+        "pull_requests"
+      ]
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "source_url": "https://cursor.com/en-US/product",
+      "source_checked_utc": "2026-05-11T00:00:00Z",
+      "capability_notes": [
+        "Agent surfaces span desktop, CLI, browser/mobile, GitHub, Slack, Linear, JetBrains, and more.",
+        "Uses codebase understanding, parallel subagents, codebase indexing, planning, debugging, terminal commands, checkpoints, plugins, skills, and MCP.",
+        "Product page describes long-running autonomous coding research and cloud agents."
+      ],
+      "comparison_tags": [
+        "ide_agent",
+        "codebase_indexing",
+        "parallel_agents",
+        "cloud_agents",
+        "checkpointing",
+        "terminal_tools",
+        "mcp"
+      ]
+    },
+    {
+      "id": "devin",
+      "name": "Devin",
+      "source_url": "https://docs.devin.ai/get-started/devin-intro",
+      "source_checked_utc": "2026-05-11T00:00:00Z",
+      "capability_notes": [
+        "Autonomous AI software engineer that can write, run, and test code.",
+        "Targets Linear/Jira tickets, features, bug reproduction and fixes, internal tools, refactors, migrations, PR review, tests, and documentation.",
+        "Advanced capabilities include managed sessions in parallel, session outcome analysis, playbooks, knowledge management, and schedules."
+      ],
+      "comparison_tags": [
+        "autonomous_software_engineer",
+        "parallel_agents",
+        "playbooks",
+        "knowledge_management",
+        "schedules",
+        "tool_integrations"
+      ]
+    }
+  ],
+  "capability_domains": [
+    {
+      "id": "rmi_architecture_governance",
+      "name": "RMI architecture governance",
+      "category": "core_rmi",
+      "target": "Keep the ratcheting modular architecture explicit, measured, and auditable.",
+      "market_comparators": [
+        "openai_codex",
+        "devin",
+        "cursor"
+      ],
+      "market_standard": "Commercial agents expose strong task execution surfaces, but usually do not expose an RMI-style benchmark/residual/tool/arm growth ledger to users.",
+      "local_evidence_paths": [
+        "reports/ratcheting_modular_intelligence_report.json",
+        "reports/architecture_gate_report.json"
+      ]
+    },
+    {
+      "id": "octopus_router_arms",
+      "name": "Octopus router and governed specialist arms",
+      "category": "routing",
+      "target": "Route tasks through bounded arms with schemas, permission envelopes, local memory, reliability metrics, and lifecycle state.",
+      "market_comparators": [
+        "cursor",
+        "devin",
+        "openai_codex"
+      ],
+      "market_standard": "Market systems increasingly support parallel or specialized agents, but arm cards with local benchmarks, residuals, permissions, and split/merge/deprecate governance are a differentiated research design.",
+      "local_evidence_paths": [
+        "reports/arm_registry.json",
+        "reports/octopus_router_report.json",
+        "reports/octopus_router_head_report.json",
+        "reports/arm_lifecycle_governance.json"
+      ]
+    },
+    {
+      "id": "arm_sucker_transfer_hierarchy",
+      "name": "Arm-sucker transfer hierarchy",
+      "category": "routing",
+      "target": "Keep high-transfer capability in reusable arms while attaching low-transfer benchmark, game, simulator, and asset specializations as loadable suckers.",
+      "market_comparators": [
+        "cursor",
+        "devin",
+        "openai_codex"
+      ],
+      "market_standard": "Most agent products expose tools or subagents, but do not expose a governed hierarchy where reusable core skills explicitly feed low-transfer specializations with transfer artifacts.",
+      "local_evidence_paths": [
+        "reports/arm_sucker_registry.json",
+        "reports/arm_transfer_plan.json",
+        "reports/arm_transfer_artifacts.json"
+      ]
+    },
+    {
+      "id": "benchmark_ratchet",
+      "name": "Benchmark ratchet, regression floor, and residual escrow",
+      "category": "evaluation",
+      "target": "Continuously promote mastered benchmarks to regression while preserving residual tails and moving the frontier.",
+      "market_comparators": [
+        "devin",
+        "openai_codex",
+        "github_copilot_cloud_agent"
+      ],
+      "market_standard": "Market coding agents report task/PR results and may have internal evals, but persistent user-visible benchmark lifecycle and residual escrow are not common product surfaces.",
+      "local_evidence_paths": [
+        "reports/benchmark_ledger.json",
+        "reports/residual_escrow.json",
+        "reports/candidate_promotion_gate.json"
+      ]
+    },
+    {
+      "id": "public_calibration_market_comparison",
+      "name": "Public calibration and market comparison",
+      "category": "evaluation",
+      "target": "Separate internal frontier pressure from public apples-to-apples comparison and market capability posture.",
+      "market_comparators": [
+        "openai_codex",
+        "anthropic_claude_code",
+        "google_gemini_cli",
+        "github_copilot_cloud_agent",
+        "cursor",
+        "devin"
+      ],
+      "market_standard": "Mature products publish capability claims and product surfaces; SparkStream should keep a reproducible local matrix plus source URLs instead of relying on memory.",
+      "local_evidence_paths": [
+        "reports/public_comparator_ledger.json",
+        "reports/capability_matrix.json",
+        "configs/capability_market_baselines.json"
+      ]
+    },
+    {
+      "id": "loop_closure_tool_registry",
+      "name": "Loop closure and tool registry",
+      "category": "procedural_memory",
+      "target": "Turn repeated successful workflows into verified, parameterized tools with lifecycle cost gates.",
+      "market_comparators": [
+        "google_gemini_cli",
+        "cursor",
+        "devin"
+      ],
+      "market_standard": "Market agents support tools, commands, skills, MCP, and playbooks; SparkStream's differentiator is explicit trajectory-to-tool ratcheting with residual governance.",
+      "local_evidence_paths": [
+        "reports/tool_registry.json",
+        "docs/COGNITIVE_LOOP_CLOSURE.md"
+      ]
+    },
+    {
+      "id": "autonomous_daemon_teacher",
+      "name": "Autonomous daemon with sparse teacher escalation",
+      "category": "autonomy",
+      "target": "Run local improvement cycles for long periods while calling the teacher only when local evidence justifies it.",
+      "market_comparators": [
+        "devin",
+        "openai_codex",
+        "github_copilot_cloud_agent",
+        "cursor"
+      ],
+      "market_standard": "Commercial products support background tasks, schedules, and cloud agents; SparkStream is narrower operationally today but broader in explicit self-improvement governance.",
+      "local_evidence_paths": [
+        "scripts/sparkstream_daemon.py",
+        "scripts/autonomy_cycle.py",
+        "reports/autonomy_launch_readiness.json",
+        "reports/self_improvement_queue.json"
+      ]
+    },
+    {
+      "id": "dashboard_observability",
+      "name": "Live dashboard and observability",
+      "category": "operator_surface",
+      "target": "Show live training, benchmark, data, RL, source, checkpoint, teacher, context, and capability status.",
+      "market_comparators": [
+        "openai_codex",
+        "cursor",
+        "devin"
+      ],
+      "market_standard": "Market products offer agent dashboards and logs; SparkStream should expose research-specific graphs and ledgers locally.",
+      "local_evidence_paths": [
+        "scripts/sparkstream_dashboard.py",
+        "dashboard/index.html",
+        "dashboard/app.js"
+      ]
+    },
+    {
+      "id": "distributed_hive_app_runtime",
+      "name": "Distributed Hive app runtime",
+      "category": "distributed_runtime",
+      "target": "Install Project Theseus on trusted Windows/macOS/Linux machines through a no-terminal wizard or server-friendly CLI, join phones by QR, switch between Hive profiles, discover peers, advertise CUDA/MLX/CPU capacity, and route bounded real CUDA/MLX training/eval chunks plus safe inference tasks across the hive.",
+      "market_comparators": [
+        "cursor",
+        "devin",
+        "openai_codex"
+      ],
+      "market_standard": "Market agents often run hosted workers or background cloud agents; Project Theseus needs a private local-network mesh that uses owned machines for training and inference while keeping teacher use sparse.",
+      "local_evidence_paths": [
+        "configs/hive_policy.json",
+        "scripts/theseus_setup_wizard.py",
+        "scripts/theseus_cli.py",
+        "scripts/install_theseus_cli.ps1",
+        "scripts/install_theseus_cli.sh",
+        "scripts/hive_profiles.py",
+        "scripts/hive_node.py",
+        "scripts/hive_worker_chunk.py",
+        "scripts/hive_scheduler.py",
+        "scripts/hive_relay.py",
+        "reports/hive_status.json",
+        "reports/hive_scheduler.json"
+      ]
+    },
+    {
+      "id": "checkpoint_versioning_chat",
+      "name": "Major/minor checkpoint versioning and checkpoint chat",
+      "category": "state_management",
+      "target": "Save major snapshots plus minor delta chains and let the user inspect or chat with live/checkpoint state.",
+      "market_comparators": [
+        "google_gemini_cli",
+        "cursor",
+        "devin"
+      ],
+      "market_standard": "Market products provide conversation checkpoints, code checkpoints, or session histories; SparkStream's minor-chain artifact model is locally specialized and still research-grade.",
+      "local_evidence_paths": [
+        "reports/checkpoint_registry.json",
+        "scripts/checkpoint_registry.py",
+        "scripts/checkpoint_chat.py"
+      ]
+    },
+    {
+      "id": "resource_aware_rust_cuda_training",
+      "name": "Resource-aware Rust/CUDA training path",
+      "category": "training_runtime",
+      "target": "Use RTX 2060 Super efficiently, prefer Rust/CUDA hot loops, and keep Python as orchestration/reporting.",
+      "market_comparators": [
+        "google_gemini_cli",
+        "anthropic_claude_code",
+        "openai_codex"
+      ],
+      "market_standard": "Commercial coding agents optimize their hosted or provider runtime; SparkStream must optimize the user's local GPU and Rust/CUDA stack explicitly.",
+      "local_evidence_paths": [
+        "reports/resource_governor.json",
+        "configs/training_profiles_rtx2060super.json",
+        "crates/symliquid-cuda"
+      ]
+    },
+    {
+      "id": "language_grammar_babylm",
+      "name": "BabyLM/grammar learning track",
+      "category": "training_domain",
+      "target": "Maintain public/local BabyLM comparator plus mutated private frontier/regression pressure.",
+      "market_comparators": [
+        "openai_codex",
+        "anthropic_claude_code",
+        "google_gemini_cli"
+      ],
+      "market_standard": "Market agents are general language/coding systems; SparkStream's current measured learning domain is small local grammar/sequence learning.",
+      "local_evidence_paths": [
+        "reports/benchmark_ledger.json",
+        "reports/babylm_mutated_holdout_seed55_stateful_grammar_state_frontier.json",
+        "data/babylm_mutated_holdout_seed55.jsonl"
+      ]
+    },
+    {
+      "id": "rl_environment_learning",
+      "name": "RL environment learning and benchmark ingestion",
+      "category": "training_domain",
+      "target": "Use local and staged RL environments as benchmark/regression/frontier surfaces.",
+      "market_comparators": [
+        "devin",
+        "openai_codex",
+        "cursor"
+      ],
+      "market_standard": "Coding agents may operate in sandboxes, but they generally are not exposed as self-training RL systems over local emulated or Gym-style environments.",
+      "local_evidence_paths": [
+        "reports/rl_benchmark_registry.json",
+        "configs/online_source_catalog.json",
+        "data/external_benchmark_candidates"
+      ]
+    },
+    {
+      "id": "drone_racing_control",
+      "name": "Drone racing control and AI Grand Prix readiness",
+      "category": "training_domain",
+      "target": "Learn simulation-first drone hover, waypoint, visual racing, MAVLink/MAVSDK control, and competition compliance without unsafe live-hardware side effects.",
+      "market_comparators": [
+        "devin",
+        "openai_codex",
+        "cursor"
+      ],
+      "market_standard": "General agent products can help code drone stacks, but Project Theseus needs local RL/simulator/control adapters and safety gates because it is meant to learn the skill itself.",
+      "local_evidence_paths": [
+        "reports/ai_grand_prix_spec_digest.json",
+        "reports/python_runtime_compatibility.json",
+        "reports/benchmark_adapter_factory.json",
+        "reports/rl_benchmark_registry.json"
+      ]
+    },
+    {
+      "id": "minecraft_open_world_rl",
+      "name": "Minecraft and open-world RL",
+      "category": "training_domain",
+      "target": "Learn local licensed Minecraft and Minecraft-like open-world survival, crafting, navigation, player instruction following, and long-horizon skill reuse.",
+      "market_comparators": [
+        "devin",
+        "openai_codex",
+        "cursor"
+      ],
+      "market_standard": "General agent products can help write Minecraft automation code, but Theseus needs local RL harnesses, trace capsules, transfer artifacts, and account/server safety gates because it is meant to learn the skill itself.",
+      "local_evidence_paths": [
+        "configs/minecraft_rl_policy.json",
+        "reports/minecraft_runtime_probe.json",
+        "reports/benchmark_adapter_factory.json",
+        "reports/rl_benchmark_registry.json",
+        "reports/pressure_source_crafter_seed1.json"
+      ]
+    },
+    {
+      "id": "native_voice_io",
+      "name": "Native voice I/O",
+      "category": "interaction_io",
+      "target": "Learn speech input/output as a native Theseus head/router capability without provider, installed-package, or pretrained third-party STT/TTS inference.",
+      "market_comparators": [
+        "openai_codex",
+        "anthropic_claude_code",
+        "google_gemini_cli",
+        "cursor"
+      ],
+      "market_standard": "Market assistants often provide voice through hosted or separately pretrained speech stacks. Project Theseus treats speech as a native local learning frontier and keeps third-party speech inference out of non-teacher paths.",
+      "local_evidence_paths": [
+        "configs/native_voice_policy.json",
+        "configs/native_voice_training_policy.json",
+        "reports/native_voice_io.json",
+        "reports/native_voice_training_manifest.json",
+        "benchmarks/cards/source_common_voice.json",
+        "benchmarks/cards/source_librispeech.json",
+        "benchmarks/cards/source_ljspeech.json"
+      ]
+    },
+    {
+      "id": "training_data_governance",
+      "name": "Training data inventory and source governance",
+      "category": "data",
+      "target": "Track data roles, licenses, staging state, provenance, and blocked/allowed training-use policies.",
+      "market_comparators": [
+        "devin",
+        "cursor",
+        "openai_codex"
+      ],
+      "market_standard": "Market systems handle repo/project context; SparkStream needs local training data governance because it is explicitly self-training.",
+      "local_evidence_paths": [
+        "reports/training_data_inventory.json",
+        "reports/online_source_catalog_report.json",
+        "docs/DATA_AND_ARTIFACTS.md"
+      ]
+    },
+    {
+      "id": "synthetic_data_curation",
+      "name": "Synthetic data curation",
+      "category": "data",
+      "target": "Create higher-signal residual-targeted data locally with leakage, quality, blend, and provenance gates.",
+      "market_comparators": [
+        "openai_codex",
+        "anthropic_claude_code",
+        "devin"
+      ],
+      "market_standard": "Frontier labs use synthetic data internally; products rarely expose user-governed synthetic training-data pipelines.",
+      "local_evidence_paths": [
+        "reports/synthetic_data_curator.json",
+        "configs/synthetic_data_policy.json",
+        "docs/SYNTHETIC_DATA_CURATION.md"
+      ]
+    },
+    {
+      "id": "context_packet_memory",
+      "name": "Packetized context scoring and compaction",
+      "category": "memory",
+      "target": "Score, compact, summarize, merge, and evict packets so long-horizon autonomy keeps high-value context.",
+      "market_comparators": [
+        "openai_codex",
+        "google_gemini_cli",
+        "cursor",
+        "devin"
+      ],
+      "market_standard": "Market agents support long context, memory, or checkpoints; SparkStream exposes a local scored packet ledger for long-run self-improvement.",
+      "local_evidence_paths": [
+        "reports/context_packet_ledger.json",
+        "scripts/context_packet_ledger.py",
+        "docs/CONTEXT_PACKET_MEMORY.md"
+      ]
+    },
+    {
+      "id": "safety_permissions_reflex",
+      "name": "Safety, permission envelopes, and reflex/failsafe layer",
+      "category": "safety",
+      "target": "Bound arms by risk tier, runtime tier, memory/tool permissions, approval gates, and reflex/failsafe behavior.",
+      "market_comparators": [
+        "openai_codex",
+        "github_copilot_cloud_agent",
+        "devin",
+        "cursor"
+      ],
+      "market_standard": "Commercial agents rely on permissions, sandboxing, approval flows, and admin controls; SparkStream mirrors this locally for self-training and modular arms.",
+      "local_evidence_paths": [
+        "reports/safety_benchmark_ledger.json",
+        "reports/arm_registry.json",
+        "configs/autonomy_policy.json"
+      ]
+    },
+    {
+      "id": "attd_repo_health_governance",
+      "name": "ATTD repository health governance",
+      "category": "codebase_governance",
+      "target": "Use deterministic assembly-theoretic technical-debt triggers to pause autonomous growth and emit bounded maintenance packets before structural debt compounds.",
+      "market_comparators": [
+        "openai_codex",
+        "devin",
+        "cursor"
+      ],
+      "market_standard": "Market coding agents rely on tests, linters, reviews, and product guardrails; SparkStream adds an explicit repository-native ATTD gate over self-evolution.",
+      "local_evidence_paths": [
+        "configs/attd_policy.json",
+        "scripts/attd_analyzer.py",
+        "reports/attd_report.json",
+        "reports/attd_maintenance_packets.json"
+      ]
+    },
+    {
+      "id": "codebase_engineering_agent",
+      "name": "General codebase engineering agent",
+      "category": "product_capability",
+      "target": "Independently inspect, edit, test, and improve arbitrary repositories with PR-grade output.",
+      "market_comparators": [
+        "openai_codex",
+        "anthropic_claude_code",
+        "github_copilot_cloud_agent",
+        "cursor",
+        "devin"
+      ],
+      "market_standard": "This is a mature market category with strong products that edit files, run commands/tests, work in background/cloud/IDE surfaces, and open PRs.",
+      "local_evidence_paths": [
+        "scripts/autonomous_goal_runner.py",
+        "reports/workflow_routing_traces.jsonl",
+        "reports/autonomous_goal_last.json"
+      ]
+    },
+    {
+      "id": "external_research_and_benchmark_discovery",
+      "name": "External research, benchmark, and data discovery",
+      "category": "research",
+      "target": "Find new benchmarks/data, preserve provenance, audit licenses/terms, and stage approved sources without unsafe bulk ingestion.",
+      "market_comparators": [
+        "google_gemini_cli",
+        "openai_codex",
+        "cursor",
+        "devin"
+      ],
+      "market_standard": "Market agents can browse/fetch/search with tools; SparkStream keeps network fetch off by default and routes discoveries through audit and import policy.",
+      "local_evidence_paths": [
+        "scripts/benchmark_seeker.py",
+        "scripts/online_source_catalog.py",
+        "reports/knowledge_source_registry.json"
+      ]
+    }
+  ]
+}

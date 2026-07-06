@@ -1,0 +1,58 @@
+{
+  "policy": "project_theseus_neural_seed_architecture_sweep_v0",
+  "purpose": "Run bounded private multi-seed and one-notch budget-ladder evidence for the matched SymLiquid-style vs transformer code-proposer comparator before making architecture claims.",
+  "base_comparator_config": "configs/neural_seed_code_proposer_comparator.json",
+  "safety": {
+    "public_calibration_allowed": false,
+    "public_training_allowed": false,
+    "teacher_calls_allowed": false,
+    "teacher_distillation_allowed": false,
+    "network_fetch_allowed": false,
+    "model_promotion_allowed": false,
+    "long_unattended_training_allowed": false
+  },
+  "seed_sweep": {
+    "seeds": [23, 29, 31, 37, 41],
+    "minimum_claim_seed_count": 5,
+    "claim_language": "report mean, standard deviation, min, max, and per-seed deltas; do not declare an architecture winner from one seed"
+  },
+  "budget_tiers": [
+    {
+      "id": "current_smoke_seed_sweep",
+      "enabled_by_default": true,
+      "description": "Repeat the current code-proposer smoke across five seeds with the same private data, verifier, STS controls, fanout, and matched parameter discipline.",
+      "matched_budget_overrides": {},
+      "transformer_control_overrides": {},
+      "symliquid_style_overrides": {}
+    },
+    {
+      "id": "one_notch_budget_ladder",
+      "enabled_by_default": false,
+      "description": "One bounded scale step to test whether the gap widens, narrows, or flips with more capacity while preserving matching discipline.",
+      "matched_budget_overrides": {
+        "max_sequence_tokens": 96,
+        "max_vocab": 1024,
+        "epochs": 4,
+        "batch_size": 64,
+        "fanout_top_k": 4
+      },
+      "transformer_control_overrides": {
+        "d_model": 64,
+        "nhead": 2,
+        "num_layers": 1,
+        "dim_feedforward": 128
+      },
+      "symliquid_style_overrides": {
+        "hidden_dim_candidates": [48, 56, 64, 72, 80],
+        "reservoir_dim_candidates": [48, 56, 64, 72, 80],
+        "hv_dim_candidates": [48, 56, 64, 72, 80]
+      }
+    }
+  ],
+  "outputs": {
+    "out": "reports/neural_seed_architecture_sweep.json",
+    "markdown_out": "reports/neural_seed_architecture_sweep.md",
+    "run_dir": "reports/neural_seed_architecture_sweep"
+  },
+  "score_semantics": "Private architecture evidence only. Public calibration, teacher calls, distillation, network fetches, long unattended training, and model promotion remain locked."
+}

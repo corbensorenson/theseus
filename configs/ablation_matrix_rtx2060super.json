@@ -1,0 +1,83 @@
+{
+  "hardware_profile": "configs/training_profiles_rtx2060super.json",
+  "policy": "matched_comparisons_before_heavy_training",
+  "defaults": {
+    "build": "cargo run --release",
+    "features": "cuda",
+    "train_seed": 0,
+    "eval_seed": 10000,
+    "cases_per_task": 20,
+    "epochs": 3,
+    "hv_dim": 1024,
+    "samples_per_launch": 256,
+    "rollout_batch": 256,
+    "seq_len": 32
+  },
+  "comparisons": [
+    {
+      "name": "cpu_baseline",
+      "purpose": "CPU Rust baseline for speed and accuracy comparison.",
+      "command": "cargo run --release -p symliquid-cli -- train-baseline --cases-per-task 20 --epochs 3 --batch-size 16 --hv-dim 1024 --lr 0.03 --out reports/ablation_cpu_baseline.json"
+    },
+    {
+      "name": "cuda_readout",
+      "purpose": "CUDA readout-only speedup check.",
+      "command": "cargo run --release -p symliquid-cli --features cuda -- train-standalone-cuda --cases-per-task 20 --epochs 3 --samples-per-launch 256 --hv-dim 1024 --lr 0.03 --out reports/ablation_cuda_readout.json"
+    },
+    {
+      "name": "rollout_state_frozen",
+      "purpose": "Rust/CUDA rollout with frozen recurrent state.",
+      "command": "cargo run --release -p symliquid-cli --features cuda -- train-rollout-cuda --cases-per-task 20 --epochs 3 --state-epochs 0 --state-lr 0.0 --probe-cases-per-task 12 --samples-per-launch 256 --rollout-batch 256 --obs-dim 32 --hidden-dim 64 --reservoir-dim 96 --hv-dim 1024 --seq-len 32 --lr 0.03 --out reports/ablation_rollout_state_frozen.json"
+    },
+    {
+      "name": "learned_state",
+      "purpose": "Matched learned recurrent state candidate.",
+      "command": "cargo run --release -p symliquid-cli --features cuda -- train-rollout-cuda --cases-per-task 20 --epochs 3 --state-epochs 1 --state-lr 0.02 --probe-cases-per-task 12 --samples-per-launch 256 --rollout-batch 256 --obs-dim 32 --hidden-dim 64 --reservoir-dim 96 --hv-dim 1024 --seq-len 32 --lr 0.03 --out reports/ablation_rollout_learned_state.json"
+    },
+    {
+      "name": "task_heads",
+      "purpose": "Readout routing diagnostic inside rollout report; accepted only if guarded probe improves without subgroup damage.",
+      "source_report": "reports/ablation_rollout_learned_state.json",
+      "metric_path": "readout_routing.accepted_task_heads"
+    },
+    {
+      "name": "residual_adapters",
+      "purpose": "Residual adapter diagnostic inside rollout report; accepted only if guarded probe improves without subgroup damage.",
+      "source_report": "reports/ablation_rollout_learned_state.json",
+      "metric_path": "readout_routing.accepted_residual_adapters"
+    },
+    {
+      "name": "bridge_benchmark_on",
+      "purpose": "BabyLM wh-vs-that bridge benchmark active.",
+      "command": "target/release/symliquid-cli.exe train-babylm-probe --input data/babylm_blimp_filtered_train.jsonl --eval-input benchmarks/bridges/babylm_wh_gap_bridge.jsonl --train-limit 10000 --eval-limit 200 --steps 300 --hv-dim 8192 --stateful --pairwise-contrast --balance-rules --prior-weight 1.0 --out reports/ablation_babylm_bridge_on.json"
+    },
+    {
+      "name": "bridge_benchmark_off",
+      "purpose": "Matched BabyLM public-eval probe without bridge pressure, used as the bridge-off comparator.",
+      "command": "target/release/symliquid-cli.exe train-babylm-probe --input data/babylm_blimp_filtered_train.jsonl --eval-input data/babylm_blimp_filtered_eval.jsonl --train-limit 10000 --eval-limit 200 --steps 300 --hv-dim 8192 --stateful --pairwise-contrast --balance-rules --prior-weight 1.0 --out reports/ablation_babylm_bridge_off.json"
+    },
+    {
+      "name": "public_only",
+      "purpose": "Public BLIMP/BabyLM comparator without mutated holdout steering.",
+      "source_report": "reports/blimp_filtered_train_800k_evalfull_hv16k_lr02_complexnpfix.json"
+    },
+    {
+      "name": "public_plus_mutated",
+      "purpose": "Public comparator plus seed49 regression and seed55 frontier.",
+      "source_reports": [
+        "reports/blimp_filtered_train_800k_evalfull_hv16k_lr02_complexnpfix.json",
+        "reports/babylm_mutated_holdout_seed49_stateful_grammar_state_frontier.json",
+        "reports/babylm_mutated_holdout_seed55_stateful_grammar_state_frontier.json"
+      ]
+    }
+  ],
+  "promotion_rule": {
+    "require_matched_seeds": true,
+    "require_runtime_profile": true,
+    "require_timing_breakdown": true,
+    "require_public_comparator": true,
+    "require_seed49_regression": true,
+    "require_seed55_frontier": true,
+    "require_residual_escrow_review": true
+  }
+}

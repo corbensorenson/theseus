@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SparkStream</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#101214">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>SparkStream</h1>
+        <p id="status-line">Loading local autonomy state...</p>
+      </div>
+      <div class="toolbar">
+        <select id="profile">
+          <option value="smoke">smoke</option>
+          <option value="inner_loop" selected>inner_loop</option>
+          <option value="candidate">candidate</option>
+          <option value="seed_sweep">seed_sweep</option>
+        </select>
+        <label><input id="execute" type="checkbox"> execute</label>
+        <label><input id="allow-teacher" type="checkbox"> teacher</label>
+        <label><input id="allow-network-fetch" type="checkbox"> network fetch</label>
+        <input id="daemon-duration-hours" class="small-input" placeholder="hours">
+        <button data-action="run_cycle">Run Cycle</button>
+        <button data-action="start_daemon">Start</button>
+        <button data-action="pause_daemon">Pause</button>
+        <button data-action="resume_daemon">Resume</button>
+        <button data-action="stop_daemon">Stop</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel hero">
+        <div class="metric"><span>Training</span><strong id="metric-training">--</strong></div>
+        <div class="metric"><span>Candidate</span><strong id="metric-candidate">--</strong></div>
+        <div class="metric"><span>Learning</span><strong id="metric-learning">--</strong></div>
+        <div class="metric"><span>VIEA OS</span><strong id="metric-viea">--</strong></div>
+        <div class="metric"><span>Frontier</span><strong id="metric-frontier">--</strong></div>
+        <div class="metric"><span>Teacher Calls</span><strong id="metric-teacher">--</strong></div>
+        <div class="metric"><span>Data Files</span><strong id="metric-data">--</strong></div>
+        <div class="metric"><span>Synthetic</span><strong id="metric-synthetic">--</strong></div>
+        <div class="metric"><span>RL Envs</span><strong id="metric-rl">--</strong></div>
+        <div class="metric"><span>Sources</span><strong id="metric-online-sources">--</strong></div>
+        <div class="metric"><span>Efficiency</span><strong id="metric-efficiency">--</strong></div>
+        <div class="metric"><span>Hive</span><strong id="metric-hive">--</strong></div>
+        <div class="metric"><span>Operator OS</span><strong id="metric-operator-os">--</strong></div>
+        <div class="metric"><span>Gas</span><strong id="metric-market">--</strong></div>
+        <div class="metric"><span>License</span><strong id="metric-license">--</strong></div>
+        <div class="metric"><span>OpenAI API</span><strong id="metric-openai">--</strong></div>
+        <div class="metric"><span>Updates</span><strong id="metric-updates">--</strong></div>
+        <div class="metric"><span>Launch</span><strong id="metric-readiness">--</strong></div>
+        <div class="metric"><span>Arms</span><strong id="metric-arms">--</strong></div>
+        <div class="metric"><span>Context</span><strong id="metric-context">--</strong></div>
+        <div class="metric"><span>Capabilities</span><strong id="metric-capabilities">--</strong></div>
+        <div class="metric"><span>Evolution</span><strong id="metric-evolution">--</strong></div>
+        <div class="metric"><span>ATTD</span><strong id="metric-attd">--</strong></div>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="section-head">
+          <h2>Benchmark Scores</h2>
+          <button data-action="refresh_seeker">Refresh Inventory</button>
+        </div>
+        <canvas id="benchmark-chart" width="1200" height="360"></canvas>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="section-head">
+          <h2>Improvement History</h2>
+          <span class="pill" id="history-summary">--</span>
+        </div>
+        <canvas id="history-chart" width="1200" height="320"></canvas>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Benchmarks</h2>
+          <div id="benchmark-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Self-Improvement Queue</h2>
+          <div id="queue-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Autonomy Daemon</h2>
+          <div id="daemon-summary" class="item-meta"></div>
+          <div id="daemon-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>VIEA Operating Spine</h2>
+          <div id="viea-summary" class="item-meta"></div>
+          <div id="viea-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Feedback Actions</h2>
+          <div id="viea-actions-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <button id="viea-action-run">Run Queue</button>
+            <button id="viea-action-pause">Pause Queue</button>
+            <button id="viea-action-resume">Resume Queue</button>
+            <input id="viea-action-block-id" placeholder="action id">
+            <button id="viea-action-block">Block</button>
+          </div>
+          <div id="viea-actions-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Broad Transfer Closure</h2>
+          <div id="viea-transfer-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <button id="viea-calibration-run">Rerun 32+ Calibration</button>
+          </div>
+          <div id="viea-transfer-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Repo-Repair Curriculum</h2>
+          <div id="viea-repo-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <button id="viea-repo-refresh">Refresh Learner Bridge</button>
+          </div>
+          <div id="viea-repo-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>SymLiquid State Engine</h2>
+          <div id="viea-sym-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <button id="viea-sym-refresh">Refresh State</button>
+          </div>
+          <div id="viea-sym-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Teacher Architecture Queue</h2>
+          <div id="viea-teacher-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <button id="viea-teacher-request">Request Diagnosis</button>
+          </div>
+          <div id="viea-teacher-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Learning Truth</h2>
+          <div id="learning-summary" class="item-meta"></div>
+          <div id="learning-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Training Data</h2>
+          <div id="data-summary" class="item-meta"></div>
+          <div id="data-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Synthetic Data</h2>
+          <div id="synthetic-summary" class="item-meta"></div>
+          <div id="synthetic-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>RL Benchmarks</h2>
+          <div id="rl-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <input id="rl-discover-query" placeholder="open source RL environment, gameboy homebrew benchmark...">
+            <select id="rl-discover-limit">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+            </select>
+            <button id="rl-discover-submit">Discover RL</button>
+          </div>
+          <div id="rl-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="section-head">
+            <h2>Online Source Catalog</h2>
+            <div class="inline-controls">
+              <button id="source-catalog-refresh">Refresh</button>
+              <button id="source-catalog-import">Import Approved</button>
+            </div>
+          </div>
+          <div id="source-catalog-summary" class="item-meta"></div>
+          <div id="source-catalog-list" class="list"></div>
+          <p class="hint">Imports stage source archives or dataset metadata under ignored folders. Unknown licenses, bulk corpora, and ROM-like assets stay blocked until audited.</p>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="section-head">
+            <h2>Capability Matrix</h2>
+            <button id="capability-refresh">Refresh</button>
+          </div>
+          <div id="capability-summary" class="item-meta"></div>
+          <div id="capability-list" class="list"></div>
+          <p class="hint">The matrix compares local capabilities against source-backed market baselines and turns the lowest-maturity gaps into self-improvement queue items.</p>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="section-head">
+            <h2>Registration & License</h2>
+            <button id="license-refresh">Check</button>
+          </div>
+          <div id="license-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <input id="license-name" placeholder="name">
+            <input id="license-email" placeholder="email">
+            <input id="license-organization" placeholder="organization">
+            <select id="license-usage">
+              <option value="personal_homelab">personal homelab</option>
+              <option value="research">research</option>
+              <option value="startup_free">startup free</option>
+              <option value="company">company</option>
+              <option value="public_operator">public operator</option>
+            </select>
+            <input id="license-seats" class="small-input" value="1">
+            <label><input id="license-commercial" type="checkbox"> commercial</label>
+            <label><input id="license-terms" type="checkbox"> terms</label>
+            <button id="license-register">Register</button>
+            <button id="license-request">Request Paid</button>
+          </div>
+          <textarea id="license-import-json" rows="4" placeholder="Paste signed license JSON"></textarea>
+          <button id="license-import">Import Signed License</button>
+          <div id="license-list" class="list"></div>
+          <p class="hint">Community registration enables non-commercial private/friends-family hives up to the free cap. Company hives and public gateways require a signed paid license.</p>
+        </div>
+        <div class="panel">
+          <h2>Resource Governor</h2>
+          <div id="resource-summary" class="item-meta"></div>
+          <div id="resource-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <div class="section-head">
+            <h2>Project Theseus Hive</h2>
+            <div class="inline-controls">
+              <button id="hive-probe">Probe</button>
+              <button id="hive-start">Start Hive</button>
+              <button id="hive-relay-start">Start Relay</button>
+              <button id="hive-schedule">Schedule</button>
+            </div>
+          </div>
+          <div id="hive-summary" class="item-meta"></div>
+          <div id="hive-list" class="list"></div>
+          <p class="hint">Hive peers can advertise CUDA, MLX, CPU, and chat-gateway capacity. Remote tasks are limited to registered safe task kinds and require the configured shared secret outside loopback.</p>
+        </div>
+        <div class="panel">
+          <div class="section-head">
+            <h2>Hive Operator OS</h2>
+            <div class="inline-controls">
+              <button id="hive-operator-refresh">Refresh</button>
+              <button id="hive-work-board-run">Run Board Step</button>
+              <button id="hive-high-transfer-schedule">High-Transfer</button>
+            </div>
+          </div>
+          <div class="toolbar compact">
+            <input id="hive-command-text" placeholder="/background run broad transfer status" value="/background run broad transfer status">
+            <button id="hive-command-send">Run Background</button>
+          </div>
+          <div id="hive-operator-summary" class="item-meta"></div>
+          <div id="hive-operator-list" class="list"></div>
+          <p class="hint">One command vocabulary across dashboard, mobile, CLI, tray, relay, and future chat channels. The work board, background jobs, skills, hooks, and safety contracts are generated from the same operator manifest.</p>
+        </div>
+        <div class="panel">
+          <div class="section-head">
+            <h2>Compute Market</h2>
+            <div class="inline-controls">
+              <button id="market-check">Check</button>
+              <button id="market-quote">Quote CUDA</button>
+              <button id="market-settle">Settle Receipts</button>
+            </div>
+          </div>
+          <div id="market-summary" class="item-meta"></div>
+          <div id="market-list" class="list"></div>
+          <pre id="market-result"></pre>
+          <p class="hint">Work credits are internal accounting until a public-chain token, exchange, custody, and compliance release explicitly exist.</p>
+        </div>
+        <div class="panel">
+          <div class="section-head">
+            <h2>OpenAI-Compatible Endpoint</h2>
+            <div class="inline-controls">
+              <button id="openai-start">Start</button>
+              <button id="openai-stop">Stop</button>
+            </div>
+          </div>
+          <div id="openai-summary" class="item-meta"></div>
+          <div class="toolbar compact">
+            <label><input id="openai-enabled" type="checkbox"> enabled</label>
+            <input id="openai-host" placeholder="127.0.0.1" value="127.0.0.1">
+            <input id="openai-port" class="small-input" placeholder="8789" value="8789">
+            <input id="openai-model" placeholder="theseus-live" value="theseus-live">
+            <input id="openai-checkpoint" placeholder="live" value="live">
+            <button id="openai-save">Save</button>
+          </div>
+          <div id="openai-list" class="list"></div>
+          <p class="hint">Use the Base URL in OpenCode/Hermes-compatible tools. This shim is local-first and routes to Project Theseus live/checkpoint chat without external inference.</p>
+        </div>
+        <div class="panel">
+          <div class="section-head">
+            <h2>Candidate Updates</h2>
+            <div class="inline-controls">
+              <button id="updates-check">Check</button>
+              <button id="updates-save">Save Settings</button>
+              <button id="updates-create">Create Offer</button>
+              <button id="updates-apply-soft">Install Soft</button>
+            </div>
+          </div>
+          <div class="toolbar compact">
+            <select id="updates-mode">
+              <option value="notify">notify</option>
+              <option value="manual">manual</option>
+              <option value="auto_soft">auto soft</option>
+              <option value="auto_safe">auto safe</option>
+            </select>
+            <select id="updates-channel">
+              <option value="community">community</option>
+              <option value="public">public</option>
+              <option value="company">company</option>
+            </select>
+            <select id="updates-track">
+              <option value="stable">stable</option>
+              <option value="beta">beta</option>
+              <option value="dev">dev</option>
+            </select>
+            <input id="updates-catalog-url" placeholder="catalog URL">
+            <select id="updates-offer"></select>
+            <label><input id="updates-check-start" type="checkbox"> startup</label>
+            <label><input id="updates-auto-soft" type="checkbox"> auto soft</label>
+            <label><input id="updates-auto-hard" type="checkbox"> auto hard</label>
+            <label><input id="updates-prerelease" type="checkbox"> prerelease</label>
+          </div>
+          <div id="updates-summary" class="item-meta"></div>
+          <div id="updates-list" class="list"></div>
+          <pre id="updates-result"></pre>
+          <p class="hint">Accepted candidates create update offers. Soft updates activate checkpoint metadata without restart. Hard app/source changes are staged and skip protected local/company arms and data.</p>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="section-head">
+            <h2>Launch Readiness</h2>
+            <button id="readiness-refresh">Check</button>
+          </div>
+          <div id="readiness-summary" class="item-meta"></div>
+          <div id="readiness-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Arm Lifecycle</h2>
+          <div id="arm-summary" class="item-meta"></div>
+          <div id="arm-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Autonomous Goals</h2>
+          <textarea id="goal-text" rows="4" placeholder="Set a goal for the Octopus router arms. Example: Improve the current frontier efficiently while preserving regressions."></textarea>
+          <button id="goal-submit">Route Goal</button>
+          <pre id="goal-result"></pre>
+          <div id="goal-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>ATTD Repo Health</h2>
+          <div id="attd-summary" class="item-meta"></div>
+          <div id="attd-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Self-Evolution</h2>
+          <div id="self-evolution-summary" class="item-meta"></div>
+          <div id="self-evolution-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Architecture Experiments</h2>
+          <div id="architecture-summary" class="item-meta"></div>
+          <div id="architecture-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Arm Transfer</h2>
+          <div id="arm-transfer-summary" class="item-meta"></div>
+          <div id="arm-transfer-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Autoresearch Audit</h2>
+          <div id="autoresearch-summary" class="item-meta"></div>
+          <div id="autoresearch-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Benchmark Adapter Factory</h2>
+          <div id="adapter-summary" class="item-meta"></div>
+          <div id="adapter-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Loop Closure</h2>
+          <div id="loop-closure-summary" class="item-meta"></div>
+          <div id="loop-closure-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="section-head">
+            <h2>Checkpoints</h2>
+            <div class="inline-controls">
+              <select id="checkpoint-kind">
+                <option value="auto">auto</option>
+                <option value="major">major</option>
+                <option value="minor">minor</option>
+              </select>
+              <button id="checkpoint-create">Create</button>
+            </div>
+          </div>
+          <div class="checkpoint-tools">
+            <input id="checkpoint-a" placeholder="checkpoint A">
+            <input id="checkpoint-b" placeholder="checkpoint B">
+            <button id="checkpoint-compare">Compare</button>
+            <button id="checkpoint-backup">Backup Accepted</button>
+          </div>
+          <div id="checkpoint-backup-summary" class="item-meta"></div>
+          <pre id="checkpoint-backup-result"></pre>
+          <pre id="checkpoint-compare-result"></pre>
+          <pre id="checkpoint-materialize-result"></pre>
+          <div id="checkpoint-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Checkpoint / Live Chat</h2>
+          <div class="toolbar compact">
+            <input id="chat-checkpoint" placeholder="live or checkpoint id" value="live">
+            <button id="chat-live">Live</button>
+          </div>
+          <textarea id="chat-prompt" rows="4" placeholder="Ask the live system or selected checkpoint about scores, data, RL, residuals, or next steps."></textarea>
+          <button id="chat-submit">Ask</button>
+          <pre id="chat-result"></pre>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Teacher</h2>
+          <textarea id="teacher-prompt" rows="5" placeholder="Ask the teacher to evaluate a benchmark, architecture idea, or import plan."></textarea>
+          <div class="toolbar compact">
+            <select id="teacher-reason">
+              <option value="user_requested_benchmark">benchmark</option>
+              <option value="architecture_wall">architecture wall</option>
+              <option value="residual_conflict">residual conflict</option>
+              <option value="safety_or_governance_uncertainty">safety</option>
+            </select>
+            <button id="teacher-submit">Queue / Ask</button>
+          </div>
+          <pre id="teacher-last"></pre>
+        </div>
+        <div class="panel">
+          <h2>Add Benchmark or Data Source</h2>
+          <input id="benchmark-url" placeholder="https://...">
+          <input id="benchmark-name" placeholder="Name">
+          <textarea id="benchmark-notes" rows="3" placeholder="Notes, source, intended capability, import constraints."></textarea>
+          <button id="benchmark-add">Queue Source</button>
+          <p class="hint">Sources are queued by default. Network fetch uses the top-bar network fetch switch and asks for confirmation.</p>
+        </div>
+        <div class="panel">
+          <h2>Discover Sources</h2>
+          <input id="discover-query" placeholder="grammar benchmark, BabyLM, reasoning eval...">
+          <div class="toolbar compact">
+            <select id="discover-limit">
+              <option value="5">5 results</option>
+              <option value="10" selected>10 results</option>
+              <option value="20">20 results</option>
+            </select>
+            <button id="discover-submit">Discover</button>
+          </div>
+          <div id="discovered-list" class="list"></div>
+          <p class="hint">Discovery uses public dataset search only when network fetch is enabled. Results stay pending audit.</p>
+        </div>
+        <div class="panel">
+          <h2>Knowledge Sources</h2>
+          <div id="knowledge-summary" class="item-meta"></div>
+          <div id="knowledge-list" class="list"></div>
+          <p class="hint">Knowledge sources are lookup-only by default. Training ingestion requires license, robots, provenance, and human approval gates.</p>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Active Jobs</h2>
+          <div id="jobs-list" class="list"></div>
+        </div>
+        <div class="panel">
+          <h2>Context Packets</h2>
+          <div id="context-summary" class="item-meta"></div>
+          <div id="context-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Benchmark Seeker</h2>
+          <div id="seeker-list" class="list"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Recent Reports</h2>
+        <div id="reports-list" class="reports"></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/service-worker.js").catch(() => {});
+      }
+    </script>
+  </body>
+</html>

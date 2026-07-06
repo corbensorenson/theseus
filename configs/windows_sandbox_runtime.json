@@ -1,0 +1,20 @@
+{
+  "policy": "project_theseus_windows_sandbox_runtime_v0",
+  "runtime": "podman",
+  "podman_bin": "D:/ProjectTheseus/tools/podman/podman.exe",
+  "machine_name": "theseus-podman",
+  "storage_root": "D:/ProjectTheseus/containers",
+  "container_tmp": "D:/ProjectTheseus/container_tmp",
+  "project_mount": "D:/ProjectTheseus:/projecttheseus",
+  "workspace_mount": "C:/Users/corbe/Documents/New project:/workspace:rw",
+  "default_cpus": 8,
+  "default_memory_mib": 8192,
+  "default_disk_gib": 80,
+  "network_during_scoring": false,
+  "public_benchmark_training_use_allowed": false,
+  "teacher_apply_mode_allowed": false,
+  "notes": [
+    "Podman CLI is installed on D:, but Windows may require a reboot after WSL feature installation before podman machine init can succeed.",
+    "Run scripts/setup_podman_sandbox_windows.ps1 after reboot to create and start the D-drive-oriented sandbox machine."
+  ]
+}

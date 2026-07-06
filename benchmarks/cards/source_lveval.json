@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_lveval",
+  "source_id": "lveval",
+  "name": "LV-Eval",
+  "category": "long_context_memory_benchmark",
+  "priority": "high",
+  "status": "needs_license_partition_review",
+  "url": "https://github.com/infinigence/LVEval",
+  "paper_url": "https://arxiv.org/abs/2402.05136",
+  "license_spdx": "mit AND cc-by-sa-4.0",
+  "license_allowed": true,
+  "decision": "approved_for_metadata_import_only_until_dataset_partition_review",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "high",
+  "capability_target": "Long-context QA at 16k, 32k, 64k, 128k, and 256k with confusing facts and keyword/phrase replacement.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "long_context_qa",
+  "input_contract": {
+    "metadata": "official source card and length/task taxonomy",
+    "context": "private long QA contexts with confusing facts",
+    "query": "single-hop or multi-hop QA question",
+    "evidence": "supporting answer keyword rows and confusing-fact rows",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "exact local answer or keyword recall for private analogues",
+    "evidence_precision_recall": "supporting fact recovery under distraction",
+    "abstention": "missing support rejection",
+    "latency": "local retrieval and compaction cost",
+    "residuals": "confuser selected, keyword miss, multi-hop miss, or length degradation"
+  },
+  "smoke_steps": [
+    "record MIT code and CC-BY-SA data split",
+    "stage public payloads only after dataset license partition review",
+    "mirror confusing-fact and length buckets with private analogues"
+  ],
+  "promotion_gates": [
+    "license_partition_review_before_payload_stage",
+    "public_calibration_only",
+    "no_public_training_rows",
+    "no_external_inference",
+    "private_analogue_suite_present",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "Public LV-Eval content is calibration-only. No public contexts, answer keywords, confusing facts, prompts, answers, or templates enter training rows.",
+  "regression_policy": "If mastered, keep private confusing-fact rows as regression and track public LV-Eval only through exact-run manifests.",
+  "permission_envelope": {
+    "memory": "metadata and private analogues until payload stage is explicitly admitted",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving. Teacher may not grade or repair public LV-Eval rows.",
+  "external_inference_calls": 0
+}

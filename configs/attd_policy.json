@@ -1,0 +1,189 @@
+{
+  "policy": "sparkstream_attd_policy_v0",
+  "purpose": "Deterministic Assembly-Theoretic Technical Debt governance for autonomous SparkStream/RMI source evolution.",
+  "analyzer_version": "attd_analyzer_v0",
+  "include_paths": [
+    "scripts",
+    "configs",
+    "docs",
+    "dashboard",
+    "crates",
+    "adapters",
+    "benchmarks/cards",
+    "tests"
+  ],
+  "include_extensions": [
+    ".py",
+    ".rs",
+    ".json",
+    ".toml",
+    ".md",
+    ".html",
+    ".css",
+    ".js",
+    ".ps1",
+    ".yml",
+    ".yaml"
+  ],
+  "exclude_globs": [
+    "reports/**",
+    "target/**",
+    "data/**",
+    "games/**",
+    "checkpoints/**",
+    ".venv*/**",
+    "tmp/**",
+    "vendor/**",
+    "**/__pycache__/**",
+    "**/*.pyc"
+  ],
+  "roles": [
+    {
+      "id": "project_registry",
+      "patterns": ["scripts/theseus_project_registry.py", "configs/project_manifest_registry.json", "configs/project_steward.json", "scripts/module_definition_of_done_gate.py", "configs/module_definition_of_done.json", "scripts/theseus_deprecation_registry.py", "scripts/theseus_workspace_hygiene_audit.py"],
+      "criticality": 1.0
+    },
+    {
+      "id": "control_plane",
+      "patterns": ["scripts/theseus_control_plane.py", "scripts/report_evidence_store.py", "configs/control_plane_ownership.json", "scripts/theseus_dirty_workspace_review.py", "scripts/theseus_doc_link_audit.py", "scripts/theseus_generated_artifact_gc.py", "scripts/theseus_artifact_retention.py", "scripts/semantic_patch_gate.py", "configs/semantic_patch_registry.json", "scripts/procedural_memory_toolification_gate.py", "scripts/procedural_memory_canary_executor.py", "scripts/procedural_memory_route_adoption_gate.py", "configs/procedural_memory_toolification.json", "scripts/proof_carrying_contract_gate.py", "configs/proof_carrying_contracts.json"],
+      "criticality": 1.0
+    },
+    {
+      "id": "autonomy_control",
+      "patterns": ["scripts/autonomy_*.py", "scripts/sparkstream_*.py", "scripts/start_sparkstream.ps1"],
+      "criticality": 1.0
+    },
+    {
+      "id": "neural_seed",
+      "patterns": ["scripts/neural_seed_*.py", "scripts/strict_generator_mlx_*.py", "scripts/strict_generator_pretraining_spine.py", "scripts/student_*candidate*.py", "scripts/*candidate*generator*.py", "configs/neural_seed*.json"],
+      "criticality": 0.95
+    },
+    {
+      "id": "vcm_memory",
+      "patterns": ["scripts/vcm_*.py", "scripts/virtual_context_memory.py", "configs/vcm_context_governor.json", "memory/**"],
+      "criticality": 0.9
+    },
+    {
+      "id": "macos_acceleration",
+      "patterns": ["scripts/macos_*.py", "crates/symliquid-metal/**"],
+      "criticality": 0.9
+    },
+    {
+      "id": "hive_install",
+      "patterns": ["scripts/hive_*.py", "scripts/install_*", "scripts/package_*", "scripts/start_*", "configs/hive_policy_first_scheduler.json"],
+      "criticality": 0.85
+    },
+    {
+      "id": "public_transfer",
+      "patterns": ["scripts/operator_bounded_public_calibration.py", "scripts/wide_public_slice_selector.py", "scripts/public_*transfer*.py", "scripts/public_*calibration*.py"],
+      "criticality": 1.0
+    },
+    {
+      "id": "governance_gate",
+      "patterns": ["scripts/*gate*.py", "scripts/*governor*.py", "scripts/*readiness*.py", "configs/*policy*.json", "configs/generation_mode_registry.json", "configs/proof_carrying_contracts.json"],
+      "criticality": 1.0
+    },
+    {
+      "id": "benchmark_adapter",
+      "patterns": ["scripts/*benchmark*.py", "benchmarks/cards/*.json", "configs/*benchmark*.json"],
+      "criticality": 0.9
+    },
+    {
+      "id": "data_governance",
+      "patterns": ["scripts/*data*.py", "scripts/*source*.py", "configs/*source*.json", "configs/*data*.json"],
+      "criticality": 0.85
+    },
+    {
+      "id": "training_runtime",
+      "patterns": ["scripts/*training*.py", "scripts/run_*profile*.py", "crates/**/*.rs", "adapters/**/*.py"],
+      "criticality": 0.95
+    },
+    {
+      "id": "router_arms",
+      "patterns": ["scripts/*router*.py", "scripts/*arm*.py", "configs/*arm*.json"],
+      "criticality": 0.9
+    },
+    {
+      "id": "dashboard_ui",
+      "patterns": ["dashboard/**", "scripts/sparkstream_dashboard.py"],
+      "criticality": 0.65
+    },
+    {
+      "id": "documentation",
+      "patterns": ["docs/**", "*.md"],
+      "criticality": 0.45
+    },
+    {
+      "id": "config",
+      "patterns": ["configs/**"],
+      "criticality": 0.75
+    },
+    {
+      "id": "tests",
+      "patterns": ["tests/**", "**/*test*.py", "**/*tests*.rs"],
+      "criticality": 0.7
+    }
+  ],
+  "weights": {
+    "intrinsic_assembly_burden": 0.22,
+    "reuse_failure": 0.18,
+    "pattern_entropy": 0.22,
+    "rolling_residue": 0.18,
+    "debt_pressure": 0.20
+  },
+  "normalization": {
+    "green_effective_lines": 25000,
+    "red_effective_lines": 115000,
+    "green_file_count": 80,
+    "red_file_count": 420,
+    "preferred_file_lines": 900,
+    "large_file_lines": 1800,
+    "red_file_lines": 3600,
+    "max_nesting_green": 4,
+    "max_nesting_red": 10,
+    "motif_window_lines": 3,
+    "motif_min_support": 2,
+    "history_commit_window": 24,
+    "rolling_residue_red_lines": 9000,
+    "debt_todo_red_count": 80,
+    "test_ratio_green": 0.18
+  },
+  "thresholds": {
+    "green_max_score": 0.55,
+    "yellow_max_score": 0.78,
+    "yellow_growth_rate": 0.12,
+    "red_growth_rate": 0.25
+  },
+  "hard_caps": {
+    "max_source_file_lines": 7000,
+    "max_role_entropy": 0.92,
+    "max_dirty_residue_score": 0.92,
+    "max_debt_pressure": 0.9,
+    "max_duplicate_density": 0.42,
+    "max_boundary_violation_count": 8
+  },
+  "workspace_checkpoint": {
+    "mode": "auto_checkpoint_provenance_hygiene",
+    "dirty_residue_is_debt_gate": false,
+    "auto_commit_dirty_workspace": true,
+    "auto_stage_untracked": true,
+    "auto_commit_mode": "any_dirty_workspace",
+    "auto_commit_message": "Checkpoint workspace before ATTD gate",
+    "report": "reports/attd_dirty_workspace_checkpoint.json"
+  },
+  "governance": {
+    "red_blocks_long_autonomy": true,
+    "red_blocks_teacher_self_edit_except_attd_maintenance": true,
+    "red_blocks_architecture_change": true,
+    "red_blocks_adapter_card_writes": true,
+    "yellow_requires_maintenance_packets": true,
+    "maintenance_reason": "attd_maintenance"
+  },
+  "maintenance_packets": {
+    "max_packets": 12,
+    "component_warning_threshold": 0.55,
+    "component_red_threshold": 0.78,
+    "default_runtime_tier": "E1",
+    "default_risk_tier": "medium"
+  }
+}

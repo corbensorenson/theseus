@@ -1,0 +1,52 @@
+{
+  "policy": "project_theseus_token_superposition_training_v1",
+  "paper": {
+    "title": "Efficient Pre-Training with Token Superposition",
+    "url": "https://arxiv.org/abs/2605.06546",
+    "concept": "Fold contiguous tokens into bags during early training, train against the next token bag, then recover with ordinary autoregressive training."
+  },
+  "governance": {
+    "external_inference_calls": 0,
+    "toy_proxy_allowed": false,
+    "backend_required": "platform_native_cuda_or_mlx",
+    "permanent_architecture_change": false,
+    "requires_recovery_before_promotion": true,
+    "try_before_parameter_growth": true,
+    "comparison_rule": "Run ordinary AR and TST+AR recovery through the same platform-native readout path: Rust/CUDA on CUDA nodes, MLX on Apple Silicon Macs. The only intended differentiator is the token-superposition phase.",
+    "allowed_data_sources": [
+      "local_project_source_code_proxy",
+      "local_babylm_training_rows"
+    ],
+    "forbidden_data_sources": [
+      "public_eval_holdouts_as_training_input",
+      "uncertain_license_bulk_data",
+      "teacher_generated_training_data"
+    ]
+  },
+  "rust_cuda": {
+    "binary": "target/release/symliquid-cli.exe",
+    "input": "data/babylm_blimp_filtered_train.jsonl",
+    "include_project_code": true,
+    "project_code_roots": "scripts,crates",
+    "train_seed": 20260514,
+    "max_language_rows": 8000,
+    "max_code_files": 160,
+    "max_chars_per_doc": 12000,
+    "max_vocab": 256,
+    "hv_dim": 4096,
+    "train_samples": 32768,
+    "eval_samples": 4096,
+    "baseline_epochs": 6,
+    "bag_sizes": "4,8",
+    "recovery_ratios": "0.2,0.4",
+    "lr": 0.03,
+    "samples_per_launch": 512,
+    "gate_tolerance": 0.002,
+    "min_nominal_speedup": 1.2,
+    "min_train_speedup": 1.0,
+    "model_out": "reports/token_superposition_training_best_readout.json"
+  },
+  "reports": {
+    "out": "reports/token_superposition_training.json"
+  }
+}

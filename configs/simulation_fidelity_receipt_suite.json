@@ -1,0 +1,154 @@
+{
+  "policy": "project_theseus_simulation_fidelity_receipt_suite_v1",
+  "purpose": "Fixture-level simulation/fidelity receipt checks from the AI_book simulation-fidelity chapter.",
+  "no_cheat": {
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0
+  },
+  "required_scenarios": [
+    "unit_invariant_result",
+    "benchmark_with_approximation_limits",
+    "scenario_only_result",
+    "blocked_transfer_missing_bottleneck",
+    "downgraded_claim_after_instrumentation_cost"
+  ],
+  "fixtures": [
+    {
+      "scenario": "unit_invariant_result",
+      "claim_class": "invariant_check",
+      "simulation_id": "sim.unit.route_shape.v1",
+      "scope": "compiled route record shape only",
+      "fidelity_standard": "schema_and_record_family_exact",
+      "temporal_semantics": "offline_fixture",
+      "demand_estimate": {
+        "cpu_seconds": 1,
+        "memory_mb": 64,
+        "network": "none"
+      },
+      "capacity_bottlenecks": [
+        "schema_only_no_runtime_execution"
+      ],
+      "approximation_liberties": [
+        "no live peer",
+        "no real workload execution"
+      ],
+      "supported_claim_boundary": "can support record-shape readiness only",
+      "transfer_decision": "allow_narrow_invariant",
+      "instrumentation_cost_recorded": true,
+      "world_adapter": "fixture.local.schema",
+      "evidence_refs": [
+        "reports/viea_spine_record_gate.json"
+      ]
+    },
+    {
+      "scenario": "benchmark_with_approximation_limits",
+      "claim_class": "benchmark_comparison",
+      "simulation_id": "sim.benchmark.adapter_limits.v1",
+      "scope": "benchmark adapter dry-run limits",
+      "fidelity_standard": "declared_approximations_required",
+      "temporal_semantics": "offline_fixture",
+      "demand_estimate": {
+        "cpu_seconds": 2,
+        "memory_mb": 128,
+        "network": "none"
+      },
+      "capacity_bottlenecks": [
+        "adapter_stub_only",
+        "hidden_tests_not_available"
+      ],
+      "approximation_liberties": [
+        "fixture inputs",
+        "no public payload training"
+      ],
+      "supported_claim_boundary": "can support adapter readiness, not public score",
+      "transfer_decision": "allow_benchmark_limited",
+      "instrumentation_cost_recorded": true,
+      "world_adapter": "fixture.local.benchmark_adapter",
+      "evidence_refs": [
+        "scripts/benchmark_adapter_smoke.py"
+      ]
+    },
+    {
+      "scenario": "scenario_only_result",
+      "claim_class": "scenario_exploration",
+      "simulation_id": "sim.scenario.voice_following_route.v1",
+      "scope": "voice-following route sketch without live mic/speaker execution",
+      "fidelity_standard": "scenario_only",
+      "temporal_semantics": "not_runtime_execution",
+      "demand_estimate": {
+        "cpu_seconds": 1,
+        "memory_mb": 64,
+        "network": "none"
+      },
+      "capacity_bottlenecks": [
+        "no live audio",
+        "no room localization"
+      ],
+      "approximation_liberties": [
+        "capability summary only"
+      ],
+      "supported_claim_boundary": "can support roadmap scenario only",
+      "transfer_decision": "scenario_only_no_promotion",
+      "instrumentation_cost_recorded": true,
+      "world_adapter": "fixture.local.scenario",
+      "evidence_refs": [
+        "roadmap.md"
+      ]
+    },
+    {
+      "scenario": "blocked_transfer_missing_bottleneck",
+      "claim_class": "feasibility_estimate",
+      "simulation_id": "sim.blocked.native_kv_claim.v1",
+      "scope": "native MLX KV parity claim",
+      "fidelity_standard": "requires_exact_backend_lifecycle",
+      "temporal_semantics": "not_runtime_execution",
+      "demand_estimate": {
+        "cpu_seconds": 0,
+        "memory_mb": 0,
+        "network": "none"
+      },
+      "capacity_bottlenecks": [
+        "model_native_mlx_kv_lifecycle_missing"
+      ],
+      "approximation_liberties": [
+        "descriptor_lifecycle_not_model_native_kv"
+      ],
+      "supported_claim_boundary": "cannot support native KV parity",
+      "transfer_decision": "block_transfer",
+      "instrumentation_cost_recorded": true,
+      "world_adapter": "fixture.local.runtime_boundary",
+      "evidence_refs": [
+        "reports/vcm_native_runtime_probe.json"
+      ]
+    },
+    {
+      "scenario": "downgraded_claim_after_instrumentation_cost",
+      "claim_class": "safety_rehearsal",
+      "simulation_id": "sim.downgrade.instrumentation_cost.v1",
+      "scope": "scheduler trace with observer/logging overhead",
+      "fidelity_standard": "instrumentation_cost_visible",
+      "temporal_semantics": "offline_fixture",
+      "demand_estimate": {
+        "cpu_seconds": 3,
+        "memory_mb": 192,
+        "network": "none"
+      },
+      "capacity_bottlenecks": [
+        "trace_logging_overhead",
+        "no live distributed peer"
+      ],
+      "approximation_liberties": [
+        "dry-plan only",
+        "no task submission"
+      ],
+      "supported_claim_boundary": "downgrade to route-shape evidence",
+      "transfer_decision": "downgrade_claim",
+      "instrumentation_cost_recorded": true,
+      "world_adapter": "fixture.local.scheduler_trace",
+      "evidence_refs": [
+        "reports/hive_policy_first_scheduler.json"
+      ]
+    }
+  ]
+}

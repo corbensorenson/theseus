@@ -1,0 +1,38 @@
+{
+  "source_id": "openassistant_oasst2",
+  "dataset": "OpenAssistant/oasst2",
+  "url": "https://huggingface.co/datasets/OpenAssistant/oasst2",
+  "license_spdx": "apache-2.0",
+  "expected_license_normalized": "apache-2.0",
+  "enabled": false,
+  "format": "oasst_message_rows",
+  "config": "default",
+  "split": "train",
+  "offset": 0,
+  "length": 0,
+  "why": "Apache-2.0 human-feedback tree rows; held metadata-only until a conversation-tree assembler preserves parent/child context.",
+  "use": "queued_tree_reconstruction_before_training",
+  "checks": [
+    {
+      "gate": "source_enabled",
+      "passed": false,
+      "evidence": "False"
+    },
+    {
+      "gate": "source_kind_huggingface_dataset",
+      "passed": true,
+      "evidence": "huggingface_dataset"
+    },
+    {
+      "gate": "license_expected_allowlisted",
+      "passed": true,
+      "evidence": "apache-2.0"
+    }
+  ],
+  "status": "metadata_only",
+  "conversation_samples": 0,
+  "private_train_rows": 0,
+  "sts_rows": 0,
+  "external_inference_calls": 0,
+  "decision": "disabled_by_policy"
+}

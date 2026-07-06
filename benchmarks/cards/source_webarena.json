@@ -1,0 +1,66 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_webarena",
+  "source_id": "webarena",
+  "name": "web-arena-x/webarena",
+  "category": "web_agent_benchmark",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/web-arena-x/webarena",
+  "license_spdx": "apache-2.0",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "self_hosted_web_agent_adapter",
+  "runner_family": "web_agent_local",
+  "runtime_tier": "E3",
+  "risk_tier": "medium",
+  "capability_target": "browser/web task planning in self-hosted sandboxes",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "examples": "local benchmark items or metadata",
+    "model": "local checkpoint or SymLiquid scorer"
+  },
+  "output_contract": {
+    "score": "accuracy or task metric",
+    "residuals": "failed cases",
+    "cost": "runtime and memory"
+  },
+  "smoke_steps": [
+    "metadata_scan",
+    "self_hosted_service_health",
+    "single_task_reset_step_grade"
+  ],
+  "promotion_gates": [
+    "self_hosted_only",
+    "no_real_accounts",
+    "network_scope_recorded",
+    "no_external_inference"
+  ],
+  "contamination_policy": "Record source provenance and keep generated frontiers separate from training samples.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

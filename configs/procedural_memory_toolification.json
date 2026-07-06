@@ -1,0 +1,152 @@
+{
+  "policy": "project_theseus_procedural_memory_toolification_v1",
+  "purpose": "Turn repeated Theseus traces into verified procedural tool candidates only after recurrence, verification, monitoring, and retirement criteria are explicit.",
+  "inputs": {
+    "loop_closure_harvester": "reports/loop_closure_harvester.json",
+    "loop_closure_tool_promoter": "reports/loop_closure_tool_promoter.json",
+    "viea_verified_procedural_tools": "reports/viea_verified_procedural_tools.json",
+    "deterministic_tool_loop_closure_candidates": "reports/deterministic_tool_loop_closure_candidates.json",
+    "assistant_trace_schema": "configs/assistant_trace_schema.json",
+    "assistant_trace_events": [
+      "runtime/dogfood/daily_use_events.jsonl",
+      "reports/theseus_assistant_trace_schema_events.jsonl",
+      "reports/assistant_deterministic_tool_dogfood_events.jsonl"
+    ],
+    "assistant_viea_traces": [
+      "reports/theseus_assistant_viea_trace.jsonl",
+      "reports/theseus_assistant_trace_schema_trace.jsonl",
+      "reports/theseus_assistant_product_spine_trace.jsonl"
+    ]
+  },
+  "hard_boundaries": {
+    "one_off_trace_can_be_default_tool": false,
+    "toolification_counts_as_learned_model_capability": false,
+    "benchmark_eval_workflows_can_be_distilled_to_answer_tools": false,
+    "route_without_retirement_criteria_allowed": false,
+    "route_without_regression_check_allowed": false,
+    "external_inference_allowed": false,
+    "raw_private_text_allowed": false
+  },
+  "minimum_recurrence": 3,
+  "assistant_trace_replay_fixtures": [
+    {
+      "id": "replay.local_planning_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+      "expected_surface": "local_assistant",
+      "expected_assistant_lane": "planning_assistant",
+      "expected_intent_bucket": "planning",
+      "minimum_recurrence": 12,
+      "minimum_success_rate": 0.95,
+      "minimum_useful_or_corrected_rate": 0.95,
+      "required_risk_tier": "low",
+      "required_runtime_tier": "E1",
+      "require_viea_bound": true,
+      "require_no_residuals": true,
+      "expected_raw_private_text_count": 0,
+      "expected_public_training_rows_written": 0,
+      "expected_external_inference_calls": 0,
+      "expected_fallback_return_count": 0,
+      "required_for_canary": true,
+      "expected_canary_route_eligible": true,
+      "reason": "The local planning assistant trace is high-recurrence, low-risk, metadata-only, and suitable for canary routing before any default procedural tool adoption."
+    }
+  ],
+  "canary_routes": [
+    {
+      "id": "canary.local_planning_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+      "owner_surface": "theseus_plan_compiler",
+      "planner_mode": "registry_gated_canary",
+      "default_route_allowed": false,
+      "registry_required": true,
+      "replay_fixture_id": "replay.local_planning_assistant_metadata_only_v1",
+      "metric_contract": {
+        "duplicate_work_delta": "estimated_duplicate_work_instances_after_canary_minus_before_repeated_trace_count",
+        "verification_cost_delta": "estimated_verification_checks_after_replay_fixture_minus_before_per_trace_checks"
+      }
+    }
+  ],
+  "default_route_adoption_policy": {
+    "id": "default.local_planning_assistant_metadata_only_v1",
+    "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+    "source_canary_route_id": "canary.local_planning_assistant_metadata_only_v1",
+    "required_replay_fixture_id": "replay.local_planning_assistant_metadata_only_v1",
+    "owner_surface": "theseus_plan_compiler",
+    "planner_mode": "registry_default_regression_guarded",
+    "route_binding_contract": {
+      "scope": "assistant_intent_lane_metadata_route",
+      "assistant_surfaces": [
+        "local_assistant"
+      ],
+      "assistant_intents": [
+        "planning"
+      ],
+      "assistant_lanes": [
+        "planning_assistant"
+      ],
+      "vcm_task_families": [
+        "autonomy_governance"
+      ],
+      "runtime_consumers": [
+        "theseus_plan_compiler",
+        "theseus_assistant_runtime"
+      ],
+      "selection_keys": [
+        "surface",
+        "intent",
+        "assistant_lane",
+        "vcm_task_family"
+      ],
+      "fail_closed_on_binding_mismatch": true
+    },
+    "allow_default_route_when_all_gates_pass": true,
+    "required_steward_work_contract": "roadmap.procedural_memory_toolification_v1",
+    "minimum_matched_event_count": 12,
+    "maximum_risk_tier": "low",
+    "required_runtime_tier": "E1",
+    "require_viea_bound": true,
+    "require_no_residuals": true,
+    "require_retirement_criteria": true,
+    "require_actual_duplicate_work_delta_below": 0,
+    "require_metadata_verification_cost_delta_below": 0,
+    "default_route_authority_ceiling": "local_metadata_route_packet_only_no_external_effects",
+    "rollback_criteria": [
+      "assistant e2e regression fails twice consecutively",
+      "schema hash changes without steward review",
+      "raw private text appears in a candidate event",
+      "public-training, runtime-external-inference, or fallback counter becomes nonzero",
+      "replay fixture or canary execution report leaves GREEN"
+    ],
+    "non_claims": [
+      "Default procedural route is workflow compression, not learned generation.",
+      "Default route is local metadata routing only.",
+      "Default adoption does not support public-transfer or model-promotion claims."
+    ]
+  },
+  "required_tool_fields": [
+    "id",
+    "source_traces",
+    "invariant_structure",
+    "parameters",
+    "preconditions",
+    "postconditions",
+    "verification_result",
+    "risk_tier",
+    "runtime_tier",
+    "monitoring",
+    "residuals",
+    "regressions",
+    "lifecycle_state",
+    "retirement_criteria",
+    "non_claims"
+  ],
+  "regression_fixtures": [
+    {
+      "id": "regression.fixture_failed_candidate_blocks_route",
+      "candidate_tool_name": "attd_maintenance_repair_tool",
+      "regression_passed": false,
+      "expected_route_eligible": false,
+      "reason": "A failed regression must block routable promotion even if recurrence is high."
+    }
+  ]
+}

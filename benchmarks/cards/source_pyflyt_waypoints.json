@@ -1,0 +1,87 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_pyflyt_waypoints",
+  "source_id": "pyflyt_waypoints",
+  "name": "jjshoots/PyFlyt QuadX Waypoints",
+  "category": "drone_rl_environment",
+  "priority": "critical",
+  "status": "adapter_smoke_passed",
+  "url": "https://github.com/jjshoots/PyFlyt",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": true,
+  "staged_path": "D:/ProjectTheseus/resource_pantry/git/pyflyt",
+  "resource_pantry_path": "D:/ProjectTheseus/resource_pantry/git/pyflyt",
+  "adapter_type": "drone_rl_adapter",
+  "runner_family": "drone_rl_local",
+  "runtime_tier": "E3",
+  "risk_tier": "high",
+  "capability_target": "simulation-first drone waypoint tracking pressure after hover graduation, feeding AI Grand Prix racing and recovery curricula",
+  "current_curriculum_stage": "drone_waypoint_control",
+  "next_frontier_family": "drone_rl",
+  "input_contract": {
+    "env_id": "PyFlyt/QuadX-Waypoints-v4",
+    "seed": "deterministic seed",
+    "policy": "local learner/controller only",
+    "safety": "no live hardware endpoint"
+  },
+  "output_contract": {
+    "reward": "episode waypoint score",
+    "target_distance": "mean distance to active waypoint target",
+    "gates": "waypoints reached or waypoint progress",
+    "safety_events": "collisions, boundary hits, failsafe triggers",
+    "latency": "control timing",
+    "residuals": "waypoint, racing-line, recovery, and obstacle handling failure clusters"
+  },
+  "smoke_steps": [
+    "PyFlyt_import",
+    "PyFlyt/QuadX-Waypoints-v4_reset_step",
+    "target_delta_schema_detected",
+    "drone_safety_contract_present"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "simulation_only_by_default",
+    "reset_step_smoke_passes_or_runtime_blocked_with_reason",
+    "deterministic_seed_recorded",
+    "trace_manifest_written",
+    "no_live_hardware_without_explicit_human_approval",
+    "safety_reflex_contract_written"
+  ],
+  "contamination_policy": "Treat public simulator tasks as calibration until private tracks, held-out seeds, and race-specific course variants are generated.",
+  "regression_policy": "If mastered, demote to regression suite and preserve waypoint/racing/recovery failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata, target-delta traces, and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "write_drone_event_logs",
+      "write_rollout_traces"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "forbidden_without_explicit_human_approval",
+    "approval_required_for": [
+      "arm_or_takeoff_command",
+      "destructive",
+      "financial",
+      "hardware_in_loop",
+      "legal",
+      "live_drone_endpoint",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs or architecture walls after local learner evidence; do not score or solve benchmark items.",
+  "external_inference_calls": 0,
+  "last_smoke": {
+    "status": "passed",
+    "created_utc": "2026-05-13T11:02:07.690240+00:00",
+    "report_path": "reports/pressure_source_pyflyt_waypoints_seed16.json",
+    "passed": true,
+    "blocked": false
+  }
+}

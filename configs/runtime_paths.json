@@ -1,0 +1,34 @@
+{
+  "policy": "project_theseus_runtime_paths_v0",
+  "enabled": true,
+  "purpose": "Keep source checkout small and redirect generated reports, checkpoints, caches, and Cargo build output to a local runtime drive when available.",
+  "env_names": {
+    "runtime_root": "THESEUS_RUNTIME_ROOT",
+    "data_dir": "THESEUS_DATA_DIR",
+    "cache_dir": "THESEUS_CACHE_DIR",
+    "reports_dir": "THESEUS_REPORTS_DIR",
+    "checkpoints_dir": "THESEUS_CHECKPOINTS_DIR",
+    "cargo_target_dir": "CARGO_TARGET_DIR"
+  },
+  "runtime_root": "",
+  "data_dir": "",
+  "cache_dir": "",
+  "reports_dir": "",
+  "checkpoints_dir": "",
+  "cargo_target_dir": "",
+  "migration_mode": "manual_or_launcher",
+  "default_windows_runtime_root": "D:/ProjectTheseus/runtime",
+  "default_macos_runtime_root": "~/Library/Application Support/Project Theseus Hive/runtime",
+  "default_linux_runtime_root": "~/.local/share/project-theseus/runtime",
+  "managed_generated_directories": [
+    "reports",
+    "checkpoints",
+    "target"
+  ],
+  "safety": {
+    "move_only_ignored_generated_directories": true,
+    "never_move_source_configs_or_tracked_data": true,
+    "require_target_under_runtime_root": true,
+    "dry_run_supported": true
+  }
+}

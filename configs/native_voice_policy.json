@@ -1,0 +1,98 @@
+{
+  "policy": "project_theseus_native_voice_policy_v0",
+  "purpose": "Make speech input/output a native Project Theseus capability rather than an installed STT/TTS dependency.",
+  "owner": "octopus_head_router_io_layer",
+  "execution_boundary": {
+    "external_inference": "teacher_only_outside_voice_path",
+    "provider_stt_tts": "forbidden",
+    "pretrained_third_party_voice_models": "forbidden_for_inference",
+    "audio_codecs_and_file_io": "allowed_as_non_inference_plumbing",
+    "benchmarks_and_training_data": "license_gated_allowed_pressure",
+    "teacher_role": "proposal_only_for_architecture_eval_and_debugging"
+  },
+  "architecture": {
+    "voice_is_head_router_io": true,
+    "reason": "Speech is an interaction transport for the unified agent. Domain-specialist arms may consume parsed packets, but audio packetization, speech decoding, speech synthesis, turn-taking, and privacy gates belong at the head/router boundary.",
+    "packet_flow": [
+      "audio_input_packet",
+      "native_audio_feature_packet",
+      "head_router_semantic_packet",
+      "arm_task_packet",
+      "head_router_response_packet",
+      "native_audio_output_packet"
+    ],
+    "native_components": [
+      {
+        "id": "audio_packetizer",
+        "status": "scaffold",
+        "notes": "Deterministic local audio frame metadata and feature extraction."
+      },
+      {
+        "id": "native_stt_decoder",
+        "status": "frontier",
+        "notes": "To be learned by SymLiquid/Theseus from licensed speech data; no Whisper/Vosk/provider decoder inference."
+      },
+      {
+        "id": "native_tts_generator",
+        "status": "frontier",
+        "notes": "To be learned by SymLiquid/Theseus from licensed speech data; no pyttsx3/provider synthesizer inference."
+      },
+      {
+        "id": "voice_turn_router",
+        "status": "scaffold",
+        "notes": "Routes voice-derived packets through the same Octopus head/router policy as text."
+      }
+    ]
+  },
+  "allowed_non_inference_utilities": [
+    "python_stdlib_wave",
+    "python_stdlib_audioop_or_equivalent_dsp",
+    "container_metadata_readers",
+    "local_dataset_loaders_when_license_gated"
+  ],
+  "disallowed_inference_modules": [
+    "whisper",
+    "faster_whisper",
+    "vosk",
+    "speechbrain.pretrained",
+    "pyttsx3",
+    "coqui_tts",
+    "bark",
+    "elevenlabs",
+    "openai.audio",
+    "google.cloud.speech",
+    "azure.cognitiveservices.speech",
+    "amazon.transcribe"
+  ],
+  "promotion_gates": [
+    "native_voice_policy_present",
+    "voice_cards_present",
+    "audio_packet_contract_passes",
+    "head_router_voice_ownership_declared",
+    "provider_stt_tts_absent",
+    "external_inference_calls_zero",
+    "licensed_audio_data_before_training",
+    "native_voice_training_manifest_ready",
+    "native_stt_tts_reports_metrics"
+  ],
+  "metrics": {
+    "stt": [
+      "word_error_rate",
+      "phoneme_or_character_error_rate",
+      "latency_ms",
+      "streaming_packet_loss",
+      "privacy_boundary_ok"
+    ],
+    "tts": [
+      "mel_or_waveform_reconstruction_loss",
+      "intelligibility_proxy",
+      "latency_ms",
+      "speaker_privacy_boundary_ok"
+    ],
+    "router": [
+      "voice_turn_routing_accuracy",
+      "barge_in_or_interrupt_handling",
+      "tool_call_intent_preservation"
+    ]
+  }
+}

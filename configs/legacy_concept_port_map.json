@@ -1,0 +1,985 @@
+{
+    "policy":  "theseus_legacy_concept_port_map_v0",
+    "updated_utc":  "2026-05-13",
+    "source_root":  "data/old_projects",
+    "purpose":  "Capture high-value concepts from predecessor AI projects that Project Theseus should preserve, port, or deliberately retire.",
+    "scan_policy":  {
+                        "mode":  "source_and_docs_only",
+                        "ignore_archives_when_extracted_folders_exist":  true,
+                        "ignored_paths":  [
+                                              "**/.git/**",
+                                              "**/target/**",
+                                              "**/node_modules/**",
+                                              "**/.venv*/**",
+                                              "**/__pycache__/**",
+                                              "**/artifacts/**",
+                                              "**/research_cache/**",
+                                              "**/evalplus_results/**",
+                                              "**/.tmp/**",
+                                              "**/.tmp.driveupload/**",
+                                              "**/bbvr_runs/**"
+                                          ]
+                    },
+    "projects":  [
+                     {
+                         "id":  "beastbrain",
+                         "path":  "data/old_projects/BeastBrain",
+                         "role_in_lineage":  "SSD-first multimodal platform, background cognition, safety/advocate subsystems, device-first interaction.",
+                         "source_evidence":  [
+                                                 "README.md",
+                                                 "INTERNAL_MANIFEST.md",
+                                                 "docs/WHITEPAPER.md",
+                                                 "docs/ADVANCED_FEATURES_WHITEPAPER.md",
+                                                 "docs/amorphousEditorNotes.md",
+                                                 "docs/aletheia.md",
+                                                 "docs/context engineer.md",
+                                                 "crates/beastbrain-planforge/src/lib.rs",
+                                                 "crates/beastbrain-sparkstream/src/lib.rs",
+                                                 "crates/beastbrain-sparkstream/src/processor.rs",
+                                                 "crates/beastbrain-whitecell/src/lib.rs",
+                                                 "crates/beastbrain-aletheia/src/lib.rs",
+                                                 "crates/beastbrain-advocate/src/advocate.rs"
+                                             ]
+                     },
+                     {
+                         "id":  "bugbrain",
+                         "path":  "data/old_projects/BugBrain",
+                         "role_in_lineage":  "Bare-metal neuro-symbolic runtime, thermal/resource awareness, hot-path gates, hive/work-stealing, first-party audio/runtime discipline.",
+                         "source_evidence":  [
+                                                 "README.md",
+                                                 "feature_matrix.md",
+                                                 "docs/whitepaper.md",
+                                                 "docs/skill_tree.md",
+                                                 "docs/critical_module_test_ownership.md",
+                                                 "docs/decentralized_work_stealing.md",
+                                                 "bugbrain/src/active_inference.rs",
+                                                 "bugbrain/src/world_model.rs",
+                                                 "bugbrain/src/spiking_transformer.rs",
+                                                 "bugbrain/src/cognition/context_horizon.rs",
+                                                 "bugbrain/src/hive/scheduler.rs",
+                                                 "bugbrain/src/tts.rs",
+                                                 "tools/ci"
+                                             ]
+                     },
+                     {
+                         "id":  "cca",
+                         "path":  "data/old_projects/cca",
+                         "role_in_lineage":  "Governed autonomy, self-modification contracts, apples-to-apples benchmarks, aerial/drone runtime bridge, manifest-first closure.",
+                         "source_evidence":  [
+                                                 "README.md",
+                                                 "docs/cca.md",
+                                                 "docs/benchmark_apples_to_apples.md",
+                                                 "docs/proxy_trace_and_truth_audit_schema.md",
+                                                 "docs/drone_control_stack.md",
+                                                 "docs/training_resource_expansion.md",
+                                                 "formal/CONTRACT_MAPPING.md",
+                                                 "crates/cca-governance/src/lib.rs",
+                                                 "crates/cca-self-mod/src/lib.rs",
+                                                 "config/benchmarks/v1/manifests/apples_to_apples",
+                                                 "config/aerial/v1",
+                                                 "config/training/v1"
+                                             ]
+                     },
+                     {
+                         "id":  "corben1",
+                         "path":  "data/old_projects/corbens best model possible",
+                         "role_in_lineage":  "Compact local model family, architecture A/B discipline, first-party speech/router contracts, update lanes and wedges.",
+                         "source_evidence":  [
+                                                 "README.md",
+                                                 "docs/runtime/README.md",
+                                                 "docs/architecture/contracts_v1.md",
+                                                 "docs/architecture/outer_system_contracts.md",
+                                                 "docs/model/frontier_evolution_plan.md",
+                                                 "docs/model/long_duration_training_runbook.md",
+                                                 "docs/experiments/architecture_evolution_rulebase.md",
+                                                 "docs/experiments/ab_testing.md",
+                                                 "docs/architecture/update_lanes_and_wedges.md",
+                                                 "crates/corben-model/src/lib.rs",
+                                                 "crates/corben-contracts/src/lib.rs",
+                                                 "crates/corben-compiler/src/lib.rs",
+                                                 "crates/corben-audio/src/lib.rs",
+                                                 "crates/corben-macro-store/src/lib.rs",
+                                                 "crates/corben-router/src/lib.rs",
+                                                 "crates/corben-speech/src/lib.rs",
+                                                 "configs/ab"
+                                             ]
+                     },
+                     {
+                         "id":  "corbens_trainer",
+                         "path":  "data/old_projects/corbens-trainer",
+                         "role_in_lineage":  "Contract-first trainer, registry/evidence graph, fixed-budget campaign DAGs, resource bounded orchestrator, telemetry.",
+                         "source_evidence":  [
+                                                 "README.md",
+                                                 "docs/architecture/overview.md",
+                                                 "docs/architecture/autonomous-fixed-budget-loops.md",
+                                                 "docs/architecture/benchmark-rule-separation.md",
+                                                 "docs/architecture/evidence_graph_and_research_ledger.md",
+                                                 "docs/architecture/efficiency-model.md",
+                                                 "docs/architecture/project-integration-contract.md",
+                                                 "docs/architecture/holdout-hygiene.md",
+                                                 "docs/architecture/replacement-readiness.md",
+                                                 "docs/developer-end-to-end.md",
+                                                 "docs/speech-integration-playbook.md",
+                                                 "crates/corbens-trainer-orchestrator/src/lib.rs",
+                                                 "crates/corbens-trainer-registry/src/lib.rs",
+                                                 "crates/corbens-trainer-telemetry/src/lib.rs"
+                                             ]
+                     },
+                     {
+                         "id":  "moecot_manifest",
+                         "path":  "data/old_projects/moecot-manifest",
+                         "role_in_lineage":  "Superloop, semantic compiler, trace-fabric training exchange, ATTD growth guard, hidden holdouts and eval track contracts.",
+                         "source_evidence":  [
+                                                 "README.md",
+                                                 "final-plan.md",
+                                                 "PRE_TRAINING_READINESS_REPORT.md",
+                                                 "docs/architecture/superloop_growth_guard_contract_2026-03-23.md",
+                                                 "docs/architecture/shared_trace_fabric_training_exchange_2026-03-06.md",
+                                                 "docs/architecture/world_adapter_runtime_contract_2026-03-09.md",
+                                                 "docs/architecture/world_execution_job_runtime_architecture_2026-03-09.md",
+                                                 "clients/octopus/control/operations/compute_mode_acceptance_contract.md",
+                                                 "clients/octopus/control/operations/bridge_adapter_native_promotion_contract.md",
+                                                 "clients/octopus/apps/external-facing/g5xr/README.md",
+                                                 "clients/octopus/apps/external-facing/training-exchange/README.md",
+                                                 "clients/octopus/apps/external-facing/benchmark-bounty/README.md",
+                                                 "clients/octopus/apps/external-facing/moecot-compressor/README.md",
+                                                 "clients/esp-coder/SERIAL_PROTOCOL.md",
+                                                 "clients/esp-coder/USB_INSTALLER_FLOW.md",
+                                                 "shared/scripts",
+                                                 "shared/model-compiler",
+                                                 "taskNerve"
+                                             ]
+                     }
+                 ],
+    "port_candidates":  [
+                            {
+                                "id":  "sparkstream_salience_scheduler",
+                                "project":  "beastbrain",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Use salience-scored Spark packets, priority queues, circadian/idle windows, and batch processing for background cognition.",
+                                "theseus_surface":  [
+                                                        "scripts/context_packet_ledger.py",
+                                                        "scripts/sparkstream_daemon.py",
+                                                        "scripts/autonomy_watchdog.py",
+                                                        "reports/self_improvement_queue.json"
+                                                    ],
+                                "port_goal":  "Make watchdog/autonomy corrections prioritize high-value conclusions, residual walls, teacher traces, and benchmark transitions over raw log noise.",
+                                "acceptance_gates":  [
+                                                         "context packets include salience fields",
+                                                         "low-value packet compaction does not discard benchmark decisions",
+                                                         "watchdog hard faults are ranked above routine status",
+                                                         "dashboard exposes top active sparks"
+                                                     ]
+                            },
+                            {
+                                "id":  "ssd_tiered_memory_consolidation",
+                                "project":  "beastbrain",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Hot/warm/cold/archive memory tiers with background decay, merge, demotion, promotion, and compressed archive storage.",
+                                "theseus_surface":  [
+                                                        "docs/CONTEXT_PACKET_MEMORY.md",
+                                                        "scripts/context_packet_ledger.py",
+                                                        "reports/context_packets.json",
+                                                        "reports/tiered_memory_consolidation.json"
+                                                    ],
+                                "port_goal":  "Turn context packet compaction into an explicit tiered-memory policy, with cheap retrieval from important historical packets.",
+                                "acceptance_gates":  [
+                                                         "hot/warm/cold/archive counts reported",
+                                                         "merge/decay decisions are deterministic",
+                                                         "frontier/residual/teacher packets are protected by policy",
+                                                         "compaction produces replayable summaries"
+                                                     ]
+                            },
+                            {
+                                "id":  "aletheia_advocate_gate",
+                                "project":  "beastbrain",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Request normalization, clarification, contract locks, quantitative risk gating, sycophancy probes, tribunal/adversary checks.",
+                                "theseus_surface":  [
+                                                        "scripts/octopus_router.py",
+                                                        "scripts/teacher_oracle.py",
+                                                        "scripts/autonomous_goal_runner.py",
+                                                        "reports/routing_memory.json",
+                                                        "reports/aletheia_advocate_gate.json"
+                                                    ],
+                                "port_goal":  "Add a first-party input/governance preprocessor before teacher calls, self-edits, and high-risk autonomous goals.",
+                                "acceptance_gates":  [
+                                                         "ambiguous goals emit clarify/contract-lock packets",
+                                                         "teacher prompts include normalized intent and risk envelope",
+                                                         "high-risk goals route through safety/reflex arm",
+                                                         "sycophancy/agreeability bias is tracked as a diagnostic"
+                                                     ]
+                            },
+                            {
+                                "id":  "bugbrain_hotpath_quality_gates",
+                                "project":  "bugbrain",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Critical-module budgets, advisory gates, unsafe/fail-closed checks, hot-path microbench deltas, and HIL-lite envelopes.",
+                                "theseus_surface":  [
+                                                        "configs/attd_policy.json",
+                                                        "scripts/attd_analyzer.py",
+                                                        "scripts/performance_optimizer.py",
+                                                        "scripts/profile_vram_stress.py"
+                                                    ],
+                                "port_goal":  "Make source and runtime hot-path regressions impossible to ignore during long autonomous runs.",
+                                "acceptance_gates":  [
+                                                         "critical module budget packets emitted",
+                                                         "hot-loop benchmark deltas are reported per cycle",
+                                                         "performance RED blocks long runs",
+                                                         "CUDA/MLX/Hive worker changes require microbench evidence"
+                                                     ]
+                            },
+                            {
+                                "id":  "bugbrain_synaptic_work_stealing",
+                                "project":  "bugbrain",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Decentralized work stealing, sharded state, idle worker slaving, and atomic per-worker negotiation.",
+                                "theseus_surface":  [
+                                                        "scripts/hive_scheduler.py",
+                                                        "scripts/hive_worker_chunk.py",
+                                                        "configs/hive_policy.json",
+                                                        "reports/synaptic_work_stealing.json"
+                                                    ],
+                                "port_goal":  "Move Theseus Hive from scheduled smoke chunks toward actual sharded training/eval chunks with resource-aware idle work stealing.",
+                                "acceptance_gates":  [
+                                                         "work packets declare shard ownership",
+                                                         "idle workers request bounded chunks",
+                                                         "chunk completion merges without global locks",
+                                                         "worker telemetry tracks utilization and steal rate"
+                                                     ]
+                            },
+                            {
+                                "id":  "cca_self_mod_proof_bundle",
+                                "project":  "cca",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Manifest history, diffs, evidence tiers, holdout isolation, growth guard, autonomy freeze envelopes, replay/effect logs, shadow challengers.",
+                                "theseus_surface":  [
+                                                        "scripts/self_evolution_governor.py",
+                                                        "scripts/teacher_self_edit_runner.py",
+                                                        "scripts/promotion_closure.py",
+                                                        "scripts/checkpoint_registry.py"
+                                                    ],
+                                "port_goal":  "Make teacher self-edits and candidate promotions produce one closure-grade proof bundle every time.",
+                                "acceptance_gates":  [
+                                                         "self-edit branch emits effect log",
+                                                         "promotion emits proof bundle with checkpoint/diff/hash links",
+                                                         "rollback path is non-destructive and tested",
+                                                         "shadow challenger keeps loser/winner lineage"
+                                                     ]
+                            },
+                            {
+                                "id":  "cca_drone_blackbox_parity",
+                                "project":  "cca",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Separate practice and competition drone lanes, loopback bridges, blackbox command/ack/telemetry/video lineage, and sim2real campaign preflight.",
+                                "theseus_surface":  [
+                                                        "scripts/drone_controller_trainer.py",
+                                                        "scripts/drone_command_contract_trainer.py",
+                                                        "scripts/pressure_runner.py",
+                                                        "configs/benchmaxx_curriculum.json"
+                                                    ],
+                                "port_goal":  "Turn drone RL from a learned local controller smoke into promotion-grade AI Grand Prix control evidence.",
+                                "acceptance_gates":  [
+                                                         "practice and competition profiles cannot be conflated",
+                                                         "hardware commands remain approval-gated",
+                                                         "blackbox parity packet records command/ack/telemetry/video hashes",
+                                                         "sim2real residual clusters are escrowed"
+                                                     ]
+                            },
+                            {
+                                "id":  "corben_architecture_motif_library",
+                                "project":  "corben1",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Single-axis architecture candidate lifecycle with prime-cycle, recursive-core, hemispheric readout, control-placement, and shadow variants.",
+                                "theseus_surface":  [
+                                                        "configs/architecture_search_space.json",
+                                                        "scripts/architecture_experiment_governor.py",
+                                                        "scripts/architecture_experiment_runner.py",
+                                                        "reports/architecture_motif_library.json"
+                                                    ],
+                                "port_goal":  "Give the teacher and local search a small, pre-declared motif library so architectural changes remain minimal and comparable.",
+                                "acceptance_gates":  [
+                                                         "motifs are represented as named low-blast-radius experiment families",
+                                                         "single-axis before coupled changes is enforced",
+                                                         "near-miss reruns require declared budget",
+                                                         "retired motifs are not reopened without explicit exception"
+                                                     ]
+                            },
+                            {
+                                "id":  "corben_first_party_speech_contract",
+                                "project":  "corben1",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Native streaming speech engine with audio chunks, transcript hypotheses, shared latent tokens, speech-to-cognition routing, and parity reports.",
+                                "theseus_surface":  [
+                                                        "configs/native_voice_policy.json",
+                                                        "configs/native_voice_training_policy.json",
+                                                        "scripts/native_voice_io.py",
+                                                        "scripts/native_voice_bootstrap_learner.py"
+                                                    ],
+                                "port_goal":  "Keep STT/TTS as Theseus-owned head/router capability, trained from licensed data, with no external speech inference.",
+                                "acceptance_gates":  [
+                                                         "audio packet contract is versioned",
+                                                         "STT/TTS bootstrap artifacts are trainable local state",
+                                                         "speech route evidence joins normal routing memory",
+                                                         "roundtrip eval tracks WER/CER/latency and synthesis intelligibility"
+                                                     ]
+                            },
+                            {
+                                "id":  "trainer_contract_first_campaign_dag",
+                                "project":  "corbens_trainer",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Manifest-defined campaign DAGs, asset/rule separation, deterministic streaming data plane, topology-aware resume, and fixed-budget reports.",
+                                "theseus_surface":  [
+                                                        "configs/autonomy_policy.json",
+                                                        "scripts/autonomy_cycle.py",
+                                                        "scripts/run_training_ratchet_profile.py",
+                                                        "scripts/training_data_inventory.py"
+                                                    ],
+                                "port_goal":  "Make every Theseus long run a replayable campaign with explicit assets, rules, datasets, envs, stages, budgets, and resume topology.",
+                                "acceptance_gates":  [
+                                                         "cycle plan is exported before execution",
+                                                         "benchmark asset and scoring rule are separate records",
+                                                         "dataset/env mixture hash is persisted",
+                                                         "resume topology compatibility is checked"
+                                                     ]
+                            },
+                            {
+                                "id":  "trainer_evidence_graph_research_ledger",
+                                "project":  "corbens_trainer",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Candidate evidence graph plus deterministic keep/discard/hold/retry research ledger.",
+                                "theseus_surface":  [
+                                                        "scripts/architecture_experiment_runner.py",
+                                                        "scripts/promotion_closure.py",
+                                                        "reports/autonomy_ledger.jsonl",
+                                                        "reports/model_ledger.json"
+                                                    ],
+                                "port_goal":  "Stop treating experiments as loose reports; every candidate should have a durable verdict row and proof artifact references.",
+                                "acceptance_gates":  [
+                                                         "every architecture/run candidate has candidate_digest and baseline_digest",
+                                                         "keep/discard decisions require proof refs",
+                                                         "ledger rows are append-only and sorted",
+                                                         "dashboard summarizes current champion and challengers"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_trace_fabric_training_exchange",
+                                "project":  "moecot_manifest",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Trace capsules with reward components, episode boundaries, replay contracts, data minimization, and quality payout policy.",
+                                "theseus_surface":  [
+                                                        "scripts/context_packet_ledger.py",
+                                                        "scripts/arm_transfer_planner.py",
+                                                        "scripts/synthetic_data_curator.py",
+                                                        "scripts/compute_market.py"
+                                                    ],
+                                "port_goal":  "Convert real Theseus work traces into trainable, contamination-checked learning packets for future self-repair and tool use.",
+                                "acceptance_gates":  [
+                                                         "trace packets include reward components and episode fields",
+                                                         "holdout fingerprints reject contaminated traces",
+                                                         "golden replay bundles are created for regressions",
+                                                         "compute-market work credit uses quality-weighted packets"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_semantic_intent_repair",
+                                "project":  "moecot_manifest",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Semantic intent IR, localized repair apply contracts, plan graphs, compiler passes, and effect graph bundles.",
+                                "theseus_surface":  [
+                                                        "scripts/autonomous_goal_runner.py",
+                                                        "scripts/loop_closure_tool_promoter.py",
+                                                        "scripts/teacher_self_edit_runner.py",
+                                                        "reports/semantic_intent_repair.json"
+                                                    ],
+                                "port_goal":  "Make user goals and teacher patches compile through a small semantic intent/effect graph before source or runtime mutation.",
+                                "acceptance_gates":  [
+                                                         "goal packets include intent graph and side-effect envelope",
+                                                         "repair patches include localized effect graph",
+                                                         "loop-closure tools are generated from intent patterns",
+                                                         "verification compares intended vs observed effects"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_eval_track_contract_library",
+                                "project":  "moecot_manifest",
+                                "priority":  "P2",
+                                "status":  "done",
+                                "concept":  "Predeclared eval-track contracts for RLM/verifier-centric reasoning, MTP, KV policy, differential attention, BitNet, context freeze/thaw, and other architecture lanes.",
+                                "theseus_surface":  [
+                                                        "configs/architecture_search_space.json",
+                                                        "configs/model_growth_policy.json",
+                                                        "scripts/model_growth_gate.py",
+                                                        "reports/eval_track_contract_library.json"
+                                                    ],
+                                "port_goal":  "Expand Theseus architecture search only as named contract-backed tracks with cheap feasibility probes first.",
+                                "acceptance_gates":  [
+                                                         "each track has a smoke feasibility probe",
+                                                         "model growth gate maps residual wall to a named track",
+                                                         "teacher cannot introduce unnamed architecture families",
+                                                         "retirement criteria are explicit"
+                                                     ]
+                            },
+                            {
+                                "id":  "beastbrain_planforge_critical_path_scheduler",
+                                "project":  "beastbrain",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "PlanForge decomposes goals into contracts, risk envelopes, DAGs, and critical-path schedules instead of a single linear loop.",
+                                "theseus_surface":  [
+                                                        "scripts/autonomous_goal_runner.py",
+                                                        "scripts/autonomy_cycle.py",
+                                                        "scripts/hive_scheduler.py",
+                                                        "reports/autonomy_cycle_last.json"
+                                                    ],
+                                "port_goal":  "Let long autonomous runs schedule benchmark pressure, teacher review, synthetic data, RL training, and maintenance as a dependency-aware critical path.",
+                                "acceptance_gates":  [
+                                                         "cycle report includes goal DAG nodes and blockers",
+                                                         "scheduler distinguishes critical path from background maintenance",
+                                                         "Hive workers can consume independent ready nodes",
+                                                         "teacher work is never scheduled while cheaper unblocked local work exists"
+                                                     ]
+                            },
+                            {
+                                "id":  "beastbrain_synaptic_permission_decay",
+                                "project":  "beastbrain",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Synaptic capability strengths decay or reinforce based on verified use, turning permissions into earned, revisable trust.",
+                                "theseus_surface":  [
+                                                        "configs/hive_policy.json",
+                                                        "scripts/arm_lifecycle_governance.py",
+                                                        "scripts/tool_registry_governor.py",
+                                                        "reports/synaptic_permission_decay.json"
+                                                    ],
+                                "port_goal":  "Make arms, tools, and Hive workers gain or lose capability envelopes from outcomes instead of static registration alone.",
+                                "acceptance_gates":  [
+                                                         "arm/tool trust scores decay over disuse or failures",
+                                                         "successful verified use reinforces bounded permissions",
+                                                         "high-risk permissions require recent proof",
+                                                         "dashboard shows decayed, probationary, and trusted capabilities"
+                                                     ]
+                            },
+                            {
+                                "id":  "beastbrain_temporal_replay_assertions",
+                                "project":  "beastbrain",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Fractal temporal versioning, timeline replay, temporal assertions, and ghost overlays for debugging long-horizon behavior.",
+                                "theseus_surface":  [
+                                                        "scripts/checkpoint_delta_store.py",
+                                                        "scripts/promotion_closure.py",
+                                                        "scripts/drone_rl_runner.py",
+                                                        "scripts/game_rl_runner.py",
+                                                        "reports/temporal_replay_assertions.json"
+                                                    ],
+                                "port_goal":  "Make checkpoints, drone/game rollouts, and self-edits replayable with temporal assertions that catch regressions before promotion.",
+                                "acceptance_gates":  [
+                                                         "checkpoint deltas carry replay assertions",
+                                                         "RL traces expose timeline checkpoints",
+                                                         "promotion closure replays critical assertions",
+                                                         "failed assertions enter residual escrow with timeline IDs"
+                                                     ]
+                            },
+                            {
+                                "id":  "beastbrain_whitecell_local_threat_memory",
+                                "project":  "beastbrain",
+                                "priority":  "P2",
+                                "status":  "done",
+                                "concept":  "WhiteCell keeps local threat memory for prompt shielding, code auditing, traffic guarding, and policy hardening.",
+                                "theseus_surface":  [
+                                                        "scripts/autonomy_watchdog.py",
+                                                        "scripts/teacher_self_edit_runner.py",
+                                                        "scripts/license_guard.py",
+                                                        "reports/whitecell_threat_memory.json"
+                                                    ],
+                                "port_goal":  "Add a local security memory that can block repeated unsafe teacher prompts, bad network sources, and risky patches.",
+                                "acceptance_gates":  [
+                                                         "security incidents persist as reusable local patterns",
+                                                         "teacher prompts are screened against threat memory",
+                                                         "network source risk updates license/source gates",
+                                                         "risky source edits require explicit safety evidence"
+                                                     ]
+                            },
+                            {
+                                "id":  "bugbrain_coherence_delirium_metric",
+                                "project":  "bugbrain",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Runtime coherence and delirium metrics detect internal instability before ordinary benchmarks show obvious failure.",
+                                "theseus_surface":  [
+                                                        "scripts/autonomy_watchdog.py",
+                                                        "scripts/model_growth_gate.py",
+                                                        "reports/resource_governor.json"
+                                                    ],
+                                "port_goal":  "Add a cheap health signal for stuck, noisy, thrashing, or self-contradictory autonomy behavior that can pause, rotate, or call the teacher.",
+                                "acceptance_gates":  [
+                                                         "watchdog reports coherence and delirium scores",
+                                                         "repeated low coherence triggers bounded correction",
+                                                         "model growth gate treats instability as evidence",
+                                                         "dashboard displays instability trend"
+                                                     ]
+                            },
+                            {
+                                "id":  "bugbrain_active_inference_world_model",
+                                "project":  "bugbrain",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Active-inference loops and compact world models choose actions that reduce surprise under resource constraints.",
+                                "theseus_surface":  [
+                                                        "scripts/drone_controller_train.py",
+                                                        "scripts/game_rl_runner.py",
+                                                        "scripts/arm_transfer_planner.py"
+                                                    ],
+                                "port_goal":  "Give drone, game, and tool-use arms a shared local world-model/action-selection primitive instead of isolated scripted baselines.",
+                                "acceptance_gates":  [
+                                                         "world-model learner emits prediction error and action value",
+                                                         "drone/game runners can train/evaluate the learner",
+                                                         "transfer planner can reuse learned priors",
+                                                         "resource limits are part of action selection"
+                                                     ]
+                            },
+                            {
+                                "id":  "bugbrain_zero_copy_context_prefetch",
+                                "project":  "bugbrain",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Zero-copy context handles, predictive prefetch, and context-horizon diff-apply keep long-running cognition fast.",
+                                "theseus_surface":  [
+                                                        "scripts/context_packet_ledger.py",
+                                                        "scripts/sparkstream_daemon.py",
+                                                        "scripts/dashboard_server.py",
+                                                        "reports/zero_copy_context_prefetch.json"
+                                                    ],
+                                "port_goal":  "Reduce context/report churn by passing stable packet references and prefetching only the likely next pressure surface.",
+                                "acceptance_gates":  [
+                                                         "large reports are referenced by digest where possible",
+                                                         "next-frontier artifacts are prefetched before rotation",
+                                                         "context compaction avoids duplicate report bodies",
+                                                         "dashboard API exposes packet refs and summaries"
+                                                     ]
+                            },
+                            {
+                                "id":  "bugbrain_hil_emulator_gate",
+                                "project":  "bugbrain",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Hardware-in-the-loop and emulator-lite gates validate host/device interaction before real-world control is trusted.",
+                                "theseus_surface":  [
+                                                        "scripts/drone_rl_runner.py",
+                                                        "scripts/game_rl_runner.py",
+                                                        "scripts/hive_worker_chunk.py",
+                                                        "reports/hil_emulator_gate.json"
+                                                    ],
+                                "port_goal":  "Require emulator/sim evidence for drones, robots, games, phones, and weak Hive clients before live control or promotion.",
+                                "acceptance_gates":  [
+                                                         "device/world adapters declare sim, emulator, or live mode",
+                                                         "live mode is blocked without sim smoke evidence",
+                                                         "HIL failures produce escrow items",
+                                                         "promotion reports include HIL parity status"
+                                                     ]
+                            },
+                            {
+                                "id":  "cca_proxy_truth_audit",
+                                "project":  "cca",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Proxy traces and benchmark truth audits fail closed on contaminated rows, fabricated results, missing raw outputs, and runtime identity mismatch.",
+                                "theseus_surface":  [
+                                                        "scripts/candidate_promotion_gate.py",
+                                                        "scripts/benchmark_adapter_factory.py",
+                                                        "scripts/pressure_runner.py"
+                                                    ],
+                                "port_goal":  "Make every benchmark/adapter score prove it came from the intended checkpoint, tokenizer, prompt template, runtime path, and raw outputs.",
+                                "acceptance_gates":  [
+                                                         "score reports include checkpoint/runtime/template hashes",
+                                                         "missing raw outputs block candidate promotion",
+                                                         "contaminated or fabricated rows are classified fail-closed",
+                                                         "truth audit summary is visible in candidate gate"
+                                                     ]
+                            },
+                            {
+                                "id":  "cca_formal_runtime_coupling",
+                                "project":  "cca",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Formal contract mapping binds runtime invariants, deterministic coupling hashes, proof obligations, and rollback completeness.",
+                                "theseus_surface":  [
+                                                        "scripts/self_evolution_governor.py",
+                                                        "scripts/teacher_self_edit_runner.py",
+                                                        "scripts/promotion_closure.py",
+                                                        "reports/formal_runtime_coupling.json"
+                                                    ],
+                                "port_goal":  "Give self-edit and promotion closure a machine-checkable invariant registry before architecture changes become routine.",
+                                "acceptance_gates":  [
+                                                         "self-edit plans list affected invariants",
+                                                         "runtime coupling hashes are emitted",
+                                                         "rollback completeness is checked before merge",
+                                                         "unmapped invariants block high-risk edits"
+                                                     ]
+                            },
+                            {
+                                "id":  "cca_veritas_discovery_novelty",
+                                "project":  "cca",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Veritas claim validation, novelty scoring, falsification probes, and discovery evaluation for new data, benchmarks, and synthetic cases.",
+                                "theseus_surface":  [
+                                                        "scripts/benchmark_seeker.py",
+                                                        "scripts/synthetic_data_curator.py",
+                                                        "scripts/training_data_sampler.py",
+                                                        "reports/veritas_discovery_novelty.json"
+                                                    ],
+                                "port_goal":  "Prevent resource pantry growth from becoming a pile of duplicate, weak, or unverified sources.",
+                                "acceptance_gates":  [
+                                                         "new sources get novelty and claim-validation rows",
+                                                         "synthetic data proposals include falsification probes",
+                                                         "duplicate benchmark/data concepts are rejected",
+                                                         "pantry entries carry discovery confidence"
+                                                     ]
+                            },
+                            {
+                                "id":  "cca_anti_expert_tribunal_router",
+                                "project":  "cca",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Anti-expert negative routing and tribunal sessions preserve dissent and abstain when a specialist is known to fail a residual class.",
+                                "theseus_surface":  [
+                                                        "scripts/octopus_router.py",
+                                                        "scripts/router_head_trainer.py",
+                                                        "reports/routing_memory.json",
+                                                        "reports/anti_expert_tribunal_router.json"
+                                                    ],
+                                "port_goal":  "Teach the router not only which arm to pick, but which arm to avoid for known failure clusters.",
+                                "acceptance_gates":  [
+                                                         "routing memory stores negative expertise",
+                                                         "residual clusters can veto arms",
+                                                         "tribunal disagreement is logged",
+                                                         "router eval includes anti-route accuracy"
+                                                     ]
+                            },
+                            {
+                                "id":  "corben_taskspell_contract_lock",
+                                "project":  "corben1",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "TaskSpell locks immutable task contracts with acceptance tests, non-goals, budgets, risks, and route/runtime/evidence records.",
+                                "theseus_surface":  [
+                                                        "scripts/autonomous_goal_runner.py",
+                                                        "scripts/teacher_oracle.py",
+                                                        "scripts/self_evolution_governor.py"
+                                                    ],
+                                "port_goal":  "Compile user and teacher goals into stable task contracts before autonomous execution or self-editing begins.",
+                                "acceptance_gates":  [
+                                                         "goals emit immutable task lock hashes",
+                                                         "teacher prompts carry acceptance tests and non-goals",
+                                                         "contract drift is reported",
+                                                         "goal completion requires evidence rows for all locked tests"
+                                                     ]
+                            },
+                            {
+                                "id":  "corben_macro_store_counterexample_gate",
+                                "project":  "corben1",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Macro/loop closure promotes only after replay verification and counterexample search, then keeps usage/failure telemetry.",
+                                "theseus_surface":  [
+                                                        "scripts/loop_closure_tool_promoter.py",
+                                                        "scripts/tool_registry_governor.py",
+                                                        "reports/tool_registry.json"
+                                                    ],
+                                "port_goal":  "Make benchmark ingestion, residual analysis, smoke setup, and checkpoint repair close into tools without creating brittle scripts.",
+                                "acceptance_gates":  [
+                                                         "tool candidates include counterexample tests",
+                                                         "promotion requires replay on old and synthetic cases",
+                                                         "tool telemetry can retire stale macros",
+                                                         "failed macro cases enter residual escrow"
+                                                     ]
+                            },
+                            {
+                                "id":  "corben_low_rank_lane_adapter_bank",
+                                "project":  "corben1",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Low-rank lane adapter banks for math, code, speech, tool use, and other capabilities are promoted only when interference stays bounded.",
+                                "theseus_surface":  [
+                                                        "scripts/arm_transfer_planner.py",
+                                                        "scripts/model_growth_gate.py",
+                                                        "configs/model_growth_policy.json"
+                                                    ],
+                                "port_goal":  "Turn arm transfer learning into concrete reusable adapters with interference matrices and lane-safe promotion gates.",
+                                "acceptance_gates":  [
+                                                         "adapter artifacts declare source/target lanes",
+                                                         "interference matrix is reported",
+                                                         "router loads adapters by lane and task",
+                                                         "promotion requires no critical lane regression"
+                                                     ]
+                            },
+                            {
+                                "id":  "corben_probe_router_burst_budget",
+                                "project":  "corben1",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Probe-before-specialist router uses reflex, grounded, deep, and hard-stop bands plus a bounded deep-route burst budget.",
+                                "theseus_surface":  [
+                                                        "scripts/octopus_router.py",
+                                                        "scripts/openai_compatible_endpoint.py",
+                                                        "scripts/voice_io_governor.py",
+                                                        "reports/probe_router_burst_budget.json"
+                                                    ],
+                                "port_goal":  "Make text, voice, and agentic endpoint requests follow the same route path and spend deep cognition only under evidence.",
+                                "acceptance_gates":  [
+                                                         "router reports band and burst-budget use",
+                                                         "spoken turns cannot bypass routing/governance",
+                                                         "hard-stop band blocks unsafe tool paths",
+                                                         "deep-route budget resets only by policy"
+                                                     ]
+                            },
+                            {
+                                "id":  "trainer_runtime_resolution_boundary",
+                                "project":  "corbens_trainer",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Runtime capability resolution separates planner intent from CUDA, MLX, CPU, and fallback backend selection.",
+                                "theseus_surface":  [
+                                                        "scripts/performance_optimizer.py",
+                                                        "scripts/hive_scheduler.py",
+                                                        "scripts/pressure_runner.py"
+                                                    ],
+                                "port_goal":  "Make every training/eval request resolve through an explicit backend contract so Mac MLX, Windows CUDA, CPU, and Hive fallback stay comparable.",
+                                "acceptance_gates":  [
+                                                         "pressure runners declare required capabilities",
+                                                         "backend resolver emits selected runtime and fallback reason",
+                                                         "CUDA/MLX/CPU scores include backend metadata",
+                                                         "bad fallback does not masquerade as target runtime"
+                                                     ]
+                            },
+                            {
+                                "id":  "trainer_dataset_recipe_scaffolder",
+                                "project":  "corbens_trainer",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Dataset recipe discovery/scaffolding turns candidate datasets into validated manifests, splits, checksums, and smoke samplers.",
+                                "theseus_surface":  [
+                                                        "scripts/training_data_inventory.py",
+                                                        "scripts/training_data_sampler.py",
+                                                        "scripts/resource_pantry.py"
+                                                    ],
+                                "port_goal":  "Let Theseus add open training data with less teacher involvement and fewer one-off loader fixes.",
+                                "acceptance_gates":  [
+                                                         "new data source creates recipe card automatically",
+                                                         "recipe smoke test verifies access and checksum",
+                                                         "license and contamination gates are attached",
+                                                         "sampler can draw tiny governed batches"
+                                                     ]
+                            },
+                            {
+                                "id":  "trainer_rlds_minari_trace_export",
+                                "project":  "corbens_trainer",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "RL trace export into interchange formats such as RLDS/Minari keeps game, drone, and tool-use episodes reusable.",
+                                "theseus_surface":  [
+                                                        "scripts/drone_rl_runner.py",
+                                                        "scripts/game_rl_runner.py",
+                                                        "scripts/arm_transfer_planner.py",
+                                                        "reports/rlds_minari_trace_export.json"
+                                                    ],
+                                "port_goal":  "Make all RL/environment traces portable training assets rather than runner-specific logs.",
+                                "acceptance_gates":  [
+                                                         "RL episodes export observation/action/reward/done rows",
+                                                         "export manifests include license/source metadata",
+                                                         "transfer planner can consume exported traces",
+                                                         "episode replay smoke passes"
+                                                     ]
+                            },
+                            {
+                                "id":  "trainer_live_operator_advisors",
+                                "project":  "corbens_trainer",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Training advisors and live operator panels diagnose stalls, runtime choices, and next actions without waiting for teacher reasoning.",
+                                "theseus_surface":  [
+                                                        "scripts/dashboard_server.py",
+                                                        "scripts/autonomy_watchdog.py",
+                                                        "reports/capability_matrix.json",
+                                                        "reports/live_operator_advisors.json"
+                                                    ],
+                                "port_goal":  "Show actionable local advice in the dashboard when benchmarks stall, resources bottleneck, or teacher calls are waiting.",
+                                "acceptance_gates":  [
+                                                         "dashboard exposes top recommended local correction",
+                                                         "advisor output is deterministic from reports",
+                                                         "teacher-needed reasons are separated from local fixes",
+                                                         "operator can see current blocker and next frontier"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_world_adapter_job_runtime",
+                                "project":  "moecot_manifest",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "World adapter and world-execution job contracts provide deterministic pause/resume/cancel/status, adapter coverage, and checkpointed branch lineage.",
+                                "theseus_surface":  [
+                                                        "scripts/pressure_runner.py",
+                                                        "scripts/drone_rl_runner.py",
+                                                        "scripts/game_rl_runner.py",
+                                                        "scripts/autonomous_goal_runner.py"
+                                                    ],
+                                "port_goal":  "Standardize drone, game, web, robot, and simulation environments behind one replayable world job interface.",
+                                "acceptance_gates":  [
+                                                         "world runners implement pause/resume/cancel/status",
+                                                         "adapter coverage matrix is emitted",
+                                                         "branch checkpoints have stable hashes",
+                                                         "missing required world capabilities fail closed"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_compute_mode_acceptance",
+                                "project":  "moecot_manifest",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Compute mode acceptance proves local/cloud/auto routing parity, fallback behavior, resolver latency, and cost boundaries.",
+                                "theseus_surface":  [
+                                                        "scripts/hive_scheduler.py",
+                                                        "scripts/performance_optimizer.py",
+                                                        "scripts/compute_market.py"
+                                                    ],
+                                "port_goal":  "Keep Theseus Hive resource-aware as it grows across CUDA, MLX, CPU, public, private, and rented compute.",
+                                "acceptance_gates":  [
+                                                         "compute resolver scenarios are smoke-tested",
+                                                         "degraded local fallback is deterministic",
+                                                         "cost budget can force local execution",
+                                                         "resolver p95 latency is reported"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_bridge_adapter_native_promotion",
+                                "project":  "moecot_manifest",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Bridge-adapter lanes must promote to native runtime when latency, quality, or policy-control risk becomes high.",
+                                "theseus_surface":  [
+                                                        "scripts/benchmark_adapter_factory.py",
+                                                        "scripts/pressure_runner.py",
+                                                        "scripts/performance_optimizer.py"
+                                                    ],
+                                "port_goal":  "Prevent important benchmark, RL, trace, and data lanes from staying forever as brittle Python/shell adapter glue.",
+                                "acceptance_gates":  [
+                                                         "adapter cards track native-promotion priority",
+                                                         "high-value lanes require native-roadmap entries",
+                                                         "native promotion smoke excludes legacy command paths",
+                                                         "performance gate flags adapter overhead"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_emulator_game_trace_gateway",
+                                "project":  "moecot_manifest",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "g5xr captures browser/emulator gameplay events, trace batches, AI copilot turns, and BYO-ROM metadata without binary ROM ingestion.",
+                                "theseus_surface":  [
+                                                        "scripts/game_rl_runner.py",
+                                                        "scripts/rl_benchmark_registry.py",
+                                                        "scripts/training_data_inventory.py"
+                                                    ],
+                                "port_goal":  "Turn local owned game collections and emulator sessions into governed RL/eval traces and regression suites.",
+                                "acceptance_gates":  [
+                                                         "game runners store metadata without copying ROM binaries into git",
+                                                         "frame/event traces export to replayable episodes",
+                                                         "BYO license/source policy is explicit",
+                                                         "AI copilot/gameplay turns are contamination-checked before training"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_benchmark_bounty_registry",
+                                "project":  "moecot_manifest",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "Benchmark bounty flow verifies candidate benchmarks for duplicate IDs, duplicate commands, canonical fingerprints, tag novelty, and required field quality.",
+                                "theseus_surface":  [
+                                                        "scripts/benchmark_seeker.py",
+                                                        "scripts/benchmark_adapter_factory.py",
+                                                        "reports/resource_pantry.json",
+                                                        "reports/benchmark_bounty_registry.json"
+                                                    ],
+                                "port_goal":  "Give Theseus a community/public-hive path for adding benchmark pressure safely without flooding the pantry with junk.",
+                                "acceptance_gates":  [
+                                                         "benchmark submissions get novelty and quality scores",
+                                                         "duplicate command/source/fingerprint checks run",
+                                                         "accepted submissions create adapter cards",
+                                                         "rejected submissions include deterministic reasons"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_orcp_compression_frontier",
+                                "project":  "moecot_manifest",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "ORCP compression lanes use deterministic round-trip, identity, compression-ratio, and Hutter-style gates as pressure surfaces.",
+                                "theseus_surface":  [
+                                                        "scripts/pressure_runner.py",
+                                                        "scripts/benchmark_ledger.py",
+                                                        "scripts/checkpoint_delta_store.py"
+                                                    ],
+                                "port_goal":  "Add compression as a native intelligence pressure lane for memory, context, checkpoint, and data representation quality.",
+                                "acceptance_gates":  [
+                                                         "compression runner has round-trip smoke",
+                                                         "ratio and decoder-size metrics are logged",
+                                                         "archive identity integrates with checkpoint deltas",
+                                                         "failed deterministic replay blocks promotion"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_usb_serial_device_endpoint",
+                                "project":  "moecot_manifest",
+                                "priority":  "P1",
+                                "status":  "done",
+                                "concept":  "USB/serial endpoint uses JSONL request/response frames, installer autodetection, and a local OpenAI-compatible endpoint for weak devices.",
+                                "theseus_surface":  [
+                                                        "scripts/theseus_hive_node.py",
+                                                        "scripts/openai_compatible_endpoint.py",
+                                                        "scripts/device_bridge.py"
+                                                    ],
+                                "port_goal":  "Make phones, microcontrollers, robots, and lightweight clients able to talk to the Hive without bespoke integrations.",
+                                "acceptance_gates":  [
+                                                         "JSONL device protocol validates frame version/kind/id",
+                                                         "weak clients can proxy to local Hive endpoint",
+                                                         "installer mode does not require terminal",
+                                                         "device requests use the same route/governance path"
+                                                     ]
+                            },
+                            {
+                                "id":  "moecot_pretraining_readiness_integrity_gate",
+                                "project":  "moecot_manifest",
+                                "priority":  "P0",
+                                "status":  "done",
+                                "concept":  "Pre-training readiness checks evidence persistence, reward formalization, action/observation contracts, episode boundaries, contamination, deterministic replay, streaming reliability, and semantic watchdogs.",
+                                "theseus_surface":  [
+                                                        "scripts/autonomy_launch_readiness.py",
+                                                        "scripts/training_data_sampler.py",
+                                                        "scripts/pressure_runner.py",
+                                                        "scripts/autonomy_watchdog.py"
+                                                    ],
+                                "port_goal":  "Before long runs, prove each active training lane has contracts, rewards, episode boundaries, replay, and contamination gates.",
+                                "acceptance_gates":  [
+                                                         "readiness report is per-lane, not only global",
+                                                         "missing reward or done signal blocks RL long runs",
+                                                         "streaming checksums are verified before training",
+                                                         "semantic watchdog warnings gate candidate promotion"
+                                                     ]
+                            }
+                        ]
+}

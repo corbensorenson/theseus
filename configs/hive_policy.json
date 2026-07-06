@@ -1,0 +1,1546 @@
+{
+  "policy": "project_theseus_hive_policy_v0",
+  "enabled": true,
+  "purpose": "Turn Project Theseus machines on the same trusted network into a resource-aware hive for local training, evaluation, inference routing, and operator chat surfaces.",
+  "node": {
+    "default_role": [
+      "coordinator",
+      "worker",
+      "chat_gateway"
+    ],
+    "http_host": "0.0.0.0",
+    "http_port": 8791,
+    "dashboard_port": 8787,
+    "heartbeat_interval_seconds": 5,
+    "stale_after_seconds": 45,
+    "task_submit_timeout_seconds": 30,
+    "identity_path": "reports/hive_node_identity.json",
+    "status_path": "reports/hive_status.json",
+    "peers_path": "reports/hive_peers.json",
+    "task_ledger_path": "reports/hive_task_ledger.jsonl",
+    "task_queue_path": "reports/hive_task_queue.jsonl",
+    "job_ledger_path": "reports/hive_job_ledger.jsonl",
+    "registry_operator_status_enabled": false,
+    "registry_operator_status_timeout_seconds": 1.0
+  },
+  "discovery": {
+    "enabled": true,
+    "lan_scope": "same_subnet_only",
+    "multicast_group": "239.255.87.87",
+    "multicast_port": 8789,
+    "ttl": 1,
+    "bind_host": "0.0.0.0",
+    "announce_prefix": "project-theseus-hive",
+    "peer_registry_path": "reports/hive_peer_registry.json",
+    "max_known_peers": 256,
+    "peer_retention_seconds": 604800,
+    "probe_known_peers": true,
+    "known_peer_probe_interval_seconds": 30,
+    "coordinator_sync_timeout_seconds": 8,
+    "peer_probe_timeout_seconds": 3,
+    "bonjour_enabled": true,
+    "bonjour_service_type": "_theseus-hive._tcp",
+    "bonjour_domain": "local.",
+    "bonjour_browse_seconds": 3,
+    "bonjour_advertise_refresh_seconds": 300,
+    "require_signed_multicast_when_secret_configured": true,
+    "require_signed_multicast": false,
+    "trust_unsigned_multicast_without_secret": true
+  },
+  "federation": {
+    "tiers": {
+      "private": {
+        "description": "Your own machines across home, workshop, phones, and private tunnels.",
+        "remote_tasks": true,
+        "training_tasks": true,
+        "inference_tasks": true,
+        "requires_invite": true,
+        "requires_shared_secret": true
+      },
+      "friends_family": {
+        "description": "Known people or a company/workgroup sharing compute by invitation.",
+        "remote_tasks": true,
+        "training_tasks": false,
+        "inference_tasks": true,
+        "requires_invite": true,
+        "requires_shared_secret": true,
+        "default_task_scope": [
+          "resource_probe",
+          "capability_refresh",
+          "checkpoint_chat"
+        ]
+      },
+      "company": {
+        "description": "Licensed company or organization Hive. Requires a signed paid Project Theseus license before company-scope joining or worker chunks are allowed.",
+        "remote_tasks": true,
+        "training_tasks": true,
+        "inference_tasks": true,
+        "requires_invite": true,
+        "requires_shared_secret": true,
+        "requires_feature": "company_hive"
+      },
+      "public": {
+        "description": "Open compute network. Public contribution is opt-in and worker-only until signed tasks, sandboxing, reputation, abuse controls, and legal terms exist.",
+        "remote_tasks": false,
+        "training_tasks": false,
+        "inference_tasks": false,
+        "requires_invite": true,
+        "requires_shared_secret": true,
+        "status": "worker_contribution_scaffold_only"
+      }
+    },
+    "default_tier": "private",
+    "join_config_path": "configs/hive_join.local.json",
+    "profiles_path": "configs/hive_profiles.local.json",
+    "hive_id_env": "THESEUS_HIVE_ID",
+    "relay_url_env": "THESEUS_HIVE_RELAY_URL",
+    "node_tags_env": "THESEUS_HIVE_NODE_TAGS"
+  },
+  "setup_wizard": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 8788,
+    "launcher_windows": "bin/project-theseus-setup.cmd",
+    "launcher_macos": "bin/project-theseus-setup.command",
+    "supports_profile_switching": true,
+    "supports_phone_qr": true,
+    "public_hive_visible_but_disabled": true
+  },
+  "public_contribution": {
+    "purpose": "Allow a private or semi-private Hive node to donate idle compute to the larger public Theseus Hive without exposing private data, private peers, teacher/self-edit capability, or arbitrary shell.",
+    "config_path": "configs/public_hive.local.json",
+    "status_path": "reports/public_hive_contribution_status.json",
+    "ledger_path": "reports/public_hive_contribution_ledger.jsonl",
+    "default_mode": "off",
+    "modes": {
+      "off": "Never connect to the public Hive.",
+      "idle": "Offer bounded public compute only when the machine is idle and resource gates are green.",
+      "always": "Offer bounded public compute whenever resource gates are green."
+    },
+    "gateway_url": "",
+    "public_hive_id": "theseus-public",
+    "require_explicit_opt_in": true,
+    "require_signed_task_manifest": true,
+    "worker_only": true,
+    "never_share": [
+      "private_hive_join_tokens",
+      "private_hive_peer_lists",
+      "local_training_data",
+      "rom_assets",
+      "checkpoint_weights_unless_user_publishes_them",
+      "teacher_oracle",
+      "teacher_self_edit",
+      "git_credentials",
+      "arbitrary_filesystem"
+    ],
+    "allowed_public_task_kinds": [
+      "resource_probe",
+      "capability_refresh",
+      "public_training_smoke",
+      "public_eval_shard",
+      "public_synthetic_quality_vote"
+    ],
+    "idle_policy": {
+      "idle_minutes_before_connect": 20,
+      "allow_on_ac_power_only": true,
+      "min_disk_free_gib": 25,
+      "max_memory_load_percent": 82,
+      "max_gpu_utilization_percent": 35,
+      "max_gpu_memory_used_percent": 70,
+      "max_cpu_load_percent": 65
+    },
+    "budgets": {
+      "max_public_gpu_memory_fraction": 0.65,
+      "max_public_cpu_threads_fraction": 0.5,
+      "max_public_disk_cache_gib": 25,
+      "max_task_runtime_seconds": 1800,
+      "max_download_mb_per_day": 512,
+      "max_upload_mb_per_day": 512
+    },
+    "promotion_requirements": [
+      "signed_native_worker",
+      "task_manifest_signature_verification",
+      "sandboxed_execution_runtime",
+      "public_task_reputation",
+      "resource_quota_enforcement",
+      "user_visible_pause_stop",
+      "privacy_boundary_tests",
+      "legal_terms_and_abuse_response"
+    ]
+  },
+  "rented_compute": {
+    "enabled": true,
+    "purpose": "Make it easy to add rented compute or storage to a private Hive while preserving dry-run planning, explicit cost approval, public-data leakage controls, and provider portability.",
+    "local_config_path": "configs/hive_rented_compute.local.json",
+    "status_path": "reports/hive_rented_compute_status.json",
+    "plan_path": "reports/hive_rented_compute_plan.json",
+    "launch_path": "reports/hive_rented_compute_launch.json",
+    "ledger_path": "reports/hive_rented_compute_ledger.jsonl",
+    "default_provider": "aws_ec2",
+    "dry_run_default": true,
+    "execute_requires_operator_flag": true,
+    "allowed_task_kinds": [
+      "cuda_eval_chunk",
+      "cuda_training_chunk",
+      "cuda_rollout_chunk",
+      "training_smoke",
+      "mlx_eval_chunk",
+      "mlx_training_chunk",
+      "mlx_rollout_chunk",
+      "storage_burst",
+      "artifact_sync",
+      "checkpoint_handoff"
+    ],
+    "provider_maturity": {
+      "aws_ec2": "R2_sandboxed_cloud_launch_adapter",
+      "aws_s3": "R1_planning_adapter_with_explicit_execute",
+      "gcp_compute": "R2_sandboxed_cloud_launch_adapter",
+      "gcp_gcs": "R1_planning_adapter_with_explicit_execute",
+      "azure_vm": "R2_sandboxed_cloud_launch_adapter",
+      "azure_blob": "R1_planning_adapter_with_explicit_execute",
+      "runpod": "R1_api_launch_adapter_requires_profile_review",
+      "vast_ai": "R1_cli_launch_adapter_requires_offer_review",
+      "lambda_cloud": "R0_contract_only",
+      "coreweave": "R0_contract_only",
+      "fluidstack": "R0_contract_only",
+      "ssh_gpu_host": "R0_contract_only"
+    },
+    "default_conditions": {
+      "spot_only": true,
+      "max_session_hours": 6,
+      "max_estimated_hourly_usd": 0.75,
+      "max_total_usd_per_session": 4.5,
+      "max_daily_planned_usd": 12.0,
+      "max_weekly_planned_usd": 48.0,
+      "cooldown_minutes": 20,
+      "require_queue_pressure": true,
+      "require_broad_transfer_below_floor": true,
+      "min_transfer_floor_gap": 0.03,
+      "min_local_disk_free_gib": 10,
+      "require_services": [
+        "hive_node"
+      ],
+      "stop_when_queue_empty": true,
+      "stop_when_budget_spent": true
+    },
+    "user_policies": {
+      "overnight_spot_gpu": {
+        "description": "Default safe burst policy for GPU learning pressure: spot only, nights/weekends, bounded spend, and only when transfer/queue pressure exists.",
+        "time_windows": [
+          {
+            "days": [
+              "mon",
+              "tue",
+              "wed",
+              "thu",
+              "sun"
+            ],
+            "start_local": "21:00",
+            "end_local": "07:00"
+          },
+          {
+            "days": [
+              "fri",
+              "sat"
+            ],
+            "start_local": "00:00",
+            "end_local": "23:59"
+          }
+        ],
+        "spot_only": true,
+        "max_session_hours": 6,
+        "max_estimated_hourly_usd": 0.75,
+        "max_total_usd_per_session": 4.5,
+        "max_daily_planned_usd": 12.0,
+        "max_weekly_planned_usd": 48.0,
+        "cooldown_minutes": 20,
+        "require_queue_pressure": true,
+        "require_broad_transfer_below_floor": true,
+        "min_transfer_floor_gap": 0.03,
+        "min_local_disk_free_gib": 10,
+        "require_services": [
+          "hive_node"
+        ]
+      },
+      "manual_daytime_gpu": {
+        "description": "Operator-reviewed daytime burst policy with smaller sessions and explicit launch still required.",
+        "spot_only": true,
+        "max_session_hours": 2,
+        "max_estimated_hourly_usd": 1.25,
+        "max_total_usd_per_session": 2.5,
+        "max_daily_planned_usd": 8.0,
+        "cooldown_minutes": 30,
+        "require_queue_pressure": true,
+        "require_broad_transfer_below_floor": true,
+        "min_local_disk_free_gib": 10,
+        "require_services": [
+          "hive_node"
+        ]
+      },
+      "storage_burst": {
+        "description": "Low-cost object storage expansion for artifact/checkpoint handoff. Creates storage only; upload remains governed by Hive artifact sync.",
+        "spot_only": false,
+        "max_session_hours": 24,
+        "max_estimated_hourly_usd": 0.05,
+        "max_total_usd_per_session": 2.0,
+        "max_weekly_planned_usd": 8.0,
+        "require_queue_pressure": false,
+        "require_broad_transfer_below_floor": false,
+        "require_services": [],
+        "min_local_disk_free_gib": 5
+      }
+    },
+    "safety": {
+      "never_store_cloud_credentials_in_repo": true,
+      "never_train_on_public_benchmark_solutions": true,
+      "never_launch_without_plan_report": true,
+      "never_launch_without_execute_flag": true,
+      "prefer_private_subnet_or_private_relay": true,
+      "never_expose_dashboard_or_hive_api_publicly": [
+        8787,
+        8791
+      ],
+      "cloud_init_user_data_may_contain_hive_invite": "ignored_reports_only; treat as secret when include_join_token_in_user_data=true"
+    }
+  },
+  "relay": {
+    "enabled_when_configured": true,
+    "server_host": "0.0.0.0",
+    "server_port": 8793,
+    "state_path": "reports/hive_relay_state.json",
+    "status_path": "reports/hive_relay_status.json",
+    "poll_interval_seconds": 5,
+    "task_ttl_seconds": 3600,
+    "node_stale_after_seconds": 90,
+    "max_payload_bytes": 3145728,
+    "mobile_operator_ui": true,
+    "chat_task_kind": "checkpoint_chat",
+    "allowed_remote_task_kinds_by_tier": {
+      "private": [
+        "resource_probe",
+        "capability_refresh",
+        "readiness_check",
+        "checkpoint_chat",
+        "compute_market_status",
+        "storage_status",
+        "storage_index",
+        "voice_following_status",
+        "spatial_status",
+        "network_doctor",
+        "update_status",
+        "update_apply_soft",
+        "hive_version_status",
+        "hive_version_converge",
+        "utilization_sweep",
+        "training_orchestrate",
+        "training_smoke",
+        "cuda_eval_chunk",
+        "cuda_training_chunk",
+        "cuda_rollout_chunk",
+        "mlx_eval_chunk",
+        "mlx_training_chunk",
+        "mlx_rollout_chunk",
+        "rl_smoke",
+        "adapter_smoke"
+      ],
+      "friends_family": [
+        "resource_probe",
+        "capability_refresh",
+        "checkpoint_chat",
+        "compute_market_status",
+        "network_doctor",
+        "update_status"
+      ],
+      "company": [
+        "resource_probe",
+        "capability_refresh",
+        "readiness_check",
+        "checkpoint_chat",
+        "compute_market_status",
+        "storage_status",
+        "storage_index",
+        "voice_following_status",
+        "spatial_status",
+        "network_doctor",
+        "update_status",
+        "update_apply_soft",
+        "hive_version_status",
+        "hive_version_converge",
+        "utilization_sweep",
+        "training_orchestrate",
+        "training_smoke",
+        "cuda_eval_chunk",
+        "cuda_training_chunk",
+        "cuda_rollout_chunk",
+        "mlx_eval_chunk",
+        "mlx_training_chunk",
+        "mlx_rollout_chunk",
+        "rl_smoke",
+        "adapter_smoke"
+      ],
+      "public": []
+    }
+  },
+  "security": {
+    "trust_boundary": "trusted_local_network_private_tunnel_or_authenticated_relay_only",
+    "shared_secret_env": "THESEUS_HIVE_SECRET",
+    "requires_shared_secret_for_remote_tasks": true,
+    "allow_status_without_secret": true,
+    "allow_loopback_tasks_without_secret": true,
+    "require_signed_task_manifest_for_remote": false,
+    "task_manifest_signature_algorithms": [
+      "hmac-sha256-private-hive-v0"
+    ],
+    "revocations_path": "configs/hive_revocations.local.json",
+    "quota_state_path": "reports/hive_quota_state.json",
+    "quotas": {
+      "enabled": true,
+      "window_seconds": 3600,
+      "max_tasks_per_subject_per_window": 128,
+      "max_worker_chunks_per_subject_per_window": 96
+    },
+    "artifact_signatures": {
+      "enabled": true,
+      "algorithm": "hmac-sha256-private-hive-v0",
+      "sign_task_results": true,
+      "sign_worker_reports": true
+    },
+    "forbidden_remote_task_kinds": [
+      "teacher_oracle",
+      "teacher_self_edit",
+      "git_push",
+      "rom_import",
+      "bulk_data_download",
+      "arbitrary_shell"
+    ],
+    "remote_mutation_policy": "never_run_arbitrary_commands; only allow registered bounded task kinds"
+  },
+  "multi_user": {
+    "enabled": true,
+    "users_config_path": "configs/hive_users.local.json",
+    "token_storage": "sha256_hash_only_in_local_ignored_config",
+    "legacy_hive_join_token_role": "owner",
+    "default_new_user_role": "member",
+    "roles": {
+      "owner": {
+        "label": "Owner",
+        "remote_task_kinds": [
+          "*"
+        ],
+        "can_view_status": true,
+        "can_view_storage": true,
+        "can_download_files": true,
+        "can_remote_control": true,
+        "can_request_worker_chunks": true,
+        "can_manage_updates": true,
+        "can_manage_users": true,
+        "can_voice_control": true,
+        "can_sync_artifacts": true
+      },
+      "operator": {
+        "label": "Operator",
+        "remote_task_kinds": [
+          "resource_probe",
+          "capability_refresh",
+          "readiness_check",
+          "checkpoint_chat",
+          "compute_market_status",
+          "storage_status",
+          "storage_index",
+          "voice_following_status",
+          "spatial_status",
+          "hive_version_status",
+          "training_orchestrate",
+          "training_smoke",
+          "cuda_eval_chunk",
+          "mlx_eval_chunk"
+        ],
+        "can_view_status": true,
+        "can_view_storage": true,
+        "can_download_files": true,
+        "can_remote_control": true,
+        "can_request_worker_chunks": true,
+        "can_manage_updates": false,
+        "can_manage_users": false,
+        "can_voice_control": true,
+        "can_sync_artifacts": true
+      },
+      "member": {
+        "label": "Family Member",
+        "remote_task_kinds": [
+          "resource_probe",
+          "readiness_check",
+          "checkpoint_chat",
+          "storage_status",
+          "storage_index",
+          "voice_following_status",
+          "spatial_status"
+        ],
+        "can_view_status": true,
+        "can_view_storage": true,
+        "can_download_files": true,
+        "can_remote_control": false,
+        "can_request_worker_chunks": false,
+        "can_manage_updates": false,
+        "can_manage_users": false,
+        "can_voice_control": true,
+        "can_sync_artifacts": false
+      },
+      "child": {
+        "label": "Child",
+        "remote_task_kinds": [
+          "resource_probe",
+          "readiness_check",
+          "checkpoint_chat",
+          "voice_following_status",
+          "spatial_status"
+        ],
+        "can_view_status": true,
+        "can_view_storage": false,
+        "can_download_files": false,
+        "can_remote_control": false,
+        "can_request_worker_chunks": false,
+        "can_manage_updates": false,
+        "can_manage_users": false,
+        "can_voice_control": true,
+        "can_sync_artifacts": false
+      },
+      "guest": {
+        "label": "Guest",
+        "remote_task_kinds": [
+          "resource_probe",
+          "checkpoint_chat"
+        ],
+        "can_view_status": true,
+        "can_view_storage": false,
+        "can_download_files": false,
+        "can_remote_control": false,
+        "can_request_worker_chunks": false,
+        "can_manage_updates": false,
+        "can_manage_users": false,
+        "can_voice_control": false,
+        "can_sync_artifacts": false
+      }
+    }
+  },
+  "resource_slots": {
+    "enabled": true,
+    "max_worker_threads": 8,
+    "max_cpu_slots": 4,
+    "max_cuda_slots_per_gpu": 1,
+    "max_mlx_slots": 1,
+    "max_mlx_cuda_slots": 1,
+    "slot_types_by_task_kind": {
+      "resource_probe": [
+        "cpu"
+      ],
+      "capability_refresh": [
+        "cpu"
+      ],
+      "readiness_check": [
+        "cpu"
+      ],
+      "checkpoint_chat": [
+        "cpu",
+        "mlx_apple",
+        "cuda"
+      ],
+      "compute_market_status": [
+        "cpu"
+      ],
+      "storage_status": [
+        "cpu"
+      ],
+      "storage_index": [
+        "cpu"
+      ],
+      "voice_following_status": [
+        "cpu"
+      ],
+      "spatial_status": [
+        "cpu"
+      ],
+      "network_doctor": [
+        "cpu"
+      ],
+      "update_status": [
+        "cpu"
+      ],
+      "update_apply_soft": [
+        "cpu"
+      ],
+      "hive_version_status": [
+        "cpu"
+      ],
+      "hive_version_converge": [
+        "cpu"
+      ],
+      "utilization_sweep": [
+        "cpu"
+      ],
+      "training_orchestrate": [
+        "cpu"
+      ],
+      "training_smoke": [
+        "cpu",
+        "cuda",
+        "mlx_apple",
+        "mlx_cuda"
+      ],
+      "cuda_eval_chunk": [
+        "cuda"
+      ],
+      "cuda_training_chunk": [
+        "cuda"
+      ],
+      "cuda_rollout_chunk": [
+        "cuda"
+      ],
+      "mlx_eval_chunk": [
+        "mlx_apple",
+        "mlx_cuda"
+      ],
+      "mlx_training_chunk": [
+        "mlx_apple",
+        "mlx_cuda"
+      ],
+      "mlx_rollout_chunk": [
+        "mlx_apple",
+        "mlx_cuda"
+      ],
+      "public_training_smoke": [
+        "cpu"
+      ]
+    },
+    "task_kinds_by_slot": {
+      "cpu": [
+        "resource_probe",
+        "capability_refresh",
+        "readiness_check",
+        "checkpoint_chat",
+        "compute_market_status",
+        "storage_status",
+        "storage_index",
+        "voice_following_status",
+        "spatial_status",
+        "network_doctor",
+        "update_status",
+        "update_apply_soft",
+        "hive_version_status",
+        "hive_version_converge",
+        "utilization_sweep",
+        "training_orchestrate",
+        "training_smoke",
+        "public_training_smoke"
+      ],
+      "cuda": [
+        "cuda_eval_chunk",
+        "cuda_training_chunk",
+        "cuda_rollout_chunk",
+        "checkpoint_chat"
+      ],
+      "mlx": [
+        "mlx_eval_chunk",
+        "mlx_training_chunk",
+        "mlx_rollout_chunk",
+        "checkpoint_chat"
+      ]
+    }
+  },
+  "jobs": {
+    "enabled": true,
+    "model": "arm_aware_embarrassingly_parallel_v0",
+    "scheduler_report_path": "reports/hive_jobs.json",
+    "defaults": {
+      "priority": 50,
+      "lease_seconds": 1800,
+      "max_retries": 1,
+      "merge_policy": "append_report_then_candidate_gate"
+    },
+    "defaults_by_task_kind": {
+      "cuda_eval_chunk": {
+        "arm_id": "rust_cuda_systems_arm",
+        "priority": 70,
+        "merge_policy": "append_cuda_eval_report"
+      },
+      "cuda_training_chunk": {
+        "arm_id": "rust_cuda_systems_arm",
+        "priority": 80,
+        "merge_policy": "merge_readout_candidate_if_gate_passes"
+      },
+      "cuda_rollout_chunk": {
+        "arm_id": "rl_control_arm",
+        "priority": 78,
+        "merge_policy": "merge_rollout_candidate_if_probe_improves"
+      },
+      "mlx_eval_chunk": {
+        "arm_id": "apple_mlx_worker_arm",
+        "priority": 65,
+        "merge_policy": "append_mlx_eval_report"
+      },
+      "mlx_training_chunk": {
+        "arm_id": "apple_mlx_worker_arm",
+        "priority": 72,
+        "merge_policy": "merge_mlx_readout_candidate_if_gate_passes"
+      },
+      "mlx_rollout_chunk": {
+        "arm_id": "apple_mlx_control_arm",
+        "priority": 76,
+        "merge_policy": "merge_mlx_rollout_candidate_if_probe_improves"
+      }
+    },
+    "embarrassingly_parallel": {
+      "enabled": true,
+      "max_jobs_per_cuda_node": 3,
+      "max_jobs_per_mlx_node": 3,
+      "max_jobs_per_cpu_node": 2,
+      "families": [
+        "seed_sweep",
+        "eval_shard",
+        "readout_chunk",
+        "rollout_chunk",
+        "hyperparameter_probe"
+      ]
+    }
+  },
+  "artifact_sync": {
+    "enabled": true,
+    "inbox_path": "reports/hive_artifact_inbox",
+    "ledger_path": "reports/hive_artifact_sync_ledger.jsonl",
+    "merge_ledger_path": "reports/hive_artifact_merge_ledger.jsonl",
+    "merge_summary_path": "reports/hive_artifact_merge_summary.json",
+    "promoted_checkpoint_root": "checkpoints/hive_promoted",
+    "allowed_roots": [
+      "reports/hive_chunks",
+      "reports",
+      "checkpoints/hive_promoted",
+      "dist/hive-release",
+      "dist/macos",
+      "dist/windows",
+      "dist/linux",
+      "dist/universal-usb"
+    ],
+    "max_index_items": 500,
+    "max_index_scan_files": 5000,
+    "max_artifact_bytes": 536870912,
+    "max_relay_bundle_bytes": 2097152,
+    "index_file_suffixes": [
+      ".json",
+      ".dmg",
+      ".pkg",
+      ".zip",
+      ".exe",
+      ".msi",
+      ".AppImage",
+      ".deb",
+      ".rpm",
+      ".tar.gz",
+      ".sh",
+      ".ps1",
+      ".cmd"
+    ],
+    "verify_sha256": true,
+    "merge_model": "artifact_level_best_by_arm",
+    "promotion_gate": {
+      "require_worker_report_ok": true,
+      "score_keys": [
+        "eval_accuracy",
+        "train_accuracy",
+        "accuracy",
+        "train_examples_per_second"
+      ]
+    }
+  },
+  "storage": {
+    "enabled": true,
+    "config_path": "configs/hive_storage.local.json",
+    "status_path": "reports/hive_storage_status.json",
+    "index_path": "reports/hive_storage_index.json",
+    "inbox_path": "reports/hive_storage_inbox",
+    "transfer_ledger_path": "reports/hive_storage_transfer_ledger.jsonl",
+    "max_browse_items": 500,
+    "max_index_items": 500,
+    "max_mount_candidates": 64,
+    "max_file_bytes": 104857600,
+    "include_hidden": false,
+    "default_share_mode": "read_only",
+    "remote_access_policy": "authenticated_configured_shares_only",
+    "never_share_by_default": [
+      "whole_home_directory",
+      "system_roots",
+      "keychains",
+      "browser_profiles",
+      "ssh_keys",
+      "env_files",
+      "configs_secret_files"
+    ]
+  },
+  "remote_control": {
+    "enabled": true,
+    "config_path": "configs/hive_remote_control.local.json",
+    "status_path": "reports/hive_remote_control_status.json",
+    "session_report_path": "reports/hive_remote_control_session.json",
+    "ledger_path": "reports/hive_remote_control_ledger.jsonl",
+    "allowed_tiers": [
+      "private",
+      "company"
+    ],
+    "allowed_providers": [
+      "rustdesk",
+      "rdp",
+      "screen_sharing",
+      "vnc",
+      "sunshine_moonlight"
+    ],
+    "preferred_providers": [
+      "rustdesk",
+      "rdp",
+      "screen_sharing",
+      "vnc",
+      "sunshine_moonlight"
+    ],
+    "max_session_minutes": 240,
+    "public_port_policy": "never_expose_raw_desktop_ports; use same-LAN, WireGuard/private tunnel, RD Gateway, or self-hosted provider relay",
+    "hive_api_role": "authenticated_session_broker_and_audit_log_only",
+    "pixel_input_transport": "mature_external_provider_not_custom_hive_stream"
+  },
+  "voice_following": {
+    "enabled": true,
+    "config_path": "configs/hive_voice_following.local.json",
+    "status_path": "reports/hive_voice_following_status.json",
+    "state_path": "reports/hive_voice_following_state.json",
+    "presence_ledger_path": "reports/hive_voice_presence_ledger.jsonl",
+    "route_report_path": "reports/hive_voice_following_route.json",
+    "max_presence_age_seconds": 20,
+    "handoff_hysteresis_seconds": 3,
+    "min_presence_score": 0.2,
+    "audio_probe_cache_seconds": 30,
+    "raw_audio_policy": "never_relay_raw_audio_by_default",
+    "speaker_selection": "nearest_recent_presence_with_ready_speaker",
+    "native_speech_dependency": "local_theseus_stt_tts_only_after_native_components_are_ready",
+    "presence_payload_policy": "score_direction_room_metadata_only"
+  },
+  "training_orchestration": {
+    "enabled": true,
+    "strategy": "deterministic_arm_slot_owner_v0",
+    "state_path": "reports/hive_training_state.json",
+    "report_path": "reports/hive_training_orchestrator.json",
+    "ledger_path": "reports/hive_training_orchestrator_ledger.jsonl",
+    "default_profile": "smoke",
+    "round_minutes": 30,
+    "lease_seconds": 1800,
+    "reachability_timeouts_seconds": [
+      2.5,
+      5,
+      10
+    ],
+    "default_max_jobs_per_round": 3,
+    "queue_over_capacity": false,
+    "merge_policy": "promote_best_for_arm_if_score_improves",
+    "artifact_flow": "worker_report_to_best_by_arm_promotion",
+    "decentralized_duplicate_rule": "deterministic job IDs; node enqueue suppresses duplicates",
+    "arms": [
+      {
+        "arm_id": "apple_mlx_worker_arm",
+        "display_name": "Apple MLX language/readout arm",
+        "enabled": true,
+        "priority": 20,
+        "task_kinds": [
+          "mlx_training_chunk",
+          "mlx_eval_chunk"
+        ],
+        "preferred_backends": [
+          "mlx_apple",
+          "apple_mlx"
+        ],
+        "backend_requirements": [
+          "mlx_apple_or_mlx_cuda"
+        ],
+        "job_family": "mlx_readout_chunk"
+      },
+      {
+        "arm_id": "rust_cuda_systems_arm",
+        "display_name": "Rust/CUDA systems readout arm",
+        "enabled": true,
+        "priority": 30,
+        "task_kinds": [
+          "cuda_training_chunk",
+          "cuda_eval_chunk"
+        ],
+        "preferred_backends": [
+          "nvidia_cuda",
+          "rust_cuda"
+        ],
+        "backend_requirements": [
+          "nvidia_cuda",
+          "rust_cuda"
+        ],
+        "job_family": "cuda_readout_chunk"
+      },
+      {
+        "arm_id": "apple_mlx_control_arm",
+        "display_name": "Apple MLX rollout/control arm",
+        "enabled": true,
+        "priority": 70,
+        "task_kinds": [
+          "mlx_rollout_chunk"
+        ],
+        "preferred_backends": [
+          "mlx_apple",
+          "apple_mlx"
+        ],
+        "backend_requirements": [
+          "mlx_apple_or_mlx_cuda"
+        ],
+        "job_family": "mlx_rollout_chunk"
+      },
+      {
+        "arm_id": "rl_control_arm",
+        "display_name": "CUDA rollout/control arm",
+        "enabled": true,
+        "priority": 80,
+        "task_kinds": [
+          "cuda_rollout_chunk"
+        ],
+        "preferred_backends": [
+          "nvidia_cuda",
+          "rust_cuda"
+        ],
+        "backend_requirements": [
+          "nvidia_cuda",
+          "rust_cuda"
+        ],
+        "job_family": "cuda_rollout_chunk"
+      }
+    ]
+  },
+  "hive_utilization": {
+    "enabled": true,
+    "purpose": "Keep every safe private Hive node fed with user work first, then bounded decentralized training, then CPU self-improvement/maintenance, then grounded checkpointing instead of letting compute sit idle.",
+    "always_active_mode": "user_work_first_bounded_self_improvement",
+    "status_path": "reports/hive_utilization_manager.json",
+    "ledger_path": "reports/hive_utilization_ledger.jsonl",
+    "training_enabled": true,
+    "maintenance_enabled": true,
+    "inference_keepalive_enabled": true,
+    "training_profile": "inner_loop",
+    "adaptive_accelerator_profile": true,
+    "min_accelerator_profile": "inner_loop",
+    "max_accelerator_profile": "candidate",
+    "suppress_cpu_maintenance_when_accelerator_underfed": true,
+    "target_queue_depth_per_accelerator_slot": 2,
+    "max_new_jobs_per_sweep": 4,
+    "accelerator_lease_seconds": 900,
+    "max_background_queue_depth_per_node": 2,
+    "sweep_interval_seconds": 60,
+    "min_disk_free_gib": 5,
+    "min_training_disk_free_gib": 8,
+    "max_memory_load_percent": 92,
+    "allow_on_battery": false,
+    "min_battery_percent": 40,
+    "max_gpu_utilization_percent_to_enqueue": 85,
+    "max_gpu_memory_used_percent_to_enqueue": 88,
+    "maintenance_task_order": [
+      "training_smoke",
+      "storage_index",
+      "resource_probe",
+      "capability_refresh",
+      "network_doctor",
+      "voice_following_status",
+      "spatial_status",
+      "compute_market_status",
+      "storage_status",
+      "update_status",
+      "hive_version_status"
+    ],
+    "priority_model": [
+      {
+        "priority": 10,
+        "lane": "user_requested_work",
+        "rule": "Existing user, operator, storage, voice, and control tasks keep their slots and queue position."
+      },
+      {
+        "priority": 20,
+        "lane": "accelerator_training",
+        "rule": "Idle CUDA/MLX slots receive bounded decentralized training rounds before lower-value background work."
+      },
+      {
+        "priority": 30,
+        "lane": "cpu_self_improvement",
+        "rule": "Idle CPU slots rotate bounded smoke training, storage, capability, network, voice, and version refresh tasks."
+      },
+      {
+        "priority": 40,
+        "lane": "grounded_checkpoint",
+        "rule": "If no safe worker slot is available, keep a grounded checkpoint summary fresh for the operator."
+      },
+      {
+        "priority": 50,
+        "lane": "blocked_or_paused",
+        "rule": "Stop, pause, resource floors, licensing, and public-data guards beat the no-downtime goal."
+      }
+    ],
+    "rules": {
+      "public_benchmarks": "calibration_only_never_training",
+      "work_surface": "registered_hive_task_kinds_only",
+      "cloud_compute": "never_launch_from_utilization_manager_use_rented_compute_plan_review",
+      "teacher": "teacher_is_architecture_diagnosis_only_not_idle_fill"
+    }
+  },
+  "resource_routing": {
+    "prefer_local_for": [
+      "teacher_oracle",
+      "teacher_self_edit",
+      "git_operations",
+      "checkpoint_backup",
+      "rom_asset_staging"
+    ],
+    "offload_allowed_for": [
+      "resource_probe",
+      "capability_refresh",
+      "readiness_check",
+      "checkpoint_chat",
+      "compute_market_status",
+      "storage_status",
+      "storage_index",
+      "voice_following_status",
+      "spatial_status",
+      "network_doctor",
+      "update_status",
+      "update_apply_soft",
+      "hive_version_status",
+      "hive_version_converge",
+      "utilization_sweep",
+      "training_orchestrate",
+      "training_smoke",
+      "cuda_eval_chunk",
+      "cuda_training_chunk",
+      "cuda_rollout_chunk",
+      "mlx_eval_chunk",
+      "mlx_training_chunk",
+      "mlx_rollout_chunk",
+      "rl_smoke",
+      "adapter_smoke"
+    ],
+    "public_contribution_allowed_for": [
+      "resource_probe",
+      "capability_refresh",
+      "public_training_smoke",
+      "public_eval_shard",
+      "public_synthetic_quality_vote"
+    ],
+    "training_priority_order": [
+      "nvidia_cuda",
+      "apple_mlx",
+      "cpu_many_core",
+      "weak_client_proxy"
+    ],
+    "inference_priority_order": [
+      "local_checkpoint_available",
+      "apple_mlx",
+      "nvidia_cuda",
+      "cpu_many_core",
+      "remote_best_peer"
+    ],
+    "weak_client_policy": "run small local arms when possible and proxy larger model/chat work to the best authorized peer"
+  },
+  "mac_support": {
+    "mlx_optional": true,
+    "mlx_python_module": "mlx.core",
+    "macos_package": {
+      "minimum_supported_version": "10.15",
+      "target_architectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "installer_wrapper": "architecture_neutral_shell_app",
+      "menu_bar_helper_policy": "universal_when_possible_target_local_compile_or_shell_fallback"
+    },
+    "mlx_feature_cache": {
+      "enabled": true,
+      "root": "reports/hive_chunks/mlx_feature_cache",
+      "format": "npz_float32",
+      "purpose": "avoid repeated BabyLM text hashing and Python list-to-MLX conversion on Mac workers"
+    },
+    "intel_mac_roles": [
+      "cpu_worker",
+      "checkpoint_chat_gateway",
+      "hive_storage_extension",
+      "remote_control_operator",
+      "voice_following_node",
+      "relay_or_coordinator",
+      "artifact_sync"
+    ],
+    "preferred_roles_when_mlx_available": [
+      "local_inference",
+      "embedding",
+      "small_sequence_training",
+      "checkpoint_chat"
+    ]
+  },
+  "windows_support": {
+    "preferred_roles_when_nvidia_available": [
+      "cuda_training",
+      "cuda_rollout",
+      "benchmark_eval",
+      "checkpoint_chat"
+    ]
+  },
+    "worker_chunks": {
+    "enabled": true,
+    "default_profile": "smoke",
+    "allowed_profiles": [
+      "smoke",
+      "inner_loop",
+      "candidate"
+    ],
+    "report_root": "reports/hive_chunks",
+    "ledger_path": "reports/hive_worker_chunk_ledger.jsonl",
+    "max_runtime_seconds_by_kind": {
+      "cuda_eval_chunk": 300,
+      "cuda_training_chunk": 1800,
+      "cuda_rollout_chunk": 1800,
+      "mlx_eval_chunk": 300,
+      "mlx_training_chunk": 900,
+      "mlx_rollout_chunk": 900
+    },
+    "limits": {
+      "max_cuda_cases_per_task": 512,
+      "max_cuda_epochs": 10,
+      "max_mlx_train_rows": 8192,
+      "max_mlx_eval_rows": 4096,
+      "max_mlx_rollout_cases": 4096,
+      "max_mlx_steps": 128
+    },
+    "mlx_feature_cache": {
+      "enabled": true,
+      "root": "reports/hive_chunks/mlx_feature_cache"
+    },
+    "network_access": "none",
+    "external_inference": "forbidden",
+    "teacher_use": "forbidden",
+    "remote_payload_policy": "bounded_json_parameters_only"
+  },
+  "spatial": {
+    "enabled": true,
+    "config_path": "configs/hive_spatial.local.json",
+    "status_path": "reports/hive_spatial_status.json",
+    "coordinate_space": "local_room_manual",
+    "default_units": "meters",
+    "raw_spatial_data_policy": "never_relay_camera_passthrough_or_room_mesh_by_default",
+    "operator_only": true,
+    "visionos_client": {
+      "status": "contract_ready_native_client_pending",
+      "preferred_stack": "SwiftUI_RealityKit"
+    },
+    "quest_client": {
+      "status": "contract_ready_native_client_pending",
+      "preferred_stack": "Unity_or_native_OpenXR"
+    },
+    "remote_payload_policy": "summaries_only_no_raw_camera_audio_or_room_mesh",
+    "spatial_devices_as_training_workers": false
+  },
+  "task_kinds": {
+    "resource_probe": {
+      "description": "Refresh resource governor and Hive node status.",
+      "command": [
+        "{python}",
+        "scripts/resource_governor.py",
+        "--profile",
+        "smoke",
+        "--out",
+        "reports/resource_governor.json"
+      ],
+      "timeout_seconds": 120,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "capability_refresh": {
+      "description": "Refresh the local capability matrix.",
+      "command": [
+        "{python}",
+        "scripts/capability_matrix.py",
+        "--out",
+        "reports/capability_matrix.json"
+      ],
+      "timeout_seconds": 300,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "readiness_check": {
+      "description": "Refresh long-run autonomy launch readiness.",
+      "command": [
+        "{python}",
+        "scripts/autonomy_launch_readiness.py",
+        "--profile",
+        "inner_loop",
+        "--out",
+        "reports/autonomy_launch_readiness.json"
+      ],
+      "timeout_seconds": 300,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "checkpoint_chat": {
+      "description": "Answer a grounded local assistant chat request through the canonical Theseus assistant runtime: checkpoint session memory, VCM context, dogfood feedback, and code/tool/planning route metadata without runtime teacher escalation.",
+      "command": [
+        "{python}",
+        "scripts/theseus_assistant_runtime.py",
+        "--checkpoint-id",
+        "{checkpoint_id}",
+        "--session-id",
+        "{session_id}",
+        "--prompt",
+        "{prompt}",
+        "--intent",
+        "{intent}",
+        "--feedback",
+        "{feedback}",
+        "--surface",
+        "{surface}",
+        "--out",
+        "reports/checkpoint_chat_last.json"
+      ],
+      "timeout_seconds": 180,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "compute_market_status": {
+      "description": "Refresh local work-credit accounting, gas quote, wallet, and settlement status.",
+      "command": [
+        "{python}",
+        "scripts/compute_market.py",
+        "status",
+        "--out",
+        "reports/compute_market_status.json"
+      ],
+      "timeout_seconds": 120,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "storage_status": {
+      "description": "Refresh bounded Hive storage share, NAS mount, and device-extension status.",
+      "command": [
+        "{python}",
+        "scripts/hive_storage.py",
+        "status",
+        "--out",
+        "reports/hive_storage_status.json"
+      ],
+      "timeout_seconds": 120,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "storage_index": {
+      "description": "Write a bounded metadata-only index for explicitly configured Hive storage shares.",
+      "command": [
+        "{python}",
+        "scripts/hive_storage.py",
+        "index",
+        "--out",
+        "reports/hive_storage_index.json"
+      ],
+      "timeout_seconds": 180,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "voice_following_status": {
+      "description": "Refresh local room-aware voice-following mic/speaker readiness without capturing or relaying raw audio.",
+      "command": [
+        "{python}",
+        "scripts/hive_voice_following.py",
+        "status",
+        "--out",
+        "reports/hive_voice_following_status.json"
+      ],
+      "timeout_seconds": 60,
+      "risk_tier": "low",
+      "side_effects": "reports_only_no_audio_capture"
+    },
+    "spatial_status": {
+      "description": "Refresh the privacy-preserving spatial operator scene contract for rooms, nodes, storage anchors, voice route, and work state.",
+      "command": [
+        "{python}",
+        "scripts/hive_spatial.py",
+        "status",
+        "--out",
+        "reports/hive_spatial_status.json"
+      ],
+      "timeout_seconds": 90,
+      "risk_tier": "low",
+      "side_effects": "reports_only_no_camera_audio_or_room_mesh_capture"
+    },
+    "network_doctor": {
+      "description": "Diagnose local Hive API, coordinator, peer, firewall, stale-peer, and roaming endpoint reachability without printing tokens.",
+      "command": [
+        "{python}",
+        "scripts/hive_network_doctor.py",
+        "--out",
+        "reports/hive_network_doctor.json",
+        "--markdown-out",
+        "reports/hive_network_doctor.md"
+      ],
+      "timeout_seconds": 120,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "update_status": {
+      "description": "Check the configured update catalog and refresh local update status.",
+      "command": [
+        "{python}",
+        "scripts/update_manager.py",
+        "check",
+        "--respect-interval",
+        "--out",
+        "reports/update_checkin.json"
+      ],
+      "timeout_seconds": 120,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "update_apply_soft": {
+      "description": "Install the current accepted-candidate soft update only; hard/app changes remain staged.",
+      "command": [
+        "{python}",
+        "scripts/update_manager.py",
+        "apply",
+        "--mode",
+        "soft",
+        "--execute",
+        "--out",
+        "reports/update_apply_last.json"
+      ],
+      "timeout_seconds": 180,
+      "risk_tier": "low",
+      "side_effects": "local_update_metadata"
+    },
+    "hive_version_status": {
+      "description": "Refresh local Hive version, verified-version, installer-artifact, and update convergence status.",
+      "command": [
+        "{python}",
+        "scripts/hive_version_manager.py",
+        "status",
+        "--out",
+        "reports/hive_version_status.json"
+      ],
+      "timeout_seconds": 120,
+      "risk_tier": "low",
+      "side_effects": "reports_only"
+    },
+    "hive_version_converge": {
+      "description": "Ask private Hive peers to check the verified private catalog and apply the soft update metadata.",
+      "command": [
+        "{python}",
+        "scripts/hive_version_manager.py",
+        "converge",
+        "--execute",
+        "--out",
+        "reports/hive_version_convergence.json"
+      ],
+      "timeout_seconds": 240,
+      "risk_tier": "low",
+      "side_effects": "private_hive_update_metadata"
+    },
+    "utilization_sweep": {
+      "description": "Fill idle private Hive slots with bounded training, inference, or maintenance work according to the utilization policy.",
+      "command": [
+        "{python}",
+        "scripts/hive_utilization_manager.py",
+        "sweep",
+        "--execute",
+        "--out",
+        "reports/hive_utilization_manager.json"
+      ],
+      "timeout_seconds": 600,
+      "risk_tier": "medium",
+      "side_effects": "queues_registered_hive_tasks_only"
+    },
+    "training_orchestrate": {
+      "description": "Plan a deterministic decentralized training round and queue bounded arm-specific worker chunks.",
+      "command": [
+        "{python}",
+        "scripts/hive_training_orchestrator.py",
+        "--payload-json",
+        "{payload_json}",
+        "run",
+        "--execute",
+        "--sync-artifacts",
+        "--out",
+        "reports/hive_training_orchestrator.json"
+      ],
+      "timeout_seconds": 300,
+      "risk_tier": "medium",
+      "side_effects": "queues_registered_training_chunks_and_merges_reports"
+    },
+    "training_smoke": {
+      "description": "Run the smoke training ratchet profile only.",
+      "command": [
+        "{python}",
+        "scripts/run_training_ratchet_profile.py",
+        "--profile",
+        "smoke",
+        "--out",
+        "reports/training_ratchet_profile_run.json"
+      ],
+      "timeout_seconds": 900,
+      "risk_tier": "medium",
+      "side_effects": "local_training_reports"
+    },
+    "cuda_eval_chunk": {
+      "description": "Run a bounded Rust/CUDA eval chunk using the local SymLiquid binary.",
+      "command": [
+        "{python}",
+        "scripts/hive_worker_chunk.py",
+        "--kind",
+        "cuda_eval_chunk",
+        "--payload-json",
+        "{payload_json}",
+        "--out",
+        "reports/hive_chunks/cuda_eval_chunk_last.json"
+      ],
+      "timeout_seconds": 360,
+      "risk_tier": "medium",
+      "side_effects": "local_training_reports"
+    },
+    "cuda_training_chunk": {
+      "description": "Run a bounded Rust/CUDA readout training chunk using the local SymLiquid binary.",
+      "command": [
+        "{python}",
+        "scripts/hive_worker_chunk.py",
+        "--kind",
+        "cuda_readout_train",
+        "--payload-json",
+        "{payload_json}",
+        "--out",
+        "reports/hive_chunks/cuda_training_chunk_last.json"
+      ],
+      "timeout_seconds": 960,
+      "risk_tier": "medium",
+      "side_effects": "local_training_reports"
+    },
+    "cuda_rollout_chunk": {
+      "description": "Run a bounded Rust/CUDA rollout training chunk using the local SymLiquid binary.",
+      "command": [
+        "{python}",
+        "scripts/hive_worker_chunk.py",
+        "--kind",
+        "cuda_rollout_train",
+        "--payload-json",
+        "{payload_json}",
+        "--out",
+        "reports/hive_chunks/cuda_rollout_chunk_last.json"
+      ],
+      "timeout_seconds": 960,
+      "risk_tier": "medium",
+      "side_effects": "local_training_reports"
+    },
+    "mlx_eval_chunk": {
+      "description": "Run a bounded Apple MLX BabyLM eval chunk on Mac workers when MLX is available.",
+      "command": [
+        "{python}",
+        "scripts/hive_worker_chunk.py",
+        "--kind",
+        "mlx_babylm_eval",
+        "--payload-json",
+        "{payload_json}",
+        "--out",
+        "reports/hive_chunks/mlx_eval_chunk_last.json"
+      ],
+      "timeout_seconds": 360,
+      "risk_tier": "medium",
+      "side_effects": "local_training_reports"
+    },
+    "mlx_training_chunk": {
+      "description": "Run a bounded Apple MLX BabyLM training chunk on Mac workers when MLX is available.",
+      "command": [
+        "{python}",
+        "scripts/hive_worker_chunk.py",
+        "--kind",
+        "mlx_babylm_train",
+        "--payload-json",
+        "{payload_json}",
+        "--out",
+        "reports/hive_chunks/mlx_training_chunk_last.json"
+      ],
+      "timeout_seconds": 960,
+      "risk_tier": "medium",
+      "side_effects": "local_training_reports"
+    },
+    "mlx_rollout_chunk": {
+      "description": "Run a bounded Apple MLX rollout/control probe on Mac workers when MLX is available.",
+      "command": [
+        "{python}",
+        "scripts/hive_worker_chunk.py",
+        "--kind",
+        "mlx_rollout_probe",
+        "--payload-json",
+        "{payload_json}",
+        "--out",
+        "reports/hive_chunks/mlx_rollout_chunk_last.json"
+      ],
+      "timeout_seconds": 960,
+      "risk_tier": "medium",
+      "side_effects": "local_training_reports"
+    },
+    "public_training_smoke": {
+      "description": "Run a public-contribution smoke task that proves the worker can accept bounded public work without touching private data.",
+      "command": [
+        "{python}",
+        "scripts/public_hive_contributor.py",
+        "work-smoke",
+        "--out",
+        "reports/public_hive_work_smoke.json"
+      ],
+      "timeout_seconds": 300,
+      "risk_tier": "medium",
+      "side_effects": "reports_only"
+    },
+    "public_eval_shard": {
+      "description": "Placeholder for signed public eval shards. Disabled until signed manifests and sandboxing are enforced.",
+      "command": [
+        "{python}",
+        "scripts/public_hive_contributor.py",
+        "blocked-task",
+        "--kind",
+        "public_eval_shard",
+        "--out",
+        "reports/public_hive_blocked_task.json"
+      ],
+      "timeout_seconds": 60,
+      "risk_tier": "medium",
+      "side_effects": "reports_only"
+    },
+    "public_synthetic_quality_vote": {
+      "description": "Placeholder for signed public synthetic-data quality review shards. Disabled until signed manifests and sandboxing are enforced.",
+      "command": [
+        "{python}",
+        "scripts/public_hive_contributor.py",
+        "blocked-task",
+        "--kind",
+        "public_synthetic_quality_vote",
+        "--out",
+        "reports/public_hive_blocked_task.json"
+      ],
+      "timeout_seconds": 60,
+      "risk_tier": "medium",
+      "side_effects": "reports_only"
+    }
+  },
+  "tunnel": {
+    "supported_modes": [
+      "same_lan_multicast",
+      "self_hosted_wireguard_private_tunnel",
+      "built_in_authenticated_relay_polling",
+      "https_reverse_proxy_to_relay"
+    ],
+    "default": "same_lan_multicast",
+    "cost_policy": "no_paid_mesh_or_cloud_dependency_required",
+    "recommended_wireguard_udp_port": 51820,
+    "relay_forwarding_port": 8793,
+    "never_forward_ports": [
+      8791,
+      8787
+    ],
+    "notes": "LAN multicast handles one subnet. Home/workshop/travel/phone nodes should use same-LAN, hotspot, a self-hosted WireGuard/private tunnel, or the authenticated relay. Raw public forwarding is a last resort; never expose the Hive node API or local dashboard directly to the internet. Public hive participation is disabled until stronger sandbox, identity, and abuse controls exist."
+  }
+}

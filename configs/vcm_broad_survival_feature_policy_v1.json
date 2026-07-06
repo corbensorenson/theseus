@@ -1,0 +1,31 @@
+{
+  "action": "disable_vcm_for_broad_body_template_selector",
+  "applies_to": [
+    "project_theseus_broad_capability_survival_lane_comparator_v1",
+    "private_train_body_template_selector"
+  ],
+  "created_utc": "2026-06-19T22:01:00.324340+00:00",
+  "default_vcm_mode": "off",
+  "evidence": {
+    "deltas": {
+      "symliquid_style": -0.104167,
+      "transformer_control": -0.0625
+    },
+    "harmed_arms": [
+      "transformer_control",
+      "symliquid_style"
+    ],
+    "vcm_off": "reports/broad_capability_survival_lane_v1_vcm_off_smoke.json",
+    "vcm_on": "reports/broad_capability_survival_lane_v1_vcm_on_smoke.json",
+    "vcm_rows_with_context": 560,
+    "vcm_unique_context_hashes": [
+      "sha256:612591e810624c69d9d7f333a05410cf9a951bded5eb85a6cb3a233a0e4fbf9d",
+      "sha256:cc31d1e6b91e345195bf9a190289d914b4231f289086bb8d282ab43454b89e47",
+      "sha256:f0677ba42666e3e9836f5bf44f921ed31b63d9c41d5f157ec9cc384b4f41a023"
+    ]
+  },
+  "external_inference_calls": 0,
+  "policy": "project_theseus_vcm_broad_survival_feature_policy_v1",
+  "public_calibration_allowed": false,
+  "re_enable_rule": "VCM may be re-enabled by default for this comparator only after an equal-budget private ablation shows non-negative transformer_control and symliquid_style deltas. Structural/full-body generators may run VCM under explicit --vcm-mode on for their own ablations."
+}

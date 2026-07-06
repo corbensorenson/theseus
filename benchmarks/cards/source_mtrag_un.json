@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_mtrag_un",
+  "source_id": "mtrag_un",
+  "name": "IBM MTRAG-UN",
+  "category": "long_context_memory_benchmark",
+  "priority": "medium",
+  "status": "needs_license_and_evaluator_review",
+  "url": "https://github.com/IBM/mt-rag-benchmark",
+  "paper_url": "https://arxiv.org/abs/2602.23184",
+  "license_spdx": "unknown",
+  "license_allowed": false,
+  "decision": "queued_until_license_and_deterministic_scoring_verified",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "Multi-turn RAG memory under unanswerable, underspecified, non-standalone, and unclear-response pressure.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "multi_turn_rag_abstention",
+  "input_contract": {
+    "metadata": "official source card and challenge taxonomy",
+    "context": "private multi-turn RAG histories with answerability labels",
+    "query": "ambiguous or non-standalone follow-up question",
+    "evidence": "prior-turn bridge rows and answerability support",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "exact answer or deterministic abstention",
+    "evidence_precision_recall": "support and answerability evidence",
+    "abstention": "unanswerable/underspecified detection",
+    "latency": "local retrieval and bridge cost",
+    "residuals": "false answer, underspecification miss, wrong turn bridge, or domain miss"
+  },
+  "smoke_steps": [
+    "verify repository license and data terms",
+    "admit deterministic answerability scoring lanes only",
+    "run private MTRAG-UN-shaped analogues first"
+  ],
+  "promotion_gates": [
+    "license_review_before_payload_stage",
+    "deterministic_scorer_present",
+    "no_public_training_rows",
+    "no_external_inference",
+    "private_analogue_suite_present",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "MTRAG-UN public conversations/corpora are calibration-only. Do not train on public turns, retrieved passages, answers, or task templates.",
+  "regression_policy": "If mastered, keep private answerability rows as regression.",
+  "permission_envelope": {
+    "memory": "private analogues until license/evaluator admission",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving or LLM-as-judge substitution.",
+  "external_inference_calls": 0
+}

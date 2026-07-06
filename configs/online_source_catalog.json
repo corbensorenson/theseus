@@ -1,0 +1,2293 @@
+{
+  "policy": "sparkstream_online_source_catalog_v0",
+  "updated_utc": "2026-05-11",
+  "default_network_mode": "metadata_or_source_archive_only",
+  "storage_root": "data/external_benchmark_candidates",
+  "license_policy": {
+    "allowed_code_licenses": [
+      "apache-2.0",
+      "mit",
+      "bsd-2-clause",
+      "bsd-3-clause",
+      "mpl-2.0",
+      "cc0-1.0",
+      "unlicense"
+    ],
+    "allowed_data_licenses": [
+      "odc-by",
+      "cc-by-4.0",
+      "cc0-1.0",
+      "public-domain",
+      "apache-2.0",
+      "mit"
+    ],
+    "default_training_data_mode": "metadata_only_until_sampling_plan",
+    "commercial_roms": "forbidden_without_explicit_user_rights",
+    "license_uncertain_sources": "exclude_from_active_runway",
+    "exclude_non_permissive_or_uncleared_sources": true
+  },
+  "sources": [
+    {
+      "id": "gymnasium",
+      "category": "rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "Farama-Foundation/Gymnasium",
+      "url": "https://github.com/Farama-Foundation/Gymnasium",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Maintained reference API and baseline classic-control/toy-text RL environments.",
+      "adapter_plan": "Use as the Python compatibility boundary; mirror selected low-dimensional tasks into Rust when hot loops matter.",
+      "smoke_plan": [
+        "CartPole-v1",
+        "Acrobot-v1",
+        "FrozenLake-v1",
+        "Taxi-v3"
+      ],
+      "risk": "low"
+    },
+    {
+      "id": "minigrid",
+      "category": "rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "Farama-Foundation/Minigrid",
+      "url": "https://github.com/Farama-Foundation/Minigrid",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Fast configurable grid-world curriculum for partial observability, memory, planning, and instruction following.",
+      "adapter_plan": "Start with Empty, DoorKey, FourRooms, Memory, DynamicObstacles, and MultiRoom as seed-stable frontiers.",
+      "smoke_plan": [
+        "MiniGrid-Empty-5x5-v0",
+        "MiniGrid-DoorKey-5x5-v0",
+        "MiniGrid-MemoryS7-v0",
+        "MiniGrid-FourRooms-v0"
+      ],
+      "risk": "low"
+    },
+    {
+      "id": "bsuite",
+      "category": "rl_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "google-deepmind/bsuite",
+      "url": "https://github.com/google-deepmind/bsuite",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Diagnostic RL behavior suite for exploration, memory, credit assignment, and generalization.",
+      "adapter_plan": "Use as a benchmark ledger source before adding harder open-ended environments.",
+      "smoke_plan": [
+        "catch",
+        "deep_sea",
+        "memory_len",
+        "bandit"
+      ],
+      "risk": "low"
+    },
+    {
+      "id": "craftax",
+      "category": "minecraft_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "MichaelTMatthews/Craftax",
+      "url": "https://github.com/MichaelTMatthews/Craftax",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Fast JAX open-ended benchmark with symbolic and pixel modes, useful as a long-horizon survival/crafting frontier.",
+      "adapter_plan": "Keep as optional JAX benchmark; use symbolic mode first, then pixel mode after resource profiling.",
+      "smoke_plan": [
+        "Craftax-Symbolic-v1",
+        "Craftax-Classic-Symbolic-v1"
+      ],
+      "risk": "medium_optional_jax_stack"
+    },
+    {
+      "id": "minerl",
+      "category": "minecraft_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "minerllabs/minerl",
+      "url": "https://github.com/minerllabs/minerl",
+      "license_spdx": "NOASSERTION",
+      "import_policy": "metadata_only",
+      "local_subdir": "minecraft_rl_envs",
+      "why": "Historical Minecraft RL environment and dataset interface useful as a compatibility/reference lane when local licensing and license compatibility are explicit.",
+      "adapter_plan": "Keep metadata-only until license compatibility is resolved. Use local licensed Minecraft runtime only; never download game assets or credentials.",
+      "smoke_plan": [
+        "minerl_import_if_installed",
+        "local_minecraft_install_detected",
+        "java_runtime_available",
+        "no_public_server_or_asset_download"
+      ],
+      "risk": "high_license_noassertion_and_minecraft_runtime_required"
+    },
+    {
+      "id": "minedojo",
+      "category": "minecraft_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "MineDojo/MineDojo",
+      "url": "https://github.com/MineDojo/MineDojo",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "minecraft_rl_envs",
+      "why": "Open-ended Minecraft task/knowledge harness for long-horizon agents, crafting, navigation, survival, and player-instruction pressure.",
+      "adapter_plan": "Clone source for local adapter contracts; promote to full runtime only with local licensed Minecraft install, Java readiness, deterministic seeds, and disposable local worlds.",
+      "smoke_plan": [
+        "minedojo_import_if_installed",
+        "local_minecraft_install_detected",
+        "java_runtime_available",
+        "task_inventory_metadata"
+      ],
+      "risk": "high_minecraft_runtime_required"
+    },
+    {
+      "id": "malmo",
+      "category": "minecraft_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "microsoft/malmo",
+      "url": "https://github.com/microsoft/malmo",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "minecraft_rl_envs",
+      "why": "Research-focused Minecraft mission/control API suitable for local loopback tasks, navigation, item collection, and scripted world contracts.",
+      "adapter_plan": "Clone source for local mission-contract adapters; use import/runtime probing until a local Minecraft/Malmo mission can run in a disposable world without public server access.",
+      "smoke_plan": [
+        "malmoenv_or_MalmoPython_import_if_installed",
+        "local_minecraft_install_detected",
+        "mission_xml_contract_written",
+        "no_public_server_or_credentials"
+      ],
+      "risk": "high_native_runtime_and_minecraft_required"
+    },
+    {
+      "id": "voyager_minecraft",
+      "category": "minecraft_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "MineDojo/Voyager",
+      "url": "https://github.com/MineDojo/Voyager",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "minecraft_rl_envs",
+      "why": "Minecraft skill-library and lifelong-learning reference architecture. Theseus may learn from its task/skill schema, but cannot use external LLM inference as a solver.",
+      "adapter_plan": "Metadata/reference only by default. Port local skill schema and evaluation ideas into Theseus loop closure without provider inference.",
+      "smoke_plan": [
+        "metadata_scan",
+        "skill_schema_extract",
+        "external_llm_calls_forbidden",
+        "local_teacher_proposal_only"
+      ],
+      "risk": "medium_reference_contains_external_llm_workflow"
+    },
+    {
+      "id": "procgen",
+      "category": "rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "openai/procgen",
+      "url": "https://github.com/openai/procgen",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Procedural visual-control benchmark designed to test sample efficiency and generalization.",
+      "adapter_plan": "Use source archive and metadata first; runtime integration may need build tooling on Windows.",
+      "smoke_plan": [
+        "coinrun",
+        "starpilot",
+        "bossfight",
+        "heist"
+      ],
+      "risk": "medium_native_build"
+    },
+    {
+      "id": "pettingzoo",
+      "category": "multiagent_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "Farama-Foundation/PettingZoo",
+      "url": "https://github.com/Farama-Foundation/PettingZoo",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Standard multi-agent RL API with cooperative and competitive reference tasks.",
+      "adapter_plan": "Use classic and MPE-style tasks first; avoid Atari/ROM-backed tasks unless rights are explicit.",
+      "smoke_plan": [
+        "tictactoe_v3",
+        "connect_four_v3",
+        "pistonball_v6"
+      ],
+      "risk": "medium_multiagent_api"
+    },
+    {
+      "id": "pygba",
+      "category": "emulator_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "dvruette/pygba",
+      "url": "https://github.com/dvruette/pygba",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "GBA-focused Gymnasium wrapper around mGBA. It is the most direct path from user-supplied GBA ROMs to local RL frontiers.",
+      "adapter_plan": "Use with user-owned local ROMs only. Start with its Pokemon Emerald wrapper, then add project-owned reward wrappers.",
+      "smoke_plan": [
+        "pygba_import",
+        "mgba_python_bindings_available",
+        "pokemon_emerald_wrapper_reset_step"
+      ],
+      "risk": "medium_requires_mgba_python_bindings_and_user_rom"
+    },
+    {
+      "id": "mgba",
+      "category": "emulator_runtime_dependency",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "mgba-emu/mgba",
+      "url": "https://github.com/mgba-emu/mgba",
+      "license_spdx": "mpl-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Native emulator core used by PyGBA for user-supplied GBA ROM reinforcement learning.",
+      "adapter_plan": "Stage source and build Python CFFI bindings in the isolated emulator runtime. Treat Windows CFFI/header generation failures as a runtime gate, not teacher architecture work.",
+      "smoke_plan": [
+        "mgba_import",
+        "mgba_core_import",
+        "mCoreFind_symbol_available",
+        "mColor_cdef_available"
+      ],
+      "risk": "high_native_cffi_build_dependency"
+    },
+    {
+      "id": "pyboy",
+      "category": "emulator_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "Baekalfen/PyBoy",
+      "url": "https://github.com/Baekalfen/PyBoy",
+      "license_spdx": "gpl-3.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "rl_envs",
+      "why": "Python Game Boy/Game Boy Color emulator with APIs commonly used for scripting and Gymnasium-style RL wrappers.",
+      "adapter_plan": "Use for user-owned GB/GBC ROMs after GPL compatibility and package/runtime smoke are explicit.",
+      "smoke_plan": [
+        "pyboy_import",
+        "headless_reset",
+        "tetris_or_pokemon_step_smoke"
+      ],
+      "risk": "medium_gpl_and_user_rom_required"
+    },
+    {
+      "id": "gymboy",
+      "category": "emulator_rl_environment",
+      "priority": "high",
+      "source_kind": "pypi_package",
+      "name": "gymboy",
+      "url": "https://pypi.org/project/gymboy/",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "rl_envs",
+      "why": "Gymnasium package for Game Boy/Game Boy Color environments, including Tetris, Pokemon, Kirby, and Super Mario Land variants.",
+      "adapter_plan": "Use only with user-owned local ROMs. Prefer minimal-image/flatten modes first for efficient local training.",
+      "smoke_plan": [
+        "gymboy_import",
+        "Tetris-minimal-image-v1",
+        "Pokemon-Red-minimal-image-v1"
+      ],
+      "risk": "medium_user_rom_required"
+    },
+    {
+      "id": "stable_retro",
+      "category": "emulator_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "Farama-Foundation/stable-retro",
+      "url": "https://github.com/Farama-Foundation/stable-retro",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "rl_envs",
+      "why": "Maintained fork of Gym Retro for emulator-backed RL with game integration metadata and local ROM import workflows.",
+      "adapter_plan": "Use metadata first because the source archive is large; stage code only after checksum/import integration is explicit. Use for user-owned ROMs only; no autonomous ROM downloads.",
+      "smoke_plan": [
+        "stable_retro_import",
+        "local_rom_import_dry_run",
+        "deterministic_reset_step"
+      ],
+      "risk": "medium_native_dependencies_and_user_rom_required"
+    },
+    {
+      "id": "pyflyt",
+      "category": "drone_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "jjshoots/PyFlyt",
+      "url": "https://github.com/jjshoots/PyFlyt",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "drone_rl_envs",
+      "why": "MIT-licensed UAV simulator with Gymnasium and PettingZoo environments; best first drone RL smoke target before high-fidelity race simulation.",
+      "adapter_plan": "Start with PyFlyt/QuadX-Hover-v2 and fixed random/PID-like policies, then add gate-following and waypoint rewards.",
+      "smoke_plan": [
+        "PyFlyt_import",
+        "PyFlyt/QuadX-Hover-v2_reset_step",
+        "drone_safety_contract_present"
+      ],
+      "risk": "medium_simulation_only_no_live_hardware"
+    },
+    {
+      "id": "gym_pybullet_drones",
+      "category": "drone_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "learnsyslab/gym-pybullet-drones",
+      "url": "https://github.com/learnsyslab/gym-pybullet-drones",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "drone_rl_envs",
+      "why": "Gymnasium-compatible PyBullet quadrotor control environments with hover and multi-agent examples.",
+      "adapter_plan": "Use as the lightweight local quadrotor dynamics lane; keep SITL and real firmware examples disabled until explicitly requested.",
+      "smoke_plan": [
+        "gym_pybullet_drones_import",
+        "hover_reset_step",
+        "drone_safety_contract_present"
+      ],
+      "risk": "medium_optional_pybullet_build"
+    },
+    {
+      "id": "airsim_drone_racing_lab",
+      "category": "drone_racing_simulator",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "microsoft/AirSim-Drone-Racing-Lab",
+      "url": "https://github.com/microsoft/AirSim-Drone-Racing-Lab",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "drone_racing_sims",
+      "why": "Race-specific AirSim framework with Python API, baselines, and Windows/Linux binaries for drone racing research.",
+      "adapter_plan": "Use as a race-like simulator lane after basic hover/waypoint control works; require simulator process health before runtime smoke.",
+      "smoke_plan": [
+        "airsimdroneracinglab_import",
+        "simulator_endpoint_health_or_runtime_block",
+        "mavsdk_bridge_contract_present"
+      ],
+      "risk": "high_simulator_binary_and_runtime_setup_required"
+    },
+    {
+      "id": "aerial_gym_simulator",
+      "category": "drone_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "ntnu-arl/aerial_gym_simulator",
+      "url": "https://github.com/ntnu-arl/aerial_gym_simulator",
+      "license_spdx": "bsd-3-clause",
+      "import_policy": "source_archive",
+      "local_subdir": "drone_rl_envs",
+      "why": "Isaac Gym-based high-throughput aerial robot simulator for massively parallel MAV RL once NVIDIA stack support is ready.",
+      "adapter_plan": "Clone source for adapter and contract inspection. Promote execution only after Isaac/Aerial Gym runtime and GPU budget smoke pass on a suitable machine.",
+      "smoke_plan": [
+        "metadata_scan",
+        "isaac_runtime_probe",
+        "navigation_policy_smoke"
+      ],
+      "risk": "high_isaac_gym_dependency"
+    },
+    {
+      "id": "airsim",
+      "category": "drone_racing_simulator",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "microsoft/AirSim",
+      "url": "https://github.com/microsoft/AirSim",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "drone_racing_sims",
+      "why": "Open-source Unreal/Unity simulator for drones and vehicles with APIs for imagery, state, and control; useful as legacy reference for race simulation.",
+      "adapter_plan": "Clone source for legacy API compatibility and adapters because the upstream project is archived and Unreal setup is heavy. Prefer AirSim Drone Racing Lab for race work.",
+      "smoke_plan": [
+        "metadata_scan",
+        "python_client_import_or_runtime_block",
+        "simulator_endpoint_health_or_runtime_block"
+      ],
+      "risk": "high_archived_unreal_runtime"
+    },
+    {
+      "id": "mavsdk_python",
+      "category": "drone_control_api",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "mavlink/MAVSDK-Python",
+      "url": "https://github.com/mavlink/MAVSDK-Python",
+      "license_spdx": "bsd-3-clause",
+      "import_policy": "source_archive",
+      "local_subdir": "drone_control_apis",
+      "why": "Python MAVSDK client matching the AI Grand Prix-style MAVLink/MAVSDK-compatible SITL bridge.",
+      "adapter_plan": "Use only against simulator/SITL endpoints by default; live vehicle endpoints require explicit human approval and failsafe proof.",
+      "smoke_plan": [
+        "mavsdk_import",
+        "no_live_endpoint_by_default",
+        "heartbeat_and_command_rate_contract"
+      ],
+      "risk": "high_control_api_requires_safety_envelope"
+    },
+    {
+      "id": "px4_sitl",
+      "category": "drone_control_api",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "PX4/PX4-Autopilot",
+      "url": "https://github.com/PX4/PX4-Autopilot",
+      "license_spdx": "bsd-3-clause",
+      "import_policy": "source_archive",
+      "local_subdir": "drone_control_apis",
+      "why": "PX4 SITL is the standard bridge for testing MAVSDK/PX4 control logic before any hardware-facing work.",
+      "adapter_plan": "Clone source for SITL contract metadata. Prefer prebuilt/container SITL packages and never connect to real flight hardware without explicit operator approval.",
+      "smoke_plan": [
+        "metadata_scan",
+        "sitl_container_or_binary_probe",
+        "mavsdk_udp_loopback_smoke"
+      ],
+      "risk": "high_flight_control_safety_gate_required"
+    },
+    {
+      "id": "webarena",
+      "category": "web_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "web-arena-x/webarena",
+      "url": "https://github.com/web-arena-x/webarena",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Self-hosted web-agent benchmark for realistic browser tasks across shopping, forum, GitLab, map, and content environments.",
+      "adapter_plan": "Metadata first. Build local browser/action adapter only after sandbox, self-hosted services, and no-live-account side-effect gates are explicit.",
+      "smoke_plan": [
+        "metadata_scan",
+        "self_hosted_service_health",
+        "single_task_reset_step_grade"
+      ],
+      "risk": "medium_docker_browser_services"
+    },
+    {
+      "id": "osworld",
+      "category": "desktop_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "xlang-ai/OSWorld",
+      "url": "https://github.com/xlang-ai/OSWorld",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Real operating-system benchmark for multimodal computer-use agents with execution-based task grading.",
+      "adapter_plan": "Metadata first. Use only after VM sandbox, grader isolation, and safety/reflex gates are ready.",
+      "smoke_plan": [
+        "metadata_scan",
+        "vm_sandbox_health",
+        "single_safe_task_grade"
+      ],
+      "risk": "high_vm_desktop_side_effects"
+    },
+    {
+      "id": "browsergym",
+      "category": "web_agent_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "ServiceNow/BrowserGym",
+      "url": "https://github.com/ServiceNow/BrowserGym",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Gym-style framework that unifies web-agent benchmark environments, including WebArena-style tasks.",
+      "adapter_plan": "Stage source as the local browser-task adapter layer. Full browser runs require Playwright/browser isolation, no-live-account policy, and local Theseus endpoint routing.",
+      "smoke_plan": [
+        "metadata_scan",
+        "package_manifest_scan",
+        "single_browsergym_task_smoke"
+      ],
+      "risk": "medium_browser_runtime_and_account_isolation_required"
+    },
+    {
+      "id": "tau_bench",
+      "category": "tool_dialogue_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "sierra-research/tau-bench",
+      "url": "https://github.com/sierra-research/tau-bench",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Tool-Agent-User benchmark for multi-turn policy-constrained tool use in realistic domains.",
+      "adapter_plan": "Use metadata first; add local tool API simulator and policy verifier before benchmark pressure.",
+      "smoke_plan": [
+        "metadata_scan",
+        "retail_policy_tool_schema_dry_run",
+        "airline_policy_tool_schema_dry_run"
+      ],
+      "risk": "medium_policy_tool_simulator_needed"
+    },
+    {
+      "id": "tau2_bench",
+      "category": "tool_dialogue_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "sierra-research/tau2-bench",
+      "url": "https://github.com/sierra-research/tau2-bench",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Current tau-bench successor with tau three text, knowledge, voice, task-fix, and gym interfaces for long-horizon tool-agent-user evaluation.",
+      "adapter_plan": "Use text/gym domains first through a local tool simulator and local Theseus endpoint. Voice/provider paths and external LLM user simulators stay disabled unless separately approved.",
+      "smoke_plan": [
+        "package_manifest_scan",
+        "domain_inventory",
+        "local_text_tool_simulator_contract",
+        "provider_path_audit"
+      ],
+      "risk": "high_tool_simulator_provider_guard_and_optional_voice_runtime_required"
+    },
+    {
+      "id": "bfcl",
+      "category": "tool_use_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "ShishirPatil/gorilla:berkeley-function-call-leaderboard",
+      "url": "https://github.com/ShishirPatil/gorilla",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Berkeley Function Calling Leaderboard pressures function/tool-call selection, AST-style call validity, multi-turn tool use, relevance detection, and format sensitivity.",
+      "adapter_plan": "Stage Gorilla source and treat BFCL as public calibration only. Use local endpoint generation/evaluation paths, disable external provider calls, and keep web-search/API categories gated unless local substitutes exist.",
+      "smoke_plan": [
+        "bfcl_directory_scan",
+        "test_category_inventory",
+        "local_endpoint_contract",
+        "provider_path_audit",
+        "web_search_category_gate"
+      ],
+      "risk": "high_tool_call_public_calibration_and_provider_api_guard_required"
+    },
+    {
+      "id": "toolsandbox",
+      "category": "tool_use_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "apple/ToolSandbox",
+      "url": "https://github.com/apple/ToolSandbox",
+      "license_spdx": "LicenseRef-Apple-Sample-Code",
+      "import_policy": "queue_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Stateful conversational tool-use benchmark with implicit state dependencies, user simulation, intermediate milestones, canonicalization, and insufficient-information stress cases.",
+      "adapter_plan": "Keep metadata-only until license terms are manually accepted for this project. If approved, use as a stateful local tool-use calibration lane only, never as training data.",
+      "smoke_plan": [
+        "license_audit",
+        "stateful_tool_schema_scan",
+        "user_simulator_contract",
+        "local_only_eval_gate"
+      ],
+      "risk": "license_terms_manual_review_required"
+    },
+    {
+      "id": "metaworld",
+      "category": "robotics_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "Farama-Foundation/Metaworld",
+      "url": "https://github.com/Farama-Foundation/Metaworld",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Meta- and multi-task manipulation benchmark with 50 Sawyer robot tasks.",
+      "adapter_plan": "Queue as robotics frontier; only run after MuJoCo and Windows support are verified.",
+      "smoke_plan": [
+        "Meta-World/MT1 reach-v3",
+        "Meta-World/ML1 reach-v3"
+      ],
+      "risk": "medium_mujoco_windows_optional"
+    },
+    {
+      "id": "jumanji",
+      "category": "rl_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "instadeepai/jumanji",
+      "url": "https://github.com/instadeepai/jumanji",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "JAX-based industry-grade RL environment suite for combinatorial optimization, routing, packing, and logic tasks.",
+      "adapter_plan": "Stage source for adapter design; run only after JAX install/resource smoke passes, then start with small deterministic graph/logic tasks.",
+      "smoke_plan": [
+        "metadata_scan",
+        "jumanji_import",
+        "single_small_env_reset_step"
+      ],
+      "risk": "medium_optional_jax_stack"
+    },
+    {
+      "id": "brax",
+      "category": "physics_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "google/brax",
+      "url": "https://github.com/google/brax",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Fast differentiable physics and RL environments used for accelerated control and JAX training experiments.",
+      "adapter_plan": "Keep as optional JAX/physics frontier; smoke import and a tiny ant/hopper-style reset before any training use.",
+      "smoke_plan": [
+        "metadata_scan",
+        "brax_import",
+        "single_env_reset_step"
+      ],
+      "risk": "medium_optional_jax_stack"
+    },
+    {
+      "id": "dm_control",
+      "category": "physics_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "google-deepmind/dm_control",
+      "url": "https://github.com/google-deepmind/dm_control",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "DeepMind Control Suite is a common continuous-control benchmark family for locomotion and manipulation.",
+      "adapter_plan": "Stage source only; run after MuJoCo/runtime compatibility is verified on the target worker.",
+      "smoke_plan": [
+        "metadata_scan",
+        "dm_control_import",
+        "cartpole_swingup_reset_step"
+      ],
+      "risk": "medium_physics_stack"
+    },
+    {
+      "id": "envpool",
+      "category": "rl_runtime_acceleration",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "sail-sg/envpool",
+      "url": "https://github.com/sail-sg/envpool",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "High-throughput batched RL environment runtime useful for future parallel rollout acceleration.",
+      "adapter_plan": "Stage source for reference; only compile after Windows/native toolchain gate passes or on Linux/mac worker.",
+      "smoke_plan": [
+        "metadata_scan",
+        "package_import_or_build_probe",
+        "batched_cartpole_smoke"
+      ],
+      "risk": "medium_native_build"
+    },
+    {
+      "id": "crafter",
+      "category": "minecraft_rl_environment",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "danijar/crafter",
+      "url": "https://github.com/danijar/crafter",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "rl_envs",
+      "why": "Compact open-ended survival benchmark with procedural world dynamics and long-horizon reward structure.",
+      "adapter_plan": "Use as a mid-stage symbolic/pixel RL frontier after Gymnasium/Minigrid and before heavier emulator tasks.",
+      "smoke_plan": [
+        "metadata_scan",
+        "crafter_import",
+        "headless_reset_step"
+      ],
+      "risk": "medium_pixel_rl"
+    },
+    {
+      "id": "minatar",
+      "category": "arcade_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "kenjyoung/MinAtar",
+      "url": "https://github.com/kenjyoung/MinAtar",
+      "license_spdx": "gpl-3.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "rl_envs",
+      "why": "Small arcade-like RL environments that pressure perception and control without commercial ROMs.",
+      "adapter_plan": "Keep metadata-only until GPL compatibility is accepted for this lane.",
+      "smoke_plan": [
+        "license_audit",
+        "metadata_scan",
+        "single_env_reset_step"
+      ],
+      "risk": "medium_gpl_policy_review"
+    },
+    {
+      "id": "ale",
+      "category": "arcade_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "Farama-Foundation/Arcade-Learning-Environment",
+      "url": "https://github.com/Farama-Foundation/Arcade-Learning-Environment",
+      "license_spdx": "gpl-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "rl_envs",
+      "why": "Canonical Atari RL interface, useful for planning user-owned ROM integration and public benchmark comparability.",
+      "adapter_plan": "Metadata only. Never fetch Atari ROMs autonomously; require user-owned ROM inventory and GPL/runtime policy review.",
+      "smoke_plan": [
+        "license_audit",
+        "metadata_scan",
+        "romless_runtime_probe"
+      ],
+      "risk": "high_user_rom_and_gpl_required"
+    },
+    {
+      "id": "nle",
+      "category": "text_rl_environment",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "facebookresearch/nle",
+      "url": "https://github.com/facebookresearch/nle",
+      "license_spdx": "unknown",
+      "import_policy": "metadata_only",
+      "local_subdir": "rl_envs",
+      "why": "NetHack Learning Environment is a hard long-horizon symbolic RL benchmark for exploration, planning, and inventory management.",
+      "adapter_plan": "Queue until license/runtime status is audited; prefer metadata and benchmark card only.",
+      "smoke_plan": [
+        "license_audit",
+        "metadata_scan",
+        "nethack_runtime_probe"
+      ],
+      "risk": "license_verify_before_import"
+    },
+    {
+      "id": "cleanrl",
+      "category": "rl_reference_implementation",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "vwxyzjn/cleanrl",
+      "url": "https://github.com/vwxyzjn/cleanrl",
+      "license_spdx": "unknown",
+      "import_policy": "metadata_only",
+      "local_subdir": "rl_reference",
+      "why": "Widely used single-file RL implementation reference for PPO/DQN/SAC patterns and reproducible training scripts.",
+      "adapter_plan": "Metadata/reference only until license is confirmed; do not import as training code automatically.",
+      "smoke_plan": [
+        "license_audit",
+        "metadata_scan",
+        "algorithm_reference_index"
+      ],
+      "risk": "license_verify_before_import"
+    },
+    {
+      "id": "lm_eval_harness",
+      "category": "language_benchmark_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "EleutherAI/lm-evaluation-harness",
+      "url": "https://github.com/EleutherAI/lm-evaluation-harness",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "language_benchmarks",
+      "why": "Widely used local evaluation harness with many language, reasoning, coding, and long-context tasks.",
+      "adapter_plan": "Use as public calibration only until SymLiquid exposes a compatible LM scoring interface.",
+      "smoke_plan": [
+        "hellaswag",
+        "arc_easy",
+        "lambada_openai",
+        "blimp"
+      ],
+      "risk": "medium_adapter_needed"
+    },
+    {
+      "id": "simple_evals",
+      "category": "language_benchmark_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "openai/simple-evals",
+      "url": "https://github.com/openai/simple-evals",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "language_benchmarks",
+      "why": "Compact public eval harness used around frontier model releases for GPQA, MMLU-style, math, coding, and instruction-following calibration.",
+      "adapter_plan": "Use as a small public calibration harness after SymLiquid exposes compatible scoring/chat adapters; never call external models from this harness.",
+      "smoke_plan": [
+        "metadata_scan",
+        "local_adapter_contract_report",
+        "single_no_network_eval_dry_run"
+      ],
+      "risk": "medium_adapter_needed"
+    },
+    {
+      "id": "helm",
+      "category": "language_benchmark_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "stanford-crfm/helm",
+      "url": "https://github.com/stanford-crfm/helm",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Holistic multi-metric language-model evaluation framework for calibration, robustness, fairness, and scenario coverage.",
+      "adapter_plan": "Use as benchmark metadata and public calibration first; stage source only after task IO contracts are explicit.",
+      "smoke_plan": [
+        "helm_import",
+        "small_run_entry_dry_run",
+        "local_adapter_contract_report"
+      ],
+      "risk": "medium_adapter_needed"
+    },
+    {
+      "id": "big_bench",
+      "category": "language_benchmark_suite",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "google/BIG-bench",
+      "url": "https://github.com/google/BIG-bench",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Broad benchmark/task collection useful for discovering new pressure surfaces and bridge tasks.",
+      "adapter_plan": "Use metadata first, then queue tasks by IO shape; prefer small deterministic subsets as diagnostics before public calibration.",
+      "smoke_plan": [
+        "task_metadata_scan",
+        "json_task_loader_smoke",
+        "local_prompt_adapter_dry_run"
+      ],
+      "risk": "medium_large_suite_adapter_needed"
+    },
+    {
+      "id": "human_eval",
+      "category": "coding_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "openai/human-eval",
+      "url": "https://github.com/openai/human-eval",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Small Python code-generation benchmark with unit-test style execution, useful as an early coding pressure surface.",
+      "adapter_plan": "Metadata first. Add sandboxed local code execution adapter before any score claim.",
+      "smoke_plan": [
+        "metadata_scan",
+        "sandbox_import",
+        "single_problem_unit_test_dry_run"
+      ],
+      "risk": "medium_generated_code_sandbox_required"
+    },
+    {
+      "id": "bigcodebench",
+      "category": "coding_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "bigcode-project/bigcodebench",
+      "url": "https://github.com/bigcode-project/bigcodebench",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "language_benchmarks",
+      "why": "Function-level code-generation benchmark with more complex instructions and library usage than HumanEval/MBPP.",
+      "adapter_plan": "Use after sandboxed Python execution and dependency isolation are working; start with metadata and one safe task smoke.",
+      "smoke_plan": [
+        "metadata_scan",
+        "sandbox_import",
+        "single_task_unit_test_dry_run"
+      ],
+      "risk": "medium_generated_code_sandbox_required"
+    },
+    {
+      "id": "livecodebench",
+      "category": "coding_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "LiveCodeBench/LiveCodeBench",
+      "url": "https://github.com/LiveCodeBench/LiveCodeBench",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "language_benchmarks",
+      "why": "Contamination-aware coding benchmark with newer problems and code execution/self-repair task families.",
+      "adapter_plan": "Metadata/source first; run only inside sandboxed generated-code execution lane with network off.",
+      "smoke_plan": [
+        "metadata_scan",
+        "single_problem_loader",
+        "sandboxed_execution_smoke"
+      ],
+      "risk": "medium_generated_code_sandbox_required"
+    },
+    {
+      "id": "mbpp",
+      "category": "coding_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "google-research/google-research",
+      "url": "https://github.com/google-research/google-research",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "language_benchmarks",
+      "staged_path": "resource_pantry/git/mbpp",
+      "staged_metadata_path": "resource_pantry/git/mbpp/sanitized-mbpp.json",
+      "why": "Google Research repository containing MBPP-style coding benchmark assets; useful after HumanEval adapter smoke.",
+      "adapter_plan": "Metadata first because the repository is broad; stage only MBPP-relevant assets after adapter plan is explicit.",
+      "smoke_plan": [
+        "metadata_scan",
+        "mbpp_asset_locator",
+        "single_problem_unit_test_dry_run"
+      ],
+      "risk": "medium_large_repo_subset_needed"
+    },
+    {
+      "id": "hendrycks_test",
+      "category": "language_benchmark_suite",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "hendrycks/test",
+      "url": "https://github.com/hendrycks/test",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "language_benchmarks",
+      "why": "Original MMLU/MATH benchmark source repository, useful for public calibration and regression context.",
+      "adapter_plan": "Use as public calibration metadata/source; prefer private mutated/internal analogs for frontier pressure.",
+      "smoke_plan": [
+        "metadata_scan",
+        "mmlu_subset_loader",
+        "math_subset_loader"
+      ],
+      "risk": "medium_public_benchmark_contamination"
+    },
+    {
+      "id": "mmlu_pro",
+      "category": "language_benchmark_suite",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "TIGER-Lab/MMLU-Pro",
+      "url": "https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Harder MMLU-style public calibration surface with broader option sets and reasoning pressure.",
+      "adapter_plan": "Metadata/tiny samples only until leakage and scoring adapters are ready.",
+      "smoke_plan": [
+        "metadata_scan",
+        "tiny_sample_loader",
+        "multiple_choice_scoring_contract"
+      ],
+      "risk": "medium_public_benchmark_contamination"
+    },
+    {
+      "id": "gpqa",
+      "category": "language_benchmark_suite",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "Idavidrein/gpqa",
+      "url": "https://huggingface.co/datasets/Idavidrein/gpqa",
+      "license_spdx": "cc-by-4.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Graduate-level science QA benchmark frequently used in frontier model public evaluations.",
+      "adapter_plan": "Metadata/tiny samples only; use as calibration after answer-choice scoring and contamination checks.",
+      "smoke_plan": [
+        "metadata_scan",
+        "tiny_sample_loader",
+        "choice_order_invariance_check"
+      ],
+      "risk": "medium_public_benchmark_contamination"
+    },
+    {
+      "id": "gaia",
+      "category": "agent_benchmark",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "gaia-benchmark/GAIA",
+      "url": "https://huggingface.co/datasets/gaia-benchmark/GAIA",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Public general-assistant benchmark for tool use, browsing, multimodal reasoning, and multi-step task execution.",
+      "adapter_plan": "Queue until license/access terms and local no-external-inference harness are explicit.",
+      "smoke_plan": [
+        "license_audit",
+        "metadata_scan",
+        "local_tool_contract_dry_run"
+      ],
+      "risk": "license_verify_and_tool_sandbox_required"
+    },
+    {
+      "id": "aider_polyglot",
+      "category": "coding_agent_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "Aider-AI/polyglot-benchmark",
+      "url": "https://github.com/Aider-AI/polyglot-benchmark",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Multi-language coding benchmark used by an agentic coding tool community; useful later for coding-agent calibration.",
+      "adapter_plan": "Queue until license is confirmed; prefer metadata and compatibility notes before any clone or execution.",
+      "smoke_plan": [
+        "license_audit",
+        "metadata_scan",
+        "local_repo_patch_contract"
+      ],
+      "risk": "license_verify_before_import"
+    },
+    {
+      "id": "swe_bench",
+      "category": "coding_agent_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "SWE-bench/SWE-bench",
+      "url": "https://github.com/SWE-bench/SWE-bench",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Repository-level software engineering benchmark for issue-to-patch behavior; later-stage coding agent pressure.",
+      "adapter_plan": "Metadata first. Use only after sandboxed repo checkout, patch isolation, and regression test execution are automated locally.",
+      "smoke_plan": [
+        "metadata_scan",
+        "single_instance_checkout",
+        "patch_apply_test_dry_run"
+      ],
+      "risk": "high_compute_and_sandbox_required"
+    },
+    {
+      "id": "swe_skills_bench",
+      "category": "coding_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "GeniusHTX/SWE-Skills-Bench",
+      "url": "https://github.com/GeniusHTX/SWE-Skills-Bench",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Requirement-driven software-engineering benchmark that measures marginal value of agent skills, useful for Theseus Hive skill lifecycle and tool-compiler validation.",
+      "adapter_plan": "Stage source and build a local-endpoint, no-provider smoke. The upstream Claude/API-key runner is forbidden during scoring until replaced by a local Theseus adapter.",
+      "smoke_plan": [
+        "task_inventory",
+        "skill_manifest_scan",
+        "provider_path_audit",
+        "local_skill_delta_contract"
+      ],
+      "risk": "high_provider_runner_rewrite_required"
+    },
+    {
+      "id": "gittaskbench",
+      "category": "coding_agent_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "QuantaAlpha/GitTaskBench",
+      "url": "https://github.com/QuantaAlpha/GitTaskBench",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Repo-level real-world code-agent benchmark spanning repository understanding, environment setup, incremental development, bug fixing, multimodal file outputs, and task delivery.",
+      "adapter_plan": "Queue until license terms are explicit. If cleared, use only as public calibration with local endpoint, sandboxed execution, and no bundled ground-truth leakage into training.",
+      "smoke_plan": [
+        "license_audit",
+        "task_inventory",
+        "groundtruth_leakage_gate",
+        "local_agent_framework_contract"
+      ],
+      "risk": "license_unknown_and_groundtruth_separation_required"
+    },
+    {
+      "id": "mini_swe_agent",
+      "category": "coding_agent_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "SWE-agent/mini-swe-agent",
+      "url": "https://github.com/SWE-agent/mini-swe-agent",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Compact SWE-bench-style agent harness useful for later local coding-agent scaffolding and regression tests.",
+      "adapter_plan": "Use as harness source only; route generated code through sandbox and local model adapters, not external model APIs.",
+      "smoke_plan": [
+        "metadata_scan",
+        "no_external_inference_audit",
+        "single_local_repo_task_dry_run"
+      ],
+      "risk": "high_sandbox_and_external_inference_guard_required"
+    },
+    {
+      "id": "evalplus",
+      "category": "coding_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "evalplus/evalplus",
+      "url": "https://github.com/evalplus/evalplus",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "language_benchmarks",
+      "why": "HumanEval+/MBPP+ add stronger generated-code test suites and efficiency-oriented pressure beyond the original small coding benchmarks.",
+      "adapter_plan": "Use as a sandboxed local code-eval harness only. Provider backends and external model calls are forbidden during Theseus scoring.",
+      "smoke_plan": [
+        "metadata_scan",
+        "dataset_or_problem_manifest_scan",
+        "sandboxed_execution_contract",
+        "provider_backend_disabled"
+      ],
+      "risk": "medium_generated_code_sandbox_and_provider_backend_guard_required"
+    },
+    {
+      "id": "opencode",
+      "category": "coding_agent_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "anomalyco/opencode",
+      "url": "https://github.com/anomalyco/opencode",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "OpenCode is an actively used terminal coding-agent harness with OpenAI-compatible endpoint support, useful for training Theseus to operate inside real coding workflows.",
+      "adapter_plan": "Use the source as a local harness integration target. All provider/model paths stay disabled during scoring; the only solver endpoint is the local Theseus/OpenAI-compatible endpoint.",
+      "smoke_plan": [
+        "package_manifest_scan",
+        "bun_runtime_gate",
+        "provider_path_audit",
+        "local_openai_endpoint_contract",
+        "sandboxed_repo_task_dry_run"
+      ],
+      "risk": "high_agent_harness_external_provider_guard_required"
+    },
+    {
+      "id": "opencode_bench",
+      "category": "coding_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "anomalyco/opencode-bench",
+      "url": "https://github.com/anomalyco/opencode-bench",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "OpenCode-style benchmark candidate for real repository coding-agent pressure.",
+      "adapter_plan": "Keep metadata-only until the repository license is explicit or the user approves a rights override. If approved, use only with local Theseus endpoint and provider judges disabled.",
+      "smoke_plan": [
+        "license_audit",
+        "task_manifest_scan",
+        "provider_judge_disable_contract",
+        "local_repo_patch_contract"
+      ],
+      "risk": "license_unknown_and_agent_harness_external_judge_guard_required"
+    },
+    {
+      "id": "swe_agent",
+      "category": "coding_agent_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "SWE-agent/SWE-agent",
+      "url": "https://github.com/SWE-agent/SWE-agent",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Full SWE-agent harness gives Theseus a stronger issue-to-patch workflow reference than mini-swe-agent once sandboxing is ready.",
+      "adapter_plan": "Use as a local harness/reference. Disable external model providers and route only through Theseus/local endpoint contracts during benchmark scoring.",
+      "smoke_plan": [
+        "pyproject_or_package_manifest_scan",
+        "swe_task_contract_scan",
+        "provider_path_audit",
+        "sandboxed_patch_contract"
+      ],
+      "risk": "high_sandbox_and_external_inference_guard_required"
+    },
+    {
+      "id": "openhands",
+      "category": "coding_agent_framework",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "OpenHands/OpenHands",
+      "url": "https://github.com/OpenHands/OpenHands",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "OpenHands provides a broad software-agent sandbox architecture and SWE-bench-oriented workflow references.",
+      "adapter_plan": "Clone source for local architecture and task-contract reference. Do not run provider-backed agents; full harness execution requires local sandbox/runtime gates.",
+      "smoke_plan": [
+        "source_manifest_scan",
+        "docker_runtime_gate",
+        "provider_path_audit",
+        "local_endpoint_contract",
+        "sandboxed_repo_task_contract"
+      ],
+      "risk": "high_docker_runtime_and_external_provider_guard_required"
+    },
+    {
+      "id": "terminal_bench",
+      "category": "coding_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "harbor-framework/terminal-bench",
+      "url": "https://github.com/harbor-framework/terminal-bench",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Terminal-Bench pressures real CLI, build, repair, data, and systems tasks with task-specific verification scripts.",
+      "adapter_plan": "Use only through local terminal sandboxes and Theseus endpoint contracts. Full execution needs a container runtime; metadata/task-contract pressure can run without provider inference.",
+      "smoke_plan": [
+        "task_manifest_scan",
+        "verifier_script_inventory",
+        "container_runtime_gate",
+        "local_terminal_agent_contract"
+      ],
+      "risk": "high_container_runtime_and_arbitrary_command_sandbox_required"
+    },
+    {
+      "id": "the_agent_company",
+      "category": "desktop_agent_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "TheAgentCompany/TheAgentCompany",
+      "url": "https://github.com/TheAgentCompany/TheAgentCompany",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Simulated software-company benchmark combining browsing, coding, terminal use, collaboration tools, files, and coworker communication.",
+      "adapter_plan": "Stage source only. Do not run the heavy service/data setup autonomously; full runtime needs Docker, 30+ GB disk, account isolation, local endpoint routing, and no public gateway exposure.",
+      "smoke_plan": [
+        "source_manifest_scan",
+        "server_setup_contract_scan",
+        "docker_runtime_gate",
+        "account_isolation_policy",
+        "provider_path_audit"
+      ],
+      "risk": "high_heavy_docker_services_and_side_effect_boundary_required"
+    },
+    {
+      "id": "codeclash",
+      "category": "coding_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "CodeClash-ai/CodeClash",
+      "url": "https://github.com/CodeClash-ai/CodeClash",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Goal-oriented software-engineering tournament benchmark that adds competitive, multi-round pressure beyond one-shot bug fixing.",
+      "adapter_plan": "Stage as an arena/score-contract source. Route competitors to local Theseus checkpoints only; external model APIs and public tournament submission are forbidden by default.",
+      "smoke_plan": [
+        "arena_manifest_scan",
+        "single_player_local_contract",
+        "provider_path_audit",
+        "tournament_trace_schema"
+      ],
+      "risk": "high_agent_tournament_sandbox_required"
+    },
+    {
+      "id": "swe_atlas",
+      "category": "coding_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "scaleapi/SWE-Atlas",
+      "url": "https://github.com/scaleapi/SWE-Atlas",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "SWE-Atlas covers codebase Q&A, test writing, and refactoring, giving Theseus coding pressure beyond issue resolution.",
+      "adapter_plan": "Use repository exploration and artifact scoring locally. Hosted/LLM rubric graders are forbidden during scoring until a local rubric scorer exists.",
+      "smoke_plan": [
+        "task_metadata_scan",
+        "docker_or_local_fixture_gate",
+        "rubric_schema_scan",
+        "local_answer_tool_contract"
+      ],
+      "risk": "high_container_runtime_and_external_grader_guard_required"
+    },
+    {
+      "id": "swe_polybench",
+      "category": "coding_agent_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "amazon-science/SWE-PolyBench",
+      "url": "https://github.com/amazon-science/SWE-PolyBench",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Multilingual repository-level benchmark for Python, JavaScript/TypeScript, and Java-style coding agent transfer.",
+      "adapter_plan": "Stage as a polyglot repo-level pressure lane after sandboxed build/test execution is ready.",
+      "smoke_plan": [
+        "task_manifest_scan",
+        "language_inventory",
+        "sandboxed_build_contract",
+        "local_patch_contract"
+      ],
+      "risk": "high_polyglot_build_sandbox_required"
+    },
+    {
+      "id": "swe_rex",
+      "category": "coding_agent_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "SWE-agent/SWE-ReX",
+      "url": "https://github.com/SWE-agent/SWE-ReX",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "Sandboxed execution infrastructure used by SWE-agent; useful for Theseus local code execution and patch-eval isolation.",
+      "adapter_plan": "Use as a reference/runtime lane for local sandbox execution. Prefer local Docker or Podman; cloud backends stay disabled unless explicitly approved.",
+      "smoke_plan": [
+        "package_manifest_scan",
+        "container_runtime_gate",
+        "local_execution_backend_contract",
+        "cloud_backend_disabled"
+      ],
+      "risk": "high_container_runtime_and_cloud_backend_guard_required"
+    },
+    {
+      "id": "swe_smith",
+      "category": "coding_agent_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "SWE-bench/SWE-smith",
+      "url": "https://github.com/SWE-bench/SWE-smith",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "SWE-smith is a task-generation and training-data pipeline for software-engineering agents, useful for self-generated coding curricula.",
+      "adapter_plan": "Use only to generate governed local tasks from permitted repos. Docker/Ubuntu assumptions are runtime-gated; generated tasks must pass license, leakage, and verifier checks.",
+      "smoke_plan": [
+        "package_manifest_scan",
+        "task_generation_schema_scan",
+        "container_runtime_gate",
+        "generated_task_license_contract"
+      ],
+      "risk": "high_generated_data_and_container_runtime_guard_required"
+    },
+    {
+      "id": "swe_gen",
+      "category": "coding_agent_framework",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "abundant-ai/SWE-gen",
+      "url": "https://github.com/abundant-ai/SWE-gen",
+      "license_spdx": "apache-2.0",
+      "import_policy": "source_archive",
+      "local_subdir": "agent_benchmarks",
+      "why": "SWE-gen-style PR-to-task tooling can help Theseus synthesize fresh repository repair environments from permitted local repos.",
+      "adapter_plan": "Keep as a task-generation reference. Any generated benchmark must keep source provenance, base commit, tests, license, and contamination metadata.",
+      "smoke_plan": [
+        "package_manifest_scan",
+        "pr_to_task_schema_scan",
+        "local_repo_fixture_contract",
+        "generated_task_provenance_contract"
+      ],
+      "risk": "medium_generated_task_quality_and_license_gate_required"
+    },
+    {
+      "id": "repobench",
+      "category": "coding_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "Leolty/repobench",
+      "url": "https://github.com/Leolty/repobench",
+      "license_spdx": "cc-by-4.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Repository-level code completion benchmark for multi-file context and retrieval pressure.",
+      "adapter_plan": "Metadata-only until attribution requirements and task loader are explicit; useful for context/memory transfer evals.",
+      "smoke_plan": [
+        "metadata_scan",
+        "completion_task_schema_scan",
+        "attribution_contract"
+      ],
+      "risk": "medium_cc_by_attribution_and_repo_context_loader_required"
+    },
+    {
+      "id": "repo_trans_bench",
+      "category": "coding_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "DeepSoftwareAnalytics/RepoTransBench",
+      "url": "https://github.com/DeepSoftwareAnalytics/RepoTransBench",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Repository-level code translation benchmark for cross-language transfer through arms.",
+      "adapter_plan": "Keep queue-only until license is explicit, then use as a multilingual transfer diagnostic.",
+      "smoke_plan": [
+        "license_audit",
+        "task_manifest_scan",
+        "polyglot_test_contract"
+      ],
+      "risk": "license_unknown"
+    },
+    {
+      "id": "swelancer",
+      "category": "coding_agent_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "openai/SWELancer-Benchmark",
+      "url": "https://github.com/openai/SWELancer-Benchmark",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "agent_benchmarks",
+      "why": "Freelance-style software-engineering benchmark reference for later real-world coding task pressure.",
+      "adapter_plan": "Archived and license-uncertain; keep metadata-only and prefer OpenAI preparedness references only as public calibration metadata.",
+      "smoke_plan": [
+        "license_audit",
+        "archived_repo_metadata_scan",
+        "task_schema_reference_only"
+      ],
+      "risk": "archived_license_unknown"
+    },
+    {
+      "id": "inspect_evals",
+      "category": "evaluation_harness",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "UKGovernmentBEIS/inspect_evals",
+      "url": "https://github.com/UKGovernmentBEIS/inspect_evals",
+      "license_spdx": "mit",
+      "import_policy": "source_archive",
+      "local_subdir": "language_benchmarks",
+      "why": "Public evaluation implementations for many model capabilities, useful as source/reference for adapter and scorer design.",
+      "adapter_plan": "Clone source as a reference harness; run only local/offline tasks after scorer contracts and external-inference audit pass.",
+      "smoke_plan": [
+        "metadata_scan",
+        "eval_listing",
+        "single_offline_eval_contract"
+      ],
+      "risk": "medium_adapter_needed"
+    },
+    {
+      "id": "babylm_official_eval",
+      "category": "language_benchmark_framework",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "babylm/babylm-evaluation-pipeline",
+      "url": "https://github.com/babylm/babylm-evaluation-pipeline",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "language_benchmarks",
+      "why": "Official BabyLM 2026 evaluation pipeline and leaderboard comparator.",
+      "adapter_plan": "Queue because the local project already has a BabyLM eval clone; verify license/commit before importing another copy.",
+      "smoke_plan": [
+        "official BabyLM 2026 eval pipeline"
+      ],
+      "risk": "license_verify_before_import"
+    },
+    {
+      "id": "fineweb_edu",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "HuggingFaceFW/fineweb-edu",
+      "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu",
+      "license_spdx": "odc-by",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Large educational web corpus with published filtering methodology and sample configs.",
+      "adapter_plan": "Do not bulk download. Add a small streamed sample only after dedupe, toxicity, license, and domain-balance gates.",
+      "sample_plan": "stream <=1000 docs from sample-10BT into ignored candidate data, then score with local quality filters",
+      "sampling": {
+        "enabled": true,
+        "api": "huggingface_datasets_server_rows",
+        "config": "sample-10BT",
+        "split": "train",
+        "offset": 0,
+        "length": 48,
+        "min_chars": 160,
+        "purpose": "tiny governed educational web sample for low-ratio local pairwise distillation only"
+      },
+      "risk": "large_web_corpus"
+    },
+    {
+      "id": "fineweb",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "HuggingFaceFW/fineweb",
+      "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb",
+      "license_spdx": "odc-by",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Large open web corpus with documented curation, useful as a broad data source reference after quality and domain gates.",
+      "adapter_plan": "Do not bulk download. Use metadata and tiny controlled samples only when the data sampler requests general-web contrast data.",
+      "sample_plan": "stream <=48 rows only after dedupe, PII, quality, and source-mix gates pass",
+      "sampling": {
+        "enabled": false,
+        "reason": "fineweb_edu is preferred for current small-model educational pressure; keep broad web metadata-only"
+      },
+      "risk": "very_large_web_corpus"
+    },
+    {
+      "id": "fineweb2",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "HuggingFaceFW/fineweb-2",
+      "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-2",
+      "license_spdx": "odc-by",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Newer multilingual FineWeb-family corpus candidate for future multilingual and broad-coverage lanes.",
+      "adapter_plan": "Metadata only until multilingual benchmarks and tokenizer/data-mix policies are explicit.",
+      "sample_plan": "none until language coverage, leakage, and storage budgets are approved",
+      "sampling": {
+        "enabled": false,
+        "reason": "future multilingual lane; avoid broad sampling during current local benchmark setup"
+      },
+      "risk": "very_large_web_corpus"
+    },
+    {
+      "id": "smollm_corpus",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "HuggingFaceTB/smollm-corpus",
+      "url": "https://huggingface.co/datasets/HuggingFaceTB/smollm-corpus",
+      "license_spdx": "odc-by",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Smaller deduplicated corpus family aligned with small-model training constraints.",
+      "adapter_plan": "Use as a candidate for small controlled text samples, not as an automatic bulk source.",
+      "sample_plan": "stream a tiny educational subset after source mix and overlap checks",
+      "sampling": {
+        "enabled": true,
+        "api": "huggingface_datasets_server_rows",
+        "config": "fineweb-edu-dedup",
+        "split": "train",
+        "offset": 0,
+        "length": 48,
+        "min_chars": 160,
+        "purpose": "tiny governed deduplicated educational web sample for low-ratio local pairwise distillation only"
+      },
+      "risk": "large_web_corpus"
+    },
+    {
+      "id": "open_orca",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "Open-Orca/OpenOrca",
+      "url": "https://huggingface.co/datasets/Open-Orca/OpenOrca",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Broad MIT licensed instruction-response corpus for extraction, QA, summarization, reasoning, and response-shape pressure.",
+      "adapter_plan": "Use tiny governed D: samples only; never treat as benchmark evidence; keep eval-overlap filters active.",
+      "sample_plan": "stream <=24 rows into the governed D: sample pantry for low-ratio local pairwise and instruction-pressure experiments",
+      "sampling": {
+        "enabled": true,
+        "api": "huggingface_datasets_server_rows",
+        "config": "default",
+        "split": "train",
+        "offset": 0,
+        "length": 24,
+        "min_chars": 160,
+        "purpose": "tiny governed instruction-response sample for low-ratio local augmentation only"
+      },
+      "risk": "large_instruction_corpus_tiny_samples_only"
+    },
+    {
+      "id": "numina_math_cot",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "AI-MO/NuminaMath-CoT",
+      "url": "https://huggingface.co/datasets/AI-MO/NuminaMath-CoT",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Apache-2.0 math problem-solution traces for symbolic reasoning, final-answer discipline, and step repair.",
+      "adapter_plan": "Use tiny governed D: samples and keep math benchmarks eval-only; preserve source tags and no public benchmark promotion claims.",
+      "sample_plan": "stream <=24 rows into the governed D: sample pantry for low-ratio local reasoning pressure",
+      "sampling": {
+        "enabled": true,
+        "api": "huggingface_datasets_server_rows",
+        "config": "default",
+        "split": "train",
+        "offset": 0,
+        "length": 24,
+        "min_chars": 160,
+        "purpose": "tiny governed math reasoning sample for low-ratio local augmentation only"
+      },
+      "risk": "math_corpus_contamination_and_attribution_gate_required"
+    },
+    {
+      "id": "hermes_function_calling",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "NousResearch/hermes-function-calling-v1",
+      "url": "https://huggingface.co/datasets/NousResearch/hermes-function-calling-v1",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Apache-2.0 function-calling conversations for schema adherence, tool selection, abstention, and argument planning.",
+      "adapter_plan": "Use tiny governed D: samples for private tool-use pressure; score BFCL and other public tool benchmarks only as calibration.",
+      "sample_plan": "stream <=24 rows from func_calling_singleturn after license and overlap gates",
+      "sampling": {
+        "enabled": true,
+        "api": "huggingface_datasets_server_rows",
+        "config": "func_calling_singleturn",
+        "split": "train",
+        "offset": 0,
+        "length": 24,
+        "min_chars": 160,
+        "purpose": "tiny governed tool-use sample for local interface and schema pressure only"
+      },
+      "risk": "tool_use_public_calibration_separation_required"
+    },
+    {
+      "id": "synth_apigen_function_calling",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "argilla/Synth-APIGen-v0.1",
+      "url": "https://huggingface.co/datasets/argilla/Synth-APIGen-v0.1",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Apache-2.0 synthetic APIGen rows with tool schemas, user queries, and answer calls for interface-grounded tool-use pressure.",
+      "adapter_plan": "Use tiny governed D: samples only; avoid Salesforce xLAM gated source for automatic ingest.",
+      "sample_plan": "stream <=24 rows into the governed D: sample pantry for low-ratio tool-schema pressure",
+      "sampling": {
+        "enabled": true,
+        "api": "huggingface_datasets_server_rows",
+        "config": "default",
+        "split": "train",
+        "offset": 0,
+        "length": 24,
+        "min_chars": 160,
+        "purpose": "tiny governed synthetic function-calling sample for local tool-use augmentation only"
+      },
+      "risk": "synthetic_tool_use_quality_gate_required"
+    },
+    {
+      "id": "openassistant_oasst2",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "OpenAssistant/oasst2",
+      "url": "https://huggingface.co/datasets/OpenAssistant/oasst2",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Apache-2.0 human-feedback conversation tree rows useful after parent/child context reconstruction.",
+      "adapter_plan": "Metadata only until a tree assembler and language/review filters are promoted.",
+      "sample_plan": "none until parent/child context assembly preserves conversation turns",
+      "sampling": {
+        "enabled": false,
+        "reason": "requires tree reconstruction before useful training rows"
+      },
+      "risk": "conversation_tree_reconstruction_required"
+    },
+    {
+      "id": "dolma",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "allenai/dolma",
+      "url": "https://huggingface.co/datasets/allenai/dolma",
+      "license_spdx": "odc-by",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Transparent multi-source pretraining corpus with documented versions and samples.",
+      "adapter_plan": "Use metadata and data-sheet first; only sample small subsets after PII and overlap gates.",
+      "sample_plan": "prefer v1_6-sample metadata; avoid bulk download",
+      "sampling": {
+        "enabled": false,
+        "reason": "dataset viewer rows unavailable in this environment; keep metadata-only until a bounded sample endpoint is verified"
+      },
+      "risk": "very_large_corpus"
+    },
+    {
+      "id": "cosmopedia",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "HuggingFaceTB/cosmopedia",
+      "url": "https://huggingface.co/datasets/HuggingFaceTB/cosmopedia",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Open synthetic textbook/blog/story corpus useful for studying compact educational data mixtures after provenance and quality checks.",
+      "adapter_plan": "Metadata only by default. Sample tiny slices only after dedupe, source-quality, and synthetic-ratio gates pass.",
+      "sample_plan": "stream <=48 rows as a low-ratio candidate only after dataset viewer config is verified",
+      "sampling": {
+        "enabled": false,
+        "reason": "keep metadata-only until local quality filters are tuned for synthetic educational data"
+      },
+      "risk": "synthetic_web_corpus_quality_gate_required"
+    },
+    {
+      "id": "openwebmath",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "open-web-math/open-web-math",
+      "url": "https://huggingface.co/datasets/open-web-math/open-web-math",
+      "license_spdx": "unknown",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Math-heavy corpus candidate for future mathematical reasoning growth lanes.",
+      "adapter_plan": "Queue for license/data-sheet review before any sampling or training use.",
+      "sample_plan": "none until license and overlap policy are explicit",
+      "sampling": {
+        "enabled": false,
+        "reason": "license and contamination audit required first"
+      },
+      "risk": "license_verify_before_sampling"
+    },
+    {
+      "id": "wikitext",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "Salesforce/wikitext",
+      "url": "https://huggingface.co/datasets/Salesforce/wikitext",
+      "license_spdx": "cc-by-sa-3.0_gfdl",
+      "import_policy": "queue_only",
+      "local_subdir": "training_data_metadata",
+      "why": "Common language-modeling benchmark/data reference, useful for public comparability but not currently in the allowed data-license set.",
+      "adapter_plan": "Queue for license compatibility review; do not train on it automatically.",
+      "sample_plan": "none until share-alike/GFDL obligations are reviewed",
+      "sampling": {
+        "enabled": false,
+        "reason": "license obligations require explicit review before sampling or training use"
+      },
+      "risk": "license_verify_before_sampling"
+    },
+    {
+      "id": "apps",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "codeparrot/apps",
+      "url": "https://huggingface.co/datasets/codeparrot/apps",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "APPS provides competitive-programming-style prompts, solutions, and tests for coding skill growth.",
+      "adapter_plan": "Metadata first. Tiny samples only after leakage checks against HumanEval/MBPP/EvalPlus/LiveCodeBench and sandboxed execution policy.",
+      "sample_plan": "tiny governed task/test metadata only; no bulk download",
+      "sampling": {
+        "enabled": false,
+        "reason": "enable only after code-sandbox leakage filters are refreshed"
+      },
+      "risk": "code_execution_sandbox_and_contamination_gate_required"
+    },
+    {
+      "id": "code_contests",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "deepmind/code_contests",
+      "url": "https://huggingface.co/datasets/deepmind/code_contests",
+      "license_spdx": "cc-by-4.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "DeepMind CodeContests adds harder algorithmic programming pressure with tests and multiple solution traces.",
+      "adapter_plan": "Use as attribution-preserving metadata and later tiny governed shards; run only inside local sandbox and never mix eval splits into training.",
+      "sample_plan": "tiny governed examples after attribution and contamination checks",
+      "sampling": {
+        "enabled": false,
+        "reason": "requires attribution tracking and code-eval leakage gates before sampling"
+      },
+      "risk": "large_dataset_attribution_and_eval_leakage_gate_required"
+    },
+    {
+      "id": "the_stack_v2",
+      "category": "training_data",
+      "priority": "high",
+      "source_kind": "huggingface_dataset",
+      "name": "bigcode/the-stack-v2",
+      "url": "https://huggingface.co/datasets/bigcode/the-stack-v2",
+      "license_spdx": "other",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "The Stack v2 is a broad code corpus reference for future local code pretraining mixtures.",
+      "adapter_plan": "Metadata only until per-file license filters, opt-out handling, PII/secrets scanning, and storage budget are implemented.",
+      "sample_plan": "none by default; only license-filtered tiny shards after governance expands",
+      "sampling": {
+        "enabled": false,
+        "reason": "gated dataset with per-file license obligations; no automatic sampling"
+      },
+      "risk": "gated_large_code_corpus_per_file_license_filter_required"
+    },
+    {
+      "id": "starcoderdata",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "bigcode/starcoderdata",
+      "url": "https://huggingface.co/datasets/bigcode/starcoderdata",
+      "license_spdx": "other",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "StarCoderData is a reference code pretraining corpus with governance lessons for license filtering and opt-out handling.",
+      "adapter_plan": "Metadata only; use to shape policy and future license-filtered code data recipes rather than bulk training now.",
+      "sample_plan": "none until per-file license and opt-out filters are implemented",
+      "sampling": {
+        "enabled": false,
+        "reason": "requires BigCode-style governance and license-filtering before use"
+      },
+      "risk": "large_code_corpus_license_filter_required"
+    },
+    {
+      "id": "codesearchnet",
+      "category": "training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "code-search-net/code_search_net",
+      "url": "https://huggingface.co/datasets/code-search-net/code_search_net",
+      "license_spdx": "other",
+      "import_policy": "metadata_only",
+      "local_subdir": "training_data_metadata",
+      "why": "CodeSearchNet is useful for code-text retrieval, docstring alignment, and code understanding transfer.",
+      "adapter_plan": "Metadata only until license obligations and train/eval contamination checks are explicit.",
+      "sample_plan": "none until license and split policy are reviewed",
+      "sampling": {
+        "enabled": false,
+        "reason": "license marked other; keep metadata-only"
+      },
+      "risk": "license_review_required"
+    },
+    {
+      "id": "ruler",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "NVIDIA/RULER",
+      "url": "https://github.com/NVIDIA/RULER",
+      "repo": "NVIDIA/RULER",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "RULER is a long-context benchmark generator covering retrieval, multi-hop tracking, aggregation, and robustness beyond simple needle recall.",
+      "adapter_plan": "Use as public calibration metadata only. Map task categories into private VCM context-recovery analogues without copying public prompts, contexts, answers, traces, or templates.",
+      "smoke_plan": [
+        "read repository metadata and license",
+        "record synthetic task families",
+        "run private VCM context-recovery smoke with local fixtures only"
+      ],
+      "sample_plan": "no public examples or generated benchmark rows enter training",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "babilong",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "BABILong",
+      "url": "https://github.com/booydar/babilong",
+      "repo": "booydar/babilong",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "BABILong stresses fact tracking and reasoning over long irrelevant background text, which maps directly to VCM evidence selection and distraction rejection.",
+      "adapter_plan": "Keep benchmark content calibration-only; create private fact-in-noise fixtures for training and regression pressure.",
+      "smoke_plan": [
+        "read repository metadata and license",
+        "record task family mapping",
+        "verify no BABILong rows are admitted to training"
+      ],
+      "sample_plan": "metadata only; no public rows are used as training samples",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "needlebench_opencompass",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "NeedleBench / OpenCompass",
+      "url": "https://github.com/open-compass/opencompass",
+      "repo": "open-compass/opencompass",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "NeedleBench covers single retrieval, multi retrieval, multi reasoning, and atomic-to-composite long-context evaluation families.",
+      "adapter_plan": "Use OpenCompass/NeedleBench only as public calibration metadata; mirror categories with private VCM fixtures.",
+      "smoke_plan": [
+        "read OpenCompass metadata and license",
+        "record NeedleBench task-family taxonomy",
+        "verify private-only VCM smoke path"
+      ],
+      "sample_plan": "metadata only; no public needles, haystacks, or answer templates enter training",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "locomo",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "snap-research/LoCoMo",
+      "url": "https://github.com/snap-research/locomo",
+      "repo": "snap-research/locomo",
+      "license_spdx": "cc-by-nc-4.0",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "LoCoMo targets long-term conversational memory, temporal/event summaries, and personalized QA.",
+      "adapter_plan": "Queue only because the license is non-commercial. Use its task taxonomy for human review, not active import or training.",
+      "smoke_plan": [
+        "record license as non-commercial",
+        "block active benchmark card until license policy changes",
+        "do not stage rows or examples"
+      ],
+      "sample_plan": "none; license is not allowed for active import",
+      "risk": "noncommercial_license_active_import_blocked"
+    },
+    {
+      "id": "longmemeval",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "LongMemEval",
+      "url": "https://github.com/xiaowu0162/longmemeval",
+      "repo": "xiaowu0162/longmemeval",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "LongMemEval covers extraction, multi-session reasoning, updates, temporal reasoning, and abstention over long memory histories.",
+      "adapter_plan": "Use as public calibration metadata and derive private event-history fixtures with explicit stale/update handling.",
+      "smoke_plan": [
+        "read repository metadata and license",
+        "record memory ability taxonomy",
+        "verify public calibration firewall"
+      ],
+      "sample_plan": "metadata only; no public memory questions or answers enter training",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "longmemeval_v2",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "LongMemEval-V2",
+      "url": "https://github.com/xiaowu0162/LongMemEval-V2",
+      "repo": "xiaowu0162/LongMemEval-V2",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "LongMemEval-V2 expands long-memory QA with large trajectory histories and explicit memory ability labels.",
+      "adapter_plan": "Use as public calibration metadata and map abilities into private VCM stale/update/abstention regression fixtures.",
+      "smoke_plan": [
+        "read repository metadata and license",
+        "record trajectory-memory task families",
+        "verify no public rows are admitted to training"
+      ],
+      "sample_plan": "metadata only; no public trajectories enter training",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "helmet",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "Princeton NLP HELMET",
+      "url": "https://github.com/princeton-nlp/HELMET",
+      "repo": "princeton-nlp/HELMET",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "HELMET is a long-context benchmark harness spanning retrieval, reasoning, generation, and summarization categories across controlled lengths.",
+      "adapter_plan": "Use harness taxonomy as public calibration metadata; do not use public items for training pressure.",
+      "smoke_plan": [
+        "read repository metadata and license",
+        "record category and length-control schema",
+        "link to private VCM context-recovery smoke"
+      ],
+      "sample_plan": "metadata only; no public tasks enter training",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "longbench_v2",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "THUDM/LongBench v2",
+      "url": "https://github.com/THUDM/LongBench",
+      "repo": "THUDM/LongBench",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "LongBench v2 focuses on long-context deep understanding and reasoning across very long context lengths.",
+      "adapter_plan": "Use as public calibration metadata and keep any future calibration operator-locked.",
+      "smoke_plan": [
+        "read repository metadata and license",
+        "record long-context reasoning categories",
+        "verify no public rows enter training"
+      ],
+      "sample_plan": "metadata only; public prompts and answer labels stay out of training",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "infinitebench",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "OpenBMB/InfiniteBench",
+      "url": "https://github.com/OpenBMB/InfiniteBench",
+      "repo": "OpenBMB/InfiniteBench",
+      "license_spdx": "mit",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "InfiniteBench targets 100k-plus context evaluation across retrieval, QA, summarization, and code/debugging long-context tasks.",
+      "adapter_plan": "Use as calibration metadata; create private context-scale stressors from Theseus artifacts instead of importing public items into training.",
+      "smoke_plan": [
+        "read repository metadata and license",
+        "record 100k-plus context task families",
+        "verify public calibration firewall"
+      ],
+      "sample_plan": "metadata only; no public long-context items enter training",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "nolima",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "adobe-research/NoLiMa",
+      "url": "https://github.com/adobe-research/NoLiMa",
+      "repo": "adobe-research/NoLiMa",
+      "license_spdx": "adobe-research-license-noncommercial",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "NoLiMa stresses minimal lexical overlap between questions and evidence, directly pressuring VCM alias/cue bridge recovery.",
+      "adapter_plan": "Block public payload staging under the current non-commercial license policy; use private lexical-disconnect analogues only.",
+      "smoke_plan": [
+        "record repository and non-commercial license",
+        "block active public payload staging",
+        "run private VCM hard-memory analogue"
+      ],
+      "sample_plan": "none; public data is not imported under current license policy",
+      "risk": "noncommercial_license_active_import_blocked"
+    },
+    {
+      "id": "michelangelo_lsq",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "paper",
+      "name": "Michelangelo / Latent Structure Queries",
+      "url": "https://arxiv.org/abs/2409.12640",
+      "repo": "",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "Michelangelo/LSQ tests latent structure, MRCR, latent list, and IDK behavior beyond needle retrieval.",
+      "adapter_plan": "Verify official source and license before public scoring; mirror latent-structure categories with private analogues.",
+      "smoke_plan": [
+        "locate official code/data",
+        "verify license and deterministic scorer",
+        "run private LSQ analogue"
+      ],
+      "sample_plan": "none until official source/license is verified",
+      "risk": "official_source_locator_needed"
+    },
+    {
+      "id": "lveval",
+      "category": "long_context_memory_benchmark",
+      "priority": "high",
+      "source_kind": "github_repo",
+      "name": "infinigence/LVEval",
+      "url": "https://github.com/infinigence/LVEval",
+      "repo": "infinigence/LVEval",
+      "license_spdx": "mit AND cc-by-sa-4.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "LV-Eval spans 16k to 256k context QA with confusing facts and keyword/phrase replacement.",
+      "adapter_plan": "Use metadata until license partition and deterministic scoring are reviewed; mirror confusing-fact length buckets privately.",
+      "smoke_plan": [
+        "record license partition",
+        "verify deterministic exact/keyword scorer",
+        "run private LV-Eval-shaped analogue"
+      ],
+      "sample_plan": "metadata only until dataset partition review",
+      "risk": "public_benchmark_calibration_only"
+    },
+    {
+      "id": "loft",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "paper",
+      "name": "LOFT / Long-Context Frontiers",
+      "url": "https://arxiv.org/abs/2406.13121",
+      "repo": "",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "LOFT covers retrieval, RAG, SQL-like structured queries, and many-shot long-context task substitution up to million-token contexts.",
+      "adapter_plan": "Locate official payloads/license and admit only deterministic text/RAG/SQL/many-shot lanes; use private structured-memory analogues first.",
+      "smoke_plan": [
+        "locate official payload source",
+        "verify license and local deterministic scorers",
+        "run private LOFT-shaped analogue"
+      ],
+      "sample_plan": "none until official payloads and license are verified",
+      "risk": "official_payload_locator_needed"
+    },
+    {
+      "id": "mtrag",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "ibm/mt-rag-benchmark",
+      "url": "https://github.com/ibm/mt-rag-benchmark",
+      "repo": "ibm/mt-rag-benchmark",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "MTRAG targets multi-turn RAG memory with later-turn, non-standalone, unanswerable, and multi-domain pressure.",
+      "adapter_plan": "Verify license/evaluator determinism before public payload staging; use private multi-turn RAG analogues first.",
+      "smoke_plan": [
+        "verify repository license",
+        "verify deterministic answerability scoring",
+        "run private MTRAG analogue"
+      ],
+      "sample_plan": "none until license and deterministic scoring are verified",
+      "risk": "license_and_evaluator_review_needed"
+    },
+    {
+      "id": "mtrag_un",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "IBM/mt-rag-benchmark MTRAG-UN",
+      "url": "https://github.com/IBM/mt-rag-benchmark",
+      "repo": "IBM/mt-rag-benchmark",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "MTRAG-UN stresses unanswerable, underspecified, non-standalone, and unclear multi-turn RAG behavior.",
+      "adapter_plan": "Verify license/evaluator determinism before public payload staging; use private answerability analogues first.",
+      "smoke_plan": [
+        "verify repository license",
+        "verify deterministic abstention scoring",
+        "run private MTRAG-UN analogue"
+      ],
+      "sample_plan": "none until license and deterministic scoring are verified",
+      "risk": "license_and_evaluator_review_needed"
+    },
+    {
+      "id": "facts_grounding",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "leaderboard",
+      "name": "FACTS Grounding",
+      "url": "https://www.kaggle.com/facts-leaderboard",
+      "repo": "",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "FACTS Grounding tests document-grounded long-form answer behavior, but its public/private leaderboard and model-judge path need separate admission.",
+      "adapter_plan": "Block public scoring until terms and local deterministic proxy are reviewed; use private grounded-span analogues only.",
+      "smoke_plan": [
+        "verify terms and scoring path",
+        "block model-judge substitution",
+        "run private grounded-span analogue"
+      ],
+      "sample_plan": "none until terms and deterministic proxy are verified",
+      "risk": "model_judge_private_leaderboard_blocked"
+    },
+    {
+      "id": "locomoplus",
+      "category": "long_context_memory_benchmark",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "xjtuleeyf/Locomo-Plus",
+      "url": "https://github.com/xjtuleeyf/Locomo-Plus",
+      "repo": "xjtuleeyf/Locomo-Plus",
+      "license_spdx": "unknown",
+      "import_policy": "queue_only",
+      "local_subdir": "long_context_benchmark_metadata",
+      "why": "LoCoMo-Plus targets cognitive memory and cue-trigger constraint disconnect, matching VCM's long-term user constraint lane.",
+      "adapter_plan": "Verify license and deterministic constraint-consistency metrics before public payload staging; use private cognitive-memory analogues first.",
+      "smoke_plan": [
+        "verify repository license",
+        "verify deterministic constraint metric",
+        "run private LoCoMo-Plus analogue"
+      ],
+      "sample_plan": "none until license and metric are verified",
+      "risk": "license_and_metric_review_needed"
+    },
+    {
+      "id": "speechbrain_benchmarks",
+      "category": "voice_benchmark_framework",
+      "priority": "medium",
+      "source_kind": "github_repo",
+      "name": "speechbrain/benchmarks",
+      "url": "https://github.com/speechbrain/benchmarks",
+      "repo": "speechbrain/benchmarks",
+      "license_spdx": "apache-2.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "voice_benchmark_metadata",
+      "why": "Open benchmark harnesses for speech tasks that can pressure the native Theseus voice I/O lane.",
+      "adapter_plan": "Start with metadata and harness inspection. Use harnesses only as benchmark/scoring pressure; do not use pretrained SpeechBrain inference as a capability.",
+      "sample_plan": "metadata only until local voice model and data policy are ready",
+      "risk": "voice_pipeline_dependency_complexity"
+    },
+    {
+      "id": "common_voice",
+      "category": "voice_training_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "mozilla-foundation/common_voice_17_0",
+      "url": "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0",
+      "license_spdx": "cc0-1.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "voice_data_metadata",
+      "why": "Large multilingual CC0 voice dataset candidate for Theseus-native STT and voice-router growth.",
+      "adapter_plan": "Use as license-gated native voice pressure. Keep locale/storage selection explicit and do not use pretrained speech inference.",
+      "sample_plan": "metadata first; tiny locale shards only through configs/native_voice_training_policy.json caps",
+      "risk": "large_voice_dataset_requires_locale_storage_and_privacy_review"
+    },
+    {
+      "id": "librispeech",
+      "category": "voice_benchmark_data",
+      "priority": "medium",
+      "source_kind": "huggingface_dataset",
+      "name": "openslr/librispeech_asr",
+      "url": "https://huggingface.co/datasets/openslr/librispeech_asr",
+      "license_spdx": "cc-by-4.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "voice_data_metadata",
+      "why": "Standard CC BY 4.0 ASR corpus for native STT bootstrap, evaluation, and voice packet pressure.",
+      "adapter_plan": "Use validation-clean as the tiny automatic bootstrap shard; larger train-clean archives require explicit disk/runtime approval.",
+      "sample_plan": "tiny governed audio/transcript rows through scripts/native_voice_training_manifest.py",
+      "risk": "large_archives_require_storage_review_before_bulk_fetch"
+    },
+    {
+      "id": "libritts",
+      "category": "voice_training_data",
+      "priority": "medium",
+      "source_kind": "direct_download",
+      "name": "OpenSLR SLR60 LibriTTS",
+      "url": "https://www.openslr.org/60/",
+      "license_spdx": "cc-by-4.0",
+      "import_policy": "metadata_only",
+      "local_subdir": "voice_data_metadata",
+      "why": "CC BY 4.0 multi-speaker English corpus designed for TTS research.",
+      "adapter_plan": "Keep metadata-only until a shard downloader chooses specific OpenSLR archives and disk caps.",
+      "sample_plan": "planned TTS shards through native voice training policy; no bulk download by default",
+      "risk": "large_voice_dataset_requires_storage_review"
+    },
+    {
+      "id": "ljspeech",
+      "category": "voice_training_data",
+      "priority": "low",
+      "source_kind": "huggingface_dataset",
+      "name": "keithito/lj_speech",
+      "url": "https://huggingface.co/datasets/keithito/lj_speech",
+      "license_spdx": "public-domain",
+      "import_policy": "metadata_only",
+      "local_subdir": "voice_data_metadata",
+      "why": "Public-domain single-speaker TTS dataset for native speech synthesis pressure.",
+      "adapter_plan": "Use as the first clean native TTS learner shard after the tiny shard fetcher is approved.",
+      "sample_plan": "metadata first; tiny governed TTS shard through native voice training policy",
+      "risk": "dataset_archive_is_gigabyte_scale_so_bulk_fetch_requires_storage_review"
+    },
+    {
+      "id": "vctk",
+      "category": "voice_training_data",
+      "priority": "low",
+      "source_kind": "direct_download",
+      "name": "CSTR VCTK Corpus",
+      "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "license_spdx": "odc-by",
+      "import_policy": "queue_only",
+      "local_subdir": "voice_data_metadata",
+      "why": "Speaker-diverse English speech corpus useful for later native TTS speaker-conditioning pressure.",
+      "adapter_plan": "Queue until source-card attribution and storage requirements are reviewed directly.",
+      "sample_plan": "none until VCTK attribution/storage review is complete",
+      "risk": "license_attribution_and_storage_review_required"
+    }
+  ]
+}

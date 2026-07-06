@@ -1,0 +1,68 @@
+{
+  "policy": "project_theseus_module_definition_of_done_v1",
+  "purpose": "Apply the ASI Stack book-quality definition of done to every major Theseus registry surface without turning module cards into capability evidence.",
+  "inputs": {
+    "project_manifest_registry": "configs/project_manifest_registry.json",
+    "project_steward": "configs/project_steward.json",
+    "registry_report": "reports/theseus_project_registry.json"
+  },
+  "book_standard_sources": [
+    "../AI_book/docs/book_quality_standard.md",
+    "../AI_book/docs/evidence_test_plan.md",
+    "../AI_book/docs/proof_and_code_plan.md",
+    "../AI_book/chapters/prototype-roadmap.qmd",
+    "roadmap.md",
+    "AGENTS.md",
+    "docs/PROJECT_REGISTRY.md"
+  ],
+  "required_module_card_fields": [
+    "id",
+    "surface_id",
+    "problem",
+    "interface",
+    "invariants",
+    "failure_modes",
+    "minimal_implementation",
+    "validation_commands",
+    "evidence_refs",
+    "non_claims",
+    "deprecation_route"
+  ],
+  "minimum_list_lengths": {
+    "invariants": 2,
+    "failure_modes": 2,
+    "validation_commands": 1,
+    "evidence_refs": 1,
+    "non_claims": 1
+  },
+  "module_record_fields": [
+    "problem",
+    "owner_field",
+    "interface",
+    "invariants",
+    "failure_modes",
+    "minimal_implementation",
+    "validation_commands",
+    "evidence_refs",
+    "non_claims",
+    "deprecation_route",
+    "source_crosswalk"
+  ],
+  "report_family_policy": {
+    "max_declared_report_outputs_per_surface": 80,
+    "max_cleanup_queue_count": 64,
+    "stale_latest_view_is_hard": true,
+    "generated_reports_are_not_progress": true
+  },
+  "steward_decision_policy": {
+    "stale_module_must_have_decision_or_registry_gap": true,
+    "negative_evidence_must_remain_linked": true,
+    "capability_claim_from_module_card_allowed": false
+  },
+  "outputs": {
+    "report": "reports/module_definition_of_done.json",
+    "markdown": "reports/module_definition_of_done.md",
+    "module_records": "reports/module_definition_cards.jsonl",
+    "source_backlog_work_cards": "reports/book_to_theseus_backlog_work_cards.jsonl"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "policy": "project_theseus_control_plane_ownership_v1",
+  "decision_owner": "scripts/theseus_control_plane.py",
+  "rules": {
+    "decision_owner_meaning": "Only the decision owner may convert report state into unattended next work, leases, or promotion-facing actions.",
+    "producer_meaning": "Listed scripts may refresh reports, diagnostics, gates, or advisory state but must not create a parallel unattended control plane.",
+    "cleanup_meaning": "Workspace hygiene should not flag listed overlap groups as deprecation candidates while every existing producer is owned here."
+  },
+  "groups": [
+    {
+      "id": "supervisor_overlap",
+      "decision_owner": "scripts/theseus_control_plane.py",
+      "status": "owned_fact_producers",
+      "scripts": [
+        {
+          "path": "scripts/learning_launch_supervisor.py",
+          "role": "launch and training-readiness fact producer"
+        },
+        {
+          "path": "scripts/vacation_mode_supervisor.py",
+          "role": "bounded unattended-cycle executor and report producer"
+        },
+        {
+          "path": "scripts/unattended_autonomy_supervisor.py",
+          "role": "legacy unattended supervisor compatibility producer"
+        },
+        {
+          "path": "scripts/autonomy_watchdog.py",
+          "role": "watchdog health and correction producer"
+        },
+        {
+          "path": "scripts/autonomy_rotation_governor.py",
+          "role": "rotation advisory producer"
+        }
+      ]
+    },
+    {
+      "id": "planning_compiler_overlap",
+      "decision_owner": "scripts/theseus_control_plane.py",
+      "status": "owned_fact_producers",
+      "scripts": [
+        {
+          "path": "scripts/theseus_plan_compiler.py",
+          "role": "typed goal-contract, semantic-DAG, VCM-context, and executor-route fact producer; never a parallel executor"
+        },
+        {
+          "path": "scripts/decoder_plan_ir_code_lm_adapter.py",
+          "role": "decoder plan-IR training-pressure producer for neural seed/code-transfer lanes"
+        },
+        {
+          "path": "scripts/theseus_plan_semantic_residual_miner.py",
+          "role": "plan-semantic residual fact producer for private repair planning"
+        }
+      ]
+    },
+    {
+      "id": "resource_overlap",
+      "decision_owner": "scripts/theseus_control_plane.py",
+      "status": "owned_fact_producers",
+      "scripts": [
+        {
+          "path": "scripts/resource_aware_execution_policy.py",
+          "role": "canonical resource policy report producer"
+        },
+        {
+          "path": "scripts/resource_governor.py",
+          "role": "runtime resource observation producer"
+        },
+        {
+          "path": "scripts/training_resource_runway.py",
+          "role": "training runway advisory producer"
+        },
+        {
+          "path": "scripts/windows_cuda_doctor.py",
+          "role": "Windows CUDA health fact producer"
+        }
+      ]
+    },
+    {
+      "id": "promotion_gate_overlap",
+      "decision_owner": "scripts/theseus_control_plane.py",
+      "status": "owned_fact_producers",
+      "scripts": [
+        {
+          "path": "scripts/candidate_promotion_gate.py",
+          "role": "candidate promotion gate producer"
+        },
+        {
+          "path": "scripts/model_growth_gate.py",
+          "role": "model growth gate producer"
+        },
+        {
+          "path": "scripts/maturity_integrity_audit.py",
+          "role": "maturity and integrity gate producer"
+        },
+        {
+          "path": "scripts/coherence_delirium_gate.py",
+          "role": "coherence gate producer"
+        },
+        {
+          "path": "scripts/asi_wall_breaker_governor.py",
+          "role": "ASI wall diagnosis and action advisory producer"
+        }
+      ]
+    }
+  ]
+}

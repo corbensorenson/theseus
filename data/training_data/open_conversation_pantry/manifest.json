@@ -1,0 +1,20 @@
+{
+  "policy": "project_theseus_open_conversation_pantry_manifest_v1",
+  "created_utc": "2026-06-04T23:21:07.761737+00:00",
+  "root": "/Users/corbensorenson/Documents/Theseus-Hive/data/training_data/open_conversation_pantry",
+  "sample_jsonl": "/Users/corbensorenson/Documents/Theseus-Hive/data/training_data/open_conversation_pantry/samples/open_conversation_samples.jsonl",
+  "private_train_jsonl": "/Users/corbensorenson/Documents/Theseus-Hive/data/training_data/open_conversation_pantry/private_train/conversation_sft_pressure.jsonl",
+  "sts_stream_jsonl": "/Users/corbensorenson/Documents/Theseus-Hive/data/training_data/open_conversation_pantry/sts_streams/conversation_sts_streams.jsonl",
+  "source_cards": "/Users/corbensorenson/Documents/Theseus-Hive/data/training_data/open_conversation_pantry/dataset_cards",
+  "source_count": 40,
+  "conversation_samples": 2923,
+  "private_train_rows": 2811,
+  "sts_rows": 2811,
+  "previous_counts_on_refresh": {
+    "conversation_samples": 0,
+    "private_train_rows": 0,
+    "sts_rows": 0
+  },
+  "bulk_download": false,
+  "external_inference_calls": 0
+}

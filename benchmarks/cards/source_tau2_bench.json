@@ -1,0 +1,77 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_tau2_bench",
+  "source_id": "tau2_bench",
+  "name": "sierra-research/tau2-bench",
+  "category": "tool_dialogue_agent_benchmark",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/sierra-research/tau2-bench",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "tool_dialogue_agent_adapter",
+  "runner_family": "tool_use_local_simulator",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "multi-turn policy-constrained tool use with user/environment simulation",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "user_goal": "multi-turn task objective",
+    "policy": "domain constraints and allowed actions",
+    "tools": "local API/tool simulator only",
+    "agent": "local Theseus/OpenAI-compatible endpoint only"
+  },
+  "output_contract": {
+    "task_success": "completed user objective under policy",
+    "policy_adherence": "violations or safe refusals",
+    "tool_trace": "ordered local API/tool calls",
+    "residuals": "dialogue state, tool, policy, and recovery clusters"
+  },
+  "smoke_steps": [
+    "package_manifest_scan",
+    "domain_inventory",
+    "local_text_tool_simulator_contract",
+    "provider_path_audit"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "domain_policy_present",
+    "tool_schema_manifest_present",
+    "local_user_simulator_or_replay_path_present",
+    "provider_judges_disabled",
+    "no_external_inference"
+  ],
+  "contamination_policy": "Public benchmark is calibration/diagnostic unless private holdouts or live variants are generated.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards",
+      "write_tool_trace_logs",
+      "write_policy_simulator_reports"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "live_customer_or_account_data",
+      "network_during_scoring",
+      "production",
+      "provider_api_key_use",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

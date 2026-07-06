@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it."
+title: "Virtual Context Memory: An Evidence-Carrying, Planner-Guided Context Compiler for Long-Horizon Language-Model Agents"
+type: article
+authors:
+  - family-names: Sorenson
+    given-names: Corben
+version: "1.0"
+date-released: 2026-06-18
+abstract: >-
+  Virtual Context Memory is an inter-layer architecture that treats a language
+  model's finite attention window as a compiled working set over a larger,
+  addressable, governed memory space. The paper specifies semantic pages,
+  evidence-carrying derivation, protected context compilation, planner-guided
+  staging, transactional memory, runtime-cache coherence, security controls,
+  conformance profiles, and a falsifiable evaluation program.

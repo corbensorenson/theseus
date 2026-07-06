@@ -1,0 +1,204 @@
+{
+  "hardware": {
+    "name": "NVIDIA GeForce RTX 5060 Ti",
+    "compute_capability": "12.0",
+    "vram_total_mib": 16311,
+    "max_target_vram_mib": 13800,
+    "rust_release_default": true,
+    "preferred_hot_loop_owner": "rust_cuda",
+    "python_role": "orchestration_and_reporting"
+  },
+  "global_gates": {
+    "architecture_gate_ready": true,
+    "rmi_score": 1.0,
+    "external_inference_calls": 0,
+    "seed49_regression_required": true,
+    "seed55_frontier_required": true,
+    "public_blimp_comparator_required": true,
+    "residual_escrow_required": true,
+    "gpu_telemetry_required": true,
+    "release_build_required": true
+  },
+  "benchmarkmaxx_resource_scaling": {
+    "enabled": true,
+    "mode": "auto",
+    "principle": "Use smoke runs only for correctness; active frontier pressure must train enough before eval and scale up when local resources are idle.",
+    "min_free_vram_mib_after_allocation": 2048,
+    "inner_loop_max_budget_multiplier": 3.0,
+    "candidate_max_budget_multiplier": 3.5,
+    "watchdog_requires_budget_report": true
+  },
+  "synthetic_data": {
+    "policy": "configs/synthetic_data_policy.json",
+    "default_training_input": "data/synthetic/babylm_train_plus_synthetic_current.jsonl",
+    "default_report": "reports/synthetic_data_curator.json",
+    "use_for_babylm_profiles": true,
+    "max_synthetic_ratio": 0.12,
+    "strategy": "residual_targeted_local_verified"
+  },
+  "profiles": {
+    "smoke": {
+      "purpose": "Fast correctness and CUDA telemetry gate before any longer run.",
+      "expected_runtime_minutes": 2,
+      "max_vram_mib": 7000,
+      "cgs_cuda_readout": {
+        "cases_per_task": 16,
+        "epochs": 1,
+        "hv_dim": 512,
+        "samples_per_launch": 512,
+        "lr": 0.05
+      },
+      "puffer_ocean_rollout_cuda": {
+        "cases_per_task": 4,
+        "epochs": 1,
+        "state_epochs": 0,
+        "state_lr": 0.0,
+        "probe_cases_per_task": 4,
+        "rollout_batch": 64,
+        "samples_per_launch": 256,
+        "obs_dim": 16,
+        "hidden_dim": 24,
+        "reservoir_dim": 32,
+        "hv_dim": 256,
+        "seq_len": 16,
+        "lr": 0.03
+      },
+      "promotion_gates": {
+        "cuda_feature_enabled": true,
+        "standalone_examples_per_second_min": 150.0,
+        "rollout_examples_per_second_min": 50.0,
+        "rollout_total_runtime_ms_max": 120000,
+        "cuda_fallback_allowed": false
+      }
+    },
+    "inner_loop": {
+      "purpose": "Short ratchet iteration with learned-state probes and mutated holdout checks.",
+      "expected_runtime_minutes": 15,
+      "max_vram_mib": 12000,
+      "puffer_ocean_rollout_cuda": {
+        "cases_per_task": 20,
+        "epochs": 3,
+        "state_epochs": 1,
+        "state_lr": 0.02,
+        "probe_cases_per_task": 12,
+        "rollout_batch": 384,
+        "samples_per_launch": 512,
+        "obs_dim": 32,
+        "hidden_dim": 64,
+        "reservoir_dim": 96,
+        "hv_dim": 1536,
+        "seq_len": 32,
+        "lr": 0.03
+      },
+      "babylm": {
+        "train_limit": 50000,
+        "eval_limit": 5000,
+        "steps": 1000,
+        "hv_dim": 16384,
+        "stateful": true,
+        "pairwise_contrast": true,
+        "balance_rules": true,
+        "prior_weight": 1.0
+      },
+      "pressure_runner": {
+        "episodes": 4,
+        "steps": 256,
+        "train_iterations": 8,
+        "train_population": 24,
+        "elite_count": 6,
+        "eval_seed_count": 4
+      },
+      "token_superposition": {
+        "config": "configs/token_superposition_training.json",
+        "out": "reports/token_superposition_training.json",
+        "timeout_seconds": 1800
+      },
+      "promotion_gates": {
+        "architecture_gate_ready": true,
+        "rmi_score": 1.0,
+        "public_comparator_no_regression": true,
+        "seed49_regression_accuracy_drop_max": 0.01,
+        "seed55_frontier_improvement_min": 0.005,
+        "critical_residual_worsening_allowed": false
+      }
+    },
+    "candidate": {
+      "purpose": "Promotion candidate run after smoke and inner-loop gates are green.",
+      "expected_runtime_minutes": 120,
+      "max_vram_mib": 13800,
+      "puffer_ocean_rollout_cuda": {
+        "cases_per_task": 100,
+        "epochs": 8,
+        "state_epochs": 2,
+        "state_lr": 0.01,
+        "probe_cases_per_task": 50,
+        "rollout_batch": 768,
+        "samples_per_launch": 768,
+        "obs_dim": 64,
+        "hidden_dim": 96,
+        "reservoir_dim": 128,
+        "hv_dim": 3072,
+        "seq_len": 64,
+        "lr": 0.03
+      },
+      "babylm": {
+        "train_limit": 400000,
+        "eval_limit": 20000,
+        "steps": 4000,
+        "hv_dim": 32768,
+        "stateful": true,
+        "pairwise_contrast": true,
+        "balance_rules": true,
+        "prior_weight": 1.0
+      },
+      "pressure_runner": {
+        "episodes": 8,
+        "steps": 512,
+        "train_iterations": 20,
+        "train_population": 48,
+        "elite_count": 10,
+        "eval_seed_count": 8
+      },
+      "token_superposition": {
+        "config": "configs/token_superposition_training.json",
+        "out": "reports/token_superposition_training.json",
+        "timeout_seconds": 2400
+      },
+      "promotion_gates": {
+        "architecture_gate_ready": true,
+        "rmi_score": 1.0,
+        "public_comparator_no_regression": true,
+        "seed49_regression_accuracy_drop_max": 0.005,
+        "seed55_frontier_improvement_min": 0.01,
+        "residual_escrow_critical_delta_max": 0,
+        "runtime_and_cost_reported": true
+      }
+    },
+    "seed_sweep": {
+      "purpose": "Matched seed sweep after a candidate profile clears promotion gates.",
+      "expected_runtime_minutes": 240,
+      "max_vram_mib": 13800,
+      "train_seeds": [0, 1, 2, 3, 5, 8, 13],
+      "puffer_ocean_rollout_cuda": {
+        "cases_per_task": 60,
+        "epochs": 5,
+        "state_epochs_grid": [0, 1, 2],
+        "state_lrs": [0.0, 0.005, 0.02],
+        "probe_cases_per_task": 30,
+        "rollout_batch": 768,
+        "samples_per_launch": 768,
+        "obs_dim": 64,
+        "hidden_dim": 96,
+        "reservoir_dim": 128,
+        "hv_dim": 3072,
+        "seq_len": 64,
+        "lr": 0.03
+      },
+      "promotion_gates": {
+        "mean_accuracy_improves": true,
+        "std_accuracy_reported": true,
+        "best_seed_promoted_only_if_regression_holds": true
+      }
+    }
+  }
+}

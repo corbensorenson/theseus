@@ -1,0 +1,123 @@
+{
+  "policy": "project_theseus_neural_seed_substrate_comparator_v0",
+  "purpose": "Run the first honest private SymLiquid-style-vs-classic-transformer substrate smoke under matched data, seed, token, step, verifier, fanout, and STS controls.",
+  "comparison_level": "lower_level_private_contract_substrate_smoke",
+  "code_proposer_comparison_target": "future_full_code_proposer",
+  "safety": {
+    "public_calibration_allowed": false,
+    "public_training_allowed": false,
+    "teacher_calls_allowed": false,
+    "teacher_distillation_allowed": false,
+    "network_fetch_allowed": false,
+    "model_promotion_allowed": false
+  },
+  "data": {
+    "train_jsonl": "data/training_data/high_transfer/private_train/private_contract_blind_transfer_v1_train_reference_code_lm_tasks.jsonl",
+    "eval_jsonl": "data/training_data/high_transfer/private_eval/private_contract_blind_transfer_v1_code_lm_tasks.jsonl",
+    "label_path": ["decoder_contract", "return_shape"],
+    "family_path": ["decoder_contract", "type_family"],
+    "max_train_rows": 512,
+    "max_eval_rows": 128,
+    "split_seed": 17,
+    "require_private_flags": true,
+    "forbidden_row_flags": [
+      "public_benchmark",
+      "public_benchmark_solutions_included",
+      "public_prompts_included",
+      "public_score_labels_included",
+      "public_tests_included"
+    ]
+  },
+  "text_views": {
+    "sts_off": [
+      "prompt",
+      "metamorphic_properties"
+    ],
+    "sts_on": [
+      "prompt",
+      "metamorphic_properties",
+      "decoder_contract.argument_roles",
+      "decoder_contract.required_constructs",
+      "decoder_contract.generation_plan.skeleton_bias",
+      "decoder_contract.generation_plan.repair_strategy",
+      "decoder_contract.return_contract.empty_or_invalid_behavior",
+      "decoder_contract.return_contract.must_preserve_container_shape",
+      "decoder_contract.visible_arg_count_hint"
+    ],
+    "withheld_from_text": [
+      "decoder_contract.return_shape",
+      "decoder_contract.return_contract.shape",
+      "category",
+      "concept_residual_label",
+      "solution_body",
+      "tests"
+    ]
+  },
+  "matched_budget": {
+    "budget_id": "substrate_smoke_private_contract_v0",
+    "seeds": [17],
+    "max_sequence_tokens": 64,
+    "max_vocab": 768,
+    "epochs": 8,
+    "batch_size": 32,
+    "learning_rate": 0.003,
+    "weight_decay": 0.0001,
+    "fanout_top_k": 3,
+    "parameter_match_tolerance": 0.1,
+    "trusted_parameter_match_tolerance": 0.05
+  },
+  "arms": {
+    "symliquid_style": {
+      "id": "symliquid_style_recurrent_vsa",
+      "kind": "torch_symliquid_style_recurrent_vsa_classifier",
+      "role": "private contract substrate/proposal smoke; not yet the Rust SymLiquid code-proposer adapter",
+      "hidden_dim_candidates": [20, 24, 28, 32, 36],
+      "reservoir_dim_candidates": [20, 24, 28, 32, 36],
+      "hv_dim_candidates": [20, 24, 28, 32, 36]
+    },
+    "transformer_control": {
+      "id": "classic_tiny_transformer_control",
+      "kind": "torch_transformer_encoder_classifier",
+      "role": "classic tiny transformer matched control",
+      "d_model": 24,
+      "nhead": 2,
+      "num_layers": 1,
+      "dim_feedforward": 48
+    }
+  },
+  "adapter_boundary": {
+    "current_status": "lower_level_contract_substrate_only",
+    "full_code_proposer_input_contract": [
+      "visible private task prompt",
+      "entry point",
+      "private decoder contract",
+      "STS stream bundle",
+      "fanout seed"
+    ],
+    "full_code_proposer_output_contract": [
+      "task_id",
+      "phase",
+      "candidate_source",
+      "code",
+      "candidate_sha256",
+      "substrate_arm",
+      "rank_score",
+      "provenance"
+    ],
+    "missing_before_full_code_proposer_comparison": [
+      "SymLiquid substrate adapter that emits candidate code rows consumable by code_lm_private_verifier.py",
+      "Classic transformer control adapter that emits candidate code rows under the same private manifest",
+      "shared verifier/fanout/ranker wrapper over those candidate code rows"
+    ]
+  },
+  "success_criteria": {
+    "report_smoke_only": true,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_rows_used_for_training": 0,
+    "both_arms_runnable": true,
+    "both_sts_controls_runnable": true,
+    "transformer_control_must_be_real": true,
+    "symliquid_arm_status_may_be_style_adapter_until_rust_code_proposer_exists": true
+  }
+}

@@ -1,0 +1,664 @@
+{
+  "policy": "project_theseus_neural_seed_token_decoder_comparator_v0",
+  "purpose": "Run a matched private SymLiquid-style-vs-classic-transformer token-level code decoder smoke using natural-prompt private rows, prompt/signature-only inference, the existing candidate-code row schema, and the private verifier.",
+  "comparison_level": "private_prompt_signature_token_level_code_decoder_smoke",
+  "safety": {
+    "public_calibration_allowed": false,
+    "public_training_allowed": false,
+    "teacher_calls_allowed": false,
+    "teacher_distillation_allowed": true,
+    "network_fetch_allowed": false,
+    "model_promotion_allowed": false,
+    "long_unattended_training_allowed": true
+  },
+  "teacher_distillation": {
+    "enabled": true,
+    "mode": "governed_training_rows_only",
+    "manifest": "reports/teacher_distillation_manifest.json",
+    "gate": "reports/teacher_distillation_gate.json",
+    "max_code_lm_rows": 64,
+    "utility_quarantine": {
+      "enabled": true,
+      "blocked_task_ids": [
+        "private_state_window_relay_v1"
+      ],
+      "reason": "2026-06-23 flywheel round 2: verifier-accepted row produced no family-disjoint lift (0/24 stayed 0/24) and worsened strict syntax; retain in ledger, do not consume as training pressure until a stronger utility gate reinstates it."
+    },
+    "requires_execution_verified_code_lm_task": true,
+    "exclude_strict_family_disjoint_holdout_families": true,
+    "record_verified_self_generated_rows": true,
+    "verified_self_generation": {
+      "enabled": true,
+      "ledger": "reports/teacher_distillation_ledger.jsonl",
+      "max_rows_per_run": 32,
+      "source": "strict_no_cheat_private_execution_verifier_passes_only",
+      "score_semantics": "Only no-cheat eligible student candidates from private_eval that pass the private execution verifier are appended as verified_self_generated ledger accounting rows."
+    },
+    "runtime_serving_external_tokens": "forbidden",
+    "live_teacher_calls_in_comparator": false,
+    "score_semantics": "The comparator may train on manifest-admitted private code_lm_task rows only. It does not call the teacher, serve external tokens, train on public benchmark payloads, or credit teacher/template/tool rows as learned candidate generation."
+  },
+  "pretraining_initialization": {
+    "enabled": true,
+    "policy": "from_scratch_narrow_corpus_pretraining_embedding_init_v1",
+    "source": "reports/narrow_corpus_pretraining_spine_ladder_v1.json",
+    "tokenizer": "checkpoints/narrow_pretraining_ladder_v1/tokenizer.json",
+    "checkpoints": {
+      "symliquid_style": "checkpoints/narrow_pretraining_ladder_v1/symliquid_style_rung_0_6m_sanity.pt",
+      "transformer_control": "checkpoints/narrow_pretraining_ladder_v1/transformer_control_rung_15m_transformer.pt"
+    },
+    "map_policy": "average_bpe_embedding_for_visible_prompt_signature_tokens_and_private_body_tokens",
+    "from_scratch": true,
+    "open_or_pretrained_model_weights_used": false,
+    "uses_eval_tests_or_solutions": false,
+    "uses_public_data": false,
+    "synthesizes_code": false,
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "full_state_warmup": {
+      "enabled": true,
+      "policy": "comparator_compatible_full_model_python_function_pretraining_v2",
+      "corpus_manifest": "data/training_sources/narrow_corpus_manifest_ladder_v1.json",
+      "max_files": 3200,
+      "max_examples": 12000,
+      "eval_fraction": 0.08,
+      "max_eval_examples": 640,
+      "extend_target_vocab": true,
+      "extend_source_vocab": true,
+      "target_vocab_max_files": 3200,
+      "target_vocab_max_examples": 16000,
+      "source_vocab_max_files": 3200,
+      "source_vocab_max_examples": 16000,
+      "min_target_tokens": 8,
+      "max_function_body_chars": 5000,
+      "source_text_style": "prompt_signature_metadata_v2",
+      "quality_filter": {
+        "enabled": true,
+        "policy": "nontrivial_algorithmic_function_body_filter_v1",
+        "exclude_dunder_functions": true,
+        "reject_inert_bodies": true,
+        "reject_identity_copy_shortcuts": true,
+        "min_body_statement_count": 1,
+        "min_nontrivial_signal_count": 2,
+        "require_parameter_or_call": true,
+        "uses_eval_tests_or_solutions": false,
+        "uses_public_data": false
+      },
+      "epochs": 4,
+      "batch_size": 64,
+      "learning_rate": 0.0008,
+      "weight_decay": 0.0001,
+      "first_target_token_loss_weight": 1.0,
+      "return_token_loss_weight": 1.0,
+      "grammar_validity_auxiliary_loss_weight": 0.03,
+      "grammar_validity_max_positions_per_batch": 48,
+      "body_token_validity_policy": "strict_body_token_legality_v1",
+      "arm_example_caps": {
+        "symliquid_style": 768
+      },
+      "arm_eval_example_caps": {
+        "symliquid_style": 128
+      },
+      "arm_epoch_overrides": {
+        "symliquid_style": 1
+      },
+      "split_example_caps": {
+        "broad_private_heldout": 4096
+      },
+      "split_eval_example_caps": {
+        "broad_private_heldout": 128
+      },
+      "split_epoch_overrides": {
+        "broad_private_heldout": 2
+      },
+      "from_scratch": true,
+      "open_or_pretrained_model_weights_used": false,
+      "uses_eval_tests_or_solutions": false,
+      "uses_public_data": false,
+      "public_training_rows": 0,
+      "external_inference_calls": 0,
+      "score_semantics": "Self-supervised warmup over admitted license-clean Python function bodies only; updates the same strict comparator model instance before private task-pair adaptation."
+    }
+  },
+  "strict_generator_pretraining": {
+    "enabled": true,
+    "policy": "checkpointed_strict_transformer_generator_full_model_pretraining_v1",
+    "checkpoint_dir": "checkpoints/strict_generator_pretraining_v1",
+    "score_semantics": "Train the actual strict prompt/signature-to-body transformer generator and materialize reusable checkpoints. This is not a renderer, template, tool, structural adapter, or learned-generation claim by itself.",
+    "budgets": [
+      {
+        "id": "strict_generator_smoke",
+        "max_files": 64,
+        "max_examples": 256,
+        "target_vocab_max_files": 64,
+        "target_vocab_max_examples": 512,
+        "source_vocab_max_files": 64,
+        "source_vocab_max_examples": 512,
+        "max_eval_examples": 64,
+        "epochs": 1,
+        "batch_size": 64,
+        "learning_rate": 0.0008,
+        "grammar_validity_auxiliary_loss_weight": 0.0,
+        "grammar_validity_max_positions_per_batch": 0,
+        "target_token_positions": 600000
+      },
+      {
+        "id": "strict_generator_5m",
+        "max_files": 3200,
+        "max_examples": 12000,
+        "target_vocab_max_files": 3200,
+        "target_vocab_max_examples": 16000,
+        "source_vocab_max_files": 3200,
+        "source_vocab_max_examples": 16000,
+        "max_eval_examples": 640,
+        "epochs": 3,
+        "batch_size": 64,
+        "learning_rate": 0.0008,
+        "grammar_validity_auxiliary_loss_weight": 0.0,
+        "grammar_validity_max_positions_per_batch": 0,
+        "target_token_positions": 5000000
+      },
+      {
+        "id": "strict_generator_5m_quality_balanced",
+        "max_files": 3200,
+        "max_examples": 12000,
+        "target_vocab_max_files": 3200,
+        "target_vocab_max_examples": 16000,
+        "source_vocab_max_files": 3200,
+        "source_vocab_max_examples": 16000,
+        "max_eval_examples": 640,
+        "epochs": 3,
+        "batch_size": 64,
+        "learning_rate": 0.0008,
+        "grammar_validity_auxiliary_loss_weight": 0.0,
+        "grammar_validity_max_positions_per_batch": 0,
+        "target_token_positions": 5000000,
+        "example_selection": {
+          "policy": "quality_balanced_ast_local_v1",
+          "min_quality_score": 6.0,
+          "high_quality_fraction": 0.6,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false,
+          "uses_answer_metadata": false
+        },
+        "score_semantics": "Comparison rung for AST-local quality-balanced selection over admitted private/licensed corpus functions. It changes train-row sampling only; it does not inspect eval rows, verifier results, tests, solutions, public benchmarks, answer metadata, or hidden task family labels."
+      },
+      {
+        "id": "strict_generator_5m_quality_ops",
+        "max_files": 3200,
+        "max_examples": 12000,
+        "target_vocab_max_files": 3200,
+        "target_vocab_max_examples": 16000,
+        "source_vocab_max_files": 3200,
+        "source_vocab_max_examples": 16000,
+        "max_eval_examples": 640,
+        "epochs": 3,
+        "batch_size": 64,
+        "learning_rate": 0.0008,
+        "grammar_validity_auxiliary_loss_weight": 0.0,
+        "grammar_validity_max_positions_per_batch": 0,
+        "target_token_positions": 5000000,
+        "source_text_style": "prompt_signature_operation_metadata_v3",
+        "example_selection": {
+          "policy": "quality_balanced_ast_local_v1",
+          "min_quality_score": 6.0,
+          "high_quality_fraction": 0.6,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false,
+          "uses_answer_metadata": false
+        },
+        "source_conditioning": {
+          "visible_prompt_operation_tags": true,
+          "policy": "prompt_signature_visible_operation_tags_v1",
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false,
+          "uses_answer_metadata": false
+        },
+        "semantic_plan_auxiliary_loss": {
+          "enabled": false,
+          "policy": "private_body_derived_source_plan_auxiliary_v1",
+          "weight": 0.08,
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false,
+          "uses_answer_metadata": false,
+          "served_at_runtime": false,
+          "candidate_generation_credit": 0
+        },
+        "score_semantics": "Comparison rung for prompt/signature-only operation tags plus AST-local quality-balanced corpus selection. It changes visible source conditioning and train-row sampling only; it does not inspect eval rows, verifier results, tests, solutions, public benchmarks, answer metadata, or hidden task family labels."
+      },
+      {
+        "id": "strict_generator_5m_visible_intent",
+        "max_files": 3200,
+        "max_examples": 12000,
+        "target_vocab_max_files": 3200,
+        "target_vocab_max_examples": 16000,
+        "source_vocab_max_files": 3200,
+        "source_vocab_max_examples": 16000,
+        "max_eval_examples": 640,
+        "epochs": 3,
+        "batch_size": 64,
+        "learning_rate": 0.0008,
+        "grammar_validity_auxiliary_loss_weight": 0.0,
+        "grammar_validity_max_positions_per_batch": 0,
+        "target_token_positions": 5000000,
+        "source_conditioning": {
+          "visible_prompt_intent_tags": true,
+          "policy": "generic_prompt_entrypoint_keyword_tags_v1",
+          "uses_eval_tests_or_solutions": false,
+          "uses_public_data": false,
+          "uses_answer_metadata": false
+        },
+        "score_semantics": "Comparison rung for prompt/signature-only visible intent source conditioning. It changes source text features only; it does not change data admission, verifier scoring, public benchmark policy, or learned-generation family semantics."
+      },
+      {
+        "id": "strict_generator_15m",
+        "max_files": 3200,
+        "max_examples": 12000,
+        "target_vocab_max_files": 3200,
+        "target_vocab_max_examples": 16000,
+        "source_vocab_max_files": 3200,
+        "source_vocab_max_examples": 16000,
+        "max_eval_examples": 640,
+        "epochs": 8,
+        "batch_size": 64,
+        "learning_rate": 0.0008,
+        "grammar_validity_auxiliary_loss_weight": 0.0,
+        "grammar_validity_max_positions_per_batch": 0,
+        "target_token_positions": 15000000
+      },
+      {
+        "id": "strict_generator_15m_capacity",
+        "max_files": 3200,
+        "max_examples": 12000,
+        "target_vocab_max_files": 3200,
+        "target_vocab_max_examples": 16000,
+        "source_vocab_max_files": 3200,
+        "source_vocab_max_examples": 16000,
+        "max_eval_examples": 640,
+        "epochs": 8,
+        "batch_size": 48,
+        "learning_rate": 0.0006,
+        "grammar_validity_auxiliary_loss_weight": 0.0,
+        "grammar_validity_max_positions_per_batch": 0,
+        "target_token_positions": 15000000,
+      "source_text_style": "prompt_signature_operation_metadata_v3",
+      "transformer_control": {
+        "d_model": 320,
+        "nhead": 4,
+        "num_layers": 4,
+        "dim_feedforward": 640
+      },
+      "source_conditioning": {
+        "visible_prompt_intent_tags": true,
+        "visible_prompt_operation_tags": true,
+        "policy": "prompt_signature_visible_intent_and_operation_tags_v1",
+        "uses_eval_tests_or_solutions": false,
+        "uses_public_data": false,
+        "uses_answer_metadata": false
+      },
+      "semantic_plan_auxiliary_loss": {
+        "enabled": false,
+        "policy": "private_body_derived_source_plan_auxiliary_v1",
+        "weight": 0.08,
+        "uses_eval_tests_or_solutions": false,
+        "uses_public_data": false,
+        "uses_answer_metadata": false,
+        "served_at_runtime": false,
+        "candidate_generation_credit": 0
+      },
+      "score_semantics": "Capacity rung for the practical transformer/hybrid strict body-token generator with prompt/signature-only visible intent and operation tags. It changes model size, training steps, and visible source conditioning only; it does not change data admission, verifier scoring, public benchmark policy, or learned-generation family semantics."
+    }
+    ],
+    "uses_eval_tests_or_solutions": false,
+    "uses_public_data": false,
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "open_or_pretrained_model_weights_used": false
+  },
+  "gap_report": {
+    "source_report": "reports/neural_seed_code_proposer_comparator.json",
+    "source_candidate_manifest": "reports/neural_seed_code_proposer_candidates.jsonl",
+    "out": "reports/neural_seed_code_proposer_gap_report.json",
+    "markdown_out": "reports/neural_seed_code_proposer_gap_report.md",
+    "score_eval_solutions_for_coverage_diagnostics_only": true
+  },
+  "data": {
+    "train_jsonl": "data/training_data/high_transfer/private_train/broad_private_generalization_ladder_v1_code_lm_tasks.jsonl",
+    "eval_jsonl": "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
+    "max_train_rows": 3000,
+    "max_eval_rows": 24,
+    "family_disjoint_eval": {
+      "enabled": true,
+      "family_key": "concept_residual_label",
+      "min_holdout_families": 6,
+      "views": [
+        "sts_on"
+      ],
+      "max_train_rows": 1500,
+      "max_eval_rows": 24,
+      "split_seed": 734
+    },
+    "broad_private_heldout_eval": {
+      "enabled": true,
+      "eval_jsonl": [
+        "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_semantic_alias_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/broad_private_novel_composition_v1_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/dependency_free_candidate_private_curriculum_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/edge_contract_v3_verifier_mismatch_public_transfer_private_curriculum_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/post_v4_private_shadow_transfer_v1_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/post_v4_seed23_5x32_private_residual_repair_v3_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/private_contract_blind_transfer_v1_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/private_ecology_generalization_v5_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/private_residual_frontier_v1_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/private_residual_repair_v3_heldout_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/private_unseen_transfer_challenge_v1_code_lm_tasks.jsonl",
+        "data/training_data/high_transfer/private_eval/public_safe_broad_transfer_maturity_v4_heldout_code_lm_tasks.jsonl"
+      ],
+      "family_key": "concept_residual_label",
+      "min_eval_rows": 200,
+      "min_eval_families": 30,
+      "max_train_rows": 1500,
+      "max_eval_rows": 200,
+      "max_target_tokens": 112,
+      "fanout_top_k": 1,
+      "grammar_decode_top_k": 64,
+      "decode_beam_width": 4,
+      "decode_branching_factor": 2,
+      "split_seed": 17017,
+      "score_semantics": "Existing private heldout instrument with zero family overlap against the broad_private_generalization_ladder_v1 train rows; family labels are audit-only and never generator-visible."
+    },
+    "split_seed": 23,
+    "require_private_flags": true,
+    "forbidden_row_flags": [
+      "public_benchmark",
+      "public_benchmark_solutions_included",
+      "public_prompts_included",
+      "public_score_labels_included",
+      "public_tests_included"
+    ],
+    "training_target": "private_train_body_tokens",
+    "eval_tests_visible_to": "private_verifier_only",
+    "eval_solution_visible_to_generator": false
+  },
+  "body_structure_decoder": {
+    "target_mode": "body_tokens",
+    "target_source": "private_train_solution_body_tokens",
+    "fallback_returns_allowed": false,
+    "fallback_return_evidence_policy": "forbidden_hard_failure",
+    "no_cheat_evidence_policy": {
+      "enabled": true,
+      "null_baselines_count_as_evidence": false,
+      "fallback_returns_count_as_evidence": false,
+      "visible_contract_semantic_priors_count_as_evidence": false,
+      "semantic_family_body_renderers_count_as_evidence": false,
+      "body_template_selectors_count_as_evidence": false,
+      "task_id_keyed_candidates_allowed": false,
+      "public_or_eval_leakage_allowed": false,
+      "teacher_or_external_inference_allowed": false
+    },
+    "raw_validity_required_before_scale": true,
+    "static_coherence_ranker": {
+      "enabled": true,
+      "policy": "prompt_signature_static_coherence_v1",
+      "candidate_pool_size": 8,
+      "purpose": "Rerank already decoded body-token candidates by task-blind Python static hygiene before verifier execution.",
+      "uses_only_callable_signature_and_candidate_code": true,
+      "uses_eval_tests_or_solutions": false,
+      "uses_public_data": false,
+      "uses_answer_metadata": false,
+      "synthesizes_code": false,
+      "fallback_returns_allowed": false
+    },
+    "visible_contract_semantic_beam": {
+      "enabled": false,
+      "beam_policy": "disabled_for_blind_prompt_signature_default",
+      "uses_only_allowed_decoder_contract_fields": false,
+      "uses_eval_tests_or_solutions": false,
+      "uses_public_data": false,
+      "fields": [],
+      "covered_initial_families": []
+    },
+    "internal_semantic_routing": {
+      "enabled": false,
+      "routing_policy": "disabled_for_blind_prompt_signature_default",
+      "enabled_views": [],
+      "auxiliary_plan_loss_weight": 0.0,
+      "plan_router_scale": 0.0,
+      "learned_route_top_k": 0,
+      "prototype_route_weight": 0.0,
+      "prototype_route_memory": false,
+      "prototype_route_keep_rate": 0.0,
+      "contract_fingerprint_route_memory": false,
+      "contract_fingerprint_route_top_k": 0,
+      "contract_fingerprint_route_keep_rate": 0.0,
+      "contract_feature_route_memory": false,
+      "contract_feature_route_top_k": 0,
+      "contract_feature_route_keep_rate": 0.0,
+      "visible_text_prototype_route_memory": false,
+      "visible_text_prototype_route_top_k": 0,
+      "visible_text_prototype_route_keep_rate": 0.0,
+      "route_dropout_policy": "deterministic_task_hash_keep_rate",
+      "target": "disabled",
+      "source": "disabled",
+      "uses_only_allowed_decoder_contract_fields": false,
+      "uses_eval_tests_or_solutions": false,
+      "uses_public_data": false,
+      "matched_for_both_arms": true
+    },
+    "structural_action_family": {
+      "enabled": false,
+      "diagnostic_only": true,
+      "target_mode": "structural_action_sequence_v0",
+      "target_source": "private_train_solution_body_line_action_sequences",
+      "source_view": "sts_on",
+      "compiler": "generic_private_train_line_action_compiler_v0",
+      "candidate_generation_mode": "private_train_structural_action_sequence_decoder",
+      "selection_ablation_axis": "sequence_class_selection",
+      "compiler_ablation_axis": "line_action_compilation",
+      "finer_ast_synthesis_enabled": false,
+      "fanout_top_k": 4,
+      "epochs": 8,
+      "fallback_returns_allowed": false,
+      "uses_only_allowed_decoder_contract_fields": false,
+      "uses_eval_tests_or_solutions": false,
+      "uses_public_data": false,
+      "teacher_used": false,
+      "matched_for_both_arms": true
+    }
+  },
+  "text_views": {
+    "sts_off": [
+      "prompt",
+      "entry_point",
+      "visible_operation_tags"
+    ],
+    "sts_on": [
+      "prompt",
+      "entry_point",
+      "visible_operation_tags"
+    ],
+    "withheld_from_text": [
+      "category",
+      "concept_residual_label",
+      "decoder_contract.semantic_family",
+      "decoder_contract.residual_label_hint",
+      "solution_body",
+      "solution_expr",
+      "tests"
+    ]
+  },
+  "matched_budget": {
+    "budget_id": "token_decoder_private_smoke_v0",
+    "seeds": [
+      23
+    ],
+    "max_source_tokens": 96,
+    "max_target_tokens": 160,
+    "max_source_vocab": 4096,
+    "max_target_vocab": 4096,
+    "epochs": 4,
+    "batch_size": 64,
+    "learning_rate": 0.003,
+    "weight_decay": 0.0001,
+    "first_target_token_loss_weight": 2.0,
+    "return_token_loss_weight": 1.6,
+    "grammar_validity_auxiliary_loss_weight": 0.05,
+    "grammar_validity_max_positions_per_batch": 64,
+    "body_token_validity_policy": "strict_body_token_legality_v1",
+    "body_token_decode_policy": "strict_body_token_legality_v1",
+    "semantic_token_loss_weights": {
+      "enabled": true,
+      "policy": "visible_parameter_and_expression_token_weighting_v1",
+      "parameter_identifier_weight": 3.0,
+      "update_call_name_weight": 1.5,
+      "operator_token_weight": 1.25,
+      "control_token_weight": 1.2,
+      "structural_trajectory_weights_enabled": true,
+      "line_boundary_weight": 1.15,
+      "loop_header_weight": 1.35,
+      "accumulator_update_line_weight": 1.65,
+      "top_level_return_weight": 3.0,
+      "final_dedent_weight": 2.1,
+      "builtin_call_trajectory_weights_enabled": true,
+      "builtin_call_name_weight": 1.7,
+      "builtin_call_argument_weight": 1.25,
+      "builtin_call_punctuation_weight": 1.45,
+      "returned_local_dependency_weights_enabled": true,
+      "returned_local_update_weight": 2.4,
+      "returned_local_return_weight": 2.8,
+      "primary_dataflow_weights_enabled": false,
+      "primary_parameter_identifier_weight": 3.7,
+      "primary_dataflow_update_weight": 2.7,
+      "primary_dataflow_return_weight": 3.6,
+      "primary_loop_header_weight": 2.1,
+      "max_weight": 4.0,
+      "uses_eval_tests_or_solutions": false,
+      "uses_public_data": false
+    },
+    "fanout_top_k": 1,
+    "grammar_decode_top_k": 64,
+    "decode_beam_width": 4,
+    "decode_branching_factor": 2,
+    "decode_temperature": 0.9,
+    "parameter_match_tolerance": 0.12,
+    "trusted_parameter_match_tolerance": 0.08,
+    "private_candidate_timeout_seconds": 4
+  },
+  "candidate_row_schema": {
+    "source": "configs/neural_seed_code_proposer_comparator.json",
+    "phases": {
+      "private_baseline": "shared null baseline candidate",
+      "private_eval_sts_off": "same-seed STS-off token decoder control",
+      "private_eval": "STS-on token decoder candidate rows"
+    },
+    "ranker": "syntax-valid candidate first, then sequence log probability normalized by generated token count",
+    "ranker_policy": "prompt-signature static coherence first, then decoded sequence log probability; no tests, solutions, family labels, public data, or answer metadata",
+    "verifier": "scripts/code_lm_private_verifier.py::evaluate_private_candidates"
+  },
+  "arms": {
+    "symliquid_style": {
+      "id": "symliquid_style_token_decoder",
+      "kind": "torch_symliquid_style_recurrent_vsa_token_decoder",
+      "role": "private token-level code decoder smoke with source-summary semantic-plan routing; emits decoded Python code tokens, not selected body templates",
+      "views": [
+        "sts_on"
+      ],
+      "decode_beam_width": 4,
+      "decode_branching_factor": 2,
+      "hidden_dim_candidates": [
+        128,
+        160,
+        192,
+        224,
+        256,
+        288
+      ],
+      "reservoir_dim_candidates": [
+        192,
+        224,
+        256,
+        320,
+        384,
+        448,
+        512
+      ],
+      "hv_dim_candidates": [
+        160,
+        192,
+        224,
+        256,
+        320,
+        384,
+        448,
+        512
+      ],
+      "training_budget_overrides": {
+        "max_train_rows": 512,
+        "epochs": 2,
+        "learning_rate": 0.002,
+        "score_semantics": "Bounded SymLiquid discovery comparator budget so the practical transformer/hybrid full-pretraining proof is not blocked by recurrent CPU adaptation cost."
+      }
+    },
+    "transformer_control": {
+      "id": "classic_tiny_transformer_token_decoder",
+      "kind": "torch_transformer_encoder_token_decoder",
+      "role": "classic tiny transformer matched token decoder control",
+      "views": [
+        "sts_off",
+        "sts_on"
+      ],
+      "decode_beam_width": 4,
+      "decode_branching_factor": 2,
+      "d_model": 224,
+      "nhead": 4,
+      "num_layers": 2,
+      "dim_feedforward": 448
+    }
+  },
+  "adapter_boundary": {
+    "current_status": "semantic_slot_token_decoder_smoke",
+    "common_input_contract": [
+      "visible private task prompt",
+      "entry point",
+      "STS view",
+      "fanout seed"
+    ],
+    "common_output_contract": [
+      "task_id",
+      "source_task_id",
+      "entry_point",
+      "phase",
+      "candidate_source",
+      "code",
+      "candidate_sha256",
+      "substrate_arm",
+      "rank_score",
+      "provenance"
+    ],
+    "limitations": [
+      "This smoke trains small local token decoders on direct private solution-body tokens while inference features are restricted to prompt plus entry point.",
+      "Decoded streams use a lightweight grammar-aware top-k chooser and syntax cleanup, but no semantic-slot body renderer or terminal fallback return is allowed as evidence.",
+      "Contract-derived semantic beams, internal semantic route memories, and structural-action adapters are disabled in the default path; they may only be used in separately labeled diagnostic ablations.",
+      "Fallback terminal returns are forbidden evidence. Syntax cleanup may balance/drop fragments and close blocks, but it must not synthesize a return from the task contract.",
+      "MLX is reported if available, but the active comparator implementation uses Torch for matched model code paths."
+    ],
+    "next_after_smoke": [
+      "Move the token decoder path into the Rust/SymLiquid production generator once the private smoke is informative.",
+      "Add native MLX kernels for Apple Silicon once mlx.core is available in the active Python environment.",
+      "Use the gap and residual-mining reports to target SymLiquid-only wins and both-fail families before any public calibration."
+    ]
+  },
+  "success_criteria": {
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_rows_used_for_training": 0,
+    "model_promotion_allowed": false,
+    "both_arms_emit_token_decoded_candidate_code_rows": true,
+    "same_private_verifier_for_both_arms": true,
+    "template_selector_mode_disallowed": true,
+    "transformer_raw_syntax_pass_rate_floor": 0.6,
+    "transformer_rank1_passed_floor": 12,
+    "transformer_pass_if_any_passed_floor": 12
+  }
+}

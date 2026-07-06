@@ -1,0 +1,69 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_mgba",
+  "source_id": "mgba",
+  "name": "mgba-emu/mgba",
+  "category": "emulator_runtime_dependency",
+  "priority": "high",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/mgba-emu/mgba",
+  "license_spdx": "mpl-2.0",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "emulator_runtime_dependency_adapter",
+  "runner_family": "emulator_runtime_local",
+  "runtime_tier": "E3",
+  "risk_tier": "medium",
+  "capability_target": "native emulator runtime support for user-supplied local game RL assets",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "source": "staged native/runtime source",
+    "python_runtime": "isolated emulator runtime",
+    "symbols": "required CFFI imports and core symbols"
+  },
+  "output_contract": {
+    "runtime_ready": "bool",
+    "symbols": "available or missing symbols",
+    "residuals": "native build/import failures"
+  },
+  "smoke_steps": [
+    "mgba_import",
+    "mgba_core_import",
+    "mCoreFind_symbol_available",
+    "mColor_cdef_available"
+  ],
+  "promotion_gates": [
+    "license_allowed",
+    "native_source_present",
+    "python_binding_imports",
+    "required_symbols_available",
+    "no_commercial_rom_download"
+  ],
+  "contamination_policy": "Record source provenance and keep generated frontiers separate from training samples.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

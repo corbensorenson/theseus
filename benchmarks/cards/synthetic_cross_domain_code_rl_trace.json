@@ -1,0 +1,146 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "synthetic_cross_domain_code_rl_trace",
+  "name": "Synthetic Cross-Domain Code and RL Trace Pressure",
+  "category": "synthetic_coding_benchmark",
+  "family": "coding_local_sandbox",
+  "source_id": "synthetic_cross_domain_code_rl_trace",
+  "runner_family": "synthetic_benchmark_local",
+  "status": "adapter_smoke_passed",
+  "decision": "synthetic_local_generated",
+  "license_allowed": true,
+  "license_spdx": "local-generated-provenance-only",
+  "resource_pantry_path": "data/synthetic_benchmarks/synthetic_cross_domain_code_rl_trace.jsonl",
+  "staged_path": "data/synthetic_benchmarks/synthetic_cross_domain_code_rl_trace.jsonl",
+  "case_manifest": "data/synthetic_benchmarks/synthetic_cross_domain_code_rl_trace.jsonl",
+  "public_comparator_use": "forbidden",
+  "contamination_risk": "private_synthetic_pressure_do_not_train_on_eval_cases",
+  "required_arms": [
+    "benchmark_ratchet_arm",
+    "code_repair_verifier",
+    "puffer_ocean_control_arm",
+    "residual_governance_arm"
+  ],
+  "arm_activation_contract": {
+    "required_arms": [
+      "benchmark_ratchet_arm",
+      "code_repair_verifier",
+      "puffer_ocean_control_arm",
+      "residual_governance_arm"
+    ],
+    "available_required_arms": [
+      "benchmark_ratchet_arm",
+      "code_repair_verifier",
+      "puffer_ocean_control_arm",
+      "residual_governance_arm"
+    ],
+    "must_report_activation": true
+  },
+  "synthetic_benchmark": {
+    "mode": "cross_domain_hybrid",
+    "case_count": 8,
+    "case_index": [
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_safe_ratio_00",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "wh_vs_that_with_gap",
+        "source_benchmark": "transfer_web_task"
+      },
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_reward_delta_01",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "drone_rl:runtime",
+        "source_benchmark": "transfer_rl_control"
+      },
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_stable_dedupe_02",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "animate_subject_trans",
+        "source_benchmark": "native_voice_io"
+      },
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_safe_head_03",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "tough_vs_raising_1",
+        "source_benchmark": "transfer_voice_io"
+      },
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_parse_ints_04",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "matrix_question_npi_licensor_present",
+        "source_benchmark": "asi_transfer_suite"
+      },
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_window_sums_05",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "coordinate_structure_constraint_object_extraction",
+        "source_benchmark": "transfer_self_debugging"
+      },
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_chunked_06",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "ellipsis_n_bar_1",
+        "source_benchmark": "transfer_code_repair"
+      },
+      {
+        "case_id": "synthetic_cross_domain_code_rl_trace_episode_survival_ratio_07",
+        "required_arms": [
+          "benchmark_ratchet_arm",
+          "code_repair_verifier",
+          "puffer_ocean_control_arm",
+          "residual_governance_arm"
+        ],
+        "residual_target": "causative",
+        "source_benchmark": "transfer_long_context_recovery"
+      }
+    ],
+    "score_semantics": "private_pressure_readiness_and_unit_test_pass_rate_not_public_comparator_accuracy",
+    "promotion_rule": "requires transfer artifact consumption plus real benchmark regression gate"
+  },
+  "permission_envelope": {
+    "network": "forbidden_during_scoring",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "side_effects": [
+      "read_case_manifest",
+      "write_reports",
+      "sandbox_python_unit_tests"
+    ]
+  },
+  "external_inference_calls": 0
+}

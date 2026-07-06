@@ -1,0 +1,68 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_the_agent_company",
+  "source_id": "the_agent_company",
+  "name": "TheAgentCompany/TheAgentCompany",
+  "category": "desktop_agent_benchmark",
+  "priority": "medium",
+  "status": "needs_adapter_smoke",
+  "url": "https://github.com/TheAgentCompany/TheAgentCompany",
+  "license_spdx": "mit",
+  "license_allowed": true,
+  "decision": "approved_for_catalog_import",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "sandboxed_desktop_eval_adapter",
+  "runner_family": "desktop_agent_local",
+  "runtime_tier": "E3",
+  "risk_tier": "high",
+  "capability_target": "desktop action planning in VM/sandboxed environments",
+  "current_curriculum_stage": "tool_dialogue_agents",
+  "next_frontier_family": "tool_agent",
+  "input_contract": {
+    "examples": "local benchmark items or metadata",
+    "model": "local checkpoint or SymLiquid scorer"
+  },
+  "output_contract": {
+    "score": "accuracy or task metric",
+    "residuals": "failed cases",
+    "cost": "runtime and memory"
+  },
+  "smoke_steps": [
+    "source_manifest_scan",
+    "server_setup_contract_scan",
+    "docker_runtime_gate",
+    "account_isolation_policy",
+    "provider_path_audit"
+  ],
+  "promotion_gates": [
+    "sandbox_or_vm_required",
+    "no_host_mutation_without_approval",
+    "rollback_verified",
+    "no_external_inference"
+  ],
+  "contamination_policy": "Record source provenance and keep generated frontiers separate from training samples.",
+  "regression_policy": "If mastered, demote to regression suite and preserve any failures in residual escrow.",
+  "permission_envelope": {
+    "memory": "benchmark-local metadata and task context only",
+    "tools": "local loaders, scorers, sandboxes, and report writers",
+    "runtime": "E3",
+    "side_effects": [
+      "write_reports",
+      "write_adapter_cards"
+    ],
+    "network": "forbidden during scoring; catalog import only through license-gated source tools",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "approval_required_for": [
+      "destructive",
+      "financial",
+      "legal",
+      "production",
+      "security_sensitive"
+    ]
+  },
+  "teacher_role": "Only diagnose adapter/source bugs after local smoke fails; do not score or solve benchmark items.",
+  "external_inference_calls": 0
+}

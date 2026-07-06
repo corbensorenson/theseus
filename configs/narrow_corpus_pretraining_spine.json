@@ -1,0 +1,304 @@
+{
+  "policy": "project_theseus_narrow_corpus_pretraining_spine_config_v4",
+  "purpose": "Build the 10M license-clean, code-rich from-scratch corpus ladder before strict private task-pair adaptation.",
+  "scope": {
+    "include": [
+      "Corben-owned/project-internal non-eval source needed for Theseus behavior",
+      "PSF-licensed local Python standard-library source",
+      "Explicitly allowlisted MIT/BSD/Apache/PSF Python package source already present on this Mac"
+    ],
+    "exclude": [
+      "public benchmark prompts",
+      "public benchmark tests and hidden tests",
+      "public benchmark solutions, traces, and answer templates",
+      "open/base/pretrained model weights",
+      "unknown-license data",
+      "generated reports and checkpoints",
+      "test/example/benchmark directories from third-party packages"
+    ]
+  },
+  "firewall": {
+    "include_strict_comparator_eval": true,
+    "strict_comparator_config": "configs/neural_seed_token_decoder_comparator.json",
+    "score_semantics": "Firewall strings are used only for corpus rejection/decontamination, never as model-visible generation or ranking features."
+  },
+  "corpus": {
+    "sources": [
+      {
+        "id": "python_stdlib_psf_3_9_command_line_tools",
+        "root": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9",
+        "suffixes": [
+          ".py"
+        ],
+        "excluded_dirs": [
+          "test",
+          "tests",
+          "idle_test",
+          "__pycache__"
+        ],
+        "max_files": 1200,
+        "max_total_chars": 7000000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "PSF-2.0",
+        "license_file": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/LICENSE.txt",
+        "provenance": "local_apple_command_line_tools_python_stdlib"
+      },
+      {
+        "id": "sympy_bsd_symbolic_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/sympy",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 900,
+        "max_total_chars": 8000000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "scipy_bsd_numeric_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/scipy",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 700,
+        "max_total_chars": 6000000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD-3-Clause",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "numpy_bsd_array_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/numpy",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 480,
+        "max_total_chars": 5000000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD-3-Clause",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "pandas_bsd_data_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/pandas",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 800,
+        "max_total_chars": 6000000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD-3-Clause",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "scikit_learn_bsd_ml_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/sklearn",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 520,
+        "max_total_chars": 5000000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD-3-Clause",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "numba_bsd_compiler_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/numba",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 520,
+        "max_total_chars": 4500000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "statsmodels_bsd_statistical_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/statsmodels",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 600,
+        "max_total_chars": 4500000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "networkx_bsd_graph_algorithms",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/networkx",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 500,
+        "max_total_chars": 3500000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "BSD",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "sqlalchemy_mit_stateful_systems",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/sqlalchemy",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 250,
+        "max_total_chars": 3000000,
+        "max_chars_per_file": 80000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "MIT",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "transformers_apache_framework_code",
+        "root": "/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/transformers",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 700,
+        "max_total_chars": 5500000,
+        "max_chars_per_file": 70000,
+        "source_kind": "permissive_external_code",
+        "content_type": "code_python",
+        "license": "Apache-2.0",
+        "provenance": "local_miniforge_site_packages_metadata"
+      },
+      {
+        "id": "project_internal_source_code",
+        "root": "scripts",
+        "suffixes": [
+          ".py"
+        ],
+        "max_files": 120,
+        "max_total_chars": 2500000,
+        "max_chars_per_file": 50000,
+        "source_kind": "project_internal_code",
+        "content_type": "code_python",
+        "license": "project-internal",
+        "provenance": "local_project_workspace"
+      }
+    ],
+    "suffixes": [
+      ".py"
+    ],
+    "excluded_dirs": [
+      ".git",
+      "__pycache__",
+      ".venv",
+      ".venv-mlx",
+      "target",
+      "reports",
+      "archive",
+      "deprecated",
+      "checkpoints",
+      "dist",
+      "data",
+      "resource_pantry",
+      "benchmarks",
+      "benchmark",
+      "bench",
+      "tmp",
+      "test",
+      "tests",
+      "testing",
+      "examples",
+      "example",
+      "docs",
+      "doc"
+    ],
+    "max_files": 6400,
+    "max_chars_per_file": 80000,
+    "max_total_chars": 55000000,
+    "project_internal_license": "project-internal"
+  },
+  "tokenizer": {
+    "target_vocab_size": 12000,
+    "min_vocab_size": 8192,
+    "min_pair_frequency": 2,
+    "max_merges": 12000,
+    "max_train_chars": 2500000
+  },
+  "pretraining": {
+    "seed": 23,
+    "device": "auto",
+    "eval_fraction": 0.06,
+    "max_total_tokens": 10000000,
+    "budgets": [
+      {
+        "id": "rung_0_6m_sanity",
+        "seq_len": 96,
+        "steps": 391,
+        "batch_size": 16,
+        "d_model": 64,
+        "learning_rate": 0.0015,
+        "weight_decay": 0.0001,
+        "loss_curve_max_points": 256,
+        "arms": [
+          "transformer_control",
+          "symliquid_style"
+        ],
+        "target_token_positions": 600000,
+        "score_semantics": "Matched survival/discovery sanity rung over admitted corpus token windows."
+      },
+      {
+        "id": "rung_5m_transformer",
+        "seq_len": 96,
+        "steps": 3256,
+        "batch_size": 16,
+        "d_model": 64,
+        "learning_rate": 0.0012,
+        "weight_decay": 0.0001,
+        "loss_curve_max_points": 256,
+        "arms": [
+          "transformer_control"
+        ],
+        "target_token_positions": 5000000,
+        "score_semantics": "Practical transformer/hybrid survival-lane rung; SymLiquid remains protected on the matched sanity rung but does not block scaling."
+      },
+      {
+        "id": "rung_15m_transformer",
+        "seq_len": 96,
+        "steps": 9766,
+        "batch_size": 16,
+        "d_model": 64,
+        "learning_rate": 0.001,
+        "weight_decay": 0.0001,
+        "loss_curve_max_points": 256,
+        "arms": [
+          "transformer_control"
+        ],
+        "target_token_positions": 15000000,
+        "score_semantics": "Longer practical transformer/hybrid survival-lane rung, run only when local runtime/disk conditions permit."
+      }
+    ],
+    "planned_rungs": [
+      {
+        "id": "rung_100m",
+        "target_tokens": 100000000,
+        "status": "requires additional license-clean source acquisition or larger local allowlist"
+      }
+    ]
+  }
+}

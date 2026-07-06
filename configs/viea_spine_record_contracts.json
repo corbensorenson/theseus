@@ -1,0 +1,1012 @@
+{
+  "policy": "project_theseus_viea_spine_record_contracts_v1",
+  "purpose": "Shared record contract for the canonical VIEA execution spine. Producers may keep local payload shape, but their records must normalize to these canonical record families before they can support roadmap completion, routing, or product-use claims.",
+  "canonical_record_aliases": {
+    "artifact_graph": "artifact_graph_record",
+    "authority_transition_record": "authority_transition",
+    "context_adequacy_record": "context_adequacy",
+    "context_transaction_record": "context_transaction",
+    "costed_route_record": "costed_route",
+    "failure_boundary_map": "failure_boundary",
+    "generation_mode_record": "generation_mode",
+    "constitutional_predicates": "constitutional_predicate",
+    "governance_right_record": "governance_right",
+    "governance_rights": "governance_right",
+    "proof_contract_receipt_record": "proof_contract_receipt",
+    "proof_carrying_claim": "proof_carrying_claim",
+    "resource_budget_record": "resource_budget",
+    "semantic_node_record": "semantic_node",
+    "simulation_contract_record": "simulation_contract",
+    "substrate_adoption_record": "substrate_adoption"
+  },
+  "global_no_cheat_counters": [
+    "public_training_rows_written",
+    "external_inference_calls",
+    "fallback_return_count"
+  ],
+  "profiles": [
+    {
+      "id": "report_evidence_store_records_v1",
+      "producer_surface": "evidence_store",
+      "source_kind": "report_evidence_store_report",
+      "required": true,
+      "path": "reports/report_evidence_store.json",
+      "required_record_types": [
+        "compression_record",
+        "compressed_artifact_record",
+        "compression_receipt"
+      ],
+      "required_evidence": [
+        "compression_records_present_for_truncated_snapshots",
+        "compressed_artifact_records_present_for_truncated_snapshots",
+        "compression_receipts_present_for_truncated_snapshots",
+        "defeater_records_present_for_latest_view_supersession",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "artifact_retention_records_v1",
+      "producer_surface": "artifact_retention",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/theseus_artifact_retention.json",
+      "record_list_fields": [
+        "compression_records",
+        "compressed_artifact_records",
+        "compression_receipts",
+        "defeater_records"
+      ],
+      "required_record_types": [
+        "compression_record",
+        "compressed_artifact_record",
+        "compression_receipt"
+      ],
+      "allow_empty_when_no_actions": true,
+      "required_evidence": [
+        "compression_records_present_when_action_count_positive",
+        "compressed_artifact_records_present_when_action_count_positive",
+        "compression_receipts_present_when_action_count_positive",
+        "defeater_records_present_when_archive_pointer_supersedes_original_path",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "artifact_retention_replay_gate_v1",
+      "producer_surface": "artifact_retention_replay_gate",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/theseus_artifact_retention_replay_gate.json",
+      "record_list_fields": [
+        "compressed_artifact_records",
+        "compression_receipts",
+        "proof_contract_receipt_records",
+        "claim_records",
+        "artifact_graph_records",
+        "evidence_transition_records",
+        "defeater_records"
+      ],
+      "required_record_types": [
+        "compressed_artifact_record",
+        "compression_receipt",
+        "proof_contract_receipt_record",
+        "claim_record",
+        "artifact_graph_record",
+        "evidence_transition_record",
+        "defeater_record"
+      ],
+      "required_evidence": [
+        "archive_pointer_exact_replay_passed",
+        "defeater_records_present_for_archive_pointer_replay",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "assistant_runtime_trace_v1",
+      "producer_surface": "theseus_assistant_runtime",
+      "source_kind": "jsonl_trace",
+      "required": true,
+      "paths": [
+        "reports/theseus_assistant_roadmap_integration_trace.jsonl",
+        "reports/theseus_assistant_tool_integration_trace.jsonl",
+        "reports/theseus_assistant_viea_spine_contract_trace.jsonl",
+        "reports/theseus_assistant_product_spine_trace.jsonl",
+        "reports/theseus_assistant_vcm_governor_trace.jsonl",
+        "reports/theseus_assistant_trace_schema_trace.jsonl"
+      ],
+      "required_record_types": [
+        "intent_contract",
+        "command_contract",
+        "context_abi_record",
+        "context_transaction",
+        "context_adequacy",
+        "typed_job",
+        "planforge_dag",
+        "runtime_adapter_invocation",
+        "authority_transition",
+        "authority_use_receipt",
+        "resource_budget",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "residual_record",
+        "policy_optimization_record"
+      ],
+      "required_evidence": [
+        "raw_prompt_stored=false",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "plan_compiler_nested_spine_v1",
+      "producer_surface": "theseus_plan_compiler",
+      "source_kind": "compiled_dags",
+      "required": true,
+      "path": "reports/theseus_plan_compiled_dags.json",
+      "required_node_record_types": [
+        "semantic_atom",
+        "semantic_node",
+        "typed_job",
+        "runtime_adapter_invocation",
+        "authority_transition",
+        "authority_use_receipt",
+        "context_abi_record",
+        "context_transaction",
+        "context_adequacy",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "evidence_transition_record",
+        "proof_carrying_claim",
+        "routing_decision",
+        "simulation_contract",
+        "tool_call_receipt"
+      ],
+      "required_goal_record_types": [
+        "intent_contract",
+        "command_contract",
+        "constitutional_predicate",
+        "agency_rights_checklist",
+        "value_conflict_record",
+        "governance_right",
+        "research_backlog",
+        "reference_trace"
+      ],
+      "required_evidence": [
+        "compiled_goal_count>0",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "deterministic_tool_spine_v1",
+      "producer_surface": "deterministic_tool_substrate",
+      "source_kind": "tool_report_and_artifact_graph",
+      "required": true,
+      "report_path": "reports/assistant_deterministic_tool_evidence.json",
+      "artifact_graph_path": "reports/assistant_deterministic_tool_artifact_graph.json",
+      "required_record_types": [
+        "tool_card",
+        "tool_call_receipt",
+        "tool_result_evidence",
+        "artifact_graph_record",
+        "claim_record"
+      ],
+      "required_evidence": [
+        "trigger_state=GREEN",
+        "tool_results_present",
+        "artifact_graph_present",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "deterministic_tool_context_spine_v1",
+      "producer_surface": "deterministic_tool_substrate",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/deterministic_tool_substrate.json",
+      "record_list_fields": [
+        "viea_tool_context_records"
+      ],
+      "required_record_types": [
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_deterministic_tool_substrate_v1",
+        "vcm_context_governor_ready=true",
+        "vcm_context_resolver_status=ready",
+        "vcm_context_adequacy_state=governed_sufficient_for_deterministic_tool_execution",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "execution_spine_runtime_v1",
+      "producer_surface": "theseus_plan_compiler",
+      "source_kind": "execution_spine_report",
+      "required": true,
+      "path": "reports/viea_execution_spine.json",
+      "required_record_types": [
+        "authority_transition",
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "runtime_adapter_invocation",
+        "context_transaction",
+        "context_adequacy",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "evidence_transition_record",
+        "proof_carrying_claim"
+      ],
+      "required_evidence": [
+        "trigger_state in GREEN/YELLOW",
+        "compiled_execution_results_present",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "hive_scheduler_route_records_v1",
+      "producer_surface": "hive_install_and_apps",
+      "source_kind": "hive_scheduler_report",
+      "required": true,
+      "path": "reports/hive_scheduler.json",
+      "required_record_types": [
+        "authority_transition",
+        "authority_use_receipt",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_hive_scheduler_v0",
+        "placements_present",
+        "route_records_present_per_placement",
+        "execution_receipt_smoke_present",
+        "route_validator_receipt_ready",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ],
+      "allow_route_validator_bootstrap": true,
+      "bootstrap_policy": "The Hive scheduler is itself a producer of route-validator records. A stale not-ready consumer receipt may be warning-only during materialized-view bootstrap only when required groups are present and no no-cheat counters fault; after the view is green, rerun the scheduler so route_validator_receipt_ready is true."
+    },
+    {
+      "id": "candidate_integrity_producer_v1",
+      "producer_surface": "candidate_integrity",
+      "source_kind": "candidate_integrity_report",
+      "required": true,
+      "path": "reports/candidate_integrity_audit.json",
+      "required_record_types": [
+        "claim_record",
+        "proof_carrying_claim",
+        "authority_use_receipt",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_candidate_integrity_audit_v1",
+        "candidate_count>0",
+        "candidate family recomputed independently",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "private_verifier_spine_v1",
+      "producer_surface": "code_lm_private_verifier",
+      "source_kind": "private_verifier_spine_report",
+      "required": true,
+      "path": "reports/private_verifier_spine_smoke.json",
+      "required_record_types": [
+        "claim_record",
+        "proof_carrying_claim",
+        "authority_transition",
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_private_verifier_spine_smoke_v1",
+        "private_verification.policy=private_code_candidate_verification_cascade_v1",
+        "candidate_attempt_count>0",
+        "vcm_context_governor_ready=true",
+        "vcm_context_adequacy_state=governed_sufficient_for_verification",
+        "local private sandbox only",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "strict_generator_fanout_receipt_v1",
+      "producer_surface": "neural_seed_strict_generator_fanout_receipt",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/neural_seed_strict_generator_fanout_receipt.json",
+      "record_list_fields": [
+        "viea_strict_generator_fanout_records"
+      ],
+      "required_record_types": [
+        "authority_use_receipt",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "proof_carrying_claim",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_neural_seed_strict_generator_fanout_receipt_v1",
+        "eligible_full_body_candidate_count>0",
+        "runtime_load_task_rate>0",
+        "intended_behavior_pass_rate reported separately",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "train_once_fanout_spine_v1",
+      "producer_surface": "code_lm_train_once_fanout",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/code_lm_train_once_fanout.json",
+      "record_list_fields": [
+        "viea_fanout_records"
+      ],
+      "required_record_types": [
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_code_lm_train_once_fanout_v1",
+        "vcm_context_governor_ready=true",
+        "vcm_context_adequacy_state=governed_sufficient_for_generation_fanout",
+        "public_calibration_allowed=false",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "direct_generator_context_spine_v1",
+      "producer_surface": "neural_seed_candidate_generation",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/neural_seed_token_decoder_comparator.json",
+      "record_list_fields": [
+        "viea_direct_generator_records"
+      ],
+      "required_record_types": [
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_neural_seed_token_decoder_comparator_report_v0",
+        "direct_generator_vcm_context_ready=true",
+        "direct_generator_vcm_context_adequacy_state=governed_sufficient_for_direct_generation",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "vcm_native_runtime_spine_v1",
+      "producer_surface": "vcm_native_runtime_probe",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/vcm_native_runtime_probe.json",
+      "record_list_fields": [
+        "viea_runtime_records"
+      ],
+      "required_record_types": [
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_vcm_native_runtime_probe_v1",
+        "semantic_runtime_lifecycle_green=true",
+        "scheduler_vcm_descriptor_route_allowed_for_recommended_backend=true",
+        "scheduler_native_kv_route_fail_closed=true unless exact recommended backend native KV lifecycle is proven",
+        "accelerator_kv_parity_claimed=false until exact accelerator lifecycle proofs exist",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "vcm_context_abi_fixture_spine_v1",
+      "producer_surface": "vcm_context_governor",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/vcm_context_governor.json",
+      "record_list_fields": [
+        "viea_context_abi_records"
+      ],
+      "required_record_types": [
+        "context_abi_record",
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_vcm_context_governor_gate_v1",
+        "context_abi_fixture_status=ready",
+        "valid leased materialization fixture present",
+        "mandatory miss emits typed fault",
+        "verification-inadequate packet is rejected for verification",
+        "mount policy denial emits typed fault",
+        "expired lease reuse is blocked",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "vcm_context_resolver_conformance_spine_v1",
+      "producer_surface": "vcm_context_governor",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/vcm_context_governor.json",
+      "record_list_fields": [
+        "viea_context_resolver_records"
+      ],
+      "required_record_types": [
+        "context_abi_record",
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_vcm_context_governor_gate_v1",
+        "context_resolver_status=ready",
+        "real roadmap and registry artifact materialization requests resolve to path+hash refs",
+        "metadata-only private trace request resolves without raw private text staging",
+        "mandatory miss emits typed fault",
+        "public benchmark payload mount denial emits typed fault",
+        "expired lease reuse is blocked",
+        "summary-only context is rejected for verifier-evidence use",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "training_data_admission_context_spine_v1",
+      "producer_surface": "teacher_and_data_governance",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/training_data_admission_v1.json",
+      "record_list_fields": [
+        "viea_training_data_context_records"
+      ],
+      "required_record_types": [
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_training_data_admission_v1",
+        "vcm_context_governor_ready=true",
+        "vcm_context_resolver_status=ready",
+        "public_benchmark_payload_admitted=false",
+        "raw_user_text_not_admitted",
+        "teacher_rows_not_admitted_outside_distillation_gate",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "public_calibration_proposal_spine_v1",
+      "producer_surface": "public_calibration_registry",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/public_calibration_proposal_gate.json",
+      "record_list_fields": [
+        "public_calibration_proposal_records",
+        "public_run_registry_records",
+        "contamination_check_records",
+        "failure_taxonomy_records",
+        "private_repair_manifest_records",
+        "failure_boundary_records",
+        "claim_records",
+        "artifact_graph_records",
+        "evidence_transition_records"
+      ],
+      "required_record_types": [
+        "public_calibration_proposal",
+        "public_run_registry_row",
+        "contamination_check",
+        "failure_taxonomy",
+        "private_repair_manifest",
+        "failure_boundary",
+        "claim_record",
+        "artifact_graph_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_public_calibration_proposal_gate_v1",
+        "candidate_integrity_cited_and_green=true",
+        "training_firewall_cited_and_clean=true",
+        "alignment_preflight_cited_and_clean=true",
+        "fresh surfaces may execute without calendar budget throttles",
+        "exact consumed surfaces are refused before execution",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "procedural_memory_toolification_spine_v1",
+      "producer_surface": "procedural_memory_toolification",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/procedural_memory_toolification.json",
+      "record_list_fields": [
+        "viea_procedural_tool_records"
+      ],
+      "required_record_types": [
+        "procedural_tool_record",
+        "claim_record",
+        "artifact_graph_record",
+        "authority_use_receipt",
+        "generation_mode",
+        "failure_boundary",
+        "evidence_transition_record",
+        "policy_optimization_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_procedural_memory_toolification_gate_v1",
+        "assistant_trace_schema_ready=true",
+        "assistant_trace_raw_private_text_count=0",
+        "assistant_trace_no_cheat_counter_fault_count=0",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "procedural toolification is candidate-only until replay regression and registry eligibility pass"
+      ]
+    },
+    {
+      "id": "procedural_memory_canary_execution_spine_v1",
+      "producer_surface": "procedural_memory_canary_executor",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/procedural_memory_canary_execution.json",
+      "record_list_fields": [
+        "viea_canary_execution_records"
+      ],
+      "required_record_types": [
+        "procedural_tool_record",
+        "claim_record",
+        "artifact_graph_record",
+        "authority_use_receipt",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_procedural_memory_canary_execution_v1",
+        "executed_canary_route_count>=1",
+        "default_route_adopted_count=0",
+        "learned_generation_claim_count=0",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "procedural canary execution is bounded metadata replay, not default adoption"
+      ]
+    },
+    {
+      "id": "procedural_memory_route_adoption_spine_v1",
+      "producer_surface": "procedural_memory_route_adoption",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/procedural_memory_route_adoption.json",
+      "record_list_fields": [
+        "viea_route_adoption_records"
+      ],
+      "required_record_types": [
+        "procedural_tool_record",
+        "claim_record",
+        "artifact_graph_record",
+        "authority_use_receipt",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "evidence_transition_record",
+        "policy_optimization_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_procedural_memory_route_adoption_v1",
+        "default_route_adopted_count=1",
+        "default_route_guarded_count=1",
+        "learned_generation_claim_count=0",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "procedural default route adoption is local metadata workflow compression, not learned generation"
+      ]
+    },
+    {
+      "id": "octopus_moecot_route_spine_v1",
+      "producer_surface": "octopus_router",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/octopus_router_report.json",
+      "record_list_fields": [
+        "viea_moecot_route_records"
+      ],
+      "required_record_types": [
+        "routing_decision",
+        "semantic_node",
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "residual_record"
+      ],
+      "required_evidence": [
+        "policy=local_only_no_external_inference",
+        "moecot_spine.route_validator_ready=true",
+        "moecot_spine.vcm_context_ready=true",
+        "moecot_spine.candidate_integrity_ready=true",
+        "candidate_generation_credit=0",
+        "learned_generation_claim_allowed=false",
+        "router selection is not learned generation",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "octopus_router_head_training_spine_v1",
+      "producer_surface": "octopus_router",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/octopus_router_head_report.json",
+      "record_list_fields": [
+        "viea_router_head_records"
+      ],
+      "required_record_types": [
+        "routing_decision",
+        "authority_use_receipt",
+        "resource_budget",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "residual_record"
+      ],
+      "required_evidence": [
+        "policy=local_only_no_external_inference",
+        "schema_bound_real_trace_examples>0",
+        "contrastive_holdout_negatives>0",
+        "contrastive_negative_accuracy>=0.95",
+        "candidate_generation_credit=0",
+        "learned_generation_claim_allowed=false",
+        "router-head selection is not learned generation",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "proof_contract_and_substrate_adoption_spine_v1",
+      "producer_surface": "deterministic_tool_substrate",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/proof_carrying_contract_gate.json",
+      "record_list_fields": [
+        "contract_records",
+        "substrate_adoption_records"
+      ],
+      "required_record_types": [
+        "proof_contract_receipt",
+        "substrate_adoption"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_proof_carrying_contract_gate_v1",
+        "proof_contract_receipt_record_count=9",
+        "schema_shaped_substrate_adoption_record_count=3",
+        "production_default_adoption_count=0",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "substrate_verdict_spine_v1",
+      "producer_surface": "substrate_verdict",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/theseus_substrate_verdict.json",
+      "record_list_fields": [
+        "substrate_adoption_records",
+        "claim_records",
+        "artifact_graph_records",
+        "evidence_transition_records"
+      ],
+      "required_record_types": [
+        "substrate_adoption",
+        "claim_record",
+        "artifact_graph_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "symliquid_discovery_state=protected_matched_comparator",
+        "practical_route=transformer_hybrid_practical_survival_lane",
+        "superiority_claim=none",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "semantic_ir_obligation_spine_v1",
+      "producer_surface": "theseus_plan_compiler",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/semantic_ir_obligation_gate.json",
+      "record_list_fields": [
+        "semantic_atom_records",
+        "semantic_node_records",
+        "semantic_obligation_records",
+        "dependency_edge_records",
+        "evidence_binding_records",
+        "claim_records",
+        "artifact_graph_records",
+        "evidence_transition_records"
+      ],
+      "required_record_types": [
+        "semantic_atom",
+        "semantic_node",
+        "semantic_obligation",
+        "dependency_edge",
+        "evidence_binding",
+        "claim_record",
+        "artifact_graph_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_semantic_ir_obligation_gate_v1",
+        "candidate integrity obligations bind to materialized semantic IR",
+        "private verifier obligations bind to materialized semantic IR",
+        "direct generator obligations bind to materialized semantic IR",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
+      "id": "rmi_compact_generative_record_spine_v1",
+      "producer_surface": "ratcheting_modular_intelligence",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/ratcheting_modular_intelligence_report.json",
+      "record_list_fields": [
+        "compact_generative_records"
+      ],
+      "required_record_types": [
+        "compact_generative_record"
+      ],
+      "required_evidence": [
+        "policy=local_only_no_external_inference",
+        "framework=ratcheting_modular_intelligence",
+        "compact generative record has residual, correction, verification, governance, burden, cost, fallback, and non-claim fields",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "RMI compact records are architecture/evidence-spine contracts, not learned-generation, substrate-victory, public-benchmark, or compression-performance claims"
+      ]
+    },
+    {
+      "id": "governance_rights_receipt_spine_v1",
+      "producer_surface": "governance_rights_receipt_suite",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/governance_rights_receipt_suite.json",
+      "record_list_fields": [
+        "constitutional_predicate_records",
+        "governance_right_records",
+        "failure_boundary_records",
+        "artifact_graph_records",
+        "claim_records",
+        "evidence_transition_records"
+      ],
+      "required_record_types": [
+        "constitutional_predicate",
+        "governance_right",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_governance_rights_receipt_suite_v1",
+        "fixture_count=4",
+        "passed_fixture_count=4",
+        "constitutional_fixture_count=4",
+        "passed_constitutional_fixture_count=4",
+        "constitutional_predicate_record_count=4",
+        "material_audit_scenario_count=2",
+        "portable_exit_scenario_count=1",
+        "fork_safety_scenario_count=1",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "rights receipts are fixture-level material-usability protocol evidence, not institutional governance or learned generation"
+      ]
+    },
+    {
+      "id": "hive_operator_governance_audit_spine_v1",
+      "producer_surface": "hive_install_and_apps",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/hive_operator_governance_audit.json",
+      "record_list_fields": [
+        "governance_right_records",
+        "authority_use_receipts",
+        "failure_boundary_records",
+        "artifact_graph_records",
+        "claim_records",
+        "evidence_transition_records"
+      ],
+      "required_record_types": [
+        "governance_right",
+        "authority_use_receipt",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_hive_operator_governance_audit_v1",
+        "operator-accessible audit/export request has materialized receipts",
+        "artifact endpoint citations are hashes/refs, not raw private text",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "live operator audit/export evidence is not learned generation, legal compliance, or peer reachability proof"
+      ]
+    },
+    {
+      "id": "simulation_fidelity_receipt_spine_v1",
+      "producer_surface": "simulation_fidelity_receipt_suite",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/simulation_fidelity_receipt_suite.json",
+      "record_list_fields": [
+        "simulation_contract_records",
+        "fidelity_records",
+        "counterfactual_trace_records",
+        "world_adapter_receipts",
+        "failure_boundary_records",
+        "claim_records",
+        "evidence_transition_records"
+      ],
+      "required_record_types": [
+        "simulation_contract",
+        "fidelity_record",
+        "counterfactual_trace",
+        "world_adapter_receipt",
+        "failure_boundary",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_evidence": [
+        "policy=project_theseus_simulation_fidelity_receipt_suite_v1",
+        "fixture_count=5",
+        "passed_fixture_count=5",
+        "real_planning_adapter_count=1",
+        "planning_adapter_passed=true",
+        "simulation_contract_record_count=6",
+        "world_adapter_receipt_count=6",
+        "blocked_transfer_count=1",
+        "downgraded_claim_count=1",
+        "scenario_only_count=1",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "simulation receipts are fixture and bounded planning-adapter claim-boundary accounting, not physical feasibility, benchmark transfer, deployment evidence, or learned generation"
+      ]
+    }
+  ],
+  "non_claims": [
+    "Passing this gate is implementation-cohesion evidence, not learned-generation capability evidence.",
+    "Tool-assisted traces remain tool-assisted and must be scored separately from model-only claims.",
+    "Planner compile-time records are not execution success until executor/verifier evidence exists."
+  ]
+}

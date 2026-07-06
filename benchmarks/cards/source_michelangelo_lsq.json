@@ -1,0 +1,71 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_michelangelo_lsq",
+  "source_id": "michelangelo_lsq",
+  "name": "Michelangelo / Latent Structure Queries",
+  "category": "long_context_memory_benchmark",
+  "priority": "high",
+  "status": "queued_official_source_locator_needed",
+  "url": "https://arxiv.org/abs/2409.12640",
+  "license_spdx": "unknown",
+  "license_allowed": false,
+  "decision": "queued_until_official_code_data_license_verified",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "medium",
+  "capability_target": "Latent structure recovery beyond single-needle retrieval, including coreference, latent lists, and IDK/abstention.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "context_reasoning",
+  "input_contract": {
+    "metadata": "paper card plus verified source pointer when found",
+    "context": "private long histories with latent list/coreference structure",
+    "query": "structural question over the hidden relation",
+    "evidence": "minimal rows that recover the latent relation",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "exact answer, set match, or abstention",
+    "evidence_precision_recall": "selected relation rows",
+    "abstention": "IDK when latent structure is absent",
+    "latency": "local selection cost",
+    "residuals": "relation synthesis miss, wrong order, wrong coreference, or false answer"
+  },
+  "smoke_steps": [
+    "verify official source URL and license",
+    "admit only deterministic local scoring lanes",
+    "run private latent-structure analogues first"
+  ],
+  "promotion_gates": [
+    "official_source_verified_before_public_payloads",
+    "private_analogue_suite_present",
+    "no_public_training_rows",
+    "no_external_inference",
+    "no_fallback_returns",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "Use Michelangelo only as public calibration once official source/license/evaluator are verified. Private analogues may mirror LSQ task families without copying public items or templates.",
+  "regression_policy": "If mastered, keep latent-structure private rows in regression and preserve public LSQ admission state separately.",
+  "permission_envelope": {
+    "memory": "private analogue contexts only until official source is admitted",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving or public-item explanation.",
+  "external_inference_calls": 0
+}

@@ -1,0 +1,95 @@
+{
+  "policy": "project_theseus_synthetic_benchmark_policy_v1",
+  "enabled": true,
+  "purpose": "Create local-only synthetic pressure benchmarks by mutating old benchmark evidence and composing cross-arm tasks while keeping public benchmark claims quarantined.",
+  "external_inference": "forbidden",
+  "network": "forbidden",
+  "teacher_generation": "proposal_only",
+  "public_comparator_use": "forbidden",
+  "license_policy": "local_generated_from_provenance_only_no_copied_items",
+  "seed": 1337,
+  "max_cases_per_benchmark": 8,
+  "min_source_benchmarks": 3,
+  "min_cross_arm_cases": 6,
+  "min_quality_score": 0.72,
+  "max_copied_source_chars": 0,
+  "default_cards": [
+    {
+      "id": "synthetic_code_repair_mutation",
+      "name": "Synthetic Code Repair Mutation Pressure",
+      "category": "synthetic_coding_benchmark",
+      "runner_family": "synthetic_benchmark_local",
+      "family": "coding_local_sandbox",
+      "mode": "single_family_mutation",
+      "required_arms": [
+        "benchmark_ratchet_arm",
+        "code_repair_verifier",
+        "residual_governance_arm"
+      ]
+    },
+    {
+      "id": "synthetic_cross_arm_code_memory",
+      "name": "Synthetic Cross-Arm Code and Memory Pressure",
+      "category": "synthetic_coding_benchmark",
+      "runner_family": "synthetic_benchmark_local",
+      "family": "coding_local_sandbox",
+      "mode": "cross_arm_hybrid",
+      "required_arms": [
+        "benchmark_ratchet_arm",
+        "code_repair_verifier",
+        "context_packet_memory_arm",
+        "head_router"
+      ]
+    },
+    {
+      "id": "synthetic_cross_arm_tool_safety",
+      "name": "Synthetic Cross-Arm Tool Safety and Code Pressure",
+      "category": "synthetic_coding_benchmark",
+      "runner_family": "synthetic_benchmark_local",
+      "family": "coding_local_sandbox",
+      "mode": "cross_arm_hybrid",
+      "required_arms": [
+        "benchmark_ratchet_arm",
+        "code_repair_verifier",
+        "safety_reflex_arm",
+        "head_router"
+      ]
+    },
+    {
+      "id": "synthetic_cross_domain_code_rl_trace",
+      "name": "Synthetic Cross-Domain Code and RL Trace Pressure",
+      "category": "synthetic_coding_benchmark",
+      "runner_family": "synthetic_benchmark_local",
+      "family": "coding_local_sandbox",
+      "mode": "cross_domain_hybrid",
+      "required_arms": [
+        "benchmark_ratchet_arm",
+        "code_repair_verifier",
+        "puffer_ocean_control_arm",
+        "residual_governance_arm"
+      ]
+    }
+  ],
+  "mutation_targets": [
+    "edge_case",
+    "type_handling",
+    "algorithm_choice",
+    "hidden_tests",
+    "parsing",
+    "timeout",
+    "tool_use_failure",
+    "safety_gate"
+  ],
+  "quality_gates": [
+    "source_benchmarks_loaded",
+    "residual_clusters_loaded",
+    "cases_generated",
+    "cross_arm_cases_generated",
+    "case_manifests_written",
+    "cards_written",
+    "provenance_preserved",
+    "no_copied_public_items",
+    "external_inference_zero",
+    "public_comparator_quarantined"
+  ]
+}

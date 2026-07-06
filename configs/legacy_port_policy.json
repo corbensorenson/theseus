@@ -1,0 +1,143 @@
+{
+  "policy": "project_theseus_legacy_port_policy_v0",
+  "enabled": true,
+  "created_utc": "2026-05-13",
+  "reports": {
+    "aggregate": "reports/legacy_port_mechanisms.json",
+    "markdown": "reports/legacy_port_mechanisms.md"
+  },
+  "critical_path": {
+    "teacher_is_expensive": true,
+    "prefer_unblocked_local_work": true,
+    "max_background_nodes": 6
+  },
+  "coherence_delirium": {
+    "same_frontier_warning": 12,
+    "same_frontier_red": 24,
+    "teacher_age_warning_seconds": 1800,
+    "teacher_budget_block_warning": 3,
+    "status_stale_warning_seconds": 900,
+    "residual_cluster_warning": 50
+  },
+  "proxy_truth_audit": {
+    "require_raw_outputs_for_promotion": true,
+    "require_runtime_identity": true,
+    "require_external_inference_zero": true,
+    "classification_fail_closed": true
+  },
+  "taskspell": {
+    "contract_version": "taskspell.v0",
+    "default_budget": {
+      "profile": "inner_loop",
+      "teacher_calls": 1,
+      "network": "license_gated",
+      "side_effects": "reports_and_governed_local_artifacts_only"
+    }
+  },
+  "adapter_bank": {
+    "zero_param_first": true,
+    "default_rank": 8,
+    "max_interference_allowed": 0.03
+  },
+  "world_runtime": {
+    "required_actions": [
+      "status",
+      "pause",
+      "resume",
+      "cancel"
+    ],
+    "live_hardware_requires_approval": true
+  },
+  "emulator_gateway": {
+    "binary_rom_upload": "forbidden",
+    "rom_files_git_policy": "ignored_required",
+    "trace_formats": [
+      "event_jsonl",
+      "episode_json",
+      "frame_digest_manifest"
+    ]
+  },
+  "compute_mode_acceptance": {
+    "max_resolver_p95_ms": 180,
+    "cloud_mode_requires_explicit_policy": true,
+    "local_first_when_cost_budget_strict": true
+  },
+  "compression_frontier": {
+    "sample_paths": [
+      "configs/legacy_concept_port_map.json",
+      "reports/legacy_project_concept_audit.json",
+      "docs/OLD_PROJECTS_TRANSFER_AUDIT.md",
+      "reports/autonomy_cycle_last.json"
+    ],
+    "max_sample_bytes": 262144,
+    "codecs": [
+      "zlib",
+      "lzma"
+    ]
+  },
+  "device_endpoint": {
+    "protocol": "jsonl_v1",
+    "max_frame_bytes": 32768,
+    "local_endpoint": "http://127.0.0.1:8787/v1",
+    "frame_kinds": [
+      "infer_req",
+      "infer_resp",
+      "status_req",
+      "status_resp"
+    ]
+  },
+  "active_inference_world_model": {
+    "resource_bound": true,
+    "model_growth_after_world_model": true,
+    "lanes": ["drone_rl", "emulator_rl", "web_agent_local", "tool_use"]
+  },
+  "macro_counterexample_gate": {
+    "minimum_success_rate": 0.95,
+    "minimum_recurrence": 3,
+    "required_counterexamples": ["missing_required_parameter", "stale_input_artifact", "schema_mismatch", "external_inference_boundary"]
+  },
+  "bridge_adapter_native_promotion": {
+    "native_promotion_score_threshold": 0.65,
+    "high_value_runner_families": ["drone_rl_local", "emulator_rl_local", "coding_eval_local", "web_agent_local"]
+  },
+  "pretraining_readiness_integrity": {
+    "require_per_lane_contracts": true,
+    "require_reward_done_replay_for_rl": true,
+    "require_contamination_gate": true
+  },
+  "salience_scheduler": {
+    "protect_packet_kinds": ["frontier_gate", "teacher_trace", "legacy_port", "loop_closure", "resource"],
+    "max_top_packets": 12
+  },
+  "campaign_dag": {
+    "require_asset_rule_separation": true,
+    "require_dataset_env_mixture_hash": true,
+    "require_resume_topology": true
+  },
+  "dataset_recipe_scaffolder": {
+    "require_tiny_sampler": true,
+    "require_checksum": true,
+    "unknown_license_metadata_only": true
+  },
+  "evidence_graph_ledger": {
+    "append_only": true,
+    "require_candidate_and_baseline_digest": true
+  },
+  "runtime_resolution_boundary": {
+    "allowed_modes": ["cuda", "mlx", "cpu", "hive"],
+    "bad_fallback_fails_closed": true
+  },
+  "legacy_source_root": "data/old_projects",
+  "tiered_memory_consolidation": {
+    "protected_kinds": ["frontier", "residual", "teacher", "promotion", "safety", "legacy_port"]
+  },
+  "aletheia_advocate_gate": {
+    "deep_path_threshold": 0.15,
+    "hard_stop_threshold": 0.9,
+    "tribunal_roles": ["logician", "safety", "pedant", "empiricist", "skeptic"]
+  },
+  "probe_router_burst_budget": {
+    "deep_route_burst_budget": 3,
+    "hard_stop_requires_human": true
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "policy": "project_theseus_hive_operator_os_config_v1",
+  "version": "0.1.0",
+  "app": {
+    "id": "project-theseus-hive-operator",
+    "name": "Project Theseus Hive Operator",
+    "command_contract": "one_agent_many_channels",
+    "shared_surface_prefixes": ["/mobile", "/operator", "/api/hive/operator", "/api/status"],
+    "panels": [
+      "chat",
+      "progress",
+      "work_board",
+      "background_tasks",
+      "persistent_goals",
+      "hive_nodes",
+      "remote_control",
+      "skills",
+      "benchmarks",
+      "training_data",
+      "trace_fabric",
+      "updates",
+      "ops"
+    ]
+  },
+  "channels": [
+    {"id": "dashboard", "label": "Web dashboard", "status": "implemented", "adapter": "scripts/sparkstream_dashboard.py"},
+    {"id": "mobile_web", "label": "Mobile web operator", "status": "implemented", "adapter": "scripts/hive_node.py:/mobile"},
+    {"id": "ios", "label": "iPhone app", "status": "implemented", "adapter": "ios/TheseusHive"},
+    {"id": "android", "label": "Android app", "status": "implemented", "adapter": "android/TheseusHive"},
+    {"id": "cli", "label": "CLI", "status": "implemented", "adapter": "bin/theseus.cmd / bin/theseus.sh"},
+    {"id": "tray", "label": "Windows tray", "status": "implemented", "adapter": "packaging/windows"},
+    {"id": "menubar", "label": "macOS menu bar", "status": "implemented", "adapter": "packaging/macos"},
+    {"id": "relay", "label": "Hive relay", "status": "implemented", "adapter": "scripts/hive_relay.py"},
+    {"id": "webhook", "label": "Signed webhook", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "telegram", "label": "Telegram", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "discord", "label": "Discord", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "slack", "label": "Slack", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "signal", "label": "Signal", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "email", "label": "Email", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "sms", "label": "SMS", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "matrix", "label": "Matrix", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "teams", "label": "Microsoft Teams", "status": "contract", "adapter": "operator_gateway"},
+    {"id": "imessage", "label": "iMessage", "status": "contract", "adapter": "operator_gateway"}
+  ],
+  "commands": [
+    {"name": "/status", "intent": "summarize live Hive and learning state", "risk": "low"},
+    {"name": "/goal", "intent": "set or inspect a persistent objective", "risk": "medium"},
+    {"name": "/background", "intent": "start a resumable background job", "risk": "medium"},
+    {"name": "/watch", "intent": "subscribe to progress on a task or metric", "risk": "low"},
+    {"name": "/wake", "intent": "notify the operator when a condition is met", "risk": "low"},
+    {"name": "/board", "intent": "inspect or update the Hive work board", "risk": "medium"},
+    {"name": "/skill", "intent": "search, load, install, or audit Hive skills", "risk": "medium"},
+    {"name": "/rollback", "intent": "show rollback options or restore a checkpoint", "risk": "high"},
+    {"name": "/takeover", "intent": "request remote screen/keyboard/mouse control", "risk": "high"},
+    {"name": "/bench", "intent": "run or inspect benchmark calibration", "risk": "medium"},
+    {"name": "/train", "intent": "queue governed private training work", "risk": "high"},
+    {"name": "/schedule", "intent": "create or inspect scheduled commands", "risk": "medium"},
+    {"name": "/teacher", "intent": "request architecture diagnosis only", "risk": "high"},
+    {"name": "/pause", "intent": "pause daemon, queue, or job", "risk": "medium"},
+    {"name": "/resume", "intent": "resume daemon, queue, or job", "risk": "medium"},
+    {"name": "/stop", "intent": "stop daemon, job, or remote-control session", "risk": "high"},
+    {"name": "/feedback", "intent": "route a correction into memory, skill, residual, or task", "risk": "medium"}
+  ],
+  "skill_packs": [
+    {"id": "mail", "label": "Mail", "status": "contract", "permissions": ["message_read", "draft_write"], "load_terms": ["email", "inbox", "mail"]},
+    {"id": "calendar", "label": "Calendar", "status": "contract", "permissions": ["calendar_read", "event_draft"], "load_terms": ["calendar", "meeting", "schedule"]},
+    {"id": "files", "label": "Files", "status": "implemented", "permissions": ["local_file_read", "approved_file_write"], "load_terms": ["file", "folder", "document"]},
+    {"id": "browser", "label": "Browser", "status": "implemented", "permissions": ["browser_view", "approved_network"], "load_terms": ["browse", "website", "dashboard"]},
+    {"id": "github", "label": "GitHub", "status": "implemented", "permissions": ["repo_read", "approved_repo_write"], "load_terms": ["github", "pr", "issue", "commit"]},
+    {"id": "linear", "label": "Linear", "status": "contract", "permissions": ["ticket_read", "ticket_draft"], "load_terms": ["linear", "ticket", "issue"]},
+    {"id": "notes", "label": "Notes and Obsidian", "status": "contract", "permissions": ["note_read", "note_draft"], "load_terms": ["note", "obsidian", "knowledge"]},
+    {"id": "daily_brief", "label": "Daily Brief", "status": "implemented", "permissions": ["status_read", "summary_write"], "load_terms": ["brief", "morning", "summary"]},
+    {"id": "repo_repair", "label": "Repo Repair", "status": "implemented", "permissions": ["repo_read", "worktree_write", "test_run"], "load_terms": ["bug", "test", "repair", "repo"]},
+    {"id": "remote_desktop", "label": "Remote Desktop", "status": "implemented", "permissions": ["screen_view", "keyboard_mouse_control"], "load_terms": ["takeover", "remote", "screen", "keyboard", "mouse"]},
+    {"id": "training_status", "label": "Training Status", "status": "implemented", "permissions": ["reports_read", "training_queue_write"], "load_terms": ["train", "learning", "checkpoint"]},
+    {"id": "benchmark_watch", "label": "Benchmark Watch", "status": "implemented", "permissions": ["benchmark_read", "calibration_run"], "load_terms": ["benchmark", "eval", "score"]},
+    {"id": "cloud_compute", "label": "Cloud Compute", "status": "implemented", "permissions": ["quote_compute", "reviewed_compute_start"], "load_terms": ["aws", "cloud", "rent", "compute"]},
+    {"id": "hive_updates", "label": "Hive Updates", "status": "implemented", "permissions": ["update_read", "soft_update_apply"], "load_terms": ["update", "version", "install"]},
+    {"id": "personality_memory", "label": "Personality Memory", "status": "implemented", "permissions": ["personality_context_read"], "load_terms": ["personality", "memory", "tone", "identity"]}
+  ],
+  "cron_templates": [
+    {
+      "id": "daily_training_brief",
+      "natural_language": "Every morning, summarize training, failed runs, useful new benchmarks, and what needs approval.",
+      "schedule_hint": "daily morning local time",
+      "command": "/background daily_brief --deliver phone dashboard"
+    },
+    {
+      "id": "nightly_vacation_mode_check",
+      "natural_language": "Every night, run the vacation supervisor if the machine is plugged in and resource gates are green.",
+      "schedule_hint": "nightly local time",
+      "command": "/background vacation_mode --step-budget governed"
+    },
+    {
+      "id": "weekly_skill_hygiene",
+      "natural_language": "Every week, audit stale, duplicate, and low-value skills.",
+      "schedule_hint": "weekly",
+      "command": "/skill audit --hygiene"
+    }
+  ],
+  "tool_hooks": [
+    {"target": "shell", "before": ["budget_gate", "permission_envelope", "checkpoint_if_mutating"], "after": ["record_replay", "route_feedback"]},
+    {"target": "file_write", "before": ["worktree_or_checkpoint", "scope_gate"], "after": ["hash_artifact", "record_replay"]},
+    {"target": "browser", "before": ["network_policy", "source_label"], "after": ["trace_capsule_candidate"]},
+    {"target": "remote_control", "before": ["ttl_permission", "kill_switch_visible"], "after": ["action_replay", "session_ledger"]},
+    {"target": "board_task", "before": ["node_assignment", "resume_state", "step_budget"], "after": ["task_status", "evidence_link", "feedback_route"]},
+    {"target": "background_task", "before": ["permission_envelope", "step_budget", "delivery_contract"], "after": ["status_report", "notify_channel", "feedback_route"]},
+    {"target": "conversation_training", "before": ["personality_core", "session_isolation", "turn_budget"], "after": ["conversation_score", "correction_memory_route"]},
+    {"target": "repo_repair_training", "before": ["private_repo_tasks_only", "hidden_private_tests"], "after": ["repair_trace", "code_lm_row_route"]},
+    {"target": "long_horizon_tool_use", "before": ["resume_state", "checkpoint_visibility"], "after": ["run_ledger", "tool_rot_signal"]},
+    {"target": "training_launch", "before": ["resource_governor", "public_data_leak_check"], "after": ["checkpoint_report", "residual_router"]},
+    {"target": "cloud_compute", "before": ["cost_policy", "time_window_policy"], "after": ["receipt_settlement", "artifact_sync"]},
+    {"target": "channel_message", "before": ["role_scope", "rate_limit"], "after": ["conversation_trace", "memory_feedback_router"]},
+    {"target": "teacher_call", "before": ["teacher_budget", "architecture_only"], "after": ["experiment_spec_capture", "no_answer_distillation_check"]},
+    {"target": "self_update", "before": ["signed_manifest", "rollback_plan"], "after": ["version_convergence", "node_drift_report"]}
+  ],
+  "security_contract": {
+    "default_permission": "least_privilege",
+    "danger_banner_required_for": ["remote_control", "teacher_call", "cloud_compute", "self_update", "training_launch"],
+    "remote_control": {
+      "ttl_required": true,
+      "kill_switch_required": true,
+      "ledger_required": true
+    },
+    "public_data": "calibration_only_not_training",
+    "teacher": "architecture_diagnosis_only_no_answers_no_apply_without_gate"
+  }
+}

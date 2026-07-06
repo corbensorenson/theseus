@@ -1,0 +1,15 @@
+{
+  "policy": "project_theseus_old_project_training_sources_v1",
+  "created_utc": "2026-06-07T08:52:35.886795+00:00",
+  "source_project": "D:/old_projects/corbens-trainer",
+  "copy_training_data": false,
+  "sources": [],
+  "ready_sources": [],
+  "usage_policy": {
+    "internal_training_only": true,
+    "not_public_benchmark_claim_evidence": true,
+    "bulk_copy_requires_human_approval": true,
+    "train_only_when_sha256_and_decontamination_policy_pass": true
+  },
+  "external_inference_calls": 0
+}

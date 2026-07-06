@@ -1,0 +1,10 @@
+{
+  "allow_public_training_rows": false,
+  "allow_remote_task_scope_change": false,
+  "approved": false,
+  "approved_surfaces": [],
+  "evidence_sha256": "38e017ecbac4c15f79a0212a4ffb8f8314385ace6ccb383f910e3378a8bc1d1e",
+  "max_surfaces": 0,
+  "operator_note": "Set approved=true only after reviewing every surface blocker and intentionally enabling bounded production Metal routing. Do not use this to enable arbitrary remote execution or public training.",
+  "policy": "project_theseus_macos_metal_production_route_approval_v1"
+}

@@ -1,0 +1,41 @@
+{
+  "policy": "project_theseus_model_growth_policy_v0",
+  "principle": "Stay as small as possible. Add parameters or architecture only after cheaper interventions fail under evidence.",
+  "required_before_growth": [
+    "data_or_benchmark_audit_complete",
+    "tool_loop_closure_attempted",
+    "adapter_pressure_available",
+    "inference_or_runtime_efficiency_green",
+    "token_superposition_training_attempted",
+    "residual_wall_repeats"
+  ],
+  "hard_blockers": [
+    "external_inference_violation",
+    "attd_red",
+    "resource_governor_red",
+    "candidate_bottleneck_safe_actions_remaining"
+  ],
+  "allowed_growth_types": [
+    "zero_parameter_tooling",
+    "adapter",
+    "inference_strategy",
+    "small_readout_head",
+    "localized_specialist_arm",
+    "small_neural_proposer",
+    "hybrid_neural_proposer_with_verifier_harness",
+    "substrate_architecture_change"
+  ],
+  "neural_seed_growth": {
+    "preferred_next_shape": "small_neural_proposer_behind_existing_verifier_harness",
+    "acceptable_student_types": [
+      "small_transformer_code_lm",
+      "small_liquid_or_ssm_code_lm",
+      "hybrid_neural_proposer_with_verifier_harness"
+    ],
+    "freeze_non_thesis_lanes_while_active": true,
+    "teacher_distillation_policy": "configs/teacher_distillation_policy.json",
+    "public_benchmark_policy": "one_shot_calibration_only_after_private_gate",
+    "growth_validation_floor": 0.4,
+    "promotion_floor": 0.7
+  }
+}

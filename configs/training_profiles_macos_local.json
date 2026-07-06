@@ -1,0 +1,45 @@
+{
+  "hardware": {
+    "name": "macOS local",
+    "compute_capability": "apple_metal_or_cpu",
+    "vram_total_mib": 0,
+    "max_target_vram_mib": 0,
+    "rust_release_default": true,
+    "preferred_hot_loop_owner": "auto_detect",
+    "python_role": "orchestration_and_reporting"
+  },
+  "global_gates": {
+    "architecture_gate_ready": true,
+    "external_inference_calls": 0,
+    "gpu_telemetry_required": false,
+    "release_build_required": false
+  },
+  "profiles": {
+    "smoke": {
+      "purpose": "Fast local correctness gate for Mac CPU, Metal, or MLX worker paths.",
+      "expected_runtime_minutes": 2,
+      "max_vram_mib": 0
+    },
+    "inner_loop": {
+      "purpose": "Short private ratchet iteration with Mac-native accelerator when available.",
+      "expected_runtime_minutes": 20,
+      "max_vram_mib": 0
+    },
+    "candidate": {
+      "purpose": "Promotion-candidate evidence on Mac after smoke and inner-loop gates are green.",
+      "expected_runtime_minutes": 120,
+      "max_vram_mib": 0
+    },
+    "overnight": {
+      "purpose": "Bounded unattended Mac learning window: private residual work, VCM/STS ablations, retention maintenance, and governed teacher proposal only when architecture-wall evidence exists.",
+      "expected_runtime_minutes": 480,
+      "max_vram_mib": 0
+    },
+    "seed_sweep": {
+      "purpose": "Matched seed sweep after a candidate profile clears promotion gates.",
+      "expected_runtime_minutes": 240,
+      "max_vram_mib": 0,
+      "train_seeds": [0, 1, 2, 3, 5, 8, 13]
+    }
+  }
+}

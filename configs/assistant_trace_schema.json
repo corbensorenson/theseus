@@ -1,0 +1,76 @@
+{
+  "policy": "project_theseus_assistant_trace_schema_v1",
+  "schema_version": "1.0.0",
+  "purpose": "Shared product assistant trace and dogfood outcome contract for every local Theseus assistant route.",
+  "allowed_outcomes": [
+    "accepted",
+    "missed",
+    "ignored",
+    "corrected",
+    "completed"
+  ],
+  "empty_outcome_allowed": true,
+  "required_event_fields": [
+    "session_id",
+    "intent",
+    "assistant_lane",
+    "prompt_sha256",
+    "assistant_text_sha256",
+    "feedback",
+    "dogfood_event_written",
+    "vcm_context_ready",
+    "vcm_context_governor_ready",
+    "viea_materialized_view_ready",
+    "private_verifier_spine_ready",
+    "public_training_rows_written",
+    "external_inference_calls"
+  ],
+  "required_viea_bindings": [
+    "policy_optimization_record",
+    "context_transaction",
+    "context_adequacy",
+    "artifact_graph_record",
+    "claim_record",
+    "evidence_transition_record"
+  ],
+  "dogfood_training_row_schema": {
+    "raw_user_text": false,
+    "public_benchmark_rows": false,
+    "teacher_rows": false,
+    "inputs": [
+      "assistant_lane",
+      "outcome",
+      "intent_summary_redacted",
+      "artifact_refs",
+      "error_family",
+      "duration_bucket"
+    ],
+    "targets": [
+      "outcome_label",
+      "repair_priority",
+      "lane_feedback"
+    ]
+  },
+  "outcome_semantics": {
+    "accepted": "The user accepted the result or route as useful.",
+    "missed": "The assistant failed to address the user's actual need.",
+    "ignored": "The output was not used and should not be treated as successful.",
+    "corrected": "The user or verifier supplied a correction signal.",
+    "completed": "The task reached a usable completed state without implying model promotion."
+  },
+  "boundaries": {
+    "raw_prompt_persistence": "hash_only",
+    "raw_text_training_allowed": false,
+    "public_benchmark_training_allowed": false,
+    "external_inference_at_runtime_allowed": false,
+    "fallback_returns_allowed": false,
+    "tool_outputs_are_evidence_not_model_only_skill": true,
+    "dogfood_metadata_is_private_training_pressure_only": true
+  },
+  "failure_behavior": {
+    "unknown_outcome": "normalize_to_missed_and_mark_schema_violation",
+    "missing_schema": "fail_closed_hard_gate",
+    "missing_required_event_field": "fail_closed_hard_gate",
+    "raw_text_or_public_training_attempt": "hard_block"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "old_registry_benchmark_livecodebench_authentic_template_v1",
+  "source_id": "benchmark.livecodebench.authentic_template.v1",
+  "name": "livecodebench",
+  "category": "coding_benchmark",
+  "priority": "low",
+  "status": "blocked_missing_case_manifest",
+  "decision": "old_project_registry_ported",
+  "license_allowed": true,
+  "license_spdx": "LicenseRef-OldProjectRegistry-MetadataOnly",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "case_manifest": "",
+  "adapter_type": "redacted_case_manifest_adapter",
+  "runner_family": "coding_local_sandbox",
+  "family": "coding_local_sandbox",
+  "runtime_tier": "E4",
+  "risk_tier": "low",
+  "capability_target": "Authentic-source scaffold for LiveCodeBench ingestion.",
+  "old_project_registry": {
+    "benchmark_id": "benchmark.livecodebench.authentic_template.v1",
+    "manifest_toml": "D:\\old_projects\\corbens-trainer\\registry\\benchmarks\\scaffolds\\livecodebench.authentic_template.benchmark.toml",
+    "case_fixture_path": "D:\\old_projects\\corbens-trainer\\REPLACE_WITH_AUTHENTIC_CASE_BUNDLE.json",
+    "benchmark_class": "trace_graded_agent",
+    "default_rule_id": "rule.live_window_internal.v1",
+    "claim_track": "public_claim_eligible_with_recency",
+    "contamination_sensitivity_tier": "critical",
+    "requires_code_execution_sandbox": true,
+    "requires_containerized_runner": true,
+    "requires_remote_runner": true,
+    "redacted_reference_answers": true,
+    "case_count": 0
+  },
+  "input_contract": {
+    "prompt": "redacted old-project benchmark case prompt",
+    "metadata": "trace/scoring contract metadata",
+    "answers": "not exposed to runner or student"
+  },
+  "output_contract": {
+    "score": "private pressure readiness or trace-contract score only",
+    "trace": "evidence packet; no public score claim",
+    "residuals": "missing scorer, endpoint, sandbox, or student generator gaps"
+  },
+  "smoke_steps": [
+    "parse_old_toml_manifest",
+    "write_redacted_case_manifest",
+    "verify_no_reference_answers_in_manifest",
+    "record_contamination_policy"
+  ],
+  "promotion_gates": [
+    "reference_answers_redacted",
+    "student_checkpoint_candidate_generator_present",
+    "external_inference_zero",
+    "real_public_or_private_regression_gate"
+  ],
+  "public_comparator_use": "metadata_only",
+  "contamination_policy": "Old-project prompts are private pressure or metadata. Public score claims are forbidden from this port.",
+  "regression_policy": "Use as private regression/pressure only after a trace scorer and student candidate source are wired.",
+  "permission_envelope": {
+    "network": "forbidden_during_scoring",
+    "external_inference": "forbidden",
+    "hardware": "not_applicable",
+    "side_effects": [
+      "read_case_manifest",
+      "write_reports"
+    ]
+  },
+  "teacher_role": "Audit adapter/scorer gaps only; never solve old benchmark cases.",
+  "external_inference_calls": 0
+}

@@ -1,0 +1,159 @@
+{
+  "policy": "project_theseus_neural_seed_code_proposer_comparator_v0",
+  "purpose": "Run the first true private SymLiquid-style-vs-classic-transformer candidate-code proposer smoke under matched data, seed, budget, STS, fanout, ranker, and private verifier controls.",
+  "comparison_level": "private_candidate_code_proposer_smoke",
+  "safety": {
+    "public_calibration_allowed": false,
+    "public_training_allowed": false,
+    "teacher_calls_allowed": false,
+    "teacher_distillation_allowed": false,
+    "network_fetch_allowed": false,
+    "model_promotion_allowed": false,
+    "long_unattended_training_allowed": false
+  },
+  "data": {
+    "train_jsonl": "data/training_data/high_transfer/private_train/private_contract_blind_transfer_v1_train_reference_code_lm_tasks.jsonl",
+    "eval_jsonl": "data/training_data/high_transfer/private_eval/private_contract_blind_transfer_v1_code_lm_tasks.jsonl",
+    "max_train_rows": 4096,
+    "max_eval_rows": 96,
+    "split_seed": 23,
+    "require_private_flags": true,
+    "forbidden_row_flags": [
+      "public_benchmark",
+      "public_benchmark_solutions_included",
+      "public_prompts_included",
+      "public_score_labels_included",
+      "public_tests_included"
+    ],
+    "training_target": "private_train_solution_body_template",
+    "eval_tests_visible_to": "private_verifier_only",
+    "eval_solution_visible_to_generator": false
+  },
+  "text_views": {
+    "sts_off": [
+      "prompt",
+      "metamorphic_properties"
+    ],
+    "sts_on": [
+      "prompt",
+      "metamorphic_properties",
+      "decoder_contract.argument_roles",
+      "decoder_contract.required_constructs",
+      "decoder_contract.generation_plan.skeleton_bias",
+      "decoder_contract.generation_plan.repair_strategy",
+      "decoder_contract.return_shape",
+      "decoder_contract.return_contract.shape",
+      "decoder_contract.return_contract.empty_or_invalid_behavior",
+      "decoder_contract.return_contract.must_preserve_container_shape",
+      "decoder_contract.type_family",
+      "decoder_contract.visible_arg_count_hint"
+    ],
+    "withheld_from_text": [
+      "category",
+      "concept_residual_label",
+      "decoder_contract.semantic_family",
+      "decoder_contract.residual_label_hint",
+      "solution_body",
+      "solution_expr",
+      "tests"
+    ]
+  },
+  "matched_budget": {
+    "budget_id": "code_proposer_private_body_template_smoke_v0",
+    "seeds": [23],
+    "max_sequence_tokens": 96,
+    "max_vocab": 1024,
+    "epochs": 6,
+    "batch_size": 64,
+    "learning_rate": 0.003,
+    "weight_decay": 0.0001,
+    "fanout_top_k": 4,
+    "parameter_match_tolerance": 0.1,
+    "trusted_parameter_match_tolerance": 0.05,
+    "private_candidate_timeout_seconds": 4
+  },
+  "candidate_row_schema": {
+    "required_fields": [
+      "task_id",
+      "source_task_id",
+      "entry_point",
+      "phase",
+      "candidate_source",
+      "code",
+      "candidate_sha256",
+      "substrate_arm",
+      "rank_score",
+      "provenance"
+    ],
+    "phases": {
+      "private_baseline": "shared null baseline candidate",
+      "private_eval_sts_off": "same-seed STS-off proposer control",
+      "private_eval": "STS-on proposer candidate rows"
+    },
+    "ranker": "arm softmax probability sorted descending; same top-k fanout per task",
+    "verifier": "scripts/code_lm_private_verifier.py::evaluate_private_candidates"
+  },
+  "arms": {
+    "symliquid_style": {
+      "id": "symliquid_style_code_body_proposer",
+      "kind": "torch_symliquid_style_recurrent_vsa_code_body_selector",
+      "role": "private candidate-code proposer smoke; emits full Python function bodies by selecting private train body templates",
+      "hidden_dim_candidates": [24, 28, 32, 36, 40],
+      "reservoir_dim_candidates": [24, 28, 32, 36, 40],
+      "hv_dim_candidates": [24, 28, 32, 36, 40]
+    },
+    "transformer_control": {
+      "id": "classic_tiny_transformer_code_body_proposer",
+      "kind": "torch_transformer_encoder_code_body_selector",
+      "role": "classic tiny transformer matched code-body proposer control",
+      "d_model": 32,
+      "nhead": 2,
+      "num_layers": 1,
+      "dim_feedforward": 64
+    }
+  },
+  "adapter_boundary": {
+    "current_status": "candidate_code_body_template_selector",
+    "common_input_contract": [
+      "visible private task prompt",
+      "entry point",
+      "private decoder contract fields allowed by text_views",
+      "STS view",
+      "fanout seed"
+    ],
+    "common_output_contract": [
+      "task_id",
+      "source_task_id",
+      "entry_point",
+      "phase",
+      "candidate_source",
+      "code",
+      "candidate_sha256",
+      "substrate_arm",
+      "rank_score",
+      "provenance"
+    ],
+    "limitations": [
+      "The first adapter selects reusable private train body templates instead of free-form token decoding.",
+      "The generated function signature is synthesized from decoder_contract.visible_arg_count_hint and the private data/other/extra convention.",
+      "Eval tests are used only by the private verifier after candidate rows are emitted."
+    ],
+    "next_after_smoke": [
+      "Replace body-template selection with token-level decoding for both arms under the same candidate row schema.",
+      "Add MLX-backed transformer/SymLiquid kernels when the active Python environment exposes mlx.core.",
+      "Keep this comparator as a no-public, no-teacher private regression gate."
+    ]
+  },
+  "success_criteria": {
+    "report_smoke_only": true,
+    "external_inference_calls": 0,
+    "teacher_used": false,
+    "public_rows_used_for_training": 0,
+    "model_promotion_allowed": false,
+    "both_arms_emit_candidate_code_rows": true,
+    "both_sts_controls_runnable": true,
+    "same_private_verifier_for_both_arms": true,
+    "transformer_control_must_be_real": true,
+    "symliquid_style_adapter_must_be_real": true
+  }
+}

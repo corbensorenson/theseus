@@ -1,0 +1,27 @@
+{
+  "policy": "project_theseus_legacy_training_admissions_v1",
+  "created_utc": "2026-06-18T21:58:36.889928+00:00",
+  "source_manifest": "data/training_sources/old_project_registry_training_sources.json",
+  "bulk_copy_training_data": false,
+  "default_training_use": "metadata_only_until_sampler_explicitly_selects_a_hash_verified_source",
+  "admit_for_tiny_dry_run": [],
+  "seed_for_contract_tests": [],
+  "candidate_after_quality_review": [],
+  "recipe_only_pending_fetch_and_hash": [],
+  "blocked_not_train_allowed": [],
+  "hard_invariants": [
+    "Do not train on benchmark reference answers or answer digests.",
+    "Do not use old-project benchmark case manifests as public score evidence.",
+    "Do not bulk-copy legacy data without an explicit source admission record.",
+    "Do not admit a source without train_allowed, verified hash when local, and protected benchmark exclusions.",
+    "Do not treat external inference output as local learning evidence."
+  ],
+  "next_sampler": {
+    "preferred_dataset_id": "",
+    "max_rows_first_pass": 128,
+    "must_report_lane_mix": true,
+    "must_report_source_sha256": true,
+    "must_remain_internal_training_only": true
+  },
+  "external_inference_calls": 0
+}

@@ -1,0 +1,38 @@
+{
+  "source_id": "wildchat",
+  "dataset": "allenai/WildChat",
+  "url": "https://huggingface.co/datasets/allenai/WildChat",
+  "license_spdx": "odc-by",
+  "expected_license_normalized": "odc-by",
+  "enabled": false,
+  "format": "messages",
+  "config": "default",
+  "split": "train",
+  "offset": 0,
+  "length": 0,
+  "why": "Useful real-world chat distribution, but left metadata-only until the moderation, redaction, and PII gates are stricter.",
+  "use": "queued_metadata_only",
+  "checks": [
+    {
+      "gate": "source_enabled",
+      "passed": false,
+      "evidence": "False"
+    },
+    {
+      "gate": "source_kind_huggingface_dataset",
+      "passed": true,
+      "evidence": "huggingface_dataset"
+    },
+    {
+      "gate": "license_expected_allowlisted",
+      "passed": true,
+      "evidence": "odc-by"
+    }
+  ],
+  "status": "metadata_only",
+  "conversation_samples": 0,
+  "private_train_rows": 0,
+  "sts_rows": 0,
+  "external_inference_calls": 0,
+  "decision": "disabled_by_policy"
+}

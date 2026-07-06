@@ -1,0 +1,245 @@
+{
+  "policy": "project_theseus_arm_sucker_policy_v0",
+  "purpose": "Keep high-transfer capability in arms and low-transfer specialization in loadable suckers attached to those arms.",
+  "terms": {
+    "arm": "High-transfer specialist core with reusable state, tools, schemas, permissions, and benchmarks.",
+    "sucker": "Low-transfer attachment mounted on an arm or another sucker for a specific game, simulator, benchmark family, runtime, or local asset contract.",
+    "nested_sucker": "A sucker that inherits from a broader sucker before adding a narrower specialization."
+  },
+  "rules": {
+    "prefer_sucker_before_new_arm": true,
+    "create_new_arm_when": [
+      "permission envelope differs materially",
+      "runtime substrate differs materially",
+      "shared transfer primitives are stable across multiple suckers",
+      "sucker count or bloat exceeds parent arm cap"
+    ],
+    "create_new_sucker_when": [
+      "task needs a new adapter, controller prior, action schema, or local asset contract",
+      "skill is expected to transfer mostly within one parent arm",
+      "the parent arm already has reusable primitives for the task"
+    ],
+    "sucker_graduation": "A sucker may be promoted into an arm only after repeated transfer to sibling suckers and distinct permission/runtime needs.",
+    "external_inference": "forbidden outside sparse teacher governance"
+  },
+  "cores": [
+    {
+      "arm_name": "video_game_play_arm",
+      "transfer_role": "high",
+      "shared_skills": [
+        "pixel and low-dimensional observation normalization",
+        "action schema mapping",
+        "reward and done normalization",
+        "episode trace export",
+        "state-action-reward-done replay",
+        "curriculum and residual escrow for game tasks",
+        "controller prior loading"
+      ],
+      "sucker_cap": 24,
+      "permission_domain": "game_control",
+      "loads_with": [
+        "benchmark_ratchet_arm",
+        "puffer_ocean_control_arm",
+        "context_packet_memory_arm",
+        "safety_reflex_arm"
+      ]
+    },
+    {
+      "arm_name": "drone_racing_control_arm",
+      "transfer_role": "high",
+      "shared_skills": [
+        "simulator-first control",
+        "state normalization",
+        "action scaling",
+        "waypoint and racing-line residuals",
+        "safety reflex gating",
+        "trace export"
+      ],
+      "sucker_cap": 16,
+      "permission_domain": "drone_control",
+      "loads_with": [
+        "python_runtime_compliance_arm",
+        "safety_reflex_arm",
+        "rust_cuda_systems_arm"
+      ]
+    }
+  ],
+  "suckers": [
+    {
+      "sucker_id": "minecraft_open_world_sucker",
+      "parent_arm": "video_game_play_arm",
+      "parent_sucker_id": "",
+      "scope": "Minecraft and Minecraft-like open-world survival, crafting, navigation, inventory, and player-instruction tasks.",
+      "transfer_role": "medium",
+      "frontier_families": [
+        "minecraft_rl"
+      ],
+      "routing_keywords": [
+        "minecraft",
+        "mineflayer",
+        "minedojo",
+        "malmo",
+        "minerl",
+        "crafter",
+        "craftax",
+        "open world",
+        "crafting",
+        "inventory"
+      ],
+      "required_reports": [
+        "reports/minecraft_runtime_probe.json"
+      ],
+      "artifact_globs": [
+        "reports/transfer_artifacts/minecraft_policy_prior_*.json",
+        "reports/minecraft_traces/*.jsonl"
+      ],
+      "load_policy": "on_demand_when_minecraft_frontier_or_user_task",
+      "unload_policy": "after_task_boundary_keep_trace_summary"
+    },
+    {
+      "sucker_id": "crafter_bridge_sucker",
+      "parent_arm": "video_game_play_arm",
+      "parent_sucker_id": "minecraft_open_world_sucker",
+      "scope": "Open-source Crafter bridge pressure for Minecraft-like survival and crafting without launching a live Minecraft account/session.",
+      "transfer_role": "low",
+      "frontier_families": [
+        "minecraft_rl"
+      ],
+      "routing_keywords": [
+        "crafter",
+        "bridge world",
+        "survival bridge",
+        "crafting bridge"
+      ],
+      "required_reports": [
+        "reports/pressure_source_crafter_seed2_smoke.json"
+      ],
+      "artifact_globs": [
+        "reports/transfer_artifacts/minecraft_policy_prior_crafter.json"
+      ],
+      "load_policy": "on_demand_for_source_crafter",
+      "unload_policy": "after_pressure_run_keep_policy_prior"
+    },
+    {
+      "sucker_id": "minecraft_java_local_sucker",
+      "parent_arm": "video_game_play_arm",
+      "parent_sucker_id": "minecraft_open_world_sucker",
+      "scope": "User-owned local Java Minecraft runtime, disposable worlds, loopback-only harnesses, and no public-server/account side effects.",
+      "transfer_role": "low",
+      "frontier_families": [
+        "minecraft_rl"
+      ],
+      "routing_keywords": [
+        "java minecraft",
+        "local minecraft",
+        "singleplayer",
+        "disposable world"
+      ],
+      "required_reports": [
+        "reports/minecraft_runtime_probe.json"
+      ],
+      "artifact_globs": [],
+      "load_policy": "approval_gated_full_runtime",
+      "unload_policy": "after_task_boundary_redact_credentials"
+    },
+    {
+      "sucker_id": "emulator_gba_sucker",
+      "parent_arm": "video_game_play_arm",
+      "parent_sucker_id": "",
+      "scope": "BYO-ROM-safe Game Boy Advance and handheld emulator RL traces, action schemas, and local asset registry contracts.",
+      "transfer_role": "medium",
+      "frontier_families": [
+        "emulator_rl",
+        "transfer_eval"
+      ],
+      "routing_keywords": [
+        "gba",
+        "gameboy",
+        "rom",
+        "emulator",
+        "pyboy",
+        "pygba",
+        "stable retro"
+      ],
+      "required_reports": [
+        "reports/local_rom_registry.json",
+        "reports/emulator_game_trace_gateway.json"
+      ],
+      "artifact_globs": [
+        "reports/local_rom_staging_report.json"
+      ],
+      "load_policy": "on_demand_for_user_owned_rom",
+      "unload_policy": "after_task_boundary_no_rom_bytes_in_repo"
+    },
+    {
+      "sucker_id": "gym_pybullet_hover_sucker",
+      "parent_arm": "drone_racing_control_arm",
+      "parent_sucker_id": "",
+      "scope": "gym-pybullet-drones hover and low-level quadrotor control pressure.",
+      "transfer_role": "low",
+      "frontier_families": [
+        "drone_rl"
+      ],
+      "routing_keywords": [
+        "gym-pybullet-drones",
+        "hover",
+        "quadrotor"
+      ],
+      "required_reports": [
+        "reports/pressure_source_gym_pybullet_drones_seed14.json"
+      ],
+      "artifact_globs": [
+        "reports/transfer_artifacts/drone_policy_prior_gym_pybullet_drones.json"
+      ],
+      "load_policy": "on_demand_for_hover_pressure",
+      "unload_policy": "after_eval_keep_policy_prior"
+    },
+    {
+      "sucker_id": "pyflyt_waypoint_sucker",
+      "parent_arm": "drone_racing_control_arm",
+      "parent_sucker_id": "",
+      "scope": "PyFlyt waypoint/racing bridge control and residuals before AI Grand Prix SITL.",
+      "transfer_role": "low",
+      "frontier_families": [
+        "drone_rl"
+      ],
+      "routing_keywords": [
+        "pyflyt",
+        "waypoint",
+        "drone racing",
+        "racing line"
+      ],
+      "required_reports": [
+        "reports/transfer_artifacts/drone_policy_prior_pyflyt_waypoints.json"
+      ],
+      "artifact_globs": [
+        "reports/transfer_artifacts/drone_policy_prior_pyflyt_waypoints.json"
+      ],
+      "load_policy": "on_demand_for_waypoint_or_racing_pressure",
+      "unload_policy": "after_eval_keep_policy_prior"
+    },
+    {
+      "sucker_id": "ai_grand_prix_sitl_sucker",
+      "parent_arm": "drone_racing_control_arm",
+      "parent_sucker_id": "pyflyt_waypoint_sucker",
+      "scope": "AI Grand Prix rule/runtime compliance, SITL contracts, and competition-specific gates.",
+      "transfer_role": "low",
+      "frontier_families": [
+        "drone_rl"
+      ],
+      "routing_keywords": [
+        "ai grand prix",
+        "sitl",
+        "competition",
+        "race gate"
+      ],
+      "required_reports": [
+        "reports/ai_grand_prix_spec_digest.json",
+        "reports/python_runtime_compatibility.json"
+      ],
+      "artifact_globs": [],
+      "load_policy": "approval_gated_for_competition_runtime",
+      "unload_policy": "after_task_boundary_keep_contract_summary"
+    }
+  ]
+}

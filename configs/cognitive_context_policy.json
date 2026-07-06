@@ -1,0 +1,76 @@
+{
+  "policy": "project_theseus_cognitive_context_policy_v1",
+  "updated_utc": "2026-05-15",
+  "purpose": "Divide context into governed cognitive spaces on top of STS: private planning, response drafting, response review, durable artifact workspace, memory retrieval, and visible report.",
+  "local_only": true,
+  "external_inference_calls": 0,
+  "public_benchmark_training_use": "forbidden",
+  "teacher_use": "proposal_only_architecture_guidance",
+  "raw_chain_of_thought_exposure": "forbidden",
+  "streams": [
+    "system_policy_stream",
+    "context_stream",
+    "personality_stream",
+    "memory_context_stream",
+    "internal_monologue_stream",
+    "artifact_workspace_stream",
+    "mouthpiece_draft_stream",
+    "response_review_stream",
+    "visible_report_stream"
+  ],
+  "stream_roles": {
+    "system_policy_stream": "Non-negotiable local policy, anti-cheat rules, teacher limits, and public/private evidence boundaries.",
+    "context_stream": "Immediate task, benchmark wall, active goal, and available local reports.",
+    "personality_stream": "Compact personality/core orientation and anti-drift invariants.",
+    "memory_context_stream": "Retrieved durable context packets and stale/superseded lane markers.",
+    "internal_monologue_stream": "Private planning-summary tokens and action tags; no raw hidden chain is exposed or promoted.",
+    "artifact_workspace_stream": "Long-horizon artifact build space: reports, ledgers, specs, patches, and next-state records.",
+    "mouthpiece_draft_stream": "Candidate user-facing response text before final review.",
+    "response_review_stream": "Truth, no-cheat, safety, provenance, and overclaim review before visible output.",
+    "visible_report_stream": "Final public/user-visible response or operational report."
+  },
+  "visibility": {
+    "internal_monologue_stream": "private_summary_only",
+    "artifact_workspace_stream": "durable_local_artifact_context",
+    "mouthpiece_draft_stream": "private_until_reviewed",
+    "response_review_stream": "private_audit_summary",
+    "visible_report_stream": "user_visible"
+  },
+  "causal_contract": {
+    "strict_past_only": true,
+    "same_row_cross_stream_attention": "forbidden",
+    "visible_report_requires_review": true,
+    "mouthpiece_requires_internal_plan": true,
+    "artifact_updates_require_provenance": true,
+    "one_token_per_output_stream_target": true
+  },
+  "security": {
+    "max_rows": 64,
+    "max_cell_chars": 1200,
+    "max_total_chars_per_row": 5000,
+    "blocked_visible_patterns": [
+      "public benchmark solution",
+      "hidden public test",
+      "teacher-generated answer",
+      "promotion allowed because private pressure passed"
+    ],
+    "forbidden_training_sources": [
+      "public benchmark solutions",
+      "hidden public tests",
+      "teacher answer distillation",
+      "raw private chain-of-thought"
+    ]
+  },
+  "reporting": {
+    "out_data": "data/sts_learning/cognitive_context_spaces_seed14.jsonl",
+    "merged_sts_out": "data/sts_learning/sts_code_context_spaces_seed14.jsonl",
+    "report": "reports/cognitive_context_router.json",
+    "markdown": "reports/cognitive_context_router.md"
+  },
+  "gates": {
+    "min_context_rows": 4,
+    "min_context_space_count": 6,
+    "max_public_solution_chars": 0,
+    "max_external_inference_calls": 0
+  }
+}

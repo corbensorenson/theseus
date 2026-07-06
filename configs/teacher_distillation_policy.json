@@ -1,0 +1,99 @@
+{
+  "policy": "project_theseus_teacher_distillation_policy_v0",
+  "purpose": "Permit teacher influence as audited training-time data by default; never as runtime served tokens, public benchmark answers, hidden tests, or unbounded synthetic bulk.",
+  "default_state": "governed_training_enabled",
+  "growth_policy": "configs/permissive_growth_policy.json",
+  "operator_unlock_flag": "reports/teacher_distillation_operator_unlock.flag",
+  "gate_report": "reports/teacher_distillation_gate.json",
+  "ledger_path": "reports/teacher_distillation_ledger.jsonl",
+  "manifest_path": "reports/teacher_distillation_manifest.json",
+  "boundary": {
+    "runtime_serving_external_tokens": "forbidden",
+    "external_inference_at_runtime": "forbidden",
+    "teacher_apply_mode": "forbidden",
+    "teacher_training_data": "governed_training_enabled_after_manifest_verifier_license_leakage_gate",
+    "public_benchmarks": "heldout_scoring_only_exact_eval_payloads_forbidden",
+    "public_solutions_or_hidden_tests": "forbidden",
+    "raw_teacher_outputs_to_user": "forbidden",
+    "training_rows_must_be_retained": true,
+    "training_rows_must_have_provenance": true
+  },
+  "allowed_input_streams": [
+    "licensed_open_corpora",
+    "verified_self_generated_data",
+    "governed_teacher_distillation_rows"
+  ],
+  "blocked_uses": [
+    "runtime_answer_delegation",
+    "public_benchmark_solution_distillation",
+    "hidden_test_oracle_use",
+    "bulk_web_distillation_without_license",
+    "uncertain_license_training_use",
+    "teacher_generated_rows_without_manifest",
+    "teacher_generated_rows_without_verifier_pass",
+    "teacher_generated_rows_without_holdout_exclusion",
+    "teacher_generated_rows_without_teacher_share_accounting"
+  ],
+  "required_before_distillation": [
+    "external_inference_audit_ok_or_missing_safe_locked",
+    "governed_training_policy_active",
+    "neural_seed_student_ready",
+    "manifest_present",
+    "license_policy_accepts_sources",
+    "leakage_audit_zero",
+    "verifier_accepts_rows",
+    "holdout_and_public_exclusion_proven",
+    "teacher_share_within_cap",
+    "no_runtime_serving_path"
+  ],
+  "neural_seed": {
+    "required": true,
+    "gate_report": "reports/neural_seed_growth_gate.json",
+    "minimum_report_trigger_state": "GREEN",
+    "acceptable_student_types": [
+      "small_transformer_code_lm",
+      "small_liquid_or_ssm_code_lm",
+      "hybrid_neural_proposer_with_verifier_harness"
+    ],
+    "must_keep_verifier_harness": true
+  },
+  "teacher_share": {
+    "max_initial_training_ratio": 0.8,
+    "target_trend": "decrease_over_cycles_as_verified_self_generated_data_increases",
+    "graduation_metric": "teacher_accepted_row_share",
+    "graduation_target": 0.05,
+    "schedule": [
+      {
+        "phase": "bootstrap",
+        "max_training_ratio": 0.8
+      },
+      {
+        "phase": "student_replay",
+        "max_training_ratio": 0.5
+      },
+      {
+        "phase": "self_generated_majority",
+        "max_training_ratio": 0.2
+      },
+      {
+        "phase": "graduation",
+        "max_training_ratio": 0.05
+      }
+    ]
+  },
+  "quality_gates": {
+    "min_verifier_pass_rate": 0.95,
+    "max_public_overlap_hits": 0,
+    "max_holdout_overlap_hits": 0,
+    "require_private_eval_delta": true,
+    "require_public_calibration_only_after_private_gate": false,
+    "require_public_calibration_run_registry": true
+  },
+  "growth_validation": {
+    "intermediate_public_floor": 0.4,
+    "promotion_public_floor": 0.7,
+    "one_shot_public_calibration": false,
+    "private_gate_required_before_public_spend": false,
+    "public_calibration_mode": "run_registry_no_fishing"
+  }
+}

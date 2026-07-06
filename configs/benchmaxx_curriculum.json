@@ -1,0 +1,435 @@
+{
+  "policy": "sparkstream_benchmaxx_curriculum_v0",
+  "updated_utc": "2026-05-11",
+  "purpose": "A predefined capability course for growing SymLiquid/RMI into an increasingly agentic local system one benchmark frontier at a time.",
+  "teacher_role": {
+    "default": "audit_and_propose_only",
+    "meaning": "The teacher checks whether the system is on course, diagnoses walls after local evidence, and proposes architecture changes. It does not choose the curriculum by default.",
+    "escalate_only_after": [
+      "frontier_floor_failure",
+      "residual_cluster_recurs_across_benchmarks",
+      "adapter_smoke_blocked_by_source_bug",
+      "architecture_gate_or_resource_governor_blocker",
+      "intervention_ladder_reaches_architecture_change"
+    ]
+  },
+  "global_rules": {
+    "frontier_must_move": true,
+    "floor_must_hold": true,
+    "mastered_benchmarks_become_regression": true,
+    "unsolved_tails_enter_residual_escrow": true,
+    "external_inference_allowed_only_for_teacher": true,
+    "bulk_data_download_requires_human_approval": true,
+    "commercial_rom_downloads_forbidden": true,
+    "voice_must_be_native_local_capability": true,
+    "near_term_focus": "conversation_multiturn_before_returning_to_code_temporarily"
+  },
+  "frontier_focus": {
+    "mode": "conversation_first_temporarily",
+    "prefer_stage_ids": [
+      "tool_dialogue_agents",
+      "language_reasoning_coding",
+      "web_agents",
+      "desktop_os_agents"
+    ],
+    "deprioritize_stage_ids": [
+      "minecraft_open_world_agents",
+      "emulator_rl_games"
+    ],
+    "reason": "Temporarily prioritize English multi-turn conversation and personality continuity so Theseus becomes directly talkable, then return to coding, repair, and agentic programming evals before game frontiers."
+  },
+  "same_family_rotation": {
+    "enabled": true,
+    "floor_threshold": 0.7,
+    "below_floor_attempts_before_rotate": 4,
+    "stalled_cycles_before_rotate": 2,
+    "meaning": "If a pressure card stays below the graduation floor after enough real attempts, rotate to the next smoke-passed card in the same family and return later.",
+      "coding_local_sandbox": {
+      "ordered_ids": [
+        "source_bigcodebench",
+        "source_evalplus",
+        "source_human_eval",
+        "source_mbpp",
+        "source_livecodebench",
+        "multistream_code_repair_pressure",
+        "synthetic_code_repair_mutation",
+        "synthetic_cross_arm_code_memory",
+        "synthetic_cross_arm_tool_safety",
+        "synthetic_cross_domain_code_rl_trace",
+        "source_opencode",
+        "source_swe_bench",
+        "source_swe_agent",
+        "source_mini_swe_agent",
+        "source_codeclash",
+        "source_swe_polybench",
+        "source_swe_gen",
+        "old_registry_benchmark_corben_coding_agent_native_v1",
+        "old_registry_benchmark_corben_task_execution_native_v1",
+        "old_registry_benchmark_corben_shortcut_resistant_compositional_v1"
+      ]
+    }
+  },
+  "transfer_interleave_rotation": {
+    "enabled": true,
+    "meaning": "If the code-family frontier has rotated locally but public transfer still stays below floor, temporarily interleave a broader learning surface, export/load transfer artifacts, and return to the code card.",
+    "same_family_first": true,
+    "active_attempts_before_cross_family": 6,
+    "max_same_family_attempts_before_forced_interleave": 12,
+    "minimum_public_floor_gap": 0.001,
+    "teacher_after_interleave_attempts": 2,
+    "teacher_role": "architecture_guidance_only_no_benchmark_answers",
+    "promotion_semantics": "interleave scores are transfer pressure only; code promotion still requires honest public code calibration from token-level student generation",
+    "cycle": [
+      {
+        "family": "conversation_multiturn",
+        "runner_family": "conversation_multiturn_local",
+        "recommended_env": "multi_turn_conversation_benchmark",
+        "reason": "exercise user-facing memory, correction handling, constraint carry, and personality-core continuity before broader tool-agent work"
+      },
+      {
+        "family": "transfer_eval",
+        "runner_family": "transfer_eval_local",
+        "recommended_env": "transfer_eval_suite",
+        "reason": "probe broad transfer gaps across code repair, tool use, long context, RL, self-debugging, and voice"
+      },
+      {
+        "family": "rl_local",
+        "runner_family": "rl_local",
+        "recommended_env": "auto",
+        "reason": "exercise memory, control, exploration, and credit assignment for transfer into code planning"
+      },
+      {
+        "family": "web_agent_local",
+        "runner_family": "web_agent_local",
+        "recommended_env": "source_webarena",
+        "reason": "exercise tool/browser-style grounding and multi-step action verification"
+      },
+      {
+        "family": "drone_rl",
+        "runner_family": "drone_rl_local",
+        "recommended_env": "auto",
+        "reason": "exercise simulator control and continuous feedback if a smoke-passed drone card is ready"
+      }
+    ]
+  },
+  "stage_status_order": [
+    "locked_regression",
+    "active_frontier",
+    "ready_next",
+    "blocked_waiting_asset",
+    "future"
+  ],
+  "stages": [
+    {
+      "id": "substrate_bootstrap",
+      "level": 0,
+      "title": "SymLiquid Substrate and CGS Governance",
+      "capability_goal": "Stable local compact-generative substrate: KAN-lite, liquid state, reservoir, VSA memory, EFE/action selection, CGS accounting, and regression preservation.",
+      "benchmark_patterns": [
+        "cgs",
+        "role_filler",
+        "delayed_recall",
+        "active_classification",
+        "gridworld"
+      ],
+      "source_ids": [],
+      "promotion_gate": "architecture gate green; toy tasks and CGS reports locked as regression; no external inference.",
+      "next_frontier_family": "local_substrate",
+      "teacher_policy": "none unless architecture gate regresses"
+    },
+    {
+      "id": "language_grammar_core",
+      "level": 1,
+      "title": "BabyLM Grammar and Mutated Linguistic Generalization",
+      "capability_goal": "Learn compact language/grammar structure under public calibration, private mutation, residual escrow, and synthetic-data guardrails.",
+      "benchmark_patterns": [
+        "babylm_local_probe",
+        "babylm_mutated_holdout",
+        "blimp"
+      ],
+      "source_ids": [
+        "lm_eval_harness",
+        "helm",
+        "big_bench"
+      ],
+      "promotion_gate": "public comparator holds; mutated holdout clears threshold; residual delta bounded; candidate profile evidence complete.",
+      "next_frontier_family": "babylm_mutated",
+      "teacher_policy": "proposal_only on residual or architecture wall"
+    },
+    {
+      "id": "residual_synthetic_compression",
+      "level": 2,
+      "title": "Residual-Targeted Synthetic Data and Loop Closure",
+      "capability_goal": "Turn failure clusters into local synthetic bridge data, verified tools, and procedural memory without model collapse.",
+      "benchmark_patterns": [
+        "residual_escrow",
+        "synthetic_data",
+        "tool_registry"
+      ],
+      "source_ids": [
+        "fineweb_edu",
+        "smollm_corpus",
+        "dolma",
+        "cosmopedia"
+      ],
+      "promotion_gate": "synthetic ratio capped; leakage checks clean; public/private regression holds; accepted rows improve residual targets.",
+      "next_frontier_family": "synthetic_bridge",
+      "teacher_policy": "audit sampling plans only; no teacher-generated training data by default"
+    },
+    {
+      "id": "local_rl_memory_control",
+      "level": 3,
+      "title": "Local RL: Memory, Control, Exploration, and Credit Assignment",
+      "capability_goal": "Grow from toy control to richer local RL environments while keeping hot loops Rust/CUDA-owned and resource-aware.",
+      "benchmark_patterns": [
+        "ocean-",
+        "puffer_ocean",
+        "minigrid",
+        "bsuite",
+        "craftax",
+        "procgen"
+      ],
+      "source_ids": [
+        "gymnasium",
+        "minigrid",
+        "bsuite",
+        "craftax",
+        "procgen",
+        "pettingzoo"
+      ],
+      "promotion_gate": "environment smoke passes; reward is deterministic; regression suite holds; runtime profile fits RTX 2060 Super envelope.",
+      "next_frontier_family": "rl_local",
+      "teacher_policy": "proposal_only on new environment adapter design or persistent RL wall"
+    },
+    {
+      "id": "minecraft_open_world_agents",
+      "level": 4,
+      "title": "Minecraft Open-World RL and Player Co-op",
+      "capability_goal": "Learn long-horizon open-world survival, navigation, crafting, inventory management, player instruction following, and local Minecraft-like skill transfer.",
+      "benchmark_patterns": [
+        "minecraft",
+        "minerl",
+        "minedojo",
+        "malmo",
+        "crafter",
+        "craftax",
+        "open_world"
+      ],
+      "source_ids": [
+        "crafter",
+        "craftax",
+        "minedojo",
+        "malmo",
+        "voyager_minecraft",
+        "minerl"
+      ],
+      "requires_local_minecraft_license": true,
+      "promotion_gate": "licensed local install or open-source bridge smoke passes; disposable worlds only; no public server/account side effects; traces and transfer artifacts exported.",
+      "next_frontier_family": "minecraft_rl",
+      "teacher_policy": "proposal_only for adapter/runtime walls and skill-schema design; no teacher as gameplay solver"
+    },
+    {
+      "id": "drone_racing_control",
+      "level": 5,
+      "title": "Drone Racing Control and AI Grand Prix Readiness",
+      "capability_goal": "Grow simulation-first drone hover, waypoint following, visual gate navigation, MAVLink/MAVSDK SITL control, and AI Grand Prix competition compliance.",
+      "benchmark_patterns": [
+        "drone",
+        "uav",
+        "quadrotor",
+        "mavsdk",
+        "mavlink",
+        "px4",
+        "airsim",
+        "pyflyt",
+        "gym_pybullet_drones"
+      ],
+      "source_ids": [
+        "pyflyt",
+        "gym_pybullet_drones",
+        "airsim_drone_racing_lab",
+        "mavsdk_python",
+        "aerial_gym_simulator",
+        "airsim",
+        "px4_sitl"
+      ],
+      "promotion_gate": "sim-only adapter smoke passes; AI Grand Prix spec contract recorded; Python 3.14 lane checked; command/heartbeat/vision timing tracked; real hardware remains approval-gated.",
+      "next_frontier_family": "drone_rl",
+      "teacher_policy": "proposal_only for simulator adapter, reward design, and architecture walls; no teacher in control loop"
+    },
+    {
+      "id": "emulator_rl_games",
+      "level": 6,
+      "title": "Emulator RL From User-Owned ROMs",
+      "capability_goal": "Use owned GB/GBC/GBA games as long-horizon RL frontiers for planning, memory, exploration, and pixel/control grounding.",
+      "benchmark_patterns": [
+        "local_rom",
+        "pygba",
+        "gymboy",
+        "stable_retro"
+      ],
+      "source_ids": [
+        "pygba",
+        "gymboy",
+        "stable_retro",
+        "pyboy"
+      ],
+      "requires_local_rom": true,
+      "promotion_gate": "local ROM inventory match; deterministic reset/step smoke; documented reward and save-state policy; no ROM files tracked.",
+      "next_frontier_family": "emulator_rl",
+      "recommended_rom_profiles": [
+        "gba_pokemon_emerald",
+        "gb_tetris",
+        "gbc_pokemon_red_blue_yellow",
+        "gbc_platformer_action",
+        "gba_strategy_or_tactics"
+      ],
+      "teacher_policy": "proposal_only for reward design and wrapper debugging"
+    },
+    {
+      "id": "language_reasoning_coding",
+      "level": 7,
+      "title": "Language, Reasoning, and Coding Benchmarks",
+      "capability_goal": "Broaden from grammar into reasoning, coding, instruction following, and public calibration without using external models as solvers.",
+      "benchmark_patterns": [
+        "hellaswag",
+        "arc",
+        "lambada",
+        "human_eval",
+        "mbpp",
+        "swe_bench"
+      ],
+      "source_ids": [
+        "lm_eval_harness",
+        "big_bench",
+        "human_eval",
+        "mbpp",
+        "evalplus",
+        "bigcodebench",
+        "livecodebench",
+        "swe_bench",
+        "mini_swe_agent",
+        "swe_agent",
+        "swe_rex",
+        "swe_smith",
+        "swe_gen",
+        "opencode",
+        "opencode_bench",
+        "openhands",
+        "terminal_bench",
+        "codeclash",
+        "swe_atlas",
+        "swe_polybench",
+        "repobench",
+        "swelancer",
+        "apps",
+        "code_contests",
+        "the_stack_v2",
+        "starcoderdata",
+        "codesearchnet"
+      ],
+      "promotion_gate": "local scoring adapter exists; public calibration is separated from private/live bridge tasks; code execution sandboxed.",
+      "next_frontier_family": "coding_local_sandbox",
+      "teacher_policy": "audit task adapters and architecture hypotheses after residuals"
+    },
+    {
+      "id": "tool_dialogue_agents",
+      "level": 8,
+      "title": "Tool-Use and Multi-Turn Dialogue Agents",
+      "capability_goal": "Learn policy-constrained tool use, API calling, multi-turn state tracking, abstention, and verification.",
+      "benchmark_patterns": [
+        "tau_bench",
+        "tool",
+        "function_calling",
+        "dialogue_agent",
+        "conversation_multiturn",
+        "multi_turn_conversation",
+        "personality_dialogue",
+        "checkpoint_chat"
+      ],
+      "source_ids": [
+        "tau_bench",
+        "smol_smoltalk",
+        "ultrachat_200k",
+        "openassistant_oasst1"
+      ],
+      "promotion_gate": "tool schemas local; policy constraints verified; hallucinated tool calls penalized; safety arm can veto.",
+      "next_frontier_family": "tool_agent",
+      "teacher_policy": "proposal_only for tool schema coverage and policy edge cases"
+    },
+    {
+      "id": "web_agents",
+      "level": 9,
+      "title": "Browser and Web Agent Benchmarks",
+      "capability_goal": "Operate self-hosted web tasks with observation/action loops, verification, and sandboxed side effects.",
+      "benchmark_patterns": [
+        "webarena",
+        "browsergym",
+        "web_agent"
+      ],
+      "source_ids": [
+        "webarena",
+        "browsergym"
+      ],
+      "promotion_gate": "self-hosted environment installed; browser actions sandboxed; task completion graders pass; no live-account side effects.",
+      "next_frontier_family": "web_agent",
+      "teacher_policy": "proposal_only for adapter design; no teacher as web-task solver"
+    },
+    {
+      "id": "desktop_os_agents",
+      "level": 10,
+      "title": "Desktop/OS Computer-Use Agents",
+      "capability_goal": "Complete real desktop tasks across files, apps, and OS state with execution-based verification and strict sandboxing.",
+      "benchmark_patterns": [
+        "osworld",
+        "desktop",
+        "computer_use"
+      ],
+      "source_ids": [
+        "osworld"
+      ],
+      "promotion_gate": "VM sandbox ready; task graders deterministic; file/app mutations isolated; safety/reflex layer gates risky actions.",
+      "next_frontier_family": "desktop_agent",
+      "teacher_policy": "proposal_only for sandbox architecture and failure diagnosis"
+    },
+    {
+      "id": "native_voice_multimodal",
+      "level": 11,
+      "title": "Native Voice I/O and Multimodal Interaction",
+      "capability_goal": "Interact through native Theseus speech input/output owned by the Octopus head/router, without provider, installed-package, or pretrained third-party speech inference.",
+      "benchmark_patterns": [
+        "librispeech",
+        "libritts",
+        "common_voice",
+        "ljspeech",
+        "speechbrain"
+      ],
+      "source_ids": [
+        "speechbrain_benchmarks",
+        "common_voice",
+        "librispeech",
+        "libritts",
+        "ljspeech"
+      ],
+      "promotion_gate": "licensed audio data; native audio packet contract; Theseus-trained STT/TTS components; WER/MOS-style evals tracked; no installed or provider speech inference.",
+      "next_frontier_family": "native_voice",
+      "teacher_policy": "proposal_only for architecture and eval design; no external, installed-package, or pretrained third-party STT/TTS inference"
+    },
+    {
+      "id": "autonomous_user_agent",
+      "level": 12,
+      "title": "End-to-End Autonomous User Agent",
+      "capability_goal": "Handle arbitrary user goals through Octopus routing, memory, tools, RL policies, web/desktop actions, voice, safety, and self-ratcheting.",
+      "benchmark_patterns": [
+        "autonomous_goal",
+        "checkpoint_chat",
+        "sparkstream",
+        "capability_matrix"
+      ],
+      "source_ids": [],
+      "promotion_gate": "multi-week autonomous run; no stale loops; benchmark rotation works; teacher usage trends toward zero; safety incidents zero.",
+      "next_frontier_family": "end_to_end_agent",
+      "teacher_policy": "only for rare architecture walls; system should self-route all ordinary tasks"
+    }
+  ]
+}

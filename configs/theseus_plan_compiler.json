@@ -1,0 +1,607 @@
+{
+  "policy": "project_theseus_plan_compiler_v0",
+  "purpose": "Compile Theseus goals into typed, VCM-backed, verifier-ready execution DAGs that route through the existing registry, control plane, and Hive work board instead of creating another loose planner.",
+  "schema_version": "0.1",
+  "source_ideas": [
+    "Cognitive Compilation: source plan -> semantic IR -> target compilation",
+    "PlanForge: optimized DAG, semantic dedupe, critical path scheduling, watchdog execution",
+    "Aletheia Foundry: contract lock, context slices, pre-mortem, claim/evidence verification",
+    "LLMCompiler/LATS/ToT/GoT/ReAct/Reflexion: parallel function planning, candidate-plan search, leaf action loops, and repair memory",
+    "Theseus VCM: task context slices, constraint capsules, accepted/missed/ignored/failure traces"
+  ],
+  "hard_constraints": [
+    {
+      "id": "no_public_benchmark_training",
+      "rule": "Public benchmark prompts, tests, hidden tests, solutions, traces, and answer templates are calibration-only and must not enter training rows."
+    },
+    {
+      "id": "no_arbitrary_remote_execution",
+      "rule": "Remote work must route only through registered Hive task kinds and existing executor surfaces."
+    },
+    {
+      "id": "no_fallback_returns",
+      "rule": "Fallback returns are not valid capability evidence or generated answers."
+    },
+    {
+      "id": "registry_first",
+      "rule": "Every compiled goal must name a registered owner surface or be blocked before execution."
+    },
+    {
+      "id": "vcm_context_required",
+      "rule": "Every executable plan node must carry a minimal VCM context slice and constraint capsules."
+    },
+    {
+      "id": "teacher_proposal_only",
+      "rule": "Teacher use is architecture/curriculum proposal only unless governed distillation gates explicitly admit retained rows."
+    }
+  ],
+  "allowed_executor_backends": [
+    "theseus_control_plane",
+    "hive_work_board_executor",
+    "autonomy_watchdog",
+    "vcm_task_context_bridge",
+    "local_deterministic_tool",
+    "governed_teacher_proposal",
+    "planning_benchmark_adapter"
+  ],
+  "allowed_tools": [
+    "python_script",
+    "json_report",
+    "sqlite_work_board",
+    "registry_lookup",
+    "vcm_lookup",
+    "local_filesystem_read",
+    "local_filesystem_write_reports",
+    "py_compile",
+    "bash_syntax_check",
+    "teacher_proposal",
+    "benchmark_adapter_dry_run",
+    "math.sympy_exact",
+    "math.numeric_interval",
+    "math.linear_algebra",
+    "math.numeric_verify",
+    "math.mpmath_verify",
+    "logic.lean_check",
+    "logic.z3_smt",
+    "rewrite.egraph_minimal",
+    "rewrite.equality_saturation",
+    "search.local_bm25",
+    "search.local_hybrid",
+    "search.vcm_hybrid",
+    "tool.trace_replay"
+  ],
+  "worker_tiers": {
+    "T0": "deterministic local tools, parsers, linters, report readers, schema checks",
+    "T1": "local script runners and small deterministic transforms",
+    "T2": "local learned systems or accelerator-backed work such as MLX/CUDA/CPU training lanes",
+    "T3": "governed teacher proposal mode for architecture/curriculum diagnosis",
+    "T4": "run-registry check for public calibration, plus explicit review for risky updates or policy changes"
+  },
+  "vcm_family_defaults": {
+    "planning": "autonomy_governance",
+    "code_transfer": "code_generation",
+    "memory": "memory_context",
+    "hive": "hive_operations",
+    "operator": "operator_chat",
+    "acceleration": "runtime_accelerator_routing",
+    "benchmark": "public_calibration_review"
+  },
+  "representative_goals": [
+    {
+      "id": "plan_compiler_bootstrap",
+      "title": "Make planning a registry-owned compiled control surface",
+      "owner_surface": "core_control_plane",
+      "priority": "critical",
+      "risk_tier": "medium",
+      "objective": "Install the planning compiler as the canonical way Theseus converts objectives into auditable execution graphs.",
+      "non_goals": [
+        "Do not create a separate autonomous executor.",
+        "Do not add a dashboard or mobile surface.",
+        "Do not change public calibration policy."
+      ],
+      "outputs": [
+        "reports/theseus_plan_compiler.json",
+        "reports/theseus_plan_compiled_dags.json",
+        "reports/theseus_plan_trace_bundle.jsonl"
+      ],
+      "acceptance_tests": [
+        "plan_contract_lints_green",
+        "registry_owner_surface_present",
+        "vcm_context_attached_to_all_nodes",
+        "executor_backend_is_existing_surface",
+        "trace_bundle_replay_links_present"
+      ],
+      "atoms": [
+        {
+          "id": "observe_current_state",
+          "op": "OBSERVE",
+          "title": "Load registry, control-plane, VCM, work-board, and resource reports",
+          "depends_on": [],
+          "outputs": ["current_state_snapshot"],
+          "required_capabilities": ["registry_lookup", "vcm_lookup", "report_reading"],
+          "allowed_tools": ["json_report", "registry_lookup", "vcm_lookup"],
+          "executor_backend": "local_deterministic_tool",
+          "worker_tier": "T0",
+          "estimated_seconds": 8,
+          "vcm_family": "planning",
+          "acceptance_refs": ["registry_owner_surface_present"]
+        },
+        {
+          "id": "compile_plan_ir",
+          "op": "COMPILE",
+          "title": "Compile goal contract into typed semantic IR nodes",
+          "depends_on": ["observe_current_state"],
+          "outputs": ["semantic_ir_dag"],
+          "required_capabilities": ["semantic_ir", "dependency_graph"],
+          "allowed_tools": ["python_script", "json_report"],
+          "executor_backend": "theseus_control_plane",
+          "worker_tier": "T0",
+          "estimated_seconds": 12,
+          "vcm_family": "planning",
+          "acceptance_refs": ["plan_contract_lints_green"]
+        },
+        {
+          "id": "attach_context_and_routes",
+          "op": "ROUTE",
+          "title": "Attach VCM context slices and existing executor targets",
+          "depends_on": ["compile_plan_ir"],
+          "outputs": ["routed_execution_dag"],
+          "required_capabilities": ["vcm_context", "work_board_routing"],
+          "allowed_tools": ["vcm_lookup", "json_report", "sqlite_work_board"],
+          "executor_backend": "hive_work_board_executor",
+          "worker_tier": "T0",
+          "estimated_seconds": 10,
+          "vcm_family": "planning",
+          "acceptance_refs": ["vcm_context_attached_to_all_nodes", "executor_backend_is_existing_surface"]
+        },
+        {
+          "id": "verify_traceability",
+          "op": "VERIFY",
+          "title": "Verify every node has inputs, outputs, evidence target, and replay link",
+          "depends_on": ["attach_context_and_routes"],
+          "outputs": ["trace_bundle"],
+          "required_capabilities": ["trace_validation", "claim_evidence_mapping"],
+          "allowed_tools": ["python_script", "json_report"],
+          "executor_backend": "autonomy_watchdog",
+          "worker_tier": "T0",
+          "estimated_seconds": 10,
+          "vcm_family": "planning",
+          "acceptance_refs": ["trace_bundle_replay_links_present"]
+        }
+      ]
+    },
+    {
+      "id": "private_semantic_quality_loop",
+      "title": "Improve semantic candidate quality without public-data training",
+      "owner_surface": "neural_seed_and_decoder",
+      "priority": "high",
+      "risk_tier": "medium",
+      "objective": "Route semantic candidate-quality repair through plan-aware private residual work before any public calibration.",
+      "non_goals": [
+        "Do not train on public benchmark artifacts.",
+        "Do not count template renderers or fallback returns as capability evidence."
+      ],
+      "outputs": ["private_residual_repair_plan", "candidate_quality_trace"],
+      "acceptance_tests": [
+        "private_only_training_surface",
+        "no_fallback_returns",
+        "failure_categories_mapped_to_plan_nodes",
+        "teacher_only_architecture_proposal"
+      ],
+      "atoms": [
+        {
+          "id": "mine_residual_categories",
+          "op": "OBSERVE",
+          "title": "Mine algorithm, return-shape, verifier-contract, and selector/ranking residual categories",
+          "depends_on": [],
+          "outputs": ["residual_category_manifest"],
+          "required_capabilities": ["code_transfer_residuals", "report_reading"],
+          "allowed_tools": ["python_script", "json_report"],
+          "executor_backend": "local_deterministic_tool",
+          "worker_tier": "T0",
+          "estimated_seconds": 40,
+          "vcm_family": "code_transfer",
+          "acceptance_refs": ["failure_categories_mapped_to_plan_nodes"]
+        },
+        {
+          "id": "compile_private_repair_work",
+          "op": "COMPILE",
+          "title": "Compile residual categories into private-only repair tasks",
+          "depends_on": ["mine_residual_categories"],
+          "outputs": ["private_repair_dag"],
+          "required_capabilities": ["semantic_ir", "private_curriculum"],
+          "allowed_tools": ["python_script", "json_report"],
+          "executor_backend": "hive_work_board_executor",
+          "worker_tier": "T1",
+          "estimated_seconds": 120,
+          "vcm_family": "code_transfer",
+          "acceptance_refs": ["private_only_training_surface"]
+        },
+        {
+          "id": "teacher_architecture_packet",
+          "op": "PROPOSE",
+          "title": "Package repeated residual failures for governed teacher architecture diagnosis only",
+          "depends_on": ["compile_private_repair_work"],
+          "outputs": ["teacher_architecture_proposal_packet"],
+          "required_capabilities": ["teacher_proposal"],
+          "allowed_tools": ["teacher_proposal", "json_report"],
+          "executor_backend": "governed_teacher_proposal",
+          "worker_tier": "T3",
+          "estimated_seconds": 180,
+          "vcm_family": "code_transfer",
+          "acceptance_refs": ["teacher_only_architecture_proposal"]
+        }
+      ]
+    },
+    {
+      "id": "vcm_daily_use_planning_loop",
+      "title": "Make VCM the default planning memory for daily-use tasks",
+      "owner_surface": "vcm_memory",
+      "priority": "high",
+      "risk_tier": "low",
+      "objective": "Attach VCM context slices, constraint capsules, and accepted/missed/ignored traces to every daily-use plan.",
+      "non_goals": [
+        "Do not store raw private text unless a separate local policy admits it.",
+        "Do not promote VCM-Runtime KV parity from semantic-cache evidence alone."
+      ],
+      "outputs": ["vcm_plan_context_contract", "dogfood_trace_contract"],
+      "acceptance_tests": [
+        "raw_private_text_disabled_by_default",
+        "accepted_missed_ignored_trace_shape_present",
+        "vcm_context_slice_hashes_present",
+        "no_runtime_kv_parity_overclaim"
+      ],
+      "atoms": [
+        {
+          "id": "select_minimal_context",
+          "op": "CONTEXT",
+          "title": "Select least-privilege VCM pages for the task family",
+          "depends_on": [],
+          "outputs": ["minimal_context_slice"],
+          "required_capabilities": ["vcm_lookup", "context_slicing"],
+          "allowed_tools": ["vcm_lookup", "json_report"],
+          "executor_backend": "vcm_task_context_bridge",
+          "worker_tier": "T0",
+          "estimated_seconds": 15,
+          "vcm_family": "memory",
+          "acceptance_refs": ["vcm_context_slice_hashes_present"]
+        },
+        {
+          "id": "bind_trace_events",
+          "op": "TRACE",
+          "title": "Bind accepted, missed, ignored, corrected, and completed outcomes to plan nodes",
+          "depends_on": ["select_minimal_context"],
+          "outputs": ["dogfood_trace_schema"],
+          "required_capabilities": ["event_trace", "privacy_policy"],
+          "allowed_tools": ["json_report", "local_filesystem_write_reports"],
+          "executor_backend": "theseus_control_plane",
+          "worker_tier": "T0",
+          "estimated_seconds": 20,
+          "vcm_family": "operator",
+          "acceptance_refs": ["accepted_missed_ignored_trace_shape_present", "raw_private_text_disabled_by_default"]
+        }
+      ]
+    },
+    {
+      "id": "viea_execution_spine_deterministic_tools",
+      "title": "Route private work through the VIEA execution spine and deterministic tools",
+      "owner_surface": "deterministic_tool_substrate",
+      "priority": "critical",
+      "risk_tier": "medium",
+      "objective": "Make exact local solver, search, proof-check, replay, evidence, VCM, dogfood, and loop-closure packets a canonical private-work route.",
+      "non_goals": [
+        "Do not train on public benchmark artifacts.",
+        "Do not use external inference.",
+        "Do not emit fallback answers when a tool cannot solve."
+      ],
+      "outputs": [
+        "deterministic_tool_registry",
+        "deterministic_tool_trace",
+        "deterministic_tool_artifact_graph",
+        "deterministic_tool_dogfood_events",
+        "deterministic_tool_loop_closure_candidates"
+      ],
+      "acceptance_tests": [
+        "tool_cards_registered",
+        "tool_results_replayable",
+        "artifact_graph_and_claim_ledger_present",
+        "dogfood_metadata_events_present",
+        "loop_closure_candidates_present",
+        "no_public_training_rows",
+        "no_fallback_returns"
+      ],
+      "atoms": [
+        {
+          "id": "load_tool_cards",
+          "op": "OBSERVE",
+          "title": "Load deterministic tool cards and dependency health",
+          "depends_on": [],
+          "outputs": [
+            "deterministic_tool_registry"
+          ],
+          "required_capabilities": [
+            "registry_lookup",
+            "deterministic_tool_card"
+          ],
+          "allowed_tools": [
+            "json_report",
+            "registry_lookup"
+          ],
+          "executor_backend": "local_deterministic_tool",
+          "worker_tier": "T0",
+          "estimated_seconds": 8,
+          "vcm_family": "planning",
+          "acceptance_refs": [
+            "tool_cards_registered"
+          ]
+        },
+        {
+          "id": "execute_private_tool_smoke",
+          "op": "EXECUTE",
+          "title": "Run private deterministic smoke cases with no fallback returns",
+          "depends_on": [
+            "load_tool_cards"
+          ],
+          "outputs": [
+            "deterministic_tool_trace"
+          ],
+          "required_capabilities": [
+            "exact_math",
+            "formal_check",
+            "local_search",
+            "trace_replay"
+          ],
+          "allowed_tools": [
+            "math.sympy_exact",
+            "math.numeric_interval",
+            "math.linear_algebra",
+            "math.numeric_verify",
+            "math.mpmath_verify",
+            "logic.lean_check",
+            "logic.z3_smt",
+            "rewrite.egraph_minimal",
+            "rewrite.equality_saturation",
+            "search.local_bm25",
+            "search.local_hybrid",
+            "search.vcm_hybrid",
+            "tool.trace_replay"
+          ],
+          "executor_backend": "local_deterministic_tool",
+          "worker_tier": "T0",
+          "estimated_seconds": 45,
+          "vcm_family": "planning",
+          "acceptance_refs": [
+            "tool_results_replayable",
+            "no_public_training_rows",
+            "no_fallback_returns"
+          ]
+        },
+        {
+          "id": "attach_evidence_and_claims",
+          "op": "VERIFY",
+          "title": "Attach deterministic tool results to artifact graph and claim ledger",
+          "depends_on": [
+            "execute_private_tool_smoke"
+          ],
+          "outputs": [
+            "deterministic_tool_artifact_graph"
+          ],
+          "required_capabilities": [
+            "claim_evidence_mapping",
+            "vcm_context"
+          ],
+          "allowed_tools": [
+            "json_report",
+            "vcm_lookup"
+          ],
+          "executor_backend": "local_deterministic_tool",
+          "worker_tier": "T0",
+          "estimated_seconds": 12,
+          "vcm_family": "memory",
+          "acceptance_refs": [
+            "artifact_graph_and_claim_ledger_present"
+          ]
+        },
+        {
+          "id": "emit_feedback_and_loop_candidates",
+          "op": "TRACE",
+          "title": "Emit local dogfood metadata and loop-closure candidates from repeated tool traces",
+          "depends_on": [
+            "attach_evidence_and_claims"
+          ],
+          "outputs": [
+            "deterministic_tool_dogfood_events",
+            "deterministic_tool_loop_closure_candidates"
+          ],
+          "required_capabilities": [
+            "event_trace",
+            "loop_closure"
+          ],
+          "allowed_tools": [
+            "json_report",
+            "local_filesystem_write_reports"
+          ],
+          "executor_backend": "local_deterministic_tool",
+          "worker_tier": "T0",
+          "estimated_seconds": 12,
+          "vcm_family": "operator",
+          "acceptance_refs": [
+            "dogfood_metadata_events_present",
+            "loop_closure_candidates_present"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mac_native_acceleration_planning",
+      "title": "Plan MLX/Metal work as first-class local accelerator routes",
+      "owner_surface": "resource_and_acceleration",
+      "priority": "medium",
+      "risk_tier": "medium",
+      "objective": "Make planning aware of Mac-local MLX/Metal capability, Python import failures, and parity-claim limits.",
+      "non_goals": [
+        "Do not claim CUDA-equivalent parity without apples-to-apples reports.",
+        "Do not route remote CUDA when peers are stale or unreachable."
+      ],
+      "outputs": ["accelerator_route_plan", "parity_claim_guard"],
+      "acceptance_tests": [
+        "local_mlx_routed_when_ready",
+        "remote_cuda_blocked_when_unreachable",
+        "parity_claim_guard_present"
+      ],
+      "atoms": [
+        {
+          "id": "read_node_capabilities",
+          "op": "OBSERVE",
+          "title": "Read Hive node registry and resource governor capability state",
+          "depends_on": [],
+          "outputs": ["capability_snapshot"],
+          "required_capabilities": ["mlx_apple", "cuda", "cpu_worker"],
+          "allowed_tools": ["json_report"],
+          "executor_backend": "local_deterministic_tool",
+          "worker_tier": "T0",
+          "estimated_seconds": 8,
+          "vcm_family": "acceleration",
+          "acceptance_refs": ["local_mlx_routed_when_ready", "remote_cuda_blocked_when_unreachable"]
+        },
+        {
+          "id": "compile_accelerator_routes",
+          "op": "ROUTE",
+          "title": "Route bounded local work to MLX/CPU and leave stale CUDA blocked",
+          "depends_on": ["read_node_capabilities"],
+          "outputs": ["accelerator_route_table"],
+          "required_capabilities": ["routing_policy", "resource_policy"],
+          "allowed_tools": ["json_report"],
+          "executor_backend": "hive_work_board_executor",
+          "worker_tier": "T0",
+          "estimated_seconds": 15,
+          "vcm_family": "acceleration",
+          "acceptance_refs": ["parity_claim_guard_present"]
+        }
+      ]
+    },
+    {
+      "id": "planning_benchmark_readiness",
+      "title": "Prepare public planning benchmarks as calibration-only surfaces",
+      "owner_surface": "public_calibration_registry",
+      "priority": "medium",
+      "risk_tier": "medium",
+      "objective": "Create readiness metadata for PlanBench and TravelPlanner-style evaluation without fetching, training on, or rerunning public benchmark artifacts.",
+      "non_goals": [
+        "Do not run public planning calibration in this compiler pass.",
+        "Do not train on public benchmark prompt or answer templates."
+      ],
+      "outputs": ["planning_benchmark_readiness_adapter"],
+      "acceptance_tests": [
+        "public_benchmark_calibration_only",
+        "no_public_training_rows",
+        "adapter_is_dry_run_only"
+      ],
+      "atoms": [
+        {
+          "id": "compile_planbench_adapter_contract",
+          "op": "BENCHMARK_ADAPTER",
+          "title": "Describe PlanBench-style PDDL/action-change task mapping into Theseus contracts",
+          "depends_on": [],
+          "outputs": ["planbench_adapter_contract"],
+          "required_capabilities": ["planning_benchmark_adapter"],
+          "allowed_tools": ["benchmark_adapter_dry_run", "json_report"],
+          "executor_backend": "planning_benchmark_adapter",
+          "worker_tier": "T0",
+          "estimated_seconds": 10,
+          "vcm_family": "benchmark",
+          "acceptance_refs": ["public_benchmark_calibration_only", "adapter_is_dry_run_only"]
+        },
+        {
+          "id": "compile_travelplanner_adapter_contract",
+          "op": "BENCHMARK_ADAPTER",
+          "title": "Describe TravelPlanner-style constraint planning task mapping into Theseus contracts",
+          "depends_on": [],
+          "outputs": ["travelplanner_adapter_contract"],
+          "required_capabilities": ["constraint_planning", "tool_noise_robustness"],
+          "allowed_tools": ["benchmark_adapter_dry_run", "json_report"],
+          "executor_backend": "planning_benchmark_adapter",
+          "worker_tier": "T0",
+          "estimated_seconds": 10,
+          "vcm_family": "benchmark",
+          "acceptance_refs": ["public_benchmark_calibration_only", "no_public_training_rows"]
+        }
+      ]
+    },
+    {
+      "id": "overnight_compiled_autonomy_cycle",
+      "title": "Compile unattended work into bounded verified steps",
+      "owner_surface": "autonomy_and_supervision",
+      "priority": "high",
+      "risk_tier": "medium",
+      "objective": "Turn overnight autonomy from loose queue selection into compiled, verified, VCM-backed work with useful-progress evidence.",
+      "non_goals": [
+        "Do not launch long work from this dry-run compiler report.",
+        "Do not spend public calibration automatically."
+      ],
+      "outputs": ["overnight_compiled_plan_template"],
+      "acceptance_tests": [
+        "bounded_work_steps",
+        "useful_progress_signal_required",
+        "stale_lease_recovery_present",
+        "public_calibration_not_auto_spent"
+      ],
+      "atoms": [
+        {
+          "id": "rank_ready_board_work",
+          "op": "OBSERVE",
+          "title": "Read ready work-board tasks and rank them by compiled dependency and progress value",
+          "depends_on": [],
+          "outputs": ["ranked_ready_work"],
+          "required_capabilities": ["work_board_routing", "progress_contract"],
+          "allowed_tools": ["sqlite_work_board", "json_report"],
+          "executor_backend": "hive_work_board_executor",
+          "worker_tier": "T0",
+          "estimated_seconds": 15,
+          "vcm_family": "hive",
+          "acceptance_refs": ["bounded_work_steps", "useful_progress_signal_required"]
+        },
+        {
+          "id": "attach_watchdog_and_recovery",
+          "op": "VERIFY",
+          "title": "Attach watchdog, heartbeat, stale lease recovery, and failure fingerprints",
+          "depends_on": ["rank_ready_board_work"],
+          "outputs": ["overnight_watchdog_contract"],
+          "required_capabilities": ["watchdog", "stale_lease_recovery"],
+          "allowed_tools": ["json_report"],
+          "executor_backend": "autonomy_watchdog",
+          "worker_tier": "T0",
+          "estimated_seconds": 20,
+          "vcm_family": "hive",
+          "acceptance_refs": ["stale_lease_recovery_present", "public_calibration_not_auto_spent"]
+        }
+      ]
+    }
+  ],
+  "planning_benchmark_readiness": [
+    {
+      "id": "planbench",
+      "kind": "formal_action_planning",
+      "public_role": "calibration_only",
+      "train_allowed": false,
+      "adapter_status": "dry_run_contract_only",
+      "task_mapping": "PDDL/domain/action-change problems map to goal contracts with initial_state, actions, goal_state, plan_steps, and validator_result fields."
+    },
+    {
+      "id": "travelplanner",
+      "kind": "constraint_real_world_planning",
+      "public_role": "calibration_only",
+      "train_allowed": false,
+      "adapter_status": "dry_run_contract_only",
+      "task_mapping": "Travel intents map to contract constraints for budget, time, locations, meals, lodging, transport, and commonsense/hard constraint validators."
+    },
+    {
+      "id": "apb_osworld_webarena_later",
+      "kind": "long_horizon_agent_execution",
+      "public_role": "calibration_only",
+      "train_allowed": false,
+      "adapter_status": "deferred_heavy_setup",
+      "task_mapping": "Use only after v0 contract/DAG execution is stable; these require environment setup and execution-based scoring."
+    }
+  ]
+}

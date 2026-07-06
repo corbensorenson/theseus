@@ -1,0 +1,38 @@
+{
+  "policy": "project_theseus_openai_compat_policy_v0",
+  "enabled": true,
+  "purpose": "Expose a local OpenAI-compatible HTTP shim so agent harnesses can point at Project Theseus without using external inference.",
+  "paths": {
+    "local_config": "configs/openai_compat.local.json",
+    "status": "reports/openai_compat_status.json",
+    "events": "reports/openai_compat_events.jsonl",
+    "last_chat": "reports/openai_compat_last_chat.json"
+  },
+  "defaults": {
+    "enabled": false,
+    "host": "127.0.0.1",
+    "port": 8789,
+    "model": "theseus-live",
+    "checkpoint_id": "live",
+    "allow_teacher": false,
+    "accept_any_model": true,
+    "require_token": false,
+    "api_token": "",
+    "cors": true
+  },
+  "security": {
+    "loopback_only_by_default": true,
+    "require_token_for_non_loopback": true,
+    "never_call_external_inference": true,
+    "teacher_disabled_by_default": true
+  },
+  "compatibility": {
+    "base_url_hint": "http://127.0.0.1:8789/v1",
+    "endpoints": [
+      "GET /v1/models",
+      "POST /v1/chat/completions",
+      "POST /v1/completions",
+      "GET /health"
+    ]
+  }
+}

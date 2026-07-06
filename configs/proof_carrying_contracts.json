@@ -1,0 +1,203 @@
+{
+  "policy": "project_theseus_proof_carrying_contracts_v1",
+  "purpose": "Import Circle/Coil/cyclic theorem-backed AI contracts as bounded structural evidence while preventing fixture/proof facts from being credited as model-quality, speed, memory, transfer, promotion, or ASI claims.",
+  "inputs": {
+    "circle_contract_pack": "../circle math/site/data/generated/circle_ai_contract_pack.json",
+    "circle_legacy_contracts": "../circle math/site/data/generated/theseus_hive_ai_contracts.json",
+    "circle_theorem_manifest": "../circle math/site/data/generated/theorem_manifest.json",
+    "legacy_consumer_report": "reports/circle_ai_contract_consumer.json",
+    "legacy_workload_smoke_report": "reports/circle_ai_private_workload_smoke.json",
+    "legacy_proxy_benchmark_report": "reports/circle_ai_private_proxy_benchmark.json",
+    "circle_lean_contract_source": "../circle math/Circle/Contracts.lean",
+    "circle_lean_contract_artifact": "../circle math/.lake/build/lib/lean/Circle/Contracts.olean"
+  },
+  "proof_claim_policy": {
+    "fixture_use_requires_pack_consumer_check": true,
+    "proof_carrying_claim_requires_local_lean_artifact": true,
+    "proof_carrying_claim_requires_theorem_manifest_resolution": true,
+    "proof_placeholder_blocks_claim": true,
+    "model_quality_claim_requires_separate_theseus_task_evidence": true,
+    "speed_claim_requires_separate_theseus_runtime_evidence": true,
+    "memory_claim_requires_separate_theseus_memory_evidence": true,
+    "transfer_claim_requires_separate_theseus_transfer_evidence": true,
+    "learned_generation_claim_requires_candidate_integrity_evidence": true
+  },
+  "required_contract_fields": [
+    "id",
+    "kind",
+    "content_fingerprint",
+    "theorem_ids",
+    "proof_status",
+    "consumer_check",
+    "not_claimed",
+    "validation_commands",
+    "ordinary_baselines",
+    "planner_recommendations"
+  ],
+  "allowed_fixture_claims": [
+    "finite_structure_fixture",
+    "structural_invariant_boundary",
+    "deterministic_configuration_input",
+    "private_benchmark_design_input",
+    "proof_boundary_reference"
+  ],
+  "forbidden_claims_without_separate_theseus_evidence": [
+    "learned_model_quality_improvement",
+    "reasoning_ability_improvement",
+    "speedup",
+    "memory_scaling_improvement",
+    "context_length_improvement",
+    "public_transfer_improvement",
+    "promotion_evidence",
+    "asi_progress"
+  ],
+  "claim_requests": [
+    {
+      "id": "claim.circle_contract_pack_fixture_boundary",
+      "source": "circle_contract_pack",
+      "claim_type": "finite_structure_fixture",
+      "requested_support": "fixture_only",
+      "requires_separate_theseus_task_evidence": false,
+      "separate_theseus_task_evidence_refs": [],
+      "expected_decision": "allowed"
+    },
+    {
+      "id": "claim.circle_rope_context_length_improvement",
+      "source": "CC-AI-CONTRACT-ROPE-001",
+      "claim_type": "context_length_improvement",
+      "requested_support": "model_quality_or_runtime",
+      "requires_separate_theseus_task_evidence": true,
+      "separate_theseus_task_evidence_refs": [],
+      "expected_decision": "blocked"
+    },
+    {
+      "id": "claim.circle_fanout_candidate_coverage_fixture",
+      "source": "CC-AI-CONTRACT-FANOUT-001",
+      "claim_type": "structural_invariant_boundary",
+      "requested_support": "fixture_only",
+      "requires_separate_theseus_task_evidence": false,
+      "separate_theseus_task_evidence_refs": [
+        "reports/circle_ai_private_proxy_benchmark.json"
+      ],
+      "expected_decision": "allowed"
+    }
+  ],
+  "substrate_adoption_records": [
+    {
+      "id": "substrate.circle_rope_position_certifier",
+      "source_contract_ids": [
+        "CC-AI-CONTRACT-ROPE-001"
+      ],
+      "candidate_use": "RoPE position distinguishability certificate for private configuration checks.",
+      "current_lifecycle": "research_fixture",
+      "production_default": false,
+      "baselines": [
+        "ordinary RoPE without theorem-backed distinguishability receipt",
+        "existing transformer/hybrid positional path",
+        "no-position ablation"
+      ],
+      "negative_controls": [
+        "wrong period",
+        "insufficient context range",
+        "unresolved theorem id"
+      ],
+      "falsification_criteria": [
+        "the receipt cannot map theorem IDs to proved manifest rows",
+        "the configuration does not improve a separate Theseus private task under matched compute",
+        "the improvement disappears against the transformer/hybrid baseline"
+      ],
+      "required_future_evidence": [
+        "private task evidence with model-quality metric",
+        "runtime/memory cost comparison",
+        "candidate integrity report if used in generation"
+      ],
+      "non_claims": [
+        "Does not prove longer usable context by itself.",
+        "Does not prove Theseus quality or transfer.",
+        "Does not supersede transformer/hybrid baselines."
+      ]
+    },
+    {
+      "id": "substrate.circle_kv_cache_ring_boundary",
+      "source_contract_ids": [
+        "CC-AI-CONTRACT-KV-001"
+      ],
+      "candidate_use": "KV-cache request boundary checks for future VCM/runtime cache integration.",
+      "current_lifecycle": "research_fixture",
+      "production_default": false,
+      "baselines": [
+        "ordinary rolling KV cache",
+        "sink plus rolling window without receipt",
+        "VCM semantic context governor without native KV claim"
+      ],
+      "negative_controls": [
+        "stale requested token",
+        "duplicate slot request",
+        "sink/live-window overlap"
+      ],
+      "falsification_criteria": [
+        "stale-request negative control passes",
+        "separate runtime benchmark shows no useful verified solution/sec lift",
+        "cache receipt cannot be replayed from registered artifacts"
+      ],
+      "required_future_evidence": [
+        "runtime cache replay report",
+        "VCM native runtime report",
+        "latency and correctness ablation"
+      ],
+      "non_claims": [
+        "Does not claim VCM-Runtime parity.",
+        "Does not claim memory benchmark improvement.",
+        "Does not authorize runtime serving changes."
+      ]
+    },
+    {
+      "id": "substrate.circle_sparse_attention_coverage",
+      "source_contract_ids": [
+        "CC-AI-CONTRACT-SPARSE-001"
+      ],
+      "candidate_use": "Sparse/local repair coverage receipt for future generation-mode comparisons.",
+      "current_lifecycle": "research_fixture",
+      "production_default": false,
+      "baselines": [
+        "dense attention",
+        "local window only",
+        "existing semantic-head prefix-guided decode"
+      ],
+      "negative_controls": [
+        "uncovered lag",
+        "wrong repair window",
+        "dense fallback misreported as sparse success"
+      ],
+      "falsification_criteria": [
+        "coverage receipt fails under replay",
+        "separate generation-mode comparison has zero useful verified solution/sec",
+        "cost exceeds dense baseline without verified task lift"
+      ],
+      "required_future_evidence": [
+        "generation mode report",
+        "accepted spans/sec and useful verified solution/sec",
+        "no fallback/template credit audit"
+      ],
+      "non_claims": [
+        "Does not claim sparse attention is better.",
+        "Does not claim learned code generation.",
+        "Does not claim public transfer."
+      ]
+    }
+  ],
+  "legacy_bridge_expectations": {
+    "external_inference_calls": 0,
+    "public_calibration_used": false,
+    "training_mutation": false,
+    "promotion_evidence": false,
+    "private_data_exported": false,
+    "learned_model_quality_metrics_present": false
+  },
+  "outputs": {
+    "report": "reports/proof_carrying_contract_gate.json",
+    "markdown": "reports/proof_carrying_contract_gate.md",
+    "contract_records": "reports/proof_carrying_contract_records.jsonl",
+    "substrate_adoption_records": "reports/substrate_adoption_records.jsonl"
+  }
+}

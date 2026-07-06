@@ -1,0 +1,107 @@
+{
+  "policy": "project_theseus_grammar_suckers_v0",
+  "purpose": "Give each supported surface language a small rule substrate so the learned language/reasoning arm spends more capacity on meaning, repair, and creative transfer rather than rediscovering syntax.",
+  "governance": {
+    "rule_substrate_not_answer_key": true,
+    "public_benchmark_solutions_allowed": false,
+    "public_tests_visible_to_rule_layer": false,
+    "external_inference_calls": 0,
+    "teacher_distillation": false,
+    "bulk_downloads": false,
+    "notes": "Grammar suckers may reject malformed candidates, emit SBL frames, and route to the correct arm. They may not insert task-specific answers."
+  },
+  "inputs": {
+    "python_candidate_manifest": "reports/student_code_candidates.jsonl",
+    "conversation_train_jsonl": "data/open_conversation_pantry/private_train/conversation_sft_pressure.jsonl",
+    "legacy_sbl_roots": [
+      "data/old_projects/moecot-manifest/shared/tools/sblc",
+      "data/old_projects/moecot-manifest/shared/tools/sbl_training_bootstrap",
+      "data/old_projects/moecot-manifest/shared/registry/registry/contracts/semantic"
+    ]
+  },
+  "outputs": {
+    "sbl_trace_jsonl": "data/grammar_suckers/sbl_rule_traces.jsonl",
+    "report": "reports/grammar_suckers.json",
+    "markdown": "reports/grammar_suckers.md"
+  },
+  "suckers": [
+    {
+      "sucker_id": "python_grammar_sucker",
+      "language": "python",
+      "parent_arm": "python_runtime_compliance_arm",
+      "routes_into": [
+        "code_lm_decoder",
+        "real_code_benchmark_graduation",
+        "python_runtime_compliance_arm"
+      ],
+      "rule_checks": [
+        "ast_parse",
+        "function_def_present",
+        "return_or_yield_present",
+        "side_effect_import_guard",
+        "promotion_eligible_candidates_must_parse"
+      ],
+      "role": "fail_closed_candidate_filter_and_sbl_projection"
+    },
+    {
+      "sucker_id": "english_surface_grammar_sucker",
+      "language": "english",
+      "parent_arm": "babylm_grammar_arm",
+      "routes_into": [
+        "conversation_training_pressure",
+        "personality_core",
+        "head_router"
+      ],
+      "rule_checks": [
+        "balanced_punctuation",
+        "sentence_boundary",
+        "basic_clause_signal",
+        "quote_balance"
+      ],
+      "role": "conversation_surface_pressure_and_sbl_projection"
+    },
+    {
+      "sucker_id": "sbl_semantic_backbone_sucker",
+      "language": "semantic_backbone_language",
+      "parent_arm": "head_router",
+      "routes_into": [
+        "octopus_router_head",
+        "genesis_kernel",
+        "sts_streams"
+      ],
+      "rule_checks": [
+        "sbl_schema_present",
+        "source_surface_preserved",
+        "semantic_primitive_present",
+        "provenance_present"
+      ],
+      "role": "language_independent_semantic_frame_for_routing_and_transfer"
+    },
+    {
+      "sucker_id": "rust_grammar_sucker",
+      "language": "rust",
+      "parent_arm": "rust_cuda_systems_arm",
+      "routes_into": [
+        "rust_cuda_systems_arm"
+      ],
+      "rule_checks": [
+        "planned_cargo_check",
+        "planned_rustfmt_parse"
+      ],
+      "role": "planned"
+    },
+    {
+      "sucker_id": "javascript_typescript_grammar_sucker",
+      "language": "javascript_typescript",
+      "parent_arm": "language_reasoning_arm",
+      "routes_into": [
+        "future_web_agent",
+        "tool_agent"
+      ],
+      "rule_checks": [
+        "planned_parser_or_node_check"
+      ],
+      "role": "planned"
+    }
+  ]
+}

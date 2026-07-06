@@ -1,0 +1,71 @@
+{
+  "schema": "sparkstream_benchmark_card_v0",
+  "id": "source_loft",
+  "source_id": "loft",
+  "name": "LOFT / Long-Context Frontiers",
+  "category": "long_context_memory_benchmark",
+  "priority": "medium",
+  "status": "queued_official_payload_locator_needed",
+  "url": "https://arxiv.org/abs/2406.13121",
+  "license_spdx": "unknown",
+  "license_allowed": false,
+  "decision": "queued_until_official_payloads_and_license_verified",
+  "staged": false,
+  "staged_path": "",
+  "resource_pantry_path": "",
+  "adapter_type": "vcm_context_recovery_adapter",
+  "runner_family": "vcm_hard_memory_private_analogue",
+  "runtime_tier": "E2",
+  "risk_tier": "high",
+  "capability_target": "Long-context retrieval, RAG, SQL-like structured query, and many-shot in-context memory up to million-token settings.",
+  "current_curriculum_stage": "private_vcm_hard_memory",
+  "next_frontier_family": "long_context_tool_substitution",
+  "input_contract": {
+    "metadata": "paper card plus official data locator when verified",
+    "context": "private corpus/table/example-bank analogues",
+    "query": "retrieval, RAG, SQL-like, or many-shot query",
+    "evidence": "support rows and structured state rows",
+    "memory_system": "VCM and non-VCM baselines under equal context budgets"
+  },
+  "output_contract": {
+    "answer_accuracy": "exact answer, set match, or deterministic local execution for private fixtures",
+    "evidence_precision_recall": "selected corpus/table/example support",
+    "abstention": "missing support rejection",
+    "latency": "local selection and structured fusion cost",
+    "residuals": "retrieval miss, wrong table row, compositional miss, or many-shot rule miss"
+  },
+  "smoke_steps": [
+    "locate official payload source and license",
+    "admit deterministic text/RAG/SQL/many-shot lanes only",
+    "run private analogues before public payload scoring"
+  ],
+  "promotion_gates": [
+    "official_source_verified_before_public_payloads",
+    "deterministic_scorer_present",
+    "no_public_training_rows",
+    "no_external_inference",
+    "private_analogue_suite_present",
+    "vcm_baseline_comparison_written"
+  ],
+  "contamination_policy": "LOFT public content is calibration-only and not staged until source/license/evaluator are verified. Private analogues may mirror task families only.",
+  "regression_policy": "If mastered, keep private LOFT-shaped rows as regression and preserve public admission blockers separately.",
+  "permission_envelope": {
+    "memory": "private analogues until public source is admitted",
+    "tools": "local loaders, scorers, and report writers",
+    "runtime": "E2",
+    "side_effects": [
+      "write_reports",
+      "write_vcm_benchmark_reports",
+      "write_private_context_recovery_residuals"
+    ],
+    "network": "forbidden during scoring",
+    "external_inference": "forbidden",
+    "approval_required_for": [
+      "bulk_dataset_download",
+      "public_calibration_unlock",
+      "public_data_training_use"
+    ]
+  },
+  "teacher_role": "No teacher solving. Do not approximate model-judge or multimodal tasks.",
+  "external_inference_calls": 0
+}

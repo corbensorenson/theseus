@@ -1,0 +1,11 @@
+{
+  "allow_model_promotion": false,
+  "allow_public_training_rows": false,
+  "allow_scheduler_routing": false,
+  "approved": false,
+  "claim_scope": "audit_statement_only_no_runtime_routing",
+  "evidence_sha256": "ecf5da0c852b48e2ebaed2344277a74bb4173f2abe4a21513d699a9b9f2e722c",
+  "max_surfaces": 4,
+  "operator_note": "Set approved=true only after reviewing apples-to-apples CUDA and Metal result equivalence across every listed real training surface. This approval must not be used to enable scheduler routing or model promotion.",
+  "policy": "project_theseus_accelerator_parity_claim_approval_v1"
+}

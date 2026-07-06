@@ -1,0 +1,12 @@
+[babylm_candidate]
+path = "C:\\Users\\corbe\\Documents\\babylm-candidate"
+purpose = "Local BabyLM candidate worktree, scripts, manifests, and eval harness references."
+
+[parameter_golf]
+path = "C:\\Users\\corbe\\Documents\\golf"
+purpose = "Local Parameter Golf artifacts, submissions, configs, and benchmark notes."
+
+[policy]
+external_inference = "forbidden"
+public_scores = "metadata_only"
+notes = "These paths are local benchmark sources, not provider/model inference endpoints."
