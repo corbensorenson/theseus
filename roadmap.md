@@ -443,7 +443,11 @@ remain honestly bounded.
   reruns, fallback/template/router/tool credit as learned generation, raw
   private user text by default, and arbitrary remote execution.
   Current result: `reports/training_inference_execution_plan_gate.json` is
-  `GREEN` with `0` failed checks and `0` failed expected-invalid controls.
+  `RED` with one failed check, `current_architecture_and_registry_ready`,
+  because strict pre-training architecture readiness is still `RED`. The next
+  allowed step remains `complete_partial_book_derived_phases_before_training_focus`;
+  governed training and inference gates can resume only after those partial
+  book-derived mechanics are implemented or explicitly falsified.
 - The E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed:
   `reports/governance_rights_receipt_suite.json` proves one side-effecting
   assistant/tool fixture through runtime adapter invocation, authority
