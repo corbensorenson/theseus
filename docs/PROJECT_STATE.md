@@ -84,6 +84,22 @@ updates, finalizers, and shallow accumulators. This keeps the next valid work
 targeted at trainable AST/state-machine or localized semantic-IR body
 construction before DPO/GRPO/MTP/diffusion/scale or public calibration can be
 interpreted as capability movement.
+The first trainable bridge from that wall into private adaptation is now wired:
+`scripts/strict_generator_mlx_private_adaptation.py` can read
+`reports/strict_generator_semantic_ir_repair_bridge.json` and
+`reports/neural_seed_survival_readiness_gate.json`, map their aggregate private
+failure labels into existing source-condition, loop-semantic, loop-expression,
+plan-conditioned-body, direct-body, local-return, and closed-state span
+weighting objectives, and record the resulting plan with explicit no-credit
+semantics. The compact canary report
+`reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_canary_20260706.json`
+is `GREEN`: a tiny MLX private adaptation run used `32` admitted private rows,
+held out `8`, activated all seven obligation objectives, improved heldout LM
+loss `3.477920 -> 3.142617`, and kept public training rows, external inference,
+and fallback/template/router/tool credit at `0`. This is a training-pressure
+and wiring improvement, not a behavior or promotion claim. The next wall is a
+paired strict decode replay from a durable checkpoint that must produce
+behavior-positive non-fallback private candidates.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

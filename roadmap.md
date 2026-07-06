@@ -111,6 +111,19 @@ preserve the no-cheat boundary: no public benchmark training rows, no runtime
 external inference, no fallback/template/router/tool/renderer credit as learned
 generation, and no broad new side lane.
 
+Implementation delta: the MLX private adaptation path now has a registered
+semantic-IR/current-wall obligation planner. It reads only aggregate private
+failure reports, maps their labels into existing private target-side weighting
+objectives, and emits no candidate by itself. The compact canary
+`reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_canary_20260706.json`
+is `GREEN`: `32` private train rows, `8` heldout rows, all seven obligation
+objectives active, heldout LM loss improved `3.477920 -> 3.142617`, and
+public/external/fallback credit stayed zero. This moves the roadmap from
+"diagnostic semantic-IR atoms only" to "semantic-IR obligations can drive
+private trainable pressure," but it still does not prove behavior. The next
+capability step remains a durable checkpoint plus strict decode replay with
+behavior-positive non-fallback private candidates.
+
 ## 2026-07-06 Claude Review Reconciliation
 
 Claude's latest review surfaced three criticisms with enough evidence to change

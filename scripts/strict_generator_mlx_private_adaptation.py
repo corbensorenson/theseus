@@ -160,6 +160,8 @@ DEFAULT_CONFIG = ROOT / "configs" / "neural_seed_token_decoder_comparator.json"
 DEFAULT_CHECKPOINT_REPORT = ROOT / "reports" / "strict_generator_mlx_pretraining_probe_5m_visible_intent_preloaded_v1.json"
 DEFAULT_OUT = ROOT / "reports" / "strict_generator_mlx_private_adaptation_v1.json"
 DEFAULT_CHECKPOINT_DIR = ROOT / "checkpoints" / "strict_generator_mlx_private_adaptation_v1"
+DEFAULT_SEMANTIC_IR_OBLIGATION_REPORT = ROOT / "reports" / "strict_generator_semantic_ir_repair_bridge.json"
+DEFAULT_CURRENT_WALL_REPORT = ROOT / "reports" / "neural_seed_survival_readiness_gate.json"
 
 SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
     "strict_full_body_semantic_construction_v1": {
@@ -181,6 +183,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "loop_expression_synthesis_weighting",
             "plan_conditioned_body_weighting",
             "update_contract_consistency_weighting",
+            "semantic_ir_obligation_weighting",
             "source_contrastive_loss",
         ],
         "overrides": {
@@ -199,6 +202,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "source_condition_internalization_loss_boost": 2.4,
             "loop_semantic_operation_loss_boost": 3.0,
             "loop_semantic_operation_roles": "loop_semantic_update,top_level_semantic_finalizer",
+            "semantic_ir_obligation_loss_boost": 3.0,
             "semantic_slot_prefix_loss_boost": 2.2,
             "semantic_slot_prefix_roles": "plan,loop_source,update,guard,finalizer,state,binding,statement",
             "loop_expression_synthesis_loss_boost": 3.0,
@@ -240,6 +244,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "loop_expression_synthesis_weighting",
             "plan_conditioned_body_weighting",
             "update_contract_consistency_weighting",
+            "semantic_ir_obligation_weighting",
             "source_contrastive_loss",
         ],
         "overrides": {
@@ -275,6 +280,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "body_operand_loss_weight": 0.10,
             "loop_semantic_operation_loss_boost": 3.2,
             "loop_semantic_operation_roles": "loop_semantic_update,top_level_semantic_finalizer",
+            "semantic_ir_obligation_loss_boost": 4.0,
             "loop_expression_synthesis_loss_boost": 3.2,
             "loop_expression_synthesis_roles": (
                 "loop_condition_expression,loop_update_expression,top_level_finalizer_expression"
@@ -563,6 +569,285 @@ def stable_int(text: str) -> int:
     return int(stable_hash(text)[:8], 16)
 
 
+def role_csv_to_set(value: str) -> set[str]:
+    return {part.strip() for part in str(value or "").split(",") if part.strip()}
+
+
+def merge_role_csv(*values: str) -> str:
+    roles: set[str] = set()
+    for value in values:
+        roles.update(role_csv_to_set(value))
+    return ",".join(sorted(roles))
+
+
+def optional_json_report(path: Path | None) -> tuple[dict[str, Any], dict[str, Any]]:
+    if path is None:
+        return {}, {
+            "path": "",
+            "present": False,
+            "loaded": False,
+            "reason": "not_requested",
+        }
+    try:
+        resolved = resolve(path)
+    except Exception:
+        resolved = Path(path)
+    if not resolved.exists():
+        return {}, {
+            "path": rel(resolved),
+            "present": False,
+            "loaded": False,
+            "reason": "missing_report",
+        }
+    try:
+        payload = read_json(resolved)
+    except Exception as exc:
+        return {}, {
+            "path": rel(resolved),
+            "present": True,
+            "loaded": False,
+            "reason": "read_failed",
+            "error_type": type(exc).__name__,
+            "error": str(exc)[:240],
+        }
+    return payload, {
+        "path": rel(resolved),
+        "present": True,
+        "loaded": True,
+        "sha256": stable_hash_file(resolved),
+    }
+
+
+def numeric_counts(value: Any) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    if not isinstance(value, dict):
+        return counts
+    for key, raw in value.items():
+        try:
+            count = int(raw or 0)
+        except (TypeError, ValueError):
+            continue
+        if count > 0:
+            counts[str(key)] = count
+    return dict(sorted(counts.items()))
+
+
+def build_semantic_ir_obligation_weighting_plan(
+    *,
+    semantic_ir_obligation_report: Path | None,
+    current_wall_report: Path | None,
+    boost: float,
+    source_condition_internalization_loss_boost: float,
+    source_condition_operation_coverage_min_rows: int,
+    loop_semantic_operation_loss_boost: float,
+    loop_semantic_operation_roles: str,
+    loop_expression_synthesis_loss_boost: float,
+    loop_expression_synthesis_roles: str,
+    plan_conditioned_body_loss_boost: float,
+    plan_conditioned_body_roles: str,
+    direct_body_emission_loss_boost: float,
+    direct_body_emission_roles: str,
+    local_return_closure_loss_boost: float,
+    local_return_closure_roles: str,
+    closed_state_transition_loss_boost: float,
+    closed_state_transition_roles: str,
+) -> dict[str, Any]:
+    requested_boost = max(0.0, float(boost if boost is not None else 0.0))
+    bridge, bridge_source = optional_json_report(semantic_ir_obligation_report)
+    wall, wall_source = optional_json_report(current_wall_report)
+    issue_counts = numeric_counts(dict_or_empty(bridge.get("summary")).get("issue_label_counts"))
+    wall_summary = dict_or_empty(wall.get("summary"))
+    dominant_residuals = numeric_counts(
+        wall_summary.get("current_wall_dominant_residuals")
+        or dict_or_empty(wall.get("current_wall")).get("dominant_residuals")
+    )
+
+    local_labels = {
+        "missing_local_return_closure",
+        "missing_local_return",
+        "current_line_starts_return",
+        "unfinished_return_expression",
+        "block_exit_without_finalizer",
+    }
+    closed_state_labels = {
+        "repeated_nested_guard_without_progress",
+        "block_exit_without_finalizer",
+        "loop_without_decision_or_state_update",
+        "inside_loop",
+        "inside_loop_without_update",
+        "inside_loop_at_blank_line",
+        "zero_candidate_task",
+    }
+    semantic_operation_labels = {
+        "missing_semantic_update_value",
+        "missing_gcd_call",
+        "missing_list_construction",
+        "missing_numeric_accumulation",
+        "missing_windowed_finalizer",
+        "missing_rle_branch_or_update",
+        "shallow_identity_accumulation",
+        "append_accumulator_to_itself",
+        "loop_without_decision_or_state_update",
+        "inside_loop_without_update",
+    }
+    direct_body_labels = {
+        "zero_candidate_task",
+        "missing_local_return",
+        "current_line_starts_return",
+        "missing_list_construction",
+        "missing_semantic_update_value",
+        "loop_without_decision_or_state_update",
+    }
+    source_condition_labels = {
+        "missing_semantic_update_value",
+        "missing_gcd_call",
+        "missing_list_construction",
+        "missing_numeric_accumulation",
+        "missing_windowed_finalizer",
+        "missing_rle_branch_or_update",
+    }
+
+    all_counts: dict[str, int] = {}
+    for key, count in issue_counts.items():
+        all_counts[key] = all_counts.get(key, 0) + int(count)
+    for key, count in dominant_residuals.items():
+        all_counts[key] = all_counts.get(key, 0) + int(count)
+
+    def matched_count(labels: set[str]) -> int:
+        return sum(int(all_counts.get(label, 0)) for label in labels)
+
+    objective_counts = {
+        "local_return_closure": matched_count(local_labels),
+        "closed_state_transition": matched_count(closed_state_labels),
+        "loop_semantic_operation": matched_count(semantic_operation_labels),
+        "loop_expression_synthesis": matched_count(semantic_operation_labels | closed_state_labels),
+        "plan_conditioned_body": matched_count(semantic_operation_labels | local_labels | closed_state_labels),
+        "direct_body_emission": matched_count(direct_body_labels),
+        "source_condition_internalization": matched_count(source_condition_labels),
+    }
+    active_objectives = [
+        name for name, count in objective_counts.items() if requested_boost > 0.0 and count > 0
+    ]
+    enabled = bool(active_objectives)
+
+    effective = {
+        "source_condition_internalization_loss_boost": float(source_condition_internalization_loss_boost or 0.0),
+        "source_condition_operation_coverage_min_rows": int(source_condition_operation_coverage_min_rows or 0),
+        "loop_semantic_operation_loss_boost": float(loop_semantic_operation_loss_boost or 0.0),
+        "loop_semantic_operation_roles": str(loop_semantic_operation_roles or ""),
+        "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
+        "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
+        "plan_conditioned_body_loss_boost": float(plan_conditioned_body_loss_boost or 0.0),
+        "plan_conditioned_body_roles": str(plan_conditioned_body_roles or ""),
+        "direct_body_emission_loss_boost": float(direct_body_emission_loss_boost or 0.0),
+        "direct_body_emission_roles": str(direct_body_emission_roles or ""),
+        "local_return_closure_loss_boost": float(local_return_closure_loss_boost or 0.0),
+        "local_return_closure_roles": str(local_return_closure_roles or ""),
+        "closed_state_transition_loss_boost": float(closed_state_transition_loss_boost or 0.0),
+        "closed_state_transition_roles": str(closed_state_transition_roles or ""),
+    }
+
+    if enabled:
+        if objective_counts["source_condition_internalization"] > 0:
+            effective["source_condition_internalization_loss_boost"] = max(
+                effective["source_condition_internalization_loss_boost"],
+                requested_boost,
+            )
+            effective["source_condition_operation_coverage_min_rows"] = max(
+                effective["source_condition_operation_coverage_min_rows"],
+                2,
+            )
+        if objective_counts["loop_semantic_operation"] > 0:
+            effective["loop_semantic_operation_loss_boost"] = max(
+                effective["loop_semantic_operation_loss_boost"],
+                requested_boost,
+            )
+            effective["loop_semantic_operation_roles"] = merge_role_csv(
+                effective["loop_semantic_operation_roles"],
+                "loop_semantic_update,top_level_semantic_finalizer",
+            )
+        if objective_counts["loop_expression_synthesis"] > 0:
+            effective["loop_expression_synthesis_loss_boost"] = max(
+                effective["loop_expression_synthesis_loss_boost"],
+                requested_boost,
+            )
+            effective["loop_expression_synthesis_roles"] = merge_role_csv(
+                effective["loop_expression_synthesis_roles"],
+                "loop_condition_expression,loop_update_expression,top_level_finalizer_expression",
+            )
+        if objective_counts["plan_conditioned_body"] > 0:
+            effective["plan_conditioned_body_loss_boost"] = max(
+                effective["plan_conditioned_body_loss_boost"],
+                requested_boost,
+            )
+            effective["plan_conditioned_body_roles"] = merge_role_csv(
+                effective["plan_conditioned_body_roles"],
+                "guard_expression,loop_source_expression,loop_condition_expression,"
+                "loop_update_statement,plan_key_call_expression,final_return_expression",
+            )
+        if objective_counts["direct_body_emission"] > 0:
+            effective["direct_body_emission_loss_boost"] = max(
+                effective["direct_body_emission_loss_boost"],
+                requested_boost,
+            )
+            effective["direct_body_emission_roles"] = merge_role_csv(
+                effective["direct_body_emission_roles"],
+                "top_level_state_binding,top_level_state_update,top_level_branch_guard,"
+                "top_level_loop_statement,loop_source_expression,loop_condition_expression,"
+                "loop_body_state_transition,branch_body_state_transition,top_level_local_state_return,"
+                "top_level_return_expression",
+            )
+        if objective_counts["local_return_closure"] > 0:
+            effective["local_return_closure_loss_boost"] = max(
+                effective["local_return_closure_loss_boost"],
+                requested_boost,
+            )
+            effective["local_return_closure_roles"] = merge_role_csv(
+                effective["local_return_closure_roles"],
+                "previous_local_state_transition,block_exit_local_return_closure,"
+                "final_return_local_name,final_return_local_expression",
+            )
+        if objective_counts["closed_state_transition"] > 0:
+            effective["closed_state_transition_loss_boost"] = max(
+                effective["closed_state_transition_loss_boost"],
+                requested_boost,
+            )
+            effective["closed_state_transition_roles"] = merge_role_csv(
+                effective["closed_state_transition_roles"],
+                "closed_top_level_control_block,closed_nested_control_block,"
+                "control_body_state_transition,block_exit_to_next_statement,"
+                "top_level_finalizer_return",
+            )
+
+    return {
+        "enabled": enabled,
+        "policy": "private_semantic_ir_current_wall_obligation_weighting_plan_v1" if enabled else "not_enabled",
+        "requested_loss_boost": requested_boost,
+        "source_reports": {
+            "semantic_ir_obligation_report": bridge_source,
+            "current_wall_report": wall_source,
+        },
+        "issue_label_counts": issue_counts,
+        "current_wall_dominant_residuals": dominant_residuals,
+        "objective_match_counts": objective_counts,
+        "active_objectives": active_objectives,
+        "effective_overrides": effective,
+        "score_semantics": (
+            "Reads aggregate private failure reports and maps their labels to existing private target-side "
+            "span-weighting objectives. It does not train on public benchmark artifacts, eval tests, eval "
+            "solutions, generated candidate bodies, deterministic repair bodies, teacher output, hidden "
+            "answer metadata, or report text as model targets. It only changes supervised weights over "
+            "already-admitted private prompt/signature-to-body rows, and grants no candidate-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "uses_generated_candidate_bodies": False,
+        "uses_deterministic_repair_bodies": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=rel(DEFAULT_CONFIG))
@@ -617,6 +902,24 @@ def main() -> int:
             "ineligible until verifier behavior improves."
         ),
     )
+    parser.add_argument(
+        "--semantic-ir-obligation-report",
+        default=rel(DEFAULT_SEMANTIC_IR_OBLIGATION_REPORT),
+        help=(
+            "Optional aggregate private semantic-IR obligation report. When paired with a positive "
+            "--semantic-ir-obligation-loss-boost, its failure labels activate existing private "
+            "target-side weighting objectives. It is never used as a target row or learned-generation credit."
+        ),
+    )
+    parser.add_argument(
+        "--current-wall-report",
+        default=rel(DEFAULT_CURRENT_WALL_REPORT),
+        help=(
+            "Optional current-wall/readiness report. Dominant private residual labels are used only as "
+            "aggregate training-pressure selectors for admitted private rows."
+        ),
+    )
+    parser.add_argument("--semantic-ir-obligation-loss-boost", type=float, default=0.0)
     parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.0004)
@@ -924,6 +1227,24 @@ def main() -> int:
             ),
         ),
         closed_state_transition_roles=str(args.closed_state_transition_roles or ""),
+        semantic_ir_obligation_report=(
+            resolve(args.semantic_ir_obligation_report)
+            if str(args.semantic_ir_obligation_report or "").strip()
+            else None
+        ),
+        current_wall_report=(
+            resolve(args.current_wall_report)
+            if str(args.current_wall_report or "").strip()
+            else None
+        ),
+        semantic_ir_obligation_loss_boost=max(
+            0.0,
+            float(
+                args.semantic_ir_obligation_loss_boost
+                if args.semantic_ir_obligation_loss_boost is not None
+                else 0.0
+            ),
+        ),
         semantic_construction_repair_profile=semantic_construction_repair_profile,
         seed=int(args.seed or 23017),
         execute=bool(args.execute),
@@ -1007,6 +1328,9 @@ def run_adaptation(
     local_return_closure_roles: str,
     closed_state_transition_loss_boost: float,
     closed_state_transition_roles: str,
+    semantic_ir_obligation_report: Path | None,
+    current_wall_report: Path | None,
+    semantic_ir_obligation_loss_boost: float,
     semantic_construction_repair_profile: dict[str, Any],
     seed: int,
     execute: bool,
@@ -1020,6 +1344,75 @@ def run_adaptation(
         *configured_supplemental_train_jsonl,
         *list(supplemental_private_train_jsonl or []),
     ]
+    semantic_ir_obligation_weighting_plan = build_semantic_ir_obligation_weighting_plan(
+        semantic_ir_obligation_report=semantic_ir_obligation_report,
+        current_wall_report=current_wall_report,
+        boost=semantic_ir_obligation_loss_boost,
+        source_condition_internalization_loss_boost=source_condition_internalization_loss_boost,
+        source_condition_operation_coverage_min_rows=source_condition_operation_coverage_min_rows,
+        loop_semantic_operation_loss_boost=loop_semantic_operation_loss_boost,
+        loop_semantic_operation_roles=loop_semantic_operation_roles,
+        loop_expression_synthesis_loss_boost=loop_expression_synthesis_loss_boost,
+        loop_expression_synthesis_roles=loop_expression_synthesis_roles,
+        plan_conditioned_body_loss_boost=plan_conditioned_body_loss_boost,
+        plan_conditioned_body_roles=plan_conditioned_body_roles,
+        direct_body_emission_loss_boost=direct_body_emission_loss_boost,
+        direct_body_emission_roles=direct_body_emission_roles,
+        local_return_closure_loss_boost=local_return_closure_loss_boost,
+        local_return_closure_roles=local_return_closure_roles,
+        closed_state_transition_loss_boost=closed_state_transition_loss_boost,
+        closed_state_transition_roles=closed_state_transition_roles,
+    )
+    if bool(semantic_ir_obligation_weighting_plan.get("enabled")):
+        effective_overrides = dict_or_empty(semantic_ir_obligation_weighting_plan.get("effective_overrides"))
+        source_condition_internalization_loss_boost = float(
+            effective_overrides.get(
+                "source_condition_internalization_loss_boost",
+                source_condition_internalization_loss_boost,
+            )
+        )
+        source_condition_operation_coverage_min_rows = int(
+            effective_overrides.get(
+                "source_condition_operation_coverage_min_rows",
+                source_condition_operation_coverage_min_rows,
+            )
+        )
+        loop_semantic_operation_loss_boost = float(
+            effective_overrides.get("loop_semantic_operation_loss_boost", loop_semantic_operation_loss_boost)
+        )
+        loop_semantic_operation_roles = str(
+            effective_overrides.get("loop_semantic_operation_roles", loop_semantic_operation_roles)
+        )
+        loop_expression_synthesis_loss_boost = float(
+            effective_overrides.get("loop_expression_synthesis_loss_boost", loop_expression_synthesis_loss_boost)
+        )
+        loop_expression_synthesis_roles = str(
+            effective_overrides.get("loop_expression_synthesis_roles", loop_expression_synthesis_roles)
+        )
+        plan_conditioned_body_loss_boost = float(
+            effective_overrides.get("plan_conditioned_body_loss_boost", plan_conditioned_body_loss_boost)
+        )
+        plan_conditioned_body_roles = str(
+            effective_overrides.get("plan_conditioned_body_roles", plan_conditioned_body_roles)
+        )
+        direct_body_emission_loss_boost = float(
+            effective_overrides.get("direct_body_emission_loss_boost", direct_body_emission_loss_boost)
+        )
+        direct_body_emission_roles = str(
+            effective_overrides.get("direct_body_emission_roles", direct_body_emission_roles)
+        )
+        local_return_closure_loss_boost = float(
+            effective_overrides.get("local_return_closure_loss_boost", local_return_closure_loss_boost)
+        )
+        local_return_closure_roles = str(
+            effective_overrides.get("local_return_closure_roles", local_return_closure_roles)
+        )
+        closed_state_transition_loss_boost = float(
+            effective_overrides.get("closed_state_transition_loss_boost", closed_state_transition_loss_boost)
+        )
+        closed_state_transition_roles = str(
+            effective_overrides.get("closed_state_transition_roles", closed_state_transition_roles)
+        )
     if not execute:
         return {
             "policy": "project_theseus_strict_generator_mlx_private_adaptation_v1",
@@ -1063,6 +1456,8 @@ def run_adaptation(
                     "local_return_closure_roles": str(local_return_closure_roles or ""),
                     "closed_state_transition_loss_boost": float(closed_state_transition_loss_boost or 0.0),
                     "closed_state_transition_roles": str(closed_state_transition_roles or ""),
+                    "semantic_ir_obligation_loss_boost": float(semantic_ir_obligation_loss_boost or 0.0),
+                    "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
                     "semantic_construction_repair_profile": semantic_construction_repair_profile,
                     "train_tier": train_tier,
                     "tier_balanced_sampling": bool(tier_balanced_sampling),
@@ -2577,6 +2972,7 @@ def run_adaptation(
             "target_mode": target_mode,
             "semantic_plan_visible_operation_weighting": visible_operation_plan_weighting,
             "semantic_construction_repair_profile": semantic_construction_repair_profile,
+            "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
             "family_disjoint_holdout_exclusion": holdout_exclusion,
             "supplemental_private_train_audit": supplemental_train_audit,
             "private_train_tier_selection": private_train_tier_vocab_summary(tier_selection),
@@ -2705,6 +3101,8 @@ def run_adaptation(
             "local_return_closure_roles": str(local_return_closure_roles or ""),
             "closed_state_transition_loss_boost": float(closed_state_transition_loss_boost or 0.0),
             "closed_state_transition_roles": str(closed_state_transition_roles or ""),
+            "semantic_ir_obligation_loss_boost": float(semantic_ir_obligation_loss_boost or 0.0),
+            "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
             "semantic_construction_repair_profile": semantic_construction_repair_profile,
             "semantic_plan_visible_operation_loss_boost": float(semantic_plan_visible_operation_loss_boost or 0.0),
             "private_residual_repair_split": bool(private_residual_repair_split),
@@ -2735,6 +3133,7 @@ def run_adaptation(
         "direct_body_emission_weighting": direct_body_emission_weighting,
         "local_return_closure_weighting": local_return_closure_weighting,
         "closed_state_transition_weighting": closed_state_transition_weighting,
+        "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
         "semantic_construction_repair_profile": semantic_construction_repair_profile,
         "strict_target_guard": {
             "train": target_guard_summary,

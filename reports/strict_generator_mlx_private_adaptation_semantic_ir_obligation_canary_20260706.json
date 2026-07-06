@@ -1,0 +1,417 @@
+{
+  "command": "python3 scripts/strict_generator_mlx_private_adaptation.py --semantic-ir-obligation-loss-boost 4.0 --max-train-rows 32 --max-eval-rows 8 --epochs 1 --batch-size 8 --checkpoint-dir /tmp/theseus_semantic_ir_obligation_ckpt_explicit --out /tmp/theseus_semantic_ir_obligation_execute_explicit.json --execute",
+  "created_utc": "2026-07-06T20:12:34Z",
+  "gates": [
+    {
+      "name": "private_training_rows_present",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "heldout_private_train_rows_present",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "checkpoint_artifacts_written_with_digests",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "family_disjoint_holdout_excluded",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "private_residual_repair_not_family_disjoint_claim_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "public_training_rows_zero",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "external_inference_zero",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "no_open_or_pretrained_weights",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "no_template_router_tool_credit",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "strict_source_text_audit_clean",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "parameter_tensor_update_recorded",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "parameter_element_update_meaningful",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "heldout_lm_improved",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "semantic_plan_loss_improved_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "semantic_plan_visible_operation_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "semantic_plan_label_space_active_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "semantic_slot_loss_improved_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "semantic_slot_label_space_active_when_requested",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "semantic_slot_auxiliary_active_when_requested",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "body_transition_loss_improved_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "body_action_loss_improved_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "body_operand_loss_improved_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "source_contrastive_gap_improved_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "throughput_recorded",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "strict_target_guard_reported",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "private_train_tier_rows_present_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "return_expression_weighting_reported_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "default_parameter_return_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "truthiness_guard_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "source_condition_internalization_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "loop_operation_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "loop_statement_action_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "loop_semantic_operation_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "semantic_slot_prefix_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "loop_expression_synthesis_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "plan_conditioned_body_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "update_contract_consistency_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "direct_body_emission_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "local_return_closure_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "closed_state_transition_weighting_matched_when_enabled",
+      "passed": true,
+      "severity": "soft"
+    },
+    {
+      "name": "semantic_construction_profile_private_only",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "semantic_construction_profile_public_calibration_ineligible",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "semantic_construction_profile_required_components_active",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "negative_replay_private_train_only_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "negative_replay_all_examples_failed_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "negative_replay_no_public_or_eval_visibility_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "pairwise_replay_private_train_only_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "pairwise_replay_all_examples_failed_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "pairwise_replay_no_public_or_eval_visibility_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "name": "pairwise_replay_dpo_ipo_uses_frozen_reference_when_enabled",
+      "passed": true,
+      "severity": "hard"
+    }
+  ],
+  "next_wall": "Run a paired strict decode replay from a durable semantic-IR-obligation checkpoint and require behavior-positive non-fallback private candidates before DPO/GRPO/MTP/diffusion/scale work can be interpreted as capability movement.",
+  "non_claims": [
+    "No learned-generation behavior improvement is claimed from this canary alone.",
+    "No public benchmark artifacts, eval tests, eval solutions, teacher output, deterministic repair bodies, router/tool/template outputs, or fallback bodies were training targets.",
+    "The checkpoint was written under /tmp for validation and is not promoted or committed."
+  ],
+  "policy": "project_theseus_semantic_ir_obligation_adaptation_canary_summary_v1",
+  "scope": "tiny_private_mlx_adaptation_canary_only_not_behavior_or_promotion_claim",
+  "source_full_report": "not_retained_temp_report",
+  "source_full_report_retention": "The full /tmp report was compacted into this manifest and deleted with the temporary checkpoint artifacts.",
+  "source_full_report_sha256": "8cd19b699e49f492867c8a6a1eae5ed22fddf6c3dea83ed3b547d48d9391df86",
+  "summary": {
+    "checkpoint_sha256": "fb035d3d81efaaacdbaa7b93ea564883b7012317bb5629074ecd00a40367b251",
+    "closed_state_transition_weighting": {
+      "candidate_generation_credit": 0,
+      "enabled": true,
+      "matched_rows": 32,
+      "role_match_counts": {
+        "block_exit_to_next_statement": 105,
+        "closed_nested_control_block": 21,
+        "closed_top_level_control_block": 21,
+        "control_body_state_transition": 24,
+        "top_level_finalizer_return": 25
+      },
+      "weighted_token_positions": 2524
+    },
+    "heldout_lm_improved": true,
+    "heldout_lm_loss_after": 3.142617,
+    "heldout_lm_loss_before": 3.47792,
+    "heldout_private_train_rows": 8,
+    "local_return_closure_weighting": {
+      "candidate_generation_credit": 0,
+      "enabled": true,
+      "matched_rows": 27,
+      "role_match_counts": {
+        "block_exit_local_return_closure": 24,
+        "final_return_local_expression": 8,
+        "final_return_local_name": 16,
+        "previous_local_state_transition": 25
+      },
+      "weighted_token_positions": 671
+    },
+    "loop_semantic_operation_weighting": {
+      "candidate_generation_credit": 0,
+      "enabled": true,
+      "matched_rows": 26,
+      "role_match_counts": {
+        "loop_semantic_update": 62,
+        "top_level_semantic_finalizer": 6
+      },
+      "semantic_kind_match_counts": {
+        "assignment_transform_update": 21,
+        "augmented_accumulator_update": 4,
+        "projected_append_or_add_update": 37,
+        "transform_finalizer": 6
+      },
+      "weighted_token_positions": 916
+    },
+    "no_cheat_counters": {
+      "external_inference_calls": 0,
+      "fallback_template_router_tool_credit_count": 0,
+      "public_training_rows": 0,
+      "uses_eval_tests_or_solutions": false,
+      "uses_public_data": false
+    },
+    "semantic_ir_obligation_weighting_plan": {
+      "active_objectives": [
+        "local_return_closure",
+        "closed_state_transition",
+        "loop_semantic_operation",
+        "loop_expression_synthesis",
+        "plan_conditioned_body",
+        "direct_body_emission",
+        "source_condition_internalization"
+      ],
+      "candidate_generation_credit": 0,
+      "current_wall_dominant_residuals": {
+        "append_accumulator_to_itself": 2,
+        "current_line_starts_return": 4,
+        "inside_loop": 15,
+        "inside_loop_at_blank_line": 1,
+        "inside_loop_without_update": 15,
+        "loop_without_decision_or_state_update": 54,
+        "missing_gcd_call": 18,
+        "missing_list_construction": 48,
+        "missing_local_return": 18,
+        "missing_numeric_accumulation": 16,
+        "missing_rle_branch_or_update": 8,
+        "missing_semantic_update_value": 6,
+        "missing_windowed_finalizer": 16,
+        "shallow_identity_accumulation": 4,
+        "zero_candidate_task": 8
+      },
+      "effective_overrides": {
+        "closed_state_transition_loss_boost": 4.0,
+        "closed_state_transition_roles": "block_exit_to_next_statement,closed_nested_control_block,closed_top_level_control_block,control_body_state_transition,top_level_finalizer_return",
+        "direct_body_emission_loss_boost": 4.0,
+        "direct_body_emission_roles": "branch_body_state_transition,loop_body_state_transition,loop_condition_expression,loop_source_expression,top_level_branch_guard,top_level_local_state_return,top_level_loop_statement,top_level_return_expression,top_level_state_binding,top_level_state_update",
+        "local_return_closure_loss_boost": 4.0,
+        "local_return_closure_roles": "block_exit_local_return_closure,final_return_local_expression,final_return_local_name,previous_local_state_transition",
+        "loop_expression_synthesis_loss_boost": 4.0,
+        "loop_expression_synthesis_roles": "loop_condition_expression,loop_update_expression,top_level_finalizer_expression",
+        "loop_semantic_operation_loss_boost": 4.0,
+        "loop_semantic_operation_roles": "loop_semantic_update,top_level_semantic_finalizer",
+        "plan_conditioned_body_loss_boost": 4.0,
+        "plan_conditioned_body_roles": "final_return_expression,guard_expression,loop_condition_expression,loop_source_expression,loop_update_statement,plan_key_call_expression",
+        "source_condition_internalization_loss_boost": 4.0,
+        "source_condition_operation_coverage_min_rows": 2
+      },
+      "enabled": true,
+      "issue_label_counts": {
+        "block_exit_without_finalizer": 1,
+        "missing_local_return_closure": 4,
+        "repeated_nested_guard_without_progress": 4,
+        "unfinished_return_expression": 3
+      },
+      "objective_match_counts": {
+        "closed_state_transition": 98,
+        "direct_body_emission": 138,
+        "local_return_closure": 30,
+        "loop_expression_synthesis": 216,
+        "loop_semantic_operation": 187,
+        "plan_conditioned_body": 245,
+        "source_condition_internalization": 112
+      },
+      "policy": "private_semantic_ir_current_wall_obligation_weighting_plan_v1",
+      "requested_loss_boost": 4.0,
+      "score_semantics": "Reads aggregate private failure reports and maps their labels to existing private target-side span-weighting objectives. It does not train on public benchmark artifacts, eval tests, eval solutions, generated candidate bodies, deterministic repair bodies, teacher output, hidden answer metadata, or report text as model targets. It only changes supervised weights over already-admitted private prompt/signature-to-body rows, and grants no candidate-generation credit.",
+      "source_reports": {
+        "current_wall_report": {
+          "loaded": true,
+          "path": "reports/neural_seed_survival_readiness_gate.json",
+          "present": true,
+          "sha256": "cfcc08f0a64c7f8f875dc9221f65e2f8f06e550458d1c89490fc6dc37ced5d90"
+        },
+        "semantic_ir_obligation_report": {
+          "loaded": true,
+          "path": "reports/strict_generator_semantic_ir_repair_bridge.json",
+          "present": true,
+          "sha256": "9f2b54b1e7f80e4f9e656ea5a40b9d72fd191ff941ca9fff00209331247ba40d"
+        }
+      },
+      "uses_answer_metadata": false,
+      "uses_deterministic_repair_bodies": false,
+      "uses_eval_tests_or_solutions": false,
+      "uses_generated_candidate_bodies": false,
+      "uses_public_data": false
+    },
+    "source_condition_internalization_weighting": {
+      "candidate_generation_credit": 0,
+      "enabled": true,
+      "hit_operation_tag_counts": null,
+      "matched_rows": 27,
+      "weighted_token_positions": 100
+    },
+    "train_rows": 32,
+    "training_tokens_per_second": 12148.893,
+    "training_wall_ms": null,
+    "vocab_sha256": "0fdc24dfcb485d55dd78c96e19aae7b29a8381b0ea84621ecab4e49d700a5741"
+  },
+  "trigger_state": "GREEN"
+}
