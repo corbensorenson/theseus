@@ -44,6 +44,13 @@ Book sources reviewed:
   memory, prototype-roadmap gates, source notes for context engineering,
   verification bandwidth, Black Hole Context Manager, GenesisCode, TreeLLM,
   fast-generation literature, and feedback-learning literature.
+- Fourth-pass Claude/AI_book mining covering the book's own `Planned Codex
+  test` lists as the concrete technique backlog: DPO/IPO/ORPO/KTO/SimPO,
+  GRPO/RLOO/ReMax/RLVR, MTP, Medusa/EAGLE/speculative/LayerSkip generation,
+  diffusion/LLaDA sketch-first repair, GVR state transitions, semantic-IR
+  localized repair, verifier-capacity routing, VCM transaction certificates,
+  Circle/Coil cyclic primitives, belief revision, and procedural-memory
+  lookahead.
 
 Theseus sources checked:
 
@@ -131,22 +138,27 @@ the roadmap:
 
 Claude's deeper AI_book mining packet is accepted as a roadmap-quality review,
 not as evidence. Its main value is that it turns the book's `Planned Codex
-test` lists into an implementation backlog. The review does **not** authorize a
-new side lane, a public-training exception, or learned-generation credit for
-routers, tools, renderers, action catalogs, templates, or fallback bodies.
+test` lists into an implementation backlog. Those planned tests are now treated
+as missing technique obligations unless a registered Theseus implementation has
+run a matched control, negative control, no-cheat audit, and retained residuals.
+The review does **not** authorize a new side lane, a public-training exception,
+or learned-generation credit for routers, tools, renderers, action catalogs,
+templates, or fallback bodies.
 
 Current reconciliation:
 
 | Claude-mined requirement | Current Theseus state | Roadmap action |
 | --- | --- | --- |
-| DPO / IPO as fastest feedback lever | A first DPO shadow update exists and moved a private preference gap, but strict replay emitted `0` learned candidate rows and `0/16` behavior passes. | Keep DPO quarantined as loss/policy-gap evidence only. Repair direct prompt/signature body-token emission before any larger DPO/IPO run. |
-| GRPO / RLOO / ReMax / RLVR | Policy-optimization records and reward-hacking probes exist, but no verifier-reward update has improved heldout behavior. | Queue only after non-fallback learned candidates exist. Require reward-present/reward-removed ablation, reward-hacking probes, drift bounds, rollback plan, and no authority expansion. |
-| Fast-generation modes: MTP, lookahead/trie, speculative, early-exit, diffusion/sketch-first | Generation-mode registry and runtime accounting exist; current comparisons are negative for accepted verified output. | Treat each mode as a registered generation-mode candidate measured by useful verified output per second, not proposed-token speed. Do not run MTP/diffusion before the direct learned emission wall moves. |
+| DPO / IPO / ORPO / KTO / SimPO as offline preference levers | A first DPO shadow update exists and moved a private preference gap, but strict replay emitted `0` learned candidate rows and `0/16` behavior passes. | Keep DPO quarantined as loss/policy-gap evidence only. Repair direct prompt/signature body-token emission before any larger offline-preference sweep. When resumed, compare DPO/IPO/ORPO/KTO/SimPO on the same private pair split with the same reference checkpoint and heldout verifier. |
+| GRPO / RLOO / ReMax / RLVR | Policy-optimization records and reward-hacking probes exist, but no verifier-reward update has improved heldout behavior. | Queue only after non-fallback learned candidates exist. Require reward-present/reward-removed ablation, reward-hacking probes, drift bounds, rollback plan, rollout budget, verifier-cost ledger, and no authority expansion. |
+| Multi-target policy optimization | Current policy-update evidence is generator-centered. The book explicitly treats planners, routers, VCM selectors, verifier policies, execution policies, and generation-mode selectors as policy targets. | Add multi-target policy updates only through behavior-change leases with target policy, admissible feedback, authority effect, rollback, monitor window, and task-specific heldouts. Do not let a policy update expand authority or erase verification cost. |
+| Fast-generation modes: MTP, Medusa, EAGLE, speculative, early-exit/LayerSkip, lookahead/trie, Mamba/PagedAttention cache policy, diffusion/LLaDA sketch-first repair | Generation-mode registry and runtime accounting exist; current comparisons are negative for accepted verified output. | Treat each mode as a registered generation-mode candidate measured by useful verified output per second, not proposed-token speed. Do not run MTP/diffusion before the direct learned emission wall moves. |
+| GVR as typed state machine | The generator has verifier receipts and repair hooks, but GVR is not yet the universal transition contract. | Implement candidate -> verified-exact -> verified-lossy -> repaired-exact -> literal-fallback/noncredit -> quarantined as a typed state machine with S/R/Q/G/V/E consistency checks, verifier receipts, repair cost, fallback count, residuals, and explicit model-only versus assisted scoring. |
 | Semantic IR / localized repair | Semantic atom and semantic patch gates exist, but generator failures are not yet lowered into atom-level repair obligations. | Connect strict-generator decode failures to semantic atoms: failed atom -> localized repair -> dependent obligation replay -> residual ledger. |
 | Verification bandwidth | VCM/context-governor and verifier-spine records exist, but verifier capacity is not yet a scheduled resource in all fanout/ranking paths. | Add verifier-capacity budgets, residual-obligation ledgers, decomposition contracts, and governance-tax accounting to Phase 16 before route-policy changes. |
 | VCM certificates and context transactions | Context ABI fixtures, mission briefs, deletion closure, and materialized VIEA context records exist. | Promote fixture-level semantics into a deployed resolver/compiler conformance gate, then add model-native MLX KV/prefix-cache lifecycle proof before runtime parity claims. |
-| Circle / Coil / cyclic substrate primitives | Circle/proof-carrying bridge and substrate-adoption records exist as proof-boundary machinery. | Keep cyclic/SymLiquid ideas protected as matched-compute discovery candidates only; no cyclic route can bypass transformer/hybrid baselines or claim quality from structural proofs alone. |
-| Planning control layer and intelligence-arbitrage ledger | VIEA/PlanForge-style records exist; live peer execution remains externally frozen and some arbitrage costs are not yet measured. | Keep local traces canonical; add displaced verification/repair/human-cleanup cost to route decisions before changing default routing. |
+| Circle / Coil / cyclic substrate primitives | Circle/proof-carrying bridge and substrate-adoption records exist as proof-boundary machinery. | Keep cyclic/SymLiquid ideas protected as matched-compute discovery candidates only. Test cyclic memory, KV-cache ring buffers, recurrence schedules, sparse-attention coverage, circulant/block-cyclic mixers, and MultiCoil RoPE phase features against dense/LoRA/RoPE/Mamba controls with matched compute before any route claim. |
+| Planning control layer and intelligence-arbitrage ledger | VIEA/PlanForge-style records exist; live peer execution remains externally frozen and some arbitrage costs are not yet measured. | Keep local traces canonical; add adequacy contracts, displaced verification/repair/human-cleanup cost, and local subgraph repair before changing default routing. |
 | Claim ledger belief revision | Support states and evidence packs exist, but revision transitions are not universal. | Add downgrade/split/merge/contradiction/retire transitions with immutable revision history under Phase 14. |
 | Procedural memory / loop closure | Procedural-memory gates exist and canary route selection is available; useful real traces are still too thin. | Convert repeated real assistant/repo/generator traces into monitored procedural candidates; use verified procedures as lookahead/trie sources without learned-generation credit. |
 
@@ -157,7 +169,8 @@ The active dependency order after this review is:
 2. Repair direct learned body emission under the strict prompt/signature-only
    decoder profile.
 3. Only after non-fallback top-level-return candidates exist, rerun bounded
-   DPO/IPO and then one verifier-reward RLVR/GRPO update with ablations.
+   offline preference comparisons across DPO/IPO/ORPO/KTO/SimPO and then one
+   verifier-reward RLVR/GRPO/RLOO/ReMax update with ablations.
 4. Then test MTP, GVR/localized semantic repair, lookahead/trie, and
    sketch-first/diffusion as generation-mode candidates under accepted-output
    accounting.
@@ -1127,14 +1140,22 @@ Deliverables:
   supervised body tokens plus verifier-labeled preference/ranking or
   rejection-sampling updates.
 - Run the first actual policy-optimization update on private data:
-  DPO-style or IPO-style offline preference learning over accepted/rejected
-  verifier-labeled candidate pairs. It must report pre/post heldout verifier
-  pass, accepted-output quality, drift bound, rollback plan, reward-hacking
-  probes, and no-cheat counters. It is not complete if it only improves LM loss.
-- Add a bounded GRPO/RLVR verifier-reward lane for exact private tasks after
-  the offline preference path is reproducible. Reward is functional verifier
-  evidence plus context/evidence adequacy, not style. Authority expansion by
-  training side effect is forbidden.
+  DPO/IPO/ORPO/KTO/SimPO offline preference learning over accepted/rejected
+  verifier-labeled candidate pairs. Each family must share the same private
+  pair split, reference checkpoint, optimizer budget, and heldout verifier. It
+  must report pre/post heldout verifier pass, accepted-output quality, drift
+  bound, rollback plan, reward-hacking probes, and no-cheat counters. It is not
+  complete if it only improves LM loss or policy-gap metrics.
+- Add a bounded GRPO/RLOO/ReMax/RLVR verifier-reward lane for exact private
+  tasks after the offline preference path is reproducible. Reward is functional
+  verifier evidence plus context/evidence adequacy, not style. Authority
+  expansion by training side effect is forbidden.
+- Treat policy optimization as a multi-target behavior-change mechanism, not
+  only generator fine-tuning. Planner, router, VCM-selector, verifier-policy,
+  execution-policy, and generation-mode-selector updates require explicit
+  leases naming target policy, admissible feedback, reward boundary,
+  authority effect, drift bound, rollback, monitor window, and task-specific
+  heldouts.
 - Extend the negative-replay objective beyond candidate-level CE into
   verifier-stage-aware preference learning: prefer private candidates that
   advance from syntax -> runtime load -> intended behavior, and reject repeated
@@ -1163,11 +1184,13 @@ Deliverables:
   candidate -> verified-exact -> verified-lossy -> repaired-exact ->
   literal-fallback/noncredit -> quarantined. Every transition needs a verifier
   receipt, repair cost, residual, and non-claim.
-- Add lookahead/trie retrieval from verified procedural memory and one
-  sketch-first or diffusion-style repair experiment as governed generation
-  modes. They are judged by useful verified output and are noncredit for
-  learned generation unless the same model-only checkpoint improves one-shot
-  behavior.
+- Add lookahead/trie retrieval from verified procedural memory plus one
+  sketch-first/diffusion/LLaDA-style repair experiment as governed generation
+  modes. Medusa, EAGLE, speculative/self-speculative, early-exit/LayerSkip,
+  Mamba-state, and PagedAttention/KV-cache routes are allowed only as
+  generation-mode candidates with accepted-output accounting. They are judged
+  by useful verified output and are noncredit for learned generation unless the
+  same model-only checkpoint improves one-shot behavior.
 - Add semantic-IR localized repair to the generator loop: compile
   prompt/signature/candidate body into semantic atoms, map verifier failures to
   failed atoms, repair only affected atoms, and replay dependents. Requirement
@@ -1615,6 +1638,10 @@ Deliverables:
 - Add generation mode records for model decoding, speculative generation,
   draft-verify-accept paths, deterministic tool assistance, MLX generation,
   Rust generation, STS-conditioned generation, and VCM-assisted generation.
+- Name concrete fast-generation families in the generation-mode registry:
+  AR baseline, MTP, Medusa, EAGLE, speculative/self-speculative, early-exit or
+  LayerSkip, lookahead/trie retrieval, Mamba-state decoding, PagedAttention/KV
+  cache policy, and diffusion/LLaDA sketch-first repair.
 - Measure proposed output and accepted output separately.
 - Report verification tax explicitly: time spent proving/validating versus
   time spent generating.

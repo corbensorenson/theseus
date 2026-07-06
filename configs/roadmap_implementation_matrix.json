@@ -51,6 +51,7 @@
     "At most one flagship implementation lane may be active at a time; other lanes can do maintenance, evidence sync, or narrow dependency work only.",
     "Every capability statement must carry a support state: argument, prototype-backed, synthetic-test-backed, empirical-test-backed, or replayable-reference-backed.",
     "Every authored AI_book chapter must map to a Theseus implementation slice with a minimum slice, beyond-SOTA endpoint, support-state target, no-claim boundary, and gate or fixture.",
+    "AI_book chapter-level Planned Codex tests are treated as missing technique obligations until a registered Theseus implementation has matched controls, negative controls, no-cheat audit, retained residuals, and explicit non-claims.",
     "Negative, inconclusive, and regression evidence must remain attached to the claim or phase it constrains; do not replace a negative report with a nearby positive family.",
     "Before training becomes the primary roadmap focus again, the book-reference core must be represented as runnable claim-ledger, replacement-transaction, authority/SCIF, assistant-product, and evidence-hygiene slices."
   ],
@@ -954,7 +955,10 @@
         "transformer/hybrid survival lane",
         "full-body generation",
         "policy optimization and learning from feedback",
+        "DPO/IPO/ORPO/KTO/SimPO offline preference optimization",
+        "GRPO/RLOO/ReMax/RLVR verifier-reward optimization",
         "fast generation architectures",
+        "MTP/Medusa/EAGLE/speculative/LayerSkip/diffusion generation modes",
         "semantic IR localized repair"
       ],
       "registry_surface_id": "neural_seed_and_decoder",
@@ -970,6 +974,8 @@
         "verifier_fanout",
         "private_preference_pair_builder",
         "policy_optimization_update",
+        "policy_update_lease",
+        "multi_target_policy_update",
         "reward_hacking_probe_suite",
         "generation_mode_selection",
         "semantic_ir_localized_repair"
@@ -978,8 +984,10 @@
         "model_checkpoint_receipt",
         "training_data_provenance",
         "policy_optimization_record",
+        "behavior_change_lease_record",
         "substrate_adoption_record",
         "reward_hacking_probe_record",
+        "verification_budget_record",
         "generation_mode_accounting",
         "generation_mode_record",
         "semantic_ir_patch_record",
@@ -1040,11 +1048,13 @@
         "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json"
       ],
       "missing_items": [
-        "DPO shadow replay failed behavior: repair direct learned body emission, local-return completion, and promotion-eligible candidate rows before scaling DPO/GRPO or claiming behavior lift",
-        "bounded GRPO/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference and no authority expansion by training side effect",
+        "DPO shadow replay failed behavior: repair direct learned body emission, local-return completion, and promotion-eligible candidate rows before scaling DPO/IPO/ORPO/KTO/SimPO, GRPO/RLOO/ReMax/RLVR, or claiming behavior lift",
+        "offline preference comparison across DPO/IPO/ORPO/KTO/SimPO on the same private accepted/rejected pair split, same reference checkpoint, same optimizer budget, same heldout verifier, and same no-cheat/candidate-integrity audit",
+        "bounded GRPO/RLOO/ReMax/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference, reward-present/reward-removed ablation, verifier-cost ledger, reward-hacking probes, and no authority expansion by training side effect",
+        "multi-target policy-update leases for planner, router, VCM selector, verifier policy, execution policy, and generation-mode selector; each update names target policy, admissible feedback, reward boundary, authority effect, drift bound, rollback, monitor window, and task-specific heldouts",
         "MTP objective/head support with matched single-token control and verifier-stage-aware accepted-span accounting",
         "bounded generate-verify-repair state machine: candidate -> verified-exact -> verified-lossy -> repaired-exact -> literal-fallback/noncredit -> quarantined, with model-only one-shot, verifier-guided repair, repair cost, fallback count, and useful solution/sec reported separately",
-        "lookahead/trie retrieval from verified procedural memory and sketch-first/diffusion or arbitrary-order repair experiment, both as governed generation modes with useful-solution-per-second accounting",
+        "lookahead/trie retrieval from verified procedural memory plus Medusa, EAGLE, speculative/self-speculative, early-exit/LayerSkip, Mamba-state, PagedAttention/KV-cache policy, and sketch-first/diffusion/LLaDA arbitrary-order repair experiments as governed generation modes with useful-solution-per-second accounting",
         "capacity ablation: dense 50-150M scale step and/or sparse MoE with matched active compute, router receipts, active-parameter accounting, and no router/tool credit as learned generation",
         "substrate-adoption record for every capability technique: baseline, negative control, matched data/compute, falsification condition, residuals, reward-hacking probes, and non-claims"
       ],
@@ -1053,9 +1063,9 @@
         "Current direct learned full-body behavior remains weak: fanout behavior is 5/22, C1 selected/pass-if-any is 0.0 on the clean transformer/hybrid private replay, and production route eligibility remains blocked.",
         "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",
         "The DPO shadow checkpoint replay is negative behavior evidence: it emitted zero learned candidate rows and 0/16 private heldout passes, so it remains quarantined and cannot support default routing, public transfer, or learned-generation promotion.",
-        "The next governed step is direct learned emission repair: make prompt/signature body-token decode produce non-fallback, non-template, top-level-return candidates before preference/RL scaling. DPO/GRPO remains downstream of emission and verifier behavior, not a substitute for it."
+        "The next governed step is direct learned emission repair: make prompt/signature body-token decode produce non-fallback, non-template, top-level-return candidates before preference/RL scaling. DPO/IPO/ORPO/KTO/SimPO and GRPO/RLOO/ReMax/RLVR remain downstream of emission and verifier behavior, not substitutes for it."
       ],
-      "smallest_next_patch": "Do not scale DPO/GRPO yet. First repair direct learned body emission so strict prompt/signature decode emits non-fallback, non-template, top-level-return candidates under the same private replay profile. Use semantic-IR localized repair or generation-mode changes only if candidate integrity and blind-flow remain clean; no public rows, no fallback returns, no renderer/router/tool credit.",
+      "smallest_next_patch": "Do not scale offline preference or verifier-reward RL yet. First repair direct learned body emission so strict prompt/signature decode emits non-fallback, non-template, top-level-return candidates under the same private replay profile. Use semantic-IR localized repair or generation-mode changes only if candidate integrity and blind-flow remain clean; no public rows, no fallback returns, no renderer/router/tool credit.",
       "integration_smoke": [
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",

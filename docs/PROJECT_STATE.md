@@ -79,17 +79,22 @@ active source-sync
 review decisions. That keeps book-to-Theseus follow-up visible instead of
 clearing it with superficial steward decisions.
 
-The latest Claude book-mining packet is reconciled into `roadmap.md` as
-planning evidence. Its strongest recommendation, DPO on existing
-accepted/rejected verifier pairs, is no longer a missing implementation: the
-shadow DPO update ran and improved private preference-gap/loss metrics, then
-failed strict private replay with `0` learned candidate rows and `0/16`
-behavior passes. The current wall is therefore lower-level than DPO/GRPO/MTP:
-strict prompt/signature body-token decode must emit non-fallback,
-non-template, top-level-return learned candidates before broader policy
-optimization, verifier-reward RL, fast-generation, diffusion/sketch-first, or
-scale work can honestly matter. This does not weaken the ASI_book backlog; it
-orders it around the live falsifying evidence.
+The latest Claude book-mining packet is reconciled into `roadmap.md` and
+`configs/roadmap_implementation_matrix.json` as planning evidence. The book's
+chapter-level `Planned Codex test` lists are now treated as concrete missing
+technique obligations until Theseus has registered implementations with matched
+controls, negative controls, no-cheat audit, retained residuals, and explicit
+non-claims. Its strongest recommendation, DPO on existing accepted/rejected
+verifier pairs, is no longer a missing implementation: the shadow DPO update
+ran and improved private preference-gap/loss metrics, then failed strict
+private replay with `0` learned candidate rows and `0/16` behavior passes. The
+current wall is therefore lower-level than offline preference optimization
+(`DPO/IPO/ORPO/KTO/SimPO`), verifier-reward RL
+(`GRPO/RLOO/ReMax/RLVR`), MTP, Medusa/EAGLE/speculative/LayerSkip generation,
+diffusion/LLaDA sketch-first repair, or scale work: strict prompt/signature
+body-token decode must emit non-fallback, non-template, top-level-return
+learned candidates before those methods can honestly matter. This does not
+weaken the ASI_book backlog; it orders it around the live falsifying evidence.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint
