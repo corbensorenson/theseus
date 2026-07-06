@@ -228,6 +228,11 @@ Latest packet coverage audit:
   required by Chapter 38, fast generation, GVR, semantic IR, verification
   bandwidth, VCM transactions, Circle/Coil, belief revision, and procedural
   memory.
+- The packet's technique catalog is now accepted as implementation debt only
+  when it is routed through `configs/roadmap_implementation_matrix.json`, an
+  existing phase, matched controls, negative controls, candidate-integrity
+  audit, residual retention, and explicit non-claims. It does not create a new
+  sidecar, benchmark family, product surface, or learned-generation shortcut.
 - Its strongest recommendation, DPO over accepted/rejected verifier pairs, has
   already been attempted once as a governed shadow update. The result moved
   loss/preference-gap metrics but failed behaviorally under strict replay, so
@@ -4268,7 +4273,7 @@ below so current priorities keep absolute precedence.
 The crosswalk refresh has now run against the current 44-chapter AI_book tree:
 `scripts/roadmap_implementation_gate.py --gate` reports `44/44` chapter-level
 implementation rows in `configs/roadmap_implementation_matrix.json`, `0`
-stale phases, and `41` active backlog rows. Keep the merged/folded chapter-ID
+stale phases, and `38` active roadmap backlog rows. Keep the merged/folded chapter-ID
 notes below as historical remapping guidance for future source-sync reviews,
 not as a current stale-state claim:
 
