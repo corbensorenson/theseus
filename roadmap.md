@@ -305,7 +305,7 @@ Current reconciliation:
 | Multi-target policy optimization | Current policy-update evidence is generator-centered. The book explicitly treats planners, routers, VCM selectors, verifier policies, execution policies, and generation-mode selectors as policy targets. | Add multi-target policy updates only through behavior-change leases with target policy, admissible feedback, authority effect, rollback, monitor window, and task-specific heldouts. Do not let a policy update expand authority or erase verification cost. |
 | Fast-generation modes: MTP, Medusa, EAGLE, speculative, early-exit/LayerSkip, lookahead/trie, Mamba/PagedAttention cache policy, diffusion/LLaDA sketch-first repair | Generation-mode registry and runtime accounting exist; current comparisons are negative for accepted verified output. | Treat each mode as a registered generation-mode candidate measured by useful verified output per second, not proposed-token speed. Do not run MTP/diffusion before the direct learned emission wall moves. |
 | GVR as typed state machine | The generator has verifier receipts and repair hooks, but GVR is not yet the universal transition contract. | Implement candidate -> verified-exact -> verified-lossy -> repaired-exact -> literal-fallback/noncredit -> quarantined as a typed state machine with S/R/Q/G/V/E consistency checks, verifier receipts, repair cost, fallback count, residuals, and explicit model-only versus assisted scoring. |
-| Semantic IR / localized repair | Semantic atom and semantic patch gates exist, but generator failures are not yet lowered into atom-level repair obligations. | Connect strict-generator decode failures to semantic atoms: failed atom -> localized repair -> dependent obligation replay -> residual ledger. |
+| Semantic IR / localized repair | Strict-generator RED decode failures now lower into semantic atoms and localized repair patches through `strict_generator_semantic_ir_repair_bridge.py`, and `semantic_ir_obligation_gate.py` consumes that bridge. This is diagnostic implementation progress, not behavior improvement. | Consume those atoms in a localized semantic-IR body-construction path or trainable AST/state-machine constructor: failed atom -> repaired/generated update expression -> dependent obligation replay -> private verifier receipt -> residual ledger. |
 | Verification bandwidth | VCM/context-governor and verifier-spine records exist, but verifier capacity is not yet a scheduled resource in all fanout/ranking paths. | Add verifier-capacity budgets, residual-obligation ledgers, decomposition contracts, and governance-tax accounting to Phase 16 before route-policy changes. |
 | VCM certificates and context transactions | Context ABI fixtures, mission briefs, deletion closure, and materialized VIEA context records exist. | Promote fixture-level semantics into a deployed resolver/compiler conformance gate, then add model-native MLX KV/prefix-cache lifecycle proof before runtime parity claims. |
 | Circle / Coil / cyclic substrate primitives | Circle/proof-carrying bridge and substrate-adoption records exist as proof-boundary machinery. | Keep cyclic/SymLiquid ideas protected as matched-compute discovery candidates only. Test cyclic memory, KV-cache ring buffers, recurrence schedules, sparse-attention coverage, circulant/block-cyclic mixers, and MultiCoil RoPE phase features against dense/LoRA/RoPE/Mamba controls with matched compute before any route claim. |
@@ -356,10 +356,12 @@ Latest packet coverage audit:
   construction must emit non-fallback, non-template learned candidates before
   another DPO/IPO/ORPO/KTO/SimPO or GRPO/RLVR run can mean capability.
 - The roadmap therefore treats the Claude-mined technique catalog as complete
-  coverage obligations, not permission to skip the live blocker. The next
-  capability implementation should repair broad semantic/action body-token
-  generation, then map failures through semantic IR, then retry bounded
-  preference/RL and fast-generation modes under matched controls.
+  coverage obligations, not permission to skip the live blocker. The semantic
+  IR bridge now maps strict-generator failures into atoms and patch
+  obligations, so the next capability implementation must consume those atoms
+  in a behavior-changing localized repair or trainable AST/state-machine body
+  constructor before retrying bounded preference/RL and fast-generation modes
+  under matched controls.
 
 ## 2026-07-06 Planned Codex Test Backlog Hardening
 
