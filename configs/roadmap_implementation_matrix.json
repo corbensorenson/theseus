@@ -1856,10 +1856,10 @@
         "reports/viea_spine_materialized_view.json"
       ],
       "missing_items": [
-        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit verification-bandwidth capacity accounting with obligation count, verifier capacity, decomposition contracts, residual-obligation ledger, and escalation thresholds; current STS rerun honestly exposes a no-admissible residual because the old candidate manifests are not present in the cleaned local state",
-        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit governance-tax accounting with per-gate overhead, review load, tax-per-caught-risk, and caught verification-capacity/residual evidence; remaining work is regenerating current STS candidate inputs through the registered fanout path and collecting richer real task-to-arm traces"
+        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit verification-bandwidth capacity accounting with obligation count, verifier capacity, decomposition contracts, residual-obligation ledger, and escalation thresholds; the STS ranker now reads retained archived matched private surfaces through an archive-aware reader and clears the previous no-admissible residual",
+        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit governance-tax accounting with per-gate overhead, review load, tax-per-caught-risk, and caught verification-capacity/residual evidence; remaining work is live-route adoption evidence: richer real task-to-arm traces and current hot-manifest regeneration before any default route-policy change"
       ],
-      "smallest_next_patch": "Regenerate current STS candidate manifests through the registered fanout path so the STS ranker accounting can evaluate live admissible candidates again, then collect more diverse real task-to-arm traces before changing major route policy.",
+      "smallest_next_patch": "Collect more diverse real task-to-arm traces and, before any default route-policy adoption, refresh current hot STS candidate manifests through the registered fanout path so retained archive evidence is not mistaken for live-route proof.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -1892,7 +1892,8 @@
         "reports/sts_ranker_policy_v1.json verification_bandwidth.status=ready",
         "reports/sts_ranker_policy_v1.json governance_tax.status=ready",
         "reports/sts_ranker_policy_v1.json viea_sts_ranker_records contains costed_route_record",
-        "reports/sts_ranker_policy_v1.json summary.no_admissible_rate documents current candidate-manifest availability",
+        "reports/sts_ranker_policy_v1.json summary.no_admissible_rate=0.0",
+        "reports/sts_ranker_policy_v1.json verification_bandwidth.residual_obligations=[]",
         "python3 scripts/viea_spine_record_gate.py --gate",
         "reports/viea_spine_record_gate.json profiles octopus_moecot_route_spine_v1 passed=true",
         "reports/viea_spine_record_gate.json profiles train_once_fanout_spine_v1 passed=true",

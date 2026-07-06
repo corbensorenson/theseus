@@ -1001,12 +1001,15 @@ now narrower: `scripts/sts_ranker_policy_v1.py` emits
 `viea_sts_ranker_records` with a `costed_route_record`, and
 `configs/viea_spine_record_contracts.json` registers
 `sts_ranker_policy_spine_v1` as a shared VIEA producer profile. The refreshed
-local STS ranker rerun is intentionally `YELLOW`, not stale green: the old
-candidate manifests referenced by the ranker are absent in the cleaned local
-state, so the report records `no_admissible_rate=1.0` and a
-`sts_ranker_no_admissible_residual`. The next Phase 16 fix is to regenerate
-current STS candidate manifests through the registered fanout path and then
-collect richer real task-to-arm traces before route-policy changes.
+local STS ranker rerun is now `GREEN` after switching to archive-aware retained
+matched private surfaces instead of stale deleted hot report names:
+`312/312` equal-budget tasks, `no_admissible_rate=0.0`,
+`verification_escalation_required=false`, STS selected pass rate `1.0`, and
+non-STS selected pass rate `0.00641`. This remains selector-only private
+evidence, not learned-generation or public-transfer evidence. The next Phase
+16 fix is live-route adoption evidence: collect richer real task-to-arm traces
+and refresh current hot STS candidate manifests through the registered fanout
+path before any default route-policy change.
 The report attaches a ready VIEA route-validator receipt, a ready VCM context
 governor receipt, and a ready candidate-integrity boundary; it records `0`
 public training rows, `0` runtime external inference calls, `0` fallback

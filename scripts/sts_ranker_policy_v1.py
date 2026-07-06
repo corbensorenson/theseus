@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from private_residual_repair_v3_heldout_score import run_candidate
+from theseus_archive_resolver import read_jsonl_follow_pointer, resolve_archived_path
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,22 +35,24 @@ GUARD_ENV = "THESEUS_ENABLE_STS_RANKER_POLICY_V1"
 
 SURFACES = [
     {
-        "name": "private_residual_v3",
-        "role": "primary_private_v3",
-        "heldout": ROOT / "data" / "training_data" / "high_transfer" / "private_eval" / "private_residual_repair_v3_heldout_code_lm_tasks.jsonl",
-        "sts_candidates": ROOT / "reports" / "code_lm_private_candidates_private_residual_repair_v3_student_repair.jsonl",
-        "non_sts_candidates": ROOT / "reports" / "code_lm_private_candidates_private_residual_repair_v3_student_repair_sts_off_control.jsonl",
-        "task_limit": 0,
+        "name": "broad_private_generalization_ladder_v1_retained_archive240",
+        "role": "primary_broad_private_generalization",
+        "heldout": ROOT / "data" / "training_data" / "high_transfer" / "private_eval" / "broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
+        "sts_candidates": ROOT / "archive" / "report_artifacts" / "code_lm_private_candidates_broad_private_generalization_ladder_v" / "reports_7f26104f77a7" / "code_lm_private_candidates_broad_private_generalization_ladder_v1_heldout.jsonl.gz",
+        "non_sts_candidates": ROOT / "archive" / "report_artifacts" / "code_lm_private_candidates_broad_private_generalization_ladder_v" / "reports_7f26104f77a7" / "code_lm_private_candidates_broad_private_generalization_ladder_v1_heldout_sts_off.jsonl.gz",
+        "task_limit": 240,
         "minimum_tasks": 240,
+        "source_semantics": "retained_archive_from_registered_candidate_fanout",
     },
     {
-        "name": "private_ecology_generalization_v5_smoke72",
+        "name": "private_ecology_generalization_v5_retained_archive72",
         "role": "existing_disjoint_private_family",
         "heldout": ROOT / "data" / "training_data" / "high_transfer" / "private_eval" / "private_ecology_generalization_v5_heldout_code_lm_tasks.jsonl",
-        "sts_candidates": ROOT / "reports" / "code_lm_private_candidates_private_ecology_generalization_v5_smoke72.jsonl",
-        "non_sts_candidates": ROOT / "reports" / "code_lm_private_candidates_private_ecology_generalization_v5_smoke72_sts_off.jsonl",
+        "sts_candidates": ROOT / "archive" / "report_artifacts" / "code_lm_private_candidates_private_ecology_generalization_v" / "reports_7f26104f77a7" / "code_lm_private_candidates_private_ecology_generalization_v5_full480.jsonl.gz",
+        "non_sts_candidates": ROOT / "archive" / "report_artifacts" / "code_lm_private_candidates_private_ecology_generalization_v" / "reports_7f26104f77a7" / "code_lm_private_candidates_private_ecology_generalization_v5_full480_sts_off.jsonl.gz",
         "task_limit": 72,
         "minimum_tasks": 72,
+        "source_semantics": "retained_archive_from_registered_private_ecology_refresh",
     },
 ]
 
@@ -339,13 +342,18 @@ def score_surface(surface: dict[str, Any], *, budget: int, timeout_seconds: int)
         "surface": surface["name"],
         "role": surface["role"],
         "minimum_tasks": int(surface["minimum_tasks"]),
+        "source_semantics": surface.get("source_semantics", "hot_report_candidate_manifest"),
         "inputs": {
             "heldout": rel(heldout_path),
             "sts_candidates": rel(sts_path),
+            "sts_candidates_resolved": rel(resolve_archived_path(sts_path)),
             "non_sts_candidates": rel(non_sts_path),
+            "non_sts_candidates_resolved": rel(resolve_archived_path(non_sts_path)),
             "task_limit": int(surface.get("task_limit") or 0),
             "candidate_budget_requested": budget,
             "timeout_seconds": timeout_seconds,
+            "sts_candidates_exists": resolve_archived_path(sts_path).exists(),
+            "non_sts_candidates_exists": resolve_archived_path(non_sts_path).exists(),
         },
         "summary": summary,
         "per_task": task_rows,
@@ -643,6 +651,13 @@ def sts_ranker_verification_bandwidth_record(
         residual_obligations.append("sts_ranker_selection_regression_residual")
     if capacity_margin_units < 0:
         residual_obligations.append("sts_ranker_verifier_capacity_escalation")
+    surface_refs = []
+    for row in surface_reports:
+        inputs = row.get("inputs") if isinstance(row.get("inputs"), dict) else {}
+        for key in ("heldout", "sts_candidates_resolved", "non_sts_candidates_resolved"):
+            value = str(inputs.get(key) or "")
+            if value:
+                surface_refs.append(value)
     return {
         "policy": "project_theseus_sts_ranker_verification_bandwidth_v1",
         "surface": "sts_ranker_policy_v1",
@@ -651,7 +666,8 @@ def sts_ranker_verification_bandwidth_record(
             "reports/sts_ranker_policy_v1.json",
             "reports/sts_ranker_policy_v1_selected_candidates.jsonl",
             "configs/sts_ranker_policy_v1.json",
-        ],
+        ]
+        + sorted(set(surface_refs)),
         "obligation_count": obligation_count,
         "verifier_capacity_units": verifier_capacity_units,
         "capacity_floor_units": capacity_floor_units,
@@ -785,7 +801,15 @@ def build_sts_ranker_spine_records(
         "reports/sts_ranker_policy_v1.json",
         "reports/sts_ranker_policy_v1_selected_candidates.jsonl",
         "configs/sts_ranker_policy_v1.json",
-    ]
+    ] + sorted(
+        {
+            str(inputs.get(key))
+            for row in surface_reports
+            for inputs in [row.get("inputs") if isinstance(row.get("inputs"), dict) else {}]
+            for key in ("heldout", "sts_candidates_resolved", "non_sts_candidates_resolved")
+            if str(inputs.get(key) or "")
+        }
+    )
     return [
         {
             **common,
@@ -1002,15 +1026,11 @@ def read_json(path: Path) -> dict[str, Any]:
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    if not path.exists():
+    if not resolve_archived_path(path).exists():
         return rows
-    with path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            if not line.strip():
-                continue
-            value = json.loads(line)
-            if isinstance(value, dict):
-                rows.append(value)
+    for value in read_jsonl_follow_pointer(path):
+        if isinstance(value, dict):
+            rows.append(value)
     return rows
 
 
