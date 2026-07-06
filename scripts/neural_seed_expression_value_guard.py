@@ -43,10 +43,21 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
     local_types = inferred_ast_local_types(function)
     examples: list[dict[str, Any]] = []
     bare_builtin_value_argument_count = 0
+    bare_builtin_runtime_value_count = 0
     invalid_call_argument_type_count = 0
     invalid_attribute_receiver_count = 0
     invalid_literal_subscript_count = 0
     invalid_membership_container_count = 0
+    runtime_bare_names = expression_bare_builtin_runtime_value_names(function)
+    if runtime_bare_names:
+        bare_builtin_runtime_value_count = len(runtime_bare_names)
+        examples.append(
+            {
+                "label": "bare_builtin_runtime_value",
+                "names": sorted(runtime_bare_names),
+                "expression": ast_text(function)[:160],
+            }
+        )
     for node in ast.walk(function):
         if isinstance(node, ast.Attribute) and expression_is_bare_builtin_name(node.value):
             invalid_attribute_receiver_count += 1
@@ -112,6 +123,7 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
                 )
     invalid_expression_value_count = (
         bare_builtin_value_argument_count
+        + bare_builtin_runtime_value_count
         + invalid_call_argument_type_count
         + invalid_attribute_receiver_count
         + invalid_literal_subscript_count
@@ -121,6 +133,7 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
         "parse_ok": True,
         "invalid_expression_value_count": invalid_expression_value_count,
         "bare_builtin_value_argument_count": bare_builtin_value_argument_count,
+        "bare_builtin_runtime_value_count": bare_builtin_runtime_value_count,
         "invalid_call_argument_type_count": invalid_call_argument_type_count,
         "invalid_attribute_receiver_count": invalid_attribute_receiver_count,
         "invalid_literal_subscript_count": invalid_literal_subscript_count,
@@ -128,11 +141,11 @@ def expression_value_quality_summary(body: str, *, allowed_names: set[str] | Non
         "examples": examples,
         "score_semantics": (
             "Task-blind AST value hygiene over generated expressions. It rejects bare builtin/type "
-            "objects used as runtime values, obvious call argument type errors, builtin/type objects used "
-            "as attribute receivers, literal constant/container subscripts, impossible membership tests "
-            "against non-iterable literals, and boolean/comparison expressions used as the object passed "
-            "to isinstance. It does not inspect tests, solutions, public benchmark payloads, or hidden "
-            "target metadata."
+            "objects used as call arguments or returned runtime values, obvious call argument type "
+            "errors, builtin/type objects used as attribute receivers, literal constant/container "
+            "subscripts, impossible membership tests against non-iterable literals, and "
+            "boolean/comparison expressions used as the object passed to isinstance. It does not inspect "
+            "tests, solutions, public benchmark payloads, or hidden target metadata."
         ),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
@@ -183,6 +196,33 @@ def expression_bare_builtin_value_names(expr: ast.AST | None) -> set[str]:
                 self.visit(arg)
             for kw in node.keywords:
                 self.visit(kw.value)
+
+        def visit_Name(self, node: ast.Name) -> None:  # noqa: N802
+            if isinstance(node.ctx, ast.Load) and node.id in EXPRESSION_VALUE_BARE_BUILTINS:
+                names.add(node.id)
+
+    if expr is not None:
+        Visitor().visit(expr)
+    return names
+
+
+def expression_bare_builtin_runtime_value_names(expr: ast.AST | None) -> set[str]:
+    """Return bare builtin/type names used as values, excluding legal callees."""
+
+    names: set[str] = set()
+
+    class Visitor(ast.NodeVisitor):
+        def visit_Call(self, node: ast.Call) -> None:  # noqa: N802
+            callee = expression_call_name(node)
+            for index, arg in enumerate(node.args):
+                if callee == "isinstance" and index >= 1:
+                    continue
+                self.visit(arg)
+            for kw in node.keywords:
+                self.visit(kw.value)
+
+        def visit_Attribute(self, node: ast.Attribute) -> None:  # noqa: N802
+            self.visit(node.value)
 
         def visit_Name(self, node: ast.Name) -> None:  # noqa: N802
             if isinstance(node.ctx, ast.Load) and node.id in EXPRESSION_VALUE_BARE_BUILTINS:

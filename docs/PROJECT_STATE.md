@@ -123,6 +123,15 @@ blocks builtin-attribute receivers, literal/container subscript chains, and
 impossible membership tests; the broad4 v2 canary emits `8` generated rows with
 no syntax warnings, `12` runtime-loaded verifier attempts including baselines,
 and still `0` behavior passes.
+The next runtime-builtin-value hygiene pass blocks returned builtin/type objects
+such as `return min, data` while preserving legal call prefixes such as
+`return max(`. The adequacy-preferred broad4 canary remains `YELLOW` with `12`
+generated rows, `16` runtime-loaded verifier attempts including baselines, and
+`0` behavior passes. A comparison against the larger T3
+`strict_full_body_semantic_construction_v1` checkpoint under the same current
+guards is worse for this surface (`4` generated rows, `8` runtime-loaded
+attempts including baselines, `0` behavior passes), so the direct-body
+checkpoint remains the better current strict-generator route.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.

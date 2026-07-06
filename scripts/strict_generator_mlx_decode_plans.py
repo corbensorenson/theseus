@@ -1978,7 +1978,10 @@ def token_blocked_by_expression_value_guard(
     if not token_value:
         return False
 
-    if current_return_line_has_invalid_expression_value(values):
+    if current_return_line_has_invalid_expression_value(values) and not current_return_invalid_value_can_be_repaired(
+        values,
+        token_value,
+    ):
         return True
 
     # Empty literals remain legal for initializers such as "out = []"; they are
@@ -2041,6 +2044,19 @@ def current_return_line_has_invalid_expression_value(values: list[str]) -> bool:
     line = " ".join(values)
     summary = expression_value_quality_summary(line, allowed_names=None)
     return bool(summary.get("parse_ok")) and int(summary.get("invalid_expression_value_count") or 0) > 0
+
+
+def current_return_invalid_value_can_be_repaired(values: list[str], token_value: str) -> bool:
+    """Allow a bare builtin return prefix to become a call, not a value."""
+
+    if len(values) != 2 or values[0] != "return" or values[1] not in EXPRESSION_VALUE_BARE_BUILTINS:
+        return False
+    if token_value != "(":
+        return False
+    summary = expression_value_quality_summary(" ".join(values), allowed_names=None)
+    return int(summary.get("invalid_expression_value_count") or 0) == int(
+        summary.get("bare_builtin_runtime_value_count") or 0
+    )
 
 
 def token_value_for_guard(token: str) -> str:

@@ -147,8 +147,17 @@ the roadmap:
    and the expression-value hygiene extension removes builtin-attribute,
    literal/container-subscript, and impossible-membership warnings while
    preserving learned row emission (`8` generated rows on broad4 v2). Functional
-   behavior remains `0`, confirming the remaining wall is semantic/action body
-   construction, not another narrow malformed-token or local-return family.
+   behavior remains `0`. The runtime-builtin-value hygiene pass then blocks
+   returned builtin/type objects like `return min, data` while preserving legal
+   call formation; the adequacy-preferred broad4 canary stays at `12` generated
+   rows, `16` runtime-loaded attempts including baselines, and `0` behavior
+   passes. A same-guard decode of the larger T3
+   `strict_full_body_semantic_construction_v1` checkpoint is worse on this
+   surface (`4` generated rows, `8` runtime-loaded attempts including
+   baselines, `0` behavior passes), so the current direct-body route remains the
+   practical strict-generator path. This confirms the remaining wall is
+   semantic/action body construction, not another narrow malformed-token or
+   local-return family.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 
