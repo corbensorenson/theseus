@@ -80,6 +80,37 @@ complete.
 
 Updated: 2026-07-06
 
+## Latest Claude Book-Mining Packet Triage
+
+Source packet:
+`/Users/corbensorenson/.codex/attachments/f08752f6-9be1-440d-9c6c-65169a852670/pasted-text.txt`.
+
+Decision: accept the packet as roadmap input, not capability evidence. It does
+not reveal a missing ASI Stack chapter absent from the current roadmap. It does
+confirm that the book's `Planned Codex test` lists must remain first-class
+implementation debt in `configs/roadmap_implementation_matrix.json`: offline
+preference optimization, verifier-reward RL, fast-generation modes, typed
+generate-verify-repair, semantic-IR localized repair, verification-bandwidth
+routing, VCM transaction certificates, Circle/Coil cyclic baselines, claim
+belief revision, and procedural-memory-to-lookahead.
+
+Critical-path correction: the packet's strongest recommendation, DPO on
+accepted/rejected verifier pairs, is not still untouched. Theseus already ran a
+governed DPO shadow update; it moved private loss/preference-gap metrics but
+failed strict replay with zero behavior improvement. That makes the next
+capability wall lower-level than DPO/GRPO/MTP/diffusion/scale: direct
+prompt/signature learned body-token generation must produce non-fallback,
+non-template, verifier-positive private candidates. Until that moves, policy
+optimization and fast-generation techniques are valid queued obligations but
+not honest capability levers.
+
+Operational consequence: the next major implementation should consume the
+current semantic-IR/state-transition obligations in a behavior-changing
+trainable AST/state-machine or localized semantic-IR body constructor. It must
+preserve the no-cheat boundary: no public benchmark training rows, no runtime
+external inference, no fallback/template/router/tool/renderer credit as learned
+generation, and no broad new side lane.
+
 ## 2026-07-06 Claude Review Reconciliation
 
 Claude's latest review surfaced three criticisms with enough evidence to change
