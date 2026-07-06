@@ -226,6 +226,16 @@ the roadmap:
    trainable AST/state-transition choice must improve, or semantic-IR localized
    body construction must change strict replay behavior. Another scalar
    target-side loss boost is not sufficient evidence.
+   The first prompt-visible source-plan compatibility reranker is also now
+   wired through strict decode. It uses only tags already visible in the source
+   text and grants zero learned-generation credit. Its replay
+   `reports/strict_generator_mlx_decode_eval_source_plan_compatibility_strict_replay2_20260706.json`
+   is still `RED` with `0` emitted candidates and `0` behavior passes, but it
+   moves the first-plan choices on the two-row canary from repeated aggregate
+   collapse to `AST_LIST_FILTER_MAP` and `GRAPH_COMPONENTS`. The next wall is
+   therefore not simply first-plan selection; it is trainable body construction
+   after a compatible plan: coherent loop state, update expressions, finalizers,
+   and top-level returns.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 
@@ -2264,12 +2274,15 @@ MLX routing, or CUDA/MLX/Metal parity.
 
 Current Phase 10/13 delta: the prefix-conditioned body-transition head is now
 real code and real evidence, not a TODO. It improves private transition loss
-but fails strict replay behavior, so the roadmap should not schedule a bigger
+but fails strict replay behavior. The prompt-visible source-plan compatibility
+reranker moves first-plan selection in the two-row canary, but also fails
+strict replay behavior. The roadmap should therefore not schedule a bigger
 body-transition/DPO/GRPO/MTP run as the next move. The next implementation
-should make semantic-plan/slot selection and AST/state-transition choices
-depend on prompt/signature context strongly enough to emit closed, nontrivial,
-verifier-loadable bodies. Localized semantic-IR repair is the right consumer if
-it changes replay behavior; it must not become another diagnostic-only report.
+should make AST/state-transition and body-operand choices depend on
+prompt/signature context strongly enough to emit closed, nontrivial,
+verifier-loadable bodies after a compatible plan. Localized semantic-IR repair
+is the right consumer if it changes replay behavior; it must not become another
+diagnostic-only report.
 
 Out of scope for that goal:
 

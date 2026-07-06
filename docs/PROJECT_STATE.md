@@ -298,6 +298,22 @@ degenerate into nested guard/expression fragments. This falsifies "add a
 body-transition loss" as sufficient. The next material repair is semantic-plan
 and semantic-slot adequacy plus a trainable AST/state-transition decision path,
 or localized semantic-IR body construction that changes strict replay behavior.
+The first prompt-visible source-plan compatibility reranker is now implemented
+in `scripts/strict_generator_mlx_decode_plans.py` and
+`scripts/strict_generator_mlx_decode_eval.py`. It uses only broad tags already
+present in the strict source text (`prompt_operation_hints`,
+`visible_intent_tags`, and `visible_type_shape_tags`) and records zero
+candidate-generation credit, zero public data use, and zero
+test/solution/verifier access. The canary
+`reports/strict_generator_mlx_decode_eval_source_plan_compatibility_strict_replay2_20260706.json`
+is still `RED`: `0` emitted manifest candidate rows and `0` behavior passes.
+But the first selected plans changed from the repeated aggregate collapse to
+`AST_LIST_FILTER_MAP` for `bpg_project_table` and `GRAPH_COMPONENTS` for
+`bpg_shortest_hops`, with compatibility scores `6` and `5`. That is useful
+diagnostic movement, not capability evidence. The live wall is now narrower:
+after a more compatible first plan, the learned body still cannot construct a
+closed update/finalizer/top-level-return program and stalls in loop bodies
+without coherent state updates.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

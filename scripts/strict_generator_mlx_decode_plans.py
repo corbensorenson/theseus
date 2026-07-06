@@ -885,6 +885,133 @@ def visible_operation_tags_from_source_text(source_text: str) -> list[str]:
     return []
 
 
+def visible_tags_from_source_text(source_text: str, prefix: str) -> list[str]:
+    for line in str(source_text or "").splitlines():
+        stripped = line.strip()
+        if stripped.startswith(prefix):
+            return [part for part in stripped.split()[1:] if part]
+    return []
+
+
+def source_plan_compatibility_for_plan_token(plan_token: str, source_text: str) -> dict[str, Any]:
+    """Score a first plan-token choice against prompt-visible source tags only.
+
+    This is a task-blind decode adequacy signal, not a renderer. It uses broad
+    prompt/signature tags already visible to the strict generator and can only
+    rerank plan-head choices; it never reads task family labels, tests,
+    solutions, return-shape metadata, verifier output, public payloads, or
+    teacher output.
+    """
+
+    plan = str(plan_token or "").removeprefix("SLOT:PLAN_").upper()
+    operation_tags = set(visible_operation_tags_from_source_text(source_text))
+    intent_tags = set(visible_tags_from_source_text(source_text, "visible_intent_tags "))
+    type_tags = set(visible_tags_from_source_text(source_text, "visible_type_shape_tags "))
+    if not plan:
+        return {
+            "enabled": False,
+            "policy": "prompt_visible_source_plan_compatibility_v1",
+            "score": 0,
+            "candidate_generation_credit": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+        }
+
+    score = 0
+    hits: list[str] = []
+    misses: list[str] = []
+
+    def reward(label: str, condition: bool, *, weight: int = 4) -> None:
+        nonlocal score
+        if condition:
+            score += weight
+            hits.append(label)
+        else:
+            score -= max(1, weight // 2)
+            misses.append(label)
+
+    def plan_has(*parts: str) -> bool:
+        return any(part.upper() in plan for part in parts)
+
+    if "shape_graph" in type_tags or "op_graph_walk" in operation_tags:
+        reward("graph_plan", plan_has("GRAPH", "HOPS", "COMPONENT", "BFS", "DFS", "PATH"), weight=8)
+        if plan_has("AGGREGATE", "MAX", "MIN", "SUM") and not plan_has("HOPS"):
+            score -= 6
+            misses.append("graph_prompt_aggregate_plan")
+    if "shape_records" in type_tags or {"op_group_by_key", "op_threshold_filter"} & operation_tags:
+        reward("record_or_table_plan", plan_has("RECORD", "TABLE", "FIELD", "GROUP", "THRESHOLD", "DICT", "PROJECT", "FILTER"), weight=6)
+    if "op_group_by_key" in operation_tags:
+        reward("group_by_plan", plan_has("GROUP", "DICT", "SETDEFAULT"), weight=6)
+    if "op_frequency_top_k" in operation_tags or "shape_ranked_counts" in type_tags:
+        reward("frequency_plan", plan_has("TOP_K", "FREQUENT", "COUNT", "DICT", "SORT"), weight=6)
+    if "op_interval_merge" in operation_tags or "shape_intervals" in type_tags:
+        reward("interval_plan", plan_has("INTERVAL", "MERGE", "SORT"), weight=6)
+    if "op_stack_balance" in operation_tags:
+        reward("stack_balance_plan", plan_has("BALANCED", "BRACKET", "STACK", "BOOL"), weight=6)
+    if "op_gcd_reduce" in operation_tags:
+        reward("gcd_plan", plan_has("GCD", "NUMERIC", "ACCUMULATE"), weight=6)
+    if "op_normalize_filter_sort" in operation_tags:
+        reward("normalize_filter_sort_plan", plan_has("NORMALIZE", "FILTER", "SORT", "LIST"), weight=6)
+    if "op_query_key_value_parse" in operation_tags:
+        reward("query_parse_plan", plan_has("QUERY", "PARSE", "TEXT", "DICT"), weight=6)
+    if {"op_abs_tolerance_filter", "op_abs_positive_filter", "op_threshold_filter"} & operation_tags:
+        reward("filter_or_threshold_plan", plan_has("FILTER", "THRESHOLD", "BRANCH", "LIST", "ACCUMULATE"), weight=5)
+    if "op_windowed_delta" in operation_tags:
+        reward("window_delta_plan", plan_has("WINDOW", "DELTA", "LIST", "ACCUMULATE"), weight=6)
+    if "op_numeric_summary" in operation_tags and not ({"shape_graph", "shape_records"} & type_tags):
+        reward("numeric_summary_plan", plan_has("NUMERIC", "AGGREGATE", "MAX", "MIN", "SUM", "AVG", "ROUND"), weight=4)
+    if "shape_text" in type_tags and not operation_tags:
+        if plan_has("TEXT", "STRING", "JOIN", "SPLIT", "PARSE"):
+            score += 3
+            hits.append("text_plan")
+    if "intent_top_k" in intent_tags:
+        reward("top_k_intent_plan", plan_has("TOP_K", "FREQUENT", "COUNT", "SORT"), weight=6)
+    if "intent_query_string" in intent_tags:
+        reward("query_intent_plan", plan_has("QUERY", "PARSE", "DICT"), weight=6)
+    if "intent_run_length" in intent_tags:
+        reward("run_length_plan", plan_has("RLE", "RUN", "LENGTH"), weight=6)
+
+    enabled = bool(operation_tags or intent_tags or type_tags)
+    return {
+        "enabled": enabled,
+        "policy": "prompt_visible_source_plan_compatibility_v1",
+        "plan_token": plan_token,
+        "plan": plan,
+        "score": int(score) if enabled else 0,
+        "hit_count": len(hits),
+        "miss_count": len(misses),
+        "hits": hits[:12],
+        "misses": misses[:12],
+        "operation_tags": sorted(operation_tags),
+        "intent_tags": sorted(intent_tags),
+        "type_shape_tags": sorted(type_tags),
+        "score_semantics": (
+            "Prompt/signature-visible first-plan adequacy score. It reranks candidate plan-head tokens "
+            "only when explicitly enabled, uses broad visible tags already present in strict source text, "
+            "and grants zero learned-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def source_plan_compatibility_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    enabled_rows = [dict_or_empty(row) for row in rows if bool(dict_or_empty(row).get("enabled"))]
+    score_counts = Counter(int(row.get("selected_score") or row.get("score") or 0) for row in enabled_rows)
+    selected_plans = Counter(str(row.get("selected_plan") or row.get("plan") or "") for row in enabled_rows)
+    return {
+        "policy": "prompt_visible_source_plan_compatibility_summary_v1",
+        "row_count": len(rows),
+        "enabled_row_count": len(enabled_rows),
+        "score_counts": dict(sorted(score_counts.items())),
+        "selected_plan_counts": dict(sorted(selected_plans.items())),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def source_condition_expectations_summary(expectations: list[dict[str, Any]]) -> dict[str, Any]:
     enabled = [row for row in expectations if bool(dict_or_empty(row).get("enabled"))]
     return {

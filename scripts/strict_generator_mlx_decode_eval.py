@@ -244,6 +244,8 @@ from strict_generator_mlx_decode_plans import (  # noqa: E402
     bool_expr_is_direct_name_operand,
     bool_expr_contains_name,
     expr_contains_name,
+    source_plan_compatibility_for_plan_token,
+    source_plan_compatibility_summary,
     source_condition_candidate_summary,
     body_action_trace_candidate_summary,
 )
@@ -305,6 +307,15 @@ def main() -> int:
     parser.add_argument("--require-nontrivial-return", action="store_true")
     parser.add_argument("--require-top-level-return", action="store_true")
     parser.add_argument("--use-semantic-plan-head-prefix", action="store_true")
+    parser.add_argument(
+        "--prefer-source-plan-compatibility",
+        action="store_true",
+        help=(
+            "Rerank source-conditioned semantic plan-head choices using broad prompt-visible intent, "
+            "operation, and type tags. This is a zero-credit adequacy experiment; it does not render code, "
+            "inspect tests/solutions/public payloads, or create learned-generation promotion evidence."
+        ),
+    )
     parser.add_argument(
         "--use-semantic-slot-head-prefix",
         action="store_true",
@@ -424,6 +435,7 @@ def main() -> int:
         require_nontrivial_return=bool(args.require_nontrivial_return),
         require_top_level_return=bool(args.require_top_level_return),
         use_semantic_plan_head_prefix=bool(args.use_semantic_plan_head_prefix),
+        prefer_source_plan_compatibility=bool(args.prefer_source_plan_compatibility),
         use_semantic_slot_head_prefix=bool(args.use_semantic_slot_head_prefix),
         enable_learned_expression_token_bias=bool(args.enable_learned_expression_token_bias),
         use_body_transition_head=bool(args.use_body_transition_head),
@@ -498,6 +510,7 @@ def run_decode_eval(
     require_nontrivial_return: bool,
     require_top_level_return: bool,
     use_semantic_plan_head_prefix: bool,
+    prefer_source_plan_compatibility: bool,
     use_semantic_slot_head_prefix: bool,
     enable_learned_expression_token_bias: bool,
     use_body_transition_head: bool,
@@ -535,6 +548,7 @@ def run_decode_eval(
                     "train_replay_tier": train_replay_tier,
                     "max_target_tokens_override": int(max_target_tokens_override or 0),
                     "use_semantic_plan_head_prefix": bool(use_semantic_plan_head_prefix),
+                    "prefer_source_plan_compatibility": bool(prefer_source_plan_compatibility),
                     "use_semantic_slot_head_prefix": bool(use_semantic_slot_head_prefix),
                     "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
                     "use_body_transition_head": bool(use_body_transition_head),
@@ -637,6 +651,7 @@ def run_decode_eval(
             require_nontrivial_return=require_nontrivial_return,
             require_top_level_return=require_top_level_return,
             use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
+            prefer_source_plan_compatibility=prefer_source_plan_compatibility,
             use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
             enable_learned_expression_token_bias=enable_learned_expression_token_bias,
             use_body_transition_head=use_body_transition_head,
@@ -678,6 +693,7 @@ def run_decode_eval(
             require_nontrivial_return=require_nontrivial_return,
             require_top_level_return=require_top_level_return,
             use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
+            prefer_source_plan_compatibility=prefer_source_plan_compatibility,
             use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
             enable_learned_expression_token_bias=enable_learned_expression_token_bias,
             use_body_transition_head=use_body_transition_head,
@@ -715,6 +731,7 @@ def run_decode_eval(
                 require_nontrivial_return=require_nontrivial_return,
                 require_top_level_return=require_top_level_return,
                 use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
+                prefer_source_plan_compatibility=prefer_source_plan_compatibility,
                 use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
                 enable_learned_expression_token_bias=enable_learned_expression_token_bias,
                 use_body_transition_head=use_body_transition_head,
@@ -750,6 +767,7 @@ def run_decode_eval(
                 require_nontrivial_return=bool(route_options["require_nontrivial_return"]),
                 require_top_level_return=bool(route_options["require_top_level_return"]),
                 use_semantic_plan_head_prefix=bool(route_options["use_semantic_plan_head_prefix"]),
+                prefer_source_plan_compatibility=bool(route_options.get("prefer_source_plan_compatibility", prefer_source_plan_compatibility)),
                 use_semantic_slot_head_prefix=bool(route_options.get("use_semantic_slot_head_prefix", use_semantic_slot_head_prefix)),
                 enable_learned_expression_token_bias=bool(route_options.get("enable_learned_expression_token_bias", enable_learned_expression_token_bias)),
                 use_body_transition_head=bool(route_options.get("use_body_transition_head", use_body_transition_head)),
@@ -824,6 +842,10 @@ def run_decode_eval(
             name: get_path(report, ["summary", "body_action_trace"], {})
             for name, report in selected.items()
         },
+        "split_source_plan_compatibility": {
+            name: get_path(report, ["summary", "source_plan_compatibility"], {})
+            for name, report in selected.items()
+        },
         "preselected_split_reuse": preselected_reuse_summary,
         "split_decode_starvation": {
             name: get_path(report, ["summary", "decode_starvation"], {})
@@ -843,6 +865,7 @@ def run_decode_eval(
             "require_top_level_return": require_top_level_return,
             "max_target_tokens_override": int(max_target_tokens_override or 0),
             "use_semantic_plan_head_prefix": bool(use_semantic_plan_head_prefix),
+            "prefer_source_plan_compatibility": bool(prefer_source_plan_compatibility),
             "use_semantic_slot_head_prefix": bool(use_semantic_slot_head_prefix),
             "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
             "use_body_transition_head": bool(use_body_transition_head),
@@ -1021,6 +1044,7 @@ def evaluate_split(
     require_nontrivial_return: bool,
     require_top_level_return: bool,
     use_semantic_plan_head_prefix: bool,
+    prefer_source_plan_compatibility: bool,
     use_semantic_slot_head_prefix: bool,
     enable_learned_expression_token_bias: bool,
     use_body_transition_head: bool,
@@ -1134,6 +1158,7 @@ def evaluate_split(
         decode_branching_factor=branch_factor,
         target_mode=target_mode,
         body_token_decode_policy=decode_policy,
+        source_texts=source_texts,
         allowed_name_sets=[allowed_signature_names_for_task(row) for row in eval_rows],
         input_type_hints_by_row=input_type_hints_by_row,
         source_condition_expectations=source_condition_expectations,
@@ -1141,6 +1166,7 @@ def evaluate_split(
         require_nontrivial_return=require_nontrivial_return,
         require_top_level_return=require_top_level_return,
         use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
+        prefer_source_plan_compatibility=prefer_source_plan_compatibility,
         use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
         enable_learned_expression_token_bias=enable_learned_expression_token_bias,
         use_body_transition_head=use_body_transition_head,
@@ -1162,6 +1188,9 @@ def evaluate_split(
     decode_wall_ms = int((time.perf_counter() - decode_started) * 1000)
     decode_guard_rejections = decode_guard_rejection_summary(decode_guard_diagnostics)
     decode_starvation = decode_starvation_summary(decode_guard_diagnostics)
+    source_plan_compatibility = source_plan_compatibility_summary(
+        [dict_or_empty(item.get("source_plan_compatibility")) for item in decode_guard_diagnostics]
+    )
     emitted_top_k = max(0, int(output_top_k or 0)) or fanout_top_k
     rows = token_candidate_rows_for_view(
         eval_rows,
@@ -1359,6 +1388,20 @@ def evaluate_split(
                 "uses_public_data": False,
                 "candidate_generation_credit": 0,
             },
+            "source_plan_compatibility": {
+                "enabled": bool(prefer_source_plan_compatibility),
+                "policy": "prompt_visible_source_plan_compatibility_rerank_v1",
+                "summary": source_plan_compatibility,
+                "score_semantics": (
+                    "Optional first-plan-token reranking using only prompt-visible intent, operation, "
+                    "and type tags from the same strict source text that the generator sees. It does "
+                    "not render code, inspect tests/solutions/public payloads, call tools, or grant "
+                    "learned-generation credit."
+                ),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+            },
             "body_action_trace": {
                 "enabled": bool(body_action_summary.get("enabled_candidate_rows")),
                 "policy": "strict_generator_body_action_trace_summary_v1",
@@ -1433,6 +1476,7 @@ def evaluate_split(
             "decode_wall_time_ms": decode_wall_ms,
             "decode_rows_per_second": round(len(eval_rows) / max(decode_wall_ms / 1000.0, 1e-9), 6),
             "source_condition_adequacy": source_condition_summary,
+            "source_plan_compatibility": source_plan_compatibility,
             "body_action_trace": body_action_summary,
             "private_verifier": {
                 "trained_passed": private_eval.get("trained_passed"),
@@ -1523,6 +1567,7 @@ def generate_candidates_mlx(
     decode_branching_factor: int,
     target_mode: str,
     body_token_decode_policy: str,
+    source_texts: list[str] | None,
     allowed_name_sets: list[set[str]] | None,
     input_type_hints_by_row: list[dict[str, str]] | None,
     source_condition_expectations: list[dict[str, Any]] | None,
@@ -1530,6 +1575,7 @@ def generate_candidates_mlx(
     require_nontrivial_return: bool,
     require_top_level_return: bool,
     use_semantic_plan_head_prefix: bool,
+    prefer_source_plan_compatibility: bool,
     use_semantic_slot_head_prefix: bool,
     enable_learned_expression_token_bias: bool,
     use_body_transition_head: bool,
@@ -1551,13 +1597,15 @@ def generate_candidates_mlx(
     model.eval()
     beam_width = max(int(fanout_top_k or 1), int(decode_beam_width or 1))
     branch_factor = max(1, int(decode_branching_factor or 1))
-    plan_prefix_choices_by_row = semantic_plan_head_prefix_choices(
+    plan_prefix_choices_by_row, source_plan_compatibility_by_row = semantic_plan_head_prefix_choices(
         model,
         source_rows,
         inverse,
         max_choices=branch_factor,
         target_mode=target_mode,
         enabled=bool(use_semantic_plan_head_prefix),
+        source_texts=source_texts,
+        prefer_source_plan_compatibility=prefer_source_plan_compatibility,
         mx=mx,
     )
     slot_prefix_probs_by_row = semantic_slot_head_prefix_probs(
@@ -1583,7 +1631,18 @@ def generate_candidates_mlx(
                     else {"enabled": False, "required_features": []}
                 ),
                 "plan_prefix_choices": plan_choices,
-                "plan_prefix_source": "semantic_plan_head" if plan_choices else "decoder_first_token",
+                "plan_prefix_source": (
+                    "semantic_plan_head_source_plan_compatibility"
+                    if plan_choices and bool((source_plan_compatibility_by_row[i] if i < len(source_plan_compatibility_by_row) else {}).get("enabled"))
+                    else "semantic_plan_head"
+                    if plan_choices
+                    else "decoder_first_token"
+                ),
+                "source_plan_compatibility": (
+                    source_plan_compatibility_by_row[i]
+                    if i < len(source_plan_compatibility_by_row)
+                    else {"enabled": False, "policy": "prompt_visible_source_plan_compatibility_v1"}
+                ),
                 "slot_prefix_probs": slot_probs,
                 "slot_prefix_source": "semantic_slot_head" if slot_probs else "decoder_autoregressive_slots",
                 "beams": [{"generated": [bos], "logprob": 0.0, "done": False}],
@@ -1850,6 +1909,7 @@ def generate_candidates_mlx(
                     "decoded_token_sha256": stable_hash(" ".join(str(idx) for idx in generated)),
                     "beam_source": str(beam.get("completion_source") or "mlx_batched_grammar_constrained_token_beam"),
                     "plan_prefix_source": str(state.get("plan_prefix_source") or "decoder_first_token"),
+                    "source_plan_compatibility": dict_or_empty(state.get("source_plan_compatibility")),
                     "decode_static_guard": guard,
                     "expression_value_quality": expression_value_quality,
                     "source_condition_expectation": dict_or_empty(state.get("source_condition_expectation")),
@@ -1867,6 +1927,7 @@ def generate_candidates_mlx(
                     "guard_rejection_counts": dict(rejection_counts) if isinstance(rejection_counts, Counter) else {},
                     "guard_rejection_examples": list(state.get("guard_rejection_examples") or []),
                     "source_condition_expectation": dict_or_empty(state.get("source_condition_expectation")),
+                    "source_plan_compatibility": dict_or_empty(state.get("source_plan_compatibility")),
                     "decode_starvation": decode_starvation_for_state(
                         state,
                         inverse,
@@ -1943,6 +2004,7 @@ def decode_starvation_for_state(
                 "decoded_token_tail": decoded_tokens[-60:],
                 "body_preview": body[:320],
                 "learned_plan_prefix": prefix_meta,
+                "source_plan_compatibility": dict_or_empty(state.get("source_plan_compatibility")),
                 "loop_prefix_state": loop_state,
             }
         )
@@ -2860,12 +2922,20 @@ def semantic_plan_head_prefix_choices(
     max_choices: int,
     target_mode: str,
     enabled: bool,
+    source_texts: list[str] | None,
+    prefer_source_plan_compatibility: bool,
     mx: Any,
-) -> list[list[tuple[int, float]] | None]:
+) -> tuple[list[list[tuple[int, float]] | None], list[dict[str, Any]]]:
     if not enabled or not learned_plan_prefix_target_mode(target_mode) or not source_rows:
-        return [None for _row in source_rows]
+        return [None for _row in source_rows], [
+            {"enabled": False, "policy": "prompt_visible_source_plan_compatibility_v1"}
+            for _row in source_rows
+        ]
     if not hasattr(model, "semantic_plan_logits"):
-        return [None for _row in source_rows]
+        return [None for _row in source_rows], [
+            {"enabled": False, "policy": "prompt_visible_source_plan_compatibility_v1", "reason": "model_has_no_semantic_plan_head"}
+            for _row in source_rows
+        ]
     src = mx.array(source_rows, dtype=mx.int32)
     logits = model.semantic_plan_logits(src)
     probs = mx.softmax(logits, axis=-1)
@@ -2873,11 +2943,59 @@ def semantic_plan_head_prefix_choices(
     prob_rows = np.asarray(probs, dtype=np.float64)
     plan_ids = [int(idx) for idx, tok in inverse.items() if str(tok).startswith("SLOT:PLAN_")]
     choices_by_row: list[list[tuple[int, float]] | None] = []
-    for row in prob_rows:
-        ranked = sorted(plan_ids, key=lambda idx: float(row[idx]), reverse=True)
+    diagnostics_by_row: list[dict[str, Any]] = []
+    for row_index, row in enumerate(prob_rows):
+        source_text = source_texts[row_index] if source_texts and row_index < len(source_texts) else ""
+        compatibility_rows = {
+            int(idx): source_plan_compatibility_for_plan_token(str(inverse.get(int(idx), "")), source_text)
+            for idx in plan_ids
+        }
+        compatibility_enabled = bool(prefer_source_plan_compatibility) and any(
+            bool(record.get("enabled")) for record in compatibility_rows.values()
+        )
+        if compatibility_enabled:
+            ranked = sorted(
+                plan_ids,
+                key=lambda idx: (
+                    int(compatibility_rows.get(int(idx), {}).get("score") or 0),
+                    float(row[idx]),
+                ),
+                reverse=True,
+            )
+        else:
+            ranked = sorted(plan_ids, key=lambda idx: float(row[idx]), reverse=True)
         choices = [(idx, float(max(row[idx], 1e-9))) for idx in ranked[: max(1, int(max_choices or 1))]]
         choices_by_row.append(choices or None)
-    return choices_by_row
+        selected_id = ranked[0] if ranked else None
+        selected_record = compatibility_rows.get(int(selected_id), {}) if selected_id is not None else {}
+        diagnostics_by_row.append(
+            {
+                "enabled": bool(compatibility_enabled),
+                "requested": bool(prefer_source_plan_compatibility),
+                "policy": "prompt_visible_source_plan_compatibility_rerank_v1",
+                "selected_plan_token": str(inverse.get(int(selected_id), "")) if selected_id is not None else "",
+                "selected_plan": str(selected_record.get("plan") or "").upper(),
+                "selected_score": int(selected_record.get("score") or 0),
+                "selected_probability": round(float(row[int(selected_id)]), 8) if selected_id is not None else None,
+                "top_choices": [
+                    {
+                        "plan_token": str(inverse.get(int(idx), "")),
+                        "probability": round(float(row[int(idx)]), 8),
+                        "compatibility": compatibility_rows.get(int(idx), {}),
+                    }
+                    for idx in ranked[: max(1, int(max_choices or 1))]
+                ],
+                "score_semantics": (
+                    "Reranks semantic plan-head choices with prompt-visible plan compatibility only. "
+                    "It does not render code, inspect tests/solutions/public payloads, call tools, or "
+                    "grant learned-generation credit."
+                ),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+            }
+        )
+    return choices_by_row, diagnostics_by_row
 
 
 def semantic_slot_head_prefix_probs(
