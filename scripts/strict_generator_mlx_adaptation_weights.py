@@ -1171,6 +1171,104 @@ def apply_direct_body_emission_path_weights(
     }
 
 
+def apply_local_return_closure_weights(
+    token_weight_rows: list[list[float]],
+    target_rows: list[list[int]],
+    bodies: list[str],
+    *,
+    target_vocab: dict[str, int],
+    boost: float,
+    roles: str,
+) -> tuple[list[list[float]], dict[str, Any]]:
+    value = max(0.0, float(boost if boost is not None else 0.0))
+    allowed_roles = parse_role_filter(roles)
+    if value <= 0.0:
+        return token_weight_rows, {
+            "enabled": False,
+            "policy": "not_enabled",
+            "local_return_closure_loss_boost": value,
+            "role_filter": sorted(allowed_roles),
+            "matched_rows": 0,
+            "weighted_token_positions": 0,
+            "candidate_generation_credit": 0,
+        }
+
+    inverse = {int(token_id): str(token) for token, token_id in target_vocab.items()}
+    adjusted = [list(row) for row in token_weight_rows]
+    matched_rows = 0
+    weighted_positions = 0
+    role_counts: dict[str, int] = {}
+    token_counts: dict[str, int] = {}
+    skipped: dict[str, int] = {}
+
+    for index, target in enumerate(target_rows):
+        body = bodies[index] if index < len(bodies) else ""
+        extraction = local_return_closure_spans_for_body(body)
+        for key, count in dict_or_empty(extraction.get("skipped_counts")).items():
+            skipped[str(key)] = skipped.get(str(key), 0) + int(count or 0)
+        spans = list(extraction.get("spans") or [])
+        if not bool(extraction.get("matched")) or not spans:
+            reason = str(extraction.get("reason") or "no_local_return_closure_spans")
+            skipped[reason] = skipped.get(reason, 0) + 1
+            continue
+
+        target_texts = [inverse.get(int(token_id), "") for token_id in target]
+        row_matched = False
+        for span in spans:
+            item = dict_or_empty(span)
+            role = str(item.get("role") or "unknown")
+            if allowed_roles and role not in allowed_roles:
+                skipped[f"role_filtered_{role}"] = skipped.get(f"role_filtered_{role}", 0) + 1
+                continue
+            span_tokens = [str(token) for token in list(item.get("tokens") or []) if str(token)]
+            if not span_tokens:
+                skipped[f"empty_span_tokens_{role}"] = skipped.get(f"empty_span_tokens_{role}", 0) + 1
+                continue
+            matches = find_subsequence_positions(target_texts, span_tokens)
+            if not matches:
+                skipped[f"span_not_found_{role}"] = skipped.get(f"span_not_found_{role}", 0) + 1
+                continue
+            row_matched = True
+            role_counts[role] = role_counts.get(role, 0) + len(matches)
+            for start in matches:
+                for offset, token_text in enumerate(span_tokens):
+                    pos = start + offset
+                    if pos >= len(adjusted[index]):
+                        continue
+                    adjusted[index][pos] = max(float(adjusted[index][pos]), value)
+                    weighted_positions += 1
+                    token_counts[token_text] = token_counts.get(token_text, 0) + 1
+        if row_matched:
+            matched_rows += 1
+
+    return adjusted, {
+        "enabled": True,
+        "policy": "private_local_return_closure_weighting_v1",
+        "local_return_closure_loss_boost": value,
+        "role_filter": sorted(allowed_roles),
+        "role_filter_active": bool(allowed_roles),
+        "rows": len(token_weight_rows),
+        "matched_rows": matched_rows,
+        "weighted_token_positions": weighted_positions,
+        "weighted_token_counts": dict(sorted(token_counts.items())),
+        "role_match_counts": dict(sorted(role_counts.items())),
+        "skipped_counts": dict(sorted(skipped.items())),
+        "score_semantics": (
+            "Boosts admitted private target spans that close a local-state body: the last local "
+            "state transition feeding the returned local, the DEDENT-to-return boundary after a "
+            "block, and the final `return <local>` or local-dependent return expression. It uses "
+            "only private solution bodies already admitted as training targets. It does not inspect "
+            "eval tests, eval solutions, public benchmark payloads, teacher output, generated "
+            "candidate bodies, deterministic tools, or hidden answer metadata, and it grants no "
+            "candidate-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def direct_body_emission_path_spans_for_body(body: str) -> dict[str, Any]:
     text = str(body or "")
     try:
@@ -1340,6 +1438,183 @@ def add_return_span(
             "statement": safe_unparse(stmt)[:240],
         }
     )
+
+
+def local_return_closure_spans_for_body(body: str) -> dict[str, Any]:
+    text = str(body or "")
+    try:
+        parsed = ast.parse("def _candidate(data, other=None):\n" + "\n".join(f"    {line}" for line in text.splitlines()))
+    except SyntaxError as exc:
+        return {
+            "matched": False,
+            "reason": "parse_error",
+            "error": str(exc)[:160],
+            "spans": [],
+            "skipped_counts": {},
+        }
+    function = next((node for node in parsed.body if isinstance(node, ast.FunctionDef)), None)
+    if function is None:
+        return {"matched": False, "reason": "missing_function", "spans": [], "skipped_counts": {}}
+
+    local_bindings = function_local_binding_names(function)
+    spans: list[dict[str, Any]] = []
+    skipped_counts: dict[str, int] = {}
+
+    def skip(reason: str) -> None:
+        skipped_counts[reason] = skipped_counts.get(reason, 0) + 1
+
+    for index, stmt in enumerate(function.body):
+        if not isinstance(stmt, ast.Return):
+            continue
+        value = stmt.value
+        if value is None:
+            skip("empty_return")
+            continue
+        local_names = ast_load_names(value) & local_bindings
+        if not local_names:
+            skip("return_does_not_use_local_state")
+            continue
+
+        return_tokens = body_statement_tokens(stmt)
+        if return_tokens:
+            role = (
+                "final_return_local_name"
+                if isinstance(value, ast.Name) and value.id in local_names
+                else "final_return_local_expression"
+            )
+            spans.append(
+                {
+                    "role": role,
+                    "semantic_kind": expression_kind_for_ast(value),
+                    "tokens": return_tokens,
+                    "statement": safe_unparse(stmt)[:240],
+                    "local_names": sorted(local_names),
+                }
+            )
+        else:
+            skip("empty_return_tokens")
+
+        previous = previous_local_state_transition(function.body[:index], local_names=local_names)
+        if previous is None:
+            skip("missing_previous_local_state_transition")
+        else:
+            previous_tokens = body_statement_tokens(previous)
+            if previous_tokens:
+                spans.append(
+                    {
+                        "role": "previous_local_state_transition",
+                        "semantic_kind": type(previous).__name__,
+                        "tokens": previous_tokens,
+                        "statement": safe_unparse(previous)[:240],
+                        "local_names": sorted(local_names),
+                    }
+                )
+            else:
+                skip("empty_previous_transition_tokens")
+
+        if index > 0 and isinstance(function.body[index - 1], (ast.For, ast.While, ast.If, ast.Try, ast.With)):
+            block_exit_tokens = ["DEDENT:", *return_tokens]
+            spans.append(
+                {
+                    "role": "block_exit_local_return_closure",
+                    "semantic_kind": "block_exit_to_local_return",
+                    "tokens": block_exit_tokens,
+                    "statement": safe_unparse(stmt)[:240],
+                    "local_names": sorted(local_names),
+                }
+            )
+
+    if not spans:
+        return {
+            "matched": False,
+            "reason": "no_local_return_closure_spans",
+            "spans": [],
+            "skipped_counts": dict(sorted(skipped_counts.items())),
+        }
+
+    role_counts: dict[str, int] = {}
+    semantic_kind_counts: dict[str, int] = {}
+    for span in spans:
+        role = str(span.get("role") or "unknown")
+        semantic_kind = str(span.get("semantic_kind") or "unknown")
+        role_counts[role] = role_counts.get(role, 0) + 1
+        semantic_kind_counts[semantic_kind] = semantic_kind_counts.get(semantic_kind, 0) + 1
+    return {
+        "matched": True,
+        "policy": "private_local_return_closure_span_extraction_v1",
+        "spans": spans,
+        "role_counts": dict(sorted(role_counts.items())),
+        "semantic_kind_counts": dict(sorted(semantic_kind_counts.items())),
+        "skipped_counts": dict(sorted(skipped_counts.items())),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def previous_local_state_transition(statements: list[ast.stmt], *, local_names: set[str]) -> ast.stmt | None:
+    for stmt in reversed(statements):
+        if statement_writes_any_local(stmt, local_names):
+            nested = last_nested_statement_writing_any_local(stmt, local_names)
+            return nested or stmt
+    return None
+
+
+def statement_writes_any_local(stmt: ast.stmt, local_names: set[str]) -> bool:
+    return bool(statement_store_names(stmt) & local_names)
+
+
+def last_nested_statement_writing_any_local(stmt: ast.stmt, local_names: set[str]) -> ast.stmt | None:
+    candidates: list[ast.stmt] = []
+    for node in ast.walk(stmt):
+        if not isinstance(node, ast.stmt) or node is stmt:
+            continue
+        if statement_store_names(node) & local_names:
+            candidates.append(node)
+    return candidates[-1] if candidates else None
+
+
+def statement_store_names(stmt: ast.stmt) -> set[str]:
+    names: set[str] = set()
+    for node in ast.walk(stmt):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                names.update(ast_store_names(target))
+        elif isinstance(node, ast.AnnAssign):
+            names.update(ast_store_names(node.target))
+        elif isinstance(node, ast.AugAssign):
+            names.update(ast_store_names(node.target))
+        elif isinstance(node, ast.For):
+            names.update(ast_store_names(node.target))
+        elif isinstance(node, ast.With):
+            for item in node.items:
+                names.update(ast_store_names(item.optional_vars))
+        elif isinstance(node, ast.Call):
+            mutated = mutation_call_target_name(node)
+            if mutated:
+                names.add(mutated)
+    return names
+
+
+def mutation_call_target_name(call: ast.Call) -> str:
+    func = call.func
+    if not isinstance(func, ast.Attribute) or not isinstance(func.value, ast.Name):
+        return ""
+    if func.attr not in {
+        "append",
+        "extend",
+        "insert",
+        "add",
+        "update",
+        "setdefault",
+        "pop",
+        "remove",
+        "discard",
+        "sort",
+        "reverse",
+    }:
+        return ""
+    return str(func.value.id or "")
 
 
 def function_local_binding_names(function: ast.FunctionDef) -> set[str]:

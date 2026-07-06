@@ -174,6 +174,28 @@ training rows, no external inference, and no fallback returns. The current wall
 therefore moved from "the tolerance residual is not in the private adaptation
 sample" to "the model sees and trains on the residual but still fails to close
 coherent local-return bodies under strict decode."
+The follow-up local-return-closure implementation makes that closure pressure
+first-class instead of implicit. `strict_direct_body_emission_path_v1` no
+longer hard-requires semantic-plan auxiliary components when the checkpoint
+target mode is plain `body_tokens`, because no `SLOT:PLAN_*` labels can exist
+in that target vocabulary. It now requires
+`local_return_closure_weighting`, which boosts admitted private target spans
+for the previous local state transition, `DEDENT:` block exit, and final
+`return <local>` / local-dependent return expression. The bounded canary
+`reports/strict_generator_mlx_private_adaptation_local_return_closure_smoke_v2_20260706.json`
+is `GREEN`: it improves heldout LM loss `3.264155 -> 2.427558`, writes
+digest-bound checkpoint/vocab artifacts, keeps public/external/fallback credit
+counters at zero, and matches local-return closure evidence in `79/128` rows
+with `1967` weighted token positions. The paired strict broad4 decode
+`reports/strict_generator_mlx_decode_eval_local_return_closure_smoke_broad4_20260706.json`
+is still `RED`: it writes only `4` noncredit baseline JSONL rows, emits `0`
+learned candidate rows, has `0` behavior passes, and the starvation summary is
+now dominated by over-opened nested guard blocks plus `missing_local_return` /
+`current_line_starts_return`. This is clean negative behavior evidence, not a
+promotion. The next repair target is a stronger learned state-transition or
+semantic-IR body-construction objective that prevents unbounded guard nesting
+and produces a closed update/finalizer/return structure, not another hidden
+renderer, public-data row, fallback return, or cosmetic guard family.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.
