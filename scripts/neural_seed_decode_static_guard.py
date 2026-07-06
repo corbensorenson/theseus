@@ -510,6 +510,12 @@ def decode_static_guard(
         require_top_level_return
         and require_nontrivial_return
         and int(dependency.get("top_level_nontrivial_return_count", 0) or 0) <= 0
+        # Guard/default bodies put the nontrivial return in the guarded branch
+        # and the top-level return in the fallthrough default path.
+        and not (
+            int(dependency.get("top_level_valued_return_count", 0) or 0) > 0
+            and int(dependency.get("nontrivial_return_count", 0) or 0) > 0
+        )
     ):
         failures.append("top_level_return_not_nontrivial")
     if require_nontrivial_return and int(dependency.get("weak_placeholder_local_return_count", 0) or 0) > 0:

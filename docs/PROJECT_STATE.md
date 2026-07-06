@@ -92,9 +92,12 @@ current wall is therefore lower-level than offline preference optimization
 (`DPO/IPO/ORPO/KTO/SimPO`), verifier-reward RL
 (`GRPO/RLOO/ReMax/RLVR`), MTP, Medusa/EAGLE/speculative/LayerSkip generation,
 diffusion/LLaDA sketch-first repair, or scale work: strict prompt/signature
-body-token decode must emit non-fallback, non-template, top-level-return
-learned candidates before those methods can honestly matter. This does not
-weaken the ASI_book backlog; it orders it around the live falsifying evidence.
+body-token decode must emit non-fallback, non-template candidates that work
+beyond the narrow simple-return replay before those methods can honestly
+matter. The newest guarded/default static correction proves the simple-return
+path can emit and pass `2/2` private replay candidates, but broad/private
+replay still admits `0` candidates and passes `0/4`. This does not weaken the
+ASI_book backlog; it orders it around the live falsifying evidence.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint
@@ -288,6 +291,21 @@ remain `RED` with `0` admitted learned rows and `0` behavior passes. The wall is
 now precise: learned decode can emit some runtime-loadable body-token syntax,
 but it still cannot reliably emit promotion-grade nontrivial top-level-return
 semantics from prompt/signature alone.
+The next static-guard correction in
+`scripts/neural_seed_decode_static_guard.py` accepts the valid guarded/default
+shape where the nontrivial return is inside the branch and the top-level return
+is the fallthrough default, while still rejecting default-only and nested-only
+bodies. The narrow private train-replay canary
+`reports/strict_generator_mlx_decode_eval_guarded_default_static_relax_train_replay2_20260706.json`
+is now `GREEN`: `2` emitted transformer/hybrid rows, `2/2` intended-behavior
+passes, `2/2` integrity verified, nontrivial-return rate `1.0`, and clean
+no-cheat counters (`0` public rows, `0` external inference, `0` fallback
+returns). The broader canary
+`reports/strict_generator_mlx_decode_eval_guarded_default_static_relax_broad2_replay4_20260706.json`
+still exits `RED` with `0` admitted candidates and `0/4` behavior passes; its
+top beams are malformed long expression chains. The wall has therefore moved
+from "strict simple-return replay starves" to "broad prompt/signature semantic
+and expression construction still fails."
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with

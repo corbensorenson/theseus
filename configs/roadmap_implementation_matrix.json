@@ -1197,11 +1197,13 @@
         "reports/strict_generator_mlx_decode_eval_direct_body_emission_path_broad4_replay8_20260706_candidates.jsonl",
         "reports/strict_generator_mlx_decode_eval_local_return_continuation_syntax_canary_20260706.json",
         "reports/strict_generator_mlx_decode_eval_local_return_continuation_train_replay2_20260706.json",
-        "reports/strict_generator_mlx_decode_eval_local_return_continuation_broad2_replay4_20260706.json"
+        "reports/strict_generator_mlx_decode_eval_local_return_continuation_broad2_replay4_20260706.json",
+        "reports/strict_generator_mlx_decode_eval_guarded_default_static_relax_train_replay2_20260706.json",
+        "reports/strict_generator_mlx_decode_eval_guarded_default_static_relax_broad2_replay4_20260706.json"
       ],
       "missing_items": [
         "DPO shadow replay failed behavior: repair direct learned semantic body emission and promotion-eligible nontrivial top-level-return candidates before scaling DPO/IPO/ORPO/KTO/SimPO, GRPO/RLOO/ReMax/RLVR, or claiming behavior lift",
-        "direct body-emission path weighting and local-return continuation are now active; syntax-only private train replay emits 8 generated rows with 8/8 integrity verified, but strict nontrivial/top-level semantic replay still emits zero admitted learned rows and zero behavior passes",
+        "direct body-emission path weighting, local-return continuation, and guarded/default static admission are now active; narrow simple-return private replay emits 2 transformer/hybrid rows with 2/2 intended-behavior passes and clean no-cheat counters, but broad/private replay still emits zero admitted learned rows and zero behavior passes because malformed expression/semantic construction dominates",
         "offline preference comparison across DPO/IPO/ORPO/KTO/SimPO on the same private accepted/rejected pair split, same reference checkpoint, same optimizer budget, same heldout verifier, and same no-cheat/candidate-integrity audit",
         "bounded GRPO/RLOO/ReMax/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference, reward-present/reward-removed ablation, verifier-cost ledger, reward-hacking probes, and no authority expansion by training side effect",
         "multi-target policy-update leases for planner, router, VCM selector, verifier policy, execution policy, and generation-mode selector; each update names target policy, admissible feedback, reward boundary, authority effect, drift bound, rollback, monitor window, and task-specific heldouts",
@@ -1216,10 +1218,11 @@
         "Current direct learned full-body behavior remains weak: fanout behavior is 5/22, C1 selected/pass-if-any is 0.0 on the clean transformer/hybrid private replay, and production route eligibility remains blocked.",
         "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",
         "The DPO shadow checkpoint replay is negative behavior evidence: it emitted zero learned candidate rows and 0/16 private heldout passes, so it remains quarantined and cannot support default routing, public transfer, or learned-generation promotion.",
-        "The direct body-emission profile is training evidence only: it matched 128/128 private rows and 8054 token positions, but strict replay still emitted 0 accepted learned candidate rows and 0/8 behavior passes.",
-        "The next governed step is local-return/finalizer continuation repair: make prompt/signature body-token decode produce admitted non-fallback, non-template, top-level-return candidates before preference/RL scaling. DPO/IPO/ORPO/KTO/SimPO and GRPO/RLOO/ReMax/RLVR remain downstream of emission and verifier behavior, not substitutes for it."
+        "The direct body-emission profile is training evidence only: it matched 128/128 private rows and 8054 token positions, but the broad direct replay still emitted 0 accepted learned candidate rows and 0/8 behavior passes.",
+        "The guarded/default static relaxation is narrow behavior evidence on existing private simple-return replay only: it is not a public-transfer claim, not a promotion claim, and not evidence that loop/action or broad expression semantics are solved.",
+        "The next governed step is broad semantic expression/body construction repair: make prompt/signature body-token decode produce admitted non-fallback, non-template candidates beyond simple-return replay before preference/RL scaling. DPO/IPO/ORPO/KTO/SimPO and GRPO/RLOO/ReMax/RLVR remain downstream of emission and verifier behavior, not substitutes for it."
       ],
-      "smallest_next_patch": "Do not scale offline preference or verifier-reward RL yet. Syntax-only direct body-token emission now exists under a weak private train-replay canary, but strict prompt/signature replay still needs semantic top-level-return quality: admitted non-fallback, non-template, nontrivial top-level-return candidates that pass candidate integrity and private verifier replay. Use semantic-IR localized repair or generation-mode changes only if candidate integrity and blind-flow remain clean; no public rows, no fallback returns, no renderer/router/tool credit.",
+      "smallest_next_patch": "Do not scale offline preference or verifier-reward RL yet. Narrow simple-return replay now admits and passes learned transformer/hybrid candidates under clean no-cheat counters, but broad prompt/signature replay still needs semantic expression/body construction: admitted non-fallback, non-template, nontrivial candidates that pass candidate integrity and private verifier replay beyond simple-return. Use semantic-IR localized repair or generation-mode changes only if candidate integrity and blind-flow remain clean; no public rows, no fallback returns, no renderer/router/tool credit.",
       "integration_smoke": [
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",
