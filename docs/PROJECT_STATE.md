@@ -260,6 +260,25 @@ fails closed with `0` candidate rows; the surviving beams are malformed repeated
 expression fragments. The current wall is therefore learned nontrivial
 body-token construction after the semantic prefix, not slot-head plumbing,
 syntax/loadability, or public calibration.
+The follow-up private decode-starvation replay pass made that wall more
+diagnosable without claiming a behavior win. The existing private replay
+selector now labels repeated return-expression runaway and trailing-comma
+return-expression failures, then weights accepted private bodies over the
+failed private replay beams. The canary
+`reports/strict_generator_mlx_private_adaptation_semantic_slot_return_repetition_pairwise_smoke_20260706.json`
+is `YELLOW`: LM loss improves `4.550125 -> 4.154544`, return-expression
+repetition is detected in `3` private replay rows, pairwise accepted-over-failed
+preference moves by `+1.0`, and public/external/fallback credit counters remain
+zero. But plan and slot heldout metrics regress (`plan accuracy 0.428571 ->
+0.0`, slot accuracy `0.45045 -> 0.396396`), and the paired strict decode
+`reports/strict_generator_mlx_decode_eval_semantic_slot_return_repetition_pairwise_strict_replay2_20260706.json`
+remains `RED`: `0` emitted strict candidate rows, `0` behavior passes, `0.0`
+nontrivial-return rate, and surviving beams now show broader body-prefix
+repetition before an unfinished local return. This is clean negative evidence
+against solving the wall with another scalar replay-weight tweak. The next
+material repair should be a trainable body-continuation/state-transition or
+expression/value decision surface that emits coherent assignments, loops,
+updates, and finalizers directly from prompt/signature context.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

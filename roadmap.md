@@ -4106,6 +4106,18 @@ Implementation status:
   expression/value head or richer body-continuation objective that predicts
   operation operands and final return expressions, then decode raw body tokens
   and prove verifier pass movement.
+- Return-expression repetition replay canary, 2026-07-06:
+  `scripts/strict_generator_mlx_private_adaptation.py` now names
+  return-expression repetition and trailing-comma return-expression starvation
+  inside the existing private decode-starvation replay path. This is diagnostic
+  private replay pressure only: it grants no candidate credit and consumes no
+  public/eval payloads. The first canary improved LM loss and pairwise
+  accepted-over-failed preference, but regressed plan/slot heldout metrics and
+  the paired strict replay still emitted `0` candidate rows with `0` behavior
+  passes. Roadmap implication: scalar replay weighting is now evidence, not the
+  solution. The next implementation should be a trainable body-continuation /
+  state-transition / expression-value decision surface wired into strict decode
+  and A/B tested against these exact replay reports.
 - Scalar body-weighting limit:
   `reports/strict_generator_mlx_private_adaptation_semantic_slot_body_expression_repair_private_v1.json`
   applied the existing private body-expression, loop semantic operation,

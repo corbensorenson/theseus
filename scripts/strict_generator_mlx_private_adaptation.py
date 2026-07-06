@@ -14,6 +14,7 @@ import argparse
 import ast
 import json
 import random
+import re
 import sys
 import time
 import textwrap
@@ -3838,7 +3839,28 @@ def replay_private_row_index(private_rows: list[dict[str, Any]]) -> dict[str, di
     return private_by_id
 
 
-def starvation_replay_labels(raw_labels: list[Any]) -> list[str]:
+def return_expression_runaway_replay_labels(body: str) -> list[str]:
+    labels: list[str] = []
+    for line in str(body or "").splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("return "):
+            continue
+        repeated_parenthesized_names = re.findall(r"\(([A-Za-z_][A-Za-z0-9_]*)\)", stripped)
+        max_repeated_name = 0
+        if repeated_parenthesized_names:
+            counts: dict[str, int] = {}
+            for name in repeated_parenthesized_names:
+                counts[name] = counts.get(name, 0) + 1
+            max_repeated_name = max(counts.values())
+        comma_count = stripped.count(",")
+        if comma_count >= 4 and (max_repeated_name >= 3 or len(repeated_parenthesized_names) >= 4):
+            labels.append("decode_starvation_return_expression_repetition")
+        if comma_count >= 3 and stripped.endswith(","):
+            labels.append("decode_starvation_return_expression_trailing_comma")
+    return labels
+
+
+def starvation_replay_labels(raw_labels: list[Any], *, body: str = "") -> list[str]:
     labels = [str(label) for label in raw_labels if str(label or "").strip()]
     replay_labels: list[str] = []
     if "inside_loop_without_update" in labels:
@@ -3849,6 +3871,7 @@ def starvation_replay_labels(raw_labels: list[Any]) -> list[str]:
         replay_labels.append("decode_starvation_inside_loop")
     if "current_line_starts_return" in labels:
         replay_labels.extend(["decode_starvation_return_expression_not_closed", "current_line_starts_return"])
+    replay_labels.extend(return_expression_runaway_replay_labels(body))
     for label in labels:
         if label not in replay_labels:
             replay_labels.append(label)
@@ -3978,7 +4001,7 @@ def select_decode_starvation_replay_examples(
             seen.add(dedupe_key)
             loop_state = dict_or_empty(beam_dict.get("loop_prefix_state"))
             raw_state_labels = [str(label) for label in list(loop_state.get("state_labels") or [])]
-            replay_labels = starvation_replay_labels(raw_state_labels)
+            replay_labels = starvation_replay_labels(raw_state_labels, body=body)
             for label in replay_labels:
                 state_counts[label] = state_counts.get(label, 0) + 1
             examples.append(
@@ -4291,6 +4314,8 @@ def action_trace_positive_replay_tokens(labels: list[str]) -> set[str]:
         tokens.update({"DEDENT:", "NAME:return", "NEWLINE:"})
     if "decode_starvation_return_expression_not_closed" in label_set or "current_line_starts_return" in label_set:
         tokens.update({"OP:)", "OP:]", "OP:}", "NEWLINE:", "DEDENT:", "NAME:return"})
+    if "decode_starvation_return_expression_repetition" in label_set or "decode_starvation_return_expression_trailing_comma" in label_set:
+        tokens.update({"NEWLINE:", "DEDENT:", "<eos>", "NAME:for", "NAME:if", "NAME:return"})
     if "decode_starvation_inside_loop" in label_set or "decode_starvation_inside_loop_without_update" in label_set:
         tokens.update({"DEDENT:", "NAME:return", "NEWLINE:"})
     if "loop_without_decision_or_state_update" in label_set:
@@ -4360,6 +4385,8 @@ def action_trace_negative_replay_tokens(labels: list[str]) -> set[str]:
     label_set = {str(label) for label in labels}
     if "decode_starvation_return_expression_not_closed" in label_set or "current_line_starts_return" in label_set:
         tokens.update({"OP:[", "OP:.", "NAME:in", "NAME:and", "NAME:or", "NAME:is"})
+    if "decode_starvation_return_expression_repetition" in label_set or "decode_starvation_return_expression_trailing_comma" in label_set:
+        tokens.update({"OP:,", "OP:(", "OP:[", "OP:.", "NAME:and", "NAME:or"})
     if "decode_starvation_missing_local_return" in label_set:
         tokens.update({"OP:[", "OP:.", "NAME:and", "NAME:or", "NAME:in"})
     if "decode_starvation_inside_loop" in label_set or "decode_starvation_inside_loop_without_update" in label_set:
