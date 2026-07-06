@@ -1530,14 +1530,18 @@
         "reports/viea_spine_record_gate.json",
         "reports/viea_spine_materialized_view.json",
         "reports/theseus_plan_compiled_dags.json",
-        "reports/semantic_ir_obligation_gate.json"
+        "reports/semantic_ir_obligation_gate.json",
+        "reports/strict_generator_semantic_ir_repair_bridge.json",
+        "reports/strict_generator_semantic_ir_repair_atoms.jsonl",
+        "reports/strict_generator_semantic_ir_repair_patches.jsonl"
       ],
       "missing_items": [
         "semantic IR / AST-plan compiler for strict-generator candidates with atom records for intent, signature, branch condition, loop update, finalizer, verifier obligation, and repair scope",
-        "localized semantic repair fixture over real failed candidate manifests: failed atom -> repair patch -> dependent obligation replay, with scope-change ledger if upstream requirements change"
+        "strict-generator RED decode failures now lower into semantic atoms and localized repair patches, but the repair is still an obligation record only; the next implementation must make a trainable AST/state-transition head or localized semantic-IR body-construction path consume those atoms and improve private replay behavior"
       ],
-      "smallest_next_patch": "Connect semantic IR to real generator failures: compile prompt/signature/body candidates into obligation atoms, map verifier failures to failed atoms, and run localized repair that updates only dependent atoms or emits a scope-change ledger entry.",
+      "smallest_next_patch": "Consume the new strict-generator semantic-IR repair atoms in a trainable body-construction path: AST/state-transition head or localized semantic-IR repair that changes decode behavior under candidate-integrity replay, without public rows, hidden labels, fallback returns, renderers, routers, or tools.",
       "integration_smoke": [
+        "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/semantic_ir_obligation_gate.py"
       ],
       "completion_rule": "Plans, code generation attempts, tool calls, and verifier obligations share a typed semantic IR instead of incompatible one-off payloads."

@@ -209,6 +209,23 @@ public-data row, fallback return, or cosmetic guard family.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.
+The first Phase 13 bridge for that wall is now live:
+`scripts/strict_generator_semantic_ir_repair_bridge.py` consumes the RED strict
+decode report and emits semantic-IR repair obligations rather than another
+target-side weighting family. The local bridge report is `GREEN` with `4`
+failure tasks lowered into `12` semantic atoms and `4` localized repair
+patches. Its issue labels are `missing_local_return_closure=4`,
+`repeated_nested_guard_without_progress=4`, `unfinished_return_expression=3`,
+and `block_exit_without_finalizer=1`. `semantic_ir_obligation_gate.py` now
+recognizes this bridge as an optional consumer and binds it into the shared
+semantic-IR obligation view when the report is present. After refreshing the
+canonical candidate-integrity audit, `semantic_ir_obligation_gate.py` is
+`GREEN`: all `4/4` consumers are ready, including the strict-generator repair
+bridge, and the candidate-integrity audit remains clean with `0` integrity
+mismatches while explicitly retaining syntax-invalid learned rows as negative
+candidate evidence. The next behavior-changing implementation is still a
+trainable AST/state-transition head or localized semantic-IR body-construction
+path that consumes the new repair atoms and improves strict private replay.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

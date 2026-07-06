@@ -31,6 +31,7 @@ DEFAULT_VIEW = ROOT / "reports" / "viea_spine_materialized_view.json"
 DEFAULT_CANDIDATE = ROOT / "reports" / "candidate_integrity_audit.json"
 DEFAULT_VERIFIER = ROOT / "reports" / "private_verifier_spine_smoke.json"
 DEFAULT_GENERATOR = ROOT / "reports" / "neural_seed_token_decoder_comparator.json"
+DEFAULT_STRICT_GENERATOR_REPAIR = ROOT / "reports" / "strict_generator_semantic_ir_repair_bridge.json"
 DEFAULT_OUT = ROOT / "reports" / "semantic_ir_obligation_gate.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "semantic_ir_obligation_gate.md"
 NO_CHEAT = {
@@ -46,6 +47,7 @@ def main() -> int:
     parser.add_argument("--candidate-integrity", default=rel(DEFAULT_CANDIDATE))
     parser.add_argument("--private-verifier", default=rel(DEFAULT_VERIFIER))
     parser.add_argument("--direct-generator", default=rel(DEFAULT_GENERATOR))
+    parser.add_argument("--strict-generator-repair", default=rel(DEFAULT_STRICT_GENERATOR_REPAIR))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     args = parser.parse_args()
@@ -67,10 +69,12 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     candidate_path = resolve(args.candidate_integrity)
     verifier_path = resolve(args.private_verifier)
     generator_path = resolve(args.direct_generator)
+    strict_generator_repair_path = resolve(args.strict_generator_repair)
     view = read_json(view_path)
     candidate = read_json(candidate_path)
     verifier = read_json(verifier_path)
     generator = read_json(generator_path)
+    strict_generator_repair = read_json(strict_generator_repair_path)
 
     semantic_records = list_dicts(view.get("semantic_ir_records"))
     semantic_atoms = [row for row in semantic_records if row.get("canonical_record_type") == "semantic_atom"]
@@ -107,6 +111,17 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             obligation_kind="prompt_signature_direct_generation_boundary",
         ),
     ]
+    if strict_generator_repair_path.exists() and strict_generator_repair:
+        consumers.append(
+            consumer_state(
+                "strict_generator_semantic_ir_repair",
+                strict_generator_repair_path,
+                strict_generator_repair,
+                required_policy="project_theseus_strict_generator_semantic_ir_repair_bridge_v1",
+                allowed_states={"GREEN", "YELLOW"},
+                obligation_kind="strict_generator_failure_atom_and_localized_repair",
+            )
+        )
     ready_consumers = [row for row in consumers if row["ready"]]
     hard_gates = [
         gate("materialized_semantic_view_ready", semantic_ready, {"path": rel(view_path), "semantic_atom_count": len(semantic_atoms), "semantic_node_count": len(semantic_nodes)}),
@@ -134,6 +149,11 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "semantic_node_count": len(semantic_nodes),
             "consumer_count": len(consumers),
             "ready_consumer_count": len(ready_consumers),
+            "strict_generator_repair_consumer_present": bool(strict_generator_repair_path.exists() and strict_generator_repair),
+            "strict_generator_repair_consumer_ready": any(
+                row["consumer_surface"] == "strict_generator_semantic_ir_repair" and row["ready"]
+                for row in consumers
+            ),
             "semantic_obligation_record_count": len(records["semantic_obligation_records"]),
             "dependency_edge_record_count": len(records["dependency_edge_records"]),
             "evidence_binding_record_count": len(records["evidence_binding_records"]),
