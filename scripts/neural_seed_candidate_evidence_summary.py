@@ -234,15 +234,28 @@ def grammar_repair_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def static_coherence_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    records = [dict_or_empty(row.get("static_coherence")) for row in rows if isinstance(row.get("static_coherence"), dict)]
+    coherence_rows = [row for row in rows if isinstance(row.get("static_coherence"), dict)]
+    records = [dict_or_empty(row.get("static_coherence")) for row in coherence_rows]
     rankers = [dict_or_empty(row.get("static_coherence_ranker")) for row in rows if isinstance(row.get("static_coherence_ranker"), dict)]
     total = len(records)
+
+    def dependency_or_static_count(dependency_key: str, static_key: str) -> int:
+        count = 0
+        for source_row, static in zip(coherence_rows, records):
+            dependency = dict_or_empty(get_path(source_row, ["decode_static_guard", "dependency"], {}))
+            if dependency.get("parse_ok"):
+                count += 1 if int(dependency.get(dependency_key) or 0) > 0 else 0
+            else:
+                count += 1 if int(static.get(static_key) or 0) > 0 else 0
+        return count
+
     parse_ok = sum(1 for row in records if row.get("parse_ok") and row.get("has_function"))
     has_return = sum(1 for row in records if row.get("has_return"))
-    valued_return = sum(1 for row in records if int(row.get("valued_return_count") or 0) > 0)
+    valued_return = dependency_or_static_count("valued_return_count", "valued_return_count")
     trivial_return = sum(1 for row in records if int(row.get("trivial_return_count") or 0) > 0)
-    nontrivial_return = sum(1 for row in records if int(row.get("nontrivial_return_count") or 0) > 0)
-    top_level_valued_return = sum(1 for row in records if int(row.get("top_level_valued_return_count") or 0) > 0)
+    nontrivial_return = dependency_or_static_count("nontrivial_return_count", "nontrivial_return_count")
+    top_level_valued_return = dependency_or_static_count("top_level_valued_return_count", "top_level_valued_return_count")
+    top_level_nontrivial_return = dependency_or_static_count("top_level_nontrivial_return_count", "nontrivial_return_count")
     nested_return = sum(1 for row in records if int(row.get("nested_return_count") or 0) > 0)
     parameter_use = sum(1 for row in records if int(row.get("used_parameter_count") or 0) > 0)
     primary_parameter_use = sum(1 for row in records if int(row.get("primary_parameter_load_count") or 0) > 0)
@@ -298,6 +311,9 @@ def static_coherence_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "nontrivial_return_rate": ratio(nontrivial_return, total),
         "top_level_valued_return_count": top_level_valued_return,
         "top_level_valued_return_rate": ratio(top_level_valued_return, total),
+        "top_level_nontrivial_return_count": top_level_nontrivial_return,
+        "top_level_nontrivial_return_rate": ratio(top_level_nontrivial_return, total),
+        "return_dependency_summary_policy": "strict_decode_dependency_when_available_else_static_coherence_v1",
         "nested_return_count": nested_return,
         "nested_return_rate": ratio(nested_return, total),
         "parameter_use_count": parameter_use,

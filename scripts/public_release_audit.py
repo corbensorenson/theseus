@@ -51,7 +51,14 @@ def main() -> int:
     forbidden_suffixes = tuple(str(p) for p in config.get("forbidden_suffixes", []))
     allowed_large_prefixes = tuple(str(p) for p in config.get("allowed_large_file_prefixes", []))
     allowed_secret_prefixes = tuple(str(p) for p in config.get("allowed_secret_literal_prefixes", []))
+    tracked_root_allowlist = set(str(p) for p in config.get("tracked_root_allowlist", []))
     large_limit = int(config.get("large_file_soft_limit_bytes", 5 * 1024 * 1024))
+    tracked_roots = sorted({rel_path.split("/", 1)[0] for rel_path in tracked if rel_path})
+
+    if tracked_root_allowlist:
+        for root_entry in tracked_roots:
+            if root_entry not in tracked_root_allowlist:
+                warnings.append({"kind": "unregistered_tracked_root_entry", "path": root_entry})
 
     for rel_path in tracked:
         if rel_path in forbidden_paths or rel_path.startswith(forbidden_prefixes):
@@ -90,6 +97,10 @@ def main() -> int:
         "forbidden_tracked_path_count": sum(1 for gap in hard_gaps if gap["kind"].startswith("forbidden")),
         "secret_literal_hard_gap_count": sum(1 for gap in hard_gaps if gap["kind"] == "secret_literal_match"),
         "large_file_warning_count": sum(1 for warning in warnings if warning["kind"] == "large_tracked_file"),
+        "tracked_root_entry_count": len(tracked_roots),
+        "unregistered_tracked_root_warning_count": sum(
+            1 for warning in warnings if warning["kind"] == "unregistered_tracked_root_entry"
+        ),
         "hard_gap_count": len(hard_gaps),
         "warning_count": len(warnings),
         "github_visibility": visibility.get("visibility", "UNKNOWN"),

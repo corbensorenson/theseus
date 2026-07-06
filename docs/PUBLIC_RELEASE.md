@@ -33,3 +33,8 @@ The audit also verifies GitHub visibility when `require_public_visibility` is
 enabled in `configs/public_release_manifest.json`. A private GitHub repository
 is a hard release gap because the book cannot safely treat it as a public
 reference.
+
+The manifest also owns the public root allowlist. New top-level tracked files
+or directories should be added only when they are intentional public source
+surfaces. Otherwise they should live under an existing source root, stay ignored
+as local runtime state, or be moved to `deprecated/` with a short rationale.

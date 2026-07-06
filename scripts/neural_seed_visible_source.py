@@ -198,12 +198,12 @@ def visible_prompt_operation_tags(text: str) -> list[str]:
         tags.append("op_parity_run_length")
     if any_has("adjacent", "delta", "deltas", "windowed") and any_has("clip", "clipping", "range"):
         tags.append("op_windowed_delta")
-    if any_has("clip", "clipping") and any_has("range", "lo", "hi"):
+    if any_has("clip", "clipping", "clamp", "clamped", "clamping") and any_has("range", "lo", "hi"):
         tags.append("op_clip_to_range")
     if has("query", "string") or has("key", "values"):
         tags.append("op_query_key_value_parse")
     if (
-        any_has("min", "max", "median", "average", "gcd", "delta", "deltas", "adjacent", "absolute")
+        any_has("min", "max", "median", "average", "gcd", "delta", "deltas", "adjacent", "absolute", "round", "rounded")
         and any_has("count", "numeric", "number", "numbers", "integer", "integers", "values", "sum")
     ):
         tags.append("op_numeric_summary")
