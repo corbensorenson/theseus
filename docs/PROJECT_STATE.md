@@ -193,6 +193,23 @@ policy-update receipt, but it is not a behavior-lift claim, not default
 routing, not public transfer, and not learned-generation promotion. The next
 Phase 10 proof is private decode/candidate-integrity/verifier replay of this
 DPO checkpoint against the pre-update checkpoint.
+That proof is now negative:
+`reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json`
+is `RED` under the same bounded `both` split, `8+8` private rows, top-k `8`,
+plan-prefix/source-condition/loop-expression guard profile as the pre-DPO
+T3 replay. It emitted `0` learned candidate rows, scored `0/16` private
+heldout behavior passes, and kept `public_training_rows=0`,
+`external_inference_calls=0`, and fallback/tool/template learned-generation
+credit `0`. Standalone candidate integrity
+`reports/candidate_integrity_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json`
+is `YELLOW` because all `16` JSONL rows are `fallback_or_template`
+baseline rows and `0` are independently verified learned candidates. Blind
+information-flow audit
+`reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json`
+is `GREEN` with zero invalid claims or static flow violations. The current
+Phase 10 wall is therefore not "scale DPO"; it is direct learned body emission:
+produce non-fallback, non-template, top-level-return candidates before another
+preference/RL scaling step.
 
 The execution-spine record contract is now shared in
 `configs/viea_spine_record_contracts.json` and checked with

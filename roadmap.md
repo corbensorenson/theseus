@@ -118,14 +118,14 @@ the roadmap:
    from becoming uninspectable.
 7. Claude's later book-mining pass does not add another lane; it sharpens the
    execution order. The ASI Stack chapter-level `Planned Codex test` lists are
-   the implementation backlog, and Chapter 38 remains the fastest real
-   capability lever. The first DPO shadow update exists now, so the next Phase
-   10 claim must replay that checkpoint through private decode,
-   candidate-integrity, and verifier behavior checks against the pre-update
-   checkpoint before broader RLVR/GRPO, MTP, diffusion, or scale work. The
-   policy gate/scaffolding and policy-gap movement are not enough; accepted
-   output quality must move without reward-hacking, public rows, or fallback
-   credit.
+   the implementation backlog, and Chapter 38 remains a necessary capability
+   lever. The first DPO shadow update exists now and the required private replay
+   has run; it failed behaviorally with zero learned candidate rows and zero
+   private heldout passes. That means policy-gap movement is not enough. Phase
+   10 must repair direct prompt/signature body-token emission before broader
+   RLVR/GRPO, MTP, diffusion, or scale work. Accepted output quality must move
+   without reward-hacking, public rows, fallback rows, renderer credit, router
+   credit, or tool credit.
 
 This reconciliation changes claims, not the no-cheat charter. It does not
 authorize public benchmark training rows, runtime external inference,
@@ -1961,7 +1961,7 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Wired | Keep the resource/MLX route gate current; production routing stays disabled until Phase 10 behavior is positive and parity remains separately proven. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. A first DPO shadow update now moves the private policy/reference preference gap without public/external/fallback/tool/template credit, but it has not yet proved heldout decode/verifier behavior. The next behavior-changing sequence is DPO checkpoint replay, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation under substrate-adoption records. |
+| 10 | Practical Neural Seed Survival Lane | Partial | T2/T3 private MLX evidence proves trainability/loss improvement, but T4 direct decode still emitted zero candidates. A first DPO shadow update moved the private policy/reference preference gap, then its private replay failed behaviorally: `0` learned candidate rows and `0/16` heldout passes, with candidate integrity classifying the JSONL rows as fallback/template baselines. The next behavior-changing sequence is direct learned emission repair first, then bounded DPO/IPO scale, RLVR/GRPO, MTP, generate-verify-repair, lookahead/diffusion, and dense-vs-MoE/scale ablation only after non-fallback top-level-return candidates exist. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Public calibration remains measurement-only. The execution plan keeps it blocked until private semantic behavior improves and a fresh, non-consumed surface passes the proposal gate; exact consumed-surface reruns stay refused. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Partial | Connect semantic IR to real generator failures: failed atom -> localized repair -> dependent obligation replay, with scope-change ledgers when requirements change. |
@@ -2651,6 +2651,15 @@ Implementation status:
   `external_inference_calls=0`, fallback/template/router/tool credit `0`).
   This is policy-update evidence only. It is not a behavior-lift claim, not a
   default route, not public transfer, and not learned-generation promotion.
+- The required DPO private replay then ran through
+  `reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json`
+  with the same bounded `8+8` private replay profile used against the
+  pre-update checkpoint. It is `RED`: `generated_candidate_rows=0`,
+  `split_passes` are `0` for both `broad_private_heldout` and
+  `family_disjoint`, and the standalone candidate-integrity audit classifies
+  all `16` candidate JSONL rows as `fallback_or_template` baselines with
+  `integrity_verified_candidate_count=0`. The blind information-flow audit is
+  `GREEN`, so the result is clean negative evidence rather than a tainted run.
 - The actual behavior-changing policy updates are **not** complete yet: no
   governed DPO/IPO update or GRPO/RLVR verifier-reward update has beaten its
   pre-update checkpoint on private heldout decode/verifier behavior or been
@@ -2680,12 +2689,12 @@ Implementation status:
   `python3 scripts/policy_optimization_gate.py`;
   `python3 scripts/theseus_project_registry.py --gate`;
   `python3 scripts/attd_analyzer.py`.
-- Remaining related work: replay the DPO shadow checkpoint through the private
-  decode, candidate-integrity, blind-information-flow, and verifier harness
-  against the same pre-update checkpoint. If behavior is flat or worse, keep
-  the checkpoint quarantined and mine the residuals; if behavior improves,
-  scale the private DPO/IPO tranche with reward-hacking probes before any
-  default review. Only after that should a bounded GRPO/RLVR exact-private
+- Remaining related work: keep the DPO checkpoint quarantined and repair direct
+  learned body emission first. The next patch should make strict
+  prompt/signature decode emit non-fallback, non-template, top-level-return
+  learned candidates under the same private replay profile. If that works,
+  rerun the DPO/IPO update at a bounded scale with reward-hacking probes; only
+  after behavior improves should a bounded GRPO/RLVR exact-private
   verifier-reward update run. The policy program is the gate for that work; it
   is not itself a behavior-lift claim.
 

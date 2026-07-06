@@ -1033,10 +1033,14 @@
         "reports/strict_generator_mlx_private_adaptation_t3_semantic_private_rung_20260706.json",
         "reports/strict_generator_mlx_decode_eval_t3_semantic_private_rung_broad8_replay16_20260706.json",
         "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json",
-        "checkpoints/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706/strict_generator_mlx_dpo_pairwise_smoke_20260706.npz"
+        "checkpoints/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706/strict_generator_mlx_dpo_pairwise_smoke_20260706.npz",
+        "reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json",
+        "reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706_candidates.jsonl",
+        "reports/candidate_integrity_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json",
+        "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json"
       ],
       "missing_items": [
-        "post-DPO private decode/verifier replay must show heldout behavioral verifier lift or accepted-output quality before any default route; current DPO smoke only proves shadow policy-gap movement and loss improvement",
+        "DPO shadow replay failed behavior: repair direct learned body emission, local-return completion, and promotion-eligible candidate rows before scaling DPO/GRPO or claiming behavior lift",
         "bounded GRPO/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference and no authority expansion by training side effect",
         "MTP objective/head support with matched single-token control and verifier-stage-aware accepted-span accounting",
         "bounded generate-verify-repair state machine: candidate -> verified-exact -> verified-lossy -> repaired-exact -> literal-fallback/noncredit -> quarantined, with model-only one-shot, verifier-guided repair, repair cost, fallback count, and useful solution/sec reported separately",
@@ -1048,10 +1052,10 @@
         "Phase 10 is wired as architecture readiness for the practical transformer/hybrid survival lane, not as a model-quality or public-transfer win.",
         "Current direct learned full-body behavior remains weak: fanout behavior is 5/22, C1 selected/pass-if-any is 0.0 on the clean transformer/hybrid private replay, and production route eligibility remains blocked.",
         "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",
-        "The DPO shadow checkpoint is policy-update evidence only; it is not default routing, verifier behavior lift, public transfer, or learned-generation promotion until private decode/candidate-integrity/verifier replay improves against the pre-update checkpoint.",
-        "The next governed step is private replay of the DPO shadow checkpoint, followed by larger private DPO/IPO, bounded RLVR/GRPO, MTP, generate-verify-repair, semantic-IR localized repair, lookahead/diffusion, or scale/MoE work only under no-cheat substrate-adoption records."
+        "The DPO shadow checkpoint replay is negative behavior evidence: it emitted zero learned candidate rows and 0/16 private heldout passes, so it remains quarantined and cannot support default routing, public transfer, or learned-generation promotion.",
+        "The next governed step is direct learned emission repair: make prompt/signature body-token decode produce non-fallback, non-template, top-level-return candidates before preference/RL scaling. DPO/GRPO remains downstream of emission and verifier behavior, not a substitute for it."
       ],
-      "smallest_next_patch": "Replay the DPO shadow checkpoint through the private decode/candidate-integrity/verifier harness against the same pre-update checkpoint, then either keep it quarantined if behavior is flat/regressed or use the result to choose a larger DPO/IPO + semantic-IR repair tranche. No public training rows, no fallback returns, no renderer/router/tool credit.",
+      "smallest_next_patch": "Do not scale DPO/GRPO yet. First repair direct learned body emission so strict prompt/signature decode emits non-fallback, non-template, top-level-return candidates under the same private replay profile. Use semantic-IR localized repair or generation-mode changes only if candidate integrity and blind-flow remain clean; no public rows, no fallback returns, no renderer/router/tool credit.",
       "integration_smoke": [
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",
@@ -1164,7 +1168,13 @@
         "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json summary.pairwise_replay_preference.mean_policy_minus_reference_gap_delta=0.628971",
         "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json summary.public_training_rows=0",
         "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json summary.external_inference_calls=0",
-        "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json failed soft gate parameter_element_update_meaningful; no default route or behavior lift claimed"
+        "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json failed soft gate parameter_element_update_meaningful; no default route or behavior lift claimed",
+        "python3 scripts/strict_generator_mlx_decode_eval.py --checkpoint-report reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json --out reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json --candidates-out reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706_candidates.jsonl --split both --max-family-rows 8 --max-broad-rows 8 --output-top-k 8 --require-parameter-use --require-nontrivial-return --require-top-level-return --use-semantic-plan-head-prefix --prefer-source-condition-adequacy --block-shallow-loop-identity-update --enable-loop-progress-guard --enable-expression-closure-guard --enable-expression-value-guard --execute",
+        "reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=RED",
+        "reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json summary.generated_candidate_rows=0",
+        "reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json summary.split_passes broad_private_heldout=0 family_disjoint=0",
+        "reports/candidate_integrity_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=YELLOW family_counts.fallback_or_template=16 integrity_verified_candidate_count=0",
+        "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=GREEN invalid_claim_count=0 static_information_flow_violation_count=0"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence."
     },

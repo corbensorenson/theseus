@@ -63,7 +63,10 @@
         "reports/strict_generator_mlx_private_adaptation_simple_return_pairwise_value_v1.json",
         "reports/strict_generator_mlx_decode_eval_simple_return_pairwise_value_v1.json",
         "reports/candidate_integrity_audit.json",
-        "reports/blind_information_flow_audit.json"
+        "reports/blind_information_flow_audit.json",
+        "reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json",
+        "reports/candidate_integrity_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json",
+        "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json"
       ],
       "governance_gate": "reports/policy_optimization_program.json",
       "rollback_plan": "Keep prior strict-generator checkpoint as default; retain failed update as residual and do not route it as default until private verifier behavior lifts without leakage.",
@@ -71,7 +74,9 @@
         "LM loss can improve while verifier pass stays flat",
         "pairwise negatives may overfit shallow failure signatures",
         "behavior lift must be measured on private heldout rows, not public calibration",
-        "DPO shadow update now moves private accepted-vs-rejected policy/reference gap, but behavior replay remains unproven until a private decode/verifier report improves."
+        "DPO shadow update now moves private accepted-vs-rejected policy/reference gap, but behavior replay remains unproven until a private decode/verifier report improves.",
+        "DPO shadow replay emitted zero learned candidate rows and 0/16 private heldout behavior passes; preference-gap movement did not translate into decode/verifier behavior.",
+        "Standalone candidate-integrity audit classified all 16 replay JSONL rows as fallback_or_template baseline rows, so no learned-generation promotion evidence exists."
       ],
       "reward_hacking_probes": [
         "shallow_identity_loop",
@@ -96,7 +101,8 @@
         "This is not learned-code-generation promotion by itself.",
         "This is not evidence that SymLiquid or the transformer substrate won.",
         "This does not allow fallback/template/router/tool credit as learned generation.",
-        "The DPO smoke is policy-update evidence only; it is not default routing, verifier behavior lift, public transfer, or learned-generation promotion."
+        "The DPO smoke is policy-update evidence only; it is not default routing, verifier behavior lift, public transfer, or learned-generation promotion.",
+        "The DPO replay failure means this checkpoint stays quarantined; do not scale DPO/GRPO from it until direct learned body emission and private verifier behavior improve."
       ]
     },
     {

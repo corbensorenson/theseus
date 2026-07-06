@@ -320,10 +320,49 @@ def extract_behavior_metrics(payload: dict[str, Any]) -> dict[str, Any]:
             "fallback_return_candidate_count",
             "public_training_rows",
             "external_inference_calls",
+            "candidate_rows",
+            "generated_candidate_rows",
+            "integrity_verified_candidate_count",
+            "integrity_mismatch_count",
         ]:
             if key in section and key not in metrics:
                 metrics[key] = section.get(key)
+        if "candidate_integrity" in section:
+            integrity = dict_value(section.get("candidate_integrity"))
+            for source_key, metric_key in [
+                ("integrity_verified_candidate_count", "integrity_verified_candidate_count"),
+                ("integrity_mismatch_count", "integrity_mismatch_count"),
+                ("generated_candidate_count", "generated_candidate_rows"),
+            ]:
+                if source_key in integrity and metric_key not in metrics:
+                    metrics[metric_key] = integrity.get(source_key)
+        if "family_counts" in section:
+            family_counts = dict_value(section.get("family_counts"))
+            if "fallback_or_template" in family_counts and "fallback_return_candidate_count" not in metrics:
+                metrics["fallback_return_candidate_count"] = family_counts.get("fallback_or_template")
+        split_pass_metrics = strict_decode_split_pass_metrics(section)
+        for key, value in split_pass_metrics.items():
+            metrics.setdefault(key, value)
     return metrics
+
+
+def strict_decode_split_pass_metrics(section: dict[str, Any]) -> dict[str, Any]:
+    split_passes = dict_value(section.get("split_passes"))
+    split_verifier = dict_value(section.get("split_private_verifier"))
+    if not split_passes and not split_verifier:
+        return {}
+    pass_count = sum(int(value or 0) for value in split_passes.values())
+    task_count = 0
+    for row in split_verifier.values():
+        verifier = dict_value(row)
+        task_count += int(verifier.get("eval_task_count") or 0)
+    if task_count <= 0:
+        task_count = len(split_passes)
+    return {
+        "private_verifier_pass_count": pass_count,
+        "private_verifier_eval_task_count": task_count,
+        "private_verifier_pass_rate": round(pass_count / max(1, task_count), 6),
+    }
 
 
 def summarize_behavior_evidence(evidence: list[dict[str, Any]]) -> dict[str, Any]:
