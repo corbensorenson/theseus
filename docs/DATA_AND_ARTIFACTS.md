@@ -45,30 +45,15 @@ Hive storage pulls are runtime artifacts under `reports/hive_storage_inbox/`.
 The source files remain on the owning machine or NAS; only files intentionally
 pulled through the authenticated Hive storage API are copied locally.
 
-On this workstation, `D:\ProjectTheseus` is the preferred home for both large
-runtime artifacts and, after migration, the source checkout itself. Large
-runtime paths are redirected through `configs/runtime_paths.json` and
-`scripts/runtime_paths.py`:
+Large runtime paths should be redirected through `configs/runtime_paths.json`
+and `scripts/runtime_paths.py` rather than committed to the source checkout.
+On Windows workstations with a secondary data drive, `D:\ProjectTheseus` is a
+supported local runtime root for corpora, caches, generated reports,
+checkpoints, and build products. On macOS/Linux, use a machine-local path with
+the same logical roles and keep it ignored by git.
 
-```text
-D:\ProjectTheseus\runtime\data
-D:\ProjectTheseus\runtime\cache
-D:\ProjectTheseus\runtime\reports
-D:\ProjectTheseus\runtime\checkpoints
-D:\ProjectTheseus\runtime\cargo-target
-```
-
-Use the D: runtime for open-source training corpora, caches, generated reports,
-checkpoints, and build products. On space-constrained Windows nodes, also move
-the tracked checkout to:
-
-```text
-D:\ProjectTheseus\repo
-```
-
-and leave the old `C:\Users\<you>\Documents\New project` path as a junction for
-old shortcuts, scheduled tasks, and running tools that still know the original
-location. The migration helper is:
+For space-constrained Windows nodes, the migration helper can move the source
+checkout and create a compatibility junction for old shortcuts:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\migrate_project_home_to_d.ps1

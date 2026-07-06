@@ -76,6 +76,15 @@ def main() -> int:
                         warnings.append(row)
 
     visibility = gh_repo_visibility()
+    visibility_state = str(visibility.get("visibility", "UNKNOWN")).upper()
+    if bool(config.get("require_public_visibility", False)) and visibility_state != "PUBLIC":
+        hard_gaps.append(
+            {
+                "kind": "github_visibility_not_public",
+                "visibility": visibility.get("visibility", "UNKNOWN"),
+                "repository": visibility.get("nameWithOwner", ""),
+            }
+        )
     summary = {
         "tracked_file_count": len(tracked),
         "forbidden_tracked_path_count": sum(1 for gap in hard_gaps if gap["kind"].startswith("forbidden")),

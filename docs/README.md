@@ -26,17 +26,14 @@ Start here:
   moving the current Windows CUDA state to Apple Silicon Codex/MLX.
 - [Travel Parent Demo](THESEUS_TRAVEL_PARENT_DEMO.md): calm MacBook demo path
   for non-specialist family/friend audiences.
-- Current snapshot: code-family pressure is still the promotion-facing wall.
-  STS is default-on for the current Code LM fanout path, decoder/transfer/STS
-  private gates are `GREEN`, and candidate promotion/model growth remain
-  locked. The Mac sandbox path issue is fixed by a private/local regression.
-  The single bounded June 5 public calibration now scores `14/32` (`0.4375`)
-  with STS delta `+0.15625`, still below the `0.70` promotion floor. The v2
-  private residual curriculum generator now covers edge contracts,
-  candidate-floor adapters, return/type shape, and parsing/encoding, but the
-  public score did not improve, so the next cycle must stay private until
-  verifier-mismatch behavior changes. Use [Project State](PROJECT_STATE.md)
-  before quoting any benchmark number.
+- Current snapshot: use [Project State](PROJECT_STATE.md) before quoting any
+  benchmark number or capability claim. As of 2026-07-06, the public-source
+  audit is `GREEN`, the project registry is `GREEN`, and the roadmap
+  implementation gate is `YELLOW` with zero hard gaps because several
+  implementation phases are intentionally partial or frozen. The strict
+  learned-generator wall is semantic behavior, not syntax/loadability alone.
+  Public benchmarks remain calibration-only and generated reports remain
+  evidence, not progress by themselves.
 - Benchmaxxing now has an explicit generalization guard:
   `reports/transfer_generalization_audit.json` is `YELLOW` because only
   HumanEval and MBPP are above floor and cross-card spread is high. The current

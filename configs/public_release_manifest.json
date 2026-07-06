@@ -1,6 +1,7 @@
 {
   "policy": "project_theseus_public_release_manifest_v1",
   "description": "Defines which repo paths are not allowed in the public source repository. Local copies may exist on a developer machine, but they must not be tracked by git.",
+  "require_public_visibility": true,
   "forbidden_tracked_prefixes": [
     "archive/",
     "checkpoints/",

@@ -12,25 +12,46 @@ verification reports, resource-aware CPU/CUDA/MLX contracts, and explicit
 governance around autonomy, teacher use, data ingress, licensing, and rented
 Hive compute.
 
+## Public Source And Book Companion
+
+Public source lives at
+`https://github.com/corbensorenson/symliquid-rmi`. The repository is intended
+to be the implementation companion for *The ASI Stack* book, with public-safe
+source, docs, schemas, apps, and small reproducible fixtures kept in git while
+local reports, checkpoints, runtime state, private traces, and generated
+training payloads stay out of the tracked tree.
+
+Before publishing or linking a new source snapshot, run:
+
+```bash
+python3 scripts/public_release_audit.py --gate
+python3 scripts/theseus_project_registry.py --gate
+python3 scripts/roadmap_implementation_gate.py --gate
+```
+
+The public release audit must report `github_visibility=PUBLIC` and zero hard
+gaps. Public benchmarks remain calibration-only and never become training rows.
+
 ## Current Project State
 
 Use `docs/PROJECT_STATE.md` as the live operational source of truth. The
 README stays high-level so transfer work does not create two competing status
 snapshots.
 
-As of the 2026-06-03 Mac handoff:
+As of the 2026-07-06 public-source pass:
 
-- the Windows CUDA workstation state is the source of truth and `main` is
-  synchronized with `origin/main`;
-- coherence is `GREEN`, candidate promotion is `26/28`, active Code LM workers
-  are `0`, and active control-plane leases are `0`;
-- public calibration and model growth remain locked while the control plane
-  points to `broad_public_transfer_floor_private_repair`;
-- the remaining candidate blockers are `broad_public_code_transfer_ready` and
-  `maturity_integrity_audit_green`;
-- the latest private-only Code LM transfer repair completed `GREEN` with `373`
-  private candidates and `0` public candidates. This is private/source-level
-  repair evidence only, not public calibration unlock evidence.
+- `main` is the public default branch and is synchronized with
+  `origin/main`;
+- the project registry gate is `GREEN` with no routing or governance blockers;
+- the roadmap implementation gate is `YELLOW` with zero hard gaps: the core
+  book-derived slices are prototype-backed, several implementation phases
+  remain intentionally partial, and Hive multi-node proof is frozen until a
+  trusted peer is reachable;
+- the public-release audit is `GREEN` with no forbidden tracked runtime
+  artifacts, large-file warnings, or secret literal hard gaps;
+- learned generation remains a live research wall: strict body-token candidates
+  mostly parse/load in private receipts, but semantic behavior is not yet
+  promotion-grade or public-transfer proof.
 
 Theseus is currently a local Ratcheting Modular Intelligence prototype with a
 real Code LM learning lane, SymLiquid substrate, SparkStream autonomy,

@@ -1,7 +1,10 @@
 # Project Theseus Public Release Surface
 
-This repository is intended to publish the source, configuration, docs, apps,
-schemas, and small reproducible manifests for Project Theseus.
+This repository is public at
+`https://github.com/corbensorenson/symliquid-rmi`. It is intended to publish
+the source, configuration, docs, apps, schemas, and small reproducible
+manifests for Project Theseus so *The ASI Stack* book can link to a stable,
+auditable implementation reference.
 
 It intentionally does not track local runtime products:
 
@@ -25,3 +28,8 @@ python3 scripts/public_release_audit.py --gate
 The audit is intentionally conservative. If it reports a forbidden tracked path,
 remove that path from git tracking and keep it in local storage or a separate
 private artifact store.
+
+The audit also verifies GitHub visibility when `require_public_visibility` is
+enabled in `configs/public_release_manifest.json`. A private GitHub repository
+is a hard release gap because the book cannot safely treat it as a public
+reference.
