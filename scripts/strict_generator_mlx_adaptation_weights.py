@@ -1269,6 +1269,104 @@ def apply_local_return_closure_weights(
     }
 
 
+def apply_closed_state_transition_weights(
+    token_weight_rows: list[list[float]],
+    target_rows: list[list[int]],
+    bodies: list[str],
+    *,
+    target_vocab: dict[str, int],
+    boost: float,
+    roles: str,
+) -> tuple[list[list[float]], dict[str, Any]]:
+    value = max(0.0, float(boost if boost is not None else 0.0))
+    allowed_roles = parse_role_filter(roles)
+    if value <= 0.0:
+        return token_weight_rows, {
+            "enabled": False,
+            "policy": "not_enabled",
+            "closed_state_transition_loss_boost": value,
+            "role_filter": sorted(allowed_roles),
+            "matched_rows": 0,
+            "weighted_token_positions": 0,
+            "candidate_generation_credit": 0,
+        }
+
+    inverse = {int(token_id): str(token) for token, token_id in target_vocab.items()}
+    adjusted = [list(row) for row in token_weight_rows]
+    matched_rows = 0
+    weighted_positions = 0
+    role_counts: dict[str, int] = {}
+    token_counts: dict[str, int] = {}
+    skipped: dict[str, int] = {}
+
+    for index, target in enumerate(target_rows):
+        body = bodies[index] if index < len(bodies) else ""
+        extraction = closed_state_transition_spans_for_body(body)
+        for key, count in dict_or_empty(extraction.get("skipped_counts")).items():
+            skipped[str(key)] = skipped.get(str(key), 0) + int(count or 0)
+        spans = list(extraction.get("spans") or [])
+        if not bool(extraction.get("matched")) or not spans:
+            reason = str(extraction.get("reason") or "no_closed_state_transition_spans")
+            skipped[reason] = skipped.get(reason, 0) + 1
+            continue
+
+        target_texts = [inverse.get(int(token_id), "") for token_id in target]
+        row_matched = False
+        for span in spans:
+            item = dict_or_empty(span)
+            role = str(item.get("role") or "unknown")
+            if allowed_roles and role not in allowed_roles:
+                skipped[f"role_filtered_{role}"] = skipped.get(f"role_filtered_{role}", 0) + 1
+                continue
+            span_tokens = [str(token) for token in list(item.get("tokens") or []) if str(token)]
+            if not span_tokens:
+                skipped[f"empty_span_tokens_{role}"] = skipped.get(f"empty_span_tokens_{role}", 0) + 1
+                continue
+            matches = find_subsequence_positions(target_texts, span_tokens)
+            if not matches:
+                skipped[f"span_not_found_{role}"] = skipped.get(f"span_not_found_{role}", 0) + 1
+                continue
+            row_matched = True
+            role_counts[role] = role_counts.get(role, 0) + len(matches)
+            for start in matches:
+                for offset, token_text in enumerate(span_tokens):
+                    pos = start + offset
+                    if pos >= len(adjusted[index]):
+                        continue
+                    adjusted[index][pos] = max(float(adjusted[index][pos]), value)
+                    weighted_positions += 1
+                    token_counts[token_text] = token_counts.get(token_text, 0) + 1
+        if row_matched:
+            matched_rows += 1
+
+    return adjusted, {
+        "enabled": True,
+        "policy": "private_closed_state_transition_weighting_v1",
+        "closed_state_transition_loss_boost": value,
+        "role_filter": sorted(allowed_roles),
+        "role_filter_active": bool(allowed_roles),
+        "rows": len(token_weight_rows),
+        "matched_rows": matched_rows,
+        "weighted_token_positions": weighted_positions,
+        "weighted_token_counts": dict(sorted(token_counts.items())),
+        "role_match_counts": dict(sorted(role_counts.items())),
+        "skipped_counts": dict(sorted(skipped.items())),
+        "score_semantics": (
+            "Boosts admitted private target spans that express a closed statement-state lifecycle: "
+            "complete top-level control blocks, semantic statements inside control bodies, DEDENT-to-next "
+            "statement transitions, and finalizer returns. This is private target-side supervision for "
+            "closed body construction, not a decode-time renderer or fallback. It does not inspect eval "
+            "tests, eval solutions, public benchmark payloads, teacher output, generated candidate "
+            "bodies, deterministic tools, or hidden answer metadata, and it grants no candidate-generation "
+            "credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def direct_body_emission_path_spans_for_body(body: str) -> dict[str, Any]:
     text = str(body or "")
     try:
@@ -1438,6 +1536,133 @@ def add_return_span(
             "statement": safe_unparse(stmt)[:240],
         }
     )
+
+
+def closed_state_transition_spans_for_body(body: str) -> dict[str, Any]:
+    text = str(body or "")
+    try:
+        parsed = ast.parse("def _candidate(data, other=None):\n" + "\n".join(f"    {line}" for line in text.splitlines()))
+    except SyntaxError as exc:
+        return {
+            "matched": False,
+            "reason": "parse_error",
+            "error": str(exc)[:160],
+            "spans": [],
+            "skipped_counts": {},
+        }
+    function = next((node for node in parsed.body if isinstance(node, ast.FunctionDef)), None)
+    if function is None:
+        return {"matched": False, "reason": "missing_function", "spans": [], "skipped_counts": {}}
+
+    spans: list[dict[str, Any]] = []
+    skipped_counts: dict[str, int] = {}
+
+    def skip(reason: str) -> None:
+        skipped_counts[reason] = skipped_counts.get(reason, 0) + 1
+
+    def add_stmt(role: str, stmt: ast.stmt, *, semantic_kind: str = "") -> None:
+        tokens = body_statement_tokens(stmt)
+        if not tokens:
+            skip(f"empty_tokens_{role}")
+            return
+        spans.append(
+            {
+                "role": role,
+                "semantic_kind": semantic_kind or type(stmt).__name__,
+                "tokens": tokens,
+                "statement": safe_unparse(stmt)[:240],
+            }
+        )
+
+    for stmt in function.body:
+        if isinstance(stmt, (ast.For, ast.While, ast.If)):
+            add_stmt("closed_top_level_control_block", stmt, semantic_kind=type(stmt).__name__)
+            for child in control_body_semantic_statements(stmt):
+                if isinstance(child, (ast.For, ast.While, ast.If)):
+                    add_stmt("closed_nested_control_block", child, semantic_kind=type(child).__name__)
+                elif isinstance(child, ast.Return):
+                    add_stmt("control_body_return", child, semantic_kind="Return")
+                else:
+                    add_stmt("control_body_state_transition", child, semantic_kind=type(child).__name__)
+        elif isinstance(stmt, ast.Return):
+            add_stmt("top_level_finalizer_return", stmt, semantic_kind="Return")
+
+    body_token_stream = [
+        str(token)
+        for token in target_tokens(text, target_mode="body_tokens")
+        if str(token) not in {"<pad>", "<bos>", "<eos>", "<unk>"}
+    ]
+    for index, token in enumerate(body_token_stream):
+        if token != "DEDENT:":
+            continue
+        transition = dedent_transition_window(body_token_stream, index)
+        if transition:
+            spans.append(
+                {
+                    "role": "block_exit_to_next_statement",
+                    "semantic_kind": "dedent_transition",
+                    "tokens": transition,
+                    "statement": " ".join(transition[:16])[:240],
+                }
+            )
+
+    if not spans:
+        return {
+            "matched": False,
+            "reason": "no_closed_state_transition_spans",
+            "spans": [],
+            "skipped_counts": dict(sorted(skipped_counts.items())),
+        }
+
+    role_counts: dict[str, int] = {}
+    semantic_kind_counts: dict[str, int] = {}
+    for span in spans:
+        role = str(span.get("role") or "unknown")
+        semantic_kind = str(span.get("semantic_kind") or "unknown")
+        role_counts[role] = role_counts.get(role, 0) + 1
+        semantic_kind_counts[semantic_kind] = semantic_kind_counts.get(semantic_kind, 0) + 1
+    return {
+        "matched": True,
+        "policy": "private_closed_state_transition_span_extraction_v1",
+        "spans": spans,
+        "role_counts": dict(sorted(role_counts.items())),
+        "semantic_kind_counts": dict(sorted(semantic_kind_counts.items())),
+        "skipped_counts": dict(sorted(skipped_counts.items())),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
+def control_body_semantic_statements(stmt: ast.stmt) -> list[ast.stmt]:
+    out: list[ast.stmt] = []
+    for attr in ("body", "orelse", "finalbody"):
+        for child in list(getattr(stmt, attr, []) or []):
+            if isinstance(child, (ast.If, ast.For, ast.While)):
+                out.append(child)
+                continue
+            if isinstance(child, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.Expr, ast.Return)):
+                out.append(child)
+    handlers = list(getattr(stmt, "handlers", []) or [])
+    for handler in handlers:
+        for child in list(getattr(handler, "body", []) or []):
+            if isinstance(child, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.Expr, ast.Return, ast.If, ast.For, ast.While)):
+                out.append(child)
+    return out
+
+
+def dedent_transition_window(tokens: list[str], index: int) -> list[str]:
+    if index >= len(tokens):
+        return []
+    end = min(len(tokens), index + 8)
+    for pos in range(index + 1, end):
+        if tokens[pos] == "NEWLINE:":
+            end = pos + 1
+            break
+    window = tokens[index:end]
+    if len(window) < 2:
+        return []
+    return window
 
 
 def local_return_closure_spans_for_body(body: str) -> dict[str, Any]:

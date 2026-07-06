@@ -192,10 +192,20 @@ is still `RED`: it writes only `4` noncredit baseline JSONL rows, emits `0`
 learned candidate rows, has `0` behavior passes, and the starvation summary is
 now dominated by over-opened nested guard blocks plus `missing_local_return` /
 `current_line_starts_return`. This is clean negative behavior evidence, not a
-promotion. The next repair target is a stronger learned state-transition or
-semantic-IR body-construction objective that prevents unbounded guard nesting
-and produces a closed update/finalizer/return structure, not another hidden
-renderer, public-data row, fallback return, or cosmetic guard family.
+promotion. The follow-up closed-state-transition adaptation now makes the
+stronger private target-side pressure explicit:
+`reports/strict_generator_mlx_private_adaptation_closed_state_transition_smoke_20260706.json`
+is `GREEN`, improves heldout LM loss `3.264155 -> 2.424949`, matches
+closed-state-transition evidence in `127/128` rows, and weights `9637` target
+token positions with clean public/external/fallback counters. The paired broad4
+decode
+`reports/strict_generator_mlx_decode_eval_closed_state_transition_smoke_broad4_20260706.json`
+is still `RED`: main candidate rows are `0`, broad behavior passes are `0`,
+and starvation remains `missing_local_return` / `current_line_starts_return`
+from repeated nested guard blocks. The next repair target is therefore
+semantic-IR body construction or a trainable AST/state-transition head that can
+produce closed update/finalizer/return structure, not another hidden renderer,
+public-data row, fallback return, or cosmetic guard family.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.

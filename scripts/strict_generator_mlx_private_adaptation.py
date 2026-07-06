@@ -93,6 +93,7 @@ from strict_generator_mlx_adaptation_weights import (  # noqa: E402
     apply_update_contract_consistency_weights,
     apply_direct_body_emission_path_weights,
     apply_local_return_closure_weights,
+    apply_closed_state_transition_weights,
     loop_expression_synthesis_spans_for_body,
     expression_body_tokens,
     expression_is_plain_loop_identity,
@@ -205,6 +206,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "source_condition_internalization_weighting",
             "direct_body_emission_path_weighting",
             "local_return_closure_weighting",
+            "closed_state_transition_weighting",
             "loop_semantic_operation_weighting",
             "loop_expression_synthesis_weighting",
             "plan_conditioned_body_weighting",
@@ -233,6 +235,12 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "local_return_closure_roles": (
                 "previous_local_state_transition,block_exit_local_return_closure,"
                 "final_return_local_name,final_return_local_expression"
+            ),
+            "closed_state_transition_loss_boost": 3.8,
+            "closed_state_transition_roles": (
+                "closed_top_level_control_block,closed_nested_control_block,"
+                "control_body_state_transition,block_exit_to_next_statement,"
+                "top_level_finalizer_return"
             ),
             "loop_semantic_operation_loss_boost": 3.2,
             "loop_semantic_operation_roles": "loop_semantic_update,top_level_semantic_finalizer",
@@ -682,6 +690,16 @@ def main() -> int:
             "Empty means all extracted roles."
         ),
     )
+    parser.add_argument("--closed-state-transition-loss-boost", type=float, default=0.0)
+    parser.add_argument(
+        "--closed-state-transition-roles",
+        default="",
+        help=(
+            "Optional comma-separated closed state-transition roles to boost, such as "
+            "closed_top_level_control_block,control_body_state_transition,block_exit_to_next_statement. "
+            "Empty means all extracted roles."
+        ),
+    )
     parser.add_argument("--seed", type=int, default=23017)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
@@ -801,6 +819,15 @@ def main() -> int:
             float(args.local_return_closure_loss_boost if args.local_return_closure_loss_boost is not None else 0.0),
         ),
         local_return_closure_roles=str(args.local_return_closure_roles or ""),
+        closed_state_transition_loss_boost=max(
+            0.0,
+            float(
+                args.closed_state_transition_loss_boost
+                if args.closed_state_transition_loss_boost is not None
+                else 0.0
+            ),
+        ),
+        closed_state_transition_roles=str(args.closed_state_transition_roles or ""),
         semantic_construction_repair_profile=semantic_construction_repair_profile,
         seed=int(args.seed or 23017),
         execute=bool(args.execute),
@@ -877,6 +904,8 @@ def run_adaptation(
     direct_body_emission_roles: str,
     local_return_closure_loss_boost: float,
     local_return_closure_roles: str,
+    closed_state_transition_loss_boost: float,
+    closed_state_transition_roles: str,
     semantic_construction_repair_profile: dict[str, Any],
     seed: int,
     execute: bool,
@@ -926,6 +955,8 @@ def run_adaptation(
                     "direct_body_emission_roles": str(direct_body_emission_roles or ""),
                     "local_return_closure_loss_boost": float(local_return_closure_loss_boost or 0.0),
                     "local_return_closure_roles": str(local_return_closure_roles or ""),
+                    "closed_state_transition_loss_boost": float(closed_state_transition_loss_boost or 0.0),
+                    "closed_state_transition_roles": str(closed_state_transition_roles or ""),
                     "semantic_construction_repair_profile": semantic_construction_repair_profile,
                     "train_tier": train_tier,
                     "tier_balanced_sampling": bool(tier_balanced_sampling),
@@ -1294,6 +1325,14 @@ def run_adaptation(
         target_vocab=target_vocab,
         boost=local_return_closure_loss_boost,
         roles=local_return_closure_roles,
+    )
+    token_weight_rows, closed_state_transition_weighting = apply_closed_state_transition_weights(
+        token_weight_rows,
+        train_target_rows,
+        train_bodies,
+        target_vocab=target_vocab,
+        boost=closed_state_transition_loss_boost,
+        roles=closed_state_transition_roles,
     )
     (
         pairwise_positive_weight_rows,
@@ -1827,6 +1866,7 @@ def run_adaptation(
             "update_contract_consistency_weighting": update_contract_consistency_weighting,
             "direct_body_emission_weighting": direct_body_emission_weighting,
             "local_return_closure_weighting": local_return_closure_weighting,
+            "closed_state_transition_weighting": closed_state_transition_weighting,
             "negative_replay": negative_replay_vocab_summary(negative_replay, active=negative_replay_active),
             "pairwise_replay_preference": pairwise_replay_vocab_summary(
                 negative_replay,
@@ -1904,6 +1944,8 @@ def run_adaptation(
             "direct_body_emission_roles": str(direct_body_emission_roles or ""),
             "local_return_closure_loss_boost": float(local_return_closure_loss_boost or 0.0),
             "local_return_closure_roles": str(local_return_closure_roles or ""),
+            "closed_state_transition_loss_boost": float(closed_state_transition_loss_boost or 0.0),
+            "closed_state_transition_roles": str(closed_state_transition_roles or ""),
             "semantic_construction_repair_profile": semantic_construction_repair_profile,
             "semantic_plan_visible_operation_loss_boost": float(semantic_plan_visible_operation_loss_boost or 0.0),
             "private_residual_repair_split": bool(private_residual_repair_split),
@@ -1933,6 +1975,7 @@ def run_adaptation(
         "update_contract_consistency_weighting": update_contract_consistency_weighting,
         "direct_body_emission_weighting": direct_body_emission_weighting,
         "local_return_closure_weighting": local_return_closure_weighting,
+        "closed_state_transition_weighting": closed_state_transition_weighting,
         "semantic_construction_repair_profile": semantic_construction_repair_profile,
         "strict_target_guard": {
             "train": target_guard_summary,
@@ -2112,6 +2155,7 @@ def run_adaptation(
             "update_contract_consistency_weighting": payload["update_contract_consistency_weighting"],
             "direct_body_emission_weighting": payload["direct_body_emission_weighting"],
             "local_return_closure_weighting": payload["local_return_closure_weighting"],
+            "closed_state_transition_weighting": payload["closed_state_transition_weighting"],
             "semantic_construction_repair_profile": payload["semantic_construction_repair_profile"],
             "public_training_rows": 0,
             "external_inference_calls": 0,
@@ -2235,6 +2279,7 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
         "update_contract_consistency_weighting",
         "direct_body_emission_weighting",
         "local_return_closure_weighting",
+        "closed_state_transition_weighting",
     ]:
         if name not in required:
             continue
@@ -2510,6 +2555,15 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             ),
             "soft",
             dict_or_empty(payload.get("local_return_closure_weighting")),
+        ),
+        gate(
+            "closed_state_transition_weighting_matched_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("closed_state_transition_weighting")).get("enabled"))
+                or int(dict_or_empty(payload.get("closed_state_transition_weighting")).get("weighted_token_positions") or 0) > 0
+            ),
+            "soft",
+            dict_or_empty(payload.get("closed_state_transition_weighting")),
         ),
         gate(
             "semantic_construction_profile_private_only",
