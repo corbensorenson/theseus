@@ -145,6 +145,16 @@ prompt-visible operation evidence now requires an `abs(...)` call plus a
 comparison. The next semantic fix is therefore to train/decode actual
 absolute-distance filtering and order-preserving accumulation, not another
 summary-function guard.
+The follow-up zero-credit semantic-operation value-construction canary
+`reports/strict_generator_mlx_decode_eval_semantic_operation_value_construction_canary_v4_20260706.json`
+keeps candidate integrity and blind-flow clean, but remains negative behavior
+evidence: `2` integrity-verified transformer/hybrid private-eval rows, `1.0`
+nontrivial-return rate, `0/2` private passes, and a starvation trace where one
+task over-opens repeated `max(max(...` expressions. The emitted rows are still
+shallow accumulator/type-handling failures, not operation-bearing clamp/round
+or absolute-distance bodies. This sharpens the current wall to trainable
+semantic body construction or localized semantic-IR repair that changes
+update/finalizer/value expressions under private replay.
 The next evidence-only pass adds aggregate operation residuals to
 `source_condition_candidate_summary`, so prompt-visible operation failures are
 visible at split/report level instead of only inside individual candidates.

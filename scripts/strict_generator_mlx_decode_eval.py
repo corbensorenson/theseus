@@ -427,6 +427,16 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--enable-semantic-operation-value-construction",
+        action="store_true",
+        help=(
+            "Use prompt-visible operation tags to continue already-open update/append value "
+            "expressions during strict decoding. This is a zero-credit semantic-IR/body "
+            "construction experiment: it does not inspect tests, solutions, public payloads, "
+            "teacher output, or render complete bodies."
+        ),
+    )
+    parser.add_argument(
         "--require-binding-prefix-groups",
         action="store_true",
         help=(
@@ -477,6 +487,7 @@ def main() -> int:
         enable_loop_progress_guard=bool(args.enable_loop_progress_guard),
         enable_expression_closure_guard=bool(args.enable_expression_closure_guard),
         enable_expression_value_guard=bool(args.enable_expression_value_guard),
+        enable_semantic_operation_value_construction=bool(args.enable_semantic_operation_value_construction),
         require_binding_prefix_groups=bool(args.require_binding_prefix_groups),
         execute=bool(args.execute),
     )
@@ -556,6 +567,7 @@ def run_decode_eval(
     enable_loop_progress_guard: bool,
     enable_expression_closure_guard: bool,
     enable_expression_value_guard: bool,
+    enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
     execute: bool,
     preselected_splits: dict[str, dict[str, Any]] | None = None,
@@ -598,6 +610,7 @@ def run_decode_eval(
                     "enable_loop_progress_guard": bool(enable_loop_progress_guard),
                     "enable_expression_closure_guard": bool(enable_expression_closure_guard),
                     "enable_expression_value_guard": bool(enable_expression_value_guard),
+                    "enable_semantic_operation_value_construction": bool(enable_semantic_operation_value_construction),
                     "require_binding_prefix_groups": bool(require_binding_prefix_groups),
                     "public_training_rows": 0,
                     "external_inference_calls": 0,
@@ -705,6 +718,7 @@ def run_decode_eval(
             enable_loop_progress_guard=enable_loop_progress_guard,
             enable_expression_closure_guard=enable_expression_closure_guard,
             enable_expression_value_guard=enable_expression_value_guard,
+            enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
             require_binding_prefix_groups=require_binding_prefix_groups,
         )
         selected["family_disjoint"] = family_report
@@ -751,6 +765,7 @@ def run_decode_eval(
             enable_loop_progress_guard=enable_loop_progress_guard,
             enable_expression_closure_guard=enable_expression_closure_guard,
             enable_expression_value_guard=enable_expression_value_guard,
+            enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
             require_binding_prefix_groups=require_binding_prefix_groups,
         )
         selected["broad_private_heldout"] = broad_report
@@ -793,6 +808,7 @@ def run_decode_eval(
                 enable_loop_progress_guard=enable_loop_progress_guard,
                 enable_expression_closure_guard=enable_expression_closure_guard,
                 enable_expression_value_guard=enable_expression_value_guard,
+                enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
                 require_binding_prefix_groups=require_binding_prefix_groups,
             )
             route["decode_options"] = route_options
@@ -833,6 +849,7 @@ def run_decode_eval(
                 enable_loop_progress_guard=bool(route_options["enable_loop_progress_guard"]),
                 enable_expression_closure_guard=bool(route_options["enable_expression_closure_guard"]),
                 enable_expression_value_guard=bool(route_options["enable_expression_value_guard"]),
+                enable_semantic_operation_value_construction=bool(route_options.get("enable_semantic_operation_value_construction", enable_semantic_operation_value_construction)),
                 require_binding_prefix_groups=bool(route_options["require_binding_prefix_groups"]),
             )
             selected[split_key] = train_replay_report
@@ -935,6 +952,7 @@ def run_decode_eval(
             "enable_loop_progress_guard": bool(enable_loop_progress_guard),
             "enable_expression_closure_guard": bool(enable_expression_closure_guard),
             "enable_expression_value_guard": bool(enable_expression_value_guard),
+            "enable_semantic_operation_value_construction": bool(enable_semantic_operation_value_construction),
             "require_binding_prefix_groups": bool(require_binding_prefix_groups),
             "output_top_k_override": output_top_k,
             "uses_eval_tests_or_solutions": False,
@@ -1118,6 +1136,7 @@ def evaluate_split(
     enable_loop_progress_guard: bool,
     enable_expression_closure_guard: bool,
     enable_expression_value_guard: bool,
+    enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     started = time.perf_counter()
@@ -1244,6 +1263,7 @@ def evaluate_split(
         enable_loop_progress_guard=enable_loop_progress_guard,
         enable_expression_closure_guard=enable_expression_closure_guard,
         enable_expression_value_guard=enable_expression_value_guard,
+        enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
         require_binding_prefix_groups=require_binding_prefix_groups,
         mx=mx,
     )
@@ -1434,6 +1454,19 @@ def evaluate_split(
                     "expressions used as the object tested by isinstance. It does not choose an "
                     "algorithm, render a body, inspect tests/solutions, use public data, or grant "
                     "candidate-generation credit."
+                ),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+            },
+            "semantic_operation_value_construction": {
+                "enabled": bool(enable_semantic_operation_value_construction),
+                "policy": "prompt_visible_semantic_operation_value_construction_v1",
+                "score_semantics": (
+                    "Offers continuation choices for already-open update/append value expressions "
+                    "using prompt-visible operation tags and visible signature names only. It does "
+                    "not inspect tests/solutions/public payloads, render a body, call tools, create "
+                    "fallbacks, or grant learned-generation promotion credit."
                 ),
                 "uses_eval_tests_or_solutions": False,
                 "uses_public_data": False,
@@ -1691,6 +1724,7 @@ def generate_candidates_mlx(
     enable_loop_progress_guard: bool,
     enable_expression_closure_guard: bool,
     enable_expression_value_guard: bool,
+    enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
     mx: Any,
 ) -> tuple[list[list[dict[str, Any]]], list[dict[str, Any]]]:
@@ -1844,6 +1878,7 @@ def generate_candidates_mlx(
                     enable_loop_progress_guard=enable_loop_progress_guard,
                     enable_expression_closure_guard=enable_expression_closure_guard,
                     enable_expression_value_guard=enable_expression_value_guard,
+                    enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
                     require_binding_prefix_groups=require_binding_prefix_groups,
                 )
                 for next_id, prob in choices:
@@ -2451,6 +2486,7 @@ def mlx_token_choices(
     enable_loop_progress_guard: bool,
     enable_expression_closure_guard: bool,
     enable_expression_value_guard: bool,
+    enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
 ) -> list[tuple[int, float]]:
     prefix = [inverse.get(idx, "<unk>") for idx in generated[1:]]
@@ -2505,10 +2541,10 @@ def mlx_token_choices(
     )
     if forced is not None and inverse.get(int(forced[0]), "<unk>") == "INDENT:":
         return [forced]
-    effective_source_condition_expectation = (
-        learned_decision_expectation
-        if bool(prefer_learned_prefix_decision_adequacy) and bool(learned_decision_expectation.get("enabled"))
-        else dict_or_empty(source_condition_expectation)
+    effective_source_condition_expectation = merged_source_condition_expectation(
+        learned_decision_expectation=learned_decision_expectation,
+        source_condition_expectation=dict_or_empty(source_condition_expectation),
+        prefer_learned=bool(prefer_learned_prefix_decision_adequacy),
     )
     effective_source_condition_enabled = bool(prefer_source_condition_adequacy) or (
         bool(prefer_learned_prefix_decision_adequacy) and bool(learned_decision_expectation.get("enabled"))
@@ -2523,6 +2559,7 @@ def mlx_token_choices(
         allowed_names=allowed_names,
         input_type_hints=input_type_hints,
         enabled=effective_source_condition_enabled,
+        enable_operation_value_construction=enable_semantic_operation_value_construction,
     )
     priority_source_choices = filter_loop_plan_blocked_choices(
         body_prefix,
@@ -2534,6 +2571,8 @@ def mlx_token_choices(
     source_priority_active = bool(priority_source_choices) and source_condition_priority_prefix(
         body_prefix,
         effective_source_condition_expectation,
+        enable_operation_value_construction=enable_semantic_operation_value_construction,
+        allowed_names=set(allowed_names or set()),
     )
     direct_return_choices = direct_local_return_continuation_choices(
         arr,
@@ -2548,6 +2587,8 @@ def mlx_token_choices(
     )
     if direct_return_choices:
         return direct_return_choices
+    if source_priority_active and enable_semantic_operation_value_construction:
+        return priority_source_choices
     if source_priority_active and source_condition_preempts_loop_plan(effective_source_condition_expectation):
         return priority_source_choices
     loop_plan_choices = loop_plan_exploration_choices(
@@ -2622,6 +2663,7 @@ def mlx_token_choices(
                 allowed_names=allowed_names,
                 input_type_hints=input_type_hints,
                 enabled=effective_source_condition_enabled,
+                enable_operation_value_construction=enable_semantic_operation_value_construction,
             )
             source_choices = filter_loop_plan_blocked_choices(
                 body_prefix,
@@ -2699,6 +2741,7 @@ def mlx_token_choices(
             allowed_names=allowed_names,
             input_type_hints=input_type_hints,
             enabled=effective_source_condition_enabled,
+            enable_operation_value_construction=enable_semantic_operation_value_construction,
         )
     )
     choices.extend(loop_plan_choices)
@@ -2755,6 +2798,36 @@ def mlx_token_choices(
         if token_allowed_by_policy(body_prefix, tok, policy=token_policy, allowed_names=allowed_names):
             return [(idx, float(max(arr[idx], 1e-9)))]
     return [(eos_id, float(max(arr[eos_id], 1e-9)))] if ready else []
+
+
+def merged_source_condition_expectation(
+    *,
+    learned_decision_expectation: dict[str, Any],
+    source_condition_expectation: dict[str, Any],
+    prefer_learned: bool,
+) -> dict[str, Any]:
+    """Merge learned prefix obligations with prompt-visible operation tags."""
+
+    source = dict_or_empty(source_condition_expectation)
+    learned = dict_or_empty(learned_decision_expectation)
+    if not (prefer_learned and bool(learned.get("enabled"))):
+        return source
+    merged = dict(source)
+    merged.update(learned)
+    source_operation_tags = [str(item) for item in list(source.get("operation_tags") or []) if str(item)]
+    learned_operation_tags = [str(item) for item in list(learned.get("operation_tags") or []) if str(item)]
+    if source_operation_tags and not learned_operation_tags:
+        merged["operation_tags"] = source_operation_tags
+        merged["requires_operation_evidence"] = bool(source.get("requires_operation_evidence", True))
+        required = [str(item) for item in list(merged.get("required_features") or []) if str(item)]
+        if "operation_evidence" not in required:
+            required.append("operation_evidence")
+        merged["required_features"] = required
+    merged["policy"] = "merged_learned_prefix_and_prompt_visible_source_condition_v1"
+    merged["candidate_generation_credit"] = 0
+    merged["uses_eval_tests_or_solutions"] = False
+    merged["uses_public_data"] = False
+    return merged
 
 
 def top_token_indices_desc(arr: Any, limit: int) -> list[int]:

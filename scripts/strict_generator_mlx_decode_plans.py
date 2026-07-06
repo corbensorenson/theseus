@@ -159,6 +159,7 @@ def source_condition_exploration_choices(
     allowed_names: set[str] | None,
     input_type_hints: dict[str, str] | None,
     enabled: bool,
+    enable_operation_value_construction: bool = False,
 ) -> list[tuple[int, float]]:
     if not enabled or not bool(expectation.get("enabled")):
         return []
@@ -192,6 +193,17 @@ def source_condition_exploration_choices(
         body_text = decode_body_tokens(prefix)
         accumulator = loop_plan_first_assigned_local(body_text)
         loop_target = source_condition_prefix_loop_target(prefix)
+        for token_text in source_condition_operation_value_prefix_tokens(
+            values,
+            operation_tags=operation_tags,
+            loop_target=loop_target,
+            default_arg=default_arg,
+            allowed_names=set(allowed_names or set()),
+            enabled=enable_operation_value_construction,
+        ):
+            add_token(token_text)
+        if choices:
+            return choices
         for token_text in source_condition_operation_prefix_tokens(
             values,
             operation_tags=operation_tags,
@@ -736,7 +748,13 @@ def expression_closure_can_dedent(prefix: list[str], *, body_text: str, expectat
     return False
 
 
-def source_condition_priority_prefix(prefix: list[str], expectation: dict[str, Any]) -> bool:
+def source_condition_priority_prefix(
+    prefix: list[str],
+    expectation: dict[str, Any],
+    *,
+    enable_operation_value_construction: bool = False,
+    allowed_names: set[str] | None = None,
+) -> bool:
     if not bool(expectation.get("enabled")):
         return False
     values = tuple(token_values(current_line_tokens(prefix)))
@@ -747,6 +765,16 @@ def source_condition_priority_prefix(prefix: list[str], expectation: dict[str, A
         operation_evidence = source_condition_operation_evidence_for_body(body_text, expectation)
         if not bool(operation_evidence.get("has_operation_evidence")):
             loop_target = source_condition_prefix_loop_target(prefix)
+            operation_value_prefix = source_condition_operation_value_prefix_tokens(
+                values,
+                operation_tags=operation_tags,
+                loop_target=loop_target,
+                default_arg=str(expectation.get("default_arg") or ""),
+                allowed_names=set(allowed_names or set()),
+                enabled=enable_operation_value_construction,
+            )
+            if operation_value_prefix:
+                return True
             operation_prefix = source_condition_operation_prefix_tokens(
                 values,
                 operation_tags=operation_tags,
@@ -2907,6 +2935,132 @@ def source_condition_operation_prefix_tokens(
     ):
         return [f"NAME:{default_arg}"]
     return []
+
+
+def source_condition_operation_value_prefix_tokens(
+    values: tuple[str, ...],
+    *,
+    operation_tags: set[str],
+    loop_target: str,
+    default_arg: str,
+    allowed_names: set[str],
+    enabled: bool,
+) -> list[str]:
+    """Continue operation-bearing update expressions from visible prompt tags.
+
+    This is a decode-search helper, not a renderer. It only fires after the
+    learned decoder has already opened an update value such as ``out.append(``
+    or ``out =``. The helper then offers local expression continuations that
+    expose prompt-visible operation evidence, while the token decoder still
+    chooses the final candidate and the verifier/integrity layers decide
+    whether the body is useful.
+    """
+
+    if not enabled or not operation_tags or not loop_target:
+        return []
+    allowed = {str(name) for name in allowed_names if str(name)}
+    default_visible = bool(default_arg and default_arg in allowed)
+    choices: list[str] = []
+
+    def unique(items: list[str], limit: int = 5) -> list[str]:
+        return list(dict.fromkeys(items))[:limit]
+
+    at_expression_start = bool(
+        values
+        and (
+            values[-1] == "="
+            or values[-3:] == (".", "append", "(")
+            or values[-2:] == ("append", "(")
+        )
+    )
+    if at_expression_start:
+        if "op_round_values" in operation_tags:
+            choices.append("NAME:round")
+        if operation_tags & {"op_abs_tolerance_filter", "op_abs_positive_filter"}:
+            choices.append("NAME:abs")
+        if default_visible and operation_tags & {"op_clip_to_range", "op_threshold_filter"}:
+            choices.extend(["NAME:min", "NAME:max"])
+        choices.append(f"NAME:{loop_target}")
+        return unique(choices)
+
+    if values[-1:] in {("round",), ("abs",), ("min",), ("max",)}:
+        return ["OP:("]
+    if values[-2:] in {("round", "("), ("abs", "(")}:
+        if default_visible and "op_clip_to_range" in operation_tags and values[-2:] == ("round", "("):
+            return ["NAME:min", "NAME:max", f"NAME:{loop_target}"]
+        return [f"NAME:{loop_target}"]
+    if default_visible and values[-2:] == ("min", "("):
+        return ["NAME:max", f"NAME:{loop_target}"]
+    if values[-1:] == (loop_target,):
+        open_index = _innermost_value_open_paren(values)
+        callee = values[open_index - 1] if open_index > 0 else ""
+        if callee in {"round", "abs"}:
+            return ["OP:)"]
+        if default_visible and callee == "max":
+            return ["OP:,"]
+        if default_visible and callee == "min":
+            return ["OP:,"]
+    if default_visible and values[-2:] == ("max", "("):
+        return [f"NAME:{loop_target}"]
+    if default_visible and values[-3:] == ("max", "(", loop_target):
+        return ["OP:,"]
+    if default_visible and len(values) >= 4 and values[-1] == "," and values[-3] == "(" and values[-4] == "max":
+        return [f"NAME:{default_arg}"]
+    if default_visible and values[-1:] == (",",):
+        open_index = _innermost_value_open_paren(values)
+        callee = values[open_index - 1] if open_index > 0 else ""
+        if callee == "min":
+            return [f"NAME:{default_arg}"]
+    if default_visible and values[-1:] == (default_arg,):
+        open_index = _innermost_value_open_paren(values)
+        callee = values[open_index - 1] if open_index > 0 else ""
+        if callee in {"max", "min"}:
+            return ["OP:)"]
+    if values[-1:] == (")",):
+        if default_visible:
+            open_index = _innermost_value_open_paren(values)
+            callee = values[open_index - 1] if open_index > 0 else ""
+            if callee == "min" and not _top_level_comma_after_open(values, open_index):
+                return ["OP:,"]
+        if _current_line_open_paren_delta(values) > 0:
+            return ["OP:)"]
+        return ["NEWLINE:"]
+    return []
+
+
+def _innermost_value_open_paren(values: tuple[str, ...]) -> int:
+    depth = 0
+    for idx in range(len(values) - 1, -1, -1):
+        value = values[idx]
+        if value == ")":
+            depth += 1
+        elif value == "(":
+            if depth == 0:
+                return idx
+            depth -= 1
+    return -1
+
+
+def _current_line_open_paren_delta(values: tuple[str, ...]) -> int:
+    depth = 0
+    for value in values:
+        if value == "(":
+            depth += 1
+        elif value == ")":
+            depth = max(0, depth - 1)
+    return depth
+
+
+def _top_level_comma_after_open(values: tuple[str, ...], open_index: int) -> bool:
+    depth = 0
+    for value in values[open_index + 1 :]:
+        if value == "(":
+            depth += 1
+        elif value == ")":
+            depth = max(0, depth - 1)
+        elif value == "," and depth == 0:
+            return True
+    return False
 
 
 def source_condition_operation_exploration_tokens(

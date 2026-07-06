@@ -2352,9 +2352,17 @@ integrity mismatches, nontrivial-return rate `1.0`, and `0/2` private passes.
 The remaining emitted bodies are shallow accumulators such as
 `out.append(item)` and `out = out + item`, with missing semantic update value,
 missing expected update call, and missing clamp/round operation evidence. The
-next implementation target is therefore trainable semantic body construction
-or localized semantic-IR repair that changes generated update/finalizer bodies,
-not another source-condition ranker or diagnostic guard.
+follow-up zero-credit semantic-operation value-construction canary
+`reports/strict_generator_mlx_decode_eval_semantic_operation_value_construction_canary_v4_20260706.json`
+keeps the no-cheat boundary clean and emits `2` integrity-verified
+transformer/hybrid private-eval rows with nontrivial returns, but still scores
+`0/2` private passes. One task still starves into repeated `max(max(...` beams,
+and the emitted candidates remain shallow accumulator/type-handling failures
+rather than clamp/round or absolute-distance bodies. The next implementation
+target is therefore trainable semantic body construction or localized
+semantic-IR repair that changes generated update/finalizer/value bodies, not
+another source-condition ranker, preference sweep, fast-generation mode, or
+diagnostic guard.
 
 Out of scope for that goal:
 
