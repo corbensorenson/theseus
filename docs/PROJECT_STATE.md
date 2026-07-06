@@ -238,14 +238,28 @@ slot auxiliary inactive. A tiny semantic-slot checkpoint smoke,
 is `GREEN`: target mode `plan_semantic_slots_body_tokens_v1`, heldout LM loss
 `7.977254 -> 6.251445`, plan loss `8.106359 -> 6.817652`, and slot loss
 `2.727118 -> 2.204776`, with zero public rows, external inference, fallback,
-template, router, or tool credit. The paired active adaptation smoke
-`reports/strict_generator_mlx_private_adaptation_semantic_slot_aux_active_smoke_20260706.json`
-is intentionally `YELLOW`: it improves heldout LM loss `6.651568 -> 5.230507`
-and plan loss `3.590698 -> 3.4865`, but semantic-slot heldout loss regresses
-`2.250886 -> 2.315585` and accuracy drops `0.307692 -> 0.25`. This means the
-slot-head consumption path is real, but the next wall is balancing/adapting
-semantic-slot supervision so it improves heldout structure instead of
-overfitting the tiny train slice.
+template, router, or tool credit. The first paired active adaptation smoke
+surfaced a real implementation bug: the training loop reached the plan-only
+loss branch before the combined plan+slot semantic auxiliary branch, so changing
+the semantic-slot loss weight had no effect and slot heldout quality regressed.
+That branch order is fixed in `scripts/strict_generator_mlx_private_adaptation.py`.
+The directly comparable smoke
+`reports/strict_generator_mlx_private_adaptation_semantic_slot_aux_fixed_branch_smoke_20260706.json`
+is now `GREEN`: heldout LM loss improves `6.651568 -> 5.233559`, plan loss
+improves `3.590698 -> 3.568831`, and semantic-slot loss improves
+`2.250886 -> 1.764961` with accuracy `0.307692 -> 0.423077`. The decode-side
+canary
+`reports/strict_generator_mlx_decode_eval_semantic_slot_fixed_branch_broad2_replay2_20260706.json`
+then proves the remaining wall honestly: `52` integrity-clean
+transformer/hybrid candidates are emitted with zero public/external/fallback
+credit, but all collapse to inert `return None` bodies (`0` passes,
+`0.0` nontrivial-return rate). When strict admission requires parameter use,
+nontrivial return, and top-level return,
+`reports/strict_generator_mlx_decode_eval_semantic_slot_fixed_branch_strict_replay2_20260706.json`
+fails closed with `0` candidate rows; the surviving beams are malformed repeated
+expression fragments. The current wall is therefore learned nontrivial
+body-token construction after the semantic prefix, not slot-head plumbing,
+syntax/loadability, or public calibration.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

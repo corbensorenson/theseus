@@ -4061,6 +4061,28 @@ Implementation status:
   (`reports/strict_generator_mlx_decode_eval_semantic_slot_head_broad4_v1.json`)
   emitted four integrity-clean runtime-loaded candidates. Functional pass
   remained `0/4`.
+- Semantic slot adaptation bugfix, 2026-07-06:
+  `scripts/strict_generator_mlx_private_adaptation.py` now reaches the combined
+  plan+slot semantic auxiliary loss before the plan-only branch. The prior
+  active adaptation smoke changed no behavior when the slot-loss weight changed,
+  because the slot branch was unreachable without source-contrastive loss. The
+  fixed private-only smoke
+  `reports/strict_generator_mlx_private_adaptation_semantic_slot_aux_fixed_branch_smoke_20260706.json`
+  is `GREEN`: heldout LM loss improved `6.651568 -> 5.233559`, plan loss
+  improved `3.590698 -> 3.568831`, and slot loss improved
+  `2.250886 -> 1.764961` with slot accuracy `0.307692 -> 0.423077`. This is
+  implementation progress, not a learned-generation promotion. The paired
+  decode report
+  `reports/strict_generator_mlx_decode_eval_semantic_slot_fixed_branch_broad2_replay2_20260706.json`
+  remains `YELLOW`: `52` integrity-clean generated transformer/hybrid
+  candidates, zero public/external/fallback credit, `0` passes, and
+  `0.0` nontrivial-return rate because the bodies collapse to `return None`.
+  The strict admission canary
+  `reports/strict_generator_mlx_decode_eval_semantic_slot_fixed_branch_strict_replay2_20260706.json`
+  is `RED` with `0` candidate rows once parameter use, nontrivial return, and
+  top-level return are required. The live repair target is now the learned
+  nontrivial body-token continuation after `SLOT:BODY_START`, not another
+  semantic-slot auxiliary or prefix-label accounting pass.
 - Larger slot-head smoke:
   `reports/strict_generator_mlx_pretraining_semantic_slot_full_smoke_v1.json`
   trained the same private/licensed smoke corpus for `600000` token positions

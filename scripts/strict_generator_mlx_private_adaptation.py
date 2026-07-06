@@ -1879,20 +1879,6 @@ def run_adaptation(
                     mx,
                     nn,
                 )
-            elif semantic_plan_enabled and loss_and_grad_plan is not None:
-                loss, grads = loss_and_grad_plan(
-                    model,
-                    src,
-                    tgt,
-                    pad_id,
-                    weights,
-                    plan_targets,
-                    plan_weights,
-                    float(semantic_plan_loss_weight),
-                    mx,
-                    nn,
-                    semantic_plan_class_id_array,
-                )
             elif semantic_slot_enabled and loss_and_grad_semantic_aux is not None:
                 if semantic_plan_enabled:
                     plan_targets_arg = plan_targets
@@ -1917,6 +1903,20 @@ def run_adaptation(
                     mx,
                     nn,
                     semantic_slot_class_id_arrays,
+                )
+            elif semantic_plan_enabled and loss_and_grad_plan is not None:
+                loss, grads = loss_and_grad_plan(
+                    model,
+                    src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    plan_targets,
+                    plan_weights,
+                    float(semantic_plan_loss_weight),
+                    mx,
+                    nn,
+                    semantic_plan_class_id_array,
                 )
             else:
                 loss, grads = loss_and_grad_plain(model, src, tgt, pad_id, weights, mx, nn)
