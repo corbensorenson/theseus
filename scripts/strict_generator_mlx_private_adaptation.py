@@ -1104,6 +1104,21 @@ def main() -> int:
     parser.add_argument("--body-state-event-target-event-weight", type=float, default=1.0)
     parser.add_argument("--body-state-event-target-none-weight", type=float, default=0.20)
     parser.add_argument(
+        "--enable-coupled-state-body-constructor",
+        action="store_true",
+        help=(
+            "Construct the model with a shared predicted-state-event body representation. "
+            "The model's own event distribution is projected back into body token/action/operand/"
+            "transition logits; target event labels are not visible at generation time."
+        ),
+    )
+    parser.add_argument(
+        "--coupled-state-body-constructor-scale",
+        type=float,
+        default=0.35,
+        help="Blend scale for the predicted-state-event body constructor when enabled.",
+    )
+    parser.add_argument(
         "--body-state-event-action-consistency-weight",
         type=float,
         default=0.0,
@@ -1357,6 +1372,15 @@ def main() -> int:
                 else 0.20
             ),
         ),
+        enable_coupled_state_body_constructor=bool(args.enable_coupled_state_body_constructor),
+        coupled_state_body_constructor_scale=max(
+            0.0,
+            float(
+                args.coupled_state_body_constructor_scale
+                if args.coupled_state_body_constructor_scale is not None
+                else 0.35
+            ),
+        ),
         body_state_event_action_consistency_weight=max(
             0.0,
             float(
@@ -1513,6 +1537,8 @@ def run_adaptation(
     body_state_event_loss_weight: float,
     body_state_event_target_event_weight: float,
     body_state_event_target_none_weight: float,
+    enable_coupled_state_body_constructor: bool,
+    coupled_state_body_constructor_scale: float,
     body_state_event_action_consistency_weight: float,
     body_state_event_operand_consistency_weight: float,
     semantic_slot_prefix_roles: str,
@@ -1651,6 +1677,8 @@ def run_adaptation(
                     "body_state_event_loss_weight": float(body_state_event_loss_weight or 0.0),
                     "body_state_event_target_event_weight": float(body_state_event_target_event_weight or 0.0),
                     "body_state_event_target_none_weight": float(body_state_event_target_none_weight or 0.0),
+                    "enable_coupled_state_body_constructor": bool(enable_coupled_state_body_constructor),
+                    "coupled_state_body_constructor_scale": float(coupled_state_body_constructor_scale or 0.0),
                     "body_state_event_action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
                     "body_state_event_operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
                     "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
@@ -1716,14 +1744,36 @@ def run_adaptation(
 
     random.seed(seed)
     mx.random.seed(seed)
-    loaded = load_mlx_checkpoint(vocab_path, checkpoint_path, mx=mx, nn=nn)
+    loaded = load_mlx_checkpoint(
+        vocab_path,
+        checkpoint_path,
+        mx=mx,
+        nn=nn,
+        force_coupled_state_body_constructor=bool(enable_coupled_state_body_constructor) or None,
+        coupled_state_body_constructor_scale=(
+            float(coupled_state_body_constructor_scale or 0.0)
+            if enable_coupled_state_body_constructor
+            else None
+        ),
+    )
     model = loaded["model"]
     pairwise_objective = str(pairwise_replay_objective or "margin").strip().lower() or "margin"
     if pairwise_objective not in {"margin", "dpo", "ipo"}:
         pairwise_objective = "margin"
     reference_model = None
     if float(pairwise_replay_loss_weight or 0.0) > 0.0 and pairwise_objective in {"dpo", "ipo"}:
-        reference_model = load_mlx_checkpoint(vocab_path, checkpoint_path, mx=mx, nn=nn)["model"]
+        reference_model = load_mlx_checkpoint(
+            vocab_path,
+            checkpoint_path,
+            mx=mx,
+            nn=nn,
+            force_coupled_state_body_constructor=bool(enable_coupled_state_body_constructor) or None,
+            coupled_state_body_constructor_scale=(
+                float(coupled_state_body_constructor_scale or 0.0)
+                if enable_coupled_state_body_constructor
+                else None
+            ),
+        )["model"]
         reference_model.eval()
     vocab_payload = loaded["vocab_payload"]
     source_vocab = dict_or_empty(vocab_payload.get("source_vocab"))
@@ -3576,6 +3626,31 @@ def run_adaptation(
                     "admitted private body action/operand roles and emit no candidates."
                 ),
             },
+            "coupled_state_body_constructor": {
+                "enabled": bool(enable_coupled_state_body_constructor),
+                "policy": (
+                    "predicted_state_event_conditioned_body_constructor_v1"
+                    if enable_coupled_state_body_constructor
+                    else "not_enabled"
+                ),
+                "scale": float(coupled_state_body_constructor_scale or 0.0)
+                if enable_coupled_state_body_constructor
+                else 0.0,
+                "loader_receipt": dict_or_empty(loaded.get("loader_reuse_receipt")).get(
+                    "coupled_state_body_constructor"
+                ),
+                "event_role_count": len(BODY_STATE_EVENT_ROLES),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+                "score_semantics": (
+                    "Opt-in architecture coupling inside the existing strict generator. The model's own "
+                    "predicted state-event distribution is projected into the shared body hidden state "
+                    "before token/action/operand/transition logits. It emits no candidate by itself and "
+                    "does not inspect tests, solutions, public benchmark payloads, tools, templates, or "
+                    "fallback bodies."
+                ),
+            },
             "negative_replay": negative_replay_vocab_summary(negative_replay, active=negative_replay_active),
             "pairwise_replay_preference": pairwise_replay_vocab_summary(
                 negative_replay,
@@ -3659,6 +3734,10 @@ def run_adaptation(
             "body_state_event_loss_weight": float(body_state_event_loss_weight or 0.0),
             "body_state_event_target_event_weight": float(body_state_event_target_event_weight or 0.0),
             "body_state_event_target_none_weight": float(body_state_event_target_none_weight or 0.0),
+            "enable_coupled_state_body_constructor": bool(enable_coupled_state_body_constructor),
+            "coupled_state_body_constructor_scale": float(coupled_state_body_constructor_scale or 0.0)
+            if enable_coupled_state_body_constructor
+            else 0.0,
             "body_state_event_action_consistency_weight": float(body_state_event_action_consistency_weight or 0.0),
             "body_state_event_operand_consistency_weight": float(body_state_event_operand_consistency_weight or 0.0),
             "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
@@ -3707,6 +3786,32 @@ def run_adaptation(
         "closed_state_transition_weighting": closed_state_transition_weighting,
         "body_aux_semantic_event_weighting": body_aux_semantic_event_weighting_summary,
         "body_state_machine_event_weighting": body_state_machine_event_weighting_summary,
+        "coupled_state_body_constructor": {
+            "enabled": bool(enable_coupled_state_body_constructor),
+            "policy": (
+                "predicted_state_event_conditioned_body_constructor_v1"
+                if enable_coupled_state_body_constructor
+                else "not_enabled"
+            ),
+            "scale": float(coupled_state_body_constructor_scale or 0.0)
+            if enable_coupled_state_body_constructor
+            else 0.0,
+            "loader_receipt": dict_or_empty(loaded.get("loader_reuse_receipt")).get(
+                "coupled_state_body_constructor"
+            ),
+            "event_role_count": len(BODY_STATE_EVENT_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "uses_answer_metadata": False,
+            "served_at_runtime": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Shared executable-state body constructor inside the existing strict generator. It "
+                "uses predicted state-event probabilities, not target event labels, to condition "
+                "body-token, transition, action, and operand logits. It is architecture/training "
+                "evidence only unless strict decode/verifier replay improves."
+            ),
+        },
         "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
         "semantic_construction_repair_profile": semantic_construction_repair_profile,
         "strict_target_guard": {
@@ -4678,6 +4783,19 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             ),
             "soft",
             dict_or_empty(payload.get("body_state_event_auxiliary")),
+        ),
+        gate(
+            "coupled_state_body_constructor_loaded_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("coupled_state_body_constructor")).get("enabled"))
+                or bool(
+                    dict_or_empty(
+                        dict_or_empty(payload.get("coupled_state_body_constructor")).get("loader_receipt")
+                    ).get("enabled")
+                )
+            ),
+            "hard",
+            dict_or_empty(payload.get("coupled_state_body_constructor")),
         ),
         gate(
             "source_contrastive_gap_improved_when_enabled",

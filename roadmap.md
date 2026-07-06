@@ -231,6 +231,18 @@ profile setting and carries `candidate_generation_credit=0`. The next C1/Phase
 body constructor or localized semantic-IR constructor, not another auxiliary
 loss, direct state-event bias, or DPO/GRPO/MTP/diffusion run ahead of
 behavior-positive learned candidates.
+`reports/strict_generator_coupled_state_body_constructor_smoke_summary_20260706.json`
+now tests the first architecture-level version of that target. The existing
+strict generator can opt into a predicted-state-event body constructor: its
+own event distribution is projected into the body hidden state before token,
+transition, action, and operand logits. Scale `0.25` and `0.05` private
+ablations are both rejected. They improve LM/transition/event metrics, but
+action/operand losses still regress and tensor-update coverage remains below
+the hard gate. The code path is checkpoint-loadable and non-default; the
+finding is negative evidence that a one-step residual event-probability blend
+is not enough. The next implementation should materialize executable state
+objects or localized semantic-IR spans that supervise/condition update,
+finalizer, and return construction directly.
 
 ## 2026-07-06 Claude Review Reconciliation
 

@@ -225,6 +225,20 @@ summary was written, and the route remains opt-in only. This rules out simple
 soft compatibility coupling as another near-term lever; the wall is now a
 shared executable state/action/operand body constructor or localized
 semantic-IR constructor that changes private verifier behavior.
+`reports/strict_generator_coupled_state_body_constructor_smoke_summary_20260706.json`
+implements that next architectural slice without making it default: the
+strict-generator model can now project its own predicted state-event
+distribution back into a shared body hidden state before token, transition,
+action, and operand logits. Two bounded private ablations were run at blend
+scales `0.25` and `0.05`; both are `RED`. They improve heldout LM,
+transition, and event losses, but body-action and body-operand losses still
+regress, tensor-update coverage misses the hard gate (`0.880952 < 0.90`), and
+the rejected checkpoints were removed after compact hashes were retained. This
+means the implemented residual-blend constructor is useful negative evidence,
+not the final constructor. The next wall is an explicit executable
+state/action/operand object or localized semantic-IR span constructor that can
+close update/finalizer/return behavior, not another scalar blend of event
+probabilities.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

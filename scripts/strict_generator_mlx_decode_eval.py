@@ -1017,6 +1017,8 @@ def load_mlx_checkpoint(
     mx: Any,
     nn: Any,
     loader_cache: dict[str, Any] | None = None,
+    force_coupled_state_body_constructor: bool | None = None,
+    coupled_state_body_constructor_scale: float | None = None,
 ) -> dict[str, Any]:
     load_started = time.perf_counter()
     vocab_sha = stable_hash_file(vocab_path)
@@ -1055,6 +1057,20 @@ def load_mlx_checkpoint(
     source_vocab = dict_or_empty(vocab_payload.get("source_vocab"))
     target_vocab = dict_or_empty(vocab_payload.get("target_vocab"))
     dims = dict_or_empty(vocab_payload.get("dims"))
+    coupled_cfg = dict_or_empty(vocab_payload.get("coupled_state_body_constructor"))
+    coupled_state_body_constructor = (
+        bool(force_coupled_state_body_constructor)
+        if force_coupled_state_body_constructor is not None
+        else bool(coupled_cfg.get("enabled"))
+    )
+    coupled_state_body_constructor_scale = max(
+        0.0,
+        float(
+            coupled_state_body_constructor_scale
+            if coupled_state_body_constructor_scale is not None
+            else (coupled_cfg.get("scale") if coupled_cfg.get("scale") is not None else 0.35)
+        ),
+    )
     model_key_payload = {
         "vocab_sha256": vocab_sha,
         "source_vocab_size": len(source_vocab),
@@ -1062,6 +1078,10 @@ def load_mlx_checkpoint(
         "max_source": int(vocab_payload.get("max_source") or 96),
         "max_target": int(vocab_payload.get("max_target") or 160),
         "dims": dims,
+        "coupled_state_body_constructor": {
+            "enabled": coupled_state_body_constructor,
+            "scale": coupled_state_body_constructor_scale if coupled_state_body_constructor else 0.0,
+        },
     }
     model_key = stable_hash(json.dumps(model_key_payload, sort_keys=True))
     model_cache = cache.setdefault("models", {}) if cache is not None else {}
@@ -1079,6 +1099,8 @@ def load_mlx_checkpoint(
             nhead=int(dims.get("nhead") or 4),
             num_layers=int(dims.get("num_layers") or 2),
             dim_feedforward=int(dims.get("dim_feedforward") or 448),
+            coupled_state_body_constructor=coupled_state_body_constructor,
+            coupled_state_body_constructor_scale=coupled_state_body_constructor_scale,
             mx=mx,
             nn=nn,
         ).model
@@ -1100,6 +1122,7 @@ def load_mlx_checkpoint(
                 "body_action_router",
                 "body_operand_router",
                 "body_state_event_router",
+                "body_state_event_to_hidden",
             )
         ):
             raise
@@ -1129,6 +1152,11 @@ def load_mlx_checkpoint(
             "model_reused": bool(model_reused),
             "model_key": model_key,
             "strict_weight_load": bool(strict_load),
+            "coupled_state_body_constructor": {
+                "enabled": coupled_state_body_constructor,
+                "scale": coupled_state_body_constructor_scale if coupled_state_body_constructor else 0.0,
+                "source": "forced" if force_coupled_state_body_constructor is not None else "vocab",
+            },
             "checkpoint_weight_reloaded": True,
             "load_runtime_ms": int((time.perf_counter() - load_started) * 1000),
             "public_training_rows": 0,

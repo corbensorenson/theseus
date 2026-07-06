@@ -474,6 +474,8 @@ class MlxStrictGenerator:
         nhead: int,
         num_layers: int,
         dim_feedforward: int,
+        coupled_state_body_constructor: bool = False,
+        coupled_state_body_constructor_scale: float = 0.35,
         mx: Any,
         nn: Any,
     ) -> None:
@@ -509,6 +511,10 @@ class MlxStrictGenerator:
                 self.body_action_router = nn.Linear(d_model, len(BODY_ACTION_ROLES))
                 self.body_operand_router = nn.Linear(d_model, len(BODY_OPERAND_ROLES))
                 self.body_state_event_router = nn.Linear(d_model, len(BODY_STATE_EVENT_ROLES))
+                self.coupled_state_body_constructor_enabled = bool(coupled_state_body_constructor)
+                self.coupled_state_body_constructor_scale = float(coupled_state_body_constructor_scale or 0.0)
+                if self.coupled_state_body_constructor_enabled:
+                    self.body_state_event_to_hidden = nn.Linear(len(BODY_STATE_EVENT_ROLES), d_model)
 
             def encode_source(self, src: Any) -> tuple[Any, Any]:
                 src_mask = additive_padding_mask(src, mx)
@@ -537,20 +543,28 @@ class MlxStrictGenerator:
                 memory, _pooled = self.encode_source(src)
                 return self.decoder(target, memory, tgt_mask, src_mask)
 
+            def body_constructor_hidden(self, src: Any, tgt_in: Any) -> Any:
+                hidden = self.decode_hidden(src, tgt_in)
+                if not bool(self.coupled_state_body_constructor_enabled):
+                    return hidden
+                event_probs = mx.softmax(self.body_state_event_router(hidden), axis=-1)
+                event_delta = mx.tanh(self.body_state_event_to_hidden(event_probs))
+                return hidden + float(self.coupled_state_body_constructor_scale) * event_delta
+
             def body_transition_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_transition_router(self.decode_hidden(src, tgt_in))
+                return self.body_transition_router(self.body_constructor_hidden(src, tgt_in))
 
             def body_action_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_action_router(self.decode_hidden(src, tgt_in))
+                return self.body_action_router(self.body_constructor_hidden(src, tgt_in))
 
             def body_operand_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_operand_router(self.decode_hidden(src, tgt_in))
+                return self.body_operand_router(self.body_constructor_hidden(src, tgt_in))
 
             def body_state_event_logits(self, src: Any, tgt_in: Any) -> Any:
                 return self.body_state_event_router(self.decode_hidden(src, tgt_in))
 
             def __call__(self, src: Any, tgt_in: Any) -> Any:
-                return self.output(self.decode_hidden(src, tgt_in))
+                return self.output(self.body_constructor_hidden(src, tgt_in))
 
         self.model = _Model()
 
@@ -634,11 +648,19 @@ def train_budget_mlx(
             "external_inference_calls": 0,
         }
     dims = transformer_dims_with_budget(working_config, budget)
+    coupled_constructor_cfg = dict_or_empty(budget.get("coupled_state_body_constructor"))
+    coupled_state_body_constructor = bool(coupled_constructor_cfg.get("enabled"))
+    coupled_state_body_constructor_scale = max(
+        0.0,
+        float(coupled_constructor_cfg.get("scale") if coupled_constructor_cfg.get("scale") is not None else 0.35),
+    )
     model = MlxStrictGenerator(
         source_vocab_size=len(source_vocab),
         target_vocab_size=len(target_vocab),
         max_source_len=max_source,
         max_target_len=max_target,
+        coupled_state_body_constructor=coupled_state_body_constructor,
+        coupled_state_body_constructor_scale=coupled_state_body_constructor_scale,
         mx=mx,
         nn=nn,
         **dims,
@@ -851,6 +873,25 @@ def train_budget_mlx(
             "roles": semantic_slot_role_summary(),
             "train_targets": semantic_slot_target_summary,
             "eval_targets": semantic_slot_eval_target_summary,
+        },
+        "coupled_state_body_constructor": {
+            "enabled": coupled_state_body_constructor,
+            "policy": (
+                "predicted_state_event_conditioned_body_constructor_v1"
+                if coupled_state_body_constructor
+                else "not_enabled"
+            ),
+            "scale": coupled_state_body_constructor_scale if coupled_state_body_constructor else 0.0,
+            "event_role_count": len(BODY_STATE_EVENT_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Opt-in architecture coupling: the model's own predicted state-event distribution "
+                "projects back into the body hidden state before token/action/operand/transition heads. "
+                "It does not receive target event labels during generation and grants no credit without "
+                "strict decode/verifier behavior."
+            ),
         },
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
@@ -1176,6 +1217,25 @@ def train_budget_mlx(
                 "corpus target prefixes. Labels are AST/body-derived from training rows; the head "
                 "does not render code, inspect tests/solutions, use public data, or grant "
                 "learned-generation promotion credit."
+            ),
+        },
+        "coupled_state_body_constructor": {
+            "enabled": coupled_state_body_constructor,
+            "policy": (
+                "predicted_state_event_conditioned_body_constructor_v1"
+                if coupled_state_body_constructor
+                else "not_enabled"
+            ),
+            "scale": coupled_state_body_constructor_scale if coupled_state_body_constructor else 0.0,
+            "event_role_count": len(BODY_STATE_EVENT_ROLES),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Opt-in architecture coupling: predicted state-event probabilities are projected into "
+                "a shared body-state representation before token/action/operand/transition logits. "
+                "This emits no candidate by itself and does not inspect tests, solutions, public "
+                "benchmark payloads, tools, templates, or fallback bodies."
             ),
         },
         "source_contrastive_loss": {
