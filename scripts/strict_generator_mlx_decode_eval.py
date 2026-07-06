@@ -1224,10 +1224,12 @@ def evaluate_split(
                 "score_semantics": (
                     "When a model-generated plan prefix opens a loop and the beam is at an empty "
                     "loop-body line before any update call, this guard prioritizes an accumulator "
-                    "update start before loop exit/finalizer. It uses only generated prefix state, "
-                    "visible signature names, and task-blind grammar state; it does not inspect tests, "
-                    "solutions, public data, or render a full algorithm. Runs with this guard should be "
-                    "reported separately from unconstrained learned-generation evidence."
+                    "update start before loop exit/finalizer. If the model already emitted a mutation "
+                    "call prefix, it only completes that generated statement so the beam can dedent "
+                    "and search for a local return. It uses only generated prefix state, visible "
+                    "signature names, and task-blind grammar state; it does not inspect tests, "
+                    "solutions, public data, or render a full algorithm. Runs with this guard should "
+                    "be reported separately from unconstrained learned-generation evidence."
                 ),
                 "uses_eval_tests_or_solutions": False,
                 "uses_public_data": False,
@@ -1252,7 +1254,7 @@ def evaluate_split(
                 "policy": "task_blind_expression_value_hygiene_guard_v1",
                 "score_semantics": (
                     "Rejects generated-prefix-only expression value pathologies such as empty "
-                    "update-call arguments, direct set literals in append/update calls, and bare "
+                    "update-call arguments, direct set literals in mutation calls, and bare "
                     "builtin function/class objects closed as values. It does not choose an "
                     "algorithm, render a body, inspect tests/solutions, use public data, or grant "
                     "candidate-generation credit."

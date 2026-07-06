@@ -47,6 +47,17 @@ from strict_generator_mlx_decode_guards import (
     token_blocked_by_strict_decode_guard,
 )
 
+LOOP_PLAN_MUTATION_METHODS = {
+    "append",
+    "add",
+    "extend",
+    "update",
+    "setdefault",
+    "discard",
+    "remove",
+    "pop",
+}
+
 
 def beam_mentions_allowed_parameter(
     row: dict[str, Any],
@@ -953,9 +964,9 @@ def loop_plan_adequacy_for_body(
                         if value_names & loop_target_names:
                             binding_hits["loop_target_transformed"] += 1
                 if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute):
-                    if child.func.attr in {"append", "add", "extend", "update", "setdefault"}:
+                    if child.func.attr in LOOP_PLAN_MUTATION_METHODS:
                         update_call_count += 1
-                        if child.func.attr in {"append", "add", "extend", "update"}:
+                        if child.func.attr in LOOP_PLAN_MUTATION_METHODS - {"setdefault"}:
                             append_like_update_count += 1
                         if (
                             child.func.attr in {"append", "add"}
@@ -1294,7 +1305,7 @@ def body_action_trace_for_body(body: str, expectation: dict[str, Any], *, allowe
                 self_accumulator_append_count += 1
             if (
                 isinstance(node.func, ast.Attribute)
-                and node.func.attr in {"append", "add", "extend", "update"}
+                and node.func.attr in LOOP_PLAN_MUTATION_METHODS
                 and isinstance(node.func.value, ast.Name)
                 and node.func.value.id in assigned_names
             ):
@@ -1521,8 +1532,15 @@ def loop_plan_exploration_choices(
     has_loop = loop_plan_has_loop_over_source(body_text, source_arg=source_arg)
     inside_loop = loop_plan_inside_loop(prefix)
     has_update = loop_plan_has_update_call(body_text)
+    generated_mutation_choices = (
+        loop_plan_generated_mutation_continuation(line_values, accumulator=accumulator, loop_var=loop_var)
+        if inside_loop and enable_loop_progress_guard
+        else []
+    )
 
-    if inside_loop and line_values and line_values[0] == accumulator:
+    if generated_mutation_choices:
+        choices = generated_mutation_choices
+    elif inside_loop and line_values and line_values[0] == accumulator:
         choices = loop_plan_update_continuation(line_values, accumulator=accumulator, loop_var=loop_var, update_style=update_style)
     elif line_values and line_values[0] == accumulator and ("=" in line_values or not has_initializer):
         choices = loop_plan_initializer_continuation(line_values, accumulator=accumulator, shape=shape)
@@ -1792,7 +1810,7 @@ def expression_value_allows_empty_initializer(values: list[str], closer: str) ->
 
 def expression_value_inside_update_call(values: list[str]) -> bool:
     return any(
-        values[index : index + 3] in ([".", "append", "("], [".", "add", "("], [".", "extend", "("], [".", "update", "("])
+        values[index : index + 3] in [[".", method, "("] for method in LOOP_PLAN_MUTATION_METHODS]
         for index in range(max(0, len(values) - 8), max(0, len(values) - 2))
     )
 
@@ -1894,6 +1912,38 @@ def loop_plan_update_continuation(line_values: list[str], *, accumulator: str, l
         return [f"NAME:{loop_var}"]
     if line_values == [accumulator, ".", method, "(", loop_var]:
         return ["OP:)"]
+    if line_values == [accumulator, ".", method, "(", loop_var, ")"]:
+        return ["NEWLINE:"]
+    return []
+
+
+def loop_plan_generated_mutation_continuation(line_values: list[str], *, accumulator: str, loop_var: str) -> list[str]:
+    """Finish a generated mutation statement so loop beams can reach return.
+
+    This helper does not select an algorithm or method. It only recognizes that
+    the model already emitted an accumulator mutation call and advances the
+    syntactic transition needed to close that statement. That keeps learned
+    beams from spending the whole budget repeating partial update calls before
+    dedent/finalizer search can run.
+    """
+
+    if len(line_values) < 3:
+        return []
+    if line_values[0] != accumulator or line_values[1] != ".":
+        return []
+    method = line_values[2]
+    if method not in LOOP_PLAN_MUTATION_METHODS:
+        return []
+    if line_values == [accumulator, ".", method]:
+        return ["OP:("]
+    if line_values == [accumulator, ".", method, "("]:
+        if method == "pop":
+            return ["OP:)"]
+        return [f"NAME:{loop_var}"]
+    if line_values == [accumulator, ".", method, "(", loop_var]:
+        return ["OP:)"]
+    if line_values == [accumulator, ".", method, "(", ")"]:
+        return ["NEWLINE:"]
     if line_values == [accumulator, ".", method, "(", loop_var, ")"]:
         return ["NEWLINE:"]
     return []
@@ -2093,13 +2143,13 @@ def loop_plan_has_update_call(body_text: str) -> bool:
                     if loop_plan_value_has_stateful_transform(value):
                         return True
                 if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute):
-                    if child.func.attr in {"append", "add", "extend", "update", "setdefault"}:
+                    if child.func.attr in LOOP_PLAN_MUTATION_METHODS:
                         return True
     for raw_line in str(body_text or "").splitlines():
         line = raw_line.strip()
         if not line.endswith(")"):
             continue
-        if any(f".{method}(" in line for method in ["append", "add", "extend", "update", "setdefault"]):
+        if any(f".{method}(" in line for method in sorted(LOOP_PLAN_MUTATION_METHODS)):
             return True
     return False
 

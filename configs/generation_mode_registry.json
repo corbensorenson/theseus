@@ -472,7 +472,8 @@
         "reports/strict_generator_mlx_private_adaptation_semantic_slot_body_expression_repair_private_v1.json",
         "reports/strict_generator_mlx_decode_eval_semantic_slot_body_expression_repair_broad4_v1.json",
         "reports/strict_generator_mlx_private_adaptation_semantic_construction_profile_semantic_slot_private_smoke_v1.json",
-        "reports/strict_generator_mlx_decode_eval_semantic_construction_profile_broad4_v1.json"
+        "reports/strict_generator_mlx_decode_eval_semantic_construction_profile_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json"
       ],
       "accounting_contract": {
         "proposed_tokens_or_spans_source": "manifest_candidate_rows",
@@ -491,8 +492,8 @@
         "The full smoke improved heldout source-contrastive gap, semantic-plan accuracy, and semantic-slot accuracy, and emitted seven integrity-clean runtime-loaded candidates on broad4.",
         "A stronger private body-expression adaptation lowered heldout LM loss but did not improve broad4 functional pass and reduced completed candidate coverage.",
         "Functional pass remained zero; generated bodies still collapse to generic accumulator loops or malformed nested branch/update continuations, so the current wall is prompt-conditioned semantic expression/body choice.",
-        "The strict_full_body_semantic_construction_v1 profile now composes source-contrastive, semantic-plan, semantic-slot, loop-update, expression-synthesis, plan-conditioned body, update-contract, return-expression, and primary-dataflow losses without renderer/template/tool credit. It passes GREEN on the semantic-slot checkpoint, but the follow-up broad4 decode still scores 0/4 with no accepted strict candidate rows.",
-        "The latest decode starvation is sharper: learned beams repeatedly enter loop-update prefixes and fail to synthesize an exit/local return, so the next repair target is body-transition control rather than another generic semantic-weighting pass."
+        "The strict_full_body_semantic_construction_v1 profile now composes source-contrastive, semantic-plan, semantic-slot, loop-update, expression-synthesis, plan-conditioned body, update-contract, return-expression, and primary-dataflow losses without renderer/template/tool credit. It passes GREEN on the semantic-slot checkpoint, but the first follow-up broad4 decode scored 0/4 with no accepted strict candidate rows.",
+        "The body-transition guard follow-up removed the zero-candidate starvation on the same broad4 slice: 8/8 generated transformer-hybrid candidates are integrity-clean, 0/4 tasks starve, and verifier labels attach. This remains negative capability evidence because behavior is still 0/4, nontrivial-return rate is 0.0, and the remaining mismatches are loop_without_decision_or_state_update plus missing_semantic_update_value."
       ]
     },
     {

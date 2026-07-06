@@ -341,9 +341,19 @@ remain honestly bounded.
   is still RED: no accepted strict candidate rows, `0/4` behavior pass,
   nontrivial-return rate `0.0`, and top learned beams starve inside repeated
   loop-update prefixes with `inside_loop_without_update` and
-  `missing_local_return`. The next patch is learned loop exit/local-return
-  synthesis and body-transition control, not another selector or generic
-  semantic-weighting pass.
+  `missing_local_return`.
+- The first body-transition guard follow-up,
+  `reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json`,
+  removes that starvation mode on the same broad-private slice without public
+  data, teacher calls, templates, tools, fallback returns, or renderer credit:
+  `8` generated transformer/hybrid candidates are integrity-clean, verifier
+  labels attach, and zero-candidate tasks fall from `4/4` to `0/4`. This is
+  still negative capability evidence, not promotion evidence: behavior remains
+  `0/4`, nontrivial-return rate remains `0.0`, and the residual labels are now
+  `loop_without_decision_or_state_update` plus `missing_semantic_update_value`.
+  The next patch is learned semantic update choice and nontrivial local-return
+  synthesis, not another selector, fanout-width, or generic semantic-weighting
+  pass.
 - Phase 12 is wired: `reports/public_calibration_proposal_gate.json` is a
   VIEA-gated public-calibration proposal receipt. It requires candidate
   integrity, training-data firewall, alignment preflight, and exact public
@@ -1720,7 +1730,7 @@ thresholds before any production MLX route claim.
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
 | 8 | Resource, Cost, And Mac Acceleration Routing | Partial | Broaden private MLX replay row count and repair semantic candidate quality under explicit latency, quality, no-cheat, and route-eligibility thresholds before production routing. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
-| 10 | Practical Neural Seed Survival Lane | Partial | Improve strict full-body semantic construction against the blind residual and selector/oracle diagnosis: 93 eligible candidates, 22 tasks replayed, runtime-load rate 1.0, behavior pass rate 0.227273, 17 runtime-loaded failures, no candidate-budget lift from cap 8, and no hidden full-pool oracle lift. |
+| 10 | Practical Neural Seed Survival Lane | Partial | Body-transition control now emits 8/8 integrity-clean broad4 candidates with 0 zero-candidate tasks, but behavior remains 0/4 and nontrivial-return rate remains 0.0; next target is learned semantic update choice and parameter-dependent local-return synthesis. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |
 | 12 | Public Calibration And Residual Mining Discipline | Wired | Freeze the next genuinely fresh public surface only after direct learned candidate quality improves, then pass the proposal gate before execution and mine failures into private residual rows. |
 | 13 | Semantic IR And Substrate-Neutral Reasoning Atoms | Wired | Make future generator/verifier implementations consume these semantic obligation bindings in their native payloads rather than only through the current shared gate. |

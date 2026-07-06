@@ -185,8 +185,17 @@ training rows and `0` external inference. The follow-up decode smoke
 is still `RED`: broad-private pass remains `0/4`, nontrivial-return rate is
 `0.0`, and generated learned-prefix beams starve inside repeated loop-update
 calls with `inside_loop_without_update` and `missing_local_return` states. The
-next Phase 10 target is therefore learned loop exit/local-return synthesis and
-body-transition control, not more generic semantic weighting.
+first body-transition guard follow-up,
+`reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json`,
+removes that emission/starvation wall on the same slice: `8` generated
+transformer/hybrid rows are integrity-clean, verifier labels attach, and
+zero-candidate tasks fall from `4/4` to `0/4`, still with `0` public training
+rows, `0` external inference calls, and `0` fallback/template/router/tool
+credit. This is not a promotion: broad-private behavior remains `0/4`,
+nontrivial-return rate remains `0.0`, and the new residual labels are
+`loop_without_decision_or_state_update` and `missing_semantic_update_value`.
+The next Phase 10 target is therefore learned semantic update choice and
+nontrivial local-return synthesis, not more generic semantic weighting.
 `reports/semantic_ir_obligation_gate.json` now contributes
 `semantic_ir_obligation_spine_v1`. It binds candidate-integrity,
 private-verifier, and direct-generator obligations to the materialized semantic

@@ -938,15 +938,16 @@
         "reports/candidate_integrity_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
         "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
         "reports/strict_generator_mlx_private_adaptation_semantic_construction_profile_semantic_slot_private_smoke_v1.json",
-        "reports/strict_generator_mlx_decode_eval_semantic_construction_profile_broad4_v1.json"
+        "reports/strict_generator_mlx_decode_eval_semantic_construction_profile_broad4_v1.json",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json"
       ],
       "missing_items": [
         "strict full-body token candidates now have independent replay/loadability/functionality receipts, but behavior quality remains weak at 5/22 private eval tasks in the current receipt; increasing private replay candidate cap to 8 did not improve behavior, and the blind semantic residual plus selector/oracle diagnosis finds 17 runtime-loaded failures dominated by statically plausible but algorithmically wrong candidates, with baseline rank, prompt/AST-only blind rank, and full-pool pass-if-any oracle all stuck at 5/22",
-        "the strict_full_body_semantic_construction_v1 MLX repair profile now activates the required private semantic-plan/slot/loop/expression/update losses on the semantic-slot checkpoint, but the follow-up broad-private decode still scores 0/4 with zero accepted strict candidate rows and learned beams starving inside repeated loop-update prefixes without local returns",
+        "the strict_full_body_semantic_construction_v1 MLX repair profile now activates the required private semantic-plan/slot/loop/expression/update losses on the semantic-slot checkpoint; body-transition control now removes zero-candidate starvation on the broad4 follow-up with 8 integrity-clean transformer/hybrid rows and 0 zero-candidate tasks, but semantic behavior remains 0/4, nontrivial-return rate remains 0.0, and residuals are dominated by loop_without_decision_or_state_update plus missing_semantic_update_value",
         "the old Rust/template-like fanout inventory remains a separate baseline surface and must not be used as practical learned-generation promotion evidence",
         "C1 capability research lane now has a bounded verifier-driven learned body-token experiment gate, but the clean transformer/hybrid private replay records a falsifying semantic wall: 36 eligible integrity-verified candidates across 8 private tasks, selected/pass-if-any behavior 0.0, no promotion, and no public/external/fallback counters."
       ],
-      "smallest_next_patch": "Improve learned loop exit/local-return synthesis and body-transition control in the transformer/hybrid strict full-body generator: use only prompt/signature/private licensed training rows plus generated-prefix AST/state features to teach when to close loop-update calls, leave loops, and emit nontrivial local returns; do not use tests, solutions, hidden labels, decoder-contract target fields, public data, tools, templates, renderers, or fallback returns.",
+      "smallest_next_patch": "Improve learned semantic update choice and nontrivial local-return synthesis in the transformer/hybrid strict full-body generator: use only prompt/signature/private licensed training rows plus generated-prefix AST/state features to teach when a loop update should branch, transform values, call add/append/discard/remove safely, or synthesize a parameter-dependent return; do not use tests, solutions, hidden labels, decoder-contract target fields, public data, tools, templates, renderers, or fallback returns.",
       "integration_smoke": [
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
         "reports/neural_seed_strict_generator_fanout_receipt.json trigger_state=GREEN",
@@ -971,7 +972,14 @@
         "reports/correctness_generator_survival_lane_gate.json summary.public_training_rows_written=0",
         "reports/correctness_generator_survival_lane_gate.json summary.external_inference_calls=0",
         "reports/correctness_generator_survival_lane_gate.json summary.fallback_return_count=0",
-        "python3 -m py_compile scripts/code_lm_train_once_fanout.py scripts/neural_seed_strict_generator_fanout_receipt.py scripts/correctness_generator_survival_lane_gate.py",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json summary.generated_candidate_rows=8",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json summary.candidate_integrity.integrity_verified_candidate_count=8",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json summary.split_decode_starvation.broad_private_heldout.zero_candidate_task_count=0",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json summary.split_passes.broad_private_heldout=0",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json summary.public_training_rows=0",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json summary.external_inference_calls=0",
+        "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json summary.fallback_template_router_tool_credit_count=0",
+        "python3 -m py_compile scripts/code_lm_train_once_fanout.py scripts/neural_seed_strict_generator_fanout_receipt.py scripts/correctness_generator_survival_lane_gate.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_plans.py",
         "scripts/code_lm_train_once_fanout.py contains strict_generator_fanout_receipt_summary closure gate; next refreshed closure report must cite summary.strict_generator_fanout_receipt.ready=true"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence."
