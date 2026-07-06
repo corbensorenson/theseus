@@ -323,6 +323,16 @@ def main() -> int:
             "inspect tests/solutions, or grant learned-generation promotion credit."
         ),
     )
+    parser.add_argument(
+        "--use-body-transition-head",
+        action="store_true",
+        help=(
+            "Blend the learned prefix-conditioned body-transition projection into raw token logits. "
+            "This is a learned checkpoint head only; it does not render code, call tools, inspect tests, "
+            "or grant generation credit without candidate-integrity/verifier behavior."
+        ),
+    )
+    parser.add_argument("--body-transition-head-blend", type=float, default=0.35)
     parser.add_argument("--prefer-learned-prefix-decision-adequacy", action="store_true")
     parser.add_argument("--prefer-source-condition-adequacy", action="store_true")
     parser.add_argument("--require-source-condition-adequacy", action="store_true")
@@ -416,6 +426,8 @@ def main() -> int:
         use_semantic_plan_head_prefix=bool(args.use_semantic_plan_head_prefix),
         use_semantic_slot_head_prefix=bool(args.use_semantic_slot_head_prefix),
         enable_learned_expression_token_bias=bool(args.enable_learned_expression_token_bias),
+        use_body_transition_head=bool(args.use_body_transition_head),
+        body_transition_head_blend=max(0.0, min(1.0, float(args.body_transition_head_blend if args.body_transition_head_blend is not None else 0.35))),
         prefer_learned_prefix_decision_adequacy=bool(args.prefer_learned_prefix_decision_adequacy),
         prefer_source_condition_adequacy=bool(args.prefer_source_condition_adequacy),
         require_source_condition_adequacy=bool(args.require_source_condition_adequacy),
@@ -488,6 +500,8 @@ def run_decode_eval(
     use_semantic_plan_head_prefix: bool,
     use_semantic_slot_head_prefix: bool,
     enable_learned_expression_token_bias: bool,
+    use_body_transition_head: bool,
+    body_transition_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -523,6 +537,8 @@ def run_decode_eval(
                     "use_semantic_plan_head_prefix": bool(use_semantic_plan_head_prefix),
                     "use_semantic_slot_head_prefix": bool(use_semantic_slot_head_prefix),
                     "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
+                    "use_body_transition_head": bool(use_body_transition_head),
+                    "body_transition_head_blend": float(body_transition_head_blend or 0.0),
                     "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
                     "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
                     "require_source_condition_adequacy": bool(require_source_condition_adequacy),
@@ -623,6 +639,8 @@ def run_decode_eval(
             use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
             use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
             enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+            use_body_transition_head=use_body_transition_head,
+            body_transition_head_blend=body_transition_head_blend,
             prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
             prefer_source_condition_adequacy=prefer_source_condition_adequacy,
             require_source_condition_adequacy=require_source_condition_adequacy,
@@ -662,6 +680,8 @@ def run_decode_eval(
             use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
             use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
             enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+            use_body_transition_head=use_body_transition_head,
+            body_transition_head_blend=body_transition_head_blend,
             prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
             prefer_source_condition_adequacy=prefer_source_condition_adequacy,
             require_source_condition_adequacy=require_source_condition_adequacy,
@@ -697,6 +717,8 @@ def run_decode_eval(
                 use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
                 use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
                 enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+                use_body_transition_head=use_body_transition_head,
+                body_transition_head_blend=body_transition_head_blend,
                 prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
                 prefer_source_condition_adequacy=prefer_source_condition_adequacy,
                 require_source_condition_adequacy=require_source_condition_adequacy,
@@ -730,6 +752,8 @@ def run_decode_eval(
                 use_semantic_plan_head_prefix=bool(route_options["use_semantic_plan_head_prefix"]),
                 use_semantic_slot_head_prefix=bool(route_options.get("use_semantic_slot_head_prefix", use_semantic_slot_head_prefix)),
                 enable_learned_expression_token_bias=bool(route_options.get("enable_learned_expression_token_bias", enable_learned_expression_token_bias)),
+                use_body_transition_head=bool(route_options.get("use_body_transition_head", use_body_transition_head)),
+                body_transition_head_blend=float(route_options.get("body_transition_head_blend", body_transition_head_blend)),
                 prefer_learned_prefix_decision_adequacy=bool(route_options["prefer_learned_prefix_decision_adequacy"]),
                 prefer_source_condition_adequacy=bool(route_options["prefer_source_condition_adequacy"]),
                 require_source_condition_adequacy=bool(route_options["require_source_condition_adequacy"]),
@@ -821,6 +845,8 @@ def run_decode_eval(
             "use_semantic_plan_head_prefix": bool(use_semantic_plan_head_prefix),
             "use_semantic_slot_head_prefix": bool(use_semantic_slot_head_prefix),
             "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
+            "use_body_transition_head": bool(use_body_transition_head),
+            "body_transition_head_blend": float(body_transition_head_blend or 0.0),
             "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
             "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
             "require_source_condition_adequacy": bool(require_source_condition_adequacy),
@@ -937,7 +963,7 @@ def load_mlx_checkpoint(
     try:
         model.load_weights(str(checkpoint_path))
     except Exception as exc:
-        if "plan_router" not in str(exc) and "slot_router" not in str(exc):
+        if not any(name in str(exc) for name in ("plan_router", "slot_router", "body_transition_router")):
             raise
         strict_load = False
         model.load_weights(str(checkpoint_path), strict=False)
@@ -997,6 +1023,8 @@ def evaluate_split(
     use_semantic_plan_head_prefix: bool,
     use_semantic_slot_head_prefix: bool,
     enable_learned_expression_token_bias: bool,
+    use_body_transition_head: bool,
+    body_transition_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -1115,6 +1143,8 @@ def evaluate_split(
         use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
         use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
         enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+        use_body_transition_head=use_body_transition_head,
+        body_transition_head_blend=body_transition_head_blend,
         prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
         prefer_source_condition_adequacy=prefer_source_condition_adequacy or require_source_condition_adequacy,
         require_source_condition_adequacy=require_source_condition_adequacy,
@@ -1196,6 +1226,21 @@ def evaluate_split(
                 "beam_scheduler": "mlx_batched_active_beam_scheduler_v1",
                 "top_token_selection_policy": "argpartition_bounded_topk_v1",
                 "search_width_policy": "output_top_k_bounded_beam_branch_override_v1",
+            "body_transition_head": {
+                "enabled": bool(use_body_transition_head and hasattr(model, "body_transition_logits")),
+                "requested": bool(use_body_transition_head),
+                "blend": float(max(0.0, min(1.0, float(body_transition_head_blend or 0.0)))),
+                "policy": "learned_prefix_conditioned_body_transition_logit_blend_v1",
+                "score_semantics": (
+                    "Blends a checkpoint-trained prefix-conditioned body-transition projection into "
+                    "autoregressive token logits. It is model-derived and prompt/signature-visible only, "
+                    "but it is not a renderer, fallback, tool call, template, or promotion claim; behavior "
+                    "must still be earned through candidate integrity and private verifier replay."
+                ),
+                "uses_eval_tests_or_solutions": False,
+                "uses_public_data": False,
+                "candidate_generation_credit": 0,
+            },
             "requested_output_top_k": int(output_top_k or 0),
             "grammar_constrained_top_k": grammar_top_k,
             "decode_beam_width": beam_width,
@@ -1487,6 +1532,8 @@ def generate_candidates_mlx(
     use_semantic_plan_head_prefix: bool,
     use_semantic_slot_head_prefix: bool,
     enable_learned_expression_token_bias: bool,
+    use_body_transition_head: bool,
+    body_transition_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -1568,6 +1615,10 @@ def generate_candidates_mlx(
             src = mx.array([states[task_idx]["source_row"] for task_idx, _beam, _generated in refs], dtype=mx.int32)
             tgt = mx.array([generated for _task_idx, _beam, generated in refs], dtype=mx.int32)
             logits = model(src, tgt)[:, -1, :]
+            transition_blend = max(0.0, min(1.0, float(body_transition_head_blend or 0.0)))
+            if bool(use_body_transition_head) and transition_blend > 0.0 and hasattr(model, "body_transition_logits"):
+                transition_logits = model.body_transition_logits(src, tgt)[:, -1, :]
+                logits = (logits * (1.0 - transition_blend)) + (transition_logits * transition_blend)
             probs = mx.softmax(logits, axis=-1)
             mx.eval(probs)
             prob_rows = np.asarray(probs, dtype=np.float64)

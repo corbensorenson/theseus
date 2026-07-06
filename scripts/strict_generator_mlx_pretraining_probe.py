@@ -402,6 +402,7 @@ class MlxStrictGenerator:
                 self.output = nn.Linear(d_model, target_vocab_size)
                 self.plan_router = nn.Linear(d_model, target_vocab_size)
                 self.slot_router = nn.Linear(d_model, target_vocab_size * len(SEMANTIC_SLOT_ROLES))
+                self.body_transition_router = nn.Linear(d_model, target_vocab_size)
 
             def encode_source(self, src: Any) -> tuple[Any, Any]:
                 src_mask = additive_padding_mask(src, mx)
@@ -423,13 +424,18 @@ class MlxStrictGenerator:
                 flat = self.slot_router(pooled)
                 return flat.reshape((flat.shape[0], len(SEMANTIC_SLOT_ROLES), target_vocab_size))
 
-            def __call__(self, src: Any, tgt_in: Any) -> Any:
+            def decode_hidden(self, src: Any, tgt_in: Any) -> Any:
                 src_mask = additive_padding_mask(src, mx)
                 tgt_mask = nn.MultiHeadAttention.create_additive_causal_mask(tgt_in.shape[1], mx.float32)
                 target = self.target_embedding(tgt_in) + self.target_position[:, : tgt_in.shape[1], :]
                 memory, _pooled = self.encode_source(src)
-                decoded = self.decoder(target, memory, tgt_mask, src_mask)
-                return self.output(decoded)
+                return self.decoder(target, memory, tgt_mask, src_mask)
+
+            def body_transition_logits(self, src: Any, tgt_in: Any) -> Any:
+                return self.body_transition_router(self.decode_hidden(src, tgt_in))
+
+            def __call__(self, src: Any, tgt_in: Any) -> Any:
+                return self.output(self.decode_hidden(src, tgt_in))
 
         self.model = _Model()
 
@@ -1162,6 +1168,141 @@ def weighted_loss_fn_mlx(model: Any, src: Any, tgt: Any, pad_id: int, token_weig
     return weighted_loss_with_prefix_mlx(model, src, tgt, pad_id, token_weights, mx, nn, prefix_token_count=0)
 
 
+def body_transition_loss_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    transition_weights: Any,
+    mx: Any,
+    nn: Any,
+) -> Any:
+    if not hasattr(model, "body_transition_logits"):
+        return mx.array(0.0, dtype=mx.float32)
+    tgt_in = tgt[:, :-1]
+    tgt_out = tgt[:, 1:]
+    logits = model.body_transition_logits(src, tgt_in)
+    losses = nn.losses.cross_entropy(logits, tgt_out, reduction="none")
+    valid = (tgt_out != pad_id).astype(mx.float32) * transition_weights[:, 1:]
+    return mx.sum(losses * valid) / mx.maximum(mx.sum(valid), mx.array(1.0, dtype=mx.float32))
+
+
+def body_transition_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    transition_weights: Any,
+    body_transition_weight: float,
+    mx: Any,
+    nn: Any,
+) -> Any:
+    loss = weighted_loss_fn_mlx(model, src, tgt, pad_id, token_weights, mx, nn)
+    if float(body_transition_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_transition_weight)
+            * body_transition_loss_mlx(model, src, tgt, pad_id, transition_weights, mx, nn)
+        )
+    return loss
+
+
+def semantic_body_transition_aux_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+) -> Any:
+    loss = semantic_aux_weighted_loss_fn_mlx(
+        model,
+        src,
+        tgt,
+        pad_id,
+        token_weights,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+    )
+    if float(body_transition_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_transition_weight)
+            * body_transition_loss_mlx(model, src, tgt, pad_id, transition_weights, mx, nn)
+        )
+    return loss
+
+
+def semantic_body_transition_aux_source_contrastive_weighted_loss_fn_mlx(
+    model: Any,
+    src: Any,
+    mismatched_src: Any,
+    tgt: Any,
+    pad_id: int,
+    token_weights: Any,
+    source_contrastive_weight: float,
+    source_contrastive_margin: float,
+    source_contrastive_prefix_tokens: int,
+    source_contrastive_span_mode: str,
+    source_contrastive_body_start_id: int,
+    plan_targets: Any,
+    plan_sample_weights: Any,
+    semantic_plan_weight: float,
+    slot_targets: Any,
+    slot_sample_weights: Any,
+    semantic_slot_weight: float,
+    transition_weights: Any,
+    body_transition_weight: float,
+    mx: Any,
+    nn: Any,
+    slot_role_class_ids: list[Any] | None = None,
+) -> Any:
+    loss = semantic_aux_source_contrastive_weighted_loss_fn_mlx(
+        model,
+        src,
+        mismatched_src,
+        tgt,
+        pad_id,
+        token_weights,
+        source_contrastive_weight,
+        source_contrastive_margin,
+        source_contrastive_prefix_tokens,
+        source_contrastive_span_mode,
+        source_contrastive_body_start_id,
+        plan_targets,
+        plan_sample_weights,
+        semantic_plan_weight,
+        slot_targets,
+        slot_sample_weights,
+        semantic_slot_weight,
+        mx,
+        nn,
+        slot_role_class_ids=slot_role_class_ids,
+    )
+    if float(body_transition_weight or 0.0) > 0.0:
+        loss = loss + (
+            float(body_transition_weight)
+            * body_transition_loss_mlx(model, src, tgt, pad_id, transition_weights, mx, nn)
+        )
+    return loss
+
+
 def weighted_loss_with_prefix_mlx(
     model: Any,
     src: Any,
@@ -1790,6 +1931,94 @@ def semantic_slot_prefix_tokens_for_body(body: str, *, target_mode: str) -> list
         if str(token).startswith("SLOT:"):
             prefix.append(str(token))
     return prefix
+
+
+def body_transition_weight_rows(
+    target_rows: list[list[int]],
+    *,
+    target_vocab: dict[str, int],
+    target_mode: str,
+    transition_boost: float = 1.0,
+) -> tuple[list[list[float]], dict[str, Any]]:
+    pad_id = int(target_vocab.get("<pad>", 0))
+    bos_id = int(target_vocab.get("<bos>", -1))
+    eos_id = int(target_vocab.get("<eos>", -2))
+    body_start_id = int(target_vocab.get(PLAN_BODY_START_TOKEN, -999999))
+    inverse = {int(idx): str(tok) for tok, idx in target_vocab.items()}
+    boost = max(1.0, float(transition_boost if transition_boost is not None else 1.0))
+    rows: list[list[float]] = []
+    active_positions = 0
+    line_boundary_positions = 0
+    statement_head_positions = 0
+    closure_positions = 0
+    body_start_rows = 0
+    for row in target_rows:
+        weights: list[float] = []
+        body_active = int(body_start_id) < 0 or str(target_mode or "") == "body_tokens"
+        if int(body_start_id) >= 0 and any(int(value) == int(body_start_id) for value in row):
+            body_start_rows += 1
+            body_active = False
+        previous_token = ""
+        for pos, value in enumerate(row):
+            token_id = int(value)
+            token_text = inverse.get(token_id, "")
+            if token_id == pad_id or token_id == bos_id:
+                weights.append(0.0)
+                previous_token = token_text
+                continue
+            if token_id == body_start_id:
+                weights.append(0.0)
+                body_active = True
+                previous_token = token_text
+                continue
+            if not body_active:
+                weights.append(0.0)
+                previous_token = token_text
+                continue
+            if token_id == eos_id:
+                weights.append(boost)
+                active_positions += 1
+                closure_positions += 1
+                previous_token = token_text
+                continue
+            weight = 1.0
+            if previous_token == "NEWLINE:" or pos <= 1:
+                weight = max(weight, boost)
+                statement_head_positions += 1
+            if token_text in {"NEWLINE:", "DEDENT:", "INDENT:", "NAME:return", "NAME:for", "NAME:if", "NAME:while"}:
+                weight = max(weight, boost)
+                line_boundary_positions += 1
+            if token_text in {"OP:)", "OP:]", "OP:}", "<eos>"}:
+                weight = max(weight, boost)
+                closure_positions += 1
+            weights.append(weight)
+            active_positions += 1
+            previous_token = token_text
+        rows.append(weights)
+    return rows, {
+        "enabled": bool(active_positions),
+        "policy": "private_prefix_conditioned_body_transition_weight_rows_v1",
+        "rows": len(target_rows),
+        "target_mode": str(target_mode or ""),
+        "body_start_token": PLAN_BODY_START_TOKEN,
+        "body_start_rows": body_start_rows,
+        "active_positions": active_positions,
+        "statement_head_positions": statement_head_positions,
+        "line_boundary_positions": line_boundary_positions,
+        "closure_positions": closure_positions,
+        "transition_boost": boost,
+        "score_semantics": (
+            "Weights admitted private/licensed target-body token positions for the prefix-conditioned "
+            "body-transition auxiliary head. The labels are the same target next tokens used for normal "
+            "supervised training, masked to body-continuation positions after SLOT:BODY_START when present. "
+            "This trains a learned prefix-conditioned projection only; it does not render code, inspect "
+            "tests/solutions, use public benchmarks, or grant learned-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "uses_answer_metadata": False,
+        "candidate_generation_credit": 0,
+    }
 
 
 def semantic_plan_sample_weights(
@@ -2689,6 +2918,71 @@ def evaluate_loss_mlx(
     model.train()
     loss = sum(losses) / max(1, len(losses))
     return {"loss": round(loss, 6), "perplexity": round(min(1e12, pow(2.718281828459045, loss)), 6)}
+
+
+def evaluate_body_transition_mlx(
+    model: Any,
+    source_rows: list[list[int]],
+    target_rows: list[list[int]],
+    transition_weight_rows: list[list[float]],
+    *,
+    batch_size: int,
+    pad_id: int,
+    enabled: bool,
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    if not enabled or not source_rows or not target_rows or not transition_weight_rows:
+        return {
+            "enabled": bool(enabled),
+            "loss": None,
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    if not hasattr(model, "body_transition_logits"):
+        return {
+            "enabled": False,
+            "loss": None,
+            "reason": "model_has_no_body_transition_head",
+            "active_position_count": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+    losses: list[float] = []
+    active_positions = 0
+    model.eval()
+    for start in range(0, len(source_rows), batch_size):
+        src = mx.array(source_rows[start : start + batch_size], dtype=mx.int32)
+        tgt = mx.array(target_rows[start : start + batch_size], dtype=mx.int32)
+        weights = mx.array(transition_weight_rows[start : start + batch_size], dtype=mx.float32)
+        loss = body_transition_loss_mlx(model, src, tgt, pad_id, weights, mx, nn)
+        mx.eval(loss)
+        losses.append(float(loss.item()))
+        active_positions += sum(
+            1
+            for row in transition_weight_rows[start : start + batch_size]
+            for value in row[1:]
+            if float(value or 0.0) > 0.0
+        )
+    model.train()
+    loss = sum(losses) / max(1, len(losses))
+    return {
+        "enabled": True,
+        "policy": "private_prefix_conditioned_body_transition_eval_v1",
+        "loss": round(loss, 6),
+        "active_position_count": active_positions,
+        "score_semantics": (
+            "Heldout loss for the prefix-conditioned body-transition head over admitted private/licensed "
+            "target-body continuation positions. This is auxiliary training evidence only; it does not "
+            "emit candidates or support learned-generation promotion."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
 
 
 def evaluate_source_contrast_mlx(

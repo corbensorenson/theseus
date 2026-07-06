@@ -279,6 +279,25 @@ against solving the wall with another scalar replay-weight tweak. The next
 material repair should be a trainable body-continuation/state-transition or
 expression/value decision surface that emits coherent assignments, loops,
 updates, and finalizers directly from prompt/signature context.
+The first prefix-conditioned body-transition head is now implemented in the
+MLX strict-generator model, private adaptation loop, and decode loop. The
+canary
+`reports/strict_generator_mlx_private_adaptation_semantic_slot_body_transition_smoke_20260706.json`
+is `YELLOW`: heldout LM loss improves `5.162593 -> 4.222686`,
+semantic-slot loss improves `1.644809 -> 1.613966`, and the new
+body-transition heldout loss improves `8.010089 -> 4.222839` over `2616`
+train and `720` eval body-transition target positions, with zero public rows,
+external inference, fallback, template, router, or tool credit. It is not a
+route claim because semantic-plan loss regresses `2.934673 -> 3.792772`.
+The paired strict replay
+`reports/strict_generator_mlx_decode_eval_semantic_slot_body_transition_strict_replay2_20260706.json`
+is still `RED`: `0` emitted manifest candidate rows, `0` behavior passes, and
+`0.0` nontrivial-return rate. The top beams repeatedly select
+`SLOT:PLAN_AST_RETURN_MAX_AGGREGATE` for unrelated broad tasks and then
+degenerate into nested guard/expression fragments. This falsifies "add a
+body-transition loss" as sufficient. The next material repair is semantic-plan
+and semantic-slot adequacy plus a trainable AST/state-transition decision path,
+or localized semantic-IR body construction that changes strict replay behavior.
 
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint

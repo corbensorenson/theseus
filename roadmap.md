@@ -216,6 +216,16 @@ the roadmap:
    `YELLOW` because slot heldout loss regresses despite improved LM and plan
    loss. The next repair target is therefore semantic-slot/adaptation balance
    plus decode use, not just slot-head wiring.
+   The first prefix-conditioned body-transition head is now implemented in the
+   MLX strict-generator model, private adaptation loop, and decode loop. Its
+   private adaptation canary improves heldout LM, semantic-slot, and
+   body-transition loss, but remains `YELLOW` because semantic-plan loss
+   regresses. The paired strict replay is still `RED` with `0` emitted manifest
+   candidate rows, `0` behavior passes, and `0.0` nontrivial-return rate. This
+   makes the next Phase 10/13 repair sharper: semantic-plan/slot adequacy and
+   trainable AST/state-transition choice must improve, or semantic-IR localized
+   body construction must change strict replay behavior. Another scalar
+   target-side loss boost is not sufficient evidence.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 
@@ -2251,6 +2261,15 @@ MLX routing, or CUDA/MLX/Metal parity.
 | 17 | Simulation, Fidelity, And World-Model Contracts | Wired | Expand the same fidelity/counterfactual/world-adapter/failure-boundary semantics from the current bounded planning adapter to future real simulators and resource adapters without turning simulation into deployment evidence. |
 | 18 | Governance Rights, Constitutional Predicates, And Failure Boundaries | Frozen | When a trusted peer is reachable, validate remote Hive artifact endpoint citations through the same operator governance audit, VIEA route-validator, and claim-ledger path. |
 | 19 | Book-To-Theseus Backlog And Evidence Synchronization | Wired | Keep future AI_book source drift sticky until exact source-sync review decisions clear or update the affected phase contracts. |
+
+Current Phase 10/13 delta: the prefix-conditioned body-transition head is now
+real code and real evidence, not a TODO. It improves private transition loss
+but fails strict replay behavior, so the roadmap should not schedule a bigger
+body-transition/DPO/GRPO/MTP run as the next move. The next implementation
+should make semantic-plan/slot selection and AST/state-transition choices
+depend on prompt/signature context strongly enough to emit closed, nontrivial,
+verifier-loadable bodies. Localized semantic-IR repair is the right consumer if
+it changes replay behavior; it must not become another diagnostic-only report.
 
 Out of scope for that goal:
 

@@ -53,7 +53,10 @@ from strict_generator_mlx_decode_eval import (  # noqa: E402
 from strict_generator_mlx_replay_selection import select_family_disjoint_rows  # noqa: E402
 from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     SEMANTIC_SLOT_ROLES,
+    body_transition_aux_weighted_loss_fn_mlx,
+    body_transition_weight_rows,
     evaluate_loss_mlx,
+    evaluate_body_transition_mlx,
     evaluate_semantic_plan_mlx,
     evaluate_semantic_slot_mlx,
     evaluate_source_contrast_mlx,
@@ -61,6 +64,8 @@ from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     parameter_snapshot,
     parameter_update_summary,
     semantic_aux_source_contrastive_weighted_loss_fn_mlx,
+    semantic_body_transition_aux_weighted_loss_fn_mlx,
+    semantic_body_transition_aux_source_contrastive_weighted_loss_fn_mlx,
     semantic_aux_weighted_loss_fn_mlx,
     semantic_plan_sample_weights,
     semantic_plan_target_ids,
@@ -662,6 +667,21 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--body-transition-loss-weight",
+        type=float,
+        default=0.0,
+        help=(
+            "Private prefix-conditioned body-transition auxiliary loss weight. This trains a separate "
+            "learned projection over body-continuation positions after SLOT:BODY_START when present."
+        ),
+    )
+    parser.add_argument(
+        "--body-transition-position-boost",
+        type=float,
+        default=1.75,
+        help="Extra weight for statement-head, line-boundary, and closure positions in the body-transition head.",
+    )
+    parser.add_argument(
         "--semantic-slot-prefix-roles",
         default="",
         help=(
@@ -817,6 +837,14 @@ def main() -> int:
             0.0,
             float(args.semantic_slot_loss_weight if args.semantic_slot_loss_weight is not None else 0.0),
         ),
+        body_transition_loss_weight=max(
+            0.0,
+            float(args.body_transition_loss_weight if args.body_transition_loss_weight is not None else 0.0),
+        ),
+        body_transition_position_boost=max(
+            1.0,
+            float(args.body_transition_position_boost if args.body_transition_position_boost is not None else 1.75),
+        ),
         semantic_slot_prefix_roles=str(args.semantic_slot_prefix_roles or ""),
         loop_expression_synthesis_loss_boost=max(
             0.0,
@@ -918,6 +946,8 @@ def run_adaptation(
     loop_semantic_operation_roles: str,
     semantic_slot_prefix_loss_boost: float,
     semantic_slot_loss_weight: float,
+    body_transition_loss_weight: float,
+    body_transition_position_boost: float,
     semantic_slot_prefix_roles: str,
     loop_expression_synthesis_loss_boost: float,
     loop_expression_synthesis_roles: str,
@@ -970,6 +1000,8 @@ def run_adaptation(
                     "loop_semantic_operation_roles": str(loop_semantic_operation_roles or ""),
                     "semantic_slot_prefix_loss_boost": float(semantic_slot_prefix_loss_boost or 0.0),
                     "semantic_slot_loss_weight": float(semantic_slot_loss_weight or 0.0),
+                    "body_transition_loss_weight": float(body_transition_loss_weight or 0.0),
+                    "body_transition_position_boost": float(body_transition_position_boost or 0.0),
                     "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
                     "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
                     "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -1169,6 +1201,18 @@ def run_adaptation(
     eval_source_rows = encode_many(eval_source_texts, source_vocab, max_source)
     train_target_rows = encode_target_rows(train_bodies, target_vocab, max_target, target_mode=target_mode)
     eval_target_rows = encode_target_rows(eval_bodies, target_vocab, max_target, target_mode=target_mode)
+    train_body_transition_weights, body_transition_train_summary = body_transition_weight_rows(
+        train_target_rows,
+        target_vocab=target_vocab,
+        target_mode=target_mode,
+        transition_boost=body_transition_position_boost,
+    )
+    eval_body_transition_weights, body_transition_eval_summary = body_transition_weight_rows(
+        eval_target_rows,
+        target_vocab=target_vocab,
+        target_mode=target_mode,
+        transition_boost=body_transition_position_boost,
+    )
     negative_replay = select_negative_replay_examples(
         config,
         all_rows,
@@ -1228,6 +1272,7 @@ def run_adaptation(
         }
     semantic_plan_enabled = float(semantic_plan_loss_weight or 0.0) > 0.0 and hasattr(model, "semantic_plan_logits")
     semantic_slot_requested = float(semantic_slot_loss_weight or 0.0) > 0.0 and hasattr(model, "semantic_slot_logits")
+    body_transition_requested = float(body_transition_loss_weight or 0.0) > 0.0 and hasattr(model, "body_transition_logits")
     train_examples = [{"source_text": text} for text in train_source_texts]
     loss_weight_budget: dict[str, Any] = {}
     if enable_primary_dataflow_weights:
@@ -1457,6 +1502,11 @@ def run_adaptation(
         and int(train_slot_summary.get("active_target_count") or 0) > 0
         and int(eval_slot_summary.get("active_target_count") or 0) > 0
     )
+    body_transition_enabled = (
+        body_transition_requested
+        and int(body_transition_train_summary.get("active_positions") or 0) > 0
+        and int(body_transition_eval_summary.get("active_positions") or 0) > 0
+    )
     before = parameter_snapshot(model, mlx_utils, mx)
     heldout_before = evaluate_loss_mlx(
         model,
@@ -1487,6 +1537,17 @@ def run_adaptation(
         mx=mx,
         nn=nn,
         slot_role_class_ids=semantic_slot_class_id_arrays,
+    )
+    body_transition_before = evaluate_body_transition_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        eval_body_transition_weights,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=body_transition_enabled,
+        mx=mx,
+        nn=nn,
     )
     source_contrastive_active = float(source_contrastive_loss_weight or 0.0) > 0.0
     source_contrastive_span_mode = "prefix"
@@ -1526,6 +1587,21 @@ def run_adaptation(
         if source_contrastive_active and semantic_slot_enabled
         else None
     )
+    loss_and_grad_body_transition = (
+        nn.value_and_grad(model, body_transition_aux_weighted_loss_fn_mlx)
+        if body_transition_enabled
+        else None
+    )
+    loss_and_grad_semantic_body_transition = (
+        nn.value_and_grad(model, semantic_body_transition_aux_weighted_loss_fn_mlx)
+        if body_transition_enabled and semantic_slot_enabled
+        else None
+    )
+    loss_and_grad_semantic_body_transition_contrast = (
+        nn.value_and_grad(model, semantic_body_transition_aux_source_contrastive_weighted_loss_fn_mlx)
+        if body_transition_enabled and semantic_slot_enabled and source_contrastive_active
+        else None
+    )
     loss_and_grad_negative_plain = (
         nn.value_and_grad(model, negative_replay_weighted_loss_fn_mlx)
         if negative_replay_active
@@ -1558,6 +1634,7 @@ def run_adaptation(
     plan_weight_matrix = mx.array(train_plan_weights, dtype=mx.float32) if semantic_plan_enabled else None
     slot_target_matrix = mx.array(train_slot_targets, dtype=mx.int32) if semantic_slot_enabled else None
     slot_weight_matrix = mx.array(train_slot_weights, dtype=mx.float32) if semantic_slot_enabled else None
+    body_transition_weight_matrix = mx.array(train_body_transition_weights, dtype=mx.float32) if body_transition_enabled else None
     negative_source_matrix = mx.array(negative_source_rows, dtype=mx.int32) if negative_replay_active else None
     negative_target_matrix = mx.array(negative_target_rows, dtype=mx.int32) if negative_replay_active else None
     negative_weight_matrix = mx.array(negative_token_weight_rows, dtype=mx.float32) if negative_replay_active else None
@@ -1572,6 +1649,8 @@ def run_adaptation(
         mx.eval(plan_target_matrix, plan_weight_matrix)
     if semantic_slot_enabled:
         mx.eval(slot_target_matrix, slot_weight_matrix)
+    if body_transition_enabled:
+        mx.eval(body_transition_weight_matrix)
     if negative_replay_active:
         mx.eval(negative_source_matrix, negative_target_matrix, negative_weight_matrix)
     if pairwise_replay_active:
@@ -1621,6 +1700,8 @@ def run_adaptation(
             if semantic_slot_enabled:
                 slot_targets = slot_target_matrix[batch_indices]
                 slot_weights = slot_weight_matrix[batch_indices]
+            if body_transition_enabled:
+                body_transition_weights = body_transition_weight_matrix[batch_indices]
             if negative_replay_active:
                 neg_count = len(negative_source_rows)
                 neg_indices = [
@@ -1804,6 +1885,47 @@ def run_adaptation(
                     mx,
                     nn,
                 )
+            elif (
+                source_contrastive_active
+                and semantic_slot_enabled
+                and body_transition_enabled
+                and loss_and_grad_semantic_body_transition_contrast is not None
+            ):
+                shifted_indices = indices[1:] + indices[:1]
+                mismatched_src = source_matrix[mx.array(shifted_indices, dtype=mx.int32)]
+                effective_contrastive_weight = source_contrastive_loss_weight if len(indices) > 1 else 0.0
+                if semantic_plan_enabled:
+                    plan_targets_arg = plan_targets
+                    plan_weights_arg = plan_weights
+                    effective_plan_weight = semantic_plan_loss_weight
+                else:
+                    plan_targets_arg = tgt[:, 0]
+                    plan_weights_arg = weights[:, 0]
+                    effective_plan_weight = 0.0
+                loss, grads = loss_and_grad_semantic_body_transition_contrast(
+                    model,
+                    src,
+                    mismatched_src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    float(effective_contrastive_weight),
+                    float(source_contrastive_margin),
+                    int(source_contrastive_prefix_tokens),
+                    source_contrastive_span_mode,
+                    source_contrastive_body_start_id,
+                    plan_targets_arg,
+                    plan_weights_arg,
+                    float(effective_plan_weight),
+                    slot_targets,
+                    slot_weights,
+                    float(semantic_slot_loss_weight),
+                    body_transition_weights,
+                    float(body_transition_loss_weight),
+                    mx,
+                    nn,
+                    semantic_slot_class_id_arrays,
+                )
             elif source_contrastive_active and semantic_slot_enabled and loss_and_grad_semantic_aux_contrast is not None:
                 shifted_indices = indices[1:] + indices[:1]
                 mismatched_src = source_matrix[mx.array(shifted_indices, dtype=mx.int32)]
@@ -1880,6 +2002,37 @@ def run_adaptation(
                     mx,
                     nn,
                 )
+            elif (
+                semantic_slot_enabled
+                and body_transition_enabled
+                and loss_and_grad_semantic_body_transition is not None
+            ):
+                if semantic_plan_enabled:
+                    plan_targets_arg = plan_targets
+                    plan_weights_arg = plan_weights
+                    effective_plan_weight = semantic_plan_loss_weight
+                else:
+                    plan_targets_arg = tgt[:, 0]
+                    plan_weights_arg = weights[:, 0]
+                    effective_plan_weight = 0.0
+                loss, grads = loss_and_grad_semantic_body_transition(
+                    model,
+                    src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    plan_targets_arg,
+                    plan_weights_arg,
+                    float(effective_plan_weight),
+                    slot_targets,
+                    slot_weights,
+                    float(semantic_slot_loss_weight),
+                    body_transition_weights,
+                    float(body_transition_loss_weight),
+                    mx,
+                    nn,
+                    semantic_slot_class_id_arrays,
+                )
             elif semantic_slot_enabled and loss_and_grad_semantic_aux is not None:
                 if semantic_plan_enabled:
                     plan_targets_arg = plan_targets
@@ -1918,6 +2071,18 @@ def run_adaptation(
                     mx,
                     nn,
                     semantic_plan_class_id_array,
+                )
+            elif body_transition_enabled and loss_and_grad_body_transition is not None:
+                loss, grads = loss_and_grad_body_transition(
+                    model,
+                    src,
+                    tgt,
+                    pad_id,
+                    weights,
+                    body_transition_weights,
+                    float(body_transition_loss_weight),
+                    mx,
+                    nn,
                 )
             else:
                 loss, grads = loss_and_grad_plain(model, src, tgt, pad_id, weights, mx, nn)
@@ -1962,6 +2127,17 @@ def run_adaptation(
         mx=mx,
         nn=nn,
         slot_role_class_ids=semantic_slot_class_id_arrays,
+    )
+    body_transition_after = evaluate_body_transition_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        eval_body_transition_weights,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        enabled=body_transition_enabled,
+        mx=mx,
+        nn=nn,
     )
     source_contrast_after = evaluate_source_contrast_mlx(
         model,
@@ -2109,6 +2285,8 @@ def run_adaptation(
             "loop_semantic_operation_roles": str(loop_semantic_operation_roles or ""),
             "semantic_slot_prefix_loss_boost": float(semantic_slot_prefix_loss_boost or 0.0),
             "semantic_slot_loss_weight": float(semantic_slot_loss_weight or 0.0),
+            "body_transition_loss_weight": float(body_transition_loss_weight or 0.0),
+            "body_transition_position_boost": float(body_transition_position_boost or 0.0),
             "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
             "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
             "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -2295,6 +2473,34 @@ def run_adaptation(
                 "candidate, renderer output, fallback, public-training row, or learned-generation promotion claim."
             ),
         },
+        "body_transition_auxiliary": {
+            "enabled": body_transition_enabled,
+            "requested": body_transition_requested,
+            "policy": "private_prefix_conditioned_body_transition_auxiliary_v1" if body_transition_enabled else "not_enabled",
+            "weight": float(body_transition_loss_weight or 0.0),
+            "target_mode": target_mode,
+            "train_targets": body_transition_train_summary,
+            "eval_targets": body_transition_eval_summary,
+            "heldout_transition_loss_before": body_transition_before.get("loss"),
+            "heldout_transition_loss_after": body_transition_after.get("loss"),
+            "heldout_transition_improved": (
+                body_transition_enabled
+                and body_transition_before.get("loss") is not None
+                and body_transition_after.get("loss") is not None
+                and float(body_transition_after["loss"]) < float(body_transition_before["loss"])
+            ),
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+            "uses_answer_metadata": False,
+            "served_at_runtime": False,
+            "candidate_generation_credit": 0,
+            "score_semantics": (
+                "Private prefix-conditioned body-transition auxiliary supervision. It trains a separate "
+                "learned projection from source plus generated target prefix to the next body token over "
+                "admitted private/licensed target-body continuation positions. It emits no candidate by "
+                "itself and grants no learned-generation credit without strict decode/verifier behavior."
+            ),
+        },
         "parameter_count": update_summary["parameter_count"],
         "parameter_update_fraction": update_summary["parameter_update_fraction"],
         "parameter_tensor_update_fraction": update_summary["parameter_tensor_update_fraction"],
@@ -2360,6 +2566,7 @@ def run_adaptation(
             "semantic_plan_auxiliary": payload["semantic_plan_auxiliary"],
             "semantic_plan_visible_operation_weighting": payload["semantic_plan_visible_operation_weighting"],
             "semantic_plan_label_space": payload["semantic_plan_label_space"],
+            "body_transition_auxiliary": payload["body_transition_auxiliary"],
             "strict_target_guard": payload["strict_target_guard"],
             "negative_replay_unlikelihood": payload["negative_replay_unlikelihood"],
             "pairwise_replay_preference": payload["pairwise_replay_preference"],
@@ -2663,6 +2870,15 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             ),
             "soft",
             dict_or_empty(payload.get("semantic_slot_auxiliary")),
+        ),
+        gate(
+            "body_transition_loss_improved_when_enabled",
+            (
+                not bool(dict_or_empty(payload.get("body_transition_auxiliary")).get("enabled"))
+                or bool(dict_or_empty(payload.get("body_transition_auxiliary")).get("heldout_transition_improved"))
+            ),
+            "soft",
+            dict_or_empty(payload.get("body_transition_auxiliary")),
         ),
         gate(
             "source_contrastive_gap_improved_when_enabled",
