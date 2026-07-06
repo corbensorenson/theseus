@@ -2334,6 +2334,26 @@ verifier-loadable bodies after a compatible plan. Localized semantic-IR repair
 is the right consumer if it changes replay behavior; it must not become another
 diagnostic-only report.
 
+Current Phase 10/13 operation-adequacy delta: source-condition operation
+evidence is now stricter and participates earlier in strict decode. The decode
+planner reports `missing_expected_update_call` when the learned prefix predicts
+an update call but the body emits only assignment transforms, operation evidence
+is ranked ahead of generic loop-score proxies, and prompt-visible operation
+tags can propose operation-bearing branch/update tokens before the generic loop
+path preempts them. The bounded private canaries
+`reports/strict_generator_mlx_rung_decode_sweep_operation_adequacy_canary_20260706.json`,
+`reports/strict_generator_mlx_rung_decode_sweep_operation_rank_canary_20260706.json`,
+and
+`reports/strict_generator_mlx_rung_decode_sweep_operation_priority_canary_20260706.json`
+are clean but behavior-zero: `4` integrity-verified generated rows, `0`
+integrity mismatches, nontrivial-return rate `1.0`, and `0/2` private passes.
+The remaining emitted bodies are shallow accumulators such as
+`out.append(item)` and `out = out + item`, with missing semantic update value,
+missing expected update call, and missing clamp/round operation evidence. The
+next implementation target is therefore trainable semantic body construction
+or localized semantic-IR repair that changes generated update/finalizer bodies,
+not another source-condition ranker or diagnostic guard.
+
 Out of scope for that goal:
 
 - Long training runs.

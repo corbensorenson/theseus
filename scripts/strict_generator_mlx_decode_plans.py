@@ -189,7 +189,25 @@ def source_condition_exploration_choices(
     _lines, current_depth, current_values = prefix_lines_with_depth(prefix)
     progress = source_condition_prefix_progress(prefix, expectation)
     if operation_tags:
-        for token_text in source_condition_operation_exploration_tokens(values, operation_tags=operation_tags):
+        body_text = decode_body_tokens(prefix)
+        accumulator = loop_plan_first_assigned_local(body_text)
+        loop_target = source_condition_prefix_loop_target(prefix)
+        for token_text in source_condition_operation_prefix_tokens(
+            values,
+            operation_tags=operation_tags,
+            accumulator=accumulator,
+            loop_target=loop_target,
+            default_arg=default_arg,
+            inside_loop=current_depth > 0,
+            has_operation_evidence=bool(progress.get("has_operation_evidence")),
+        ):
+            add_token(token_text)
+        for token_text in source_condition_operation_exploration_tokens(
+            values,
+            operation_tags=operation_tags,
+            loop_target=loop_target,
+            default_arg=default_arg,
+        ):
             add_token(token_text)
         if choices:
             return choices
@@ -723,6 +741,25 @@ def source_condition_priority_prefix(prefix: list[str], expectation: dict[str, A
         return False
     values = tuple(token_values(current_line_tokens(prefix)))
     _lines, current_depth, current_values = prefix_lines_with_depth(prefix)
+    operation_tags = {str(item) for item in list(expectation.get("operation_tags") or []) if str(item)}
+    if operation_tags and bool(expectation.get("requires_operation_evidence")):
+        body_text = decode_body_tokens(prefix)
+        operation_evidence = source_condition_operation_evidence_for_body(body_text, expectation)
+        if not bool(operation_evidence.get("has_operation_evidence")):
+            loop_target = source_condition_prefix_loop_target(prefix)
+            operation_prefix = source_condition_operation_prefix_tokens(
+                values,
+                operation_tags=operation_tags,
+                accumulator=loop_plan_first_assigned_local(body_text),
+                loop_target=loop_target,
+                default_arg=str(expectation.get("default_arg") or ""),
+                inside_loop=current_depth > 0,
+                has_operation_evidence=False,
+            )
+            if operation_prefix:
+                return True
+            if values and current_line_tail_needs_operand(list(values)):
+                return True
     if values == ("return",):
         return True
     truthiness_arg = str(expectation.get("truthiness_arg") or "")
@@ -1076,6 +1113,8 @@ def learned_prefix_decision_final_decode_beam_sort_key(
     prefix_tokens = [str(tok) for tok in list(prefix_meta.get("learned_plan_prefix_tokens") or [])]
     learned_expectation = learned_prefix_decision_expectation_from_tokens(prefix_tokens)
     body = decode_body_tokens(body_tokens_for_target_mode(decoded_tokens, target_mode=target_mode))
+    source_adequacy = source_condition_adequacy_for_body(body, expectation, allowed_names=None)
+    source_operation_rank = source_condition_operation_rank_metrics(source_adequacy)
     adequacy = source_condition_adequacy_for_body(body, learned_expectation, allowed_names=None)
     loop_expectation = learned_prefix_loop_expectation_from_tokens(prefix_tokens)
     loop_adequacy = loop_plan_adequacy_for_body(body, loop_expectation, allowed_names=None)
@@ -1088,6 +1127,9 @@ def learned_prefix_decision_final_decode_beam_sort_key(
     ]
     duplicate_penalty = len(exact_slots) - len(set(exact_slots))
     return (
+        int(bool(source_adequacy.get("enabled")) and bool(source_adequacy.get("adequate"))),
+        int(source_operation_rank.get("hit_operation_tag_count") or 0),
+        -int(source_operation_rank.get("missing_operation_tag_count") or 0),
         int(bool(learned_expectation.get("enabled"))),
         int(bool(loop_expectation.get("enabled"))),
         int(loop_adequacy.get("score") or 0),
@@ -1432,7 +1474,11 @@ def loop_plan_adequacy_for_body(
         score += 4 if loop_over_source_count else -4
         if not loop_over_source_count:
             failures.append("missing_loop_over_source")
+    expected_update_call = bool(update_ops & {"append_item", "call"})
     score += 3 if update_call_count else -2
+    if expected_update_call and not update_call_count:
+        score -= 6
+        failures.append("missing_expected_update_call")
     if update_ops and any(op in {"append_item", "call"} for op in update_ops):
         score += 2 if append_like_update_count or update_call_count else -2
     if "has_branch" in state_transitions or "loop_has_branch" in state_transitions:
@@ -2635,10 +2681,13 @@ def source_condition_final_decode_beam_sort_key(
     decoded_tokens = [inverse.get(int(idx), "<unk>") for idx in list(row.get("generated") or [])[1:]]
     body = decode_body_tokens(body_tokens_for_target_mode(decoded_tokens, target_mode=target_mode))
     adequacy = source_condition_adequacy_for_body(body, expectation, allowed_names=None)
+    operation_rank = source_condition_operation_rank_metrics(adequacy)
     return (
         int(bool(adequacy.get("adequate"))),
         int(adequacy.get("satisfied_feature_count") or 0),
         int(bool(adequacy.get("has_operation_evidence"))),
+        int(operation_rank.get("hit_operation_tag_count") or 0),
+        -int(operation_rank.get("missing_operation_tag_count") or 0),
         int(bool(adequacy.get("has_guarded_first_item_return"))),
         int(bool(adequacy.get("has_sequence_type_guard"))),
         int(bool(adequacy.get("has_truthiness_guard"))),
@@ -2698,6 +2747,18 @@ def source_condition_prefix_progress(prefix: list[str], expectation: dict[str, A
             + (3 * has_guarded_first_item_return)
             + (3 * has_operation_evidence)
         ),
+    }
+
+
+def source_condition_operation_rank_metrics(adequacy: dict[str, Any]) -> dict[str, int]:
+    operation_evidence = dict_or_empty(adequacy.get("operation_evidence"))
+    hit_count = len([item for item in list(operation_evidence.get("hit_operation_tags") or []) if str(item)])
+    missing_count = len([item for item in list(operation_evidence.get("missing_operation_tags") or []) if str(item)])
+    recognized_count = len([item for item in list(operation_evidence.get("recognized_operation_tags") or []) if str(item)])
+    return {
+        "hit_operation_tag_count": int(hit_count),
+        "missing_operation_tag_count": int(missing_count),
+        "recognized_operation_tag_count": int(recognized_count),
     }
 
 
@@ -2771,7 +2832,90 @@ def source_condition_adequacy_for_body(
     }
 
 
-def source_condition_operation_exploration_tokens(values: tuple[str, ...], *, operation_tags: set[str]) -> list[str]:
+def source_condition_prefix_loop_target(prefix: list[str]) -> str:
+    lines, _current_depth, _current_values = prefix_lines_with_depth(prefix)
+    for _depth, values in reversed(lines):
+        clean = [str(item) for item in values]
+        if len(clean) >= 4 and clean[0] == "for" and clean[1].isidentifier() and clean[2] == "in":
+            return clean[1]
+    return ""
+
+
+def source_condition_operation_prefix_tokens(
+    values: tuple[str, ...],
+    *,
+    operation_tags: set[str],
+    accumulator: str,
+    loop_target: str,
+    default_arg: str,
+    inside_loop: bool,
+    has_operation_evidence: bool,
+) -> list[str]:
+    if not operation_tags or has_operation_evidence:
+        return []
+    filter_tags = {
+        "op_abs_tolerance_filter",
+        "op_abs_positive_filter",
+        "op_threshold_filter",
+        "op_clip_to_range",
+    }
+    transform_tags = {
+        "op_round_values",
+        "op_clip_to_range",
+        "op_numeric_summary",
+        "op_windowed_delta",
+    }
+    choices: list[str] = []
+    if not values:
+        if inside_loop and operation_tags & filter_tags:
+            choices.append("NAME:if")
+        if inside_loop and accumulator and operation_tags & transform_tags:
+            choices.append(f"NAME:{accumulator}")
+        return list(dict.fromkeys(choices))[:4]
+    if accumulator and values == (accumulator,):
+        return ["OP:="]
+    if accumulator and values == (accumulator, "="):
+        if "op_round_values" in operation_tags:
+            choices.append("NAME:round")
+        if "op_clip_to_range" in operation_tags:
+            choices.extend(["NAME:min", "NAME:max"])
+        if "op_numeric_summary" in operation_tags:
+            choices.extend(["NAME:sum", "NAME:max", "NAME:min"])
+        return list(dict.fromkeys(choices))[:5]
+    if values == ("if",):
+        if operation_tags & {"op_abs_tolerance_filter", "op_abs_positive_filter", "op_windowed_delta"}:
+            choices.append("NAME:abs")
+        if loop_target and operation_tags & {"op_threshold_filter", "op_clip_to_range"}:
+            choices.append(f"NAME:{loop_target}")
+        return list(dict.fromkeys(choices))[:3]
+    if values == ("if", "abs"):
+        return ["OP:("]
+    if values == ("if", "abs", "(") and loop_target:
+        return [f"NAME:{loop_target}"]
+    if values == ("if", "abs", "(", loop_target):
+        return ["OP:)"]
+    if len(values) >= 5 and values[0] == "if" and "abs" in values and values[-1] == ")" and not any(
+        item in values for item in {"<", "<=", ">", ">=", "==", "!="}
+    ):
+        return ["OP:<=", "OP:<"]
+    if (
+        len(values) >= 6
+        and values[0] == "if"
+        and "abs" in values
+        and values[-1] in {"<", "<=", ">", ">=", "==", "!="}
+        and default_arg
+    ):
+        return [f"NAME:{default_arg}"]
+    return []
+
+
+def source_condition_operation_exploration_tokens(
+    values: tuple[str, ...],
+    *,
+    operation_tags: set[str],
+    loop_target: str = "",
+    default_arg: str = "",
+) -> list[str]:
     if not values or not operation_tags:
         return []
     if not current_line_tail_needs_operand(list(values)):
@@ -2791,6 +2935,10 @@ def source_condition_operation_exploration_tokens(values: tuple[str, ...], *, op
         choices.append("NAME:round")
     if "op_numeric_summary" in operation_tags:
         choices.extend(["NAME:round", "NAME:abs", "NAME:min", "NAME:max", "NAME:sum"])
+    if values and values[0] == "if" and loop_target:
+        choices.append(f"NAME:{loop_target}")
+    if values and values[0] == "if" and default_arg:
+        choices.append(f"NAME:{default_arg}")
     return list(dict.fromkeys(choices))[:5]
 
 

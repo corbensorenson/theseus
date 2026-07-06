@@ -374,6 +374,25 @@ Production route eligibility now fails closed as
 has moved from candidate starvation to semantic/type-handling quality in legal
 full-body token candidates.
 
+The follow-up operation-adequacy decode pass makes that wall more explicit
+without granting any learned-generation credit. `strict_generator_mlx_decode_plans.py`
+now treats a model-generated `SLOT:UPDATE_CALL` prefix with no update call in
+the decoded body as `missing_expected_update_call`, ranks prompt-visible
+operation evidence ahead of generic loop-score proxies, and lets
+prompt-derived operation tags propose operation-bearing branch/update tokens
+before the generic loop-plan path preempts them. The bounded private canaries
+`reports/strict_generator_mlx_rung_decode_sweep_operation_adequacy_canary_20260706.json`,
+`reports/strict_generator_mlx_rung_decode_sweep_operation_rank_canary_20260706.json`,
+and
+`reports/strict_generator_mlx_rung_decode_sweep_operation_priority_canary_20260706.json`
+all remain clean but behavior-zero: generated rows `4`, integrity mismatches
+`0`, nontrivial-return rate `1.0`, and passes `0/2`. Candidate bodies are now
+diagnosed as shallow `out.append(item)` or `out = out + item` loops with
+missing semantic update values, missing expected update calls, and missing
+`op_clip_to_range` / `op_round_values` evidence. This confirms the remaining
+wall is trainable semantic body construction, not another source-condition
+ranker, decode guard, or operation-tag diagnostic.
+
 The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
 `configs/artifact_retention_budget_policy.json` defines report/checkpoint
 budgets and retention classes, and
