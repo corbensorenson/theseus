@@ -240,6 +240,7 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "closed_state_transition_weighting",
             "body_action_auxiliary",
             "body_operand_auxiliary",
+            "body_aux_semantic_event_weighting",
             "loop_semantic_operation_weighting",
             "loop_expression_synthesis_weighting",
             "plan_conditioned_body_weighting",
@@ -282,6 +283,9 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
             "body_operand_class_balance": True,
             "body_operand_class_balance_min_weight": 0.35,
             "body_operand_class_balance_max_weight": 3.0,
+            "body_aux_semantic_event_weighting": True,
+            "body_aux_semantic_event_min_factor": 1.0,
+            "body_aux_semantic_event_max_factor": 3.0,
             "body_action_loss_weight": 0.08,
             "body_operand_loss_weight": 0.10,
             "loop_semantic_operation_loss_boost": 3.2,
@@ -1048,6 +1052,17 @@ def main() -> int:
     parser.add_argument("--body-operand-class-balance-min-weight", type=float, default=0.35)
     parser.add_argument("--body-operand-class-balance-max-weight", type=float, default=3.0)
     parser.add_argument(
+        "--body-aux-semantic-event-weighting",
+        action="store_true",
+        help=(
+            "Focus body transition/action/operand auxiliary losses on the same private semantic event "
+            "positions already boosted by body-construction token weighting. This changes loss weights "
+            "only and grants no candidate-generation credit."
+        ),
+    )
+    parser.add_argument("--body-aux-semantic-event-min-factor", type=float, default=1.0)
+    parser.add_argument("--body-aux-semantic-event-max-factor", type=float, default=3.0)
+    parser.add_argument(
         "--semantic-slot-prefix-roles",
         default="",
         help=(
@@ -1237,6 +1252,15 @@ def main() -> int:
             0.0,
             float(args.body_operand_class_balance_max_weight if args.body_operand_class_balance_max_weight is not None else 3.0),
         ),
+        body_aux_semantic_event_weighting=bool(args.body_aux_semantic_event_weighting),
+        body_aux_semantic_event_min_factor=max(
+            1.0,
+            float(args.body_aux_semantic_event_min_factor if args.body_aux_semantic_event_min_factor is not None else 1.0),
+        ),
+        body_aux_semantic_event_max_factor=max(
+            1.0,
+            float(args.body_aux_semantic_event_max_factor if args.body_aux_semantic_event_max_factor is not None else 3.0),
+        ),
         semantic_slot_prefix_roles=str(args.semantic_slot_prefix_roles or ""),
         loop_expression_synthesis_loss_boost=max(
             0.0,
@@ -1366,6 +1390,9 @@ def run_adaptation(
     body_operand_class_balance: bool,
     body_operand_class_balance_min_weight: float,
     body_operand_class_balance_max_weight: float,
+    body_aux_semantic_event_weighting: bool,
+    body_aux_semantic_event_min_factor: float,
+    body_aux_semantic_event_max_factor: float,
     semantic_slot_prefix_roles: str,
     loop_expression_synthesis_loss_boost: float,
     loop_expression_synthesis_roles: str,
@@ -1932,6 +1959,20 @@ def run_adaptation(
         target_vocab=target_vocab,
         boost=closed_state_transition_loss_boost,
         roles=closed_state_transition_roles,
+    )
+    (
+        train_body_transition_weights,
+        train_body_action_weights,
+        train_body_operand_weights,
+        body_aux_semantic_event_weighting_summary,
+    ) = apply_body_aux_semantic_event_weights(
+        train_body_transition_weights,
+        train_body_action_weights,
+        train_body_operand_weights,
+        token_weight_rows,
+        enabled=body_aux_semantic_event_weighting,
+        min_factor=body_aux_semantic_event_min_factor,
+        max_factor=body_aux_semantic_event_max_factor,
     )
     (
         pairwise_positive_weight_rows,
@@ -3057,6 +3098,7 @@ def run_adaptation(
             "direct_body_emission_weighting": direct_body_emission_weighting,
             "local_return_closure_weighting": local_return_closure_weighting,
             "closed_state_transition_weighting": closed_state_transition_weighting,
+            "body_aux_semantic_event_weighting": body_aux_semantic_event_weighting_summary,
             "body_action_auxiliary": {
                 "enabled": bool(body_action_enabled),
                 "requested": bool(body_action_requested),
@@ -3147,6 +3189,9 @@ def run_adaptation(
             "body_transition_position_boost": float(body_transition_position_boost or 0.0),
             "body_action_loss_weight": float(body_action_loss_weight or 0.0),
             "body_operand_loss_weight": float(body_operand_loss_weight or 0.0),
+            "body_aux_semantic_event_weighting": bool(body_aux_semantic_event_weighting),
+            "body_aux_semantic_event_min_factor": float(body_aux_semantic_event_min_factor or 0.0),
+            "body_aux_semantic_event_max_factor": float(body_aux_semantic_event_max_factor or 0.0),
             "semantic_slot_prefix_roles": str(semantic_slot_prefix_roles or ""),
             "loop_expression_synthesis_loss_boost": float(loop_expression_synthesis_loss_boost or 0.0),
             "loop_expression_synthesis_roles": str(loop_expression_synthesis_roles or ""),
@@ -3191,6 +3236,7 @@ def run_adaptation(
         "direct_body_emission_weighting": direct_body_emission_weighting,
         "local_return_closure_weighting": local_return_closure_weighting,
         "closed_state_transition_weighting": closed_state_transition_weighting,
+        "body_aux_semantic_event_weighting": body_aux_semantic_event_weighting_summary,
         "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
         "semantic_construction_repair_profile": semantic_construction_repair_profile,
         "strict_target_guard": {
@@ -3512,6 +3558,7 @@ def run_adaptation(
             "direct_body_emission_weighting": payload["direct_body_emission_weighting"],
             "local_return_closure_weighting": payload["local_return_closure_weighting"],
             "closed_state_transition_weighting": payload["closed_state_transition_weighting"],
+            "body_aux_semantic_event_weighting": payload["body_aux_semantic_event_weighting"],
             "semantic_construction_repair_profile": payload["semantic_construction_repair_profile"],
             "public_training_rows": 0,
             "external_inference_calls": 0,
@@ -3611,6 +3658,90 @@ def apply_visible_operation_plan_sample_weights(
     }
 
 
+def apply_body_aux_semantic_event_weights(
+    transition_weights: list[list[float]],
+    action_weights: list[list[float]],
+    operand_weights: list[list[float]],
+    semantic_token_weights: list[list[float]],
+    *,
+    enabled: bool,
+    min_factor: float,
+    max_factor: float,
+) -> tuple[list[list[float]], list[list[float]], list[list[float]], dict[str, Any]]:
+    if not enabled:
+        return transition_weights, action_weights, operand_weights, {
+            "enabled": False,
+            "policy": "not_enabled",
+            "reason": "body_aux_semantic_event_weighting_not_requested",
+            "candidate_generation_credit": 0,
+            "uses_eval_tests_or_solutions": False,
+            "uses_public_data": False,
+        }
+    min_factor = max(1.0, float(min_factor if min_factor is not None else 1.0))
+    max_factor = max(min_factor, float(max_factor if max_factor is not None else 3.0))
+    boosted_positions = 0
+    active_positions = 0
+    factor_sum = 0.0
+    max_observed_factor = 1.0
+
+    def clone(rows: list[list[float]]) -> list[list[float]]:
+        return [[float(value or 0.0) for value in row] for row in rows]
+
+    transition_out = clone(transition_weights)
+    action_out = clone(action_weights)
+    operand_out = clone(operand_weights)
+    row_count = max(len(transition_out), len(action_out), len(operand_out))
+    for row_index in range(row_count):
+        semantic_row = semantic_token_weights[row_index] if row_index < len(semantic_token_weights) else []
+        width = max(
+            len(transition_out[row_index]) if row_index < len(transition_out) else 0,
+            len(action_out[row_index]) if row_index < len(action_out) else 0,
+            len(operand_out[row_index]) if row_index < len(operand_out) else 0,
+        )
+        for pos in range(width):
+            transition_weight = transition_out[row_index][pos] if row_index < len(transition_out) and pos < len(transition_out[row_index]) else 0.0
+            action_weight = action_out[row_index][pos] if row_index < len(action_out) and pos < len(action_out[row_index]) else 0.0
+            operand_weight = operand_out[row_index][pos] if row_index < len(operand_out) and pos < len(operand_out[row_index]) else 0.0
+            if max(transition_weight, action_weight, operand_weight) <= 0.0:
+                continue
+            active_positions += 1
+            semantic_weight = float(semantic_row[pos]) if pos < len(semantic_row) else 0.0
+            if semantic_weight <= 1.000001:
+                continue
+            factor = max(min_factor, min(max_factor, semantic_weight))
+            if factor <= 1.000001:
+                continue
+            boosted_positions += 1
+            factor_sum += factor
+            max_observed_factor = max(max_observed_factor, factor)
+            if row_index < len(transition_out) and pos < len(transition_out[row_index]) and transition_out[row_index][pos] > 0.0:
+                transition_out[row_index][pos] *= factor
+            if row_index < len(action_out) and pos < len(action_out[row_index]) and action_out[row_index][pos] > 0.0:
+                action_out[row_index][pos] *= factor
+            if row_index < len(operand_out) and pos < len(operand_out[row_index]) and operand_out[row_index][pos] > 0.0:
+                operand_out[row_index][pos] *= factor
+    return transition_out, action_out, operand_out, {
+        "enabled": True,
+        "policy": "private_body_aux_semantic_event_weighting_v1",
+        "active_positions": active_positions,
+        "boosted_positions": boosted_positions,
+        "boosted_position_rate": round(boosted_positions / max(1, active_positions), 6),
+        "min_factor": min_factor,
+        "max_factor": max_factor,
+        "mean_applied_factor": round(factor_sum / max(1, boosted_positions), 6),
+        "max_observed_factor": round(max_observed_factor, 6),
+        "score_semantics": (
+            "Train-split-only bridge from existing private semantic body-construction token weights into "
+            "body-transition, body-action, and body-operand auxiliary target weights. It focuses auxiliary "
+            "heads on event positions already selected by registered private objectives; it does not render "
+            "code, inspect eval tests or solutions, use public data, or grant candidate-generation credit."
+        ),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def semantic_construction_profile_missing_components(payload: dict[str, Any]) -> list[str]:
     profile = dict_or_empty(payload.get("semantic_construction_repair_profile"))
     if not bool(profile.get("enabled")):
@@ -3642,11 +3773,16 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
         "direct_body_emission_weighting",
         "local_return_closure_weighting",
         "closed_state_transition_weighting",
+        "body_aux_semantic_event_weighting",
     ]:
         if name not in required:
             continue
         item = component(name)
         if name == "semantic_slot_prefix_weighting" and semantic_slot_prefix_unavailable_for_target_mode(payload):
+            continue
+        if name == "body_aux_semantic_event_weighting":
+            if not bool(item.get("enabled")) or int(item.get("boosted_positions") or 0) <= 0:
+                missing.append(name)
             continue
         if not bool(item.get("enabled")) or int(item.get("weighted_token_positions") or 0) <= 0:
             missing.append(name)

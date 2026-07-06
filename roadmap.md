@@ -180,6 +180,18 @@ but does not move heldout metrics at this scale. Both checkpoints are rejected.
 This keeps the next target at semantic-IR/state-machine event supervision for
 transition/action heads, or a larger controlled balance sweep, before any
 strict replay or public calibration.
+The semantic-event bridge follow-up in
+`reports/strict_generator_semantic_event_bridge_smoke_summary_20260706.json`
+connects the existing private semantic body-construction token weights to the
+body-transition, body-action, and body-operand auxiliary losses, with
+`4013/4120` auxiliary positions boosted and no public/external/fallback credit.
+It improves heldout LM and operand metrics, but it still rejects itself because
+transition/action metrics regress and tensor-update coverage is below the hard
+gate. That makes the roadmap sharper: DPO/GRPO/MTP/diffusion are still queued
+techniques from the book, but the immediate implementation wall is no longer
+"add more loss weight." The next registered improvement needs event-level
+semantic-IR/state-machine supervision for traversal, update, finalizer, return
+closure, value expression, and verifier-obligation transitions.
 
 ## 2026-07-06 Claude Review Reconciliation
 

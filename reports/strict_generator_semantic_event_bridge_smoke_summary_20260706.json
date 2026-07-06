@@ -1,0 +1,90 @@
+{
+  "policy": "project_theseus_strict_generator_semantic_event_bridge_summary_v1",
+  "created_utc": "2026-07-06T00:00:00Z",
+  "source_report": "reports/strict_generator_mlx_private_adaptation_semantic_event_bridge_smoke_20260706.json",
+  "source_report_sha256": "e682671443d686b92092bffff0c0ba0837a5a108cf21358c106dc056e8e8ad95",
+  "source_report_size_bytes": 349380,
+  "trigger_state": "RED",
+  "code_change_summary": [
+    "strict_direct_body_emission_path_v1 now requires body_aux_semantic_event_weighting.",
+    "The private adaptation CLI accepts --body-aux-semantic-event-weighting plus min/max factors.",
+    "Train-split semantic body-construction token weights are bridged into body-transition, body-action, and body-operand auxiliary weights.",
+    "The required-component gate now checks boosted_positions for the bridge instead of weighted_token_positions."
+  ],
+  "training_scope": {
+    "train_rows": 64,
+    "heldout_rows": 16,
+    "train_split_policy": "private_residual_repair_row_holdout_v1",
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit_count": 0
+  },
+  "semantic_event_bridge": {
+    "enabled": true,
+    "policy": "private_body_aux_semantic_event_weighting_v1",
+    "active_positions": 4120,
+    "boosted_positions": 4013,
+    "boosted_position_rate": 0.974029,
+    "mean_applied_factor": 2.855285,
+    "max_observed_factor": 3.0,
+    "candidate_generation_credit": 0,
+    "uses_public_data": false,
+    "uses_eval_tests_or_solutions": false
+  },
+  "heldout_metrics": {
+    "lm_loss_before": 1.49465,
+    "lm_loss_after": 1.441715,
+    "lm_improved": true,
+    "body_transition_loss_before": 8.056851,
+    "body_transition_loss_after": 8.05741,
+    "body_transition_improved": false,
+    "body_action_loss_before": 3.064914,
+    "body_action_loss_after": 3.078369,
+    "body_action_accuracy_before": 0.087858,
+    "body_action_accuracy_after": 0.080948,
+    "body_action_improved": false,
+    "body_operand_loss_before": 3.016909,
+    "body_operand_loss_after": 3.015661,
+    "body_operand_accuracy_before": 0.047384,
+    "body_operand_accuracy_after": 0.054294,
+    "body_operand_improved": true
+  },
+  "failed_gates": [
+    {
+      "name": "parameter_tensor_update_recorded",
+      "severity": "hard",
+      "evidence": {
+        "actual": 0.875,
+        "minimum": 0.9
+      }
+    },
+    {
+      "name": "parameter_element_update_meaningful",
+      "severity": "soft",
+      "evidence": 0.155002
+    },
+    {
+      "name": "body_transition_loss_improved_when_enabled",
+      "severity": "soft",
+      "evidence": "8.056851 -> 8.057410"
+    },
+    {
+      "name": "body_action_loss_improved_when_enabled",
+      "severity": "soft",
+      "evidence": "loss 3.064914 -> 3.078369; accuracy 0.087858 -> 0.080948"
+    }
+  ],
+  "claim_boundary": {
+    "learned_generation_promotion": false,
+    "public_transfer_claim": false,
+    "runtime_route_claim": false,
+    "model_quality_claim": false,
+    "summary": "The bridge is valid train-split private training-pressure evidence, not behavior evidence. It improves LM loss and the operand auxiliary head, but transition/action supervision still regresses and the checkpoint is rejected."
+  },
+  "next_required_work": [
+    "Replace broad body-transition/action supervision with localized semantic-IR or state-machine event targets.",
+    "Record event-level targets for traversal, update, finalizer, return closure, value expression, and verifier obligation transitions.",
+    "Only rerun strict private decode after the event/state-machine target path improves LM, transition, action, and operand metrics together or produces behavior-positive private replay.",
+    "Do not route the rejected checkpoint, relax graph/source-condition adequacy, or scale DPO/GRPO/MTP/diffusion from this result."
+  ]
+}

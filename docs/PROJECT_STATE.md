@@ -165,6 +165,23 @@ does not move those heldout metrics. Both checkpoints were rejected and removed
 from local routeable checkpoint storage. The remaining wall is sharper:
 transition/action supervision needs localized semantic-IR or state-machine
 events, not just lower weights or role-frequency balance.
+The semantic-event bridge follow-up is wired but negative. The compact report
+`reports/strict_generator_semantic_event_bridge_smoke_summary_20260706.json`
+summarizes a private `64`-row MLX canary where existing semantic
+body-construction token weights are bridged into the body-transition,
+body-action, and body-operand auxiliary losses. The bridge activates strongly
+(`4013/4120` boosted auxiliary positions, mean factor `2.855285`) and keeps
+public training rows, external inference, and fallback/template/router/tool
+credit at `0`. Heldout LM improves (`1.494650 -> 1.441715`) and operand
+loss/accuracy improves (`3.016909 -> 3.015661`, `0.047384 -> 0.054294`), but
+transition loss still worsens (`8.056851 -> 8.057410`), action loss/accuracy
+worsens (`3.064914 -> 3.078369`, `0.087858 -> 0.080948`), and the canary is
+`RED` from tensor-update coverage plus transition/action regression. The
+required-component checker now understands this bridge's `boosted_positions`
+evidence shape, but the checkpoint remains rejected and removed. This
+falsifies another pure weighting fix: the next implementation needs localized
+semantic-IR/state-machine event targets for traversal, update, finalizer,
+return closure, value expression, and verifier-obligation transitions.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`
