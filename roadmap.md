@@ -1125,6 +1125,37 @@ These rules are the implementation interpretation of the book plus `AGENTS.md`.
 
 ## The ASI Stack Crosswalk
 
+Latest Claude/AI_book mining reconciliation, 2026-07-06:
+
+- No new roadmap phase is required. Claude's additional book-mined backlog maps
+  onto the existing phase structure: policy optimization / RLVR / DPO /
+  GRPO maps to phases `4` and `10`; semantic-IR localized repair maps to phase
+  `13`; governed generation modes, MTP, speculative, diffusion/sketch-first,
+  and accepted-output-per-second accounting map to phases `10` and `16`;
+  verification-bandwidth routing maps to phase `16`; VCM certificates,
+  copy-on-write snapshots, taint propagation, deletion closure, and context
+  adequacy faults map to phases `3` and `15`; Circle/cyclic substrate adoption
+  tests map to phase `18`; planning adequacy contracts and intelligence
+  arbitrage accounting map to phases `2` and `16`; belief revision and linked
+  contradictions map to phases `5` and `14`; procedural memory / loop closure
+  maps to phases `7` and `15`; and unified research backlog records map to
+  phase `19`.
+- Claude's strongest recommendation, DPO on accepted/rejected verifier pairs,
+  is accepted as a required technique but not as a shortcut around the current
+  body-token wall. The latest private pairwise replay canary moved preference
+  metrics but still emitted `0` strict candidate rows and regressed plan/slot
+  heldout metrics. Therefore DPO/IPO/ORPO/KTO/SimPO remain governed phase-10
+  policy-optimization surfaces that must be A/B tested against supervised-only
+  and negative controls after the body-continuation/state-transition surface can
+  emit admissible candidates. They must not be counted as learned-generation
+  capability by themselves.
+- The next implementation priority remains a real trainable
+  body-continuation/state-transition/expression-value decision surface wired
+  through strict decode and verifier replay. That surface is the bridge between
+  the book's policy-optimization chapter and Theseus's live failure evidence:
+  without admissible learned candidates, preference/RL methods have no useful
+  behavior channel to improve.
+
 | Book concept | Theseus should do | Current gap | Roadmap phase |
 |---|---|---|---|
 | Stable Capability Fields | Make each capability a stable field with semantic boundary, interface contract, authority ceiling, evidence, route validity, migration, and rollback. | Registry/SCF exists, but evidence for live implementations is stale and routing eligibility is mostly blocked. | Phase 0, Phase 1 |
