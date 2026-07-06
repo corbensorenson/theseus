@@ -437,6 +437,12 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
         return False
     if kind == "NAME" and line_would_iterate_known_noniterable(values, value, local_types=local_types):
         return False
+    if kind == "NAME" and strict_body_for_loop_name_is_bad_semantic_slot(
+        values,
+        value,
+        allowed_names=allowed_names,
+    ):
+        return False
     if values and values[0] == "for" and "in" not in values[1:]:
         loop_target_values = [item for item in values[1:] if item not in {","}]
         if kind == "NAME" and value == "in":
@@ -476,6 +482,8 @@ def token_allowed_by_strict_body_token_policy(prefix: list[str], tok: str, *, al
     if kind == "NEWLINE" and values == ["return"]:
         return False
     if line_start(prefix):
+        if any(depth == 0 and row_values[:1] == ["return"] for depth, row_values in previous_significant_lines_with_depth(prefix)):
+            return False
         if (
             kind == "NAME"
             and value == "return"
@@ -650,6 +658,42 @@ def strict_body_condition_lacks_runtime_signal(values: list[str], *, allowed_nam
     if runtime_names - visible:
         return False
     return True
+
+
+def strict_body_for_loop_name_is_bad_semantic_slot(
+    values: list[str],
+    value: str,
+    *,
+    allowed_names: set[str] | None = None,
+) -> bool:
+    """Reject recurring builtin-shadowed loop headers under strict decode.
+
+    This is a task-blind body-token legality rule. It never reads tests,
+    solutions, targets, verifier labels, public payloads, or answer metadata.
+    It only prevents patterns such as ``for max in max`` that are syntactically
+    legal Python but destroy source/loop-variable semantics in the learned
+    direct generator.
+    """
+
+    if not values or values[0] != "for" or not value:
+        return False
+    allowed = {str(name) for name in set(allowed_names or set()) if str(name).isidentifier()}
+    if "in" not in values[1:]:
+        previous = values[-1] if values else ""
+        if previous in {"for", ","}:
+            return value in STRICT_BODY_ALLOWED_GLOBAL_NAMES or value in STRICT_BODY_KEYWORD_NAMES
+        return False
+    if values[-1] != "in":
+        return False
+    if allowed and value in allowed:
+        return False
+    # Calls such as ``range(...)`` or ``enumerate(data)`` can still become
+    # valid iterables. Aggregating/scalar builtins like ``max`` and ``sum`` are
+    # not valid source iterables here and caused repeated starvation beams.
+    iterable_call_builtins = {"dict", "enumerate", "filter", "list", "map", "range", "reversed", "set", "sorted", "tuple", "zip"}
+    if value in iterable_call_builtins:
+        return False
+    return value in STRICT_BODY_ALLOWED_GLOBAL_NAMES
 
 
 def previous_name_is_callable(prefix: list[str], previous_value: str, *, allowed_names: set[str] | None = None) -> bool:

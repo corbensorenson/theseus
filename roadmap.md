@@ -284,6 +284,16 @@ the roadmap:
    blocker is therefore no longer manifest-row starvation under the canonical
    route; it is shallow semantic/type-handling candidate quality after legal
    full-body emission.
+   The latest v9 initializer/operation-delay canary keeps that wall honest:
+   `reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706.json`
+   is still `YELLOW` with `2` learned private-eval rows, `4` manifest rows,
+   `0` behavior passes, and clean no-cheat boundaries. The useful movement is
+   failure-shape only: builtin-shadowed loop headers and bare-builtin values
+   are gone, but the emitted bodies still use generic accumulator updates like
+   `out = out + item` where the source-conditioned plan expects a real call or
+   operation-bearing update. The next implementation still needs trainable
+   semantic/value construction or localized semantic-IR repair; this is not a
+   promotion.
 
 ## 2026-07-06 Claude Book-Mining Delta Review
 

@@ -193,6 +193,8 @@ def source_condition_exploration_choices(
         body_text = decode_body_tokens(prefix)
         accumulator = loop_plan_first_assigned_local(body_text)
         loop_target = source_condition_prefix_loop_target(prefix)
+        if current_depth > 0 and loop_plan_has_update_call(body_text) and not values:
+            return []
         for token_text in source_condition_operation_value_prefix_tokens(
             values,
             operation_tags=operation_tags,
@@ -762,6 +764,8 @@ def source_condition_priority_prefix(
     operation_tags = {str(item) for item in list(expectation.get("operation_tags") or []) if str(item)}
     if operation_tags and bool(expectation.get("requires_operation_evidence")):
         body_text = decode_body_tokens(prefix)
+        if current_depth > 0 and loop_plan_has_update_call(body_text) and not values:
+            return False
         operation_evidence = source_condition_operation_evidence_for_body(body_text, expectation)
         if not bool(operation_evidence.get("has_operation_evidence")):
             loop_target = source_condition_prefix_loop_target(prefix)
@@ -2219,6 +2223,8 @@ def token_blocked_by_expression_value_guard(
             return True
         if current_return_line_has_invalid_expression_value(values):
             return True
+        if current_assignment_line_has_bare_builtin_value(values):
+            return True
         if len(values) >= 2 and values[0] == "return" and values[-1] in EXPRESSION_VALUE_BARE_BUILTINS:
             return True
         if expression_value_inside_update_call(values):
@@ -2245,6 +2251,17 @@ def current_return_line_has_invalid_expression_value(values: list[str]) -> bool:
     line = " ".join(values)
     summary = expression_value_quality_summary(line, allowed_names=None)
     return bool(summary.get("parse_ok")) and int(summary.get("invalid_expression_value_count") or 0) > 0
+
+
+def current_assignment_line_has_bare_builtin_value(values: list[str]) -> bool:
+    """Reject ``local = max`` style runtime builtin objects as values."""
+
+    if len(values) < 3 or "=" not in values:
+        return False
+    equals = values.index("=")
+    if equals != 1 or not values[0].isidentifier():
+        return False
+    return values[-1] in EXPRESSION_VALUE_BARE_BUILTINS
 
 
 def current_return_invalid_value_can_be_repaired(values: list[str], token_value: str) -> bool:
@@ -2903,6 +2920,8 @@ def source_condition_operation_prefix_tokens(
     if accumulator and values == (accumulator,):
         return ["OP:="]
     if accumulator and values == (accumulator, "="):
+        if not inside_loop and not loop_target:
+            return []
         if "op_round_values" in operation_tags:
             choices.append("NAME:round")
         if "op_clip_to_range" in operation_tags:
@@ -3073,6 +3092,8 @@ def source_condition_operation_exploration_tokens(
     if not values or not operation_tags:
         return []
     if not current_line_tail_needs_operand(list(values)):
+        return []
+    if len(values) >= 2 and values[1] == "=" and not loop_target:
         return []
     choices: list[str] = []
     if "op_gcd_reduce" in operation_tags:

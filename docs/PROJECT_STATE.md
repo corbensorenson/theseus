@@ -155,6 +155,15 @@ shallow accumulator/type-handling failures, not operation-bearing clamp/round
 or absolute-distance bodies. This sharpens the current wall to trainable
 semantic body construction or localized semantic-IR repair that changes
 update/finalizer/value expressions under private replay.
+The follow-up initializer/operation-delay canary
+`reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706.json`
+keeps the same honest wall: `2` learned private-eval rows, `4` manifest rows,
+`0` behavior passes, and clean blind-flow/no-public/no-teacher boundaries. It
+removes the earlier builtin-shadowed loop/bare-builtin value pathology from
+the sampled learned rows, but the bodies remain generic accumulator updates
+such as `out = out + item` where the source-conditioned plan expects a call or
+operation-bearing update. This is failure-shape improvement only, not a
+capability promotion.
 The next evidence-only pass adds aggregate operation residuals to
 `source_condition_candidate_summary`, so prompt-visible operation failures are
 visible at split/report level instead of only inside individual candidates.
