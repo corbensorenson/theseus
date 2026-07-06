@@ -32,6 +32,7 @@ DEFAULT_CANDIDATE = ROOT / "reports" / "candidate_integrity_audit.json"
 DEFAULT_VERIFIER = ROOT / "reports" / "private_verifier_spine_smoke.json"
 DEFAULT_GENERATOR = ROOT / "reports" / "neural_seed_token_decoder_comparator.json"
 DEFAULT_STRICT_GENERATOR_REPAIR = ROOT / "reports" / "strict_generator_semantic_ir_repair_bridge.json"
+DEFAULT_STRICT_GENERATOR_REPAIR_APPLY = ROOT / "reports" / "strict_generator_semantic_ir_repair_apply_v9.json"
 DEFAULT_OUT = ROOT / "reports" / "semantic_ir_obligation_gate.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "semantic_ir_obligation_gate.md"
 NO_CHEAT = {
@@ -48,6 +49,7 @@ def main() -> int:
     parser.add_argument("--private-verifier", default=rel(DEFAULT_VERIFIER))
     parser.add_argument("--direct-generator", default=rel(DEFAULT_GENERATOR))
     parser.add_argument("--strict-generator-repair", default=rel(DEFAULT_STRICT_GENERATOR_REPAIR))
+    parser.add_argument("--strict-generator-repair-apply", default=rel(DEFAULT_STRICT_GENERATOR_REPAIR_APPLY))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     args = parser.parse_args()
@@ -70,11 +72,13 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     verifier_path = resolve(args.private_verifier)
     generator_path = resolve(args.direct_generator)
     strict_generator_repair_path = resolve(args.strict_generator_repair)
+    strict_generator_repair_apply_path = resolve(args.strict_generator_repair_apply)
     view = read_json(view_path)
     candidate = read_json(candidate_path)
     verifier = read_json(verifier_path)
     generator = read_json(generator_path)
     strict_generator_repair = read_json(strict_generator_repair_path)
+    strict_generator_repair_apply = read_json(strict_generator_repair_apply_path)
 
     semantic_records = list_dicts(view.get("semantic_ir_records"))
     semantic_atoms = [row for row in semantic_records if row.get("canonical_record_type") == "semantic_atom"]
@@ -122,6 +126,17 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
                 obligation_kind="strict_generator_failure_atom_and_localized_repair",
             )
         )
+    if strict_generator_repair_apply_path.exists() and strict_generator_repair_apply:
+        consumers.append(
+            consumer_state(
+                "strict_generator_semantic_ir_repair_apply",
+                strict_generator_repair_apply_path,
+                strict_generator_repair_apply,
+                required_policy="project_theseus_strict_generator_semantic_ir_repair_apply_v1",
+                allowed_states={"GREEN", "YELLOW"},
+                obligation_kind="strict_generator_localized_repair_apply_and_verify",
+            )
+        )
     ready_consumers = [row for row in consumers if row["ready"]]
     hard_gates = [
         gate("materialized_semantic_view_ready", semantic_ready, {"path": rel(view_path), "semantic_atom_count": len(semantic_atoms), "semantic_node_count": len(semantic_nodes)}),
@@ -152,6 +167,13 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "strict_generator_repair_consumer_present": bool(strict_generator_repair_path.exists() and strict_generator_repair),
             "strict_generator_repair_consumer_ready": any(
                 row["consumer_surface"] == "strict_generator_semantic_ir_repair" and row["ready"]
+                for row in consumers
+            ),
+            "strict_generator_repair_apply_consumer_present": bool(
+                strict_generator_repair_apply_path.exists() and strict_generator_repair_apply
+            ),
+            "strict_generator_repair_apply_consumer_ready": any(
+                row["consumer_surface"] == "strict_generator_semantic_ir_repair_apply" and row["ready"]
                 for row in consumers
             ),
             "semantic_obligation_record_count": len(records["semantic_obligation_records"]),

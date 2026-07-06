@@ -239,12 +239,20 @@ and `block_exit_without_finalizer=1`. `semantic_ir_obligation_gate.py` now
 recognizes this bridge as an optional consumer and binds it into the shared
 semantic-IR obligation view when the report is present. After refreshing the
 canonical candidate-integrity audit, `semantic_ir_obligation_gate.py` is
-`GREEN`: all `4/4` consumers are ready, including the strict-generator repair
-bridge, and the candidate-integrity audit remains clean with `0` integrity
-mismatches while explicitly retaining syntax-invalid learned rows as negative
-candidate evidence. The next behavior-changing implementation is still a
-trainable AST/state-transition head or localized semantic-IR body-construction
-path that consumes the new repair atoms and improves strict private replay.
+`GREEN`: all `5/5` consumers are ready, including the strict-generator repair
+bridge and the new apply-and-verify consumer
+`scripts/strict_generator_semantic_ir_repair_apply.py`. The v9 apply report
+`reports/strict_generator_semantic_ir_repair_apply_v9.json` is `YELLOW`: it
+produces `2` deterministic semantic-IR repaired candidates, runtime-loads both
+through the private verifier, keeps `candidate_generation_credit=0`, uses no
+public rows, teacher calls, fallback returns, templates, routers, or tools for
+learned-generation credit, and still scores `0` behavior passes. The
+candidate-integrity audit remains clean with `0` integrity mismatches while
+explicitly retaining syntax-invalid learned rows as negative candidate
+evidence. The next behavior-changing implementation is still a trainable
+AST/state-transition head or localized semantic-IR body-construction path that
+consumes the new repair atoms and improves strict private replay without
+crediting deterministic repair rows as learned generation.
 The first trainable semantic-slot consumption patch is now in the registered
 MLX private adaptation path rather than a side lane:
 `scripts/strict_generator_mlx_private_adaptation.py` can train/evaluate the
