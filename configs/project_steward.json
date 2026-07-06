@@ -1537,7 +1537,7 @@
         "chapters/routing-heads-and-specialist-cores.qmd",
         "chapters/policy-optimization-and-learning-from-feedback.qmd",
         "reports/resource_aware_execution_policy.json",
-        "reports/mlx_environment_gate.json",
+        "reports/macos_mlx_environment_diagnosis.json",
         "reports/theseus_project_registry.json"
       ],
       "reviewed_utc": "2026-06-26T01:49:30Z",
@@ -2470,7 +2470,7 @@
       "evidence_refs": [
         "reports/policy_optimization_program.json",
         "reports/resource_aware_execution_policy.json",
-        "reports/mlx_environment_gate.json",
+        "reports/macos_mlx_environment_diagnosis.json",
         "reports/viea_spine_record_gate.json"
       ],
       "reviewed_utc": "2026-06-26T04:45:00Z",

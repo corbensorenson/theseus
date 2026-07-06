@@ -578,6 +578,25 @@ latency-only patch; it is broader private replay plus semantic candidate-quality
 repair under explicit resource and no-cheat thresholds before any production
 MLX route claim.
 
+The broader private MLX replay now has a two-row all-rung resource receipt,
+`reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json`.
+It is `GREEN` under a 65s total budget, 25s max child budget, and 0.15 eval
+rows/sec floor: `total_eval_rows=10`, `total_generated_candidate_rows=10`,
+`eval_rows_per_second=0.1906`, `max_child_decode_eval_runtime_ms=16961`,
+`checkpoint_weight_load_count=5`, `model_reuse_count=4`,
+`total_test_harness_cache_hit_count=10`, and all public-training,
+external-inference, fallback/template/router/tool-credit, and integrity-mismatch
+counters remain zero. The immediately prior stricter probe
+`reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json`
+correctly failed closed with `route_state=fail_closed_resource_budget` because
+`rung_25000000` took `21274` ms against a 20s child budget. The current broader
+receipt therefore proves resource-threshold accounting and route fail-closed
+behavior on a larger private replay, but still records `0/10` behavior passes
+and `production_route_eligible=false` with
+`route_state=fail_closed_behavior_quality_zero`. Phase 8 remains partial until
+semantic quality becomes positive and the CUDA/MLX/Metal parity claim is backed
+by comparable real hot-loop evidence.
+
 Teacher/data governance now has a durable share ledger view:
 `reports/teacher_share_ledger_summary.json` is `GREEN` with
 `metric_ready=true`, `19` ledger rows, `64152` accepted training rows in the

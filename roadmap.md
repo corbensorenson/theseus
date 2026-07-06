@@ -1731,6 +1731,21 @@ The new route-eligibility receipt still fail-closes production routing with
 plus semantic candidate-quality repair under explicit resource and no-cheat
 thresholds before any production MLX route claim.
 
+The broader private MLX replay
+`reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json`
+is now `GREEN` under a 65s total budget, 25s max child budget, and 0.15 eval
+rows/sec floor: `total_eval_rows=10`, `total_generated_candidate_rows=10`,
+`eval_rows_per_second=0.1906`, `max_child_decode_eval_runtime_ms=16961`,
+`checkpoint_weight_load_count=5`, `model_reuse_count=4`,
+`total_test_harness_cache_hit_count=10`, and all no-cheat/integrity counters at
+zero. The stricter sibling
+`reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json`
+correctly failed closed at a 20s child budget because `rung_25000000` took
+`21274` ms. The larger replay therefore proves budget enforcement and route
+fail-closed behavior over more private rows, not learned capability: behavior
+is still `0/10`, `production_route_eligible=false`, and
+`route_state=fail_closed_behavior_quality_zero`.
+
 | Phase | Surface | Current state | Next implementation target |
 | --- | --- | --- | --- |
 | 0 | Stabilize current truth | Implemented/green registry gate/registered roadmap matrix; cleanup queue `16/16` steward-covered; bounded tmp/smoke cleanup canary complete | Continue governed retention/consolidation in bounded passes for steward-covered cleanup families; do not treat generated evidence history as active source lanes. |
@@ -1741,7 +1756,7 @@ thresholds before any production MLX route claim.
 | 5 | Daily-Use Assistant Runtime And Dogfood Trace Loop | Wired | Turn repeated successful real assistant traces into guarded procedural-memory candidates and continue improving the code-assistant generator wall through Phase 10 rather than creating a parallel assistant lane. |
 | 6 | Deterministic Tool And Search Substrate | Wired | Keep tool-assisted public/tool-use measurement ledgers separate from model-only scores as future public adapters are added; do not allow deterministic tool receipts to support learned-generation claims. |
 | 7 | Teacher And Data Governance | Wired | Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible `teacher_governance` surface. |
-| 8 | Resource, Cost, And Mac Acceleration Routing | Partial | Broaden private MLX replay row count and repair semantic candidate quality under explicit latency, quality, no-cheat, and route-eligibility thresholds before production routing. |
+| 8 | Resource, Cost, And Mac Acceleration Routing | Partial | Use the broader resource-green MLX replay to drive semantic candidate-quality repair; keep production routing disabled until behavior is positive under latency, no-cheat, integrity, and parity thresholds. |
 | 9 | Hive Policy-First Distributed Operation | Frozen | When peers are reachable, run one bounded registered Hive task submission and verify live execution receipts against the scheduler route-local VIEA contract. |
 | 10 | Practical Neural Seed Survival Lane | Partial | Body-transition, prompt-operation conditioning, and source-condition operation-token internalization now cover every emitted prompt-operation tag without public/external/fallback credit; v2 broad4 decode remains 0/4 and loses one integrity-clean row, so the target is a broader integrity-preserving learned operation/state-transition refresh. |
 | 11 | SymLiquid Discovery Lane Verdict | Wired | Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence. |

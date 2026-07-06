@@ -745,7 +745,7 @@
       ],
       "required_gates": [
         "python3 scripts/resource_aware_execution_policy.py",
-        "python3 scripts/mlx_environment_gate.py"
+        "python3 scripts/macos_mlx_environment_diagnosis.py --out reports/macos_mlx_environment_diagnosis.json --markdown-out reports/macos_mlx_environment_diagnosis.md"
       ],
       "required_docs": [
         "docs/PROJECT_STATE.md",
@@ -753,7 +753,7 @@
       ],
       "current_evidence": [
         "reports/resource_aware_execution_policy.json",
-        "reports/mlx_environment_gate.json",
+        "reports/macos_mlx_environment_diagnosis.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1/rung_10000000_decode_report.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_two_checkpoint_canary_v1.json",
@@ -765,13 +765,15 @@
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_all_rung_bounded_v1/rung_20000000_decode_report.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_all_rung_bounded_v1/rung_25000000_decode_report.json",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_all_rung_bounded_v1/rung_30000000_decode_report.json",
-        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_resource_budget_probe_v1.json"
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_resource_budget_probe_v1.json",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json"
       ],
       "missing_items": [
-        "Python MLX route now has reusable private split selection, bounded top-k token selection receipts, same-vocab model/vocab construction reuse, verifier sandbox warmup/cache accounting, a two-checkpoint canary, and a one-row all-rung private replay across 5/5 checkpoints with per-checkpoint weight reload receipts. Resource-budget reporting and route-eligibility receipts are wired; the strict 30s/10s/0.2 rows-per-second probe currently passes route-resource thresholds but fail-closes production routing because private behavior remains 0/5. Broader-row replay, semantic quality repair, and production route stability are still pending",
+        "Python MLX route now has reusable private split selection, bounded top-k token selection receipts, same-vocab model/vocab construction reuse, verifier sandbox warmup/cache accounting, a two-checkpoint canary, a one-row all-rung private replay across 5/5 checkpoints, and a two-row all-rung private replay with 10 eval rows / 10 generated candidate rows. Resource-budget reporting and route-eligibility receipts are wired. The stricter two-row probe correctly fail-closed when rung_25000000 exceeded a 20s child budget; the broader two-row probe passes a 65s total / 25s child / 0.15 rows-per-second resource budget with zero public-training, external-inference, fallback/template/router/tool-credit, and integrity-mismatch counters. Production routing still fail-closes because private behavior remains 0/10. Semantic quality repair, route-around-slow-rung policy, production route stability, and broader real hot-loop parity are still pending",
         "CUDA/MLX/Metal parity evidence is not yet broad enough"
       ],
-      "smallest_next_patch": "Broaden the private MLX replay row count and repair semantic candidate quality under explicit resource, route-eligibility, no-cheat, and behavior thresholds; keep scheduler production routing disabled until broader replay is both budget-green and quality-positive.",
+      "smallest_next_patch": "Use the broader resource-green MLX replay to drive semantic candidate-quality repair and add route-around-slow-rung policy only when it is backed by positive private behavior; keep scheduler production routing disabled until broader replay is budget-green, integrity-clean, no-cheat-clean, and quality-positive.",
       "integration_smoke": [
         "python3 scripts/strict_generator_mlx_rung_decode_sweep.py --training-report reports/strict_generator_mlx_pretraining_probe_plan_prefix_plan_aux_30m_rungs_v1.json --out reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1.json --artifacts-dir reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1 --split family_disjoint --max-family-rows 1 --max-broad-rows 0 --output-top-k 1 --max-checkpoints 1 --use-semantic-plan-head-prefix --execute",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_canary_v1.json trigger_state=GREEN",
@@ -830,7 +832,32 @@
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_resource_budget_probe_v1.json summary.route_eligibility.route_state=fail_closed_behavior_quality_zero",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_resource_budget_probe_v1.json gates.resource_budget_thresholds_respected.passed=true",
         "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_resource_budget_probe_v1.json gates.mlx_route_eligibility_fail_closed_when_unqualified.passed=true",
-        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_resource_budget_probe_v1.json gates.production_route_requires_private_pass_and_budget.passed=true"
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_resource_budget_probe_v1.json gates.production_route_requires_private_pass_and_budget.passed=true",
+        "python3 scripts/strict_generator_mlx_rung_decode_sweep.py --training-report reports/strict_generator_mlx_pretraining_probe_plan_prefix_plan_aux_30m_rungs_v1.json --out reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json --artifacts-dir reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2 --split family_disjoint --max-family-rows 2 --max-broad-rows 0 --output-top-k 1 --use-semantic-plan-head-prefix --resource-budget-ms 65000 --max-child-decode-eval-ms 25000 --min-eval-rows-per-second 0.15 --execute",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json trigger_state=RED",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json summary.resource_budget.child_budget_ok=false",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json summary.resource_budget.slow_child_decode_eval_ids includes rung_25000000",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v1.json summary.route_eligibility.route_state=fail_closed_resource_budget",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json trigger_state=GREEN",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.performance.total_eval_rows=10",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.performance.total_generated_candidate_rows=10",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.performance.eval_rows_per_second=0.1906",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.resource_budget.budget_ok=true",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.resource_budget.child_budget_ok=true",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.resource_budget.max_child_decode_eval_runtime_ms=16961",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.resource_budget.eval_rows_per_second=0.1906",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.resource_budget.public_training_rows=0",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.resource_budget.external_inference_calls=0",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.resource_budget.fallback_template_router_tool_credit_count=0",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.route_eligibility.production_route_eligible=false",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.route_eligibility.route_state=fail_closed_behavior_quality_zero",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.route_eligibility.quality_gate.total_eval_rows=10",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.route_eligibility.quality_gate.total_private_passes=0",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.route_eligibility.integrity_gate.integrity_mismatch_count=0",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.checkpoint_loader_reuse.stats.vocab_read_count=1",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.checkpoint_loader_reuse.stats.vocab_cache_hit_count=4",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.checkpoint_loader_reuse.stats.model_reuse_count=4",
+        "reports/strict_generator_mlx_rung_decode_sweep_plan_prefix_plan_aux_30m_rungs_broader_resource_probe_v2.json summary.verifier_cache_warmup.total_test_harness_cache_hit_count=10"
       ],
       "completion_rule": "Mac, Windows, and Linux routes select CPU/CUDA/MLX/Metal by evidence, policy, latency, thermals, battery, and queue state."
     },
