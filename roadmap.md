@@ -124,6 +124,23 @@ private trainable pressure," but it still does not prove behavior. The next
 capability step remains a durable checkpoint plus strict decode replay with
 behavior-positive non-fallback private candidates.
 
+Durable rung result: the same semantic-IR/current-wall obligation path now has
+a real private MLX checkpoint at
+`reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_private_rung_20260706.json`.
+It trained on `256` private rows, held out `64`, activated the local-return,
+closed-state, loop-semantic, loop-expression, plan-conditioned-body,
+direct-body, and source-condition objectives, improved heldout LM loss
+`2.019539 -> 1.467591`, and kept public training rows, external inference, and
+fallback/template/router/tool credit at `0`. The paired strict decode evidence
+is still negative behavior evidence: broad4 replay emitted `9` integrity-clean
+transformer/hybrid rows with `0` passes, and train replay with the tightened
+task-blind expression-value guard emitted `11` integrity-clean rows with `0`
+passes. The guard now blocks bare builtin/type attribute receivers and
+uncalled-attribute value closure, but the remaining residuals are still
+`wrong_answer` and `type_handling`. This confirms the wall is semantic/value
+body construction and verifier-positive local update/finalizer/return closure,
+not another sample-coverage, target-weighting, or malformed-token hygiene pass.
+
 ## 2026-07-06 Claude Review Reconciliation
 
 Claude's latest review surfaced three criticisms with enough evidence to change

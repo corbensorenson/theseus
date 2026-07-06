@@ -127,6 +127,7 @@ def specialist_route_decode_options(
     enable_loop_progress_guard: bool,
     enable_expression_closure_guard: bool,
     enable_expression_value_guard: bool,
+    enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
 ) -> dict[str, Any]:
     options: dict[str, Any] = {
@@ -153,6 +154,7 @@ def specialist_route_decode_options(
         "enable_loop_progress_guard": bool(enable_loop_progress_guard),
         "enable_expression_closure_guard": bool(enable_expression_closure_guard),
         "enable_expression_value_guard": bool(enable_expression_value_guard),
+        "enable_semantic_operation_value_construction": bool(enable_semantic_operation_value_construction),
         "require_binding_prefix_groups": bool(require_binding_prefix_groups),
         "candidate_generation_credit": 0,
         "uses_eval_tests_or_solutions_for_generation": False,

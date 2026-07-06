@@ -100,6 +100,23 @@ and fallback/template/router/tool credit at `0`. This is a training-pressure
 and wiring improvement, not a behavior or promotion claim. The next wall is a
 paired strict decode replay from a durable checkpoint that must produce
 behavior-positive non-fallback private candidates.
+That durable rung now exists:
+`reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_private_rung_20260706.json`
+is `GREEN` after training on `256` private rows with `64` heldout rows. Heldout
+LM loss improved `2.019539 -> 1.467591`, all seven semantic-IR/current-wall
+obligation objectives were active, and public training rows, external
+inference, and fallback/template/router/tool credit all stayed at `0`. The
+paired strict decode evidence is still behavior-negative:
+`reports/strict_generator_mlx_decode_eval_semantic_ir_obligation_broad4_20260706.json`
+emits `9` integrity-clean transformer/hybrid rows with `0` passes, and
+`reports/strict_generator_mlx_decode_eval_semantic_ir_obligation_train_replay8_value_guard_v3_20260706.json`
+emits `11` integrity-clean transformer/hybrid rows with `0` passes. The latest
+task-blind expression-value guard removes bare builtin/type attribute receivers
+and uncalled-attribute value closures from admitted completions, but residuals
+remain `wrong_answer` and `type_handling`. The wall is therefore semantic/value
+body construction and verifier-positive update/finalizer/return closure, not
+another narrow malformed-token guard, sample-coverage fix, target-weighting
+family, or DPO loss-only movement.
 The AI_book crosswalk remains sticky by design: it currently indexes `1703`
 AI_book source files and has `38` active roadmap backlog items, `0`
 stale-source phase candidates, `58` public-safe evidence pointers, and `136`

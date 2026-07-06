@@ -2183,6 +2183,13 @@ def token_blocked_by_expression_value_guard(
     if not token_value:
         return False
 
+    if expression_value_would_create_bare_builtin_attribute_chain(values, token_value):
+        return True
+    if expression_value_has_bare_builtin_attribute_chain(values):
+        return True
+    if expression_value_tail_is_uncalled_attribute_reference(values) and token_value != "(":
+        return True
+
     if current_return_line_has_invalid_expression_value(values) and not current_return_invalid_value_can_be_repaired(
         values,
         token_value,
@@ -2223,6 +2230,8 @@ def token_blocked_by_expression_value_guard(
             return True
         if current_return_line_has_invalid_expression_value(values):
             return True
+        if expression_value_has_bare_builtin_attribute_chain(values):
+            return True
         if current_assignment_line_has_bare_builtin_value(values):
             return True
         if len(values) >= 2 and values[0] == "return" and values[-1] in EXPRESSION_VALUE_BARE_BUILTINS:
@@ -2241,6 +2250,37 @@ def token_blocked_by_expression_value_guard(
     if token_value == "not" and expression_value_has_pathological_not_run(values):
         return True
     return False
+
+
+def expression_value_would_create_bare_builtin_attribute_chain(values: list[str], token_value: str) -> bool:
+    """Reject ``max.get``-style attribute chains on builtin/type objects.
+
+    The check is lexical and task-blind so it can fire before the partial
+    expression becomes parseable Python.
+    """
+
+    if token_value == "." and values and values[-1] in EXPRESSION_VALUE_BARE_BUILTINS:
+        return True
+    if len(values) >= 2 and values[-2] in EXPRESSION_VALUE_BARE_BUILTINS and values[-1] == ".":
+        return True
+    return False
+
+
+def expression_value_has_bare_builtin_attribute_chain(values: list[str]) -> bool:
+    for index in range(len(values) - 1):
+        if values[index] in EXPRESSION_VALUE_BARE_BUILTINS and values[index + 1] == ".":
+            return True
+    return False
+
+
+def expression_value_tail_is_uncalled_attribute_reference(values: list[str]) -> bool:
+    if len(values) < 3:
+        return False
+    if values[-2] != "." or not values[-1].isidentifier():
+        return False
+    if values[-1] in {"real", "imag"}:
+        return False
+    return True
 
 
 def current_return_line_has_invalid_expression_value(values: list[str]) -> bool:

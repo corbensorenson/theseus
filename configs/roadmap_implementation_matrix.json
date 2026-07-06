@@ -9,9 +9,9 @@
     "status": "coverage_integrated_critical_path_tightened",
     "source_attachment": "/Users/corbensorenson/.codex/attachments/f08752f6-9be1-440d-9c6c-65169a852670/pasted-text.txt",
     "coverage_result": "The packet confirms existing planned_codex_test_backlog coverage for policy optimization, fast generation, GVR, semantic IR, verification bandwidth, VCM transaction certificates, Circle/Coil cyclic baselines, belief revision, and procedural memory.",
-    "important_correction": "DPO over accepted/rejected verifier pairs is no longer simply missing: a governed shadow update already moved private loss/preference-gap metrics and then failed strict private replay behaviorally. A later zero-credit semantic-operation value-construction canary preserved clean candidate integrity and emitted nontrivial transformer/hybrid rows, but still scored 0/2 private passes and exposed repeated max(max(... starvation plus shallow accumulator/type-handling failures. Future DPO/IPO/ORPO/KTO/SimPO or GRPO/RLVR work depends on direct prompt/signature body-token generation producing behavior-positive, non-fallback, non-template learned candidates beyond narrow simple-return replay.",
-    "immediate_capability_wall": "phase_10_direct_semantic_action_body_construction",
-    "latest_validation": "2026-07-06 roadmap gate validated 12 planned_codex_test_backlog rows with zero missing required fields and zero invalid phase refs; training/inference gate remains RED only because strict pre-training architecture readiness is intentionally blocked by partial book-derived mechanics.",
+    "important_correction": "DPO over accepted/rejected verifier pairs is no longer simply missing: a governed shadow update already moved private loss/preference-gap metrics and then failed strict private replay behaviorally. The durable semantic-IR obligation MLX private rung now trains from aggregate private failure obligations and improves heldout LM loss 2.019539 -> 1.467591 with clean public/external/fallback counters, but paired strict decode still scores 0 behavior passes on broad_private_heldout and private_train_replay. The newest expression-value guard removes builtin/type attribute receiver and uncalled-attribute value closures from admitted rows, yet strict replay remains behavior-zero with wrong_answer/type_handling residuals. Future DPO/IPO/ORPO/KTO/SimPO, GRPO/RLVR, MTP, diffusion, or scale work must depend on direct prompt/signature body-token generation producing behavior-positive, non-fallback, non-template learned candidates beyond narrow simple-return replay.",
+    "immediate_capability_wall": "phase_10_behavior_zero_semantic_value_body_construction_after_clean_obligation_training",
+    "latest_validation": "2026-07-06 durable semantic-IR obligation private rung: GREEN adaptation report reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_private_rung_20260706.json; heldout LM 2.019539 -> 1.467591 over 256 private train rows and 64 heldout rows. Paired strict replay remains YELLOW: broad4 0 passes over 9 generated rows, train replay v3 0 passes over 11 generated rows, candidate integrity clean, public_training_rows=0, external_inference_calls=0, fallback/template/router/tool credit=0.",
     "ordered_next_sequence": [
       "repair_broad_prompt_signature_semantic_action_body_token_generation",
       "consume_existing_semantic_ir_atoms_in_localized_repair_or_trainable_ast_state_machine_body_construction",
@@ -81,7 +81,9 @@
       "backlog_id": "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
       "source_basis": "AI_book Chapter 38 planned tests plus Claude fourth-pass mining",
       "technique_family": "offline_preference_optimization",
-      "owned_phase_refs": [10],
+      "owned_phase_refs": [
+        10
+      ],
       "track_id": "C_capability_research_survival_lane",
       "status": "blocked_by_direct_learned_emission_wall",
       "dependency": "strict prompt/signature body-token replay must emit non-fallback, nontrivial, loadable candidates before another preference sweep can mean anything behaviorally",
@@ -93,7 +95,10 @@
       "backlog_id": "planned.grpo_rloo_remax_rlvr_private_verifier_reward_v1",
       "source_basis": "AI_book Chapter 38 planned tests and LongRLVR source notes",
       "technique_family": "verifier_reward_policy_optimization",
-      "owned_phase_refs": [10, 16],
+      "owned_phase_refs": [
+        10,
+        16
+      ],
       "track_id": "C_capability_research_survival_lane",
       "status": "queued_after_nonfallback_candidate_quality",
       "dependency": "requires usable learned candidates and a verifier-capacity ledger before online/group-relative reward optimization",
@@ -105,7 +110,13 @@
       "backlog_id": "planned.multi_target_policy_updates_v1",
       "source_basis": "AI_book Chapter 38 multi-target optimization",
       "technique_family": "policy_update_lease",
-      "owned_phase_refs": [4, 5, 10, 14, 16],
+      "owned_phase_refs": [
+        4,
+        5,
+        10,
+        14,
+        16
+      ],
       "track_id": "F_memory_planning_tool_substrate",
       "status": "planned",
       "dependency": "requires behavior-change leases with admissible feedback and per-target heldouts",
@@ -117,7 +128,11 @@
       "backlog_id": "planned.gvr_state_machine_and_localized_repair_v1",
       "source_basis": "AI_book Chapters 15 and 30 planned tests",
       "technique_family": "generate_verify_repair",
-      "owned_phase_refs": [10, 13, 14],
+      "owned_phase_refs": [
+        10,
+        13,
+        14
+      ],
       "track_id": "F_memory_planning_tool_substrate",
       "status": "planned_after_direct_generator_candidates",
       "dependency": "requires candidate integrity and semantic atom mapping for actual generated failures",
@@ -129,7 +144,11 @@
       "backlog_id": "planned.mtp_generation_mode_matched_control_v1",
       "source_basis": "AI_book fast-generation chapters and multi-token prediction source notes",
       "technique_family": "generation_mode",
-      "owned_phase_refs": [8, 10, 16],
+      "owned_phase_refs": [
+        8,
+        10,
+        16
+      ],
       "track_id": "C_capability_research_survival_lane",
       "status": "queued_after_semantic_candidate_quality_moves",
       "dependency": "requires a nonzero behavior baseline so useful verified output per second can be measured",
@@ -141,7 +160,11 @@
       "backlog_id": "planned.medusa_eagle_speculative_layerskip_registry_v1",
       "source_basis": "AI_book fast-generation chapters plus Medusa/EAGLE/speculative/LayerSkip notes",
       "technique_family": "generation_mode",
-      "owned_phase_refs": [8, 10, 16],
+      "owned_phase_refs": [
+        8,
+        10,
+        16
+      ],
       "track_id": "C_capability_research_survival_lane",
       "status": "planned",
       "dependency": "requires generation-mode registry accounting and accepted-output scoring",
@@ -153,7 +176,10 @@
       "backlog_id": "planned.diffusion_llada_sketch_first_repair_v1",
       "source_basis": "AI_book diffusion/LLaDA planned tests",
       "technique_family": "sketch_first_generation",
-      "owned_phase_refs": [10, 13],
+      "owned_phase_refs": [
+        10,
+        13
+      ],
       "track_id": "C_capability_research_survival_lane",
       "status": "queued_after_behavior_changing_semantic_ir_consumption",
       "dependency": "requires semantic IR atoms to be consumed by a localized repair or trainable AST/state-machine body-construction path that improves private replay, so scaffold/infill repair has behavior-positive obligations instead of whole-body rerolling",
@@ -165,7 +191,11 @@
       "backlog_id": "planned.vcm_context_transaction_certificate_abi_v1",
       "source_basis": "AI_book Chapters 16-17 planned tests",
       "technique_family": "context_memory_abi",
-      "owned_phase_refs": [3, 14, 16],
+      "owned_phase_refs": [
+        3,
+        14,
+        16
+      ],
       "track_id": "F_memory_planning_tool_substrate",
       "status": "partial",
       "dependency": "requires deployed resolver/compiler conformance beyond fixture-level VCM records",
@@ -177,7 +207,10 @@
       "backlog_id": "planned.verification_bandwidth_and_governance_tax_v1",
       "source_basis": "AI_book Chapter 18 planned tests",
       "technique_family": "verification_resource_routing",
-      "owned_phase_refs": [14, 16],
+      "owned_phase_refs": [
+        14,
+        16
+      ],
       "track_id": "F_memory_planning_tool_substrate",
       "status": "partial",
       "dependency": "requires route-level verifier capacity and residual-obligation ledgers",
@@ -189,7 +222,10 @@
       "backlog_id": "planned.claim_belief_revision_v1",
       "source_basis": "AI_book Chapter 19 planned tests and truth-maintenance notes",
       "technique_family": "claim_ledger_revision",
-      "owned_phase_refs": [14, 19],
+      "owned_phase_refs": [
+        14,
+        19
+      ],
       "track_id": "A_reference_evidence_spine",
       "status": "partial",
       "dependency": "requires immutable revision history attached to evidence transitions",
@@ -201,7 +237,10 @@
       "backlog_id": "planned.procedural_memory_to_lookahead_trie_v1",
       "source_basis": "AI_book Chapter 24 and lookahead decoding planned tests",
       "technique_family": "procedural_memory",
-      "owned_phase_refs": [15, 10],
+      "owned_phase_refs": [
+        15,
+        10
+      ],
       "track_id": "B_product_assistant_usefulness",
       "status": "partial",
       "dependency": "requires repeated real or replayable verified trajectories with preconditions and monitoring",
@@ -213,7 +252,10 @@
       "backlog_id": "planned.circle_coil_cyclic_substrate_baseline_matrix_v1",
       "source_basis": "AI_book Chapters 33-35 planned tests and Circle/Coil source notes",
       "technique_family": "substrate_adoption",
-      "owned_phase_refs": [11, 18],
+      "owned_phase_refs": [
+        11,
+        18
+      ],
       "track_id": "C_capability_research_survival_lane",
       "status": "protected_discovery_lane",
       "dependency": "requires matched-compute substrate-adoption records and proof-boundary claims",
@@ -1397,7 +1439,9 @@
         "reports/candidate_integrity_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=YELLOW family_counts.fallback_or_template=16 integrity_verified_candidate_count=0",
         "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=GREEN invalid_claim_count=0 static_information_flow_violation_count=0"
       ],
-      "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence."
+      "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence.",
+      "current_wall": "Durable semantic-IR obligation training now improves private heldout LM loss and emits integrity-clean transformer/hybrid rows under strict replay, but behavior remains 0 on broad and train replay slices. The remaining wall is semantic/value body construction and verifier-positive local update/finalizer/return closure, not sample coverage, target-side weighting, malformed-token hygiene, or DPO shadow loss movement.",
+      "next_required_work": "Build a behavior-changing trainable AST/state-machine or localized semantic-IR body constructor, then run bounded DPO/IPO/ORPO/KTO/SimPO only after non-fallback learned candidates achieve private verifier passes. Keep all policy optimization/generation-mode work under matched controls, reward-hacking probes, rollback, no public benchmark training rows, and no fallback/tool/router/renderer credit."
     },
     {
       "phase": 11,

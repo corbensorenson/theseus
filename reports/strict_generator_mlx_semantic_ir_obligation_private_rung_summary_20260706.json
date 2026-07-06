@@ -1,0 +1,66 @@
+{
+  "created_utc": "2026-07-06T20:30:00Z",
+  "policy": "project_theseus_semantic_ir_obligation_private_rung_summary_v1",
+  "source_reports": {
+    "adaptation": "reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_private_rung_20260706.json",
+    "broad_replay": "reports/strict_generator_mlx_decode_eval_semantic_ir_obligation_broad4_20260706.json",
+    "train_replay_value_guard": "reports/strict_generator_mlx_decode_eval_semantic_ir_obligation_train_replay8_value_guard_v3_20260706.json"
+  },
+  "adaptation": {
+    "trigger_state": "GREEN",
+    "private_train_rows": 256,
+    "private_heldout_rows": 64,
+    "heldout_lm_loss_before": 2.019539,
+    "heldout_lm_loss_after": 1.467591,
+    "active_objectives": [
+      "local_return_closure",
+      "closed_state_transition",
+      "loop_semantic_operation",
+      "loop_expression_synthesis",
+      "plan_conditioned_body",
+      "direct_body_emission",
+      "source_condition_internalization"
+    ],
+    "checkpoint_sha256": "23f60cfb1a5866142399fe86a6839ceb2ad414d79bbd01fb9df3ace0f73cc673",
+    "vocab_sha256": "312371f811e3077e10d83640fd93feacf268f9fb59b856159a3eaa5ff1396886"
+  },
+  "strict_replay": {
+    "broad_private_heldout": {
+      "trigger_state": "YELLOW",
+      "generated_candidate_rows": 9,
+      "integrity_verified_rows": 9,
+      "behavior_passes": 0,
+      "residuals": {
+        "wrong_answer": 9
+      }
+    },
+    "private_train_replay_value_guard_v3": {
+      "trigger_state": "YELLOW",
+      "generated_candidate_rows": 11,
+      "integrity_verified_rows": 11,
+      "behavior_passes": 0,
+      "nontrivial_return_rate": 1.0,
+      "mean_verification_reward": 0.443333,
+      "max_verification_reward": 0.7,
+      "residuals": {
+        "type_handling": 4,
+        "wrong_answer": 7
+      }
+    }
+  },
+  "implementation_changes": [
+    "strict_generator_mlx_specialist_routing now forwards enable_semantic_operation_value_construction into specialist route decode options",
+    "strict_generator_mlx_decode_plans now blocks bare builtin/type attribute receiver chains during expression-value decode",
+    "strict_generator_mlx_decode_plans now blocks uncalled attribute references from closing as runtime values while still allowing repair into calls"
+  ],
+  "no_cheat_evidence": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit_count": 0,
+    "uses_public_data": false,
+    "uses_eval_tests_or_solutions_for_generation": false,
+    "candidate_generation_credit_from_deterministic_repair": 0
+  },
+  "conclusion": "Semantic-IR obligation training is now durable and clean, but strict replay remains behavior-zero. The remaining wall is semantic/value body construction and verifier-positive update/finalizer/return closure, not another malformed-token guard, sample-coverage fix, target-side weighting family, or DPO loss-only movement.",
+  "next_required_work": "Implement a behavior-changing trainable AST/state-machine or localized semantic-IR body-construction path, then rerun strict private replay. Only after non-fallback learned candidates pass private verifier checks should bounded DPO/IPO/ORPO/KTO/SimPO or GRPO/RLVR be treated as capability levers."
+}
