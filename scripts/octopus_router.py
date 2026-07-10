@@ -1,4 +1,4 @@
-"""Octopus Router Architecture report builder for SymLiquid.
+"""Octopus Router Architecture report builder for Project Theseus.
 
 This script creates a local-only system-level routing layer:
 arm cards, routing benchmark decisions, permission envelopes, dynamic-load
@@ -41,6 +41,8 @@ def main() -> int:
     parser.add_argument("--bridge-out", default="benchmarks/bridges/babylm_wh_gap_bridge.jsonl")
     parser.add_argument("--router-head-report", default=None)
     parser.add_argument("--router-head-eval", default=None)
+    parser.add_argument("--router-head-model", default="reports/octopus_router_head_model.json")
+    parser.add_argument("--router-head-gate", default="reports/octopus_router_head_gate.json")
     parser.add_argument("--project-registry", default="reports/theseus_project_registry.json")
     parser.add_argument("--vcm-context-governor", default="reports/vcm_context_governor.json")
     parser.add_argument("--candidate-integrity", default="reports/candidate_integrity_audit.json")
@@ -55,6 +57,14 @@ def main() -> int:
     event_log = read_json(args.event_log, {})
     router_head_report = read_json(args.router_head_report, {}) if args.router_head_report else {}
     router_head_eval = read_json(args.router_head_eval, {}) if args.router_head_eval else {}
+    router_head_model = read_json(args.router_head_model, {}) if args.router_head_report else {}
+    router_head_gate = read_json(args.router_head_gate, {}) if args.router_head_report else {}
+    router_head_activation = build_router_head_activation(
+        router_head_report,
+        router_head_eval,
+        router_head_model,
+        router_head_gate,
+    )
     project_registry = read_json(args.project_registry, {})
     vcm_context_governor = read_json(args.vcm_context_governor, {})
     candidate_integrity = read_json(args.candidate_integrity, {})
@@ -70,7 +80,7 @@ def main() -> int:
         event_log=event_log,
     )
     annotate_registry_routes(arms, registry_context)
-    router_eval = evaluate_router(arms, registry_context)
+    router_eval = evaluate_router(arms, registry_context, router_head_activation=router_head_activation)
     routing_memory = build_routing_memory(router_eval, arms)
     arm_lifecycle_ledger = build_arm_lifecycle_ledger(arms, router_eval)
     safety_ledger = build_safety_ledger(router_eval, arms)
@@ -88,6 +98,7 @@ def main() -> int:
         registry_context=registry_context,
         vcm_context=vcm_context,
         candidate_integrity_context=candidate_integrity_context,
+        router_head_activation=router_head_activation,
     )
 
     write_json(args.arm_registry_out, {"policy": "local_only_no_external_inference", "arms": arms})
@@ -757,12 +768,23 @@ ROUTER_CASES = [
 ]
 
 
-def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]) -> dict[str, Any]:
+def evaluate_router(
+    arms: list[dict[str, Any]],
+    registry_context: dict[str, Any],
+    *,
+    router_head_activation: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     decisions = []
     dynamic = DynamicLoadTracker(arms)
     arm_map = {arm["arm_name"]: arm for arm in arms}
     for case in ROUTER_CASES:
-        decision = route_task(case["task"], case["risk"], arms, expected_pattern=case["pattern"])
+        decision = route_task(
+            case["task"],
+            case["risk"],
+            arms,
+            expected_pattern=case["pattern"],
+            router_head_activation=router_head_activation,
+        )
         dynamic.observe(decision["selected_arms"])
         expected = set(case["expected"])
         selected = set(decision["selected_arms"])
@@ -775,7 +797,7 @@ def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]
             if name in arm_map
             and not arm_map[name].get("registry_route", {}).get("routing_eligible")
         ]
-        passed = not missing and high_risk_ok and not registry_blocked
+        passed = decision.get("route_state") == "READY" and not missing and not unnecessary and high_risk_ok and not registry_blocked
         verification_bandwidth = build_verification_bandwidth_record(
             case=case,
             selected_arms=decision["selected_arms"],
@@ -800,6 +822,9 @@ def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]
                 "permission_envelopes": decision["permission_envelopes"],
                 "composition_plan": decision["composition_plan"],
                 "dynamic_loading": decision["dynamic_loading"],
+                "route_state": decision.get("route_state"),
+                "typed_faults": decision.get("typed_faults", []),
+                "blocked_candidates": decision.get("blocked_candidates", []),
                 "missing_expected": missing,
                 "unnecessary_arms": unnecessary,
                 "registry_blocked_arms": registry_blocked,
@@ -819,7 +844,11 @@ def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]
         "methodology": "octopus_router_eval",
         "router": {
             "resident_head": True,
-            "strategy": "keyword_weighted_rule_router_v0",
+            "strategy": (
+                "learned_sparse_centroid_head"
+                if dict(router_head_activation or {}).get("active") is True
+                else "keyword_weighted_rule_router_v0"
+            ),
             "learned_upgrade_path": "train a small routing head on accumulated task->arm traces once enough local traces exist",
         },
         "metrics": {
@@ -835,6 +864,7 @@ def evaluate_router(arms: list[dict[str, Any]], registry_context: dict[str, Any]
             "governance_tax": summarize_governance_tax(decisions),
         },
         "project_registry": registry_context,
+        "router_head_activation": router_head_activation_view(router_head_activation),
         "dynamic_loading_metrics": dynamic.metrics(),
         "decisions": decisions,
     }
@@ -1232,23 +1262,69 @@ def route_task(
     arms: list[dict[str, Any]],
     *,
     expected_pattern: str,
+    router_head_activation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     task_l = task.lower()
-    scored = []
-    for arm in arms:
-        if arm["arm_name"] == "head_router":
-            continue
-        score = score_arm(task_l, arm)
-        if score > 0:
-            scored.append((score, arm))
-    scored.sort(key=lambda row: (-row[0], row[1]["arm_name"]))
-    selected = ["head_router"] + [arm["arm_name"] for _, arm in scored[:4]]
-    selected.extend(corouted_arms(task_l, risk, selected))
+    arms_by_name = {arm["arm_name"]: arm for arm in arms}
+    eligible_names = {
+        name
+        for name, arm in arms_by_name.items()
+        if arm_route_eligible_for_task(arm, task_l=task_l)
+    }
+    blocked_candidates = sorted(set(arms_by_name) - eligible_names)
+    if "head_router" not in eligible_names:
+        return blocked_route_decision(
+            expected_pattern=expected_pattern,
+            fault_type="ROUTER_HEAD_NOT_ROUTE_ELIGIBLE",
+            blocked_candidates=blocked_candidates,
+        )
+    activation = dict(router_head_activation or {})
+    selection_source = "rule_bootloader"
+    if activation.get("active") is True:
+        from train_octopus_router_head import predict as predict_router_head
+
+        predicted = predict_router_head(dict(activation.get("model") or {}), task, risk, expected_pattern)
+        requested = dedupe(["head_router", *predicted])
+        ineligible_predictions = sorted(name for name in requested if name not in eligible_names)
+        if ineligible_predictions:
+            return blocked_route_decision(
+                expected_pattern=expected_pattern,
+                fault_type="LEARNED_HEAD_SELECTED_INELIGIBLE_ROUTE",
+                blocked_candidates=sorted(set(blocked_candidates) | set(ineligible_predictions)),
+            )
+        selected = requested
+        selection_source = "learned_sparse_centroid_head"
+    else:
+        scored = []
+        for arm in arms:
+            if arm["arm_name"] == "head_router" or arm["arm_name"] not in eligible_names:
+                continue
+            score = score_arm(task_l, arm)
+            if score > 0:
+                scored.append((score, arm))
+        scored.sort(key=lambda row: (-row[0], row[1]["arm_name"]))
+        selected = ["head_router"] + [arm["arm_name"] for _, arm in scored[:4]]
+        selected.extend(name for name in corouted_arms(task_l, risk, selected) if name in eligible_names)
+    if risk in ("high", "critical") and "safety_reflex_arm" not in eligible_names:
+        return blocked_route_decision(
+            expected_pattern=expected_pattern,
+            fault_type="REQUIRED_SAFETY_ARM_NOT_ROUTE_ELIGIBLE",
+            blocked_candidates=blocked_candidates,
+        )
     if risk in ("high", "critical") and "safety_reflex_arm" not in selected:
         selected.append("safety_reflex_arm")
     selected = dedupe(selected)
-    arms_by_name = {arm["arm_name"]: arm for arm in arms}
+    if selected == ["head_router"]:
+        return blocked_route_decision(
+            expected_pattern=expected_pattern,
+            fault_type="NO_ELIGIBLE_SPECIALIST_ROUTE",
+            blocked_candidates=blocked_candidates,
+        )
     return {
+        "route_state": "READY",
+        "typed_faults": [],
+        "blocked_candidates": blocked_candidates,
+        "selection_source": selection_source,
         "selected_arms": selected,
         "routing_pattern": "reflex" if risk == "critical" else expected_pattern,
         "permission_envelopes": {
@@ -1259,6 +1335,76 @@ def route_task(
             "head_resident": True,
             "loaded_on_demand": [name for name in selected if name != "head_router"],
             "unload_policy": "lru_after_task_boundary",
+        },
+    }
+
+
+def build_router_head_activation(
+    report: dict[str, Any],
+    evaluation: dict[str, Any],
+    model: dict[str, Any],
+    gate_report: dict[str, Any],
+) -> dict[str, Any]:
+    reasons = []
+    if report.get("promotion_gate_passed") is not True:
+        reasons.append("training_report_not_promoted")
+    if evaluation.get("promotion_gate_passed") is not True:
+        reasons.append("evaluation_not_promoted")
+    if gate_report.get("trigger_state") != "GREEN":
+        reasons.append("independent_gate_not_green")
+    if model.get("model_type") != "sparse_centroid_multilabel_router_v0" or not model.get("centroids"):
+        reasons.append("model_missing_or_invalid")
+    return {
+        "active": not reasons,
+        "blocked_reasons": reasons,
+        "model": model if not reasons else {},
+        "model_type": model.get("model_type"),
+        "gate_trigger_state": gate_report.get("trigger_state") if gate_report else "missing",
+        "candidate_generation_credit": 0,
+        "learned_generation_claim_allowed": False,
+        "fallback_return_count": 0,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+    }
+
+
+def router_head_activation_view(value: dict[str, Any] | None) -> dict[str, Any]:
+    return {key: item for key, item in dict(value or {}).items() if key != "model"}
+
+
+def arm_route_eligible_for_task(arm: dict[str, Any], *, task_l: str) -> bool:
+    route = arm.get("registry_route") if isinstance(arm.get("registry_route"), dict) else {}
+    if route.get("routing_eligible") is not True:
+        return False
+    freshness = arm.get("freshness") if isinstance(arm.get("freshness"), dict) else {}
+    if freshness.get("requires_revalidation") is True:
+        return False
+    lifecycle = str(arm.get("lifecycle_status") or "")
+    if lifecycle == "probationary_simulation_only":
+        simulation_requested = any(term in task_l for term in ("simulation", "simulator", "sitl", "synthetic"))
+        live_requested = any(term in task_l for term in ("live hardware", "real hardware", "takeoff", "production"))
+        return simulation_requested and not live_requested
+    return lifecycle.startswith("active") or lifecycle == "split_candidate"
+
+
+def blocked_route_decision(*, expected_pattern: str, fault_type: str, blocked_candidates: list[str]) -> dict[str, Any]:
+    return {
+        "route_state": "BLOCKED",
+        "typed_faults": [
+            {
+                "fault_type": fault_type,
+                "failure_behavior": "reject_without_fallback",
+            }
+        ],
+        "blocked_candidates": list(blocked_candidates),
+        "selected_arms": [],
+        "routing_pattern": expected_pattern,
+        "permission_envelopes": {},
+        "composition_plan": {"mode": "blocked", "stages": []},
+        "dynamic_loading": {
+            "head_resident": False,
+            "loaded_on_demand": [],
+            "unload_policy": "not_applicable",
         },
     }
 
@@ -1518,6 +1664,21 @@ def build_moecot_route_records(
                     "route_validator_receipt_id": route_validator_receipt.get("receipt_id"),
                     "route_validator_ready": route_validator_receipt.get("ready") is True,
                     "selected_arms": selected,
+                    "selection_source": decision.get("selection_source"),
+                    "candidate_fields": [
+                        {
+                            "arm_id": name,
+                            "selected": name in selected,
+                            "routing_eligible": bool(dict(arm_map.get(name, {}).get("registry_route") or {}).get("routing_eligible")),
+                            "implementation_ids": list(dict(arm_map.get(name, {}).get("registry_route") or {}).get("implementation_ids") or []),
+                            "lifecycle_status": arm_map.get(name, {}).get("lifecycle_status"),
+                            "reliability_score": arm_map.get(name, {}).get("reliability_score"),
+                            "active_parameter_count": None,
+                            "active_parameter_support_state": "NOT_AVAILABLE_UNTIL_PHASE10_SPARSE_PROPOSER",
+                        }
+                        for name in sorted(arm_map)
+                    ],
+                    "rejected_arms": sorted(set(arm_map) - set(selected)),
                     "expected_arms": decision.get("expected", []),
                     "registry_blocked_arms": registry_blocked,
                     "routing_pattern": decision.get("routing_pattern"),
@@ -1525,6 +1686,13 @@ def build_moecot_route_records(
                     "verification_bandwidth": verification_bandwidth,
                     "governance_tax": governance_tax,
                     "passed": passed,
+                    "ledger_refs": [
+                        "reports/arm_registry.json",
+                        "reports/octopus_router_eval.json",
+                        registry_context.get("registry_path"),
+                        vcm_context.get("path"),
+                        candidate_integrity_context.get("path"),
+                    ],
                 },
                 {
                     **common,
@@ -1692,6 +1860,26 @@ def build_moecot_route_records(
                     "evidence_ref": "reports/arm_registry.json",
                 }
             )
+    route_records = [row for row in records if row.get("record_type") == "routing_decision"]
+    records.append(
+        {
+            "record_type": "moecot_orchestration_record",
+            "record_id": stable_id("moecot_orchestration", [row.get("record_id") for row in route_records]),
+            "route_id": "octopus_router.current_evaluation",
+            "task_kind": "moecot_multi_core_orchestration",
+            "support_state": "SUPPORTED" if route_records and all(row.get("passed") for row in route_records) else "RESIDUAL_REVIEW",
+            "routing_decision_refs": [row.get("record_id") for row in route_records],
+            "route_count": len(route_records),
+            "selected_arm_sets": [row.get("selected_arms") for row in route_records],
+            "active_parameter_accounting_state": "NOT_AVAILABLE_UNTIL_PHASE10_SPARSE_PROPOSER",
+            "matched_dense_control_state": "NOT_RUN",
+            "candidate_generation_credit": 0,
+            "learned_generation_claim_allowed": False,
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+    )
     records.append(
         {
             "record_type": "claim_record",
@@ -1727,8 +1915,10 @@ def build_report(
     registry_context: dict[str, Any],
     vcm_context: dict[str, Any],
     candidate_integrity_context: dict[str, Any],
+    router_head_activation: dict[str, Any],
 ) -> dict[str, Any]:
     learned_head = summarize_router_head(router_head_report, router_head_eval)
+    learned_head["runtime_activation"] = router_head_activation_view(router_head_activation)
     route_validator_receipt = viea_spine_records.materialized_view_consumer_receipt(
         "octopus_router_route_validator",
         required_groups=[
@@ -1781,7 +1971,7 @@ def build_report(
         "implementation_matrix": matrix,
         "head_router": {
             "resident": True,
-            "strategy": "rule_bootloader_plus_learned_sparse_head_v0" if learned_head["promotion_gate_passed"] else router_eval["router"]["strategy"],
+            "strategy": router_eval["router"]["strategy"],
             "learned_upgrade_path": "append local task-to-arm traces and retrain the sparse head before every architecture gate",
             "scope_limits": [
                 "intent",

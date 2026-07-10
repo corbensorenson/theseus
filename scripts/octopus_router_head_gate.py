@@ -68,6 +68,10 @@ def build_gate(
     dataset_summary = dict_value(dataset.get("summary"))
     metrics = dict_value(evaluation.get("metrics") or report.get("metrics"))
     records = list_dicts(report.get("viea_router_head_records"))
+    examples = list_dicts(dataset.get("examples"))
+    contrastive_negatives = list_dicts(dataset.get("contrastive_negatives"))
+    eval_decisions = list_dicts(evaluation.get("decisions"))
+    contrastive_decisions = list_dicts(evaluation.get("contrastive_decisions"))
     observed = {str(row.get("record_type") or "") for row in records}
     missing_records = sorted(REQUIRED_RECORD_TYPES - observed)
 
@@ -83,10 +87,39 @@ def build_gate(
         hard_gaps.append(gap("dataset_policy_mismatch", {"policy": dataset.get("policy")}))
     if evaluation.get("policy") != "local_only_no_external_inference":
         hard_gaps.append(gap("eval_policy_mismatch", {"policy": evaluation.get("policy")}))
-    if int(trace_summary.get("real_trace_examples") or 0) <= 0:
+    actual_real = [row for row in examples if row.get("source") == "real_workflow_trace"]
+    actual_schema_real = [
+        row
+        for row in actual_real
+        if row.get("schema_bound") is True and not list(row.get("forbidden_metadata_paths") or [])
+    ]
+    unique_real_tasks = {str(row.get("task") or "").strip() for row in actual_schema_real if str(row.get("task") or "").strip()}
+    unique_real_labelsets = {
+        tuple(sorted(str(item) for item in row.get("expected_arms") or []))
+        for row in actual_schema_real
+    }
+    if not examples:
+        hard_gaps.append(gap("dataset_examples_missing", {"dataset_summary": dataset_summary}))
+    if int(trace_summary.get("real_trace_examples") or 0) != len(actual_real):
+        hard_gaps.append(gap("real_trace_summary_content_mismatch", {"reported": trace_summary.get("real_trace_examples"), "actual": len(actual_real)}))
+    if int(trace_summary.get("schema_bound_real_trace_examples") or 0) != len(actual_schema_real):
+        hard_gaps.append(gap("schema_trace_summary_content_mismatch", {"reported": trace_summary.get("schema_bound_real_trace_examples"), "actual": len(actual_schema_real)}))
+    if len(actual_real) <= 0:
         hard_gaps.append(gap("real_trace_examples_missing", {"trace_summary": trace_summary}))
-    if int(trace_summary.get("schema_bound_real_trace_examples") or 0) <= 0:
+    if len(actual_schema_real) <= 0:
         hard_gaps.append(gap("schema_bound_real_trace_examples_missing", {"trace_summary": trace_summary}))
+    if len(unique_real_tasks) < 3 or len(unique_real_labelsets) < 2:
+        hard_gaps.append(
+            gap(
+                "real_trace_diversity_below_floor",
+                {
+                    "unique_task_count": len(unique_real_tasks),
+                    "minimum_unique_tasks": 3,
+                    "unique_labelset_count": len(unique_real_labelsets),
+                    "minimum_unique_labelsets": 2,
+                },
+            )
+        )
     if int(trace_summary.get("contrastive_holdout_negatives") or 0) <= 0:
         hard_gaps.append(gap("contrastive_holdout_negatives_missing", {"trace_summary": trace_summary}))
     if float(metrics.get("contrastive_negative_accuracy") or 0.0) < args.min_contrastive_accuracy:
@@ -131,17 +164,58 @@ def build_gate(
         hard_gaps.append(gap("generation_mode_record_allows_generation_credit", {"count": len(generation_faults)}))
     if missing_records:
         hard_gaps.append(gap("viea_router_head_records_missing", {"missing": missing_records}))
+    actual_summary = {
+        "examples": len(examples),
+        "train": sum(1 for row in examples if row.get("split") == "train"),
+        "holdout": sum(1 for row in examples if row.get("split") == "holdout"),
+        "real_trace_examples": len(actual_real),
+        "schema_bound_real_trace_examples": len(actual_schema_real),
+        "contrastive_negatives": len(contrastive_negatives),
+        "contrastive_holdout_negatives": sum(1 for row in contrastive_negatives if row.get("split") == "holdout"),
+    }
+    summary_mismatches = {
+        key: {"reported": dataset_summary.get(key), "actual": value}
+        for key, value in actual_summary.items()
+        if int(dataset_summary.get(key) or 0) != value
+    }
+    if summary_mismatches:
+        hard_gaps.append(gap("dataset_summary_content_mismatch", summary_mismatches))
     if int(dataset_summary.get("contrastive_negatives") or 0) != int(trace_summary.get("contrastive_negatives") or 0):
-        warnings.append(
+        hard_gaps.append(
             gap(
                 "dataset_report_contrastive_count_mismatch",
                 {
                     "dataset": dataset_summary.get("contrastive_negatives"),
                     "report": trace_summary.get("contrastive_negatives"),
                 },
-                severity="warning",
             )
         )
+    train_sources = {str(row.get("source_task_id") or "") for row in examples if row.get("split") == "train"}
+    holdout_sources = {str(row.get("source_task_id") or "") for row in examples if row.get("split") == "holdout"}
+    leaked_sources = sorted((train_sources & holdout_sources) - {""})
+    if leaked_sources:
+        hard_gaps.append(gap("holdout_source_overlap", {"count": len(leaked_sources), "examples": leaked_sources[:20]}))
+    expected_holdout_ids = {str(row.get("trace_id") or "") for row in examples if row.get("split") == "holdout"}
+    observed_eval_ids = {str(row.get("trace_id") or "") for row in eval_decisions}
+    if expected_holdout_ids != observed_eval_ids:
+        hard_gaps.append(gap("eval_decision_dataset_mismatch", {"expected_count": len(expected_holdout_ids), "observed_count": len(observed_eval_ids)}))
+    recomputed_exact = sum(
+        1
+        for row in eval_decisions
+        if set(row.get("expected_arms") or []) == set(row.get("predicted_arms") or [])
+    ) / max(1, len(eval_decisions))
+    recomputed_risk = sum(
+        1
+        for row in eval_decisions
+        if row.get("risk") not in {"high", "critical"} or "safety_reflex_arm" in set(row.get("predicted_arms") or [])
+    ) / max(1, len(eval_decisions))
+    if float(metrics.get("exact_set_accuracy") or 0.0) != round(recomputed_exact, 4):
+        hard_gaps.append(gap("exact_accuracy_not_replayable", {"reported": metrics.get("exact_set_accuracy"), "recomputed": recomputed_exact}))
+    if float(metrics.get("risk_routing_accuracy") or 0.0) != round(recomputed_risk, 4):
+        hard_gaps.append(gap("risk_accuracy_not_replayable", {"reported": metrics.get("risk_routing_accuracy"), "recomputed": recomputed_risk}))
+    expected_contrastive_count = actual_summary["contrastive_holdout_negatives"]
+    if len(contrastive_decisions) != expected_contrastive_count:
+        hard_gaps.append(gap("contrastive_decision_dataset_mismatch", {"expected": expected_contrastive_count, "observed": len(contrastive_decisions)}))
 
     trigger_state = "GREEN" if not hard_gaps else "RED"
     return {
@@ -163,6 +237,11 @@ def build_gate(
             "learned_generation_claim_allowed": report.get("learned_generation_claim_allowed"),
             "candidate_generation_credit": int(report.get("candidate_generation_credit") or 0),
             "viea_router_head_record_count": len(records),
+            "dataset_example_count": len(examples),
+            "actual_schema_bound_real_trace_examples": len(actual_schema_real),
+            "unique_schema_bound_real_task_count": len(unique_real_tasks),
+            "unique_schema_bound_real_labelset_count": len(unique_real_labelsets),
+            "holdout_source_overlap_count": len(leaked_sources),
             "missing_viea_router_head_records": missing_records,
             "hard_gap_count": len(hard_gaps),
             "warning_count": len(warnings),
@@ -199,7 +278,9 @@ def no_cheat_faults_for(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     faults = []
     for index, row in enumerate(rows):
         for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count"):
-            if int(row.get(key) or 0) != 0:
+            if key not in row:
+                faults.append({"index": index, "key": key, "value": "missing"})
+            elif int(row.get(key) or 0) != 0:
                 faults.append({"index": index, "key": key, "value": row.get(key)})
     return faults
 

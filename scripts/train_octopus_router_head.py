@@ -18,6 +18,20 @@ from typing import Any
 
 
 DEFAULT_REAL_TRACE_PATH = "reports/routing_memory_real_traces.jsonl"
+FORBIDDEN_ROUTER_TRACE_KEYS = {
+    "answer",
+    "category",
+    "expected",
+    "hidden_tests",
+    "required_constructs",
+    "return_shape",
+    "solution",
+    "solution_body",
+    "solution_expr",
+    "source_task_id",
+    "tests",
+    "type_family",
+}
 
 STOPWORDS = {
     "a",
@@ -97,18 +111,18 @@ def build_trace_dataset(router_eval: dict[str, Any], arms: list[dict[str, Any]])
         for arm in arms
     }
     examples: list[dict[str, Any]] = []
-    for row in router_eval.get("decisions", []):
+    for source_index, row in enumerate(router_eval.get("decisions", [])):
         labels = sorted(set(row.get("expected", [])))
         if row.get("risk") in ("high", "critical"):
             labels = sorted(set(labels + ["safety_reflex_arm"]))
         variants = augment_task(row)
+        source_split = "holdout" if source_index % 4 == 3 else "train"
         for idx, text in enumerate(variants):
-            split = "holdout" if idx == len(variants) - 1 else "train"
             examples.append(
                 {
                     "trace_id": stable_id(row.get("task_id", "route"), idx, text),
                     "source_task_id": row.get("task_id"),
-                    "split": split,
+                    "split": source_split,
                     "task": text,
                     "risk": row.get("risk", "low"),
                     "routing_pattern": row.get("pattern") or row.get("routing_pattern"),
@@ -153,6 +167,7 @@ def build_extra_trace_dataset(paths: list[str], arms: list[dict[str, Any]]) -> l
                 continue
             if risk in ("high", "critical"):
                 labels = sorted(set(labels + ["safety_reflex_arm"]))
+            forbidden_paths = forbidden_router_trace_paths(row)
             schema_bound = schema_bound_real_trace(row, labels)
             examples.append(
                 {
@@ -164,6 +179,8 @@ def build_extra_trace_dataset(paths: list[str], arms: list[dict[str, Any]]) -> l
                     "routing_pattern": pattern,
                     "expected_arms": labels,
                     "schema_bound": schema_bound,
+                    "forbidden_metadata_paths": forbidden_paths,
+                    "generation_read_set": ["task", "risk", "routing_pattern"],
                     "outcome_ok": bool((row.get("outcome") or {}).get("ok", True)) if isinstance(row.get("outcome"), dict) else None,
                     "features": sorted(
                         featurize(
@@ -180,6 +197,11 @@ def build_extra_trace_dataset(paths: list[str], arms: list[dict[str, Any]]) -> l
 
 
 def schema_bound_real_trace(row: dict[str, Any], labels: list[str]) -> bool:
+    if forbidden_router_trace_paths(row):
+        return False
+    for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count", "candidate_generation_credit"):
+        if key not in row or int(row.get(key) or 0) != 0:
+            return False
     envelopes = row.get("permission_envelopes")
     if not isinstance(envelopes, dict) or not envelopes:
         return False
@@ -197,6 +219,20 @@ def schema_bound_real_trace(row: dict[str, Any], labels: list[str]) -> bool:
         if "runtime_tier" not in envelope or "tools" not in envelope:
             return False
     return bool(row.get("trace_id") and row.get("task") and row.get("source"))
+
+
+def forbidden_router_trace_paths(value: Any, *, prefix: str = "") -> list[str]:
+    faults: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            path = f"{prefix}.{key}" if prefix else str(key)
+            if str(key) in FORBIDDEN_ROUTER_TRACE_KEYS:
+                faults.append(path)
+            faults.extend(forbidden_router_trace_paths(child, prefix=path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            faults.extend(forbidden_router_trace_paths(child, prefix=f"{prefix}[{index}]"))
+    return faults
 
 
 def augment_task(row: dict[str, Any]) -> list[str]:
@@ -424,7 +460,11 @@ def evaluate_model(
         "decisions": decisions,
         "contrastive_decisions": contrastive_decisions(model, contrastive_negatives, split="holdout")[:80],
         "promotion_gate_passed": promotion_gate_passed,
+        "learned_generation_claim_allowed": False,
+        "candidate_generation_credit": 0,
+        "public_training_rows_written": 0,
         "external_inference_calls": 0,
+        "fallback_return_count": 0,
     }
 
 
@@ -535,7 +575,11 @@ def dataset_payload(examples: list[dict[str, Any]], contrastive_negatives: list[
         },
         "examples": examples,
         "contrastive_negatives": contrastive_negatives,
+        "learned_generation_claim_allowed": False,
+        "candidate_generation_credit": 0,
+        "public_training_rows_written": 0,
         "external_inference_calls": 0,
+        "fallback_return_count": 0,
     }
 
 
@@ -596,7 +640,9 @@ def build_report(
         "router_selection_only": True,
         "viea_router_head_records": records,
         "next_actions": next_actions(evaluation),
+        "public_training_rows_written": 0,
         "external_inference_calls": 0,
+        "fallback_return_count": 0,
     }
 
 
@@ -710,7 +756,7 @@ def build_viea_router_head_records(
 def next_actions(evaluation: dict[str, Any]) -> list[str]:
     if evaluation.get("promotion_gate_passed"):
         return [
-            "Use the learned sparse head as the router training artifact while keeping the rule router as a deterministic bootloader/fallback.",
+            "Activate the learned sparse head only after the independent content-replay gate is GREEN; keep the rule bootloader as an inactive comparison, not a runtime fallback.",
             "Append future real task-to-arm traces and retrain this head before every major architecture gate.",
             "Keep contrastive negative margins in the router-head gate as the arm ecosystem grows.",
         ]
