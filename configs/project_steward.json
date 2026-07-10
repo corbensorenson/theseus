@@ -1393,6 +1393,44 @@
   ],
   "source_sync_review_decisions": [
     {
+      "id": "source_sync.phase7.data_engine_future_intake_matrix_update.20260710",
+      "record_type": "source_sync_review_decision",
+      "phase": 7,
+      "phase_title": "Teacher And Data Governance",
+      "decision": "matrix_updated",
+      "status": "active",
+      "reason": "The current local AI_book data-engine chapter and controlled completeness intake were reviewed against Theseus. Phase 7 and the roadmap matrix now require per-candidate admission receipts, lifecycle lineage, semantic contamination controls, continual-learning policy comparison, recursive-synthetic coverage diagnostics, and descendant deletion closure. The other provisional book candidates are routed into existing phases with activation conditions and remain planning-only.",
+      "surface_ids": [
+        "teacher_and_data_governance",
+        "active_docs"
+      ],
+      "changed_source_paths": [
+        "chapters/data-engines-continual-learning-and-unlearning.qmd",
+        "docs/v1_x_beyond_sota_roadmap.md"
+      ],
+      "backlog_ids": [],
+      "evidence_refs": [
+        "roadmap.md",
+        "configs/roadmap_implementation_matrix.json",
+        "reports/training_data_admission_v1.json",
+        "reports/roadmap_implementation_gate.json"
+      ],
+      "validation_commands": [
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/module_definition_of_done_gate.py"
+      ],
+      "non_claims": [
+        "book roadmap candidates are planning obligations, not implemented Theseus capability",
+        "book source text is not training data",
+        "data-admission receipt completeness is not data quality, privacy, verified unlearning, or model capability evidence",
+        "future-candidate routing does not create active implementation lanes or block unrelated bounded private training"
+      ],
+      "reviewed_utc": "2026-07-10T03:00:53Z",
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
+    },
+    {
       "id": "source_sync.phase3.vcm_context_abi_fixture_matrix_update.20260626",
       "phase": 3,
       "decision": "matrix_updated",

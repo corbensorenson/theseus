@@ -82,6 +82,18 @@ REQUIRED_PLANNED_CODEX_BACKLOG_FIELDS = {
     "support_state_target",
     "no_claim_boundary",
 }
+REQUIRED_BOOK_FUTURE_CANDIDATE_FIELDS = {
+    "candidate_id",
+    "title",
+    "item_kind",
+    "book_disposition",
+    "phase_refs",
+    "entry_condition",
+    "theseus_scope",
+    "acceptance_boundary",
+    "non_claim_boundary",
+}
+ALLOWED_BOOK_FUTURE_ITEM_KINDS = {"chapter_candidate", "cross_cutting_section"}
 HIVE_ARTIFACT_CITATION_REPORTS = [
     "reports/hive_installer_artifacts.json",
     "reports/hive_artifact_index_smoke.json",
@@ -239,6 +251,14 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
             "book_active_core_slice_support_states": book_contract_report["summary"]["active_core_slice_support_states"],
             "book_core_slice_support_states": book_contract_report["summary"]["core_slice_support_states"],
             "book_support_state_ladder_ready": book_contract_report["summary"]["support_state_ladder_ready"],
+            "book_future_candidate_count": book_contract_report["summary"]["future_candidate_count"],
+            "book_future_candidate_chapter_count": book_contract_report["summary"]["future_candidate_chapter_count"],
+            "book_future_cross_cutting_section_count": book_contract_report["summary"]["future_cross_cutting_section_count"],
+            "book_future_candidate_missing_required_field_count": book_contract_report["summary"][
+                "future_candidate_missing_required_field_count"
+            ],
+            "book_future_candidate_invalid_ref_count": book_contract_report["summary"]["future_candidate_invalid_ref_count"],
+            "book_future_candidate_disposition_counts": book_contract_report["summary"]["future_candidate_disposition_counts"],
             "planned_codex_test_backlog_count": book_contract_report["summary"]["planned_codex_test_backlog_count"],
             "planned_codex_test_backlog_missing_required_field_count": book_contract_report["summary"][
                 "planned_codex_test_backlog_missing_required_field_count"
@@ -438,6 +458,7 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
     support_ladder = list_dicts(matrix.get("claim_support_ladder"))
     support_states = {str(row.get("state") or "") for row in support_ladder}
     crosswalk = list_dicts(matrix.get("book_chapter_implementation_crosswalk"))
+    future_candidates = list_dicts(matrix.get("book_future_candidate_crosswalk"))
     planned_backlog = list_dicts(matrix.get("planned_codex_test_backlog"))
     flagship = dict_value(matrix.get("flagship_lane_governance"))
     core = dict_value(matrix.get("book_reference_core_before_training"))
@@ -453,6 +474,8 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
         hard_gaps.append(gap("book_implementation_contract", "missing_claim_support_ladder", {}))
     if not planned_backlog:
         hard_gaps.append(gap("book_implementation_contract", "missing_planned_codex_test_backlog", {}))
+    if not future_candidates:
+        hard_gaps.append(gap("book_implementation_contract", "missing_book_future_candidate_crosswalk", {}))
     missing_support_states = sorted(REQUIRED_SUPPORT_STATES - support_states)
     if missing_support_states:
         hard_gaps.append(gap("book_implementation_contract", "missing_required_support_states", {"missing": missing_support_states}))
@@ -573,6 +596,67 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
     if duplicates:
         hard_gaps.append(gap("book_chapter_implementation_crosswalk", "duplicate_chapter_ids", {"duplicates": duplicates}))
 
+    future_candidate_ids: list[str] = []
+    future_candidate_kinds: list[str] = []
+    future_candidate_dispositions: list[str] = []
+    future_candidate_missing_required_field_count = 0
+    future_candidate_invalid_ref_count = 0
+    for row in future_candidates:
+        candidate_id = str(row.get("candidate_id") or "")
+        item_kind = str(row.get("item_kind") or "")
+        disposition = str(row.get("book_disposition") or "")
+        future_candidate_ids.append(candidate_id)
+        future_candidate_kinds.append(item_kind or "missing_item_kind")
+        future_candidate_dispositions.append(disposition or "missing_disposition")
+        missing_fields = sorted(field for field in REQUIRED_BOOK_FUTURE_CANDIDATE_FIELDS if empty(row.get(field)))
+        if missing_fields:
+            future_candidate_missing_required_field_count += len(missing_fields)
+            hard_gaps.append(
+                gap(
+                    "book_future_candidate_crosswalk",
+                    "future_candidate_missing_required_fields",
+                    {"candidate_id": candidate_id, "missing_fields": missing_fields},
+                )
+            )
+        if item_kind not in ALLOWED_BOOK_FUTURE_ITEM_KINDS:
+            future_candidate_invalid_ref_count += 1
+            hard_gaps.append(
+                gap(
+                    "book_future_candidate_crosswalk",
+                    "future_candidate_invalid_item_kind",
+                    {"candidate_id": candidate_id, "item_kind": item_kind},
+                )
+            )
+        phase_refs = [int_or(value, -1) for value in list_values(row.get("phase_refs"))]
+        invalid_phases = [phase for phase in phase_refs if phase not in phases]
+        if invalid_phases:
+            future_candidate_invalid_ref_count += len(invalid_phases)
+            hard_gaps.append(
+                gap(
+                    "book_future_candidate_crosswalk",
+                    "future_candidate_invalid_phase_refs",
+                    {"candidate_id": candidate_id, "invalid_phase_refs": invalid_phases},
+                )
+            )
+        if disposition == "admitted_current_local_manifest":
+            admitted_chapter_id = str(row.get("chapter_id") or "")
+            if not admitted_chapter_id or admitted_chapter_id not in chapter_ids:
+                future_candidate_invalid_ref_count += 1
+                hard_gaps.append(
+                    gap(
+                        "book_future_candidate_crosswalk",
+                        "admitted_future_candidate_missing_chapter_crosswalk",
+                        {"candidate_id": candidate_id, "chapter_id": admitted_chapter_id},
+                    )
+                )
+
+    future_duplicates = sorted(item for item, count in count_values(future_candidate_ids).items() if item and count > 1)
+    if future_duplicates:
+        hard_gaps.append(gap("book_future_candidate_crosswalk", "duplicate_future_candidate_ids", {"duplicates": future_duplicates}))
+    future_cross_cutting_obligations = [str(value) for value in list_values(matrix.get("book_future_cross_cutting_obligations"))]
+    if not future_cross_cutting_obligations:
+        hard_gaps.append(gap("book_future_candidate_crosswalk", "missing_cross_cutting_obligations", {}))
+
     planned_backlog_ids: list[str] = []
     planned_backlog_statuses: list[str] = []
     planned_backlog_technique_families: list[str] = []
@@ -663,6 +747,14 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
             "invalid_support_target_count": invalid_support_target_count,
             "missing_no_claim_count": missing_no_claim_count,
             "duplicate_chapter_id_count": len(duplicates),
+            "future_candidate_count": len(future_candidates),
+            "future_candidate_chapter_count": sum(1 for kind in future_candidate_kinds if kind == "chapter_candidate"),
+            "future_cross_cutting_section_count": sum(1 for kind in future_candidate_kinds if kind == "cross_cutting_section"),
+            "future_cross_cutting_obligation_count": len(future_cross_cutting_obligations),
+            "future_candidate_missing_required_field_count": future_candidate_missing_required_field_count,
+            "future_candidate_invalid_ref_count": future_candidate_invalid_ref_count,
+            "future_candidate_duplicate_id_count": len(future_duplicates),
+            "future_candidate_disposition_counts": count_values(future_candidate_dispositions),
             "planned_codex_test_backlog_count": len(planned_backlog),
             "planned_codex_test_backlog_missing_required_field_count": planned_backlog_missing_required_field_count,
             "planned_codex_test_backlog_invalid_ref_count": planned_backlog_invalid_ref_count,
@@ -916,6 +1008,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Public-safe evidence smoke passed: `{summary.get('public_safe_evidence_smoke_passed', False)}`",
         f"- Book implementation tracks: `{summary.get('book_implementation_track_count', 0)}`",
         f"- Book chapter implementation crosswalk: `{summary.get('book_chapter_implementation_crosswalk_count', 0)}/{summary.get('book_manifest_chapter_count', 0)}`",
+        f"- Book future candidates/sections: `{summary.get('book_future_candidate_count', 0)}`",
+        f"- Book future candidate missing fields: `{summary.get('book_future_candidate_missing_required_field_count', 0)}`",
+        f"- Book future candidate invalid refs: `{summary.get('book_future_candidate_invalid_ref_count', 0)}`",
+        f"- Book future candidate dispositions: `{summary.get('book_future_candidate_disposition_counts', {})}`",
         f"- Planned Codex test backlog: `{summary.get('planned_codex_test_backlog_count', 0)}`",
         f"- Planned Codex backlog missing fields: `{summary.get('planned_codex_test_backlog_missing_required_field_count', 0)}`",
         f"- Planned Codex backlog invalid refs: `{summary.get('planned_codex_test_backlog_invalid_ref_count', 0)}`",
@@ -1571,6 +1667,12 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "book_implementation_track_count": summary.get("book_implementation_track_count", 0),
         "book_chapter_implementation_crosswalk_count": summary.get("book_chapter_implementation_crosswalk_count", 0),
         "book_manifest_chapter_count": summary.get("book_manifest_chapter_count", 0),
+        "book_future_candidate_count": summary.get("book_future_candidate_count", 0),
+        "book_future_candidate_chapter_count": summary.get("book_future_candidate_chapter_count", 0),
+        "book_future_cross_cutting_section_count": summary.get("book_future_cross_cutting_section_count", 0),
+        "book_future_candidate_missing_required_field_count": summary.get("book_future_candidate_missing_required_field_count", 0),
+        "book_future_candidate_invalid_ref_count": summary.get("book_future_candidate_invalid_ref_count", 0),
+        "book_future_candidate_disposition_counts": summary.get("book_future_candidate_disposition_counts", {}),
         "planned_codex_test_backlog_count": summary.get("planned_codex_test_backlog_count", 0),
         "planned_codex_test_backlog_missing_required_field_count": summary.get(
             "planned_codex_test_backlog_missing_required_field_count", 0

@@ -39,6 +39,248 @@
     ],
     "no_claim_boundary": "Receipt completeness is bounded eligibility, not data quality, privacy compliance, verified forgetting, training success, public decontamination proof, or capability promotion."
   },
+  "book_future_candidate_crosswalk": [
+    {
+      "candidate_id": "future.governed_deliberation_test_time_scaling",
+      "title": "Governed Deliberation and Test-Time Scaling",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [6, 8, 10, 13],
+      "entry_condition": "direct model-only private verifier pass is nonzero",
+      "theseus_scope": "think and search budgets, aggregation modes, verifier selection, stopping, diminishing returns, and residual accounting",
+      "acceptance_boundary": "test-time compute produces a monotonic accepted-output curve against matched one-shot and equal-cost controls",
+      "non_claim_boundary": "more tokens, candidates, or latency are not reasoning capability unless verified task behavior improves"
+    },
+    {
+      "candidate_id": "future.data_engines_continual_learning_unlearning",
+      "title": "Data Engines, Continual Learning, and Unlearning",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "admitted_current_local_manifest",
+      "chapter_id": "data-engines-continual-learning-and-unlearning",
+      "phase_refs": [3, 7, 12, 14],
+      "entry_condition": "active now as Phase-7 data-lifecycle work",
+      "theseus_scope": "receipt-bound admission, lineage, continual-learning policy comparison, semantic contamination, and descendant deletion closure",
+      "acceptance_boundary": "controlled lifecycle-policy workload and negative deletion-propagation fixture replay independently",
+      "non_claim_boundary": "receipt completeness is not data quality, privacy, verified forgetting, or capability evidence"
+    },
+    {
+      "candidate_id": "future.scalable_oversight_adversarial_ai_control",
+      "title": "Scalable Oversight and Adversarial AI Control",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [4, 14, 18],
+      "entry_condition": "before high-impact or self-improving routes",
+      "theseus_scope": "weak-supervisor limits, trusted and untrusted monitoring, collusion resistance, fleet-scale oversight, and recursion-bottom records",
+      "acceptance_boundary": "adversarial monitor assignment and weak-supervisor fixtures expose collusion, capture, and unresolved oversight debt",
+      "non_claim_boundary": "more review records or monitor votes do not establish scalable oversight effectiveness"
+    },
+    {
+      "candidate_id": "future.adversarial_evaluation_sandbagging_training_deception",
+      "title": "Adversarial Evaluation, Sandbagging, and Training-Time Deception",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [4, 10, 12, 14, 18],
+      "entry_condition": "before model promotion or broad public capability claims",
+      "theseus_scope": "elicitation state, evaluation awareness, exploration hacking, reward-hack generalization, monitor sabotage, mitigation evidence, and promotion blockers",
+      "acceptance_boundary": "adversarially varied elicitation and monitor conditions preserve independent integrity/evidence receipts and surface inconsistent behavior",
+      "non_claim_boundary": "passing one deception probe is not evidence that a model is honest or non-scheming"
+    },
+    {
+      "candidate_id": "future.capability_thresholds_deployment_commitments",
+      "title": "Capability Thresholds and Deployment Commitments",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [2, 8, 12, 18],
+      "entry_condition": "before production serving, open-weight release, or authority growth",
+      "theseus_scope": "threshold records, if-then safeguards, autonomy/time-horizon measurements, automated-R&D share, release decisions, and precommitment enforcement",
+      "acceptance_boundary": "crossing a frozen threshold triggers its preregistered route restriction or review without self-exemption",
+      "non_claim_boundary": "a threshold is a decision instrument, not proof of general capability or safety"
+    },
+    {
+      "candidate_id": "future.reasoning_trace_faithfulness",
+      "title": "Reasoning-Trace Faithfulness",
+      "item_kind": "cross_cutting_section",
+      "book_disposition": "route_into_existing_owners",
+      "phase_refs": [1, 4, 14],
+      "entry_condition": "active now as a claim/evidence boundary",
+      "theseus_scope": "distinguish reasoning traces from receipts, compare trace/action consistency, and preserve monitorability limits",
+      "acceptance_boundary": "trace perturbation and action-replay controls quantify when traces predict or fail to predict executed behavior",
+      "non_claim_boundary": "a fluent or internally consistent trace is not an authoritative account of hidden computation"
+    },
+    {
+      "candidate_id": "future.inter_stack_protocols_identity_economic_exchange",
+      "title": "Inter-Stack Protocols, Identity, and Economic Exchange",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [1, 2, 9, 18],
+      "entry_condition": "before cross-Hive or external-agent federation",
+      "theseus_scope": "MCP/A2A/ACP/ANP crosswalks, verifiable identity, credentials, payments, authority, receipts, and non-claims",
+      "acceptance_boundary": "two stacks exchange a typed task/artifact under mutually verified identity, authority, revocation, accounting, and failure contracts",
+      "non_claim_boundary": "protocol interoperability does not imply trust, capability, payment correctness, or safe delegation"
+    },
+    {
+      "candidate_id": "future.world_models_model_based_cognition",
+      "title": "World Models and Model-Based Cognition",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [10, 13, 17],
+      "entry_condition": "after the core proposer has nonzero verified behavior",
+      "theseus_scope": "learned prediction, error/version ledgers, model-predictive control, imagination/search, causal limits, and sim-to-real boundaries",
+      "acceptance_boundary": "a learned world model improves a frozen planning/control task against model-free and deterministic-simulator controls while prediction error remains calibrated",
+      "non_claim_boundary": "prediction accuracy, simulation fidelity, or latent structure alone is not planning capability or real-world safety"
+    },
+    {
+      "candidate_id": "future.safety_cases_structured_assurance",
+      "title": "Safety Cases and Structured Assurance",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [14, 17, 18],
+      "entry_condition": "before production or high-impact routes",
+      "theseus_scope": "claims, arguments, evidence, assumptions, hazards, defeaters, deployment context, invalidation, and reviewable assurance artifacts",
+      "acceptance_boundary": "a deployment change invalidates affected assurance nodes and blocks the route until evidence and defeaters are reviewed",
+      "non_claim_boundary": "a complete argument graph or safety-case document is not demonstrated safety"
+    },
+    {
+      "candidate_id": "future.model_weight_custody_hardware_roots_trust",
+      "title": "Model-Weight Custody and Hardware Roots of Trust",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [0, 8, 18],
+      "entry_condition": "before distributing valuable weights or production model loading",
+      "theseus_scope": "weight exfiltration, autonomous-insider risk, key release, attestation-gated loading, TEE/GPU limits, confidential inference, and open-weight custody",
+      "acceptance_boundary": "tampered weights, missing attestation, revoked keys, and unsupported hardware claims fail model loading with audit/rollback receipts",
+      "non_claim_boundary": "attestation proves a scoped measurement and identity chain, not model behavior, confidentiality against all attackers, or hardware correctness"
+    },
+    {
+      "candidate_id": "future.multi_agent_systemic_risk_agent_economies",
+      "title": "Multi-Agent Systemic Risk and Agent Economies",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [9, 16, 18],
+      "entry_condition": "before multi-agent economic or autonomous fleet operation",
+      "theseus_scope": "population conflict, collusion, cascades, market behavior, governance graphs, miscoordination, and gradual disempowerment",
+      "acceptance_boundary": "stress simulations and live bounded traces expose correlated failure, collusion, and cascade paths with containment decisions",
+      "non_claim_boundary": "single-agent safety or protocol correctness does not establish population-level stability"
+    },
+    {
+      "candidate_id": "future.persuasion_epistemic_security_human_agency",
+      "title": "Persuasion, Epistemic Security, and Human Agency",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "source_contingent",
+      "phase_refs": [5, 14, 18],
+      "entry_condition": "only after stronger empirical anchors and an ownership decision",
+      "theseus_scope": "approver-directed influence, disclosure/consent, trusted-interface laundering, persuasion thresholds, and epistemic effects",
+      "acceptance_boundary": "controlled studies or source-backed fixtures measure disclosure, consent, influence, and decision-quality effects without covert experimentation",
+      "non_claim_boundary": "one persuasion benchmark cannot establish human parity, broad influence, or compute-scaling claims"
+    },
+    {
+      "candidate_id": "future.open_ended_improvement_engines",
+      "title": "Open-Ended Improvement Engines",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [2, 7, 10, 14],
+      "entry_condition": "after a verifier-positive proposer exists",
+      "theseus_scope": "self-play, automatic curricula, environment generation, propose-solve-verify loops, evolutionary artifact search, evaluator capture, novelty/coverage, and shutdown handoff",
+      "acceptance_boundary": "the engine increases verified heldout coverage across generations under independent evaluators, diversity/tail metrics, rollback, and stop conditions",
+      "non_claim_boundary": "more generated tasks, artifacts, or novelty scores are not recursive capability improvement"
+    },
+    {
+      "candidate_id": "future.cais_embedded_agency_corrigibility_foundations",
+      "title": "CAIS, Embedded Agency, and Corrigibility Foundations",
+      "item_kind": "cross_cutting_section",
+      "book_disposition": "prior_art_and_foundations_first",
+      "phase_refs": [1, 18, 19],
+      "entry_condition": "active as prior-art positioning; chapter only if a distinct mechanism and proof program emerges",
+      "theseus_scope": "service composition, embedded-agency limits, formal corrigibility limits, record-level guarantee boundaries, and prior-art deltas",
+      "acceptance_boundary": "source-noted prior-art and explicit weakening conditions narrow Theseus claims and architecture interfaces",
+      "non_claim_boundary": "record-level governance cannot establish corrigibility of learned internal cognition"
+    },
+    {
+      "candidate_id": "future.perception_grounding_observation_trust",
+      "title": "Perception, Grounding, and Observation Trust",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [3, 8, 17, 18],
+      "entry_condition": "when a vision, audio, or sensor modality begins",
+      "theseus_scope": "observation contracts, sensor identity, provenance/taint, fusion disagreement, active-perception budgets, uncertainty, refresh, spoofing, and occlusion",
+      "acceptance_boundary": "multi-source observations carry calibrated uncertainty and disagreement; spoofed, stale, missing, and occluded inputs trigger bounded refresh or abstention",
+      "non_claim_boundary": "sensor availability or representation quality is not grounded understanding"
+    },
+    {
+      "candidate_id": "future.embodied_execution_physical_world_safety",
+      "title": "Embodied Execution and Physical-World Safety",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [1, 8, 17, 18],
+      "entry_condition": "before physical actuation",
+      "theseus_scope": "control periods, hazard envelopes, interlocks, simulation-before-actuation, safe fallback controllers, stop authority, degraded modes, and irreversible residuals",
+      "acceptance_boundary": "bounded traces prove deadlines/interlocks/fallback/stop paths and retain sim-to-real residuals before any real actuator route",
+      "non_claim_boundary": "simulation success or temporal-logic checks do not prove open-world physical safety"
+    },
+    {
+      "candidate_id": "future.operational_resilience_incident_response_decommissioning",
+      "title": "Operational Resilience, Incident Response, and Decommissioning",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [0, 8, 9, 14, 18],
+      "entry_condition": "before production or fleet dependence",
+      "theseus_scope": "criticality, dependency maps, impact tolerance, monitoring, containment, failover, manual fallback, recovery, disclosure, post-incident learning, and retirement",
+      "acceptance_boundary": "fault injection exercises containment, degraded operation, recovery objectives, evidence preservation, safety-case invalidation, and secure decommissioning",
+      "non_claim_boundary": "a runbook or passing failover smoke is not operational resilience under untested failure classes"
+    },
+    {
+      "candidate_id": "future.ai_supply_chain_integrity_lifecycle_provenance",
+      "title": "AI Supply-Chain Integrity and Lifecycle Provenance",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [0, 7, 8, 14, 18],
+      "entry_condition": "before reproducible model releases or distributed training fleets",
+      "theseus_scope": "AIBOMs, model/data/code/hardware lineage, signed build/training attestations, dependency/dataset integrity, derivative provenance, reproducible rebuild, supplier trust, and revocation",
+      "acceptance_boundary": "a clean rebuild and poisoned/substituted dependency fixtures verify lineage, signatures, revocation, and affected-descendant discovery",
+      "non_claim_boundary": "an AIBOM or signature inventory is not proof that components, data, models, or suppliers are safe"
+    },
+    {
+      "candidate_id": "future.privacy_data_rights_multi_agent_memory",
+      "title": "Privacy, Data Rights, and Multi-Agent Memory",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [3, 5, 7, 9, 18],
+      "entry_condition": "before multi-user or shared-memory production",
+      "theseus_scope": "purpose/use limitation, minimization, consent, retention, access/correction/export, privacy budgets, inference attacks, internal-channel leakage, cross-user memory, and deletion closure",
+      "acceptance_boundary": "multi-user fixtures enforce purpose, access, export, correction, isolation, privacy budget, and descendant deletion across VCM/training/retrieval paths",
+      "non_claim_boundary": "local storage, encryption, redaction, or deletion requests do not establish privacy or verified unlearning"
+    },
+    {
+      "candidate_id": "future.autonomous_replication_proliferation_containment",
+      "title": "Autonomous Replication, Proliferation, and Containment",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [2, 8, 9, 14, 18],
+      "entry_condition": "before any replication, compute provisioning, or persistence authority",
+      "theseus_scope": "descendant identity, principal binding, resource acquisition, weight/code copying, provisioning, persistence, lineage, credential/network containment, shutdown resistance, and threshold responses",
+      "acceptance_boundary": "replication requests are denied by default and bounded fixtures prove lineage, quotas, revocation, containment, and shutdown across descendants",
+      "non_claim_boundary": "Hive installation or package copying is not autonomous replication capability or evidence of containment"
+    },
+    {
+      "candidate_id": "future.scientific_discovery_experimental_governance",
+      "title": "Scientific Discovery and Experimental Governance",
+      "item_kind": "chapter_candidate",
+      "book_disposition": "provisional_source_gated",
+      "phase_refs": [1, 6, 7, 14, 17, 18],
+      "entry_condition": "when Theseus begins proposing or executing scientific experiments",
+      "theseus_scope": "hypothesis/objective provenance, experiment contracts, instrument/simulator authority, preregistration, independent measurement/analysis, statistical/causal limits, replication, negative results, dual-use review, and evidence handoff",
+      "acceptance_boundary": "a preregistered public-safe experiment replays with independent analysis, negative controls, causal/statistical boundaries, artifact lineage, dual-use decision, and claim-ledger transition",
+      "non_claim_boundary": "a generated hypothesis, simulation, significant result, or one replication is not scientific discovery or broad causal knowledge"
+    }
+  ],
+  "book_future_cross_cutting_obligations": [
+    "calibrated uncertainty, selective prediction, abstention, and reasoning-trace/action faithfulness under Phases 4 and 14",
+    "prompt-injection limits, autonomous-insider and collusion probes, randomized monitoring, oversight latency, and operator-load residuals under Phase 18",
+    "active perception, OOD state, fusion disagreement, causal/counterfactual reasoning, and structural-identifiability boundaries under Phases 13 and 17",
+    "temporal-logic monitoring, interlocks, fallback controllers, degraded operation, and sim-to-real residuals under Phases 17 and 18",
+    "AIBOM/reproducible builds/derivative revocation plus privacy budgets, cross-user leakage, and deletion propagation under Phases 0, 3, 7, 14, and 18",
+    "objective fingerprints, periodic recontracting, time-horizon and automated-R&D measures, dual-use profiles, provider concentration, portability, and shutdown handoff under Phases 2, 8, 9, and 18"
+  ],
   "weekly_focus_decision": {
     "date": "2026-07-06",
     "recommendation": "Spend the remaining weekly token budget primarily on Project Theseus while keeping AI_book as the specification, evidence ledger, and publication surface.",

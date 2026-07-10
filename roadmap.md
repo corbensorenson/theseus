@@ -42,6 +42,7 @@ module must meet.
 | Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
 | Report hygiene | Phases 0, 8 | ~2.4 GB, high churn | enforce report/checkpoint retention; drive live state below 1 GB |
 | Book crosswalk / parity | Phase 19 | 45 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
+| Book futures intake | Phase 19 + routed owners | 19 chapter candidates + 2 section routes mapped | activate only at source/ownership and operational entry gates |
 
 ## Non-Negotiable Rules
 
@@ -670,6 +671,53 @@ gaps route into the phases above:
 | Partition / distributed authority governance | stale-grant/revocation-race behavior across Hive nodes not modeled in runtime | 9, 18 |
 | Interpretability evidence discipline | interpretability claims not held to the same support-state/non-claim bar | 13, 14 |
 | Amendment legitimacy | governance/charter changes not treated as first-class amendment events with legitimacy checks | 18 |
+
+## Book-Futures Intake (provisional, phase-routed)
+
+The ASI Stack's `2026-07-09 Controlled ASI Completeness Intake` names future
+chapter candidates and section-level obligations that are not all in the active
+45-chapter manifest. Theseus tracks them now so the architecture does not discover
+the omissions after deployment. They are **not new active lanes**: each is owned by
+existing phases, remains planning-only until its book source/ownership gate passes,
+and activates only at the entry condition below. Except for work that directly
+governs the current data/update path, these rows do not block bounded private
+training; they block the higher-authority operation they govern.
+
+| Book candidate or section | Theseus owner phases | Entry condition / disposition |
+|---|---|---|
+| Governed Deliberation and Test-Time Scaling | 6, 8, 10, 13 | after direct model-only pass is nonzero; own think/search budgets, verifier selection, stopping, diminishing returns, and residuals |
+| Data Engines, Continual Learning, and Unlearning | 3, 7, 12, 14 | admitted to the local 45-chapter manifest; current Phase-7 receipt/lifecycle work |
+| Scalable Oversight and Adversarial AI Control | 4, 14, 18 | before high-impact or self-improving routes; weak-supervisor limits, trusted/untrusted monitors, collusion resistance, oversight recursion |
+| Adversarial Evaluation, Sandbagging, and Training-Time Deception | 4, 10, 12, 14, 18 | before promotion/public claims; elicitation state, evaluation awareness, exploration/reward hacking, monitor sabotage |
+| Capability Thresholds and Deployment Commitments | 2, 8, 12, 18 | before production serving or authority growth; if-then safeguards, autonomy/time horizon, automated-R&D share, open-weight decisions |
+| Reasoning-Trace Faithfulness (section route) | 1, 4, 14 | now as an evidence boundary; distinguish traces from receipts and test trace/action consistency without treating hidden reasoning as authoritative |
+| Inter-Stack Protocols, Identity, and Economic Exchange | 1, 2, 9, 18 | before cross-Hive/external-agent federation; protocol, identity, credential, payment, authority, and receipt interoperability |
+| World Models and Model-Based Cognition | 10, 13, 17 | after the core proposer floor; prediction/error ledgers, model-predictive control, imagination/search, causal limits, sim-to-real |
+| Safety Cases and Structured Assurance | 14, 17, 18 | before production/high-impact routes; claims, arguments, assumptions, hazards, defeaters, context, and invalidation lifecycle |
+| Model-Weight Custody and Hardware Roots of Trust | 0, 8, 18 | before distributing valuable weights or production loading; exfiltration, key release, attestation, TEE/GPU limits, open-weight custody |
+| Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |
+| Persuasion, Epistemic Security, and Human Agency | 5, 14, 18 | source-contingent; require stronger empirical anchors before activation or claims |
+| Open-Ended Improvement Engines | 2, 7, 10, 14 | after a verifier-positive proposer exists; self-play, automatic curricula, environment generation, evolutionary search, novelty/coverage, evaluator capture |
+| CAIS, Embedded Agency, and Corrigibility Foundations (section route) | 1, 18, 19 | prior-art/foundations work only unless a distinct mechanism and proof program earns a chapter boundary |
+| Perception, Grounding, and Observation Trust | 3, 8, 17, 18 | when a vision/audio/sensor modality starts; observation contracts, provenance/taint, fusion disagreement, uncertainty, refresh, spoofing/occlusion |
+| Embodied Execution and Physical-World Safety | 1, 8, 17, 18 | before physical actuation; control periods, hazard envelopes, interlocks, fallback controllers, stop authority, degraded modes |
+| Operational Resilience, Incident Response, and Decommissioning | 0, 8, 9, 14, 18 | before production/fleet dependence; criticality, impact tolerance, monitoring, containment, failover, recovery, disclosure, secure retirement |
+| AI Supply-Chain Integrity and Lifecycle Provenance | 0, 7, 8, 14, 18 | before reproducible releases/training fleets; AIBOM, signed build/training attestations, dependency/data integrity, supplier trust, revocation |
+| Privacy, Data Rights, and Multi-Agent Memory | 3, 5, 7, 9, 18 | before multi-user or shared-memory production; purpose limitation, consent, minimization, access/export/correction, privacy budgets, leakage, deletion closure |
+| Autonomous Replication, Proliferation, and Containment | 2, 8, 9, 14, 18 | before any replication/provisioning authority; descendant identity, principal binding, resource acquisition, persistence, containment, shutdown tests |
+| Scientific Discovery and Experimental Governance | 1, 6, 7, 14, 17, 18 | when Theseus begins autonomous experiments; hypothesis provenance, preregistration, instrument authority, statistics/causality limits, replication, dual-use review |
+
+Cross-cutting Tier-2 obligations are folded into those owners rather than becoming
+more systems: calibrated uncertainty/selective prediction/abstention and
+trace-faithfulness (Phases 4/14); prompt-injection limits, autonomous-insider and
+collusion probes, randomized monitoring, and operator-load residuals (Phase 18);
+OOD/active perception plus causal/counterfactual/identifiability boundaries
+(Phases 13/17); temporal-logic monitors, interlocks, degraded operation, and
+sim-to-real residuals (Phases 17/18); AIBOM/reproducible-build/derivative-revocation
+plus privacy budgets and cross-user leakage (Phases 0/3/7/14/18); and objective
+fingerprints, periodic recontracting, time-horizon/automated-R&D measures,
+dual-use profiles, provider concentration, portability, and shutdown handoff
+(Phases 2/8/9/18).
 
 ## Quality Bars (definition of "done")
 
