@@ -62,6 +62,7 @@ from code_lm_private_rows import (  # noqa: E402
     DEFAULT_RESIDUAL_PRIVATE_TRAIN_JSONL,
 )
 from theseus_archive_resolver import is_archive_pointer, resolve_archived_path  # noqa: E402
+import vcm_consumer_abi  # noqa: E402
 
 REPORTS = ROOT / "reports"
 REHYDRATED_ARTIFACTS = ROOT / "runtime" / "rehydrated_artifacts"
@@ -2545,38 +2546,32 @@ def gate(name: str, passed: bool, detail: Any) -> dict[str, Any]:
 
 
 def vcm_context_governor_receipt(path: Path = DEFAULT_VCM_CONTEXT_GOVERNOR) -> dict[str, Any]:
-    report = read_json(path, {})
-    summary = object_field(report, "summary")
-    trigger_state = str(report.get("trigger_state") or "")
-    hard_gap_count = int(number(summary.get("hard_gap_count")))
-    warning_count = int(number(summary.get("warning_count")))
-    ready = bool(
-        path.exists()
-        and trigger_state == "GREEN"
-        and hard_gap_count == 0
-        and str(summary.get("mission_brief_status") or "") == "ready"
-        and str(summary.get("deletion_closure_status") or "") == "closed"
-        and str(summary.get("scif_status") or "") == "ready"
+    packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id="code_lm_train_once_fanout",
+        purpose="generation_fanout",
+        read_set=[rel(path)],
+        write_set=["reports/code_lm_train_once_fanout.json"],
+        authority_ceiling=["local_checkpoint_read", "local_candidate_manifest_write", "governed_context_read"],
+        permitted_uses=["generation_fanout_context", "candidate_manifest_provenance", "audit_replay"],
+        governor_path=path,
+        taint_labels=["private_generation_metadata", "public_calibration_metadata_not_training"],
+        deletion_obligations=["invalidate_fanout_derivatives_when_context_is_revoked"],
+        audit_refs=["scripts/code_lm_train_once_fanout.py"],
     )
-    receipt_basis = {
-        "path": rel(path),
-        "created_utc": report.get("created_utc"),
-        "trigger_state": trigger_state,
-        "summary": summary,
-    }
+    governor = packet["governor_receipt"]
+    summary = object_field(governor, "summary")
     return {
-        "policy": str(report.get("policy") or ""),
+        **governor,
         "report": rel(path),
-        "receipt_id": f"train_once_fanout_vcm_governor-{stable_payload_hash(receipt_basis)[:16]}",
-        "trigger_state": trigger_state,
-        "ready": ready,
-        "hard_gap_count": hard_gap_count,
-        "warning_count": warning_count,
+        "ready": bool(packet.get("ready")),
+        "hard_gap_count": int(number(summary.get("hard_gap_count"))),
+        "warning_count": int(number(summary.get("warning_count"))),
         "mission_brief_status": str(summary.get("mission_brief_status") or ""),
         "mission_brief_omission_count": int(number(summary.get("mission_brief_omission_count"))),
         "deletion_closure_status": str(summary.get("deletion_closure_status") or ""),
         "deletion_closure_fault_count": int(number(summary.get("deletion_closure_fault_count"))),
         "scif_status": str(summary.get("scif_status") or ""),
+        "consumer_abi": packet,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -2707,7 +2702,9 @@ def build_fanout_spine_records(
             "public_candidates": object_field(artifact_provenance, "public_candidates").get("sha256", ""),
         }
     )
-    return [
+    abi_packet = vcm_receipt.get("consumer_abi") if isinstance(vcm_receipt.get("consumer_abi"), dict) else {}
+    abi_records = abi_packet.get("records") if isinstance(abi_packet.get("records"), list) else []
+    return list(abi_records) + [
         {
             **common,
             "record_type": "context_transaction_record",

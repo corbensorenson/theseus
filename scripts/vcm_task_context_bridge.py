@@ -20,6 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import vcm_consumer_abi
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -35,6 +37,7 @@ DEFAULT_RELEASE = REPORTS / "vcm_release_conformance_audit.json"
 DEFAULT_OUT = REPORTS / "vcm_task_context_bridge.json"
 DEFAULT_MARKDOWN_OUT = REPORTS / "vcm_task_context_bridge.md"
 DEFAULT_CONTEXTS_OUT = REPORTS / "vcm_task_contexts.json"
+DEFAULT_CONTEXT_GOVERNOR = REPORTS / "vcm_context_governor.json"
 
 
 def main() -> int:
@@ -48,6 +51,7 @@ def main() -> int:
     parser.add_argument("--consumer-audit", default=rel(DEFAULT_CONSUMER_AUDIT))
     parser.add_argument("--runtime-readiness", default=rel(DEFAULT_RUNTIME))
     parser.add_argument("--release-conformance", default=rel(DEFAULT_RELEASE))
+    parser.add_argument("--vcm-governor", default=rel(DEFAULT_CONTEXT_GOVERNOR))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN_OUT))
     parser.add_argument("--contexts-out", default=rel(DEFAULT_CONTEXTS_OUT))
@@ -73,7 +77,6 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
     runtime = read_json(resolve(args.runtime_readiness))
     release = read_json(resolve(args.release_conformance))
 
-    pages = list_value(index.get("pages"))
     visible_pages = list_value(compiled.get("model_visible_pages"))
     protected_pages = select_protected_pages(visible_pages)
     defaults = dict_value(policy.get("defaults"))
@@ -87,7 +90,6 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
             continue
         context = build_task_context(
             family=family,
-            pages=pages,
             visible_pages=visible_pages,
             protected_pages=protected_pages,
             defaults=defaults,
@@ -110,13 +112,53 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
             else:
                 warnings.append(issue)
 
+    selected_pages = [page for context in task_contexts for page in list_value(context.get("selected_pages")) if isinstance(page, dict)]
+    consumer_packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id="vcm_task_context_bridge",
+        purpose="task_context_compilation",
+        read_set=[
+            rel(resolve(args.vcm_governor)),
+            rel(resolve(args.policy)),
+            rel(resolve(args.index)),
+            rel(resolve(args.compiled)),
+        ],
+        write_set=[rel(resolve(args.out)), rel(resolve(args.contexts_out))],
+        authority_ceiling=["local_vcm_metadata_read", "task_context_packet_write"],
+        permitted_uses=["task_context_compilation", "context_selection", "audit_replay"],
+        governor_path=resolve(args.vcm_governor),
+        semantic_index_path=resolve(args.index),
+        context_refs=[
+            {
+                "kind": "semantic_address",
+                "ref": page.get("address") or page.get("source_path"),
+                "required": True,
+                "exists": bool(page.get("address") or page.get("source_path")),
+                "sha256": page.get("content_hash") or page.get("sha256") or "",
+                "taint_labels": page.get("taints", []),
+                "contradiction_refs": page.get("contradiction_refs", []),
+            }
+            for page in selected_pages
+        ],
+        taint_labels=sorted({str(taint) for page in selected_pages for taint in list_value(page.get("taints"))}),
+        deletion_obligations=["invalidate_task_contexts_when_source_pages_are_revoked"],
+        contradiction_refs=[
+            str(ref)
+            for page in selected_pages
+            for ref in list_value(page.get("contradiction_refs"))
+            if ref
+        ],
+        audit_refs=["scripts/vcm_task_context_bridge.py"],
+    )
+
     gates.extend(system_gates(policy, probe, status, training, consumer, runtime, release, compiled, task_contexts))
+    gates.append(gate("semantic_index_loaded", bool(list_value(index.get("pages"))), len(list_value(index.get("pages"))), "hard"))
     gates.extend(task_family_gates(task_contexts))
     gates.append(gate("no_high_priority_task_context_blockers", not blockers, blockers[:8], "hard"))
     gates.append(gate("medium_priority_task_context_warnings_recorded", isinstance(warnings, list), warnings[:8], "warning"))
     gates.append(gate("external_inference_zero", external_calls(probe, status, training, runtime, release) == 0, external_calls(probe, status, training, runtime, release), "hard"))
     gates.append(gate("public_training_rows_zero", public_training_rows(probe, status, training, runtime, release) == 0, public_training_rows(probe, status, training, runtime, release), "hard"))
     gates.append(gate("fallback_returns_zero", fallback_returns(probe, status, training, runtime, release) == 0, fallback_returns(probe, status, training, runtime, release), "hard"))
+    gates.append(gate("vcm_consumer_abi_ready", bool(consumer_packet.get("ready")), consumer_packet.get("typed_faults"), "hard"))
 
     hard_failures = [row for row in gates if row["severity"] == "hard" and not row["passed"]]
     trigger_state = "GREEN" if not hard_failures and not blockers else "RED"
@@ -129,6 +171,7 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
         "snapshot": str(compiled.get("snapshot") or ""),
         "task_context_count": len(task_contexts),
         "task_contexts": task_contexts,
+        "vcm_consumer_abi_receipt": vcm_consumer_abi.compact_consumer_packet(consumer_packet),
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "teacher_solving_calls": 0,
@@ -149,6 +192,7 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
             "consumer_audit": rel(resolve(args.consumer_audit)),
             "runtime_readiness": rel(resolve(args.runtime_readiness)),
             "release_conformance": rel(resolve(args.release_conformance)),
+            "vcm_governor": rel(resolve(args.vcm_governor)),
         },
         "artifacts": {
             "contexts": rel(resolve(args.contexts_out)),
@@ -169,6 +213,8 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
             "release_conformance_state": release.get("trigger_state"),
             "runtime_profile_claimed": bool(get_path(runtime, ["summary", "runtime_profile_claimed"], False)),
             "runtime_native_kv_claimed": bool(get_path(runtime, ["summary", "native_kv_cache_claimed"], False)),
+            "vcm_consumer_abi_ready": consumer_packet.get("ready"),
+            "vcm_consumer_abi_packet_id": consumer_packet.get("packet_id"),
             "snapshot": str(compiled.get("snapshot") or ""),
             "public_training_rows_written": 0,
             "external_inference_calls": 0,
@@ -180,6 +226,7 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
         "warnings": warnings,
         "gates": gates,
         "task_contexts": task_contexts,
+        "vcm_consumer_abi": consumer_packet,
         "integration_contract": {
             "load_before": [
                 "operator_chat",
@@ -212,7 +259,6 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
 def build_task_context(
     *,
     family: dict[str, Any],
-    pages: list[dict[str, Any]],
     visible_pages: list[dict[str, Any]],
     protected_pages: list[dict[str, Any]],
     defaults: dict[str, Any],
@@ -228,7 +274,7 @@ def build_task_context(
     preferred_lanes = {str(lane) for lane in list_value(family.get("preferred_lanes")) if str(lane)}
     scored: list[tuple[float, dict[str, Any]]] = []
     visible_addresses = {str(row.get("address") or "") for row in visible_pages}
-    for page in pages:
+    for page in visible_pages:
         if not isinstance(page, dict):
             continue
         score = page_score(page, terms=terms, preferred_lanes=preferred_lanes, visible_addresses=visible_addresses)
@@ -252,6 +298,8 @@ def build_task_context(
     blockers = []
     if len(selected) < min_pages:
         blockers.append(f"selected_pages_below_minimum:{len(selected)}/{min_pages}")
+    if any(page.get("model_visible") is not True for page in selected):
+        blockers.append("selected_context_contains_non_model_visible_page")
     for row in guard_results:
         if row["severity"] == "hard" and not row["passed"]:
             blockers.append(str(row["guard"]))

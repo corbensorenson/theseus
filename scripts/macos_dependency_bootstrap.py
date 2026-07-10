@@ -22,6 +22,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports" / "macos_dependency_bootstrap.json"
+MLX_LM_SOURCE = "git+https://github.com/ml-explore/mlx-lm.git@a790972f0f844d81067ed45c28b524220a10c019"
 
 
 def emit(message: str) -> None:
@@ -116,9 +117,16 @@ def bootstrap(args: argparse.Namespace) -> dict[str, Any]:
 
     emit("Checking MLX import.")
     report["checks"]["mlx"] = python_check(python, "import mlx.core as mx; print('mlx.core ok')")
+    report["checks"]["mlx_lm"] = python_check(
+        python,
+        "import mlx_lm; from mlx_lm.models.cache import KVCache; print('mlx_lm KVCache ok')",
+    )
     if args.require_mlx and not report["checks"]["mlx"]["ok"]:
         report["ok"] = False
         report["next_actions"].append("MLX is required for this install but import mlx.core failed.")
+    if args.require_mlx and not report["checks"]["mlx_lm"]["ok"]:
+        report["ok"] = False
+        report["next_actions"].append("MLX-LM is required for model-native KV/prefix caching but its import failed.")
 
     emit("Running Hive capability probe.")
     report["checks"]["hive_probe"] = run_json([str(python), "scripts/hive_node.py", "probe", "--out", "reports/hive_status.json"], timeout=120)
@@ -154,20 +162,35 @@ def ensure_venv(report: dict[str, Any], venv_path: Path) -> Path:
 def install_python_deps(report: dict[str, Any], python: Path, args: argparse.Namespace) -> None:
     emit("Updating pip, wheel, and setuptools.")
     run_action(report, [str(python), "-m", "pip", "install", "--upgrade", "pip", "wheel", "setuptools"], timeout=600, allow_fail=False)
-    packages = ["numpy"]
+    packages = [
+        ("numpy", "numpy", "import numpy; print('numpy ok')"),
+    ]
     machine = platform.machine().lower()
     if not args.skip_mlx and machine in {"arm64", "aarch64"}:
-        packages.append("mlx")
+        packages.extend(
+            [
+                ("mlx", "mlx", "import mlx.core as mx; print('mlx ok')"),
+                (
+                    "mlx-lm",
+                    MLX_LM_SOURCE,
+                    "import mlx_lm; from mlx_lm.models.cache import KVCache; print('mlx_lm KVCache ok')",
+                ),
+            ]
+        )
     elif not args.skip_mlx and platform.system() == "Darwin":
         report["actions"].append({"action": "skip_mlx", "reason": "intel_mac_or_unsupported_macos_architecture", "machine": platform.machine()})
-    for package in packages:
-        probe = "import numpy; print('numpy ok')" if package == "numpy" else "import mlx.core as mx; print('mlx ok')"
+    for package, install_spec, probe in packages:
         if python_check(python, probe)["ok"]:
             emit(f"Python package already present: {package}.")
             report["actions"].append({"action": "python_package_present", "package": package})
             continue
         emit(f"Installing Python package: {package}.")
-        run_action(report, [str(python), "-m", "pip", "install", package], timeout=1800, allow_fail=(package == "mlx" and not args.require_mlx))
+        run_action(
+            report,
+            [str(python), "-m", "pip", "install", install_spec],
+            timeout=1800,
+            allow_fail=(package in {"mlx", "mlx-lm"} and not args.require_mlx),
+        )
 
 
 def init_runtime(report: dict[str, Any], python: Path, runtime_root: str) -> dict[str, Any]:

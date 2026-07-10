@@ -21,6 +21,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import vcm_consumer_abi
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -1112,6 +1114,18 @@ def build_gates(
         gate("all_nodes_have_vcm_context", all(node.get("vcm_context_slice", {}).get("selected_page_count", 0) > 0 for node in all_nodes), len(all_nodes), "hard"),
         gate("all_nodes_have_governed_vcm_context", all(node.get("vcm_context_slice", {}).get("governed_ready") is True for node in all_nodes), {node.get("node_id"): node.get("vcm_context_slice", {}).get("context_adequacy_state") for node in all_nodes}, "hard"),
         gate(
+            "all_nodes_pass_vcm_consumer_abi",
+            all(get_path(node, ["asi_stack_records", "vcm_consumer_abi", "ready"], False) is True for node in all_nodes),
+            {
+                node.get("node_id"): {
+                    "packet_id": get_path(node, ["asi_stack_records", "vcm_consumer_abi", "packet_id"], ""),
+                    "faults": get_path(node, ["asi_stack_records", "vcm_consumer_abi", "typed_faults"], []),
+                }
+                for node in all_nodes
+            },
+            "hard",
+        ),
+        gate(
             "all_context_adequacy_records_use_governor_receipt",
             all(
                 bool(get_path(node, ["asi_stack_records", "context_adequacy", "governor_receipt_id"], ""))
@@ -1327,6 +1341,9 @@ def summarize(
         "vcm_context_governor_state": governor_summary.get("trigger_state"),
         "vcm_context_governor_receipt_id": governor_summary.get("receipt_id"),
         "vcm_context_adequacy_governed_node_count": sum(1 for node in all_nodes if node.get("vcm_context_slice", {}).get("governed_ready") is True),
+        "vcm_consumer_abi_ready_node_count": sum(
+            1 for node in all_nodes if get_path(node, ["asi_stack_records", "vcm_consumer_abi", "ready"], False) is True
+        ),
         "vcm_context_governor_hard_gap_count": governor_summary.get("hard_gap_count", 0),
         "vcm_mission_brief_status": governor_summary.get("mission_brief_status"),
         "vcm_deletion_closure_status": governor_summary.get("deletion_closure_status"),
@@ -1751,6 +1768,37 @@ def asi_stack_records_for(node: dict[str, Any], contract: dict[str, Any]) -> dic
         for page in selected_pages
         if isinstance(page, dict)
     ]
+    vcm_consumer_packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id=f"theseus_plan_compiler:{node_id}",
+        purpose="planning",
+        read_set=["reports/vcm_context_governor.json"],
+        write_set=[],
+        authority_ceiling=[authority],
+        permitted_uses=["planning_context", "route_selection", "verification_obligation_compilation"],
+        context_refs=[
+            {
+                "kind": "semantic_address",
+                "ref": page.get("address"),
+                "required": True,
+                "exists": bool(page.get("address")),
+                "sha256": page.get("content_hash") or vcm.get("context_hash"),
+                "taint_labels": page.get("taints", []),
+                "contradiction_refs": page.get("contradiction_refs", []),
+            }
+            for page in semantic_units
+        ],
+        taint_labels=sorted({str(taint) for page in semantic_units for taint in list_value(page.get("taints"))}),
+        deletion_obligations=["invalidate_compiled_plan_when_context_is_revoked"],
+        contradiction_refs=[
+            str(ref)
+            for page in semantic_units
+            for ref in list_value(page.get("contradiction_refs"))
+            if ref
+        ],
+        compression_loss=float(governor.get("mission_brief_compression_loss") or 0.0),
+        audit_refs=["scripts/theseus_plan_compiler.py", str(vcm.get("context_hash") or "")],
+    )
+    governor_ready = governor_ready and bool(vcm_consumer_packet.get("ready"))
     if semantic_units and context_pages_ready and governor_ready:
         adequacy_state = "governed_sufficient_for_planning"
         context_faults: list[str] = []
@@ -1761,7 +1809,7 @@ def asi_stack_records_for(node: dict[str, Any], contract: dict[str, Any]) -> dic
         if not context_pages_ready:
             context_faults.append("vcm_context_bridge_not_ready")
         if not governor_ready:
-            context_faults.append("vcm_context_governor_not_ready")
+            context_faults.extend(vcm_consumer_packet.get("typed_faults") or ["vcm_context_governor_not_ready"])
         adequacy_state = "fault_" + "_and_".join(context_faults or ["unknown_context_fault"])
     failure_trigger = route.get("block_reason") or "execution_or_verification_failure"
     residual_risk = "route_blocked" if route.get("blocked") else "unexecuted_compile_time_obligation"
@@ -2108,6 +2156,7 @@ def asi_stack_records_for(node: dict[str, Any], contract: dict[str, Any]) -> dic
         "simulation_contract": simulation_contract,
         "tool_eligibility": tool_eligibility,
         "tool_call_receipts": tool_receipts,
+        "vcm_consumer_abi": vcm_consumer_packet,
     }
 
 
@@ -2401,6 +2450,8 @@ def trace_row(goal_id: str, contract_hash: str, node: dict[str, Any]) -> dict[st
         "vcm_context_adequacy_state": node.get("vcm_context_slice", {}).get("context_adequacy_state"),
         "vcm_context_governor_receipt_id": get_path(node, ["vcm_context_slice", "governor_receipt", "receipt_id"], ""),
         "vcm_context_governor_ready": get_path(node, ["vcm_context_slice", "governor_receipt", "ready"], False),
+        "vcm_consumer_abi_packet_id": get_path(node, ["asi_stack_records", "vcm_consumer_abi", "packet_id"], ""),
+        "vcm_consumer_abi_ready": get_path(node, ["asi_stack_records", "vcm_consumer_abi", "ready"], False),
         "claim_ids": [claim.get("claim_id") for claim in node.get("claim_objects", [])],
         "evidence_refs": [target.get("evidence_ref") for target in node.get("evidence_targets", [])],
         "asi_stack_record_ids": asi_stack_record_ids(node.get("asi_stack_records", {})),

@@ -97,13 +97,24 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
         subprocess_lifecycle=mlx_tensor_subprocess_lifecycle,
         direct_lifecycle=mlx_tensor_direct_lifecycle,
     )
-    native_adapter = inspect_native_adapter(native_lifecycle=native_lifecycle)
-    claim_scope = native_claim_scope(route=route, native_lifecycle=native_lifecycle)
+    mlx_model_lifecycle = run_mlx_lm_model_cache_lifecycle_probe(
+        route=route,
+        claims=claims,
+        python=str(route.get("python") or ""),
+        timeout_seconds=timeout_seconds,
+    )
+    selected_native_lifecycle = (
+        mlx_model_lifecycle
+        if route.get("backend") == "mlx_apple" and mlx_model_lifecycle.get("passed") is True
+        else native_lifecycle
+    )
+    native_adapter = inspect_native_adapter(native_lifecycle=selected_native_lifecycle)
+    claim_scope = native_claim_scope(route=route, native_lifecycle=selected_native_lifecycle)
     descriptors = [
         row
         for row in [
             route,
-            native_lifecycle.get("runtime_cache_record"),
+            selected_native_lifecycle.get("runtime_cache_record"),
             mlx_tensor_lifecycle.get("runtime_cache_record"),
         ]
         if isinstance(row, dict) and row
@@ -115,7 +126,7 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
         "fallback_return_count": 0,
         "teacher_calls": 0,
     }
-    native_lifecycle_passed = native_lifecycle.get("passed") is True
+    native_lifecycle_passed = selected_native_lifecycle.get("passed") is True
     native_claimable = (
         semantic_ready
         and route.get("route_descriptor_complete") is True
@@ -170,13 +181,13 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
                 "recommended_execution_backend": claim_scope.get("recommended_execution_backend"),
             }
         )
-    if recommended_backend_tensor_descriptor_claimable:
+    if recommended_backend_tensor_descriptor_claimable and mlx_model_lifecycle.get("passed") is not True:
         warnings.append(
             {
                 "kind": "mlx_descriptor_lifecycle_is_not_model_kv_cache",
                 "detail": (
                     "MLX core resident tensor descriptor reuse/invalidation passed for complete VCM keys, "
-                    "but mlx-lm is not installed, so model-native MLX KV/prefix cache routing remains disabled."
+                    "but the model-forward MLX-LM lifecycle is not proven, so model-native MLX KV/prefix cache routing remains disabled."
                 ),
             }
         )
@@ -217,8 +228,24 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
             mlx_tensor_lifecycle.get("passed") is True,
             mlx_tensor_lifecycle,
         ),
+        gate(
+            "mlx_lm_model_cache_lifecycle_test_passed",
+            mlx_model_lifecycle.get("passed") is True,
+            mlx_model_lifecycle,
+        ),
         gate("native_claim_scope_complete", claim_scope.get("claim_scope_complete") is True, claim_scope),
-        gate("native_claim_does_not_imply_mlx_cuda_metal_parity", claim_scope.get("accelerator_kv_parity_claimed") is False, claim_scope),
+        gate(
+            "native_claim_scope_does_not_widen_across_accelerators",
+            claim_scope.get("cuda_native_kv_parity_claimed") is False
+            and claim_scope.get("metal_native_kv_parity_claimed") is False
+            and claim_scope.get("mlx_native_kv_parity_claimed") is False
+            and (
+                claim_scope.get("mlx_native_kv_lifecycle_claimed") is False
+                or claim_scope.get("claim_backend") == "mlx_apple"
+                and claim_scope.get("claim_backend_matches_recommended_execution_backend") is True
+            ),
+            claim_scope,
+        ),
         gate("external_inference_zero", no_cheat["external_inference_calls"] == 0, no_cheat["external_inference_calls"]),
         gate("public_training_zero", no_cheat["public_training_rows_written"] == 0, no_cheat["public_training_rows_written"]),
         gate("fallback_return_zero", no_cheat["fallback_return_count"] == 0, no_cheat["fallback_return_count"]),
@@ -228,7 +255,7 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
     trigger_state = "GREEN" if native_claimable else ("YELLOW" if semantic_ready and route.get("route_descriptor_complete") else "RED")
     viea_runtime_records = build_viea_runtime_records(
         route=route,
-        native_lifecycle=native_lifecycle,
+        native_lifecycle=selected_native_lifecycle,
         mlx_tensor_lifecycle=mlx_tensor_lifecycle,
         claim_scope=claim_scope,
         semantic_ready=semantic_ready,
@@ -252,12 +279,15 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
             "native_prefix_cache_claimed": native_claimable,
             "native_prefix_kv_lifecycle_test_passed": native_lifecycle_passed,
             "native_runtime_claimable": native_claimable,
-            "native_runtime_kind": native_lifecycle.get("runtime_kind"),
-            "native_runtime_cache_backend": native_lifecycle.get("backend"),
-            "native_runtime_key_complete": native_lifecycle.get("runtime_key_complete"),
-            "native_runtime_cache_reuse_hit": native_lifecycle.get("cache_reuse_hit"),
-            "native_runtime_append_seq_length": native_lifecycle.get("append_seq_length"),
-            "native_runtime_invalidation_miss_rate": native_lifecycle.get("invalidation_miss_rate"),
+            "native_runtime_kind": selected_native_lifecycle.get("runtime_kind"),
+            "native_runtime_cache_backend": selected_native_lifecycle.get("backend"),
+            "native_runtime_key_complete": selected_native_lifecycle.get("runtime_key_complete"),
+            "native_runtime_cache_reuse_hit": selected_native_lifecycle.get("cache_reuse_hit"),
+            "native_runtime_append_seq_length": selected_native_lifecycle.get("append_seq_length"),
+            "native_runtime_invalidation_miss_rate": selected_native_lifecycle.get("invalidation_miss_rate"),
+            "mlx_lm_model_cache_lifecycle_test_passed": mlx_model_lifecycle.get("passed") is True,
+            "mlx_lm_model_cache_class": mlx_model_lifecycle.get("cache_class"),
+            "mlx_lm_model_forward_cache_created": mlx_model_lifecycle.get("native_model_forward_cache_created"),
             "mlx_tensor_descriptor_lifecycle_test_passed": mlx_tensor_lifecycle.get("passed") is True,
             "mlx_tensor_descriptor_launch_mode": mlx_tensor_lifecycle.get("launch_mode"),
             "mlx_tensor_descriptor_runtime_kind": mlx_tensor_lifecycle.get("runtime_kind"),
@@ -279,11 +309,13 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
             "recommended_backend_native_runtime_claimable": recommended_backend_native_runtime_claimable,
             "scheduler_native_kv_route_allowed_for_recommended_backend": recommended_backend_native_runtime_claimable,
             "scheduler_native_kv_route_fail_closed": not recommended_backend_native_runtime_claimable,
+            "accelerator_kv_lifecycle_claimed": claim_scope.get("accelerator_kv_lifecycle_claimed"),
+            "mlx_native_kv_lifecycle_claimed": claim_scope.get("mlx_native_kv_lifecycle_claimed"),
             "accelerator_kv_parity_claimed": claim_scope.get("accelerator_kv_parity_claimed"),
             "mlx_native_kv_parity_claimed": claim_scope.get("mlx_native_kv_parity_claimed"),
             "cuda_native_kv_parity_claimed": claim_scope.get("cuda_native_kv_parity_claimed"),
             "metal_native_kv_parity_claimed": claim_scope.get("metal_native_kv_parity_claimed"),
-            "native_runtime_python": native_python,
+            "native_runtime_python": str(route.get("python") or "") if selected_native_lifecycle is mlx_model_lifecycle else native_python,
             "mlx_core_usable": python_probe.get("mlx_core_usable"),
             "mlx_lm_available": python_probe.get("mlx_lm_available"),
             "route_python_transformers_available": python_probe.get("transformers_available"),
@@ -301,7 +333,9 @@ def build_report(*, timeout_seconds: int, started: float) -> tuple[dict[str, Any
         "python_runtime_probe": python_probe,
         "native_runtime_python_probe": native_python_probe,
         "native_adapter_probe": native_adapter,
-        "native_lifecycle_probe": native_lifecycle,
+        "native_lifecycle_probe": selected_native_lifecycle,
+        "cpu_transformers_native_lifecycle_probe": native_lifecycle,
+        "mlx_lm_model_cache_lifecycle_probe": mlx_model_lifecycle,
         "mlx_tensor_descriptor_lifecycle_probe": mlx_tensor_lifecycle,
         "mlx_tensor_descriptor_subprocess_probe": mlx_tensor_subprocess_lifecycle,
         "mlx_tensor_descriptor_direct_probe": mlx_tensor_direct_lifecycle,
@@ -876,6 +910,203 @@ except Exception as exc:
     return result
 
 
+def run_mlx_lm_model_cache_lifecycle_probe(
+    *,
+    route: dict[str, Any],
+    claims: list[dict[str, Any]],
+    python: str,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    """Exercise a real MLX-LM model forward cache under a complete VCM key."""
+    if not python:
+        return {"passed": False, "error": "no_mlx_python", "runtime_kind": "mlx_lm_tiny_llama_kv_cache"}
+    accepted_claim = next(
+        (
+            claim
+            for claim in claims
+            if isinstance(claim, dict)
+            and claim.get("outcome") == "ACCEPTED_SEMANTIC_DESCRIPTOR"
+            and claim.get("key_complete") is True
+            and isinstance(claim.get("runtime_key"), dict)
+        ),
+        None,
+    )
+    if not accepted_claim:
+        return {"passed": False, "error": "no_accepted_semantic_claim_with_complete_runtime_key", "runtime_kind": "mlx_lm_tiny_llama_kv_cache"}
+    runtime_key = {
+        **dict(accepted_claim.get("runtime_key") or {}),
+        "backend": "mlx_apple",
+        "accelerator": "mlx_apple",
+        "model_runtime_id": "mlx_lm_tiny_llama_kv_cache_v1",
+    }
+    runtime_key_order = list_value(route.get("runtime_key_order"))
+    missing = [field for field in runtime_key_order if not runtime_key.get(field)]
+    payload = {
+        "runtime_key": runtime_key,
+        "runtime_key_order": runtime_key_order,
+        "mutate_fields": ["snapshot", "policy_hash", "permission_view", "redaction_view", "model_runtime_id"],
+    }
+    code = r'''
+import hashlib
+import json
+import sys
+
+payload = json.loads(sys.stdin.read())
+
+def hash_json(value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return "sha256:" + hashlib.sha256(raw).hexdigest()
+
+try:
+    import mlx.core as mx
+    import mlx_lm
+    from mlx.utils import tree_flatten
+    from mlx_lm.models.cache import KVCache
+    from mlx_lm.models.llama import Model, ModelArgs
+
+    runtime_key = payload["runtime_key"]
+    runtime_key_order = payload["runtime_key_order"]
+    missing = [field for field in runtime_key_order if not runtime_key.get(field)]
+    key_hash = hash_json({field: runtime_key.get(field) for field in runtime_key_order})
+    args = ModelArgs(
+        model_type="llama",
+        hidden_size=16,
+        num_hidden_layers=1,
+        intermediate_size=32,
+        num_attention_heads=2,
+        num_key_value_heads=2,
+        rms_norm_eps=1e-5,
+        vocab_size=32,
+    )
+    model = Model(args)
+    cache = model.make_cache()
+    prefix_logits = model(mx.array([[1, 2, 3]]), cache=cache)
+    mx.eval(prefix_logits)
+    prefix_offset = int(cache[0].offset)
+    store = {key_hash: cache}
+    reused = store.get(key_hash)
+    reuse_hit = reused is cache
+    append_logits = model(mx.array([[4, 5]]), cache=reused)
+    mx.eval(append_logits)
+    append_offset = int(cache[0].offset)
+    mutated_misses = {}
+    for field in payload["mutate_fields"]:
+        mutated = dict(runtime_key)
+        mutated[field] = str(mutated.get(field, "")) + "#mutated"
+        mutated_hash = hash_json({name: mutated.get(name) for name in runtime_key_order})
+        mutated_misses[field] = mutated_hash not in store
+    passed = (
+        not missing
+        and len(cache) == 1
+        and isinstance(cache[0], KVCache)
+        and prefix_offset == 3
+        and append_offset == 5
+        and reuse_hit
+        and tuple(prefix_logits.shape) == (1, 3, 32)
+        and tuple(append_logits.shape) == (1, 2, 32)
+        and all(mutated_misses.values())
+    )
+    print(json.dumps({
+        "ok": True,
+        "passed": passed,
+        "runtime_kind": "mlx_lm_tiny_llama_kv_cache",
+        "backend": "mlx_apple",
+        "accelerator": "mlx_apple",
+        "device": str(mx.default_device()),
+        "mlx_version": getattr(mx, "__version__", ""),
+        "mlx_lm_version": getattr(mlx_lm, "__version__", ""),
+        "runtime_key_hash": key_hash,
+        "runtime_key_complete": not missing,
+        "missing_runtime_key_fields": missing,
+        "cache_class": type(cache[0]).__name__,
+        "cache_layer_count": len(cache),
+        "cache_reuse_hit": reuse_hit,
+        "native_model_forward_cache_created": prefix_offset == 3,
+        "native_prefix_cache_reused": reuse_hit,
+        "prefix_seq_length": prefix_offset,
+        "append_seq_length": append_offset,
+        "prefix_logits_shape": list(prefix_logits.shape),
+        "append_logits_shape": list(append_logits.shape),
+        "mutated_key_misses": mutated_misses,
+        "invalidation_miss_rate": sum(1 for value in mutated_misses.values() if value) / max(1, len(mutated_misses)),
+        "model_param_count": int(sum(x.size for _, x in tree_flatten(model.parameters()))),
+        "model_native_kv_cache_claimed": passed,
+        "mlx_lm_cache_claimed": passed,
+        "native_kv_cache_claimed": passed,
+        "native_prefix_cache_claimed": passed,
+        "external_inference_calls": 0,
+        "public_training_rows_written": 0,
+        "fallback_return_count": 0,
+        "teacher_calls": 0,
+    }, sort_keys=True))
+except BaseException as exc:
+    print(json.dumps({
+        "ok": False,
+        "passed": False,
+        "runtime_kind": "mlx_lm_tiny_llama_kv_cache",
+        "error": type(exc).__name__ + ":" + str(exc),
+        "external_inference_calls": 0,
+        "public_training_rows_written": 0,
+        "fallback_return_count": 0,
+        "teacher_calls": 0,
+    }, sort_keys=True))
+'''
+    try:
+        proc = subprocess.run(
+            [python, "-c", code],
+            cwd=str(ROOT),
+            input=json.dumps(payload, sort_keys=True),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=timeout_seconds,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {"passed": False, "runtime_kind": "mlx_lm_tiny_llama_kv_cache", "error": type(exc).__name__ + ":" + str(exc)}
+    result = parse_json_line(proc.stdout)
+    if not result:
+        result = {"ok": False, "passed": False, "runtime_kind": "mlx_lm_tiny_llama_kv_cache", "error": "no_json_probe_output"}
+    result.update(
+        {
+            "returncode": proc.returncode,
+            "stderr_tail": proc.stderr[-1200:],
+            "backend": "mlx_apple",
+            "accelerator": "mlx_apple",
+            "runtime_key_order": runtime_key_order,
+            "runtime_key_complete": result.get("runtime_key_complete") is True and not missing,
+            "missing_runtime_key_fields": list(dict.fromkeys([*missing, *list_value(result.get("missing_runtime_key_fields"))])),
+            "runtime_cache_record": {
+                "policy": "project_theseus_vcm_mlx_lm_native_cache_record_v1",
+                "created_utc": now(),
+                "runtime_kind": result.get("runtime_kind"),
+                "backend": "mlx_apple",
+                "accelerator": "mlx_apple",
+                "device": result.get("device"),
+                "runtime_key_hash": result.get("runtime_key_hash") or hash_json({field: runtime_key.get(field) for field in runtime_key_order}),
+                "cache_class": result.get("cache_class"),
+                "cache_reuse_hit": result.get("cache_reuse_hit"),
+                "native_model_forward_cache_created": result.get("native_model_forward_cache_created"),
+                "native_prefix_cache_reused": result.get("native_prefix_cache_reused"),
+                "append_seq_length": result.get("append_seq_length"),
+                "invalidation_miss_rate": result.get("invalidation_miss_rate"),
+                "native_kv_cache_claimed": result.get("passed") is True,
+                "native_prefix_cache_claimed": result.get("passed") is True,
+                "model_native_kv_cache_claimed": result.get("passed") is True,
+                "external_inference_calls": 0,
+                "public_training_rows_written": 0,
+                "fallback_return_count": 0,
+                "teacher_calls": 0,
+            },
+        }
+    )
+    if proc.returncode != 0 and not result.get("error"):
+        result["error"] = f"mlx_lm_model_cache_subprocess_returncode_{proc.returncode}"
+    if result.get("passed") is not True and not result.get("failed_reason"):
+        result["failed_reason"] = "MLX-LM model-forward KV cache lifecycle checks did not all pass"
+    return result
+
+
 def read_mlx_direct_descriptor_lifecycle(*, route: dict[str, Any], claims: list[dict[str, Any]]) -> dict[str, Any]:
     report = read_json(DEFAULT_MLX_DIRECT_DESCRIPTOR)
     accepted_claim = next(
@@ -1003,17 +1234,25 @@ def inspect_native_adapter(*, native_lifecycle: dict[str, Any]) -> dict[str, Any
                 continue
             if all(token in lowered for token in ["native", "kv", "cache", "lifecycle"]):
                 matches.append({"path": rel(path), "kind": "candidate_text_match"})
-    lifecycle_adapter_present = (
-        native_lifecycle.get("runtime_kind") == "transformers_tiny_gpt2_dynamic_cache_torch"
-        and native_lifecycle.get("passed") is True
-        and native_lifecycle.get("native_kv_cache_object_created") is True
+    lifecycle_adapter_present = bool(
+        native_lifecycle.get("passed") is True
         and native_lifecycle.get("native_model_forward_cache_created") is True
         and native_lifecycle.get("native_prefix_cache_reused") is True
+        and (
+            native_lifecycle.get("native_kv_cache_object_created") is True
+            or native_lifecycle.get("cache_class") == "KVCache"
+        )
     )
     return {
         "native_cache_adapter_present": lifecycle_adapter_present,
         "adapter_kind": native_lifecycle.get("runtime_kind") if lifecycle_adapter_present else None,
-        "adapter_source": "scripts/vcm_native_runtime_probe.py:run_native_lifecycle_probe" if lifecycle_adapter_present else None,
+        "adapter_source": (
+            "scripts/vcm_native_runtime_probe.py:run_mlx_lm_model_cache_lifecycle_probe"
+            if lifecycle_adapter_present and native_lifecycle.get("backend") == "mlx_apple"
+            else "scripts/vcm_native_runtime_probe.py:run_native_lifecycle_probe"
+            if lifecycle_adapter_present
+            else None
+        ),
         "candidate_text_matches": matches[:20],
         "candidate_text_match_count": len(matches),
         "required_adapter_contract": [
@@ -1032,7 +1271,8 @@ def native_claim_scope(*, route: dict[str, Any], native_lifecycle: dict[str, Any
     passed = native_lifecycle.get("passed") is True
     accelerator_backend = recommended_execution_backend in {"mlx_apple", "apple_metal", "cuda", "nvidia_cuda"}
     backend_matches_execution = bool(claim_backend) and claim_backend == recommended_execution_backend
-    accelerator_kv_parity_claimed = bool(passed and accelerator_backend and backend_matches_execution)
+    accelerator_kv_lifecycle_claimed = bool(passed and accelerator_backend and backend_matches_execution)
+    mlx_native_kv_lifecycle_claimed = bool(passed and claim_backend == "mlx_apple" and backend_matches_execution)
     return {
         "policy": "project_theseus_vcm_native_runtime_claim_scope_v1",
         "claim_scope_complete": bool(passed and claim_backend and claim_device),
@@ -1047,18 +1287,17 @@ def native_claim_scope(*, route: dict[str, Any], native_lifecycle: dict[str, Any
         "claim_backend_matches_recommended_execution_backend": backend_matches_execution,
         "native_kv_cache_claimed_for_backend": passed,
         "native_prefix_cache_claimed_for_backend": passed,
-        "accelerator_kv_parity_claimed": accelerator_kv_parity_claimed,
-        "mlx_native_kv_parity_claimed": bool(passed and claim_backend == "mlx_apple" and backend_matches_execution),
-        "cuda_native_kv_parity_claimed": bool(passed and claim_backend in {"cuda", "nvidia_cuda"} and backend_matches_execution),
-        "metal_native_kv_parity_claimed": bool(passed and claim_backend == "apple_metal" and backend_matches_execution),
+        "accelerator_kv_lifecycle_claimed": accelerator_kv_lifecycle_claimed,
+        "mlx_native_kv_lifecycle_claimed": mlx_native_kv_lifecycle_claimed,
+        "accelerator_kv_parity_claimed": False,
+        "mlx_native_kv_parity_claimed": False,
+        "cuda_native_kv_parity_claimed": False,
+        "metal_native_kv_parity_claimed": False,
         "not_claimed": [
-            "MLX native KV/prefix cache reuse",
             "CUDA native KV/prefix cache reuse",
             "Metal native KV/prefix cache reuse",
             "cross-accelerator KV/prefix cache parity",
-        ]
-        if not accelerator_kv_parity_claimed
-        else [],
+        ] + ([] if mlx_native_kv_lifecycle_claimed else ["MLX native KV/prefix cache reuse"]),
         "score_semantics": (
             "A native cache lifecycle proof is valid only for the exact claim_backend and claim_device. "
             "Hardware route metadata may recommend a different execution backend for training or inference, "
@@ -1117,6 +1356,8 @@ def build_viea_runtime_records(
         "runtime_profile_claimed": cpu_native_supported,
         "native_kv_cache_claimed": cpu_native_supported,
         "native_prefix_cache_claimed": cpu_native_supported,
+        "accelerator_kv_lifecycle_claimed": bool(claim_scope.get("accelerator_kv_lifecycle_claimed")),
+        "mlx_native_kv_lifecycle_claimed": bool(claim_scope.get("mlx_native_kv_lifecycle_claimed")),
         "accelerator_kv_parity_claimed": bool(claim_scope.get("accelerator_kv_parity_claimed")),
         "mlx_native_kv_parity_claimed": bool(claim_scope.get("mlx_native_kv_parity_claimed")),
         "cuda_native_kv_parity_claimed": bool(claim_scope.get("cuda_native_kv_parity_claimed")),

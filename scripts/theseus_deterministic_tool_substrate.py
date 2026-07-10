@@ -26,6 +26,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+import vcm_consumer_abi
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIGS = ROOT / "configs"
@@ -1040,21 +1042,30 @@ def summarize(
 
 
 def vcm_context_governor_receipt(path: Path) -> dict[str, Any]:
-    report = read_json(path, {})
-    summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
-    ready = (
-        bool(report)
-        and str(report.get("trigger_state")) == "GREEN"
-        and int(summary.get("hard_gap_count") or 0) == 0
-        and str(summary.get("context_resolver_status") or "") == "ready"
+    packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id="theseus_deterministic_tool_substrate",
+        purpose="deterministic_tool_execution",
+        read_set=[rel(path), "configs/deterministic_tool_substrate.json", "reports/vcm_task_contexts.json"],
+        write_set=[
+            "reports/deterministic_tool_substrate.json",
+            "reports/deterministic_tool_trace.jsonl",
+            "reports/deterministic_tool_artifact_graph.json",
+            "reports/deterministic_tool_dogfood_events.jsonl",
+        ],
+        authority_ceiling=["local_private_tool_execution", "governed_context_read"],
+        permitted_uses=["tool_selection_context", "deterministic_tool_execution", "tool_evidence_replay"],
+        governor_path=path,
+        taint_labels=["private_tool_metadata", "raw_text_not_staged"],
+        deletion_obligations=["invalidate_tool_context_derivatives_when_source_context_is_revoked"],
+        audit_refs=["scripts/theseus_deterministic_tool_substrate.py"],
     )
+    governor = packet["governor_receipt"]
+    summary = governor.get("summary") if isinstance(governor.get("summary"), dict) else {}
     return {
+        **governor,
         "record_type": "vcm_context_governor_receipt",
-        "receipt_id": stable_id("vcm_tool_receipt", rel(path), summary.get("context_resolver_passed_count"), summary.get("context_resolver_typed_fault_count")),
         "path": rel(path),
-        "ready": ready,
-        "trigger_state": report.get("trigger_state"),
-        "created_utc": report.get("created_utc"),
+        "ready": bool(packet.get("ready")),
         "hard_gap_count": int(summary.get("hard_gap_count") or 0),
         "context_resolver_status": summary.get("context_resolver_status"),
         "context_resolver_passed_count": int(summary.get("context_resolver_passed_count") or 0),
@@ -1062,7 +1073,8 @@ def vcm_context_governor_receipt(path: Path) -> dict[str, Any]:
         "context_resolver_materialized_count": int(summary.get("context_resolver_materialized_count") or 0),
         "context_resolver_typed_fault_count": int(summary.get("context_resolver_typed_fault_count") or 0),
         "context_resolver_viea_record_count": int(summary.get("context_resolver_viea_record_count") or 0),
-        "content_hash": file_sha256(path),
+        "content_hash": governor.get("content_hash"),
+        "consumer_abi": packet,
         "required_for": "deterministic_tool_substrate",
         "non_claim": "This receipt proves governed context availability for deterministic tool execution; it is not learned generation, public calibration, or model-native KV-cache parity evidence.",
         "public_training_rows_written": 0,
@@ -1085,7 +1097,9 @@ def deterministic_tool_vcm_records(vcm_receipt: dict[str, Any], result_count: in
         "raw_prompt_stored": False,
         "raw_private_text_stored": False,
     }
-    return [
+    abi_packet = vcm_receipt.get("consumer_abi") if isinstance(vcm_receipt.get("consumer_abi"), dict) else {}
+    abi_records = abi_packet.get("records") if isinstance(abi_packet.get("records"), list) else []
+    return list(abi_records) + [
         {
             **base,
             "record_type": "authority_use_receipt",

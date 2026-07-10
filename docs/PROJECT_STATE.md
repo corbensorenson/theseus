@@ -17,23 +17,28 @@ records, gates, docs, evidence, and an integration smoke. This prevents the
 roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The project registry is now `GREEN` with `0` hard violations and `0` route
-blockers. Route health uses `14` minimal source-bound, TTL-bound, or
-current-invocation receipts; `150` other declared outputs are supporting
+blockers. Route health uses `15` minimal source-bound, TTL-bound, or
+current-invocation receipts; `152` other declared outputs are supporting
 evidence and no longer force daily regeneration. Stale, invalid, missing, or
 acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
-`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `7`, `10`,
+`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phase `3` is `implemented`; phases `7`, `10`,
 `13`, `14`, `15`, and `16` are intentionally `partial` after the latest
 ASI Stack/Claude book-mining pass; and phases `1`, `2`, `9`, and `18` are
 externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
-current local AI_book manifest contains `46` chapters, all mapped through the
+current local AI_book manifest contains `47` chapters, all mapped through the
 roadmap implementation matrix. The newly admitted adversarial-evaluation chapter
 is routed into existing phases `4`, `10`, `12`, `14`, and `18`; mapping it is not
 evidence that Theseus detects deception or that any local model is deceptive.
+The concurrently added Open-Ended Improvement Engines chapter is mapped to
+phases `7`, `10`, `12`, `14`, `15`, and `18` with generator/evaluator
+separation, candidate-archive, resource/stop-boundary, residual-custody, and SCF
+admission obligations. Mapping it is not evidence of open-ended intelligence or
+autonomous scientific discovery.
 roadmap gate now requires active core slices to carry a valid current support
 state and evidence refs. A1 is currently `synthetic-test-backed`; the full core
 slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
@@ -46,9 +51,8 @@ architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
 work can continue, but strict pre-training architecture readiness is now `RED`
-with one blocker: seven book-derived implementation phases are still partial.
-Those partial phases are VCM transactional ABI/runtime parity (`3`),
-candidate-level data/teacher lifecycle governance (`7`), practical
+with one blocker: six book-derived implementation phases are still partial.
+Those partial phases are candidate-level data/teacher lifecycle governance (`7`), practical
 neural seed survival/policy optimization/generation modes (`10`), semantic IR
 localized repair (`13`), evidence hygiene/receipt faithfulness/claim revision
 (`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and
@@ -1000,11 +1004,10 @@ boundary emits `11` VIEA runtime records over authority, context transaction
 and adequacy, runtime adapter, resource, costed route, generation mode,
 failure boundary, artifact, claim, and evidence-transition families. The
 current probe is `GREEN`: semantic VCM descriptor cache readiness is green,
-backend-scoped CPU Transformers DynamicCache prefix/KV lifecycle is proven,
-and MLX resident tensor descriptor reuse/invalidation is proven. It does not
-claim model-native MLX KV/prefix parity; scheduler native KV routing for the
-recommended MLX backend remains fail-closed until that exact backend has a
-lifecycle proof.
+and a real tiny MLX-LM Llama forward creates, reuses, appends, and invalidates an
+`mlx_lm.models.cache.KVCache` on `mlx_apple`. The route is allowed only for the
+exact tested backend and runtime identity. CUDA parity, custom Metal-kernel
+parity, and cross-backend equivalence remain unclaimed.
 `reports/vcm_context_governor.json` now also contributes
 `vcm_context_abi_fixture_spine_v1` and
 `vcm_context_resolver_conformance_spine_v1`. The Context ABI fixture gate is
@@ -1024,6 +1027,21 @@ record lists under the resolver conformance profile, and
 `python3 scripts/viea_spine_record_gate.py --gate` remains `GREEN` with `0`
 hard gaps and `0` warnings. This is context ABI and resolver evidence, not a
 VCM benchmark score, native KV-cache parity claim, or learned-generation claim.
+`scripts/vcm_consumer_abi.py` now makes those contracts mandatory at the
+consumer boundary. `reports/vcm_consumer_integration_gate.json` is `GREEN`:
+`33/33` canonical consumers and `25/25` planner nodes independently validate
+source-bound packets; assistant dogfood and the native MLX cache path are
+present; and `5/5` integration mutation controls are rejected. Unit coverage
+also rejects missing, stale, tainted, contradictory, over-compressed, revoked,
+deleted, authority-widened, and source-mutating context. The private
+equal-budget VCM context-recovery ablation records `1.0` VCM-on answer accuracy
+versus `0.5625` VCM-off across 16 cases with zero off-only wins and zero fallback
+returns. This closes Phase 3 implementation mechanics; it does not establish
+broad public-memory capability or learned-model quality. The separate
+`VCM-Governed` release profile remains RED because its quarantined public prompt
+calibration manifest is not currently available; that negative capability
+evidence is retained rather than being converted into an implementation blocker
+or a cosmetic green result.
 `reports/deterministic_tool_substrate.json` now contributes
 `deterministic_tool_context_spine_v1` in addition to the existing deterministic
 tool evidence profile. The deterministic tool path is `GREEN` with `13` local

@@ -35,13 +35,13 @@ module must meet.
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
 | Generator capability (held-out pass) | Phase 10 | RED - 0/24 functional | action-aware semantic-IR body construction; no more heads |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
-| VCM ABI + transactions/certificates | Phase 3 | synthetic-test-backed | make certificates/CoW/faults universal; native cache proof |
+| VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
 | Claim ledger + belief revision | Phase 14 | partial | one real belief revision on a live claim + independent audit |
 | Replacement transactions | Phase 2 | synthetic-test-backed | one real default swap with rollback |
 | Authority kernel / SCIF | Phase 18 | synthetic-test-backed | one real side-effecting run |
 | Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
 | Report hygiene | Phases 0, 8 | ~2.4 GB, high churn | enforce report/checkpoint retention; drive live state below 1 GB |
-| Book crosswalk / parity | Phase 19 | 46 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
+| Book crosswalk / parity | Phase 19 | 47 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
 | Book futures intake | Phase 19 + routed owners | 19 chapter candidates + 2 section routes mapped | activate only at source/ownership and operational entry gates |
 
 ## Non-Negotiable Rules
@@ -390,6 +390,21 @@ run and it meets the Quality Bars below.
   improves one real internal task with no leakage/runtime regression; the real
   MLX/Metal serving path separately proves KV/prefix-cache lifecycle before parity
   is claimed.
+- Current implementation evidence: one fail-closed packet ABI is independently
+  validated across assistant, planner, verifier, deterministic-tool,
+  training-admission, candidate-generation, and fanout paths; `33/33` canonical
+  consumers and `25/25` planner nodes pass, while authority-widening,
+  source-mutation, taint-drop, best-effort, fallback, missing, stale,
+  contradictory, over-compressed, revoked, and deleted controls fail closed. A
+  real tiny MLX-LM Llama forward creates, reuses, appends, and invalidates an
+  `mlx_lm.models.cache.KVCache`; this supports only an exact `mlx_apple`
+  lifecycle claim, not CUDA, custom Metal-kernel, or cross-backend parity. The
+  equal-budget private context ablation is `1.0` VCM-on versus `0.5625` VCM-off
+  over 16 cases with zero fallback returns; it is integration evidence, not a
+  broad public-capability claim. The separate `VCM-Governed` release profile
+  remains RED because its quarantined public prompt calibration manifest is not
+  currently available; Phase 3 implementation status does not override that
+  capability/calibration result.
 - Do not: keep proving VCM on tiny saturated benchmarks; store raw private user
   text in training rows by default.
 
@@ -647,7 +662,6 @@ gaps route into the phases above:
 | Intent-to-execution contracts | runtime path does not yet require contracts for every meaningful task | 1 |
 | PlanForge DAGs + adequacy + arbitrage | not the default execution spine; adequacy contracts + arbitrage ledger missing | 1 |
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
-| VCM ABI + certificates + transactions | not yet mandatory across assistant/training/verifier/routing; certificates/CoW not universal | 3 |
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
 | Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |
 | Claim ledgers + belief revision | claim/transition records + contradiction links not first-class per run | 14 |
@@ -663,7 +677,6 @@ gaps route into the phases above:
 | Integrated reference architecture | the missing canonical spine | 1 |
 | Authority kernel / SCIF / failure boundaries / adapter receipts | no universal authority-transition ledger or SCIF receipt layer | 18 |
 | Constitutional predicates / agency / value conflicts / governance rights | not first-class records consumed by planning and self-improvement | 18 |
-| Context transactions + adequacy | transactional memory semantics + fail-closed adequacy not universal | 3 |
 | Resource budgets + costed routes + generation-mode records | costed routes + accepted-output accounting not the normal artifact | 8 |
 | Simulation contracts | no contract separating map from territory | 17 |
 | Semantic atoms/nodes + compact artifacts + substrate adoption | not the common substrate; adoption discipline not universal | 11, 13, 14 |
@@ -689,9 +702,9 @@ training; they block the higher-authority operation they govern.
 | Book candidate or section | Theseus owner phases | Entry condition / disposition |
 |---|---|---|
 | Governed Deliberation and Test-Time Scaling | 6, 8, 10, 13 | after direct model-only pass is nonzero; own think/search budgets, verifier selection, stopping, diminishing returns, and residuals |
-| Data Engines, Continual Learning, and Unlearning | 3, 7, 12, 14 | admitted to the local 46-chapter manifest; current Phase-7 receipt/lifecycle work |
+| Data Engines, Continual Learning, and Unlearning | 3, 7, 12, 14 | admitted to the local 47-chapter manifest; current Phase-7 receipt/lifecycle work |
 | Scalable Oversight and Adversarial AI Control | 4, 14, 18 | before high-impact or self-improving routes; weak-supervisor limits, trusted/untrusted monitors, collusion resistance, oversight recursion |
-| Adversarial Evaluation, Sandbagging, and Training-Time Deception | 4, 10, 12, 14, 18 | admitted to the local 46-chapter manifest; before promotion/public claims, bind elicitation/selection/monitor context and cross-context discrepancies to existing evidence and promotion routes |
+| Adversarial Evaluation, Sandbagging, and Training-Time Deception | 4, 10, 12, 14, 18 | admitted to the local 47-chapter manifest; before promotion/public claims, bind elicitation/selection/monitor context and cross-context discrepancies to existing evidence and promotion routes |
 | Capability Thresholds and Deployment Commitments | 2, 8, 12, 18 | before production serving or authority growth; if-then safeguards, autonomy/time horizon, automated-R&D share, open-weight decisions |
 | Reasoning-Trace Faithfulness (section route) | 1, 4, 14 | now as an evidence boundary; distinguish traces from receipts and test trace/action consistency without treating hidden reasoning as authoritative |
 | Inter-Stack Protocols, Identity, and Economic Exchange | 1, 2, 9, 18 | before cross-Hive/external-agent federation; protocol, identity, credential, payment, authority, and receipt interoperability |
@@ -700,7 +713,7 @@ training; they block the higher-authority operation they govern.
 | Model-Weight Custody and Hardware Roots of Trust | 0, 8, 18 | before distributing valuable weights or production loading; exfiltration, key release, attestation, TEE/GPU limits, open-weight custody |
 | Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |
 | Persuasion, Epistemic Security, and Human Agency | 5, 14, 18 | source-contingent; require stronger empirical anchors before activation or claims |
-| Open-Ended Improvement Engines | 2, 7, 10, 14 | after a verifier-positive proposer exists; self-play, automatic curricula, environment generation, evolutionary search, novelty/coverage, evaluator capture |
+| Open-Ended Improvement Engines | 7, 10, 12, 14, 15, 18 | admitted to the local 47-chapter manifest; implement the bounded campaign/admission contract now, then run empirical campaigns only after a verifier-positive proposer exists |
 | CAIS, Embedded Agency, and Corrigibility Foundations (section route) | 1, 18, 19 | prior-art/foundations work only unless a distinct mechanism and proof program earns a chapter boundary |
 | Perception, Grounding, and Observation Trust | 3, 8, 17, 18 | when a vision/audio/sensor modality starts; observation contracts, provenance/taint, fusion disagreement, uncertainty, refresh, spoofing/occlusion |
 | Embodied Execution and Physical-World Safety | 1, 8, 17, 18 | before physical actuation; control periods, hazard envelopes, interlocks, fallback controllers, stop authority, degraded modes |

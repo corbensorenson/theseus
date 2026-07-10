@@ -178,9 +178,10 @@
       "candidate_id": "future.open_ended_improvement_engines",
       "title": "Open-Ended Improvement Engines",
       "item_kind": "chapter_candidate",
-      "book_disposition": "provisional_source_gated",
-      "phase_refs": [2, 7, 10, 14],
-      "entry_condition": "after a verifier-positive proposer exists",
+      "book_disposition": "admitted_current_local_manifest",
+      "chapter_id": "open-ended-improvement-engines",
+      "phase_refs": [7, 10, 12, 14, 15, 18],
+      "entry_condition": "active now as a bounded campaign/admission contract; empirical improvement campaigns wait for a verifier-positive proposer",
       "theseus_scope": "self-play, automatic curricula, environment generation, propose-solve-verify loops, evolutionary artifact search, evaluator capture, novelty/coverage, and shutdown handoff",
       "acceptance_boundary": "the engine increases verified heldout coverage across generations under independent evaluators, diversity/tail metrics, rollback, and stop conditions",
       "non_claim_boundary": "more generated tasks, artifacts, or novelty scores are not recursive capability improvement"
@@ -780,7 +781,7 @@
     {
       "phase": 3,
       "title": "Virtual Context Memory As Default Context Substrate",
-      "status": "partial",
+      "status": "implemented",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-3",
       "ai_book_source_basis": [
@@ -811,11 +812,13 @@
       ],
       "required_gates": [
         "python3 scripts/virtual_context_memory.py",
-        "python3 scripts/vcm_bridge_gate.py",
+        "python3 tests/test_vcm_consumer_abi.py",
+        "python3 scripts/vcm_task_context_bridge.py",
         "python3 scripts/vcm_context_governor_gate.py",
         "python3 scripts/vcm_runtime_claim_readiness.py",
         "python3 scripts/vcm_runtime_cache_lifecycle.py",
         "python3 scripts/vcm_native_runtime_probe.py",
+        "python3 scripts/vcm_consumer_integration_gate.py",
         "python3 scripts/theseus_plan_compiler.py",
         "python3 scripts/code_lm_train_once_fanout.py",
         "python3 scripts/neural_seed_token_decoder_comparator.py",
@@ -830,8 +833,12 @@
         "docs/reference/virtual_context_memory_v1.0/source/Virtual_Context_Memory_v1.0.md"
       ],
       "current_evidence": [
+        "scripts/vcm_consumer_abi.py",
+        "scripts/vcm_consumer_integration_gate.py",
+        "tests/test_vcm_consumer_abi.py",
         "reports/virtual_context_memory.json",
-        "reports/vcm_bridge_gate.json",
+        "reports/vcm_task_context_bridge.json",
+        "reports/vcm_consumer_integration_gate.json",
         "reports/vcm_context_governor.json",
         "reports/vcm_mission_brief.json",
         "reports/vcm_deletion_closure.json",
@@ -856,13 +863,8 @@
         "reports/theseus_assistant_vcm_context_abi_trace.jsonl",
         "configs/viea_spine_record_contracts.json"
       ],
-      "missing_items": [
-        "VCM representation certificates are now emitted by the deployed context resolver for every audited request: source refs, omissions, loss contract, permitted uses, authority ceiling, consumer policy, authority-nonwidening checks, and expected-invalid controls are GREEN; remaining work is making this certificate ABI mandatory for every future VCM consumer that bypasses the governor",
-        "copy-on-write VCM snapshot branch ledger is now emitted by the deployed context resolver with read/write sets, taint propagation, deletion obligations, contradiction refs, closure state, typed faults, and expected-invalid controls; remaining work is universal adoption for every context-producing runtime surface",
-        "native KV/prefix-cache lifecycle proof for the actual MLX/Metal serving path, separated from semantic descriptor-cache and CPU DynamicCache evidence",
-        "context adequacy must fail closed in assistant, verifier, planner, and training/eval packets when required material is stale, tainted, missing, contradictory, or over-compressed"
-      ],
-      "smallest_next_patch": "Continue Phase 3 by forcing the new VCM representation-certificate and copy-on-write snapshot-branch ABI into every context-producing runtime surface, then add native MLX/Metal KV/prefix-cache lifecycle proof before any runtime parity or production serving-route claim.",
+      "missing_items": [],
+      "smallest_next_patch": "Proceed to Phase 7 and make the real transformer/hybrid proposer consume the completed VCM ABI through the canonical inference/training contract; keep SymLiquid as a matched-compute discovery comparator and preserve exact-backend MLX claim scope.",
       "integration_smoke": [
         "python3 scripts/vcm_context_governor_gate.py",
         "reports/vcm_context_governor.json summary.context_abi_fixture_status=ready",
@@ -887,7 +889,19 @@
         "python3 scripts/vcm_native_runtime_probe.py",
         "reports/vcm_native_runtime_probe.json summary.viea_runtime_record_count=11",
         "reports/vcm_native_runtime_probe.json summary.scheduler_vcm_descriptor_route_allowed_for_recommended_backend=true",
-        "reports/vcm_native_runtime_probe.json summary.scheduler_native_kv_route_fail_closed=true",
+        "reports/vcm_native_runtime_probe.json summary.mlx_lm_model_cache_lifecycle_test_passed=true",
+        "reports/vcm_native_runtime_probe.json summary.mlx_lm_model_forward_cache_created=true",
+        "reports/vcm_native_runtime_probe.json summary.scheduler_native_kv_route_allowed_for_recommended_backend=true",
+        "reports/vcm_native_runtime_probe.json summary.mlx_native_kv_lifecycle_claimed=true while MLX, CUDA, Metal, and cross-accelerator parity claims remain false",
+        "python3 scripts/vcm_consumer_integration_gate.py",
+        "reports/vcm_consumer_integration_gate.json trigger_state=GREEN",
+        "reports/vcm_consumer_integration_gate.json summary.ready_consumer_count=33/33",
+        "reports/vcm_consumer_integration_gate.json summary.planner_vcm_consumer_abi_ready_count=25/25",
+        "reports/vcm_consumer_integration_gate.json summary.expected_invalid_rejected_count=5/5",
+        "reports/vcm_consumer_integration_gate.json summary.assistant_dogfood_vcm_path_ready=true",
+        "reports/vcm_consumer_integration_gate.json summary.native_mlx_model_cache_ready=true",
+        "python3 scripts/vcm_context_recovery_benchmark.py",
+        "reports/vcm_context_recovery_benchmark.json records a private equal-budget 16-case VCM-on accuracy 1.0 versus VCM-off 0.5625 with zero off-only wins and zero fallback returns",
         "python3 scripts/theseus_plan_compiler.py",
         "reports/theseus_plan_compiler.json gates.vcm_context_governor_ready.passed=true",
         "python3 scripts/code_lm_train_once_fanout.py",
@@ -916,7 +930,7 @@
         "reports/theseus_assistant_vcm_context_abi_smoke.json summary.viea_materialized_view_record_count>0",
         "reports/theseus_assistant_vcm_context_abi_trace.jsonl contains context_abi_record, context_transaction, and context_adequacy"
       ],
-      "completion_rule": "Assistant, planner, verifier, tool, and training-data paths all consume VCM packets by default with on/off accounting."
+      "completion_rule": "Assistant, planner, verifier, tool, training-data, candidate-generation, and fanout paths independently validate the same source-bound VCM packet ABI; expected-invalid context cases fail closed; causal on/off accounting uses equal budgets; exact native KV/prefix claims remain backend-scoped."
     },
     {
       "phase": 4,
@@ -3637,6 +3651,81 @@
     },
     {
       "chapter_ordinal": 13,
+      "chapter_id": "open-ended-improvement-engines",
+      "chapter_title": "Open-Ended Improvement Engines",
+      "part_id": "foundations-alignment-governance",
+      "part_title": "Part I - Foundations, Alignment, and Governance",
+      "book_file": "chapters/open-ended-improvement-engines.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned improvement-campaign record containing objective, generator and task-policy bounds, candidate identifier, evaluator/version, independent-review flag, resource bill, failure or residual record, archive disposition, and a route that blocks admission when independent evaluation or a stop boundary is absent.",
+      "book_beyond_state_of_art": "The mature system runs multiple constrained discovery campaigns across simulations, program spaces, data curation, and tools while preserving evaluator separation, challenge provenance, counterexamples, resource economics, sandbox limits, dual-use review, reproducibility, and campaign stop authority. It uses generated discoveries only through qualified capability fields and governed replacement, rather than granting a search process the power to promote itself.",
+      "book_interfaces": [
+        "Data Engines owns training-input provenance and admissibility.",
+        "Benchmark Ratchets owns benchmark integrity and regression floors.",
+        "Procedural Memory owns procedures only after qualification.",
+        "Policy Optimization consumes bounded candidate evidence under an approved update lease.",
+        "Recursive Self-Improvement Boundaries, Stable Capability Fields, and Readiness Gates own promotion, authority, rollback, and monitoring."
+      ],
+      "book_invariants": [
+        "Generated tasks, candidates, scores, novelty metrics, and self-verification traces are not admission decisions.",
+        "Every campaign declares evaluator scope, resource budget, task-generator constraints, stop conditions, and residual custody.",
+        "A candidate cannot widen authority, alter protected policy, or replace a live field without independent qualification.",
+        "Rejected, quarantined, and superseded candidates retain provenance, cost, and failure evidence."
+      ],
+      "book_failure_modes": [
+        "Objective or task-generator drift turns proxy novelty into fake improvement.",
+        "Evaluator capture or self-verification laundering converts a search score into a capability claim.",
+        "Archive survivorship erases failed, costly, unsafe, or overprivileged candidates.",
+        "Generated artifacts bypass authority, regression, rollback, or monitor checks.",
+        "Open-ended search consumes unbounded resources or produces dual-use artifacts without stop authority."
+      ],
+      "codex_test_count": 3,
+      "representative_codex_tests": [
+        "Improvement-campaign admission fixture",
+        "Generator-evaluator separation probe",
+        "Candidate archive and stop-boundary review"
+      ],
+      "primary_track_id": "C_capability_research_survival_lane",
+      "phase_refs": [
+        7,
+        10,
+        12,
+        14,
+        15,
+        18
+      ],
+      "implementation_priority": "core_before_training",
+      "minimum_theseus_slice": "Implement the chapter's bounded campaign record and fail-closed admission route across phases [7, 10, 12, 14, 15, 18], preserving evaluator independence, resource/stop bounds, complete candidate archives, residual custody, and SCF replacement authority.",
+      "beyond_sota_theseus_endpoint": "Run constrained discovery campaigns across private simulations, program spaces, governed data curation, and tools with independent evaluators, challenge provenance, counterexample retention, resource economics, sandbox/dual-use boundaries, reproducibility, stop authority, and promotion only through qualified capability fields and replacement transactions.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "partial_reference_slice",
+      "required_gate_or_fixture": "Improvement-campaign admission fixture",
+      "required_records_or_receipts": [
+        "improvement_campaign_record",
+        "candidate_archive_record",
+        "evaluator_independence_receipt",
+        "resource_budget",
+        "stop_boundary_receipt",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "failure_boundary",
+        "residual_record",
+        "policy_optimization_record",
+        "replacement_transaction",
+        "authority_use_receipt"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "open-ended campaign mechanics are not evidence of open-ended intelligence",
+        "generated scores or self-verification cannot authorize promotion",
+        "tool/template/router output is not learned generation",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 14,
       "chapter_id": "intent-to-execution-contracts",
       "chapter_title": "Command Contracts: From Intent to Executable Work",
       "part_id": "planning-memory-reasoning-execution",
@@ -3713,7 +3802,7 @@
       ]
     },
     {
-      "chapter_ordinal": 14,
+      "chapter_ordinal": 15,
       "chapter_id": "planning-as-a-control-layer",
       "chapter_title": "Planning as a Control Layer: DAGs and Intelligence Arbitrage",
       "part_id": "planning-memory-reasoning-execution",
@@ -3801,7 +3890,7 @@
       ]
     },
     {
-      "chapter_ordinal": 15,
+      "chapter_ordinal": 16,
       "chapter_id": "cognitive-compilation-and-semantic-ir",
       "chapter_title": "Cognitive Compilation and Semantic IR",
       "part_id": "planning-memory-reasoning-execution",
@@ -3864,7 +3953,7 @@
       ]
     },
     {
-      "chapter_ordinal": 16,
+      "chapter_ordinal": 17,
       "chapter_id": "virtual-context-abi",
       "chapter_title": "The Virtual Context ABI: Typed Pages, Cells, and Certificates",
       "part_id": "planning-memory-reasoning-execution",
@@ -3943,7 +4032,7 @@
       ]
     },
     {
-      "chapter_ordinal": 17,
+      "chapter_ordinal": 18,
       "chapter_id": "context-transactions-snapshots-mounts-and-taint",
       "chapter_title": "Context Transactions, Snapshots, Mounts, and Taint",
       "part_id": "planning-memory-reasoning-execution",
@@ -4019,7 +4108,7 @@
       ]
     },
     {
-      "chapter_ordinal": 18,
+      "chapter_ordinal": 19,
       "chapter_id": "verification-bandwidth-and-context-adequacy",
       "chapter_title": "Verification Bandwidth and Context Adequacy",
       "part_id": "planning-memory-reasoning-execution",
@@ -4093,7 +4182,7 @@
       ]
     },
     {
-      "chapter_ordinal": 19,
+      "chapter_ordinal": 20,
       "chapter_id": "claim-ledgers-and-belief-revision",
       "chapter_title": "Claim Ledgers and Belief Revision",
       "part_id": "planning-memory-reasoning-execution",
@@ -4161,7 +4250,7 @@
       ]
     },
     {
-      "chapter_ordinal": 20,
+      "chapter_ordinal": 21,
       "chapter_id": "spinoza-verification-and-proof-carrying-claims",
       "chapter_title": "Proof-Carrying Claims and Adversarial Review",
       "part_id": "planning-memory-reasoning-execution",
@@ -4238,7 +4327,7 @@
       ]
     },
     {
-      "chapter_ordinal": 21,
+      "chapter_ordinal": 22,
       "chapter_id": "labor-os-and-typed-jobs",
       "chapter_title": "Labor OS and Typed Jobs",
       "part_id": "planning-memory-reasoning-execution",
@@ -4311,7 +4400,7 @@
       ]
     },
     {
-      "chapter_ordinal": 22,
+      "chapter_ordinal": 23,
       "chapter_id": "artifact-graphs-audit-logs-and-replay",
       "chapter_title": "Artifact Graphs, Audit Logs, and Replay",
       "part_id": "planning-memory-reasoning-execution",
@@ -4380,7 +4469,7 @@
       ]
     },
     {
-      "chapter_ordinal": 23,
+      "chapter_ordinal": 24,
       "chapter_id": "runtime-adapters-tool-permissions-and-human-approval",
       "chapter_title": "Runtime Adapters, Tool Permissions, and Human Approval",
       "part_id": "planning-memory-reasoning-execution",
@@ -4449,7 +4538,7 @@
       ]
     },
     {
-      "chapter_ordinal": 24,
+      "chapter_ordinal": 25,
       "chapter_id": "procedural-memory-and-cognitive-loop-closure",
       "chapter_title": "Procedural Memory and Cognitive Loop Closure",
       "part_id": "planning-memory-reasoning-execution",
@@ -4515,7 +4604,7 @@
       ]
     },
     {
-      "chapter_ordinal": 25,
+      "chapter_ordinal": 26,
       "chapter_id": "routing-heads-and-specialist-cores",
       "chapter_title": "Routing Heads and Specialist Cores",
       "part_id": "routing-compression-representation-substrates",
@@ -4600,7 +4689,7 @@
       ]
     },
     {
-      "chapter_ordinal": 26,
+      "chapter_ordinal": 27,
       "chapter_id": "readiness-gates-residual-escrow-and-quarantine",
       "chapter_title": "Readiness Gates, Residual Escrow, and Quarantine",
       "part_id": "routing-compression-representation-substrates",
@@ -4668,7 +4757,7 @@
       ]
     },
     {
-      "chapter_ordinal": 27,
+      "chapter_ordinal": 28,
       "chapter_id": "personal-compute-hives-and-federated-edge-intelligence",
       "chapter_title": "Personal Compute Hives and Federated Edge Intelligence",
       "part_id": "routing-compression-representation-substrates",
@@ -4746,7 +4835,7 @@
       ]
     },
     {
-      "chapter_ordinal": 28,
+      "chapter_ordinal": 29,
       "chapter_id": "compact-generative-systems-and-residual-honesty",
       "chapter_title": "Compact Generative Systems: Generate, Verify, Repair, and Residual Honesty",
       "part_id": "routing-compression-representation-substrates",
@@ -4842,7 +4931,7 @@
       ]
     },
     {
-      "chapter_ordinal": 29,
+      "chapter_ordinal": 30,
       "chapter_id": "fast-generation-architectures",
       "chapter_title": "Fast Generation Architectures",
       "part_id": "routing-compression-representation-substrates",
@@ -4929,7 +5018,7 @@
       ]
     },
     {
-      "chapter_ordinal": 30,
+      "chapter_ordinal": 31,
       "chapter_id": "rankfold-neuralfold-and-artifact-compression",
       "chapter_title": "RankFold, NeuralFold, and Artifact Compression",
       "part_id": "routing-compression-representation-substrates",
@@ -5000,7 +5089,7 @@
       ]
     },
     {
-      "chapter_ordinal": 31,
+      "chapter_ordinal": 32,
       "chapter_id": "resource-economics-and-token-budgets",
       "chapter_title": "Resource Economics and Token Budgets",
       "part_id": "routing-compression-representation-substrates",
@@ -5084,7 +5173,7 @@
       ]
     },
     {
-      "chapter_ordinal": 32,
+      "chapter_ordinal": 33,
       "chapter_id": "mathematical-and-search-substrates",
       "chapter_title": "Mathematical and Search Substrates",
       "part_id": "routing-compression-representation-substrates",
@@ -5149,7 +5238,7 @@
       ]
     },
     {
-      "chapter_ordinal": 33,
+      "chapter_ordinal": 34,
       "chapter_id": "circle-calculus-and-proof-carrying-ai-contracts",
       "chapter_title": "Circle Calculus and Proof-Carrying AI Contracts",
       "part_id": "routing-compression-representation-substrates",
@@ -5219,7 +5308,7 @@
       ]
     },
     {
-      "chapter_ordinal": 34,
+      "chapter_ordinal": 35,
       "chapter_id": "coil-attention-cyclic-memory-and-recurrence-contracts",
       "chapter_title": "Coil Attention, Cyclic Memory, and Recurrence Contracts",
       "part_id": "routing-compression-representation-substrates",
@@ -5287,7 +5376,7 @@
       ]
     },
     {
-      "chapter_ordinal": 35,
+      "chapter_ordinal": 36,
       "chapter_id": "coilra-multicoil-rope-and-cyclic-mixers",
       "chapter_title": "CoilRA, MultiCoil RoPE, and Cyclic Mixers",
       "part_id": "routing-compression-representation-substrates",
@@ -5355,7 +5444,7 @@
       ]
     },
     {
-      "chapter_ordinal": 36,
+      "chapter_ordinal": 37,
       "chapter_id": "executable-specifications-and-lean-proof-envelope",
       "chapter_title": "Executable Specifications and Lean Proof Envelope",
       "part_id": "evidence-implementation-living-book",
@@ -5419,7 +5508,7 @@
       ]
     },
     {
-      "chapter_ordinal": 37,
+      "chapter_ordinal": 38,
       "chapter_id": "benchmark-ratchets-and-anti-goodhart-evidence",
       "chapter_title": "Benchmark Ratchets and Anti-Goodhart Evidence",
       "part_id": "evidence-implementation-living-book",
@@ -5482,7 +5571,7 @@
       ]
     },
     {
-      "chapter_ordinal": 38,
+      "chapter_ordinal": 39,
       "chapter_id": "adversarial-evaluation-sandbagging-and-training-time-deception",
       "chapter_title": "Adversarial Evaluation, Sandbagging, and Training-Time Deception",
       "part_id": "evidence-implementation-living-book",
@@ -5554,7 +5643,7 @@
       ]
     },
     {
-      "chapter_ordinal": 39,
+      "chapter_ordinal": 40,
       "chapter_id": "policy-optimization-and-learning-from-feedback",
       "chapter_title": "Policy Optimization and Learning from Feedback",
       "part_id": "evidence-implementation-living-book",
@@ -5634,7 +5723,7 @@
       ]
     },
     {
-      "chapter_ordinal": 40,
+      "chapter_ordinal": 41,
       "chapter_id": "data-engines-continual-learning-and-unlearning",
       "chapter_title": "Data Engines, Continual Learning, and Unlearning",
       "part_id": "evidence-implementation-living-book",
@@ -5703,7 +5792,7 @@
       ]
     },
     {
-      "chapter_ordinal": 41,
+      "chapter_ordinal": 42,
       "chapter_id": "artifact-steward-agents-and-living-project-governance",
       "chapter_title": "Artifact Steward Agents and Living Project Governance",
       "part_id": "evidence-implementation-living-book",
@@ -5772,7 +5861,7 @@
       ]
     },
     {
-      "chapter_ordinal": 42,
+      "chapter_ordinal": 43,
       "chapter_id": "integrated-reference-architecture",
       "chapter_title": "Integrated Reference Architecture",
       "part_id": "evidence-implementation-living-book",
@@ -5833,7 +5922,7 @@
       ]
     },
     {
-      "chapter_ordinal": 43,
+      "chapter_ordinal": 44,
       "chapter_id": "project-theseus-as-report-first-implementation-reference",
       "chapter_title": "Project Theseus as Report-First Implementation Reference",
       "part_id": "evidence-implementation-living-book",
@@ -5900,7 +5989,7 @@
       ]
     },
     {
-      "chapter_ordinal": 44,
+      "chapter_ordinal": 45,
       "chapter_id": "prototype-roadmap",
       "chapter_title": "Prototype Roadmap",
       "part_id": "evidence-implementation-living-book",
@@ -5960,7 +6049,7 @@
       ]
     },
     {
-      "chapter_ordinal": 45,
+      "chapter_ordinal": 46,
       "chapter_id": "living-book-methodology",
       "chapter_title": "Living Book Methodology",
       "part_id": "evidence-implementation-living-book",
@@ -6016,7 +6105,7 @@
       ]
     },
     {
-      "chapter_ordinal": 46,
+      "chapter_ordinal": 47,
       "chapter_id": "open-research-agenda-and-bibliography-plan",
       "chapter_title": "Open Research Agenda and Bibliography Plan",
       "part_id": "evidence-implementation-living-book",
@@ -6080,22 +6169,22 @@
   "book_chapter_crosswalk_summary": {
     "policy": "all_authored_book_chapters_mapped_to_theseus_v1",
     "book_manifest": "/Users/corbensorenson/Documents/AI_book/book_structure.json",
-    "book_chapter_count": 45,
+    "book_chapter_count": 47,
     "track_counts": {
       "A_reference_evidence_spine": 10,
       "F_memory_planning_tool_substrate": 12,
       "E_authority_security_rights_kernel": 7,
       "D_repo_stewardship_and_evidence_hygiene": 9,
       "B_product_assistant_usefulness": 1,
-      "C_capability_research_survival_lane": 6
+      "C_capability_research_survival_lane": 7
     },
     "current_state_counts": {
-      "partial_reference_slice": 32,
+      "partial_reference_slice": 33,
       "wired_reference_slice_exists": 11,
       "mapped_with_frozen_dependency": 2
     },
     "support_state_target_counts": {
-      "synthetic-test-backed": 35,
+      "synthetic-test-backed": 36,
       "replayable-reference-backed": 9,
       "empirical-test-backed": 1
     },

@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 import viea_spine_records
+import vcm_consumer_abi
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -103,6 +104,41 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     vcm_governor = vcm_context_governor_packet()
     contexts = read_json(REPORTS / "vcm_task_contexts.json", {})
     selected_context = select_vcm_context(contexts, str(route.get("vcm_task_family") or "operator_chat"))
+    selected_pages = selected_context.get("selected_pages") if isinstance(selected_context.get("selected_pages"), list) else []
+    vcm_consumer_packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id="theseus_assistant_runtime",
+        purpose="assistant",
+        read_set=["reports/vcm_context_governor.json", "reports/vcm_task_contexts.json"],
+        write_set=[rel(resolve(args.out)), rel(resolve(args.viea_trace_out))],
+        authority_ceiling=["local_assistant_context_read", "local_session_memory_write"],
+        permitted_uses=["assistant_context", "conversation_continuity", "planning_and_tool_routing", "dogfood_metadata"],
+        context_refs=[
+            {
+                "kind": "semantic_address",
+                "ref": page.get("address") or page.get("source_path"),
+                "required": True,
+                "exists": bool(page.get("address") or page.get("source_path")),
+                "sha256": page.get("content_hash") or page.get("sha256") or "",
+                "taint_labels": page.get("taints", []),
+                "contradiction_refs": page.get("contradiction_refs", []),
+            }
+            for page in selected_pages
+            if isinstance(page, dict)
+        ],
+        taint_labels=sorted({str(taint) for page in selected_pages if isinstance(page, dict) for taint in list_value(page.get("taints"))}),
+        deletion_obligations=["invalidate_session_context_derivatives_when_source_context_is_revoked"],
+        contradiction_refs=[
+            str(ref)
+            for page in selected_pages
+            if isinstance(page, dict)
+            for ref in list_value(page.get("contradiction_refs"))
+            if ref
+        ],
+        compression_loss=float(get_path(vcm_governor, ["summary", "mission_brief_compression_loss"], 0.0) or 0.0),
+        audit_refs=["scripts/theseus_assistant_runtime.py", "reports/vcm_task_contexts.json"],
+    )
+    vcm_governor["consumer_abi"] = vcm_consumer_packet
+    vcm_governor["ready"] = bool(vcm_governor.get("ready")) and bool(vcm_consumer_packet.get("ready"))
     checkpoint_out = REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}.json"
     chat_result = run_checkpoint_chat(
         prompt=prompt,
@@ -179,6 +215,9 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         assistant_text=assistant_text,
         trace_schema=trace_schema,
     )
+    assistant_viea_trace.extend(
+        row for row in vcm_consumer_packet.get("records", []) if isinstance(row, dict)
+    )
     gates = build_gates(
         chat_result=chat_result,
         response=response,
@@ -201,6 +240,18 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         trace_schema=trace_schema,
         allowed_feedback=allowed_feedback,
     )
+    gates.append(
+        gate(
+            "vcm_consumer_abi_ready",
+            bool(vcm_consumer_packet.get("ready")) and bool(vcm_consumer_packet.get("validation", {}).get("passed")),
+            {
+                "packet_id": vcm_consumer_packet.get("packet_id"),
+                "typed_faults": vcm_consumer_packet.get("typed_faults"),
+                "validation": vcm_consumer_packet.get("validation"),
+            },
+            "hard",
+        )
+    )
     hard_failures = [gate for gate in gates if gate["severity"] == "hard" and not gate["passed"]]
     warning_failures = [gate for gate in gates if gate["severity"] == "warning" and not gate["passed"]]
     trigger_state = "GREEN" if not hard_failures else "RED"
@@ -220,6 +271,9 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         "vcm_mission_brief_status": get_path(vcm_governor, ["summary", "mission_brief_status"], None),
         "vcm_deletion_closure_status": get_path(vcm_governor, ["summary", "deletion_closure_status"], None),
         "vcm_context_governor_hard_gap_count": get_path(vcm_governor, ["summary", "hard_gap_count"], 0),
+        "vcm_consumer_abi_ready": vcm_consumer_packet.get("ready"),
+        "vcm_consumer_abi_packet_id": vcm_consumer_packet.get("packet_id"),
+        "vcm_consumer_abi_fault_count": len(vcm_consumer_packet.get("typed_faults") or []),
         "checkpoint_chat_returncode": chat_result.get("returncode"),
         "checkpoint_history_turns_loaded": checkpoint_session.get("history_turns_loaded"),
         "checkpoint_session_path": checkpoint_session.get("session_path"),
@@ -323,6 +377,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         },
         "vcm_context_packet": compact_vcm_context(selected_context),
         "vcm_context_governor": vcm_governor,
+        "vcm_consumer_abi": vcm_consumer_packet,
         "code_route": code_route,
         "code_private_probe": code_private_probe,
         "tool_context": tool_context,

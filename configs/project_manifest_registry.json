@@ -476,6 +476,28 @@
             "field": "trigger_state",
             "allowed": ["GREEN", "YELLOW"]
           }
+        },
+        {
+          "id": "vcm_consumer_integration",
+          "path": "reports/vcm_consumer_integration_gate.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/vcm_consumer_abi.py",
+            "scripts/vcm_consumer_integration_gate.py",
+            "scripts/vcm_task_context_bridge.py",
+            "scripts/theseus_assistant_runtime.py",
+            "scripts/theseus_plan_compiler.py",
+            "scripts/code_lm_train_once_fanout.py",
+            "scripts/neural_seed_candidate_generation.py",
+            "scripts/code_lm_private_verifier.py",
+            "scripts/theseus_deterministic_tool_substrate.py",
+            "scripts/training_data_admission_v1.py",
+            "scripts/vcm_native_runtime_probe.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
+          }
         }
       ]
     },
@@ -4741,22 +4763,37 @@
       "canonical_entrypoint": "scripts/virtual_context_memory.py",
       "swappable_under_contract": true,
       "replacement_policy": "Runtime/KV/native cache successors must first preserve packet provenance and same-protocol VCM on/off evidence.",
-      "verification_command": "python3 scripts/virtual_context_memory.py && python3 -m py_compile scripts/virtual_context_memory.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
       "role": "vcm_context",
       "trust_tier": "governed_local_memory",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "scripts/virtual_context_memory.py",
+        "scripts/vcm_consumer_abi.py",
+        "scripts/vcm_consumer_integration_gate.py",
+        "scripts/vcm_task_context_bridge.py",
+        "scripts/vcm_native_runtime_probe.py",
+        "scripts/macos_dependency_bootstrap.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
         "scripts/neural_seed_full_state_pretraining.py",
         "scripts/neural_seed_token_model_backend.py",
         "scripts/neural_seed_candidate_generation.py",
-        "scripts/neural_seed_report_io.py"
+        "scripts/neural_seed_report_io.py",
+        "scripts/code_lm_train_once_fanout.py",
+        "scripts/code_lm_private_verifier.py",
+        "scripts/theseus_deterministic_tool_substrate.py",
+        "scripts/training_data_admission_v1.py",
+        "scripts/theseus_plan_compiler.py",
+        "scripts/theseus_assistant_runtime.py"
       ],
       "evidence_outputs": [
         "reports/virtual_context_memory_status.json",
-        "reports/vcm_runtime_claim_readiness.json"
+        "reports/vcm_runtime_claim_readiness.json",
+        "reports/vcm_context_governor.json",
+        "reports/vcm_task_context_bridge.json",
+        "reports/vcm_consumer_integration_gate.json",
+        "reports/vcm_native_runtime_probe.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -4805,12 +4842,17 @@
         },
         "state_compatibility": {
           "reads": [
-            "configs/project_manifest_registry.json",
-            "scripts/virtual_context_memory.py"
+          "configs/project_manifest_registry.json",
+          "scripts/virtual_context_memory.py",
+          "scripts/vcm_consumer_abi.py"
           ],
           "writes": [
-            "reports/virtual_context_memory_status.json",
-            "reports/vcm_runtime_claim_readiness.json"
+          "reports/virtual_context_memory_status.json",
+          "reports/vcm_runtime_claim_readiness.json",
+          "reports/vcm_context_governor.json",
+          "reports/vcm_task_context_bridge.json",
+          "reports/vcm_consumer_integration_gate.json",
+          "reports/vcm_native_runtime_probe.json"
           ],
           "migration_required": false,
           "rollback_mode": "route_containment_plus_registered_successor_or_prior_evidence_view"
@@ -4822,13 +4864,21 @@
         "evidence_binding": {
           "evidence_outputs": [
             "reports/virtual_context_memory_status.json",
-            "reports/vcm_runtime_claim_readiness.json"
+            "reports/vcm_runtime_claim_readiness.json",
+            "reports/vcm_context_governor.json",
+            "reports/vcm_task_context_bridge.json",
+            "reports/vcm_consumer_integration_gate.json",
+            "reports/vcm_native_runtime_probe.json"
           ],
-          "verification_command": "python3 scripts/virtual_context_memory.py && python3 -m py_compile scripts/virtual_context_memory.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
-            "scripts/virtual_context_memory.py"
+            "scripts/virtual_context_memory.py",
+            "scripts/vcm_consumer_abi.py",
+            "scripts/vcm_consumer_integration_gate.py",
+            "scripts/vcm_task_context_bridge.py",
+            "scripts/vcm_native_runtime_probe.py"
           ]
         },
         "observability_binding": {
@@ -7441,9 +7491,12 @@
         "reports/vcm_context_governor.json",
         "reports/vcm_context_governor.md",
         "reports/vcm_mission_brief.json",
-        "reports/vcm_deletion_closure.json"
+        "reports/vcm_deletion_closure.json",
+        "reports/vcm_task_context_bridge.json",
+        "reports/vcm_consumer_integration_gate.json",
+        "reports/vcm_native_runtime_probe.json"
       ],
-      "verification_command": "python3 scripts/vcm_release_conformance_audit.py && python3 scripts/vcm_context_governor_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/vcm_release_conformance_audit.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py && python3 tests/test_vcm_consumer_abi.py",
       "cleanup_policy": "VCM is the memory substrate; reference packet lives under docs/reference, while benchmark payload quarantines remain generated evidence, not source",
       "abstraction_id": "context_memory_contract",
       "major_surface": true,

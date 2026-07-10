@@ -16,6 +16,7 @@ import math
 from pathlib import Path
 from typing import Any
 
+import vcm_consumer_abi
 from neural_seed_code_proposer_comparator import stable_hash  # noqa: E402
 from neural_seed_static_coherence import (  # noqa: E402
     candidate_static_coherence,
@@ -37,42 +38,29 @@ DEFAULT_VCM_CONTEXT_GOVERNOR = ROOT / "reports" / "vcm_context_governor.json"
 
 
 def vcm_context_governor_receipt(path: Path = DEFAULT_VCM_CONTEXT_GOVERNOR) -> dict[str, Any]:
-    report: dict[str, Any] = {}
-    if path.exists():
-        try:
-            loaded = json.loads(path.read_text(encoding="utf-8"))
-            if isinstance(loaded, dict):
-                report = loaded
-        except json.JSONDecodeError:
-            report = {}
-    summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
-    trigger_state = str(report.get("trigger_state") or "")
-    hard_gap_count = int_number(summary.get("hard_gap_count"))
-    ready = bool(
-        path.exists()
-        and trigger_state == "GREEN"
-        and hard_gap_count == 0
-        and str(summary.get("mission_brief_status") or "") == "ready"
-        and str(summary.get("deletion_closure_status") or "") == "closed"
-        and str(summary.get("scif_status") or "") == "ready"
+    packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id="neural_seed_candidate_generation",
+        purpose="direct_generation",
+        read_set=[rel_path(path)],
+        write_set=["reports/neural_seed_token_decoder_comparator.json", "reports/neural_seed_token_decoder_candidates.jsonl"],
+        authority_ceiling=["local_model_decode", "governed_context_read"],
+        permitted_uses=["model_decode_context", "candidate_provenance", "audit_replay"],
+        governor_path=path,
+        taint_labels=["private_generation_context", "raw_text_not_staged"],
+        deletion_obligations=["invalidate_candidates_when_context_is_revoked"],
+        audit_refs=["scripts/neural_seed_candidate_generation.py"],
     )
-    receipt_basis = {
-        "path": rel_path(path),
-        "created_utc": report.get("created_utc"),
-        "trigger_state": trigger_state,
-        "summary": summary,
-    }
+    governor = packet["governor_receipt"]
+    summary = governor.get("summary") if isinstance(governor.get("summary"), dict) else {}
     return {
-        "policy": str(report.get("policy") or ""),
+        **governor,
         "report": rel_path(path),
-        "receipt_id": f"direct_generator_vcm_governor-{stable_payload_hash(receipt_basis)[:16]}",
-        "trigger_state": trigger_state,
-        "ready": ready,
-        "hard_gap_count": hard_gap_count,
-        "warning_count": int_number(summary.get("warning_count")),
+        "ready": bool(packet.get("ready")),
+        "hard_gap_count": int_number(summary.get("hard_gap_count")),
         "mission_brief_status": str(summary.get("mission_brief_status") or ""),
         "deletion_closure_status": str(summary.get("deletion_closure_status") or ""),
         "scif_status": str(summary.get("scif_status") or ""),
+        "consumer_abi": packet,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -160,7 +148,9 @@ def direct_generator_viea_records(
         "external_inference_calls": 0,
         "fallback_return_count": 0,
     }
-    return [
+    abi_packet = receipt.get("consumer_abi") if isinstance(receipt.get("consumer_abi"), dict) else {}
+    abi_records = abi_packet.get("records") if isinstance(abi_packet.get("records"), list) else []
+    return list(abi_records) + [
         {
             **common,
             "record_type": "context_transaction_record",

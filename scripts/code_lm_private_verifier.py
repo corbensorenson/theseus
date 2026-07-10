@@ -30,6 +30,7 @@ DEFAULT_VCM_CONTEXT_GOVERNOR = ROOT / "reports" / "vcm_context_governor.json"
 
 from real_code_benchmark_support import runtime_tmp_dir as benchmark_runtime_tmp_dir  # noqa: E402
 import viea_spine_records  # noqa: E402
+import vcm_consumer_abi  # noqa: E402
 
 PRIVATE_STATIC_VERIFICATION_CACHE: dict[str, dict[str, Any]] = {}
 PRIVATE_SANDBOX_VERIFICATION_CACHE: dict[str, dict[str, Any]] = {}
@@ -637,35 +638,45 @@ def private_verification_trace(
 
 
 def vcm_context_governor_receipt(path: Path = DEFAULT_VCM_CONTEXT_GOVERNOR) -> dict[str, Any]:
-    payload = read_json(path, {})
-    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
-    mission = payload.get("mission_brief") if isinstance(payload.get("mission_brief"), dict) else {}
-    deletion = payload.get("deletion_closure") if isinstance(payload.get("deletion_closure"), dict) else {}
-    scif = payload.get("digital_scif") if isinstance(payload.get("digital_scif"), dict) else {}
+    packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id="code_lm_private_verifier",
+        purpose="verification",
+        read_set=["reports/vcm_context_governor.json"],
+        write_set=["reports/private_verifier_spine_smoke.json"],
+        authority_ceiling=["local_private_verifier", "governed_context_read"],
+        permitted_uses=["private_candidate_verification", "correctness_labeling", "audit_replay"],
+        governor_path=path,
+        context_refs=[{
+            "kind": "ephemeral_hash_set",
+            "ref": "vcm://theseus/verifier/candidate-attempt-hashes@current-run",
+            "required": True,
+            "exists": True,
+            "taint_labels": ["private_verifier_metadata"],
+            "contradiction_refs": [],
+        }],
+        taint_labels=["private_verifier_metadata", "raw_candidate_text_not_embedded_in_context_packet"],
+        deletion_obligations=["invalidate_verifier_context_when_source_context_is_revoked"],
+        audit_refs=["scripts/code_lm_private_verifier.py"],
+    )
+    governor = packet["governor_receipt"]
+    summary = governor.get("summary") if isinstance(governor.get("summary"), dict) else {}
     receipt = {
-        "policy": str(payload.get("policy") or ""),
+        **governor,
         "report": rel(path),
-        "receipt_id": viea_spine_records.stable_id("private_verifier_vcm_governor", payload.get("created_utc"), summary),
-        "trigger_state": str(payload.get("trigger_state") or ""),
+        "trigger_state": str(governor.get("trigger_state") or ""),
         "hard_gap_count": int(summary.get("hard_gap_count") or 0),
         "warning_count": int(summary.get("warning_count") or 0),
-        "mission_brief_status": str(summary.get("mission_brief_status") or mission.get("status") or ""),
-        "mission_brief_omission_count": int(summary.get("mission_brief_omission_count") or len(list_values(mission.get("omissions")))),
-        "deletion_closure_status": str(summary.get("deletion_closure_status") or deletion.get("status") or ""),
-        "deletion_closure_fault_count": int(summary.get("deletion_closure_fault_count") or deletion.get("closure_fault_count") or 0),
-        "scif_status": str(summary.get("scif_status") or scif.get("status") or ""),
+        "mission_brief_status": str(summary.get("mission_brief_status") or ""),
+        "mission_brief_omission_count": int(summary.get("mission_brief_omission_count") or 0),
+        "deletion_closure_status": str(summary.get("deletion_closure_status") or ""),
+        "deletion_closure_fault_count": int(summary.get("deletion_closure_fault_count") or 0),
+        "scif_status": str(summary.get("scif_status") or ""),
+        "consumer_abi": packet,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
     }
-    receipt["ready"] = (
-        receipt["trigger_state"] == "GREEN"
-        and receipt["hard_gap_count"] == 0
-        and receipt["mission_brief_status"] == "ready"
-        and receipt["deletion_closure_status"] == "closed"
-        and receipt["deletion_closure_fault_count"] == 0
-        and receipt["scif_status"] == "ready"
-    )
+    receipt["ready"] = bool(packet.get("ready"))
     return receipt
 
 
@@ -837,7 +848,7 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
         "verification_bandwidth": verification_bandwidth,
         "governance_tax": governance_tax,
     }
-    return {
+    records = {
         "claim_record": {
             **common,
             "record_type": "claim_record",
@@ -943,7 +954,7 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
             "transaction_id": viea_spine_records.stable_id("private_verifier_context_txn", run_id, governor.get("receipt_id")),
             "operation": "read",
             "mounts": ["vcm_context_governor", "private_verifier_attempt_metadata"],
-            "read_set": ["reports/vcm_context_governor.json", "private_verifier_candidate_attempt_hashes"],
+            "read_set": ["reports/vcm_context_governor.json", "vcm://theseus/verifier/candidate-attempt-hashes@current-run"],
             "write_set": ["reports/private_verifier_spine_smoke.json"],
             "branch_policy": "verifier_read_only_governed_context",
             "taint_labels": ["private_verifier_metadata", "governed_context_receipt"],
@@ -996,6 +1007,11 @@ def build_private_verifier_records(summary: dict[str, Any]) -> dict[str, Any]:
             "evidence_ref": "reports/private_verifier_spine_smoke.json",
         },
     }
+    abi_packet = governor.get("consumer_abi") if isinstance(governor.get("consumer_abi"), dict) else {}
+    for index, row in enumerate(abi_packet.get("records", []) if isinstance(abi_packet.get("records"), list) else []):
+        if isinstance(row, dict):
+            records[f"vcm_consumer_abi_{index:02d}"] = row
+    return records
 
 
 def private_verifier_verification_bandwidth_record(summary: dict[str, Any]) -> dict[str, Any]:

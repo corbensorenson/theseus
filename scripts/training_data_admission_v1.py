@@ -18,6 +18,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import vcm_consumer_abi
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT = ROOT / "reports" / "training_data_admission_v1.json"
@@ -910,18 +912,23 @@ def gate(name: str, passed: bool, evidence: Any, severity: str) -> dict[str, Any
 
 
 def vcm_context_governor_receipt(path: Path) -> dict[str, Any]:
-    report = read_json(path)
-    summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
-    ready = (
-        report.get("trigger_state") == "GREEN"
-        and int_or(summary.get("hard_gap_count")) == 0
-        and summary.get("context_resolver_status") == "ready"
-        and int_or(summary.get("context_resolver_passed_count")) == int_or(summary.get("context_resolver_request_count"))
+    packet = vcm_consumer_abi.build_consumer_packet(
+        consumer_id="training_data_admission_v1",
+        purpose="training_admission",
+        read_set=[rel(path), "data/training_data", "data/training_sources"],
+        write_set=["reports/training_data_admission_v1.json", "data/training_sources/training_data_admission_v1.json"],
+        authority_ceiling=["local_training_metadata_read", "governed_context_read"],
+        permitted_uses=["training_source_metadata_admission", "lineage_accounting", "audit_replay"],
+        governor_path=path,
+        taint_labels=["training_metadata", "raw_text_not_staged"],
+        deletion_obligations=["exclude_raw_user_text", "exclude_public_benchmark_payloads", "propagate_source_revocation"],
+        audit_refs=["scripts/training_data_admission_v1.py"],
     )
+    governor = packet["governor_receipt"]
+    summary = governor.get("summary") if isinstance(governor.get("summary"), dict) else {}
     receipt_payload = {
+        **governor,
         "path": rel(path),
-        "trigger_state": report.get("trigger_state"),
-        "created_utc": report.get("created_utc"),
         "hard_gap_count": int_or(summary.get("hard_gap_count")),
         "context_resolver_status": summary.get("context_resolver_status"),
         "context_resolver_passed_count": int_or(summary.get("context_resolver_passed_count")),
@@ -933,10 +940,10 @@ def vcm_context_governor_receipt(path: Path) -> dict[str, Any]:
     return {
         **receipt_payload,
         "record_type": "vcm_context_governor_receipt",
-        "receipt_id": stable_id("training_data_admission:vcm:" + stable_hash(receipt_payload)),
-        "ready": ready,
+        "ready": bool(packet.get("ready")),
+        "consumer_abi": packet,
         "required_for": "training_data_admission",
-        "required_escalation": "refresh_vcm_context_governor_before_training_admission" if not ready else "none",
+        "required_escalation": "refresh_vcm_context_governor_before_training_admission" if not packet.get("ready") else "none",
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -959,7 +966,9 @@ def training_data_vcm_records(receipt: dict[str, Any]) -> list[dict[str, Any]]:
         "raw_prompt_stored": False,
         "raw_private_text_stored": False,
     }
-    return [
+    abi_packet = receipt.get("consumer_abi") if isinstance(receipt.get("consumer_abi"), dict) else {}
+    abi_records = abi_packet.get("records") if isinstance(abi_packet.get("records"), list) else []
+    return list(abi_records) + [
         {
             **common,
             "record_type": "authority_use_receipt",
@@ -1044,6 +1053,21 @@ def training_data_vcm_records(receipt: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def manifest_payload(report: dict[str, Any]) -> dict[str, Any]:
+    full_receipt = report.get("vcm_context_governor_receipt")
+    full_receipt = dict(full_receipt) if isinstance(full_receipt, dict) else {}
+    receipt_fields = (
+        "record_type", "receipt_id", "consumer_id", "path", "content_hash", "created_utc",
+        "trigger_state", "ready", "hard_gap_count", "context_resolver_status",
+        "context_resolver_passed_count", "context_resolver_request_count",
+        "context_resolver_materialized_count", "context_resolver_typed_fault_count",
+        "context_resolver_viea_record_count", "required_for", "required_escalation",
+        "public_training_rows_written", "external_inference_calls", "fallback_return_count",
+        "raw_prompt_stored", "raw_private_text_stored", "non_claim",
+    )
+    receipt = {key: full_receipt.get(key) for key in receipt_fields if key in full_receipt}
+    packet = full_receipt.get("consumer_abi")
+    if isinstance(packet, dict):
+        receipt["consumer_abi"] = vcm_consumer_abi.compact_consumer_packet(packet)
     return {
         "policy": "project_theseus_training_data_admission_manifest_v1",
         "created_utc": report.get("created_utc"),
@@ -1057,7 +1081,7 @@ def manifest_payload(report: dict[str, Any]) -> dict[str, Any]:
         "open_code_public_corpus_candidates": report.get("open_code_public_corpus_candidates", []),
         "public_open_training_allowed": bool((report.get("summary") or {}).get("public_open_training_allowed")),
         "public_benchmark_training_allowed": False,
-        "vcm_context_governor_receipt": report.get("vcm_context_governor_receipt", {}),
+        "vcm_context_governor_receipt": receipt,
         "external_inference_calls": 0,
     }
 

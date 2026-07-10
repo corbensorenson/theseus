@@ -309,13 +309,28 @@
     },
     {
       "id": "roadmap.vcm_context_governor_v1",
-      "objective": "Add VCM verification-bandwidth and context adequacy governance: chunk scoring, mission brief omissions, taint/SCIF handling, deletion closure, and fail-closed context decisions.",
+      "objective": "Make VCM the universal fail-closed context ABI across assistant, planner, verifier, tool, training-data, candidate-generation, and fanout paths, with source-bound certificates, copy-on-write transactions, leases, typed faults, causal on/off evidence, and an exact-backend MLX-LM KV-cache lifecycle proof.",
       "roadmap_refs": [
-        "roadmap.md:1873"
+        "roadmap.md:373"
       ],
       "allowed_files": [
         "configs/vcm_context_governor.json",
+        "configs/roadmap_implementation_matrix.json",
         "scripts/vcm_context_governor_gate.py",
+        "scripts/vcm_consumer_abi.py",
+        "scripts/vcm_consumer_integration_gate.py",
+        "scripts/vcm_task_context_bridge.py",
+        "scripts/vcm_native_runtime_probe.py",
+        "scripts/macos_dependency_bootstrap.py",
+        "scripts/theseus_assistant_runtime.py",
+        "scripts/theseus_plan_compiler.py",
+        "scripts/code_lm_private_verifier.py",
+        "scripts/code_lm_train_once_fanout.py",
+        "scripts/neural_seed_candidate_generation.py",
+        "scripts/theseus_deterministic_tool_substrate.py",
+        "scripts/training_data_admission_v1.py",
+        "tests/test_vcm_consumer_abi.py",
+        "data/training_sources/training_data_admission_v1.json",
         "configs/project_manifest_registry.json",
         "configs/attd_policy.json",
         "configs/project_steward.json",
@@ -326,7 +341,11 @@
       "allowed_tools": [
         "apply_patch",
         "python3 -m py_compile",
+        "python3 tests/test_vcm_consumer_abi.py",
         "python3 scripts/vcm_context_governor_gate.py",
+        "python3 scripts/vcm_task_context_bridge.py",
+        "python3 scripts/vcm_native_runtime_probe.py",
+        "python3 scripts/vcm_consumer_integration_gate.py",
         "python3 scripts/theseus_project_registry.py --gate",
         "python3 scripts/attd_analyzer.py"
       ],
@@ -340,18 +359,26 @@
         "VCM context-governor config",
         "VCM context-governor report",
         "mission brief report",
-        "deletion closure report"
+        "deletion closure report",
+        "universal consumer ABI integration report",
+        "exact-backend MLX-LM KV-cache lifecycle report"
       ],
       "acceptance_tests": [
         "python3 -m py_compile scripts/vcm_context_governor_gate.py",
+        "python3 tests/test_vcm_consumer_abi.py",
         "python3 scripts/vcm_context_governor_gate.py",
+        "python3 scripts/vcm_task_context_bridge.py",
+        "python3 scripts/vcm_native_runtime_probe.py",
+        "python3 scripts/vcm_consumer_integration_gate.py",
         "python3 scripts/theseus_project_registry.py --gate"
       ],
       "evidence_requirements": [
         "mission brief records omissions and authority limits",
         "tainted external notes cannot self-pin",
         "deletion closure emits closed or fault states",
-        "VCM context governance makes no native KV-cache parity claim"
+        "every canonical consumer independently validates the same VCM packet ABI",
+        "expected-invalid authority, mutation, taint, best-effort, fallback, stale, missing, contradictory, over-compressed, revoked, and deleted cases fail closed",
+        "MLX runtime evidence is limited to the exact tested MLX-LM KVCache lifecycle and does not imply CUDA, Metal-kernel, or cross-backend parity"
       ],
       "authority_ceiling": "vcm_context_governance_only_no_training_no_runtime_external_inference",
       "rollback_path": "Remove VCM context-governor files from the VCM registry surface and keep generated reports as historical evidence.",
@@ -360,7 +387,7 @@
         "Context adequacy does not prove code-generation transfer.",
         "Mission briefs do not expand authority."
       ],
-      "status": "queued"
+      "status": "completed"
     },
     {
       "id": "roadmap.hive_policy_first_scheduler_v1",
@@ -1187,7 +1214,7 @@
       "id": "module.vcm_memory",
       "surface_id": "vcm_memory",
       "problem": "VCM must be the default context ABI with taint, adequacy, transactions, snapshots, and deletion closure.",
-      "interface": "scripts/virtual_context_memory.py and VCM bridge scripts.",
+      "interface": "scripts/vcm_consumer_abi.py is the stable consumer contract; scripts/virtual_context_memory.py and registered bridge/runtime consumers provide governed state and exact-backend adapters.",
       "invariants": [
         "context does not erase authority labels",
         "public artifacts remain tainted",
@@ -1198,15 +1225,23 @@
         "summary erases taint",
         "deleted data survives through cache"
       ],
-      "minimal_implementation": "VCM bridge report and context transaction reports.",
+      "minimal_implementation": "One independently validated packet contract across every canonical consumer, compact receipts for duplicated manifests, exact source hashes, representation certificates, copy-on-write transactions, leases, typed faults, causal on/off accounting, and exact-backend native cache evidence.",
       "validation_commands": [
-        "python3 scripts/vcm_task_context_bridge.py"
+        "python3 tests/test_vcm_consumer_abi.py",
+        "python3 scripts/vcm_context_governor_gate.py",
+        "python3 scripts/vcm_task_context_bridge.py",
+        "python3 scripts/vcm_native_runtime_probe.py",
+        "python3 scripts/vcm_consumer_integration_gate.py"
       ],
       "evidence_refs": [
-        "reports/vcm_task_context_bridge.json"
+        "reports/vcm_task_context_bridge.json",
+        "reports/vcm_consumer_integration_gate.json",
+        "reports/vcm_native_runtime_probe.json",
+        "reports/vcm_context_recovery_benchmark.json"
       ],
       "non_claims": [
-        "VCM semantic cache is not native KV parity"
+        "The private VCM on/off ablation is integration evidence, not broad public capability.",
+        "Exact MLX-LM KVCache lifecycle evidence is not CUDA, custom Metal-kernel, or cross-accelerator parity."
       ],
       "deprecation_route": "replace through context_memory_contract"
     },
@@ -6044,6 +6079,27 @@
         "refresh volatile resource evidence when its explicit TTL expires",
         "retain supporting history without periodic regeneration",
         "reject missing, invalid, stale, or acceptance-rejected route receipts"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "decision.vcm_universal_consumer_abi_20260710",
+      "target": "context_memory_contract and every canonical VCM consumer",
+      "decision": "require_one_fail_closed_consumer_abi_and_scope_native_cache_claims_to_exact_backend",
+      "reason": "VCM is a core context substrate only when assistant, planner, verifier, tool, training-data, candidate-generation, and fanout consumers independently enforce the same source-bound representation, copy-on-write, lease, taint, deletion, contradiction, compression, and authority contract. The Apple Silicon proof uses a real MLX-LM Llama forward pass and KVCache append/reuse/invalidation lifecycle, but authorizes only that exact backend and does not imply CUDA, custom Metal-kernel, or cross-backend equivalence.",
+      "evidence_refs": [
+        "scripts/vcm_consumer_abi.py",
+        "scripts/vcm_consumer_integration_gate.py",
+        "tests/test_vcm_consumer_abi.py",
+        "reports/vcm_consumer_integration_gate.json",
+        "reports/vcm_native_runtime_probe.json",
+        "reports/vcm_context_recovery_benchmark.json"
+      ],
+      "allowed_next_actions": [
+        "route new context consumers only through the registered ABI",
+        "retain compact receipts in duplicate manifests while preserving one full canonical evidence packet",
+        "extend native cache claims only with exact-backend lifecycle and invalidation evidence",
+        "preserve VCM on/off equal-budget accounting for causal claims"
       ],
       "status": "active"
     }
