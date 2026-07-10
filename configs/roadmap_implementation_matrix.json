@@ -23,6 +23,22 @@
     ],
     "no_claim_boundary": "Claude/AI_book technique recommendations are planning coverage, not evidence. Routers, tools, templates, semantic renderers, fallback bodies, public benchmark artifacts, and external runtime inference remain noncredit for learned generation."
   },
+  "latest_ai_book_reconciliation": {
+    "date": "2026-07-09",
+    "book_manifest_chapter_count": 45,
+    "new_chapter_id": "data-engines-continual-learning-and-unlearning",
+    "source_state": "AI_book working tree contains the new conceptual chapter and manifest/outline/source updates; Theseus maps the current local manifest without claiming those book changes are published or empirical.",
+    "decision": "Route the new chapter into the existing teacher_and_data_governance, VCM, public-calibration, and claim-evidence phases. Do not create a sidecar data lane.",
+    "current_theseus_evidence": "training_data_admission_v1 already provides file-level metadata/hash/license/provenance/exact-overlap admission and public-benchmark quarantine, but it lacks the chapter's per-candidate lifecycle receipt, semantic-leakage controls, continual-learning policy comparison, and descendant deletion closure.",
+    "new_required_work": [
+      "per-candidate DataAdmissionReceipt and lineage graph",
+      "replacement versus accumulation versus replay versus quarantine versus retraining workload",
+      "semantic-overlap and provenance-adversary controls",
+      "recursive-synthetic coverage and tail-health diagnostics",
+      "descendant-aware revocation and deletion closure"
+    ],
+    "no_claim_boundary": "Receipt completeness is bounded eligibility, not data quality, privacy compliance, verified forgetting, training success, public decontamination proof, or capability promotion."
+  },
   "weekly_focus_decision": {
     "date": "2026-07-06",
     "recommendation": "Spend the remaining weekly token budget primarily on Project Theseus while keeping AI_book as the specification, evidence ledger, and publication surface.",
@@ -263,6 +279,23 @@
       "acceptance_gate": "Cyclic memory, KV-cache ring buffers, recurrence schedules, sparse-attention coverage, circulant/block-cyclic mixers, and MultiCoil/RoPE phase features are tested against dense/LoRA/RoPE/Mamba controls with matched data, matched active compute, negative controls, residuals, and falsification criteria.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Circle proof-carrying fixtures prove only their formal boundary; they do not imply model quality, transfer, speed, memory, or ASI capability."
+    },
+    {
+      "backlog_id": "planned.data_engine_continual_learning_unlearning_v1",
+      "source_basis": "AI_book Data Engines, Continual Learning, and Unlearning chapter plus Bourtoule, Shumailov, Gerstgrasser, and pinned Theseus synthetic-curation source notes",
+      "technique_family": "data_lifecycle_governance",
+      "owned_phase_refs": [
+        3,
+        7,
+        12,
+        14
+      ],
+      "track_id": "C_capability_research_survival_lane",
+      "status": "planned",
+      "dependency": "extends the existing registered training-data admission path; requires per-candidate receipt/lineage records, frozen private or public-safe policy workload, independent contamination evaluation, and descendant closure inventory",
+      "acceptance_gate": "Compare replacement, accumulation, targeted replay, quarantine, and retraining on one frozen workload with utility, forgetting, tail coverage, calibration, freshness, semantic contamination, privacy/revocation risk, storage/compute, and deletion cost; replay a negative deletion-propagation case across declared descendants.",
+      "support_state_target": "synthetic-test-backed",
+      "no_claim_boundary": "A complete data-admission receipt proves bounded eligibility only. It cannot by itself establish data quality, privacy compliance, safe synthetic recursion, verified forgetting, training success, benchmark cleanliness, or capability promotion."
     }
   ],
   "out_of_scope_now": [
@@ -874,13 +907,14 @@
     {
       "phase": 7,
       "title": "Teacher And Data Governance",
-      "status": "wired",
+      "status": "partial",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-7",
       "ai_book_source_basis": [
         "teacher bill trends to zero",
         "provenance ledgers",
-        "data boundaries"
+        "data boundaries",
+        "AI_book data engines, continual learning, and unlearning"
       ],
       "registry_surface_id": "teacher_and_data_governance",
       "abstraction_id": "teacher_data_governance_contract",
@@ -896,7 +930,10 @@
         "teacher_share_ledger_summary",
         "assistant_teacher_policy_packet",
         "control_plane_teacher_gate",
-        "governance_right_receipt"
+        "governance_right_receipt",
+        "data_admission_receipt",
+        "continual_learning_policy_decision",
+        "descendant_deletion_closure"
       ],
       "required_records": [
         "teacher_row_receipt",
@@ -906,10 +943,16 @@
         "teacher_share_ledger_summary",
         "teacher_share_daily_trend",
         "governance_right",
-        "failure_boundary"
+        "failure_boundary",
+        "data_admission_receipt",
+        "data_lineage_edge",
+        "data_lifecycle_policy_decision",
+        "continual_learning_comparison",
+        "descendant_deletion_closure_receipt"
       ],
       "required_gates": [
         "python3 scripts/teacher_distillation_gate.py",
+        "python3 scripts/training_data_admission_v1.py",
         "python3 scripts/training_data_lineage_audit.py",
         "python3 scripts/governance_rights_receipt_suite.py",
         "python3 scripts/viea_spine_record_gate.py --gate",
@@ -920,6 +963,7 @@
       "required_docs": [
         "AGENTS.md",
         "docs/TRAINING_EVALS_BENCHMARKS.md",
+        "docs/SYNTHETIC_DATA_CURATION.md",
         "docs/PROJECT_STATE.md",
         "docs/PROJECT_REGISTRY.md"
       ],
@@ -927,14 +971,21 @@
         "reports/teacher_distillation_gate.json",
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
+        "reports/training_data_admission_v1.json",
+        "data/training_sources/training_data_admission_v1.json",
         "reports/governance_rights_receipt_suite.json",
         "reports/hive_operator_status.json",
         "reports/viea_spine_record_gate.json",
         "reports/theseus_control_plane.json",
         "reports/theseus_assistant_teacher_share_smoke.json"
       ],
-      "missing_items": [],
-      "smallest_next_patch": "Once additional governed teacher/self-generated cycles exist, compute and display the multi-cycle trend delta in the existing operator-visible teacher_governance surface.",
+      "missing_items": [
+        "upgrade file-level metadata admission into a versioned per-candidate DataAdmissionReceipt carrying authority/license, provenance class, real/synthetic lineage, permitted use, split exclusions, exact and semantic contamination checks, retention, deletion scope, evaluation refs, residuals, bounded decision, and explicit non-claims",
+        "build a frozen continual-learning workload comparing replacement, accumulation, targeted replay, quarantine, and retraining on utility, forgetting, coverage/tail retention, calibration, freshness, privacy/revocation risk, storage/compute, and deletion cost",
+        "propagate revocation and deletion closure through source rows, transforms, datasets, checkpoints, adapters, caches, VCM/retrieval indexes, distilled artifacts, reports, and publications while retaining every unverified descendant state",
+        "add semantic-overlap/provenance-adversary controls and recursive synthetic-share/coverage diagnostics so exact-hash cleanliness cannot be mistaken for leakage safety or model-collapse safety"
+      ],
+      "smallest_next_patch": "Extend the existing registered training_data_admission_v1 path in place with a canonical per-candidate DataAdmissionReceipt and lineage graph, then run a small frozen replacement-versus-accumulation-versus-replay workload plus a negative descendant-deletion closure fixture. Keep receipt completeness separate from data quality, privacy, unlearning, and capability promotion.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/governance_rights_receipt_suite.py",
@@ -950,7 +1001,7 @@
         "reports/theseus_control_plane.json gates.teacher_share_ledger_ready.passed=true",
         "reports/theseus_assistant_teacher_share_smoke.json gates.teacher_share_ledger_metric_ready.passed=true"
       ],
-      "completion_rule": "Teacher use can improve training safely while zero external inference at runtime and public benchmark firewalls remain enforced."
+      "completion_rule": "Teacher use and continual data intake can improve training only through receipt-bound authority, provenance, contamination, lifecycle, independent evaluation, and deletion-closure evidence, while zero external inference at runtime and public benchmark firewalls remain enforced."
     },
     {
       "phase": 8,
@@ -2313,14 +2364,15 @@
       "track_id": "C_capability_research_survival_lane",
       "name": "Capability Research Survival Lane",
       "status": "bounded_on_direct_generator_wall",
-      "job": "Push the practical transformer/hybrid generator with concrete Part III techniques from the ASI Stack, starting with direct prompt/signature semantic/action body-token construction because the first DPO shadow update failed behaviorally. After non-fallback learned candidates exist beyond narrow simple-return replay, retry offline DPO/IPO preference updates, bounded GRPO/RLVR verifier-reward loops, MTP, generate-verify-repair, lookahead/diffusion generation modes, process/verifier rewards, and dense-vs-sparse-MoE/scale ablations, while keeping SymLiquid protected as a matched-compute discovery comparator and preventing routers/templates/tools from counting as learned generation.",
+      "job": "Push the practical transformer/hybrid generator with a receipt-bound data engine and concrete Part III techniques from the ASI Stack. Start with direct prompt/signature semantic/action body-token construction because the first DPO shadow update failed behaviorally; in parallel, replace file-level admission with per-candidate provenance/lineage/lifecycle receipts and a controlled continual-learning policy workload. After non-fallback learned candidates exist beyond narrow simple-return replay, retry offline DPO/IPO preference updates, bounded GRPO/RLVR verifier-reward loops, MTP, generate-verify-repair, lookahead/diffusion generation modes, process/verifier rewards, and dense-vs-sparse-MoE/scale ablations, while keeping SymLiquid protected as a matched-compute discovery comparator and preventing routers/templates/tools from counting as learned generation.",
       "primary_phases": [
+        7,
         10,
         11,
         12
       ],
       "support_state_target": "synthetic-test-backed",
-      "success_test": "A substrate-adoption or policy-update record shows one technique moves private heldout verifier behavior or accepted-output quality under matched controls, or records falsification and stops that technique without spawning another marker/slot/guard family."
+      "success_test": "Receipt-bound data and a substrate-adoption or policy-update record show one technique moves private heldout verifier behavior or accepted-output quality under matched controls, while contamination, lineage, recursive-synthetic coverage, and deletion residuals remain explicit; otherwise record falsification and stop that technique without spawning another marker/slot/guard family."
     },
     {
       "track_id": "D_repo_stewardship_and_evidence_hygiene",
@@ -5268,6 +5320,75 @@
     },
     {
       "chapter_ordinal": 39,
+      "chapter_id": "data-engines-continual-learning-and-unlearning",
+      "chapter_title": "Data Engines, Continual Learning, and Unlearning",
+      "part_id": "evidence-implementation-living-book",
+      "part_title": "Part IV - Evidence, Implementation, and the Living Book",
+      "book_file": "chapters/data-engines-continual-learning-and-unlearning.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A viable first slice is a versioned data-admission receipt, a public-safe synthetic fixture, deterministic routing for missing controls, and a lineage ledger that keeps every candidate experimental until an independently evaluated training or deletion path is accepted.",
+      "book_beyond_state_of_art": "The mature target is a stack-wide data governance plane that treats every learning input, synthetic descendant, replay item, deletion request, evaluation split, and derived model artifact as an auditable lifecycle object. It measures workload-specific coverage, contamination, utility, cost, privacy, freshness, and deletion propagation; compares replacement, accumulation, replay, quarantine, and retraining policies; and requires verifier-backed lineage closure before a result can affect deployment or belief.",
+      "book_interfaces": [
+        "Policy optimization consumes only receipt-bound feedback and data candidates.",
+        "Artifact graphs bind datasets, generators, evaluations, checkpoints, derived artifacts, and deletion requests.",
+        "Benchmark ratchets provide split exclusions, contamination probes, regressions, and promotion blockers.",
+        "VCM and procedural memory consume governed artifacts with permitted-use, retention, and revocation boundaries.",
+        "SCF and evidence ledgers retain authority over deployment and claim promotion after data admission."
+      ],
+      "book_invariants": [
+        "Ordinary eligibility requires provenance, authority, split exclusions, contamination checks, retention, deletion scope, evaluation refs, and residuals.",
+        "Synthetic lineage and replacement, accumulation, replay, or quarantine policy remain visible through later decisions.",
+        "A deletion request is not verified forgetting until descendant scope and verification result are recorded.",
+        "Data admission cannot independently promote a learning, benchmark, privacy, safety, or capability claim."
+      ],
+      "book_failure_modes": [
+        "Provenance laundering through transformation, distillation, or mixtures.",
+        "Exact-overlap checks that miss semantic leakage or distributional shift.",
+        "Recursive synthetic replacement loses tail coverage or accumulation retains harmful, stale, private, or revoked data.",
+        "Deletion theater leaves checkpoints, adapters, caches, retrieval, distilled models, or publications unverified.",
+        "Promotion laundering treats receipt completeness as model quality or unlearning evidence."
+      ],
+      "codex_test_count": 3,
+      "representative_codex_tests": [
+        "Data-admission receipt schema fixture",
+        "Data-admission route proof",
+        "Continual-learning and deletion workload"
+      ],
+      "primary_track_id": "C_capability_research_survival_lane",
+      "phase_refs": [
+        3,
+        7,
+        12,
+        14
+      ],
+      "implementation_priority": "core_before_training",
+      "minimum_theseus_slice": "Extend the registered training_data_admission_v1 path with a per-candidate DataAdmissionReceipt, lifecycle/lineage ledger, expected-invalid routes, and a public-safe frozen continual-learning/deletion workload without promoting any data or model claim.",
+      "beyond_sota_theseus_endpoint": "A stack-wide descendant-aware data engine governs every learning input and derived artifact, compares lifecycle policies under workload-specific utility, coverage, contamination, privacy, freshness, cost, and revocation metrics, and requires independently replayed lineage closure before deployment or belief changes.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "partial_reference_slice",
+      "required_gate_or_fixture": "Data-admission receipt schema fixture plus continual-learning and descendant-deletion workload",
+      "required_records_or_receipts": [
+        "data_admission_receipt",
+        "data_lineage_edge",
+        "license_receipt",
+        "leakage_audit_receipt",
+        "context_transaction",
+        "data_lifecycle_policy_decision",
+        "continual_learning_comparison",
+        "descendant_deletion_closure_receipt",
+        "evidence_transition_record",
+        "failure_boundary"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "receipt completeness is not data-quality, privacy, unlearning, or capability evidence",
+        "source deletion is not proof of parametric forgetting",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 40,
       "chapter_id": "artifact-steward-agents-and-living-project-governance",
       "chapter_title": "Artifact Steward Agents and Living Project Governance",
       "part_id": "evidence-implementation-living-book",
@@ -5336,7 +5457,7 @@
       ]
     },
     {
-      "chapter_ordinal": 40,
+      "chapter_ordinal": 41,
       "chapter_id": "integrated-reference-architecture",
       "chapter_title": "Integrated Reference Architecture",
       "part_id": "evidence-implementation-living-book",
@@ -5397,7 +5518,7 @@
       ]
     },
     {
-      "chapter_ordinal": 41,
+      "chapter_ordinal": 42,
       "chapter_id": "project-theseus-as-report-first-implementation-reference",
       "chapter_title": "Project Theseus as Report-First Implementation Reference",
       "part_id": "evidence-implementation-living-book",
@@ -5464,7 +5585,7 @@
       ]
     },
     {
-      "chapter_ordinal": 42,
+      "chapter_ordinal": 43,
       "chapter_id": "prototype-roadmap",
       "chapter_title": "Prototype Roadmap",
       "part_id": "evidence-implementation-living-book",
@@ -5524,7 +5645,7 @@
       ]
     },
     {
-      "chapter_ordinal": 43,
+      "chapter_ordinal": 44,
       "chapter_id": "living-book-methodology",
       "chapter_title": "Living Book Methodology",
       "part_id": "evidence-implementation-living-book",
@@ -5580,7 +5701,7 @@
       ]
     },
     {
-      "chapter_ordinal": 44,
+      "chapter_ordinal": 45,
       "chapter_id": "open-research-agenda-and-bibliography-plan",
       "chapter_title": "Open Research Agenda and Bibliography Plan",
       "part_id": "evidence-implementation-living-book",
@@ -5644,22 +5765,22 @@
   "book_chapter_crosswalk_summary": {
     "policy": "all_authored_book_chapters_mapped_to_theseus_v1",
     "book_manifest": "/Users/corbensorenson/Documents/AI_book/book_structure.json",
-    "book_chapter_count": 44,
+    "book_chapter_count": 45,
     "track_counts": {
       "A_reference_evidence_spine": 10,
       "F_memory_planning_tool_substrate": 12,
       "E_authority_security_rights_kernel": 7,
       "D_repo_stewardship_and_evidence_hygiene": 9,
       "B_product_assistant_usefulness": 1,
-      "C_capability_research_survival_lane": 5
+      "C_capability_research_survival_lane": 6
     },
     "current_state_counts": {
-      "partial_reference_slice": 31,
+      "partial_reference_slice": 32,
       "wired_reference_slice_exists": 11,
       "mapped_with_frozen_dependency": 2
     },
     "support_state_target_counts": {
-      "synthetic-test-backed": 34,
+      "synthetic-test-backed": 35,
       "replayable-reference-backed": 9,
       "empirical-test-backed": 1
     },
