@@ -198,6 +198,16 @@ def scan_code(files: list[Path]) -> tuple[list[dict[str, Any]], list[dict[str, A
                 violations.append(
                     hit(rel, "codex_exec_outside_teacher", codex_match.group(0), "violation")
                 )
+        if rel not in SELF_FILES:
+            claude_match = re.search(
+                r"(?is)(?:subprocess\.(?:run|Popen|check_output|check_call)|os\.(?:system|execv|execve))"
+                r".{0,240}[\"']claude[\"']",
+                text,
+            )
+            if claude_match:
+                violations.append(
+                    hit(rel, "claude_cli_invocation_forbidden", claude_match.group(0), "violation")
+                )
         for name, pattern in ACTIVE_INFERENCE_PATTERNS:
             for match in pattern.finditer(text):
                 item = hit(rel, name, match.group(0), classify(rel, name))

@@ -18,6 +18,10 @@ zero external inference at serving time and a teacher bill that trends to zero.
    runtime serving.
 5. Do not add arbitrary remote execution, public gateway operation, or
    unbounded self-update behavior.
+6. Governed teachers must be OpenAI models accessed through ChatGPT, Codex, or
+   an explicitly approved OpenAI API path. Do not invoke Anthropic or Claude,
+   and never admit their outputs into manifests, ledgers, training data, model
+   checkpoints, evaluations, or project-review workflows.
 
 ## Anti-Cheating Guardrail
 

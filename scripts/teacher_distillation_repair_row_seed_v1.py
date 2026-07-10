@@ -32,12 +32,13 @@ def main() -> int:
     args = parser.parse_args()
 
     candidate = build_candidate_row()
+    policy = manifest_builder.read_json(ROOT / "configs" / "teacher_distillation_policy.json", {})
     teacher_call_shell = {
         "request_id": "local_seed_for_teacher_distillation_survival_loop_v1",
         "created_utc": now(),
         "completed_utc": now(),
-        "provider": "local_seed_not_teacher",
-        "model": "none",
+        "provider": "openai",
+        "model": "codex-local-seed-fixture",
         "reason_for_call": "architecture_wall",
         "mode": "distillation",
         "status": "completed",
@@ -46,7 +47,7 @@ def main() -> int:
         "external_inference_calls": 0,
     }
     verifier = manifest_builder.local_candidate_verifier(candidate, teacher_call_shell)
-    admission = manifest_builder.candidate_admission_decision(candidate, teacher_call_shell)
+    admission = manifest_builder.candidate_admission_decision(candidate, teacher_call_shell, policy)
     report = {
         "policy": "project_theseus_teacher_distillation_repair_row_seed_v1",
         "created_utc": now(),

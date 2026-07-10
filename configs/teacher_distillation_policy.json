@@ -2,6 +2,29 @@
   "policy": "project_theseus_teacher_distillation_policy_v0",
   "purpose": "Permit teacher influence as audited training-time data by default; never as runtime served tokens, public benchmark answers, hidden tests, or unbounded synthetic bulk.",
   "default_state": "governed_training_enabled",
+  "provider_policy": {
+    "allowed_providers": [
+      "openai",
+      "chatgpt",
+      "codex",
+      "codex_cli"
+    ],
+    "allowed_model_prefixes": [
+      "gpt-",
+      "chatgpt",
+      "codex"
+    ],
+    "forbidden_markers": [
+      "anthropic",
+      "claude",
+      "haiku",
+      "opus",
+      "sonnet"
+    ],
+    "require_explicit_provider": true,
+    "require_explicit_model": true,
+    "fail_closed": true
+  },
   "growth_policy": "configs/permissive_growth_policy.json",
   "operator_unlock_flag": "reports/teacher_distillation_operator_unlock.flag",
   "gate_report": "reports/teacher_distillation_gate.json",
@@ -32,7 +55,8 @@
     "teacher_generated_rows_without_manifest",
     "teacher_generated_rows_without_verifier_pass",
     "teacher_generated_rows_without_holdout_exclusion",
-    "teacher_generated_rows_without_teacher_share_accounting"
+    "teacher_generated_rows_without_teacher_share_accounting",
+    "teacher_generated_rows_from_unapproved_provider"
   ],
   "required_before_distillation": [
     "external_inference_audit_ok_or_missing_safe_locked",

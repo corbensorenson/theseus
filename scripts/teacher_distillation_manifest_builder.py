@@ -30,6 +30,7 @@ if str(SCRIPTS) not in sys.path:
 
 from code_lm_private_verifier import evaluate_private_candidates  # noqa: E402
 from neural_seed_code_proposer_comparator import render_private_function  # noqa: E402
+from theseus_archive_resolver import read_jsonl_follow_pointer  # noqa: E402
 
 REQUIRED_ADMISSION_KEYS = [
     "provenance_retained",
@@ -183,7 +184,7 @@ def build_manifest(
             ledger_rows.append(ledger_event(proposal, accepted=False, source_kind="teacher_proposal"))
             blocking_reason_counts["proposal_mode_without_distillation_training_row"] += 1
             continue
-        decision = candidate_admission_decision(candidate, row)
+        decision = candidate_admission_decision(candidate, row, policy)
         public_overlap_hits += int(decision["public_overlap_hits"])
         holdout_overlap_hits += int(decision["holdout_overlap_hits"])
         if decision["accepted"]:
@@ -198,6 +199,8 @@ def build_manifest(
                 "source_kind": "teacher_distillation",
                 "request_id": row.get("request_id"),
                 "teacher_mode": mode,
+                "teacher_provider": row.get("provider"),
+                "teacher_model": row.get("model"),
                 "prompt_sha256": row.get("prompt_sha256") or sha256_text(str(row.get("prompt") or "")),
                 "response_sha256": sha256_text(str(row.get("response_text") or row.get("stdout_tail") or "")),
                 "candidate_sha256": stable_hash(candidate),
@@ -238,6 +241,8 @@ def build_manifest(
     verifier_pass_rate_applicable = accepted_count > 0
     verifier_pass_rate = (verifier_pass_count / accepted_count) if accepted_count else 0.0
     external_inference_calls = sum(teacher_call_external_inference_calls(row) for row in teacher_calls)
+    provider_decisions = [teacher_provider_decision(policy, row) for row in teacher_calls]
+    provider_violation_count = sum(1 for decision in provider_decisions if not decision["accepted"])
     admission_safety_checks = {
         "provenance_retained": True,
         "license_checked": True,
@@ -246,6 +251,7 @@ def build_manifest(
         "public_benchmark_excluded": public_overlap_hits == 0 and all(
             "public_benchmark_content" not in item.get("reject_reasons", []) for item in rejected_candidates
         ),
+        "approved_teacher_provider_only": provider_violation_count == 0,
     }
     admission_checks = {
         **admission_safety_checks,
@@ -278,6 +284,8 @@ def build_manifest(
         "rejected_ledger_row_count": sum(1 for row in ledger_rows if row.get("source_kind") == "teacher_distillation_rejected"),
         "teacher_share_metric_ready": True,
         "external_inference_calls": external_inference_calls,
+        "teacher_provider_violation_count": provider_violation_count,
+        "teacher_provider_policy": policy.get("provider_policy", {}),
         "public_training_rows_written": 0,
         "next_required_input": (
             "A distillation-mode teacher call containing distillation_training_row with every required "
@@ -317,7 +325,11 @@ def build_manifest(
         ),
         "external_inference_calls": external_inference_calls,
     }
-    trigger_state = "GREEN" if accepted_count > 0 and verifier_pass_rate >= 0.95 else "YELLOW"
+    trigger_state = (
+        "RED"
+        if provider_violation_count
+        else ("GREEN" if accepted_count > 0 and verifier_pass_rate >= 0.95 else "YELLOW")
+    )
     return {
         "policy": "project_theseus_teacher_distillation_manifest_builder_v0",
         "created_utc": now(),
@@ -346,6 +358,8 @@ def retained_teacher_call(row: dict[str, Any], index: int) -> dict[str, Any]:
         "created_utc": row.get("created_utc"),
         "status": row.get("status"),
         "mode": row.get("mode"),
+        "teacher_provider": row.get("provider"),
+        "teacher_model": row.get("model"),
         "reason_for_call": row.get("reason_for_call") or response_json.get("reason_for_call"),
         "prompt_sha256": row.get("prompt_sha256") or sha256_text(str(row.get("prompt") or "")),
         "response_sha256": sha256_text(str(response_text)),
@@ -379,6 +393,8 @@ def ledger_event(row: dict[str, Any], *, accepted: bool, source_kind: str) -> di
         "accepted": bool(accepted),
         "training_admission_status": "accepted_by_manifest_pending_gate" if accepted else row.get("admission_status", "not_training"),
         "request_id": row.get("request_id"),
+        "teacher_provider": row.get("teacher_provider"),
+        "teacher_model": row.get("teacher_model"),
         "prompt_sha256": row.get("prompt_sha256"),
         "response_sha256": row.get("response_sha256"),
         "candidate_sha256": row.get("candidate_sha256"),
@@ -396,11 +412,15 @@ def ledger_event(row: dict[str, Any], *, accepted: bool, source_kind: str) -> di
     return event
 
 
-def candidate_admission_decision(candidate: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
+def candidate_admission_decision(
+    candidate: dict[str, Any], row: dict[str, Any], policy: dict[str, Any]
+) -> dict[str, Any]:
     checks = candidate.get("admission_checks") if isinstance(candidate.get("admission_checks"), dict) else {}
     reject_reasons: list[str] = []
     mode = str(row.get("mode") or "")
     local_verifier = local_candidate_verifier(candidate, row)
+    provider = teacher_provider_decision(policy, row)
+    reject_reasons.extend(provider["reject_reasons"])
     if mode != "distillation":
         reject_reasons.append("teacher_call_not_distillation_mode")
     for key in REQUIRED_ADMISSION_KEYS:
@@ -424,6 +444,42 @@ def candidate_admission_decision(candidate: dict[str, Any], row: dict[str, Any])
         "public_overlap_hits": public_hits,
         "holdout_overlap_hits": holdout_hits,
         "local_verifier": local_verifier,
+        "teacher_provider": provider,
+    }
+
+
+def teacher_provider_decision(policy: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
+    """Independently enforce the OpenAI-only governed-teacher boundary."""
+
+    provider_policy = policy.get("provider_policy") if isinstance(policy.get("provider_policy"), dict) else {}
+    provider = str(row.get("provider") or "").strip().lower()
+    model = str(row.get("model") or "").strip().lower()
+    allowed_providers = {str(value).strip().lower() for value in provider_policy.get("allowed_providers", [])}
+    allowed_prefixes = tuple(
+        str(value).strip().lower() for value in provider_policy.get("allowed_model_prefixes", [])
+    )
+    forbidden_markers = {
+        str(value).strip().lower() for value in provider_policy.get("forbidden_markers", [])
+    }
+    reject_reasons: list[str] = []
+    if provider_policy.get("fail_closed") is not True:
+        reject_reasons.append("teacher_provider_policy_not_fail_closed")
+    if provider_policy.get("require_explicit_provider") is not True or not provider:
+        reject_reasons.append("teacher_provider_missing")
+    if provider_policy.get("require_explicit_model") is not True or not model:
+        reject_reasons.append("teacher_model_missing")
+    if provider not in allowed_providers:
+        reject_reasons.append("teacher_provider_not_approved")
+    if not allowed_prefixes or not model.startswith(allowed_prefixes):
+        reject_reasons.append("teacher_model_not_approved")
+    combined = f"{provider} {model}"
+    if any(marker and marker in combined for marker in forbidden_markers):
+        reject_reasons.append("forbidden_teacher_provider_or_model")
+    return {
+        "accepted": not reject_reasons,
+        "provider": provider,
+        "model": model,
+        "reject_reasons": sorted(set(reject_reasons)),
     }
 
 
@@ -737,6 +793,9 @@ def read_json(path: Path, default: Any) -> Any:
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
+    followed = read_jsonl_follow_pointer(path)
+    if followed and all(isinstance(value, dict) for value in followed):
+        return followed
     rows: list[dict[str, Any]] = []
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():

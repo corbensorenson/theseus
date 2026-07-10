@@ -222,6 +222,13 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
         "public_benchmark_excluded",
     ]
     admission_safety_required = [key for key in admission_required if key != "verifier_accepted"]
+    admission_safety_required.append("approved_teacher_provider_only")
+    ledger_provider_violations = teacher_ledger_provider_violations(policy, state)
+    configured_provider_violation = teacher_identity_violation(
+        policy,
+        str(teacher_policy.get("provider") or ""),
+        str(teacher_policy.get("model") or ""),
+    )
     if isinstance(admission_checks, dict):
         admission_checks_have_required_keys = all(key in admission_checks for key in admission_required)
         admission_safety_clean = (
@@ -408,6 +415,31 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             },
         ),
         check(
+            "configured_teacher_provider_openai_only",
+            configured_provider_violation is None,
+            "hard",
+            {
+                "provider": teacher_policy.get("provider"),
+                "model": teacher_policy.get("model"),
+                "violation": configured_provider_violation,
+            },
+        ),
+        check(
+            "approved_teacher_provider_only",
+            bool(manifest)
+            and int(manifest_summary.get("teacher_provider_violation_count") or 0) == 0
+            and not ledger_provider_violations
+            and isinstance(admission_safety_checks, dict)
+            and admission_safety_checks.get("approved_teacher_provider_only") is True,
+            "hard",
+            {
+                "allowed": get_path(policy, ["provider_policy", "allowed_providers"], []),
+                "model_prefixes": get_path(policy, ["provider_policy", "allowed_model_prefixes"], []),
+                "violation_count": manifest_summary.get("teacher_provider_violation_count"),
+                "ledger_violations": ledger_provider_violations,
+            },
+        ),
+        check(
             "teacher_share_ledger_metric_present",
             teacher_share_summary(policy, state).get("metric_ready", False),
             "evidence",
@@ -420,6 +452,56 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             teacher_share_summary(policy, state),
         ),
     ]
+
+
+def teacher_ledger_provider_violations(
+    policy: dict[str, Any], state: dict[str, Any]
+) -> list[dict[str, Any]]:
+    violations: list[dict[str, Any]] = []
+    for row in state.get("ledger_rows", []):
+        if not isinstance(row, dict) or row.get("accepted") is not True:
+            continue
+        if not str(row.get("source_kind") or "").startswith("teacher"):
+            continue
+        provider = str(row.get("teacher_provider") or "").strip().lower()
+        model = str(row.get("teacher_model") or "").strip().lower()
+        violation = teacher_identity_violation(policy, provider, model)
+        if violation:
+            violations.append(
+                {
+                    "ledger_event_id": row.get("ledger_event_id"),
+                    "provider": provider,
+                    "model": model,
+                    "violation": violation,
+                }
+            )
+    return violations
+
+
+def teacher_identity_violation(
+    policy: dict[str, Any], provider_value: str, model_value: str
+) -> str | None:
+    provider_policy = policy.get("provider_policy") if isinstance(policy.get("provider_policy"), dict) else {}
+    provider = provider_value.strip().lower()
+    model = model_value.strip().lower()
+    allowed_providers = {
+        str(value).strip().lower() for value in provider_policy.get("allowed_providers", [])
+    }
+    allowed_prefixes = tuple(
+        str(value).strip().lower() for value in provider_policy.get("allowed_model_prefixes", [])
+    )
+    forbidden = {
+        str(value).strip().lower() for value in provider_policy.get("forbidden_markers", [])
+    }
+    if provider_policy.get("fail_closed") is not True:
+        return "provider_policy_not_fail_closed"
+    if not provider or not model:
+        return "provider_or_model_missing"
+    if provider not in allowed_providers or not allowed_prefixes or not model.startswith(allowed_prefixes):
+        return "provider_or_model_not_approved"
+    if any(marker and marker in f"{provider} {model}" for marker in forbidden):
+        return "forbidden_provider_or_model_marker"
+    return None
 
 
 def teacher_share_summary(policy: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:

@@ -130,7 +130,20 @@ def build_fixture_call() -> dict[str, Any]:
         "Private distillation fixture: decide whether a retained teacher row may be routed "
         "to training when runtime external serving is forbidden and all local admission checks pass."
     )
-    target_text = json.dumps({"admit": True, "runtime_serving": "forbidden"}, sort_keys=True)
+    code_lm_task = {
+        "task_id": "teacher_smoke_private_sum_pair_v1",
+        "split": "train",
+        "category": "teacher_smoke_private_sum_pair",
+        "concept_residual_label": "teacher_smoke_private_sum_pair",
+        "prompt": "Return the sum of two integer inputs.",
+        "entry_point": "teacher_smoke_private_sum_pair_v1",
+        "solution_body": "return data + other",
+        "tests": "assert teacher_smoke_private_sum_pair_v1(2, 3) == 5\nassert teacher_smoke_private_sum_pair_v1(-4, 1) == -3\n",
+        "decoder_contract": {"visible_arg_count_hint": 2},
+        "public_benchmark": False,
+        "public_prompt": False,
+    }
+    target_text = json.dumps({"code_lm_task": code_lm_task}, sort_keys=True)
     candidate = {
         "row_id": "smoke_private_teacher_distillation_admission_v0",
         "source_kind": "teacher_distillation",
@@ -138,6 +151,7 @@ def build_fixture_call() -> dict[str, Any]:
         "input_text": input_text,
         "target_text": target_text,
         "target_hash": sha256_text(target_text),
+        "code_lm_task": code_lm_task,
         "license_spdx": "project-internal",
         "provenance": {
             "kind": "local_smoke_fixture",
@@ -188,8 +202,8 @@ def build_fixture_call() -> dict[str, Any]:
         "request_id": "teacher_distillation_smoke_fixture",
         "created_utc": now(),
         "completed_utc": now(),
-        "provider": "local_smoke_fixture",
-        "model": "none",
+        "provider": "openai",
+        "model": "codex-smoke-fixture",
         "reason_for_call": "architecture_wall",
         "mode": "distillation",
         "status": "completed",
