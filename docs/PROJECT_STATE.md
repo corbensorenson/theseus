@@ -102,9 +102,28 @@ syntax-valid direct candidates across `24` task-checkpoint evaluations, but
 scores `0/24`; all admitted failures are semantic `wrong_answer`. The candidates
 concentrate on shallow `return data`, `len(data)`, and repeated type-check forms.
 This falsifies more epochs, scalar reweighting, or private adaptation of this
-body-token checkpoint family. The next valid Phase 10 change must alter the
-learned target/representation, such as a trainable typed AST or semantic-action
-sequence whose compiler is independently accounted as zero-credit tooling.
+body-token checkpoint family.
+
+The preregistered representation repair is now also measured and negative. A
+reversible corpus-derived byte-piece fallback eliminates destructive unknown
+substitution in source and target streams, rejects oversized targets before
+splitting, and validates reconstructed lexical tokens through the same Python
+grammar. The semantic-plan-plus-direct-body arm processes `5,802,183` positions
+(`0.989618` of one pass), improves heldout loss `8.846909 -> 2.524909`, and
+improves source gap `-0.004056 -> 0.133507`; its three-rung replay emits one
+integrity-clean candidate and scores `0/24`. The matched zero-unknown direct-body
+arm processes `5,500,632` positions (`0.939897` of one pass), improves heldout
+loss `8.844997 -> 2.809789`, and improves source gap `0.000430 -> 0.127096`.
+Its final rung emits `17` integrity-clean direct candidates but the three-rung
+replay still scores `0/24`; the replay is RED on resource cost because the 1M
+child takes `337071ms` against a `300000ms` ceiling. No public data, teacher
+inference, deterministic renderer credit, tool credit, or fallback return is
+involved. Open-vocabulary encoding remains a required correctness mechanism,
+but these compact encoder-decoder representations are behaviorally falsified.
+The next valid Phase 10 dependency is materially larger governed code data and
+a standard causal decoder trained under the same prompt/signature visibility,
+integrity, replay, and verifier contracts, not another custom auxiliary head,
+weighting profile, or decode guard.
 
 The registered conversation pantry now uses resumable atomic shards rather than
 100-row samples. It reconstructed and admitted `13,918` reviewed, rank-filtered,

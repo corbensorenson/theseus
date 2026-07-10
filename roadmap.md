@@ -33,7 +33,7 @@ module must meet.
 | Verifier-guided search | Track 2 / Phases 6, 10 | not started | propose->verify->repair search; beat one-shot on held-out |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
-| Generator capability (held-out pass) | Phase 10 | RED - compact one-pass MLX rungs emit syntax-valid bodies but score 0/24 | replace shallow body-token continuation with a preregistered semantic/AST target; do not retune this checkpoint family |
+| Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | stop custom-head tuning; scale governed code data and a standard causal decoder behind the same integrity/verifier contract |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
 | VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
 | Claim ledger + belief revision | Phase 14 | partial | one real belief revision on a live claim + independent audit |
@@ -522,7 +522,15 @@ deletion closure is graph evidence, not physical unlearning.
   replay emitted `57` integrity-verified, syntax-valid candidates over `24` private
   task-checkpoints but scored `0/24`; outputs collapsed onto shallow `return data`,
   `len(data)`, and repeated type-check patterns. This falsifies more scalar tuning
-  or epochs on the same body-token target.
+  or epochs on the same body-token target. A reversible byte-piece codec now makes
+  source and target encoding open-vocabulary with zero `<unk>` positions and rejects
+  incomplete targets before splitting. The matched semantic-plan-plus-direct-body
+  arm improves heldout loss to `2.524909` but emits only one integrity-clean candidate
+  and remains `0/24`; the zero-unknown direct-body arm reaches `2.809789`, emits 17
+  integrity-clean candidates at its final rung, and also remains `0/24`. Its first
+  replay exceeds the five-minute child budget. These results retain open-vocabulary
+  encoding as correctness infrastructure but falsify both representations as the
+  current survival model.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

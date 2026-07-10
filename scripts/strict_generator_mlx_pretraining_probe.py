@@ -532,6 +532,7 @@ def train_budget_mlx(
         ]
         + source_vocab_extension_texts,
         max_vocab=int(matched_budget.get("max_source_vocab") or 4096),
+        byte_fallback=True,
     )
     target_vocab = build_target_vocab(
         [str(row.get("solution_body") or "") for row in train_rows] + target_vocab_extension_bodies,
@@ -5977,6 +5978,7 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
     specialist_routing = dict_or_empty(payload.get("specialist_routing"))
     training_plan = dict_or_empty(payload.get("training_plan"))
     data_exposure = dict_or_empty(payload.get("data_exposure"))
+    row_summary = dict_or_empty(payload.get("row_summary"))
     target_token_positions = int(training_plan.get("target_token_positions") or 0)
     consumed_token_positions = int(payload.get("optimizer_token_positions_consumed") or 0)
     requested_rungs = [int(value) for value in training_plan.get("rung_token_positions_requested") or []]
@@ -6007,6 +6009,19 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
         gate("parameter_update_recorded", float(payload.get("parameter_update_fraction") or 0.0) >= 0.95, "hard", payload.get("parameter_update_fraction")),
         gate("heldout_lm_improved", bool(payload.get("heldout_lm_improved")), "hard", [payload.get("heldout_lm_loss_before"), payload.get("heldout_lm_loss_after")]),
         gate("throughput_recorded", float(payload.get("training_tokens_per_second") or 0.0) > 0.0, "hard", payload.get("training_tokens_per_second")),
+        gate(
+            "open_vocab_encoding_has_zero_unknown_tokens",
+            bool(row_summary.get("open_vocab_unknown_free"))
+            and int(row_summary.get("source_unknown_token_count") or 0) == 0
+            and int(row_summary.get("target_unknown_token_count") or 0) == 0,
+            "hard",
+            {
+                "source_unknown_token_count": row_summary.get("source_unknown_token_count"),
+                "target_unknown_token_count": row_summary.get("target_unknown_token_count"),
+                "source_byte_fallback_token_count": row_summary.get("source_byte_fallback_token_count"),
+                "target_byte_fallback_token_count": row_summary.get("target_byte_fallback_token_count"),
+            },
+        ),
         gate(
             "unique_data_exposure_reported_without_epoch_inflation",
             int(data_exposure.get("one_pass_total_token_positions") or 0) > 0

@@ -37,3 +37,11 @@ def test_rung_sweep_forwards_every_required_decode_option() -> None:
         and parameter.default is inspect.Parameter.empty
     }
     assert required <= forwarded, f"rung sweep is missing decode options: {sorted(required - forwarded)}"
+    max_target_keywords = [
+        keyword
+        for keyword in calls[0].keywords
+        if keyword.arg == "max_target_tokens_override"
+    ]
+    assert len(max_target_keywords) == 1
+    assert isinstance(max_target_keywords[0].value, ast.Name)
+    assert max_target_keywords[0].value.id == "max_target_tokens_override"

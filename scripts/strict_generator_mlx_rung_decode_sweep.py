@@ -44,6 +44,12 @@ def main() -> int:
     parser.add_argument("--max-family-rows", type=int, default=24)
     parser.add_argument("--max-broad-rows", type=int, default=64)
     parser.add_argument("--output-top-k", type=int, default=3)
+    parser.add_argument(
+        "--max-target-tokens-override",
+        type=int,
+        default=0,
+        help="Optional per-checkpoint decode token cap forwarded to the canonical decoder.",
+    )
     parser.add_argument("--include-final", action="store_true")
     parser.add_argument("--checkpoint-id", action="append", default=[], help="Replay only matching checkpoint ids, for example rung_15000000 or final. Repeatable.")
     parser.add_argument("--max-checkpoints", type=int, default=0, help="Replay at most this many selected checkpoints. Zero means no cap.")
@@ -90,6 +96,7 @@ def main() -> int:
         max_family_rows=max(0, int(args.max_family_rows or 0)),
         max_broad_rows=max(0, int(args.max_broad_rows or 0)),
         output_top_k=max(0, int(args.output_top_k or 0)),
+        max_target_tokens_override=max(0, int(args.max_target_tokens_override or 0)),
         include_final=bool(args.include_final),
         checkpoint_ids=[str(item) for item in list(args.checkpoint_id or []) if str(item).strip()],
         max_checkpoints=max(0, int(args.max_checkpoints or 0)),
@@ -138,6 +145,7 @@ def run_sweep(
     max_family_rows: int,
     max_broad_rows: int,
     output_top_k: int,
+    max_target_tokens_override: int,
     include_final: bool,
     checkpoint_ids: list[str],
     max_checkpoints: int,
@@ -189,6 +197,7 @@ def run_sweep(
                 "checkpoint_selection": selection,
                 "checkpoints": checkpoints,
                 "split": split,
+                "max_target_tokens_override": int(max_target_tokens_override or 0),
                 "resource_budget_ms": int(resource_budget_ms or 0),
                 "max_child_decode_eval_ms": int(max_child_decode_eval_ms or 0),
                 "min_eval_rows_per_second": float(min_eval_rows_per_second or 0.0),
@@ -254,7 +263,7 @@ def run_sweep(
             max_family_rows=max_family_rows,
             max_broad_rows=max_broad_rows,
             max_train_replay_rows=0,
-            max_target_tokens_override=0,
+            max_target_tokens_override=max_target_tokens_override,
             train_replay_tier="any",
             output_top_k=output_top_k,
             require_parameter_use=require_parameter_use,
@@ -356,6 +365,7 @@ def run_sweep(
             "training_report": rel(training_report_path),
             "artifact_dir": rel(artifacts_dir),
             "split": split,
+            "max_target_tokens_override": int(max_target_tokens_override or 0),
             "available_checkpoint_count": len(available_checkpoints),
             "checkpoint_count": len(checkpoints),
             "checkpoint_selection": selection,

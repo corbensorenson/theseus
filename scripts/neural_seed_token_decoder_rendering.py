@@ -19,6 +19,7 @@ from typing import Any
 
 from neural_seed_code_proposer_comparator import get_path, render_private_function
 import semantic_ir
+from neural_seed_open_vocab import decode_target_tokens
 
 
 PLAN_PREFIX_BODY_TARGET_MODE = "plan_prefix_body_tokens_v1"
@@ -459,6 +460,9 @@ def call_name(node: ast.Call) -> str:
 
 
 def decode_body_tokens(tokens: list[str]) -> str:
+    tokens, open_vocab_receipt = decode_target_tokens(tokens)
+    if open_vocab_receipt.get("state") != "READY":
+        return ""
     lines: list[str] = []
     current: list[str] = []
     indent = 0
@@ -500,34 +504,48 @@ def decode_candidate_body_tokens(
     *,
     target_mode: str,
 ) -> tuple[str, dict[str, Any]]:
+    decoded_tokens, open_vocab_receipt = decode_target_tokens(tokens)
+    if open_vocab_receipt.get("state") != "READY":
+        return "", {
+            "target_mode": target_mode,
+            "open_vocab": open_vocab_receipt,
+            "fallback_return_used": False,
+            "task_family": task_family(task),
+            "failure_behavior": "reject_without_fallback",
+        }
     if semantic_ir.semantic_ir_target_mode(target_mode):
-        body, meta = semantic_ir.compile_body_tokens(tokens)
+        body, meta = semantic_ir.compile_body_tokens(decoded_tokens)
         meta["target_mode"] = target_mode
+        meta["open_vocab"] = open_vocab_receipt
         meta["fallback_return_used"] = False
         meta["task_family"] = task_family(task)
         return body, meta
     if target_mode == "semantic_slots_v1":
-        body, meta = render_semantic_slot_body(tokens, task)
+        body, meta = render_semantic_slot_body(decoded_tokens, task)
         meta["target_mode"] = target_mode
+        meta["open_vocab"] = open_vocab_receipt
         meta["fallback_return_used"] = False
         meta["task_family"] = task_family(task)
         return body, meta
     if target_mode == "statement_skeleton_v1":
-        body, meta = render_statement_skeleton_body(tokens)
+        body, meta = render_statement_skeleton_body(decoded_tokens)
         meta["target_mode"] = target_mode
+        meta["open_vocab"] = open_vocab_receipt
         meta["fallback_return_used"] = False
         meta["task_family"] = task_family(task)
         return body, meta
     if target_mode == "strict_action_tokens_v1":
-        body, meta = render_strict_action_body(tokens)
+        body, meta = render_strict_action_body(decoded_tokens)
         meta["target_mode"] = target_mode
+        meta["open_vocab"] = open_vocab_receipt
         meta["fallback_return_used"] = False
         meta["task_family"] = task_family(task)
         return body, meta
     if learned_plan_prefix_target_mode(target_mode):
-        body_token_stream, prefix_meta = split_learned_plan_prefix_tokens(tokens)
+        body_token_stream, prefix_meta = split_learned_plan_prefix_tokens(decoded_tokens)
         return decode_body_tokens(body_token_stream), {
             "target_mode": target_mode,
+            "open_vocab": open_vocab_receipt,
             **prefix_meta,
             "rendered_from_statement_skeleton": False,
             "rendered_from_strict_actions": False,
@@ -535,8 +553,9 @@ def decode_candidate_body_tokens(
             "fallback_return_used": False,
             "task_family": task_family(task),
         }
-    return decode_body_tokens(tokens), {
+    return decode_body_tokens(decoded_tokens), {
         "target_mode": target_mode,
+        "open_vocab": open_vocab_receipt,
         "rendered_from_statement_skeleton": False,
         "rendered_from_strict_actions": False,
         "fallback_return_used": False,

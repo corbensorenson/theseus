@@ -34,6 +34,15 @@ from neural_seed_code_proposer_comparator import (  # noqa: E402
     stable_hash,
 )
 import semantic_ir  # noqa: E402
+from neural_seed_open_vocab import (  # noqa: E402
+    TARGET_BYTE_BEGIN,
+    TARGET_BYTE_END,
+    active_target_span,
+    decode_target_tokens,
+    encode_tokens as encode_open_vocab_tokens,
+    is_byte_token,
+    populate_open_vocab,
+)
 from neural_seed_token_decoder_rendering import (  # noqa: E402
     PLAN_PREFIX_BODY_TARGET_MODE,
     PLAN_SEMANTIC_SLOTS_BODY_TARGET_MODE,
@@ -396,6 +405,44 @@ def grammar_constrained_token_choices(
 
 
 def token_allowed_by_policy(prefix: list[str], tok: str, *, policy: str, allowed_names: set[str] | None = None) -> bool:
+    span = active_target_span(prefix)
+    if bool(span.get("active")):
+        if is_byte_token(tok):
+            return int(span.get("payload_length") or 0) < 512
+        if tok != TARGET_BYTE_END or int(span.get("payload_length") or 0) <= 0:
+            return False
+        try:
+            recovered = bytes(span.get("payload") or b"").decode("utf-8")
+        except UnicodeDecodeError:
+            return False
+        return _token_allowed_by_policy_without_byte_fallback(
+            list(span.get("prefix_before_span") or []),
+            recovered,
+            policy=policy,
+            allowed_names=allowed_names,
+        )
+    if tok == TARGET_BYTE_BEGIN:
+        return True
+    if tok == TARGET_BYTE_END or is_byte_token(tok):
+        return False
+    decoded_prefix, receipt = decode_target_tokens(prefix)
+    if receipt.get("state") != "READY":
+        return False
+    return _token_allowed_by_policy_without_byte_fallback(
+        decoded_prefix,
+        tok,
+        policy=policy,
+        allowed_names=allowed_names,
+    )
+
+
+def _token_allowed_by_policy_without_byte_fallback(
+    prefix: list[str],
+    tok: str,
+    *,
+    policy: str,
+    allowed_names: set[str] | None,
+) -> bool:
     if str(policy or "") in {"strict_body_token_legality_v1", "strict_body_tokens_v1"}:
         return token_allowed_by_strict_body_token_policy(prefix, tok, allowed_names=allowed_names)
     return token_allowed_by_lightweight_python_grammar(prefix, tok)
@@ -2747,8 +2794,10 @@ def statement_sequence_return_kind(stmt: ast.Return) -> str:
 def body_tokens_for_target_mode(tokens: list[str], *, target_mode: str) -> list[str]:
     if learned_plan_prefix_target_mode(target_mode):
         body, _meta = split_learned_plan_prefix_tokens(tokens)
-        return body
-    return list(tokens)
+    else:
+        body = list(tokens)
+    decoded, receipt = decode_target_tokens(body)
+    return decoded if receipt.get("state") == "READY" else [*decoded, "<byte_fallback_fault>"]
 
 
 def build_target_vocab(
@@ -2761,10 +2810,7 @@ def build_target_vocab(
     for body in bodies:
         counts.update(target_tokens(body, target_mode=target_mode))
     vocab = {"<pad>": 0, "<bos>": 1, "<eos>": 2, "<unk>": 3}
-    for tok, _count in counts.most_common(max(0, max_vocab - len(vocab))):
-        if tok not in vocab:
-            vocab[tok] = len(vocab)
-    return vocab
+    return populate_open_vocab(vocab, counts, max_vocab=max_vocab, stream="target")
 
 
 def encode_target_rows(
@@ -2776,12 +2822,30 @@ def encode_target_rows(
 ) -> list[list[int]]:
     rows = []
     for body in bodies:
+        payload_ids, _receipt = encoded_target_payload_ids(
+            body,
+            vocab=vocab,
+            target_mode=target_mode,
+        )
         ids = [vocab["<bos>"]]
-        ids.extend(vocab.get(tok, vocab["<unk>"]) for tok in target_tokens(body, target_mode=target_mode)[: max(1, max_len - 2)])
+        ids.extend(payload_ids[: max(1, max_len - 2)])
         ids.append(vocab["<eos>"])
         ids = ids[:max_len]
         rows.append(ids + [vocab["<pad>"]] * max(0, max_len - len(ids)))
     return rows
+
+
+def encoded_target_payload_ids(
+    body: str,
+    *,
+    vocab: dict[str, int],
+    target_mode: str,
+) -> tuple[list[int], dict[str, Any]]:
+    return encode_open_vocab_tokens(
+        target_tokens(body, target_mode=target_mode),
+        vocab,
+        stream="target",
+    )
 
 
 def target_tokens(body: str, *, target_mode: str) -> list[str]:

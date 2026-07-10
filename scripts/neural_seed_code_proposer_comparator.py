@@ -28,6 +28,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from neural_seed_open_vocab import SOURCE_BYTE_BEGIN, encode_tokens, populate_open_vocab
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -836,11 +838,13 @@ def tokenize(text: str) -> list[str]:
     return out
 
 
-def build_vocab(texts: list[str], *, max_vocab: int) -> dict[str, int]:
+def build_vocab(texts: list[str], *, max_vocab: int, byte_fallback: bool = False) -> dict[str, int]:
     counts: Counter[str] = Counter()
     for text in texts:
         counts.update(tokenize(text))
     vocab = {"<pad>": 0, "<unk>": 1}
+    if byte_fallback:
+        return populate_open_vocab(vocab, counts, max_vocab=max_vocab, stream="source")
     for token, _count in counts.most_common(max(0, max_vocab - len(vocab))):
         if token not in vocab:
             vocab[token] = len(vocab)
@@ -850,7 +854,12 @@ def build_vocab(texts: list[str], *, max_vocab: int) -> dict[str, int]:
 def encode_many(texts: list[str], vocab: dict[str, int], max_len: int) -> list[list[int]]:
     rows = []
     for text in texts:
-        ids = [vocab.get(tok, 1) for tok in tokenize(text)[:max_len]]
+        logical = tokenize(text)
+        if SOURCE_BYTE_BEGIN in vocab:
+            ids, _receipt = encode_tokens(logical, vocab, stream="source")
+        else:
+            ids = [vocab.get(tok, 1) for tok in logical]
+        ids = ids[:max_len]
         rows.append(ids + [0] * max(0, max_len - len(ids)))
     return rows
 

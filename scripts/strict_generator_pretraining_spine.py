@@ -55,6 +55,13 @@ from neural_seed_token_decoder_comparator import (  # noqa: E402
     target_tokens,
     train_token_model,
 )
+from neural_seed_full_state_pretraining import filter_complete_target_examples  # noqa: E402
+from neural_seed_open_vocab import (  # noqa: E402
+    SOURCE_BYTE_BEGIN,
+    TARGET_BYTE_BEGIN,
+    byte_token_bytes,
+    is_byte_token,
+)
 
 
 DEFAULT_CONFIG = ROOT / "configs" / "neural_seed_token_decoder_comparator.json"
@@ -220,6 +227,7 @@ def train_budget(
         ]
         + source_vocab_extension_texts,
         max_vocab=int(matched_budget.get("max_source_vocab") or 4096),
+        byte_fallback=True,
     )
     log(f"budget={budget_id} build_source_vocab done size={len(source_vocab)}")
     log(
@@ -829,7 +837,13 @@ def encode_staged_full_state_rows(
             "target_rows": [],
             "summary": summary,
         }
-    examples = list(staged.get("examples") or [])
+    candidate_examples = list(staged.get("examples") or [])
+    examples, target_completeness = filter_complete_target_examples(
+        candidate_examples,
+        max_target=max_target,
+        target_mode=target_mode,
+        target_vocab=target_vocab,
+    )
     eval_fraction = max(0.0, min(0.5, float(summary.get("eval_fraction") or 0.08)))
     default_eval_examples = max(32, int(len(examples) * eval_fraction)) if examples else 0
     max_eval_examples = max(0, int(summary.get("max_eval_examples") or default_eval_examples))
@@ -862,6 +876,7 @@ def encode_staged_full_state_rows(
             "encoded_target_rows": len(target_rows),
             "encoded_eval_source_rows": len(eval_source_rows),
             "encoded_eval_target_rows": len(eval_target_rows),
+            "target_sequence_admission": target_completeness,
             **token_stats,
         }
     )
@@ -892,6 +907,22 @@ def full_state_token_stats(
     source_unknown = 0
     target_total = 0
     target_unknown = 0
+    source_fallback_tokens = 0
+    target_fallback_tokens = 0
+    source_fallback_bytes = 0
+    target_fallback_bytes = 0
+    source_begin_id = source_vocab.get(SOURCE_BYTE_BEGIN)
+    target_begin_id = target_vocab.get(TARGET_BYTE_BEGIN)
+    source_byte_widths = {
+        int(token_id): len(byte_token_bytes(token))
+        for token, token_id in source_vocab.items()
+        if is_byte_token(token)
+    }
+    target_byte_widths = {
+        int(token_id): len(byte_token_bytes(token))
+        for token, token_id in target_vocab.items()
+        if is_byte_token(token)
+    }
     for row in source_rows:
         for token_id in row:
             if int(token_id) == source_pad_id:
@@ -899,6 +930,9 @@ def full_state_token_stats(
             source_total += 1
             if int(token_id) == source_unk_id:
                 source_unknown += 1
+            if source_begin_id is not None and int(token_id) == int(source_begin_id):
+                source_fallback_tokens += 1
+            source_fallback_bytes += int(source_byte_widths.get(int(token_id), 0))
     for row in target_rows:
         for token_id in row:
             if int(token_id) == target_pad_id:
@@ -906,6 +940,9 @@ def full_state_token_stats(
             target_total += 1
             if int(token_id) == target_unk_id:
                 target_unknown += 1
+            if target_begin_id is not None and int(token_id) == int(target_begin_id):
+                target_fallback_tokens += 1
+            target_fallback_bytes += int(target_byte_widths.get(int(token_id), 0))
     return {
         "source_unknown_token_count": source_unknown,
         "source_total_token_count": source_total,
@@ -913,6 +950,11 @@ def full_state_token_stats(
         "target_unknown_token_count": target_unknown,
         "target_total_token_count": target_total,
         "target_unknown_token_rate": ratio(target_unknown, target_total),
+        "source_byte_fallback_token_count": source_fallback_tokens,
+        "source_byte_fallback_byte_count": source_fallback_bytes,
+        "target_byte_fallback_token_count": target_fallback_tokens,
+        "target_byte_fallback_byte_count": target_fallback_bytes,
+        "open_vocab_unknown_free": source_unknown == 0 and target_unknown == 0,
     }
 
 

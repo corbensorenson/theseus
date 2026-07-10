@@ -38,7 +38,7 @@ from neural_seed_static_coherence import (  # noqa: E402
     expression_is_static_literal_only,
     expression_uses_any_name,
 )
-from neural_seed_token_decoder_support import encode_target_rows, target_tokens  # noqa: E402
+from neural_seed_token_decoder_support import encoded_target_payload_ids, encode_target_rows, target_tokens  # noqa: E402
 from neural_seed_visible_source import (  # noqa: E402
     visible_identifier_parts,
     visible_prompt_intent_tags,
@@ -155,6 +155,89 @@ def source_summary_tokens(text: str) -> list[str]:
     return tokens
 
 
+def filter_complete_target_examples(
+    examples: list[dict[str, Any]],
+    *,
+    max_target: int,
+    target_mode: str,
+    target_vocab: dict[str, int] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Reject targets that cannot fit with BOS/EOS instead of truncating them.
+
+    Prefix-only target truncation is not a harmless batching detail: it teaches
+    programs without their closing control flow or return. This filter is
+    target-local and runs before train/eval splitting. It never reads verifier
+    outcomes, heldout rows, public benchmark payloads, or answer metadata.
+    """
+
+    payload_limit = max(0, int(max_target) - 2)
+    kept: list[dict[str, Any]] = []
+    lengths: list[int] = []
+    kept_lengths: list[int] = []
+    rejected_lengths: list[int] = []
+    fault_count = 0
+    for row in examples:
+        try:
+            body = str(row.get("body") or "")
+            if target_vocab:
+                encoded, encode_receipt = encoded_target_payload_ids(
+                    body,
+                    vocab=target_vocab,
+                    target_mode=target_mode,
+                )
+                if int(encode_receipt.get("unknown_token_count") or 0) > 0:
+                    fault_count += 1
+                    continue
+                token_count = len(encoded)
+            else:
+                token_count = len(target_tokens(body, target_mode=target_mode))
+        except Exception:  # Typed target encoders fail closed at admission.
+            fault_count += 1
+            continue
+        lengths.append(token_count)
+        if token_count <= payload_limit:
+            kept.append(row)
+            kept_lengths.append(token_count)
+        else:
+            rejected_lengths.append(token_count)
+
+    ordered = sorted(lengths)
+
+    def quantile(fraction: float) -> int:
+        if not ordered:
+            return 0
+        index = min(len(ordered) - 1, max(0, int(round((len(ordered) - 1) * fraction))))
+        return int(ordered[index])
+
+    return kept, {
+        "policy": "complete_target_sequence_admission_v1",
+        "target_mode": str(target_mode or ""),
+        "max_target_tokens": int(max_target),
+        "max_target_payload_tokens": payload_limit,
+        "candidate_example_count": len(examples),
+        "complete_example_count": len(kept),
+        "oversized_example_count": len(rejected_lengths),
+        "target_encoding_fault_count": fault_count,
+        "complete_example_rate": ratio(len(kept), len(examples)),
+        "candidate_target_token_positions": sum(lengths),
+        "complete_target_token_positions": sum(kept_lengths),
+        "excluded_target_token_positions": sum(rejected_lengths),
+        "target_token_length_p50": quantile(0.50),
+        "target_token_length_p90": quantile(0.90),
+        "target_token_length_p95": quantile(0.95),
+        "target_token_length_p99": quantile(0.99),
+        "target_sequence_truncation_count": 0,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "public_training_rows": 0,
+        "external_inference_calls": 0,
+        "score_semantics": (
+            "AST/body target length admission only. Oversized or unencodable target rows are excluded "
+            "before splitting so no prefix-only target is trained or evaluated."
+        ),
+    }
+
+
 def build_full_state_pretraining_rows(
     config: dict[str, Any],
     *,
@@ -195,6 +278,12 @@ def build_full_state_pretraining_rows(
         min_target_tokens=min_target_tokens,
         max_function_body_chars=max_function_body_chars,
         seed=seed,
+    )
+    examples, target_completeness = filter_complete_target_examples(
+        examples,
+        max_target=max_target,
+        target_mode=target_mode,
+        target_vocab=target_vocab,
     )
     manifest_path = resolve(str(cfg.get("corpus_manifest") or "data/training_sources/narrow_corpus_manifest.json"))
     eval_fraction = max(0.0, min(0.5, float(cfg.get("eval_fraction") or 0.08)))
@@ -268,6 +357,7 @@ def build_full_state_pretraining_rows(
         "stale_hash_count": int(collection_summary.get("stale_hash_count") or 0),
         "public_benchmark_payload_admitted_count": public_payload_admitted,
         "skip_reasons": dict(collection_summary.get("skip_reasons") or {}),
+        "target_sequence_admission": target_completeness,
         "target_vocab_extended_from_corpus": bool(cfg.get("extend_target_vocab", True)),
         "source_text_style": str(cfg.get("source_text_style") or "prompt_signature_metadata_v2"),
         "source_alignment_semantics": (

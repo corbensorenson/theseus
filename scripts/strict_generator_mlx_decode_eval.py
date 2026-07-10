@@ -1247,6 +1247,21 @@ def load_mlx_checkpoint(
         },
     }
 
+def broad_private_decode_token_budget(
+    *,
+    max_target: int,
+    broad_config: dict[str, Any],
+    target_mode: str,
+) -> int:
+    """Preserve the frozen body budget while accounting for learned prefixes."""
+
+    body_budget = max(1, int(broad_config.get("max_target_tokens") or max_target))
+    prefix_budget = (
+        int(semantic_ir.PLAN_MAX_TOKENS) + 1
+        if learned_plan_prefix_target_mode(target_mode)
+        else 0
+    )
+    return min(max(1, int(max_target)), body_budget + prefix_budget)
 
 
 def evaluate_split(
@@ -1310,7 +1325,11 @@ def evaluate_split(
 
     if split_name == "broad_private_heldout":
         broad_cfg = dict_or_empty(data_cfg.get("broad_private_heldout_eval"))
-        max_target_tokens = min(max_target, int(broad_cfg.get("max_target_tokens") or max_target))
+        max_target_tokens = broad_private_decode_token_budget(
+            max_target=max_target,
+            broad_config=broad_cfg,
+            target_mode=target_mode,
+        )
         fanout_top_k = int(broad_cfg.get("fanout_top_k") or budget.get("fanout_top_k") or 1)
         pool_size = (
             max(

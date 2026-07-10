@@ -16,6 +16,7 @@ if str(SCRIPTS) not in sys.path:
 from scripts.neural_seed_code_proposer_comparator import stable_hash
 from scripts.neural_seed_full_state_pretraining import (
     collect_full_state_python_examples,
+    filter_complete_target_examples,
     python_function_body_pretraining_examples,
 )
 
@@ -117,6 +118,26 @@ class FullStateCorpusSelectionTests(unittest.TestCase):
 
             self.assertEqual(1, len(rows))
             self.assertEqual(1, summary["exact_source_body_duplicate_count"])
+
+    def test_oversized_targets_are_rejected_without_prefix_truncation(self) -> None:
+        examples = [
+            {"body": "return data", "function": "short"},
+            {
+                "body": "\n".join(["result = []", *["result.append(data)" for _ in range(20)], "return result"]),
+                "function": "long",
+            },
+        ]
+
+        kept, summary = filter_complete_target_examples(
+            examples,
+            max_target=16,
+            target_mode="body_tokens",
+        )
+
+        self.assertEqual(["short"], [row["function"] for row in kept])
+        self.assertEqual(1, summary["oversized_example_count"])
+        self.assertEqual(0, summary["target_sequence_truncation_count"])
+        self.assertEqual(0, summary["target_encoding_fault_count"])
 
 
 if __name__ == "__main__":

@@ -23,7 +23,7 @@ from neural_seed_token_decoder_support import (
     target_tokens,
 )
 from neural_seed_decode_static_guard import decode_static_guard
-from strict_generator_mlx_decode_eval import mlx_token_choices
+from strict_generator_mlx_decode_eval import broad_private_decode_token_budget, mlx_token_choices
 from strict_generator_mlx_pretraining_probe import body_start_span_mask_mlx, parameter_is_optional_auxiliary
 
 
@@ -172,3 +172,18 @@ def test_body_contrast_mask_is_bounded_after_body_start() -> None:
     target_out = target[:, 1:]
     mask = body_start_span_mask_mlx(target, target_out, 42, np, span_token_count=2)
     assert mask.tolist() == [[0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0]]
+
+
+def test_semantic_plan_prefix_does_not_consume_frozen_body_budget() -> None:
+    broad = {"max_target_tokens": 112}
+
+    assert broad_private_decode_token_budget(
+        max_target=256,
+        broad_config=broad,
+        target_mode="body_tokens",
+    ) == 112
+    assert broad_private_decode_token_budget(
+        max_target=256,
+        broad_config=broad,
+        target_mode=semantic_ir.PLAN_BODY_TARGET_MODE,
+    ) == 112 + semantic_ir.PLAN_MAX_TOKENS + 1
