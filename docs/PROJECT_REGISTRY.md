@@ -116,9 +116,18 @@ Authoritative files:
   exist.
 - The report evidence store and artifact-retention service now emit generic
   compression records, strict compressed-artifact records, compression
-  receipts, and defeater records. Large snapshot-backed reports can be traced
-  back to exact payload hashes, and mutable latest-view supersessions are
-  recorded without deleting or invalidating historical runs. RMI also emits a
+  receipts, and defeater records. The same canonical store emits a digest-bound
+  public-safe pack for every registry/roadmap-citeable GREEN gate, a named
+  epistemic TCB with rotated primary/shadow auditors, material-claim dependency
+  and downgrade records, and deterministic randomized/trap receipt audits.
+  Large snapshot-backed reports can be traced back to exact payload hashes, and
+  mutable latest-view supersessions are recorded without deleting or
+  invalidating historical runs. Oversized SQLite payloads migrate to exact
+  snapshots before inline pages are reclaimed. Current-reference-aware
+  checkpoint retention protects operational configs, route-required evidence,
+  active promoted manifests, and explicit pins; unreferenced weights move only
+  through exact binary pointers, and byte-identical weights can share hard-link
+  storage without changing either path or digest. RMI also emits a
   compact-generative record for its operating map with generation,
   verification, fallback, residual-burden, promotion-blocker, source-ref,
   evidence-ref, and non-claim fields required by the current AI_book schema;
@@ -135,8 +144,8 @@ Authoritative files:
   deterministic tool evidence, private verifier receipt, materialized-view
   receipt, authority/resource/failure/artifact/claim trace records, and
   metadata-only dogfood feedback in one local assistant call.
-- `scripts/theseus_weekly_focus_20260706.py` is the current public-safe book
-  evidence bridge for the weekly focus. It refreshes the registered assistant
+- `scripts/theseus_weekly_focus_20260706.py` is the retained original public-safe
+  book-evidence bridge for that weekly focus. It refreshes the registered assistant
   product-spine route, exports
   `reports/theseus_public_safe_reference_trace_20260706.json`, exports
   `reports/theseus_book_importable_evidence_packs_20260706.json`, audits
@@ -146,6 +155,11 @@ Authoritative files:
   generator experiment. This is implementation-reference evidence for
   AI_book import/review, not a model-quality, public-benchmark,
   learned-generation, deployed-readiness, or ASI claim.
+- `scripts/report_evidence_store.py` is the current undated evidence owner. Its
+  `reports/theseus_book_importable_evidence_packs.json` export is derived from
+  live registry and roadmap citations rather than a hand-maintained dated list.
+  `scripts/report_evidence_integrity.py` is an imported integrity module under
+  that owner, not a separate evidence lane.
 - `reports/theseus_assistant_vcm_governor_smoke.json` is the current
   product-facing VCM adequacy proof. It exercises the VCM governor inside the
   assistant runtime, emits `context_transaction` and `context_adequacy` trace

@@ -28,6 +28,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import report_evidence_store  # noqa: E402
+import artifact_retention_reference  # noqa: E402
 from theseus_archive_resolver import ARCHIVE_POINTER_POLICY  # noqa: E402
 
 
@@ -70,7 +71,7 @@ ARCHIVEABLE_REPORT_DIRS = {
 }
 ARCHIVEABLE_SUFFIXES = {".json", ".jsonl", ".dmg", ".zip", ".pkg"}
 INLINE_POINTER_SUFFIXES = {".json", ".jsonl"}
-BINARY_SIDECAR_SUFFIXES = {".dmg", ".zip", ".pkg"}
+BINARY_SIDECAR_SUFFIXES = {".dmg", ".zip", ".pkg", ".npz", ".pt", ".pth", ".bin", ".safetensors"}
 MAX_POINTER_BYTES = 1024 * 1024
 
 
@@ -87,6 +88,17 @@ def main() -> int:
     parser.add_argument("--include-dist-artifacts", action="store_true")
     parser.add_argument("--allow-non-json-pointer", action="store_true")
     parser.add_argument("--allow-binary-sidecar", action="store_true")
+    parser.add_argument("--compact-checkpoints", action="store_true")
+    parser.add_argument("--checkpoint-only", action="store_true")
+    parser.add_argument("--checkpoint-pin", action="append", default=[])
+    parser.add_argument("--checkpoint-min-age-hours", type=float, default=24.0)
+    parser.add_argument("--checkpoint-target-bytes", type=int, default=0)
+    parser.add_argument("--repair-manifest-pointers", action="store_true")
+    parser.add_argument("--repair-only", action="store_true")
+    parser.add_argument("--compact-hot-reports", action="store_true")
+    parser.add_argument("--hot-report-only", action="store_true")
+    parser.add_argument("--hot-report-min-age-hours", type=float, default=24.0)
+    parser.add_argument("--hot-report-target-bytes", type=int, default=0)
     parser.add_argument("--no-compress", action="store_true")
     parser.add_argument("--archive-root", default=str(ARCHIVE_ROOT.relative_to(ROOT)))
     parser.add_argument("--manifest-out", default=str(DEFAULT_MANIFEST.relative_to(ROOT)))
@@ -97,6 +109,7 @@ def main() -> int:
     parser.add_argument("--budget-out", default=str(DEFAULT_BUDGET_OUT.relative_to(ROOT)))
     parser.add_argument("--budget-markdown-out", default=str(DEFAULT_BUDGET_MARKDOWN.relative_to(ROOT)))
     parser.add_argument("--registry", default=str(DEFAULT_REGISTRY.relative_to(ROOT)))
+    parser.add_argument("--roadmap-matrix", default="configs/roadmap_implementation_matrix.json")
     args = parser.parse_args()
 
     started = time.perf_counter()
@@ -119,6 +132,16 @@ def main() -> int:
     manifest_path = resolve(args.manifest_out)
     existing_manifest = read_json(manifest_path, {})
     previous_entries = existing_manifest.get("entries") if isinstance(existing_manifest.get("entries"), list) else []
+    pointer_repairs = repair_manifest_pointers(existing_manifest, execute=bool(args.execute)) if args.repair_manifest_pointers else {
+        "state": "NOT_REQUESTED",
+        "eligible_count": 0,
+        "repaired_count": 0,
+        "failed_count": 0,
+        "actions": [],
+    }
+    checkpoint_reference_index: dict[str, Any] = {}
+    checkpoint_deduplication: dict[str, Any] = {}
+    hot_report_reference_index: dict[str, Any] = {}
     candidates = discover_candidates(
         min_bytes=max(1, int(args.min_bytes)),
         include_jsonl=bool(args.include_jsonl),
@@ -128,6 +151,59 @@ def main() -> int:
         include_vcm_payloads=bool(args.include_vcm_payloads),
         include_dist_artifacts=bool(args.include_dist_artifacts),
     )
+    if args.repair_only:
+        if not args.repair_manifest_pointers:
+            parser.error("--repair-only requires --repair-manifest-pointers")
+        candidates = []
+    if args.hot_report_only:
+        if not args.compact_hot_reports:
+            parser.error("--hot-report-only requires --compact-hot-reports")
+        candidates = []
+    if args.checkpoint_only:
+        if not args.compact_checkpoints:
+            parser.error("--checkpoint-only requires --compact-checkpoints")
+        candidates = []
+    if args.compact_checkpoints:
+        registry = read_json(resolve(args.registry), {})
+        checkpoint_reference_index = artifact_retention_reference.build_checkpoint_reference_index(
+            registry,
+            explicit_pins=args.checkpoint_pin,
+        )
+        checkpoint_deduplication = artifact_retention_reference.deduplicate_checkpoint_payloads(
+            checkpoint_reference_index,
+            execute=bool(args.execute),
+            min_bytes=max(1, int(args.min_bytes)),
+        )
+        budget_policy = read_json(resolve(args.budget_policy), {})
+        checkpoint_target = int(args.checkpoint_target_bytes) or int(budget_policy.get("checkpoint_warning_bytes") or 0)
+        candidates.extend(
+            artifact_retention_reference.checkpoint_archive_candidates(
+                checkpoint_reference_index,
+                min_bytes=max(1, int(args.min_bytes)),
+                min_age_hours=max(0.0, float(args.checkpoint_min_age_hours)),
+                target_hot_bytes=max(0, checkpoint_target),
+            )
+        )
+        candidates = sorted(candidates, key=lambda row: (-int(row.get("bytes") or 0), str(row.get("path") or "")))
+    if args.compact_hot_reports:
+        registry = read_json(resolve(args.registry), {})
+        roadmap_matrix = read_json(resolve(args.roadmap_matrix), {})
+        hot_report_reference_index = artifact_retention_reference.build_hot_report_reference_index(
+            registry,
+            roadmap_matrix,
+        )
+        budget_policy = read_json(resolve(args.budget_policy), {})
+        maximum = int(budget_policy.get("max_hot_report_bytes") or 0)
+        hot_target = int(args.hot_report_target_bytes) or int(maximum * 0.80)
+        candidates.extend(
+            artifact_retention_reference.hot_report_archive_candidates(
+                hot_report_reference_index,
+                min_bytes=max(1, int(args.min_bytes)),
+                min_age_hours=max(0.0, float(args.hot_report_min_age_hours)),
+                target_hot_bytes=max(0, hot_target),
+            )
+        )
+        candidates = sorted(candidates, key=lambda row: (-int(row.get("bytes") or 0), str(row.get("path") or "")))
     if args.max_files > 0:
         candidates = candidates[: int(args.max_files)]
 
@@ -139,8 +215,14 @@ def main() -> int:
                     candidate,
                     archive_root,
                     compress=not args.no_compress,
-                    allow_non_json_pointer=bool(args.allow_non_json_pointer),
-                    allow_binary_sidecar=bool(args.allow_binary_sidecar),
+                    allow_non_json_pointer=(
+                        bool(args.allow_non_json_pointer)
+                        or candidate.get("reason") == "unreferenced_historical_hot_report"
+                    ),
+                    allow_binary_sidecar=(
+                        bool(args.allow_binary_sidecar)
+                        or candidate.get("reason") == "unreferenced_historical_checkpoint_payload"
+                    ),
                 )
             )
         else:
@@ -163,6 +245,12 @@ def main() -> int:
         if row.get("status") in {"archived", "already_archived", "dry_run"}:
             entries_by_original[str(row.get("original_path") or row.get("path"))] = manifest_entry(row)
     entries = sorted(entries_by_original.values(), key=lambda row: str(row.get("original_path") or ""))
+    archived_entries = [row for row in entries if str(row.get("status") or "") in {"archived", "already_archived"}]
+    checkpoint_archived_entries = [
+        row
+        for row in archived_entries
+        if str(row.get("reason") or "") == "unreferenced_historical_checkpoint_payload"
+    ]
     compression_records = [record for record in (retention_compression_record(row, compress=not args.no_compress) for row in actions) if record]
     compressed_artifact_records = [
         report_evidence_store.compressed_artifact_record_from_compression_record(row, source_system="artifact_retention")
@@ -176,13 +264,35 @@ def main() -> int:
     manifest = {
         "policy": "project_theseus_artifact_retention_manifest_v1",
         "created_utc": now(),
+        "trigger_state": (
+            "GREEN"
+            if not any(row.get("status") == "failed" for row in actions)
+            and pointer_repairs.get("state", "GREEN") in {"GREEN", "NOT_REQUESTED"}
+            and checkpoint_deduplication.get("state", "GREEN") in {"GREEN", "NOT_REQUESTED"}
+            else "RED"
+        ),
         "archive_root": rel(archive_root),
         "entry_count": len(entries),
+        "summary": {
+            "entry_count": len(entries),
+            "archived_entry_count": len(archived_entries),
+            "checkpoint_archived_entry_count": len(checkpoint_archived_entries),
+            "pointer_repair_state": pointer_repairs.get("state", "NOT_REQUESTED"),
+            "checkpoint_deduplication_state": checkpoint_deduplication.get("state", "NOT_REQUESTED"),
+        },
         "entries": entries,
         "compression_record_count": len(compression_records),
         "compressed_artifact_record_count": len(compressed_artifact_records),
         "compression_receipt_count": len(compression_receipts),
         "defeater_record_count": len(defeater_records),
+        "checkpoint_reference_state": checkpoint_reference_index.get("state", "NOT_REQUESTED"),
+        "checkpoint_deduplication_state": checkpoint_deduplication.get("state", "NOT_REQUESTED"),
+        "pointer_repair_state": pointer_repairs.get("state", "NOT_REQUESTED"),
+        "hot_report_reference_state": hot_report_reference_index.get("state", "NOT_REQUESTED"),
+        "cumulative_archived_entry_count": len(archived_entries),
+        "cumulative_archived_source_bytes": sum(int(row.get("bytes") or 0) for row in archived_entries),
+        "cumulative_checkpoint_archived_entry_count": len(checkpoint_archived_entries),
+        "cumulative_checkpoint_archived_source_bytes": sum(int(row.get("bytes") or 0) for row in checkpoint_archived_entries),
         "external_inference_calls": 0,
         "public_training_rows_written": 0,
         "fallback_return_count": 0,
@@ -201,7 +311,7 @@ def main() -> int:
     payload = {
         "policy": "project_theseus_artifact_retention_v1",
         "created_utc": now(),
-        "trigger_state": "GREEN" if not any(row.get("status") == "failed" for row in actions) else "YELLOW",
+        "trigger_state": "GREEN" if not any(row.get("status") == "failed" for row in actions) and checkpoint_deduplication.get("state", "GREEN") == "GREEN" and pointer_repairs.get("state", "GREEN") in {"GREEN", "NOT_REQUESTED"} else "YELLOW",
         "summary": {
             "execute": bool(args.execute),
             "candidate_count": len(candidates),
@@ -218,6 +328,19 @@ def main() -> int:
             "compressed_artifact_record_count": len(compressed_artifact_records),
             "compression_receipt_count": len(compression_receipts),
             "defeater_record_count": len(defeater_records),
+            "protected_checkpoint_file_count": int(checkpoint_reference_index.get("protected_checkpoint_file_count") or 0),
+            "protected_checkpoint_bytes": int(checkpoint_reference_index.get("protected_checkpoint_bytes") or 0),
+            "checkpoint_deduplicate_file_count": int(checkpoint_deduplication.get("deduplicated_file_count") or 0),
+            "checkpoint_deduplicate_reclaimed_bytes": int(checkpoint_deduplication.get("physical_bytes_reclaimed") or 0),
+            "cumulative_archived_entry_count": len(archived_entries),
+            "cumulative_archived_source_bytes": sum(int(row.get("bytes") or 0) for row in archived_entries),
+            "cumulative_checkpoint_archived_entry_count": len(checkpoint_archived_entries),
+            "cumulative_checkpoint_archived_source_bytes": sum(int(row.get("bytes") or 0) for row in checkpoint_archived_entries),
+            "pointer_repair_eligible_count": int(pointer_repairs.get("eligible_count") or 0),
+            "pointer_repaired_count": int(pointer_repairs.get("repaired_count") or 0),
+            "pointer_repair_failed_count": int(pointer_repairs.get("failed_count") or 0),
+            "protected_hot_report_file_count": int(hot_report_reference_index.get("protected_report_file_count") or 0),
+            "protected_hot_report_bytes": int(hot_report_reference_index.get("protected_report_bytes") or 0),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "actions": actions,
@@ -225,11 +348,19 @@ def main() -> int:
         "compressed_artifact_records": compressed_artifact_records,
         "compression_receipts": compression_receipts,
         "defeater_records": defeater_records,
+        "checkpoint_reference_index": checkpoint_reference_index,
+        "checkpoint_deduplication": checkpoint_deduplication,
+        "pointer_repairs": pointer_repairs,
+        "hot_report_reference_index": hot_report_reference_index,
         "retention_rules": {
             "delete": False,
             "compress": not args.no_compress,
             "allow_non_json_pointer": bool(args.allow_non_json_pointer),
             "allow_binary_sidecar": bool(args.allow_binary_sidecar),
+            "current_reference_aware_checkpoint_compaction": bool(args.compact_checkpoints),
+            "checkpoint_min_age_hours": float(args.checkpoint_min_age_hours),
+            "current_reference_aware_hot_report_compaction": bool(args.compact_hot_reports),
+            "hot_report_min_age_hours": float(args.hot_report_min_age_hours),
             "pointer_policy": ARCHIVE_POINTER_POLICY,
             "archiveable_prefixes": list(ARCHIVEABLE_PREFIXES),
             "retained_live_names": sorted(RETAIN_LIVE_NAMES),
@@ -417,6 +548,102 @@ def archive_candidate(
         }
     except Exception as exc:
         return {**candidate, "status": "failed", "archive_path": rel(target), "error": repr(exc)}
+
+
+def repair_manifest_pointers(manifest: dict[str, Any], *, execute: bool) -> dict[str, Any]:
+    actions: list[dict[str, Any]] = []
+    for row in list_dicts(manifest.get("entries")):
+        if str(row.get("status") or "") not in {"archived", "already_archived"}:
+            continue
+        original = resolve(str(row.get("original_path") or ""))
+        archive = resolve(str(row.get("archive_path") or ""))
+        pointer = resolve(str(row.get("pointer_path") or rel(pointer_path_for(original))))
+        expected_hash = str(row.get("sha256") or "")
+        if is_pointer(pointer):
+            actions.append({"original_path": rel(original), "pointer_path": rel(pointer), "status": "already_present"})
+            continue
+        if pointer.exists():
+            actions.append(
+                {
+                    "original_path": rel(original),
+                    "pointer_path": rel(pointer),
+                    "status": "live_path_conflict",
+                    "error": "refusing_to_overwrite_non_pointer_payload",
+                }
+            )
+            continue
+        if not archive.is_file() or not expected_hash:
+            actions.append(
+                {
+                    "original_path": rel(original),
+                    "pointer_path": rel(pointer),
+                    "archive_path": rel(archive),
+                    "status": "failed",
+                    "error": "archive_or_expected_hash_missing",
+                }
+            )
+            continue
+        compressed = archive.suffix.lower() == ".gz"
+        replay = verify_archive_payload(archive, expected_hash, compressed=compressed)
+        if not replay["verified"]:
+            actions.append(
+                {
+                    "original_path": rel(original),
+                    "pointer_path": rel(pointer),
+                    "archive_path": rel(archive),
+                    "status": "failed",
+                    "error": "archive_hash_mismatch",
+                    **replay,
+                }
+            )
+            continue
+        action = {
+            "original_path": rel(original),
+            "pointer_path": rel(pointer),
+            "archive_path": rel(archive),
+            "expected_sha256": expected_hash,
+            "status": "dry_run",
+        }
+        if execute:
+            pointer.parent.mkdir(parents=True, exist_ok=True)
+            write_pointer(
+                pointer,
+                archive,
+                {
+                    **row,
+                    "original_path": rel(original),
+                    "path": rel(original),
+                    "sha256": expected_hash,
+                },
+            )
+            action["status"] = "repaired" if is_pointer(pointer) else "failed"
+            if action["status"] == "failed":
+                action["error"] = "pointer_write_replay_failed"
+        actions.append(action)
+    failed = [row for row in actions if row.get("status") == "failed"]
+    conflicts = [row for row in actions if row.get("status") == "live_path_conflict"]
+    eligible = [row for row in actions if row.get("status") in {"dry_run", "repaired"}]
+    return {
+        "policy": "project_theseus_retention_manifest_pointer_repair_v1",
+        "state": "GREEN" if not failed and not conflicts else "RED",
+        "execute": bool(execute),
+        "manifest_entry_count": len(list_dicts(manifest.get("entries"))),
+        "eligible_count": len(eligible),
+        "repaired_count": sum(1 for row in actions if row.get("status") == "repaired"),
+        "already_present_count": sum(1 for row in actions if row.get("status") == "already_present"),
+        "live_path_conflict_count": len(conflicts),
+        "failed_count": len(failed),
+        "actions": actions,
+        "rules": {
+            "archive_hash_required": True,
+            "never_overwrite_live_payload": True,
+            "missing_pointer_only": True,
+        },
+        "non_claim": "Pointer repair restores archive reachability only; it does not change source evidence or model capability.",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
 
 
 def write_pointer(path: Path, target: Path, candidate: dict[str, Any]) -> None:
@@ -697,6 +924,8 @@ def discover_budget_files(policy: dict[str, Any]) -> list[dict[str, Any]]:
         for path in root.rglob("*"):
             if not path.is_file():
                 continue
+            if path.name == ".DS_Store":
+                continue
             rows.append(budget_file_row(path))
     return rows
 
@@ -710,6 +939,8 @@ def budget_file_row(path: Path) -> dict[str, Any]:
         "record_type": "artifact_budget_file",
         "path": rel_path,
         "bytes": int(stat.st_size),
+        "allocated_bytes": int(getattr(stat, "st_blocks", 0) * 512) or int(stat.st_size),
+        "storage_identity": f"{stat.st_dev}:{stat.st_ino}",
         "mtime_utc": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
         "family": budget_family(path),
         "is_archive_pointer": pointer_policy == ARCHIVE_POINTER_POLICY,
@@ -784,6 +1015,7 @@ def budget_summary(rows: list[dict[str, Any]], policy: dict[str, Any]) -> dict[s
     families = budget_family_records(rows)
     max_family = int(policy.get("max_single_family_bytes") or 0)
     over_family = [row for row in families if max_family and int(row.get("bytes") or 0) > max_family and row.get("budget_scope") == "hot_report"]
+    checkpoint_physical_bytes = unique_storage_bytes(checkpoints)
     return {
         "scanned_file_count": len(rows),
         "scanned_bytes": sum(int(row["bytes"]) for row in rows),
@@ -794,7 +1026,9 @@ def budget_summary(rows: list[dict[str, Any]], policy: dict[str, Any]) -> dict[s
         "archive_pointer_file_count": len(pointers),
         "archive_pointer_bytes": sum(int(row["bytes"]) for row in pointers),
         "checkpoint_file_count": len(checkpoints),
-        "checkpoint_bytes": sum(int(row["bytes"]) for row in checkpoints),
+        "checkpoint_bytes": checkpoint_physical_bytes,
+        "checkpoint_physical_bytes": checkpoint_physical_bytes,
+        "checkpoint_logical_bytes": sum(int(row["bytes"]) for row in checkpoints),
         "other_generated_file_count": len(other),
         "other_generated_bytes": sum(int(row["bytes"]) for row in other),
         "unowned_file_count": len(unowned),
@@ -809,6 +1043,18 @@ def budget_summary(rows: list[dict[str, Any]], policy: dict[str, Any]) -> dict[s
         "max_archive_pointer_files": int(policy.get("max_archive_pointer_files") or 0),
         "max_single_family_bytes": max_family,
     }
+
+
+def unique_storage_bytes(rows: list[dict[str, Any]]) -> int:
+    seen: set[str] = set()
+    total = 0
+    for row in rows:
+        identity = str(row.get("storage_identity") or row.get("path") or "")
+        if identity in seen:
+            continue
+        seen.add(identity)
+        total += int(row.get("allocated_bytes") or row.get("bytes") or 0)
+    return total
 
 
 def budget_family_records(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

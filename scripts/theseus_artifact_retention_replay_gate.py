@@ -30,6 +30,7 @@ import theseus_archive_resolver  # noqa: E402
 
 
 DEFAULT_RETENTION_REPORT = ROOT / "reports" / "theseus_artifact_retention.json"
+DEFAULT_RETENTION_MANIFEST = ROOT / "reports" / "theseus_artifact_retention_manifest.json"
 DEFAULT_OUT = ROOT / "reports" / "theseus_artifact_retention_replay_gate.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "theseus_artifact_retention_replay_gate.md"
 NO_CHEAT = {
@@ -42,6 +43,7 @@ NO_CHEAT = {
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--retention-report", default=rel(DEFAULT_RETENTION_REPORT))
+    parser.add_argument("--retention-manifest", default=rel(DEFAULT_RETENTION_MANIFEST))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     parser.add_argument("--allow-empty", action="store_true")
@@ -50,28 +52,48 @@ def main() -> int:
     started = time.perf_counter()
     retention_path = resolve(args.retention_report)
     retention = read_json(retention_path)
-    checks = [
-        verify_action(row, retention, retention_path)
+    manifest_path = resolve(args.retention_manifest)
+    manifest = read_json(manifest_path)
+    manifest_rows = [
+        row
+        for row in list_dicts(manifest.get("entries"))
+        if str(row.get("status") or "") in {"archived", "already_archived"}
+    ]
+    source_rows = manifest_rows or [
+        row
         for row in list_dicts(retention.get("actions"))
         if str(row.get("status") or "") in {"archived", "already_archived"}
+    ]
+    source_payload = manifest if manifest_rows else retention
+    source_path = manifest_path if manifest_rows else retention_path
+    checks = [
+        verify_action(
+            row,
+            source_payload,
+            source_path,
+            manifest_entry_mode=bool(manifest_rows),
+        )
+        for row in source_rows
     ]
     hard_gaps: list[dict[str, Any]] = []
     if not retention_path.exists():
         hard_gaps.append(gap("retention_report_missing", {"path": rel(retention_path)}))
     if not checks and not args.allow_empty:
-        hard_gaps.append(gap("no_executed_retention_actions", {"retention_report": rel(retention_path)}))
+        hard_gaps.append(gap("no_executed_retention_actions", {"retention_report": rel(retention_path), "retention_manifest": rel(manifest_path)}))
     for check in checks:
         if not check.get("passed"):
             hard_gaps.append(gap("archive_pointer_replay_failed", check))
 
     trigger_state = "GREEN" if not hard_gaps else "RED"
-    records = build_records(checks, retention_path)
+    records = build_records(checks, source_path)
     payload = {
         "policy": "project_theseus_artifact_retention_replay_gate_v1",
         "created_utc": now(),
         "trigger_state": trigger_state,
         "summary": {
             "retention_report": rel(retention_path),
+            "retention_manifest": rel(manifest_path),
+            "replay_source": "cumulative_manifest" if manifest_rows else "current_retention_report",
             "eligible_action_count": len(checks),
             "passed_replay_count": sum(1 for row in checks if row.get("passed")),
             "failed_replay_count": sum(1 for row in checks if not row.get("passed")),
@@ -101,7 +123,13 @@ def main() -> int:
     return 0 if trigger_state == "GREEN" else 2
 
 
-def verify_action(row: dict[str, Any], retention: dict[str, Any], retention_path: Path) -> dict[str, Any]:
+def verify_action(
+    row: dict[str, Any],
+    retention: dict[str, Any],
+    retention_path: Path,
+    *,
+    manifest_entry_mode: bool = False,
+) -> dict[str, Any]:
     original = resolve(str(row.get("original_path") or row.get("path") or ""))
     pointer_path = resolve(str(row.get("pointer_path") or row.get("original_path") or row.get("path") or ""))
     archive = resolve(str(row.get("archive_path") or ""))
@@ -123,12 +151,21 @@ def verify_action(row: dict[str, Any], retention: dict[str, Any], retention_path
             json_parse_error = repr(exc)
     else:
         json_parse_verified = True
-    defeater_verified = has_matching_defeater(row, retention)
-    compression_record_verified = has_matching_record(
-        row,
-        list_dicts(retention.get("compression_records")),
-        expected_hash=expected_hash,
-    )
+    if manifest_entry_mode:
+        defeater_verified = bool(
+            pointer_verified
+            and str(pointer.get("original_path") or "") == str(row.get("original_path") or row.get("path") or "")
+            and str(pointer.get("archive_path") or "") == str(row.get("archive_path") or "")
+            and str(pointer.get("original_sha256") or "") == expected_hash
+        )
+        compression_record_verified = bool(hash_verified and resolver_verified)
+    else:
+        defeater_verified = has_matching_defeater(row, retention)
+        compression_record_verified = has_matching_record(
+            row,
+            list_dicts(retention.get("compression_records")),
+            expected_hash=expected_hash,
+        )
     passed = all(
         [
             archive_exists,
@@ -160,6 +197,7 @@ def verify_action(row: dict[str, Any], retention: dict[str, Any], retention_path
         "payload_bytes": int(row.get("bytes") or pointer.get("original_bytes") or 0),
         "archived_bytes": int(row.get("archived_bytes") or (archive.stat().st_size if archive.exists() else 0)),
         "retention_report": rel(retention_path),
+        "manifest_entry_mode": bool(manifest_entry_mode),
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,

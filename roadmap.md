@@ -36,11 +36,11 @@ module must meet.
 | Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | stop custom-head tuning; scale governed code data and a standard causal decoder behind the same integrity/verifier contract |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
 | VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
-| Claim ledger + belief revision | Phase 14 | partial | one real belief revision on a live claim + independent audit |
+| Claim ledger + belief revision | Phase 14 | implemented; synthetic/replay infrastructure evidence | keep new citeable gates in the canonical pack/TCB/dependency audit; earn empirical support from real revisions |
 | Replacement transactions | Phase 2 | synthetic-test-backed | one real default swap with rollback |
 | Authority kernel / SCIF | Phase 18 | synthetic-test-backed | one real side-effecting run |
 | Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
-| Report hygiene | Phases 0, 8 | ~2.4 GB, high churn | enforce report/checkpoint retention; drive live state below 1 GB |
+| Report hygiene | Phases 0, 8, 14 | budget GREEN: hot reports 1.07 GB, active index 204 MB, checkpoints 6.32 GB physical | keep current-reference compaction and exact replay mandatory as artifacts grow |
 | Book crosswalk / parity | Phase 19 | 49 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
 | Book futures intake | Phase 19 + routed owners | 19 chapter candidates + 2 section routes mapped | activate only at source/ownership and operational entry gates |
 
@@ -609,6 +609,17 @@ deletion closure is graph evidence, not physical unlearning.
   source evidence without its declared-use replay gate.
 - Do not: overwrite negatives, elevate authority through summaries/compression, or
   treat structural proof as model-quality evidence.
+- Current implementation: the canonical evidence store emits 91/91 valid public-safe
+  packs, an eight-root TCB with five rotated primary/shadow assignments, a 1,532-claim
+  index spanning 43 emitting families and 9,166 dependent-surface edges, thirteen real
+  evidence-driven downgrades, 64/64 randomized deep receipt replays, and 7/7 rejected
+  adversarial traps. Exact snapshot migration reclaimed 866 MB from SQLite. Reference-
+  aware checkpoint retention archived more than 13 GiB behind replayable pointers,
+  hard-linked ten exact duplicate payloads, restored 36 missing historical pointers
+  after archive-hash verification, archived 115 superseded hot-report views, replayed
+  1,361/1,361 cumulative entries, and leaves
+  the artifact budget GREEN with zero hard gaps and zero warnings. These are evidence-system results, not model-
+  capability or checkpoint-quality claims.
 
 ### Phase 15: Procedural Memory and Toolification
 - Cluster repeated verified trajectories into procedural candidates only when they

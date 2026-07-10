@@ -3461,7 +3461,7 @@
       "canonical_entrypoint": "scripts/theseus_project_registry.py",
       "swappable_under_contract": true,
       "replacement_policy": "A replacement must materialize the same abstraction and implementation bindings before this implementation is deprecated.",
-      "verification_command": "python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate",
+      "verification_command": "python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
       "role": "governance",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -3470,6 +3470,12 @@
         "scripts/theseus_project_registry.py",
         "scripts/roadmap_implementation_gate.py",
         "scripts/scf_reference_kernel_v1.py",
+        "scripts/report_evidence_store.py",
+        "scripts/report_evidence_integrity.py",
+        "scripts/theseus_artifact_retention.py",
+        "scripts/artifact_retention_reference.py",
+        "scripts/theseus_artifact_retention_replay_gate.py",
+        "configs/checkpoint_retention_pins.json",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
         "scripts/neural_seed_full_state_pretraining.py",
@@ -3484,7 +3490,11 @@
         "reports/roadmap_implementation_gate.md",
         "reports/book_to_theseus_crosswalk.json",
         "reports/scf_reference_kernel_v1.json",
-        "reports/scf_reference_kernel_v1.md"
+        "reports/scf_reference_kernel_v1.md",
+        "reports/report_evidence_store.json",
+        "reports/theseus_book_importable_evidence_packs.json",
+        "reports/theseus_artifact_budget_gate.json",
+        "reports/theseus_artifact_retention_replay_gate.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -6936,6 +6946,7 @@
       "status": "live",
       "patterns": [
         "scripts/report_evidence_store.py",
+        "scripts/report_evidence_integrity.py",
         "scripts/theseus_weekly_focus_20260706.py",
         "reports/report_evidence_store.sqlite",
         "configs/artifact_retention_budget_policy.json"
@@ -6948,10 +6959,11 @@
         "reports/theseus_weekly_focus_20260706.md",
         "reports/theseus_public_safe_reference_trace_20260706.json",
         "reports/theseus_book_importable_evidence_packs_20260706.json",
+        "reports/theseus_book_importable_evidence_packs.json",
         "reports/theseus_artifact_budget_gate.json",
         "reports/theseus_artifact_budget_gate.md"
       ],
-      "verification_command": "python3 scripts/report_evidence_store.py && python3 scripts/theseus_weekly_focus_20260706.py --gate && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_weekly_focus_20260706.py --gate && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m pytest -q tests/test_report_evidence_integrity.py && python3 -m py_compile scripts/report_evidence_store.py scripts/report_evidence_integrity.py",
       "cleanup_policy": "stable report JSON files are latest views; durable evidence lives here",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,
@@ -6972,8 +6984,11 @@
         "scripts/theseus_doc_link_audit.py",
         "scripts/theseus_generated_artifact_gc.py",
         "scripts/theseus_artifact_retention.py",
+        "scripts/artifact_retention_reference.py",
+        "scripts/theseus_artifact_retention_replay_gate.py",
         "scripts/theseus_archive_resolver.py",
-        "configs/artifact_retention_budget_policy.json"
+        "configs/artifact_retention_budget_policy.json",
+        "configs/checkpoint_retention_pins.json"
       ],
       "canonical": "scripts/theseus_workspace_hygiene_audit.py",
       "report_outputs": [
@@ -6983,10 +6998,12 @@
         "reports/theseus_doc_link_audit.json",
         "reports/theseus_generated_artifact_gc.json",
         "reports/theseus_artifact_retention.json",
+        "reports/theseus_artifact_retention_replay_gate.json",
+        "reports/theseus_artifact_retention_replay_gate.md",
         "reports/theseus_artifact_budget_gate.json",
         "reports/theseus_artifact_budget_gate.md"
       ],
-      "verification_command": "python3 scripts/theseus_workspace_hygiene_audit.py && python3 scripts/theseus_deprecation_registry.py && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_workspace_hygiene_audit.py && python3 scripts/theseus_deprecation_registry.py && python3 scripts/theseus_artifact_retention_replay_gate.py && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m pytest -q tests/test_artifact_retention_reference.py && python3 -m py_compile scripts/theseus_artifact_retention.py scripts/artifact_retention_reference.py scripts/theseus_artifact_retention_replay_gate.py",
       "cleanup_policy": "non-destructive by default; archive/quarantine requires manifest pointers",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,

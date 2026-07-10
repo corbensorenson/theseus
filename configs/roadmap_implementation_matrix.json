@@ -2000,7 +2000,7 @@
     {
       "phase": 14,
       "title": "Compression, Proof, And Claim Evidence Records",
-      "status": "partial",
+      "status": "implemented",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-14",
       "ai_book_source_basis": [
@@ -2062,6 +2062,7 @@
         "reports/hive_artifact_merge_summary.json",
         "reports/hive_artifact_citation_refresh.json",
         "reports/theseus_book_importable_evidence_packs_20260706.json",
+        "reports/theseus_book_importable_evidence_packs.json",
         "reports/theseus_public_safe_reference_trace_20260706.json",
         "reports/theseus_weekly_focus_20260706.json",
         "reports/roadmap_implementation_gate.json",
@@ -2069,19 +2070,28 @@
         "reports/theseus_artifact_budget_gate.json",
         "reports/theseus_artifact_budget_gate.md"
       ],
-      "missing_items": [
-        "receipt-faithfulness adversarial audit beyond candidate integrity: trap fixtures, randomized deep replay audits, and cross-component verification for effect receipts, gate reports, and ledger writes",
-        "explicit epistemic trusted-computing-base record naming trust roots, verifier harnesses, blind-flow auditors, digest writers, and verifier-of-verifier rotation or independent audit",
-        "claim-ledger belief revision transitions are implemented for weekly-focus/A1 with downgrade, split, merge, contradiction-link, retire, append-only history, and expected-invalid controls; remaining work is dependent-surface discovery and rollout across every material claim-emitting run family",
-        "standard book-importable public-safe evidence pack emitter for every citeable GREEN gate: digests, commands, baselines, negative controls, residuals, non-claims, and support state",
-        "checkpoint retention follow-up: budget gate is GREEN, but checkpoint bytes remain above warning target until current-reference-aware checkpoint compaction exists"
+      "missing_items": [],
+      "implemented_items": [
+        "The canonical report evidence store now emits a named eight-root epistemic TCB and five primary-plus-shadow audit assignments rotated by ISO week; producer/self-audit, missing-root, and insufficient-independent-auditor states fail closed.",
+        "The registry/roadmap-derived evidence-pack emitter covers every currently citeable GREEN report without copying private payloads. The live run validates 91/91 packs with source digest, commands, baseline/control shape, residual shape, non-claims, support state, and source-activity counters.",
+        "Material claim discovery now spans 1,532 stable claims across 43 emitting report families, records 9,166 dependent-surface edges, merges repeated projections by stable claim ID, rejects contradictory text/cycles, persists 3,963 authoritative append-only claim versions, and emits 13 downgrade transitions only for genuinely non-GREEN dependencies.",
+        "Receipt faithfulness now performs 64 deterministic randomized deep replays plus seven expected-invalid traps covering digest/source/trigger/payload/counter, TCB self-audit, and claim-cycle faults; all live replays pass and all traps are rejected.",
+        "The append-only SQLite store moved 571 oversized inline payloads (860,781,217 bytes) to exact digest-replayed snapshots and reclaimed 866,529,280 database bytes without losing a payload.",
+        "Current-reference-aware compaction protects operational configs, route-required reports, roadmap citations, active promoted manifests, mutable ledgers, and explicit pins. It archived 13+ GiB of unreferenced weights, hard-linked ten byte-identical weight files, and archived 115 superseded hot-report views while reclaiming about 299 MiB. A manifest audit repaired 36 missing historical pointers only after archive-hash verification and then replayed 1,361/1,361 cumulative archived entries. The final artifact budget is GREEN with zero hard gaps and zero warnings."
       ],
-      "smallest_next_patch": "Continue Phase 14 evidence hygiene after the hard artifact budget gate and weekly-focus belief-revision ledger: add named epistemic TCB/auditor rotation, expand claim-belief revision/dependent-surface discovery beyond the weekly-focus trace, standardize evidence-pack exports for every citeable GREEN gate, and implement current-reference-aware checkpoint compaction for the warning-only checkpoint bulk.",
+      "smallest_next_patch": "Maintain the canonical evidence kernel as claim-emitting families change: new citeable gates must enter the registry/roadmap pack set, new high-consequence verifiers must enter the rotated TCB, and checkpoint cleanup must use current-reference dry-run plus exact replay. Do not create dated evidence-pack or retention side lanes.",
       "integration_smoke": [
         "python3 scripts/theseus_artifact_retention.py --execute --include-report-snapshots --min-bytes 7000000 --max-files 1",
         "python3 scripts/theseus_artifact_retention_replay_gate.py",
         "python3 scripts/viea_spine_record_gate.py --gate",
         "python3 scripts/theseus_artifact_retention.py --budget-gate",
+        "python3 scripts/report_evidence_store.py --integrity-sample-size 64",
+        "python3 -m pytest -q tests/test_report_evidence_integrity.py tests/test_artifact_retention_reference.py",
+        "reports/report_evidence_store.json trigger_state=GREEN",
+        "reports/report_evidence_store.json summary.standard_evidence_pack_count=91 valid_standard_evidence_pack_count=91",
+        "reports/report_evidence_store.json summary.epistemic_tcb_state=GREEN",
+        "reports/report_evidence_store.json summary.material_claim_count=1532 stored_material_claim_version_count=3963 claim_emitting_run_family_count=43",
+        "reports/report_evidence_store.json summary.receipt_randomized_deep_replay_count=64",
         "reports/theseus_artifact_budget_gate.json trigger_state=GREEN",
         "reports/theseus_artifact_budget_gate.json summary.hot_report_bytes <= summary.max_hot_report_bytes",
         "python3 scripts/theseus_weekly_focus_20260706.py --no-refresh-assistant --gate",
@@ -2090,9 +2100,10 @@
         "reports/theseus_weekly_focus_20260706.json summary.claim_belief_revision_expected_invalid_rejected_count=6",
         "reports/theseus_artifact_budget_gate.json summary.unowned_file_count=0",
         "reports/theseus_artifact_budget_gate.json summary.missing_retention_class_count=0",
-        "reports/theseus_artifact_retention_replay_gate.json summary.passed_replay_count=386"
+        "reports/theseus_artifact_budget_gate.json summary.warning_count=0",
+        "reports/theseus_artifact_retention_replay_gate.json trigger_state=GREEN passed_replay_count=1361 failed_replay_count=0"
       ],
-      "completion_rule": "Every capability claim cites exact artifacts, evidence bundles, assumptions, defeaters, and proof/compression state.",
+      "completion_rule": "Implemented: every currently citeable GREEN gate has a digest-bound compact pack; material claims retain dependency and revision records; the epistemic TCB names and rotates independent auditors; randomized/trap replay fails closed; report/checkpoint compression preserves exact replay and current operational references without erasing negative evidence.",
       "book_followup_items": [
         "A proof/evidence follow-up: use proof-carrying claims only within theorem scope and keep broader utility/model-quality claims separately supported."
       ]

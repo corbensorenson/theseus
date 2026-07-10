@@ -1,0 +1,27 @@
+{
+  "policy": "project_theseus_checkpoint_retention_pins_v1",
+  "purpose": "Keep only checkpoint families required for current operational routes or the latest unresolved scientific verdict hot; historical weights use exact archive pointers.",
+  "pins": [
+    {
+      "path": "checkpoints/strict_generator_mlx_dense_semantic_plan_body_pieces",
+      "reason": "latest zero-unknown semantic-plan-plus-direct-body negative comparator retained until the Phase 10 standard causal decoder replaces or reproduces it",
+      "owner_phase": 10,
+      "review_trigger": "standard decoder-only causal transformer private verdict"
+    },
+    {
+      "path": "checkpoints/strict_generator_mlx_dense_body_open_vocab",
+      "reason": "latest zero-unknown direct-body negative comparator retained until the Phase 10 standard causal decoder replaces or reproduces it",
+      "owner_phase": 10,
+      "review_trigger": "standard decoder-only causal transformer private verdict"
+    }
+  ],
+  "rules": {
+    "pin_is_not_promotion": true,
+    "pin_is_not_capability_evidence": true,
+    "archival_requires_exact_pointer_and_replay": true,
+    "review_instead_of_permanent_retention": true
+  },
+  "public_training_rows_written": 0,
+  "external_inference_calls": 0,
+  "fallback_return_count": 0
+}

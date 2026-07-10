@@ -17,6 +17,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import report_evidence_integrity
+import theseus_archive_resolver
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -24,7 +27,10 @@ DEFAULT_DB = REPORTS / "report_evidence_store.sqlite"
 DEFAULT_OUT = REPORTS / "report_evidence_store.json"
 DEFAULT_MARKDOWN = REPORTS / "report_evidence_store.md"
 DEFAULT_SNAPSHOT_DIR = REPORTS / "report_snapshots"
-MAX_PAYLOAD_BYTES = 4 * 1024 * 1024
+DEFAULT_EVIDENCE_PACKS_OUT = REPORTS / "theseus_book_importable_evidence_packs.json"
+DEFAULT_REGISTRY = ROOT / "configs" / "project_manifest_registry.json"
+DEFAULT_ROADMAP_MATRIX = ROOT / "configs" / "roadmap_implementation_matrix.json"
+MAX_PAYLOAD_BYTES = 512 * 1024
 NO_CHEAT_COUNTERS = ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
 
 DEFAULT_REPORT_PATHS = [
@@ -191,12 +197,23 @@ def main() -> int:
     parser.add_argument("--markdown-out", default=str(DEFAULT_MARKDOWN.relative_to(ROOT)))
     parser.add_argument("--ingest", nargs="*", default=[])
     parser.add_argument("--family", default="")
+    parser.add_argument("--compact-db", action="store_true")
+    parser.add_argument("--integrity-sample-size", type=int, default=64)
+    parser.add_argument("--evidence-packs-out", default=str(DEFAULT_EVIDENCE_PACKS_OUT.relative_to(ROOT)))
+    parser.add_argument("--registry", default=str(DEFAULT_REGISTRY.relative_to(ROOT)))
+    parser.add_argument("--roadmap-matrix", default=str(DEFAULT_ROADMAP_MATRIX.relative_to(ROOT)))
     args = parser.parse_args()
 
     started = time.perf_counter()
     db_path = resolve(args.db)
     paths = [resolve(path) for path in args.ingest] if args.ingest else default_report_paths()
     ingested = ingest_reports(db_path, paths)
+    db_compaction = compact_evidence_database(db_path) if args.compact_db else {
+        "state": "NOT_REQUESTED",
+        "migrated_payload_count": 0,
+        "migrated_payload_bytes": 0,
+        "failed_payload_count": 0,
+    }
     compression_records = [row["compression_record"] for row in ingested if isinstance(row.get("compression_record"), dict) and row.get("compression_record")]
     compressed_artifact_records = [
         compressed_artifact_record_from_compression_record(row, source_system="report_evidence_store")
@@ -209,16 +226,70 @@ def main() -> int:
     defeater_records = [row["defeater_record"] for row in ingested if isinstance(row.get("defeater_record"), dict) and row.get("defeater_record")]
     families = sorted(families_in_store(db_path))
     store_summary = evidence_store_summary(db_path)
+    stored_claim_versions = material_claim_versions(db_path)
     best = {
         family: compact_payload(best_payload_for_family(db_path, family) or {})
         for family in families
         if not args.family or family == args.family
     }
     current_index = current_report_index(db_path, paths)
+    registry = read_json(resolve(args.registry), {})
+    roadmap_matrix = read_json(resolve(args.roadmap_matrix), {})
+    pack_out = resolve(args.evidence_packs_out)
+    excluded_pack_sources = {resolve(args.out).resolve(), pack_out.resolve()}
+    citeable_paths = [
+        path
+        for path in report_evidence_integrity.citeable_green_report_paths(registry, roadmap_matrix)
+        if path.resolve() not in excluded_pack_sources
+    ]
+    evidence_packs = report_evidence_integrity.build_standard_evidence_packs(
+        citeable_paths,
+        commands=report_evidence_integrity.command_index(registry, roadmap_matrix),
+    )
+    evidence_pack_export = {
+        "policy": "project_theseus_book_importable_evidence_pack_export_v2",
+        "created_utc": now(),
+        "trigger_state": "GREEN" if evidence_packs and all(row.get("validation_state") == "GREEN" for row in evidence_packs) else "RED",
+        "summary": {
+            "evidence_pack_count": len(evidence_packs),
+            "valid_evidence_pack_count": sum(1 for row in evidence_packs if row.get("validation_state") == "GREEN"),
+            "citeable_green_source_count": len(citeable_paths),
+            "private_payload_copied_count": sum(1 for row in evidence_packs if row.get("private_payload_copied")),
+        },
+        "evidence_packs": evidence_packs,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "non_claims": [
+            "Evidence packs export compact public-safe receipts; source report payloads are not copied.",
+            "A GREEN pack preserves the source gate scope and does not create a broader capability claim.",
+        ],
+    }
+    write_json(pack_out, evidence_pack_export)
+    epistemic_tcb = report_evidence_integrity.build_epistemic_tcb()
+    claim_revision = report_evidence_integrity.build_material_claim_revision(
+        citeable_paths,
+        evidence_packs,
+        stored_claim_versions=stored_claim_versions,
+    )
+    receipt_audit = report_evidence_integrity.audit_receipt_faithfulness(
+        evidence_packs,
+        claim_revision,
+        epistemic_tcb,
+        sample_size=max(1, int(args.integrity_sample_size)),
+    )
+    integrity_states = {
+        "evidence_packs": evidence_pack_export["trigger_state"],
+        "epistemic_tcb": epistemic_tcb["state"],
+        "claim_revision": claim_revision["state"],
+        "receipt_faithfulness": receipt_audit["state"],
+        "db_compaction": db_compaction["state"],
+    }
+    trigger_state = "GREEN" if all(state in {"GREEN", "NOT_REQUESTED"} for state in integrity_states.values()) else "RED"
     payload = {
         "policy": "project_theseus_report_evidence_store_v1",
         "created_utc": now(),
-        "trigger_state": "GREEN",
+        "trigger_state": trigger_state,
         "database": rel_or_abs(db_path),
         "summary": {
             "ingested_this_run": len(ingested),
@@ -235,6 +306,21 @@ def main() -> int:
             "compressed_artifact_record_count": len(compressed_artifact_records),
             "compression_receipt_count": len(compression_receipts),
             "defeater_record_count": len(defeater_records),
+            "citeable_green_gate_count": len(citeable_paths),
+            "standard_evidence_pack_count": len(evidence_packs),
+            "valid_standard_evidence_pack_count": sum(1 for row in evidence_packs if row.get("validation_state") == "GREEN"),
+            "epistemic_tcb_state": epistemic_tcb["state"],
+            "epistemic_tcb_root_count": len(epistemic_tcb["trust_roots"]),
+            "epistemic_tcb_audit_assignment_count": len(epistemic_tcb["audit_assignments"]),
+            "material_claim_count": claim_revision["material_claim_count"],
+            "claim_emitting_run_family_count": claim_revision["claim_emitting_run_family_count"],
+            "claim_dependent_surface_edge_count": claim_revision["dependent_surface_edge_count"],
+            "claim_dependent_invalidation_count": claim_revision["dependent_invalidation_count"],
+            "stored_material_claim_version_count": len(stored_claim_versions),
+            "receipt_randomized_deep_replay_count": receipt_audit["randomized_deep_replay_count"],
+            "receipt_rejected_trap_fixture_count": receipt_audit["rejected_trap_fixture_count"],
+            "db_compacted_payload_count": db_compaction["migrated_payload_count"],
+            "db_compacted_payload_bytes": db_compaction["migrated_payload_bytes"],
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "ingested": ingested,
@@ -244,19 +330,30 @@ def main() -> int:
         "defeater_records": defeater_records,
         "current_index": current_index,
         "best_by_family": best,
+        "db_compaction": db_compaction,
+        "standard_evidence_pack_export": rel_or_abs(pack_out),
+        "epistemic_trusted_computing_base": epistemic_tcb,
+        "material_claim_revision": claim_revision,
+        "receipt_faithfulness_audit": receipt_audit,
+        "integrity_states": integrity_states,
         "rules": {
             "append_only": "Distinct report payloads are stored by content hash instead of overwriting prior evidence.",
             "large_payload_snapshots": "Reports larger than the inline payload limit are copied into content-addressed immutable snapshots.",
             "latest_views": "Stable JSON paths are mutable latest views; report_latest_by_path points to their last observed immutable run.",
             "reports_are_views": "JSON reports remain views; this DB is the durable recent-run evidence index.",
             "best_evidence": "Schedulers should choose strongest valid evidence by family, not newest file path.",
+            "claim_revision": "Missing or RED evidence dependencies downgrade material claims and invalidate discovered dependent surfaces; they never promote a claim.",
+            "epistemic_tcb": "Trust roots are digest-bound and high-consequence verifiers receive rotated primary and shadow auditors.",
+            "public_safe_packs": "Every registry/roadmap-citeable GREEN report receives a digest-bound compact pack without copying private payloads.",
         },
+        "public_training_rows_written": 0,
         "external_inference_calls": 0,
+        "fallback_return_count": 0,
     }
     write_json(resolve(args.out), payload)
     write_text(resolve(args.markdown_out), render_markdown(payload))
     print(json.dumps(payload, indent=2))
-    return 0
+    return 0 if trigger_state == "GREEN" else 2
 
 
 def connect(db_path: Path) -> sqlite3.Connection:
@@ -309,6 +406,17 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
             metrics_json TEXT NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_report_latest_family ON report_latest_by_path(family);
+        CREATE TABLE IF NOT EXISTS material_claim_versions (
+            version_id TEXT PRIMARY KEY,
+            claim_id TEXT NOT NULL,
+            source_run_id TEXT NOT NULL,
+            report_path TEXT NOT NULL,
+            support_state TEXT NOT NULL,
+            observed_utc TEXT NOT NULL,
+            claim_json TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_material_claim_id ON material_claim_versions(claim_id);
+        CREATE INDEX IF NOT EXISTS idx_material_claim_source_run ON material_claim_versions(source_run_id);
         """
     )
     columns = {str(row[1]) for row in conn.execute("PRAGMA table_info(report_runs)").fetchall()}
@@ -318,6 +426,86 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
     if "snapshot_path" not in latest_columns:
         conn.execute("ALTER TABLE report_latest_by_path ADD COLUMN snapshot_path TEXT NOT NULL DEFAULT ''")
     conn.commit()
+
+
+def compact_evidence_database(
+    db_path: Path,
+    *,
+    inline_limit: int = MAX_PAYLOAD_BYTES,
+) -> dict[str, Any]:
+    """Move oversized inline payloads to exact snapshots, then reclaim DB pages."""
+
+    if not db_path.exists():
+        return {
+            "state": "GREEN",
+            "migrated_payload_count": 0,
+            "migrated_payload_bytes": 0,
+            "failed_payload_count": 0,
+            "database_bytes_before": 0,
+            "database_bytes_after": 0,
+        }
+    before = int(db_path.stat().st_size)
+    migrated_count = 0
+    migrated_bytes = 0
+    failures: list[dict[str, Any]] = []
+    conn = connect(db_path)
+    try:
+        rows = conn.execute(
+            "SELECT * FROM report_runs WHERE payload_json != '{}' AND length(payload_json) > ? ORDER BY run_id",
+            (max(1, int(inline_limit)),),
+        ).fetchall()
+        for row in rows:
+            raw = str(row["payload_json"] or "{}").encode("utf-8")
+            digest = hashlib.sha256(raw).hexdigest()
+            expected = str(row["content_hash"] or "")
+            if digest != expected:
+                failures.append({"run_id": row["run_id"], "reason": "inline_payload_hash_mismatch"})
+                continue
+            try:
+                payload = json.loads(raw.decode("utf-8"))
+            except json.JSONDecodeError:
+                failures.append({"run_id": row["run_id"], "reason": "inline_payload_json_invalid"})
+                continue
+            source = resolve(str(row["report_path"] or "report.json"))
+            snapshot_path = write_payload_snapshot(source, payload, raw, expected, str(row["family"] or "unknown"))
+            snapshot = resolve(snapshot_path)
+            if not snapshot.is_file() or hashlib.sha256(snapshot.read_bytes().rstrip(b"\n")).hexdigest() != expected:
+                failures.append({"run_id": row["run_id"], "reason": "snapshot_replay_hash_mismatch", "snapshot_path": snapshot_path})
+                continue
+            conn.execute(
+                "UPDATE report_runs SET payload_json='{}', payload_truncated=1, snapshot_path=? WHERE run_id=?",
+                (snapshot_path, row["run_id"]),
+            )
+            conn.execute(
+                "UPDATE report_latest_by_path SET payload_truncated=1, snapshot_path=? WHERE run_id=?",
+                (snapshot_path, row["run_id"]),
+            )
+            migrated_count += 1
+            migrated_bytes += len(raw)
+        conn.commit()
+    finally:
+        conn.close()
+    if migrated_count and not failures:
+        vacuum = sqlite3.connect(str(db_path))
+        try:
+            vacuum.execute("VACUUM")
+        finally:
+            vacuum.close()
+    after = int(db_path.stat().st_size) if db_path.exists() else 0
+    return {
+        "state": "GREEN" if not failures else "RED",
+        "inline_payload_limit_bytes": int(inline_limit),
+        "migrated_payload_count": migrated_count,
+        "migrated_payload_bytes": migrated_bytes,
+        "failed_payload_count": len(failures),
+        "failures": failures[:50],
+        "database_bytes_before": before,
+        "database_bytes_after": after,
+        "database_bytes_reclaimed": max(0, before - after),
+        "reconstruction_contract": "snapshot JSON replays to the original report_runs.content_hash before inline payload removal",
+        "non_claim": "Database compaction preserves evidence payloads and does not support model capability claims.",
+        **zero_no_cheat_counters(),
+    }
 
 
 def ingest_reports(db_path: Path, paths: list[Path]) -> list[dict[str, Any]]:
@@ -383,7 +571,7 @@ def ingest_report_path(conn_or_db: sqlite3.Connection | Path, path: Path, payloa
     try:
         path = path if path.is_absolute() else ROOT / path
         if payload is None:
-            payload = read_json(path, {})
+            payload = read_report_payload(path)
         if not isinstance(payload, dict) or not payload:
             return {}
         raw = json.dumps(payload, sort_keys=True).encode("utf-8")
@@ -451,6 +639,34 @@ def ingest_report_path(conn_or_db: sqlite3.Connection | Path, path: Path, payloa
                 payload_json,
             ),
         )
+        claims_to_store = []
+        if str(payload.get("policy") or "") != "project_theseus_report_evidence_store_v1":
+            claims_to_store = report_evidence_integrity.extract_material_claims(
+                payload,
+                source_path=rel_or_abs(path),
+            )
+        for claim in claims_to_store:
+            claim_id = str(claim.get("claim_id") or "")
+            if not claim_id:
+                continue
+            version_id = stable_id("material_claim_version", run_id, claim_id, claim)
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO material_claim_versions (
+                    version_id, claim_id, source_run_id, report_path,
+                    support_state, observed_utc, claim_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    version_id,
+                    claim_id,
+                    run_id,
+                    rel_or_abs(path),
+                    str(claim.get("support_state") or "argument"),
+                    observed_utc,
+                    json.dumps(claim, sort_keys=True),
+                ),
+            )
         if snapshot_path:
             conn.execute(
                 "UPDATE report_runs SET snapshot_path=? WHERE run_id=? AND (snapshot_path IS NULL OR snapshot_path='')",
@@ -558,6 +774,31 @@ def best_payload_for_family(db_path: Path = DEFAULT_DB, family: str = "") -> dic
     return payload
 
 
+def material_claim_versions(db_path: Path = DEFAULT_DB) -> list[dict[str, Any]]:
+    if not db_path.exists():
+        return []
+    conn = connect(db_path)
+    try:
+        rows = conn.execute(
+            """
+            SELECT claim_json FROM material_claim_versions
+            WHERE report_path != 'reports/report_evidence_store.json'
+            ORDER BY observed_utc, version_id
+            """
+        ).fetchall()
+    finally:
+        conn.close()
+    versions: list[dict[str, Any]] = []
+    for row in rows:
+        try:
+            value = json.loads(str(row["claim_json"] or "{}"))
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict) and value:
+            versions.append(value)
+    return versions
+
+
 def families_in_store(db_path: Path) -> set[str]:
     if not db_path.exists():
         return set()
@@ -623,7 +864,7 @@ def current_report_index(db_path: Path, paths: list[Path], sample_limit: int = 2
             path = path if path.is_absolute() else ROOT / path
             if not path.exists():
                 continue
-            payload = read_json(path, {})
+            payload = read_report_payload(path)
             if not isinstance(payload, dict) or not payload:
                 continue
             raw = json.dumps(payload, sort_keys=True).encode("utf-8")
@@ -1169,6 +1410,11 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- truncated_payload_count: `{summary.get('truncated_payload_count')}`",
         f"- snapshot_count: `{summary.get('snapshot_count')}`",
         f"- current_truncated_without_snapshot_count: `{summary.get('current_truncated_without_snapshot_count')}`",
+        f"- standard_evidence_pack_count: `{summary.get('standard_evidence_pack_count')}` valid=`{summary.get('valid_standard_evidence_pack_count')}`",
+        f"- epistemic_tcb_state: `{summary.get('epistemic_tcb_state')}` roots=`{summary.get('epistemic_tcb_root_count')}`",
+        f"- material_claim_count: `{summary.get('material_claim_count')}` dependents=`{summary.get('claim_dependent_surface_edge_count')}`",
+        f"- receipt_randomized_deep_replay_count: `{summary.get('receipt_randomized_deep_replay_count')}`",
+        f"- db_compacted_payload_count: `{summary.get('db_compacted_payload_count')}` bytes=`{summary.get('db_compacted_payload_bytes')}`",
         "",
         "## Current Report Index",
         "",
@@ -1209,6 +1455,14 @@ def read_json(path: Path, default: Any) -> Any:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return default
+
+
+def read_report_payload(path: Path) -> dict[str, Any]:
+    payload = read_json(path, {})
+    if isinstance(payload, dict) and payload.get("policy") == theseus_archive_resolver.ARCHIVE_POINTER_POLICY:
+        resolved = theseus_archive_resolver.read_json_follow_pointer(path, default={})
+        return resolved if isinstance(resolved, dict) else {}
+    return payload if isinstance(payload, dict) else {}
 
 
 def write_json(path: Path, payload: Any) -> None:

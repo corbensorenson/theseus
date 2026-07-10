@@ -717,18 +717,35 @@ missing semantic update values, missing expected update calls, and missing
 wall is trainable semantic body construction, not another source-condition
 ranker, decode guard, or operation-tag diagnostic.
 
-The Phase 14 artifact-retention budget is now a live gate rather than a TODO.
-`configs/artifact_retention_budget_policy.json` defines report/checkpoint
-budgets and retention classes, and
-`python3 scripts/theseus_artifact_retention.py --budget-gate` reports
-`GREEN`: hot reports are under the `1 GiB` cap, active index bytes are under
-cap, unowned generated files are `0`, missing retention classes are `0`, and
-hard gaps are `0`. The execute canary archived `386` report
-snapshots through `reports/theseus_artifact_retention.json`, and
-`reports/theseus_artifact_retention_replay_gate.json` replay-verified all
-`386` archive pointers with `0` failures. The remaining retention issue is a
-warning, not a hard gap: checkpoint bytes are still above the warning target
-until current-reference-aware checkpoint compaction is implemented.
+Phase 14 is implemented as evidence-system infrastructure. The canonical
+`report_evidence_store.py` route produces `91/91` valid compact packs for the
+currently registry/roadmap-citeable GREEN reports, names eight epistemic trust
+roots with five weekly rotated primary/shadow audit assignments, discovers
+`1,532` stable material claims across `43` emitting families and `9,166`
+dependent-surface edges, persists `3,963` authoritative append-only claim
+versions, and records thirteen evidence-driven downgrades. Its
+receipt-faithfulness audit replays `64/64` deterministic random samples and
+rejects `7/7` digest/source/trigger/payload/counter/TCB/cycle traps. The
+append-only SQLite compaction moved `571` oversized inline payloads
+(`860,781,217` bytes) into exact snapshots and reclaimed `866,529,280` database
+bytes with no missing snapshots.
+
+Artifact retention is also current-reference-aware. Operational configs,
+route-required reports, active promoted manifests, and explicit pins protect
+hot checkpoints. The Phase 14 execution moved more than `13 GiB` of
+unreferenced historical weights behind exact binary archive pointers and
+hard-linked ten byte-identical payloads, reclaiming `1,461,234,114` physical
+bytes without changing either path or digest. The cumulative retention
+manifest has `1,486` entries. A matching report-reachability pass archived 115
+superseded unreferenced views and reclaimed about `299 MiB` while protecting
+registry/roadmap citations and mutable ledgers. The final budget gate is
+`GREEN`: hot reports `865,262,820` bytes, active indexes `207,761,408` bytes, checkpoint physical
+bytes `6,316,789,760`, unowned files `0`, missing retention classes `0`, hard
+gaps `0`, and warnings `0`. These measurements prove retention/evidence
+integrity only; they do not support model-quality or checkpoint-quality claims.
+The cumulative replay audit also found and repaired `36` missing legacy
+pointers only after their archives matched manifest digests; the independent
+follow-up replay passed `1,361/1,361` archived entries with zero failures.
 
 The 2026-07-06 weekly focus implementation pass is now represented by
 `reports/theseus_weekly_focus_20260706.json` (`GREEN`). It refreshed the
