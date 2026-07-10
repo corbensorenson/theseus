@@ -1249,26 +1249,45 @@
       "id": "module.teacher_and_data_governance",
       "surface_id": "teacher_and_data_governance",
       "problem": "Teacher and data admission must support learning without contaminating runtime or public calibration boundaries.",
-      "interface": "teacher oracle, distillation manifest, dogfood bridge, data admission policies.",
+      "interface": "teacher oracle, distillation manifest, dogfood bridge, source admission, per-candidate receipt ledger, lineage graph, lifecycle policy comparison, and descendant deletion closure.",
       "invariants": [
         "teacher rows are provenance-tagged",
         "teacher rows are verifier-accepted before admission",
-        "teacher tokens never serve at runtime"
+        "teacher tokens never serve at runtime",
+        "every selected training row hash has an independently replayed admit receipt",
+        "public calibration payloads and heldout rows never become training rows",
+        "incomplete descendants remain visible during revocation and deletion closure"
       ],
       "failure_modes": [
         "teacher output silently becomes runtime answer",
         "license unknown row admitted",
-        "public benchmark leak"
+        "public benchmark leak",
+        "file-level admission bypasses candidate-level rejection",
+        "ledger mutation or source drift is accepted without replay",
+        "deletion closure silently drops an unverified descendant"
       ],
-      "minimal_implementation": "Teacher manifest/gate and data admission reports.",
+      "minimal_implementation": "Teacher manifest/gate plus content-bound source and per-candidate admission receipts consumed by the curriculum and training materializer.",
       "validation_commands": [
-        "python3 scripts/teacher_distillation_manifest_builder.py"
+        "python3 scripts/teacher_distillation_manifest_builder.py",
+        "python3 scripts/training_data_admission_v1.py",
+        "python3 scripts/training_data_lineage_audit.py",
+        "python3 scripts/broad_capability_curriculum_v1.py",
+        "python3 scripts/broad_capability_survival_lane_run_v1.py",
+        "python3 tests/test_training_data_lineage_audit.py"
       ],
       "evidence_refs": [
-        "reports/teacher_distillation_manifest.json"
+        "reports/teacher_distillation_manifest.json",
+        "reports/training_data_admission_v1.json",
+        "reports/training_data_lineage_audit.json",
+        "runtime/data_governance/data_admission_receipts_v1.jsonl.gz",
+        "reports/broad_capability_curriculum_v1.json",
+        "reports/broad_capability_survival_lane_run_v1.json"
       ],
       "non_claims": [
-        "teacher proposal is not model self-improvement until admitted and trained"
+        "teacher proposal is not model self-improvement until admitted and trained",
+        "receipt completeness is not data quality or model capability",
+        "continual-policy simulation is not trained-model forgetting evidence",
+        "deletion graph closure is not proof of physical unlearning from deployed models"
       ],
       "deprecation_route": "replace through teacher_data_governance_contract"
     },

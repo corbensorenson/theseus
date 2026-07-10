@@ -624,6 +624,39 @@
       ]
     },
     {
+      "id": "training_data_candidate_lifecycle_spine_v1",
+      "producer_surface": "teacher_and_data_governance",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/training_data_admission_v1.json",
+      "record_list_fields": [
+        "viea_training_data_context_records"
+      ],
+      "required_record_types": [
+        "data_admission_receipt",
+        "data_lineage_edge",
+        "license_receipt",
+        "leakage_audit_receipt",
+        "verifier_acceptance",
+        "data_lifecycle_policy_decision",
+        "continual_learning_comparison",
+        "descendant_deletion_closure_receipt",
+        "failure_boundary"
+      ],
+      "required_evidence": [
+        "candidate receipt ledger is content-bound, compressed, and replay-valid",
+        "exact and semantic public-overlap candidates cannot be admitted",
+        "raw user text, fallback markers, missing licenses, and heldout rows cannot be admitted",
+        "teacher rows require governed manifest, verifier, license, provenance, and leakage checks",
+        "five frozen continual-learning policies are compared as metadata-policy simulation only",
+        "positive deletion closure passes and a broken descendant edge remains unverified",
+        "recursive synthetic distribution risks remain visible without being called model collapse",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
       "id": "public_calibration_proposal_spine_v1",
       "producer_surface": "public_calibration_registry",
       "source_kind": "record_list_report",

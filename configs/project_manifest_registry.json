@@ -535,7 +535,22 @@
           "id": "data_admission_gate",
           "path": "reports/training_data_admission_v1.json",
           "freshness_mode": "source_bound",
-          "source_paths": ["scripts/training_data_admission_v1.py"],
+          "source_paths": [
+            "scripts/training_data_admission_v1.py",
+            "scripts/training_data_lineage_audit.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        },
+        {
+          "id": "candidate_lineage_gate",
+          "path": "reports/training_data_lineage_audit.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/training_data_lineage_audit.py"
+          ],
           "acceptance": {
             "field": "trigger_state",
             "allowed": ["GREEN", "YELLOW"]
@@ -2415,6 +2430,10 @@
       "required_evidence": [
         "teacher distillation gate",
         "training data admission report",
+        "content-bound per-candidate admission receipt ledger",
+        "semantic contamination adversary controls",
+        "continual data-policy comparison",
+        "descendant deletion closure positive and negative fixtures",
         "public benchmark contamination audit when applicable"
       ],
       "canonical_implementation_id": "impl.teacher_and_data_governance.v1",
@@ -5135,12 +5154,17 @@
       "canonical_entrypoint": "scripts/teacher_distillation_gate.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve provenance, license, verifier, leakage, and runtime-serving boundaries.",
-      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_data_admission_v1.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 tests/test_training_data_lineage_audit.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_data_admission_v1.py scripts/training_data_lineage_audit.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "teacher",
       "trust_tier": "governed_external_training_only",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "scripts/teacher_distillation_gate.py",
+        "scripts/training_data_admission_v1.py",
+        "scripts/training_data_lineage_audit.py",
+        "scripts/broad_capability_curriculum_v1.py",
+        "scripts/broad_capability_survival_lane_run_v1.py",
+        "tests/test_training_data_lineage_audit.py",
         "scripts/public_calibration_proposal_gate.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
@@ -5154,6 +5178,11 @@
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
         "reports/training_data_admission_v1.json",
+        "reports/training_data_lineage_audit.json",
+        "reports/training_data_lineage_audit.md",
+        "runtime/data_governance/data_admission_receipts_v1.jsonl.gz",
+        "reports/broad_capability_curriculum_v1.json",
+        "reports/broad_capability_survival_lane_run_v1.json",
         "reports/public_calibration_proposal_gate.json"
       ],
       "attd_hooks": {
@@ -7524,9 +7553,14 @@
         "reports/teacher_distillation_gate.json",
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
-        "reports/training_data_admission_v1.json"
+        "reports/training_data_admission_v1.json",
+        "reports/training_data_lineage_audit.json",
+        "reports/training_data_lineage_audit.md",
+        "runtime/data_governance/data_admission_receipts_v1.jsonl.gz",
+        "reports/broad_capability_curriculum_v1.json",
+        "reports/broad_capability_survival_lane_run_v1.json"
       ],
-      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 tests/test_training_data_lineage_audit.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "teacher rows require provenance, license, verifier, and leakage audit; external tokens are never runtime-serving output",
       "abstraction_id": "teacher_data_governance_contract",
       "major_surface": true,

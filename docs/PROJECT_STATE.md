@@ -24,13 +24,13 @@ acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
-`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phase `3` is `implemented`; phases `7`, `10`,
-`13`, `14`, `15`, and `16` are intentionally `partial` after the latest
+`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3` and `7` are
+`implemented`; phases `10`, `13`, `14`, `15`, and `16` are intentionally `partial` after the latest
 ASI Stack/Claude book-mining pass; and phases `1`, `2`, `9`, and `18` are
 externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
-current local AI_book manifest contains `47` chapters, all mapped through the
+current local AI_book manifest contains `49` chapters, all mapped through the
 roadmap implementation matrix. The newly admitted adversarial-evaluation chapter
 is routed into existing phases `4`, `10`, `12`, `14`, and `18`; mapping it is not
 evidence that Theseus detects deception or that any local model is deceptive.
@@ -46,14 +46,32 @@ slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backe
 `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
 `B1_assisted_verified_assistant_product_lane=synthetic-test-backed`, and
 `C1_correctness_rl_and_generator_survival_lane=synthetic-test-backed`.
+The current local AI_book manifest now contains `49` chapters. The added
+Governed Deliberation and Test-Time Scaling chapter is mapped into existing
+phases `8`, `10`, `12`, `14`, `16`, and `18`; it adds bounded deliberation,
+independent-verifier, stop-reason, residual-owner, and no-authority-laundering
+obligations without creating a new route or claiming reasoning quality.
+The added Scalable Oversight and Adversarial AI Control chapter is mapped to
+phases `4`, `7`, `12`, `14`, `16`, and `18`; it adds supervisor-envelope,
+direct-baseline, independent-outcome-audit, correlation-risk, residual, and
+no-verdict-authority-laundering obligations without creating a parallel judge
+lane or claiming weak-to-strong oversight is solved.
+Phase `7` is implemented through the existing teacher/data-governance field:
+the content-bound gzip ledger has `64,196` candidate receipts (`63,892`
+admitted and `304` heldout rejections), nine passing contamination/provenance
+adversaries, five frozen continual-policy simulations, an 11-kind
+positive/negative deletion-closure fixture, and receipt-hash enforcement in
+the curriculum and survival-lane materializer. Its honest state is `YELLOW`
+because recursive synthetic share is `0.824771`; this is a
+curriculum-distribution warning, not a model-collapse, forgetting, unlearning,
+or capability claim.
 `scripts/roadmap_implementation_gate.py` now has a strict pre-training
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
 work can continue, but strict pre-training architecture readiness is now `RED`
-with one blocker: six book-derived implementation phases are still partial.
-Those partial phases are candidate-level data/teacher lifecycle governance (`7`), practical
-neural seed survival/policy optimization/generation modes (`10`), semantic IR
+with one blocker: five book-derived implementation phases are still partial.
+Those partial phases are practical neural seed survival/policy optimization/generation modes (`10`), semantic IR
 localized repair (`13`), evidence hygiene/receipt faithfulness/claim revision
 (`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and
 verification-bandwidth/governance-tax routing (`16`). The external-frozen

@@ -1,4 +1,16 @@
-# SymLiquid Training, Evaluation, And Benchmarking
+# Theseus Training, Evaluation, And Benchmarking
+
+2026-07-10 current data-authority note: source-level admission is no longer
+sufficient for the canonical survival lane. Every selected training row must
+match an `admit` receipt in
+`runtime/data_governance/data_admission_receipts_v1.jsonl.gz`; the receipt
+ledger is replayed against source hashes and the current contamination index.
+`reports/training_data_lineage_audit.json` is `YELLOW` with `0` hard gaps:
+`64,196` receipts, `63,892` admits, `304` heldout rejects, `9/9` adversarial
+controls, five frozen lifecycle-policy simulations, and positive plus broken
+11-kind deletion-closure fixtures. The warning is a `0.824771` recursive
+synthetic share. These are data-governance results, not model quality,
+forgetting, unlearning, learned-generation, or public-transfer evidence.
 
 This document defines the local-only workflow for SymLiquid. For the current
 live status, gate results, and next action, start with `docs/PROJECT_STATE.md`;

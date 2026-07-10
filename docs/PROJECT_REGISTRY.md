@@ -177,6 +177,14 @@ Authoritative files:
   `training_data_admission_context_spine_v1`, and fails closed if the resolver
   is not ready. This is metadata admission governance, not training execution
   or public calibration evidence.
+- The same registered `teacher_and_data_governance` field owns
+  `scripts/training_data_lineage_audit.py` and the content-bound receipt ledger
+  at `runtime/data_governance/data_admission_receipts_v1.jsonl.gz`.
+  `training_data_candidate_lifecycle_spine_v1` requires candidate admission,
+  lineage, license, leakage, verifier, lifecycle-policy, deletion-closure, and
+  failure-boundary records. Curriculum and survival-lane materialization prove
+  every selected row hash is admitted; receipt completeness does not imply
+  data quality, model capability, forgetting, or physical unlearning.
 - `reports/theseus_plan_compiler.json` is the current planner-facing VCM
   adequacy proof. The registered planner now requires
   `reports/vcm_context_governor.json`, emits governed `context_transaction`

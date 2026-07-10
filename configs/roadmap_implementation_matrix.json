@@ -1164,7 +1164,7 @@
     {
       "phase": 7,
       "title": "Teacher And Data Governance",
-      "status": "partial",
+      "status": "implemented",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-7",
       "ai_book_source_basis": [
@@ -1189,8 +1189,10 @@
         "control_plane_teacher_gate",
         "governance_right_receipt",
         "data_admission_receipt",
+        "candidate_receipt_hash_filter",
         "continual_learning_policy_decision",
-        "descendant_deletion_closure"
+        "descendant_deletion_closure",
+        "recursive_synthetic_distribution_diagnostics"
       ],
       "required_records": [
         "teacher_row_receipt",
@@ -1211,8 +1213,12 @@
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/training_data_admission_v1.py",
         "python3 scripts/training_data_lineage_audit.py",
+        "python3 scripts/broad_capability_curriculum_v1.py",
+        "python3 scripts/broad_capability_survival_lane_run_v1.py",
+        "python3 tests/test_training_data_lineage_audit.py",
         "python3 scripts/governance_rights_receipt_suite.py",
         "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/theseus_project_registry.py --gate",
         "python3 scripts/theseus_control_plane.py --no-ingest",
         "python3 scripts/hive_node.py operator-status --out reports/hive_operator_status.json",
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the teacher-share governance state and no-runtime-external-token boundary.\" --intent planning --feedback completed --session-id teacher_share_phase7_smoke --out reports/theseus_assistant_teacher_share_smoke.json --markdown-out reports/theseus_assistant_teacher_share_smoke.md --events-out reports/theseus_assistant_teacher_share_events.jsonl --viea-trace-out reports/theseus_assistant_teacher_share_trace.jsonl --skip-context-refresh"
@@ -1229,6 +1235,11 @@
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
         "reports/training_data_admission_v1.json",
+        "reports/training_data_lineage_audit.json",
+        "reports/training_data_lineage_audit.md",
+        "runtime/data_governance/data_admission_receipts_v1.jsonl.gz",
+        "reports/broad_capability_curriculum_v1.json",
+        "reports/broad_capability_survival_lane_run_v1.json",
         "data/training_sources/training_data_admission_v1.json",
         "reports/governance_rights_receipt_suite.json",
         "reports/hive_operator_status.json",
@@ -1236,19 +1247,30 @@
         "reports/theseus_control_plane.json",
         "reports/theseus_assistant_teacher_share_smoke.json"
       ],
-      "missing_items": [
-        "upgrade file-level metadata admission into a versioned per-candidate DataAdmissionReceipt carrying authority/license, provenance class, real/synthetic lineage, permitted use, split exclusions, exact and semantic contamination checks, retention, deletion scope, evaluation refs, residuals, bounded decision, and explicit non-claims",
-        "build a frozen continual-learning workload comparing replacement, accumulation, targeted replay, quarantine, and retraining on utility, forgetting, coverage/tail retention, calibration, freshness, privacy/revocation risk, storage/compute, and deletion cost",
-        "propagate revocation and deletion closure through source rows, transforms, datasets, checkpoints, adapters, caches, VCM/retrieval indexes, distilled artifacts, reports, and publications while retaining every unverified descendant state",
-        "add semantic-overlap/provenance-adversary controls and recursive synthetic-share/coverage diagnostics so exact-hash cleanliness cannot be mistaken for leakage safety or model-collapse safety"
-      ],
-      "smallest_next_patch": "Extend the existing registered training_data_admission_v1 path in place with a canonical per-candidate DataAdmissionReceipt and lineage graph, then run a small frozen replacement-versus-accumulation-versus-replay workload plus a negative descendant-deletion closure fixture. Keep receipt completeness separate from data quality, privacy, unlearning, and capability promotion.",
+      "missing_items": [],
+      "smallest_next_patch": "Proceed to Phase 10 using only candidate hashes admitted by the canonical receipt ledger. Treat the current recursive-synthetic-share warning as curriculum risk, not model-collapse proof, and do not turn the five-policy metadata simulation into a forgetting or capability claim.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
+        "python3 scripts/training_data_admission_v1.py",
+        "python3 scripts/training_data_lineage_audit.py",
+        "python3 tests/test_training_data_lineage_audit.py",
+        "reports/training_data_lineage_audit.json candidate receipt count equals current admitted-source rows plus governed teacher rows",
+        "reports/training_data_lineage_audit.json summary.admitted_candidate_count>0",
+        "reports/training_data_lineage_audit.json summary.adversary_passed_count=9",
+        "reports/training_data_lineage_audit.json summary.continual_policy_count=5",
+        "reports/training_data_lineage_audit.json summary.deletion_artifact_kind_count=11",
+        "reports/training_data_lineage_audit.json summary.public_training_rows_written=0",
+        "reports/training_data_lineage_audit.json summary.fallback_return_count=0",
+        "python3 scripts/broad_capability_curriculum_v1.py",
+        "reports/broad_capability_curriculum_v1.json gates.candidate_level_admission_filter_ready.passed=true",
+        "python3 scripts/broad_capability_survival_lane_run_v1.py",
+        "reports/broad_capability_survival_lane_run_v1.json gates.all_training_rows_have_admitted_candidate_receipts.passed=true",
         "python3 scripts/governance_rights_receipt_suite.py",
         "reports/governance_rights_receipt_suite.json summary.passed_fixture_count=4",
         "python3 scripts/viea_spine_record_gate.py --gate",
+        "reports/viea_spine_record_gate.json profiles training_data_candidate_lifecycle_spine_v1 passed=true",
         "reports/viea_spine_record_gate.json profiles governance_rights_receipt_spine_v1 passed=true",
+        "python3 scripts/theseus_project_registry.py --gate",
         "python3 scripts/theseus_control_plane.py --no-ingest",
         "python3 scripts/hive_node.py operator-status --out reports/hive_operator_status.json",
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the teacher-share governance state and no-runtime-external-token boundary.\" --intent planning --feedback completed --session-id teacher_share_phase7_smoke --out reports/theseus_assistant_teacher_share_smoke.json --markdown-out reports/theseus_assistant_teacher_share_smoke.md --events-out reports/theseus_assistant_teacher_share_events.jsonl --viea-trace-out reports/theseus_assistant_teacher_share_trace.jsonl --skip-context-refresh",
@@ -1258,7 +1280,7 @@
         "reports/theseus_control_plane.json gates.teacher_share_ledger_ready.passed=true",
         "reports/theseus_assistant_teacher_share_smoke.json gates.teacher_share_ledger_metric_ready.passed=true"
       ],
-      "completion_rule": "Teacher use and continual data intake can improve training only through receipt-bound authority, provenance, contamination, lifecycle, independent evaluation, and deletion-closure evidence, while zero external inference at runtime and public benchmark firewalls remain enforced."
+      "completion_rule": "Implemented: teacher use and continual data intake can improve training only through receipt-bound authority, provenance, contamination, lifecycle, independent evaluation, and deletion-closure evidence, while zero external inference at runtime and public benchmark firewalls remain enforced. Receipt completeness remains separate from data quality, model capability, physical unlearning, and trained-model forgetting claims."
     },
     {
       "phase": 8,
@@ -3182,6 +3204,84 @@
     },
     {
       "chapter_ordinal": 6,
+      "chapter_id": "scalable-oversight-and-adversarial-ai-control",
+      "chapter_title": "Scalable Oversight and Adversarial AI Control",
+      "part_id": "foundations-alignment-governance",
+      "part_title": "Part I - Foundations, Alignment, and Governance",
+      "book_file": "chapters/scalable-oversight-and-adversarial-ai-control.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned oversight-protocol record with task/risk/authority scope, supervisor and system envelopes, information-access declaration, role and incentive configuration, direct-review baseline, independent outcome-audit status, correlation and persuasion residuals, stop condition, escalation owner, and bounded downstream handoff. A finite Lean route blocks a high-risk admission that lacks an independent outcome audit.",
+      "book_beyond_state_of_art": "A mature oversight control plane selects direct review, assisted consultation, structured adversarial review, or abstention based on task risk, access asymmetry, supervisor capability, calibrated outcome evidence, correlation risk, and available accountable escalation. It continuously tests protocol performance against held-out outcomes and stronger baselines while preserving dissent, auditability, operator-load residuals, and the separation between supervision, training, and execution authority. This is a target architecture, not a claim that the repository has solved weak-to-strong oversight, debate, alignment, safety, or autonomous control.",
+      "book_interfaces": [
+        "Evidence States and Claim Discipline owns how an outcome may affect a claim; this chapter owns the supervision protocol and its audit record.",
+        "Human Intent as a Formal Input owns the principal's goals, authority, stop conditions, and re-contract triggers that bound oversight.",
+        "Verification Bandwidth owns whether the supervisor and outcome auditor can jointly check the relevant evidence within their declared workspace.",
+        "Proof-Carrying Claims and Adversarial Review owns bounded claim dossiers and verdict constraints after this chapter establishes whether an oversight protocol is admissible.",
+        "Policy Optimization owns an approved behavior-update lease; an oversight outcome is not an optimizer reward or a training authorization without that separate gate.",
+        "Runtime Adapters and Readiness Gates own action authority and release decisions after oversight ends."
+      ],
+      "book_invariants": [
+        "An assistant, judge, debater, critic, vote, transcript, or self-score is not independent oversight merely because it uses a different role label.",
+        "Every high-risk oversight protocol declares task and authority scope, supervisor access/capability envelope, direct-review baseline, independent outcome-audit requirement, residual owner, and escalation owner before it informs downstream work.",
+        "A protocol outcome without an independent outcome audit may remain a draft or route to accountable review but cannot become a high-risk admission or execution permission.",
+        "A comparison that lacks a declared baseline, task cohort, or failure criterion cannot be interpreted as a scalable-oversight improvement.",
+        "Training and execution authority remain separate from protocol verdicts, even when an oversight result is favorable."
+      ],
+      "book_failure_modes": [
+        "Persuasion theater lets a capable advocate win an inadequately calibrated judge without improving truth or safety.",
+        "Correlated model families, prompts, tools, or information access create false independence across nominally separate reviewers.",
+        "A weak baseline makes a protocol look helpful while an informed direct-review baseline would perform as well or better.",
+        "Outcome auditing observes only an easy or selected task cohort and hides capability-gap, calibration, or distribution-shift failures.",
+        "Fleet-scale pressure shortens review windows, exhausts human operators, or turns escalation into rubber-stamping.",
+        "A protocol verdict is laundered into a training reward, claim transition, deployment clearance, or tool permission without the owning gate."
+      ],
+      "codex_test_count": 4,
+      "representative_codex_tests": [
+        "High-risk outcome-audit admission fixture",
+        "Baseline and task-envelope completeness fixture",
+        "Correlated-reviewer negative control",
+        "Oversight protocol workload comparison"
+      ],
+      "primary_track_id": "E_authority_security_rights_kernel",
+      "phase_refs": [
+        4,
+        7,
+        12,
+        14,
+        16,
+        18
+      ],
+      "implementation_priority": "canonical_stack_or_hygiene",
+      "minimum_theseus_slice": "Implement the chapter's minimal slice through registered phases [4, 7, 12, 14, 16, 18]: a scoped oversight-protocol record, direct-review baseline, independent outcome-audit gate, correlated-reviewer negative control, and residual/escalation handoff. Reuse candidate integrity, teacher/data authority, calibration, claim evidence, Octopus routing, and constitutional failure boundaries rather than adding a parallel judge lane.",
+      "beyond_sota_theseus_endpoint": "A governed oversight controller chooses direct review, assisted consultation, adversarial review, or abstention by task risk, access asymmetry, supervisor capability, outcome evidence, correlation risk, and accountable escalation while keeping oversight verdicts separate from training and execution authority.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "mapped_missing_scalable_oversight_protocol_contract",
+      "required_gate_or_fixture": "High-risk outcome-audit admission fixture",
+      "required_records_or_receipts": [
+        "artifact_graph_record",
+        "authority_use_receipt",
+        "claim_record",
+        "correlation_risk_record",
+        "evidence_transition_record",
+        "failure_boundary",
+        "governance_right",
+        "oversight_protocol_record",
+        "residual_record",
+        "routing_decision",
+        "supervisor_capability_envelope",
+        "verifier_acceptance"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "book design argument is not model-capability evidence",
+        "role labels, votes, transcripts, and self-scores are not independent oversight",
+        "oversight verdicts do not authorize training, promotion, or execution",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 7,
       "chapter_id": "human-intent-as-a-formal-input",
       "chapter_title": "Human Intent as a Formal Input",
       "part_id": "foundations-alignment-governance",
@@ -3250,7 +3350,7 @@
       ]
     },
     {
-      "chapter_ordinal": 7,
+      "chapter_ordinal": 8,
       "chapter_id": "constitutional-alignment-substrate",
       "chapter_title": "Constitutional Alignment: Agency, Dignity, and Corrigibility",
       "part_id": "foundations-alignment-governance",
@@ -3317,7 +3417,7 @@
       ]
     },
     {
-      "chapter_ordinal": 8,
+      "chapter_ordinal": 9,
       "chapter_id": "moral-uncertainty-and-value-conflict",
       "chapter_title": "Moral Uncertainty, Value Conflict, and Contestable Governance",
       "part_id": "foundations-alignment-governance",
@@ -3386,7 +3486,7 @@
       ]
     },
     {
-      "chapter_ordinal": 9,
+      "chapter_ordinal": 10,
       "chapter_id": "stable-capability-fields",
       "chapter_title": "Stable Capability Fields",
       "part_id": "foundations-alignment-governance",
@@ -3448,7 +3548,7 @@
       ]
     },
     {
-      "chapter_ordinal": 10,
+      "chapter_ordinal": 11,
       "chapter_id": "capability-replacement-and-rollback",
       "chapter_title": "Capability Replacement and Rollback",
       "part_id": "foundations-alignment-governance",
@@ -3510,7 +3610,7 @@
       ]
     },
     {
-      "chapter_ordinal": 11,
+      "chapter_ordinal": 12,
       "chapter_id": "security-kernel-and-digital-scifs",
       "chapter_title": "Security Kernel and Digital SCIFs",
       "part_id": "foundations-alignment-governance",
@@ -3580,7 +3680,7 @@
       ]
     },
     {
-      "chapter_ordinal": 12,
+      "chapter_ordinal": 13,
       "chapter_id": "recursive-self-improvement-boundaries",
       "chapter_title": "Recursive Self-Improvement Boundaries",
       "part_id": "foundations-alignment-governance",
@@ -3650,7 +3750,7 @@
       ]
     },
     {
-      "chapter_ordinal": 13,
+      "chapter_ordinal": 14,
       "chapter_id": "open-ended-improvement-engines",
       "chapter_title": "Open-Ended Improvement Engines",
       "part_id": "foundations-alignment-governance",
@@ -3725,7 +3825,7 @@
       ]
     },
     {
-      "chapter_ordinal": 14,
+      "chapter_ordinal": 15,
       "chapter_id": "intent-to-execution-contracts",
       "chapter_title": "Command Contracts: From Intent to Executable Work",
       "part_id": "planning-memory-reasoning-execution",
@@ -3802,7 +3902,7 @@
       ]
     },
     {
-      "chapter_ordinal": 15,
+      "chapter_ordinal": 16,
       "chapter_id": "planning-as-a-control-layer",
       "chapter_title": "Planning as a Control Layer: DAGs and Intelligence Arbitrage",
       "part_id": "planning-memory-reasoning-execution",
@@ -3890,7 +3990,7 @@
       ]
     },
     {
-      "chapter_ordinal": 16,
+      "chapter_ordinal": 17,
       "chapter_id": "cognitive-compilation-and-semantic-ir",
       "chapter_title": "Cognitive Compilation and Semantic IR",
       "part_id": "planning-memory-reasoning-execution",
@@ -3953,7 +4053,7 @@
       ]
     },
     {
-      "chapter_ordinal": 17,
+      "chapter_ordinal": 18,
       "chapter_id": "virtual-context-abi",
       "chapter_title": "The Virtual Context ABI: Typed Pages, Cells, and Certificates",
       "part_id": "planning-memory-reasoning-execution",
@@ -4032,7 +4132,7 @@
       ]
     },
     {
-      "chapter_ordinal": 18,
+      "chapter_ordinal": 19,
       "chapter_id": "context-transactions-snapshots-mounts-and-taint",
       "chapter_title": "Context Transactions, Snapshots, Mounts, and Taint",
       "part_id": "planning-memory-reasoning-execution",
@@ -4108,7 +4208,7 @@
       ]
     },
     {
-      "chapter_ordinal": 19,
+      "chapter_ordinal": 20,
       "chapter_id": "verification-bandwidth-and-context-adequacy",
       "chapter_title": "Verification Bandwidth and Context Adequacy",
       "part_id": "planning-memory-reasoning-execution",
@@ -4182,7 +4282,7 @@
       ]
     },
     {
-      "chapter_ordinal": 20,
+      "chapter_ordinal": 21,
       "chapter_id": "claim-ledgers-and-belief-revision",
       "chapter_title": "Claim Ledgers and Belief Revision",
       "part_id": "planning-memory-reasoning-execution",
@@ -4250,7 +4350,7 @@
       ]
     },
     {
-      "chapter_ordinal": 21,
+      "chapter_ordinal": 22,
       "chapter_id": "spinoza-verification-and-proof-carrying-claims",
       "chapter_title": "Proof-Carrying Claims and Adversarial Review",
       "part_id": "planning-memory-reasoning-execution",
@@ -4327,7 +4427,7 @@
       ]
     },
     {
-      "chapter_ordinal": 22,
+      "chapter_ordinal": 23,
       "chapter_id": "labor-os-and-typed-jobs",
       "chapter_title": "Labor OS and Typed Jobs",
       "part_id": "planning-memory-reasoning-execution",
@@ -4400,7 +4500,7 @@
       ]
     },
     {
-      "chapter_ordinal": 23,
+      "chapter_ordinal": 24,
       "chapter_id": "artifact-graphs-audit-logs-and-replay",
       "chapter_title": "Artifact Graphs, Audit Logs, and Replay",
       "part_id": "planning-memory-reasoning-execution",
@@ -4469,7 +4569,7 @@
       ]
     },
     {
-      "chapter_ordinal": 24,
+      "chapter_ordinal": 25,
       "chapter_id": "runtime-adapters-tool-permissions-and-human-approval",
       "chapter_title": "Runtime Adapters, Tool Permissions, and Human Approval",
       "part_id": "planning-memory-reasoning-execution",
@@ -4538,7 +4638,7 @@
       ]
     },
     {
-      "chapter_ordinal": 25,
+      "chapter_ordinal": 26,
       "chapter_id": "procedural-memory-and-cognitive-loop-closure",
       "chapter_title": "Procedural Memory and Cognitive Loop Closure",
       "part_id": "planning-memory-reasoning-execution",
@@ -4604,7 +4704,7 @@
       ]
     },
     {
-      "chapter_ordinal": 26,
+      "chapter_ordinal": 27,
       "chapter_id": "routing-heads-and-specialist-cores",
       "chapter_title": "Routing Heads and Specialist Cores",
       "part_id": "routing-compression-representation-substrates",
@@ -4689,7 +4789,7 @@
       ]
     },
     {
-      "chapter_ordinal": 27,
+      "chapter_ordinal": 28,
       "chapter_id": "readiness-gates-residual-escrow-and-quarantine",
       "chapter_title": "Readiness Gates, Residual Escrow, and Quarantine",
       "part_id": "routing-compression-representation-substrates",
@@ -4757,7 +4857,7 @@
       ]
     },
     {
-      "chapter_ordinal": 28,
+      "chapter_ordinal": 29,
       "chapter_id": "personal-compute-hives-and-federated-edge-intelligence",
       "chapter_title": "Personal Compute Hives and Federated Edge Intelligence",
       "part_id": "routing-compression-representation-substrates",
@@ -4835,7 +4935,7 @@
       ]
     },
     {
-      "chapter_ordinal": 29,
+      "chapter_ordinal": 30,
       "chapter_id": "compact-generative-systems-and-residual-honesty",
       "chapter_title": "Compact Generative Systems: Generate, Verify, Repair, and Residual Honesty",
       "part_id": "routing-compression-representation-substrates",
@@ -4931,7 +5031,7 @@
       ]
     },
     {
-      "chapter_ordinal": 30,
+      "chapter_ordinal": 31,
       "chapter_id": "fast-generation-architectures",
       "chapter_title": "Fast Generation Architectures",
       "part_id": "routing-compression-representation-substrates",
@@ -5018,7 +5118,86 @@
       ]
     },
     {
-      "chapter_ordinal": 31,
+      "chapter_ordinal": 32,
+      "chapter_id": "governed-deliberation-and-test-time-scaling",
+      "chapter_title": "Governed Deliberation and Test-Time Scaling",
+      "part_id": "routing-compression-representation-substrates",
+      "part_title": "Part III - Routing, Compression, Representation, and Substrates",
+      "book_file": "chapters/governed-deliberation-and-test-time-scaling.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned deliberation record with request/risk tier, selected mode, time/token/branch/cost budget, verifier identity/version/scope/independence, candidate and rejection references, stop reason, unresolved constraints, residual owner, and downstream handoff. A finite fixture routes a high-risk execution request without independent verification to review and an exhausted budget to residual escrow.",
+      "book_beyond_state_of_art": "A mature deliberation control plane chooses direct generation, bounded revision, candidate search, or abstention by risk, expected verification value, budget, and independent-check availability. It measures quality, verifier cost, branch count, latency, residuals, and counterexamples without turning a trace or benchmark score into authority. This is a target architecture, not a claim of local reasoning quality, reliable test-time scaling, safe self-reflection, or autonomous general intelligence.",
+      "book_interfaces": [
+        "Fast Generation owns low-latency generation modes; this chapter owns extra inference, search, revision, selection, and stopping discipline.",
+        "Verification Bandwidth owns whether relevant constraints fit the verifier's effective workspace.",
+        "Resource Economics owns cost, displaced work, and protected review capacity.",
+        "Planning receives a bounded candidate or abstention record, never hidden trace content as implicit permission.",
+        "Artifact Graphs, Evidence States, Runtime Adapters, and Readiness Gates own receipts, claim effects, execution authority, and release decisions after deliberation ends."
+      ],
+      "book_invariants": [
+        "Extra tokens, branches, revisions, reasoning traces, and self-scores are not proof of correctness, safety, capability, or authority.",
+        "Every deliberation request declares its risk tier, mode, budget, verifier scope, stop condition, and residual owner before its result reaches planning.",
+        "A high-risk execution request without an independent verifier routes to review, not direct execution.",
+        "An exhausted budget records residual or abstention rather than silently widening the budget or treating the best candidate as accepted.",
+        "Candidate selection and verifier evidence remain distinct from downstream authority, readiness, and action decisions."
+      ],
+      "book_failure_modes": [
+        "Verifier capture or self-score laundering turns a correlated evaluator into independent support.",
+        "Overthinking pressure optimizes token or branch count while useful verification stalls.",
+        "Early exit removes necessary checking and hides unresolved constraints.",
+        "Budget laundering silently extends a search or reports only the winning candidate.",
+        "A persuasive trace becomes implied planning, evidence, or execution authority.",
+        "Parallel deliberation outruns available reviewer or verifier capacity."
+      ],
+      "codex_test_count": 4,
+      "representative_codex_tests": [
+        "High-risk independent-verifier admission fixture",
+        "Budget-exhaustion residual fixture",
+        "Deliberation workload comparison",
+        "Trace-to-action consistency probe"
+      ],
+      "primary_track_id": "C_capability_research_survival_lane",
+      "phase_refs": [
+        8,
+        10,
+        12,
+        14,
+        16,
+        18
+      ],
+      "implementation_priority": "capability_after_core",
+      "minimum_theseus_slice": "Implement the chapter's minimal slice through registered phases [8, 10, 12, 14, 16, 18]: a bounded deliberation campaign record plus independent-verifier and exhausted-budget negative fixtures. Reuse the existing planner, generation-mode registry, verifier, resource route, claim ledger, residual escrow, Octopus router, and authority kernel rather than creating a separate reasoning lane.",
+      "beyond_sota_theseus_endpoint": "A governed deliberation controller routes direct generation, bounded revision, candidate search, or abstention by risk, expected verification value, resource cost, and independent-check availability; preserves all candidates and rejections; and cannot convert extra computation, self-score, or persuasive trace into evidence or execution authority.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "mapped_missing_deliberation_campaign_contract",
+      "required_gate_or_fixture": "High-risk independent-verifier admission fixture",
+      "required_records_or_receipts": [
+        "artifact_graph_record",
+        "authority_use_receipt",
+        "candidate_archive_record",
+        "claim_record",
+        "costed_route",
+        "deliberation_campaign_record",
+        "evidence_transition_record",
+        "failure_boundary",
+        "generation_mode",
+        "residual_record",
+        "resource_budget",
+        "routing_decision",
+        "stop_decision_receipt",
+        "verifier_acceptance"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "book design argument is not model-capability evidence",
+        "extra tokens, branches, traces, or self-scores are not correctness or authority evidence",
+        "tool/template/router output is not learned generation",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 33,
       "chapter_id": "rankfold-neuralfold-and-artifact-compression",
       "chapter_title": "RankFold, NeuralFold, and Artifact Compression",
       "part_id": "routing-compression-representation-substrates",
@@ -5089,7 +5268,7 @@
       ]
     },
     {
-      "chapter_ordinal": 32,
+      "chapter_ordinal": 34,
       "chapter_id": "resource-economics-and-token-budgets",
       "chapter_title": "Resource Economics and Token Budgets",
       "part_id": "routing-compression-representation-substrates",
@@ -5173,7 +5352,7 @@
       ]
     },
     {
-      "chapter_ordinal": 33,
+      "chapter_ordinal": 35,
       "chapter_id": "mathematical-and-search-substrates",
       "chapter_title": "Mathematical and Search Substrates",
       "part_id": "routing-compression-representation-substrates",
@@ -5238,7 +5417,7 @@
       ]
     },
     {
-      "chapter_ordinal": 34,
+      "chapter_ordinal": 36,
       "chapter_id": "circle-calculus-and-proof-carrying-ai-contracts",
       "chapter_title": "Circle Calculus and Proof-Carrying AI Contracts",
       "part_id": "routing-compression-representation-substrates",
@@ -5308,7 +5487,7 @@
       ]
     },
     {
-      "chapter_ordinal": 35,
+      "chapter_ordinal": 37,
       "chapter_id": "coil-attention-cyclic-memory-and-recurrence-contracts",
       "chapter_title": "Coil Attention, Cyclic Memory, and Recurrence Contracts",
       "part_id": "routing-compression-representation-substrates",
@@ -5376,7 +5555,7 @@
       ]
     },
     {
-      "chapter_ordinal": 36,
+      "chapter_ordinal": 38,
       "chapter_id": "coilra-multicoil-rope-and-cyclic-mixers",
       "chapter_title": "CoilRA, MultiCoil RoPE, and Cyclic Mixers",
       "part_id": "routing-compression-representation-substrates",
@@ -5444,7 +5623,7 @@
       ]
     },
     {
-      "chapter_ordinal": 37,
+      "chapter_ordinal": 39,
       "chapter_id": "executable-specifications-and-lean-proof-envelope",
       "chapter_title": "Executable Specifications and Lean Proof Envelope",
       "part_id": "evidence-implementation-living-book",
@@ -5508,7 +5687,7 @@
       ]
     },
     {
-      "chapter_ordinal": 38,
+      "chapter_ordinal": 40,
       "chapter_id": "benchmark-ratchets-and-anti-goodhart-evidence",
       "chapter_title": "Benchmark Ratchets and Anti-Goodhart Evidence",
       "part_id": "evidence-implementation-living-book",
@@ -5571,7 +5750,7 @@
       ]
     },
     {
-      "chapter_ordinal": 39,
+      "chapter_ordinal": 41,
       "chapter_id": "adversarial-evaluation-sandbagging-and-training-time-deception",
       "chapter_title": "Adversarial Evaluation, Sandbagging, and Training-Time Deception",
       "part_id": "evidence-implementation-living-book",
@@ -5643,7 +5822,7 @@
       ]
     },
     {
-      "chapter_ordinal": 40,
+      "chapter_ordinal": 42,
       "chapter_id": "policy-optimization-and-learning-from-feedback",
       "chapter_title": "Policy Optimization and Learning from Feedback",
       "part_id": "evidence-implementation-living-book",
@@ -5723,7 +5902,7 @@
       ]
     },
     {
-      "chapter_ordinal": 41,
+      "chapter_ordinal": 43,
       "chapter_id": "data-engines-continual-learning-and-unlearning",
       "chapter_title": "Data Engines, Continual Learning, and Unlearning",
       "part_id": "evidence-implementation-living-book",
@@ -5792,7 +5971,7 @@
       ]
     },
     {
-      "chapter_ordinal": 42,
+      "chapter_ordinal": 44,
       "chapter_id": "artifact-steward-agents-and-living-project-governance",
       "chapter_title": "Artifact Steward Agents and Living Project Governance",
       "part_id": "evidence-implementation-living-book",
@@ -5861,7 +6040,7 @@
       ]
     },
     {
-      "chapter_ordinal": 43,
+      "chapter_ordinal": 45,
       "chapter_id": "integrated-reference-architecture",
       "chapter_title": "Integrated Reference Architecture",
       "part_id": "evidence-implementation-living-book",
@@ -5922,7 +6101,7 @@
       ]
     },
     {
-      "chapter_ordinal": 44,
+      "chapter_ordinal": 46,
       "chapter_id": "project-theseus-as-report-first-implementation-reference",
       "chapter_title": "Project Theseus as Report-First Implementation Reference",
       "part_id": "evidence-implementation-living-book",
@@ -5989,7 +6168,7 @@
       ]
     },
     {
-      "chapter_ordinal": 45,
+      "chapter_ordinal": 47,
       "chapter_id": "prototype-roadmap",
       "chapter_title": "Prototype Roadmap",
       "part_id": "evidence-implementation-living-book",
@@ -6049,7 +6228,7 @@
       ]
     },
     {
-      "chapter_ordinal": 46,
+      "chapter_ordinal": 48,
       "chapter_id": "living-book-methodology",
       "chapter_title": "Living Book Methodology",
       "part_id": "evidence-implementation-living-book",
@@ -6105,7 +6284,7 @@
       ]
     },
     {
-      "chapter_ordinal": 47,
+      "chapter_ordinal": 49,
       "chapter_id": "open-research-agenda-and-bibliography-plan",
       "chapter_title": "Open Research Agenda and Bibliography Plan",
       "part_id": "evidence-implementation-living-book",
@@ -6169,22 +6348,24 @@
   "book_chapter_crosswalk_summary": {
     "policy": "all_authored_book_chapters_mapped_to_theseus_v1",
     "book_manifest": "/Users/corbensorenson/Documents/AI_book/book_structure.json",
-    "book_chapter_count": 47,
+    "book_chapter_count": 49,
     "track_counts": {
       "A_reference_evidence_spine": 10,
       "F_memory_planning_tool_substrate": 12,
-      "E_authority_security_rights_kernel": 7,
+      "E_authority_security_rights_kernel": 8,
       "D_repo_stewardship_and_evidence_hygiene": 9,
       "B_product_assistant_usefulness": 1,
-      "C_capability_research_survival_lane": 7
+      "C_capability_research_survival_lane": 9
     },
     "current_state_counts": {
-      "partial_reference_slice": 33,
+      "partial_reference_slice": 34,
       "wired_reference_slice_exists": 11,
-      "mapped_with_frozen_dependency": 2
+      "mapped_with_frozen_dependency": 2,
+      "mapped_missing_scalable_oversight_protocol_contract": 1,
+      "mapped_missing_deliberation_campaign_contract": 1
     },
     "support_state_target_counts": {
-      "synthetic-test-backed": 36,
+      "synthetic-test-backed": 39,
       "replayable-reference-backed": 9,
       "empirical-test-backed": 1
     },

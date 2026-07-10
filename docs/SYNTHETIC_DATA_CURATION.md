@@ -1,6 +1,25 @@
 # Synthetic Data Curation
 
-Last updated: 2026-05-12.
+Last updated: 2026-07-10.
+
+## Candidate Lifecycle Contract
+
+Synthetic curation no longer receives training authority from file-level source
+admission alone. `scripts/training_data_lineage_audit.py` writes a compressed,
+content-bound candidate receipt ledger at
+`runtime/data_governance/data_admission_receipts_v1.jsonl.gz`; the curriculum
+and survival-lane materializer accept a row only when its canonical SHA-256 is
+present with decision `admit`. Receipts contain hashes and policy metadata, not
+raw payload text. Exact/semantic public overlap, heldout splits, fallback
+markers, raw-user text, missing licenses, and unverified teacher rows cannot be
+admitted.
+
+Current evidence covers `64,196` receipts: `63,892` admitted and `304` heldout
+rejections. Recursive synthetic share is `0.824771`, so the lifecycle report is
+intentionally `YELLOW`. This warning does not diagnose model collapse. The
+five-policy continual-learning comparison is metadata simulation, and the
+11-kind deletion closure is graph-propagation evidence rather than physical
+model unlearning.
 
 SparkStream now has a governed synthetic-data path. The goal is not to make
 bulk synthetic text. The goal is to fold existing data and residuals into a

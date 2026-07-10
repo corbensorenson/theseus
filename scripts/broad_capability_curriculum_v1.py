@@ -82,7 +82,15 @@ def main() -> int:
     write_jsonl(resolve(args.index_out), index_rows)
     write_json(resolve(args.training_sources_out), training_sources)
     write_text(resolve(args.markdown_out), render_markdown(report))
-    print(json.dumps(report, indent=2, sort_keys=True))
+    print(json.dumps({
+        "trigger_state": report.get("trigger_state"),
+        "summary": report.get("summary"),
+        "training_contract": report.get("training_contract"),
+        "failed_hard_gates": [
+            row.get("name") for row in report.get("gates", [])
+            if row.get("severity") == "hard" and row.get("passed") is not True
+        ],
+    }, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] in {"GREEN", "YELLOW"} else 2
 
 
@@ -94,6 +102,8 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
         for row in admission.get("source_admissions", [])
         if isinstance(row, dict) and row.get("allowed_for_training")
     ]
+    candidate_lineage = admission.get("candidate_lineage") if isinstance(admission.get("candidate_lineage"), dict) else {}
+    candidate_lineage_summary = candidate_lineage.get("summary") if isinstance(candidate_lineage.get("summary"), dict) else {}
     units = []
     index_rows = []
     family_counts: Counter[str] = Counter()
@@ -135,6 +145,17 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
         gate("admission_report_present", bool(admission), rel(admission_path), "hard"),
         gate("admission_not_red", admission.get("trigger_state") in {"GREEN", "YELLOW"}, admission.get("trigger_state"), "hard"),
         gate("training_sources_available", len(sources) > 0, len(sources), "hard"),
+        gate(
+            "candidate_level_admission_filter_ready",
+            candidate_lineage.get("trigger_state") in {"GREEN", "YELLOW"}
+            and candidate_lineage_summary.get("admitted_hash_filter_ready") is True,
+            {
+                "state": candidate_lineage.get("trigger_state"),
+                "admitted_candidate_count": candidate_lineage_summary.get("admitted_candidate_count"),
+                "ledger": (candidate_lineage.get("candidate_receipt_ledger") or {}).get("path"),
+            },
+            "hard",
+        ),
         gate("public_benchmark_sources_not_selected", not blocked_public_sources, blocked_public_sources[:20], "hard"),
         gate("critical_capability_coverage_complete", not critical_missing, critical_missing, "hard"),
         gate("high_capability_coverage_recorded", isinstance(high_missing, list), high_missing, "warning"),
@@ -178,6 +199,8 @@ def build_report(args: argparse.Namespace, *, started: float) -> tuple[dict[str,
         },
         "training_contract": {
             "public_benchmark_training_allowed": False,
+            "candidate_receipt_hash_filter_required": True,
+            "candidate_receipt_ledger": (candidate_lineage.get("candidate_receipt_ledger") or {}).get("path"),
             "public_calibration_allowed": False,
             "teacher_distillation_allowed": False,
             "external_inference_allowed": False,

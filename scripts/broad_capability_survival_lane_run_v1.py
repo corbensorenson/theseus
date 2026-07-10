@@ -28,6 +28,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from neural_seed_code_proposer_comparator import run_comparator  # noqa: E402
+import training_data_lineage_audit  # noqa: E402
 
 
 DEFAULT_ADMISSION = ROOT / "reports" / "training_data_admission_v1.json"
@@ -83,7 +84,15 @@ def main() -> int:
     report = build_and_maybe_run(args, started=started)
     write_json(resolve(args.out), report)
     write_text(resolve(args.markdown_out), render_markdown(report))
-    print(json.dumps(report, indent=2, sort_keys=True))
+    print(json.dumps({
+        "trigger_state": report.get("trigger_state"),
+        "summary": report.get("summary"),
+        "candidate_hash_filter": (report.get("materialization") or {}).get("candidate_hash_filter"),
+        "failed_hard_gates": [
+            row.get("name") for row in report.get("gates", [])
+            if row.get("severity") == "hard" and row.get("passed") is not True
+        ],
+    }, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] in {"GREEN", "YELLOW"} else 2
 
 
@@ -208,6 +217,7 @@ def build_and_maybe_run(args: argparse.Namespace, *, started: float) -> dict[str
             "eval_sources": materialized["eval_sources"],
             "train_family_counts": materialized["train_family_counts"],
             "eval_family_counts": materialized["eval_family_counts"],
+            "candidate_hash_filter": materialized["candidate_hash_filter"],
         },
         "architecture_policy": {
             "survival_lane": "transformer_hybrid_structural_student",
@@ -237,13 +247,14 @@ def materialize_rows(
     vcm_feature_policy: dict[str, Any] | None = None,
     vcm_mode: str = "auto",
 ) -> dict[str, Any]:
+    admitted_candidate_hashes = training_data_lineage_audit.load_admitted_candidate_hashes(admission)
     units = [row for row in curriculum.get("curriculum_units", []) if isinstance(row, dict)]
     train_rows = []
     train_sources = []
     per_unit = max(1, math.ceil(max_train_rows / max(1, len(units))))
     for unit in units:
         path = resolve(str(unit.get("path") or ""))
-        rows = clean_training_rows(read_jsonl(path))
+        rows = clean_training_rows(read_jsonl(path), admitted_candidate_hashes=admitted_candidate_hashes)
         rows = deterministic_sample(rows, min(per_unit, int(unit.get("row_budget") or per_unit)), seed + stable_int(str(unit.get("unit_id"))))
         if rows:
             train_sources.append({"path": rel(path), "rows": len(rows), "unit_id": unit.get("unit_id")})
@@ -283,6 +294,14 @@ def materialize_rows(
         "train_family_counts": family_counts(train_rows),
         "eval_family_counts": family_counts(eval_rows),
         "vcm_summary": vcm_summary,
+        "candidate_hash_filter": {
+            "ready": bool(admitted_candidate_hashes),
+            "admitted_hash_count": len(admitted_candidate_hashes),
+            "selected_train_hashes_all_admitted": bool(train_rows) and all(
+                training_data_lineage_audit.row_sha256(row) in admitted_candidate_hashes for row in train_rows
+            ),
+            "ledger": ((admission.get("candidate_lineage") or {}).get("candidate_receipt_ledger") or {}).get("path"),
+        },
     }
 
 
@@ -515,6 +534,18 @@ def build_gates(
         gate("admission_not_red", admission.get("trigger_state") in {"GREEN", "YELLOW"}, admission.get("trigger_state"), "hard"),
         gate("curriculum_green", curriculum.get("trigger_state") == "GREEN", curriculum.get("trigger_state"), "hard"),
         gate("train_rows_materialized", len(train_rows) > 0, len(train_rows), "hard"),
+        gate(
+            "candidate_receipt_hash_filter_ready",
+            materialized.get("candidate_hash_filter", {}).get("ready") is True,
+            materialized.get("candidate_hash_filter"),
+            "hard",
+        ),
+        gate(
+            "all_training_rows_have_admitted_candidate_receipts",
+            materialized.get("candidate_hash_filter", {}).get("selected_train_hashes_all_admitted") is True,
+            materialized.get("candidate_hash_filter"),
+            "hard",
+        ),
         gate("eval_rows_materialized", len(eval_rows) > 0, len(eval_rows), "hard"),
         gate("train_rows_have_solution_body", all(bool(row.get("solution_body")) for row in train_rows), len(train_rows), "hard"),
         gate("eval_rows_have_tests", all(bool(row.get("tests")) for row in eval_rows), len(eval_rows), "hard"),
@@ -531,8 +562,13 @@ def build_gates(
     ]
 
 
-def clean_training_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [row for row in rows if row_is_clean(row) and bool(row.get("solution_body"))]
+def clean_training_rows(rows: list[dict[str, Any]], *, admitted_candidate_hashes: set[str]) -> list[dict[str, Any]]:
+    return [
+        row for row in rows
+        if row_is_clean(row)
+        and bool(row.get("solution_body"))
+        and training_data_lineage_audit.row_sha256(row) in admitted_candidate_hashes
+    ]
 
 
 def clean_eval_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

@@ -28,7 +28,7 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | partial metadata admission only | receipt-bound lifecycle + continual-learning/unlearning workload |
+| Data engine + curriculum | Track 0 / Phase 7 | implemented; candidate receipts YELLOW on 82.48% synthetic-share warning | Phase 10 consumes admitted hashes; diversify real/licensed pressure without weakening the firewall |
 | Sparse specialist core (100M) | Track 1 / Phases 10, 16 | not started | build 100M sparse MoE proposer; active-param loss curve |
 | Verifier-guided search | Track 2 / Phases 6, 10 | not started | propose->verify->repair search; beat one-shot on held-out |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
@@ -41,7 +41,7 @@ module must meet.
 | Authority kernel / SCIF | Phase 18 | synthetic-test-backed | one real side-effecting run |
 | Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
 | Report hygiene | Phases 0, 8 | ~2.4 GB, high churn | enforce report/checkpoint retention; drive live state below 1 GB |
-| Book crosswalk / parity | Phase 19 | 47 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
+| Book crosswalk / parity | Phase 19 | 49 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
 | Book futures intake | Phase 19 + routed owners | 19 chapter candidates + 2 section routes mapped | activate only at source/ownership and operational entry gates |
 
 ## Non-Negotiable Rules
@@ -448,6 +448,17 @@ run and it meets the Quality Bars below.
 
 ### Phase 7: Teacher and Data Governance
 (Owns Track 0 and teacher-side learning authority.)
+
+Implementation status (2026-07-10): `implemented`. The canonical admission path
+now writes and replays `64,196` content-bound candidate receipts, admits
+`63,892`, rejects `304` heldout rows, and exposes zero detected exact/semantic
+public overlap, fallback markers, or raw-user rows. All nine adversarial cases,
+five frozen continual-policy simulations, and the 11-kind positive/negative
+descendant-deletion fixture pass. Curriculum and survival-lane materialization
+require admitted row hashes. The lifecycle surface remains `YELLOW`, not
+`GREEN`, because recursive synthetic share is `0.824771`; that is a data-risk
+warning, not proof of model collapse. The policy comparison is simulation, and
+deletion closure is graph evidence, not physical unlearning.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
   provenance/authority, lineage, permitted use, split exclusions, exact + semantic
   contamination, retention, deletion scope, evaluation refs, residuals, bounded

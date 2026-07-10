@@ -1,6 +1,6 @@
 {
   "copy_training_data": false,
-  "created_utc": "2026-06-20T22:27:02.657375+00:00",
+  "created_utc": "2026-07-10T05:51:58.726977+00:00",
   "external_inference_calls": 0,
   "policy": "project_theseus_broad_capability_training_sources_v1",
   "ready_sources": [
@@ -433,8 +433,8 @@
       "local_path": "data/training_data/high_transfer/private_train/dogfood_daily_use_trace_training_rows.jsonl",
       "public_benchmark_training_allowed": false,
       "raw_user_text_allowed": false,
-      "row_budget": 3,
-      "sha256": "8d41bdc49ce39d143c252cde6eab5351276e0339effd36a29432e2bc2b13a146",
+      "row_budget": 447,
+      "sha256": "855a603515426e36d833d8d99cd7e3f67e59cea1c3a69f27956216009170ec92",
       "sha256_verified": true,
       "training_use_state": "ready_local_verified"
     },
@@ -1361,8 +1361,8 @@
       "local_path": "data/training_data/high_transfer/private_train/dogfood_daily_use_trace_training_rows.jsonl",
       "public_benchmark_training_allowed": false,
       "raw_user_text_allowed": false,
-      "row_budget": 3,
-      "sha256": "8d41bdc49ce39d143c252cde6eab5351276e0339effd36a29432e2bc2b13a146",
+      "row_budget": 447,
+      "sha256": "855a603515426e36d833d8d99cd7e3f67e59cea1c3a69f27956216009170ec92",
       "sha256_verified": true,
       "training_use_state": "ready_local_verified"
     },

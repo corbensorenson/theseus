@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 import vcm_consumer_abi
+import training_data_lineage_audit
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,6 +100,9 @@ def main() -> int:
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     parser.add_argument("--manifest-out", default=rel(DEFAULT_MANIFEST))
+    parser.add_argument("--candidate-ledger-out", default=rel(training_data_lineage_audit.DEFAULT_LEDGER))
+    parser.add_argument("--max-candidate-receipts", type=int, default=0)
+    parser.add_argument("--max-public-contamination-texts", type=int, default=20000)
     parser.add_argument("--growth-policy", default=rel(DEFAULT_GROWTH_POLICY))
     parser.add_argument("--vcm-context-governor", default=rel(DEFAULT_VCM_CONTEXT_GOVERNOR))
     parser.add_argument("--sample-rows-per-source", type=int, default=256)
@@ -107,10 +111,68 @@ def main() -> int:
 
     started = time.perf_counter()
     report = build_report(args, started=started)
+    lineage = training_data_lineage_audit.build_lineage_bundle(
+        report,
+        ledger_path=resolve(args.candidate_ledger_out),
+        max_rows=max(0, int(args.max_candidate_receipts)),
+        max_public_texts=max(100, int(args.max_public_contamination_texts)),
+    )
+    report["candidate_lineage"] = lineage
+    report["viea_training_data_context_records"].extend(lineage.get("viea_data_governance_records", []))
+    report["summary"].update({
+        "candidate_receipt_count": (lineage.get("summary") or {}).get("candidate_receipt_count", 0),
+        "candidate_admitted_count": (lineage.get("summary") or {}).get("admitted_candidate_count", 0),
+        "candidate_quarantined_count": (lineage.get("summary") or {}).get("quarantined_candidate_count", 0),
+        "candidate_rejected_count": (lineage.get("summary") or {}).get("rejected_candidate_count", 0),
+        "candidate_lineage_trigger_state": lineage.get("trigger_state"),
+        "candidate_hash_filter_ready": (lineage.get("summary") or {}).get("admitted_hash_filter_ready", False),
+    })
+    report["gates"].append(gate(
+        "candidate_level_lineage_admission_ready",
+        lineage.get("trigger_state") in {"GREEN", "YELLOW"}
+        and bool((lineage.get("summary") or {}).get("admitted_hash_filter_ready")),
+        lineage.get("summary"),
+        "hard",
+    ))
+    if lineage.get("trigger_state") == "RED":
+        report["trigger_state"] = "RED"
+    elif lineage.get("trigger_state") == "YELLOW" and report.get("trigger_state") == "GREEN":
+        report["trigger_state"] = "YELLOW"
     write_json(resolve(args.out), report)
     write_json(resolve(args.manifest_out), manifest_payload(report))
     write_text(resolve(args.markdown_out), render_markdown(report))
-    print(json.dumps(report, indent=2, sort_keys=True))
+    report_summary = report.get("summary") or {}
+    print(json.dumps({
+        "trigger_state": report.get("trigger_state"),
+        "summary": {
+            key: report_summary.get(key) for key in (
+                "local_source_count",
+                "allowed_training_source_count",
+                "admitted_open_public_source_count",
+                "admitted_open_public_row_count",
+                "candidate_receipt_count",
+                "candidate_admitted_count",
+                "candidate_quarantined_count",
+                "candidate_rejected_count",
+                "candidate_lineage_trigger_state",
+                "candidate_hash_filter_ready",
+                "public_benchmark_payload_admitted",
+                "teacher_distillation_manifest_rows",
+                "teacher_rows_admitted_outside_distillation_gate",
+                "vcm_context_governor_ready",
+                "external_inference_calls",
+            )
+        },
+        "failed_hard_gates": [
+            row.get("name") for row in report.get("gates", [])
+            if row.get("severity") == "hard" and row.get("passed") is not True
+        ],
+        "candidate_lineage": {
+            "trigger_state": lineage.get("trigger_state"),
+            "summary": lineage.get("summary"),
+            "warnings": lineage.get("warnings"),
+        },
+    }, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] in {"GREEN", "YELLOW"} else 2
 
 
@@ -1068,6 +1130,15 @@ def manifest_payload(report: dict[str, Any]) -> dict[str, Any]:
     packet = full_receipt.get("consumer_abi")
     if isinstance(packet, dict):
         receipt["consumer_abi"] = vcm_consumer_abi.compact_consumer_packet(packet)
+    lineage = report.get("candidate_lineage")
+    lineage = lineage if isinstance(lineage, dict) else {}
+    compact_lineage = {
+        "policy": lineage.get("policy"),
+        "trigger_state": lineage.get("trigger_state"),
+        "summary": lineage.get("summary"),
+        "candidate_receipt_ledger": lineage.get("candidate_receipt_ledger"),
+        "non_claims": lineage.get("non_claims"),
+    }
     return {
         "policy": "project_theseus_training_data_admission_manifest_v1",
         "created_utc": report.get("created_utc"),
@@ -1082,6 +1153,7 @@ def manifest_payload(report: dict[str, Any]) -> dict[str, Any]:
         "public_open_training_allowed": bool((report.get("summary") or {}).get("public_open_training_allowed")),
         "public_benchmark_training_allowed": False,
         "vcm_context_governor_receipt": receipt,
+        "candidate_lineage": compact_lineage,
         "external_inference_calls": 0,
     }
 
