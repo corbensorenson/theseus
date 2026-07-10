@@ -49,6 +49,48 @@
       "required_for_canary": true,
       "expected_canary_route_eligible": true,
       "reason": "The local planning assistant trace is high-recurrence, low-risk, metadata-only, and suitable for canary routing before any default procedural tool adoption."
+    },
+    {
+      "id": "replay.local_chat_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
+      "expected_surface": "local_assistant",
+      "expected_assistant_lane": "chat_checkpoint",
+      "expected_intent_bucket": "chat",
+      "minimum_recurrence": 24,
+      "minimum_success_rate": 0.95,
+      "minimum_useful_or_corrected_rate": 0.95,
+      "required_risk_tier": "low",
+      "required_runtime_tier": "E1",
+      "require_viea_bound": true,
+      "require_no_residuals": true,
+      "expected_raw_private_text_count": 0,
+      "expected_public_training_rows_written": 0,
+      "expected_external_inference_calls": 0,
+      "expected_fallback_return_count": 0,
+      "required_for_canary": true,
+      "expected_canary_route_eligible": true,
+      "reason": "The local chat lane supplies a second independent, high-recurrence, metadata-only workflow for procedural lifecycle and route-selection evidence."
+    },
+    {
+      "id": "replay.local_tool_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
+      "expected_surface": "local_assistant",
+      "expected_assistant_lane": "tool_assistant",
+      "expected_intent_bucket": "tool",
+      "minimum_recurrence": 24,
+      "minimum_success_rate": 0.95,
+      "minimum_useful_or_corrected_rate": 0.95,
+      "required_risk_tier": "medium",
+      "required_runtime_tier": "E2",
+      "require_viea_bound": true,
+      "require_no_residuals": true,
+      "expected_raw_private_text_count": 0,
+      "expected_public_training_rows_written": 0,
+      "expected_external_inference_calls": 0,
+      "expected_fallback_return_count": 0,
+      "required_for_canary": true,
+      "expected_canary_route_eligible": true,
+      "reason": "The local tool lane supplies a diverse E2 workflow and remains bounded to metadata routing rather than tool authority expansion."
     }
   ],
   "canary_routes": [
@@ -60,6 +102,32 @@
       "default_route_allowed": false,
       "registry_required": true,
       "replay_fixture_id": "replay.local_planning_assistant_metadata_only_v1",
+      "metric_contract": {
+        "duplicate_work_delta": "estimated_duplicate_work_instances_after_canary_minus_before_repeated_trace_count",
+        "verification_cost_delta": "estimated_verification_checks_after_replay_fixture_minus_before_per_trace_checks"
+      }
+    },
+    {
+      "id": "canary.local_chat_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
+      "owner_surface": "theseus_plan_compiler",
+      "planner_mode": "registry_gated_canary",
+      "default_route_allowed": false,
+      "registry_required": true,
+      "replay_fixture_id": "replay.local_chat_assistant_metadata_only_v1",
+      "metric_contract": {
+        "duplicate_work_delta": "estimated_duplicate_work_instances_after_canary_minus_before_repeated_trace_count",
+        "verification_cost_delta": "estimated_verification_checks_after_replay_fixture_minus_before_per_trace_checks"
+      }
+    },
+    {
+      "id": "canary.local_tool_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
+      "owner_surface": "theseus_plan_compiler",
+      "planner_mode": "registry_gated_canary",
+      "default_route_allowed": false,
+      "registry_required": true,
+      "replay_fixture_id": "replay.local_tool_assistant_metadata_only_v1",
       "metric_contract": {
         "duplicate_work_delta": "estimated_duplicate_work_instances_after_canary_minus_before_repeated_trace_count",
         "verification_cost_delta": "estimated_verification_checks_after_replay_fixture_minus_before_per_trace_checks"
@@ -122,6 +190,55 @@
       "Default route is local metadata routing only.",
       "Default adoption does not support public-transfer or model-promotion claims."
     ]
+  },
+  "additional_default_route_adoption_policies": [
+    {
+      "id": "default.local_chat_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
+      "source_canary_route_id": "canary.local_chat_assistant_metadata_only_v1",
+      "required_replay_fixture_id": "replay.local_chat_assistant_metadata_only_v1",
+      "minimum_matched_event_count": 24,
+      "maximum_risk_tier": "low",
+      "required_runtime_tier": "E1",
+      "route_binding_contract": {
+        "scope": "assistant_intent_lane_metadata_route",
+        "assistant_surfaces": ["local_assistant"],
+        "assistant_intents": ["chat"],
+        "assistant_lanes": ["chat_checkpoint"],
+        "vcm_task_families": ["operator_chat"],
+        "runtime_consumers": ["theseus_plan_compiler", "theseus_assistant_runtime"],
+        "selection_keys": ["surface", "intent", "assistant_lane", "vcm_task_family"],
+        "fail_closed_on_binding_mismatch": true
+      }
+    },
+    {
+      "id": "default.local_tool_assistant_metadata_only_v1",
+      "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
+      "source_canary_route_id": "canary.local_tool_assistant_metadata_only_v1",
+      "required_replay_fixture_id": "replay.local_tool_assistant_metadata_only_v1",
+      "minimum_matched_event_count": 24,
+      "maximum_risk_tier": "medium",
+      "required_runtime_tier": "E2",
+      "route_binding_contract": {
+        "scope": "assistant_intent_lane_metadata_route",
+        "assistant_surfaces": ["local_assistant"],
+        "assistant_intents": ["tool"],
+        "assistant_lanes": ["tool_assistant"],
+        "vcm_task_families": ["operator_chat"],
+        "runtime_consumers": ["theseus_plan_compiler", "theseus_assistant_runtime"],
+        "selection_keys": ["surface", "intent", "assistant_lane", "vcm_task_family"],
+        "fail_closed_on_binding_mismatch": true
+      }
+    }
+  ],
+  "procedural_lifecycle": {
+    "minimum_active_diverse_workflows": 3,
+    "monitor_window_events": 32,
+    "minimum_recent_useful_rate": 0.9,
+    "retire_after_consecutive_failures": 2,
+    "max_stale_days": 30,
+    "fail_closed_on_missing_or_ambiguous_binding": true,
+    "append_only_ledger": "runtime/procedural_memory/lifecycle_ledger.jsonl"
   },
   "required_tool_fields": [
     "id",

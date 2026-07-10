@@ -38,9 +38,10 @@ module must meet.
 | VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
 | Claim ledger + belief revision | Phase 14 | implemented; synthetic/replay infrastructure evidence | keep new citeable gates in the canonical pack/TCB/dependency audit; earn empirical support from real revisions |
 | Replacement transactions | Phase 2 | synthetic-test-backed | one real default swap with rollback |
+| Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
 | Authority kernel / SCIF | Phase 18 | synthetic-test-backed | one real side-effecting run |
 | Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
-| Report hygiene | Phases 0, 8, 14 | budget GREEN: hot reports 1.07 GB, active index 204 MB, checkpoints 6.32 GB physical | keep current-reference compaction and exact replay mandatory as artifacts grow |
+| Report hygiene | Phases 0, 8, 14 | budget GREEN: hot reports 1.02 GB, active index 211 MB, checkpoints 6.32 GB physical | keep current-reference compaction and exact replay mandatory as artifacts grow |
 | Book crosswalk / parity | Phase 19 | 49 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
 | Book futures intake | Phase 19 + routed owners | 19 chapter candidates + 2 section routes mapped | activate only at source/ownership and operational entry gates |
 
@@ -632,6 +633,14 @@ deletion closure is graph evidence, not physical unlearning.
   tool and survives postcondition drift; stale procedures retire automatically.
 - Do not: toolify one-off traces, let procedure reuse widen authority, or call a
   stored trajectory parametric learning.
+- Implemented evidence: three diverse schema-bound real workflows (planning,
+  chat, and deterministic-tool assistance) pass replay and canary execution;
+  each compiles to a digest-bound, noncredit lookahead asset. Exact lookup
+  selects `3/3`, unknown/ambiguous routes abstain, and append-only lifecycle
+  receipts automatically retire stale or postcondition-drifted procedures.
+  Three SCF replacement transactions arm rollback guards, the plan compiler
+  consumes exact asset/receipt IDs, and assistant runtime selects all three
+  bindings without widening authority.
 
 ### Phase 16: MoECOT and Octopus Router Integration
 - Emit `RoutingDecisionRecord` for each specialist/tool/model route and

@@ -17,7 +17,9 @@
       "planning"
     ],
     "eligible_intents": [
-      "planning"
+      "planning",
+      "chat",
+      "tool"
     ],
     "mode": "guarded_metadata_route_only",
     "selection_mode": "route_binding_contract",

@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from procedural_memory_assets import append_lifecycle_ledger, build_assets
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "procedural_memory_toolification.json"
@@ -18,6 +20,8 @@ DEFAULT_REPORT = ROOT / "reports" / "procedural_memory_toolification.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "procedural_memory_toolification.md"
 DEFAULT_CANDIDATES = ROOT / "reports" / "procedural_tool_candidates.jsonl"
 DEFAULT_ROUTE_DECISIONS = ROOT / "reports" / "procedural_tool_route_decisions.jsonl"
+DEFAULT_ASSETS = ROOT / "reports" / "procedural_memory_assets.json"
+DEFAULT_LIFECYCLE_LEDGER = ROOT / "runtime" / "procedural_memory" / "lifecycle_ledger.jsonl"
 
 
 def main() -> int:
@@ -27,13 +31,22 @@ def main() -> int:
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     parser.add_argument("--candidates-out", default=rel(DEFAULT_CANDIDATES))
     parser.add_argument("--route-decisions-out", default=rel(DEFAULT_ROUTE_DECISIONS))
+    parser.add_argument("--assets-out", default=rel(DEFAULT_ASSETS))
+    parser.add_argument("--lifecycle-ledger", default=rel(DEFAULT_LIFECYCLE_LEDGER))
     args = parser.parse_args()
 
     started = time.perf_counter()
     config_path = resolve(args.config)
     config = read_json(config_path)
     report = build_report(config_path, config, started)
+    appended = append_lifecycle_ledger(
+        resolve(args.lifecycle_ledger),
+        list_dicts(get_path(report, ["procedural_assets", "lifecycle_receipts"], [])),
+    )
+    report["summary"]["lifecycle_ledger"] = rel(resolve(args.lifecycle_ledger))
+    report["summary"]["lifecycle_ledger_appended_count"] = appended
     write_json(resolve(args.out), report)
+    write_json(resolve(args.assets_out), dict_value(report.get("procedural_assets")))
     write_jsonl(resolve(args.candidates_out), report["procedural_tool_candidates"])
     write_jsonl(resolve(args.route_decisions_out), report["route_decisions"])
     write_text(resolve(args.markdown_out), render_markdown(report))
@@ -59,6 +72,16 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
     regression_decisions = [regression_fixture_decision(row) for row in list_dicts(config.get("regression_fixtures"))]
     route_decisions.extend(regression_decisions)
     canary_routes = build_canary_routes(config, candidates, route_decisions, replay_results)
+    created_utc = now()
+    procedural_assets = build_assets(
+        candidates=candidates,
+        replay_results=replay_results,
+        canary_routes=canary_routes,
+        events=assistant_trace_events,
+        lifecycle_policy=dict_value(config.get("procedural_lifecycle")),
+        created_utc=created_utc,
+    )
+    bind_procedural_assets(candidates, canary_routes, route_decisions, procedural_assets)
     viea_records = build_viea_procedural_tool_records(candidates, route_decisions, assistant_trace_audit, canary_routes)
 
     hard_gaps = [gate for gate in boundaries if gate["severity"] == "hard" and not gate["passed"]]
@@ -79,6 +102,18 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
     for result in replay_results:
         if result.get("required_for_canary") and not result.get("passed"):
             hard_gaps.append(item_gap(str(result.get("id") or "assistant_trace_replay"), "required_canary_replay_fixture_failed", result))
+    if procedural_assets.get("trigger_state") != "GREEN":
+        hard_gaps.append(item_gap("procedural_memory_assets", "procedural_memory_assets_not_green", dict_value(procedural_assets.get("summary"))))
+    required_diversity = int_or(get_path(config, ["procedural_lifecycle", "minimum_active_diverse_workflows"], 2), 2)
+    observed_diversity = int_or(get_path(procedural_assets, ["summary", "diverse_binding_count"], 0), 0)
+    if observed_diversity < required_diversity:
+        hard_gaps.append(
+            item_gap(
+                "procedural_memory_assets",
+                "active_workflow_diversity_below_minimum",
+                {"observed": observed_diversity, "required": required_diversity},
+            )
+        )
     trigger_state = "GREEN"
     if hard_gaps:
         trigger_state = "RED"
@@ -97,18 +132,27 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "assistant_trace_replay_fixture_passed_count": sum(1 for row in replay_results if row.get("passed")),
         "canary_route_eligible_count": sum(1 for row in canary_routes if row.get("canary_route_eligible")),
         "viea_procedural_tool_record_count": len(viea_records),
+        "procedural_asset_count": int_or(get_path(procedural_assets, ["summary", "asset_count"], 0), 0),
+        "active_procedural_asset_count": int_or(get_path(procedural_assets, ["summary", "active_asset_count"], 0), 0),
+        "retired_procedural_asset_count": int_or(get_path(procedural_assets, ["summary", "retired_asset_count"], 0), 0),
+        "procedural_asset_diverse_binding_count": observed_diversity,
+        "procedural_lookahead_fixture_count": int_or(get_path(procedural_assets, ["summary", "lookup_fixture_count"], 0), 0),
+        "procedural_lookahead_selected_count": int_or(get_path(procedural_assets, ["summary", "lookahead_selected_count"], 0), 0),
+        "procedural_lookahead_negative_control_rejected_count": int_or(get_path(procedural_assets, ["summary", "negative_control_rejected_count"], 0), 0),
         "procedural_tool_candidate_count": len(candidates),
         "route_eligible_count": sum(1 for row in route_decisions if row["route_eligible"]),
         "route_blocked_count": sum(1 for row in route_decisions if not row["route_eligible"]),
         "failed_regression_blocks_route_count": sum(1 for row in route_decisions if row["regression_passed"] is False and not row["route_eligible"]),
         "benchmark_eval_blocked_count": sum(1 for row in candidates if row["benchmark_or_eval_blocked"]),
+        "public_training_rows_written": 0,
         "external_inference_calls": int(harvester.get("external_inference_calls") or 0) + int(promoter.get("external_inference_calls") or 0) + int(viea.get("external_inference_calls") or 0) + int(deterministic.get("external_inference_calls") or 0),
+        "fallback_return_count": 0,
         "hard_gap_count": len(hard_gaps),
         "warning_count": len(warnings),
     }
     return {
         "policy": "project_theseus_procedural_memory_toolification_gate_v1",
-        "created_utc": now(),
+        "created_utc": created_utc,
         "trigger_state": trigger_state,
         "summary": summary,
         "boundary_gates": boundaries,
@@ -117,6 +161,7 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "procedural_tool_candidates": candidates,
         "route_decisions": route_decisions,
         "canary_routes": canary_routes,
+        "procedural_assets": procedural_assets,
         "viea_procedural_tool_records": viea_records,
         "hard_gaps": hard_gaps,
         "warnings": warnings,
@@ -126,8 +171,12 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
             "capability": "Toolification is workflow compression, not learned model capability.",
             "benchmark": "Benchmark/eval workflows become residuals or training pressure, not answer tools.",
             "lifecycle": "Every tool candidate needs monitoring and retirement criteria.",
+            "lookahead": "Verified procedural assets may guide workflow routing but receive no learned-generation credit.",
         },
         "runtime_ms": int((time.perf_counter() - started) * 1000),
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
     }
 
 
@@ -484,6 +533,58 @@ def build_canary_routes(config: dict[str, Any], candidates: list[dict[str, Any]]
     return routes
 
 
+def bind_procedural_assets(
+    candidates: list[dict[str, Any]],
+    canary_routes: list[dict[str, Any]],
+    route_decisions: list[dict[str, Any]],
+    asset_report: dict[str, Any],
+) -> None:
+    assets = {
+        str(row.get("candidate_id") or ""): row
+        for row in list_dicts(asset_report.get("assets"))
+    }
+    receipts = {
+        str(row.get("candidate_id") or ""): row
+        for row in list_dicts(asset_report.get("lifecycle_receipts"))
+    }
+    for candidate in candidates:
+        candidate_id = str(candidate.get("id") or "")
+        asset = assets.get(candidate_id, {})
+        receipt = receipts.get(candidate_id, {})
+        if not asset:
+            continue
+        candidate["procedural_asset_id"] = asset.get("id")
+        candidate["procedural_asset_sha256"] = asset.get("asset_sha256")
+        candidate["lifecycle_receipt_id"] = receipt.get("receipt_id")
+        candidate["lifecycle_state"] = receipt.get("lifecycle_state")
+        if receipt.get("lifecycle_state") != "active":
+            candidate["canary_route_eligible"] = False
+            candidate["route_eligible"] = False
+    for route in canary_routes:
+        candidate_id = str(route.get("candidate_id") or "")
+        asset = assets.get(candidate_id, {})
+        receipt = receipts.get(candidate_id, {})
+        if not asset:
+            continue
+        route["procedural_asset_id"] = asset.get("id")
+        route["procedural_asset_sha256"] = asset.get("asset_sha256")
+        route["lifecycle_receipt_id"] = receipt.get("receipt_id")
+        route["lifecycle_state"] = receipt.get("lifecycle_state")
+        route["lookahead_tokens"] = asset.get("lookahead_tokens")
+        if receipt.get("lifecycle_state") != "active":
+            route["canary_route_eligible"] = False
+    for decision in route_decisions:
+        receipt = receipts.get(str(decision.get("candidate_id") or ""), {})
+        if not receipt:
+            continue
+        decision["lifecycle_receipt_id"] = receipt.get("receipt_id")
+        decision["lifecycle_state"] = receipt.get("lifecycle_state")
+        if receipt.get("lifecycle_state") != "active":
+            decision["route_eligible"] = False
+            decision["canary_route_eligible"] = False
+            decision["decision"] = "retired_or_blocked_by_lifecycle"
+
+
 def assistant_event_schema_clean(event: dict[str, Any], schema: dict[str, Any]) -> bool:
     allowed = set(allowed_outcomes(schema))
     outcome = str(event.get("outcome") or event.get("feedback") or "")
@@ -650,6 +751,9 @@ def build_viea_procedural_tool_records(candidates: list[dict[str, Any]], route_d
                     "recurrence_count": candidate.get("recurrence_count"),
             "risk_tier": candidate.get("risk_tier"),
             "runtime_tier": candidate.get("runtime_tier"),
+            "procedural_asset_id": candidate.get("procedural_asset_id", ""),
+            "procedural_asset_sha256": candidate.get("procedural_asset_sha256", ""),
+            "lifecycle_receipt_id": candidate.get("lifecycle_receipt_id", ""),
             "support_state": "candidate_only_not_capability_claim",
             "raw_private_text_stored": False,
             "learned_generation_claim_allowed": False,
@@ -741,6 +845,10 @@ def build_viea_procedural_tool_records(candidates: list[dict[str, Any]], route_d
             "created_utc": created,
             "route_id": rid,
             "candidate_id": route.get("candidate_id"),
+            "procedural_asset_id": route.get("procedural_asset_id", ""),
+            "procedural_asset_sha256": route.get("procedural_asset_sha256", ""),
+            "lifecycle_receipt_id": route.get("lifecycle_receipt_id", ""),
+            "lifecycle_state": route.get("lifecycle_state", ""),
             "support_state": "registry_gated_canary_not_default_route",
             "route_phase": "canary",
             "route_validator_ready": bool(route.get("canary_route_eligible")),
@@ -812,6 +920,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- route eligible: `{report['summary']['route_eligible_count']}` blocked: `{report['summary']['route_blocked_count']}`",
         f"- failed regression blocks route: `{report['summary']['failed_regression_blocks_route_count']}`",
         f"- benchmark/eval blocked: `{report['summary']['benchmark_eval_blocked_count']}`",
+        f"- active procedural assets: `{report['summary']['active_procedural_asset_count']}` diverse bindings: `{report['summary']['procedural_asset_diverse_binding_count']}`",
+        f"- lookahead selections: `{report['summary']['procedural_lookahead_selected_count']}/{report['summary']['procedural_lookahead_fixture_count']}` negative controls rejected: `{report['summary']['procedural_lookahead_negative_control_rejected_count']}`",
         f"- hard gaps: `{report['summary']['hard_gap_count']}` warnings: `{report['summary']['warning_count']}`",
         "",
         "## Candidates",

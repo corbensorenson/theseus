@@ -176,6 +176,10 @@ def execute_canary_route(
         hard_gaps.append(gap(route_id, "replay_fixture_missing", {"fixture_id": fixture_id}))
     if not fixture_passed:
         hard_gaps.append(gap(route_id, "replay_fixture_not_passed", {"fixture_id": fixture_id}))
+    if not route.get("procedural_asset_id") or not route.get("procedural_asset_sha256"):
+        hard_gaps.append(gap(route_id, "procedural_asset_binding_missing", {}))
+    if route.get("lifecycle_state") != "active" or not route.get("lifecycle_receipt_id"):
+        hard_gaps.append(gap(route_id, "procedural_lifecycle_not_active", {"state": route.get("lifecycle_state")}))
     if route.get("default_route_allowed") is not False:
         hard_gaps.append(gap(route_id, "default_route_allowed_for_canary", {"default_route_allowed": route.get("default_route_allowed")}))
     if not goal:
@@ -210,6 +214,10 @@ def execute_canary_route(
         "route_id": route_id,
         "candidate_id": candidate_id,
         "fixture_id": fixture_id,
+        "procedural_asset_id": route.get("procedural_asset_id"),
+        "procedural_asset_sha256": route.get("procedural_asset_sha256"),
+        "lifecycle_receipt_id": route.get("lifecycle_receipt_id"),
+        "lookahead_tokens": route.get("lookahead_tokens", []),
         "goal_id": goal_id,
         "planner_mode": route.get("planner_mode"),
         "default_route_allowed": False,

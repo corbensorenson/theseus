@@ -1401,6 +1401,10 @@ def procedural_memory_canary_goals(report: dict[str, Any]) -> list[dict[str, Any
             continue
         route_id = str(route.get("id") or stable_id("canary_route", route))
         candidate_id = str(route.get("candidate_id") or "")
+        procedural_asset_id = str(route.get("procedural_asset_id") or "")
+        lifecycle_receipt_id = str(route.get("lifecycle_receipt_id") or "")
+        if not procedural_asset_id or route.get("lifecycle_state") != "active":
+            continue
         metrics = route.get("metrics") if isinstance(route.get("metrics"), dict) else {}
         goal_id = f"procedural_memory_canary_{slug(route_id)}"
         goals.append(
@@ -1413,6 +1417,9 @@ def procedural_memory_canary_goals(report: dict[str, Any]) -> list[dict[str, Any
                 "procedural_candidate_id": candidate_id,
                 "canary_route_id": route_id,
                 "replay_fixture_id": fixture_id,
+                "procedural_asset_id": procedural_asset_id,
+                "lifecycle_receipt_id": lifecycle_receipt_id,
+                "procedural_lookahead_tokens": route.get("lookahead_tokens", []),
                 "objective": (
                     "Route one replay-verified assistant-trace procedural candidate through the "
                     "registry-gated planner canary path without default adoption."
@@ -1444,9 +1451,9 @@ def procedural_memory_canary_goals(report: dict[str, Any]) -> list[dict[str, Any
                     {
                         "id": "validate_replay_fixture",
                         "op": "VERIFY",
-                        "title": "Validate replay fixture and no-cheat counters for procedural canary",
+                        "title": f"Validate replay fixture and no-cheat counters for procedural canary {candidate_id}",
                         "depends_on": [],
-                        "inputs": [fixture_id, candidate_id],
+                        "inputs": [fixture_id, candidate_id, procedural_asset_id, lifecycle_receipt_id],
                         "outputs": ["procedural_memory_replay_fixture_receipt"],
                         "required_capabilities": ["trace_replay", "registry_lookup"],
                         "allowed_tools": ["json_report", "registry_lookup", "tool.trace_replay"],
@@ -1465,9 +1472,9 @@ def procedural_memory_canary_goals(report: dict[str, Any]) -> list[dict[str, Any
                     {
                         "id": "compile_canary_route_packet",
                         "op": "ROUTE",
-                        "title": "Compile registry-gated canary route packet",
+                        "title": f"Compile registry-gated canary route packet {route_id}",
                         "depends_on": ["validate_replay_fixture"],
-                        "inputs": [route_id, "procedural_memory_replay_fixture_receipt"],
+                        "inputs": [route_id, procedural_asset_id, "procedural_memory_replay_fixture_receipt"],
                         "outputs": ["procedural_memory_canary_route_packet"],
                         "required_capabilities": ["semantic_ir", "work_board_routing", "registry_lookup"],
                         "allowed_tools": ["json_report", "registry_lookup"],
@@ -1483,7 +1490,7 @@ def procedural_memory_canary_goals(report: dict[str, Any]) -> list[dict[str, Any
                     {
                         "id": "measure_duplicate_and_verification_delta",
                         "op": "VERIFY",
-                        "title": "Record duplicate-work and verification-cost delta estimates",
+                        "title": f"Record duplicate-work and verification-cost delta estimates {route_id}",
                         "depends_on": ["compile_canary_route_packet"],
                         "inputs": [
                             str(metrics.get("estimated_duplicate_work_delta", "")),
@@ -1525,8 +1532,14 @@ def procedural_memory_default_route_goals(report: dict[str, Any]) -> list[dict[s
     goals: list[dict[str, Any]] = []
     if str(report.get("trigger_state") or "") != "GREEN":
         return goals
-    transaction = report.get("adoption_transaction") if isinstance(report.get("adoption_transaction"), dict) else {}
-    transaction_id = str(transaction.get("transaction_id") or "")
+    transactions = {
+        str(row.get("policy_id") or ""): row
+        for row in report.get("adoption_transactions", [])
+        if isinstance(row, dict)
+    }
+    if not transactions:
+        transaction = report.get("adoption_transaction") if isinstance(report.get("adoption_transaction"), dict) else {}
+        transactions[str(transaction.get("policy_id") or "")] = transaction
     for route in report.get("default_routes", []) if isinstance(report.get("default_routes"), list) else []:
         if not isinstance(route, dict):
             continue
@@ -1538,8 +1551,14 @@ def procedural_memory_default_route_goals(report: dict[str, Any]) -> list[dict[s
         if guard.get("armed") is not True:
             continue
         route_id = str(route.get("id") or "")
+        transaction = transactions.get(route_id, {})
+        transaction_id = str(transaction.get("transaction_id") or "")
         candidate_id = str(route.get("candidate_id") or "")
         source_canary = str(route.get("source_canary_route_id") or "")
+        procedural_asset_id = str(route.get("procedural_asset_id") or "")
+        lifecycle_receipt_id = str(route.get("lifecycle_receipt_id") or "")
+        if not procedural_asset_id or route.get("lifecycle_state") != "active":
+            continue
         goal_id = f"procedural_memory_default_route_{slug(route_id)}"
         goals.append(
             {
@@ -1551,6 +1570,9 @@ def procedural_memory_default_route_goals(report: dict[str, Any]) -> list[dict[s
                 "default_route_id": route_id,
                 "procedural_candidate_id": candidate_id,
                 "adoption_transaction_id": transaction_id,
+                "procedural_asset_id": procedural_asset_id,
+                "lifecycle_receipt_id": lifecycle_receipt_id,
+                "procedural_lookahead_tokens": route.get("lookahead_tokens", []),
                 "objective": (
                     "Compile the adopted procedural-memory default route as a guarded local metadata route "
                     "while preserving replay, rollback, and no-cheat boundaries."
@@ -1579,9 +1601,9 @@ def procedural_memory_default_route_goals(report: dict[str, Any]) -> list[dict[s
                     {
                         "id": "validate_default_route_transaction",
                         "op": "VERIFY",
-                        "title": "Validate procedural route adoption transaction and regression guard",
+                        "title": f"Validate procedural route adoption transaction and regression guard {route_id}",
                         "depends_on": [],
-                        "inputs": [transaction_id, route_id, candidate_id],
+                        "inputs": [transaction_id, route_id, candidate_id, procedural_asset_id, lifecycle_receipt_id],
                         "outputs": ["procedural_memory_default_route_guard_receipt"],
                         "required_capabilities": ["registry_lookup", "trace_replay"],
                         "allowed_tools": ["json_report", "registry_lookup", "tool.trace_replay"],
@@ -1601,9 +1623,9 @@ def procedural_memory_default_route_goals(report: dict[str, Any]) -> list[dict[s
                     {
                         "id": "compile_default_route_packet",
                         "op": "ROUTE",
-                        "title": "Compile local metadata default-route packet",
+                        "title": f"Compile local metadata default-route packet {route_id}",
                         "depends_on": ["validate_default_route_transaction"],
-                        "inputs": [route_id, source_canary, "procedural_memory_default_route_guard_receipt"],
+                        "inputs": [route_id, source_canary, procedural_asset_id, "procedural_memory_default_route_guard_receipt"],
                         "outputs": ["procedural_memory_default_route_packet"],
                         "required_capabilities": ["semantic_ir", "work_board_routing", "registry_lookup"],
                         "allowed_tools": ["json_report", "registry_lookup"],
@@ -1619,7 +1641,7 @@ def procedural_memory_default_route_goals(report: dict[str, Any]) -> list[dict[s
                     {
                         "id": "attach_default_route_rollback_handle",
                         "op": "VERIFY",
-                        "title": "Attach rollback handle for guarded procedural default route",
+                        "title": f"Attach rollback handle for guarded procedural default route {route_id}",
                         "depends_on": ["compile_default_route_packet"],
                         "inputs": [str(guard.get("guard_id") or "")],
                         "outputs": ["procedural_memory_default_route_rollback_handle"],

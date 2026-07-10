@@ -154,7 +154,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     tool_context = tool_context_packet(intent)
     tool_evidence = run_tool_evidence(intent, route)
     plan_context = plan_context_packet(intent)
-    procedural_default_route = procedural_default_route_packet(intent, route, config)
+    procedural_default_route = procedural_default_route_packet(intent, route, config, surface=str(args.surface or "local_assistant"))
     teacher_policy = teacher_policy_packet()
     benchmark_status = benchmark_status_packet(prompt)
     assistant_text = compose_assistant_text(
@@ -1654,7 +1654,13 @@ def plan_context_packet(intent: str) -> dict[str, Any]:
     }
 
 
-def procedural_default_route_packet(intent: str, route_config: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+def procedural_default_route_packet(
+    intent: str,
+    route_config: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    surface: str = "local_assistant",
+) -> dict[str, Any]:
     policy = config.get("procedural_memory_default_route") if isinstance(config.get("procedural_memory_default_route"), dict) else {}
     enabled = policy.get("enabled") is not False
     eligible_intents = {str(item) for item in policy.get("eligible_intents", []) if str(item)}
@@ -1674,7 +1680,7 @@ def procedural_default_route_packet(intent: str, route_config: dict[str, Any], c
             route.get("default_route_adopted") is True
             and guard.get("armed") is True
             and route.get("learned_generation_claim_allowed") is False
-            and procedural_route_matches_runtime(route, intent, route_config, policy)
+            and procedural_route_matches_runtime(route, intent, route_config, policy, surface=surface)
             and int_or_zero(route.get("public_training_rows_written")) == 0
             and int_or_zero(route.get("external_inference_calls")) == 0
             and int_or_zero(route.get("fallback_return_count")) == 0
@@ -1711,7 +1717,7 @@ def procedural_default_route_packet(intent: str, route_config: dict[str, Any], c
             "warning_count": summary.get("warning_count", 0),
         },
         "selected_route": selected_route,
-        "selection": procedural_route_selection_evidence(selected_route, intent, route_config, policy),
+        "selection": procedural_route_selection_evidence(selected_route, intent, route_config, policy, surface=surface),
         "public_training_rows_written": int_or_zero(summary.get("public_training_rows_written")),
         "external_inference_calls": int_or_zero(summary.get("external_inference_calls")),
         "fallback_return_count": int_or_zero(summary.get("fallback_return_count")),
@@ -1721,12 +1727,20 @@ def procedural_default_route_packet(intent: str, route_config: dict[str, Any], c
     }
 
 
-def procedural_route_matches_runtime(route: dict[str, Any], intent: str, route_config: dict[str, Any], policy: dict[str, Any]) -> bool:
+def procedural_route_matches_runtime(
+    route: dict[str, Any],
+    intent: str,
+    route_config: dict[str, Any],
+    policy: dict[str, Any],
+    *,
+    surface: str = "local_assistant",
+) -> bool:
     binding = route.get("route_binding_contract") if isinstance(route.get("route_binding_contract"), dict) else {}
     if not binding and policy.get("selection_mode") == "route_binding_contract":
         return False
     consumer = str(policy.get("required_runtime_consumer") or "theseus_assistant_runtime")
     consumers = {str(item) for item in list_value(route.get("runtime_consumers") or binding.get("runtime_consumers"))}
+    surfaces = {str(item) for item in list_value(route.get("assistant_surfaces") or binding.get("assistant_surfaces"))}
     intents = {str(item) for item in list_value(route.get("assistant_intents") or binding.get("assistant_intents"))}
     lanes = {str(item) for item in list_value(route.get("assistant_lanes") or binding.get("assistant_lanes"))}
     families = {str(item) for item in list_value(route.get("vcm_task_families") or binding.get("vcm_task_families"))}
@@ -1734,21 +1748,30 @@ def procedural_route_matches_runtime(route: dict[str, Any], intent: str, route_c
     family = str(route_config.get("vcm_task_family") or "")
     return (
         (not consumers or consumer in consumers)
+        and (not surfaces or surface in surfaces)
         and (not intents or intent in intents)
         and (not lanes or lane in lanes)
         and (not families or family in families)
     )
 
 
-def procedural_route_selection_evidence(route: dict[str, Any], intent: str, route_config: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
+def procedural_route_selection_evidence(
+    route: dict[str, Any],
+    intent: str,
+    route_config: dict[str, Any],
+    policy: dict[str, Any],
+    *,
+    surface: str = "local_assistant",
+) -> dict[str, Any]:
     binding = route.get("route_binding_contract") if isinstance(route.get("route_binding_contract"), dict) else {}
     return {
         "selection_mode": policy.get("selection_mode", "route_binding_contract"),
         "required_runtime_consumer": policy.get("required_runtime_consumer", "theseus_assistant_runtime"),
+        "requested_surface": surface,
         "requested_intent": intent,
         "requested_assistant_lane": route_config.get("assistant_lane"),
         "requested_vcm_task_family": route_config.get("vcm_task_family"),
-        "matched": bool(route) and procedural_route_matches_runtime(route, intent, route_config, policy),
+        "matched": bool(route) and procedural_route_matches_runtime(route, intent, route_config, policy, surface=surface),
         "route_scope": route.get("route_scope", ""),
         "route_binding_contract": binding,
         "selection_keys": route.get("selection_keys") or binding.get("selection_keys") or [],

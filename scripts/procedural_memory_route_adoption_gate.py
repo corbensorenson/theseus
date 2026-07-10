@@ -67,23 +67,32 @@ def build_report(
     canary = read_json(canary_path)
     registry = read_json(registry_path)
     steward = read_json(steward_path)
-    policy = dict_value(config.get("default_route_adoption_policy"))
-
-    transaction = evaluate_policy(policy, toolification, canary, registry, steward)
-    default_routes = [transaction["default_route"]] if transaction.get("default_route") else []
-    records = build_viea_records(transaction)
-    replacement_kernel = build_replacement_transaction_kernel(
-        transaction=transaction,
-        default_routes=default_routes,
-        toolification=toolification,
-        canary=canary,
-        registry=registry,
-        steward=steward,
-    )
-    hard_gaps = list_dicts(transaction.get("hard_gaps"))
+    policies = adoption_policies(config)
+    transactions = [evaluate_policy(policy, toolification, canary, registry, steward) for policy in policies]
+    default_routes = [dict_value(row.get("default_route")) for row in transactions if row.get("default_route")]
+    records = [record for transaction in transactions for record in build_viea_records(transaction)]
+    replacement_kernels = [
+        build_replacement_transaction_kernel(
+            transaction=transaction,
+            default_routes=[dict_value(transaction.get("default_route"))] if transaction.get("default_route") else [],
+            toolification=toolification,
+            canary=canary,
+            registry=registry,
+            steward=steward,
+        )
+        for transaction in transactions
+    ]
+    replacement_kernel = {
+        "policy": "project_theseus_a2_replacement_transaction_kernel_set_v1",
+        "state": "GREEN" if replacement_kernels and all(row.get("state") == "GREEN" for row in replacement_kernels) else "RED",
+        "support_state": "synthetic-test-backed" if replacement_kernels and all(row.get("support_state") == "synthetic-test-backed" for row in replacement_kernels) else "unsupported",
+        "kernel_count": len(replacement_kernels),
+        "kernels": replacement_kernels,
+    }
+    hard_gaps = [gap_item for transaction in transactions for gap_item in list_dicts(transaction.get("hard_gaps"))]
     if replacement_kernel["state"] != "GREEN":
         hard_gaps.append(gap("A2_replacement_transaction_kernel", "replacement_transaction_kernel_not_green", replacement_kernel))
-    warnings = list_dicts(transaction.get("warnings"))
+    warnings = [warning for transaction in transactions for warning in list_dicts(transaction.get("warnings"))]
     trigger_state = "GREEN"
     if hard_gaps:
         trigger_state = "RED"
@@ -95,7 +104,7 @@ def build_report(
         "canary_execution": rel(canary_path),
         "registry": rel(registry_path),
         "steward": rel(steward_path),
-        "transaction_count": 1 if transaction else 0,
+        "transaction_count": len(transactions),
         "default_route_adopted_count": sum(1 for row in default_routes if row.get("default_route_adopted")),
         "default_route_guarded_count": sum(1 for row in default_routes if row.get("continued_regression_guard", {}).get("armed")),
         "a2_replacement_transaction_kernel_state": replacement_kernel["state"],
@@ -114,7 +123,8 @@ def build_report(
         "created_utc": now(),
         "trigger_state": trigger_state,
         "summary": summary,
-        "adoption_transaction": transaction,
+        "adoption_transaction": transactions[0] if transactions else {},
+        "adoption_transactions": transactions,
         "replacement_transaction_kernel": replacement_kernel,
         "default_routes": default_routes,
         "viea_route_adoption_records": records,
@@ -129,6 +139,20 @@ def build_report(
         "external_inference_calls": 0,
         "fallback_return_count": 0,
     }
+
+
+def adoption_policies(config: dict[str, Any]) -> list[dict[str, Any]]:
+    base = dict_value(config.get("default_route_adoption_policy"))
+    if not base:
+        return []
+    policies = [base]
+    for override in list_dicts(config.get("additional_default_route_adoption_policies")):
+        merged = dict(base)
+        merged.update(override)
+        if isinstance(override.get("route_binding_contract"), dict):
+            merged["route_binding_contract"] = dict(override["route_binding_contract"])
+        policies.append(merged)
+    return policies
 
 
 def evaluate_policy(
@@ -147,6 +171,9 @@ def evaluate_policy(
     route_binding = dict_value(policy.get("route_binding_contract"))
     candidate = find_by_id(toolification.get("procedural_tool_candidates"), candidate_id)
     replay = find_by_id(toolification.get("assistant_trace_replay_results"), fixture_id)
+    procedural_asset_report = dict_value(toolification.get("procedural_assets"))
+    procedural_asset = find_by_candidate(procedural_asset_report.get("assets"), candidate_id)
+    lifecycle_receipt = find_by_candidate(procedural_asset_report.get("lifecycle_receipts"), candidate_id)
     canary_execution = find_execution(canary, route_id, candidate_id, fixture_id)
     work_contract = find_by_id(steward.get("project_work_contracts"), str(policy.get("required_steward_work_contract") or ""))
 
@@ -164,6 +191,12 @@ def evaluate_policy(
         check("candidate_runtime_tier_matches", str(candidate.get("runtime_tier") or "") == str(policy.get("required_runtime_tier") or ""), candidate.get("runtime_tier")),
         check("candidate_retirement_criteria_present", bool(candidate.get("retirement_criteria")), len(list_values(candidate.get("retirement_criteria")))),
         check("candidate_residuals_clear", not list_values(candidate.get("residuals")), candidate.get("residuals")),
+        check("procedural_asset_gate_green", procedural_asset_report.get("trigger_state") == "GREEN", procedural_asset_report.get("trigger_state")),
+        check("procedural_asset_present", bool(procedural_asset), candidate_id),
+        check("procedural_asset_hash_present", bool(procedural_asset.get("asset_sha256")), procedural_asset.get("asset_sha256")),
+        check("procedural_asset_active", procedural_asset.get("lifecycle_state") == "active" and procedural_asset.get("route_eligible") is True, procedural_asset.get("lifecycle_state")),
+        check("lifecycle_receipt_active", lifecycle_receipt.get("lifecycle_state") == "active" and lifecycle_receipt.get("rollback_triggered") is False, lifecycle_receipt),
+        check("procedural_asset_negative_controls_pass", int_or(get_path(procedural_asset_report, ["summary", "negative_control_count"], 0), 0) == int_or(get_path(procedural_asset_report, ["summary", "negative_control_rejected_count"], -1), -1), dict_value(procedural_asset_report.get("summary"))),
         check("replay_fixture_passed", replay.get("passed") is True, replay.get("passed")),
         check("route_binding_contract_present", bool(route_binding), route_binding),
         check("route_binding_has_selection_keys", bool(list_values(route_binding.get("selection_keys"))), route_binding.get("selection_keys")),
@@ -229,6 +262,11 @@ def evaluate_policy(
             "external_inference_calls": 0,
             "fallback_return_count": 0,
             "continued_regression_guard": guard,
+            "procedural_asset_id": procedural_asset.get("id"),
+            "procedural_asset_sha256": procedural_asset.get("asset_sha256"),
+            "lifecycle_receipt_id": lifecycle_receipt.get("receipt_id"),
+            "lifecycle_state": lifecycle_receipt.get("lifecycle_state"),
+            "lookahead_tokens": procedural_asset.get("lookahead_tokens"),
             "metrics": dict_value(canary_execution.get("metrics")),
             "non_claims": list_values(policy.get("non_claims")),
         }
@@ -272,6 +310,10 @@ def build_viea_records(transaction: dict[str, Any]) -> list[dict[str, Any]]:
         "assistant_lanes": route.get("assistant_lanes", []),
         "assistant_surfaces": route.get("assistant_surfaces", []),
         "runtime_consumers": route.get("runtime_consumers", []),
+        "procedural_asset_id": route.get("procedural_asset_id", ""),
+        "procedural_asset_sha256": route.get("procedural_asset_sha256", ""),
+        "lifecycle_receipt_id": route.get("lifecycle_receipt_id", ""),
+        "lifecycle_state": route.get("lifecycle_state", ""),
         "support_state": support_state,
         "default_route_adopted": adopted,
         "learned_generation_claim_allowed": False,
@@ -575,6 +617,13 @@ def check(name: str, passed: bool, evidence: Any) -> dict[str, Any]:
 def find_by_id(rows: Any, target: str) -> dict[str, Any]:
     for row in list_dicts(rows):
         if str(row.get("id") or "") == target:
+            return row
+    return {}
+
+
+def find_by_candidate(rows: Any, target: str) -> dict[str, Any]:
+    for row in list_dicts(rows):
+        if str(row.get("candidate_id") or "") == target:
             return row
     return {}
 

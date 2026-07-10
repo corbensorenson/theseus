@@ -139,10 +139,11 @@ architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
 work can continue, but strict pre-training architecture readiness is now `RED`
-with one blocker: four book-derived implementation phases are still partial.
-Those partial phases are practical neural seed survival/policy optimization/generation modes (`10`),
-evidence hygiene/receipt faithfulness/claim revision (`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and
-verification-bandwidth/governance-tax routing (`16`). The external-frozen
+with one blocker: two book-derived implementation phases are still partial.
+Those phases are practical neural seed survival/policy optimization/generation
+modes (`10`) and verification-bandwidth/governance-tax routing (`16`).
+Evidence/retention (`14`) and procedural-memory lookahead/lifecycle/toolification
+(`15`) are implemented. The external-frozen
 phases `1`, `2`, `9`, and `18` still cite current network-doctor evidence:
 `coordinator_unreachable`, `registered_peers_unreachable`,
 `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
@@ -1245,56 +1246,33 @@ preserves the current strict code-generator semantic wall as C1 evidence
 instead of counting product/tool assistance as learned generation.
 `reports/procedural_memory_toolification.json` now contributes
 `procedural_memory_toolification_spine_v1` as a first-class producer profile.
-The gate is `GREEN`: it consumed `397` schema-bound assistant/dogfood trace
-events, produced `10` assistant-trace procedural candidates and `17` total
-procedural candidates, emitted `124` VIEA procedural tool records, and kept raw
-private text, public training rows, runtime external inference, and fallback
-returns at `0`. These records are candidate-only workflow-compression evidence;
-they are not learned-generation claims and do not become default routes until
-replay regression and registry adoption pass. The first replay fixture,
-`replay.local_planning_assistant_metadata_only_v1`, now passes for
-`procedural.assistant_trace.9b50fc9d7d977f46`: it verifies `55` repeated
-planning-assistant traces, `1.0` success/useful rates, low risk, `E1` runtime,
-VIEA binding, no residuals, no raw private text, and clean no-cheat counters.
-That fixture emits one registry-gated planner canary route,
-`canary.local_planning_assistant_metadata_only_v1`, with default routing still
-explicitly false. `scripts/theseus_plan_compiler.py` now consumes that report
-and compiles one canary-only procedural-memory goal, raising the plan compiler
-to `8` compiled goals, `22` nodes, and `22` trace rows while staying `GREEN`.
-`scripts/procedural_memory_canary_executor.py` now executes that route in
-bounded local metadata-replay mode. The execution report is `GREEN`: it matched
-the same `55` schema-bound planning-assistant events, emitted `1` route packet,
-adopted `0` default routes, made `0` learned-generation claims, wrote `10`
-VIEA canary-execution records, measured actual duplicate-work delta `-54`, and
-measured metadata verification-cost delta `-206`. This is canary execution
-evidence only; default procedural-tool adoption still requires a registry
-adoption transaction and continued regression cleanliness.
-`scripts/procedural_memory_route_adoption_gate.py` now provides that adoption
-transaction. The adoption report is `GREEN`: it adopts `1` guarded default
-route, arms `1` continued regression guard, emits `12` VIEA adoption records,
-keeps learned-generation claims at `0`, and keeps public training rows, runtime
-external inference, and fallback returns at `0`. `scripts/theseus_plan_compiler.py`
-now consumes the adoption report and compiles `1` default-route maintenance
-goal, so the planner report is `GREEN` with `9` compiled goals, `25` nodes,
-`25` trace rows, `821` ASI Stack record IDs, and `72` goal governance record
-groups. This is local metadata workflow compression, not model capability
-evidence.
-`scripts/theseus_assistant_runtime.py` now consumes the same adoption report
-for planning intent through `configs/theseus_assistant_runtime.json`. The route
-is no longer an implicit first-clean-route choice: the assistant must match the
-adoption report's `route_binding_contract` over `surface`, `intent`,
-`assistant_lane`, and `vcm_task_family`, and the hard
-`procedural_default_route_binding_contract_enforced` gate must pass before the
-route can attach to a runtime trace. The roadmap and trace-schema assistant
-smokes are `GREEN` with `procedural_default_route_ready=true`,
-`procedural_default_route_selection_matched=true`, selection mode
-`route_binding_contract`, route `default.local_planning_assistant_metadata_only_v1`,
-guard armed, learned-generation claims disallowed, `19` assistant VIEA records
-per smoke, and zero public training rows, runtime external inference calls, or
-fallback returns. Those canonical assistant traces are now part of the
-`6641`-record VIEA
-materialized view with `587` claim/proof entries. This is product-route consumption evidence, still not a
-learned-generation or public-transfer claim.
+The gate is `GREEN` over `466` schema-bound metadata events, `10` assistant
+trace candidates, and `17` total candidates. Three diverse real workflow
+bindings now pass independent replay: local planning (`E1`), local chat (`E1`),
+and local deterministic-tool assistance (`E2`). `scripts/procedural_memory_assets.py`
+compiles those bindings into three digest-bound lookahead assets, obtains exact
+selection on `3/3` bound fixtures, abstains on missing/ambiguous bindings, and
+keeps all procedural reuse explicitly noncredit for learned generation.
+
+Lifecycle is executable rather than descriptive. Each asset has a freshness,
+recent-outcome, consecutive-failure, no-cheat, and replay receipt; material
+states append idempotently to
+`runtime/procedural_memory/lifecycle_ledger.jsonl`. Five expected-invalid
+controls are rejected, including automatic stale retirement and two-failure
+postcondition-drift rollback. The current three assets are active; stale,
+drifted, ambiguous, or no-cheat-faulted assets are excluded from the trie and
+cannot reach canary/default routing.
+
+The canary executor is `GREEN` for `3/3` routes over `203` matching events and
+emits `30` VIEA execution records. The route-adoption gate is `GREEN` for three
+independent SCF replacement transactions, three armed rollback guards, and `36`
+VIEA adoption records. The plan compiler consumes exact asset/lifecycle IDs and
+is `GREEN` with `13` goals, `37` nodes, three canary goals, and three default
+route-maintenance goals. Runtime route matching selects the planning, chat, and
+tool route independently under the existing intent/lane/VCM-family contract.
+All public-training, runtime-external-inference, fallback, and learned-generation
+credit counters remain zero. This is monitored workflow compression evidence,
+not model capability or public-transfer evidence.
 `reports/octopus_router_report.json` now contributes
 `octopus_moecot_route_spine_v1` as a first-class producer profile. The
 canonical Octopus report is `GREEN`: `14` route decisions emit `251`

@@ -1367,7 +1367,7 @@
         "cargo check"
       ],
       "evidence_refs": [
-        "target",
+        "Cargo.lock",
         "reports/candidate_integrity_audit.json",
         "reports/private_candidate_replay_contract_audit_v1.json"
       ],

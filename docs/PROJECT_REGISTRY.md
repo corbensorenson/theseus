@@ -282,10 +282,16 @@ Authoritative files:
   must remain zero.
 - `scripts/theseus_plan_compiler.py` is the registered planning compiler. It
   turns goals into typed, governed VCM-backed execution DAGs and routes them to
-  existing executor surfaces; it is not a separate executor. It now consumes
-  `reports/procedural_memory_toolification.json` as a canary-only input: a
-  replay-passed assistant-trace procedural candidate can become a
-  registry-gated planner route packet.
+  existing executor surfaces; it is not a separate executor. It consumes both
+  guarded canary and adopted procedural routes, and binds every such DAG to the
+  exact procedural asset and lifecycle receipt that authorized it.
+- `scripts/procedural_memory_assets.py` is an implementation module of that
+  same registered planning surface. The canonical toolification gate uses it to
+  compile replay-proven workflows into an exact-match lookahead trie, issue
+  postcondition/freshness lifecycle receipts, append material state changes to
+  `runtime/procedural_memory/lifecycle_ledger.jsonl`, and exclude stale,
+  drifted, ambiguous, or no-cheat-faulted procedures. These are workflow-route
+  assets with zero learned-generation credit, not another model lane.
 - `scripts/procedural_memory_canary_executor.py` is the bounded executor for
   those canary route packets. It validates the replay fixture against current
   metadata-only assistant events, checks the compiled planner DAG, emits a
@@ -294,18 +300,16 @@ Authoritative files:
   canary execution, but it may not adopt a default procedural route; default
   adoption still requires a registry transaction, no-cheat counters, replay
   cleanliness, and rollback criteria.
-- `scripts/procedural_memory_route_adoption_gate.py` performs that registry
-  transaction. It consumes the procedural-memory gate, canary execution report,
-  route-validator-ready registry view, and project steward contract, then emits
-  `reports/procedural_memory_route_adoption.json`. A default route can be
-  adopted only as local metadata workflow compression with an armed regression
-  guard; it remains forbidden to count this as learned generation or public
-  transfer. The adoption transaction now carries a `route_binding_contract`
-  that binds the route to `local_assistant`, `planning`, `planning_assistant`,
-  and `autonomy_governance`, with selection keys `surface`, `intent`,
-  `assistant_lane`, and `vcm_task_family`.
-- `scripts/theseus_assistant_runtime.py` is now a consumer of that adoption
-  report for planning intent. The runtime hard-gates on a GREEN adoption
+- `scripts/procedural_memory_route_adoption_gate.py` performs those registry
+  transactions. It consumes the procedural-memory gate, lifecycle-active asset,
+  canary execution report, route-validator-ready registry view, and project
+  steward contract. A default route can be adopted only as local metadata
+  workflow compression with an armed regression guard. Current bindings cover
+  planning, chat, and deterministic-tool assistant workflows independently;
+  selection remains fail-closed over intent, lane, VCM family, and authorized
+  runtime consumer.
+- `scripts/theseus_assistant_runtime.py` consumes that adoption report for
+  planning, chat, and tool intents. The runtime hard-gates on a GREEN adoption
   report, armed regression guard, learned-generation claims disabled, and zero
   public/external/fallback counters before it attaches the guarded metadata
   route to an assistant planning trace. It must also prove that the route
