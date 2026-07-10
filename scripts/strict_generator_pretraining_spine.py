@@ -517,7 +517,7 @@ def stage_full_state_examples(
                 "seed": seed,
                 "max_examples": max_examples,
                 "max_files": max_files,
-                "policy": "strict_generator_stage_cache_v2_visible_intent_source",
+                "policy": "strict_generator_stage_cache_v3_ast_canonical_prompt_provenance",
             },
             sort_keys=True,
             default=str,
@@ -545,7 +545,7 @@ def stage_full_state_examples(
         seed=seed,
     )
     cache_payload = {
-        "policy": "project_theseus_strict_generator_stage_cache_v1",
+        "policy": "project_theseus_strict_generator_stage_cache_v3_ast_canonical_prompt_provenance",
         "created_utc": now(),
         "budget_id": budget_id,
         "summary": summary,
@@ -639,14 +639,32 @@ def select_staged_row_examples(
     limit = min(len(examples), max(0, int(max_examples or 0)))
     if limit <= 0:
         return [], example_selection_summary([], [], policy=policy, selection_cfg=selection_cfg)
-    if policy != "quality_balanced_ast_local_v1":
+    if policy not in {"quality_balanced_ast_local_v1", "quality_balanced_visible_prompt_v1"}:
         selected = deterministic_sample(examples, limit, seed)
         return selected, example_selection_summary(examples, selected, policy=policy, selection_cfg=selection_cfg)
 
     min_quality_score = float(selection_cfg.get("min_quality_score") or 6.0)
     high_quality_fraction = max(0.0, min(1.0, float(selection_cfg.get("high_quality_fraction") or 0.55)))
+    descriptive_prompt_fraction = max(
+        0.0,
+        min(1.0, float(selection_cfg.get("descriptive_prompt_fraction") or 0.0)),
+    )
+    min_prompt_characters = max(1, int(selection_cfg.get("min_prompt_characters") or 24))
     high_quota = min(limit, int(round(limit * high_quality_fraction)))
+    descriptive_quota = min(limit, int(round(limit * descriptive_prompt_fraction)))
     indexed = list(enumerate(examples))
+    descriptive = [
+        item
+        for item in indexed
+        if str(item[1].get("prompt_source") or "") == "docstring"
+        and int(item[1].get("prompt_character_count") or 0) >= min_prompt_characters
+    ]
+    descriptive.sort(
+        key=lambda item: (
+            -staged_example_quality_score(item[1]),
+            stable_hash(f"{seed}:descriptive:{item[0]}:{item[1].get('path')}:{item[1].get('function')}"),
+        )
+    )
     high_quality = [
         item
         for item in indexed
@@ -658,8 +676,13 @@ def select_staged_row_examples(
             stable_hash(f"{seed}:quality:{item[0]}:{item[1].get('path')}:{item[1].get('function')}"),
         )
     )
-    selected_indexed = high_quality[:high_quota]
+    selected_indexed = descriptive[:descriptive_quota]
     selected_indices = {idx for idx, _row in selected_indexed}
+    remaining_high_quota = max(0, high_quota - len(selected_indexed))
+    if remaining_high_quota:
+        high_quality_remaining = [item for item in high_quality if item[0] not in selected_indices]
+        selected_indexed.extend(high_quality_remaining[:remaining_high_quota])
+        selected_indices.update(idx for idx, _row in high_quality_remaining[:remaining_high_quota])
     remainder = [row for idx, row in indexed if idx not in selected_indices]
     selected = [row for _idx, row in selected_indexed]
     if len(selected) < limit:
@@ -681,18 +704,50 @@ def example_selection_summary(
         "policy": policy,
         "configured_min_quality_score": float(selection_cfg.get("min_quality_score") or 0.0),
         "configured_high_quality_fraction": float(selection_cfg.get("high_quality_fraction") or 0.0),
+        "configured_descriptive_prompt_fraction": float(selection_cfg.get("descriptive_prompt_fraction") or 0.0),
+        "configured_min_prompt_characters": int(selection_cfg.get("min_prompt_characters") or 0),
         "available_example_count": len(all_examples),
         "selected_example_count": len(selected),
         "quality_before": before,
         "quality_after": after,
+        "prompt_alignment_before": prompt_alignment_distribution_summary(all_examples),
+        "prompt_alignment_after": prompt_alignment_distribution_summary(selected),
         "uses_eval_tests_or_solutions": False,
         "uses_public_data": False,
         "uses_answer_metadata": False,
         "score_semantics": (
-            "Row selection is based only on AST-local quality fields computed from admitted "
-            "private/licensed source-corpus function bodies. It does not inspect eval rows, "
+            "Row selection is based only on AST-local quality plus visible licensed-source "
+            "docstring presence/length from admitted private/licensed corpus functions. It does not inspect eval rows, "
             "tests, verifier outputs, public benchmark payloads, task labels, solution metadata, "
             "or hidden answer identifiers."
+        ),
+    }
+
+
+def prompt_alignment_distribution_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    if not rows:
+        return {
+            "rows": 0,
+            "descriptive_docstring_rows": 0,
+            "descriptive_docstring_rate": 0.0,
+            "identifier_fallback_rows": 0,
+            "mean_prompt_character_count": 0.0,
+        }
+    descriptive = [
+        row
+        for row in rows
+        if str(row.get("prompt_source") or "") == "docstring"
+        and int(row.get("prompt_character_count") or 0) > 0
+    ]
+    fallback_count = sum(1 for row in rows if str(row.get("prompt_source") or "") == "identifier_fallback")
+    return {
+        "rows": len(rows),
+        "descriptive_docstring_rows": len(descriptive),
+        "descriptive_docstring_rate": round(len(descriptive) / len(rows), 6),
+        "identifier_fallback_rows": fallback_count,
+        "mean_prompt_character_count": round(
+            sum(int(row.get("prompt_character_count") or 0) for row in rows) / len(rows),
+            4,
         ),
     }
 

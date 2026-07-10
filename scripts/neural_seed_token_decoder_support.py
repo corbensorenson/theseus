@@ -43,6 +43,7 @@ from neural_seed_token_decoder_rendering import (  # noqa: E402
     task_family,
     learned_plan_prefix_target_mode,
     learned_plan_expression_transition_body_target_mode,
+    learned_semantic_ir_plan_body_target_mode,
     learned_plan_semantic_slots_body_target_mode,
     learned_plan_statement_slots_body_target_mode,
     body_like_target_mode,
@@ -1414,9 +1415,10 @@ def forced_lightweight_python_token(
 ) -> tuple[int, float] | None:
     """Force only syntax-separator tokens required by direct body-token Python.
 
-    This does not render a solution, select a body, or add a fallback return. It
-    prevents the direct token stream from producing known-invalid layout such as
-    ``if condition`` followed by NEWLINE without a colon/indent block.
+    This does not render a solution, select a body, or add a fallback return.
+    It only completes layout after the model has emitted a colon. A syntactically
+    complete condition can still grow (for example ``if guard and value``), so
+    this function must never synthesize the colon itself.
     """
 
     if not prefix:
@@ -1428,8 +1430,6 @@ def forced_lightweight_python_token(
         return None
     if line[-1] == "OP::":
         return token_choice_by_text(inverse, probs, "NEWLINE:")
-    if current_line_needs_forced_colon(line):
-        return token_choice_by_text(inverse, probs, "OP::")
     return None
 
 
@@ -2787,6 +2787,8 @@ def encode_target_rows(
 def target_tokens(body: str, *, target_mode: str) -> list[str]:
     if semantic_ir.semantic_ir_target_mode(target_mode):
         return semantic_ir.body_to_tokens(body)
+    if learned_semantic_ir_plan_body_target_mode(target_mode):
+        return [*semantic_ir.body_to_plan_tokens(body), PLAN_BODY_START_TOKEN, *body_tokens(body)]
     if learned_plan_expression_transition_body_target_mode(target_mode):
         return [
             learned_plan_token_for_body(body),

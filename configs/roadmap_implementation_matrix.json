@@ -1559,6 +1559,12 @@
         "roadmap.md"
       ],
       "current_evidence": [
+        "scripts/strict_generator_mlx_model.py",
+        "reports/strict_generator_mlx_sparse_100m_100k.json",
+        "reports/strict_generator_mlx_dense_active_control_100m_100k.json",
+        "reports/strict_generator_mlx_dense_active_control_100m_5m.json",
+        "reports/strict_generator_mlx_dense_active_control_100m_5m_private_adaptation_decode_canary.json",
+        "reports/theseus_substrate_verdict.json",
         "reports/neural_seed_token_decoder_comparator.json",
         "reports/code_lm_train_once_fanout.json",
         "reports/neural_seed_strict_generator_fanout_receipt.json",
@@ -1624,6 +1630,8 @@
         "reports/strict_generator_state_machine_event_smoke_summary_20260706.json"
       ],
       "missing_items": [
+        "The 102.6M sparse top-2 MLX specialist implementation now has real selected-expert execution, supervised action/token routing, expert attribution, and a 0.000235 matched-active-parameter dense comparison. It is NOT_ADOPTED because dense is 2.9x faster, lower-loss, more admissible, and neither arm passes heldout behavior.",
+        "The 43.6M dense survival lane completes 5M source-conditioned positions and one governed adaptation but remains 0/8 on frozen family/broad behavior. Unique-data scale is now the prerequisite: 0.73M unique target tokens and 2,811 conversation rows are insufficient; repeated optimizer positions are not new data.",
         "state-machine event weighting is implemented and measured, but the bounded private canary is RED: LM and transition loss improve while body-action loss/accuracy and body-operand loss regress, tensor-update coverage stays below gate, and the checkpoint is rejected; the executable-span follow-up also improves LM/span/event metrics but still regresses action/operand losses or tensor-update coverage, so next work needs an action-aware executable-span/state-object or localized semantic-IR constructor rather than another scalar target-scaling variant",
         "DPO shadow replay failed behavior: repair direct learned semantic body emission and promotion-eligible nontrivial top-level-return candidates before scaling DPO/IPO/ORPO/KTO/SimPO, GRPO/RLOO/ReMax/RLVR, or claiming behavior lift",
         "direct body-emission path weighting, local-return continuation, closed-state-transition weighting, guarded/default static admission, task-blind strict decode hygiene, and generated-state return/dependency guards are now active; narrow simple-return private replay emits 2 transformer/hybrid rows with 2/2 intended-behavior passes and clean no-cheat counters, but broad/private replay still fails behaviorally after repeated nested guard blocks and missing local-return closure",
@@ -1633,7 +1641,6 @@
         "MTP objective/head support with matched single-token control and verifier-stage-aware accepted-span accounting",
         "bounded generate-verify-repair state machine: candidate -> verified-exact -> verified-lossy -> repaired-exact -> literal-fallback/noncredit -> quarantined, with model-only one-shot, verifier-guided repair, repair cost, fallback count, and useful solution/sec reported separately",
         "lookahead/trie retrieval from verified procedural memory plus Medusa, EAGLE, speculative/self-speculative, early-exit/LayerSkip, Mamba-state, PagedAttention/KV-cache policy, and sketch-first/diffusion/LLaDA arbitrary-order repair experiments as governed generation modes with useful-solution-per-second accounting",
-        "capacity ablation: dense 50-150M scale step and/or sparse MoE with matched active compute, router receipts, active-parameter accounting, and no router/tool credit as learned generation",
         "substrate-adoption record for every capability technique: baseline, negative control, matched data/compute, falsification condition, residuals, reward-hacking probes, and non-claims"
       ],
       "current_non_claims": [
@@ -1652,7 +1659,7 @@
         "The state-machine event target canary is residual/training-signal evidence only: it activates a sharper private event policy and improves LM plus transition loss, but action/operand metrics still fail and no checkpoint is routeable. It does not support learned-generation promotion, public-transfer claims, or default routing.",
         "The executable-span canary is also residual/training-signal evidence only: the dedicated span head and opt-in span-to-hidden body constructor improve LM/span/event metrics, but action/operand or tensor-update gates still fail and no checkpoint is routeable. It does not support learned-generation promotion, public-transfer claims, or default routing."
       ],
-      "smallest_next_patch": "Build a behavior-changing action-aware executable-span/state-object constructor or localized semantic-IR constructor for traversal, state update, finalizer, return closure, value expression, and verifier-obligation transitions. Keep existing role class balancing, semantic-event weighting, state-machine event weighting, soft compatibility, predicted-state constructor, and executable-span auxiliary evidence as auditable negative/partial evidence, but do not route rejected checkpoints, relax graph/operation adequacy, count deterministic repair/tool/router/template/fallback output, or scale DPO/GRPO/MTP/diffusion until strict private behavior moves above zero.",
+      "smallest_next_patch": "Scale the existing governed Track-0 corpus into a deduplicated, license- and contamination-audited mixed code/conversation manifest sized for the 43.6M dense survival model. Report unique source/target tokens separately from repeated optimizer positions, preserve family-disjoint eval isolation, and rerun the same direct behavior contract only after data-scale readiness improves. Do not add another decoder head, adapt the behavior-flat checkpoint again, or count renderer/tool/search/fallback output as learned generation.",
       "integration_smoke": [
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",
@@ -2245,6 +2252,9 @@
       ],
       "current_evidence": [
         "reports/octopus_router_report.json",
+        "reports/strict_generator_mlx_sparse_100m_100k.json",
+        "reports/strict_generator_mlx_dense_active_control_100m_100k.json",
+        "reports/theseus_substrate_verdict.json",
         "reports/octopus_router_eval.json",
         "reports/arm_registry.json",
         "reports/routing_memory.json",
@@ -2260,6 +2270,7 @@
         "reports/viea_spine_materialized_view.json"
       ],
       "missing_items": [
+        "Sparse model routing is now real and action-attributed, but matched dense wins the current diagnostics and sparse remains NOT_ADOPTED. Phase 16 still needs diverse real task-to-arm traces and a verifier-positive proposer before any learned/default route activation.",
         "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit verification-bandwidth capacity accounting with obligation count, verifier capacity, decomposition contracts, residual-obligation ledger, and escalation thresholds; the STS ranker now reads retained archived matched private surfaces through an archive-aware reader and clears the previous no-admissible residual",
         "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit governance-tax accounting with per-gate overhead, review load, tax-per-caught-risk, and caught verification-capacity/residual evidence; remaining work is live-route adoption evidence: richer real task-to-arm traces and current hot-manifest regeneration before any default route-policy change"
       ],
@@ -6433,29 +6444,314 @@
         "tool/template/router output is not learned generation",
         "public benchmark artifacts remain calibration-only and never training rows"
       ]
+    },
+    {
+      "chapter_ordinal": 13,
+      "chapter_id": "model-weight-custody-and-hardware-roots-of-trust",
+      "chapter_title": "Model-Weight Custody and Hardware Roots of Trust",
+      "part_id": "foundations-alignment-governance",
+      "part_title": "Part I - Foundations, Alignment, and Governance",
+      "book_file": "chapters/model-weight-custody-and-hardware-roots-of-trust.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned weight-custody record with model/artifact identity, lineage, encrypted-storage reference, custody authority, key-release policy, attestation requirement/result, environment identity, access scope, revocation path, residual owner, and requested load. A finite Lean route blocks a requested load with required but invalid attestation.",
+      "book_beyond_state_of_art": "A mature custody control plane continuously inventories model and derivative artifacts, binds encrypted storage and transfer to named identities, releases keys only to independently verified current trust domains, captures measurement/policy lineage, tracks copies and recipient scopes, supports scoped revocation and incident response, and treats open-weight distribution as a separately governed irreversible release. It integrates hardware/firmware trust assumptions, vendor and operator boundaries, runtime authority, monitoring, and residual risk without claiming any attestation proves the model safe or the system trustworthy. This is a target architecture, not a claim that the repository has a custody system, confidential environment, effective weight security, or authorized deployment.",
+      "book_interfaces": [
+        "Security Kernel and Digital SCIFs own runtime secrets and authority; this chapter owns the model artifact and the precondition for its loading.",
+        "Artifact Graphs owns immutable provenance and replay; custody records point to artifacts and measurements rather than duplicate them.",
+        "Capability Thresholds owns what capability observation commits a deployment path to do; custody may be one required safeguard, not a threshold conclusion.",
+        "Runtime Adapters own post-load execution permission; possession of an attested weight-load record does not grant tool or action authority.",
+        "Readiness Gates, Residual Escrow, and Quarantine own admission and residual custody after a weight policy allows a bounded readiness review."
+      ],
+      "book_invariants": [
+        "A weight identity, lineage, custody authority, access scope, and release path are recorded before a custody claim or key-release decision.",
+        "A decryption key is not released to a missing, stale, unverifiable, out-of-policy, or unapproved environment record.",
+        "An attestation is scoped evidence about a stated measurement and verifier, not proof of hardware, vendor, operator, software, model safety, or deployment safety.",
+        "Open-weight release records its irreversibility and cannot be silently treated as a reversible runtime deployment.",
+        "A custody incident or revocation path preserves affected identities, scopes, residuals, decision owner, and re-review trigger."
+      ],
+      "book_failure_modes": [
+        "Weight sprawl through backups, checkpoints, developer copies, logs, caches, or derivative artifacts.",
+        "Attestation laundering turns a token into a claim that all hardware, firmware, software, policy, or model behavior is trustworthy.",
+        "Key-release drift uses stale measurement, modified policy, widened recipient scope, or unrecorded environment changes.",
+        "Open-release laundering frames an irreversible distribution as a reversible deployment or a generic safety measure.",
+        "Autonomous-insider capture uses legitimate model access, keys, or tools to bypass the declared custody boundary."
+      ],
+      "codex_test_count": 4,
+      "representative_codex_tests": [
+        "Required invalid-attestation load block",
+        "Stale-attestation and key-policy negative control",
+        "Open-weight irreversibility record fixture"
+      ],
+      "primary_track_id": "E_authority_security_rights_kernel",
+      "phase_refs": [
+        2,
+        12,
+        14,
+        18
+      ],
+      "implementation_priority": "core_before_training",
+      "minimum_theseus_slice": "Implement the chapter's minimal slice on registered phases [2, 12, 14, 18]: A versioned weight-custody record with model/artifact identity, lineage, encrypted-storage reference, custody authority, key-release policy, attestation requirement/result, environment identity, access scope, revocation path, residual owner, and requested load. A finite Lean route blocks a requested load with required but invalid attestation.",
+      "beyond_sota_theseus_endpoint": "A mature custody control plane continuously inventories model and derivative artifacts, binds encrypted storage and transfer to named identities, releases keys only to independently verified current trust domains, captures measurement/policy lineage, tracks copies and recipient scopes, supports scoped revocation and incident response, and treats open-weight distribution as a separately governed irreversible release. It integrates hardware/firmware trust assumptions, vendor and operator boundaries, runtime authority, monitoring, and residual risk without claiming any attestation proves the model safe or the system trustworthy. This is a target architecture, not a claim that the repository has a custody system, confidential environment, effective weight security, or authorized deployment.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "partial_reference_slice",
+      "required_gate_or_fixture": "Required invalid-attestation load block",
+      "required_records_or_receipts": [
+        "model_weight_custody_record",
+        "artifact_graph_record",
+        "authority_use_receipt",
+        "attestation_receipt",
+        "key_release_decision",
+        "revocation_record",
+        "residual_record"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "book design argument is not model-capability evidence",
+        "a signature, attestation, credential, exchange receipt, or safety-case graph is not deployment authority or a safety proof",
+        "tool/template/router output is not learned generation",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 14,
+      "chapter_id": "ai-supply-chain-integrity-and-lifecycle-provenance",
+      "chapter_title": "AI Supply-Chain Integrity and Lifecycle Provenance",
+      "part_id": "foundations-alignment-governance",
+      "part_title": "Part I - Foundations, Alignment, and Governance",
+      "book_file": "chapters/ai-supply-chain-integrity-and-lifecycle-provenance.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned supply-chain admission record with artifact identity and digest, lineage reference, supplier/distributor scope, build or training provenance reference, signature requirement/result, component inventory reference/freshness, advisory state, revocation path, residual owner, and requested artifact admission. A finite Lean route quarantines a requested artifact with an unresolved critical advisory and blocks a requested artifact with a required but unverified signature.",
+      "book_beyond_state_of_art": "A mature AI supply-chain control plane maintains a continuously updated graph across data acquisition, curation, code and dependency changes, build and training runs, model and derivative artifacts, signing and verification, suppliers and distributors, deployment packages, vulnerability and advisory feeds, incident response, revocation, retention, and disposal. It can identify affected downstream paths, preserve decision history, request bounded re-review, and exchange interoperable BOM and provenance references without conflating transparency with security or safety. This is a target architecture, not a claim that this repository has complete lineage, a secure training or build pipeline, trustworthy suppliers, verified signatures, effective revocation, compliant distribution, safe models, or authorized deployment.",
+      "book_interfaces": [
+        "Artifact Graphs, Audit Logs, and Replay owns generic provenance storage and replay; this chapter owns AI supply-chain completeness, integrity policy, and affected-path routing.",
+        "Model-Weight Custody and Hardware Roots of Trust owns encrypted custody and attestation-gated loading of a known weight artifact; this chapter supplies the upstream lineage and advisory preconditions for that custody decision.",
+        "Data Engines, Continual Learning, and Unlearning owns learning-data admission, contamination, retention, and deletion mechanics; this chapter links datasets to cross-lifecycle lineage without deciding semantic fitness or unlearning success.",
+        "Security Kernel and Runtime Adapters own runtime secrets and action authority; a verified supply-chain record does not grant a tool, credential, network, or deployment permission.",
+        "Readiness Gates, Residual Escrow, and Quarantine owns bounded admission and residual custody after the supply-chain policy allows a path to be considered."
+      ],
+      "book_invariants": [
+        "An admitted artifact has a recorded identity and digest, declared upstream lineage, requested scope, and affected decision path.",
+        "A required provenance or signature result is bound to the declared artifact and policy scope; a missing, stale, mismatched, or unverified result cannot be silently accepted.",
+        "A component inventory and supplier/distributor record retain their version, scope, source, freshness, and unresolved gaps rather than claiming completeness by default.",
+        "An unresolved critical advisory, revoked signer, or invalidated lineage record propagates to affected derivatives and routes the requested artifact path to quarantine, repair, or accountable review.",
+        "A BOM, signature, provenance statement, or conformance label cannot establish artifact correctness, absence of compromise, data fitness, legal compliance, model safety, readiness, authority, or ASI."
+      ],
+      "book_failure_modes": [
+        "Dependency, dataset, model, or build substitution occurs behind an unchanged product or model name.",
+        "BOM theater presents a well-formed but incomplete, stale, or unverified inventory as an integrity guarantee.",
+        "Signature or provenance laundering turns a bounded integrity statement into a claim of secure development, safe data, safe model behavior, or deployment permission.",
+        "An upstream advisory, compromised signer, revoked supplier, or derivative relationship fails to reach affected custody, readiness, or release decisions.",
+        "A supplier, build, training, distribution, or disposal handoff loses the residual owner or re-review trigger needed after a change or incident."
+      ],
+      "codex_test_count": 4,
+      "representative_codex_tests": [
+        "Unresolved-critical-advisory quarantine route",
+        "Required-but-unverified signature admission block",
+        "Stale AI BOM and derivative-propagation negative controls"
+      ],
+      "primary_track_id": "E_authority_security_rights_kernel",
+      "phase_refs": [
+        0,
+        7,
+        12,
+        14,
+        18
+      ],
+      "implementation_priority": "core_before_training",
+      "minimum_theseus_slice": "Implement the chapter's minimal slice on registered phases [0, 7, 12, 14, 18]: A versioned supply-chain admission record with artifact identity and digest, lineage reference, supplier/distributor scope, build or training provenance reference, signature requirement/result, component inventory reference/freshness, advisory state, revocation path, residual owner, and requested artifact admission. A finite Lean route quarantines a requested artifact with an unresolved critical advisory and blocks a requested artifact with a required but unverified signature.",
+      "beyond_sota_theseus_endpoint": "A mature AI supply-chain control plane maintains a continuously updated graph across data acquisition, curation, code and dependency changes, build and training runs, model and derivative artifacts, signing and verification, suppliers and distributors, deployment packages, vulnerability and advisory feeds, incident response, revocation, retention, and disposal. It can identify affected downstream paths, preserve decision history, request bounded re-review, and exchange interoperable BOM and provenance references without conflating transparency with security or safety. This is a target architecture, not a claim that this repository has complete lineage, a secure training or build pipeline, trustworthy suppliers, verified signatures, effective revocation, compliant distribution, safe models, or authorized deployment.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "partial_reference_slice",
+      "required_gate_or_fixture": "Unresolved-critical-advisory quarantine route",
+      "required_records_or_receipts": [
+        "supply_chain_admission_record",
+        "artifact_graph_record",
+        "component_inventory",
+        "signature_verification_receipt",
+        "advisory_record",
+        "derivative_impact_record",
+        "quarantine_record",
+        "residual_record"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "book design argument is not model-capability evidence",
+        "a signature, attestation, credential, exchange receipt, or safety-case graph is not deployment authority or a safety proof",
+        "tool/template/router output is not learned generation",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 28,
+      "chapter_id": "inter-stack-protocols-identity-and-economic-exchange",
+      "chapter_title": "Inter-Stack Protocols, Identity, and Economic Exchange",
+      "part_id": "planning-memory-reasoning-execution",
+      "part_title": "Part II - Planning, Memory, Reasoning, and Execution",
+      "book_file": "chapters/inter-stack-protocols-identity-and-economic-exchange.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A public-safe exchange record with protocol/schema revision, endpoint/capability declaration, sender/receiver/principal identities, task or artifact reference, delegated-authority scope, credential requirement/result, audience, expiry, budget reservation, expected receipt, dispute/revocation path, residual owner, and requested dispatch. Finite Lean routes deny a requested dispatch with a required invalid credential and route a value-bearing requested dispatch without a reserved budget to budget repair.",
+      "book_beyond_state_of_art": "A mature stack exposes a protocol-neutral exchange control plane that maps tool requests, agent tasks, federated service calls, identity presentations, and value-bearing requests into bounded local contracts. It tracks discovery separately from trust, credentials separately from authorization, reservations separately from settlement, and declared results separately from independently reviewed evidence; it propagates expiry, revocation, endpoint change, budget release, dispute, and residual ownership to affected requests before existing local owners permit the next effect. This is a target architecture, not a claim of a local protocol, identity system, credential framework, payment network, peer-trust model, authorization service, task verifier, settlement system, privacy program, safe distributed deployment, or ASI.",
+      "book_interfaces": [
+        "Runtime Adapters, Tool Permissions, and Human Approval owns local effects; this chapter supplies a bounded remote request, not an effect lease.",
+        "Intent-to-Execution Contracts owns the originating intent and task contract; this chapter preserves principal, scope, and accepted task boundaries across a peer handoff.",
+        "Virtual Context ABI owns context provenance, admission, and taint; this chapter carries only a bounded context/artifact reference across the exchange.",
+        "Artifact Graphs, Audit Logs, and Replay owns generic provenance, receipts, and replay; this chapter owns cross-stack identity, delegation, consideration, and completeness policy.",
+        "Resource Economics and Token Budgets owns local capacity and cost policy; this chapter binds a remote consideration or reservation without claiming settlement or fairness.",
+        "Personal Compute Hives and Federated Edge Intelligence owns federation topology, while Security Kernel and Digital SCIFs owns protected secrets and handles."
+      ],
+      "book_invariants": [
+        "A requested cross-stack dispatch records its protocol/schema version, endpoint/capability declaration, sender, receiver, originating principal, requested task or artifact, and affected local owner.",
+        "Delegated authority remains bound to principal, audience, capability, scope, expiry, policy, and revocation state; protocol forwarding cannot widen it.",
+        "Identity and credential results retain verifier, policy scope, freshness, and limitation and cannot silently become local authorization or proof of peer trustworthiness.",
+        "A value-bearing request records reservation or consideration scope, expected receipt, dispute, revocation, and residual path before it can reach a local effect boundary.",
+        "A remote response remains a declared result until an independent owner checks the evidence required for the intended use.",
+        "A missing, mismatched, expired, revoked, unverified, or budget-unreserved required record routes the request to repair, accountable review, dispute, or denial rather than ordinary dispatch."
+      ],
+      "book_failure_modes": [
+        "Capability-card theater treats a self-described endpoint as a trusted, competent, authorized, or safe peer.",
+        "Deputy laundering reuses a forwarded credential or approval outside the originating principal's audience, scope, or expiry.",
+        "Identity conflation treats an endpoint, owner, agent, user, delegated principal, and credential subject as one actor.",
+        "Result laundering turns a valid response shape, completion state, or artifact receipt into proof of task truth or permission to act.",
+        "Economic commitment laundering turns a budget reservation or routed value packet into settlement, consent, fair price, or legal authorization.",
+        "Revocation races or residual loss leave a changed credential, endpoint, policy, budget, timeout, partial delivery, dispute, refund, or remote failure without accountable local handling."
+      ],
+      "codex_test_count": 3,
+      "representative_codex_tests": [
+        "Required-invalid-credential dispatch denial route",
+        "Missing-reserved-budget value-bearing dispatch repair route",
+        "Public-safe exchange contract workload with identity, delegation, expiry, revocation, budget, receipt, dispute, and residual negative controls"
+      ],
+      "primary_track_id": "F_memory_planning_tool_substrate",
+      "phase_refs": [
+        1,
+        2,
+        6,
+        9,
+        16,
+        18
+      ],
+      "implementation_priority": "canonical_stack_or_hygiene",
+      "minimum_theseus_slice": "Implement the chapter's minimal slice on registered phases [1, 2, 6, 9, 16, 18]: A public-safe exchange record with protocol/schema revision, endpoint/capability declaration, sender/receiver/principal identities, task or artifact reference, delegated-authority scope, credential requirement/result, audience, expiry, budget reservation, expected receipt, dispute/revocation path, residual owner, and requested dispatch. Finite Lean routes deny a requested dispatch with a required invalid credential and route a value-bearing requested dispatch without a reserved budget to budget repair.",
+      "beyond_sota_theseus_endpoint": "A mature stack exposes a protocol-neutral exchange control plane that maps tool requests, agent tasks, federated service calls, identity presentations, and value-bearing requests into bounded local contracts. It tracks discovery separately from trust, credentials separately from authorization, reservations separately from settlement, and declared results separately from independently reviewed evidence; it propagates expiry, revocation, endpoint change, budget release, dispute, and residual ownership to affected requests before existing local owners permit the next effect. This is a target architecture, not a claim of a local protocol, identity system, credential framework, payment network, peer-trust model, authorization service, task verifier, settlement system, privacy program, safe distributed deployment, or ASI.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "partial_reference_slice",
+      "required_gate_or_fixture": "Required-invalid-credential dispatch denial route",
+      "required_records_or_receipts": [
+        "inter_stack_exchange_record",
+        "identity_credential_receipt",
+        "delegation_receipt",
+        "resource_budget",
+        "costed_route",
+        "routing_decision",
+        "dispatch_receipt",
+        "dispute_or_revocation_record",
+        "residual_record"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "book design argument is not model-capability evidence",
+        "a signature, attestation, credential, exchange receipt, or safety-case graph is not deployment authority or a safety proof",
+        "tool/template/router output is not learned generation",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 46,
+      "chapter_id": "safety-cases-and-structured-assurance",
+      "chapter_title": "Safety Cases and Structured Assurance",
+      "part_id": "evidence-implementation-living-book",
+      "part_title": "Part IV - Evidence, Implementation, and the Living Book",
+      "book_file": "chapters/safety-cases-and-structured-assurance.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned assurance-case record with one scoped top claim, deployment and hazard context, argument/evidence references, assumptions, defeaters, countercase-review state, acceptance criterion, residual owner, decision authority, and affected release path. A finite Lean route sends a requested release with an unresolved defeater to accountable review rather than readiness release.",
+      "book_beyond_state_of_art": "A mature assurance compiler continuously builds auditable, versioned cases from the book's evidence, evaluation, threshold, safeguard, readiness, provenance, and residual records; it highlights stale dependencies, missing countercase searches, evidence-scope mismatch, contradiction, and changed deployment conditions; requests independent review; and feeds only a bounded case status to existing release and authority gates. It preserves dissent and failure history, supports multiple threat-model arguments without combining them into a single confidence score, and makes a case revision a reviewable deployment event. This is a target architecture, not a claim that this repository has a complete case, valid threat model, adequate evidence, effective controls, safe system, or authorized deployment.",
+      "book_interfaces": [
+        "Evidence States and Claim Discipline owns support-state movement and the claim ledger; the safety case consumes references and cannot promote claims by rendering them.",
+        "Benchmark Ratchets and Anti-Goodhart Evidence plus Adversarial Evaluation, Sandbagging, and Training-Time Deception own measurement and observation integrity; their evidence and defeaters enter the case as bounded inputs.",
+        "Capability Thresholds and Deployment Commitments owns threshold response; a safety case can state which commitment is affected but cannot set or waive it.",
+        "Readiness Gates, Residual Escrow, and Quarantine owns operational admission, quarantine, and residual custody; the case routes unresolved material to those gates.",
+        "Artifact Graphs, Audit Logs, and Replay owns provenance and replay handles; the case records pointers rather than becoming an alternate evidence store.",
+        "Security Kernel and Runtime Adapters own technical controls and action authority; the case can require their evidence but cannot implement or authorize them."
+      ],
+      "book_invariants": [
+        "Every top claim is bound to a deployment context, hazard/threat scope, case version, acceptance criterion, decision authority, and affected release path.",
+        "A support edge identifies the claim property, evidence reference, strategy, and scope it is asserted to support; graph connectivity alone is not evidence adequacy.",
+        "An unresolved defeater, missing countercase review, missing acceptance criterion, or missing residual owner cannot silently become a favorable case conclusion or release clearance.",
+        "A rendered, complete, or notation-conformant graph does not change support state, establish safety, or supply authority to deploy.",
+        "Case changes preserve prior version, change rationale, reviewer, affected claims, and re-review trigger."
+      ],
+      "book_failure_modes": [
+        "Argument theater presents a polished graph with unsupported edges, stale evidence, or omitted assumptions.",
+        "Defeater laundering records only evidence for a preferred conclusion and hides countercases, dissent, or failed evaluations.",
+        "Scope drift reuses a case outside its named deployment context, hazard model, model version, or access conditions.",
+        "Evidence aliasing cites a receipt or metric as if it directly established a broader safety or control claim.",
+        "Authority laundering treats case acceptance or graph completeness as release permission.",
+        "Maintenance rot leaves a structurally complete case connected to superseded policies, evaluations, safeguards, or residuals."
+      ],
+      "codex_test_count": 4,
+      "representative_codex_tests": [
+        "Unresolved-defeater safety-case route",
+        "Missing acceptance-criterion negative control",
+        "Stale case-dependency and re-review fixture"
+      ],
+      "primary_track_id": "A_reference_evidence_spine",
+      "phase_refs": [
+        4,
+        12,
+        14,
+        18,
+        19
+      ],
+      "implementation_priority": "core_before_training",
+      "minimum_theseus_slice": "Implement the chapter's minimal slice on registered phases [4, 12, 14, 18, 19]: A versioned assurance-case record with one scoped top claim, deployment and hazard context, argument/evidence references, assumptions, defeaters, countercase-review state, acceptance criterion, residual owner, decision authority, and affected release path. A finite Lean route sends a requested release with an unresolved defeater to accountable review rather than readiness release.",
+      "beyond_sota_theseus_endpoint": "A mature assurance compiler continuously builds auditable, versioned cases from the book's evidence, evaluation, threshold, safeguard, readiness, provenance, and residual records; it highlights stale dependencies, missing countercase searches, evidence-scope mismatch, contradiction, and changed deployment conditions; requests independent review; and feeds only a bounded case status to existing release and authority gates. It preserves dissent and failure history, supports multiple threat-model arguments without combining them into a single confidence score, and makes a case revision a reviewable deployment event. This is a target architecture, not a claim that this repository has a complete case, valid threat model, adequate evidence, effective controls, safe system, or authorized deployment.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "partial_reference_slice",
+      "required_gate_or_fixture": "Unresolved-defeater safety-case route",
+      "required_records_or_receipts": [
+        "assurance_case_record",
+        "claim_record",
+        "artifact_graph_record",
+        "evidence_transition_record",
+        "defeater_record",
+        "countercase_review",
+        "readiness_decision",
+        "residual_record"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "book design argument is not model-capability evidence",
+        "a signature, attestation, credential, exchange receipt, or safety-case graph is not deployment authority or a safety proof",
+        "tool/template/router output is not learned generation",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
     }
   ],
   "book_chapter_crosswalk_summary": {
     "policy": "all_authored_book_chapters_mapped_to_theseus_v1",
     "book_manifest": "/Users/corbensorenson/Documents/AI_book/book_structure.json",
-    "book_chapter_count": 49,
+    "book_chapter_count": 54,
     "track_counts": {
-      "A_reference_evidence_spine": 10,
-      "F_memory_planning_tool_substrate": 12,
-      "E_authority_security_rights_kernel": 8,
+      "A_reference_evidence_spine": 11,
+      "F_memory_planning_tool_substrate": 13,
+      "E_authority_security_rights_kernel": 11,
       "D_repo_stewardship_and_evidence_hygiene": 9,
       "B_product_assistant_usefulness": 1,
       "C_capability_research_survival_lane": 9
     },
     "current_state_counts": {
-      "partial_reference_slice": 34,
+      "partial_reference_slice": 38,
       "wired_reference_slice_exists": 11,
       "mapped_with_frozen_dependency": 2,
       "mapped_missing_scalable_oversight_protocol_contract": 1,
       "mapped_missing_deliberation_campaign_contract": 1
     },
     "support_state_target_counts": {
-      "synthetic-test-backed": 39,
+      "synthetic-test-backed": 44,
       "replayable-reference-backed": 9,
       "empirical-test-backed": 1
     },

@@ -50,6 +50,12 @@ EVIDENCE_REPORTS = [
         "evidence_role": "broad_private_survival_lane_comparator",
     },
 ]
+SPECIALIST_REPORTS = {
+    "sparse_train": "reports/strict_generator_mlx_sparse_100m_100k.json",
+    "dense_train": "reports/strict_generator_mlx_dense_active_control_100m_100k.json",
+    "sparse_decode": "reports/strict_generator_mlx_sparse_100m_100k_decode_canary.json",
+    "dense_decode": "reports/strict_generator_mlx_dense_active_control_100m_100k_decode_canary.json",
+}
 NO_CHEAT = {
     "public_training_rows_written": 0,
     "external_inference_calls": 0,
@@ -75,7 +81,12 @@ def main() -> int:
     if any(row.get("model_promotion_allowed") for row in present):
         hard_gaps.append(gap("unexpected_promotion_claim_in_verdict_inputs", {"rows": present}))
     verdict = decide_verdict(present)
-    records = build_records(present, verdict)
+    specialist_comparison = load_specialist_comparison()
+    if specialist_comparison.get("present") and not specialist_comparison.get("matched_contract"):
+        hard_gaps.append(gap("sparse_dense_active_compute_contract_mismatch", specialist_comparison))
+    if specialist_comparison.get("present") and not specialist_comparison.get("no_cheat_clean"):
+        hard_gaps.append(gap("sparse_dense_no_cheat_counter_fault", specialist_comparison))
+    records = build_records(present, verdict, specialist_comparison)
     payload = {
         "policy": "project_theseus_substrate_verdict_v1",
         "created_utc": now(),
@@ -92,11 +103,15 @@ def main() -> int:
             "symliquid_discovery_state": verdict["symliquid_discovery_state"],
             "superiority_claim": verdict["superiority_claim"],
             "hard_gap_count": len(hard_gaps),
+            "specialist_comparison_present": bool(specialist_comparison.get("present")),
+            "specialist_practical_route": specialist_comparison.get("practical_route"),
+            "specialist_adoption_state": specialist_comparison.get("adoption_state"),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "hard_gaps": hard_gaps,
         "evidence_rows": rows,
         "verdict": verdict,
+        "specialist_core_comparison": specialist_comparison,
         **records,
         **NO_CHEAT,
         "non_claims": [
@@ -195,7 +210,135 @@ def decide_verdict(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def build_records(rows: list[dict[str, Any]], verdict: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+def load_specialist_comparison() -> dict[str, Any]:
+    payloads = {name: read_json(resolve(path)) for name, path in SPECIALIST_REPORTS.items()}
+    if not all(isinstance(payload, dict) and payload for payload in payloads.values()):
+        return {
+            "present": False,
+            "missing_reports": [
+                path for name, path in SPECIALIST_REPORTS.items() if not payloads.get(name)
+            ],
+            "adoption_state": "NOT_EVALUATED",
+            "practical_route": "dense_active_control",
+        }
+    sparse = dict_value(payloads["sparse_train"].get("summary"))
+    dense = dict_value(payloads["dense_train"].get("summary"))
+    sparse_budget = dict_value(payloads["sparse_train"].get("budget"))
+    dense_budget = dict_value(payloads["dense_train"].get("budget"))
+    sparse_core = dict_value(sparse.get("specialist_core"))
+    dense_core = dict_value(dense.get("specialist_core"))
+    sparse_base = int(sparse.get("parameter_count") or 0) - int(
+        sparse_core.get("specialist_total_parameter_count") or 0
+    )
+    dense_base = int(dense.get("parameter_count") or 0) - int(
+        dense_core.get("specialist_total_parameter_count") or 0
+    )
+    sparse_active = sparse_base + int(
+        sparse_core.get("specialist_active_parameter_count_per_token") or 0
+    )
+    dense_active = dense_base + int(
+        dense_core.get("specialist_active_parameter_count_per_token") or 0
+    )
+    active_gap = abs(sparse_active - dense_active) / max(dense_active, 1)
+    sparse_behavior = decode_behavior_summary(payloads["sparse_decode"])
+    dense_behavior = decode_behavior_summary(payloads["dense_decode"])
+    matched_contract = all(
+        [
+            int(sparse.get("optimizer_token_positions_consumed") or 0)
+            == int(dense.get("optimizer_token_positions_consumed") or 0),
+            sparse_budget.get("source_vocab_sha256") == dense_budget.get("source_vocab_sha256"),
+            sparse_budget.get("target_vocab_sha256") == dense_budget.get("target_vocab_sha256"),
+            dict_value(sparse_budget.get("row_summary")).get("encoded_source_rows")
+            == dict_value(dense_budget.get("row_summary")).get("encoded_source_rows"),
+            active_gap <= 0.01,
+        ]
+    )
+    no_cheat_clean = all(
+        int(dict_value(payload.get("budget")).get(key) or 0) == 0
+        for payload in (payloads["sparse_train"], payloads["dense_train"])
+        for key in (
+            "public_training_rows",
+            "external_inference_calls",
+            "fallback_template_router_tool_credit_count",
+        )
+    )
+    sparse_wins_behavior = sparse_behavior["behavior_passes"] > dense_behavior["behavior_passes"]
+    dense_wins_diagnostics = (
+        float(dense.get("heldout_lm_loss_after") or 1e9)
+        < float(sparse.get("heldout_lm_loss_after") or 1e9)
+        and float(dense.get("training_tokens_per_second") or 0.0)
+        > float(sparse.get("training_tokens_per_second") or 0.0)
+        and dense_behavior["candidate_rows"] >= sparse_behavior["candidate_rows"]
+    )
+    sparse_adopted = bool(
+        matched_contract
+        and no_cheat_clean
+        and sparse_behavior["behavior_passes"] > 0
+        and sparse_wins_behavior
+    )
+    return {
+        "present": True,
+        "policy": "matched_sparse_specialist_vs_dense_active_control_v1",
+        "matched_contract": matched_contract,
+        "no_cheat_clean": no_cheat_clean,
+        "active_parameter_relative_gap": round(active_gap, 6),
+        "sparse": {
+            "total_parameters": int(sparse.get("parameter_count") or 0),
+            "active_parameters_per_token": sparse_active,
+            "heldout_lm_loss_after": sparse.get("heldout_lm_loss_after"),
+            "training_tokens_per_second": sparse.get("training_tokens_per_second"),
+            "active_expert_count": get_path(
+                sparse, ["specialist_routing", "active_expert_count"]
+            ),
+            **sparse_behavior,
+        },
+        "dense": {
+            "total_parameters": int(dense.get("parameter_count") or 0),
+            "active_parameters_per_token": dense_active,
+            "heldout_lm_loss_after": dense.get("heldout_lm_loss_after"),
+            "training_tokens_per_second": dense.get("training_tokens_per_second"),
+            **dense_behavior,
+        },
+        "dense_wins_diagnostics": dense_wins_diagnostics,
+        "sparse_wins_behavior": sparse_wins_behavior,
+        "adoption_state": "ADOPTED" if sparse_adopted else "NOT_ADOPTED",
+        "practical_route": "sparse_moe" if sparse_adopted else "dense_active_control",
+        "falsification_reason": (
+            "Sparse routing is real and attributable, but it is slower, has higher heldout loss, "
+            "and does not improve direct heldout verifier behavior over the matched dense control."
+        ),
+        "evidence_refs": list(SPECIALIST_REPORTS.values()),
+        **NO_CHEAT,
+    }
+
+
+def decode_behavior_summary(payload: dict[str, Any]) -> dict[str, int]:
+    gates = [row for row in payload.get("gates", []) if isinstance(row, dict)]
+    candidate_gate = next((row for row in gates if row.get("name") == "candidate_rows_emitted"), {})
+    behavior_gate = next(
+        (row for row in gates if row.get("name") == "functional_pass_moved_above_zero"), {}
+    )
+    behavior = dict_value(behavior_gate.get("evidence"))
+    return {
+        "candidate_rows": int(candidate_gate.get("evidence") or 0),
+        "behavior_passes": sum(int(value or 0) for value in behavior.values()),
+    }
+
+
+def get_path(payload: dict[str, Any], path: list[str]) -> Any:
+    value: Any = payload
+    for key in path:
+        if not isinstance(value, dict):
+            return None
+        value = value.get(key)
+    return value
+
+
+def build_records(
+    rows: list[dict[str, Any]],
+    verdict: dict[str, Any],
+    specialist_comparison: dict[str, Any],
+) -> dict[str, list[dict[str, Any]]]:
     evidence_refs = [row["path"] for row in rows if row.get("present")]
     verdict_ref = "reports/theseus_substrate_verdict.json"
     substrate_adoption_records = [
@@ -218,6 +361,18 @@ def build_records(rows: list[dict[str, Any]], verdict: dict[str, Any]) -> dict[s
             residuals=["must still clear direct learned full-body semantic quality and public transfer"],
         ),
     ]
+    if specialist_comparison.get("present"):
+        substrate_adoption_records.append(
+            substrate_record(
+                substrate_id="substrate.sparse_specialist_core",
+                substrate_kind="sparse_moe",
+                adoption_state=str(specialist_comparison.get("adoption_state") or "NOT_ADOPTED"),
+                candidate_use="Protected matched-active-compute specialist comparator.",
+                production_default=specialist_comparison.get("adoption_state") == "ADOPTED",
+                evidence_refs=list(specialist_comparison.get("evidence_refs") or []) + [verdict_ref],
+                residuals=[str(specialist_comparison.get("falsification_reason") or "")],
+            )
+        )
     claim_records = [
         {
             "record_type": "claim_record",

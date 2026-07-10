@@ -322,6 +322,15 @@ def report_output_status(policy: dict[str, Any]) -> list[dict[str, Any]]:
     for implementation in policy.get("implementations", []) if isinstance(policy.get("implementations"), list) else []:
         if not isinstance(implementation, dict):
             continue
+        status = str(implementation.get("status") or "")
+        eligibility = (
+            implementation.get("routing_eligibility")
+            if isinstance(implementation.get("routing_eligibility"), dict)
+            else {}
+        )
+        routing_required = bool(eligibility.get("eligible", status == "live"))
+        if status != "live" or not routing_required:
+            continue
         contract_result = evaluate_route_evidence_contract(policy, implementation)
         for route_row in contract_result["requirements"]:
             path_text = str(route_row.get("path") or "")

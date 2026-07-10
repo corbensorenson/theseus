@@ -12,7 +12,6 @@ from __future__ import annotations
 import ast
 import json
 import sys
-import textwrap
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -417,7 +416,6 @@ def python_function_body_pretraining_examples(
         parsed = ast.parse(text)
     except SyntaxError:
         return []
-    lines = text.splitlines()
     examples: list[dict[str, Any]] = []
     for node in ast.walk(parsed):
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -426,11 +424,10 @@ def python_function_body_pretraining_examples(
             continue
         body_nodes = [stmt for stmt in node.body if not isinstance(stmt, ast.Expr) or not isinstance(getattr(stmt, "value", None), ast.Constant)]
         body_nodes = body_nodes or list(node.body)
-        start = min(int(getattr(stmt, "lineno", 0) or 0) for stmt in body_nodes)
-        end = max(int(getattr(stmt, "end_lineno", getattr(stmt, "lineno", 0)) or 0) for stmt in body_nodes)
-        if start <= 0 or end <= 0 or end < start:
+        try:
+            body = "\n".join(ast.unparse(statement) for statement in body_nodes).strip()
+        except (AttributeError, TypeError, ValueError):
             continue
-        body = textwrap.dedent("\n".join(lines[start - 1 : end])).strip()
         if not body or len(body) > max_function_body_chars:
             continue
         args = [arg.arg for arg in list(node.args.posonlyargs) + list(node.args.args) + list(node.args.kwonlyargs)]
@@ -439,6 +436,7 @@ def python_function_body_pretraining_examples(
         if node.args.kwarg is not None:
             args.append(node.args.kwarg.arg)
         doc = ast.get_docstring(node) or ""
+        clean_doc = " ".join(str(doc).split())
         identifier_parts = visible_identifier_parts(node.name)
         arg_parts = [part for arg in args for part in visible_identifier_parts(arg)]
         source_text = python_function_body_pretraining_source_text(
@@ -456,6 +454,8 @@ def python_function_body_pretraining_examples(
                 "source_text_style": source_text_style,
                 "source_text": source_text,
                 "body": body,
+                "prompt_source": "docstring" if clean_doc else "identifier_fallback",
+                "prompt_character_count": len(clean_doc),
                 "quality": quality,
             }
         )
@@ -488,23 +488,17 @@ def python_function_body_pretraining_source_text(
     operation_tags = visible_prompt_operation_tags(prompt_like)
     type_shape_tags = visible_prompt_type_shape_tags(prompt_like)
     visible_subwords = visible_subword_parts(prompt_like)
-    include_operation_tags = source_text_style in {
-        "prompt_signature_operation_metadata_v3",
-        "prompt_signature_metadata_v3_operation_tags",
-    }
     aligned_chunks = [
         prompt_text,
         function_name,
         "visible_intent_tags " + " ".join(intent_tags) if intent_tags else "",
-        "visible_operation_tags " + " ".join(operation_tags) if include_operation_tags and operation_tags else "",
+        "prompt_operation_hints " + " ".join(operation_tags) if operation_tags else "",
         "visible_type_shape_tags " + " ".join(type_shape_tags) if type_shape_tags else "",
-        "entry_point_parts " + " ".join(identifier_parts) if identifier_parts else "",
-        "visible_subwords " + " ".join(visible_subwords) if visible_subwords else "",
-    ]
-    metadata_chunks = [
         f"signature {signature_text}",
         "arguments " + " ".join(args) if args else "",
+        "entry_point_parts " + " ".join(identifier_parts) if identifier_parts else "",
         "argument_parts " + " ".join(arg_parts) if arg_parts else "",
+        "visible_subwords " + " ".join(visible_subwords) if visible_subwords else "",
     ]
     if source_text_style == "legacy_metadata_v1":
         chunks = [
@@ -518,8 +512,6 @@ def python_function_body_pretraining_source_text(
     else:
         chunks = [
             *aligned_chunks,
-            *metadata_chunks,
-            f"path {rel_path}",
             f"source_style {source_text_style}",
         ]
     return "\n".join(part for part in chunks if part)

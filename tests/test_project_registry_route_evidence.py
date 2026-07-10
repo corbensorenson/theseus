@@ -46,9 +46,11 @@ class RouteEvidenceContractTests(unittest.TestCase):
             "implementations": [
                 {
                     "id": "impl.test",
+                    "status": "live",
                     "canonical_entrypoint": "scripts/implementation.py",
                     "route_evidence_contract_id": "route.test",
                     "evidence_outputs": ["reports/gate.json"],
+                    "routing_eligibility": {"eligible": True},
                 }
             ],
             "surfaces": [
@@ -69,6 +71,30 @@ class RouteEvidenceContractTests(unittest.TestCase):
         self.assertEqual(history["evidence_class"], "supporting")
         self.assertEqual(history["status"], "available")
         self.assertFalse(history["stale"])
+
+    def test_retained_non_routeable_implementation_does_not_authorize_report(self) -> None:
+        self.write_json(
+            "reports/gate.json",
+            {"created_utc": datetime.now(timezone.utc).isoformat(), "trigger_state": "RED"},
+        )
+        requirement = {
+            "id": "gate",
+            "path": "reports/gate.json",
+            "freshness_mode": "source_bound",
+            "source_paths": ["scripts/implementation.py"],
+            "acceptance": {"field": "trigger_state", "allowed": ["GREEN"]},
+        }
+        policy = self.policy(requirement)
+        policy["implementations"][0]["status"] = "retained"
+        policy["implementations"][0]["routing_eligibility"] = {"eligible": False}
+
+        gate = next(
+            row for row in registry.report_output_status(policy) if row["path"] == "reports/gate.json"
+        )
+
+        self.assertEqual(gate["evidence_class"], "supporting")
+        self.assertEqual(gate["status"], "available")
+        self.assertFalse(gate["route_required"])
 
     def test_source_change_invalidates_route_receipt(self) -> None:
         source = self.root / "scripts/implementation.py"

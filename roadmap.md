@@ -28,12 +28,12 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | implemented; candidate receipts YELLOW on 82.48% synthetic-share warning | Phase 10 consumes admitted hashes; diversify real/licensed pressure without weakening the firewall |
-| Sparse specialist core (100M) | Track 1 / Phases 10, 16 | not started | build 100M sparse MoE proposer; active-param loss curve |
+| Data engine + curriculum | Track 0 / Phase 7 | governance implemented; scale inadequate for the model | expand governed unique code/conversation tokens; current code run had 0.73M unique target tokens for 43.6M parameters |
+| Sparse specialist core (100M) | Track 1 / Phases 10, 16 | implemented comparator; not adopted | dense wins matched 100K diagnostics and admissibility; revisit sparse only after a behavior win |
 | Verifier-guided search | Track 2 / Phases 6, 10 | not started | propose->verify->repair search; beat one-shot on held-out |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
-| Generator capability (held-out pass) | Phase 10 | RED - 0/24 functional | action-aware semantic-IR body construction; no more heads |
+| Generator capability (held-out pass) | Phase 10 | RED - 0/8 on the current dense 5M+adaptation replay | scale unique governed data and target semantics; do not tune the same body-token checkpoint again |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
 | VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
 | Claim ledger + belief revision | Phase 14 | partial | one real belief revision on a live claim + independent audit |
@@ -508,9 +508,11 @@ deletion closure is graph evidence, not physical unlearning.
 ### Phase 10: Practical Neural Seed Survival Lane
 (Owns Tracks 1, 2's learned proposer/repair loop, 3, and 4's model path.)
 - Build the practical transformer/hybrid from-scratch generator first. The current
-  wall is action-aware semantic-IR/executable-state body construction for traversal,
-  updates, finalizers, value expressions, and return closure; auxiliary-head or LM
-  loss movement without verifier behavior does not clear it.
+  wall is underdata semantic transfer: the 43.6M dense-active model saw only 0.73M
+  unique target tokens from 16,000 licensed functions before repeated training and
+  still scored 0/8 after one governed adaptation. Scale unique governed code and
+  conversation pressure before another large model run; auxiliary-head or LM loss
+  movement without verifier behavior does not clear the wall.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled
@@ -527,7 +529,8 @@ deletion closure is graph evidence, not physical unlearning.
   behavior or record falsification; active-parameter efficiency is reported.
 - Do not: add another marker/head/slot variant without a preregistered falsification
   sequence; train on public benchmarks; credit renderer/tool/search/fallback output
-  as learned generation; scale a behavior-flat checkpoint.
+  as learned generation; scale or repeatedly adapt a behavior-flat checkpoint; call
+  repeated token positions unique data exposure.
 
 ### Phase 11: SymLiquid Discovery-Lane Verdict
 - Keep SymLiquid/CGS/VSA protected as a discovery comparator, but make the practical

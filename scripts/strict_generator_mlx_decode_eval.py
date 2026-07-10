@@ -28,6 +28,8 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
+import semantic_ir  # noqa: E402
+
 from code_lm_private_verifier import evaluate_private_candidates  # noqa: E402
 from neural_seed_code_proposer_comparator import (  # noqa: E402
     dict_or_empty,
@@ -67,6 +69,7 @@ from neural_seed_token_decoder_support import (  # noqa: E402
     invalid_known_method_arity,
     learned_plan_prefix_target_mode,
     learned_plan_semantic_slots_body_target_mode,
+    learned_semantic_ir_plan_body_target_mode,
     normalize_body_text,
     strict_body_expression_is_likely_noniterable,
     strict_body_prefix_local_static_types,
@@ -167,6 +170,7 @@ from strict_generator_mlx_specialist_routing import (  # noqa: E402
 )
 from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     BODY_ACTION_ROLES,
+    BODY_EXECUTABLE_SPAN_ROLES,
     BODY_OPERAND_ROLES,
     BODY_STATE_EVENT_ROLES,
     MlxStrictGenerator,
@@ -1063,6 +1067,8 @@ def load_mlx_checkpoint(
     coupled_cfg = dict_or_empty(vocab_payload.get("coupled_state_body_constructor"))
     executable_span_cfg = dict_or_empty(vocab_payload.get("body_executable_span_auxiliary"))
     executable_constructor_cfg = dict_or_empty(vocab_payload.get("executable_span_body_constructor"))
+    specialist_core_cfg = dict_or_empty(vocab_payload.get("specialist_core"))
+    specialist_router_supervision = dict_or_empty(vocab_payload.get("specialist_router_supervision"))
     coupled_state_body_constructor = (
         bool(force_coupled_state_body_constructor)
         if force_coupled_state_body_constructor is not None
@@ -1114,6 +1120,7 @@ def load_mlx_checkpoint(
             "enabled": executable_span_body_constructor,
             "scale": executable_span_body_constructor_scale if executable_span_body_constructor else 0.0,
         },
+        "specialist_core": specialist_core_cfg,
     }
     model_key = stable_hash(json.dumps(model_key_payload, sort_keys=True))
     model_cache = cache.setdefault("models", {}) if cache is not None else {}
@@ -1136,6 +1143,15 @@ def load_mlx_checkpoint(
             body_executable_span_head=body_executable_span_head,
             executable_span_body_constructor=executable_span_body_constructor,
             executable_span_body_constructor_scale=executable_span_body_constructor_scale,
+            semantic_slot_role_count=len(SEMANTIC_SLOT_ROLES),
+            body_action_role_count=len(BODY_ACTION_ROLES),
+            body_operand_role_count=len(BODY_OPERAND_ROLES),
+            body_state_event_role_count=len(BODY_STATE_EVENT_ROLES),
+            body_executable_span_role_count=len(BODY_EXECUTABLE_SPAN_ROLES),
+            specialist_core=specialist_core_cfg,
+            specialist_token_expert_ids=list(
+                specialist_router_supervision.get("token_expert_ids") or []
+            ),
             mx=mx,
             nn=nn,
         ).model
@@ -2846,7 +2862,7 @@ def mlx_token_choices(
         tok = inverse.get(idx, "<unk>")
         if tok == "<eos>" and not ready:
             continue
-        if tok.startswith("SLOT:"):
+        if token_is_target_control_metadata(tok, target_mode=target_mode):
             continue
         if token_blocked_by_strict_decode_guard(
             body_prefix,
@@ -2928,7 +2944,7 @@ def mlx_token_choices(
         tok = inverse.get(idx, "<unk>")
         if tok == "<eos>" and not ready:
             continue
-        if tok.startswith("SLOT:"):
+        if token_is_target_control_metadata(tok, target_mode=target_mode):
             continue
         if token_blocked_by_strict_decode_guard(
             body_prefix,
@@ -2955,6 +2971,15 @@ def mlx_token_choices(
         if token_allowed_by_policy(body_prefix, tok, policy=token_policy, allowed_names=allowed_names):
             return [(idx, float(max(arr[idx], 1e-9)))]
     return [(eos_id, float(max(arr[eos_id], 1e-9)))] if ready else []
+
+
+def token_is_target_control_metadata(token: str, *, target_mode: str) -> bool:
+    """Keep autoregressive prefix metadata out of an emitted Python body."""
+
+    value = str(token or "")
+    if value.startswith("SLOT:"):
+        return True
+    return learned_semantic_ir_plan_body_target_mode(target_mode) and value.startswith(semantic_ir.PLAN_PREFIX)
 
 
 def merged_source_condition_expectation(
@@ -3283,6 +3308,14 @@ def learned_plan_prefix_choices(
         return None
     arr = np.asarray(probs, dtype=np.float64)
     prefix_no_eos = [tok for tok in prefix if tok != "<eos>"]
+    if learned_semantic_ir_plan_body_target_mode(target_mode):
+        return semantic_ir_plan_prefix_choices(
+            arr,
+            inverse,
+            token_to_id,
+            prefix_no_eos,
+            max_choices=max_choices,
+        )
     if not prefix_no_eos:
         if override_choices:
             return list(override_choices)[: max(1, int(max_choices or 1))]
@@ -3366,6 +3399,98 @@ def learned_plan_prefix_choices(
             return []
         return [(idx, float(max(arr[idx], 1e-9)))]
     return []
+
+
+def semantic_ir_plan_prefix_choices(
+    probabilities: Any,
+    inverse: dict[int, str],
+    token_to_id: dict[str, int],
+    prefix: list[str],
+    *,
+    max_choices: int,
+    max_plan_tokens: int = semantic_ir.PLAN_MAX_TOKENS,
+) -> list[tuple[int, float]] | None:
+    """Apply syntax-only boundaries to a model-generated semantic plan."""
+
+    arr = np.asarray(probabilities, dtype=np.float64)
+    if PLAN_BODY_START_TOKEN in prefix:
+        return None
+    if not prefix:
+        idx = token_to_id.get(semantic_ir.PLAN_BEGIN)
+        return [(idx, float(max(arr[idx], 1e-9)))] if idx is not None else []
+    if prefix[0] != semantic_ir.PLAN_BEGIN:
+        return []
+    if prefix[-1] == semantic_ir.PLAN_END:
+        idx = token_to_id.get(PLAN_BODY_START_TOKEN)
+        return [(idx, float(max(arr[idx], 1e-9)))] if idx is not None else []
+    plan_content = [
+        token
+        for token in prefix[1:]
+        if token.startswith(semantic_ir.PLAN_PREFIX) and token not in {semantic_ir.PLAN_BEGIN, semantic_ir.PLAN_END}
+    ]
+    plan_content_count = len(plan_content)
+    statement_count = sum(token.startswith(("IRP:STEP:", "IRP:STMT:")) for token in plan_content)
+    if plan_content_count >= max(1, int(max_plan_tokens or semantic_ir.PLAN_MAX_TOKENS) - 2) or statement_count >= semantic_ir.PLAN_MAX_STEPS:
+        idx = token_to_id.get(semantic_ir.PLAN_END)
+        return [(idx, float(max(arr[idx], 1e-9)))] if idx is not None else []
+    allowed_prefixes, allow_end = semantic_ir_plan_next_token_contract(plan_content)
+    candidate_ids = [
+        int(idx)
+        for idx, token in inverse.items()
+        if any(str(token).startswith(prefix_value) for prefix_value in allowed_prefixes)
+        or (allow_end and token == semantic_ir.PLAN_END)
+    ]
+    current_statement = semantic_ir_plan_current_statement_tokens(plan_content)
+    candidate_ids = [idx for idx in candidate_ids if inverse.get(idx) not in current_statement]
+    ranked = top_candidate_indices_desc(arr, candidate_ids, max(1, int(max_choices or 1)))
+    return [(idx, float(max(arr[idx], 1e-9))) for idx in ranked]
+
+
+def semantic_ir_plan_next_token_contract(plan_content: list[str]) -> tuple[tuple[str, ...], bool]:
+    if not plan_content:
+        return ("IRP:STEP:", "IRP:DEPTH:"), False
+    if any(token.startswith("IRP:STEP:") for token in plan_content):
+        last = plan_content[-1]
+        if last.startswith("IRP:STEP:"):
+            return ("IRP:SEM:",), False
+        if last.startswith("IRP:SEM:"):
+            return ("IRP:FLOW:",), False
+        if last.startswith("IRP:FLOW:"):
+            return ("IRP:FEATURE:", "IRP:STEP:"), True
+        if last.startswith("IRP:FEATURE:"):
+            return ("IRP:STEP:",), True
+        return (), False
+    # Legacy checkpoints remain replayable, but new targets use the compact
+    # STEP/SEM/FLOW contract above.
+    if not plan_content or plan_content[-1].startswith(("IRP:CONTROL:", "IRP:RETURN:")):
+        return ("IRP:DEPTH:",), bool(plan_content)
+    last = plan_content[-1]
+    if last.startswith("IRP:DEPTH:"):
+        return ("IRP:STMT:",), False
+    if last.startswith("IRP:STMT:"):
+        return ("IRP:INTENT:",), False
+    if last.startswith("IRP:INTENT:"):
+        return ("IRP:READS:",), False
+    if last.startswith("IRP:READS:"):
+        return ("IRP:WRITES:",), False
+    if last.startswith("IRP:WRITES:"):
+        return ("IRP:CALL:", "IRP:OP:", "IRP:CONTAINER:", "IRP:RETURN:", "IRP:CONTROL:", "IRP:DEPTH:"), True
+    if last.startswith("IRP:CALL:"):
+        return ("IRP:CALL:", "IRP:OP:", "IRP:CONTAINER:", "IRP:RETURN:", "IRP:CONTROL:", "IRP:DEPTH:"), True
+    if last.startswith("IRP:OP:"):
+        return ("IRP:OP:", "IRP:CONTAINER:", "IRP:RETURN:", "IRP:CONTROL:", "IRP:DEPTH:"), True
+    if last.startswith("IRP:CONTAINER:"):
+        return ("IRP:CONTAINER:", "IRP:RETURN:", "IRP:CONTROL:", "IRP:DEPTH:"), True
+    return ("IRP:DEPTH:",), True
+
+
+def semantic_ir_plan_current_statement_tokens(plan_content: list[str]) -> set[str]:
+    start = 0
+    for index in range(len(plan_content) - 1, -1, -1):
+        if plan_content[index].startswith(("IRP:STEP:", "IRP:DEPTH:")):
+            start = index
+            break
+    return set(plan_content[start:])
 
 
 def semantic_plan_head_prefix_choices(
@@ -3841,6 +3966,8 @@ def learned_plan_prefix_metadata(decoded_tokens: list[str], *, target_mode: str)
         "learned_plan_prefix_tokens": prefix_tokens,
         "predicted_plan_token": str(meta.get("predicted_plan_token") or ""),
         "predicted_plan": str(meta.get("predicted_plan") or ""),
+        "semantic_ir_plan_tokens": [str(token) for token in list(meta.get("semantic_ir_plan_tokens") or [])],
+        "semantic_ir_plan_complete": bool(meta.get("semantic_ir_plan_complete")),
         "policy": "strict_mlx_decoded_learned_plan_prefix_metadata_v1",
         "score_semantics": (
             "Task-blind metadata derived from generated plan-prefix tokens before body decoding. "

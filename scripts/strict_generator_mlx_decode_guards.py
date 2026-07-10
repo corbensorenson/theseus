@@ -50,8 +50,10 @@ def token_blocked_by_strict_decode_guard(
         return True
     if values == ("return",) and kind == "NAME" and value in builtin_type_names:
         return True
-    if values == ("return",) and kind == "NAME" and value in set(allowed_names or set()):
-        return True
+    # A visible parameter immediately after ``return`` may still grow into a
+    # nontrivial access or call (``return data[0]``). Reject direct identity
+    # only when the expression closes; pruning the first name makes valid
+    # learned continuations unreachable.
     if values[:1] == ("return",) and values[-1:] in {("+",), ("-",)} and kind == "NUMBER":
         return True
     if values[-1:] in {("+",), ("-",)} and kind == "NAME" and value in {"None", "True", "False"}:
@@ -106,6 +108,18 @@ def bare_builtin_type_value_argument_invalid(values: tuple[str, ...], tok: str) 
     if kind != "NAME" or value not in builtin_type_names:
         return False
     line_values = list(values)
+    # A tuple/list of types is a legal second argument to isinstance or
+    # issubclass. Looking only at the innermost grouping parenthesis loses the
+    # enclosing call and previously rejected the high-probability target in
+    # ``isinstance(data, (list, tuple))``.
+    for call_open_index in reversed(unclosed_paren_indices(line_values)):
+        if call_open_index <= 0:
+            continue
+        outer_callee = line_values[call_open_index - 1]
+        if outer_callee in {"isinstance", "issubclass"} and top_level_comma_seen(
+            line_values[call_open_index + 1 :]
+        ):
+            return False
     open_index = innermost_open_paren_index(line_values)
     if open_index <= 0:
         if line_values[:1] == ["return"]:
@@ -121,6 +135,18 @@ def bare_builtin_type_value_argument_invalid(values: tuple[str, ...], tok: str) 
         # argument is handled by existing call-prefix checks.
         return False
     return True
+
+
+def unclosed_paren_indices(values: list[str]) -> list[int]:
+    """Return unmatched opening-parenthesis indices in lexical order."""
+
+    stack: list[int] = []
+    for index, value in enumerate(values):
+        if value == "(":
+            stack.append(index)
+        elif value == ")" and stack:
+            stack.pop()
+    return stack
 
 
 def isinstance_first_arg_continuation_invalid(

@@ -4052,7 +4052,7 @@
       "canonical_entrypoint": "scripts/neural_seed_token_decoder_comparator.py",
       "swappable_under_contract": true,
       "replacement_policy": "Successors must keep prompt/signature-only input, independent integrity audit, private replay verification, and no fallback/template/router credit.",
-      "verification_command": "python3 scripts/blind_information_flow_audit.py && python3 scripts/candidate_integrity.py --candidates reports/neural_seed_token_decoder_candidates_strict_body_tokens.jsonl --out reports/candidate_integrity_strict_body_tokens.json --markdown-out reports/candidate_integrity_strict_body_tokens.md && python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_visible_source.py scripts/neural_seed_static_coherence.py scripts/neural_seed_expression_value_guard.py scripts/neural_seed_decode_static_guard.py scripts/neural_seed_candidate_evidence_summary.py scripts/neural_seed_teacher_distillation_rows.py scripts/neural_seed_full_state_pretraining.py scripts/neural_seed_token_model_backend.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/neural_seed_route_memory.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_guards.py scripts/strict_generator_mlx_decode_plans.py scripts/strict_generator_mlx_source_text.py scripts/strict_generator_mlx_decode_reporting.py scripts/strict_generator_mlx_specialist_routing.py scripts/strict_generator_mlx_private_adaptation.py scripts/strict_generator_mlx_adaptation_weights.py scripts/strict_generator_mlx_adaptation_selection.py scripts/strict_generator_mlx_replay_selection.py scripts/strict_generator_mlx_pretraining_probe.py scripts/strict_generator_mlx_rung_decode_sweep.py scripts/strict_generator_pretraining_spine.py scripts/trainable_transformer_hybrid_code_generator_v1.py scripts/code_lm_private_verifier.py scripts/correctness_generator_survival_lane_gate.py scripts/neural_seed_survival_readiness_gate.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/neural_seed_token_decoder_comparator.py && python3 scripts/code_lm_private_verifier.py --spine-smoke && python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate && python3 scripts/correctness_generator_survival_lane_gate.py --gate && python3 scripts/neural_seed_survival_readiness_gate.py --gate && python3 scripts/viea_spine_record_gate.py --gate",
+      "verification_command": "python3 scripts/blind_information_flow_audit.py && python3 scripts/candidate_integrity.py --candidates reports/neural_seed_token_decoder_candidates_strict_body_tokens.jsonl --out reports/candidate_integrity_strict_body_tokens.json --markdown-out reports/candidate_integrity_strict_body_tokens.md && python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_visible_source.py scripts/neural_seed_static_coherence.py scripts/neural_seed_expression_value_guard.py scripts/neural_seed_decode_static_guard.py scripts/neural_seed_candidate_evidence_summary.py scripts/neural_seed_teacher_distillation_rows.py scripts/neural_seed_full_state_pretraining.py scripts/neural_seed_token_model_backend.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/neural_seed_route_memory.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_model.py scripts/strict_generator_mlx_decode_guards.py scripts/strict_generator_mlx_decode_plans.py scripts/strict_generator_mlx_source_text.py scripts/strict_generator_mlx_decode_reporting.py scripts/strict_generator_mlx_specialist_routing.py scripts/strict_generator_mlx_private_adaptation.py scripts/strict_generator_mlx_adaptation_weights.py scripts/strict_generator_mlx_adaptation_selection.py scripts/strict_generator_mlx_replay_selection.py scripts/strict_generator_mlx_pretraining_probe.py scripts/strict_generator_mlx_rung_decode_sweep.py scripts/strict_generator_pretraining_spine.py scripts/trainable_transformer_hybrid_code_generator_v1.py scripts/code_lm_private_verifier.py scripts/correctness_generator_survival_lane_gate.py scripts/neural_seed_survival_readiness_gate.py scripts/theseus_substrate_verdict.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/neural_seed_token_decoder_comparator.py && python3 scripts/code_lm_private_verifier.py --spine-smoke && python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate && python3 scripts/correctness_generator_survival_lane_gate.py --gate && python3 scripts/neural_seed_survival_readiness_gate.py --gate && python3 scripts/theseus_substrate_verdict.py && python3 scripts/viea_spine_record_gate.py --gate",
       "role": "survival",
       "trust_tier": "governed_training_candidate",
       "dependencies": [
@@ -4070,6 +4070,7 @@
         "scripts/neural_seed_static_coherence.py",
         "scripts/neural_seed_candidate_evidence_summary.py",
         "scripts/strict_generator_mlx_decode_eval.py",
+        "scripts/strict_generator_mlx_model.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
         "scripts/strict_generator_mlx_source_text.py",
@@ -4091,7 +4092,9 @@
         "reports/neural_seed_strict_generator_fanout_receipt.md",
         "reports/correctness_generator_survival_lane_gate.json",
         "reports/neural_seed_survival_readiness_gate.json",
-        "reports/neural_seed_survival_readiness_gate.md"
+        "reports/neural_seed_survival_readiness_gate.md",
+        "reports/theseus_substrate_verdict.json",
+        "reports/theseus_substrate_verdict.md"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -6090,7 +6093,7 @@
       "route_evidence_contract_id": "route.octopus_head.source_bound",
       "abstraction_id": "planning_execution_spine",
       "surface_id": "theseus_plan_compiler",
-      "status": "live",
+      "status": "retained",
       "implementation_type": "learned_sparse_centroid_router_head_with_contrastive_negative_gate",
       "backend": "python_dependency_free_sparse_centroid_model",
       "canonical_entrypoint": "scripts/train_octopus_router_head.py",
@@ -6129,11 +6132,11 @@
         "maintenance_packet_prefix": "registry_impl_octopus_sparse_router_head_v1"
       },
       "routing_eligibility": {
-        "eligible": true,
+        "eligible": false,
         "roles": [
           "planning"
         ],
-        "requires_fresh_evidence": true,
+        "requires_fresh_evidence": false,
         "requires_registry_green": true,
         "runtime_serving_allowed": false,
         "teacher_allowed": false,

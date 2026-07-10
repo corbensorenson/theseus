@@ -174,9 +174,11 @@
         "grammar_validity_max_positions_per_batch": 0,
         "target_token_positions": 5000000,
         "example_selection": {
-          "policy": "quality_balanced_ast_local_v1",
+          "policy": "quality_balanced_visible_prompt_v1",
           "min_quality_score": 6.0,
           "high_quality_fraction": 0.6,
+          "descriptive_prompt_fraction": 0.55,
+          "min_prompt_characters": 24,
           "uses_eval_tests_or_solutions": false,
           "uses_public_data": false,
           "uses_answer_metadata": false
@@ -307,6 +309,109 @@
         "candidate_generation_credit": 0
       },
       "score_semantics": "Capacity rung for the practical transformer/hybrid strict body-token generator with prompt/signature-only visible intent and operation tags. It changes model size, training steps, and visible source conditioning only; it does not change data admission, verifier scoring, public benchmark policy, or learned-generation family semantics."
+    },
+    {
+      "id": "strict_generator_sparse_100m",
+      "max_files": 3200,
+      "max_examples": 12000,
+      "target_vocab_max_files": 3200,
+      "target_vocab_max_examples": 16000,
+      "source_vocab_max_files": 3200,
+      "source_vocab_max_examples": 16000,
+      "max_eval_examples": 640,
+      "epochs": 8,
+      "batch_size": 8,
+      "learning_rate": 0.0003,
+      "weight_decay": 0.0001,
+      "target_token_positions": 5000000,
+      "source_text_style": "prompt_signature_operation_metadata_v3",
+      "transformer_control": {
+        "d_model": 320,
+        "nhead": 5,
+        "num_layers": 2,
+        "dim_feedforward": 640
+      },
+      "specialist_core": {
+        "enabled": true,
+        "mode": "sparse_moe",
+        "num_experts": 32,
+        "top_k": 2,
+        "expert_hidden_dim": 2048,
+        "router_aux_loss_weight": 0.1,
+        "router_z_loss_weight": 0.001,
+        "router_supervision_loss_weight": 0.2,
+        "routing_policy": "token_top_k_no_capacity_drop_v1"
+      },
+      "example_selection": {
+        "policy": "quality_balanced_visible_prompt_v1",
+        "min_quality_score": 6.0,
+        "high_quality_fraction": 0.6,
+        "descriptive_prompt_fraction": 0.55,
+        "min_prompt_characters": 24,
+        "uses_eval_tests_or_solutions": false,
+        "uses_public_data": false,
+        "uses_answer_metadata": false
+      },
+      "source_conditioning": {
+        "visible_prompt_intent_tags": true,
+        "visible_prompt_operation_tags": true,
+        "policy": "prompt_signature_visible_intent_and_operation_tags_v1",
+        "uses_eval_tests_or_solutions": false,
+        "uses_public_data": false,
+        "uses_answer_metadata": false
+      },
+      "score_semantics": "Phase-10 sparse specialist survival rung. The model executes only top-2 token experts, records expert/action attribution and active parameters, and remains ineligible for capability credit until family-disjoint direct verifier behavior exceeds zero."
+    },
+    {
+      "id": "strict_generator_dense_active_control_100m",
+      "max_files": 3200,
+      "max_examples": 12000,
+      "target_vocab_max_files": 3200,
+      "target_vocab_max_examples": 16000,
+      "source_vocab_max_files": 3200,
+      "source_vocab_max_examples": 16000,
+      "max_eval_examples": 640,
+      "epochs": 8,
+      "batch_size": 8,
+      "learning_rate": 0.0003,
+      "weight_decay": 0.0001,
+      "target_token_positions": 5000000,
+      "source_text_style": "prompt_signature_operation_metadata_v3",
+      "transformer_control": {
+        "d_model": 320,
+        "nhead": 5,
+        "num_layers": 2,
+        "dim_feedforward": 640
+      },
+      "specialist_core": {
+        "enabled": true,
+        "mode": "dense_active_control",
+        "num_experts": 1,
+        "top_k": 1,
+        "expert_hidden_dim": 4096,
+        "router_aux_loss_weight": 0.0,
+        "router_z_loss_weight": 0.0
+      },
+      "matched_sparse_budget_id": "strict_generator_sparse_100m",
+      "example_selection": {
+        "policy": "quality_balanced_visible_prompt_v1",
+        "min_quality_score": 6.0,
+        "high_quality_fraction": 0.6,
+        "descriptive_prompt_fraction": 0.55,
+        "min_prompt_characters": 24,
+        "uses_eval_tests_or_solutions": false,
+        "uses_public_data": false,
+        "uses_answer_metadata": false
+      },
+      "source_conditioning": {
+        "visible_prompt_intent_tags": true,
+        "visible_prompt_operation_tags": true,
+        "policy": "prompt_signature_visible_intent_and_operation_tags_v1",
+        "uses_eval_tests_or_solutions": false,
+        "uses_public_data": false,
+        "uses_answer_metadata": false
+      },
+      "score_semantics": "Matched dense active-compute control for the Phase-10 sparse specialist rung. It uses the same base, data, optimizer and two-expert-equivalent feed-forward width; no sparse efficiency or capability claim is made without direct replay."
     }
     ],
     "uses_eval_tests_or_solutions": false,

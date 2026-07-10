@@ -72,6 +72,25 @@ the curriculum and survival-lane materializer. Its honest state is `YELLOW`
 because recursive synthetic share is `0.824771`; this is a
 curriculum-distribution warning, not a model-collapse, forgetting, unlearning,
 or capability claim.
+
+Phase `10` now has a real MLX sparse-specialist implementation and matched dense
+active-compute control. The sparse model has `102,579,886` total parameters,
+routes top-2 experts, keeps `22/32` experts active after the 100K proof, and
+matches dense active parameters within `0.000235`. It is not adopted: dense
+trains at `2377` versus `821` token positions/sec, has lower heldout loss
+(`3.602533` versus `3.732045`), emits more admissible canary candidates, and
+neither arm passes heldout behavior. The dense 5M run is `GREEN` as training
+evidence (`8.438594 -> 2.807992` LM loss; source gap `-0.000857 -> 0.299505`),
+but its frozen direct replay and one governed private adaptation remain `0/8`
+behavior. The adaptation's near-zero private LM loss with zero behavior is
+falsifying evidence against more tuning of this checkpoint family.
+
+The immediate dependency is governed unique-data scale, not another head,
+marker, renderer, or adaptation. The 43.6M dense model saw only `730,798`
+unique target tokens from `16,000` licensed functions before those rows were
+repeated to 5M positions; the conversation lane has only `2,811` rows. The next
+training run must follow a larger contamination-audited code/conversation
+manifest and report unique tokens separately from optimizer token positions.
 `scripts/roadmap_implementation_gate.py` now has a strict pre-training
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.

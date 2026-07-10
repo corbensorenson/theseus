@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import math
 import random
 import re
 import sys
@@ -54,6 +55,11 @@ from strict_generator_pretraining_spine import (  # noqa: E402
     safe_slug,
     stage_full_state_examples,
     transformer_dims_with_budget,
+)
+from strict_generator_mlx_model import (  # noqa: E402
+    MlxStrictGenerator as SharedMlxStrictGenerator,
+    normalize_specialist_core_config,
+    specialist_core_parameter_estimate,
 )
 
 
@@ -425,6 +431,10 @@ def run_probe(
             "runtime_overrides": runtime_overrides,
             "parameter_count": payload.get("parameter_count"),
             "trainable_parameter_count": payload.get("trainable_parameter_count"),
+            "specialist_core": payload.get("specialist_core"),
+            "specialist_router_supervision": payload.get("specialist_router_supervision"),
+            "specialist_routing_before": payload.get("specialist_routing_before"),
+            "specialist_routing": payload.get("specialist_routing"),
             "optimizer_step_count": payload.get("optimizer_step_count"),
             "optimizer_token_positions_consumed": payload.get("optimizer_token_positions_consumed"),
             "training_plan": payload.get("training_plan"),
@@ -477,130 +487,7 @@ def run_probe(
     }
 
 
-class MlxStrictGenerator:
-    def __init__(
-        self,
-        *,
-        source_vocab_size: int,
-        target_vocab_size: int,
-        max_source_len: int,
-        max_target_len: int,
-        d_model: int,
-        nhead: int,
-        num_layers: int,
-        dim_feedforward: int,
-        coupled_state_body_constructor: bool = False,
-        coupled_state_body_constructor_scale: float = 0.35,
-        body_executable_span_head: bool = False,
-        executable_span_body_constructor: bool = False,
-        executable_span_body_constructor_scale: float = 0.25,
-        mx: Any,
-        nn: Any,
-    ) -> None:
-        class _Model(nn.Module):
-            def __init__(self) -> None:
-                super().__init__()
-                self.source_embedding = nn.Embedding(source_vocab_size, d_model)
-                self.target_embedding = nn.Embedding(target_vocab_size, d_model)
-                self.source_position = mx.zeros((1, max_source_len, d_model), dtype=mx.float32)
-                self.target_position = mx.zeros((1, max_target_len, d_model), dtype=mx.float32)
-                self.encoder = nn.TransformerEncoder(
-                    num_layers,
-                    d_model,
-                    nhead,
-                    dim_feedforward,
-                    0.0,
-                    nn.gelu,
-                    True,
-                )
-                self.decoder = nn.TransformerDecoder(
-                    num_layers,
-                    d_model,
-                    nhead,
-                    dim_feedforward,
-                    0.0,
-                    nn.gelu,
-                    True,
-                )
-                self.output = nn.Linear(d_model, target_vocab_size)
-                self.plan_router = nn.Linear(d_model, target_vocab_size)
-                self.slot_router = nn.Linear(d_model, target_vocab_size * len(SEMANTIC_SLOT_ROLES))
-                self.body_transition_router = nn.Linear(d_model, target_vocab_size)
-                self.body_action_router = nn.Linear(d_model, len(BODY_ACTION_ROLES))
-                self.body_operand_router = nn.Linear(d_model, len(BODY_OPERAND_ROLES))
-                self.body_state_event_router = nn.Linear(d_model, len(BODY_STATE_EVENT_ROLES))
-                self.coupled_state_body_constructor_enabled = bool(coupled_state_body_constructor)
-                self.coupled_state_body_constructor_scale = float(coupled_state_body_constructor_scale or 0.0)
-                if self.coupled_state_body_constructor_enabled:
-                    self.body_state_event_to_hidden = nn.Linear(len(BODY_STATE_EVENT_ROLES), d_model)
-                self.body_executable_span_head_enabled = bool(
-                    body_executable_span_head or executable_span_body_constructor
-                )
-                self.executable_span_body_constructor_enabled = bool(executable_span_body_constructor)
-                self.executable_span_body_constructor_scale = float(executable_span_body_constructor_scale or 0.0)
-                if self.body_executable_span_head_enabled:
-                    self.body_executable_span_router = nn.Linear(d_model, len(BODY_EXECUTABLE_SPAN_ROLES))
-                if self.executable_span_body_constructor_enabled:
-                    self.body_executable_span_to_hidden = nn.Linear(len(BODY_EXECUTABLE_SPAN_ROLES), d_model)
-
-            def encode_source(self, src: Any) -> tuple[Any, Any]:
-                src_mask = additive_padding_mask(src, mx)
-                valid = (src != 0).astype(mx.float32)[:, :, None]
-                source = self.source_embedding(src) + self.source_position[:, : src.shape[1], :]
-                memory = self.encoder(source, src_mask)
-                pooled = mx.sum(memory * valid, axis=1) / mx.maximum(
-                    mx.sum(valid, axis=1),
-                    mx.array(1.0, dtype=mx.float32),
-                )
-                return memory, pooled
-
-            def semantic_plan_logits(self, src: Any) -> Any:
-                _memory, pooled = self.encode_source(src)
-                return self.plan_router(pooled)
-
-            def semantic_slot_logits(self, src: Any) -> Any:
-                _memory, pooled = self.encode_source(src)
-                flat = self.slot_router(pooled)
-                return flat.reshape((flat.shape[0], len(SEMANTIC_SLOT_ROLES), target_vocab_size))
-
-            def decode_hidden(self, src: Any, tgt_in: Any) -> Any:
-                src_mask = additive_padding_mask(src, mx)
-                tgt_mask = nn.MultiHeadAttention.create_additive_causal_mask(tgt_in.shape[1], mx.float32)
-                target = self.target_embedding(tgt_in) + self.target_position[:, : tgt_in.shape[1], :]
-                memory, _pooled = self.encode_source(src)
-                return self.decoder(target, memory, tgt_mask, src_mask)
-
-            def body_constructor_hidden(self, src: Any, tgt_in: Any) -> Any:
-                hidden = self.decode_hidden(src, tgt_in)
-                if bool(self.coupled_state_body_constructor_enabled):
-                    event_probs = mx.softmax(self.body_state_event_router(hidden), axis=-1)
-                    event_delta = mx.tanh(self.body_state_event_to_hidden(event_probs))
-                    hidden = hidden + float(self.coupled_state_body_constructor_scale) * event_delta
-                if bool(self.executable_span_body_constructor_enabled):
-                    span_probs = mx.softmax(self.body_executable_span_router(hidden), axis=-1)
-                    span_delta = mx.tanh(self.body_executable_span_to_hidden(span_probs))
-                    hidden = hidden + float(self.executable_span_body_constructor_scale) * span_delta
-                return hidden
-
-            def body_transition_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_transition_router(self.body_constructor_hidden(src, tgt_in))
-
-            def body_action_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_action_router(self.body_constructor_hidden(src, tgt_in))
-
-            def body_operand_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_operand_router(self.body_constructor_hidden(src, tgt_in))
-
-            def body_state_event_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_state_event_router(self.decode_hidden(src, tgt_in))
-
-            def body_executable_span_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_executable_span_router(self.decode_hidden(src, tgt_in))
-
-            def __call__(self, src: Any, tgt_in: Any) -> Any:
-                return self.output(self.body_constructor_hidden(src, tgt_in))
-
-        self.model = _Model()
+MlxStrictGenerator = SharedMlxStrictGenerator
 
 
 def train_budget_mlx(
@@ -700,6 +587,13 @@ def train_budget_mlx(
             else 0.25
         ),
     )
+    specialist_core_cfg = normalize_specialist_core_config(budget.get("specialist_core"))
+    specialist_core_estimate = specialist_core_parameter_estimate(
+        int(dims.get("d_model") or 1), specialist_core_cfg
+    )
+    specialist_token_expert_ids, specialist_router_supervision = specialist_token_expert_map(
+        target_vocab, specialist_core_cfg
+    )
     model = MlxStrictGenerator(
         source_vocab_size=len(source_vocab),
         target_vocab_size=len(target_vocab),
@@ -710,6 +604,13 @@ def train_budget_mlx(
         body_executable_span_head=body_executable_span_head,
         executable_span_body_constructor=executable_span_body_constructor,
         executable_span_body_constructor_scale=executable_span_body_constructor_scale,
+        semantic_slot_role_count=len(SEMANTIC_SLOT_ROLES),
+        body_action_role_count=len(BODY_ACTION_ROLES),
+        body_operand_role_count=len(BODY_OPERAND_ROLES),
+        body_state_event_role_count=len(BODY_STATE_EVENT_ROLES),
+        body_executable_span_role_count=len(BODY_EXECUTABLE_SPAN_ROLES),
+        specialist_core=specialist_core_cfg,
+        specialist_token_expert_ids=specialist_token_expert_ids,
         mx=mx,
         nn=nn,
         **dims,
@@ -836,6 +737,15 @@ def train_budget_mlx(
         nn=nn,
         slot_role_class_ids=slot_role_class_ids,
     )
+    specialist_routing_before = evaluate_specialist_routing_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        target_vocab=target_vocab,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        mx=mx,
+    )
     optimizer = optim.AdamW(learning_rate=lr, weight_decay=weight_decay)
     loss_and_grad_plain = nn.value_and_grad(model, weighted_loss_fn_mlx)
     loss_and_grad_semantic_aux = (
@@ -902,6 +812,11 @@ def train_budget_mlx(
         "source_vocab_sha256": stable_hash(json.dumps(source_vocab, sort_keys=True)),
         "target_vocab_sha256": stable_hash(json.dumps(target_vocab, sort_keys=True)),
         "dims": dims,
+        "specialist_core": specialist_core_estimate,
+        "specialist_router_supervision": {
+            **specialist_router_supervision,
+            "token_expert_ids": specialist_token_expert_ids,
+        },
         "max_source": max_source,
         "max_target": max_target,
         "target_mode": target_mode,
@@ -1221,7 +1136,36 @@ def train_budget_mlx(
         nn=nn,
         slot_role_class_ids=slot_role_class_ids,
     )
+    specialist_routing = evaluate_specialist_routing_mlx(
+        model,
+        eval_source_rows,
+        eval_target_rows,
+        target_vocab=target_vocab,
+        batch_size=batch_size,
+        pad_id=pad_id,
+        mx=mx,
+    )
     update_summary = parameter_update_summary(model, before, mlx_utils, mx)
+    total_parameter_count = int(update_summary.get("parameter_count_after") or 0)
+    specialist_total = int(specialist_core_estimate.get("specialist_total_parameter_count") or 0)
+    specialist_active = int(
+        specialist_core_estimate.get("specialist_active_parameter_count_per_token") or 0
+    )
+    shared_base_parameters = max(0, total_parameter_count - specialist_total)
+    model_active_parameters = shared_base_parameters + specialist_active
+    specialist_core_estimate.update(
+        {
+            "model_total_parameter_count": total_parameter_count,
+            "shared_base_parameter_count": shared_base_parameters,
+            "model_active_parameter_count_per_token": model_active_parameters,
+            "model_active_parameter_fraction": round(
+                model_active_parameters / total_parameter_count, 6
+            )
+            if total_parameter_count
+            else 0.0,
+            "accounting_policy": "shared_base_plus_selected_experts_and_router_v1",
+        }
+    )
     model.save_weights(str(checkpoint_path))
     write_json(vocab_path, vocab_payload)
     mx.eval(model.parameters())
@@ -1238,6 +1182,10 @@ def train_budget_mlx(
         "vocab": rel(vocab_path),
         "vocab_sha256": stable_hash_file(vocab_path),
         "dims": dims,
+        "specialist_core": specialist_core_estimate,
+        "specialist_router_supervision": specialist_router_supervision,
+        "specialist_routing_before": specialist_routing_before,
+        "specialist_routing": specialist_routing,
         "source_vocab_size": len(source_vocab),
         "target_vocab_size": len(target_vocab),
         "max_source": max_source,
@@ -1380,6 +1328,9 @@ def train_budget_mlx(
         "trainable_parameter_count": update_summary["parameter_count"],
         "parameter_update_fraction": update_summary["parameter_update_fraction"],
         "parameter_tensor_update_fraction": update_summary["parameter_tensor_update_fraction"],
+        "core_parameter_update_fraction": update_summary["core_parameter_update_fraction"],
+        "core_parameter_tensor_update_fraction": update_summary["core_parameter_tensor_update_fraction"],
+        "parameter_update_summary": update_summary,
         "optimizer_step_count": optimizer_steps,
         "optimizer_token_positions_consumed": optimizer_token_positions,
         "optimizer_windows_consumed": optimizer_windows_consumed,
@@ -2723,25 +2674,48 @@ def weighted_loss_with_prefix_mlx(
 ) -> Any:
     tgt_in = tgt[:, :-1]
     tgt_out = tgt[:, 1:]
-    logits = model(src, tgt_in)
+    router_aux_loss = mx.array(0.0, dtype=mx.float32)
+    if hasattr(model, "forward_with_router_loss"):
+        logits, router_aux_loss = model.forward_with_router_loss(src, tgt_in, tgt_out)
+    else:
+        logits = model(src, tgt_in)
     losses = nn.losses.cross_entropy(logits, tgt_out, reduction="none")
     valid = (tgt_out != pad_id).astype(mx.float32)
     if str(span_mode or "prefix") == "after_body_start" and int(body_start_token_id) >= 0:
-        valid = valid * body_start_span_mask_mlx(tgt, tgt_out, int(body_start_token_id), mx)
+        valid = valid * body_start_span_mask_mlx(
+            tgt,
+            tgt_out,
+            int(body_start_token_id),
+            mx,
+            span_token_count=int(prefix_token_count or 0),
+        )
     elif int(prefix_token_count or 0) > 0:
         positions = mx.arange(tgt_out.shape[1])[None, :]
         valid = valid * (positions < int(prefix_token_count)).astype(mx.float32)
     weights = token_weights[:, 1:]
     weighted_valid = valid * weights
-    return mx.sum(losses * weighted_valid) / mx.maximum(mx.sum(weighted_valid), mx.array(1.0, dtype=mx.float32))
+    token_loss = mx.sum(losses * weighted_valid) / mx.maximum(
+        mx.sum(weighted_valid), mx.array(1.0, dtype=mx.float32)
+    )
+    return token_loss + router_aux_loss
 
 
-def body_start_span_mask_mlx(tgt: Any, tgt_out: Any, body_start_token_id: int, mx: Any) -> Any:
+def body_start_span_mask_mlx(
+    tgt: Any,
+    tgt_out: Any,
+    body_start_token_id: int,
+    mx: Any,
+    *,
+    span_token_count: int = 0,
+) -> Any:
     matches = (tgt == int(body_start_token_id)).astype(mx.int32)
     has_body_start = mx.max(matches, axis=1).astype(mx.float32)
     start_positions = mx.argmax(matches, axis=1)
     positions = mx.arange(tgt_out.shape[1])[None, :]
-    return (positions >= start_positions[:, None]).astype(mx.float32) * has_body_start[:, None]
+    valid = positions >= start_positions[:, None]
+    if int(span_token_count or 0) > 0:
+        valid = valid & (positions < (start_positions[:, None] + int(span_token_count)))
+    return valid.astype(mx.float32) * has_body_start[:, None]
 
 
 def source_contrastive_weighted_loss_fn_mlx(
@@ -4795,6 +4769,86 @@ def evaluate_loss_mlx(
     return {"loss": round(loss, 6), "perplexity": round(min(1e12, pow(2.718281828459045, loss)), 6)}
 
 
+def evaluate_specialist_routing_mlx(
+    model: Any,
+    source_rows: list[list[int]],
+    target_rows: list[list[int]],
+    *,
+    target_vocab: dict[str, int],
+    batch_size: int,
+    pad_id: int,
+    mx: Any,
+) -> dict[str, Any]:
+    """Attribute sparse expert activation to private target action roles.
+
+    This teacher-forced diagnostic never enters generation, ranking, or loss.
+    """
+
+    if not hasattr(model, "specialist_route") or not source_rows or not target_rows:
+        return {"active": False, "reason": "specialist_route_unavailable"}
+    id_to_token = {int(value): str(key) for key, value in target_vocab.items()}
+    assignment_counts: dict[int, int] = {}
+    role_counts: dict[int, dict[str, int]] = {}
+    routed_token_count = 0
+    top_k = 0
+    model.eval()
+    for start in range(0, len(source_rows), max(1, int(batch_size))):
+        src = mx.array(source_rows[start : start + batch_size], dtype=mx.int32)
+        tgt = mx.array(target_rows[start : start + batch_size], dtype=mx.int32)
+        route = model.specialist_route(src, tgt[:, :-1])
+        if not route:
+            model.train()
+            return {"active": False, "reason": "specialist_route_disabled"}
+        indices = route["indices"].tolist()
+        target_ids = tgt[:, 1:].tolist()
+        for row_indices, row_targets in zip(indices, target_ids):
+            for selected, target_id in zip(row_indices, row_targets):
+                if int(target_id) == int(pad_id):
+                    continue
+                role_id = body_action_role_id_for_token(id_to_token.get(int(target_id), ""))
+                role = BODY_ACTION_ROLES[role_id] if 0 <= role_id < len(BODY_ACTION_ROLES) else "other"
+                top_k = max(top_k, len(selected))
+                routed_token_count += 1
+                for expert_id in selected:
+                    expert_id = int(expert_id)
+                    assignment_counts[expert_id] = assignment_counts.get(expert_id, 0) + 1
+                    expert_roles = role_counts.setdefault(expert_id, {})
+                    expert_roles[role] = expert_roles.get(role, 0) + 1
+    model.train()
+    total_assignments = sum(assignment_counts.values())
+    active_experts = sorted(assignment_counts)
+    fractions = [assignment_counts[key] / max(total_assignments, 1) for key in active_experts]
+    entropy = -sum(value * math.log(max(value, 1e-12)) for value in fractions)
+    normalized_entropy = entropy / math.log(len(active_experts)) if len(active_experts) > 1 else 0.0
+    expert_rows = []
+    for expert_id in active_experts:
+        counts = role_counts.get(expert_id, {})
+        dominant_role, dominant_count = max(counts.items(), key=lambda row: row[1]) if counts else ("none", 0)
+        expert_rows.append(
+            {
+                "expert_id": expert_id,
+                "assignment_count": assignment_counts[expert_id],
+                "assignment_fraction": round(assignment_counts[expert_id] / max(total_assignments, 1), 6),
+                "dominant_action_role": dominant_role,
+                "dominant_action_role_fraction": round(dominant_count / max(assignment_counts[expert_id], 1), 6),
+                "action_role_counts": dict(sorted(counts.items())),
+            }
+        )
+    return {
+        "active": True,
+        "policy": "private_teacher_forced_sparse_expert_action_attribution_v1",
+        "routed_token_count": routed_token_count,
+        "total_assignment_count": total_assignments,
+        "top_k": top_k,
+        "active_expert_count": len(active_experts),
+        "assignment_entropy_normalized": round(normalized_entropy, 6),
+        "expert_attribution": expert_rows,
+        "uses_eval_tests": False,
+        "uses_private_target_tokens_for_diagnostic_only": True,
+        "candidate_generation_credit": 0,
+    }
+
+
 def evaluate_body_transition_mlx(
     model: Any,
     source_rows: list[list[int]],
@@ -5681,6 +5735,51 @@ def selected_budget(cfg: dict[str, Any], budget_id: str) -> dict[str, Any]:
     }
 
 
+def specialist_token_expert_map(
+    target_vocab: dict[str, int], specialist_core: dict[str, Any]
+) -> tuple[list[list[int]], dict[str, Any]]:
+    """Create training-only action/token expert targets for a sparse router."""
+
+    if specialist_core.get("mode") != "sparse_moe":
+        return [], {
+            "enabled": False,
+            "policy": "not_enabled",
+            "candidate_generation_credit": 0,
+        }
+    num_experts = int(specialist_core.get("num_experts") or 1)
+    top_k = int(specialist_core.get("top_k") or 1)
+    max_token_id = max((int(value) for value in target_vocab.values()), default=-1)
+    rows = [[0 for _ in range(top_k)] for _ in range(max_token_id + 1)]
+    mapped_experts: set[int] = set()
+    for token, token_id_raw in target_vocab.items():
+        token_id = int(token_id_raw)
+        role_id = body_action_role_id_for_token(str(token))
+        primary = role_id % num_experts
+        selected = [primary]
+        salt = 0
+        while len(selected) < top_k:
+            digest = stable_hash(f"{token}|{role_id}|{salt}")
+            candidate = int(digest[:16], 16) % num_experts
+            salt += 1
+            if candidate not in selected:
+                selected.append(candidate)
+        rows[token_id] = selected
+        mapped_experts.update(selected)
+    return rows, {
+        "enabled": float(specialist_core.get("router_supervision_loss_weight") or 0.0) > 0.0,
+        "policy": "private_target_action_role_plus_token_shard_router_supervision_v1",
+        "loss_weight": float(specialist_core.get("router_supervision_loss_weight") or 0.0),
+        "target_vocab_size": len(target_vocab),
+        "mapped_expert_count": len(mapped_experts),
+        "top_k": top_k,
+        "uses_private_train_target_tokens": True,
+        "served_at_generation": False,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def parameter_snapshot(model: Any, mlx_utils: Any, mx: Any) -> dict[str, Any]:
     snapshot: dict[str, Any] = {}
     for name, value in mlx_utils.tree_flatten(model.trainable_parameters()):
@@ -5689,24 +5788,69 @@ def parameter_snapshot(model: Any, mlx_utils: Any, mx: Any) -> dict[str, Any]:
     return snapshot
 
 
+OPTIONAL_AUXILIARY_PARAMETER_ROOTS = (
+    "plan_router",
+    "slot_router",
+    "body_transition_router",
+    "body_action_router",
+    "body_operand_router",
+    "body_state_event_router",
+    "body_state_event_to_hidden",
+    "body_executable_span_router",
+    "body_executable_span_to_hidden",
+)
+
+
+def parameter_is_optional_auxiliary(name: str) -> bool:
+    """Classify only known opt-in heads as optional.
+
+    Unknown and newly introduced tensors stay in the core denominator so a new
+    inactive path cannot silently improve the core-update receipt.
+    """
+
+    root = str(name or "").split(".", 1)[0]
+    return root in OPTIONAL_AUXILIARY_PARAMETER_ROOTS
+
+
 def parameter_update_summary(model: Any, before: dict[str, Any], mlx_utils: Any, mx: Any) -> dict[str, Any]:
     total = 0
     changed = 0
     tensor_total = 0
     tensor_changed = 0
+    core_total = 0
+    core_changed = 0
+    core_tensor_total = 0
+    core_tensor_changed = 0
+    unchanged_core: list[str] = []
+    unchanged_optional: list[str] = []
     for name, value in mlx_utils.tree_flatten(model.trainable_parameters()):
+        optional_auxiliary = parameter_is_optional_auxiliary(name)
         tensor_total += 1
         total += int(value.size)
+        if not optional_auxiliary:
+            core_tensor_total += 1
+            core_total += int(value.size)
         old = before.get(name)
         if old is None:
             changed += int(value.size)
             tensor_changed += 1
+            if not optional_auxiliary:
+                core_changed += int(value.size)
+                core_tensor_changed += 1
             continue
         delta = mx.abs(value - old)
         element_changed = int(mx.sum((delta > 1e-10).astype(mx.int32)).item())
         changed += element_changed
         if element_changed:
             tensor_changed += 1
+        if not optional_auxiliary:
+            core_changed += element_changed
+            if element_changed:
+                core_tensor_changed += 1
+            else:
+                unchanged_core.append(str(name))
+        elif not element_changed:
+            unchanged_optional.append(str(name))
     return {
         "parameter_count": total,
         "updated_parameter_count": changed,
@@ -5714,6 +5858,15 @@ def parameter_update_summary(model: Any, before: dict[str, Any], mlx_utils: Any,
         "parameter_tensor_count": tensor_total,
         "updated_parameter_tensor_count": tensor_changed,
         "parameter_tensor_update_fraction": round(tensor_changed / tensor_total, 6) if tensor_total else 0.0,
+        "core_parameter_count": core_total,
+        "updated_core_parameter_count": core_changed,
+        "core_parameter_update_fraction": round(core_changed / core_total, 6) if core_total else 0.0,
+        "core_parameter_tensor_count": core_tensor_total,
+        "updated_core_parameter_tensor_count": core_tensor_changed,
+        "core_parameter_tensor_update_fraction": round(core_tensor_changed / core_tensor_total, 6) if core_tensor_total else 0.0,
+        "unchanged_core_parameter_tensor_names": sorted(unchanged_core)[:64],
+        "unchanged_optional_auxiliary_tensor_names": sorted(unchanged_optional)[:64],
+        "parameter_role_policy": "known_optional_auxiliary_roots_else_core_fail_closed_v1",
     }
 
 
@@ -5721,6 +5874,8 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
     source_contrast = dict_or_empty(payload.get("source_contrastive_loss"))
     semantic_plan = dict_or_empty(payload.get("semantic_plan_auxiliary"))
     semantic_slot = dict_or_empty(payload.get("semantic_slot_auxiliary"))
+    specialist_core = dict_or_empty(payload.get("specialist_core"))
+    specialist_routing = dict_or_empty(payload.get("specialist_routing"))
     training_plan = dict_or_empty(payload.get("training_plan"))
     target_token_positions = int(training_plan.get("target_token_positions") or 0)
     consumed_token_positions = int(payload.get("optimizer_token_positions_consumed") or 0)
@@ -5752,6 +5907,30 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
         gate("parameter_update_recorded", float(payload.get("parameter_update_fraction") or 0.0) >= 0.95, "hard", payload.get("parameter_update_fraction")),
         gate("heldout_lm_improved", bool(payload.get("heldout_lm_improved")), "hard", [payload.get("heldout_lm_loss_before"), payload.get("heldout_lm_loss_after")]),
         gate("throughput_recorded", float(payload.get("training_tokens_per_second") or 0.0) > 0.0, "hard", payload.get("training_tokens_per_second")),
+        gate(
+            "sparse_specialist_executes_less_than_total_when_enabled",
+            specialist_core.get("mode") != "sparse_moe"
+            or (
+                int(specialist_core.get("specialist_active_parameter_count_per_token") or 0) > 0
+                and int(specialist_core.get("specialist_active_parameter_count_per_token") or 0)
+                < int(specialist_core.get("specialist_total_parameter_count") or 0)
+            ),
+            "hard",
+            specialist_core,
+        ),
+        gate(
+            "sparse_expert_attribution_present_when_enabled",
+            specialist_core.get("mode") != "sparse_moe"
+            or (
+                bool(specialist_routing.get("active"))
+                and int(specialist_routing.get("active_expert_count") or 0)
+                >= max(2, math.ceil(int(specialist_core.get("num_experts") or 1) * 0.5))
+                and int(specialist_routing.get("total_assignment_count") or 0) > 0
+                and float(specialist_routing.get("assignment_entropy_normalized") or 0.0) >= 0.75
+            ),
+            "hard",
+            specialist_routing,
+        ),
         gate(
             "requested_rung_checkpoints_written",
             not requested_rungs or len(written_rungs) == len(requested_rungs),

@@ -963,6 +963,11 @@ def main() -> int:
     parser.add_argument("--source-contrastive-loss-weight", type=float, default=0.0)
     parser.add_argument("--source-contrastive-margin", type=float, default=0.25)
     parser.add_argument("--source-contrastive-prefix-tokens", type=int, default=0)
+    parser.add_argument(
+        "--source-contrastive-span-mode",
+        choices=("prefix", "after_body_start"),
+        default="prefix",
+    )
     parser.add_argument("--guard-clean-target-loss-boost", type=float, default=1.0)
     parser.add_argument("--guard-rejected-target-loss-weight", type=float, default=1.0)
     parser.add_argument("--negative-replay-candidates", default="")
@@ -1265,6 +1270,7 @@ def main() -> int:
         source_contrastive_loss_weight=max(0.0, float(args.source_contrastive_loss_weight if args.source_contrastive_loss_weight is not None else 0.0)),
         source_contrastive_margin=max(0.0, float(args.source_contrastive_margin if args.source_contrastive_margin is not None else 0.0)),
         source_contrastive_prefix_tokens=max(0, int(args.source_contrastive_prefix_tokens or 0)),
+        source_contrastive_span_mode=str(args.source_contrastive_span_mode or "prefix"),
         guard_clean_target_loss_boost=max(0.0, float(args.guard_clean_target_loss_boost if args.guard_clean_target_loss_boost is not None else 1.0)),
         guard_rejected_target_loss_weight=max(0.0, float(args.guard_rejected_target_loss_weight if args.guard_rejected_target_loss_weight is not None else 1.0)),
         negative_replay_candidates=resolve(args.negative_replay_candidates) if str(args.negative_replay_candidates or "").strip() else None,
@@ -1526,6 +1532,7 @@ def run_adaptation(
     source_contrastive_loss_weight: float,
     source_contrastive_margin: float,
     source_contrastive_prefix_tokens: int,
+    source_contrastive_span_mode: str,
     guard_clean_target_loss_boost: float,
     guard_rejected_target_loss_weight: float,
     negative_replay_candidates: Path | None,
@@ -2576,7 +2583,7 @@ def run_adaptation(
         nn=nn,
     )
     source_contrastive_active = float(source_contrastive_loss_weight or 0.0) > 0.0
-    source_contrastive_span_mode = "prefix"
+    source_contrastive_span_mode = str(source_contrastive_span_mode or "prefix")
     source_contrastive_body_start_id = int(target_vocab.get(PLAN_BODY_START_TOKEN, -1))
     source_contrast_before = evaluate_source_contrast_mlx(
         model,
@@ -4542,6 +4549,9 @@ def run_adaptation(
         "parameter_count": update_summary["parameter_count"],
         "parameter_update_fraction": update_summary["parameter_update_fraction"],
         "parameter_tensor_update_fraction": update_summary["parameter_tensor_update_fraction"],
+        "core_parameter_update_fraction": update_summary["core_parameter_update_fraction"],
+        "core_parameter_tensor_update_fraction": update_summary["core_parameter_tensor_update_fraction"],
+        "parameter_update_summary": update_summary,
         "optimizer_step_count": optimizer_steps,
         "optimizer_token_positions_consumed": optimizer_token_positions,
         "training_wall_time_ms": training_wall_ms,
@@ -4593,6 +4603,9 @@ def run_adaptation(
             "heldout_lm_improved": payload["heldout_lm_improved"],
             "parameter_update_fraction": payload["parameter_update_fraction"],
             "parameter_tensor_update_fraction": payload["parameter_tensor_update_fraction"],
+            "core_parameter_update_fraction": payload["core_parameter_update_fraction"],
+            "core_parameter_tensor_update_fraction": payload["core_parameter_tensor_update_fraction"],
+            "parameter_update_summary": payload["parameter_update_summary"],
             "source_text_style": payload["source_text_style"],
             "target_mode": payload["target_mode"],
             "source_text_audit": payload["source_text_audit"],
@@ -5098,17 +5111,24 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             payload.get("source_text_audit"),
         ),
         gate(
-            "parameter_tensor_update_recorded",
-            float(payload.get("parameter_tensor_update_fraction") or 0.0) >= 0.90,
+            "core_parameter_tensor_update_recorded",
+            float(payload.get("core_parameter_tensor_update_fraction") or 0.0) >= 0.90,
             "hard",
             {
-                "actual": payload.get("parameter_tensor_update_fraction"),
+                "actual": payload.get("core_parameter_tensor_update_fraction"),
                 "minimum": 0.90,
                 "reason": (
-                    "Policy updates can legitimately skip inactive auxiliary tensors; "
-                    "element-wide update size remains a separate soft gate."
+                    "The prompt-conditioned generator must update across its core tensor surface; "
+                    "only explicitly known opt-in auxiliary heads are excluded."
                 ),
+                "classification": dict_or_empty(payload.get("parameter_update_summary")),
             },
+        ),
+        gate(
+            "overall_parameter_tensor_update_diagnostic",
+            float(payload.get("parameter_tensor_update_fraction") or 0.0) >= 0.75,
+            "soft",
+            payload.get("parameter_tensor_update_fraction"),
         ),
         gate("parameter_element_update_meaningful", float(payload.get("parameter_update_fraction") or 0.0) >= 0.25, "soft", payload.get("parameter_update_fraction")),
         gate("heldout_lm_improved", bool(payload.get("heldout_lm_improved")), "hard", [payload.get("heldout_lm_loss_before"), payload.get("heldout_lm_loss_after")]),

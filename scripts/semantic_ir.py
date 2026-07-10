@@ -12,6 +12,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import textwrap
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Iterable
@@ -19,6 +20,12 @@ from typing import Any, Iterable
 
 POLICY = "project_theseus_typed_semantic_ir_v1"
 TARGET_MODE = "typed_semantic_ir_tokens_v1"
+PLAN_BODY_TARGET_MODE = "typed_semantic_ir_plan_body_tokens_v1"
+PLAN_BEGIN = "IRP:BEGIN"
+PLAN_END = "IRP:END"
+PLAN_PREFIX = "IRP:"
+PLAN_MAX_TOKENS = 48
+PLAN_MAX_STEPS = 8
 PROGRAM_BEGIN = "IR:PROGRAM"
 PROGRAM_END = "IR:PROGRAM_END"  # Reserved so older fault fixtures fail explicitly.
 NODE_END = "IR:NODE_END"  # Reserved; compact v1 uses AST field arity.
@@ -61,6 +68,243 @@ class SemanticIRProgram:
 
 def semantic_ir_target_mode(value: str) -> bool:
     return str(value or "") == TARGET_MODE
+
+
+def semantic_ir_plan_body_target_mode(value: str) -> bool:
+    return str(value or "") == PLAN_BODY_TARGET_MODE
+
+
+def body_to_plan_tokens(body: str, *, max_tokens: int = PLAN_MAX_TOKENS) -> list[str]:
+    """Encode an ordered generic semantic plan that cannot reconstruct code.
+
+    This is an autoregressive scratchpad target for the existing strict
+    generator. It records AST-local operations and state flow in execution
+    order, but omits task-family labels, tests, solutions, and renderer actions.
+    The model must still emit the complete Python body after this plan.
+    """
+
+    function = parse_body(body)
+    budget = max(4, int(max_tokens or PLAN_MAX_TOKENS))
+    content: list[str] = []
+    for step in _plan_statement_groups(function.body):
+        if len(content) + len(step) > budget - 2:
+            break
+        content.extend(step)
+        if sum(token.startswith("IRP:STEP:") for token in content) >= PLAN_MAX_STEPS:
+            break
+    return [PLAN_BEGIN, *content, PLAN_END]
+
+
+def _plan_statement_groups(statements: Iterable[ast.stmt], *, depth: int = 0) -> Iterable[list[str]]:
+    """Yield compact, complete plan steps in execution order.
+
+    The former plan used five to ten tokens per statement and routinely spent
+    the entire target prefix describing a few AST nodes. These steps use a
+    closed, generic vocabulary and never include identifiers or exact call
+    names, so the model gets a short planning bottleneck without a renderer or
+    task-family catalog.
+    """
+
+    for statement in statements:
+        step = [
+            f"IRP:STEP:D{min(max(0, int(depth)), 7)}:{_plan_statement_kind(statement)}",
+            f"IRP:SEM:{semantic_intent(statement)}",
+            _plan_flow_token(statement),
+        ]
+        feature = _plan_primary_feature(statement)
+        if feature:
+            step.append(f"IRP:FEATURE:{feature}")
+        yield step
+        yield from _plan_statement_groups(_nested_statements(statement), depth=depth + 1)
+
+
+def _plan_statement_kind(statement: ast.stmt) -> str:
+    if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.NamedExpr)):
+        return "bind"
+    if isinstance(statement, ast.AugAssign):
+        return "update"
+    if isinstance(statement, (ast.For, ast.AsyncFor)):
+        return "iterate"
+    if isinstance(statement, ast.While):
+        return "iterate_condition"
+    if isinstance(statement, ast.If):
+        return "branch"
+    if isinstance(statement, ast.Return):
+        return "return"
+    if isinstance(statement, ast.Expr):
+        return "effect"
+    if isinstance(statement, (ast.Try, getattr(ast, "TryStar", ast.Try))):
+        return "failure_boundary"
+    if isinstance(statement, ast.Raise):
+        return "raise"
+    if isinstance(statement, ast.Assert):
+        return "assert"
+    if isinstance(statement, (ast.With, ast.AsyncWith)):
+        return "resource_scope"
+    if isinstance(statement, (ast.Break, ast.Continue, ast.Pass)):
+        return type(statement).__name__.lower()
+    if isinstance(statement, (ast.Import, ast.ImportFrom)):
+        return "dependency"
+    if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        return "nested_definition"
+    match_type = getattr(ast, "Match", ())
+    if isinstance(match_type, type) and isinstance(statement, match_type):
+        return "branch"
+    return "statement"
+
+
+def _plan_flow_token(statement: ast.stmt) -> str:
+    return f"IRP:FLOW:R{_plan_count_bucket(_loaded_names(statement))}:W{_plan_count_bucket(_stored_names(statement))}"
+
+
+def _plan_count_bucket(values: set[str]) -> str:
+    count = len(values)
+    return str(count) if count < 3 else "M"
+
+
+def _plan_primary_feature(node: ast.AST) -> str:
+    calls: list[str] = []
+    operators: list[ast.AST] = []
+    containers: list[ast.AST] = []
+    for child in _walk_direct_statement_scope(node):
+        if isinstance(child, ast.Call):
+            calls.append(call_name(child.func).rsplit(".", 1)[-1])
+        elif isinstance(child, (ast.operator, ast.boolop, ast.unaryop, ast.cmpop)):
+            operators.append(child)
+        elif isinstance(child, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
+            containers.append(child)
+        elif isinstance(child, (ast.List, ast.Tuple, ast.Set, ast.Dict)):
+            containers.append(child)
+    if calls:
+        return _plan_call_family(calls[0])
+    if operators:
+        return _plan_operator_family(operators[0])
+    if containers:
+        return "comprehension" if isinstance(
+            containers[0], (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)
+        ) else "container_literal"
+    return ""
+
+
+def _plan_call_family(name: str) -> str:
+    value = str(name or "").lower()
+    groups = (
+        ({"all", "any", "isinstance", "len"}, "inspect"),
+        ({"sorted", "reversed"}, "order"),
+        ({"abs", "max", "min", "pow", "round", "sum"}, "numeric"),
+        ({"enumerate", "filter", "map", "range", "zip"}, "iterate"),
+        ({"bool", "bytes", "dict", "float", "int", "list", "set", "str", "tuple"}, "convert"),
+        ({"add", "append", "extend", "insert", "setdefault", "update"}, "mutate"),
+        ({"get", "items", "keys", "pop", "values"}, "mapping"),
+        ({"endswith", "join", "lower", "replace", "split", "startswith", "strip", "upper"}, "text"),
+    )
+    for members, family in groups:
+        if value in members:
+            return f"call_{family}"
+    return "call_other"
+
+
+def _plan_operator_family(operator: ast.AST) -> str:
+    if isinstance(operator, (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv, ast.Mod, ast.Pow, ast.MatMult)):
+        return "op_arithmetic"
+    if isinstance(operator, (ast.Eq, ast.NotEq, ast.Lt, ast.LtE, ast.Gt, ast.GtE)):
+        return "op_compare"
+    if isinstance(operator, (ast.And, ast.Or, ast.Not)):
+        return "op_boolean"
+    if isinstance(operator, (ast.In, ast.NotIn)):
+        return "op_membership"
+    if isinstance(operator, (ast.Is, ast.IsNot)):
+        return "op_identity"
+    return "op_other"
+
+
+def _plan_expression_features(node: ast.AST) -> list[str]:
+    features: list[str] = []
+    calls: list[str] = []
+    operators: list[str] = []
+    containers: list[str] = []
+    for child in _walk_direct_statement_scope(node):
+        if isinstance(child, ast.Call):
+            name = call_name(child.func).rsplit(".", 1)[-1]
+            if name:
+                calls.append(_plan_symbol(name))
+        elif isinstance(child, (ast.operator, ast.boolop, ast.unaryop, ast.cmpop)):
+            operators.append(type(child).__name__)
+        elif isinstance(child, (ast.List, ast.Tuple, ast.Set, ast.Dict, ast.ListComp, ast.SetComp, ast.DictComp)):
+            containers.append(type(child).__name__)
+    for name in _stable_unique(calls)[:3]:
+        features.append(f"IRP:CALL:{name}")
+    for name in _stable_unique(operators)[:3]:
+        features.append(f"IRP:OP:{name}")
+    for name in _stable_unique(containers)[:2]:
+        features.append(f"IRP:CONTAINER:{name}")
+    if isinstance(node, ast.Return):
+        features.append(f"IRP:RETURN:{infer_node_type(node.value, {})}")
+    if isinstance(node, (ast.For, ast.AsyncFor, ast.While)):
+        features.append("IRP:CONTROL:LOOP")
+    elif isinstance(node, ast.If):
+        features.append("IRP:CONTROL:BRANCH")
+    elif isinstance(node, ast.Try):
+        features.append("IRP:CONTROL:FAILURE_BOUNDARY")
+    return features
+
+
+def _nested_statements(node: ast.AST) -> list[ast.stmt]:
+    nested: list[ast.stmt] = []
+    for field in ("body", "orelse", "finalbody"):
+        values = getattr(node, field, None)
+        if isinstance(values, list):
+            nested.extend(value for value in values if isinstance(value, ast.stmt))
+    handlers = getattr(node, "handlers", None)
+    if isinstance(handlers, list):
+        for handler in handlers:
+            nested.extend(value for value in getattr(handler, "body", []) if isinstance(value, ast.stmt))
+    return nested
+
+
+def _loaded_names(node: ast.AST) -> set[str]:
+    return {
+        item.id
+        for item in _walk_direct_statement_scope(node)
+        if isinstance(item, ast.Name) and isinstance(item.ctx, ast.Load)
+    }
+
+
+def _stored_names(node: ast.AST) -> set[str]:
+    return {
+        item.id
+        for item in _walk_direct_statement_scope(node)
+        if isinstance(item, ast.Name) and isinstance(item.ctx, ast.Store)
+    }
+
+
+def _walk_direct_statement_scope(root: ast.AST) -> Iterable[ast.AST]:
+    """Walk one statement's expressions without folding nested statements in."""
+
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        yield node
+        children = list(ast.iter_child_nodes(node))
+        for child in reversed(children):
+            if child is not root and isinstance(child, ast.stmt):
+                continue
+            stack.append(child)
+
+
+def _plan_count_token(kind: str, values: set[str]) -> str:
+    count = len(values)
+    bucket = str(count) if count < 4 else "4PLUS"
+    return f"IRP:{kind}:{bucket}"
+
+
+def _plan_symbol(value: str) -> str:
+    cleaned = "".join(char if char.isalnum() or char == "_" else "_" for char in str(value or ""))
+    return cleaned[:48] or "UNKNOWN"
+
+
+def _stable_unique(values: Iterable[str]) -> list[str]:
+    return list(dict.fromkeys(str(value) for value in values if str(value)))
 
 
 def body_to_tokens(body: str) -> list[str]:
@@ -542,7 +786,7 @@ def allowed_ast_classes() -> dict[str, type[ast.AST]]:
 
 
 def parse_body(body: str) -> ast.FunctionDef:
-    normalized = str(body or "").strip("\n")
+    normalized = textwrap.dedent(str(body or "")).strip("\n")
     if not normalized.strip():
         raise SemanticIRFault("IR_EMPTY_SOURCE_BODY", "body is empty")
     source = "def _theseus_semantic_ir(data=None, other=None):\n" + "\n".join(

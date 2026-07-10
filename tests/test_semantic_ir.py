@@ -12,10 +12,15 @@ if str(SCRIPTS) not in sys.path:
 
 import semantic_ir
 from code_lm_private_verifier import evaluate_private_candidates
-from neural_seed_token_decoder_rendering import decode_candidate_body_tokens
+from neural_seed_token_decoder_rendering import (
+    PLAN_BODY_START_TOKEN,
+    decode_candidate_body_tokens,
+    split_learned_plan_prefix_tokens,
+)
 from neural_seed_token_decoder_comparator import token_candidate_rows_for_view
-from neural_seed_token_decoder_support import target_tokens
+from neural_seed_token_decoder_support import body_tokens, target_tokens
 from strict_generator_semantic_ir_repair_apply import apply_local_repair
+from strict_generator_mlx_decode_eval import semantic_ir_plan_prefix_choices
 
 
 BODY = """out = {}
@@ -32,6 +37,84 @@ def canonical(body: str) -> str:
     return ast.dump(ast.parse("def f(data):\n" + "".join(f"    {line}\n" for line in body.splitlines())), include_attributes=False)
 
 
+def test_ordered_plan_body_target_keeps_learned_body_tokens() -> None:
+    body = "out = []\nfor value in data:\n    out.append(value + 1)\nreturn out"
+    tokens = target_tokens(body, target_mode=semantic_ir.PLAN_BODY_TARGET_MODE)
+    assert tokens[0] == semantic_ir.PLAN_BEGIN
+    assert semantic_ir.PLAN_END in tokens
+    assert PLAN_BODY_START_TOKEN in tokens
+    decoded_body_tokens, metadata = split_learned_plan_prefix_tokens(tokens)
+    assert decoded_body_tokens == body_tokens(body)
+    assert metadata["semantic_ir_plan_complete"] is True
+
+
+def test_ordered_plan_is_generic_bounded_and_non_compilable() -> None:
+    body = "total = 0\nfor value in data:\n    if value > 0:\n        total += value\nreturn total"
+    tokens = semantic_ir.body_to_plan_tokens(body)
+    assert len(tokens) <= semantic_ir.PLAN_MAX_TOKENS
+    assert "IRP:SEM:traversal" in tokens
+    assert "IRP:SEM:state_update" in tokens
+    assert "IRP:STEP:D0:iterate" in tokens
+    assert all("total" not in token and "value" not in token for token in tokens)
+    compiled, receipt = semantic_ir.compile_body_tokens(tokens)
+    assert compiled == ""
+    assert receipt["state"] == "FAULT"
+    assert receipt["candidate_generation_credit"] == 0
+
+
+def test_semantic_plan_decode_boundary_uses_only_plan_vocabulary() -> None:
+    vocab = {
+        "<pad>": 0,
+        "<bos>": 1,
+        "<eos>": 2,
+        semantic_ir.PLAN_BEGIN: 3,
+        "IRP:STEP:D0:return": 4,
+        "IRP:SEM:return_closure": 5,
+        "IRP:FLOW:R1:W0": 6,
+        semantic_ir.PLAN_END: 9,
+        PLAN_BODY_START_TOKEN: 10,
+        "NAME:return": 11,
+    }
+    inverse = {index: token for token, index in vocab.items()}
+    probabilities = [0.01] * (max(inverse) + 1)
+    probabilities[11] = 0.9
+    probabilities[4] = 0.8
+    first = semantic_ir_plan_prefix_choices(probabilities, inverse, vocab, [], max_choices=2)
+    assert first == [(3, probabilities[3])]
+    content = semantic_ir_plan_prefix_choices(
+        probabilities,
+        inverse,
+        vocab,
+        [semantic_ir.PLAN_BEGIN],
+        max_choices=2,
+    )
+    assert content == [(4, probabilities[4])]
+    boundary = semantic_ir_plan_prefix_choices(
+        probabilities,
+        inverse,
+        vocab,
+        [
+            semantic_ir.PLAN_BEGIN,
+            "IRP:STEP:D0:return",
+            "IRP:SEM:return_closure",
+            "IRP:FLOW:R1:W0",
+            semantic_ir.PLAN_END,
+        ],
+        max_choices=2,
+    )
+    assert boundary == [(10, probabilities[10])]
+
+
+def test_compact_plan_keeps_complete_steps_within_budget() -> None:
+    body = "\n".join([f"value_{index} = data" for index in range(20)] + ["return data"])
+    tokens = semantic_ir.body_to_plan_tokens(body, max_tokens=17)
+    assert len(tokens) <= 17
+    assert tokens[-1] == semantic_ir.PLAN_END
+    assert sum(token.startswith("IRP:STEP:") for token in tokens) == 5
+    assert sum(token.startswith("IRP:SEM:") for token in tokens) == 5
+    assert sum(token.startswith("IRP:FLOW:") for token in tokens) == 5
+
+
 def test_generic_semantic_ir_roundtrips_nested_program() -> None:
     tokens = semantic_ir.body_to_tokens(BODY)
     rendered, receipt = semantic_ir.compile_body_tokens(tokens)
@@ -40,6 +123,16 @@ def test_generic_semantic_ir_roundtrips_nested_program() -> None:
     assert receipt["candidate_generation_credit"] == 0
     assert receipt["deterministic_compiler_credit"] == 0
     assert canonical(rendered) == canonical(BODY)
+
+
+def test_semantic_ir_normalizes_source_extraction_indentation() -> None:
+    extracted = "    value = int(data)\n    if value > 0:\n        return value\n    return 0"
+    plan = semantic_ir.body_to_plan_tokens(extracted)
+    tokens = semantic_ir.body_to_tokens(extracted)
+    rendered, receipt = semantic_ir.compile_body_tokens(tokens)
+    assert plan[0] == semantic_ir.PLAN_BEGIN
+    assert receipt["state"] == "READY"
+    assert "return value" in rendered
 
 
 def test_semantic_ir_rejects_malformed_stream_without_fallback() -> None:
