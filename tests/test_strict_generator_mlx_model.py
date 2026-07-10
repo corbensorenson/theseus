@@ -17,7 +17,11 @@ from strict_generator_mlx_model import (  # noqa: E402
     normalize_specialist_core_config,
     specialist_core_parameter_estimate,
 )
-from strict_generator_mlx_pretraining_probe import specialist_token_expert_map  # noqa: E402
+from strict_generator_mlx_pretraining_probe import (  # noqa: E402
+    active_parameter_accounting,
+    model_data_exposure_summary,
+    specialist_token_expert_map,
+)
 
 
 def test_sparse_config_fails_closed_on_invalid_route() -> None:
@@ -70,6 +74,38 @@ def test_router_supervision_map_covers_experts_without_runtime_labels() -> None:
     assert summary["uses_eval_tests_or_solutions"] is False
 
 
+def test_data_exposure_never_counts_optimizer_repetition_as_unique_data() -> None:
+    summary = model_data_exposure_summary(
+        one_pass_source_token_positions=600,
+        one_pass_target_token_positions=400,
+        optimizer_token_positions=10_000,
+        active_parameter_count=2_000,
+    )
+    assert summary["one_pass_total_token_positions"] == 1_000
+    assert summary["one_pass_tokens_per_active_parameter"] == 0.5
+    assert summary["optimizer_repetition_factor"] == 10.0
+    assert summary["data_scale_state"] == "underdata"
+    assert summary["optimizer_repetition_counted_as_unique_data"] is False
+
+
+def test_active_parameter_accounting_uses_measured_core_and_selected_experts() -> None:
+    summary = active_parameter_accounting(
+        {
+            "parameter_count": 10_000,
+            "core_parameter_count": 8_000,
+            "parameter_count_by_root": {"slot_role_router": 2_000},
+        },
+        {
+            "specialist_total_parameter_count": 4_000,
+            "specialist_active_parameter_count_per_token": 1_000,
+        },
+        active_optional_roots={"slot_role_router"},
+    )
+    assert summary["model_total_parameter_count"] == 10_000
+    assert summary["shared_core_parameter_count_excluding_specialists"] == 4_000
+    assert summary["model_active_parameter_count_per_token"] == 7_000
+
+
 def test_sparse_mlx_model_routes_and_differentiates_selected_experts() -> None:
     mx = pytest.importorskip("mlx.core")
     nn = pytest.importorskip("mlx.nn")
@@ -115,3 +151,65 @@ def test_sparse_mlx_model_routes_and_differentiates_selected_experts() -> None:
     assert route["indices"].shape == (2, 4, 2)
     assert float(loss.item()) > 0.0
     assert len(route["indices"].tolist()) == 2
+
+
+def test_factorized_auxiliary_heads_share_vocab_projection() -> None:
+    mx = pytest.importorskip("mlx.core")
+    nn = pytest.importorskip("mlx.nn")
+    kwargs = dict(
+        source_vocab_size=32,
+        target_vocab_size=128,
+        max_source_len=8,
+        max_target_len=8,
+        d_model=16,
+        nhead=4,
+        num_layers=1,
+        dim_feedforward=32,
+        semantic_slot_role_count=6,
+        body_action_role_count=3,
+        body_operand_role_count=4,
+        body_state_event_role_count=5,
+        body_executable_span_role_count=6,
+        specialist_core={"enabled": False},
+        mx=mx,
+        nn=nn,
+    )
+    legacy = MlxStrictGenerator(**kwargs, auxiliary_head_policy="legacy_materialized_v1").model
+    factorized = MlxStrictGenerator(
+        **kwargs, auxiliary_head_policy="shared_factorized_on_demand_v1"
+    ).model
+    factorized_without_slot = MlxStrictGenerator(
+        **kwargs,
+        auxiliary_head_policy="shared_factorized_on_demand_v1",
+        semantic_slot_head=False,
+    ).model
+    tied = MlxStrictGenerator(
+        **kwargs,
+        auxiliary_head_policy="shared_factorized_on_demand_v1",
+        semantic_slot_head=False,
+        output_projection_policy="tied_target_embedding_v1",
+    ).model
+    legacy_count = sum(int(value.size) for _name, value in __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten(legacy.trainable_parameters()))
+    factorized_count = sum(int(value.size) for _name, value in __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten(factorized.trainable_parameters()))
+    factorized_without_slot_count = sum(
+        int(value.size)
+        for _name, value in __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten(
+            factorized_without_slot.trainable_parameters()
+        )
+    )
+    tied_count = sum(
+        int(value.size)
+        for _name, value in __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten(
+            tied.trainable_parameters()
+        )
+    )
+    src = mx.array([[1, 2, 3, 0]])
+    logits = factorized.semantic_slot_logits(src)
+    mx.eval(logits)
+    assert logits.shape == (1, 6, 128)
+    assert factorized_count < legacy_count
+    assert factorized_without_slot_count < factorized_count
+    tied_logits = tied(src, mx.array([[1, 2, 3]]))
+    mx.eval(tied_logits)
+    assert tied_logits.shape == (1, 3, 128)
+    assert tied_count < factorized_without_slot_count

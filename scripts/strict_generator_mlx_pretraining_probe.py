@@ -20,6 +20,7 @@ import random
 import re
 import sys
 import time
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -449,6 +450,7 @@ def run_probe(
             "parameter_update_fraction": payload.get("parameter_update_fraction"),
             "parameter_tensor_update_fraction": payload.get("parameter_tensor_update_fraction"),
             "row_summary": payload.get("row_summary"),
+            "data_exposure": payload.get("data_exposure"),
             "checkpoint": payload.get("checkpoint"),
             "checkpoint_sha256": payload.get("checkpoint_sha256"),
             "vocab": payload.get("vocab"),
@@ -594,6 +596,12 @@ def train_budget_mlx(
     specialist_token_expert_ids, specialist_router_supervision = specialist_token_expert_map(
         target_vocab, specialist_core_cfg
     )
+    auxiliary_head_policy = str(
+        budget.get("auxiliary_head_policy") or "legacy_materialized_v1"
+    )
+    output_projection_policy = str(
+        budget.get("output_projection_policy") or "independent_output_v1"
+    )
     model = MlxStrictGenerator(
         source_vocab_size=len(source_vocab),
         target_vocab_size=len(target_vocab),
@@ -605,10 +613,13 @@ def train_budget_mlx(
         executable_span_body_constructor=executable_span_body_constructor,
         executable_span_body_constructor_scale=executable_span_body_constructor_scale,
         semantic_slot_role_count=len(SEMANTIC_SLOT_ROLES),
+        semantic_slot_head=bool(semantic_slot_cfg.get("enabled")),
         body_action_role_count=len(BODY_ACTION_ROLES),
         body_operand_role_count=len(BODY_OPERAND_ROLES),
         body_state_event_role_count=len(BODY_STATE_EVENT_ROLES),
         body_executable_span_role_count=len(BODY_EXECUTABLE_SPAN_ROLES),
+        auxiliary_head_policy=auxiliary_head_policy,
+        output_projection_policy=output_projection_policy,
         specialist_core=specialist_core_cfg,
         specialist_token_expert_ids=specialist_token_expert_ids,
         mx=mx,
@@ -812,6 +823,9 @@ def train_budget_mlx(
         "source_vocab_sha256": stable_hash(json.dumps(source_vocab, sort_keys=True)),
         "target_vocab_sha256": stable_hash(json.dumps(target_vocab, sort_keys=True)),
         "dims": dims,
+        "auxiliary_head_policy": auxiliary_head_policy,
+        "output_projection_policy": output_projection_policy,
+        "semantic_slot_head_materialized": bool(semantic_slot_cfg.get("enabled")),
         "specialist_core": specialist_core_estimate,
         "specialist_router_supervision": {
             **specialist_router_supervision,
@@ -1146,31 +1160,39 @@ def train_budget_mlx(
         mx=mx,
     )
     update_summary = parameter_update_summary(model, before, mlx_utils, mx)
-    total_parameter_count = int(update_summary.get("parameter_count_after") or 0)
-    specialist_total = int(specialist_core_estimate.get("specialist_total_parameter_count") or 0)
-    specialist_active = int(
-        specialist_core_estimate.get("specialist_active_parameter_count_per_token") or 0
+    active_optional_roots: set[str] = set()
+    if semantic_plan_active and auxiliary_head_policy == "legacy_materialized_v1":
+        active_optional_roots.add("plan_router")
+    if semantic_slot_active:
+        active_optional_roots.add(
+            "slot_role_router"
+            if auxiliary_head_policy == "shared_factorized_on_demand_v1"
+            else "slot_router"
+        )
+    if coupled_state_body_constructor:
+        active_optional_roots.update({"body_state_event_router", "body_state_event_to_hidden"})
+    if body_executable_span_head:
+        active_optional_roots.add("body_executable_span_router")
+    if executable_span_body_constructor:
+        active_optional_roots.add("body_executable_span_to_hidden")
+    active_accounting = active_parameter_accounting(
+        update_summary,
+        specialist_core_estimate,
+        active_optional_roots=active_optional_roots,
     )
-    shared_base_parameters = max(0, total_parameter_count - specialist_total)
-    model_active_parameters = shared_base_parameters + specialist_active
-    specialist_core_estimate.update(
-        {
-            "model_total_parameter_count": total_parameter_count,
-            "shared_base_parameter_count": shared_base_parameters,
-            "model_active_parameter_count_per_token": model_active_parameters,
-            "model_active_parameter_fraction": round(
-                model_active_parameters / total_parameter_count, 6
-            )
-            if total_parameter_count
-            else 0.0,
-            "accounting_policy": "shared_base_plus_selected_experts_and_router_v1",
-        }
-    )
+    model_active_parameters = int(active_accounting["model_active_parameter_count_per_token"])
+    specialist_core_estimate.update(active_accounting)
     model.save_weights(str(checkpoint_path))
     write_json(vocab_path, vocab_payload)
     mx.eval(model.parameters())
     source_nonpad = sum(source_nonpad_by_row)
     target_nonpad = sum(target_nonpad_by_row)
+    data_exposure = model_data_exposure_summary(
+        one_pass_source_token_positions=source_nonpad,
+        one_pass_target_token_positions=target_nonpad,
+        optimizer_token_positions=optimizer_token_positions,
+        active_parameter_count=model_active_parameters,
+    )
     seconds = max(training_wall_ms / 1000.0, 1e-9)
     return {
         "id": budget_id,
@@ -1182,6 +1204,9 @@ def train_budget_mlx(
         "vocab": rel(vocab_path),
         "vocab_sha256": stable_hash_file(vocab_path),
         "dims": dims,
+        "auxiliary_head_policy": auxiliary_head_policy,
+        "output_projection_policy": output_projection_policy,
+        "semantic_slot_head_materialized": bool(semantic_slot_cfg.get("enabled")),
         "specialist_core": specialist_core_estimate,
         "specialist_router_supervision": specialist_router_supervision,
         "specialist_routing_before": specialist_routing_before,
@@ -1196,6 +1221,7 @@ def train_budget_mlx(
         "source_vocab_extension": full_state_source_vocab_extension_summary(source_vocab_extension_texts),
         "target_vocab_extension": full_state_target_vocab_extension_summary(target_vocab_extension_bodies),
         "row_summary": dict_or_empty(rows.get("summary")),
+        "data_exposure": data_exposure,
         "loss_weighting": loss_weight_summary,
         "semantic_plan_auxiliary": {
             **semantic_plan_cfg,
@@ -1390,6 +1416,40 @@ def train_budget_mlx(
         "open_or_pretrained_model_weights_used": False,
         "fallback_template_router_tool_credit_count": 0,
         "score_semantics": "MLX native training proof only; no candidate generation or promotion claim.",
+    }
+
+
+def model_data_exposure_summary(
+    *,
+    one_pass_source_token_positions: int,
+    one_pass_target_token_positions: int,
+    optimizer_token_positions: int,
+    active_parameter_count: int,
+) -> dict[str, Any]:
+    one_pass_total = max(0, int(one_pass_source_token_positions)) + max(0, int(one_pass_target_token_positions))
+    ratio_to_active = one_pass_total / max(1, int(active_parameter_count))
+    repetition = max(0, int(optimizer_token_positions)) / max(1, one_pass_total)
+    if ratio_to_active >= 10.0:
+        state = "scaling_runway"
+    elif ratio_to_active >= 1.0:
+        state = "minimum_unique_exposure"
+    else:
+        state = "underdata"
+    return {
+        "policy": "strict_generator_unique_data_exposure_v1",
+        "one_pass_source_token_positions": int(one_pass_source_token_positions),
+        "one_pass_target_token_positions": int(one_pass_target_token_positions),
+        "one_pass_total_token_positions": one_pass_total,
+        "active_parameter_count": int(active_parameter_count),
+        "one_pass_tokens_per_active_parameter": round(ratio_to_active, 6),
+        "optimizer_token_positions": int(optimizer_token_positions),
+        "optimizer_repetition_factor": round(repetition, 6),
+        "data_scale_state": state,
+        "optimizer_repetition_counted_as_unique_data": False,
+        "score_semantics": (
+            "One-pass positions count each selected source/target row once after corpus deduplication. "
+            "Optimizer epochs and repeated shuffled windows are reported only as repetition and never increase data-scale credit."
+        ),
     }
 
 
@@ -5791,6 +5851,7 @@ def parameter_snapshot(model: Any, mlx_utils: Any, mx: Any) -> dict[str, Any]:
 OPTIONAL_AUXILIARY_PARAMETER_ROOTS = (
     "plan_router",
     "slot_router",
+    "slot_role_router",
     "body_transition_router",
     "body_action_router",
     "body_operand_router",
@@ -5823,7 +5884,10 @@ def parameter_update_summary(model: Any, before: dict[str, Any], mlx_utils: Any,
     core_tensor_changed = 0
     unchanged_core: list[str] = []
     unchanged_optional: list[str] = []
+    parameter_count_by_root: Counter[str] = Counter()
     for name, value in mlx_utils.tree_flatten(model.trainable_parameters()):
+        root = str(name or "").split(".", 1)[0]
+        parameter_count_by_root[root] += int(value.size)
         optional_auxiliary = parameter_is_optional_auxiliary(name)
         tensor_total += 1
         total += int(value.size)
@@ -5866,7 +5930,42 @@ def parameter_update_summary(model: Any, before: dict[str, Any], mlx_utils: Any,
         "core_parameter_tensor_update_fraction": round(core_tensor_changed / core_tensor_total, 6) if core_tensor_total else 0.0,
         "unchanged_core_parameter_tensor_names": sorted(unchanged_core)[:64],
         "unchanged_optional_auxiliary_tensor_names": sorted(unchanged_optional)[:64],
+        "parameter_count_by_root": dict(sorted(parameter_count_by_root.items())),
         "parameter_role_policy": "known_optional_auxiliary_roots_else_core_fail_closed_v1",
+    }
+
+
+def active_parameter_accounting(
+    update_summary: dict[str, Any],
+    specialist_core_estimate: dict[str, Any],
+    *,
+    active_optional_roots: set[str] | None = None,
+) -> dict[str, Any]:
+    root_counts = {
+        str(key): int(value)
+        for key, value in dict_or_empty(update_summary.get("parameter_count_by_root")).items()
+    }
+    total = int(update_summary.get("parameter_count") or sum(root_counts.values()))
+    core_total = int(update_summary.get("core_parameter_count") or 0)
+    specialist_total = int(specialist_core_estimate.get("specialist_total_parameter_count") or 0)
+    specialist_active = int(
+        specialist_core_estimate.get("specialist_active_parameter_count_per_token") or 0
+    )
+    optional_roots = set(active_optional_roots or set())
+    active_optional = sum(root_counts.get(root, 0) for root in optional_roots)
+    shared_core = max(0, core_total - specialist_total)
+    active = shared_core + specialist_active + active_optional
+    return {
+        "model_total_parameter_count": total,
+        "core_parameter_count": core_total,
+        "shared_core_parameter_count_excluding_specialists": shared_core,
+        "specialist_total_parameter_count": specialist_total,
+        "specialist_active_parameter_count_per_token": specialist_active,
+        "active_optional_parameter_roots": sorted(optional_roots),
+        "active_optional_parameter_count": active_optional,
+        "model_active_parameter_count_per_token": active,
+        "model_active_parameter_fraction": round(active / total, 6) if total else 0.0,
+        "accounting_policy": "measured_core_plus_selected_experts_plus_active_optional_roots_v2",
     }
 
 
@@ -5877,6 +5976,7 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
     specialist_core = dict_or_empty(payload.get("specialist_core"))
     specialist_routing = dict_or_empty(payload.get("specialist_routing"))
     training_plan = dict_or_empty(payload.get("training_plan"))
+    data_exposure = dict_or_empty(payload.get("data_exposure"))
     target_token_positions = int(training_plan.get("target_token_positions") or 0)
     consumed_token_positions = int(payload.get("optimizer_token_positions_consumed") or 0)
     requested_rungs = [int(value) for value in training_plan.get("rung_token_positions_requested") or []]
@@ -5907,6 +6007,19 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
         gate("parameter_update_recorded", float(payload.get("parameter_update_fraction") or 0.0) >= 0.95, "hard", payload.get("parameter_update_fraction")),
         gate("heldout_lm_improved", bool(payload.get("heldout_lm_improved")), "hard", [payload.get("heldout_lm_loss_before"), payload.get("heldout_lm_loss_after")]),
         gate("throughput_recorded", float(payload.get("training_tokens_per_second") or 0.0) > 0.0, "hard", payload.get("training_tokens_per_second")),
+        gate(
+            "unique_data_exposure_reported_without_epoch_inflation",
+            int(data_exposure.get("one_pass_total_token_positions") or 0) > 0
+            and data_exposure.get("optimizer_repetition_counted_as_unique_data") is False,
+            "hard",
+            data_exposure,
+        ),
+        gate(
+            "minimum_one_pass_token_per_active_parameter",
+            float(data_exposure.get("one_pass_tokens_per_active_parameter") or 0.0) >= 1.0,
+            "soft",
+            data_exposure,
+        ),
         gate(
             "sparse_specialist_executes_less_than_total_when_enabled",
             specialist_core.get("mode") != "sparse_moe"

@@ -85,12 +85,36 @@ but its frozen direct replay and one governed private adaptation remain `0/8`
 behavior. The adaptation's near-zero private LM loss with zero behavior is
 falsifying evidence against more tuning of this checkpoint family.
 
-The immediate dependency is governed unique-data scale, not another head,
-marker, renderer, or adaptation. The 43.6M dense model saw only `730,798`
-unique target tokens from `16,000` licensed functions before those rows were
-repeated to 5M positions; the conversation lane has only `2,811` rows. The next
-training run must follow a larger contamination-audited code/conversation
-manifest and report unique tokens separately from optimizer token positions.
+The data-right-sized model has now received a direct behavior verdict. Corpus
+selection scans the
+entire admitted manifest instead of stopping at the first `max_examples`,
+deduplicates exact source/body pairs, and yields `35,297` licensed functions.
+The compact code lane has `5,580,951` encoded one-pass positions (`2,378,201`
+target; `3,202,750` visible source) for a `3,697,408`-active-parameter dense MLX
+model, or `1.509423` one-pass positions per active parameter. Decoder input and
+output weights are tied; disabled vocab-sized auxiliary heads are no longer
+materialized. The one-pass contrastive run is clean: it processes `5,602,244`
+optimizer positions (`1.003815` repetition), improves heldout LM loss
+`8.410877 -> 2.273732`, improves the matched/mismatched source-loss gap
+`0.006521 -> 0.238046`, and trains at `8,935.226` positions/sec. Frozen
+1M/3M/5.5M replay over the same 4+4 private rows emits `57` integrity-verified,
+syntax-valid direct candidates across `24` task-checkpoint evaluations, but
+scores `0/24`; all admitted failures are semantic `wrong_answer`. The candidates
+concentrate on shallow `return data`, `len(data)`, and repeated type-check forms.
+This falsifies more epochs, scalar reweighting, or private adaptation of this
+body-token checkpoint family. The next valid Phase 10 change must alter the
+learned target/representation, such as a trainable typed AST or semantic-action
+sequence whose compiler is independently accounted as zero-credit tooling.
+
+The registered conversation pantry now uses resumable atomic shards rather than
+100-row samples. It reconstructed and admitted `13,918` reviewed, rank-filtered,
+human-contributed OpenAssistant conversations from OASST1/OASST2, totaling
+`4,285,750` one-pass positions. Rows are redacted, exact/near-deduplicated, and
+checked against a `2,625`-text public-contamination index before a compact
+DataAdmissionReceipt is bound to each admitted train row. `9,018` candidate
+paths were quarantined. Externally generated conversation corpora remain blocked
+unless the governed teacher gate explicitly admits conversation rows. This is
+training-data readiness evidence, not conversation capability.
 `scripts/roadmap_implementation_gate.py` now has a strict pre-training
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.

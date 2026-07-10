@@ -543,7 +543,9 @@
           "freshness_mode": "source_bound",
           "source_paths": [
             "scripts/training_data_admission_v1.py",
-            "scripts/training_data_lineage_audit.py"
+            "scripts/training_data_lineage_audit.py",
+            "scripts/open_conversation_training_pantry.py",
+            "scripts/governed_conversation_stream.py"
           ],
           "acceptance": {
             "field": "trigger_state",
@@ -7219,7 +7221,7 @@
           "reason": "This report is bounded MLX pretraining provenance for operand-binding smoke work; current decode/eval reports remain on the default surface freshness window."
         }
       },
-      "verification_command": "python3 scripts/blind_information_flow_audit.py && python3 scripts/candidate_integrity.py --candidates reports/neural_seed_token_decoder_candidates_strict_body_tokens.jsonl --out reports/candidate_integrity_strict_body_tokens.json --markdown-out reports/candidate_integrity_strict_body_tokens.md && python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_visible_source.py scripts/neural_seed_static_coherence.py scripts/neural_seed_expression_value_guard.py scripts/neural_seed_decode_static_guard.py scripts/neural_seed_candidate_evidence_summary.py scripts/neural_seed_teacher_distillation_rows.py scripts/neural_seed_full_state_pretraining.py scripts/neural_seed_token_model_backend.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/neural_seed_route_memory.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_guards.py scripts/strict_generator_mlx_decode_plans.py scripts/strict_generator_mlx_source_text.py scripts/strict_generator_mlx_decode_reporting.py scripts/strict_generator_mlx_specialist_routing.py scripts/strict_generator_mlx_private_adaptation.py scripts/strict_generator_mlx_adaptation_weights.py scripts/strict_generator_mlx_adaptation_selection.py scripts/strict_generator_mlx_replay_selection.py scripts/strict_generator_mlx_pretraining_probe.py scripts/strict_generator_mlx_rung_decode_sweep.py scripts/strict_generator_pretraining_spine.py scripts/trainable_transformer_hybrid_code_generator_v1.py scripts/code_lm_private_verifier.py scripts/neural_seed_survival_readiness_gate.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/neural_seed_token_decoder_comparator.py && python3 scripts/code_lm_private_verifier.py --spine-smoke && python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate && python3 scripts/correctness_generator_survival_lane_gate.py --gate && python3 scripts/neural_seed_survival_readiness_gate.py --gate && python3 scripts/viea_spine_record_gate.py --gate",
+      "verification_command": "python3 scripts/blind_information_flow_audit.py && python3 scripts/candidate_integrity.py --candidates reports/neural_seed_token_decoder_candidates_strict_body_tokens.jsonl --out reports/candidate_integrity_strict_body_tokens.json --markdown-out reports/candidate_integrity_strict_body_tokens.md && python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_visible_source.py scripts/neural_seed_static_coherence.py scripts/neural_seed_expression_value_guard.py scripts/neural_seed_decode_static_guard.py scripts/neural_seed_candidate_evidence_summary.py scripts/neural_seed_teacher_distillation_rows.py scripts/neural_seed_full_state_pretraining.py scripts/neural_seed_token_model_backend.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/neural_seed_route_memory.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_model.py scripts/strict_generator_mlx_decode_guards.py scripts/strict_generator_mlx_decode_plans.py scripts/strict_generator_mlx_source_text.py scripts/strict_generator_mlx_decode_reporting.py scripts/strict_generator_mlx_specialist_routing.py scripts/strict_generator_mlx_private_adaptation.py scripts/strict_generator_mlx_adaptation_weights.py scripts/strict_generator_mlx_adaptation_selection.py scripts/strict_generator_mlx_replay_selection.py scripts/strict_generator_mlx_pretraining_probe.py scripts/strict_generator_mlx_rung_decode_sweep.py scripts/strict_generator_pretraining_spine.py scripts/trainable_transformer_hybrid_code_generator_v1.py scripts/code_lm_private_verifier.py scripts/neural_seed_survival_readiness_gate.py && python3 tests/test_strict_generator_mlx_model.py && python3 tests/test_full_state_corpus_selection.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/neural_seed_token_decoder_comparator.py && python3 scripts/code_lm_private_verifier.py --spine-smoke && python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate && python3 scripts/correctness_generator_survival_lane_gate.py --gate && python3 scripts/neural_seed_survival_readiness_gate.py --gate && python3 scripts/viea_spine_record_gate.py --gate",
       "cleanup_policy": "the strict prompt/signature direct body-token comparator is canonical for honest learned code-generation evidence; action selectors, semantic-slot renderers, structural adapters, private ngrams, and old body-template selectors are diagnostic/tool baselines unless a separate gate explicitly admits them as non-promotion evidence",
       "current_wall": "strict prompt/signature generation is wired as an architecture-ready survival lane, not a quality win. reports/neural_seed_survival_readiness_gate.json is GREEN: the current direct learned full-body receipt has 93 eligible candidates across 22 private tasks, runtime-load task rate 1.0, behavior pass rate 0.227273, and wider top-8 fanout does not improve the rate. The C1 clean transformer/hybrid private replay records selected/pass-if-any behavior 0.0, so promotion and public calibration remain blocked. Resource/MLX routing is ready but fail-closes production routing because behavior is zero. The next governed step is private semantic update/final-return adaptation over the existing transformer/hybrid survival lane using only allowed prompt/signature context, private/licensed rows, private verifier labels, integrity-negative replay, generated-prefix AST/state features, and VCM packets with public calibration taint excluded.",
       "abstraction_id": "candidate_generation_contract",
@@ -7556,6 +7558,8 @@
         "scripts/teacher_*.py",
         "scripts/*training_data*.py",
         "scripts/*data_admission*.py",
+        "scripts/open_conversation_training_pantry.py",
+        "scripts/governed_conversation_stream.py",
         "configs/teacher*.json",
         "configs/*data*.json",
         "data/training_data/**",
@@ -7569,11 +7573,13 @@
         "reports/training_data_admission_v1.json",
         "reports/training_data_lineage_audit.json",
         "reports/training_data_lineage_audit.md",
+        "reports/open_conversation_training_pantry.json",
+        "reports/open_conversation_training_pantry.md",
         "runtime/data_governance/data_admission_receipts_v1.jsonl.gz",
         "reports/broad_capability_curriculum_v1.json",
         "reports/broad_capability_survival_lane_run_v1.json"
       ],
-      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 tests/test_training_data_lineage_audit.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/open_conversation_training_pantry.py --scalable && python3 scripts/training_data_admission_v1.py && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 tests/test_training_data_lineage_audit.py && python3 tests/test_governed_conversation_stream.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/governed_conversation_stream.py scripts/open_conversation_training_pantry.py",
       "cleanup_policy": "teacher rows require provenance, license, verifier, and leakage audit; external tokens are never runtime-serving output",
       "abstraction_id": "teacher_data_governance_contract",
       "major_surface": true,

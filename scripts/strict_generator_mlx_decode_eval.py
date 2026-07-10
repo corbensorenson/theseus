@@ -1069,6 +1069,15 @@ def load_mlx_checkpoint(
     executable_constructor_cfg = dict_or_empty(vocab_payload.get("executable_span_body_constructor"))
     specialist_core_cfg = dict_or_empty(vocab_payload.get("specialist_core"))
     specialist_router_supervision = dict_or_empty(vocab_payload.get("specialist_router_supervision"))
+    auxiliary_head_policy = str(
+        vocab_payload.get("auxiliary_head_policy") or "legacy_materialized_v1"
+    )
+    output_projection_policy = str(
+        vocab_payload.get("output_projection_policy") or "independent_output_v1"
+    )
+    semantic_slot_head_materialized = bool(
+        vocab_payload.get("semantic_slot_head_materialized", True)
+    )
     coupled_state_body_constructor = (
         bool(force_coupled_state_body_constructor)
         if force_coupled_state_body_constructor is not None
@@ -1111,6 +1120,9 @@ def load_mlx_checkpoint(
         "max_source": int(vocab_payload.get("max_source") or 96),
         "max_target": int(vocab_payload.get("max_target") or 160),
         "dims": dims,
+        "auxiliary_head_policy": auxiliary_head_policy,
+        "output_projection_policy": output_projection_policy,
+        "semantic_slot_head_materialized": semantic_slot_head_materialized,
         "coupled_state_body_constructor": {
             "enabled": coupled_state_body_constructor,
             "scale": coupled_state_body_constructor_scale if coupled_state_body_constructor else 0.0,
@@ -1144,10 +1156,13 @@ def load_mlx_checkpoint(
             executable_span_body_constructor=executable_span_body_constructor,
             executable_span_body_constructor_scale=executable_span_body_constructor_scale,
             semantic_slot_role_count=len(SEMANTIC_SLOT_ROLES),
+            semantic_slot_head=semantic_slot_head_materialized,
             body_action_role_count=len(BODY_ACTION_ROLES),
             body_operand_role_count=len(BODY_OPERAND_ROLES),
             body_state_event_role_count=len(BODY_STATE_EVENT_ROLES),
             body_executable_span_role_count=len(BODY_EXECUTABLE_SPAN_ROLES),
+            auxiliary_head_policy=auxiliary_head_policy,
+            output_projection_policy=output_projection_policy,
             specialist_core=specialist_core_cfg,
             specialist_token_expert_ids=list(
                 specialist_router_supervision.get("token_expert_ids") or []

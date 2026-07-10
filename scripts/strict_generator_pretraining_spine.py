@@ -509,6 +509,9 @@ def stage_full_state_examples(
         int(cfg.get("source_vocab_max_files") or cfg.get("target_vocab_max_files") or 0),
         int(cfg.get("target_vocab_max_files") or 0),
     )
+    corpus_manifest_path = resolve(
+        str(cfg.get("corpus_manifest") or "data/training_sources/narrow_corpus_manifest.json")
+    )
     cache_key = stable_hash(
         json.dumps(
             {
@@ -517,7 +520,9 @@ def stage_full_state_examples(
                 "seed": seed,
                 "max_examples": max_examples,
                 "max_files": max_files,
-                "policy": "strict_generator_stage_cache_v3_ast_canonical_prompt_provenance",
+                "policy": "strict_generator_stage_cache_v4_full_stream_deduplicated_selection",
+                "collector_sha256": stable_hash_file(ROOT / "scripts" / "neural_seed_full_state_pretraining.py"),
+                "corpus_manifest_sha256": stable_hash_file(corpus_manifest_path),
             },
             sort_keys=True,
             default=str,
@@ -545,7 +550,7 @@ def stage_full_state_examples(
         seed=seed,
     )
     cache_payload = {
-        "policy": "project_theseus_strict_generator_stage_cache_v3_ast_canonical_prompt_provenance",
+        "policy": "project_theseus_strict_generator_stage_cache_v4_full_stream_deduplicated_selection",
         "created_utc": now(),
         "budget_id": budget_id,
         "summary": summary,
@@ -603,6 +608,8 @@ def build_staged_example_views(
             "row_example_count": len(row_examples),
             "source_vocab_example_count": len(source_vocab_examples),
             "target_vocab_example_count": len(target_vocab_examples),
+            "eval_fraction": float(cfg.get("eval_fraction") or 0.08),
+            "max_eval_examples": int(cfg.get("max_eval_examples") or 0),
             "example_selection": selection_summary,
             "uses_eval_tests_or_solutions": False,
             "uses_public_data": False,

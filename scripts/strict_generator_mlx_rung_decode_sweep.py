@@ -60,6 +60,8 @@ def main() -> int:
     parser.add_argument("--body-action-head-blend", type=float, default=0.35)
     parser.add_argument("--use-body-operand-head", action="store_true")
     parser.add_argument("--body-operand-head-blend", type=float, default=0.35)
+    parser.add_argument("--use-body-state-event-head", action="store_true")
+    parser.add_argument("--body-state-event-head-blend", type=float, default=0.35)
     parser.add_argument("--prefer-learned-prefix-decision-adequacy", action="store_true")
     parser.add_argument("--prefer-source-condition-adequacy", action="store_true")
     parser.add_argument("--require-source-condition-adequacy", action="store_true")
@@ -67,6 +69,7 @@ def main() -> int:
     parser.add_argument("--enable-loop-progress-guard", action="store_true")
     parser.add_argument("--enable-expression-closure-guard", action="store_true")
     parser.add_argument("--enable-expression-value-guard", action="store_true")
+    parser.add_argument("--enable-semantic-operation-value-construction", action="store_true")
     parser.add_argument("--require-binding-prefix-groups", action="store_true")
     parser.add_argument("--resource-budget-ms", type=int, default=0, help="Optional total decode/eval runtime budget. Zero records observation only.")
     parser.add_argument("--max-child-decode-eval-ms", type=int, default=0, help="Optional per-checkpoint decode/eval runtime budget. Zero records observation only.")
@@ -103,6 +106,8 @@ def main() -> int:
         body_action_head_blend=max(0.0, min(1.0, float(args.body_action_head_blend or 0.0))),
         use_body_operand_head=bool(args.use_body_operand_head),
         body_operand_head_blend=max(0.0, min(1.0, float(args.body_operand_head_blend or 0.0))),
+        use_body_state_event_head=bool(args.use_body_state_event_head),
+        body_state_event_head_blend=max(0.0, min(1.0, float(args.body_state_event_head_blend or 0.0))),
         prefer_learned_prefix_decision_adequacy=bool(args.prefer_learned_prefix_decision_adequacy),
         prefer_source_condition_adequacy=bool(args.prefer_source_condition_adequacy),
         require_source_condition_adequacy=bool(args.require_source_condition_adequacy),
@@ -110,6 +115,7 @@ def main() -> int:
         enable_loop_progress_guard=bool(args.enable_loop_progress_guard),
         enable_expression_closure_guard=bool(args.enable_expression_closure_guard),
         enable_expression_value_guard=bool(args.enable_expression_value_guard),
+        enable_semantic_operation_value_construction=bool(args.enable_semantic_operation_value_construction),
         require_binding_prefix_groups=bool(args.require_binding_prefix_groups),
         resource_budget_ms=max(0, int(args.resource_budget_ms or 0)),
         max_child_decode_eval_ms=max(0, int(args.max_child_decode_eval_ms or 0)),
@@ -148,6 +154,8 @@ def run_sweep(
     body_action_head_blend: float,
     use_body_operand_head: bool,
     body_operand_head_blend: float,
+    use_body_state_event_head: bool,
+    body_state_event_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -155,6 +163,7 @@ def run_sweep(
     enable_loop_progress_guard: bool,
     enable_expression_closure_guard: bool,
     enable_expression_value_guard: bool,
+    enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
     resource_budget_ms: int,
     max_child_decode_eval_ms: int,
@@ -197,6 +206,8 @@ def run_sweep(
                     body_action_head_blend=body_action_head_blend,
                     use_body_operand_head=use_body_operand_head,
                     body_operand_head_blend=body_operand_head_blend,
+                    use_body_state_event_head=use_body_state_event_head,
+                    body_state_event_head_blend=body_state_event_head_blend,
                     prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
                     prefer_source_condition_adequacy=prefer_source_condition_adequacy,
                     require_source_condition_adequacy=require_source_condition_adequacy,
@@ -204,6 +215,7 @@ def run_sweep(
                     enable_loop_progress_guard=enable_loop_progress_guard,
                     enable_expression_closure_guard=enable_expression_closure_guard,
                     enable_expression_value_guard=enable_expression_value_guard,
+                    enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
                     require_binding_prefix_groups=require_binding_prefix_groups,
                 ),
                 "public_training_rows": 0,
@@ -258,6 +270,8 @@ def run_sweep(
             body_action_head_blend=body_action_head_blend,
             use_body_operand_head=use_body_operand_head,
             body_operand_head_blend=body_operand_head_blend,
+            use_body_state_event_head=use_body_state_event_head,
+            body_state_event_head_blend=body_state_event_head_blend,
             prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
             prefer_source_condition_adequacy=prefer_source_condition_adequacy,
             require_source_condition_adequacy=require_source_condition_adequacy,
@@ -265,6 +279,7 @@ def run_sweep(
             enable_loop_progress_guard=enable_loop_progress_guard,
             enable_expression_closure_guard=enable_expression_closure_guard,
             enable_expression_value_guard=enable_expression_value_guard,
+            enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
             require_binding_prefix_groups=require_binding_prefix_groups,
             execute=True,
             preselected_splits=preselected_splits,
@@ -364,6 +379,8 @@ def run_sweep(
                 body_action_head_blend=body_action_head_blend,
                 use_body_operand_head=use_body_operand_head,
                 body_operand_head_blend=body_operand_head_blend,
+                use_body_state_event_head=use_body_state_event_head,
+                body_state_event_head_blend=body_state_event_head_blend,
                 prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
                 prefer_source_condition_adequacy=prefer_source_condition_adequacy,
                 require_source_condition_adequacy=require_source_condition_adequacy,
@@ -371,6 +388,7 @@ def run_sweep(
                 enable_loop_progress_guard=enable_loop_progress_guard,
                 enable_expression_closure_guard=enable_expression_closure_guard,
                 enable_expression_value_guard=enable_expression_value_guard,
+                enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
                 require_binding_prefix_groups=require_binding_prefix_groups,
             ),
             "best_checkpoint_by_private_passes": rows_sorted[0] if rows_sorted else None,
@@ -406,6 +424,8 @@ def rung_decode_options_receipt(
     body_action_head_blend: float,
     use_body_operand_head: bool,
     body_operand_head_blend: float,
+    use_body_state_event_head: bool,
+    body_state_event_head_blend: float,
     prefer_learned_prefix_decision_adequacy: bool,
     prefer_source_condition_adequacy: bool,
     require_source_condition_adequacy: bool,
@@ -413,10 +433,11 @@ def rung_decode_options_receipt(
     enable_loop_progress_guard: bool,
     enable_expression_closure_guard: bool,
     enable_expression_value_guard: bool,
+    enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
 ) -> dict[str, Any]:
     return {
-        "policy": "strict_generator_mlx_rung_decode_options_v2",
+        "policy": "strict_generator_mlx_rung_decode_options_v3",
         "require_parameter_use": bool(require_parameter_use),
         "require_nontrivial_return": bool(require_nontrivial_return),
         "require_top_level_return": bool(require_top_level_return),
@@ -430,6 +451,8 @@ def rung_decode_options_receipt(
         "body_action_head_blend": max(0.0, min(1.0, float(body_action_head_blend or 0.0))),
         "use_body_operand_head": bool(use_body_operand_head),
         "body_operand_head_blend": max(0.0, min(1.0, float(body_operand_head_blend or 0.0))),
+        "use_body_state_event_head": bool(use_body_state_event_head),
+        "body_state_event_head_blend": max(0.0, min(1.0, float(body_state_event_head_blend or 0.0))),
         "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
         "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
         "require_source_condition_adequacy": bool(require_source_condition_adequacy),
@@ -437,6 +460,7 @@ def rung_decode_options_receipt(
         "enable_loop_progress_guard": bool(enable_loop_progress_guard),
         "enable_expression_closure_guard": bool(enable_expression_closure_guard),
         "enable_expression_value_guard": bool(enable_expression_value_guard),
+        "enable_semantic_operation_value_construction": bool(enable_semantic_operation_value_construction),
         "require_binding_prefix_groups": bool(require_binding_prefix_groups),
         "score_semantics": (
             "Rung sweep decode option receipt. These options are task-blind decoder/search settings "

@@ -98,10 +98,13 @@ class MlxStrictGenerator:
         num_layers: int,
         dim_feedforward: int,
         semantic_slot_role_count: int,
+        semantic_slot_head: bool = True,
         body_action_role_count: int,
         body_operand_role_count: int,
         body_state_event_role_count: int,
         body_executable_span_role_count: int,
+        auxiliary_head_policy: str = "legacy_materialized_v1",
+        output_projection_policy: str = "independent_output_v1",
         coupled_state_body_constructor: bool = False,
         coupled_state_body_constructor_scale: float = 0.35,
         body_executable_span_head: bool = False,
@@ -113,6 +116,16 @@ class MlxStrictGenerator:
         nn: Any,
     ) -> None:
         specialist_cfg = normalize_specialist_core_config(specialist_core)
+        if auxiliary_head_policy not in {
+            "legacy_materialized_v1",
+            "shared_factorized_on_demand_v1",
+        }:
+            raise ValueError(f"unsupported auxiliary_head_policy={auxiliary_head_policy!r}")
+        if output_projection_policy not in {
+            "independent_output_v1",
+            "tied_target_embedding_v1",
+        }:
+            raise ValueError(f"unsupported output_projection_policy={output_projection_policy!r}")
         token_expert_ids = tuple(
             tuple(int(expert_id) for expert_id in row[: int(specialist_cfg["top_k"])])
             for row in (specialist_token_expert_ids or [])
@@ -228,10 +241,24 @@ class MlxStrictGenerator:
                 self.decoder = nn.TransformerDecoder(
                     num_layers, d_model, nhead, dim_feedforward, 0.0, nn.gelu, True
                 )
-                self.output = nn.Linear(d_model, target_vocab_size)
-                self.plan_router = nn.Linear(d_model, target_vocab_size)
-                self.slot_router = nn.Linear(d_model, target_vocab_size * semantic_slot_role_count)
-                self.body_transition_router = nn.Linear(d_model, target_vocab_size)
+                self.output_projection_policy = output_projection_policy
+                if output_projection_policy == "independent_output_v1":
+                    self.output = nn.Linear(d_model, target_vocab_size)
+                else:
+                    self.output_bias = mx.zeros((target_vocab_size,), dtype=mx.float32)
+                self.auxiliary_head_policy = auxiliary_head_policy
+                if auxiliary_head_policy == "legacy_materialized_v1":
+                    self.plan_router = nn.Linear(d_model, target_vocab_size)
+                    self.slot_router = nn.Linear(d_model, target_vocab_size * semantic_slot_role_count)
+                    self.body_transition_router = nn.Linear(d_model, target_vocab_size)
+                else:
+                    # Share the trained token projection for vocab-sized auxiliary
+                    # logits and learn only compact role-specific query transforms.
+                    self.semantic_slot_head_enabled = bool(semantic_slot_head)
+                    if self.semantic_slot_head_enabled:
+                        self.slot_role_router = nn.Linear(
+                            d_model, d_model * semantic_slot_role_count, bias=False
+                        )
                 self.body_action_router = nn.Linear(d_model, body_action_role_count)
                 self.body_operand_router = nn.Linear(d_model, body_operand_role_count)
                 self.body_state_event_router = nn.Linear(d_model, body_state_event_role_count)
@@ -265,12 +292,39 @@ class MlxStrictGenerator:
 
             def semantic_plan_logits(self, src: Any) -> Any:
                 _memory, pooled = self.encode_source(src)
-                return self.plan_router(pooled)
+                if self.auxiliary_head_policy == "legacy_materialized_v1":
+                    return self.plan_router(pooled)
+                return self.project_output(pooled)
 
             def semantic_slot_logits(self, src: Any) -> Any:
                 _memory, pooled = self.encode_source(src)
-                flat = self.slot_router(pooled)
-                return flat.reshape((flat.shape[0], semantic_slot_role_count, target_vocab_size))
+                if self.auxiliary_head_policy == "legacy_materialized_v1":
+                    flat = self.slot_router(pooled)
+                    return flat.reshape((flat.shape[0], semantic_slot_role_count, target_vocab_size))
+                if not self.semantic_slot_head_enabled:
+                    raise RuntimeError("semantic slot head was not materialized for this checkpoint")
+                role_hidden = self.slot_role_router(pooled).reshape(
+                    (pooled.shape[0], semantic_slot_role_count, d_model)
+                )
+                output_weight = (
+                    self.output.weight
+                    if self.output_projection_policy == "independent_output_v1"
+                    else self.target_embedding.weight
+                )
+                logits = role_hidden @ output_weight.T
+                output_bias = (
+                    self.output.bias
+                    if self.output_projection_policy == "independent_output_v1"
+                    else self.output_bias
+                )
+                if output_bias is not None:
+                    logits = logits + output_bias
+                return logits
+
+            def project_output(self, hidden: Any) -> Any:
+                if self.output_projection_policy == "independent_output_v1":
+                    return self.output(hidden)
+                return hidden @ self.target_embedding.weight.T + self.output_bias
 
             def decode_hidden(self, src: Any, tgt_in: Any) -> Any:
                 src_mask = additive_padding_mask(src, mx)
@@ -334,7 +388,7 @@ class MlxStrictGenerator:
                     router_loss = router_loss + (
                         float(specialist_cfg["router_supervision_loss_weight"]) * supervision_loss
                     )
-                return self.output(hidden), router_loss
+                return self.project_output(hidden), router_loss
 
             def specialist_route(self, src: Any, tgt_in: Any) -> dict[str, Any]:
                 if specialist_cfg["mode"] != "sparse_moe":
@@ -353,7 +407,10 @@ class MlxStrictGenerator:
                 }
 
             def body_transition_logits(self, src: Any, tgt_in: Any) -> Any:
-                return self.body_transition_router(self.body_constructor_hidden(src, tgt_in))
+                hidden = self.body_constructor_hidden(src, tgt_in)
+                if self.auxiliary_head_policy == "legacy_materialized_v1":
+                    return self.body_transition_router(hidden)
+                return self.project_output(hidden)
 
             def body_action_logits(self, src: Any, tgt_in: Any) -> Any:
                 return self.body_action_router(self.body_constructor_hidden(src, tgt_in))

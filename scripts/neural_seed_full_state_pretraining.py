@@ -10,6 +10,7 @@ or solutions, or call a teacher.
 from __future__ import annotations
 
 import ast
+import heapq
 import json
 import sys
 from collections import Counter
@@ -326,15 +327,20 @@ def collect_full_state_python_examples(
     manifest_path = resolve(str(cfg.get("corpus_manifest") or "data/training_sources/narrow_corpus_manifest.json"))
     manifest = read_json(manifest_path)
     sources = manifest.get("sources") if isinstance(manifest.get("sources"), list) else []
-    examples: list[dict[str, Any]] = []
+    # Keep a deterministic bottom-k sample over the entire admitted corpus.
+    # Stopping once max_examples is reached biases the corpus toward whichever
+    # packages happen to sort first in the manifest.
+    sampled: list[tuple[int, int, dict[str, Any]]] = []
+    seen_source_body: set[str] = set()
     skip_reasons: Counter[str] = Counter()
     stale_hash_count = 0
     admitted_python_files = 0
     public_payload_admitted = 0
+    eligible_example_count = 0
+    exact_source_body_duplicate_count = 0
+    exact_body_hashes: set[str] = set()
     quality_cfg = dict_or_empty(cfg.get("quality_filter"))
     for source in sources:
-        if len(examples) >= max_examples:
-            break
         row = dict_or_empty(source)
         if not bool(row.get("admitted")):
             skip_reasons[str(row.get("reason") or "not_admitted")] += 1
@@ -377,8 +383,6 @@ def collect_full_state_python_examples(
             max_function_body_chars=max_function_body_chars,
             source_text_style=str(cfg.get("source_text_style") or "prompt_signature_metadata_v2"),
         ):
-            if len(examples) >= max_examples:
-                break
             quality_reject_reason = corpus_pretraining_quality_reject_reason(example, quality_cfg)
             if quality_reject_reason:
                 skip_reasons[f"quality_filter:{quality_reject_reason}"] += 1
@@ -387,12 +391,52 @@ def collect_full_state_python_examples(
             if target_token_count < min_target_tokens:
                 skip_reasons["too_few_target_tokens"] += 1
                 continue
-            examples.append(example)
-    examples = deterministic_sample(examples, max_examples, seed)
+            source_body_hash = stable_hash(
+                json.dumps(
+                    [str(example.get("source_text") or ""), str(example.get("body") or "")],
+                    separators=(",", ":"),
+                    ensure_ascii=True,
+                )
+            )
+            if source_body_hash in seen_source_body:
+                exact_source_body_duplicate_count += 1
+                skip_reasons["exact_source_body_duplicate"] += 1
+                continue
+            seen_source_body.add(source_body_hash)
+            exact_body_hashes.add(stable_hash(str(example.get("body") or "")))
+            eligible_example_count += 1
+            rank = int(
+                stable_hash(
+                    f"{seed}:{source_body_hash}:{example.get('path')}:{example.get('function')}"
+                ),
+                16,
+            )
+            heap_row = (-rank, eligible_example_count, example)
+            if len(sampled) < max_examples:
+                heapq.heappush(sampled, heap_row)
+            elif rank < -sampled[0][0]:
+                heapq.heapreplace(sampled, heap_row)
+    examples = [row for _rank, _ordinal, row in sorted(sampled, key=lambda item: (-item[0], item[1]))]
+    source_token_counter: Counter[str] = Counter()
+    target_token_counter: Counter[str] = Counter()
+    selected_body_hashes: set[str] = set()
+    for example in examples:
+        source_token_counter.update(source_summary_tokens(str(example.get("source_text") or "")))
+        target_token_counter.update(target_tokens(str(example.get("body") or ""), target_mode="body_tokens"))
+        selected_body_hashes.add(stable_hash(str(example.get("body") or "")))
     return examples, {
         "manifest_source_count": len(sources),
         "admitted_python_files": admitted_python_files,
         "example_count": len(examples),
+        "eligible_example_count_before_sampling": eligible_example_count,
+        "selection_policy": "deterministic_full_stream_bottom_k_v1",
+        "exact_source_body_duplicate_count": exact_source_body_duplicate_count,
+        "eligible_unique_body_count": len(exact_body_hashes),
+        "selected_unique_body_count": len(selected_body_hashes),
+        "selected_single_pass_source_token_positions": sum(source_token_counter.values()),
+        "selected_single_pass_target_token_positions": sum(target_token_counter.values()),
+        "selected_source_vocabulary_size": len(source_token_counter),
+        "selected_target_vocabulary_size": len(target_token_counter),
         "stale_hash_count": stale_hash_count,
         "public_benchmark_payload_admitted_count": public_payload_admitted,
         "skip_reasons": dict(skip_reasons.most_common()),

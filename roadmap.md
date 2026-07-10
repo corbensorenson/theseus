@@ -28,12 +28,12 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | governance implemented; scale inadequate for the model | expand governed unique code/conversation tokens; current code run had 0.73M unique target tokens for 43.6M parameters |
+| Data engine + curriculum | Track 0 / Phase 7 | governed scalable intake implemented; still below mature scale | 35,297 deduplicated code functions provide 5.58M encoded one-pass positions; 13,918 human-contributed conversations add 4.29M redacted/decontaminated positions |
 | Sparse specialist core (100M) | Track 1 / Phases 10, 16 | implemented comparator; not adopted | dense wins matched 100K diagnostics and admissibility; revisit sparse only after a behavior win |
 | Verifier-guided search | Track 2 / Phases 6, 10 | not started | propose->verify->repair search; beat one-shot on held-out |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
-| Generator capability (held-out pass) | Phase 10 | RED - 0/8 on the current dense 5M+adaptation replay | scale unique governed data and target semantics; do not tune the same body-token checkpoint again |
+| Generator capability (held-out pass) | Phase 10 | RED - compact one-pass MLX rungs emit syntax-valid bodies but score 0/24 | replace shallow body-token continuation with a preregistered semantic/AST target; do not retune this checkpoint family |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
 | VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
 | Claim ledger + belief revision | Phase 14 | partial | one real belief revision on a live claim + independent audit |
@@ -508,11 +508,21 @@ deletion closure is graph evidence, not physical unlearning.
 ### Phase 10: Practical Neural Seed Survival Lane
 (Owns Tracks 1, 2's learned proposer/repair loop, 3, and 4's model path.)
 - Build the practical transformer/hybrid from-scratch generator first. The current
-  wall is underdata semantic transfer: the 43.6M dense-active model saw only 0.73M
-  unique target tokens from 16,000 licensed functions before repeated training and
-  still scored 0/8 after one governed adaptation. Scale unique governed code and
-  conversation pressure before another large model run; auxiliary-head or LM loss
-  movement without verifier behavior does not clear the wall.
+  wall is semantic transfer after correcting a severe data/capacity mismatch. The
+  old 43.6M dense-active model saw only 0.73M target positions from 16,000 licensed
+  functions before repeated training and remained 0/8 after adaptation. The
+  replacement path now selects across the full admitted corpus (35,297 functions),
+  removes exact source/body duplicates, exposes 5.58M encoded one-pass positions to
+  a 3.70M-active-parameter tied-output model, and reports optimizer repetition
+  separately. The governed conversation path adds 13,918 human-contributed,
+  redacted, decontaminated rows (4.29M one-pass positions). Neither data scale nor
+  LM loss clears the wall without direct verifier behavior. The completed one-pass
+  contrastive run improved heldout LM loss `8.410877 -> 2.273732` and the matched
+  versus mismatched source-loss gap `0.006521 -> 0.238046`. Frozen 1M/3M/5.5M
+  replay emitted `57` integrity-verified, syntax-valid candidates over `24` private
+  task-checkpoints but scored `0/24`; outputs collapsed onto shallow `return data`,
+  `len(data)`, and repeated type-check patterns. This falsifies more scalar tuning
+  or epochs on the same body-token target.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

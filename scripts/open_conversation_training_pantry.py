@@ -50,16 +50,42 @@ def main() -> int:
     parser.add_argument("--refresh", action="store_true")
     parser.add_argument("--max-rows-per-source", type=int, default=0)
     parser.add_argument("--max-chars-per-conversation", type=int, default=0)
+    parser.add_argument(
+        "--scalable",
+        action="store_true",
+        help="Use the resumable receipt-bound streaming intake instead of legacy bounded row samples.",
+    )
+    parser.add_argument("--target-one-pass-token-positions", type=int, default=0)
+    parser.add_argument("--max-total-rows", type=int, default=0)
+    parser.add_argument("--shard-rows", type=int, default=0)
+    parser.add_argument("--max-disk-bytes", type=int, default=0)
     parser.add_argument("--out", default=str(DEFAULT_OUT.relative_to(ROOT)))
     parser.add_argument("--markdown-out", default=str(DEFAULT_MARKDOWN_OUT.relative_to(ROOT)))
     args = parser.parse_args()
 
     config = read_json(resolve(args.config))
-    report = build_pantry(config, args)
+    if args.scalable:
+        from governed_conversation_stream import run_streaming_intake
+
+        root = Path(args.root or config.get("root") or "data/training_data/open_conversation_pantry")
+        if not root.is_absolute():
+            root = ROOT / root
+        report = run_streaming_intake(
+            config,
+            root=root,
+            execute=bool(args.allow_network_fetch),
+            target_token_positions=max(0, int(args.target_one_pass_token_positions or 0)),
+            max_total_rows=max(0, int(args.max_total_rows or 0)),
+            shard_rows=max(0, int(args.shard_rows or 0)),
+            max_disk_bytes=max(0, int(args.max_disk_bytes or 0)),
+        )
+        report["pantry_policy"] = "project_theseus_open_conversation_training_pantry_v2"
+    else:
+        report = build_pantry(config, args)
     write_json(resolve(args.out), report)
     write_text(resolve(args.markdown_out), render_markdown(report))
     print(json.dumps(report, indent=2))
-    return 0 if report["trigger_state"] in {"GREEN", "YELLOW"} else 1
+    return 0 if report["trigger_state"] in {"GREEN", "YELLOW", "PLANNED"} else 1
 
 
 def build_pantry(config: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
