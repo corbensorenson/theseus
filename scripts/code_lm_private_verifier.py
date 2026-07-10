@@ -31,6 +31,7 @@ DEFAULT_VCM_CONTEXT_GOVERNOR = ROOT / "reports" / "vcm_context_governor.json"
 from real_code_benchmark_support import runtime_tmp_dir as benchmark_runtime_tmp_dir  # noqa: E402
 import viea_spine_records  # noqa: E402
 import vcm_consumer_abi  # noqa: E402
+import semantic_ir  # noqa: E402
 
 PRIVATE_STATIC_VERIFICATION_CACHE: dict[str, dict[str, Any]] = {}
 PRIVATE_SANDBOX_VERIFICATION_CACHE: dict[str, dict[str, Any]] = {}
@@ -614,8 +615,12 @@ def private_verification_trace(
         "sandbox_cache_hit": bool(result.get("sandbox_cache_hit")),
         "test_harness_cache_hit": bool(result.get("test_harness_cache_hit")),
         "verification_cache_key": result.get("verification_cache_key"),
+        "failure_class": "none" if result.get("passed") else classify_failure(str(result.get("stderr") or "")),
+        "exception_type": private_exception_type(str(result.get("stderr") or "")),
     }
     if candidate:
+        independent_ir = semantic_ir.candidate_receipt(str(candidate.get("code") or ""))
+        claimed_ir = candidate.get("semantic_ir") if isinstance(candidate.get("semantic_ir"), dict) else {}
         trace.update(
             {
                 "candidate_sha256": candidate.get("candidate_sha256"),
@@ -632,9 +637,39 @@ def private_verification_trace(
                 "eval_tests_visible_to_generator": bool(candidate.get("eval_tests_visible_to_generator")),
                 "eval_solution_visible_to_generator": bool(candidate.get("eval_solution_visible_to_generator")),
                 "external_inference_calls": int(candidate.get("external_inference_calls") or 0),
+                "semantic_ir_state": independent_ir.get("state"),
+                "semantic_ir_program_sha256": independent_ir.get("program_sha256"),
+                "semantic_ir_roundtrip_ast_equal": bool(independent_ir.get("roundtrip_ast_equal")),
+                "semantic_ir_open_obligation_count": int(independent_ir.get("open_obligation_count") or 0),
+                "semantic_ir_receipt_match": bool(
+                    claimed_ir
+                    and claimed_ir.get("program_sha256")
+                    and claimed_ir.get("program_sha256") == independent_ir.get("program_sha256")
+                ),
+                "semantic_ir_independently_recomputed": True,
             }
         )
     return trace
+
+
+def private_exception_type(stderr: str) -> str:
+    text = str(stderr or "")
+    for name in (
+        "AssertionError",
+        "AttributeError",
+        "IndexError",
+        "KeyError",
+        "NameError",
+        "OverflowError",
+        "RecursionError",
+        "RuntimeError",
+        "TypeError",
+        "ValueError",
+        "ZeroDivisionError",
+    ):
+        if name in text:
+            return name
+    return ""
 
 
 def vcm_context_governor_receipt(path: Path = DEFAULT_VCM_CONTEXT_GOVERNOR) -> dict[str, Any]:

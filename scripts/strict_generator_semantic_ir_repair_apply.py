@@ -23,6 +23,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import semantic_ir
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "neural_seed_token_decoder_comparator.json"
@@ -71,9 +73,19 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
     bridge = read_json(bridge_path)
     source_candidates = read_jsonl(candidates_path)
     selected = candidate_rows_for_repair(source_candidates, limit=max(1, int(args.max_candidates or 1)))
+    source_selected: list[dict[str, Any]] = []
     repaired: list[dict[str, Any]] = []
     skipped: list[dict[str, Any]] = []
     for row in selected:
+        source_row = copy.deepcopy(row)
+        source_row["semantic_ir"] = semantic_ir.candidate_receipt(
+            str(source_row.get("code") or ""),
+            learned_prefix_tokens=list(
+                dict_or_empty(source_row.get("body_structure_decode")).get("learned_plan_prefix_tokens") or []
+            ),
+            residual_lineage=[f"candidate:{str(source_row.get('candidate_sha256') or semantic_ir.stable_hash(source_row.get('code') or ''))}"],
+        )
+        source_selected.append(source_row)
         repaired_row, reason = apply_local_repair(row)
         if repaired_row is None:
             skipped.append(skip_record(row, reason))
@@ -93,15 +105,52 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         gate("no_public_or_external_credit", no_cheat_clean(source_candidates + repaired), "hard", no_cheat_counts(source_candidates + repaired)),
         gate("repaired_candidates_are_noncredit", repaired_candidates_noncredit(repaired), "hard", len(repaired)),
     ]
+    source_verifier_report: dict[str, Any] = {}
     verifier_report: dict[str, Any] = {}
     if args.execute and not [row for row in hard_gates if row["severity"] == "hard" and not row["passed"]]:
-        private_rows = private_rows_for_candidates(config, repaired)
+        private_rows = private_rows_for_candidates(config, source_selected + repaired)
+        source_verifier_report = run_private_verifier(private_rows, source_selected)
         verifier_report = run_private_verifier(private_rows, repaired)
     elif not args.execute:
         verifier_report = {
             "execute": False,
             "score_semantics": "Dry run only; private verifier was not executed.",
         }
+        source_verifier_report = dict(verifier_report)
+    verifier_comparison = compare_verifier_reports(source_verifier_report, verifier_report)
+    semantic_ir_ready = bool(repaired) and all(
+        dict_or_empty(row.get("semantic_ir")).get("state") == "READY"
+        and dict_or_empty(row.get("semantic_ir")).get("roundtrip_ast_equal") is True
+        for row in repaired
+    )
+    localized_patch_count = sum(
+        1
+        for row in repaired
+        if list(dict_or_empty(row.get("semantic_ir_repair_apply")).get("changed_atom_ids") or [])
+    )
+    hard_gates.extend(
+        [
+            gate("typed_semantic_ir_roundtrip_ready", semantic_ir_ready, "hard", len(repaired)),
+            gate("localized_atom_scope_present", localized_patch_count == len(repaired) if repaired else False, "hard", localized_patch_count),
+        ]
+    )
+    if args.execute:
+        hard_gates.extend(
+            [
+                gate(
+                    "type_handling_failures_reduced",
+                    int(verifier_comparison.get("type_handling_failure_delta") or 0) < 0,
+                    "hard",
+                    verifier_comparison,
+                ),
+                gate(
+                    "intended_behavior_not_regressed",
+                    int(verifier_comparison.get("behavior_pass_delta") or 0) >= 0,
+                    "hard",
+                    verifier_comparison,
+                ),
+            ]
+        )
     behavior_passes = int(
         dict_or_empty(dict_or_empty(verifier_report.get("correctness_labels")).get("stage_counts")).get("intended_behavior_passed")
         or 0
@@ -111,7 +160,7 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         or 0
     )
     hard_failed = [row for row in hard_gates if row["severity"] == "hard" and not row["passed"]]
-    trigger_state = "RED" if hard_failed else ("GREEN" if args.execute and behavior_passes > 0 else "YELLOW")
+    trigger_state = "RED" if hard_failed else ("GREEN" if args.execute else "YELLOW")
     issue_counts = Counter(
         issue
         for row in repaired
@@ -139,6 +188,14 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
             "runtime_loaded_repaired_attempts": runtime_loaded,
             "behavior_passed_repaired_attempts": behavior_passes,
             "behavior_pass_rate": ratio(behavior_passes, len(repaired)),
+            "semantic_ir_ready_repaired_candidates": sum(
+                1 for row in repaired if dict_or_empty(row.get("semantic_ir")).get("state") == "READY"
+            ),
+            "localized_patch_candidate_count": localized_patch_count,
+            "source_type_handling_failures": verifier_comparison.get("source_type_handling_failures", 0),
+            "repaired_type_handling_failures": verifier_comparison.get("repaired_type_handling_failures", 0),
+            "type_handling_failure_delta": verifier_comparison.get("type_handling_failure_delta", 0),
+            "behavior_pass_delta": verifier_comparison.get("behavior_pass_delta", 0),
             "hard_gap_count": len(hard_failed),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
             **NO_CHEAT,
@@ -146,9 +203,11 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         "gates": hard_gates,
         "hard_gaps": hard_failed,
         "skipped": skipped[:32],
+        "private_source_verifier": source_verifier_report,
         "private_verifier": verifier_report,
+        "verifier_comparison": verifier_comparison,
         "rules": {
-            "input_boundary": "generated private candidates plus semantic-IR repair obligations only",
+            "input_boundary": "generated private candidates plus model-emitted prefix and semantic-IR repair obligations only",
             "verifier_boundary": "private tests are loaded only after repairs are produced and only for verification",
             "credit_boundary": "semantic-IR repaired rows are deterministic GVR evidence and never learned-generation evidence",
         },
@@ -158,6 +217,7 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
             "This report does not train a model.",
             "This report does not run public benchmarks or use public benchmark artifacts.",
             "Any repaired behavior pass is tool/GVR-style semantic repair evidence only.",
+            "A reduction in type-handling faults is not a learned semantic-quality claim.",
         ],
     }
     return report, repaired
@@ -193,7 +253,24 @@ def apply_local_repair(row: dict[str, Any]) -> tuple[dict[str, Any] | None, str]
     if parsed is None:
         return None, "source_code_not_single_function"
     function, lines = parsed
-    repair = aggregate_call_repair(function, lines, reducer="max" if "MAX" in plan else "min")
+    learned_prefix_tokens = list(
+        dict_or_empty(row.get("body_structure_decode")).get("learned_plan_prefix_tokens") or []
+    )
+    source_ir = semantic_ir.candidate_receipt(
+        str(row.get("code") or ""),
+        learned_prefix_tokens=learned_prefix_tokens,
+        residual_lineage=[f"candidate:{str(row.get('candidate_sha256') or semantic_ir.stable_hash(row.get('code') or ''))}"],
+        include_graph=True,
+    )
+    if source_ir.get("state") != "READY":
+        return None, "source_semantic_ir_not_ready"
+    repair = aggregate_call_repair(
+        function,
+        lines,
+        reducer="max" if "MAX" in plan else "min",
+        source_ir=source_ir,
+        comparison_key="str" if "SLOT:EXPR_CALL_STR" in learned_prefix_tokens else "",
+    )
     if repair is None:
         return None, "unsupported_body_shape_for_aggregate_call_repair"
     repaired = copy.deepcopy(row)
@@ -231,6 +308,11 @@ def apply_local_repair(row: dict[str, Any]) -> tuple[dict[str, Any] | None, str]
         "plan": plan,
         "reducer": repair["reducer"],
         "changed_lines": repair["changed_lines"],
+        "changed_atom_ids": repair["changed_atom_ids"],
+        "dependent_atom_ids": repair["dependent_atom_ids"],
+        "semantic_ir_token_sha256": repair["semantic_ir_token_sha256"],
+        "semantic_ir_program_sha256": repair["semantic_ir_program_sha256"],
+        "comparison_key": repair["comparison_key"],
         "candidate_generation_credit": 0,
         "learned_generation_claim_allowed": False,
         "uses_eval_tests_or_solutions": False,
@@ -242,6 +324,7 @@ def apply_local_repair(row: dict[str, Any]) -> tuple[dict[str, Any] | None, str]
             "not a template/fallback promotion artifact",
         ],
     }
+    repaired["semantic_ir"] = repair["semantic_ir_receipt"]
     for key in ("private_verifier_label", "private_task_residual_label"):
         repaired.pop(key, None)
     return repaired, "repaired"
@@ -258,7 +341,14 @@ def parse_single_function(code: str) -> tuple[ast.FunctionDef, list[str]] | None
     return funcs[0], code.splitlines()
 
 
-def aggregate_call_repair(function: ast.FunctionDef, lines: list[str], *, reducer: str) -> dict[str, Any] | None:
+def aggregate_call_repair(
+    function: ast.FunctionDef,
+    lines: list[str],
+    *,
+    reducer: str,
+    source_ir: dict[str, Any],
+    comparison_key: str,
+) -> dict[str, Any] | None:
     if len(function.body) < 3:
         return None
     assign = function.body[0]
@@ -282,24 +372,97 @@ def aggregate_call_repair(function: ast.FunctionDef, lines: list[str], *, reduce
     loop_target = loop.target.id
     if local_name not in loaded_names or loop_target not in loaded_names:
         return None
-    header = lines[function.lineno - 1].rstrip()
-    source_expr = ast.unparse(loop.iter)
-    code = "\n".join(
-        [
-            header,
-            f"    {local_name} = None",
-            f"    for {loop_target} in {source_expr}:",
-            f"        {local_name} = {loop_target} if {local_name} is None else {reducer}({local_name}, {loop_target})",
-            f"    return {local_name}",
-            "",
-        ]
+    repaired_function = copy.deepcopy(function)
+    repaired_assign = repaired_function.body[0]
+    repaired_loop = repaired_function.body[1]
+    if not isinstance(repaired_assign, ast.Assign) or not isinstance(repaired_loop, ast.For):
+        return None
+    repaired_assign.value = ast.Constant(value=None)
+    repaired_loop.body[0] = ast.Assign(
+        targets=[ast.Name(id=local_name, ctx=ast.Store())],
+        value=ast.IfExp(
+            test=ast.Compare(
+                left=ast.Name(id=local_name, ctx=ast.Load()),
+                ops=[ast.Is()],
+                comparators=[ast.Constant(value=None)],
+            ),
+            body=ast.Name(id=loop_target, ctx=ast.Load()),
+            orelse=ast.Call(
+                func=ast.Name(id=reducer, ctx=ast.Load()),
+                args=[ast.Name(id=local_name, ctx=ast.Load()), ast.Name(id=loop_target, ctx=ast.Load())],
+                keywords=(
+                    [ast.keyword(arg="key", value=ast.Name(id=comparison_key, ctx=ast.Load()))]
+                    if comparison_key
+                    else []
+                ),
+            ),
+        ),
     )
+    ast.fix_missing_locations(repaired_function)
+    tokens = semantic_ir.statements_to_tokens(repaired_function.body)
+    compiled_body, compile_receipt = semantic_ir.compile_body_tokens(tokens)
+    if compile_receipt.get("state") != "READY" or not compiled_body:
+        return None
+    header = lines[function.lineno - 1].rstrip()
+    code = header + "\n" + "\n".join(f"    {line}" if line else "" for line in compiled_body.splitlines()) + "\n"
+    repaired_ir = semantic_ir.candidate_receipt(code, include_graph=True)
+    if repaired_ir.get("state") != "READY":
+        return None
+    graph = dict_or_empty(source_ir.get("program_graph"))
+    changed_lines = {int(getattr(assign, "lineno", 0) or 0), int(getattr(update, "lineno", 0) or 0)}
+    changed_atom_ids = sorted(
+        str(atom.get("atom_id"))
+        for atom in list(graph.get("atoms") or [])
+        if isinstance(atom, dict)
+        and int(dict_or_empty(atom.get("source_span")).get("line") or 0) in changed_lines
+        and str(atom.get("intent") or "") in {"state_update", "value_expression", "literal_value"}
+    )
+    dependent_atom_ids = sorted(
+        str(edge.get("to_atom"))
+        for edge in list(graph.get("dependency_edges") or [])
+        if isinstance(edge, dict) and str(edge.get("from_atom") or "") in set(changed_atom_ids)
+    )
+    if not changed_atom_ids:
+        return None
     return {
         "code": code,
         "repair_id": f"semantic_ir_aggregate_{reducer}_update_v1",
         "repair_family": "aggregate_call_update",
         "reducer": reducer,
+        "comparison_key": comparison_key,
         "changed_lines": ["initializer", "loop_update"],
+        "changed_atom_ids": changed_atom_ids,
+        "dependent_atom_ids": dependent_atom_ids,
+        "semantic_ir_token_sha256": compile_receipt.get("token_sha256"),
+        "semantic_ir_program_sha256": repaired_ir.get("program_sha256"),
+        "semantic_ir_receipt": {key: value for key, value in repaired_ir.items() if key != "program_graph"},
+    }
+
+
+def compare_verifier_reports(source: dict[str, Any], repaired: dict[str, Any]) -> dict[str, Any]:
+    source_attempts = list(source.get("verification_attempt_labels") or [])
+    repaired_attempts = list(repaired.get("verification_attempt_labels") or [])
+    source_type = sum(1 for row in source_attempts if dict_or_empty(row).get("failure_class") == "type_handling")
+    repaired_type = sum(1 for row in repaired_attempts if dict_or_empty(row).get("failure_class") == "type_handling")
+    source_behavior = sum(1 for row in source_attempts if dict_or_empty(row).get("intended_behavior_passed") is True)
+    repaired_behavior = sum(1 for row in repaired_attempts if dict_or_empty(row).get("intended_behavior_passed") is True)
+    return {
+        "policy": "project_theseus_semantic_ir_source_repair_ablation_v1",
+        "source_attempt_count": len(source_attempts),
+        "repaired_attempt_count": len(repaired_attempts),
+        "source_type_handling_failures": source_type,
+        "repaired_type_handling_failures": repaired_type,
+        "type_handling_failure_delta": repaired_type - source_type,
+        "source_behavior_passes": source_behavior,
+        "repaired_behavior_passes": repaired_behavior,
+        "behavior_pass_delta": repaired_behavior - source_behavior,
+        "uses_eval_tests_or_solutions_for_generation": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+        "non_claims": [
+            "deterministic semantic-IR repair ablation only",
+            "not learned generation or model promotion evidence",
+        ],
     }
 
 

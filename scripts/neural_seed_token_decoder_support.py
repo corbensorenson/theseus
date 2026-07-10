@@ -33,6 +33,7 @@ from neural_seed_code_proposer_comparator import (  # noqa: E402
     render_private_function,
     stable_hash,
 )
+import semantic_ir  # noqa: E402
 from neural_seed_token_decoder_rendering import (  # noqa: E402
     PLAN_PREFIX_BODY_TARGET_MODE,
     PLAN_SEMANTIC_SLOTS_BODY_TARGET_MODE,
@@ -2784,6 +2785,8 @@ def encode_target_rows(
 
 
 def target_tokens(body: str, *, target_mode: str) -> list[str]:
+    if semantic_ir.semantic_ir_target_mode(target_mode):
+        return semantic_ir.body_to_tokens(body)
     if learned_plan_expression_transition_body_target_mode(target_mode):
         return [
             learned_plan_token_for_body(body),

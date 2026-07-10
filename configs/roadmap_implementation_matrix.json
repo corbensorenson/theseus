@@ -10,12 +10,11 @@
     "source_attachment": "/Users/corbensorenson/.codex/attachments/f08752f6-9be1-440d-9c6c-65169a852670/pasted-text.txt",
     "coverage_result": "The packet confirms existing planned_codex_test_backlog coverage for policy optimization, fast generation, GVR, semantic IR, verification bandwidth, VCM transaction certificates, Circle/Coil cyclic baselines, belief revision, and procedural memory.",
     "important_correction": "DPO over accepted/rejected verifier pairs is no longer simply missing: a governed shadow update already moved private loss/preference-gap metrics and then failed strict private replay behaviorally. The durable semantic-IR obligation MLX private rung now trains from aggregate private failure obligations and improves heldout LM loss 2.019539 -> 1.467591 with clean public/external/fallback counters, but paired strict decode still scores 0 behavior passes on broad_private_heldout and private_train_replay. The newest graph/operation source-condition adequacy pass tightens admission rather than claiming behavior: prompt-visible graph/type tags now require task-blind graph-walk AST evidence, clip/window operation tags no longer accept shallow summary bodies, and the same train replay moves from emitted-but-wrong rows to zero admitted rows under --require-source-condition-adequacy with graph_walk_evidence and operation_evidence residuals. A dedicated state-event auxiliary head now improves its own private heldout event loss/accuracy, but direct event-head decode bias drops manifest candidate emission from 2 rows to 0 on the same private replay checkpoint. Future DPO/IPO/ORPO/KTO/SimPO, GRPO/RLVR, MTP, diffusion, or scale work must depend on direct prompt/signature body-token generation producing behavior-positive, non-fallback, non-template learned candidates beyond narrow simple-return replay. The follow-up soft compatibility coupling test is also no longer missing: reports/strict_generator_state_event_consistency_smoke_summary_20260706.json implements opt-in body-action/body-operand compatibility losses against private state-event targets, but the bounded canary is RED. LM/event metrics improve while action/operand metrics regress and compatible-role mass worsens, so simple soft coupling must not become a default profile setting. The first architecture-level predicted-state-event body constructor is also now tested: reports/strict_generator_coupled_state_body_constructor_smoke_summary_20260706.json wires an opt-in shared body hidden state conditioned on the model's own event distribution. Scale 0.25 and 0.05 ablations are both RED; LM/transition/event metrics improve, but action/operand losses regress and tensor-update coverage misses the hard gate. A one-step residual event-probability blend is therefore not enough. The executable-span follow-up in reports/strict_generator_executable_span_constructor_smoke_summary_20260706.json adds a dedicated span head and opt-in span-to-hidden constructor; both canaries improve LM/span/event metrics, but the constructor run still regresses body-action metrics, the head-only run regresses action and operand losses, both miss tensor-update coverage, and both checkpoints are rejected.",
-    "immediate_capability_wall": "phase_10_action_aware_executable_span_or_localized_semantic_ir_constructor",
+    "immediate_capability_wall": "phase_10_direct_full_body_semantic_quality_zero_behavior",
     "latest_validation": "2026-07-06 durable semantic-IR obligation private rung: GREEN adaptation report reports/strict_generator_mlx_private_adaptation_semantic_ir_obligation_private_rung_20260706.json; heldout LM 2.019539 -> 1.467591 over 256 private train rows and 64 heldout rows. Paired strict replay remains behavior-negative. reports/strict_generator_mlx_operation_graph_adequacy_summary_20260706.json tightens graph/type source-condition obligations: before 4 emitted wrong candidates, after 0 admitted candidates, missing graph_walk_evidence=6 and operation_evidence=6. reports/strict_generator_graph_role_signal_smoke_summary_20260706.json proves graph traversal roles are consumable by the trainable body action/operand path but rejects the first checkpoint. reports/strict_generator_graph_role_balance_canary_summary_20260706.json then shows a lower auxiliary mix improves heldout LM 1.494650 -> 1.441715 and body-operand loss/accuracy 3.016909 -> 3.015661 / 0.047384 -> 0.054294, but body-transition loss still worsens 8.056851 -> 8.057410 and body-action loss/accuracy worsens 3.064914 -> 3.078369 / 0.087858 -> 0.080948. New opt-in inverse-sqrt body-action/body-operand class balancing records role factors but does not move heldout metrics in the one-epoch 64-row canary. reports/strict_generator_semantic_event_bridge_smoke_summary_20260706.json wires semantic body-construction token weights into transition/action/operand auxiliary weights and boosts 4013/4120 auxiliary positions; it preserves clean no-cheat counters and improves LM plus operand metrics, but transition/action still regress and tensor-update coverage fails the hard gate, so the checkpoint is rejected. Candidate integrity/no-public/no-external/no-fallback boundaries remain clean; this is residual/training-signal evidence, not capability promotion. reports/strict_generator_state_machine_event_smoke_summary_20260706.json then adds a sharper private state-machine event target policy over existing transition/action/operand heads: heldout LM improves 1.494650 -> 1.441715 and transition loss improves 8.067903 -> 8.060719, but action loss/accuracy regresses 2.948527 -> 2.968961 / 0.087858 -> 0.080948, operand loss regresses 3.036583 -> 3.036793, tensor-update coverage remains below gate, and no routeable checkpoint is kept. reports/strict_generator_state_event_head_smoke_summary_20260706.json adds a dedicated body_state_event_router: heldout event loss/accuracy improves 2.315528 -> 2.295373 and 0.047384 -> 0.055281, but the adaptation remains RED and the paired decode ablation shows direct state-event probability bias is harmful: event-bias-on emits 0 manifest candidates and is RED; event-bias-off emits 2 syntax-valid integrity-clean candidates with 0/4 passes and is YELLOW. This moves the wall from event weighting or direct event bias to a coupled action/operand/state architecture or localized semantic-IR body constructor. reports/strict_generator_state_event_consistency_smoke_summary_20260706.json then tests opt-in state-event action/operand compatibility coupling: heldout LM improves 1.494650 -> 1.441715 and event loss/accuracy improves 2.315528 -> 2.295373 / 0.047384 -> 0.055281, but action loss/accuracy regresses 2.948527 -> 2.968961 / 0.087858 -> 0.080948, operand loss regresses 3.036583 -> 3.036793, action compatible mass worsens 0.145821 -> 0.145479, operand compatible mass worsens 0.123916 -> 0.123011, and failed gates include parameter-update coverage plus both consistency gates. The compact report records candidate_generation_credit=0, no public data, no external inference, no fallback/template/router/tool credit, and default_route_enabled=false. This moves the wall from event weighting, direct event bias, or soft coupling to a shared executable state/action/operand body constructor or localized semantic-IR constructor. reports/strict_generator_coupled_state_body_constructor_smoke_summary_20260706.json adds predicted_state_event_conditioned_body_constructor_v1. Scale 0.25: LM 1.495607 -> 1.439150, transition 8.058211 -> 8.050190, event 2.315528 -> 2.201661 improve, while action loss 2.940240 -> 2.962905 and operand loss 3.031833 -> 3.032179 regress; tensor-update fraction is 0.880952. Scale 0.05: LM 1.494768 -> 1.441490, transition 8.065876 -> 8.058365, event 2.315528 -> 2.204687 improve, while action loss 2.946741 -> 2.968511 and operand loss 3.035579 -> 3.036034 regress; tensor-update fraction is again 0.880952. reports/strict_generator_executable_span_constructor_smoke_summary_20260706.json then adds private executable-span roles and tests head-only plus span-to-hidden constructor ablations. Constructor scale 0.15 improves LM 1.492942 -> 1.440619, transition 8.064187 -> 8.056409, event 2.315528 -> 2.295625, and span 2.533852 -> 2.527141, but action loss/accuracy regresses 2.951064 -> 2.970324 / 0.083909 -> 0.080948 and tensor-update fraction is 0.860465. Head-only improves LM 1.494650 -> 1.441715, transition 8.067903 -> 8.060719, event 2.315528 -> 2.295373, and span 2.533852 -> 2.530783, but action loss/accuracy regresses 2.948527 -> 2.968961 / 0.087858 -> 0.080948, operand loss regresses 3.036583 -> 3.036793, and tensor-update fraction is 0.833333. All reports keep public_training_rows=0, external_inference_calls=0, fallback/template/router/tool credit=0, and candidate_generation_credit=0. Rejected checkpoints were removed after compact hashes were retained. The wall is now action-aware executable span/state-object construction or localized semantic-IR construction, not event weighting, direct event bias, soft compatibility, residual event-probability blending, or a scalar executable-span auxiliary.",
     "ordered_next_sequence": [
       "repair_broad_prompt_signature_semantic_action_body_token_generation",
-      "build_action_aware_executable_span_state_object_or_localized_semantic_ir_constructor_for_update_finalizer_return",
-      "consume_existing_semantic_ir_atoms_in_localized_repair_or_trainable_ast_state_machine_body_construction",
+      "train_and_ablate_direct_full_body_transformer_hybrid_with_typed_semantic_ir_receipts_but_no_compiler_credit",
       "rerun_bounded_dpo_ipo_orpo_kto_simpo_only_after_nonfallback_candidate_quality_moves",
       "run_bounded_grpo_rloo_remax_rlvr_only_after_private_verifier_behavior_signal_exists",
       "test_mtp_gvr_lookahead_diffusion_and_scale_under_generation_mode_accounting",
@@ -25,10 +24,10 @@
   },
   "latest_ai_book_reconciliation": {
     "date": "2026-07-10",
-    "book_manifest_chapter_count": 46,
-    "new_chapter_id": "adversarial-evaluation-sandbagging-and-training-time-deception",
-    "source_state": "AI_book working tree contains the admitted adversarial-evaluation chapter and manifest/source updates; Theseus maps the current local manifest without claiming those book changes are published or that source-setting threat models establish local deception.",
-    "decision": "Route the new chapter into the existing candidate-integrity, practical-generator, benchmark-ratchet, claim-evidence, and authority phases. Do not create a sidecar deception-detection lane.",
+    "book_manifest_chapter_count": 50,
+    "new_chapter_id": "capability-thresholds-and-deployment-commitments",
+    "source_state": "The current local AI_book manifest contains 50 chapters. Theseus maps all 50 in exact book order without treating book prose, source-setting comparators, or a threshold record as capability, safeguard, readiness, safety, or deployment evidence.",
+    "decision": "Route capability-threshold commitments through existing SCF, evidence, calibration, claim, router, governance, and living-project phases. Do not create a universal score or parallel deployment lane.",
     "current_theseus_evidence": "Candidate integrity, policy-update leases, benchmark ratchets, artifact graphs, evidence transitions, and promotion gates already provide the owning surfaces, but they do not yet share a versioned evaluation-integrity record or replay cross-context discrepancy and monitor-interference controls.",
     "new_required_work": [
       "versioned evaluation-integrity record bound to elicitation, selection, reward, monitor, and evaluator provenance",
@@ -442,8 +441,8 @@
         13
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "queued_after_behavior_changing_semantic_ir_consumption",
-      "dependency": "requires semantic IR atoms to be consumed by a localized repair or trainable AST/state-machine body-construction path that improves private replay, so scaffold/infill repair has behavior-positive obligations instead of whole-body rerolling",
+      "status": "planned_after_direct_generator_candidates",
+      "dependency": "typed semantic IR and localized dependent-atom replay are implemented and reduce type-handling faults, but intended-behavior lift remains zero; sketch/infill work waits for direct learned full-body candidates with behavior-positive private verifier evidence",
       "acceptance_gate": "A sketch-first/infill candidate family is compared with AR one-shot decode on private tasks using the same verifier, candidate budget, and integrity audit, with localized repair residuals retained.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Sketch-first repair cannot claim learned generation if a deterministic renderer, hidden target field, public artifact, or fallback body supplies the answer."
@@ -458,7 +457,7 @@
         16
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "partial",
+      "status": "implemented",
       "dependency": "requires deployed resolver/compiler conformance beyond fixture-level VCM records",
       "acceptance_gate": "Every materialized context packet carries source refs, omissions, loss contract, permitted uses, authority ceiling, taint/deletion closure, copy-on-write branch lineage, typed mandatory-miss faults, and consumer policy.",
       "support_state_target": "synthetic-test-backed",
@@ -1904,7 +1903,7 @@
     {
       "phase": 13,
       "title": "Semantic IR And Substrate-Neutral Reasoning Atoms",
-      "status": "partial",
+      "status": "implemented",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-13",
       "ai_book_source_basis": [
@@ -1921,24 +1920,33 @@
       ],
       "execution_spine_hooks": [
         "semantic_ir_node",
+        "typed_python_ast_program",
+        "model_candidate_ir_receipt",
         "artifact_graph",
         "verifier_obligation",
-        "tool_binding"
+        "tool_binding",
+        "localized_dependent_atom_replay"
       ],
       "required_records": [
         "semantic_ir_atom",
         "obligation_node",
         "dependency_edge",
-        "evidence_binding"
+        "evidence_binding",
+        "typed_semantic_ir_candidate_receipt",
+        "semantic_ir_source_repair_ablation"
       ],
       "required_gates": [
         "python3 scripts/semantic_ir_obligation_gate.py",
+        "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
+        "python3 -m pytest -q tests/test_semantic_ir.py",
         "python3 scripts/roadmap_implementation_gate.py --gate"
       ],
       "required_docs": [
         "roadmap.md"
       ],
       "current_evidence": [
+        "scripts/semantic_ir.py",
+        "tests/test_semantic_ir.py",
         "reports/viea_spine_record_gate.json",
         "reports/viea_spine_materialized_view.json",
         "reports/theseus_plan_compiled_dags.json",
@@ -1956,17 +1964,25 @@
         "reports/strict_generator_semantic_ir_repair_apply_v9.json",
         "reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl"
       ],
-      "missing_items": [
-        "semantic IR / AST-plan compiler for strict-generator candidates with atom records for intent, signature, branch condition, loop update, finalizer, verifier obligation, and repair scope",
-        "strict-generator RED decode failures now lower into semantic atoms and localized repair patches; the prefix-conditioned body-transition head consumes body-prefix transition targets, source-plan compatibility consumes prompt-visible source tags, the body-action head consumes broad structural roles, and the body-operand head consumes value/binding roles. The first operand canary improves operand accuracy, and the canonical prefix-governed/operation-value route now emits integrity-verified nontrivial candidates, but private behavior remains zero-pass. The latest operation-value and initializer/operation-delay canaries confirm the missing behavior is not just syntax or row admission: builtin-shadowed loop and bare-builtin value pathologies are reduced, but emitted rows still produce shallow accumulator/type-handling bodies such as generic out = out + item updates when the visible plan expects call or operation-bearing updates. The first semantic-IR apply-and-verify consumer rewrites the aggregate-call/update obligation into two noncredit repaired candidates and runtime-loads both, but behavior remains zero-pass. The next implementation must make a trainable AST/state-machine constructor or localized semantic-IR body-construction path improve semantic/type-handling behavior under private verifier replay without crediting deterministic repairs as learned generation."
-      ],
-      "smallest_next_patch": "Consume semantic-IR atoms and graph/operation source-condition residuals in a behavior-changing body-construction path with semantically sharper transition/action events: failed atom or missing source obligation -> generated traversal/update/finalizer/value expression -> dependent obligation replay -> private verifier receipt. Deterministic repair rows remain noncredit evidence; the rejected graph_role_signal loss mix and the class-balanced one-epoch canary should not be reused unchanged.",
+      "missing_items": [],
+      "smallest_next_patch": "Proceed to the Phase 10 direct proposer floor using typed_semantic_ir_tokens_v1 as an available trainable target/diagnostic representation, while keeping compiler-rendered candidates zero-credit. The current localized replay reduces two type-handling failures to zero but still has zero intended-behavior passes; that semantic-quality wall belongs to learned full-body generation and must not be hidden by the assisted path.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
-        "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge_v9.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
-        "python3 scripts/semantic_ir_obligation_gate.py"
+        "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
+        "reports/strict_generator_semantic_ir_repair_apply_v9.json trigger_state=GREEN",
+        "reports/strict_generator_semantic_ir_repair_apply_v9.json summary.semantic_ir_ready_repaired_candidates=2",
+        "reports/strict_generator_semantic_ir_repair_apply_v9.json summary.localized_patch_candidate_count=2",
+        "reports/strict_generator_semantic_ir_repair_apply_v9.json summary.type_handling_failure_delta=-2",
+        "reports/strict_generator_semantic_ir_repair_apply_v9.json summary.behavior_pass_delta=0",
+        "python3 -m pytest -q tests/test_semantic_ir.py",
+        "tests/test_semantic_ir.py covers lossless nested AST roundtrip, malformed/unknown IR rejection, prompt/signature-only graph receipts, undefined-binding localization, noncredit target rendering, independent verifier recomputation, model-prefix repair, and unsupported-plan rejection",
+        "python3 scripts/semantic_ir_obligation_gate.py",
+        "reports/semantic_ir_obligation_gate.json trigger_state=GREEN",
+        "reports/semantic_ir_obligation_gate.json summary.typed_semantic_ir_ready_count=2/2",
+        "reports/semantic_ir_obligation_gate.json summary.typed_semantic_ir_receipt_mismatch_count=0",
+        "reports/semantic_ir_obligation_gate.json summary.typed_semantic_ir_credit_violation_count=0"
       ],
-      "completion_rule": "Plans, code generation attempts, tool calls, and verifier obligations share a typed semantic IR instead of incompatible one-off payloads."
+      "completion_rule": "Implemented: plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependency edges, obligations, repair scopes, and independently replayed receipts. The generic IR round-trips nested Python AST bodies with typed faults and no fallback. Assisted compiler/repair output remains zero-credit, and zero intended-behavior lift remains an explicit Phase 10 model-quality wall rather than a Phase 13 cohesion claim."
     },
     {
       "phase": 14,
@@ -5751,6 +5767,80 @@
     },
     {
       "chapter_ordinal": 41,
+      "chapter_id": "capability-thresholds-and-deployment-commitments",
+      "chapter_title": "Capability Thresholds and Deployment Commitments",
+      "part_id": "evidence-implementation-living-book",
+      "part_title": "Part IV - Evidence, Implementation, and the Living Book",
+      "book_file": "chapters/capability-thresholds-and-deployment-commitments.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned threshold-commitment record with capability domain and threat model, evaluation envelope and coverage date, threshold rule and uncertainty, baseline/elicitation/access references, required safeguards and verification criteria, deadline, exception authority, re-evaluation triggers, residual owner, and affected release path. A finite Lean route blocks a requested release when a crossed threshold lacks verified safeguards.",
+      "book_beyond_state_of_art": "A mature capability-commitment control plane maintains a versioned portfolio of domain-specific thresholds with reviewable evaluation envelopes, uncertainty and coverage records, precommitted safeguards, independent verification, residual-risk review, prospective exception governance, and automatic re-evaluation when models, scaffolds, elicitation, or threat models change. It coordinates release, security, monitoring, access, rollback, and disclosure obligations without reducing diverse dangerous-capability profiles to one autonomy scalar.",
+      "book_interfaces": [
+        "Benchmark Ratchets owns measurement integrity; this chapter owns the predeclared response for a named release path.",
+        "Adversarial Evaluation owns elicitation and observation integrity that constrains threshold interpretation.",
+        "Readiness Gates owns admission, quarantine, and residual custody after a commitment constrains a path.",
+        "Security Kernel and Runtime Adapters own technical safeguards and authority enforcement.",
+        "Evidence States owns support-state movement; a threshold changes a bounded route, not a broad claim.",
+        "Recursive Self-Improvement consumes threshold commitments while retaining independent promotion and rollback gates."
+      ],
+      "book_invariants": [
+        "A threshold is bound to a capability domain, threat model, evaluation envelope, policy version, coverage date, and affected path.",
+        "A score, time-horizon estimate, benchmark result, or non-crossing is not general capability, safety, readiness, or deployment clearance.",
+        "A crossed threshold cannot release its affected path until required safeguards record completion and verification.",
+        "A stale, unclear, under-elicited, incomparable, or out-of-scope assessment routes to re-evaluation, escalation, or residual escrow.",
+        "An exception records scope, rationale, authority, expiry/review trigger, compensating controls, and residual owner."
+      ],
+      "book_failure_modes": [
+        "Metric laundering turns a bounded measurement into a general capability conclusion.",
+        "Retroactive commitment drift changes safeguards after evaluation begins.",
+        "Threshold gaming narrows tasks, access, prompts, or elicitation to manufacture a non-crossing.",
+        "Safeguard theater records a control without completion, verification, or residual evidence.",
+        "Exception laundering bypasses commitments without authority, expiry, or compensating controls.",
+        "Cross-domain collapse treats unlike risk profiles as one aggregate score."
+      ],
+      "codex_test_count": 4,
+      "representative_codex_tests": [
+        "Crossed-threshold safeguard-completeness route",
+        "Stale or incomparable assessment residual fixture",
+        "Exception-expiry and compensating-control negative control",
+        "Matched threshold-commitment workload"
+      ],
+      "primary_track_id": "E_authority_security_rights_kernel",
+      "phase_refs": [
+        2,
+        4,
+        12,
+        14,
+        16,
+        18,
+        19
+      ],
+      "implementation_priority": "canonical_stack_or_hygiene",
+      "minimum_theseus_slice": "Route the chapter into registered phases [2, 4, 12, 14, 16, 18, 19]: add versioned threshold-commitment, safeguard-verification, exception, residual, and release-decision records to the existing SCF/evidence/readiness/authority path; do not create a universal score or a parallel deployment lane.",
+      "beyond_sota_theseus_endpoint": "A governed capability-commitment controller binds domain-scoped assessments to prospective safeguard, re-evaluation, exception, residual, and release obligations while preserving uncertainty and keeping measurement, readiness, and authority distinct.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "mapped_missing_capability_threshold_commitment_contract",
+      "required_gate_or_fixture": "Crossed-threshold safeguard-completeness route",
+      "required_records_or_receipts": [
+        "capability_assessment_record",
+        "threshold_commitment_record",
+        "safeguard_verification_record",
+        "exception_record",
+        "residual_record",
+        "release_decision_record",
+        "failure_boundary",
+        "authority_use_receipt"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "a threshold record is not a capability, safety, readiness, or deployment result",
+        "a non-crossing does not authorize release",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 42,
       "chapter_id": "adversarial-evaluation-sandbagging-and-training-time-deception",
       "chapter_title": "Adversarial Evaluation, Sandbagging, and Training-Time Deception",
       "part_id": "evidence-implementation-living-book",
@@ -5822,7 +5912,7 @@
       ]
     },
     {
-      "chapter_ordinal": 42,
+      "chapter_ordinal": 43,
       "chapter_id": "policy-optimization-and-learning-from-feedback",
       "chapter_title": "Policy Optimization and Learning from Feedback",
       "part_id": "evidence-implementation-living-book",
@@ -5902,7 +5992,7 @@
       ]
     },
     {
-      "chapter_ordinal": 43,
+      "chapter_ordinal": 44,
       "chapter_id": "data-engines-continual-learning-and-unlearning",
       "chapter_title": "Data Engines, Continual Learning, and Unlearning",
       "part_id": "evidence-implementation-living-book",
@@ -5971,7 +6061,7 @@
       ]
     },
     {
-      "chapter_ordinal": 44,
+      "chapter_ordinal": 45,
       "chapter_id": "artifact-steward-agents-and-living-project-governance",
       "chapter_title": "Artifact Steward Agents and Living Project Governance",
       "part_id": "evidence-implementation-living-book",
@@ -6040,7 +6130,7 @@
       ]
     },
     {
-      "chapter_ordinal": 45,
+      "chapter_ordinal": 46,
       "chapter_id": "integrated-reference-architecture",
       "chapter_title": "Integrated Reference Architecture",
       "part_id": "evidence-implementation-living-book",
@@ -6101,7 +6191,7 @@
       ]
     },
     {
-      "chapter_ordinal": 46,
+      "chapter_ordinal": 47,
       "chapter_id": "project-theseus-as-report-first-implementation-reference",
       "chapter_title": "Project Theseus as Report-First Implementation Reference",
       "part_id": "evidence-implementation-living-book",
@@ -6168,7 +6258,7 @@
       ]
     },
     {
-      "chapter_ordinal": 47,
+      "chapter_ordinal": 48,
       "chapter_id": "prototype-roadmap",
       "chapter_title": "Prototype Roadmap",
       "part_id": "evidence-implementation-living-book",
@@ -6228,7 +6318,7 @@
       ]
     },
     {
-      "chapter_ordinal": 48,
+      "chapter_ordinal": 49,
       "chapter_id": "living-book-methodology",
       "chapter_title": "Living Book Methodology",
       "part_id": "evidence-implementation-living-book",
@@ -6284,7 +6374,7 @@
       ]
     },
     {
-      "chapter_ordinal": 49,
+      "chapter_ordinal": 50,
       "chapter_id": "open-research-agenda-and-bibliography-plan",
       "chapter_title": "Open Research Agenda and Bibliography Plan",
       "part_id": "evidence-implementation-living-book",

@@ -408,6 +408,7 @@
           "source_paths": [
             "scripts/theseus_plan_compiler.py",
             "scripts/vcm_context_governor_gate.py",
+            "scripts/semantic_ir.py",
             "scripts/semantic_ir_obligation_gate.py"
           ],
           "acceptance": {
@@ -428,6 +429,11 @@
           "source_paths": [
             "scripts/neural_seed_survival_readiness_gate.py",
             "scripts/neural_seed_token_decoder_comparator.py",
+            "scripts/neural_seed_token_decoder_support.py",
+            "scripts/neural_seed_token_decoder_rendering.py",
+            "scripts/neural_seed_candidate_generation.py",
+            "scripts/code_lm_private_verifier.py",
+            "scripts/semantic_ir.py",
             "crates/symliquid-cli/src/code_token_generator.rs"
           ],
           "acceptance": {
@@ -3822,6 +3828,7 @@
         "scripts/theseus_plan_compiler.py",
         "scripts/viea_spine_records.py",
         "scripts/viea_spine_record_gate.py",
+        "scripts/semantic_ir.py",
         "scripts/semantic_ir_obligation_gate.py",
         "scripts/strict_generator_semantic_ir_repair_bridge.py",
         "scripts/strict_generator_semantic_ir_repair_apply.py",
@@ -3830,7 +3837,8 @@
         "scripts/neural_seed_full_state_pretraining.py",
         "scripts/neural_seed_token_model_backend.py",
         "scripts/neural_seed_candidate_generation.py",
-        "scripts/neural_seed_report_io.py"
+        "scripts/neural_seed_report_io.py",
+        "tests/test_semantic_ir.py"
       ],
       "evidence_outputs": [
         "reports/theseus_plan_compiler.json",
@@ -6681,6 +6689,7 @@
         "scripts/theseus_plan_compiler.py",
         "scripts/viea_spine_records.py",
         "scripts/viea_spine_record_gate.py",
+        "scripts/semantic_ir.py",
         "scripts/semantic_ir_obligation_gate.py",
         "scripts/strict_generator_semantic_ir_repair_bridge.py",
         "scripts/strict_generator_semantic_ir_repair_apply.py",
@@ -6705,6 +6714,7 @@
         "reports/arm_lifecycle_ledger.json",
         "scripts/train_octopus_router_head.py",
         "scripts/octopus_router_head_gate.py",
+        "tests/test_semantic_ir.py",
         "reports/octopus_router_trace_dataset.json",
         "reports/octopus_router_head_model.json",
         "reports/octopus_router_head_eval.json",

@@ -34,6 +34,18 @@ Plan nodes are typed atoms with:
 - schedule layer, critical-path status, slack, and estimated duration;
 - claim objects, evidence refs, and localized repair policy.
 
+## Typed Program IR
+
+`scripts/semantic_ir.py` is the code-facing form of the same semantic contract.
+It losslessly lowers a generated Python function body into generic typed AST
+nodes, dependencies, inputs/outputs, constraints, authority, verifier
+obligations, VCM refs, and localized repair scopes. Direct generator candidates
+carry compact receipts; the private verifier recomputes their program hash
+independently. `typed_semantic_ir_tokens_v1` is available as a trainable target,
+but any body reconstructed by the deterministic compiler remains assisted,
+zero-credit output rather than learned generation. Malformed, truncated, or
+unknown IR returns a typed fault and no fallback body.
+
 ## Benchmark Boundary
 
 PlanBench, TravelPlanner, APB, OSWorld, and WebArena-style public planning

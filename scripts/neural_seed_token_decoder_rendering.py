@@ -18,6 +18,7 @@ import textwrap
 from typing import Any
 
 from neural_seed_code_proposer_comparator import get_path, render_private_function
+import semantic_ir
 
 
 PLAN_PREFIX_BODY_TARGET_MODE = "plan_prefix_body_tokens_v1"
@@ -26,6 +27,7 @@ PLAN_SEMANTIC_STMT_SLOTS_BODY_TARGET_MODE = "plan_semantic_stmt_slots_body_token
 PLAN_SEMANTIC_STMT_EXPR_TRANSITION_BODY_TARGET_MODE = "plan_semantic_stmt_expression_transition_body_tokens_v1"
 PLAN_BODY_START_TOKEN = "SLOT:BODY_START"
 BODY_EXPRESSION_TRACE_PREFIX = "TRACE:EXPR_"
+TYPED_SEMANTIC_IR_TARGET_MODE = semantic_ir.TARGET_MODE
 
 
 def task_family(task: dict[str, Any]) -> str:
@@ -479,6 +481,12 @@ def decode_candidate_body_tokens(
     *,
     target_mode: str,
 ) -> tuple[str, dict[str, Any]]:
+    if semantic_ir.semantic_ir_target_mode(target_mode):
+        body, meta = semantic_ir.compile_body_tokens(tokens)
+        meta["target_mode"] = target_mode
+        meta["fallback_return_used"] = False
+        meta["task_family"] = task_family(task)
+        return body, meta
     if target_mode == "semantic_slots_v1":
         body, meta = render_semantic_slot_body(tokens, task)
         meta["target_mode"] = target_mode

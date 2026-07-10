@@ -157,6 +157,7 @@ from neural_seed_candidate_generation import (  # noqa: E402
     generate_candidates,
     merge_decoded_candidates,
     unconstrained_token_choices,
+    vcm_context_governor_receipt,
 )
 from neural_seed_report_io import (  # noqa: E402
     gate,
@@ -197,6 +198,7 @@ from neural_seed_visible_source import (  # noqa: E402
     visible_prompt_type_shape_tags,
     visible_subword_parts,
 )
+import semantic_ir  # noqa: E402
 from neural_seed_static_coherence import (  # noqa: E402
     allowed_signature_names_for_task,
     assignment_has_invalid_multi_target_scalar_unpack,
@@ -2394,6 +2396,8 @@ def token_candidate_rows_for_view(
     output_top_k: int = 0,
 ) -> list[dict[str, Any]]:
     rows = []
+    vcm_receipt = vcm_context_governor_receipt()
+    vcm_context_ref = str(vcm_receipt.get("content_hash") or vcm_receipt.get("receipt_id") or "")
     routing_summary = internal_semantic_routing_summary(config, view=view)
     static_ranker = static_coherence_ranker_enabled(config)
     for task, proposals in zip(eval_rows, decoded):
@@ -2433,6 +2437,19 @@ def token_candidate_rows_for_view(
                     "code": code,
                     "original_rank": original_rank,
                     "static_coherence": candidate_static_coherence(code),
+                    "semantic_ir_receipt": semantic_ir.candidate_receipt(
+                        code,
+                        prompt=str(task.get("prompt") or ""),
+                        callable_signature=visible_callable_signature(
+                            task,
+                            visible_callable_argument_names(task),
+                        ),
+                        learned_prefix_tokens=list(
+                            dict_or_empty(structure_decode).get("learned_plan_prefix_tokens") or []
+                        ),
+                        vcm_context_ref=vcm_context_ref,
+                        residual_lineage=[f"candidate:{stable_hash(code)}"],
+                    ),
                 }
             )
         prefix_guided_ranker = any(
@@ -2477,6 +2494,16 @@ def token_candidate_rows_for_view(
             row["internal_semantic_routing"] = routing_summary
             row["residual_mining"] = residual_tag_for_task(task, residual_context)
             row["static_coherence"] = item.get("static_coherence")
+            row["semantic_ir"] = item.get("semantic_ir_receipt")
+            if semantic_ir.semantic_ir_target_mode(target_mode):
+                row["candidate_generation_credit"] = 0
+                row["benchmark_promotion_eligible"] = False
+                row["token_level_code_generation_learned"] = False
+                row["provenance"]["candidate_family"] = "typed_semantic_ir_assisted_noncredit"
+                row["provenance"]["candidate_generation_mode_detail"] = (
+                    "learned_semantic_ir_tokens_with_deterministic_compiler_noncredit"
+                )
+                row["provenance"]["learned_generation_claim_allowed"] = False
             if proposal.get("plan_prefix_source"):
                 row["plan_prefix_source"] = str(proposal.get("plan_prefix_source"))
                 row["provenance"]["plan_prefix_source"] = str(proposal.get("plan_prefix_source"))

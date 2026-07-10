@@ -25,6 +25,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import report_evidence_store  # noqa: E402
+import semantic_ir  # noqa: E402
 
 
 DEFAULT_VIEW = ROOT / "reports" / "viea_spine_materialized_view.json"
@@ -33,6 +34,7 @@ DEFAULT_VERIFIER = ROOT / "reports" / "private_verifier_spine_smoke.json"
 DEFAULT_GENERATOR = ROOT / "reports" / "neural_seed_token_decoder_comparator.json"
 DEFAULT_STRICT_GENERATOR_REPAIR = ROOT / "reports" / "strict_generator_semantic_ir_repair_bridge.json"
 DEFAULT_STRICT_GENERATOR_REPAIR_APPLY = ROOT / "reports" / "strict_generator_semantic_ir_repair_apply_v9.json"
+DEFAULT_STRICT_GENERATOR_REPAIR_CANDIDATES = ROOT / "reports" / "strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl"
 DEFAULT_OUT = ROOT / "reports" / "semantic_ir_obligation_gate.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "semantic_ir_obligation_gate.md"
 NO_CHEAT = {
@@ -50,6 +52,7 @@ def main() -> int:
     parser.add_argument("--direct-generator", default=rel(DEFAULT_GENERATOR))
     parser.add_argument("--strict-generator-repair", default=rel(DEFAULT_STRICT_GENERATOR_REPAIR))
     parser.add_argument("--strict-generator-repair-apply", default=rel(DEFAULT_STRICT_GENERATOR_REPAIR_APPLY))
+    parser.add_argument("--strict-generator-repair-candidates", default=rel(DEFAULT_STRICT_GENERATOR_REPAIR_CANDIDATES))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     args = parser.parse_args()
@@ -73,12 +76,15 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     generator_path = resolve(args.direct_generator)
     strict_generator_repair_path = resolve(args.strict_generator_repair)
     strict_generator_repair_apply_path = resolve(args.strict_generator_repair_apply)
+    strict_generator_repair_candidates_path = resolve(args.strict_generator_repair_candidates)
     view = read_json(view_path)
     candidate = read_json(candidate_path)
     verifier = read_json(verifier_path)
     generator = read_json(generator_path)
     strict_generator_repair = read_json(strict_generator_repair_path)
     strict_generator_repair_apply = read_json(strict_generator_repair_apply_path)
+    strict_generator_repair_candidates = read_jsonl(strict_generator_repair_candidates_path)
+    typed_ir_audit = audit_typed_semantic_ir_candidates(strict_generator_repair_candidates)
 
     semantic_records = list_dicts(view.get("semantic_ir_records"))
     semantic_atoms = [row for row in semantic_records if row.get("canonical_record_type") == "semantic_atom"]
@@ -143,6 +149,22 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         gate("candidate_integrity_consumer_ready", consumers[0]["ready"], consumers[0]),
         gate("private_verifier_consumer_ready", consumers[1]["ready"], consumers[1]),
         gate("direct_generator_consumer_present", consumers[2]["ready"], consumers[2]),
+        gate(
+            "typed_semantic_ir_candidate_receipts_ready",
+            int(typed_ir_audit.get("candidate_count") or 0) > 0
+            and int(typed_ir_audit.get("ready_count") or 0) == int(typed_ir_audit.get("candidate_count") or 0),
+            typed_ir_audit,
+        ),
+        gate(
+            "typed_semantic_ir_independent_replay_matches",
+            int(typed_ir_audit.get("receipt_mismatch_count") or 0) == 0,
+            typed_ir_audit,
+        ),
+        gate(
+            "typed_semantic_ir_compiler_noncredit",
+            int(typed_ir_audit.get("credit_violation_count") or 0) == 0,
+            typed_ir_audit,
+        ),
     ]
     hard_failed = [row for row in hard_gates if not row["passed"]]
     records = build_records(
@@ -176,6 +198,10 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
                 row["consumer_surface"] == "strict_generator_semantic_ir_repair_apply" and row["ready"]
                 for row in consumers
             ),
+            "typed_semantic_ir_candidate_count": typed_ir_audit.get("candidate_count", 0),
+            "typed_semantic_ir_ready_count": typed_ir_audit.get("ready_count", 0),
+            "typed_semantic_ir_receipt_mismatch_count": typed_ir_audit.get("receipt_mismatch_count", 0),
+            "typed_semantic_ir_credit_violation_count": typed_ir_audit.get("credit_violation_count", 0),
             "semantic_obligation_record_count": len(records["semantic_obligation_records"]),
             "dependency_edge_record_count": len(records["dependency_edge_records"]),
             "evidence_binding_record_count": len(records["evidence_binding_records"]),
@@ -197,13 +223,69 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "non_claims": ["semantic source receipt only", "not generation or verification execution"],
         },
         "consumer_states": consumers,
+        "typed_semantic_ir_audit": typed_ir_audit,
         **records,
         **NO_CHEAT,
         "non_claims": [
             "This gate binds obligations to semantic IR; it does not run model decoding.",
             "Semantic IR binding is not a public benchmark result or learned-generation promotion.",
             "Router/tool/template behavior remains separate from learned generation.",
+            "Deterministic semantic-IR compilation and repair remain zero-credit assisted behavior.",
         ],
+    }
+
+
+def audit_typed_semantic_ir_candidates(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    ready = 0
+    mismatches = 0
+    credit_violations = 0
+    fault_counts: dict[str, int] = {}
+    examples: list[dict[str, Any]] = []
+    for row in rows:
+        claimed = object_field(row.get("semantic_ir"))
+        independent = semantic_ir.candidate_receipt(str(row.get("code") or ""))
+        match = bool(
+            claimed.get("program_sha256")
+            and claimed.get("program_sha256") == independent.get("program_sha256")
+        )
+        is_ready = claimed.get("state") == "READY" and independent.get("state") == "READY"
+        ready += int(is_ready)
+        mismatches += int(not match)
+        credit_violation = any(
+            int(value or 0) != 0
+            for value in (
+                row.get("candidate_generation_credit"),
+                claimed.get("candidate_generation_credit"),
+                claimed.get("deterministic_compiler_credit"),
+            )
+        ) or row.get("token_level_code_generation_learned") is not False
+        credit_violations += int(credit_violation)
+        for fault in list(independent.get("typed_faults") or []):
+            name = str(object_field(fault).get("fault_type") or "unknown")
+            fault_counts[name] = fault_counts.get(name, 0) + 1
+        if (not is_ready or not match or credit_violation) and len(examples) < 12:
+            examples.append(
+                {
+                    "candidate_sha256": row.get("candidate_sha256"),
+                    "claimed_state": claimed.get("state"),
+                    "independent_state": independent.get("state"),
+                    "receipt_match": match,
+                    "credit_violation": credit_violation,
+                }
+            )
+    return {
+        "policy": "project_theseus_typed_semantic_ir_candidate_audit_v1",
+        "candidate_count": len(rows),
+        "ready_count": ready,
+        "receipt_mismatch_count": mismatches,
+        "credit_violation_count": credit_violations,
+        "fault_counts": dict(sorted(fault_counts.items())),
+        "examples": examples,
+        "uses_eval_tests_or_solutions": False,
+        "uses_answer_metadata": False,
+        "uses_public_data": False,
+        "external_inference_calls": 0,
+        "candidate_generation_credit": 0,
     }
 
 
@@ -410,6 +492,24 @@ def read_json(path: Path) -> dict[str, Any]:
     except json.JSONDecodeError:
         return {}
     return data if isinstance(data, dict) else {}
+
+
+def read_jsonl(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    rows: list[dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(value, dict):
+                rows.append(value)
+    return rows
 
 
 def object_field(value: Any) -> dict[str, Any]:

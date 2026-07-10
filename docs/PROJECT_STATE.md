@@ -17,20 +17,21 @@ records, gates, docs, evidence, and an integration smoke. This prevents the
 roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The project registry is now `GREEN` with `0` hard violations and `0` route
-blockers. Route health uses `15` minimal source-bound, TTL-bound, or
-current-invocation receipts; `152` other declared outputs are supporting
+blockers. Route health uses `16` minimal source-bound, TTL-bound, or
+current-invocation receipts; `156` other declared outputs are supporting
 evidence and no longer force daily regeneration. Stale, invalid, missing, or
 acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
 `6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3` and `7` are
-`implemented`; phases `10`, `13`, `14`, `15`, and `16` are intentionally `partial` after the latest
+`implemented`; phase `13` is now `implemented`; phases `10`, `14`, `15`, and
+`16` are intentionally `partial` after the latest
 ASI Stack/Claude book-mining pass; and phases `1`, `2`, `9`, and `18` are
 externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
-current local AI_book manifest contains `49` chapters, all mapped through the
+current local AI_book manifest contains `50` chapters, all mapped through the
 roadmap implementation matrix. The newly admitted adversarial-evaluation chapter
 is routed into existing phases `4`, `10`, `12`, `14`, and `18`; mapping it is not
 evidence that Theseus detects deception or that any local model is deceptive.
@@ -46,7 +47,7 @@ slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backe
 `E1_authority_scif_runtime_adapter_kernel=synthetic-test-backed`,
 `B1_assisted_verified_assistant_product_lane=synthetic-test-backed`, and
 `C1_correctness_rl_and_generator_survival_lane=synthetic-test-backed`.
-The current local AI_book manifest now contains `49` chapters. The added
+The added
 Governed Deliberation and Test-Time Scaling chapter is mapped into existing
 phases `8`, `10`, `12`, `14`, `16`, and `18`; it adds bounded deliberation,
 independent-verifier, stop-reason, residual-owner, and no-authority-laundering
@@ -56,6 +57,12 @@ phases `4`, `7`, `12`, `14`, `16`, and `18`; it adds supervisor-envelope,
 direct-baseline, independent-outcome-audit, correlation-risk, residual, and
 no-verdict-authority-laundering obligations without creating a parallel judge
 lane or claiming weak-to-strong oversight is solved.
+The added Capability Thresholds and Deployment Commitments chapter is mapped
+into existing phases `2`, `4`, `12`, `14`, `16`, `18`, and `19`. It requires
+versioned domain-scoped threshold commitments, separate safeguard verification,
+prospective exception governance, residual custody, and release-decision
+records. Mapping it is not a capability assessment, threshold crossing,
+safeguard validation, readiness decision, or deployment authorization.
 Phase `7` is implemented through the existing teacher/data-governance field:
 the content-bound gzip ledger has `64,196` candidate receipts (`63,892`
 admitted and `304` heldout rejections), nine passing contamination/provenance
@@ -70,10 +77,9 @@ architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
 work can continue, but strict pre-training architecture readiness is now `RED`
-with one blocker: five book-derived implementation phases are still partial.
-Those partial phases are practical neural seed survival/policy optimization/generation modes (`10`), semantic IR
-localized repair (`13`), evidence hygiene/receipt faithfulness/claim revision
-(`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and
+with one blocker: four book-derived implementation phases are still partial.
+Those partial phases are practical neural seed survival/policy optimization/generation modes (`10`),
+evidence hygiene/receipt faithfulness/claim revision (`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and
 verification-bandwidth/governance-tax routing (`16`). The external-frozen
 phases `1`, `2`, `9`, and `18` still cite current network-doctor evidence:
 `coordinator_unreachable`, `registered_peers_unreachable`,
@@ -443,7 +449,21 @@ public-data row, fallback return, or cosmetic guard family.
 This does not weaken the ASI_book backlog; it orders it around the live
 falsifying evidence: broad semantic/action body construction is still the wall,
 not another narrow return-token or guard-family issue.
-The first Phase 13 bridge for that wall is now live:
+Phase 13 is now implemented as a shared typed semantic-IR contract rather than
+only a failure bridge. `scripts/semantic_ir.py` provides a generic,
+round-trippable Python AST/state representation; it has no task-family renderer
+catalog, emits typed faults instead of fallback bodies, and keeps deterministic
+compilation at zero learned-generation credit. The same compact receipt is
+attached to direct token-decoder candidates and independently recomputed by the
+private verifier. On 1,000 admitted private bodies, the compact representation
+round-tripped `1000/1000` with median target length `199`, p95 `592`, and zero
+faults; the superseded first encoding measured median `477` and p95 `1392`.
+`tests/test_semantic_ir.py` covers nested-AST replay, malformed and unknown-node
+rejection, hidden-input boundaries, undefined-binding localization, noncredit
+rendering, independent verifier recomputation, model-prefix repair, and
+unsupported-plan rejection.
+
+The existing Phase 13 failure bridge remains live:
 `scripts/strict_generator_semantic_ir_repair_bridge.py` consumes the RED strict
 decode report and emits semantic-IR repair obligations rather than another
 target-side weighting family. The local bridge report is `GREEN` with `4`
@@ -457,17 +477,17 @@ canonical candidate-integrity audit, `semantic_ir_obligation_gate.py` is
 `GREEN`: all `5/5` consumers are ready, including the strict-generator repair
 bridge and the new apply-and-verify consumer
 `scripts/strict_generator_semantic_ir_repair_apply.py`. The v9 apply report
-`reports/strict_generator_semantic_ir_repair_apply_v9.json` is `YELLOW`: it
-produces `2` deterministic semantic-IR repaired candidates, runtime-loads both
-through the private verifier, keeps `candidate_generation_credit=0`, uses no
-public rows, teacher calls, fallback returns, templates, routers, or tools for
-learned-generation credit, and still scores `0` behavior passes. The
+`reports/strict_generator_semantic_ir_repair_apply_v9.json` is `GREEN`: it
+produces `2` localized deterministic semantic-IR repaired candidates, binds
+changed/dependent atom IDs, independently round-trips both receipts, and reduces
+type-handling failures from `2` to `0` by consuming the model-emitted `str`
+expression atom. It keeps `candidate_generation_credit=0`, uses no public rows,
+teacher calls, fallback returns, templates, routers, or tools for learned-generation
+credit, and still scores `0` behavior passes with behavior delta `0`. The
 candidate-integrity audit remains clean with `0` integrity mismatches while
 explicitly retaining syntax-invalid learned rows as negative candidate
-evidence. The next behavior-changing implementation is still a trainable
-AST/state-transition head or localized semantic-IR body-construction path that
-consumes the new repair atoms and improves strict private replay without
-crediting deterministic repair rows as learned generation.
+evidence. The remaining zero-pass semantic-quality wall belongs to the Phase 10
+direct learned proposer and is not hidden by the Phase 13 assisted path.
 The first trainable semantic-slot consumption patch is now in the registered
 MLX private adaptation path rather than a side lane:
 `scripts/strict_generator_mlx_private_adaptation.py` can train/evaluate the
@@ -994,9 +1014,9 @@ training-path coverage and negative-evidence plumbing, not a capability win or
 promotion claim.
 `reports/semantic_ir_obligation_gate.json` now contributes
 `semantic_ir_obligation_spine_v1`. It binds candidate-integrity,
-private-verifier, and direct-generator obligations to the materialized semantic
-IR view: `25` semantic atoms, `93` semantic nodes, `3/3` ready consumers, `3`
-semantic-obligation records, `3` dependency edges, and `3` evidence bindings.
+private-verifier, direct-generator, repair-bridge, and repair-apply obligations
+to the materialized semantic IR view. Its independent candidate audit reports
+`2/2` ready receipts, `0` receipt mismatches, and `0` credit violations.
 This is Phase 13 implementation cohesion; it is not model decoding, verifier
 execution, public calibration, or learned-generation promotion evidence.
 `reports/code_lm_train_once_fanout.json` now contributes
