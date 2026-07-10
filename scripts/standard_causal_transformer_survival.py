@@ -60,6 +60,7 @@ class Stage:
     sft_inputs: np.ndarray
     sft_labels: np.ndarray
     sft_mask: np.ndarray
+    sft_sampling_weights: np.ndarray
     eval_inputs: np.ndarray
     eval_labels: np.ndarray
     eval_mask: np.ndarray
@@ -153,6 +154,7 @@ def run(
         stage.sft_mask,
         int(training_cfg["batch_size"]),
         int(training_cfg["sft_target_token_positions"]),
+        sample_weights=stage.sft_sampling_weights,
     )
     total_steps = pretrain_steps + sft_steps
     if max_steps:
@@ -165,9 +167,61 @@ def run(
         phase_reports = list(prior_training.get("phases") or [])
         consumed_steps = int(prior_training.get("optimizer_steps") or 0)
         training_complete = bool(prior_training.get("complete"))
+    elif resume:
+        prior = read_json(report_path)
+        prior_training = prior.get("training") if isinstance(prior.get("training"), dict) else {}
+        conditioning = prior.get("conditioning") if isinstance(prior.get("conditioning"), dict) else {}
+        eval_loss_before = float(prior_training.get("eval_loss_before") or float("inf"))
+        phase_reports = list(prior_training.get("phases") or [])
+        consumed_steps = sum(int(row.get("optimizer_steps") or 0) for row in phase_reports)
+        optimizer = optim.AdamW(
+            learning_rate=float(training_cfg["min_learning_rate"]),
+            weight_decay=float(training_cfg["weight_decay"]),
+        )
+        loss_and_grad = nn.value_and_grad(model, causal_loss)
+        heartbeat = stage_dir / "training_heartbeat.json"
+        prior_sft_positions = phase_target_positions(phase_reports, "prompt_signature_body_sft")
+        remaining_sft_positions = max(
+            0, int(training_cfg["sft_target_token_positions"]) - prior_sft_positions
+        )
+        if remaining_sft_positions:
+            continuation_steps = required_steps(
+                stage.sft_mask,
+                int(training_cfg["batch_size"]),
+                remaining_sft_positions,
+                sample_weights=stage.sft_sampling_weights,
+            )
+            phase_report = train_phase(
+                model,
+                optimizer,
+                loss_and_grad,
+                stage.sft_inputs,
+                stage.sft_labels,
+                stage.sft_mask,
+                sample_weights=stage.sft_sampling_weights,
+                phase_name="prompt_signature_body_sft_continuation",
+                target_positions=remaining_sft_positions,
+                batch_size=int(training_cfg["batch_size"]),
+                gradient_clip=float(training_cfg["gradient_clip_norm"]),
+                seed=seed + 7919,
+                max_steps=continuation_steps + 64,
+                checkpoint=checkpoint,
+                checkpoint_every=max(1, int(training_cfg["checkpoint_every_steps"])),
+                heartbeat=heartbeat,
+                global_step_offset=consumed_steps,
+                mx=mx,
+                optim=optim,
+            )
+            phase_report["optimizer_state_restored"] = False
+            phase_report["continuation_learning_rate"] = float(training_cfg["min_learning_rate"])
+            phase_reports.append(phase_report)
+            consumed_steps += int(phase_report["optimizer_steps"])
+        model.save_weights(str(checkpoint))
+        mx.eval(model.parameters())
+        training_complete = training_targets_complete(phase_reports, training_cfg)
     else:
         conditioning = {}
-        schedule = build_schedule(optim, mx, training_cfg, total_steps)
+        schedule = build_schedule(optim, mx, training_cfg, total_steps + 128)
         optimizer = optim.AdamW(learning_rate=schedule, weight_decay=float(training_cfg["weight_decay"]))
         loss_and_grad = nn.value_and_grad(model, causal_loss)
         eval_loss_before = evaluate_loss(
@@ -182,23 +236,27 @@ def run(
         heartbeat = stage_dir / "training_heartbeat.json"
         phase_reports = []
         consumed_steps = 0
-        for phase_name, inputs, labels, mask, target_positions in (
+        for phase_name, inputs, labels, mask, sample_weights, target_positions, planned_steps in (
             (
                 "licensed_module_causal_pretraining",
                 stage.pretrain_inputs,
                 stage.pretrain_labels,
                 stage.pretrain_mask,
+                None,
                 int(training_cfg["pretrain_target_token_positions"]),
+                pretrain_steps,
             ),
             (
                 "prompt_signature_body_sft",
                 stage.sft_inputs,
                 stage.sft_labels,
                 stage.sft_mask,
+                stage.sft_sampling_weights,
                 int(training_cfg["sft_target_token_positions"]),
+                sft_steps,
             ),
         ):
-            remaining = total_steps - consumed_steps
+            remaining = (total_steps - consumed_steps) if max_steps else (planned_steps + 64)
             if remaining <= 0:
                 break
             phase_report = train_phase(
@@ -208,6 +266,7 @@ def run(
                 inputs,
                 labels,
                 mask,
+                sample_weights=sample_weights,
                 phase_name=phase_name,
                 target_positions=target_positions,
                 batch_size=int(training_cfg["batch_size"]),
@@ -225,7 +284,7 @@ def run(
             consumed_steps += int(phase_report["optimizer_steps"])
         model.save_weights(str(checkpoint))
         mx.eval(model.parameters())
-        training_complete = not max_steps or consumed_steps >= pretrain_steps + sft_steps
+        training_complete = training_targets_complete(phase_reports, training_cfg)
     eval_loss_after = evaluate_loss(
         model,
         stage.eval_inputs,
@@ -328,6 +387,11 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
                 sft_inputs=arrays["sft_inputs"],
                 sft_labels=arrays["sft_labels"],
                 sft_mask=arrays["sft_mask"],
+                sft_sampling_weights=(
+                    arrays["sft_sampling_weights"]
+                    if "sft_sampling_weights" in arrays.files
+                    else np.ones((len(arrays["sft_inputs"]),), dtype=np.float32)
+                ),
                 eval_inputs=arrays["eval_inputs"],
                 eval_labels=arrays["eval_labels"],
                 eval_mask=arrays["eval_mask"],
@@ -357,7 +421,7 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         target_vocab,
         eval_body_token_sequences=eval_body_token_sequences,
     )
-    sft = encode_sft_examples(config, sft_examples, source_vocab, target_vocab)
+    sft = encode_sft_training_examples(config, sft_examples, source_vocab, target_vocab)
     eval_examples = [eval_example(row) for row in eval_rows]
     eval_arrays = encode_sft_examples(config, eval_examples, source_vocab, target_vocab)
     summary = {
@@ -366,6 +430,7 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         "licensed_pretrain_target_positions": int(pretrain[2].sum()),
         "sft_example_count": int(sft[0].shape[0]),
         "sft_target_positions": int(sft[2].sum()),
+        "sft_sampling_weight_sum": round(float(sft[3].sum()), 6),
         "family_disjoint_eval_task_count": len(eval_rows),
         "unique_semantic_eval_task_count": len(
             {
@@ -381,6 +446,14 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         "unique_sft_pair_count": sft_audit["unique_sft_pair_count"],
         "licensed_function_example_count": sft_audit["licensed_function_example_count"],
         "governed_private_unique_body_count": sft_audit["governed_private_unique_body_count"],
+        "governed_private_prompt_pair_count": sft_audit["governed_private_prompt_pair_count"],
+        "private_signature_test_override_count": sft_audit["private_signature_test_override_count"],
+        "private_signature_body_override_count": sft_audit["private_signature_body_override_count"],
+        "private_sampling_probability": sft_audit["private_sampling_probability"],
+        "eval_signature_test_override_count": sum(
+            int((row.get("callable_signature_receipt") or {}).get("source") == "private_tests")
+            for row in eval_rows
+        ),
         "rejected_placeholder_source_count": sft_audit["rejected_placeholder_source_count"],
         "rejected_short_source_count": sft_audit["rejected_short_source_count"],
         "metadata_tagged_source_count": sft_audit["metadata_tagged_source_count"],
@@ -403,12 +476,28 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         sft_inputs=sft[0],
         sft_labels=sft[1],
         sft_mask=sft[2],
+        sft_sampling_weights=sft[3],
         eval_inputs=eval_arrays[0],
         eval_labels=eval_arrays[1],
         eval_mask=eval_arrays[2],
     )
     write_json(metadata_path, {"stage_signature": signature, "summary": summary, "eval_rows": eval_rows})
-    return Stage(*pretrain, *sft, *eval_arrays, eval_rows, source_vocab, target_vocab, summary)
+    return Stage(
+        pretrain_inputs=pretrain[0],
+        pretrain_labels=pretrain[1],
+        pretrain_mask=pretrain[2],
+        sft_inputs=sft[0],
+        sft_labels=sft[1],
+        sft_mask=sft[2],
+        sft_sampling_weights=sft[3],
+        eval_inputs=eval_arrays[0],
+        eval_labels=eval_arrays[1],
+        eval_mask=eval_arrays[2],
+        eval_rows=eval_rows,
+        source_vocab=source_vocab,
+        target_vocab=target_vocab,
+        summary=summary,
+    )
 
 
 def build_pretrain_windows(
@@ -525,6 +614,9 @@ def load_sft_examples(
 
     admission = read_json(resolve(config["sources"]["training_admission"]))
     private_added = 0
+    private_body_hashes: set[str] = set()
+    private_signature_test_overrides = 0
+    private_signature_body_overrides = 0
     observed_holdout_families: set[str] = set()
     for source in admission.get("train_admitted_sources", []):
         path_text = str(source.get("path") or "")
@@ -560,21 +652,32 @@ def load_sft_examples(
             if body_hash in eval_body_hashes:
                 rejected_body += 1
                 continue
-            signature = callable_signature(row)
+            signature, signature_receipt = training_callable_signature(row)
             source_text = f"{prompt}\nsignature {signature}"
             pair_hash = sha(f"{source_text}\n{body}")
             if pair_hash in seen_pairs:
                 continue
+            private_signature_test_overrides += int(signature_receipt["source"] == "private_tests")
+            private_signature_body_overrides += int(signature_receipt["source"] == "body_argument_use")
             seen_pairs.add(pair_hash)
             unique_bodies.add(body_hash)
+            private_body_hashes.add(body_hash)
             examples.append({"source_text": source_text, "body": body, "source": "governed_private"})
             private_added += 1
+    examples, sampling = assign_body_balanced_sampling_weights(
+        examples,
+        private_body_weight=float(config["training"]["private_body_sampling_weight"]),
+    )
     examples.sort(key=lambda row: sha(row["source_text"] + "\n" + row["body"]))
     return examples, {
         "unique_sft_body_count": len(unique_bodies),
         "unique_sft_pair_count": len(seen_pairs),
         "licensed_function_example_count": licensed_count,
-        "governed_private_unique_body_count": private_added,
+        "governed_private_unique_body_count": len(private_body_hashes),
+        "governed_private_prompt_pair_count": private_added,
+        "private_signature_test_override_count": private_signature_test_overrides,
+        "private_signature_body_override_count": private_signature_body_overrides,
+        **sampling,
         "train_holdout_family_overlap_count": 0,
         "excluded_holdout_family_count": len(observed_holdout_families),
         "train_eval_prompt_overlap_count": 0,
@@ -593,13 +696,25 @@ def encode_sft_examples(
     source_vocab: dict[str, int],
     target_vocab: dict[str, int],
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    inputs, labels, mask, _weights = encode_sft_training_examples(
+        config, examples, source_vocab, target_vocab
+    )
+    return inputs, labels, mask
+
+
+def encode_sft_training_examples(
+    config: dict[str, Any],
+    examples: list[dict[str, Any]],
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     token_cfg = config["tokenization"]
     max_seq = int(token_cfg["max_sequence_tokens"])
     max_source = int(token_cfg["max_source_tokens"])
     max_target = int(token_cfg["max_target_tokens"])
     source_offset = SPECIAL_COUNT
     target_offset = SPECIAL_COUNT + len(source_vocab)
-    rows: list[tuple[list[int], int]] = []
+    rows: list[tuple[list[int], int, float]] = []
     for row in examples:
         source_ids, source_receipt = encode_tokens(source_tokens(row["source_text"]), source_vocab, stream="source")
         target_ids, target_receipt = encode_tokens(body_tokens(row["body"]), target_vocab, stream="target")
@@ -617,16 +732,50 @@ def encode_sft_examples(
         sequence.append(target_offset + int(target_vocab["<eos>"]))
         if len(sequence) > max_seq + 1:
             continue
-        rows.append((sequence, target_start - 1))
+        rows.append((sequence, target_start - 1, float(row.get("sampling_weight") or 1.0)))
     inputs = np.zeros((len(rows), max_seq), dtype=np.int32)
     labels = np.zeros((len(rows), max_seq), dtype=np.int32)
     mask = np.zeros((len(rows), max_seq), dtype=np.float32)
-    for index, (sequence, mask_start) in enumerate(rows):
+    weights = np.ones((len(rows),), dtype=np.float32)
+    for index, (sequence, mask_start, sampling_weight) in enumerate(rows):
         width = len(sequence) - 1
         inputs[index, :width] = sequence[:-1]
         labels[index, :width] = sequence[1:]
         mask[index, mask_start:width] = 1.0
-    return inputs, labels, mask
+        weights[index] = max(0.0, sampling_weight)
+    return inputs, labels, mask, weights
+
+
+def assign_body_balanced_sampling_weights(
+    examples: list[dict[str, Any]], *, private_body_weight: float
+) -> tuple[list[dict[str, Any]], dict[str, float]]:
+    private_counts: dict[str, int] = {}
+    for row in examples:
+        if row.get("source") != "governed_private":
+            continue
+        body_hash = sha(str(row.get("body") or ""))
+        private_counts[body_hash] = private_counts.get(body_hash, 0) + 1
+    weighted: list[dict[str, Any]] = []
+    licensed_mass = 0.0
+    private_mass = 0.0
+    for row in examples:
+        item = dict(row)
+        if item.get("source") == "governed_private":
+            body_hash = sha(str(item.get("body") or ""))
+            weight = max(0.0, private_body_weight) / max(1, private_counts.get(body_hash, 1))
+            private_mass += weight
+        else:
+            weight = 1.0
+            licensed_mass += weight
+        item["sampling_weight"] = weight
+        weighted.append(item)
+    total = licensed_mass + private_mass
+    return weighted, {
+        "licensed_sampling_mass": round(licensed_mass, 6),
+        "private_sampling_mass": round(private_mass, 6),
+        "private_sampling_probability": round(private_mass / total, 6) if total else 0.0,
+        "private_body_sampling_weight": float(private_body_weight),
+    }
 
 
 def select_family_disjoint_eval(config: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str]]:
@@ -640,7 +789,12 @@ def select_family_disjoint_eval(config: dict[str, Any]) -> tuple[list[dict[str, 
     for family in selected_families:
         candidates = [row for row in rows if str(row.get("concept_residual_label") or "") == family]
         candidates.sort(key=lambda row: sha(f"{seed}:{row.get('task_id')}:{row.get('prompt')}"))
-        selected.extend(candidates[:per_family])
+        for row in candidates[:per_family]:
+            item = dict(row)
+            signature, receipt = training_callable_signature(item)
+            item["callable_signature"] = signature
+            item["callable_signature_receipt"] = receipt
+            selected.append(item)
     return selected, selected_families
 
 
@@ -712,12 +866,70 @@ def semantic_stage_source(row: dict[str, Any]) -> tuple[str, dict[str, bool]]:
 
 def callable_signature(row: dict[str, Any]) -> str:
     entry = str(row.get("entry_point") or "solve")
+    explicit = str(row.get("callable_signature") or "").strip()
+    if explicit:
+        return explicit
     count = int((row.get("decoder_contract") or {}).get("visible_arg_count_hint") or 1)
+    return signature_for_arity(entry, count)
+
+
+def training_callable_signature(row: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    entry = str(row.get("entry_point") or "solve")
+    explicit = str(row.get("callable_signature") or "").strip()
+    if explicit:
+        return explicit, {"source": "explicit_callable_signature", "arity": signature_arity(explicit)}
+    arities = private_test_call_arities(row)
+    if len(arities) == 1:
+        arity = next(iter(arities))
+        return signature_for_arity(entry, arity), {"source": "private_tests", "arity": arity}
+    body = str(row.get("solution_body") or "")
+    try:
+        names = {node.id for node in ast.walk(ast.parse(body)) if isinstance(node, ast.Name)}
+    except SyntaxError:
+        names = set()
+    hint = int((row.get("decoder_contract") or {}).get("visible_arg_count_hint") or 1)
+    if "other" in names and hint < 2:
+        return signature_for_arity(entry, 2), {"source": "body_argument_use", "arity": 2}
+    return signature_for_arity(entry, hint), {"source": "visible_arg_count_hint", "arity": hint}
+
+
+def private_test_call_arities(row: dict[str, Any]) -> set[int]:
+    entry = str(row.get("entry_point") or "")
+    tests = str(row.get("tests") or "")
+    if not entry or not tests:
+        return set()
+    try:
+        tree = ast.parse(tests)
+    except SyntaxError:
+        return set()
+    return {
+        len(node.args) + len(node.keywords)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == entry
+    }
+
+
+def signature_for_arity(entry: str, count: int) -> str:
+    if count <= 0:
+        return f"def {entry}():"
     if count <= 1:
         return f"def {entry}(data):"
     if count == 2:
         return f"def {entry}(data, other):"
-    return f"def {entry}(data, other=None, *extra):"
+    return f"def {entry}(data, other, *extra):"
+
+
+def signature_arity(signature: str) -> int | None:
+    try:
+        tree = ast.parse(signature + "\n    pass\n")
+    except SyntaxError:
+        return None
+    function = tree.body[0] if tree.body else None
+    if not isinstance(function, ast.FunctionDef):
+        return None
+    if function.args.vararg is not None:
+        return max(3, len(function.args.posonlyargs) + len(function.args.args))
+    return len(function.args.posonlyargs) + len(function.args.args) + len(function.args.kwonlyargs)
 
 
 def source_tokens(text: str) -> list[str]:
@@ -731,11 +943,41 @@ def head_tail(values: list[int], limit: int) -> list[int]:
     return [*values[:head], *values[-(limit - head) :]]
 
 
-def required_steps(mask: np.ndarray, batch_size: int, target_positions: int) -> int:
+def required_steps(
+    mask: np.ndarray,
+    batch_size: int,
+    target_positions: int,
+    *,
+    sample_weights: np.ndarray | None = None,
+) -> int:
     if not len(mask) or target_positions <= 0:
         return 0
-    mean_positions = max(1.0, float(mask.sum(axis=1).mean()))
+    row_positions = mask.sum(axis=1)
+    if sample_weights is not None and len(sample_weights) == len(row_positions) and float(sample_weights.sum()) > 0:
+        mean_positions = float(np.average(row_positions, weights=sample_weights))
+    else:
+        mean_positions = float(row_positions.mean())
+    mean_positions = max(1.0, mean_positions)
     return max(1, math.ceil(target_positions / (mean_positions * batch_size)))
+
+
+def phase_target_positions(phase_reports: list[dict[str, Any]], phase_prefix: str) -> int:
+    return sum(
+        int(row.get("target_positions_consumed") or 0)
+        for row in phase_reports
+        if str(row.get("phase") or "").startswith(phase_prefix)
+    )
+
+
+def training_targets_complete(
+    phase_reports: list[dict[str, Any]], training_config: dict[str, Any]
+) -> bool:
+    return bool(
+        phase_target_positions(phase_reports, "licensed_module_causal_pretraining")
+        >= int(training_config["pretrain_target_token_positions"])
+        and phase_target_positions(phase_reports, "prompt_signature_body_sft")
+        >= int(training_config["sft_target_token_positions"])
+    )
 
 
 def build_schedule(optim: Any, mx: Any, cfg: dict[str, Any], total_steps: int) -> Any:
@@ -768,6 +1010,7 @@ def train_phase(
     labels: np.ndarray,
     mask: np.ndarray,
     *,
+    sample_weights: np.ndarray | None,
     phase_name: str,
     target_positions: int,
     batch_size: int,
@@ -788,6 +1031,7 @@ def train_phase(
     matrix_mask = mx.array(mask, dtype=mx.float32)
     mx.eval(matrix_x, matrix_y, matrix_mask)
     order = list(range(len(inputs)))
+    probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
     consumed = 0
     steps = 0
     losses: list[float] = []
@@ -795,7 +1039,12 @@ def train_phase(
     epoch = 0
     model.train()
     while consumed < target_positions and steps < max_steps:
-        random.Random(seed + epoch).shuffle(order)
+        if probabilities is None:
+            random.Random(seed + epoch).shuffle(order)
+        else:
+            order = np.random.default_rng(seed + epoch).choice(
+                len(inputs), size=len(inputs), replace=True, p=probabilities
+            ).tolist()
         for start in range(0, len(order), batch_size):
             if consumed >= target_positions or steps >= max_steps:
                 break
@@ -846,8 +1095,28 @@ def train_phase(
         "mean_loss": round(sum(losses) / max(1, len(losses)), 6),
         "final_loss": round(losses[-1], 6) if losses else None,
         "tokens_per_second": round(consumed / max(1e-9, time.perf_counter() - started), 3),
+        "weighted_sampling": probabilities is not None,
+        "sampling_effective_size": (
+            round(float(1.0 / np.square(probabilities).sum()), 3)
+            if probabilities is not None
+            else len(inputs)
+        ),
         "external_inference_calls": 0,
     }
+
+
+def normalized_sampling_probabilities(
+    sample_weights: np.ndarray | None, row_count: int
+) -> np.ndarray | None:
+    if sample_weights is None:
+        return None
+    weights = np.asarray(sample_weights, dtype=np.float64)
+    if len(weights) != row_count or row_count == 0 or np.any(weights < 0):
+        raise ValueError("sampling weights must be non-negative and match the training row count")
+    total = float(weights.sum())
+    if total <= 0:
+        raise ValueError("sampling weights must contain positive mass")
+    return weights / total
 
 
 def evaluate_loss(
@@ -892,6 +1161,8 @@ def generate_candidates(
     empty_rejected = 0
     decode_faults = 0
     timed_out = 0
+    cross_task_duplicate_body_rejected = 0
+    global_body_hashes: set[str] = set()
     for task in eval_rows:
         task_started = time.perf_counter()
         visible = visible_eval_source(task)
@@ -925,12 +1196,17 @@ def generate_candidates(
                 continue
             code = render_visible_signature(callable_signature(task), body)
             try:
-                ast.parse(code)
+                tree = ast.parse(code)
             except SyntaxError:
                 continue
             code_hash = sha(code)
             if code_hash in seen_code:
                 continue
+            body_hash = normalized_function_body_hash(tree)
+            if body_hash in global_body_hashes:
+                cross_task_duplicate_body_rejected += 1
+                continue
+            global_body_hashes.add(body_hash)
             seen_code.add(code_hash)
             syntax_valid += 1
             candidates.append(
@@ -984,9 +1260,20 @@ def generate_candidates(
         "empty_body_rejected_count": empty_rejected,
         "decode_fault_count": decode_faults,
         "timed_out_task_count": timed_out,
+        "cross_task_duplicate_body_rejected_count": cross_task_duplicate_body_rejected,
         "fallback_return_count": 0,
         "template_renderer_router_tool_credit_count": 0,
     }
+
+
+def normalized_function_body_hash(tree: ast.Module) -> str:
+    function = next(
+        (node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))),
+        None,
+    )
+    body = function.body if function is not None else tree.body
+    payload = ast.dump(ast.Module(body=body, type_ignores=[]), include_attributes=False)
+    return sha(payload)
 
 
 def decode_beams(
@@ -1039,8 +1326,6 @@ def decode_beams(
                         "logits": next_logits[0, -1],
                     }
                 )
-        if len(complete) >= int(config["fanout"]):
-            break
         dedup: dict[tuple[str, ...], dict[str, Any]] = {}
         for row in expanded:
             key = tuple(row["tokens"])
@@ -1048,9 +1333,16 @@ def decode_beams(
                 dedup[key] = row
         beams = sorted(
             dedup.values(),
-            key=lambda row: row["score"] / max(1, len(row["tokens"])),
+            key=lambda row: beam_rank_score(row, float(config["length_penalty"])),
             reverse=True,
         )[: int(config["beam_width"])]
+        complete = prune_complete_beams(
+            complete,
+            limit=completion_pool_target(config),
+            length_penalty=float(config["length_penalty"]),
+        )
+        if len(complete) >= completion_pool_target(config):
+            break
         if not beams:
             break
     for beam in beams:
@@ -1063,9 +1355,36 @@ def decode_beams(
             unique[key] = row
     return sorted(
         unique.values(),
-        key=lambda row: row["score"] / max(1, len(row["tokens"])),
+        key=lambda row: beam_rank_score(row, float(config["length_penalty"])),
         reverse=True,
     )[: int(config["fanout"])]
+
+
+def completion_pool_target(config: dict[str, Any]) -> int:
+    return max(
+        int(config["fanout"]),
+        int(config["fanout"]) * max(1, int(config.get("completion_pool_multiplier") or 1)),
+    )
+
+
+def beam_rank_score(row: dict[str, Any], length_penalty: float) -> float:
+    length = max(1, len(row.get("tokens") or []))
+    return float(row.get("score") or 0.0) / (length**max(0.0, length_penalty))
+
+
+def prune_complete_beams(
+    rows: list[dict[str, Any]], *, limit: int, length_penalty: float
+) -> list[dict[str, Any]]:
+    unique: dict[tuple[str, ...], dict[str, Any]] = {}
+    for row in rows:
+        key = tuple(row.get("tokens") or [])
+        if key not in unique or float(row.get("score") or 0.0) > float(unique[key].get("score") or 0.0):
+            unique[key] = row
+    return sorted(
+        unique.values(),
+        key=lambda row: beam_rank_score(row, length_penalty),
+        reverse=True,
+    )[: max(1, limit)]
 
 
 def grammar_choices(

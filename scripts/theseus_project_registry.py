@@ -1591,7 +1591,178 @@ def abstraction_registry_gaps(policy: dict[str, Any]) -> list[dict[str, Any]]:
                     "recommended_action": "choose one canonical implementation or declare a split route explicitly in the abstraction contract",
                 }
             )
+    rows.extend(
+        implementation_replacement_gaps(
+            policy,
+            abstraction_by_id=abstraction_by_id,
+            implementation_by_id=implementation_by_id,
+        )
+    )
     return rows
+
+
+def implementation_replacement_gaps(
+    policy: dict[str, Any],
+    *,
+    abstraction_by_id: dict[str, dict[str, Any]] | None = None,
+    implementation_by_id: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """Validate canonical implementation changes as evidence-bound transactions."""
+
+    contract = policy.get("abstraction_registry_contract")
+    contract = contract if isinstance(contract, dict) else {}
+    required_fields = [
+        str(item)
+        for item in contract.get("replacement_transaction_required_fields", [])
+        if item
+    ]
+    required_checks = [
+        str(item)
+        for item in contract.get("replacement_transaction_required_checks", [])
+        if item
+    ]
+    abstractions = abstraction_by_id or {
+        str(row.get("id") or ""): row
+        for row in policy.get("abstractions", [])
+        if isinstance(row, dict) and row.get("id")
+    }
+    implementations = implementation_by_id or {
+        str(row.get("id") or ""): row
+        for row in policy.get("implementations", [])
+        if isinstance(row, dict) and row.get("id")
+    }
+    transactions = [
+        row
+        for row in policy.get("implementation_replacement_transactions", [])
+        if isinstance(row, dict)
+    ]
+    transaction_by_successor: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    transaction_ids: set[str] = set()
+    gaps: list[dict[str, Any]] = []
+
+    def add_gap(kind: str, transaction: dict[str, Any], **evidence: Any) -> None:
+        transaction_id = str(transaction.get("id") or "unknown")
+        successor_id = str(transaction.get("successor_implementation_id") or "")
+        gaps.append(
+            {
+                "record_type": "project_registry_replacement_transaction_gap",
+                "kind": kind,
+                "transaction_id": transaction_id,
+                "implementation_id": successor_id,
+                "abstraction_id": str(transaction.get("abstraction_id") or ""),
+                "scope": successor_id or transaction_id,
+                "recommended_action": "repair the evidence-bound replacement transaction before the successor is canonical or routable",
+                **evidence,
+            }
+        )
+
+    for transaction in transactions:
+        transaction_id = str(transaction.get("id") or "")
+        predecessor_id = str(transaction.get("predecessor_implementation_id") or "")
+        successor_id = str(transaction.get("successor_implementation_id") or "")
+        abstraction_id = str(transaction.get("abstraction_id") or "")
+        transaction_by_successor[successor_id].append(transaction)
+        if transaction_id in transaction_ids:
+            add_gap("duplicate_replacement_transaction_id", transaction)
+        transaction_ids.add(transaction_id)
+        missing = required_field_gaps(transaction, required_fields)
+        if missing:
+            add_gap("replacement_transaction_missing_required_fields", transaction, missing_fields=missing)
+        predecessor = implementations.get(predecessor_id, {})
+        successor = implementations.get(successor_id, {})
+        abstraction = abstractions.get(abstraction_id, {})
+        if not predecessor:
+            add_gap("replacement_predecessor_missing", transaction, predecessor_implementation_id=predecessor_id)
+        if not successor:
+            add_gap("replacement_successor_missing", transaction, successor_implementation_id=successor_id)
+        if not abstraction:
+            add_gap("replacement_abstraction_missing", transaction)
+        if predecessor and str(predecessor.get("abstraction_id") or "") != abstraction_id:
+            add_gap("replacement_predecessor_contract_mismatch", transaction)
+        if successor and str(successor.get("abstraction_id") or "") != abstraction_id:
+            add_gap("replacement_successor_contract_mismatch", transaction)
+        if successor and str(successor.get("supersedes_implementation_id") or "") != predecessor_id:
+            add_gap("replacement_successor_lineage_mismatch", transaction)
+        if predecessor and str(predecessor.get("superseded_by_implementation_id") or "") != successor_id:
+            add_gap("replacement_predecessor_lineage_mismatch", transaction)
+        if str(transaction.get("decision") or "") != "adopt_canonical":
+            add_gap("replacement_decision_not_adopted", transaction, decision=transaction.get("decision"))
+        if str(transaction.get("state") or "") != "qualified":
+            add_gap("replacement_transaction_not_qualified", transaction, state=transaction.get("state"))
+        if abstraction and str(abstraction.get("canonical_implementation_id") or "") != successor_id:
+            add_gap("replacement_successor_not_canonical", transaction)
+        if successor and str(successor.get("status") or "") != "live":
+            add_gap("replacement_successor_not_live", transaction, status=successor.get("status"))
+        if predecessor and str(predecessor.get("status") or "") not in {"retained", "deprecated", "retired"}:
+            add_gap("replacement_predecessor_still_live", transaction, status=predecessor.get("status"))
+        checks = transaction.get("checks") if isinstance(transaction.get("checks"), dict) else {}
+        failed_checks = [name for name in required_checks if checks.get(name) is not True]
+        if failed_checks:
+            add_gap("replacement_required_checks_failed", transaction, failed_checks=failed_checks)
+        no_cheat = transaction.get("no_cheat_counters") if isinstance(transaction.get("no_cheat_counters"), dict) else {}
+        bad_counters = {
+            key: value
+            for key, value in no_cheat.items()
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or value != 0
+        }
+        if not no_cheat or bad_counters:
+            add_gap("replacement_no_cheat_counters_invalid", transaction, bad_counters=bad_counters)
+        bindings = transaction.get("content_bindings") if isinstance(transaction.get("content_bindings"), dict) else {}
+        binding_faults = []
+        for binding_id, binding in bindings.items():
+            if not isinstance(binding, dict):
+                binding_faults.append({"binding_id": binding_id, "kind": "binding_not_object"})
+                continue
+            path_text = normalize_path(str(binding.get("path") or ""))
+            expected_sha256 = str(binding.get("sha256") or "").lower()
+            path = resolve(path_text) if path_text else None
+            if not path_text or not expected_sha256:
+                binding_faults.append({"binding_id": binding_id, "kind": "binding_fields_missing"})
+            elif path is None or not path.exists() or not path.is_file():
+                binding_faults.append({"binding_id": binding_id, "kind": "binding_path_missing", "path": path_text})
+            else:
+                actual_sha256 = file_sha256(path)
+                if actual_sha256 != expected_sha256:
+                    binding_faults.append(
+                        {
+                            "binding_id": binding_id,
+                            "kind": "binding_hash_mismatch",
+                            "path": path_text,
+                            "expected_sha256": expected_sha256,
+                            "actual_sha256": actual_sha256,
+                        }
+                    )
+        if not bindings or binding_faults:
+            add_gap("replacement_exact_content_bindings_invalid", transaction, binding_faults=binding_faults)
+        evidence_refs = [str(item) for item in transaction.get("evidence_refs", []) if item]
+        missing_evidence = [path for path in evidence_refs if not resolve(path).exists()]
+        if not evidence_refs or missing_evidence:
+            add_gap("replacement_evidence_missing", transaction, missing_evidence=missing_evidence)
+        rollback = transaction.get("rollback") if isinstance(transaction.get("rollback"), dict) else {}
+        if rollback.get("armed") is not True or not str(rollback.get("mode") or ""):
+            add_gap("replacement_rollback_not_armed", transaction)
+        claim_boundary = transaction.get("claim_boundary") if isinstance(transaction.get("claim_boundary"), dict) else {}
+        if not claim_boundary.get("supported_claim") or not claim_boundary.get("non_claims"):
+            add_gap("replacement_claim_boundary_missing", transaction)
+
+    for implementation_id, implementation in implementations.items():
+        predecessor_id = str(implementation.get("supersedes_implementation_id") or "")
+        if not predecessor_id:
+            continue
+        matches = transaction_by_successor.get(implementation_id, [])
+        if len(matches) != 1:
+            synthetic = {
+                "id": "missing" if not matches else "ambiguous",
+                "successor_implementation_id": implementation_id,
+                "predecessor_implementation_id": predecessor_id,
+                "abstraction_id": implementation.get("abstraction_id"),
+            }
+            add_gap(
+                "canonical_successor_replacement_transaction_count_invalid",
+                synthetic,
+                transaction_count=len(matches),
+            )
+    return gaps
 
 
 def required_field_gaps(row: dict[str, Any], required: list[str]) -> list[str]:
@@ -1601,6 +1772,14 @@ def required_field_gaps(row: dict[str, Any], required: list[str]) -> list[str]:
         if value in (None, "", [], {}):
             missing.append(field)
     return missing
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def missing_true_gaps(row: dict[str, Any], required_paths: list[list[str]]) -> list[str]:

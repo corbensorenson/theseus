@@ -193,6 +193,123 @@ class RouteEvidenceContractTests(unittest.TestCase):
 
 
 class LiveRegistryContractTests(unittest.TestCase):
+    def replacement_policy(self) -> dict:
+        predecessor = {
+            "id": "impl.old",
+            "abstraction_id": "field.test",
+            "status": "retained",
+            "superseded_by_implementation_id": "impl.new",
+        }
+        successor = {
+            "id": "impl.new",
+            "abstraction_id": "field.test",
+            "status": "live",
+            "supersedes_implementation_id": "impl.old",
+        }
+        transaction = {
+            "id": "replacement.test",
+            "abstraction_id": "field.test",
+            "predecessor_implementation_id": "impl.old",
+            "successor_implementation_id": "impl.new",
+            "decision": "adopt_canonical",
+            "state": "qualified",
+            "checks": {
+                "contract_compatible": True,
+                "independent_integrity_green": True,
+                "blind_information_flow_green": True,
+                "private_replay_above_zero": True,
+                "predecessor_retained": True,
+            },
+            "content_bindings": {
+                "test_source": {
+                    "path": "tests/test_project_registry_route_evidence.py",
+                    "sha256": registry.file_sha256(ROOT / "tests/test_project_registry_route_evidence.py"),
+                }
+            },
+            "evidence_refs": ["tests/test_project_registry_route_evidence.py"],
+            "no_cheat_counters": {
+                "public_training_rows_written": 0,
+                "external_inference_calls": 0,
+                "fallback_return_count": 0,
+            },
+            "rollback": {"armed": True, "mode": "contain_and_requalify_predecessor"},
+            "claim_boundary": {
+                "supported_claim": "private proposer floor",
+                "non_claims": ["not public transfer"],
+            },
+        }
+        return {
+            "abstraction_registry_contract": {
+                "replacement_transaction_required_fields": [
+                    "id",
+                    "abstraction_id",
+                    "predecessor_implementation_id",
+                    "successor_implementation_id",
+                    "decision",
+                    "state",
+                    "checks",
+                    "content_bindings",
+                    "evidence_refs",
+                    "no_cheat_counters",
+                    "rollback",
+                    "claim_boundary",
+                ],
+                "replacement_transaction_required_checks": [
+                    "contract_compatible",
+                    "independent_integrity_green",
+                    "blind_information_flow_green",
+                    "private_replay_above_zero",
+                    "predecessor_retained",
+                ],
+            },
+            "abstractions": [
+                {
+                    "id": "field.test",
+                    "canonical_implementation_id": "impl.new",
+                }
+            ],
+            "implementations": [predecessor, successor],
+            "implementation_replacement_transactions": [transaction],
+        }
+
+    def test_valid_replacement_transaction_preserves_lineage_and_route_decision(self) -> None:
+        policy = self.replacement_policy()
+
+        gaps = registry.implementation_replacement_gaps(policy)
+
+        self.assertEqual(gaps, [])
+
+    def test_missing_replacement_transaction_blocks_declared_successor(self) -> None:
+        policy = self.replacement_policy()
+        policy["implementation_replacement_transactions"] = []
+
+        gaps = registry.implementation_replacement_gaps(policy)
+
+        self.assertIn(
+            "canonical_successor_replacement_transaction_count_invalid",
+            {row["kind"] for row in gaps},
+        )
+
+    def test_failed_independent_check_or_nonzero_no_cheat_counter_blocks_replacement(self) -> None:
+        policy = self.replacement_policy()
+        transaction = policy["implementation_replacement_transactions"][0]
+        transaction["checks"]["private_replay_above_zero"] = False
+        transaction["no_cheat_counters"]["fallback_return_count"] = 1
+
+        gaps = registry.implementation_replacement_gaps(policy)
+        kinds = {row["kind"] for row in gaps}
+
+        self.assertIn("replacement_required_checks_failed", kinds)
+        self.assertIn("replacement_no_cheat_counters_invalid", kinds)
+
+    def test_forged_content_hash_blocks_replacement(self) -> None:
+        policy = self.replacement_policy()
+        policy["implementation_replacement_transactions"][0]["content_bindings"]["test_source"]["sha256"] = "0" * 64
+
+        gaps = registry.implementation_replacement_gaps(policy)
+
+        self.assertIn("replacement_exact_content_bindings_invalid", {row["kind"] for row in gaps})
+
     def test_registered_verification_commands_do_not_pass_source_modules_as_runtime_arguments(self) -> None:
         policy = json.loads((ROOT / "configs/project_manifest_registry.json").read_text(encoding="utf-8"))
         commands: list[str] = []

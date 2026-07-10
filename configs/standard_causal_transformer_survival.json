@@ -27,7 +27,8 @@
   "training": {
     "batch_size": 16,
     "pretrain_target_token_positions": 12000000,
-    "sft_target_token_positions": 2500000,
+    "sft_target_token_positions": 6000000,
+    "private_body_sampling_weight": 16.0,
     "learning_rate": 0.0003,
     "min_learning_rate": 0.00003,
     "warmup_steps": 120,
@@ -41,6 +42,8 @@
     "fanout": 4,
     "beam_width": 4,
     "branching_factor": 2,
+    "completion_pool_multiplier": 8,
+    "length_penalty": 0.7,
     "grammar_top_k": 64,
     "decode_max_target_tokens": 180,
     "timeout_seconds_per_task": 20

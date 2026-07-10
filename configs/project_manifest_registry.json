@@ -115,6 +115,27 @@
       "retirement_policy",
       "verification_command"
     ],
+    "replacement_transaction_required_fields": [
+      "id",
+      "abstraction_id",
+      "predecessor_implementation_id",
+      "successor_implementation_id",
+      "decision",
+      "state",
+      "checks",
+      "content_bindings",
+      "evidence_refs",
+      "no_cheat_counters",
+      "rollback",
+      "claim_boundary"
+    ],
+    "replacement_transaction_required_checks": [
+      "contract_compatible",
+      "independent_integrity_green",
+      "blind_information_flow_green",
+      "private_replay_above_zero",
+      "predecessor_retained"
+    ],
     "schema_version": "abstraction_registry_contract_v1",
     "route_evidence_contract": {
       "purpose": "Separate the minimal current receipts that authorize a route from supporting and retained evidence. Static gates invalidate when their owning source changes; volatile state uses an explicit TTL; the registry itself is evaluated in the current invocation.",
@@ -165,6 +186,81 @@
       "public_calibration": "Public benchmark surfaces are measurement-only and are not training data sources."
     }
   },
+  "implementation_replacement_transactions": [
+    {
+      "id": "replace.neural_seed_with_standard_causal_transformer.v1",
+      "abstraction_id": "candidate_generation_contract",
+      "predecessor_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
+      "successor_implementation_id": "impl.standard_causal_transformer_survival.v1",
+      "decision": "adopt_canonical",
+      "state": "qualified",
+      "checks": {
+        "contract_compatible": true,
+        "independent_integrity_green": true,
+        "blind_information_flow_green": true,
+        "private_replay_above_zero": true,
+        "predecessor_retained": true
+      },
+      "content_bindings": {
+        "checkpoint": {
+          "path": "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz",
+          "sha256": "ed14d470531d4b565adbe86a43e040cc108eb47e7423283f378e3a34910fe1fa"
+        },
+        "config": {
+          "path": "configs/standard_causal_transformer_survival.json",
+          "sha256": "dbf196894d087aea3b65a320c8d60051926f1c08d4e95201b3aa0204cbaad094"
+        },
+        "implementation": {
+          "path": "scripts/standard_causal_transformer_survival.py",
+          "sha256": "f62b6290a6f9f0a46524d9ecbf0a1000d8da003ee94dd161ee7163ef911db387"
+        },
+        "candidate_manifest": {
+          "path": "reports/standard_causal_transformer_survival_candidates.jsonl",
+          "sha256": "151e89efc8557664fbb6cb420fe682bd1fca53faa418814a7b155468bddc95de"
+        },
+        "integrity_report": {
+          "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
+          "sha256": "a2937877dc455f198b2c37ee4b6efd3f825aa8ff0012631edb9fc65d7fd51731"
+        },
+        "blind_audit": {
+          "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+          "sha256": "8630734fe5d7a42d2b21291bd123047236ccc5ff751b75386eb77f7fa45b73ac"
+        }
+      },
+      "evidence_refs": [
+        "reports/standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_candidates.jsonl",
+        "reports/candidate_integrity_standard_causal_transformer_survival.json",
+        "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_gate.json"
+      ],
+      "no_cheat_counters": {
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "template_router_tool_credit_count": 0
+      },
+      "rollback": {
+        "armed": true,
+        "mode": "contain_successor_and_requalify_retained_predecessor",
+        "criteria": [
+          "candidate integrity or blind information-flow gate becomes non-GREEN",
+          "checkpoint or evidence content binding changes without requalification",
+          "model-only private verifier pass returns to zero on the frozen split"
+        ]
+      },
+      "claim_boundary": {
+        "supported_claim": "A 6.6M-parameter MLX decoder-only causal transformer establishes a direct full-body model-only private proposer floor with one verifier-passing task out of 24 family-disjoint tasks.",
+        "non_claims": [
+          "not Phase 10 completion",
+          "not broad public transfer",
+          "not production runtime serving",
+          "not selector or ranking quality",
+          "not SymLiquid superiority"
+        ]
+      }
+    }
+  ],
   "coverage_thresholds": {
     "yellow_unregistered_active_sources": 20,
     "red_unregistered_active_sources": 80,
@@ -440,6 +536,53 @@
           "acceptance": {
             "field": "trigger_state",
             "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.standard_causal_transformer.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "standard_causal_transformer_qualification_gate",
+          "path": "reports/standard_causal_transformer_survival_gate.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "configs/standard_causal_transformer_survival.json",
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_survival_gate.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
+          }
+        },
+        {
+          "id": "standard_causal_transformer_candidate_integrity",
+          "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/candidate_integrity.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
+          }
+        },
+        {
+          "id": "standard_causal_transformer_blind_information_flow",
+          "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "configs/standard_causal_transformer_survival.json",
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/blind_information_flow_audit.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
           }
         }
       ]
@@ -1429,7 +1572,7 @@
         "blind information-flow audit",
         "private verifier replay"
       ],
-      "canonical_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
+      "canonical_implementation_id": "impl.standard_causal_transformer_survival.v1",
       "io_contract": {
         "inputs": [
           "registered artifacts",
@@ -4059,7 +4202,8 @@
       "route_evidence_contract_id": "route.neural_seed.source_bound",
       "abstraction_id": "candidate_generation_contract",
       "surface_id": "neural_seed_and_decoder",
-      "status": "live",
+      "status": "retained",
+      "superseded_by_implementation_id": "impl.standard_causal_transformer_survival.v1",
       "implementation_type": "strict_blind_token_decoder_comparator_with_private_replay_receipt",
       "backend": "python_torch_transformer_plus_symliquid_comparator",
       "canonical_entrypoint": "scripts/neural_seed_token_decoder_comparator.py",
@@ -4121,7 +4265,7 @@
         "maintenance_packet_prefix": "registry_impl_neural_seed_strict_token_decoder_v1"
       },
       "routing_eligibility": {
-        "eligible": true,
+        "eligible": false,
         "roles": [
           "survival"
         ],
@@ -4129,7 +4273,7 @@
         "requires_registry_green": true,
         "runtime_serving_allowed": false,
         "teacher_allowed": false,
-        "learned_generation_claim_allowed": true
+        "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retire only after a registered successor satisfies the same abstraction contract or this abstraction is explicitly demoted.",
       "stable_capability_binding": {
@@ -4567,6 +4711,190 @@
           "public_training_rows_written": 0,
           "external_inference_calls": 0,
           "fallback_return_count": 0
+        }
+      }
+    },
+    {
+      "id": "impl.standard_causal_transformer_survival.v1",
+      "route_evidence_contract_id": "route.standard_causal_transformer.source_bound",
+      "abstraction_id": "candidate_generation_contract",
+      "surface_id": "neural_seed_and_decoder",
+      "status": "live",
+      "supersedes_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
+      "implementation_type": "decoder_only_causal_transformer_direct_full_body_generator",
+      "backend": "python_mlx_apple_rope_gqa_swiglu_tied_embeddings",
+      "canonical_entrypoint": "scripts/standard_causal_transformer_survival.py",
+      "swappable_under_contract": true,
+      "replacement_policy": "A successor must preserve prompt/signature-only visibility, reversible tokenization, direct learned full-body generation, independent integrity and blind-flow audits, private verifier replay, exact checkpoint binding, and zero fallback/template/router/tool credit.",
+      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+      "role": "survival",
+      "trust_tier": "governed_training_candidate",
+      "dependencies": [
+        "configs/project_manifest_registry.json",
+        "configs/standard_causal_transformer_survival.json",
+        "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_survival_gate.py",
+        "scripts/candidate_integrity.py",
+        "scripts/blind_information_flow_audit.py",
+        "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz"
+      ],
+      "evidence_outputs": [
+        "reports/standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_candidates.jsonl",
+        "reports/candidate_integrity_standard_causal_transformer_survival.json",
+        "reports/candidate_integrity_standard_causal_transformer_survival.md",
+        "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+        "reports/blind_information_flow_audit_standard_causal_transformer_survival.md",
+        "reports/standard_causal_transformer_survival_gate.json"
+      ],
+      "attd_hooks": {
+        "component": "project_registry",
+        "pressure_sources": [
+          "route_evidence_stale",
+          "checkpoint_binding_changed",
+          "private_replay_zero",
+          "candidate_integrity_regression",
+          "blind_information_flow_regression"
+        ],
+        "maintenance_packet_prefix": "registry_impl_standard_causal_transformer_survival_v1"
+      },
+      "routing_eligibility": {
+        "eligible": true,
+        "roles": [
+          "survival"
+        ],
+        "requires_fresh_evidence": true,
+        "requires_registry_green": true,
+        "runtime_serving_allowed": false,
+        "teacher_allowed": false,
+        "learned_generation_claim_allowed": true
+      },
+      "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
+      "current_wall": "The registered proposer floor is 1/24 model-only verifier-passing tasks. Rank quality is weak, 23 tasks remain unsolved, and 23 of 94 candidates are independently classified as inert or stub-like. This is not Phase 10 completion or public-transfer evidence.",
+      "stable_capability_binding": {
+        "field_id": "candidate_generation_contract",
+        "contract_version": "1.0.0",
+        "artifact_identity": {
+          "revision_policy": "source_config_checkpoint_and_evidence_hash_bound_before_qualification",
+          "provenance_policy": "licensed and private admitted rows retain source and exclusion receipts; public calibration artifacts are absent from training",
+          "mutable_instance_policy": "any checkpoint continuation changes artifact identity and requires fresh audit and replacement qualification"
+        },
+        "authority_request": {
+          "effect_classes": [
+            "read_governed_private_training_rows",
+            "read_governed_licensed_pretraining_rows",
+            "write_training_checkpoint",
+            "write_candidate_artifacts",
+            "write_replay_reports"
+          ],
+          "tools": "local_python_mlx_and_private_verifier_only",
+          "data_read": "registered private and licensed admission manifests plus frozen private heldouts",
+          "data_write": "registered checkpoint and evidence outputs only",
+          "network": "disabled",
+          "delegation_depth": 0,
+          "external_inference_runtime_allowed": false,
+          "public_benchmark_training_allowed": false,
+          "arbitrary_remote_shell_allowed": false
+        },
+        "state_compatibility": {
+          "reads": [
+            "configs/standard_causal_transformer_survival.json",
+            "reports/standard_causal_transformer_survival.json",
+            "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz"
+          ],
+          "writes": [
+            "reports/standard_causal_transformer_survival.json",
+            "reports/standard_causal_transformer_survival_candidates.jsonl",
+            "reports/candidate_integrity_standard_causal_transformer_survival.json",
+            "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+            "reports/standard_causal_transformer_survival_gate.json"
+          ],
+          "migration_required": true,
+          "rollback_mode": "contain_successor_and_requalify_retained_predecessor"
+        },
+        "deployment_profiles": [
+          "private_training_candidate_generation",
+          "public_calibration_preparation"
+        ],
+        "evidence_binding": {
+          "evidence_outputs": [
+            "reports/standard_causal_transformer_survival.json",
+            "reports/standard_causal_transformer_survival_candidates.jsonl",
+            "reports/candidate_integrity_standard_causal_transformer_survival.json",
+            "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+            "reports/standard_causal_transformer_survival_gate.json"
+          ],
+          "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+          "freshness_required": true,
+          "dependency_closure": [
+            "configs/project_manifest_registry.json",
+            "configs/standard_causal_transformer_survival.json",
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_survival_gate.py",
+            "scripts/candidate_integrity.py",
+            "scripts/blind_information_flow_audit.py"
+          ]
+        },
+        "observability_binding": {
+          "required_events": [
+            "checkpoint_loaded_or_trained",
+            "candidate_generated",
+            "candidate_integrity_recomputed",
+            "private_verifier_replayed",
+            "typed_failure_or_abstention",
+            "route_evidence_bound"
+          ],
+          "decision_receipt": true,
+          "privacy_boundary": "structured hashes, counts, candidate source, and verifier outcomes only; no private chain-of-thought"
+        },
+        "content_binding": {
+          "exact_hash_binding_required": true,
+          "artifact_hash_policy": "bind checkpoint, config, implementation source, candidates, integrity report, and blind audit by SHA-256",
+          "manifest_hash_policy": "manifest changes are qualification-relevant and cannot silently preserve route authority",
+          "contract_hash_policy": "bind candidate_generation_contract version 1.0.0",
+          "dependency_closure_hash_policy": "bind tokenizer, model architecture, training config, source, and evaluator dependencies",
+          "evidence_bundle_hash_policy": "replacement transaction contains exact evidence and checkpoint hashes"
+        },
+        "route_binding": {
+          "role_profiles": [
+            "primary",
+            "canary",
+            "shadow",
+            "abstention"
+          ],
+          "caller_context_binding": "candidate generation receives prompt, callable signature, and explicitly admitted local context only",
+          "validator_receipt_required": true,
+          "request_context_hash_policy": "frozen private task and callable signature are receipt-bound without answer-identifying metadata",
+          "fallback_binding": "no fallback route is implemented or credited; generation failure is typed"
+        },
+        "claim_binding": {
+          "qualification_claims": "only a private direct full-body proposer floor above zero is supported",
+          "assumptions": "Apple MLX execution, frozen private split, current checkpoint hash, and current evaluator revisions",
+          "defeaters": "zero replay passes, integrity mismatch, blind-flow fault, content-binding change, or contamination revokes route eligibility",
+          "waivers": "no waiver can bypass no-cheat, integrity, replay, or provider boundaries",
+          "transfer_witnesses": "no public transfer or runtime-serving witness exists",
+          "evaluator_overlap_record_required": true
+        },
+        "lease_binding": {
+          "expiry_required": true,
+          "authority_grant_binding": "lease limits local files, MLX compute, checkpoint destination, and evidence outputs",
+          "state_binding": "lease binds the exact checkpoint and tokenizer/config identity",
+          "consequence_budget": "private bounded candidate generation only; no runtime serving or public calibration authority",
+          "fail_closed_required": true
+        },
+        "adaptation_binding": {
+          "epoch_token_policy": "continued training requires an explicit bounded local epoch and produces a new checkpoint identity",
+          "updater_revision_policy": "optimizer and source revisions are qualification-relevant",
+          "data_receipts_policy": "all rows require private or licensed admission receipts and contamination exclusions",
+          "sentinel_binding": "public-row, external-inference, fallback, and integrity sentinels abort qualification",
+          "journal_policy": "position counts, losses, hashes, no-cheat counters, and resume limitations are retained",
+          "baseline_binding": "the retained compact neural-seed route and pre-fix transformer negatives remain comparison evidence"
+        },
+        "migration_binding": {
+          "solvency_class_required": true,
+          "state_relation_binding": "no checkpoint state compatibility is claimed between the compact predecessor and standard causal transformer",
+          "rehearsal_required": "route-only migration was replayed on the same frozen 24-task private split",
+          "rollback_or_compensation": "contain the new route and requalify the retained predecessor; never reinterpret incompatible checkpoint state"
         }
       }
     },
@@ -7176,6 +7504,9 @@
         "scripts/bounded_public_transfer_residual_mining_v1.py",
         "scripts/sts_broad_regression_audit_v1.py",
         "scripts/trainable_transformer_hybrid_code_generator_v1.py",
+        "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_survival_gate.py",
+        "configs/standard_causal_transformer_survival.json",
         "scripts/canonical_survival_lane_ablation_v1.py",
         "scripts/strict_generator_mlx_*.py",
         "scripts/correctness_generator_survival_lane_gate.py",
@@ -7191,7 +7522,7 @@
         "crates/symliquid-cli/src/code_token_generator.rs",
         "crates/symliquid-cli/src/code_lm_closure/**"
       ],
-      "canonical": "scripts/broad_capability_survival_lane_decision_v1.py",
+      "canonical": "scripts/standard_causal_transformer_survival.py",
       "report_outputs": [
         "reports/private_verifier_spine_smoke.json",
         "reports/private_verifier_spine_smoke.md",
@@ -7199,7 +7530,14 @@
         "reports/neural_seed_strict_generator_fanout_receipt.md",
         "reports/correctness_generator_survival_lane_gate.json",
         "reports/neural_seed_survival_readiness_gate.json",
-        "reports/neural_seed_survival_readiness_gate.md"
+        "reports/neural_seed_survival_readiness_gate.md",
+        "reports/standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_candidates.jsonl",
+        "reports/candidate_integrity_standard_causal_transformer_survival.json",
+        "reports/candidate_integrity_standard_causal_transformer_survival.md",
+        "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+        "reports/blind_information_flow_audit_standard_causal_transformer_survival.md",
+        "reports/standard_causal_transformer_survival_gate.json"
       ],
       "max_report_age_hours": 168,
       "report_output_policies": {

@@ -4,6 +4,7 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 
@@ -14,9 +15,17 @@ if str(SCRIPTS) not in sys.path:
 
 from standard_causal_transformer_model import CausalTransformerConfig, build_model
 from standard_causal_transformer_survival import (
+    beam_rank_score,
+    completion_pool_target,
+    assign_body_balanced_sampling_weights,
+    normalized_sampling_probabilities,
+    phase_target_positions,
+    prune_complete_beams,
     render_visible_signature,
     semantic_stage_source,
     select_family_disjoint_eval,
+    training_callable_signature,
+    training_targets_complete,
     validate_config,
     visible_eval_source,
 )
@@ -179,3 +188,73 @@ def test_semantic_stage_source_rejects_placeholders_and_strips_metadata() -> Non
     assert "prompt_operation_hints" not in semantic
     assert semantic.endswith("signature def dedupe(data):")
     assert semantic_audit == {"placeholder": False, "too_short": False, "metadata_tagged": True}
+
+
+def test_finished_beam_pool_does_not_collapse_to_fanout_size() -> None:
+    config = {"fanout": 4, "completion_pool_multiplier": 8}
+    assert completion_pool_target(config) == 32
+    rows = [
+        {"tokens": [f"token_{index}"], "score": -float(index + 1)}
+        for index in range(40)
+    ]
+    retained = prune_complete_beams(rows, limit=completion_pool_target(config), length_penalty=0.7)
+    assert len(retained) == 32
+    assert beam_rank_score(retained[0], 0.7) >= beam_rank_score(retained[-1], 0.7)
+
+
+def test_private_callable_signature_repairs_stale_hint_from_executable_contract() -> None:
+    signature, receipt = training_callable_signature(
+        {
+            "entry_point": "pair_sum",
+            "solution_body": "return data + other",
+            "tests": "assert pair_sum(2, 3) == 5\n",
+            "decoder_contract": {"visible_arg_count_hint": 1},
+        }
+    )
+    assert signature == "def pair_sum(data, other):"
+    assert receipt == {"source": "private_tests", "arity": 2}
+
+
+def test_family_disjoint_eval_freezes_normalized_callable_signature() -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    rows, _families = select_family_disjoint_eval(config)
+    lcs = next(row for row in rows if row["concept_residual_label"] == "bpg_lcs_length")
+    assert lcs["callable_signature"].endswith("(data, other):")
+    assert lcs["callable_signature_receipt"] == {"source": "private_tests", "arity": 2}
+    assert visible_eval_source(lcs).endswith("signature " + lcs["callable_signature"])
+
+
+def test_private_prompt_variants_share_fixed_body_sampling_mass() -> None:
+    examples = [
+        {"source": "licensed_function", "source_text": "licensed", "body": "return data"},
+        {"source": "governed_private", "source_text": "first", "body": "return data + 1"},
+        {"source": "governed_private", "source_text": "second", "body": "return data + 1"},
+        {"source": "governed_private", "source_text": "third", "body": "return data - 1"},
+    ]
+    weighted, audit = assign_body_balanced_sampling_weights(examples, private_body_weight=16.0)
+    assert weighted[0]["sampling_weight"] == 1.0
+    assert weighted[1]["sampling_weight"] == weighted[2]["sampling_weight"] == 8.0
+    assert weighted[3]["sampling_weight"] == 16.0
+    assert audit["private_sampling_mass"] == 32.0
+    probabilities = normalized_sampling_probabilities(
+        np.array([row["sampling_weight"] for row in weighted]), len(weighted)
+    )
+    assert probabilities is not None
+    assert float(probabilities.sum()) == pytest.approx(1.0)
+
+
+def test_training_completion_uses_consumed_positions_not_estimated_steps() -> None:
+    config = {
+        "pretrain_target_token_positions": 100,
+        "sft_target_token_positions": 50,
+    }
+    reports = [
+        {"phase": "licensed_module_causal_pretraining", "target_positions_consumed": 100},
+        {"phase": "prompt_signature_body_sft", "target_positions_consumed": 49},
+    ]
+    assert phase_target_positions(reports, "prompt_signature_body_sft") == 49
+    assert training_targets_complete(reports, config) is False
+    reports.append(
+        {"phase": "prompt_signature_body_sft_continuation", "target_positions_consumed": 1}
+    )
+    assert training_targets_complete(reports, config) is True
