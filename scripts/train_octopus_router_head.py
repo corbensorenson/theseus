@@ -12,7 +12,9 @@ import hashlib
 import json
 import math
 import re
+import subprocess
 from collections import Counter, defaultdict
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
@@ -67,6 +69,8 @@ def main() -> int:
         help="Optional JSONL workflow routing traces from real local ratchet runs.",
     )
     parser.add_argument("--min-contrastive-accuracy", type=float, default=0.95)
+    parser.add_argument("--project-registry", default="configs/project_manifest_registry.json")
+    parser.add_argument("--git-trace-limit", type=int, default=32)
     args = parser.parse_args()
     if args.extra_traces is None:
         args.extra_traces = [DEFAULT_REAL_TRACE_PATH] if Path(DEFAULT_REAL_TRACE_PATH).exists() else []
@@ -76,7 +80,15 @@ def main() -> int:
     arms = arm_registry.get("arms", [])
     examples = build_trace_dataset(router_eval, arms)
     extra_examples = build_extra_trace_dataset(args.extra_traces, arms)
-    examples.extend(extra_examples)
+    admitted_extra = [row for row in extra_examples if row.get("schema_bound") is True]
+    quarantined_extra = [row for row in extra_examples if row.get("schema_bound") is not True]
+    git_examples, git_quarantine = build_git_registry_trace_dataset(
+        registry=read_json(args.project_registry, {}),
+        arms=arms,
+        limit=args.git_trace_limit,
+    )
+    examples.extend(admitted_extra)
+    examples.extend(git_examples)
     contrastive_negatives = build_contrastive_negatives(examples)
     train_examples = [row for row in examples if row["split"] == "train"]
     holdout_examples = [row for row in examples if row["split"] == "holdout"]
@@ -95,9 +107,10 @@ def main() -> int:
         examples=examples,
         contrastive_negatives=contrastive_negatives,
         router_eval=router_eval,
+        quarantined_real_traces=[*quarantined_extra, *git_quarantine],
     )
 
-    write_json(args.dataset_out, dataset_payload(examples, contrastive_negatives))
+    write_json(args.dataset_out, dataset_payload(examples, contrastive_negatives, [*quarantined_extra, *git_quarantine]))
     write_json(args.model_out, model)
     write_json(args.eval_out, evaluation)
     write_json(args.out, report)
@@ -111,12 +124,14 @@ def build_trace_dataset(router_eval: dict[str, Any], arms: list[dict[str, Any]])
         for arm in arms
     }
     examples: list[dict[str, Any]] = []
-    for source_index, row in enumerate(router_eval.get("decisions", [])):
+    decisions = [row for row in router_eval.get("decisions", []) if isinstance(row, dict)]
+    splits = source_disjoint_splits(decisions, holdout_fraction=0.25)
+    for row in decisions:
         labels = sorted(set(row.get("expected", [])))
         if row.get("risk") in ("high", "critical"):
             labels = sorted(set(labels + ["safety_reflex_arm"]))
         variants = augment_task(row)
-        source_split = "holdout" if source_index % 4 == 3 else "train"
+        source_split = splits.get(str(row.get("task_id") or ""), "train")
         for idx, text in enumerate(variants):
             examples.append(
                 {
@@ -138,6 +153,190 @@ def build_trace_dataset(router_eval: dict[str, Any], arms: list[dict[str, Any]])
                 }
             )
     return examples
+
+
+def source_disjoint_splits(rows: list[dict[str, Any]], *, holdout_fraction: float) -> dict[str, str]:
+    label_counts: Counter[str] = Counter()
+    prepared: list[tuple[str, set[str]]] = []
+    for row in rows:
+        source_id = str(row.get("task_id") or row.get("trace_id") or "")
+        labels = set(str(item) for item in row.get("expected") or row.get("expected_arms") or [])
+        if row.get("risk") in {"high", "critical"}:
+            labels.add("safety_reflex_arm")
+        if source_id and labels:
+            prepared.append((source_id, labels))
+            label_counts.update(labels)
+    target = max(1, int(round(len(prepared) * holdout_fraction))) if len(prepared) >= 4 else 0
+    assignments = {source_id: "train" for source_id, _labels in prepared}
+    remaining = Counter(label_counts)
+    chosen = 0
+    for source_id, labels in sorted(prepared, key=lambda row: stable_id("source_split", row[0])):
+        if chosen >= target:
+            break
+        if all(remaining[label] > 1 for label in labels):
+            assignments[source_id] = "holdout"
+            remaining.subtract(labels)
+            chosen += 1
+    return assignments
+
+
+def build_git_registry_trace_dataset(
+    *,
+    registry: dict[str, Any],
+    arms: list[dict[str, Any]],
+    limit: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    arm_by_name = {str(row.get("arm_name") or ""): row for row in arms}
+    surfaces = [row for row in registry.get("surfaces", []) if isinstance(row, dict)]
+    commits = git_commit_rows(max(0, limit))
+    admitted: list[dict[str, Any]] = []
+    quarantined: list[dict[str, Any]] = []
+    raw_rows: list[dict[str, Any]] = []
+    for commit in commits:
+        changed_paths = git_changed_paths(commit["commit"])
+        disallowed = [path for path in changed_paths if disallowed_router_training_path(path)]
+        if disallowed:
+            quarantined.append(
+                {
+                    "source": "git_registry_work_trace",
+                    "commit": commit["commit"],
+                    "reason": "public_or_generated_surface_not_router_training_evidence",
+                    "disallowed_paths": disallowed[:20],
+                }
+            )
+            continue
+        labels = sorted(
+            {
+                str(surface.get("owner") or "")
+                for path in changed_paths
+                for surface in surfaces
+                if surface_matches_path(surface, path)
+                and str(surface.get("owner") or "") in arm_by_name
+                and str(surface.get("owner") or "") != "head_router"
+            }
+        )
+        if not labels:
+            quarantined.append(
+                {
+                    "source": "git_registry_work_trace",
+                    "commit": commit["commit"],
+                    "reason": "no_registry_owned_octopus_arm_label",
+                }
+            )
+            continue
+        task = git_trace_task(commit["subject"], changed_paths)
+        if any(token in task.lower() for token in ("public calibration", "benchmark answer", "benchmark solution")):
+            quarantined.append(
+                {
+                    "source": "git_registry_work_trace",
+                    "commit": commit["commit"],
+                    "reason": "public_calibration_work_excluded_from_router_training",
+                }
+            )
+            continue
+        raw_rows.append(
+            {
+                "task_id": commit["commit"],
+                "task": task,
+                "risk": "medium" if any(path.startswith(("scripts/", "configs/", "crates/")) for path in changed_paths) else "low",
+                "expected_arms": labels,
+                "changed_paths": changed_paths,
+                "subject": commit["subject"],
+            }
+        )
+    splits = source_disjoint_splits(raw_rows, holdout_fraction=0.20)
+    arm_keywords = {
+        arm["arm_name"]: [str(keyword).lower() for keyword in arm.get("routing_keywords", [])]
+        for arm in arms
+    }
+    for row in raw_rows:
+        envelopes = {label: trace_permission_envelope(arm_by_name[label], row["risk"]) for label in row["expected_arms"]}
+        admitted.append(
+            {
+                "trace_id": stable_id("git_registry_work_trace", row["task_id"]),
+                "source_task_id": row["task_id"],
+                "split": splits.get(row["task_id"], "train"),
+                "task": row["task"],
+                "risk": row["risk"],
+                "routing_pattern": "registry_owned_change",
+                "expected_arms": row["expected_arms"],
+                "schema_bound": True,
+                "forbidden_metadata_paths": [],
+                "generation_read_set": ["commit_subject", "changed_source_paths", "registry_surface_owner"],
+                "outcome_ok": True,
+                "features": sorted(
+                    featurize(
+                        text=row["task"],
+                        risk=row["risk"],
+                        pattern="registry_owned_change",
+                        arm_keywords=arm_keywords,
+                    )
+                ),
+                "source": "real_workflow_trace",
+                "trace_evidence_class": "completed_git_registry_work",
+                "label_derivation": "changed_path_to_registered_surface_to_declared_octopus_owner",
+                "permission_envelopes": envelopes,
+                "commit": row["task_id"],
+                "public_training_rows_written": 0,
+                "external_inference_calls": 0,
+                "fallback_return_count": 0,
+                "candidate_generation_credit": 0,
+            }
+        )
+    return admitted, quarantined
+
+
+def git_commit_rows(limit: int) -> list[dict[str, str]]:
+    if limit <= 0:
+        return []
+    result = subprocess.run(
+        ["git", "log", f"-n{limit}", "--format=%H%x09%s"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    rows = []
+    for line in result.stdout.splitlines():
+        commit, separator, subject = line.partition("\t")
+        if separator and commit and subject:
+            rows.append({"commit": commit, "subject": subject})
+    return rows
+
+
+def git_changed_paths(commit: str) -> list[str]:
+    result = subprocess.run(
+        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", commit],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return sorted({line.strip() for line in result.stdout.splitlines() if line.strip()})
+
+
+def disallowed_router_training_path(path: str) -> bool:
+    return path.startswith(("reports/", "archive/", "checkpoints/", "data/", "benchmarks/", "resource_pantry/"))
+
+
+def surface_matches_path(surface: dict[str, Any], path: str) -> bool:
+    if str(surface.get("canonical") or "") == path:
+        return True
+    return any(fnmatch(path, str(pattern)) for pattern in surface.get("patterns", []) if str(pattern))
+
+
+def git_trace_task(subject: str, changed_paths: list[str]) -> str:
+    source_paths = [path for path in changed_paths if path.startswith(("scripts/", "configs/", "crates/", "tests/", "docs/"))]
+    compact_paths = " ".join(path.replace("/", " ").replace("_", " ") for path in source_paths[:8])
+    return " ".join(f"Completed repository work: {subject}. Changed registered surfaces: {compact_paths}".split())
+
+
+def trace_permission_envelope(arm: dict[str, Any], risk: str) -> dict[str, Any]:
+    envelope = dict(arm.get("permission_boundary") or {})
+    envelope["runtime_tier"] = arm.get("runtime_tier")
+    envelope["tools"] = envelope.get("tools") or "allowlisted_only"
+    envelope["risk"] = risk
+    envelope["budget"] = dict(arm.get("cost_profile") or {})
+    envelope["external_inference"] = "forbidden"
+    return envelope
 
 
 def build_extra_trace_dataset(paths: list[str], arms: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -276,16 +475,24 @@ def featurize(
         features[f"tok:{token}"] += 1
     for left, right in zip(tokens, tokens[1:]):
         features[f"bi:{left}_{right}"] += 1
-    text_l = text.lower()
     for arm_name, keywords in arm_keywords.items():
         for keyword in keywords:
-            if keyword and keyword in text_l:
+            if phrase_in_tokens(keyword, tokens):
                 features[f"arm_keyword:{arm_name}"] += 2
     return features
 
 
 def tokenize(text: str) -> list[str]:
     return re.findall(r"[a-z0-9_]+", text.lower())
+
+
+def phrase_in_tokens(phrase: str, tokens: list[str]) -> bool:
+    """Match router keywords on token boundaries, including multi-token phrases."""
+    wanted = tokenize(phrase)
+    if not wanted or len(wanted) > len(tokens):
+        return False
+    width = len(wanted)
+    return any(tokens[index : index + width] == wanted for index in range(len(tokens) - width + 1))
 
 
 def train_centroid_router(examples: list[dict[str, Any]], arms: list[dict[str, Any]]) -> dict[str, Any]:
@@ -460,6 +667,7 @@ def evaluate_model(
         "decisions": decisions,
         "contrastive_decisions": contrastive_decisions(model, contrastive_negatives, split="holdout")[:80],
         "promotion_gate_passed": promotion_gate_passed,
+        "adoption_state": "QUALIFIED" if promotion_gate_passed else "NOT_ADOPTED",
         "learned_generation_claim_allowed": False,
         "candidate_generation_credit": 0,
         "public_training_rows_written": 0,
@@ -559,7 +767,11 @@ def dot(left: dict[str, float], right: dict[str, float]) -> float:
     return sum(value * float(right.get(feature, 0.0)) for feature, value in left.items())
 
 
-def dataset_payload(examples: list[dict[str, Any]], contrastive_negatives: list[dict[str, Any]]) -> dict[str, Any]:
+def dataset_payload(
+    examples: list[dict[str, Any]],
+    contrastive_negatives: list[dict[str, Any]],
+    quarantined_real_traces: list[dict[str, Any]],
+) -> dict[str, Any]:
     return {
         "policy": "local_only_no_external_inference",
         "framework": "octopus_router_trace_dataset",
@@ -569,12 +781,14 @@ def dataset_payload(examples: list[dict[str, Any]], contrastive_negatives: list[
             "holdout": sum(1 for row in examples if row["split"] == "holdout"),
             "real_trace_examples": sum(1 for row in examples if row.get("source") == "real_workflow_trace"),
             "schema_bound_real_trace_examples": sum(1 for row in examples if row.get("source") == "real_workflow_trace" and row.get("schema_bound") is True),
+            "quarantined_real_trace_count": len(quarantined_real_traces),
             "contrastive_negatives": len(contrastive_negatives),
             "contrastive_holdout_negatives": sum(1 for row in contrastive_negatives if row.get("split") == "holdout"),
             "labelsets": sorted({label_key_for(row["expected_arms"]) for row in examples}),
         },
         "examples": examples,
         "contrastive_negatives": contrastive_negatives,
+        "quarantined_real_traces": quarantined_real_traces,
         "learned_generation_claim_allowed": False,
         "candidate_generation_credit": 0,
         "public_training_rows_written": 0,
@@ -591,6 +805,7 @@ def build_report(
     examples: list[dict[str, Any]],
     contrastive_negatives: list[dict[str, Any]],
     router_eval: dict[str, Any],
+    quarantined_real_traces: list[dict[str, Any]],
 ) -> dict[str, Any]:
     metrics = evaluation.get("metrics", {})
     trace_summary = {
@@ -600,6 +815,7 @@ def build_report(
         "holdout_examples": sum(1 for row in examples if row["split"] == "holdout"),
         "real_trace_examples": sum(1 for row in examples if row.get("source") == "real_workflow_trace"),
         "schema_bound_real_trace_examples": sum(1 for row in examples if row.get("source") == "real_workflow_trace" and row.get("schema_bound") is True),
+        "quarantined_real_trace_count": len(quarantined_real_traces),
         "contrastive_negatives": len(contrastive_negatives),
         "contrastive_holdout_negatives": sum(1 for row in contrastive_negatives if row.get("split") == "holdout"),
         "labelsets": len(model.get("labelsets", [])),
@@ -615,13 +831,15 @@ def build_report(
             "router_eval": args.router_eval,
             "arm_registry": args.arm_registry,
             "extra_traces": args.extra_traces,
+            "project_registry": args.project_registry,
+            "git_trace_limit": args.git_trace_limit,
         },
         promotion_gate_passed=promotion_gate_passed,
     )
     return {
         "policy": "local_only_no_external_inference",
         "framework": "octopus_router_head_training",
-        "status": "trained_contrastive_ready" if promotion_gate_passed else "needs_more_traces_or_contrastive_margin",
+        "status": "trained_contrastive_ready" if promotion_gate_passed else "valid_negative_not_adopted",
         "model_type": model["model_type"],
         "training_source": args.router_eval,
         "artifacts": {
@@ -631,10 +849,14 @@ def build_report(
             "router_eval": args.router_eval,
             "arm_registry": args.arm_registry,
             "extra_traces": args.extra_traces,
+            "project_registry": args.project_registry,
+            "git_trace_limit": args.git_trace_limit,
         },
         "trace_summary": trace_summary,
+        "quarantined_real_traces": quarantined_real_traces,
         "metrics": metrics,
         "promotion_gate_passed": promotion_gate_passed,
+        "adoption_state": "QUALIFIED" if promotion_gate_passed else "NOT_ADOPTED",
         "learned_generation_claim_allowed": False,
         "candidate_generation_credit": 0,
         "router_selection_only": True,

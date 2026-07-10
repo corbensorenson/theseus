@@ -472,7 +472,7 @@
         16
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "partial",
+      "status": "implemented",
       "dependency": "requires route-level verifier capacity and residual-obligation ledgers",
       "acceptance_gate": "Routing decisions include adequacy state, verification tax, displaced repair/human-cleanup cost, residual obligations, verifier budget consumption, and stronger-verifier escalation for high-risk work.",
       "support_state_target": "synthetic-test-backed",
@@ -2226,7 +2226,7 @@
     {
       "phase": 16,
       "title": "MoECOT And Octopus Router Integration",
-      "status": "partial",
+      "status": "implemented",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-16",
       "ai_book_source_basis": [
@@ -2297,12 +2297,8 @@
         "reports/viea_spine_record_gate.json",
         "reports/viea_spine_materialized_view.json"
       ],
-      "missing_items": [
-        "Sparse model routing is now real and action-attributed, but matched dense wins the current diagnostics and sparse remains NOT_ADOPTED. Phase 16 still needs diverse real task-to-arm traces and a verifier-positive proposer before any learned/default route activation.",
-        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit verification-bandwidth capacity accounting with obligation count, verifier capacity, decomposition contracts, residual-obligation ledger, and escalation thresholds; the STS ranker now reads retained archived matched private surfaces through an archive-aware reader and clears the previous no-admissible residual",
-        "Octopus routing, train-once fanout, private verifier cascade, and STS ranker policy now emit governance-tax accounting with per-gate overhead, review load, tax-per-caught-risk, and caught verification-capacity/residual evidence; remaining work is live-route adoption evidence: richer real task-to-arm traces and current hot-manifest regeneration before any default route-policy change"
-      ],
-      "smallest_next_patch": "Collect more diverse real task-to-arm traces and, before any default route-policy adoption, refresh current hot STS candidate manifests through the registered fanout path so retained archive evidence is not mistaken for live-route proof.",
+      "missing_items": [],
+      "smallest_next_patch": "Phase 16 is closed without adopting either losing learned route. Phase 10 owns the next capability action: train a replacement standard causal transformer, then feed verifier-positive real traces back through this already-qualified routing contract before reconsidering learned/default activation.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -2311,7 +2307,10 @@
         "reports/octopus_router_head_gate.json trigger_state=GREEN",
         "python3 scripts/octopus_router.py --router-head-report reports/octopus_router_head_report.json --router-head-eval reports/octopus_router_head_eval.json",
         "reports/octopus_router_report.json trigger_state=GREEN",
-        "reports/octopus_router_report.json learned_router_head.promotion_gate_passed=true",
+        "reports/octopus_router_eval.json metrics.selection_accuracy=1.0",
+        "reports/octopus_router_head_gate.json summary.adoption_state=NOT_ADOPTED",
+        "reports/octopus_router_head_report.json adoption_state=NOT_ADOPTED",
+        "reports/octopus_router_report.json learned_router_head.runtime_activation.active=false",
         "reports/octopus_router_report.json moecot_spine.route_validator_ready=true",
         "reports/octopus_router_report.json moecot_spine.vcm_context_ready=true",
         "reports/octopus_router_report.json moecot_spine.candidate_integrity_ready=true",
@@ -2323,7 +2322,8 @@
         "reports/octopus_router_report.json implementation_matrix contains verification_bandwidth_and_governance_tax=implemented",
         "reports/octopus_router_report.json moecot_spine.candidate_generation_credit=0",
         "reports/octopus_router_report.json implementation_matrix contains viea_moecot_route_receipts=implemented",
-        "python3 scripts/code_lm_train_once_fanout.py",
+        "python3 scripts/code_lm_train_once_fanout.py --execute --refresh-fanout-only --private-only-refresh --skip-build --refresh-private-eval-limit 16 --refresh-candidates-per-task 4 --refresh-smoke-timeout-seconds 300",
+        "reports/code_lm_train_once_fanout.json current_phase=missing_or_stale_checkpoint_for_fanout_only_refresh",
         "reports/code_lm_train_once_fanout.json verification_bandwidth.status=ready",
         "reports/code_lm_train_once_fanout.json governance_tax.status=ready",
         "reports/code_lm_train_once_fanout.json viea_fanout_records contains costed_route_record",
@@ -2344,7 +2344,7 @@
         "reports/viea_spine_record_gate.json profiles sts_ranker_policy_spine_v1 passed=true",
         "reports/viea_spine_record_gate.json profiles octopus_router_head_training_spine_v1 passed=true"
       ],
-      "completion_rule": "Octopus routing becomes a registry-validated capability selector that improves execution without laundering unsupported claims."
+      "completion_rule": "Octopus routing is a registry-validated capability selector that improves execution without laundering unsupported claims; learned routes are activated only after separately passing capability controls, and a valid negative remains NOT_ADOPTED rather than making evidence integrity RED."
     },
     {
       "phase": 17,

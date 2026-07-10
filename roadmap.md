@@ -654,6 +654,20 @@ deletion closure is graph evidence, not physical unlearning.
   beats a matched active-parameter dense control before default adoption.
 - Do not: let routing hide weak candidate generation or count expert/tool selection
   as learned answer generation.
+- Implemented evidence: the registry-gated deterministic bootloader now passes
+  `14/14` source-defined routing cases with exact arm sets, token-boundary keyword
+  matching, specialist-over-generic subsumption, fail-closed stale/unqualified
+  routes, and an explicit live-hardware veto for simulation-only arms. Eighteen
+  schema-bound completed-work traces are source-disjoint from holdout and carry
+  permission/no-cheat receipts. The learned sparse head is a valid negative
+  (`exact=0.375`, contrastive rejection `0.1667`) and remains `NOT_ADOPTED`; the
+  matched sparse proposer also remains `NOT_ADOPTED` because dense control won.
+  The independent router-head integrity gate is GREEN without converting those
+  losses into route authorization. Fanout, verifier, STS, VCM, verification-
+  bandwidth, governance-tax, VIEA, and plan-compiler contracts all replay; a live
+  fanout refresh correctly emits a typed stale-checkpoint deferral rather than
+  running an obsolete model. New learned/default routing evidence now belongs to
+  the Phase-10 replacement proposer, not to more router scaffolding.
 
 ### Phase 17: Simulation, Fidelity, and World-Model Contracts
 - Simulation contract records for toy environments/private fixtures/proxy

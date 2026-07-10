@@ -1316,6 +1316,19 @@ evidence, not learned-generation or public-transfer evidence. The next Phase
 16 fix is live-route adoption evidence: collect richer real task-to-arm traces
 and refresh current hot STS candidate manifests through the registered fanout
 path before any default route-policy change.
+The Phase 16 route contract is now closed without adopting a losing learned
+route. The deterministic bootloader moved from `4/14` to `14/14` exact private
+route cases after replacing substring matches with token-boundary scoring,
+adding specialist-over-generic subsumption, and making probationary live-hardware
+matches fail closed. Eighteen completed git/registry work traces are admitted
+under source-disjoint splits; 24 legacy/generated or schema-incomplete traces are
+quarantined. The learned sparse head remains honestly `NOT_ADOPTED`
+(`exact_set_accuracy=0.375`, `contrastive_negative_accuracy=0.1667`) and has no
+runtime activation or learned-generation credit. A bounded live fanout refresh
+also refused the stale checkpoint with the typed state
+`missing_or_stale_checkpoint_for_fanout_only_refresh`; Phase 10 owns replacement
+model training rather than refreshing a falsified body-token lane.
+
 The report attaches a ready VIEA route-validator receipt, a ready VCM context
 governor receipt, and a ready candidate-integrity boundary; it records `0`
 public training rows, `0` runtime external inference calls, `0` fallback

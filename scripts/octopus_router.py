@@ -1272,6 +1272,20 @@ def route_task(
         if arm_route_eligible_for_task(arm, task_l=task_l)
     }
     blocked_candidates = sorted(set(arms_by_name) - eligible_names)
+    live_probationary_matches = [
+        name
+        for name, arm in arms_by_name.items()
+        if arm.get("lifecycle_status") == "probationary_simulation_only"
+        and score_arm(task_l, arm) > 0
+        and any(term in task_l for term in ("live hardware", "real hardware", "takeoff", "production"))
+        and "no live hardware" not in task_l
+    ]
+    if live_probationary_matches:
+        return blocked_route_decision(
+            expected_pattern=expected_pattern,
+            fault_type="PROBATIONARY_ARM_LIVE_ROUTE_FORBIDDEN",
+            blocked_candidates=sorted(set(blocked_candidates) | set(live_probationary_matches)),
+        )
     if "head_router" not in eligible_names:
         return blocked_route_decision(
             expected_pattern=expected_pattern,
@@ -1303,8 +1317,9 @@ def route_task(
             if score > 0:
                 scored.append((score, arm))
         scored.sort(key=lambda row: (-row[0], row[1]["arm_name"]))
-        selected = ["head_router"] + [arm["arm_name"] for _, arm in scored[:4]]
+        selected = ["head_router"] + [arm["arm_name"] for score, arm in scored if score >= 3][:4]
         selected.extend(name for name in corouted_arms(task_l, risk, selected) if name in eligible_names)
+        selected = apply_capability_subsumption(task_l, selected)
     if risk in ("high", "critical") and "safety_reflex_arm" not in eligible_names:
         return blocked_route_decision(
             expected_pattern=expected_pattern,
@@ -1381,8 +1396,12 @@ def arm_route_eligible_for_task(arm: dict[str, Any], *, task_l: str) -> bool:
         return False
     lifecycle = str(arm.get("lifecycle_status") or "")
     if lifecycle == "probationary_simulation_only":
-        simulation_requested = any(term in task_l for term in ("simulation", "simulator", "sitl", "synthetic"))
+        simulation_requested = any(
+            term in task_l for term in ("simulation", "simulator", "sitl", "synthetic", "no live hardware")
+        )
         live_requested = any(term in task_l for term in ("live hardware", "real hardware", "takeoff", "production"))
+        if "no live hardware" in task_l:
+            live_requested = False
         return simulation_requested and not live_requested
     return lifecycle.startswith("active") or lifecycle == "split_candidate"
 
@@ -1410,16 +1429,45 @@ def blocked_route_decision(*, expected_pattern: str, fault_type: str, blocked_ca
 
 
 def score_arm(task_l: str, arm: dict[str, Any]) -> int:
+    tokens = route_tokens(task_l)
     score = 0
     for keyword in arm.get("routing_keywords", []):
         key = keyword.lower()
-        if key in task_l:
+        if route_phrase_present(key, tokens):
             score += 3 if " " in key or "_" in key else 2
     name_terms = arm["arm_name"].replace("_", " ").split()
     for term in name_terms:
-        if len(term) > 3 and term in task_l:
+        if len(term) > 3 and route_phrase_present(term, tokens):
             score += 1
     return score
+
+
+def route_tokens(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9_]+", text.lower())
+
+
+def route_phrase_present(phrase: str, tokens: list[str]) -> bool:
+    wanted = route_tokens(phrase)
+    if not wanted or len(wanted) > len(tokens):
+        return False
+    width = len(wanted)
+    return any(tokens[index : index + width] == wanted for index in range(len(tokens) - width + 1))
+
+
+def apply_capability_subsumption(task_l: str, selected: list[str]) -> list[str]:
+    """Prefer a precise specialist when a generic arm would duplicate its work."""
+    selected_set = set(selected)
+    if "bridge_benchmark_arm" in selected_set and not any(term in task_l for term in ("public", "ratchet", "regression")):
+        selected_set.discard("benchmark_ratchet_arm")
+    if "puffer_ocean_logging_arm" in selected_set and not any(term in task_l for term in ("diagnose", "failure", "tail")):
+        selected_set.discard("residual_governance_arm")
+    if "loop_closure_tool_arm" in selected_set and any(term in task_l for term in ("tool card", "toolify", "into verified tool")):
+        selected_set.discard("benchmark_ratchet_arm")
+    calibration_only = "public_calibration_arm" in selected_set and any(term in task_l for term in ("compare", "calibration"))
+    grammar_work = any(term in task_l for term in ("train", "generate", "repair", "grammar-state"))
+    if calibration_only and not grammar_work:
+        selected_set.discard("babylm_grammar_arm")
+    return [name for name in selected if name in selected_set]
 
 
 def corouted_arms(task_l: str, risk: str, selected: list[str]) -> list[str]:
@@ -1433,9 +1481,15 @@ def corouted_arms(task_l: str, risk: str, selected: list[str]) -> list[str]:
     if "full local capability ratchet" in task_l or ("ratchet" in task_l and "ledger" in task_l):
         arms.extend(["benchmark_ratchet_arm", "residual_governance_arm", "loop_closure_tool_arm"])
     if any(term in task_l for term in ("drone", "uav", "quadrotor", "mavsdk", "mavlink", "ai grand prix")):
-        arms.extend(["drone_racing_control_arm", "python_runtime_compliance_arm", "safety_reflex_arm"])
+        arms.extend(["drone_racing_control_arm", "safety_reflex_arm"])
+        if any(term in task_l for term in ("frontier", "benchmark", "smoke-test")):
+            arms.append("benchmark_ratchet_arm")
     if any(term in task_l for term in ("minecraft", "crafter", "craftax", "game", "video game", "gameboy", "gba", "rom", "emulator")):
         arms.extend(["video_game_play_arm", "benchmark_ratchet_arm", "safety_reflex_arm"])
+    if any(term in task_l for term in ("tool card", "toolify", "into verified tool")) and any(
+        term in task_l for term in ("residual", "repeated", "recurring")
+    ):
+        arms.extend(["loop_closure_tool_arm", "residual_governance_arm"])
     if any(term in task_l for term in ("production", "deployment", "live data")):
         arms.extend(["safety_reflex_arm", "rust_cuda_systems_arm"])
     if risk in ("high", "critical"):

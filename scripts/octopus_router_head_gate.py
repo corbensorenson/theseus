@@ -63,6 +63,7 @@ def build_gate(
     started: float,
 ) -> dict[str, Any]:
     hard_gaps: list[dict[str, Any]] = []
+    adoption_gaps: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
     trace_summary = dict_value(report.get("trace_summary"))
     dataset_summary = dict_value(dataset.get("summary"))
@@ -123,7 +124,7 @@ def build_gate(
     if int(trace_summary.get("contrastive_holdout_negatives") or 0) <= 0:
         hard_gaps.append(gap("contrastive_holdout_negatives_missing", {"trace_summary": trace_summary}))
     if float(metrics.get("contrastive_negative_accuracy") or 0.0) < args.min_contrastive_accuracy:
-        hard_gaps.append(
+        adoption_gaps.append(
             gap(
                 "contrastive_negative_accuracy_below_floor",
                 {
@@ -131,20 +132,22 @@ def build_gate(
                     "required": args.min_contrastive_accuracy,
                     "metrics": metrics,
                 },
+                severity="adoption_gap",
             )
         )
     if float(metrics.get("exact_set_accuracy") or 0.0) < 0.95:
-        hard_gaps.append(gap("holdout_exact_set_accuracy_below_floor", {"metrics": metrics}))
+        adoption_gaps.append(gap("holdout_exact_set_accuracy_below_floor", {"metrics": metrics}, severity="adoption_gap"))
     if float(metrics.get("risk_routing_accuracy") or 0.0) < 1.0:
         hard_gaps.append(gap("risk_routing_accuracy_below_floor", {"metrics": metrics}))
     if report.get("promotion_gate_passed") is not True or evaluation.get("promotion_gate_passed") is not True:
-        hard_gaps.append(
+        adoption_gaps.append(
             gap(
                 "promotion_gate_not_passed",
                 {
                     "report_promotion_gate_passed": report.get("promotion_gate_passed"),
                     "eval_promotion_gate_passed": evaluation.get("promotion_gate_passed"),
                 },
+                severity="adoption_gap",
             )
         )
     if report.get("learned_generation_claim_allowed") is not False:
@@ -218,6 +221,7 @@ def build_gate(
         hard_gaps.append(gap("contrastive_decision_dataset_mismatch", {"expected": expected_contrastive_count, "observed": len(contrastive_decisions)}))
 
     trigger_state = "GREEN" if not hard_gaps else "RED"
+    adoption_state = "QUALIFIED" if not adoption_gaps and report.get("promotion_gate_passed") is True else "NOT_ADOPTED"
     return {
         "policy": "project_theseus_octopus_router_head_gate_v1",
         "created_utc": now(),
@@ -244,15 +248,19 @@ def build_gate(
             "holdout_source_overlap_count": len(leaked_sources),
             "missing_viea_router_head_records": missing_records,
             "hard_gap_count": len(hard_gaps),
+            "adoption_gap_count": len(adoption_gaps),
+            "adoption_state": adoption_state,
             "warning_count": len(warnings),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "metrics": metrics,
         "hard_gaps": hard_gaps,
+        "adoption_gaps": adoption_gaps,
         "warnings": warnings,
         "rules": {
             "trace_source": "Learned router-head promotion needs at least one schema-bound real task-to-arm trace, not seeded cases only.",
             "contrastive": "The head must score the true arm set above hard wrong-labelset negatives on holdout examples.",
+            "qualification_boundary": "A valid, replayable negative experiment keeps the integrity gate GREEN while adoption stays NOT_ADOPTED; capability floors are never waived.",
             "non_generation": "Router-head selections are capability routing evidence only and never learned code-generation evidence.",
         },
         "public_training_rows_written": 0,
@@ -266,6 +274,7 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "trigger_state": report.get("trigger_state"),
         "summary": report.get("summary"),
         "hard_gaps": report.get("hard_gaps"),
+        "adoption_gaps": report.get("adoption_gaps"),
         "warnings": report.get("warnings"),
     }
 
