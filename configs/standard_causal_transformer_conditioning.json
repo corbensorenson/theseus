@@ -1,0 +1,28 @@
+{
+  "policy": "project_theseus_standard_causal_transformer_conditioning_v1",
+  "seed": 1759,
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "base_checkpoint": "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz",
+  "conditioned_checkpoint_dir": "checkpoints/standard_causal_transformer_conditioned_v1",
+  "base_report": "reports/standard_causal_transformer_survival_pre_conditioning.json",
+  "canonical_report": "reports/standard_causal_transformer_survival.json",
+  "training": {
+    "target_token_positions": 2000000,
+    "batch_size": 16,
+    "learning_rate": 0.00008,
+    "min_learning_rate": 0.00001,
+    "warmup_steps": 50,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "pairwise_margin": 0.2,
+    "pairwise_weight": 1.0,
+    "checkpoint_every_steps": 500
+  },
+  "boundaries": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_returns_allowed": false,
+    "hidden_eval_fields_used": false,
+    "negative_pair_policy": "deterministic_source_derangement_same_target_body"
+  }
+}

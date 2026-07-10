@@ -66,11 +66,17 @@ DEFAULT_OUT = ROOT / "reports" / "blind_information_flow_audit.json"
 DEFAULT_MD = ROOT / "reports" / "blind_information_flow_audit.md"
 
 AUDITED_INFERENCE_FUNCTIONS = {
+    "callable_signature",
+    "decode_beams",
+    "grammar_choices",
     "row_to_text",
     "prompt_contract_score",
     "prompt_signature_score",
     "rank_actions",
+    "render_visible_signature",
     "sanitize_task",
+    "signature_names",
+    "visible_eval_source",
 }
 
 FORBIDDEN_INFERENCE_FIELDS = {
