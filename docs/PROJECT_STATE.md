@@ -1,6 +1,6 @@
 # Project State
 
-Last consolidated: 2026-07-06 local / 2026-07-06 UTC.
+Last consolidated: 2026-07-09 local / 2026-07-10 UTC.
 
 This is the current-wall page for Project Theseus. Historical state was moved
 to `docs/archive/PROJECT_STATE_2026_06_22_pre_reality_harness.md`.
@@ -16,14 +16,24 @@ surface, abstraction, implementation binding, execution-spine hook, required
 records, gates, docs, evidence, and an integration smoke. This prevents the
 roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
+The project registry is now `GREEN` with `0` hard violations and `0` route
+blockers. Route health uses `14` minimal source-bound, TTL-bound, or
+current-invocation receipts; `150` other declared outputs are supporting
+evidence and no longer force daily regeneration. Stale, invalid, missing, or
+acceptance-rejected route receipts still fail closed. This is registry
+correctness and iteration-efficiency evidence, not model capability.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
-`6`, `7`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `10`,
-`13`, `14`, `15`, and `16` are intentionally back to `partial` after the latest
+`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `7`, `10`,
+`13`, `14`, `15`, and `16` are intentionally `partial` after the latest
 ASI Stack/Claude book-mining pass; and phases `1`, `2`, `9`, and `18` are
 externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
+current local AI_book manifest contains `46` chapters, all mapped through the
+roadmap implementation matrix. The newly admitted adversarial-evaluation chapter
+is routed into existing phases `4`, `10`, `12`, `14`, and `18`; mapping it is not
+evidence that Theseus detects deception or that any local model is deceptive.
 roadmap gate now requires active core slices to carry a valid current support
 state and evidence refs. A1 is currently `synthetic-test-backed`; the full core
 slice support summary records `A1_claim_ledger_trace_kernel=synthetic-test-backed`,
@@ -36,8 +46,9 @@ architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
 work can continue, but strict pre-training architecture readiness is now `RED`
-with one blocker: six book-derived implementation phases are still partial.
-Those partial phases are VCM transactional ABI/runtime parity (`3`), practical
+with one blocker: seven book-derived implementation phases are still partial.
+Those partial phases are VCM transactional ABI/runtime parity (`3`),
+candidate-level data/teacher lifecycle governance (`7`), practical
 neural seed survival/policy optimization/generation modes (`10`), semantic IR
 localized repair (`13`), evidence hygiene/receipt faithfulness/claim revision
 (`14`), procedural-memory-to-lookahead/tool lifecycle (`15`), and

@@ -90,12 +90,15 @@
         "configs/project_manifest_registry.json",
         "configs/attd_policy.json",
         "scripts/theseus_project_registry.py",
+        "scripts/theseus_control_plane.py",
+        "tests/test_project_registry_route_evidence.py",
         "docs/PROJECT_STATE.md",
         "roadmap.md"
       ],
       "allowed_tools": [
         "apply_patch",
         "python3 -m py_compile",
+        "python3 -m unittest discover -s tests -p test_project_registry_route_evidence.py -v",
         "python3 scripts/theseus_project_registry.py --gate",
         "python3 scripts/attd_analyzer.py"
       ],
@@ -107,12 +110,15 @@
       ],
       "required_outputs": [
         "project steward config",
+        "route evidence contracts separating current route receipts from supporting history",
+        "negative controls for stale source, expired TTL, rejected acceptance, and current-invocation evidence",
         "registry steward coverage summary",
         "gate output with steward counts",
         "updated project-state note if validation succeeds"
       ],
       "acceptance_tests": [
-        "python3 -m py_compile scripts/theseus_project_registry.py",
+        "python3 -m py_compile scripts/theseus_project_registry.py scripts/theseus_control_plane.py",
+        "python3 -m unittest discover -s tests -p 'test_project_registry_route_evidence.py' -v",
         "python3 scripts/theseus_project_registry.py --gate"
       ],
       "evidence_requirements": [
@@ -120,7 +126,9 @@
         "active_project_work_contract_count >= 1",
         "mandatory event-taint classes covered",
         "module cards cover active major surfaces",
-        "steward_decision_count >= 5"
+        "steward_decision_count >= 5",
+        "supporting historical outputs do not expire routes",
+        "stale, missing, invalid, or rejected minimal route receipts fail closed"
       ],
       "authority_ceiling": "registry_governance_only_no_public_training_no_runtime_external_inference",
       "rollback_path": "Revert only this steward config/registry integration patch or mark project_steward_records blocked; do not delete unrelated evidence.",
@@ -825,15 +833,20 @@
       "invariants": [
         "active source surfaces are registered",
         "implementations bind to abstractions",
-        "governance gaps remain visible"
+        "governance gaps remain visible",
+        "every routable implementation names minimal current route evidence",
+        "supporting and retained evidence cannot authorize or expire a route"
       ],
       "failure_modes": [
         "unregistered active source",
-        "stale evidence",
+        "stale, missing, invalid, or rejected route evidence",
+        "historical evidence incorrectly treated as volatile route health",
+        "unexecutable registered verification command",
         "silent successor sprawl"
       ],
       "minimal_implementation": "Materialized project registry and gate summary.",
       "validation_commands": [
+        "python3 -m unittest discover -s tests -p 'test_project_registry_route_evidence.py' -v",
         "python3 scripts/theseus_project_registry.py --gate"
       ],
       "evidence_refs": [
@@ -1392,6 +1405,47 @@
     }
   ],
   "source_sync_review_decisions": [
+    {
+      "id": "source_sync.phase4_10_12_14_18.adversarial_evaluation_manifest_admission.20260710",
+      "record_type": "source_sync_review_decision",
+      "phase": 4,
+      "phase_title": "Blind Candidate Integrity And Evidence-Bound Evaluation",
+      "decision": "matrix_updated_existing_owners",
+      "status": "active",
+      "reason": "The current local AI_book manifest admits Adversarial Evaluation, Sandbagging, and Training-Time Deception. Theseus routes its evaluation-integrity record, cross-context discrepancy probes, monitor provenance, interference controls, and no-promotion semantics through existing candidate-integrity, generator, benchmark, claim-evidence, and authority phases rather than creating a sidecar detector lane.",
+      "surface_ids": [
+        "candidate_integrity",
+        "neural_seed_decoder",
+        "benchmark_governance",
+        "claim_evidence_runtime",
+        "authority_runtime"
+      ],
+      "changed_source_paths": [
+        "chapters/adversarial-evaluation-sandbagging-and-training-time-deception.qmd",
+        "book_structure.json"
+      ],
+      "backlog_ids": [],
+      "evidence_refs": [
+        "roadmap.md",
+        "configs/roadmap_implementation_matrix.json",
+        "reports/roadmap_implementation_gate.json"
+      ],
+      "validation_commands": [
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/module_definition_of_done_gate.py",
+        "python3 scripts/theseus_project_registry.py --gate"
+      ],
+      "non_claims": [
+        "book threat models do not establish local deception",
+        "one passed probe does not establish honesty, non-scheming, complete deception detection, or safety",
+        "book source text is not training data",
+        "manifest admission does not create an implementation-complete capability"
+      ],
+      "reviewed_utc": "2026-07-10T05:00:00Z",
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
+    },
     {
       "id": "source_sync.phase7.data_engine_future_intake_matrix_update.20260710",
       "record_type": "source_sync_review_decision",
@@ -5971,6 +6025,25 @@
         "keep declared latest-view report outputs for active surfaces",
         "compact or archive bulky historical variants with pointer manifests",
         "preserve negative evidence needed for current capability walls"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "decision.registry_route_evidence_lifecycle_20260710",
+      "target": "declared implementation evidence outputs and route freshness",
+      "decision": "separate_minimal_route_receipts_from_supporting_history",
+      "reason": "The previous default treated every declared report as volatile 24-hour route evidence, expiring 11 implementations and creating pressure to regenerate 144 unrelated artifacts. Route eligibility now depends only on minimal source-bound, TTL-bound, or current-invocation receipts; supporting and retained evidence remains auditable without authorizing or expiring routes.",
+      "evidence_refs": [
+        "configs/project_manifest_registry.json",
+        "scripts/theseus_project_registry.py",
+        "tests/test_project_registry_route_evidence.py",
+        "reports/theseus_project_registry.json"
+      ],
+      "allowed_next_actions": [
+        "refresh a route receipt when its declared source changes",
+        "refresh volatile resource evidence when its explicit TTL expires",
+        "retain supporting history without periodic regeneration",
+        "reject missing, invalid, stale, or acceptance-rejected route receipts"
       ],
       "status": "active"
     }

@@ -178,7 +178,7 @@ def main() -> int:
 def observe_state(db_path: Path, control_paths: list[Path]) -> dict[str, Any]:
     report_records = build_report_records(CONTROL_REPORT_SPECS)
     report_map = {row["id"]: row for row in report_records}
-    payloads = {row["id"]: row.get("payload", {}) for row in report_records}
+    payloads = trusted_report_payloads(report_records)
     current_pid = os.getpid()
     active_code_lm = [
         row for row in windows_active_code_lm_process_rows() if int(row.get("pid") or -1) != current_pid
@@ -188,7 +188,11 @@ def observe_state(db_path: Path, control_paths: list[Path]) -> dict[str, Any]:
     current_index = report_evidence_store.current_report_index(db_path, control_paths)
     gates = build_gates(payloads, active_code_lm, duplicate_targets, current_index)
     maintenance_queue = build_maintenance_queue(payloads)
-    stale_reports = [compact_report_record(row) for row in report_records if row.get("stale") or row.get("missing")]
+    stale_reports = [
+        compact_report_record(row)
+        for row in report_records
+        if row.get("required") and (row.get("stale") or row.get("missing"))
+    ]
     blockers = build_blockers(payloads, stale_reports, duplicate_targets, current_index, gates)
     typed_records = build_typed_records(report_records, gates, maintenance_queue, blockers, active_code_lm)
     return {
@@ -210,6 +214,15 @@ def observe_state(db_path: Path, control_paths: list[Path]) -> dict[str, Any]:
         "blockers": blockers,
         "maintenance_queue": maintenance_queue,
         "typed_records": typed_records,
+    }
+
+
+def trusted_report_payloads(report_records: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Return only payloads current enough to participate in control decisions."""
+    return {
+        str(row.get("id") or ""): as_dict(row.get("payload"))
+        for row in report_records
+        if row.get("id") and not row.get("stale") and not row.get("missing")
     }
 
 
@@ -368,6 +381,7 @@ def build_gates(
         and int(project_summary.get("stable_capability_field_gap_count") or 0) == 0
         and int(project_summary.get("stable_capability_field_health_red_count") or 0) == 0
         and int(project_summary.get("implementation_routing_blocker_count") or 0) == 0
+        and int(project_summary.get("blocked_route_evidence_output_count") or 0) == 0
         and int(project_summary.get("registry_hard_governance_violation_count") or 0) == 0
     )
     spine_view_ready = bool(
@@ -402,6 +416,9 @@ def build_gates(
                 "stable_capability_field_gap_count": int(project_summary.get("stable_capability_field_gap_count") or 0),
                 "stable_capability_field_health_red_count": int(project_summary.get("stable_capability_field_health_red_count") or 0),
                 "implementation_routing_blocker_count": int(project_summary.get("implementation_routing_blocker_count") or 0),
+                "route_evidence_output_count": int(project_summary.get("route_evidence_output_count") or 0),
+                "blocked_route_evidence_output_count": int(project_summary.get("blocked_route_evidence_output_count") or 0),
+                "supporting_evidence_output_count": int(project_summary.get("supporting_evidence_output_count") or 0),
                 "registry_hard_governance_violation_count": int(project_summary.get("registry_hard_governance_violation_count") or 0),
                 "routing_eligible_implementation_count": int(project_summary.get("routing_eligible_implementation_count") or 0),
                 "registry_cleanup_queue_count": int(project_summary.get("registry_cleanup_queue_count") or 0),
@@ -1264,6 +1281,9 @@ def build_report_payload(
             "duplicate_code_lm_artifact_target_count": len(state["active_workers"]["duplicate_code_lm_artifact_targets"]),
             "registry_governance_ready": state["gates"]["registry_governance_ready"]["passed"],
             "registry_routing_eligible_implementation_count": state["gates"]["registry_governance_ready"]["evidence"].get("routing_eligible_implementation_count"),
+            "registry_route_evidence_output_count": state["gates"]["registry_governance_ready"]["evidence"].get("route_evidence_output_count"),
+            "registry_blocked_route_evidence_output_count": state["gates"]["registry_governance_ready"]["evidence"].get("blocked_route_evidence_output_count"),
+            "registry_supporting_evidence_output_count": state["gates"]["registry_governance_ready"]["evidence"].get("supporting_evidence_output_count"),
             "registry_cleanup_queue_count": state["gates"]["registry_governance_ready"]["evidence"].get("registry_cleanup_queue_count"),
             "viea_spine_materialized_view_ready": state["gates"]["viea_spine_materialized_view_ready"]["passed"],
             "viea_spine_materialized_record_count": state["gates"]["viea_spine_materialized_view_ready"]["evidence"].get("record_count"),

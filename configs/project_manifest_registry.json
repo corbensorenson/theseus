@@ -38,8 +38,8 @@
       {
         "id": "single_current_self_model",
         "severity": "hard",
-        "rule": "The materialized registry report is the current self-model for cleanup/autonomy decisions; stale or missing declared outputs must be refreshed or intentionally retired.",
-        "enforcement": "report outputs listed by live surfaces must have fresh latest-view reports unless platform-not-applicable"
+        "rule": "The materialized registry is the current self-model; every routable implementation must have accepted minimal route evidence while supporting and retained reports remain non-authorizing history.",
+        "enforcement": "source-bound, TTL-bound, or current-invocation route receipts must pass; supporting outputs do not expire routes"
       },
       {
         "id": "no_orphan_runtime_state",
@@ -107,6 +107,7 @@
       "trust_tier",
       "dependencies",
       "evidence_outputs",
+      "route_evidence_contract_id",
       "attd_hooks",
       "routing_eligibility",
       "swappable_under_contract",
@@ -115,6 +116,26 @@
       "verification_command"
     ],
     "schema_version": "abstraction_registry_contract_v1",
+    "route_evidence_contract": {
+      "purpose": "Separate the minimal current receipts that authorize a route from supporting and retained evidence. Static gates invalidate when their owning source changes; volatile state uses an explicit TTL; the registry itself is evaluated in the current invocation.",
+      "valid_modes": [
+        "all",
+        "current_invocation",
+        "not_route_required"
+      ],
+      "valid_freshness_modes": [
+        "source_bound",
+        "ttl",
+        "exists"
+      ],
+      "rules": [
+        "Supporting reports do not expire a route merely because time passed.",
+        "Every routable implementation names a minimal independently evaluated route receipt.",
+        "Source-bound evidence becomes stale when an explicitly named implementation source changes after the receipt.",
+        "A fresh receipt may still be rejected by its acceptance predicate.",
+        "Historical and negative evidence stays retained and cannot authorize current routing."
+      ]
+    },
     "valid_lifecycle_states": [
       "live",
       "experimental",
@@ -353,6 +374,240 @@
       "canonical_path": "scripts/theseus_artifact_retention.py",
       "promotion_role": "evidence_history_not_source_lane",
       "successor_policy": "report families are generated evidence history; latest-view reports stay declared by surfaces and bulky variants must move through retention manifests rather than becoming new source lanes"
+    }
+  ],
+  "route_evidence_contracts": [
+    {
+      "id": "route.registry.current_invocation",
+      "mode": "current_invocation",
+      "requirements": [],
+      "reason": "The registry computes its own implementation health in the current invocation; requiring its previous output would create a circular stale-self dependency."
+    },
+    {
+      "id": "route.control_plane.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "control_plane_materialization",
+          "path": "reports/theseus_control_plane.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/theseus_control_plane.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "route.plan_compiler.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "plan_compiler_gate",
+          "path": "reports/theseus_plan_compiler.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/theseus_plan_compiler.py",
+            "scripts/vcm_context_governor_gate.py",
+            "scripts/semantic_ir_obligation_gate.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.neural_seed.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "survival_readiness_gate",
+          "path": "reports/neural_seed_survival_readiness_gate.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/neural_seed_survival_readiness_gate.py",
+            "scripts/neural_seed_token_decoder_comparator.py",
+            "crates/symliquid-cli/src/code_token_generator.rs"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.candidate_integrity.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "candidate_integrity_gate",
+          "path": "reports/candidate_integrity_audit.json",
+          "freshness_mode": "source_bound",
+          "source_paths": ["scripts/candidate_integrity.py"],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.vcm.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "vcm_status",
+          "path": "reports/virtual_context_memory_status.json",
+          "freshness_mode": "source_bound",
+          "source_paths": ["scripts/virtual_context_memory.py"],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        },
+        {
+          "id": "vcm_runtime_claim_boundary",
+          "path": "reports/vcm_runtime_claim_readiness.json",
+          "freshness_mode": "source_bound",
+          "source_paths": ["scripts/vcm_runtime_claim_readiness.py"],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.deterministic_tools.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "tool_substrate_gate",
+          "path": "reports/deterministic_tool_substrate.json",
+          "freshness_mode": "source_bound",
+          "source_paths": ["scripts/theseus_deterministic_tool_substrate.py"],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.teacher_data.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "teacher_gate",
+          "path": "reports/teacher_distillation_gate.json",
+          "freshness_mode": "source_bound",
+          "source_paths": ["scripts/teacher_distillation_gate.py"],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        },
+        {
+          "id": "data_admission_gate",
+          "path": "reports/training_data_admission_v1.json",
+          "freshness_mode": "source_bound",
+          "source_paths": ["scripts/training_data_admission_v1.py"],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.assistant.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "assistant_product_gate",
+          "path": "reports/theseus_assistant_product_lane_gate.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/theseus_assistant_runtime.py",
+            "scripts/theseus_assistant_product_lane_gate.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.resource.dynamic_and_source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "resource_snapshot",
+          "path": "reports/resource_aware_execution_policy.json",
+          "freshness_mode": "ttl",
+          "max_age_hours": 24,
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        },
+        {
+          "id": "macos_mlx_environment",
+          "path": "reports/macos_mlx_environment_diagnosis.json",
+          "freshness_mode": "source_bound",
+          "source_paths": ["scripts/macos_mlx_environment_diagnosis.py"],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.octopus.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "octopus_router_gate",
+          "path": "reports/octopus_router_report.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/octopus_router.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.octopus_head.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "octopus_head_gate",
+          "path": "reports/octopus_router_head_gate.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "scripts/train_octopus_router_head.py",
+            "scripts/octopus_router_head_gate.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN", "YELLOW"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "route.disabled",
+      "mode": "not_route_required",
+      "requirements": [],
+      "reason": "The implementation is retained or evidence-only and cannot be selected as a route."
     }
   ],
   "abstractions": [
@@ -3147,6 +3402,7 @@
   "implementations": [
     {
       "id": "impl.project_manifest_registry.v1",
+      "route_evidence_contract_id": "route.registry.current_invocation",
       "abstraction_id": "project_self_model_registry",
       "surface_id": "project_manifest_registry",
       "status": "live",
@@ -3332,6 +3588,7 @@
     },
     {
       "id": "impl.core_control_plane.v1",
+      "route_evidence_contract_id": "route.control_plane.source_bound",
       "abstraction_id": "control_plane_decision_owner",
       "surface_id": "core_control_plane",
       "status": "live",
@@ -3503,6 +3760,7 @@
     },
     {
       "id": "impl.theseus_plan_compiler.v1",
+      "route_evidence_contract_id": "route.plan_compiler.source_bound",
       "abstraction_id": "planning_execution_spine",
       "surface_id": "theseus_plan_compiler",
       "status": "live",
@@ -3736,6 +3994,7 @@
     },
     {
       "id": "impl.neural_seed_strict_token_decoder.v1",
+      "route_evidence_contract_id": "route.neural_seed.source_bound",
       "abstraction_id": "candidate_generation_contract",
       "surface_id": "neural_seed_and_decoder",
       "status": "live",
@@ -3883,7 +4142,7 @@
             "reports/capability_transfer_closure_v1.json",
             "reports/candidate_promotion_gate.json"
           ],
-          "verification_command": "python3 scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/neural_seed_token_decoder_comparator.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -4225,7 +4484,7 @@
           "reason": "Historical strict-generator MLX sweep/adaptation/decode evidence retained for audit and mining; it is not the current freshness route. Current neural-seed routing health is represented by fresh private verifier spine smoke plus strict fanout receipt outputs."
         }
       ],
-      "latest_view_policy": "report_outputs are freshness-gated current health evidence; retained outputs are historical evidence and do not authorize routing by freshness alone",
+      "latest_view_policy": "route_evidence_contract selects freshness-gated current health evidence; other report_outputs are supporting and retained outputs are historical",
       "current_wall": "Strict prompt/signature full-body token generation now has a canonical private replay receipt: 93 independently integrity-verified learned full-body candidates across 22 private eval tasks, syntax_valid_rate=0.684211, runtime_load_task_rate=1.0, intended_behavior_pass_rate=0.227273. The remaining wall is semantic behavior quality, not syntax/loadability or candidate-integrity plumbing. No public training rows, external inference, fallback returns, renderers, routers, templates, or tools are credited as learned generation.",
       "observability": {
         "required_reports": [
@@ -4247,6 +4506,7 @@
     },
     {
       "id": "impl.candidate_integrity_harness.v1",
+      "route_evidence_contract_id": "route.candidate_integrity.source_bound",
       "abstraction_id": "candidate_integrity_contract",
       "surface_id": "candidate_integrity_harness",
       "status": "live",
@@ -4468,10 +4728,11 @@
           "reason": "historical implementation evidence retained but superseded by current MLX strict-generator or harness latest-view evidence"
         }
       ],
-      "latest_view_policy": "report_outputs are freshness-gated current health evidence; retained outputs are historical evidence and do not authorize routing by freshness alone"
+      "latest_view_policy": "route_evidence_contract selects freshness-gated current health evidence; other report_outputs are supporting and retained outputs are historical"
     },
     {
       "id": "impl.vcm_memory.v1",
+      "route_evidence_contract_id": "route.vcm.source_bound",
       "abstraction_id": "context_memory_contract",
       "surface_id": "vcm_memory",
       "status": "live",
@@ -4480,7 +4741,7 @@
       "canonical_entrypoint": "scripts/virtual_context_memory.py",
       "swappable_under_contract": true,
       "replacement_policy": "Runtime/KV/native cache successors must first preserve packet provenance and same-protocol VCM on/off evidence.",
-      "verification_command": "python3 scripts/virtual_context_memory.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/virtual_context_memory.py && python3 -m py_compile scripts/virtual_context_memory.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "vcm_context",
       "trust_tier": "governed_local_memory",
       "dependencies": [
@@ -4563,7 +4824,7 @@
             "reports/virtual_context_memory_status.json",
             "reports/vcm_runtime_claim_readiness.json"
           ],
-          "verification_command": "python3 scripts/virtual_context_memory.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/virtual_context_memory.py && python3 -m py_compile scripts/virtual_context_memory.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -4634,6 +4895,7 @@
     },
     {
       "id": "impl.deterministic_tool_substrate.v1",
+      "route_evidence_contract_id": "route.deterministic_tools.source_bound",
       "abstraction_id": "deterministic_tool_contract",
       "surface_id": "deterministic_tool_substrate",
       "status": "live",
@@ -4642,7 +4904,7 @@
       "canonical_entrypoint": "scripts/theseus_deterministic_tool_substrate.py",
       "swappable_under_contract": true,
       "replacement_policy": "Tool replacements must preserve schemas, replay checksums, trust tiers, and structured failure modes.",
-      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation && python3 -m py_compile scripts/theseus_deterministic_tool_substrate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "deterministic_tool",
       "trust_tier": "deterministic_local",
       "dependencies": [
@@ -4743,7 +5005,7 @@
             "reports/deterministic_tool_artifact_graph.json",
             "reports/deterministic_tool_substrate.md"
           ],
-          "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation && python3 -m py_compile scripts/theseus_deterministic_tool_substrate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -4814,6 +5076,7 @@
     },
     {
       "id": "impl.teacher_and_data_governance.v1",
+      "route_evidence_contract_id": "route.teacher_data.source_bound",
       "abstraction_id": "teacher_data_governance_contract",
       "surface_id": "teacher_and_data_governance",
       "status": "live",
@@ -4822,7 +5085,7 @@
       "canonical_entrypoint": "scripts/teacher_distillation_gate.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve provenance, license, verifier, leakage, and runtime-serving boundaries.",
-      "verification_command": "python3 scripts/teacher_distillation_gate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/public_calibration_proposal_gate.py",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_data_admission_v1.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "teacher",
       "trust_tier": "governed_external_training_only",
       "dependencies": [
@@ -4913,7 +5176,7 @@
             "reports/training_data_admission_v1.json",
             "reports/public_calibration_proposal_gate.json"
           ],
-          "verification_command": "python3 scripts/teacher_distillation_gate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/public_calibration_proposal_gate.py",
+          "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_data_admission_v1.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -4985,6 +5248,7 @@
     },
     {
       "id": "impl.theseus_assistant_runtime.v1",
+      "route_evidence_contract_id": "route.assistant.source_bound",
       "abstraction_id": "assistant_runtime_contract",
       "surface_id": "theseus_assistant_runtime",
       "status": "live",
@@ -5229,6 +5493,7 @@
     },
     {
       "id": "impl.hive_install_and_apps.v1",
+      "route_evidence_contract_id": "route.disabled",
       "abstraction_id": "hive_operations_contract",
       "surface_id": "hive_install_and_apps",
       "status": "retained",
@@ -5237,7 +5502,7 @@
       "canonical_entrypoint": "scripts/hive_node.py",
       "swappable_under_contract": true,
       "replacement_policy": "New native or relay implementations must preserve bounded task scopes, trust profiles, and no arbitrary remote shell.",
-      "verification_command": "python3 scripts/hive_node.py probe scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/hive_node.py probe --out reports/hive_status.json --peers-out reports/hive_peers.json && python3 -m py_compile scripts/hive_node.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "hive_operations",
       "trust_tier": "trusted_node_ops",
       "dependencies": [
@@ -5324,7 +5589,7 @@
             "reports/hive_installer_artifacts.json",
             "reports/hive_macos_release_gate.json"
           ],
-          "verification_command": "python3 scripts/hive_node.py probe scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/hive_node.py probe --out reports/hive_status.json --peers-out reports/hive_peers.json && python3 -m py_compile scripts/hive_node.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -5395,6 +5660,7 @@
     },
     {
       "id": "impl.resource_and_acceleration.v1",
+      "route_evidence_contract_id": "route.resource.dynamic_and_source_bound",
       "abstraction_id": "resource_acceleration_contract",
       "surface_id": "resource_and_acceleration",
       "status": "live",
@@ -5403,7 +5669,7 @@
       "canonical_entrypoint": "scripts/resource_aware_execution_policy.py",
       "swappable_under_contract": true,
       "replacement_policy": "Backend replacements must keep route-policy evidence separate from parity claims.",
-      "verification_command": "python3 scripts/resource_aware_execution_policy.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "acceleration",
       "trust_tier": "platform_resource_route",
       "dependencies": [
@@ -5489,7 +5755,7 @@
             "reports/windows_cuda_doctor.json",
             "reports/macos_mlx_environment_diagnosis.json"
           ],
-          "verification_command": "python3 scripts/resource_aware_execution_policy.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -5560,6 +5826,7 @@
     },
     {
       "id": "impl.octopus_registry_gated_router.v1",
+      "route_evidence_contract_id": "route.octopus.source_bound",
       "abstraction_id": "planning_execution_spine",
       "surface_id": "theseus_plan_compiler",
       "status": "live",
@@ -5568,7 +5835,7 @@
       "canonical_entrypoint": "scripts/octopus_router.py",
       "swappable_under_contract": true,
       "replacement_policy": "Router successors must preserve registry-gated implementation eligibility, permission envelopes, routing memory, and safety/quarantine evidence.",
-      "verification_command": "python3 scripts/octopus_router.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/octopus_router.py && python3 -m py_compile scripts/octopus_router.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "planning",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -5661,7 +5928,7 @@
             "reports/routing_memory.json",
             "reports/arm_lifecycle_ledger.json"
           ],
-          "verification_command": "python3 scripts/octopus_router.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/octopus_router.py && python3 -m py_compile scripts/octopus_router.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -5733,6 +6000,7 @@
     },
     {
       "id": "impl.octopus_sparse_router_head.v1",
+      "route_evidence_contract_id": "route.octopus_head.source_bound",
       "abstraction_id": "planning_execution_spine",
       "surface_id": "theseus_plan_compiler",
       "status": "live",
@@ -5920,6 +6188,7 @@
     },
     {
       "id": "impl.governance_rights_receipt_suite.v1",
+      "route_evidence_contract_id": "route.disabled",
       "abstraction_id": "control_plane_decision_owner",
       "surface_id": "core_control_plane",
       "status": "live",
@@ -6076,6 +6345,7 @@
     },
     {
       "id": "impl.simulation_fidelity_receipt_suite.v1",
+      "route_evidence_contract_id": "route.disabled",
       "abstraction_id": "planning_execution_spine",
       "surface_id": "theseus_plan_compiler",
       "status": "live",
@@ -6415,7 +6685,7 @@
         "reports/octopus_router_head_report.json",
         "reports/octopus_router_head_gate.json"
       ],
-      "verification_command": "python3 scripts/vcm_context_governor_gate.py && python3 scripts/procedural_memory_toolification_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/procedural_memory_canary_executor.py && python3 scripts/procedural_memory_route_adoption_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/viea_spine_record_gate.py --gate && python3 scripts/octopus_router.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/semantic_patch_gate.py && python3 scripts/train_octopus_router_head.py && python3 scripts/octopus_router_head_gate.py --gate && python3 scripts/octopus_router.py --router-head-report reports/octopus_router_head_report.json --router-head-eval reports/octopus_router_head_eval.json",
+      "verification_command": "python3 scripts/vcm_context_governor_gate.py && python3 scripts/procedural_memory_toolification_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/procedural_memory_canary_executor.py && python3 scripts/procedural_memory_route_adoption_gate.py && python3 scripts/viea_spine_record_gate.py --gate && python3 scripts/octopus_router.py && python3 scripts/semantic_patch_gate.py && python3 scripts/train_octopus_router_head.py && python3 scripts/octopus_router_head_gate.py --gate && python3 scripts/octopus_router.py --router-head-report reports/octopus_router_head_report.json --router-head-eval reports/octopus_router_head_eval.json",
       "cleanup_policy": "compile goals into registry-owned governed VCM-backed DAGs; deterministic local work routes through the VIEA execution spine and deterministic tool substrate while dry-run mode remains available",
       "abstraction_id": "planning_execution_spine",
       "major_surface": true,
@@ -6455,7 +6725,7 @@
         "reports/proof_carrying_contract_records.jsonl",
         "reports/substrate_adoption_records.jsonl"
       ],
-      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/proof_carrying_contract_gate.py",
+      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation && python3 scripts/proof_carrying_contract_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "exact local solver/search/checker/proof tools are registered instruments; unsupported tools emit structured non-solved states and Circle-derived fixtures remain proof-boundary/config evidence unless separate Theseus task evidence proves utility",
       "abstraction_id": "deterministic_tool_contract",
       "major_surface": true,
@@ -6560,7 +6830,7 @@
           "reason": "historical evidence retained after current-health evidence moved to latest MLX/registry outputs"
         }
       ],
-      "latest_view_policy": "report_outputs are freshness-gated current health evidence; retained outputs are historical evidence and do not authorize routing by freshness alone"
+      "latest_view_policy": "route_evidence_contract selects freshness-gated current health evidence; other report_outputs are supporting and retained outputs are historical"
     },
     {
       "id": "evidence_store",
@@ -6585,7 +6855,7 @@
         "reports/theseus_artifact_budget_gate.json",
         "reports/theseus_artifact_budget_gate.md"
       ],
-      "verification_command": "python3 scripts/report_evidence_store.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/theseus_weekly_focus_20260706.py --gate && python3 scripts/theseus_artifact_retention.py --budget-gate",
+      "verification_command": "python3 scripts/report_evidence_store.py && python3 scripts/theseus_weekly_focus_20260706.py --gate && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "stable report JSON files are latest views; durable evidence lives here",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,
@@ -6620,7 +6890,7 @@
         "reports/theseus_artifact_budget_gate.json",
         "reports/theseus_artifact_budget_gate.md"
       ],
-      "verification_command": "python3 scripts/theseus_workspace_hygiene_audit.py && python3 scripts/theseus_deprecation_registry.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/theseus_artifact_retention.py --budget-gate",
+      "verification_command": "python3 scripts/theseus_workspace_hygiene_audit.py && python3 scripts/theseus_deprecation_registry.py && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "non-destructive by default; archive/quarantine requires manifest pointers",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,
@@ -6643,7 +6913,7 @@
         "reports/attd_report.json",
         "reports/attd_maintenance_packets.json"
       ],
-      "verification_command": "python3 scripts/attd_analyzer.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/attd_analyzer.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "ATTD must produce concrete cleanup packets for registry gaps, duplicate families, large files, and churn",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,
@@ -6671,7 +6941,7 @@
         "reports/learning_launch_supervisor.json",
         "reports/hive_work_board_executor.json"
       ],
-      "verification_command": "python3 scripts/autonomy_launch_readiness.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/autonomy_launch_readiness.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "supervisors are fact producers; unattended decision ownership stays in the control plane",
       "abstraction_id": "control_plane_decision_owner",
       "major_surface": true,
@@ -6698,7 +6968,7 @@
         "reports/windows_cuda_doctor.json",
         "reports/macos_mlx_environment_diagnosis.json"
       ],
-      "verification_command": "python3 scripts/resource_aware_execution_policy.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "host-specific reports must not leak stale Windows paths into Mac scheduling",
       "abstraction_id": "resource_acceleration_contract",
       "major_surface": true,
@@ -6735,7 +7005,7 @@
         "reports/training_inference_execution_plan_gate.json",
         "reports/training_inference_execution_plan_gate.md"
       ],
-      "verification_command": "python3 scripts/maturity_integrity_audit.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py && python3 scripts/training_inference_execution_plan_gate.py --gate",
+      "verification_command": "python3 scripts/maturity_integrity_audit.py && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py && python3 scripts/training_inference_execution_plan_gate.py --gate && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "gates protect evidence quality; do not add artificial locks unrelated to leakage, reruns, provenance, or runtime safety",
       "abstraction_id": "candidate_integrity_contract",
       "major_surface": true,
@@ -6762,7 +7032,7 @@
         "reports/public_benchmark_run_registry.jsonl",
         "reports/public_calibration_proposal_gate.json"
       ],
-      "verification_command": "python3 scripts/public_calibration_proposal_gate.py && python3 scripts/operator_bounded_public_calibration.py --help scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/public_calibration_proposal_gate.py && python3 scripts/operator_bounded_public_calibration.py --help && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "public benchmarks are calibration only and consumed surfaces must never become training rows",
       "abstraction_id": "teacher_data_governance_contract",
       "major_surface": true,
@@ -7135,7 +7405,7 @@
           "reason": "Historical strict-generator MLX sweep/adaptation/decode evidence retained for audit and mining; it is not the current freshness route. Current neural-seed routing health is represented by fresh private verifier spine smoke plus strict fanout receipt outputs."
         }
       ],
-      "latest_view_policy": "report_outputs are freshness-gated current health evidence; retained outputs are historical evidence and do not authorize routing by freshness alone",
+      "latest_view_policy": "route_evidence_contract selects freshness-gated current health evidence; other report_outputs are supporting and retained outputs are historical",
       "dependencies": [
         "scripts/neural_seed_decode_static_guard.py",
         "scripts/neural_seed_candidate_evidence_summary.py",
@@ -7173,7 +7443,7 @@
         "reports/vcm_mission_brief.json",
         "reports/vcm_deletion_closure.json"
       ],
-      "verification_command": "python3 scripts/vcm_release_conformance_audit.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py && python3 scripts/vcm_context_governor_gate.py",
+      "verification_command": "python3 scripts/vcm_release_conformance_audit.py && python3 scripts/vcm_context_governor_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "VCM is the memory substrate; reference packet lives under docs/reference, while benchmark payload quarantines remain generated evidence, not source",
       "abstraction_id": "context_memory_contract",
       "major_surface": true,
@@ -7203,7 +7473,7 @@
         "reports/teacher_share_ledger_summary.md",
         "reports/training_data_admission_v1.json"
       ],
-      "verification_command": "python3 scripts/teacher_distillation_gate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "teacher rows require provenance, license, verifier, and leakage audit; external tokens are never runtime-serving output",
       "abstraction_id": "teacher_data_governance_contract",
       "major_surface": true,
@@ -7312,7 +7582,7 @@
           "reason": "historical evidence retained after current-health evidence moved to latest MLX/registry outputs"
         }
       ],
-      "latest_view_policy": "report_outputs are freshness-gated current health evidence; retained outputs are historical evidence and do not authorize routing by freshness alone"
+      "latest_view_policy": "route_evidence_contract selects freshness-gated current health evidence; other report_outputs are supporting and retained outputs are historical"
     },
     {
       "id": "rust_core",
@@ -7358,7 +7628,7 @@
         "reports/theseus_doc_link_audit.json",
         "reports/book_to_theseus_crosswalk.json"
       ],
-      "verification_command": "python3 scripts/theseus_doc_link_audit.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_doc_link_audit.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "PROJECT_STATE is the current claim surface; older docs should point forward or move to deprecated",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,
@@ -7401,7 +7671,7 @@
       "report_outputs": [
         "reports/benchmark_adapter_smoke_status.json"
       ],
-      "verification_command": "python3 scripts/benchmark_adapter_smoke.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/benchmark_adapter_smoke.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "cards describe surfaces; public benchmark content remains calibration-only",
       "abstraction_id": "teacher_data_governance_contract",
       "major_surface": true,
@@ -7450,7 +7720,7 @@
       "report_outputs": [
         "reports/theseus_project_registry.json"
       ],
-      "verification_command": "python3 scripts/theseus_project_registry.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_project_registry.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "catch-all registration prevents mystery files, but high-count families here should be promoted to a named surface, merged, or deprecated",
       "abstraction_id": "project_self_model_registry",
       "major_surface": false,
@@ -7481,7 +7751,7 @@
         "reports/theseus_generated_artifact_gc.json",
         "reports/theseus_artifact_budget_gate.json"
       ],
-      "verification_command": "python3 scripts/theseus_artifact_retention.py && python3 scripts/theseus_generated_artifact_gc.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_artifact_retention.py && python3 scripts/theseus_generated_artifact_gc.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "latest views and generated payloads are retained or archived through manifests; do not commit large runtime payloads",
       "abstraction_id": "project_self_model_registry",
       "major_surface": false,
@@ -7503,7 +7773,7 @@
       "report_outputs": [
         "reports/theseus_deprecation_registry.json"
       ],
-      "verification_command": "python3 scripts/theseus_deprecation_registry.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_deprecation_registry.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "compatibility or archived legacy material must have a replacement or retained reason",
       "abstraction_id": "project_self_model_registry",
       "major_surface": false,

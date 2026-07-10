@@ -41,7 +41,7 @@ module must meet.
 | Authority kernel / SCIF | Phase 18 | synthetic-test-backed | one real side-effecting run |
 | Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
 | Report hygiene | Phases 0, 8 | ~2.4 GB, high churn | enforce report/checkpoint retention; drive live state below 1 GB |
-| Book crosswalk / parity | Phase 19 | 45 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
+| Book crosswalk / parity | Phase 19 | 46 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
 | Book futures intake | Phase 19 + routed owners | 19 chapter candidates + 2 section routes mapped | activate only at source/ownership and operational entry gates |
 
 ## Non-Negotiable Rules
@@ -324,6 +324,9 @@ run and it meets the Quality Bars below.
 - ATT-D rejects unregistered major modules, duplicate default implementations,
   unowned report families, stale route evidence, and capability changes that omit
   rollback or substrate-adoption records.
+- Route evidence is lifecycle-aware: each routable implementation names a minimal
+  source-bound, TTL-bound, or current-invocation receipt; supporting and retained
+  reports remain audit history but neither authorize nor expire a route.
 - Enforce live report/checkpoint retention, current-reference-aware compaction, and
   one flagship claim record per metric family; generated bulk is runtime state, not
   source or capability evidence.
@@ -676,7 +679,7 @@ gaps route into the phases above:
 
 The ASI Stack's `2026-07-09 Controlled ASI Completeness Intake` names future
 chapter candidates and section-level obligations that are not all in the active
-45-chapter manifest. Theseus tracks them now so the architecture does not discover
+46-chapter manifest. Theseus tracks them now so the architecture does not discover
 the omissions after deployment. They are **not new active lanes**: each is owned by
 existing phases, remains planning-only until its book source/ownership gate passes,
 and activates only at the entry condition below. Except for work that directly
@@ -686,9 +689,9 @@ training; they block the higher-authority operation they govern.
 | Book candidate or section | Theseus owner phases | Entry condition / disposition |
 |---|---|---|
 | Governed Deliberation and Test-Time Scaling | 6, 8, 10, 13 | after direct model-only pass is nonzero; own think/search budgets, verifier selection, stopping, diminishing returns, and residuals |
-| Data Engines, Continual Learning, and Unlearning | 3, 7, 12, 14 | admitted to the local 45-chapter manifest; current Phase-7 receipt/lifecycle work |
+| Data Engines, Continual Learning, and Unlearning | 3, 7, 12, 14 | admitted to the local 46-chapter manifest; current Phase-7 receipt/lifecycle work |
 | Scalable Oversight and Adversarial AI Control | 4, 14, 18 | before high-impact or self-improving routes; weak-supervisor limits, trusted/untrusted monitors, collusion resistance, oversight recursion |
-| Adversarial Evaluation, Sandbagging, and Training-Time Deception | 4, 10, 12, 14, 18 | before promotion/public claims; elicitation state, evaluation awareness, exploration/reward hacking, monitor sabotage |
+| Adversarial Evaluation, Sandbagging, and Training-Time Deception | 4, 10, 12, 14, 18 | admitted to the local 46-chapter manifest; before promotion/public claims, bind elicitation/selection/monitor context and cross-context discrepancies to existing evidence and promotion routes |
 | Capability Thresholds and Deployment Commitments | 2, 8, 12, 18 | before production serving or authority growth; if-then safeguards, autonomy/time horizon, automated-R&D share, open-weight decisions |
 | Reasoning-Trace Faithfulness (section route) | 1, 4, 14 | now as an evidence boundary; distinguish traces from receipts and test trace/action consistency without treating hidden reasoning as authoritative |
 | Inter-Stack Protocols, Identity, and Economic Exchange | 1, 2, 9, 18 | before cross-Hive/external-agent federation; protocol, identity, credential, payment, authority, and receipt interoperability |

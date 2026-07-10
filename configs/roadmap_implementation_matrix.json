@@ -24,20 +24,20 @@
     "no_claim_boundary": "Claude/AI_book technique recommendations are planning coverage, not evidence. Routers, tools, templates, semantic renderers, fallback bodies, public benchmark artifacts, and external runtime inference remain noncredit for learned generation."
   },
   "latest_ai_book_reconciliation": {
-    "date": "2026-07-09",
-    "book_manifest_chapter_count": 45,
-    "new_chapter_id": "data-engines-continual-learning-and-unlearning",
-    "source_state": "AI_book working tree contains the new conceptual chapter and manifest/outline/source updates; Theseus maps the current local manifest without claiming those book changes are published or empirical.",
-    "decision": "Route the new chapter into the existing teacher_and_data_governance, VCM, public-calibration, and claim-evidence phases. Do not create a sidecar data lane.",
-    "current_theseus_evidence": "training_data_admission_v1 already provides file-level metadata/hash/license/provenance/exact-overlap admission and public-benchmark quarantine, but it lacks the chapter's per-candidate lifecycle receipt, semantic-leakage controls, continual-learning policy comparison, and descendant deletion closure.",
+    "date": "2026-07-10",
+    "book_manifest_chapter_count": 46,
+    "new_chapter_id": "adversarial-evaluation-sandbagging-and-training-time-deception",
+    "source_state": "AI_book working tree contains the admitted adversarial-evaluation chapter and manifest/source updates; Theseus maps the current local manifest without claiming those book changes are published or that source-setting threat models establish local deception.",
+    "decision": "Route the new chapter into the existing candidate-integrity, practical-generator, benchmark-ratchet, claim-evidence, and authority phases. Do not create a sidecar deception-detection lane.",
+    "current_theseus_evidence": "Candidate integrity, policy-update leases, benchmark ratchets, artifact graphs, evidence transitions, and promotion gates already provide the owning surfaces, but they do not yet share a versioned evaluation-integrity record or replay cross-context discrepancy and monitor-interference controls.",
     "new_required_work": [
-      "per-candidate DataAdmissionReceipt and lineage graph",
-      "replacement versus accumulation versus replay versus quarantine versus retraining workload",
-      "semantic-overlap and provenance-adversary controls",
-      "recursive-synthetic coverage and tail-health diagnostics",
-      "descendant-aware revocation and deletion closure"
+      "versioned evaluation-integrity record bound to elicitation, selection, reward, monitor, and evaluator provenance",
+      "held-out and cross-context discrepancy probes with explicit residuals",
+      "trusted-versus-untrusted monitor separation and interference controls",
+      "fail-closed promotion routing for missing controls or unresolved discrepancies",
+      "independent replay and scoped mitigation evidence"
     ],
-    "no_claim_boundary": "Receipt completeness is bounded eligibility, not data quality, privacy compliance, verified forgetting, training success, public decontamination proof, or capability promotion."
+    "no_claim_boundary": "An integrity record or passed deception probe does not establish honesty, non-scheming, complete deception detection, safety, or capability; every result remains scoped to its tested observation conditions."
   },
   "book_future_candidate_crosswalk": [
     {
@@ -78,7 +78,8 @@
       "candidate_id": "future.adversarial_evaluation_sandbagging_training_deception",
       "title": "Adversarial Evaluation, Sandbagging, and Training-Time Deception",
       "item_kind": "chapter_candidate",
-      "book_disposition": "provisional_source_gated",
+      "book_disposition": "admitted_current_local_manifest",
+      "chapter_id": "adversarial-evaluation-sandbagging-and-training-time-deception",
       "phase_refs": [4, 10, 12, 14, 18],
       "entry_condition": "before model promotion or broad public capability claims",
       "theseus_scope": "elicitation state, evaluation awareness, exploration hacking, reward-hack generalization, monitor sabotage, mitigation evidence, and promotion blockers",
@@ -5482,6 +5483,78 @@
     },
     {
       "chapter_ordinal": 38,
+      "chapter_id": "adversarial-evaluation-sandbagging-and-training-time-deception",
+      "chapter_title": "Adversarial Evaluation, Sandbagging, and Training-Time Deception",
+      "part_id": "evidence-implementation-living-book",
+      "part_title": "Part IV - Evidence, Implementation, and the Living Book",
+      "book_file": "chapters/adversarial-evaluation-sandbagging-and-training-time-deception.qmd",
+      "book_claim_label": "Design rationale",
+      "book_evidence_level": "argument",
+      "book_minimal_implementation": "A versioned evaluation-integrity record with elicitation, selection, reward, monitor, held-out/cross-context probe, discrepancy, residual, and no-promotion fields, plus finite routing for missing controls and interference findings.",
+      "book_beyond_state_of_art": "The mature system continuously tests how its own evidence depends on observation through diversified evaluators, context perturbations, trusted and untrusted monitor separation, blinded holdouts where feasible, independent replay, countercases, and assurance-state handoff into training leases and deployment gates. This is a target architecture, not a claim of complete deception detection or safety.",
+      "book_interfaces": [
+        "Benchmark Ratchets owns frozen tasks and anti-Goodhart controls; this chapter owns context-conditioned observations.",
+        "Policy Optimization consumes only integrity-bounded evaluation records and owns updates and rollback.",
+        "Artifact Graphs retain evaluator, monitor, prompt, trace, and result lineage.",
+        "SCF and Evidence States retain promotion and quarantine authority."
+      ],
+      "book_invariants": [
+        "A score is not a capability or safety conclusion without elicitation and selection context.",
+        "A reward, monitor, or trace is not independent evidence merely because it was present during training or evaluation.",
+        "Cross-context disagreement, missing monitor provenance, or untested interference blocks promotion until recorded and reviewed.",
+        "A mitigation result is scoped to its tested setting."
+      ],
+      "book_failure_modes": [
+        "Sandbagging that causes a capability threshold to be missed or delayed.",
+        "Reward hacking that improves an outcome metric while eroding task fidelity.",
+        "Monitor interference, evaluation awareness, or selection-context adaptation.",
+        "Detector or mitigation laundering into a safety guarantee."
+      ],
+      "codex_test_count": 3,
+      "representative_codex_tests": [
+        "Evaluation-integrity record fixture",
+        "Cross-context discrepancy probe",
+        "Training-time deception boundary review"
+      ],
+      "primary_track_id": "C_capability_research_survival_lane",
+      "phase_refs": [
+        4,
+        10,
+        12,
+        14,
+        18
+      ],
+      "implementation_priority": "core_before_training",
+      "minimum_theseus_slice": "Extend the registered candidate-integrity, policy-update, benchmark-ratchet, claim-evidence, and promotion paths with one shared evaluation-integrity record plus expected-invalid cross-context discrepancy and monitor-interference fixtures; do not create a new lane.",
+      "beyond_sota_theseus_endpoint": "Continuously test context-conditioned evidence across evaluation, training, and deployment using diversified evaluators, blinded perturbations where feasible, trusted and untrusted monitor separation, independent replay, countercases, and fail-closed handoff into policy leases and promotion decisions.",
+      "support_state_target": "synthetic-test-backed",
+      "current_theseus_state": "partial_reference_slice",
+      "required_gate_or_fixture": "Evaluation-integrity record fixture plus cross-context discrepancy probe and expected-invalid monitor-interference controls",
+      "required_records_or_receipts": [
+        "evaluation_integrity_record",
+        "elicitation_context_record",
+        "selection_context_record",
+        "reward_source_receipt",
+        "monitor_provenance_record",
+        "cross_context_probe_record",
+        "discrepancy_residual",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "failure_boundary",
+        "policy_update_lease_record",
+        "promotion_decision"
+      ],
+      "no_claims": [
+        "roadmap mapping is not implementation completion",
+        "one probe does not establish honesty, non-scheming, complete deception detection, or safety",
+        "source-setting findings do not establish local deception",
+        "tool/template/router output is not learned generation",
+        "public benchmark artifacts remain calibration-only and never training rows"
+      ]
+    },
+    {
+      "chapter_ordinal": 39,
       "chapter_id": "policy-optimization-and-learning-from-feedback",
       "chapter_title": "Policy Optimization and Learning from Feedback",
       "part_id": "evidence-implementation-living-book",
@@ -5561,7 +5634,7 @@
       ]
     },
     {
-      "chapter_ordinal": 39,
+      "chapter_ordinal": 40,
       "chapter_id": "data-engines-continual-learning-and-unlearning",
       "chapter_title": "Data Engines, Continual Learning, and Unlearning",
       "part_id": "evidence-implementation-living-book",
@@ -5630,7 +5703,7 @@
       ]
     },
     {
-      "chapter_ordinal": 40,
+      "chapter_ordinal": 41,
       "chapter_id": "artifact-steward-agents-and-living-project-governance",
       "chapter_title": "Artifact Steward Agents and Living Project Governance",
       "part_id": "evidence-implementation-living-book",
@@ -5699,7 +5772,7 @@
       ]
     },
     {
-      "chapter_ordinal": 41,
+      "chapter_ordinal": 42,
       "chapter_id": "integrated-reference-architecture",
       "chapter_title": "Integrated Reference Architecture",
       "part_id": "evidence-implementation-living-book",
@@ -5760,7 +5833,7 @@
       ]
     },
     {
-      "chapter_ordinal": 42,
+      "chapter_ordinal": 43,
       "chapter_id": "project-theseus-as-report-first-implementation-reference",
       "chapter_title": "Project Theseus as Report-First Implementation Reference",
       "part_id": "evidence-implementation-living-book",
@@ -5827,7 +5900,7 @@
       ]
     },
     {
-      "chapter_ordinal": 43,
+      "chapter_ordinal": 44,
       "chapter_id": "prototype-roadmap",
       "chapter_title": "Prototype Roadmap",
       "part_id": "evidence-implementation-living-book",
@@ -5887,7 +5960,7 @@
       ]
     },
     {
-      "chapter_ordinal": 44,
+      "chapter_ordinal": 45,
       "chapter_id": "living-book-methodology",
       "chapter_title": "Living Book Methodology",
       "part_id": "evidence-implementation-living-book",
@@ -5943,7 +6016,7 @@
       ]
     },
     {
-      "chapter_ordinal": 45,
+      "chapter_ordinal": 46,
       "chapter_id": "open-research-agenda-and-bibliography-plan",
       "chapter_title": "Open Research Agenda and Bibliography Plan",
       "part_id": "evidence-implementation-living-book",

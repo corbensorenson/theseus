@@ -40,6 +40,8 @@ DEFAULT_MARKDOWN = REPORTS / "theseus_project_registry.md"
 SOURCE_ROOTS = ("scripts", "configs", "docs", "crates", "dashboard", "benchmarks/cards", "tests", "src")
 SOURCE_EXTENSIONS = {".py", ".rs", ".json", ".toml", ".md", ".html", ".css", ".js", ".ps1", ".sh", ".yml", ".yaml"}
 ROUTE_VALIDATOR_SPINE_GROUPS = ("governance_records", "failure_boundaries", "authority_records", "resource_route_records")
+ROUTE_EVIDENCE_MODES = {"all", "current_invocation", "not_route_required"}
+ROUTE_EVIDENCE_FRESHNESS_MODES = {"source_bound", "ttl", "exists"}
 
 
 def main() -> int:
@@ -119,6 +121,7 @@ def main() -> int:
         "surface_count": len(policy.get("surfaces", [])) if isinstance(policy.get("surfaces"), list) else 0,
         "abstraction_count": len(policy.get("abstractions", [])) if isinstance(policy.get("abstractions"), list) else 0,
         "implementation_count": len(policy.get("implementations", [])) if isinstance(policy.get("implementations"), list) else 0,
+        "route_evidence_contracts": policy.get("route_evidence_contracts", []),
         "registry_evolution_contract": policy.get("registry_evolution_contract", {}),
         "project_steward_config": steward_coverage.get("config_path", ""),
         "project_steward_coverage": steward_coverage,
@@ -315,6 +318,16 @@ def is_active_source_path(path: str, row: dict[str, Any]) -> bool:
 
 
 def report_output_status(policy: dict[str, Any]) -> list[dict[str, Any]]:
+    route_rows_by_path: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for implementation in policy.get("implementations", []) if isinstance(policy.get("implementations"), list) else []:
+        if not isinstance(implementation, dict):
+            continue
+        contract_result = evaluate_route_evidence_contract(policy, implementation)
+        for route_row in contract_result["requirements"]:
+            path_text = str(route_row.get("path") or "")
+            if path_text:
+                route_rows_by_path[path_text].append(route_row)
+
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
     for surface in policy.get("surfaces", []) if isinstance(policy.get("surfaces"), list) else []:
@@ -343,23 +356,235 @@ def report_output_status(policy: dict[str, Any]) -> list[dict[str, Any]]:
             exists = path.exists()
             created = report_created_utc(path) if exists and path.is_file() else None
             age = age_hours_since(created) if created else None
-            stale = bool(not not_applicable and exists and age is not None and age > max_age)
+            route_rows = route_rows_by_path.get(path_text, [])
+            route_blockers = [
+                blocker
+                for route_row in route_rows
+                for blocker in route_row.get("blockers", [])
+                if blocker
+            ]
+            route_required = bool(route_rows)
+            stale = bool(route_required and any(bool(route_row.get("stale")) for route_row in route_rows))
+            if not_applicable:
+                status = "not_applicable"
+            elif route_required:
+                status = "fresh" if not route_blockers else route_evidence_failure_status(route_rows)
+            else:
+                status = "available" if exists else "missing_supporting"
             rows.append(
                 {
                     "record_type": "project_registry_report_output",
                     "surface_id": surface_id,
                     "path": path_text,
+                    "evidence_class": "route_required" if route_required else "supporting",
+                    "route_required": route_required,
+                    "route_required_by": sorted(
+                        {str(route_row.get("implementation_id") or "") for route_row in route_rows if route_row.get("implementation_id")}
+                    ),
+                    "route_requirement_statuses": route_rows,
+                    "route_blockers": sorted(set(route_blockers)),
                     "exists": exists,
                     "not_applicable": not_applicable,
                     "created_utc": created.isoformat().replace("+00:00", "Z") if created else "",
                     "age_hours": round(float(age), 3) if age is not None else None,
                     "max_age_hours": max_age,
-                    "freshness_policy": str(output_policy.get("policy") or surface.get("latest_view_policy") or "surface_default"),
+                    "freshness_policy": (
+                        "route_evidence_contract"
+                        if route_required
+                        else str(output_policy.get("policy") or surface.get("latest_view_policy") or "supporting_evidence_no_ttl")
+                    ),
                     "stale": stale,
-                    "status": "not_applicable" if not_applicable else ("missing" if not exists else ("stale" if stale else "fresh")),
+                    "status": status,
                 }
             )
     return sorted(rows, key=lambda item: (item["status"], item["path"]))
+
+
+def route_evidence_contracts(policy: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {
+        str(row.get("id") or ""): row
+        for row in policy.get("route_evidence_contracts", [])
+        if isinstance(row, dict) and row.get("id")
+    }
+
+
+def evaluate_route_evidence_contract(policy: dict[str, Any], implementation: dict[str, Any]) -> dict[str, Any]:
+    implementation_id = str(implementation.get("id") or "unknown")
+    contract_id = str(implementation.get("route_evidence_contract_id") or "")
+    contract = route_evidence_contracts(policy).get(contract_id)
+    if not contract:
+        return {
+            "contract_id": contract_id,
+            "mode": "missing",
+            "requirements": [],
+            "blockers": ["route_evidence_contract_missing"],
+        }
+    mode = str(contract.get("mode") or "all")
+    if mode == "current_invocation":
+        return {
+            "contract_id": contract_id,
+            "mode": mode,
+            "requirements": [
+                {
+                    "implementation_id": implementation_id,
+                    "requirement_id": "current_invocation",
+                    "path": "",
+                    "freshness_mode": "current_invocation",
+                    "status": "current_invocation",
+                    "stale": False,
+                    "blockers": [],
+                }
+            ],
+            "blockers": [],
+        }
+    if mode == "not_route_required":
+        return {
+            "contract_id": contract_id,
+            "mode": mode,
+            "requirements": [],
+            "blockers": [],
+        }
+    requirements = [
+        evaluate_route_evidence_requirement(implementation, row)
+        for row in contract.get("requirements", [])
+        if isinstance(row, dict)
+    ]
+    blockers = sorted(
+        {
+            blocker
+            for requirement in requirements
+            for blocker in requirement.get("blockers", [])
+            if blocker
+        }
+    )
+    if not requirements:
+        blockers.append("route_evidence_requirements_missing")
+    return {
+        "contract_id": contract_id,
+        "mode": mode,
+        "requirements": requirements,
+        "blockers": blockers,
+    }
+
+
+def evaluate_route_evidence_requirement(
+    implementation: dict[str, Any], requirement: dict[str, Any]
+) -> dict[str, Any]:
+    implementation_id = str(implementation.get("id") or "unknown")
+    requirement_id = str(requirement.get("id") or "unnamed")
+    path_text = normalize_path(str(requirement.get("path") or ""))
+    freshness_mode = str(requirement.get("freshness_mode") or "source_bound")
+    path = resolve(path_text) if path_text else ROOT / "__missing_route_evidence_path__"
+    not_applicable = bool(path_text and platform_report_not_applicable(path_text))
+    exists = bool(path_text and path.exists())
+    created = report_created_utc(path) if exists and path.is_file() else None
+    age = age_hours_since(created) if created else None
+    blockers: list[str] = []
+    source_paths: list[str] = []
+    newest_source_utc = ""
+    content_valid = False
+    acceptance_passed = False
+    acceptance_actual: Any = None
+
+    if not path_text:
+        blockers.append("route_evidence_path_missing")
+    elif not_applicable:
+        pass
+    elif not exists:
+        blockers.append("route_evidence_missing")
+    else:
+        payload = read_json(path, None)
+        content_valid = isinstance(payload, (dict, list))
+        if path.suffix.lower() == ".json" and not content_valid:
+            blockers.append("route_evidence_invalid_json")
+        if freshness_mode == "ttl":
+            max_age = float(requirement.get("max_age_hours") or 0.0)
+            if max_age <= 0:
+                blockers.append("route_evidence_ttl_missing")
+            elif age is None or age > max_age:
+                blockers.append("route_evidence_ttl_expired")
+        elif freshness_mode == "source_bound":
+            source_paths = route_evidence_source_paths(implementation, requirement)
+            source_times: list[datetime] = []
+            for source_text in source_paths:
+                source = resolve(source_text)
+                if not source.exists():
+                    blockers.append(f"route_evidence_source_missing:{source_text}")
+                    continue
+                try:
+                    source_times.append(datetime.fromtimestamp(source.stat().st_mtime, tz=timezone.utc))
+                except OSError:
+                    blockers.append(f"route_evidence_source_unreadable:{source_text}")
+            if not source_paths:
+                blockers.append("route_evidence_sources_missing")
+            if source_times:
+                newest_source = max(source_times)
+                newest_source_utc = newest_source.isoformat().replace("+00:00", "Z")
+                if created is None or created.timestamp() + 1.0 < newest_source.timestamp():
+                    blockers.append("route_evidence_source_changed")
+        elif freshness_mode != "exists":
+            blockers.append(f"route_evidence_unknown_freshness_mode:{freshness_mode}")
+
+        acceptance = requirement.get("acceptance") if isinstance(requirement.get("acceptance"), dict) else {}
+        if acceptance:
+            field = str(acceptance.get("field") or "")
+            allowed = acceptance.get("allowed") if isinstance(acceptance.get("allowed"), list) else []
+            acceptance_actual = get_nested(payload, field.split("."), None) if field and isinstance(payload, dict) else None
+            acceptance_passed = bool(field and allowed and acceptance_actual in allowed)
+            if not acceptance_passed:
+                blockers.append("route_evidence_acceptance_rejected")
+        else:
+            acceptance_passed = content_valid or path.suffix.lower() != ".json"
+
+    stale = any(blocker in {"route_evidence_ttl_expired", "route_evidence_source_changed"} for blocker in blockers)
+    status = "not_applicable" if not_applicable else ("fresh" if not blockers else route_evidence_failure_status([{"blockers": blockers}]))
+    return {
+        "record_type": "project_registry_route_evidence_requirement",
+        "implementation_id": implementation_id,
+        "requirement_id": requirement_id,
+        "path": path_text,
+        "freshness_mode": freshness_mode,
+        "source_paths": source_paths,
+        "newest_source_utc": newest_source_utc,
+        "exists": exists,
+        "not_applicable": not_applicable,
+        "created_utc": created.isoformat().replace("+00:00", "Z") if created else "",
+        "age_hours": round(float(age), 3) if age is not None else None,
+        "content_valid": content_valid,
+        "acceptance": requirement.get("acceptance", {}),
+        "acceptance_actual": acceptance_actual,
+        "acceptance_passed": acceptance_passed,
+        "status": status,
+        "stale": stale,
+        "blockers": sorted(set(blockers)),
+    }
+
+
+def route_evidence_source_paths(implementation: dict[str, Any], requirement: dict[str, Any]) -> list[str]:
+    explicit = requirement.get("source_paths") if isinstance(requirement.get("source_paths"), list) else []
+    candidates = [str(item) for item in explicit if item]
+    if not candidates:
+        canonical = str(implementation.get("canonical_entrypoint") or "")
+        if canonical:
+            candidates.append(canonical)
+        command = str(implementation.get("verification_command") or "")
+        candidates.extend(
+            re.findall(r"(?:scripts|configs|crates|src|tests)/[A-Za-z0-9_./-]+\.(?:py|json|toml|rs|md|ya?ml)", command)
+        )
+    return sorted({normalize_path(item) for item in candidates if item})
+
+
+def route_evidence_failure_status(rows: list[dict[str, Any]]) -> str:
+    blockers = {str(blocker) for row in rows for blocker in row.get("blockers", [])}
+    if any("missing" in blocker for blocker in blockers):
+        return "missing"
+    if any("invalid" in blocker or "unknown" in blocker for blocker in blockers):
+        return "invalid"
+    if any("expired" in blocker or "source_changed" in blocker for blocker in blockers):
+        return "stale"
+    if any("acceptance_rejected" in blocker for blocker in blockers):
+        return "rejected"
+    return "blocked"
 
 
 def platform_report_not_applicable(path_text: str) -> bool:
@@ -788,14 +1013,17 @@ def registry_governance_violations(
     stale_or_missing = [
         row
         for row in report_status
-        if isinstance(row, dict) and row.get("status") in {"stale", "missing"} and not row.get("not_applicable")
+        if isinstance(row, dict)
+        and row.get("route_required")
+        and row.get("status") in {"stale", "missing", "invalid", "rejected", "blocked"}
+        and not row.get("not_applicable")
     ]
     if stale_or_missing:
         rows.append(
             governance_violation(
                 rules,
                 "single_current_self_model",
-                "stale_or_missing_report_outputs",
+                "blocked_route_evidence",
                 [str(row.get("path") or "") for row in stale_or_missing[:24]],
                 {"count": len(stale_or_missing), "reports": stale_or_missing[:24]},
             )
@@ -895,7 +1123,7 @@ def recommended_action_for_rule(rule_id: str) -> str:
     actions = {
         "registry_first": "Register the file under an existing surface, create a narrow surface with required fields, or move it to deprecated/generated state.",
         "improve_existing_first": "Patch the canonical surface first; if a successor is truly needed, record the successor/deprecation relationship in the registry.",
-        "single_current_self_model": "Refresh declared latest-view reports or retire the output from the owning surface with a reason.",
+        "single_current_self_model": "Refresh or repair the minimal blocked route receipt; supporting history does not require periodic regeneration.",
         "no_orphan_runtime_state": "Move generated/cache/build artifacts out of source paths through GC or retention manifests and keep ignore coverage current.",
         "successor_not_sprawl": "Add a replacement, retained reason, or cleanup policy so old and new systems do not compete silently.",
         "no_evidence_deletion_without_manifest": "Use manifest-backed retention/GC and leave archive pointers for moved evidence.",
@@ -912,6 +1140,8 @@ def abstraction_registry_gaps(policy: dict[str, Any]) -> list[dict[str, Any]]:
     valid_states = {str(item) for item in contract.get("valid_lifecycle_states", []) if item}
     abstractions = [row for row in policy.get("abstractions", []) if isinstance(row, dict)]
     implementations = [row for row in policy.get("implementations", []) if isinstance(row, dict)]
+    route_contract_rows = [row for row in policy.get("route_evidence_contracts", []) if isinstance(row, dict)]
+    route_contract_by_id: dict[str, dict[str, Any]] = {}
     surfaces = {
         str(row.get("id") or ""): row
         for row in policy.get("surfaces", [])
@@ -920,6 +1150,108 @@ def abstraction_registry_gaps(policy: dict[str, Any]) -> list[dict[str, Any]]:
     abstraction_by_id: dict[str, dict[str, Any]] = {}
     implementation_by_id: dict[str, dict[str, Any]] = {}
     rows: list[dict[str, Any]] = []
+
+    for route_contract in route_contract_rows:
+        route_contract_id = str(route_contract.get("id") or "")
+        mode = str(route_contract.get("mode") or "")
+        if not route_contract_id:
+            rows.append(
+                {
+                    "record_type": "project_registry_route_evidence_gap",
+                    "kind": "route_evidence_contract_id_missing",
+                    "scope": "route_evidence_contracts",
+                    "recommended_action": "give every route evidence contract a stable id",
+                }
+            )
+            continue
+        if route_contract_id in route_contract_by_id:
+            rows.append(
+                {
+                    "record_type": "project_registry_route_evidence_gap",
+                    "kind": "duplicate_route_evidence_contract_id",
+                    "route_evidence_contract_id": route_contract_id,
+                    "scope": route_contract_id,
+                    "recommended_action": "merge duplicate route evidence contracts",
+                }
+            )
+        route_contract_by_id[route_contract_id] = route_contract
+        if mode not in ROUTE_EVIDENCE_MODES:
+            rows.append(
+                {
+                    "record_type": "project_registry_route_evidence_gap",
+                    "kind": "route_evidence_contract_mode_invalid",
+                    "route_evidence_contract_id": route_contract_id,
+                    "mode": mode,
+                    "scope": route_contract_id,
+                    "recommended_action": "use an allowed route evidence evaluation mode",
+                }
+            )
+        requirements = [row for row in route_contract.get("requirements", []) if isinstance(row, dict)]
+        if mode == "all" and not requirements:
+            rows.append(
+                {
+                    "record_type": "project_registry_route_evidence_gap",
+                    "kind": "route_evidence_requirements_missing",
+                    "route_evidence_contract_id": route_contract_id,
+                    "scope": route_contract_id,
+                    "recommended_action": "declare at least one minimal route receipt",
+                }
+            )
+        requirement_ids: set[str] = set()
+        for requirement in requirements:
+            requirement_id = str(requirement.get("id") or "")
+            path_text = normalize_path(str(requirement.get("path") or ""))
+            freshness_mode = str(requirement.get("freshness_mode") or "")
+            missing_fields = [
+                field for field, value in (("id", requirement_id), ("path", path_text), ("freshness_mode", freshness_mode)) if not value
+            ]
+            if missing_fields:
+                rows.append(
+                    {
+                        "record_type": "project_registry_route_evidence_gap",
+                        "kind": "route_evidence_requirement_missing_fields",
+                        "route_evidence_contract_id": route_contract_id,
+                        "requirement_id": requirement_id,
+                        "missing_fields": missing_fields,
+                        "scope": route_contract_id,
+                        "recommended_action": "complete the route evidence requirement schema",
+                    }
+                )
+            if requirement_id in requirement_ids:
+                rows.append(
+                    {
+                        "record_type": "project_registry_route_evidence_gap",
+                        "kind": "duplicate_route_evidence_requirement_id",
+                        "route_evidence_contract_id": route_contract_id,
+                        "requirement_id": requirement_id,
+                        "scope": route_contract_id,
+                        "recommended_action": "give requirements unique ids within the contract",
+                    }
+                )
+            requirement_ids.add(requirement_id)
+            if freshness_mode and freshness_mode not in ROUTE_EVIDENCE_FRESHNESS_MODES:
+                rows.append(
+                    {
+                        "record_type": "project_registry_route_evidence_gap",
+                        "kind": "route_evidence_freshness_mode_invalid",
+                        "route_evidence_contract_id": route_contract_id,
+                        "requirement_id": requirement_id,
+                        "freshness_mode": freshness_mode,
+                        "scope": route_contract_id,
+                        "recommended_action": "use source_bound, ttl, or exists freshness",
+                    }
+                )
+            if freshness_mode == "ttl" and float(requirement.get("max_age_hours") or 0.0) <= 0:
+                rows.append(
+                    {
+                        "record_type": "project_registry_route_evidence_gap",
+                        "kind": "route_evidence_ttl_missing",
+                        "route_evidence_contract_id": route_contract_id,
+                        "requirement_id": requirement_id,
+                        "scope": route_contract_id,
+                        "recommended_action": "declare a positive TTL for volatile evidence",
+                    }
+                )
 
     for abstraction in abstractions:
         abstraction_id = str(abstraction.get("id") or "")
@@ -1062,6 +1394,62 @@ def abstraction_registry_gaps(policy: dict[str, Any]) -> list[dict[str, Any]]:
                 }
             )
         eligibility = implementation.get("routing_eligibility") if isinstance(implementation.get("routing_eligibility"), dict) else {}
+        route_contract_id = str(implementation.get("route_evidence_contract_id") or "")
+        route_contract = route_contract_by_id.get(route_contract_id, {})
+        if not route_contract_id or not route_contract:
+            rows.append(
+                {
+                    "record_type": "project_registry_implementation_gap",
+                    "kind": "implementation_route_evidence_contract_missing",
+                    "implementation_id": implementation_id or "unknown",
+                    "route_evidence_contract_id": route_contract_id,
+                    "scope": implementation_id or "unknown",
+                    "recommended_action": "bind the implementation to a declared route evidence contract",
+                }
+            )
+        elif bool(eligibility.get("eligible", implementation_status == "live")) and route_contract.get("mode") == "not_route_required":
+            rows.append(
+                {
+                    "record_type": "project_registry_implementation_gap",
+                    "kind": "routable_implementation_disables_route_evidence",
+                    "implementation_id": implementation_id or "unknown",
+                    "route_evidence_contract_id": route_contract_id,
+                    "scope": implementation_id or "unknown",
+                    "recommended_action": "give routable implementations current-invocation or explicit route evidence",
+                }
+            )
+        elif route_contract:
+            evidence_outputs = {normalize_path(str(item)) for item in implementation.get("evidence_outputs", []) if item}
+            surface_outputs = {
+                normalize_path(str(item)) for item in surface.get("report_outputs", []) if item
+            } if surface else set()
+            for requirement in route_contract.get("requirements", []) if isinstance(route_contract.get("requirements"), list) else []:
+                if not isinstance(requirement, dict):
+                    continue
+                path_text = normalize_path(str(requirement.get("path") or ""))
+                if path_text and path_text not in evidence_outputs:
+                    rows.append(
+                        {
+                            "record_type": "project_registry_implementation_gap",
+                            "kind": "route_evidence_not_declared_by_implementation",
+                            "implementation_id": implementation_id or "unknown",
+                            "path": path_text,
+                            "scope": implementation_id or path_text,
+                            "recommended_action": "add the route receipt to implementation evidence_outputs",
+                        }
+                    )
+                if path_text and path_text not in surface_outputs:
+                    rows.append(
+                        {
+                            "record_type": "project_registry_implementation_gap",
+                            "kind": "route_evidence_not_declared_by_surface",
+                            "implementation_id": implementation_id or "unknown",
+                            "surface_id": surface_id,
+                            "path": path_text,
+                            "scope": implementation_id or path_text,
+                            "recommended_action": "add the route receipt to the owning surface report_outputs",
+                        }
+                    )
         if implementation_status == "live" and not eligibility:
             rows.append(
                 {
@@ -1557,6 +1945,9 @@ def implementation_registry_health(policy: dict[str, Any], report_status: list[d
         surface = surfaces.get(surface_id, {})
         eligibility = implementation.get("routing_eligibility") if isinstance(implementation.get("routing_eligibility"), dict) else {}
         evidence_outputs = [str(item) for item in implementation.get("evidence_outputs", []) if item]
+        route_contract = evaluate_route_evidence_contract(policy, implementation)
+        route_evidence_rows = route_contract["requirements"]
+        route_evidence_paths = {str(row.get("path") or "") for row in route_evidence_rows if row.get("path")}
         evidence_rows = []
         for output in evidence_outputs:
             record = report_by_path.get(output)
@@ -1565,6 +1956,8 @@ def implementation_registry_health(policy: dict[str, Any], report_status: list[d
                     {
                         "path": output,
                         "status": record.get("status"),
+                        "evidence_class": "route_required" if output in route_evidence_paths else "supporting",
+                        "route_required": output in route_evidence_paths,
                         "age_hours": record.get("age_hours"),
                         "max_age_hours": record.get("max_age_hours"),
                         "freshness_policy": record.get("freshness_policy"),
@@ -1577,16 +1970,13 @@ def implementation_registry_health(policy: dict[str, Any], report_status: list[d
                     {
                         "path": output,
                         "status": "missing_from_surface_report_outputs" if not path.exists() else "untracked_by_surface",
+                        "evidence_class": "route_required" if output in route_evidence_paths else "supporting",
+                        "route_required": output in route_evidence_paths,
                         "age_hours": None,
                         "not_applicable": False,
                     }
                 )
-        evidence_blockers = [
-            row
-            for row in evidence_rows
-            if row.get("status") in {"stale", "missing", "missing_from_surface_report_outputs"}
-            and not row.get("not_applicable")
-        ]
+        evidence_blockers = list(route_contract.get("blockers", []))
         routing_required = bool(eligibility.get("eligible", status == "live"))
         routing_roles = [str(item) for item in eligibility.get("roles", []) if item] if isinstance(eligibility.get("roles"), list) else []
         routing_eligible = bool(
@@ -1615,7 +2005,10 @@ def implementation_registry_health(policy: dict[str, Any], report_status: list[d
         if not routing_roles:
             blockers.append("routing_roles_missing")
         if evidence_blockers and bool(eligibility.get("requires_fresh_evidence", True)):
-            blockers.append("evidence_stale_or_missing")
+            blockers.append("route_evidence_blocked")
+        if routing_required and route_contract.get("mode") == "not_route_required":
+            blockers.append("route_evidence_contract_disables_required_route")
+            routing_eligible = False
         rows.append(
             {
                 "record_type": "project_registry_implementation_health",
@@ -1632,7 +2025,12 @@ def implementation_registry_health(policy: dict[str, Any], report_status: list[d
                 "routing_eligible": routing_eligible,
                 "routing_roles": routing_roles,
                 "evidence_outputs": evidence_rows,
+                "route_evidence_contract_id": route_contract.get("contract_id"),
+                "route_evidence_mode": route_contract.get("mode"),
+                "route_evidence": route_evidence_rows,
                 "evidence_blocker_count": len(evidence_blockers),
+                "evidence_blockers": evidence_blockers,
+                "supporting_evidence_output_count": sum(1 for row in evidence_rows if not row.get("route_required")),
                 "blockers": blockers,
                 "attd_hooks": implementation.get("attd_hooks") if isinstance(implementation.get("attd_hooks"), dict) else {},
                 "routing_eligibility_contract": eligibility,
@@ -1645,8 +2043,8 @@ def implementation_registry_health(policy: dict[str, Any], report_status: list[d
 def implementation_health_action(blockers: list[str]) -> str:
     if not blockers:
         return "eligible under the registry contract"
-    if "evidence_stale_or_missing" in blockers:
-        return "refresh or intentionally retire this implementation's declared evidence outputs"
+    if "route_evidence_blocked" in blockers:
+        return "refresh the minimal route receipt, repair its source/acceptance contract, or disable the route explicitly"
     if "unknown_abstraction" in blockers or "unknown_surface" in blockers:
         return "repair the implementation binding to a declared abstraction and surface"
     if "routing_roles_missing" in blockers:
@@ -1736,15 +2134,18 @@ def registry_cleanup_queue(
     stale_or_missing = [
         row
         for row in report_status
-        if isinstance(row, dict) and row.get("status") in {"stale", "missing"} and not row.get("not_applicable")
+        if isinstance(row, dict)
+        and row.get("route_required")
+        and row.get("status") in {"stale", "missing", "invalid", "rejected", "blocked"}
+        and not row.get("not_applicable")
     ]
     for row in stale_or_missing[:16]:
         rows.append(
             cleanup_item(
-                "stale_or_missing_evidence",
+                "blocked_route_evidence",
                 "medium",
                 [str(row.get("path") or "")],
-                "refresh the owning surface report or retire the declared latest-view output with a reason",
+                "refresh or repair the minimal route receipt; do not regenerate unrelated supporting evidence",
                 row,
             )
         )
@@ -1778,8 +2179,8 @@ def registry_decision_report(
             decision = "repair_or_replace_implementation"
         elif kind == "duplicate_family_pressure":
             decision = "consolidate_or_archive"
-        elif kind == "stale_or_missing_evidence":
-            decision = "refresh_or_retire_evidence"
+        elif kind == "blocked_route_evidence":
+            decision = "refresh_or_repair_route_evidence"
         elif kind == "generated_source_artifact":
             decision = "archive_generated_state"
         decisions.append(
@@ -1949,8 +2350,19 @@ def build_summary(
     type_counts = Counter(str(row.get("artifact_type") or "unknown") for row in entries)
     registered_paths = {str(row.get("path")) for row in entries}
     unregistered_active = len(unregistered)
-    stale_reports = [row for row in report_status if row.get("stale")]
-    missing_reports = [row for row in report_status if not row.get("exists") and not row.get("not_applicable")]
+    route_reports = [row for row in report_status if row.get("route_required")]
+    supporting_reports = [row for row in report_status if not row.get("route_required")]
+    stale_reports = [row for row in route_reports if row.get("stale")]
+    missing_reports = [row for row in route_reports if not row.get("exists") and not row.get("not_applicable")]
+    blocked_route_reports = [
+        row
+        for row in route_reports
+        if row.get("status") in {"stale", "missing", "invalid", "rejected", "blocked"}
+        and not row.get("not_applicable")
+    ]
+    missing_supporting_reports = [
+        row for row in supporting_reports if not row.get("exists") and not row.get("not_applicable")
+    ]
     generated_mib = sum(float(row.get("mib") or 0.0) for row in root_summaries if row.get("cleanup_class") == "generated_or_build_state")
     source_mib = sum(float(row.get("mib") or 0.0) for row in root_summaries if row.get("cleanup_class") == "active_source_surface")
     source_duplicates = [row for row in duplicate_families if str(row.get("root") or "") in {"scripts", "configs", "docs"}]
@@ -2029,6 +2441,10 @@ def build_summary(
         "unclassified_duplicate_family_count": len(unclassified_duplicates),
         "stale_report_output_count": len(stale_reports),
         "missing_report_output_count": len(missing_reports),
+        "route_evidence_output_count": len(route_reports),
+        "blocked_route_evidence_output_count": len(blocked_route_reports),
+        "supporting_evidence_output_count": len(supporting_reports),
+        "missing_supporting_evidence_output_count": len(missing_supporting_reports),
         "generated_source_artifact_count": len(generated_source),
         "registry_governance_violation_count": len(governance_violations),
         "registry_hard_governance_violation_count": len(hard_governance),
@@ -2127,6 +2543,7 @@ def compact_implementations(policy: dict[str, Any]) -> list[dict[str, Any]]:
                 "backend": implementation.get("backend"),
                 "canonical_entrypoint": implementation.get("canonical_entrypoint"),
                 "evidence_outputs": implementation.get("evidence_outputs", []),
+                "route_evidence_contract_id": implementation.get("route_evidence_contract_id", ""),
                 "routing_eligibility": implementation.get("routing_eligibility", {}),
                 "stable_capability_binding": implementation.get("stable_capability_binding", {}),
                 "verification_command": implementation.get("verification_command", ""),
@@ -2228,7 +2645,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- classified report duplicate families: `{summary.get('classified_report_duplicate_family_count')}`",
         f"- unclassified report duplicate families: `{summary.get('unclassified_report_duplicate_family_count')}`",
         f"- unclassified duplicate families: `{summary.get('unclassified_duplicate_family_count')}`",
-        f"- stale report outputs: `{summary.get('stale_report_output_count')}` missing `{summary.get('missing_report_output_count')}`",
+        f"- route evidence: `{summary.get('route_evidence_output_count')}` blocked `{summary.get('blocked_route_evidence_output_count')}` stale `{summary.get('stale_report_output_count')}` missing `{summary.get('missing_report_output_count')}`",
+        f"- supporting evidence outputs: `{summary.get('supporting_evidence_output_count')}` missing `{summary.get('missing_supporting_evidence_output_count')}`",
         f"- generated source artifacts: `{summary.get('generated_source_artifact_count')}`",
         f"- registry governance violations: `{summary.get('registry_governance_violation_count')}` hard `{summary.get('registry_hard_governance_violation_count')}`",
         f"- generated/build state MiB: `{summary.get('generated_or_build_state_mib')}`",
@@ -2369,10 +2787,13 @@ def render_markdown(payload: dict[str, Any]) -> str:
         lines.append(
             f"- `{row.get('root')}/{row.get('family')}` count=`{row.get('count')}` `{classified}` canonical=`{classification.get('canonical_path', '')}`"
         )
-    lines.extend(["", "## Stale Or Missing Report Outputs", ""])
+    lines.extend(["", "## Blocked Route Evidence And Missing Supporting Outputs", ""])
     for row in payload.get("report_outputs", []):
-        if row.get("status") != "fresh":
-            lines.append(f"- `{row.get('status')}` `{row.get('path')}` surface=`{row.get('surface_id')}` age=`{row.get('age_hours')}`")
+        if row.get("status") not in {"fresh", "available", "not_applicable"}:
+            lines.append(
+                f"- `{row.get('status')}` `{row.get('path')}` surface=`{row.get('surface_id')}` "
+                f"class=`{row.get('evidence_class')}` age=`{row.get('age_hours')}`"
+            )
     return "\n".join(lines) + "\n"
 
 
@@ -2454,6 +2875,10 @@ def registry_gate_summary(payload: dict[str, Any]) -> dict[str, Any]:
         "abstraction_health_red_count": summary.get("abstraction_health_red_count"),
         "abstraction_health_yellow_count": summary.get("abstraction_health_yellow_count"),
         "implementation_routing_blocker_count": summary.get("implementation_routing_blocker_count"),
+        "route_evidence_output_count": summary.get("route_evidence_output_count"),
+        "blocked_route_evidence_output_count": summary.get("blocked_route_evidence_output_count"),
+        "supporting_evidence_output_count": summary.get("supporting_evidence_output_count"),
+        "missing_supporting_evidence_output_count": summary.get("missing_supporting_evidence_output_count"),
         "registry_governance_violation_count": summary.get("registry_governance_violation_count"),
         "registry_hard_governance_violation_count": summary.get("registry_hard_governance_violation_count"),
         "routing_eligible_implementation_count": summary.get("routing_eligible_implementation_count"),
