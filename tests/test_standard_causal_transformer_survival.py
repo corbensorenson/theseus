@@ -39,7 +39,12 @@ from standard_causal_transformer_survival import (
     visible_eval_source,
 )
 from blind_information_flow_audit import audit_source
-from standard_causal_transformer_conditioning import deranged_source_arrays
+from standard_causal_transformer_conditioning import (
+    deranged_source_arrays,
+    inspect_bindings as inspect_conditioning_bindings,
+    publish_completed_checkpoint,
+    validate_config as validate_conditioning_config,
+)
 from code_lm_private_verifier import evaluate_all_private_candidates
 from standard_causal_transformer_preference import (
     PreferenceArrays,
@@ -246,6 +251,106 @@ def test_source_derangement_keeps_targets_and_changes_sources() -> None:
     assert 2 in negative_inputs[0]
     assert list(negative_labels[0][negative_mask[0] > 0]) == [21, 23]
     assert list(negative_labels[1][negative_mask[1] > 0]) == [22, 23]
+    assert list(negative_mask.sum(axis=1)) == list(mask.sum(axis=1))
+
+
+def test_conditioning_config_forbids_canonical_report_overwrite() -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_conditioning.json").read_text())
+    validate_conditioning_config(config)
+    unsafe = json.loads(json.dumps(config))
+    unsafe["report"] = "reports/standard_causal_transformer_survival.json"
+    with pytest.raises(ValueError, match="cannot overwrite"):
+        validate_conditioning_config(unsafe)
+
+
+def test_conditioning_preflight_rejects_stale_stage_and_incomplete_training(tmp_path: Path) -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_conditioning.json").read_text())
+    stage_dir = tmp_path / "stage"
+    stage_dir.mkdir()
+    (stage_dir / "stage_arrays_v1.npz").write_bytes(b"not-loaded-by-preflight")
+    (stage_dir / "stage_metadata_v1.json").write_text(json.dumps({"stage_signature": "stale"}))
+    base_report = tmp_path / "base_report.json"
+    base_report.write_text(
+        json.dumps(
+            {
+                "artifacts": {
+                    "config": config["base_config"],
+                    "checkpoint": config["base_checkpoint"],
+                    "stage_dir": str(stage_dir),
+                },
+                "stage": {"stage_signature": "stale"},
+                "training": {"complete": False, "evaluation_only_replay": True},
+            }
+        )
+    )
+    config["stage_dir"] = str(stage_dir)
+    config["stage_signature"] = "stale"
+    config["base_report"] = str(base_report)
+    config["report"] = str(tmp_path / "conditioning.json")
+    bindings = inspect_conditioning_bindings(config)
+    fault_codes = {row["code"] for row in bindings["binding_faults"]}
+    blocker_codes = {row["code"] for row in bindings["training_blockers"]}
+    assert "stage_logic_or_source_mismatch" in fault_codes
+    assert "base_training_receipt_incomplete" in blocker_codes
+    assert "base_training_receipt_is_evaluation_replay" in blocker_codes
+    assert bindings["ready_for_measure"] is False
+    assert bindings["ready_for_train"] is False
+
+
+def test_conditioning_checkpoint_publication_is_atomic(tmp_path: Path) -> None:
+    final = tmp_path / "checkpoint.npz"
+    partial = tmp_path / "checkpoint.partial.npz"
+    final.write_bytes(b"old-complete")
+    partial.write_bytes(b"new-complete")
+    assert final.read_bytes() == b"old-complete"
+    publish_completed_checkpoint(partial, final)
+    assert final.read_bytes() == b"new-complete"
+    assert not partial.exists()
+
+
+def test_conditioning_rejects_ambiguous_legacy_execute_flag() -> None:
+    canonical = ROOT / "reports" / "standard_causal_transformer_survival.json"
+    before = canonical.read_bytes()
+    result = subprocess.run(
+        [sys.executable, str(SCRIPTS / "standard_causal_transformer_conditioning.py"), "--execute"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    assert "unrecognized arguments: --execute" in result.stderr
+    assert canonical.read_bytes() == before
+
+
+def test_conditioning_train_mode_fails_before_optimizer_without_complete_receipt(tmp_path: Path) -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_conditioning.json").read_text())
+    config["conditioned_checkpoint_dir"] = str(tmp_path / "checkpoint")
+    config["report"] = str(tmp_path / "report.json")
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps(config))
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPTS / "standard_causal_transformer_conditioning.py"),
+            "--config",
+            str(config_path),
+            "--mode",
+            "train",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    report = json.loads((tmp_path / "report.json").read_text())
+    assert report["trigger_state"] == "RED"
+    assert {row["code"] for row in report["typed_faults"]} == {
+        "base_training_receipt_incomplete",
+        "base_training_receipt_is_evaluation_replay",
+    }
+    assert not (tmp_path / "checkpoint").exists()
 
 
 def test_semantic_stage_source_rejects_placeholders_and_strips_metadata() -> None:

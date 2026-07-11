@@ -557,6 +557,17 @@ deletion closure is graph evidence, not physical unlearning.
   provenance and no adoption. Evaluation-only now requires execute mode plus an
   explicit prior receipt, and candidate artifact paths are request-bound. This
   keeps the encoding correction while rejecting the checkpoint as capability.
+- Exact-bound source-conditioning measurement across all `24` heldouts records
+  matched loss `1.662704` versus deterministic wrong-source loss `1.766282`, a
+  positive gap of `0.103578`. The checkpoint therefore uses source information,
+  but still cannot turn it into correct behavior. The existing conditioning route
+  now separates `preflight`, `measure`, and `train`; binds the exact base config,
+  checkpoint hash, stage signature, arrays, metadata, and base report; preserves
+  target-mask cardinality under source derangement; publishes checkpoints
+  atomically; emits typed faults; and cannot overwrite canonical survival evidence.
+  It correctly refuses training while the base completion receipt is incomplete.
+  The pre-repair conditioned checkpoint is retained under an explicitly stale
+  lineage path and is absent from the configured output location.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

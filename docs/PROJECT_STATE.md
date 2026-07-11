@@ -92,6 +92,18 @@ the source-offset repair, and more same-distribution SFT all fail to move exact
 behavior above zero. The successor remains contained, non-canonical, and
 non-routable. The wall is prompt-conditioned semantic behavior, complete task
 coverage, verifier-positive pair density, and durable training provenance.
+An exact-bound conditioning diagnostic over all `24` heldouts measures matched
+loss `1.662704` versus deterministic wrong-source loss `1.766282`, a positive
+gap of `0.103578`. This rules out complete source blindness but does not support
+semantic capability. The old conditioning helper also proved unsafe: it used a
+stale stage, had an ambiguous execute flag, could publish an interrupted
+checkpoint as final, and overwrote the canonical report. It now has explicit
+preflight/measure/train modes, exact artifact and stage binding,
+target-mask-preserving derangement, atomic checkpoint publication, dedicated
+runtime evidence, and typed failure. Continued optimization is correctly denied
+until a fresh base run retains a complete non-replay training receipt. The old
+conditioned checkpoint is retained under an explicitly stale pre-source-offset
+path and cannot be mistaken for the configured next output.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.

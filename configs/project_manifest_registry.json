@@ -210,6 +210,10 @@
           "path": "checkpoints/standard_causal_transformer_faulty_source_offset_retained/standard_causal_transformer_survival_v1.npz",
           "sha256": "668ed50ff58148f41570c1df244b34855a034dc5670cf1b7b6414bcac13c8013"
         },
+        "retained_stale_pre_repair_conditioned_checkpoint": {
+          "path": "checkpoints/standard_causal_transformer_conditioned_stale_pre_source_offset_retained/standard_causal_transformer_survival_v1.npz",
+          "sha256": "28098fe87e2a0a6cd944505d6fcfcd6118210d5f095e56fea7dac4bb506347fe"
+        },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
           "sha256": "a702f3b055afcba78041438574507c742185b5e5dab09a96a991da26146fb246"
@@ -225,6 +229,14 @@
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
           "sha256": "79b0ff920f5ca6b46512873618ee0f9765aa1078f1ada508caf42ef6a9743af5"
+        },
+        "conditioning_config": {
+          "path": "configs/standard_causal_transformer_conditioning.json",
+          "sha256": "9a06e02202b35b56267ab1d04166f3d270180acd14a1ca9e23a1d71d31b0bcb4"
+        },
+        "conditioning_implementation": {
+          "path": "scripts/standard_causal_transformer_conditioning.py",
+          "sha256": "32d8c9b0073ae4eda93400386e4a5b3fa55932e28ab7301b0f9a6db940e7b0da"
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
@@ -268,7 +280,7 @@
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "6538982e251d09692e9ee253c6bf3871b372ade66e920bdd91265e36133bd5d0"
+          "sha256": "b48081ac1dbcd6afab99eed5eb2cdc21976305d876d3934ba58c1ad4e5750259"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -280,11 +292,11 @@
         },
         "policy_report": {
           "path": "reports/policy_optimization_program.json",
-          "sha256": "68855154457997e1a88c9791b6637591c214c7febc6cf827480d192d99e433c6"
+          "sha256": "15f5f883bc618445ed0d4d7807f5c82e04f2c55d66ec24c6ca042b1626bb1aa9"
         },
         "generation_mode_report": {
           "path": "reports/generation_mode_registry.json",
-          "sha256": "444ab4a46167eb1a7ea0a60406f6325a7e028e4b05a7e21654eba42f18c67fbd"
+          "sha256": "5e21c9b6ef4eb24caf3b68c1ca1cd8f7bebf0bff09f60c866172bf570bef2e96"
         }
       },
       "evidence_refs": [
@@ -4811,9 +4823,11 @@
       "dependencies": [
         "configs/project_manifest_registry.json",
         "configs/standard_causal_transformer_survival.json",
+        "configs/standard_causal_transformer_conditioning.json",
         "configs/policy_optimization_program.json",
         "configs/generation_mode_registry.json",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_conditioning.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_preference.py",
         "scripts/neural_seed_open_vocab.py",
@@ -4860,7 +4874,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. The source-offset repair then proved split source IDs had been shifted into the target embedding segment. A fresh corrected-map run lowers heldout loss to 1.662704, raises independently integrity-verified candidates from 38/88 to 57/87, and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. Its completed training receipt was overwritten by the old evaluate-only CLI behavior, so the canonical gate also records incomplete training provenance; the heartbeat and exact checkpoint are retained without promotion. The CLI now requires execute mode and an explicit prior receipt for evaluation-only replay. The successor remains contained; prompt-conditioned semantic behavior, task coverage, and durable training provenance are the Phase 10 wall.",
+      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. The source-offset repair then proved split source IDs had been shifted into the target embedding segment. A fresh corrected-map run lowers heldout loss to 1.662704, raises independently integrity-verified candidates from 38/88 to 57/87, and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. An exact-bound measurement across all 24 heldouts records matched loss 1.662704 versus deterministic wrong-source loss 1.766282 (positive gap 0.103578), so the checkpoint is not wholly source-blind. Its completed training receipt was overwritten by the old evaluation-only CLI behavior, so the canonical gate records incomplete training provenance and the conditioning route refuses optimization. Conditioning now has explicit preflight/measure/train modes, exact stage/checkpoint/report binding, target-mask-preserving derangement, atomic publication, and a dedicated runtime receipt; it cannot overwrite canonical survival evidence. The successor remains contained; source-conditioned semantic behavior, task coverage, and durable training provenance are the Phase 10 wall.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",
@@ -4889,6 +4903,7 @@
         "state_compatibility": {
           "reads": [
             "configs/standard_causal_transformer_survival.json",
+            "configs/standard_causal_transformer_conditioning.json",
             "reports/standard_causal_transformer_survival.json",
             "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz"
           ],
@@ -4919,9 +4934,11 @@
           "dependency_closure": [
             "configs/project_manifest_registry.json",
             "configs/standard_causal_transformer_survival.json",
+            "configs/standard_causal_transformer_conditioning.json",
             "configs/policy_optimization_program.json",
             "configs/generation_mode_registry.json",
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_conditioning.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
@@ -7606,10 +7623,12 @@
         "scripts/sts_broad_regression_audit_v1.py",
         "scripts/trainable_transformer_hybrid_code_generator_v1.py",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_conditioning.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_preference.py",
         "scripts/standard_causal_transformer_survival_gate.py",
         "configs/standard_causal_transformer_survival.json",
+        "configs/standard_causal_transformer_conditioning.json",
         "scripts/canonical_survival_lane_ablation_v1.py",
         "scripts/strict_generator_mlx_*.py",
         "scripts/correctness_generator_survival_lane_gate.py",
