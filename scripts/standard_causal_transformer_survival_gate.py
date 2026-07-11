@@ -31,6 +31,13 @@ DEFAULT_SFT_CONTRACT_BLIND_AUDIT = (
 DEFAULT_SFT_CONTRACT_CONTROL_REPORT = (
     ROOT / "runtime" / "standard_causal_transformer_body_only_matched_canary" / "report.json"
 )
+DEFAULT_STATE_MEMORY_ARM_DIRS = {
+    "body_only": ROOT / "runtime" / "standard_causal_transformer_body_only_current_control",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_state_semantic_canary",
+    "hash_control": ROOT / "runtime" / "standard_causal_transformer_state_hash_control_canary",
+    "zero": ROOT / "runtime" / "standard_causal_transformer_state_zero_replay",
+    "shuffle": ROOT / "runtime" / "standard_causal_transformer_state_shuffle_replay",
+}
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -104,6 +111,8 @@ def build_gate(
         control_report_path=sft_contract_control_report_path,
     )
     hard_gaps.extend(sft_contract_audit["hard_gaps"])
+    state_memory_audit = audit_state_memory_ablation(DEFAULT_STATE_MEMORY_ARM_DIRS)
+    hard_gaps.extend(state_memory_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -270,6 +279,10 @@ def build_gate(
             "sft_contract_admission_state": sft_contract_audit["state"],
             "sft_contract_adoption_state": sft_contract_audit["adoption_state"],
             "sft_contract_deltas": sft_contract_audit["deltas"],
+            "state_memory_ablation_state": state_memory_audit["state"],
+            "state_memory_adoption_state": state_memory_audit["adoption_state"],
+            "state_memory_rejection_reasons": state_memory_audit["adoption_rejection_reasons"],
+            "state_memory_deltas": state_memory_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -283,6 +296,232 @@ def build_gate(
         "fallback_return_count": 0,
         "target_mode_comparison": target_mode_audit["receipt"],
         "sft_contract_admission_ablation": sft_contract_audit["receipt"],
+        "state_memory_ablation": state_memory_audit["receipt"],
+    }
+
+
+def audit_state_memory_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
+    required_arms = {"body_only", "semantic", "hash_control", "zero", "shuffle"}
+    if set(arm_dirs) != required_arms:
+        return {
+            "state": "RED",
+            "adoption_state": "NOT_ADOPTED",
+            "adoption_rejection_reasons": ["arm_set_mismatch"],
+            "deltas": {},
+            "receipt": {"state": "RED", "observed_arms": sorted(arm_dirs)},
+            "hard_gaps": [gap("state_memory_arm_set_mismatch", {"observed": sorted(arm_dirs)})],
+        }
+    required_files = ("report.json", "config.json", "candidates.jsonl", "integrity.json", "blind_audit.json")
+    missing = [
+        rel(directory / name)
+        for directory in arm_dirs.values()
+        for name in required_files
+        if not (directory / name).exists()
+    ]
+    if missing:
+        return {
+            "state": "NOT_RUN",
+            "adoption_state": "NOT_RUN",
+            "adoption_rejection_reasons": [],
+            "deltas": {},
+            "receipt": {"state": "NOT_RUN", "missing": missing},
+            "hard_gaps": [],
+        }
+
+    reports = {name: read_json(directory / "report.json") for name, directory in arm_dirs.items()}
+    configs = {name: read_json(directory / "config.json") for name, directory in arm_dirs.items()}
+    integrities = {name: read_json(directory / "integrity.json") for name, directory in arm_dirs.items()}
+    blind = {name: read_json(directory / "blind_audit.json") for name, directory in arm_dirs.items()}
+    hard_gaps: list[dict[str, Any]] = []
+
+    state_keys = {
+        "state_memory_slots",
+        "state_memory_chunk_size",
+        "state_memory_local_window",
+        "state_memory_mode",
+        "state_memory_ablation",
+    }
+
+    def matched_config(value: dict[str, Any]) -> dict[str, Any]:
+        copy = json.loads(json.dumps(value))
+        model = copy.get("model") if isinstance(copy.get("model"), dict) else {}
+        for key in state_keys:
+            model.pop(key, None)
+        return copy
+
+    configs_equal = len({json.dumps(matched_config(value), sort_keys=True) for value in configs.values()}) == 1
+    expected_modes = {
+        "body_only": ("none", "none"),
+        "semantic": ("semantic_roles", "none"),
+        "hash_control": ("hash_control", "none"),
+        "zero": ("semantic_roles", "zero"),
+        "shuffle": ("semantic_roles", "shuffle"),
+    }
+    modes_correct = all(
+        (
+            str((configs[name].get("model") or {}).get("state_memory_mode") or "none"),
+            str((configs[name].get("model") or {}).get("state_memory_ablation") or "none"),
+        )
+        == expected
+        for name, expected in expected_modes.items()
+    )
+    stage_signatures = {
+        str((report.get("stage") or {}).get("stage_signature") or "")
+        for report in reports.values()
+    }
+
+    def body_positions(report: dict[str, Any]) -> int:
+        return sum(
+            int(row.get("optimizer_body_positions_consumed") or 0)
+            for row in (report.get("training") or {}).get("phases", [])
+            if isinstance(row, dict)
+        )
+
+    exposures = {name: body_positions(report) for name, report in reports.items()}
+    exposure_equal = len(set(exposures.values())) == 1 and next(iter(exposures.values())) > 0
+    parameters = {
+        name: int((report.get("architecture") or {}).get("parameter_count") or 0)
+        for name, report in reports.items()
+    }
+    state_parameters_equal = len({parameters[name] for name in ("semantic", "hash_control", "zero", "shuffle")}) == 1
+    integrity_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("integrity_mismatch_count") or 0) == 0
+        for value in integrities.values()
+    )
+    integrity_bound = all(
+        resolve(str(integrities[name].get("source") or "")) == arm_dirs[name] / "candidates.jsonl"
+        and int((integrities[name].get("summary") or {}).get("candidate_count") or 0)
+        == len(read_jsonl(arm_dirs[name] / "candidates.jsonl"))
+        for name in required_arms
+    )
+    blind_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("invalid_claim_count") or 0) == 0
+        for value in blind.values()
+    )
+    boundaries_clean = all(
+        int(report.get(key) or 0) == 0
+        for report in reports.values()
+        for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
+    )
+    semantic_checkpoint = resolve(str((reports["semantic"].get("artifacts") or {}).get("checkpoint") or ""))
+    replay_checkpoints = [
+        resolve(str((reports[name].get("artifacts") or {}).get("checkpoint") or ""))
+        for name in ("zero", "shuffle")
+    ]
+    replay_checkpoint_bound = semantic_checkpoint.exists() and all(path == semantic_checkpoint for path in replay_checkpoints)
+    checks = {
+        "configs_equal_except_state_policy": configs_equal,
+        "modes_and_ablations_expected": modes_correct,
+        "stage_signature_equal_and_present": len(stage_signatures) == 1 and "" not in stage_signatures,
+        "optimizer_body_exposure_equal": exposure_equal,
+        "state_parameter_counts_equal": state_parameters_equal,
+        "integrity_clean": integrity_clean,
+        "integrity_candidate_binding_clean": integrity_bound,
+        "blind_information_flow_clean": blind_clean,
+        "boundaries_clean": boundaries_clean,
+        "replays_use_semantic_checkpoint": replay_checkpoint_bound,
+    }
+    for name, passed in checks.items():
+        if not passed:
+            hard_gaps.append(gap(f"state_memory_{name}_failed", {}))
+
+    def metrics(report: dict[str, Any]) -> dict[str, Any]:
+        summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
+        private = (report.get("private_verifier") or {}).get("private_verification") or {}
+        return {
+            "passed_task_count": int(summary.get("model_only_passed_task_count") or 0),
+            "candidate_task_count": int(summary.get("candidate_task_count") or 0),
+            "candidate_count": int(summary.get("candidate_count") or 0),
+            "mean_verification_reward": float(private.get("mean_verification_reward") or 0.0),
+            "eval_loss_after": float((report.get("training") or {}).get("eval_loss_after") or 0.0),
+            "decode_runtime_ms": int((report.get("decode") or {}).get("runtime_ms") or 0),
+        }
+
+    arm_metrics = {name: metrics(report) for name, report in reports.items()}
+    semantic = arm_metrics["semantic"]
+    zero = arm_metrics["zero"]
+    shuffle = arm_metrics["shuffle"]
+    zero_degrades = (
+        semantic["mean_verification_reward"] > zero["mean_verification_reward"]
+        and semantic["eval_loss_after"] < zero["eval_loss_after"]
+    )
+    shuffle_degrades = (
+        semantic["mean_verification_reward"] > shuffle["mean_verification_reward"]
+        and semantic["eval_loss_after"] < shuffle["eval_loss_after"]
+    )
+    comparators = [arm_metrics["body_only"], arm_metrics["hash_control"]]
+    behavior_gain = semantic["passed_task_count"] > max(row["passed_task_count"] for row in comparators)
+    coverage_non_regressed = all(
+        semantic["candidate_task_count"] >= row["candidate_task_count"] for row in comparators
+    )
+    reward_non_regressed = all(
+        semantic["mean_verification_reward"] >= row["mean_verification_reward"] for row in comparators
+    )
+    adoption_state = (
+        "ADOPTED"
+        if not hard_gaps
+        and behavior_gain
+        and coverage_non_regressed
+        and reward_non_regressed
+        and zero_degrades
+        and shuffle_degrades
+        else "NOT_ADOPTED"
+    )
+    rejection_reasons = []
+    if not behavior_gain:
+        rejection_reasons.append("no_family_disjoint_verifier_pass_gain")
+    if not zero_degrades:
+        rejection_reasons.append("zero_memory_did_not_causally_degrade")
+    if not shuffle_degrades:
+        rejection_reasons.append("role_shuffle_did_not_causally_degrade")
+    if not coverage_non_regressed:
+        rejection_reasons.append("candidate_task_coverage_regressed")
+    if not reward_non_regressed:
+        rejection_reasons.append("mean_verification_reward_regressed")
+
+    deltas = {}
+    for comparator_name in ("body_only", "hash_control", "zero", "shuffle"):
+        deltas[comparator_name] = {
+            key: round(float(semantic[key]) - float(arm_metrics[comparator_name][key]), 6)
+            for key in semantic
+        }
+    artifacts: dict[str, Any] = {}
+    for arm, directory in arm_dirs.items():
+        artifacts[arm] = {}
+        for filename in required_files:
+            path = directory / filename
+            artifacts[arm][filename] = {
+                "path": rel(path),
+                "sha256": file_sha256(path),
+                "bytes": path.stat().st_size,
+            }
+    receipt = {
+        "state": "GREEN" if not hard_gaps else "RED",
+        "adoption_state": adoption_state,
+        "adoption_rejection_reasons": rejection_reasons,
+        "matched_checks": checks,
+        "optimizer_body_positions": exposures,
+        "parameter_counts": parameters,
+        "metrics": arm_metrics,
+        "deltas": deltas,
+        "zero_memory_causal_degradation": zero_degrades,
+        "role_shuffle_causal_degradation": shuffle_degrades,
+        "artifacts": artifacts,
+        "non_claims": [
+            "lower loss and higher partial verifier reward are not exact behavior",
+            "recurrent-memory use does not prove semantic role specificity",
+            "the state route remains disabled without a verifier-pass gain and both causal ablations",
+        ],
+    }
+    return {
+        "state": receipt["state"],
+        "adoption_state": adoption_state,
+        "adoption_rejection_reasons": rejection_reasons,
+        "deltas": deltas,
+        "receipt": receipt,
+        "hard_gaps": hard_gaps,
     }
 
 

@@ -130,7 +130,22 @@ canary, integrity audit, blind audit, control, and configs by hash and records
 `NOT_ADOPTED`. The next intervention must preserve the `body_tokens` stream and
 equal body-token exposure, receive training pressure only through direct body
 likelihood, and causally affect generation rather than winning an auxiliary
-metric.
+metric. That intervention now exists as persistent recurrent executable-state
+memory with eight role slots, a matched hash-routed control, and zero/shuffle
+replays. All training arms use the same seed, stage, 815 optimizer steps, and
+`1,201,160` supervised body positions; semantic and hash state are parameter
+matched at `8,209,920`. Against the current `6,623,232` body-only control,
+semantic state improves coverage `20 -> 24`, candidates `70 -> 81`, mean
+verifier reward `0.401639 -> 0.439535`, heldout loss
+`1.737719 -> 1.623448`, and decode `63,569 -> 51,019 ms`. Against the hash
+control it improves coverage `21 -> 24`, reward `0.409756 -> 0.439535`, and
+loss `1.668364 -> 1.623448`. Zeroing state worsens reward to `0.429032` and
+loss to `1.707302`, proving recurrent memory is used, but shuffling role
+assignments barely changes reward (`0.437500`) and slightly improves loss
+(`1.622655`). Every arm remains `0/24`. Five independent integrity and blind
+information-flow audits are GREEN with zero mismatches or invalid claims. The
+survival gate therefore records `NOT_ADOPTED`: recurrent memory is useful, but
+semantic role specificity and exact behavior remain unproven.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.

@@ -67,6 +67,7 @@ from standard_causal_transformer_survival_gate import (
     audit_generation_mode_canary,
     audit_preference_canary,
     audit_sft_contract_admission,
+    audit_state_memory_ablation,
     audit_target_mode_comparison,
 )
 from generation_mode_gate import audit_comparison, read_report_ref
@@ -577,6 +578,106 @@ def test_sft_contract_admission_audit_is_not_run_when_local_evidence_is_absent(
     )
     assert audit["state"] == "NOT_RUN"
     assert audit["hard_gaps"] == []
+
+
+def test_state_memory_ablation_requires_behavior_gain_and_both_causal_controls(
+    tmp_path: Path,
+) -> None:
+    modes = {
+        "body_only": ("none", "none"),
+        "semantic": ("semantic_roles", "none"),
+        "hash_control": ("hash_control", "none"),
+        "zero": ("semantic_roles", "zero"),
+        "shuffle": ("semantic_roles", "shuffle"),
+    }
+    metrics = {
+        "body_only": (0, 20, 70, 0.40, 1.7),
+        "semantic": (1, 24, 81, 0.50, 1.0),
+        "hash_control": (0, 21, 72, 0.41, 1.6),
+        "zero": (0, 23, 76, 0.43, 1.7),
+        "shuffle": (0, 23, 78, 0.44, 1.2),
+    }
+    arm_dirs: dict[str, Path] = {}
+    semantic_checkpoint = tmp_path / "semantic.npz"
+    semantic_checkpoint.write_bytes(b"semantic")
+    for name, (mode, ablation) in modes.items():
+        directory = tmp_path / name
+        directory.mkdir()
+        arm_dirs[name] = directory
+        model = {"d_model": 32}
+        if name != "body_only":
+            model.update(
+                {
+                    "state_memory_slots": 8,
+                    "state_memory_chunk_size": 4,
+                    "state_memory_local_window": 8,
+                    "state_memory_mode": mode,
+                    "state_memory_ablation": ablation,
+                }
+            )
+        (directory / "config.json").write_text(
+            json.dumps({"seed": 1, "model": model, "training": {"positions": 100}}),
+            encoding="utf-8",
+        )
+        candidates = directory / "candidates.jsonl"
+        candidates.write_text("{}\n", encoding="utf-8")
+        checkpoint = semantic_checkpoint if name in {"semantic", "zero", "shuffle"} else directory / "model.npz"
+        if not checkpoint.exists():
+            checkpoint.write_bytes(name.encode())
+        passed, tasks, count, reward, loss = metrics[name]
+        (directory / "report.json").write_text(
+            json.dumps(
+                {
+                    "artifacts": {"checkpoint": str(checkpoint)},
+                    "architecture": {"parameter_count": 200 if name != "body_only" else 150},
+                    "stage": {"stage_signature": "same"},
+                    "training": {
+                        "eval_loss_after": loss,
+                        "phases": [{"optimizer_body_positions_consumed": 100}],
+                    },
+                    "summary": {
+                        "model_only_passed_task_count": passed,
+                        "candidate_task_count": tasks,
+                        "candidate_count": count,
+                    },
+                    "private_verifier": {
+                        "private_verification": {"mean_verification_reward": reward}
+                    },
+                    "decode": {"runtime_ms": 10},
+                    "public_training_rows_written": 0,
+                    "external_inference_calls": 0,
+                    "fallback_return_count": 0,
+                }
+            ),
+            encoding="utf-8",
+        )
+        (directory / "integrity.json").write_text(
+            json.dumps(
+                {
+                    "source": str(candidates),
+                    "trigger_state": "GREEN",
+                    "summary": {"candidate_count": 1, "integrity_mismatch_count": 0},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (directory / "blind_audit.json").write_text(
+            json.dumps({"trigger_state": "GREEN", "summary": {"invalid_claim_count": 0}}),
+            encoding="utf-8",
+        )
+
+    adopted = audit_state_memory_ablation(arm_dirs)
+    assert adopted["state"] == "GREEN"
+    assert adopted["adoption_state"] == "ADOPTED"
+    assert adopted["receipt"]["optimizer_body_positions"] == {name: 100 for name in modes}
+
+    shuffle_report = json.loads((arm_dirs["shuffle"] / "report.json").read_text())
+    shuffle_report["training"]["eval_loss_after"] = 0.9
+    (arm_dirs["shuffle"] / "report.json").write_text(json.dumps(shuffle_report), encoding="utf-8")
+    rejected = audit_state_memory_ablation(arm_dirs)
+    assert rejected["state"] == "GREEN"
+    assert rejected["adoption_state"] == "NOT_ADOPTED"
+    assert "role_shuffle_did_not_causally_degrade" in rejected["adoption_rejection_reasons"]
 
 
 def test_candidate_integrity_recomputes_direct_plan_body_trace_instead_of_trusting_flags() -> None:
