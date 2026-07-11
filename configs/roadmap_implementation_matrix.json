@@ -476,7 +476,7 @@
         10
       ],
       "track_id": "B_product_assistant_usefulness",
-      "status": "partial",
+      "status": "wired",
       "dependency": "requires repeated real or replayable verified trajectories with preconditions and monitoring",
       "acceptance_gate": "Verifier-passing repeated trajectories become procedural tool candidates with preconditions, postconditions, verifier receipt, monitoring, retirement, drift checks, and optional lookahead/trie decode source.",
       "support_state_target": "synthetic-test-backed",
@@ -783,7 +783,7 @@
     {
       "phase": 1,
       "title": "VIEA Execution Spine",
-      "status": "partial",
+      "status": "wired",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-1",
       "ai_book_source_basis": [
@@ -835,16 +835,18 @@
         "reports/private_verifier_spine_smoke.json",
         "reports/theseus_assistant_product_spine_smoke.json",
         "reports/theseus_assistant_product_spine_trace.jsonl",
+        "reports/theseus_assistant_effect_complete_canary.json",
+        "reports/theseus_assistant_effect_complete_canary_trace.jsonl",
         "reports/theseus_weekly_focus_20260706.json",
         "reports/theseus_public_safe_reference_trace_20260706.json",
         "reports/theseus_book_importable_evidence_packs_20260706.json",
         "reports/hive_network_doctor.json"
       ],
-      "missing_items": [
-        "shared spine record contract validates assistant, planner, deterministic tool, execution-spine, Hive scheduler route-record, candidate-integrity, private-verifier, product-facing assistant traces, and Hive task-submission execution receipt schema smoke; VIEA materialized artifact graph and context transaction payloads are now AI_book-schema-shaped with required replay/evidence/non-claim fields; normal local assistant defaults traverse this path with complete VIEA/route-validator/materialized-view/private-verifier/dogfood/procedural-route receipts; remaining external-frozen work is to replace the receipt schema smoke with a real reachable-peer submission proof. Current network doctor evidence reports coordinator_unreachable, registered_peers_unreachable, peer_inbound_only_outbound_blocked, and No route to host for the trusted Windows coordinator",
-        "ordinary local assistant route with independent effect observation, declared effect inventory, first/final effect identity, and exact rollback or residual"
+      "missing_items": [],
+      "external_followups": [
+        "Replace the Hive task-submission receipt schema smoke with a real reachable-peer submission proof when another trusted node is physically reachable; this is owned by Phase 9 and does not block local architecture readiness."
       ],
-      "smallest_next_patch": "Run one local side-effecting assistant task through the canonical VIEA spine with proposer/observer/evaluator separation and complete effect/rollback accounting; keep the remote peer proof as a separate external follow-up.",
+      "smallest_next_patch": "Maintain the effect-complete assistant profile as a required VIEA contract and repeat the same independent observation/rollback discipline for every new side-effect class.",
       "integration_smoke": [
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the current Theseus roadmap implementation state and name the next smallest patch.\" --intent planning --feedback completed --session-id roadmap_integration_smoke --out reports/theseus_assistant_roadmap_integration_smoke.json --markdown-out reports/theseus_assistant_roadmap_integration_smoke.md --events-out reports/theseus_assistant_roadmap_integration_events.jsonl --viea-trace-out reports/theseus_assistant_roadmap_integration_trace.jsonl",
         "reports/theseus_assistant_roadmap_integration_smoke.json trigger_state=GREEN",
@@ -860,13 +862,14 @@
       ],
       "completion_rule": "A normal Theseus assistant task traverses command contract to artifact graph to claim ledger to verifier to dogfood event without sidecar routing.",
       "implemented_items": [
-        "A1 claim-ledger trace kernel is synthetic-test-backed: reports/theseus_weekly_focus_20260706.json now proves required trace records, support-state transitions, digest replay, source-to-verifier continuity, expected-invalid controls, duplicate-family avoidance, and no-cheat counters for the weekly-focus reference trace."
+        "A1 claim-ledger trace kernel is synthetic-test-backed: reports/theseus_weekly_focus_20260706.json now proves required trace records, support-state transitions, digest replay, source-to-verifier continuity, expected-invalid controls, duplicate-family avoidance, and no-cheat counters for the weekly-focus reference trace.",
+        "The canonical planning assistant executed a real bounded route-authority write through reports/theseus_assistant_effect_complete_canary.json. The proposer declared the sole effect, an independent observer reloaded exact bytes and route identity, a third evaluator verified intent, and rollback restored the exact prior identity with zero residuals. The shared VIEA gate requires the effect inventory, observation, and rollback records."
       ]
     },
     {
       "phase": 2,
       "title": "Stable Capability Fields And Route Authority",
-      "status": "partial",
+      "status": "wired",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-2",
       "ai_book_source_basis": [
@@ -915,16 +918,18 @@
         "reports/governance_rights_receipt_suite.json",
         "reports/vcm_context_governor.json",
         "reports/theseus_assistant_product_spine_smoke.json",
+        "reports/theseus_assistant_effect_complete_canary.json",
+        "reports/theseus_assistant_effect_complete_canary_trace.jsonl",
         "reports/hive_network_doctor.json",
         "scripts/theseus_artifact_admission.py",
         "configs/artifact_admission_policy.json",
         "tests/test_theseus_artifact_admission.py"
       ],
-      "missing_items": [
-        "authority and adapter records are normalized across assistant, planner, execution-spine, Hive scheduler route records, Hive task-submission execution receipt schema smoke, candidate-integrity audit records, private verifier records, project registry SCF route validator, and assistant/Hive runtime route-decision receipt traces; remaining external-frozen work is a real reachable-peer registered-task receipt proof. Current network doctor evidence reports coordinator_unreachable, registered_peers_unreachable, peer_inbound_only_outbound_blocked, and No route to host for the trusted Windows coordinator",
-        "real local default swap with complete rollback inventory"
+      "missing_items": [],
+      "external_followups": [
+        "Capture a real reachable-peer registered-task authority receipt when another trusted node is available; this remains Phase 9 external-environment evidence."
       ],
-      "smallest_next_patch": "Exercise one local model/tool default replacement and rollback, then add custody/load denial controls for tampered weights, stale attestations, revoked keys, and anti-rollback identity before the external peer proof.",
+      "smallest_next_patch": "Keep attestation-gated loaders and effect-complete route replacement under regression coverage; new routable implementations must provide equivalent exact content, authority, observation, and rollback receipts.",
       "integration_smoke": [
         "python3 scripts/scf_reference_kernel_v1.py --gate",
         "python3 scripts/viea_spine_record_gate.py --gate",
@@ -934,7 +939,8 @@
       "implemented_items": [
         "A2 replacement transaction kernel is synthetic-test-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters.",
         "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters.",
-        "routeable checkpoint loaders support fail-closed Ed25519 attestation/advisory admission before deserialization, generation anti-rollback, key/artifact revocation, relocation-safe content identity, custody observation, and explicit valuable-weight encrypted-storage/key-release requirements"
+        "routeable checkpoint loaders support fail-closed Ed25519 attestation/advisory admission before deserialization, generation anti-rollback, key/artifact revocation, relocation-safe content identity, custody observation, and explicit valuable-weight encrypted-storage/key-release requirements",
+        "The canonical local assistant performed and consumed a guarded procedural route-authority swap, independently observed its exact candidate bytes, and rolled the runtime state back to the byte-identical prior identity with a complete declared effect inventory and zero residuals."
       ]
     },
     {

@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -33,6 +34,8 @@ DEFAULT_EVENTS = REPORTS / "theseus_assistant_conversation_events.jsonl"
 DEFAULT_VIEA_TRACE = REPORTS / "theseus_assistant_viea_trace.jsonl"
 DEFAULT_ASSISTANT_TRACE_SCHEMA = ROOT / "configs" / "assistant_trace_schema.json"
 DEFAULT_PROCEDURAL_ADOPTION_REPORT = REPORTS / "procedural_memory_route_adoption.json"
+DEFAULT_EFFECT_ROOT = ROOT / "runtime" / "assistant_effects"
+DEFAULT_EFFECT_TARGET = DEFAULT_EFFECT_ROOT / "default_route_authority.json"
 DOGFOOD_EVENTS = ROOT / "runtime" / "dogfood" / "daily_use_events.jsonl"
 DEFAULT_ALLOWED_FEEDBACK = {"", "accepted", "missed", "ignored", "corrected", "completed"}
 ASSISTANT_VIEA_REQUIRED_RECORD_TYPES = viea_spine_records.ASSISTANT_RUNTIME_REQUIRED_RECORDS
@@ -70,6 +73,12 @@ def main() -> int:
     parser.add_argument("--viea-trace-out", default=rel(DEFAULT_VIEA_TRACE))
     parser.add_argument("--skip-context-refresh", action="store_true")
     parser.add_argument("--skip-dogfood", action="store_true")
+    parser.add_argument(
+        "--effect-canary",
+        action="store_true",
+        help="Exercise a bounded local route-authority write, independent observation, and exact rollback.",
+    )
+    parser.add_argument("--effect-target", default=rel(DEFAULT_EFFECT_TARGET))
     parser.add_argument("--print-answer", action="store_true")
     args = parser.parse_args()
 
@@ -155,6 +164,15 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     tool_evidence = run_tool_evidence(intent, route)
     plan_context = plan_context_packet(intent)
     procedural_default_route = procedural_default_route_packet(intent, route, config, surface=str(args.surface or "local_assistant"))
+    effect_canary = run_local_effect_canary(
+        enabled=bool(args.effect_canary),
+        target=resolve(args.effect_target),
+        allowed_root=DEFAULT_EFFECT_ROOT,
+        session_id=session_id,
+        intent=intent,
+        prompt_hash=sha256_text(prompt),
+        procedural_default_route=procedural_default_route,
+    )
     teacher_policy = teacher_policy_packet()
     benchmark_status = benchmark_status_packet(prompt)
     assistant_text = compose_assistant_text(
@@ -214,6 +232,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         feedback=feedback,
         assistant_text=assistant_text,
         trace_schema=trace_schema,
+        effect_canary=effect_canary,
     )
     assistant_viea_trace.extend(
         row for row in vcm_consumer_packet.get("records", []) if isinstance(row, dict)
@@ -239,6 +258,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         assistant_viea_trace=assistant_viea_trace,
         trace_schema=trace_schema,
         allowed_feedback=allowed_feedback,
+        effect_canary=effect_canary,
     )
     gates.append(
         gate(
@@ -350,6 +370,12 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         "assistant_trace_schema_sha256": trace_schema.get("sha256"),
         "assistant_trace_schema_ready": assistant_trace_schema_ready(trace_schema),
         "assistant_trace_allowed_outcomes": sorted(value for value in allowed_feedback if value),
+        "effect_canary_enabled": effect_canary.get("enabled"),
+        "effect_canary_ready": effect_canary.get("ready"),
+        "effect_canary_transaction_id": effect_canary.get("transaction_id"),
+        "effect_canary_first_effect_identity": get_path(effect_canary, ["observation", "identity"], ""),
+        "effect_canary_final_effect_identity": get_path(effect_canary, ["rollback", "final_identity"], ""),
+        "effect_canary_rollback_complete": get_path(effect_canary, ["rollback", "complete"], False),
     }
     return {
         "policy": "project_theseus_assistant_runtime_v0",
@@ -384,6 +410,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         "tool_evidence": tool_evidence,
         "plan_context": plan_context,
         "procedural_default_route": procedural_default_route,
+        "effect_canary": effect_canary,
         "teacher_policy": teacher_policy,
         "benchmark_status": benchmark_status,
         "assistant_trace_schema": trace_schema,
@@ -1064,6 +1091,7 @@ def build_assistant_viea_trace(
     feedback: str,
     assistant_text: str,
     trace_schema: dict[str, Any],
+    effect_canary: dict[str, Any],
 ) -> list[dict[str, Any]]:
     run_id = stable_id("assistant_viea_run", created_utc, session_id, intent, prompt_hash)
     surface = str(args.surface or "local_assistant")
@@ -1169,6 +1197,11 @@ def build_assistant_viea_trace(
             "checkpoint_id": checkpoint_id,
             "session_id": session_id,
             "side_effect_classes": ["reports_write", "conversation_event_append", "metadata_only_dogfood_event"],
+            "bounded_effect_canary": {
+                "enabled": effect_canary.get("enabled"),
+                "transaction_id": effect_canary.get("transaction_id"),
+                "target": effect_canary.get("target"),
+            },
             "non_claims": ["assistant answer is not learned-generation promotion evidence", "tool evidence is not model-only skill"],
         },
     )
@@ -1338,6 +1371,50 @@ def build_assistant_viea_trace(
             "stderr_tail_present": bool(chat_result.get("stderr_tail")),
         },
     )
+    if effect_canary.get("enabled"):
+        effect_inventory_id = add(
+            "effect_inventory",
+            {
+                "command_contract_id": command_id,
+                "typed_job_id": job_id,
+                "transaction_id": effect_canary.get("transaction_id"),
+                "proposer_id": effect_canary.get("proposer_id"),
+                "declared_effects": effect_canary.get("effect_inventory"),
+                "undeclared_effects_permitted": False,
+                "network_effects_permitted": False,
+                "training_effects_permitted": False,
+            },
+        )
+        effect_observation_id = add(
+            "effect_observation_record",
+            {
+                "effect_inventory_record_id": effect_inventory_id,
+                "transaction_id": effect_canary.get("transaction_id"),
+                "observer_id": effect_canary.get("observer_id"),
+                "observer_independent_from_proposer": effect_canary.get("observer_id") != effect_canary.get("proposer_id"),
+                "observation": effect_canary.get("observation"),
+            },
+        )
+        add(
+            "rollback_completeness_record",
+            {
+                "effect_inventory_record_id": effect_inventory_id,
+                "effect_observation_record_id": effect_observation_id,
+                "transaction_id": effect_canary.get("transaction_id"),
+                "evaluator_id": effect_canary.get("evaluator_id"),
+                "evaluator_independent_from_proposer_and_observer": len(
+                    {
+                        str(effect_canary.get("proposer_id")),
+                        str(effect_canary.get("observer_id")),
+                        str(effect_canary.get("evaluator_id")),
+                    }
+                )
+                == 3,
+                "rollback": effect_canary.get("rollback"),
+                "residuals": effect_canary.get("residuals"),
+                "ready": effect_canary.get("ready"),
+            },
+        )
     if procedural_default_route.get("active"):
         add(
             "procedural_tool_record",
@@ -1654,6 +1731,214 @@ def plan_context_packet(intent: str) -> dict[str, Any]:
     }
 
 
+def run_local_effect_canary(
+    *,
+    enabled: bool,
+    target: Path,
+    allowed_root: Path,
+    session_id: str,
+    intent: str,
+    prompt_hash: str,
+    procedural_default_route: dict[str, Any],
+) -> dict[str, Any]:
+    """Perform one real route-authority change and prove exact rollback.
+
+    The proposer declares one filesystem effect. A separate observer reloads
+    the bytes and route payload. A third evaluator compares the observation to
+    the declaration and verifies rollback against the original byte identity.
+    """
+    if not enabled:
+        return {
+            "enabled": False,
+            "ready": True,
+            "non_claims": ["effect completeness was not exercised for this assistant call"],
+        }
+
+    proposer_id = "theseus_assistant_effect_proposer_v1"
+    observer_id = "theseus_filesystem_effect_observer_v1"
+    evaluator_id = "theseus_effect_rollback_evaluator_v1"
+    selected_route_id = str(get_path(procedural_default_route, ["selected_route", "id"], ""))
+    transaction_id = stable_id(
+        "assistant_effect_transaction",
+        session_id,
+        intent,
+        prompt_hash,
+        selected_route_id,
+    )
+    base = {
+        "enabled": True,
+        "ready": False,
+        "policy": "project_theseus_bounded_local_effect_transaction_v1",
+        "transaction_id": transaction_id,
+        "proposer_id": proposer_id,
+        "observer_id": observer_id,
+        "evaluator_id": evaluator_id,
+        "target": rel(target),
+        "effect_inventory": [],
+        "observation": {},
+        "rollback": {"complete": False, "residual_count": 1},
+        "residuals": [],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "non_claims": [
+            "this canary proves local effect accounting and rollback, not model capability",
+            "the route-authority state is rolled back before the assistant call returns",
+        ],
+    }
+    try:
+        target = validate_effect_target(target, allowed_root)
+    except ValueError as exc:
+        base["residuals"] = [{"kind": "effect_target_denied", "detail": str(exc)}]
+        return base
+
+    before = observe_effect_target(target, observer_id=observer_id)
+    candidate = {
+        "policy": "project_theseus_local_route_authority_canary_v1",
+        "transaction_id": transaction_id,
+        "route_id": selected_route_id,
+        "intent": intent,
+        "assistant_surface": "local_assistant",
+        "authority_ceiling": ["bounded_local_metadata_route"],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    candidate_bytes = (json.dumps(candidate, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    intended_sha = hashlib.sha256(candidate_bytes).hexdigest()
+    base["effect_inventory"] = [
+        {
+            "effect_id": stable_id("declared_effect", transaction_id, rel(target), intended_sha),
+            "path": rel(target),
+            "operation": "replace" if before["exists"] else "create",
+            "before_identity": before["identity"],
+            "intended_content_sha256": intended_sha,
+            "intended_mode": "0o600",
+            "rollback_obligation": "restore exact prior bytes and mode" if before["exists"] else "remove created path",
+        }
+    ]
+
+    prior_bytes = target.read_bytes() if before["exists"] else None
+    prior_mode = int(before.get("mode", 0)) if before["exists"] else None
+    write_fault = ""
+    try:
+        atomic_write_bytes(target, candidate_bytes, mode=0o600)
+        observed = observe_effect_target(target, observer_id=observer_id, parse_json=True)
+    except OSError as exc:
+        observed = observe_effect_target(target, observer_id=observer_id)
+        write_fault = f"{type(exc).__name__}: {exc}"
+
+    parsed = observed.get("parsed_json") if isinstance(observed.get("parsed_json"), dict) else {}
+    matches_intent = bool(
+        observed.get("exists")
+        and observed.get("sha256") == intended_sha
+        and parsed.get("transaction_id") == transaction_id
+        and parsed.get("route_id") == selected_route_id
+        and selected_route_id
+        and procedural_default_route.get("ready") is True
+    )
+    base["observation"] = {
+        **observed,
+        "matches_intent": matches_intent,
+        "expected_content_sha256": intended_sha,
+        "expected_route_id": selected_route_id,
+        "write_fault": write_fault,
+    }
+
+    rollback_fault = ""
+    try:
+        if prior_bytes is None:
+            target.unlink(missing_ok=True)
+        else:
+            atomic_write_bytes(target, prior_bytes, mode=prior_mode or 0o600)
+    except OSError as exc:
+        rollback_fault = f"{type(exc).__name__}: {exc}"
+    final = observe_effect_target(target, observer_id=observer_id)
+    rollback_complete = final["identity"] == before["identity"] and not rollback_fault
+    residuals = []
+    if not matches_intent:
+        residuals.append({"kind": "effect_observation_mismatch", "observed_identity": observed.get("identity")})
+    if not rollback_complete:
+        residuals.append(
+            {
+                "kind": "rollback_identity_mismatch",
+                "before_identity": before["identity"],
+                "final_identity": final["identity"],
+                "fault": rollback_fault,
+            }
+        )
+    base["rollback"] = {
+        "complete": rollback_complete,
+        "before_identity": before["identity"],
+        "first_effect_identity": observed.get("identity"),
+        "final_identity": final["identity"],
+        "prior_path_existed": before["exists"],
+        "restored_prior_bytes": prior_bytes is not None and rollback_complete,
+        "removed_new_path": prior_bytes is None and rollback_complete,
+        "residual_count": len(residuals),
+        "fault": rollback_fault,
+    }
+    base["residuals"] = residuals
+    base["ready"] = matches_intent and rollback_complete and not residuals
+    return base
+
+
+def validate_effect_target(target: Path, allowed_root: Path) -> Path:
+    allowed = allowed_root.resolve()
+    resolved = target.resolve()
+    try:
+        resolved.relative_to(allowed)
+    except ValueError as exc:
+        raise ValueError(f"effect target must remain under {allowed}") from exc
+    if target.is_symlink():
+        raise ValueError("effect target may not be a symlink")
+    return resolved
+
+
+def observe_effect_target(target: Path, *, observer_id: str, parse_json: bool = False) -> dict[str, Any]:
+    if not target.exists():
+        identity = stable_hash({"exists": False, "path": rel(target)})
+        return {
+            "observer_id": observer_id,
+            "exists": False,
+            "path": rel(target),
+            "sha256": "",
+            "size_bytes": 0,
+            "mode": 0,
+            "identity": identity,
+        }
+    content = target.read_bytes()
+    sha = hashlib.sha256(content).hexdigest()
+    mode = target.stat().st_mode & 0o777
+    row: dict[str, Any] = {
+        "observer_id": observer_id,
+        "exists": True,
+        "path": rel(target),
+        "sha256": sha,
+        "size_bytes": len(content),
+        "mode": mode,
+        "identity": stable_hash({"exists": True, "path": rel(target), "sha256": sha, "mode": mode}),
+    }
+    if parse_json:
+        try:
+            parsed = json.loads(content.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            parsed = None
+        row["parsed_json"] = parsed if isinstance(parsed, dict) else {}
+    return row
+
+
+def atomic_write_bytes(path: Path, content: bytes, *, mode: int) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_bytes(content)
+        os.chmod(temporary, mode)
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def procedural_default_route_packet(
     intent: str,
     route_config: dict[str, Any],
@@ -1914,6 +2199,7 @@ def build_gates(
     assistant_viea_trace: list[dict[str, Any]],
     trace_schema: dict[str, Any],
     allowed_feedback: set[str],
+    effect_canary: dict[str, Any],
 ) -> list[dict[str, Any]]:
     event_state = get_path(dogfood, ["event", "trigger_state"], "") if dogfood else "skipped"
     bridge_state = get_path(dogfood, ["training_bridge", "trigger_state"], "") if dogfood else "skipped"
@@ -2162,6 +2448,26 @@ def build_gates(
         gate("public_benchmark_training_disabled", config.get("public_benchmark_training_allowed") is False, config.get("public_benchmark_training_allowed"), "hard"),
         gate("runtime_external_inference_disabled", config.get("external_inference_at_runtime_allowed") is False, config.get("external_inference_at_runtime_allowed"), "hard"),
         gate("fallback_returns_disabled", config.get("fallback_returns_allowed") is False, config.get("fallback_returns_allowed"), "hard"),
+        gate(
+            "bounded_effect_canary_complete_when_requested",
+            effect_canary.get("enabled") is not True
+            or (
+                effect_canary.get("ready") is True
+                and get_path(effect_canary, ["observation", "matches_intent"], False) is True
+                and get_path(effect_canary, ["rollback", "complete"], False) is True
+                and get_path(effect_canary, ["rollback", "residual_count"], 1) == 0
+                and len(
+                    {
+                        str(effect_canary.get("proposer_id")),
+                        str(effect_canary.get("observer_id")),
+                        str(effect_canary.get("evaluator_id")),
+                    }
+                )
+                == 3
+            ),
+            effect_canary,
+            "hard",
+        ),
     ]
 
 

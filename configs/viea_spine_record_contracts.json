@@ -147,6 +147,45 @@
       ]
     },
     {
+      "id": "assistant_effect_complete_trace_v1",
+      "producer_surface": "theseus_assistant_runtime",
+      "source_kind": "jsonl_trace",
+      "required": true,
+      "paths": [
+        "reports/theseus_assistant_effect_complete_canary_trace.jsonl"
+      ],
+      "required_record_types": [
+        "intent_contract",
+        "command_contract",
+        "context_abi_record",
+        "context_transaction",
+        "context_adequacy",
+        "typed_job",
+        "planforge_dag",
+        "runtime_adapter_invocation",
+        "authority_transition",
+        "authority_use_receipt",
+        "effect_inventory",
+        "effect_observation_record",
+        "rollback_completeness_record",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "residual_record"
+      ],
+      "required_evidence": [
+        "effect_canary_ready=true",
+        "effect_observation_matches_intent=true",
+        "rollback_complete=true",
+        "rollback_residual_count=0",
+        "proposer_observer_evaluator_are_distinct",
+        "raw_prompt_stored=false",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
       "id": "plan_compiler_nested_spine_v1",
       "producer_surface": "theseus_plan_compiler",
       "source_kind": "compiled_dags",
