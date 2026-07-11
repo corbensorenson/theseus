@@ -19,6 +19,18 @@ DEFAULT_OUT = ROOT / "reports" / "standard_causal_transformer_survival_gate.json
 DEFAULT_TARGET_MODE_COMPARISON = (
     ROOT / "runtime" / "standard_causal_transformer_plan_body_canary" / "matched_comparison.json"
 )
+DEFAULT_SFT_CONTRACT_REPORT = (
+    ROOT / "runtime" / "standard_causal_transformer_contract_clean_body_canary" / "report.json"
+)
+DEFAULT_SFT_CONTRACT_INTEGRITY = (
+    ROOT / "runtime" / "standard_causal_transformer_contract_clean_body_canary" / "integrity.json"
+)
+DEFAULT_SFT_CONTRACT_BLIND_AUDIT = (
+    ROOT / "runtime" / "standard_causal_transformer_contract_clean_body_canary" / "blind_audit.json"
+)
+DEFAULT_SFT_CONTRACT_CONTROL_REPORT = (
+    ROOT / "runtime" / "standard_causal_transformer_body_only_matched_canary" / "report.json"
+)
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -28,6 +40,10 @@ def main() -> int:
     parser.add_argument("--candidates", default=rel(DEFAULT_CANDIDATES))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--target-mode-comparison", default=rel(DEFAULT_TARGET_MODE_COMPARISON))
+    parser.add_argument("--sft-contract-report", default=rel(DEFAULT_SFT_CONTRACT_REPORT))
+    parser.add_argument("--sft-contract-integrity", default=rel(DEFAULT_SFT_CONTRACT_INTEGRITY))
+    parser.add_argument("--sft-contract-blind-audit", default=rel(DEFAULT_SFT_CONTRACT_BLIND_AUDIT))
+    parser.add_argument("--sft-contract-control-report", default=rel(DEFAULT_SFT_CONTRACT_CONTROL_REPORT))
     parser.add_argument("--gate", action="store_true")
     args = parser.parse_args()
     report_path = resolve(args.report)
@@ -40,6 +56,10 @@ def main() -> int:
         report,
         candidates,
         target_mode_comparison_path=resolve(args.target_mode_comparison),
+        sft_contract_report_path=resolve(args.sft_contract_report),
+        sft_contract_integrity_path=resolve(args.sft_contract_integrity),
+        sft_contract_blind_audit_path=resolve(args.sft_contract_blind_audit),
+        sft_contract_control_report_path=resolve(args.sft_contract_control_report),
     )
     write_json(resolve(args.out), gate)
     view = {
@@ -59,6 +79,10 @@ def build_gate(
     candidates: list[dict[str, Any]],
     *,
     target_mode_comparison_path: Path = DEFAULT_TARGET_MODE_COMPARISON,
+    sft_contract_report_path: Path = DEFAULT_SFT_CONTRACT_REPORT,
+    sft_contract_integrity_path: Path = DEFAULT_SFT_CONTRACT_INTEGRITY,
+    sft_contract_blind_audit_path: Path = DEFAULT_SFT_CONTRACT_BLIND_AUDIT,
+    sft_contract_control_report_path: Path = DEFAULT_SFT_CONTRACT_CONTROL_REPORT,
 ) -> dict[str, Any]:
     hard_gaps: list[dict[str, Any]] = []
     adoption_gaps: list[dict[str, Any]] = []
@@ -73,6 +97,13 @@ def build_gate(
     hard_gaps.extend(generation_mode_audit["hard_gaps"])
     target_mode_audit = audit_target_mode_comparison(target_mode_comparison_path)
     hard_gaps.extend(target_mode_audit["hard_gaps"])
+    sft_contract_audit = audit_sft_contract_admission(
+        report_path=sft_contract_report_path,
+        integrity_path=sft_contract_integrity_path,
+        blind_audit_path=sft_contract_blind_audit_path,
+        control_report_path=sft_contract_control_report_path,
+    )
+    hard_gaps.extend(sft_contract_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -236,6 +267,9 @@ def build_gate(
             "target_mode_comparison_sha256": target_mode_audit["comparison_sha256"],
             "target_mode_adoption_rejection_reasons": target_mode_audit["adoption_rejection_reasons"],
             "target_mode_deltas": target_mode_audit["deltas"],
+            "sft_contract_admission_state": sft_contract_audit["state"],
+            "sft_contract_adoption_state": sft_contract_audit["adoption_state"],
+            "sft_contract_deltas": sft_contract_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -248,6 +282,155 @@ def build_gate(
         "external_inference_calls": 0,
         "fallback_return_count": 0,
         "target_mode_comparison": target_mode_audit["receipt"],
+        "sft_contract_admission_ablation": sft_contract_audit["receipt"],
+    }
+
+
+def audit_sft_contract_admission(
+    *,
+    report_path: Path,
+    integrity_path: Path,
+    blind_audit_path: Path,
+    control_report_path: Path,
+) -> dict[str, Any]:
+    paths = (report_path, integrity_path, blind_audit_path, control_report_path)
+    if not all(path.exists() for path in paths):
+        return {
+            "state": "NOT_RUN",
+            "adoption_state": "NOT_RUN",
+            "deltas": {},
+            "receipt": {
+                "state": "NOT_RUN",
+                "paths": [rel(path) for path in paths],
+                "reason": "one or more local matched-ablation artifacts are absent",
+            },
+            "hard_gaps": [],
+        }
+
+    filtered = read_json(report_path)
+    control = read_json(control_report_path)
+    integrity = read_json(integrity_path)
+    blind = read_json(blind_audit_path)
+    hard_gaps: list[dict[str, Any]] = []
+    filtered_config_path = resolve(str((filtered.get("artifacts") or {}).get("config") or ""))
+    control_config_path = resolve(str((control.get("artifacts") or {}).get("config") or ""))
+    filtered_config = read_json(filtered_config_path)
+    control_config = read_json(control_config_path)
+
+    def without_contract(value: dict[str, Any]) -> dict[str, Any]:
+        copy = json.loads(json.dumps(value))
+        copy.pop("sft_contract_admission", None)
+        return copy
+
+    matched_config = bool(filtered_config and control_config) and without_contract(
+        filtered_config
+    ) == without_contract(control_config)
+    contract = filtered_config.get("sft_contract_admission")
+    contract_enabled = isinstance(contract, dict) and contract.get("require_self_contained_body") is True
+    filtered_stage = filtered.get("stage") if isinstance(filtered.get("stage"), dict) else {}
+    contract_receipt = (
+        filtered_stage.get("sft_contract_admission")
+        if isinstance(filtered_stage.get("sft_contract_admission"), dict)
+        else {}
+    )
+    boundaries_clean = all(
+        int(payload.get(key) or 0) == 0
+        for payload in (filtered, control)
+        for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
+    )
+    integrity_clean = (
+        integrity.get("trigger_state") == "GREEN"
+        and int((integrity.get("summary") or {}).get("integrity_mismatch_count") or 0) == 0
+    )
+    blind_clean = blind.get("trigger_state") == "GREEN" and int(
+        (blind.get("summary") or {}).get("invalid_claim_count") or 0
+    ) == 0
+    for name, passed in (
+        ("sft_contract_configs_unmatched", matched_config),
+        ("sft_contract_filter_not_enabled", contract_enabled),
+        ("sft_contract_boundaries_unclean", boundaries_clean),
+        ("sft_contract_integrity_unclean", integrity_clean),
+        ("sft_contract_blind_audit_unclean", blind_clean),
+        (
+            "sft_contract_target_derived_source_field_nonzero",
+            int(contract_receipt.get("target_body_fields_added_to_model_source") or 0) == 0,
+        ),
+        (
+            "sft_contract_heldout_rows_read_nonzero",
+            int(contract_receipt.get("heldout_rows_read_by_filter") or 0) == 0,
+        ),
+    ):
+        if not passed:
+            hard_gaps.append(gap(name, {}))
+
+    def metrics(value: dict[str, Any]) -> dict[str, Any]:
+        summary = value.get("summary") if isinstance(value.get("summary"), dict) else {}
+        verifier = value.get("private_verifier") if isinstance(value.get("private_verifier"), dict) else {}
+        private = verifier.get("private_verification") if isinstance(verifier.get("private_verification"), dict) else {}
+        training = value.get("training") if isinstance(value.get("training"), dict) else {}
+        decode = value.get("decode") if isinstance(value.get("decode"), dict) else {}
+        return {
+            "passed_task_count": int(summary.get("model_only_passed_task_count") or 0),
+            "candidate_task_count": int(summary.get("candidate_task_count") or 0),
+            "candidate_count": int(summary.get("candidate_count") or 0),
+            "mean_verification_reward": float(private.get("mean_verification_reward") or 0.0),
+            "eval_loss_after": float(training.get("eval_loss_after") or 0.0),
+            "generation_runtime_ms": int(decode.get("runtime_ms") or 0),
+        }
+
+    filtered_metrics = metrics(filtered)
+    control_metrics = metrics(control)
+    deltas = {
+        key: round(float(filtered_metrics[key]) - float(control_metrics[key]), 6)
+        for key in filtered_metrics
+    }
+    behavior_improved = (
+        filtered_metrics["passed_task_count"] > control_metrics["passed_task_count"]
+        and filtered_metrics["candidate_task_count"] >= control_metrics["candidate_task_count"]
+        and filtered_metrics["mean_verification_reward"] >= control_metrics["mean_verification_reward"]
+    )
+    adoption_state = (
+        "ADOPTED"
+        if not hard_gaps and behavior_improved
+        else "NOT_ADOPTED"
+    )
+    artifacts = {}
+    for name, path in (
+        ("filtered_report", report_path),
+        ("filtered_config", filtered_config_path),
+        ("filtered_integrity", integrity_path),
+        ("filtered_blind_audit", blind_audit_path),
+        ("control_report", control_report_path),
+        ("control_config", control_config_path),
+    ):
+        artifacts[name] = {
+            "path": rel(path),
+            "sha256": file_sha256(path) if path.exists() else "",
+            "bytes": path.stat().st_size if path.exists() else 0,
+        }
+    receipt = {
+        "state": "GREEN" if not hard_gaps else "RED",
+        "adoption_state": adoption_state,
+        "matched_config_except_contract_admission": matched_config,
+        "boundaries_clean": boundaries_clean,
+        "integrity_clean": integrity_clean,
+        "blind_audit_clean": blind_clean,
+        "contract_receipt": contract_receipt,
+        "filtered": filtered_metrics,
+        "control": control_metrics,
+        "deltas": deltas,
+        "artifacts": artifacts,
+        "non_claims": [
+            "a cleaner SFT admission set is not a capability improvement",
+            "the filter remains disabled unless matched behavior improves",
+        ],
+    }
+    return {
+        "state": receipt["state"],
+        "adoption_state": adoption_state,
+        "deltas": deltas,
+        "receipt": receipt,
+        "hard_gaps": hard_gaps,
     }
 
 

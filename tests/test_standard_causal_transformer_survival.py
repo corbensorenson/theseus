@@ -33,6 +33,7 @@ from standard_causal_transformer_survival import (
     semantic_stage_source,
     select_family_disjoint_eval,
     select_preference_train_rows,
+    standalone_sft_contract_decision,
     source_token_offset,
     stage_materialization_lock,
     stage_signature,
@@ -61,6 +62,7 @@ from standard_causal_transformer_preference import (
 from standard_causal_transformer_survival_gate import (
     audit_generation_mode_canary,
     audit_preference_canary,
+    audit_sft_contract_admission,
     audit_target_mode_comparison,
 )
 from generation_mode_gate import audit_comparison, read_report_ref
@@ -387,6 +389,90 @@ def test_target_mode_gate_replays_artifact_bindings_and_adoption(tmp_path: Path)
         gap["kind"] == "target_mode_adoption_decision_mismatch"
         for gap in invalid["hard_gaps"]
     )
+
+
+def test_sft_contract_admission_audit_retains_behavior_negative_result(tmp_path: Path) -> None:
+    filtered_config = {
+        "policy": "candidate",
+        "model": {"d_model": 32},
+        "training": {"positions": 100},
+        "sft_contract_admission": {
+            "require_self_contained_body": True,
+            "private_sampling_probability_target": 0.25,
+        },
+    }
+    control_config = {key: value for key, value in filtered_config.items() if key != "sft_contract_admission"}
+    filtered_config_path = tmp_path / "filtered-config.json"
+    control_config_path = tmp_path / "control-config.json"
+    filtered_config_path.write_text(json.dumps(filtered_config), encoding="utf-8")
+    control_config_path.write_text(json.dumps(control_config), encoding="utf-8")
+
+    def report(config_path: Path, *, candidates: int, tasks: int, reward: float) -> dict[str, object]:
+        return {
+            "artifacts": {"config": str(config_path)},
+            "stage": {
+                "sft_contract_admission": {
+                    "target_body_fields_added_to_model_source": 0,
+                    "heldout_rows_read_by_filter": 0,
+                }
+            },
+            "summary": {
+                "model_only_passed_task_count": 0,
+                "candidate_task_count": tasks,
+                "candidate_count": candidates,
+            },
+            "private_verifier": {"private_verification": {"mean_verification_reward": reward}},
+            "training": {"eval_loss_after": 1.0},
+            "decode": {"runtime_ms": 100},
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+
+    filtered_report_path = tmp_path / "filtered-report.json"
+    control_report_path = tmp_path / "control-report.json"
+    integrity_path = tmp_path / "integrity.json"
+    blind_path = tmp_path / "blind.json"
+    filtered_report_path.write_text(
+        json.dumps(report(filtered_config_path, candidates=3, tasks=2, reward=0.2)),
+        encoding="utf-8",
+    )
+    control_report_path.write_text(
+        json.dumps(report(control_config_path, candidates=5, tasks=4, reward=0.4)),
+        encoding="utf-8",
+    )
+    integrity_path.write_text(
+        json.dumps({"trigger_state": "GREEN", "summary": {"integrity_mismatch_count": 0}}),
+        encoding="utf-8",
+    )
+    blind_path.write_text(
+        json.dumps({"trigger_state": "GREEN", "summary": {"invalid_claim_count": 0}}),
+        encoding="utf-8",
+    )
+    audit = audit_sft_contract_admission(
+        report_path=filtered_report_path,
+        integrity_path=integrity_path,
+        blind_audit_path=blind_path,
+        control_report_path=control_report_path,
+    )
+    assert audit["state"] == "GREEN"
+    assert audit["adoption_state"] == "NOT_ADOPTED"
+    assert audit["deltas"]["candidate_task_count"] == -2
+    assert audit["receipt"]["matched_config_except_contract_admission"] is True
+
+
+def test_sft_contract_admission_audit_is_not_run_when_local_evidence_is_absent(
+    tmp_path: Path,
+) -> None:
+    missing = tmp_path / "missing.json"
+    audit = audit_sft_contract_admission(
+        report_path=missing,
+        integrity_path=missing,
+        blind_audit_path=missing,
+        control_report_path=missing,
+    )
+    assert audit["state"] == "NOT_RUN"
+    assert audit["hard_gaps"] == []
 
 
 def test_candidate_integrity_recomputes_direct_plan_body_trace_instead_of_trusting_flags() -> None:
@@ -769,6 +855,52 @@ def test_private_prompt_variants_share_fixed_body_sampling_mass() -> None:
     assert float(probabilities.sum()) == pytest.approx(1.0)
 
 
+def test_private_sampling_mass_can_match_a_frozen_probability() -> None:
+    examples = [
+        {"source": "licensed_function", "source_text": "licensed-a", "body": "return data"},
+        {"source": "licensed_function", "source_text": "licensed-b", "body": "return other"},
+        {"source": "governed_private", "source_text": "private-a", "body": "return data + 1"},
+        {"source": "governed_private", "source_text": "private-b", "body": "return data - 1"},
+    ]
+    weighted, audit = assign_body_balanced_sampling_weights(
+        examples,
+        private_body_weight=16.0,
+        private_sampling_probability_target=0.25,
+    )
+    assert audit["configured_private_body_sampling_weight"] == 16.0
+    assert audit["private_sampling_probability"] == pytest.approx(0.25)
+    assert sum(row["sampling_weight"] for row in weighted[2:]) == pytest.approx(2 / 3)
+
+
+def test_standalone_sft_contract_accepts_imports_and_lexical_closures() -> None:
+    source = "Compute a rounded square root.\nsignature def solve(data):"
+    body = (
+        "import math\n"
+        "def rounded(value):\n"
+        "    return round(math.sqrt(value), 3)\n"
+        "return rounded(data)"
+    )
+    decision = standalone_sft_contract_decision(source, body)
+    assert decision["accepted"] is True
+    assert decision["unresolved_names"] == []
+    assert decision["target_derived_source_field_count"] == 0
+
+
+def test_standalone_sft_contract_rejects_hidden_module_context() -> None:
+    source = "Normalize numeric input.\nsignature def solve(data):"
+    decision = standalone_sft_contract_decision(source, "return np.asarray(data)")
+    assert decision["accepted"] is False
+    assert decision["reject_reasons"] == ["unresolved_module_context"]
+    assert decision["unresolved_names"] == ["np"]
+    assert decision["model_source_unchanged"] is True
+
+
+def test_standalone_sft_contract_requires_declared_signature() -> None:
+    decision = standalone_sft_contract_decision("Compute a sum.", "return sum(data)")
+    assert decision["accepted"] is False
+    assert "declared_signature_missing" in decision["reject_reasons"]
+
+
 def test_training_completion_uses_consumed_positions_not_estimated_steps() -> None:
     config = {
         "pretrain_target_token_positions": 100,
@@ -797,6 +929,13 @@ def test_stage_signature_ignores_decode_only_knobs_but_tracks_staging_contract()
     staging_change = json.loads(json.dumps(config))
     staging_change["tokenization"]["max_source_tokens"] += 1
     assert stage_signature(staging_change) != baseline
+
+    contract_change = json.loads(json.dumps(config))
+    contract_change["sft_contract_admission"] = {
+        "require_self_contained_body": True,
+        "private_sampling_probability_target": 0.25,
+    }
+    assert stage_signature(contract_change) != baseline
 
 
 def test_stage_signature_binds_each_admitted_training_source(tmp_path: Path) -> None:

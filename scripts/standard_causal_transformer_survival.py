@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import builtins
 import copy
 import hashlib
 import inspect
@@ -13,7 +14,9 @@ import math
 import os
 import random
 import re
+import symtable
 import time
+from collections import Counter
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -586,6 +589,7 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
             "private_hidden_derived_signature_count"
         ],
         "private_sampling_probability": sft_audit["private_sampling_probability"],
+        "sft_contract_admission": sft_audit["sft_contract_admission"],
         "shared_source_target_vocabulary": shared_vocabulary_enabled(config),
         "target_mode": str(config["tokenization"]["target_mode"]),
         "target_vocab_extension": target_vocab_extension,
@@ -809,6 +813,17 @@ def load_sft_examples(
     rejected_placeholder_source = 0
     rejected_short_source = 0
     metadata_tagged_source_count = 0
+    contract_policy = (
+        config.get("sft_contract_admission")
+        if isinstance(config.get("sft_contract_admission"), dict)
+        else {}
+    )
+    contract_filter_enabled = contract_policy.get("require_self_contained_body") is True
+    contract_rejections: Counter[str] = Counter()
+    licensed_contract_accepted = 0
+    licensed_contract_rejected = 0
+    private_contract_accepted = 0
+    private_contract_rejected = 0
     seen_pairs: set[str] = set()
     unique_bodies: set[str] = set()
     for row in cache.get("examples", []):
@@ -823,6 +838,12 @@ def load_sft_examples(
             continue
         if not source_text:
             continue
+        if contract_filter_enabled:
+            contract = standalone_sft_contract_decision(source_text, body)
+            if not contract["accepted"]:
+                licensed_contract_rejected += 1
+                contract_rejections.update(contract["reject_reasons"])
+                continue
         prompt_hash = sha(source_text.partition("\nsignature ")[0])
         body_hash = sha(body)
         if prompt_hash in eval_prompt_hashes:
@@ -837,6 +858,7 @@ def load_sft_examples(
         seen_pairs.add(pair_hash)
         unique_bodies.add(body_hash)
         examples.append({"source_text": source_text, "body": body, "source": "licensed_function"})
+        licensed_contract_accepted += int(contract_filter_enabled)
     licensed_count = len(examples)
 
     admission = read_json(resolve(config["sources"]["training_admission"]))
@@ -884,6 +906,12 @@ def load_sft_examples(
             if not signature:
                 continue
             source_text = f"{prompt}\nsignature {canonical_model_signature(signature, config)}"
+            if contract_filter_enabled:
+                contract = standalone_sft_contract_decision(source_text, body)
+                if not contract["accepted"]:
+                    private_contract_rejected += 1
+                    contract_rejections.update(contract["reject_reasons"])
+                    continue
             pair_hash = sha(f"{source_text}\n{body}")
             if pair_hash in seen_pairs:
                 continue
@@ -902,9 +930,15 @@ def load_sft_examples(
             private_body_hashes.add(body_hash)
             examples.append({"source_text": source_text, "body": body, "source": "governed_private"})
             private_added += 1
+            private_contract_accepted += int(contract_filter_enabled)
     examples, sampling = assign_body_balanced_sampling_weights(
         examples,
         private_body_weight=float(config["training"]["private_body_sampling_weight"]),
+        private_sampling_probability_target=(
+            float(contract_policy["private_sampling_probability_target"])
+            if contract_policy.get("private_sampling_probability_target") is not None
+            else None
+        ),
     )
     examples.sort(key=lambda row: sha(row["source_text"] + "\n" + row["body"]))
     return examples, {
@@ -926,6 +960,18 @@ def load_sft_examples(
         "rejected_placeholder_source_count": rejected_placeholder_source,
         "rejected_short_source_count": rejected_short_source,
         "metadata_tagged_source_count": metadata_tagged_source_count,
+        "sft_contract_admission": {
+            "enabled": contract_filter_enabled,
+            "policy": "target_body_self_containment_filter_no_source_feature_derivation",
+            "licensed_accepted_count": licensed_contract_accepted,
+            "licensed_rejected_count": licensed_contract_rejected,
+            "private_accepted_count": private_contract_accepted,
+            "private_rejected_count": private_contract_rejected,
+            "reject_reason_counts": dict(sorted(contract_rejections.items())),
+            "target_body_used_for_admission_only": contract_filter_enabled,
+            "target_body_fields_added_to_model_source": 0,
+            "heldout_rows_read_by_filter": 0,
+        },
     }
 
 
@@ -1026,7 +1072,10 @@ def extend_target_vocab_for_mode(config: dict[str, Any], target_vocab: dict[str,
 
 
 def assign_body_balanced_sampling_weights(
-    examples: list[dict[str, Any]], *, private_body_weight: float
+    examples: list[dict[str, Any]],
+    *,
+    private_body_weight: float,
+    private_sampling_probability_target: float | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, float]]:
     private_counts: dict[str, int] = {}
     for row in examples:
@@ -1034,6 +1083,15 @@ def assign_body_balanced_sampling_weights(
             continue
         body_hash = sha(str(row.get("body") or ""))
         private_counts[body_hash] = private_counts.get(body_hash, 0) + 1
+    configured_private_body_weight = float(private_body_weight)
+    licensed_example_count = sum(row.get("source") != "governed_private" for row in examples)
+    if private_sampling_probability_target is not None and private_counts and licensed_example_count:
+        target = float(private_sampling_probability_target)
+        if not 0.0 < target < 1.0:
+            raise ValueError("private sampling probability target must be between zero and one")
+        private_body_weight = (
+            target * licensed_example_count / ((1.0 - target) * len(private_counts))
+        )
     weighted: list[dict[str, Any]] = []
     licensed_mass = 0.0
     private_mass = 0.0
@@ -1054,6 +1112,71 @@ def assign_body_balanced_sampling_weights(
         "private_sampling_mass": round(private_mass, 6),
         "private_sampling_probability": round(private_mass / total, 6) if total else 0.0,
         "private_body_sampling_weight": float(private_body_weight),
+        "configured_private_body_sampling_weight": configured_private_body_weight,
+        "private_sampling_probability_target": private_sampling_probability_target,
+    }
+
+
+def standalone_sft_contract_decision(source_text: str, body: str) -> dict[str, Any]:
+    """Admit only prompt/body pairs executable without hidden module context.
+
+    The target body is used only to reject contradictory SFT rows. No symbol,
+    type, return shape, or other target-derived feature is copied into the
+    model-visible source.
+    """
+
+    signature = next(
+        (
+            line.removeprefix("signature ")
+            for line in reversed(str(source_text).splitlines())
+            if line.startswith("signature def ")
+        ),
+        "",
+    )
+    reject_reasons: list[str] = []
+    unresolved_names: set[str] = set()
+    if not signature:
+        reject_reasons.append("declared_signature_missing")
+    wrapped = signature + "\n" + "\n".join(
+        f"    {line}" if line else "" for line in str(body).splitlines()
+    ) + "\n"
+    try:
+        tree = ast.parse(wrapped)
+        compile(tree, "<sft-contract>", "exec")
+        table = symtable.symtable(wrapped, "<sft-contract>", "exec")
+    except (SyntaxError, ValueError, TypeError):
+        reject_reasons.append("standalone_function_parse_failed")
+        tree = None
+        table = None
+    if tree is not None and table is not None:
+        function_table = next(
+            (child for child in table.get_children() if child.get_type() == "function"),
+            None,
+        )
+        if function_table is None:
+            reject_reasons.append("standalone_function_scope_missing")
+        else:
+            allowed_globals = set(dir(builtins))
+            allowed_globals.update({"__name__", "__file__"})
+
+            def collect_unresolved(scope: symtable.SymbolTable) -> None:
+                for name in scope.get_identifiers():
+                    symbol = scope.lookup(name)
+                    if symbol.is_referenced() and symbol.is_global() and name not in allowed_globals:
+                        unresolved_names.add(name)
+                for child in scope.get_children():
+                    collect_unresolved(child)
+
+            collect_unresolved(function_table)
+            if unresolved_names:
+                reject_reasons.append("unresolved_module_context")
+    return {
+        "accepted": not reject_reasons,
+        "reject_reasons": sorted(set(reject_reasons)),
+        "unresolved_name_count": len(unresolved_names),
+        "unresolved_names": sorted(unresolved_names),
+        "model_source_unchanged": True,
+        "target_derived_source_field_count": 0,
     }
 
 
@@ -2371,6 +2494,16 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("preference optimizer steps must stay within the bounded canary budget")
     if float(preference.get("beta") or 0.0) <= 0:
         raise ValueError("preference beta must be positive")
+    contract = (
+        config.get("sft_contract_admission")
+        if isinstance(config.get("sft_contract_admission"), dict)
+        else {}
+    )
+    if contract and not isinstance(contract.get("require_self_contained_body"), bool):
+        raise ValueError("SFT self-contained-body admission must be explicitly boolean")
+    target_probability = contract.get("private_sampling_probability_target")
+    if target_probability is not None and not 0.0 < float(target_probability) < 1.0:
+        raise ValueError("private sampling probability target must be between zero and one")
 
 
 def planned_report(
@@ -2450,6 +2583,11 @@ def compare_target_mode_canaries(
         ("tokenization_except_target_mode", matched_tokenization(plan_config), matched_tokenization(control_config)),
         ("model", plan_config.get("model"), control_config.get("model")),
         ("training", plan_config.get("training"), control_config.get("training")),
+        (
+            "sft_contract_admission",
+            plan_config.get("sft_contract_admission", {}),
+            control_config.get("sft_contract_admission", {}),
+        ),
         ("evaluation", plan_config.get("evaluation"), control_config.get("evaluation")),
         ("preference", plan_config.get("preference"), control_config.get("preference")),
         ("boundaries", plan_config.get("boundaries"), control_config.get("boundaries")),
@@ -2546,6 +2684,7 @@ def stage_signature(config: dict[str, Any]) -> str:
             "pretrain_target_token_positions": config["training"]["pretrain_target_token_positions"],
             "private_body_sampling_weight": config["training"]["private_body_sampling_weight"],
         },
+        "sft_contract_admission": config.get("sft_contract_admission", {}),
         "evaluation": {
             "holdout_family_count": config["evaluation"]["holdout_family_count"],
             "rows_per_family": config["evaluation"]["rows_per_family"],
@@ -2561,6 +2700,7 @@ def stage_signature(config: dict[str, Any]) -> str:
         training_target_tokens,
         extend_target_vocab_for_mode,
         assign_body_balanced_sampling_weights,
+        standalone_sft_contract_decision,
         select_family_disjoint_eval,
         select_preference_train_rows,
         eval_example,

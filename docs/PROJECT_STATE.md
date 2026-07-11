@@ -116,7 +116,21 @@ body-only covers `20/24` with reward `0.401639` and `114,335 ms`; both pass
 `0/24`. The flagship gate records `NOT_ADOPTED`, preserves exact negative
 artifact bindings, and leaves body-only canonical. Semantic IR therefore remains
 partial until it changes family-disjoint learned behavior rather than only loss
-or internal representation quality.
+or internal representation quality. A stricter replay found that this was not an
+equal-body-exposure comparison: emitted plan tokens consumed the same target
+budget as Python body tokens, yielding `598` plan-arm SFT steps versus `687`
+body-only steps and changing both vocabulary and parameter count. That result is
+still valid negative evidence, but it is not a substrate verdict. A separate
+standalone-SFT admission canary rejected `10,526` licensed rows that depended on
+hidden module context and preserved exact private sampling mass. It decoded
+`49,000 ms` faster, but regressed task coverage `20 -> 19`, candidate count
+`70 -> 67`, mean verifier reward `0.401639 -> 0.390833`, and heldout loss
+`1.737717 -> 1.784178`; both arms remained `0/24`. The survival gate binds that
+canary, integrity audit, blind audit, control, and configs by hash and records
+`NOT_ADOPTED`. The next intervention must preserve the `body_tokens` stream and
+equal body-token exposure, receive training pressure only through direct body
+likelihood, and causally affect generation rather than winning an auxiliary
+metric.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.
