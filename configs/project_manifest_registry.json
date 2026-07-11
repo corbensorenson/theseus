@@ -726,7 +726,10 @@
           "id": "vcm_status",
           "path": "reports/virtual_context_memory_status.json",
           "freshness_mode": "source_bound",
-          "source_paths": ["scripts/virtual_context_memory.py"],
+          "source_paths": [
+            "scripts/virtual_context_memory.py",
+            "scripts/vcm_semantic_memory.py"
+          ],
           "acceptance": {
             "field": "trigger_state",
             "allowed": ["GREEN", "YELLOW"]
@@ -3719,13 +3722,15 @@
       "canonical_entrypoint": "scripts/theseus_project_registry.py",
       "swappable_under_contract": true,
       "replacement_policy": "A replacement must materialize the same abstraction and implementation bindings before this implementation is deprecated.",
-      "verification_command": "python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
+      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
       "role": "governance",
       "trust_tier": "governed_local",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "configs/roadmap_implementation_matrix.json",
         "scripts/theseus_project_registry.py",
+        "scripts/theseus_supply_chain.py",
+        "tests/test_theseus_supply_chain.py",
         "scripts/roadmap_implementation_gate.py",
         "scripts/scf_reference_kernel_v1.py",
         "scripts/report_evidence_store.py",
@@ -5293,12 +5298,14 @@
       "canonical_entrypoint": "scripts/virtual_context_memory.py",
       "swappable_under_contract": true,
       "replacement_policy": "Runtime/KV/native cache successors must first preserve packet provenance and same-protocol VCM on/off evidence.",
-      "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
+      "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_semantic_memory.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 -m pytest -q tests/test_vcm_semantic_memory.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
       "role": "vcm_context",
       "trust_tier": "governed_local_memory",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "scripts/virtual_context_memory.py",
+        "scripts/vcm_semantic_memory.py",
+        "tests/test_vcm_semantic_memory.py",
         "scripts/vcm_consumer_abi.py",
         "scripts/vcm_consumer_integration_gate.py",
         "scripts/vcm_task_context_bridge.py",
@@ -5400,11 +5407,12 @@
             "reports/vcm_consumer_integration_gate.json",
             "reports/vcm_native_runtime_probe.json"
           ],
-          "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
+          "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_semantic_memory.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 -m pytest -q tests/test_vcm_semantic_memory.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
             "scripts/virtual_context_memory.py",
+            "scripts/vcm_semantic_memory.py",
             "scripts/vcm_consumer_abi.py",
             "scripts/vcm_consumer_integration_gate.py",
             "scripts/vcm_task_context_bridge.py",
@@ -7108,6 +7116,8 @@
         "configs/roadmap_implementation_matrix.json",
         "configs/module_definition_of_done.json",
         "scripts/theseus_project_registry.py",
+        "scripts/theseus_supply_chain.py",
+        "tests/test_theseus_supply_chain.py",
         "scripts/roadmap_implementation_gate.py",
         "scripts/module_definition_of_done_gate.py",
         "scripts/scf_reference_kernel_v1.py"
@@ -7126,7 +7136,7 @@
         "reports/scf_reference_kernel_v1.json",
         "reports/scf_reference_kernel_v1.md"
       ],
-      "verification_command": "python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/module_definition_of_done_gate.py && python3 scripts/scf_reference_kernel_v1.py --gate",
+      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/module_definition_of_done_gate.py && python3 scripts/scf_reference_kernel_v1.py --gate",
       "cleanup_policy": "must exist before cleanup/autonomy claims; no deletion decisions without registry evidence",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,
@@ -8048,6 +8058,7 @@
       "patterns": [
         "scripts/vcm_*.py",
         "scripts/virtual_context_memory.py",
+        "tests/test_vcm_semantic_memory.py",
         "configs/vcm_context_governor.json",
         "memory/**",
         "docs/reference/virtual_context_memory_v1.0/**",
@@ -8065,7 +8076,7 @@
         "reports/vcm_consumer_integration_gate.json",
         "reports/vcm_native_runtime_probe.json"
       ],
-      "verification_command": "python3 scripts/vcm_release_conformance_audit.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py && python3 tests/test_vcm_consumer_abi.py",
+      "verification_command": "python3 -m pytest -q tests/test_vcm_semantic_memory.py && python3 scripts/vcm_release_conformance_audit.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py && python3 tests/test_vcm_consumer_abi.py",
       "cleanup_policy": "VCM is the memory substrate; reference packet lives under docs/reference, while benchmark payload quarantines remain generated evidence, not source",
       "abstraction_id": "context_memory_contract",
       "major_surface": true,

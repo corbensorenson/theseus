@@ -721,18 +721,22 @@
         "reports/book_to_theseus_crosswalk.json",
         "reports/module_definition_of_done.json",
         "reports/theseus_generated_artifact_gc.json",
-        "reports/theseus_generated_artifact_gc_manifest.json"
+        "reports/theseus_generated_artifact_gc_manifest.json",
+        "scripts/theseus_supply_chain.py",
+        "tests/test_theseus_supply_chain.py"
       ],
       "implemented_items": [
         "roadmap matrix, roadmap gate, module DoD gate, and book-to-Theseus crosswalk are registered under the project_manifest_registry surface and verification sequence",
         "registry gate is GREEN with zero unregistered active source files and zero hard governance violations",
         "registry cleanup queue has 16/16 items covered by active steward decisions",
-        "bounded generated-artifact cleanup canary quarantines only safe tmp/smoke artifacts with manifest checksums and no deletion"
+        "bounded generated-artifact cleanup canary quarantines only safe tmp/smoke artifacts with manifest checksums and no deletion",
+        "the canonical registry embeds a local content-bound AIBOM with 559 requested/resolved/observed identities across 19 artifact domains, surface content Merkle roots, runtime identity, 358 dependency edges, derivative invalidation closure, zero missing required identities, and explicit non-claims for signing, advisory freshness, reproducibility, and weight custody",
+        "negative tests propagate a substituted dependency through implementation, checkpoint, and release descendants and reject an unknown descendant as incomplete closure"
       ],
       "missing_items": [
-        "stack-wide AI bill of materials with requested/resolved/observed identities, reproducible build/training attestations, advisory state, derivative invalidation, and release closure"
+        "release-grade signed advisory snapshots, reproducible build and training attestations, attestation-gated model loading, relocation checks, valuable-weight custody, revocation, and key lifecycle"
       ],
-      "smallest_next_patch": "Extend the existing project registry into one AIBOM over code, data, models, tokenizers, evaluators, tools, runtime/hardware profiles, and derived artifacts; add substituted dependency and stale-advisory controls before calling Phase 0 complete.",
+      "smallest_next_patch": "Bind a reproducible two-run build/training attestation and signed advisory snapshot to the existing AIBOM, then fail release admission on stale advisories, substituted identities, incomplete descendant invalidation, or absent weight-custody evidence.",
       "integration_smoke": [
         "python3 scripts/theseus_project_registry.py --gate",
         "reports/theseus_project_registry.json trigger_state=GREEN",
@@ -957,7 +961,9 @@
       "current_evidence": [
         "scripts/vcm_consumer_abi.py",
         "scripts/vcm_consumer_integration_gate.py",
+        "scripts/vcm_semantic_memory.py",
         "tests/test_vcm_consumer_abi.py",
+        "tests/test_vcm_semantic_memory.py",
         "reports/virtual_context_memory.json",
         "reports/vcm_task_context_bridge.json",
         "reports/vcm_consumer_integration_gate.json",
@@ -985,10 +991,16 @@
         "reports/theseus_assistant_vcm_context_abi_trace.jsonl",
         "configs/viea_spine_record_contracts.json"
       ],
-      "missing_items": [
-        "durable semantic object graph inside VCM with ontology migration, provenance-preserving merge/retraction, graph-vector retrieval, consolidation, forgetting, and restart consistency"
+      "implemented_items": [
+        "the canonical VCM graph embeds stable semantic object IDs independent of page revision, revision history, typed temporal relations, ontology 1.0.0 with additive migration records, and provenance-bound lifecycle state",
+        "sparse BM25 plus graph retrieval emits explainable score components while quarantined and retracted objects fail closed; dense embedding retrieval and parametric unlearning are explicitly not claimed",
+        "hot/warm/cold consolidation decisions preserve provenance, bounded subgraph snapshots carry deterministic content certificates, and canonical serialization/query replay is restart-consistent",
+        "negative tests cover revision identity, restart replay, poisoned and retracted retrieval suppression, consolidation actions, hybrid ranking, and bounded snapshot size"
       ],
-      "smallest_next_patch": "Implement stable semantic objects and typed temporal relations behind the existing VCM ABI, then prove restart, migration, poisoning, revocation, deletion, and bounded-subgraph snapshot behavior without creating a parallel memory sidecar.",
+      "missing_items": [
+        "executable provenance-preserving merge transactions, physical payload compaction and erasure closure, and process-level restart plus ontology migration rehearsal against persisted prior-version fixtures"
+      ],
+      "smallest_next_patch": "Execute merge, supersession, retraction, and cold-compaction as transactional VCM lifecycle operations; then restart a fresh process over prior-ontology persisted state and prove IDs, claims, provenance, deletion closure, retrieval suppression, and bounded snapshots survive migration.",
       "integration_smoke": [
         "python3 scripts/vcm_context_governor_gate.py",
         "reports/vcm_context_governor.json summary.context_abi_fixture_status=ready",
@@ -1019,8 +1031,8 @@
         "reports/vcm_native_runtime_probe.json summary.mlx_native_kv_lifecycle_claimed=true while MLX, CUDA, Metal, and cross-accelerator parity claims remain false",
         "python3 scripts/vcm_consumer_integration_gate.py",
         "reports/vcm_consumer_integration_gate.json trigger_state=GREEN",
-        "reports/vcm_consumer_integration_gate.json summary.ready_consumer_count=33/33",
-        "reports/vcm_consumer_integration_gate.json summary.planner_vcm_consumer_abi_ready_count=25/25",
+        "reports/vcm_consumer_integration_gate.json summary.ready_consumer_count=45/45",
+        "reports/vcm_consumer_integration_gate.json summary.planner_vcm_consumer_abi_ready_count=37/37",
         "reports/vcm_consumer_integration_gate.json summary.expected_invalid_rejected_count=5/5",
         "reports/vcm_consumer_integration_gate.json summary.assistant_dogfood_vcm_path_ready=true",
         "reports/vcm_consumer_integration_gate.json summary.native_mlx_model_cache_ready=true",

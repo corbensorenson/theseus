@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from vcm_semantic_memory import build_semantic_memory, query_semantic_memory
 from virtual_context_memory_support import (
     append_jsonl,
     canonical_json,
@@ -206,6 +207,7 @@ def refresh_vcm(args: argparse.Namespace) -> int:
 
     phase = time.perf_counter()
     policy = read_json(resolve(args.policy), {})
+    previous_graph = read_json(resolve(args.graph_out), {})
     phase = tick("read_policy", phase)
     pages = collect_pages(
         context_ledger=resolve(args.context_ledger),
@@ -221,6 +223,17 @@ def refresh_vcm(args: argparse.Namespace) -> int:
     phase = tick("event_log", phase)
     transactions = build_transactions(pages, event_log, policy=policy)
     graph = build_graph(pages, event_log, transactions, task=args.task)
+    graph["semantic_memory"] = build_semantic_memory(
+        pages,
+        graph,
+        usage_events=read_jsonl_all(resolve(args.usage_events)),
+        previous=(
+            previous_graph.get("semantic_memory")
+            if isinstance(previous_graph.get("semantic_memory"), dict)
+            else {}
+        ),
+        task=args.task,
+    )
     phase = tick("transactions_and_graph", phase)
     snapshots = build_snapshots(pages, graph, policy=policy, task=args.task)
     ledger = build_ledger(pages, policy=policy, task=args.task, graph=graph, event_log=event_log, snapshots=snapshots)
@@ -260,6 +273,12 @@ def refresh_vcm(args: argparse.Namespace) -> int:
         "page_count": len(pages),
         "event_count": len(event_log),
         "graph_edge_count": graph.get("edge_count", 0),
+        "semantic_object_count": len(get_path(graph, ["semantic_memory", "objects"], []) or []),
+        "semantic_relation_count": len(get_path(graph, ["semantic_memory", "relations"], []) or []),
+        "semantic_restart_replay_match": bool(
+            get_path(graph, ["semantic_memory", "restart_replay", "state_digest_match"], False)
+            and get_path(graph, ["semantic_memory", "restart_replay", "query_replay_match"], False)
+        ),
         "query_index_entries": len(query_index.get("pages", [])),
         "deterministic_ordering": True,
         "event_log_deduplicated_by_event_id": event_log_has_unique_ids(event_log),
@@ -1961,6 +1980,14 @@ def build_ledger(
         "event_count": len(event_log),
         "graph_edge_count": graph.get("edge_count", 0),
         "snapshot_count": len(get_path(snapshots, ["snapshots"], [])),
+        "semantic_memory": {
+            "ontology_version": get_path(graph, ["semantic_memory", "ontology", "version"], None),
+            "object_count": len(get_path(graph, ["semantic_memory", "objects"], []) or []),
+            "relation_count": len(get_path(graph, ["semantic_memory", "relations"], []) or []),
+            "consolidation_record_count": len(get_path(graph, ["semantic_memory", "consolidation_records"], []) or []),
+            "state_digest": get_path(graph, ["semantic_memory", "state_digest"], None),
+            "restart_replay": get_path(graph, ["semantic_memory", "restart_replay"], {}),
+        },
         "page_counts_by_type": by_type,
         "page_counts_by_execution_class": by_execution_class,
         "taint_counts": taint_counts,
@@ -2797,13 +2824,23 @@ def query_vcm(args: argparse.Namespace) -> dict[str, Any]:
         rows = [row for row in rows if str(row.get("lane") or "") == args.lane]
     if args.taint:
         rows = [row for row in rows if args.taint in set(row.get("taints") or [])]
+    semantic_results: list[dict[str, Any]] = []
     if args.query:
+        semantic_memory = graph.get("semantic_memory") if isinstance(graph.get("semantic_memory"), dict) else {}
+        semantic_results = query_semantic_memory(semantic_memory, args.query, limit=max(1, args.limit))
+        semantic_rank = {
+            str(row.get("address") or ""): index
+            for index, row in enumerate(semantic_results)
+            if isinstance(row, dict)
+        }
         query_tokens = set(tokens(args.query))
         rows = [
             row
             for row in rows
-            if query_tokens.intersection(tokens(" ".join([str(row.get("title") or ""), str(row.get("source_path") or ""), str(row.get("type") or ""), str(row.get("execution_class") or "")])))
+            if str(row.get("address") or "") in semantic_rank
+            or query_tokens.intersection(tokens(" ".join([str(row.get("title") or ""), str(row.get("source_path") or ""), str(row.get("type") or ""), str(row.get("execution_class") or "")])))
         ]
+        rows.sort(key=lambda row: (semantic_rank.get(str(row.get("address") or ""), 10**9), str(row.get("address") or "")))
     limited = rows[: max(1, args.limit)]
     return {
         "policy": "project_theseus_vcm_query_v1",
@@ -2825,6 +2862,11 @@ def query_vcm(args: argparse.Namespace) -> dict[str, Any]:
             "external_inference_calls": 0,
         },
         "results": limited,
+        "semantic_retrieval": {
+            "mode": "sparse_bm25_plus_graph",
+            "results": semantic_results,
+            "dense_embedding_claimed": False,
+        },
         "external_inference_calls": 0,
     }
 
@@ -2917,6 +2959,13 @@ def status_report(*, write_report: bool = False, out: Path | None = None) -> dic
             "page_count": summary.get("semantic_pages"),
             "event_count": summary.get("event_count"),
             "graph_edge_count": summary.get("graph_edge_count"),
+            "semantic_object_count": len(get_path(graph, ["semantic_memory", "objects"], []) or []),
+            "semantic_relation_count": len(get_path(graph, ["semantic_memory", "relations"], []) or []),
+            "semantic_ontology_version": get_path(graph, ["semantic_memory", "ontology", "version"], None),
+            "semantic_restart_replay_match": bool(
+                get_path(graph, ["semantic_memory", "restart_replay", "state_digest_match"], False)
+                and get_path(graph, ["semantic_memory", "restart_replay", "query_replay_match"], False)
+            ),
             "fault_count": len(faults),
             "fault_counts": fault_counts,
             "conflict_edge_count": len(conflicts),

@@ -29,6 +29,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import report_evidence_store  # noqa: E402
+import theseus_supply_chain  # noqa: E402
 import viea_spine_records  # noqa: E402
 
 
@@ -58,6 +59,7 @@ def main() -> int:
     policy = read_json(policy_path, {})
     inventory = build_inventory(policy)
     entries, unregistered = classify_inventory(inventory, policy)
+    aibom = theseus_supply_chain.build_aibom(ROOT, policy, entries)
     report_status = report_output_status(policy)
     base_abstraction_gaps = abstraction_registry_gaps(policy)
     route_validator_spine_receipt = route_validator_materialized_view_receipt()
@@ -110,6 +112,13 @@ def main() -> int:
         policy,
         started,
     )
+    aibom_summary = aibom.get("summary") if isinstance(aibom.get("summary"), dict) else {}
+    summary["aibom_artifact_count"] = int(aibom_summary.get("artifact_count") or 0)
+    summary["aibom_observed_identity_count"] = int(aibom_summary.get("observed_identity_count") or 0)
+    summary["aibom_missing_identity_count"] = int(aibom_summary.get("missing_identity_count") or 0)
+    summary["aibom_derivative_invalidation_closed"] = bool(
+        aibom.get("derivative_invalidation", {}).get("closure_complete")
+    )
     trigger_state = trigger_state_for(summary, policy)
     payload = {
         "policy": "project_theseus_project_registry_v1",
@@ -125,6 +134,7 @@ def main() -> int:
         "registry_evolution_contract": policy.get("registry_evolution_contract", {}),
         "project_steward_config": steward_coverage.get("config_path", ""),
         "project_steward_coverage": steward_coverage,
+        "ai_bill_of_materials": aibom,
         "abstraction_registry_contract": policy.get("abstraction_registry_contract", {}),
         "stable_capability_field_contract": policy.get("stable_capability_field_contract", {}),
         "route_validator_spine_receipt": route_validator_spine_receipt,
@@ -3100,6 +3110,10 @@ def registry_gate_summary(payload: dict[str, Any]) -> dict[str, Any]:
         "registry_hard_governance_violation_count": summary.get("registry_hard_governance_violation_count"),
         "routing_eligible_implementation_count": summary.get("routing_eligible_implementation_count"),
         "routing_role_count": summary.get("routing_role_count"),
+        "aibom_artifact_count": summary.get("aibom_artifact_count"),
+        "aibom_observed_identity_count": summary.get("aibom_observed_identity_count"),
+        "aibom_missing_identity_count": summary.get("aibom_missing_identity_count"),
+        "aibom_derivative_invalidation_closed": summary.get("aibom_derivative_invalidation_closed"),
         "cleanup_queue_count": summary.get("registry_cleanup_queue_count"),
         "cleanup_queue_steward_decision_count": summary.get("cleanup_queue_steward_decision_count"),
         "cleanup_queue_steward_uncovered_count": summary.get("cleanup_queue_steward_uncovered_count"),

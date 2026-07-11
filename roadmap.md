@@ -36,7 +36,7 @@ module must meet.
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
 | Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | retain body-only as the practical baseline; improve prompt-conditioned semantic behavior before preference/RL or scale |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
-| VCM ABI + transactions/certificates | Phase 3 | ABI implemented; durable semantic object layer partial | add ontology/versioned graph persistence inside VCM, then consume it in Phase 7/10 |
+| VCM ABI + transactions/certificates | Phase 3 | ABI plus stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle tiers, and restart replay implemented; durable lifecycle execution partial | add provenance-preserving merge/compaction execution and process-level migration rehearsal, then consume it in Phase 7/10 |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
 | Replacement transactions | Phase 2 | synthetic-test-backed | one real default swap with rollback |
 | Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
@@ -450,14 +450,22 @@ run and it meets the Quality Bars below.
   is claimed.
 - Current implementation evidence: one fail-closed packet ABI is independently
   validated across assistant, planner, verifier, deterministic-tool,
-  training-admission, candidate-generation, and fanout paths; `33/33` canonical
-  consumers and `25/25` planner nodes pass, while authority-widening,
+  training-admission, candidate-generation, and fanout paths; `45/45` canonical
+  consumers and `37/37` planner nodes pass, while authority-widening,
   source-mutation, taint-drop, best-effort, fallback, missing, stale,
   contradictory, over-compressed, revoked, and deleted controls fail closed. A
   real tiny MLX-LM Llama forward creates, reuses, appends, and invalidates an
   `mlx_lm.models.cache.KVCache`; this supports only an exact `mlx_apple`
   lifecycle claim, not CUDA, custom Metal-kernel, or cross-backend parity. The
-  equal-budget private context ablation is `1.0` VCM-on versus `0.5625` VCM-off
+  canonical VCM graph now also embeds `256` stable semantic objects and `1,871`
+  typed temporal relations under ontology `1.0.0`, with sparse-BM25 plus graph
+  retrieval, explicit hot/warm/cold lifecycle records, retraction/quarantine
+  suppression, certified bounded subgraph snapshots, and deterministic
+  serialization/query replay. This is a durable semantic projection over VCM
+  pages, not a dense-embedding, parametric-unlearning, or completed physical
+  compaction claim. Process-level restart/migration rehearsal and executable
+  merge/compaction transactions remain open. The equal-budget private context
+  ablation is `1.0` VCM-on versus `0.5625` VCM-off
   over 16 cases with zero fallback returns; it is integration evidence, not a
   broad public-capability claim. The separate `VCM-Governed` release profile
   remains RED because its quarantined public prompt calibration manifest is not
@@ -930,7 +938,7 @@ gaps route into the phases above:
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
 | Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
-| Durable semantic memory inside VCM | stable semantic objects, typed/temporal graph relations, ontology migration, provenance-preserving merge/retraction, consolidation, graph/vector retrieval, and restart persistence are incomplete | 3, 14, 15 |
+| Durable semantic memory inside VCM | stable objects, typed/temporal relations, additive ontology migration, retraction suppression, sparse-vector/graph retrieval, lifecycle tiers, bounded snapshots, and deterministic replay now exist; executable merge/physical compaction plus process-level migration/restart rehearsal remain | 3, 14, 15 |
 | Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |
 | Claim ledgers + belief revision | claim/transition records + contradiction links not first-class per run | 14 |
 | Proof-carrying + tribunal/adversarial review | broader independent-review records not standard for architecture changes | 14, 18 |
@@ -947,7 +955,7 @@ gaps route into the phases above:
 | Authority kernel / SCIF / failure boundaries / adapter receipts | no universal authority-transition ledger or SCIF receipt layer | 18 |
 | Scalable oversight | no trusted/untrusted monitor separation, correlation/collusion probe, weak-supervisor boundary, randomized audit policy, operator-load ledger, or recursion-bottom contract | 4, 14, 18 |
 | Capability commitments + safety cases | threshold/safeguard/exception commitments and dependency-invalidating assurance graphs are not consumed by release/default-route decisions | 2, 12, 14, 18 |
-| Weight custody + AI supply chain | no model/data/code/hardware AIBOM, reproducible training/build attestation, advisory quarantine, derivative revocation, attestation-gated load, or key lifecycle | 0, 2, 7, 8, 14, 18 |
+| Weight custody + AI supply chain | local AIBOM now distinguishes 559 requested/resolved/observed identities across 19 domains, surface Merkle roots, runtime identity, and derivative invalidation; signed advisories, reproducible training/build attestation, attestation-gated load, weight custody, and key lifecycle remain | 0, 2, 7, 8, 14, 18 |
 | Inter-stack identity and exchange | federation lacks credential/delegation expiry, reserved budgets, value/accounting receipts, dispute, revocation, and shutdown-handoff interoperability | 1, 2, 9, 16, 18 |
 | Constitutional predicates / agency / value conflicts / governance rights | not first-class records consumed by planning and self-improvement | 18 |
 | Resource budgets + costed routes + generation-mode records | costed routes + accepted-output accounting not the normal artifact | 8 |

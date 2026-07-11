@@ -22,6 +22,20 @@ current-invocation receipts; `171` other declared outputs are supporting
 evidence and no longer force daily regeneration. Stale, invalid, missing, or
 acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
+The registry now embeds a local content-bound AIBOM with `559` identities across
+`19` artifact domains and `358` dependency edges. Requested, resolved, and
+observed identity are separate; registered surfaces carry content Merkle roots;
+substituted dependencies propagate through derivative invalidation tests. There
+are `0` missing required identities on this machine, `9` optional packages are
+unavailable, and one Windows-only evidence output is not materialized. Signing,
+advisory freshness, reproducible builds/training, release admission, and weight
+custody remain explicitly unclaimed.
+Canonical VCM now embeds `256` stable semantic objects, `1,871` typed temporal
+relations, ontology `1.0.0`, sparse-BM25 plus graph retrieval, hot/warm/cold
+lifecycle decisions, retraction/quarantine suppression, bounded snapshot
+certificates, and deterministic serialization/query replay. This is not a
+dense-embedding, parametric-unlearning, physical-compaction, or process-level
+migration/restart claim; those lifecycle mechanics remain Phase 3 work.
 The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
 book reconciliation. Phases `15` and `19` are `implemented`; phases `4`, `6`,
 `8`, `11`, `12`, and `17` are `wired`; phases `0`, `1`, `2`, `3`, `5`, `7`,
