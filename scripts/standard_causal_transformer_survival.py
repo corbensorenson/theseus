@@ -92,6 +92,11 @@ def main() -> int:
     parser.add_argument("--candidates-out", default=rel(DEFAULT_CANDIDATES))
     parser.add_argument("--checkpoint-dir", default=rel(DEFAULT_CHECKPOINT_DIR))
     parser.add_argument("--stage-dir", default=rel(DEFAULT_STAGE_DIR))
+    parser.add_argument(
+        "--prior-report",
+        default="",
+        help="Completed training receipt to preserve during resume/evaluation-only replay.",
+    )
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--force-restage", action="store_true")
     parser.add_argument("--resume", action="store_true")
@@ -100,6 +105,11 @@ def main() -> int:
     parser.add_argument("--generation-mode-canary", action="store_true")
     parser.add_argument("--max-steps", type=int, default=0)
     args = parser.parse_args()
+    if (args.resume or args.evaluate_only) and not args.execute:
+        parser.error("--resume and --evaluate-only require --execute")
+    prior_report_path = resolve(args.prior_report) if args.prior_report else resolve(args.out)
+    if (args.resume or args.evaluate_only) and not prior_report_path.exists():
+        parser.error(f"prior training receipt missing: {prior_report_path}")
 
     started = time.perf_counter()
     config = read_json(resolve(args.config))
@@ -115,7 +125,8 @@ def main() -> int:
         preference_canary=args.preference_canary,
         generation_mode_canary=args.generation_mode_canary,
         max_steps=max(0, args.max_steps),
-        report_path=resolve(args.out),
+        prior_report_path=prior_report_path,
+        candidates_path=resolve(args.candidates_out),
         started=started,
     )
     write_json(resolve(args.out), report)
@@ -137,7 +148,8 @@ def run(
     preference_canary: bool,
     generation_mode_canary: bool,
     max_steps: int,
-    report_path: Path,
+    prior_report_path: Path,
+    candidates_path: Path,
     started: float,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     validate_config(config)
@@ -181,7 +193,7 @@ def run(
     if max_steps:
         total_steps = min(total_steps, max_steps)
     if evaluate_only:
-        prior = read_json(report_path)
+        prior = read_json(prior_report_path)
         prior_training = prior.get("training") if isinstance(prior.get("training"), dict) else {}
         conditioning = prior.get("conditioning") if isinstance(prior.get("conditioning"), dict) else {}
         eval_loss_before = float(prior_training.get("eval_loss_before") or float("inf"))
@@ -189,7 +201,7 @@ def run(
         consumed_steps = int(prior_training.get("optimizer_steps") or 0)
         training_complete = bool(prior_training.get("complete"))
     elif resume:
-        prior = read_json(report_path)
+        prior = read_json(prior_report_path)
         prior_training = prior.get("training") if isinstance(prior.get("training"), dict) else {}
         prior_conditioning = (
             prior.get("conditioning") if isinstance(prior.get("conditioning"), dict) else {}
@@ -403,7 +415,8 @@ def run(
             "config": config_path,
             "checkpoint": rel(checkpoint),
             "stage_dir": rel(stage_dir),
-            "candidates": rel(DEFAULT_CANDIDATES),
+            "candidates": rel(candidates_path),
+            "prior_training_receipt": rel(prior_report_path) if (resume or evaluate_only) else "",
         },
         "stage": stage.summary,
         "training": {
@@ -924,6 +937,7 @@ def encode_sft_training_examples(
     max_seq = int(token_cfg["max_sequence_tokens"])
     max_source = int(token_cfg["max_source_tokens"])
     max_target = int(token_cfg["max_target_tokens"])
+    source_offset = source_token_offset(config, source_vocab)
     target_offset = target_token_offset(config, source_vocab)
     rows: list[tuple[list[int], int, float]] = []
     for row in examples:
@@ -937,7 +951,7 @@ def encode_sft_training_examples(
             continue
         source_ids = head_tail(source_ids, max_source)
         sequence = [GLOBAL_BOS_ID]
-        sequence.extend(target_offset + int(value) for value in source_ids)
+        sequence.extend(source_offset + int(value) for value in source_ids)
         sequence.append(SOURCE_TARGET_SEPARATOR_ID)
         sequence.append(target_offset + int(target_vocab["<bos>"]))
         target_start = len(sequence)
@@ -1216,6 +1230,12 @@ def shared_vocabulary_enabled(config: dict[str, Any]) -> bool:
 
 def target_token_offset(config: dict[str, Any], source_vocab: dict[str, int]) -> int:
     return SPECIAL_COUNT if shared_vocabulary_enabled(config) else SPECIAL_COUNT + len(source_vocab)
+
+
+def source_token_offset(config: dict[str, Any], source_vocab: dict[str, int]) -> int:
+    """Map encoded source IDs into the embedding segment that owns their vocabulary."""
+
+    return target_token_offset(config, source_vocab) if shared_vocabulary_enabled(config) else SPECIAL_COUNT
 
 
 def model_vocab_size(
@@ -1512,8 +1532,9 @@ def generate_candidates(
             continue
         source_ids = head_tail(source_ids, int(config["tokenization"]["max_source_tokens"]))
         prompt_ids = [GLOBAL_BOS_ID]
+        source_offset = source_token_offset(config, source_vocab)
         target_offset = target_token_offset(config, source_vocab)
-        prompt_ids.extend(target_offset + int(value) for value in source_ids)
+        prompt_ids.extend(source_offset + int(value) for value in source_ids)
         prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
         prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
         beams = decode_beams(
@@ -2307,6 +2328,7 @@ def stage_signature(config: dict[str, Any]) -> str:
         model_prompt,
         canonical_model_signature,
         shared_vocabulary_enabled,
+        source_token_offset,
         target_token_offset,
         model_vocab_size,
         encode_model_source,

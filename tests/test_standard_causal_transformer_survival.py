@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -28,6 +29,7 @@ from standard_causal_transformer_survival import (
     semantic_stage_source,
     select_family_disjoint_eval,
     select_preference_train_rows,
+    source_token_offset,
     stage_materialization_lock,
     stage_signature,
     target_token_offset,
@@ -188,6 +190,18 @@ def test_config_rejects_fallback_or_external_inference() -> None:
         validate_config(task_named)
 
 
+def test_evaluate_only_requires_execute_before_any_report_write() -> None:
+    result = subprocess.run(
+        [sys.executable, str(SCRIPTS / "standard_causal_transformer_survival.py"), "--evaluate-only"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    assert "--resume and --evaluate-only require --execute" in result.stderr
+
+
 def test_blind_audit_inspects_the_new_inference_surface(tmp_path: Path) -> None:
     violating = tmp_path / "violating_generator.py"
     violating.write_text(
@@ -325,7 +339,21 @@ def test_shared_source_encoding_uses_target_vocabulary_id_space() -> None:
     assert ids
     assert receipt["unknown_token_count"] == 0
     assert receipt["model_stream"] == "shared_source_target"
+    assert source_token_offset(config, source_vocab) == 3
     assert target_token_offset(config, source_vocab) == 3
+
+
+def test_split_source_encoding_uses_disjoint_source_embedding_segment() -> None:
+    config = {"tokenization": {"shared_source_target_vocabulary": False}}
+    source_vocab = {"Return": 0, "data": 1}
+    target_vocab = {"<bos>": 0, "return": 1, "data": 2}
+    ids, receipt = encode_model_source("Return data", source_vocab, target_vocab, config)
+    assert ids == [0, 1]
+    assert receipt["model_stream"] == "split_source_target"
+    assert source_token_offset(config, source_vocab) == 3
+    assert target_token_offset(config, source_vocab) == 5
+    embedded_source_ids = [source_token_offset(config, source_vocab) + value for value in ids]
+    assert max(embedded_source_ids) < target_token_offset(config, source_vocab)
 
 
 def test_broad_private_rows_declare_prompt_visible_signature_from_template_contract() -> None:

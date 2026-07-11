@@ -204,6 +204,10 @@
       "content_bindings": {
         "checkpoint": {
           "path": "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz",
+          "sha256": "d0fe62ae939be033015cd6093a09893ae954c6614e81f6cbb93d5658c06f4b90"
+        },
+        "retained_faulty_source_offset_checkpoint": {
+          "path": "checkpoints/standard_causal_transformer_faulty_source_offset_retained/standard_causal_transformer_survival_v1.npz",
           "sha256": "668ed50ff58148f41570c1df244b34855a034dc5670cf1b7b6414bcac13c8013"
         },
         "config": {
@@ -220,7 +224,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "babf6a91be4a9e6f8c8d082ed39e7c9900da0f20873e737fac28e696fddf00ed"
+          "sha256": "79b0ff920f5ca6b46512873618ee0f9765aa1078f1ada508caf42ef6a9743af5"
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
@@ -248,23 +252,31 @@
         },
         "canonical_report": {
           "path": "reports/standard_causal_transformer_survival.json",
-          "sha256": "77a4a0a143cddcffe3a92786fc713cea117b5bb960a20b075fd2cdee6f4b9dbb"
+          "sha256": "4a3a8fc6a5ba055c4b83ca39eb8a4b3ea273813251090c76b3a82f4418977c5b"
         },
         "candidate_manifest": {
           "path": "reports/standard_causal_transformer_survival_candidates.jsonl",
-          "sha256": "dc5770f92b7230c4d597aff958e65e09b0ec640cc5248ad772200ee4fe87e97c"
+          "sha256": "125442fcc47575f483391b5f1864456612b7c2f4e6dbd6320bc03460db02ddcf"
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "d9998e1dad5f0d29b30d82bdbed56760ad6f7a910d1eabd2ff286a06db2edade"
+          "sha256": "c5bdc8ca478ecdaf3865d19dd0a6011bca3d70517b0decebad4c43f4b502b807"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "1788695fa8739918de254fafc449c5713aaa70fa27596d7209e24a610a993372"
+          "sha256": "56a66d0e4f34bf26011fe70e71638c2af7d13f63a1f6da77dd7ab99c4c8b4ab5"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "58d603192e65448e1cbf9f43454ad1ddd52cfdddd2f0706d71ec8dfed384771a"
+          "sha256": "6538982e251d09692e9ee253c6bf3871b372ade66e920bdd91265e36133bd5d0"
+        },
+        "incomplete_prior_training_receipt": {
+          "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
+          "sha256": "c4dcef3c80ea942613a62b7d34b53b6065e5046bb8c40f2bf3e4ee8e196e7fb7"
+        },
+        "last_training_heartbeat": {
+          "path": "runtime/standard_causal_transformer_stage_v1/training_heartbeat.json",
+          "sha256": "7ef84f20635666813c6187c6d42eae863ca8aed050fee718ace61c93db83ad19"
         },
         "policy_report": {
           "path": "reports/policy_optimization_program.json",
@@ -281,6 +293,8 @@
         "reports/candidate_integrity_standard_causal_transformer_survival.json",
         "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
         "reports/standard_causal_transformer_survival_gate.json",
+        "runtime/standard_causal_transformer_source_offset_repair/report.json",
+        "runtime/standard_causal_transformer_stage_v1/training_heartbeat.json",
         "reports/policy_optimization_program.json",
         "reports/generation_mode_registry.json"
       ],
@@ -300,7 +314,7 @@
         ]
       },
       "claim_boundary": {
-        "supported_claim": "The source-bound prompt/signature-only 6.6M-parameter MLX decoder produces 88 syntax-valid transformer-family candidates across 23 tasks after a corrected two-million-position continuation. Independent integrity verifies 38 and rejects 50 as inert stubs; model-only behavior scores 0/24 on the frozen family-disjoint private verifier, so the successor is contained and not canonical or routable.",
+        "supported_claim": "Correcting the split-vocabulary source offset raises independently integrity-verified candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but model-only behavior remains 0/24 on the frozen family-disjoint private verifier. The evaluate-only CLI overwrote the completed training receipt; the canonical gate therefore records both incomplete training provenance and zero behavior as adoption gaps. The successor remains contained and non-routable.",
         "non_claims": [
           "not Phase 10 completion",
           "not broad public transfer",
@@ -4846,7 +4860,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. The corrected split-vocabulary route binds all admitted source content, encodes all 24 heldout targets, extends decode context to cover them, and uses only explicit signatures or a target-independent generic interface. A two-million-position SFT continuation improves corrected heldout loss 2.212320 -> 1.667694 and emits 88 syntax-valid transformer-family candidates across 23 tasks, but independent integrity verifies only 38 and rejects 50 as inert stubs; model-only behavior remains 0/24 with zero integrity mismatches. Wider beam emitted 376 syntax-valid candidates and the shared-vocabulary arm also scored 0/24, so search width, target truncation, signature recovery, and tokenizer sharing are ruled out as the immediate wall. The successor remains contained; prompt-conditioned semantic learning and inert-body collapse are the Phase 10 wall.",
+      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. The source-offset repair then proved split source IDs had been shifted into the target embedding segment. A fresh corrected-map run lowers heldout loss to 1.662704, raises independently integrity-verified candidates from 38/88 to 57/87, and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. Its completed training receipt was overwritten by the old evaluate-only CLI behavior, so the canonical gate also records incomplete training provenance; the heartbeat and exact checkpoint are retained without promotion. The CLI now requires execute mode and an explicit prior receipt for evaluation-only replay. The successor remains contained; prompt-conditioned semantic behavior, task coverage, and durable training provenance are the Phase 10 wall.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",

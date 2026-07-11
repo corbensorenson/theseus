@@ -77,6 +77,7 @@ AUDITED_INFERENCE_FUNCTIONS = {
     "rank_actions",
     "render_visible_signature",
     "model_prompt",
+    "source_token_offset",
     "sanitize_task",
     "signature_names",
     "training_callable_signature",

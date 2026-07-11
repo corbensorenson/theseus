@@ -547,6 +547,16 @@ deletion closure is graph evidence, not physical unlearning.
   tokenizer sharing, and more same-distribution SFT are now falsified as the
   immediate repair; prompt-conditioned semantic learning and inert-body collapse
   are the active wall.
+- A subsequent ID-space audit found that split source-vocabulary IDs were
+  incorrectly shifted into the target embedding segment. The repaired mapping
+  raises independently integrity-verified candidates from `38/88` to `57/87`
+  and reduces inert stubs from `50` to `30`, but covers only `22/24` tasks and
+  remains `0/24` on exact behavior. The completed training receipt was then
+  overwritten by the old evaluation-only CLI behavior; the checkpoint and final
+  heartbeat are retained, but the canonical gate records incomplete training
+  provenance and no adoption. Evaluation-only now requires execute mode plus an
+  explicit prior receipt, and candidate artifact paths are request-bound. This
+  keeps the encoding correction while rejecting the checkpoint as capability.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

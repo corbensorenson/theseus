@@ -74,24 +74,24 @@ or capability claim.
 
 Phase `10` has a clean 6.6M-parameter MLX decoder-only causal transformer. The
 previous `1/24` floor is invalid because private tests influenced inferred
-callable arity. The corrected split-vocabulary route binds all admitted source
-content, uses only explicit signatures or a target-independent generic
-interface, and expands source/target/decode limits so all `24/24` frozen
-family-disjoint targets are encoded with zero overflow. It retains
-`12,001,413` licensed pretraining positions and `6,000,191` original private
-SFT positions, then adds a bounded `2,001,802`-position continuation. Corrected
-heldout loss improves `2.212320 -> 1.667694`, but the route emits only `88`
-syntax-valid transformer-family candidates across `23` tasks. Independent
-integrity verifies `38` and rejects `50` as inert stubs; behavior still scores
-`0/24` with zero integrity mismatches. Wider beam produced `376` syntax-valid candidates at
-`0/24`; a shared-vocabulary arm also remained `0/24` and weakened the measured
-prompt-conditioning gap. Search width, target truncation, signature recovery,
-tokenizer sharing, and more SFT on this same distribution are therefore ruled
-out as immediate repairs. The successor remains contained, non-canonical, and
-non-routable. The remaining wall is prompt-conditioned semantic learning,
-inert-body collapse, and verifier-positive pair density, not syntax or
-admissibility. This is negative
-private proposer evidence, not public transfer or runtime readiness.
+callable arity. The next audit found that split-vocabulary source IDs were also
+shifted into the target embedding segment. The repaired contract now keeps
+split source IDs in their own segment, binds every admitted source by content,
+uses only explicit signatures or a target-independent generic interface, and
+encodes all `24/24` frozen heldout targets with zero overflow. A fresh corrected
+map checkpoint replay measures heldout loss `1.662704`, `87` syntax-valid
+transformer-family candidates across `22` tasks, and zero integrity mismatches.
+Independent integrity improves from `38/88` to `57/87` and inert stubs fall from
+`50` to `30`, but exact behavior remains `0/24`. An old evaluation-only CLI path
+then overwrote the completed training receipt; the exact checkpoint and final
+heartbeat are retained, but the canonical gate marks training provenance
+incomplete rather than reconstructing it. Evaluation-only now requires execute
+mode and an explicit prior receipt, and report candidate paths are no longer
+hardcoded. Wider beam, target truncation, signature recovery, tokenizer sharing,
+the source-offset repair, and more same-distribution SFT all fail to move exact
+behavior above zero. The successor remains contained, non-canonical, and
+non-routable. The wall is prompt-conditioned semantic behavior, complete task
+coverage, verifier-positive pair density, and durable training provenance.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.
