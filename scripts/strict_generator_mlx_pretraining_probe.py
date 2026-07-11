@@ -50,6 +50,7 @@ from neural_seed_token_decoder_comparator import (  # noqa: E402
     full_state_target_vocab_extension_summary,
 )
 from neural_seed_token_decoder_support import PLAN_BODY_START_TOKEN, semantic_plan_from_body, target_tokens  # noqa: E402
+from neural_seed_teacher_distillation_rows import load_governed_teacher_code_lm_training_rows  # noqa: E402
 from strict_generator_pretraining_spine import (  # noqa: E402
     config_with_budget_overrides as strict_spine_config_with_budget_overrides,
     encode_staged_full_state_rows,
@@ -450,6 +451,7 @@ def run_probe(
             "parameter_update_fraction": payload.get("parameter_update_fraction"),
             "parameter_tensor_update_fraction": payload.get("parameter_tensor_update_fraction"),
             "row_summary": payload.get("row_summary"),
+            "teacher_training": payload.get("teacher_training"),
             "data_exposure": payload.get("data_exposure"),
             "checkpoint": payload.get("checkpoint"),
             "checkpoint_sha256": payload.get("checkpoint_sha256"),
@@ -492,6 +494,75 @@ def run_probe(
 MlxStrictGenerator = SharedMlxStrictGenerator
 
 
+def inject_governed_teacher_examples(
+    staged: dict[str, Any],
+    *,
+    teacher_rows: list[dict[str, Any]],
+    teacher_summary: dict[str, Any],
+    text_views: dict[str, Any],
+) -> dict[str, Any]:
+    """Reserve staged train positions for manifest-admitted teacher rows."""
+    result = dict(staged)
+    examples = [dict(row) for row in list(staged.get("examples") or []) if isinstance(row, dict)]
+    teacher_examples = []
+    source_fields = list(text_views.get("sts_on") or text_views.get("sts_off") or ["prompt", "entry_point"])
+    for row in teacher_rows:
+        body = str(row.get("solution_body") or "").strip()
+        prompt = str(row.get("prompt") or "").strip()
+        entry_point = str(row.get("entry_point") or "").strip()
+        if not body or not prompt or not entry_point:
+            continue
+        teacher_examples.append(
+            {
+                "path": f"teacher_manifest://{row.get('teacher_manifest_row_id') or row.get('task_id')}",
+                "function": entry_point,
+                "source_text": decoder_source_text(row, source_fields),
+                "source_text_style": "prompt_signature_operation_metadata_v3",
+                "body": body,
+                "source_kind": "teacher_distillation",
+                "teacher_generated": True,
+                "teacher_manifest_row_id": row.get("teacher_manifest_row_id"),
+                "quality": {
+                    "policy": "manifest_execution_verified_teacher_row_v1",
+                    "uses_eval_tests_or_solutions": False,
+                    "uses_public_data": False,
+                },
+            }
+        )
+    limit = max(len(examples), len(teacher_examples))
+    result["examples"] = [*examples[: max(0, limit - len(teacher_examples))], *teacher_examples]
+    result["source_vocab_extension_texts"] = [
+        *list(staged.get("source_vocab_extension_texts") or []),
+        *(str(row["source_text"]) for row in teacher_examples),
+    ]
+    result["target_vocab_extension_bodies"] = [
+        *list(staged.get("target_vocab_extension_bodies") or []),
+        *(str(row["body"]) for row in teacher_examples),
+    ]
+    summary = dict_or_empty(staged.get("summary"))
+    summary.update(
+        {
+            "governed_teacher_training_enabled": bool(teacher_summary.get("enabled")),
+            "governed_teacher_gate_green": bool(teacher_summary.get("gate_green")),
+            "governed_teacher_available_row_count": int(teacher_summary.get("available_code_lm_training_rows") or 0),
+            "governed_teacher_injected_row_count": len(teacher_examples),
+            "governed_teacher_holdout_family_row_count": int(teacher_summary.get("holdout_family_code_lm_training_rows") or 0),
+            "governed_teacher_manifest": teacher_summary.get("manifest"),
+            "teacher_source_external_inference_calls": int(teacher_summary.get("external_inference_calls") or 0),
+            "runtime_external_inference_calls": 0,
+            "public_training_rows": 0,
+        }
+    )
+    result["summary"] = summary
+    result["teacher_training"] = {
+        **teacher_summary,
+        "injected_row_count": len(teacher_examples),
+        "runtime_external_inference_calls": 0,
+        "public_training_rows": 0,
+    }
+    return result
+
+
 def train_budget_mlx(
     config: dict[str, Any],
     budget: dict[str, Any],
@@ -514,13 +585,25 @@ def train_budget_mlx(
     full_state_cfg = full_state_pretraining_config(working_config)
     target_mode = str(get_path(working_config, ["body_structure_decoder", "target_mode"], "body_tokens"))
     train_rows_all = load_private_rows(resolve(str(data_cfg.get("train_jsonl") or "")), data_cfg)
-    train_rows = deterministic_sample(train_rows_all, int(data_cfg.get("max_train_rows") or 512), seed)
+    teacher_training = load_governed_teacher_code_lm_training_rows(working_config)
+    teacher_rows = list(teacher_training.get("rows") or [])
+    max_train_rows = int(data_cfg.get("max_train_rows") or 512)
+    train_rows = [
+        *deterministic_sample(train_rows_all, max(0, max_train_rows - len(teacher_rows)), seed),
+        *teacher_rows,
+    ]
     staged = stage_full_state_examples(
         working_config,
         budget,
         budget_id=budget_id,
         checkpoint_dir=checkpoint_dir,
         seed=seed,
+    )
+    staged = inject_governed_teacher_examples(
+        staged,
+        teacher_rows=teacher_rows,
+        teacher_summary=dict_or_empty(teacher_training.get("summary")),
+        text_views=text_views,
     )
     source_vocab_extension_texts = list(staged.get("source_vocab_extension_texts") or [])
     target_vocab_extension_bodies = list(staged.get("target_vocab_extension_bodies") or [])
@@ -1222,6 +1305,7 @@ def train_budget_mlx(
         "source_vocab_extension": full_state_source_vocab_extension_summary(source_vocab_extension_texts),
         "target_vocab_extension": full_state_target_vocab_extension_summary(target_vocab_extension_bodies),
         "row_summary": dict_or_empty(rows.get("summary")),
+        "teacher_training": dict_or_empty(staged.get("teacher_training")),
         "data_exposure": data_exposure,
         "loss_weighting": loss_weight_summary,
         "semantic_plan_auxiliary": {

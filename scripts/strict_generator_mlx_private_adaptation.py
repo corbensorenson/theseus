@@ -40,6 +40,7 @@ from neural_seed_code_proposer_comparator import (  # noqa: E402
     stable_hash,
 )
 from neural_seed_token_decoder_support import PLAN_BODY_START_TOKEN, encode_target_rows, semantic_plan_from_body, target_tokens  # noqa: E402
+from neural_seed_teacher_distillation_rows import load_governed_teacher_code_lm_training_rows  # noqa: E402
 from candidate_integrity import recompute_candidate_integrity  # noqa: E402
 from strict_generator_mlx_decode_eval import (  # noqa: E402
     checkpoint_source_text_style,
@@ -469,6 +470,30 @@ def load_adaptation_private_train_rows(
         "candidate_generation_credit": 0,
     }
     return rows, audit
+
+
+def reserve_governed_teacher_train_rows(
+    *,
+    selected_rows: list[dict[str, Any]],
+    eligible_rows: list[dict[str, Any]],
+    injected_teacher_rows: list[dict[str, Any]],
+    max_train_rows: int,
+    max_eval_rows: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    teacher_row_ids = {row_id(row) for row in injected_teacher_rows}
+    eligible_teacher_rows = [row for row in eligible_rows if row_id(row) in teacher_row_ids]
+    selected_base_rows = [row for row in selected_rows if row_id(row) not in teacher_row_ids]
+    eval_count = min(max_eval_rows, max(1, len(selected_base_rows) // 5))
+    eval_rows = selected_base_rows[:eval_count]
+    train_rows = [
+        *eligible_teacher_rows,
+        *selected_base_rows[eval_count : eval_count + max(0, max_train_rows - len(eligible_teacher_rows))],
+    ]
+    return train_rows, eval_rows, {
+        "eligible_row_count_after_holdout_and_tier_filters": len(eligible_teacher_rows),
+        "reserved_train_position_count": len(eligible_teacher_rows),
+        "teacher_rows_in_eval_count": sum(1 for row in eval_rows if row_id(row) in teacher_row_ids),
+    }
 
 
 def source_condition_operation_tags_for_row(
@@ -1865,6 +1890,17 @@ def run_adaptation(
         data_cfg,
         supplemental_private_train_jsonl=supplemental_private_train_jsonl,
     )
+    teacher_training = load_governed_teacher_code_lm_training_rows(config)
+    teacher_rows = list(teacher_training.get("rows") or [])
+    existing_row_ids = {row_id(row) for row in all_rows}
+    injected_teacher_rows = [row for row in teacher_rows if row_id(row) not in existing_row_ids]
+    all_rows.extend(injected_teacher_rows)
+    supplemental_train_audit["governed_teacher_training"] = {
+        **dict_or_empty(teacher_training.get("summary")),
+        "injected_row_count": len(injected_teacher_rows),
+        "runtime_external_inference_calls": 0,
+        "public_training_rows": 0,
+    }
     all_rows, holdout_exclusion = exclude_family_disjoint_holdout_rows(
         config,
         all_rows,
@@ -1901,8 +1937,14 @@ def run_adaptation(
         source_vocab=source_vocab,
     )
     tier_selection["source_condition_operation_coverage_sampling"] = source_condition_coverage_sampling
-    eval_rows = selected[: min(max_eval_rows, max(1, len(selected) // 5))]
-    train_rows = selected[len(eval_rows) : len(eval_rows) + max_train_rows]
+    train_rows, eval_rows, teacher_reservation = reserve_governed_teacher_train_rows(
+        selected_rows=selected,
+        eligible_rows=all_rows,
+        injected_teacher_rows=injected_teacher_rows,
+        max_train_rows=max_train_rows,
+        max_eval_rows=max_eval_rows,
+    )
+    supplemental_train_audit["governed_teacher_training"].update(teacher_reservation)
     if not train_rows or not eval_rows:
         return {
             "policy": "project_theseus_strict_generator_mlx_private_adaptation_v1",
