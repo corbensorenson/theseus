@@ -27,6 +27,10 @@ _PIECE_INVENTORY_CACHE: OrderedDict[
     tuple[dict[str, int], dict[int, list[tuple[bytes, str]]]],
 ] = OrderedDict()
 _PIECE_INVENTORY_CACHE_LIMIT = 32
+_ENCODED_PIECE_CACHE: OrderedDict[
+    tuple[int, int, bytes], tuple[dict[str, int], tuple[str, ...]],
+] = OrderedDict()
+_ENCODED_PIECE_CACHE_LIMIT = 65_536
 
 
 def reserve_byte_fallback_tokens(
@@ -266,6 +270,11 @@ def byte_piece_token(payload: bytes) -> str:
 
 
 def encode_byte_pieces(payload: bytes, vocab: dict[str, int]) -> list[str]:
+    cache_key = (id(vocab), len(vocab), bytes(payload))
+    cached = _ENCODED_PIECE_CACHE.get(cache_key)
+    if cached is not None and cached[0] is vocab:
+        _ENCODED_PIECE_CACHE.move_to_end(cache_key)
+        return list(cached[1])
     by_first_byte = byte_piece_inventory(vocab)
     length = len(payload)
     best: list[list[str] | None] = [None] * (length + 1)
@@ -277,9 +286,16 @@ def encode_byte_pieces(payload: bytes, vocab: dict[str, int]) -> list[str]:
                 candidates.append([token, *list(best[index + len(raw)] or [])])
         if candidates:
             best[index] = min(candidates, key=lambda row: (len(row), row))
-    if best[0] is None:
-        return [BYTE_TOKENS[value] for value in payload]
-    return list(best[0])
+    encoded = (
+        [BYTE_TOKENS[value] for value in payload]
+        if best[0] is None
+        else list(best[0])
+    )
+    _ENCODED_PIECE_CACHE[cache_key] = (vocab, tuple(encoded))
+    _ENCODED_PIECE_CACHE.move_to_end(cache_key)
+    while len(_ENCODED_PIECE_CACHE) > _ENCODED_PIECE_CACHE_LIMIT:
+        _ENCODED_PIECE_CACHE.popitem(last=False)
+    return encoded
 
 
 def byte_piece_inventory(vocab: dict[str, int]) -> dict[int, list[tuple[bytes, str]]]:

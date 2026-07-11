@@ -26,11 +26,11 @@ if str(SCRIPTS) not in sys.path:
 from standard_causal_transformer_model import CausalTransformerConfig, build_model  # noqa: E402
 from standard_causal_transformer_survival import (  # noqa: E402
     SOURCE_TARGET_SEPARATOR_ID,
-    SPECIAL_COUNT,
     build_schedule,
     encode_sft_examples,
     eval_example,
     evaluate_loss,
+    model_vocab_size,
     visible_eval_source,
 )
 
@@ -68,7 +68,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
     metadata = read_json(stage_dir / "stage_metadata_v1.json")
     vocab = read_json(resolve(base_cfg["tokenization"]["source_vocab"]))
     model_cfg = CausalTransformerConfig(
-        vocab_size=SPECIAL_COUNT + len(vocab["source_vocab"]) + len(vocab["target_vocab"]),
+        vocab_size=model_vocab_size(base_cfg, vocab["source_vocab"], vocab["target_vocab"]),
         **base_cfg["model"],
     )
     model = build_model(model_cfg, mx=mx, nn=nn)

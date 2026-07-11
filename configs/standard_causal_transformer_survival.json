@@ -19,15 +19,17 @@
   "tokenization": {
     "source_vocab": "checkpoints/strict_generator_mlx_dense_body_open_vocab/strict_generator_mlx_strict_generator_dense_right_sized_v1_vocab.json",
     "target_mode": "body_tokens",
-    "max_sequence_tokens": 384,
-    "max_source_tokens": 144,
-    "max_target_tokens": 236,
+    "shared_source_target_vocabulary": false,
+    "canonical_model_signature_name": "solve",
+    "max_sequence_tokens": 512,
+    "max_source_tokens": 168,
+    "max_target_tokens": 340,
     "raw_code_window_stride": 320
   },
   "training": {
     "batch_size": 16,
     "pretrain_target_token_positions": 12000000,
-    "sft_target_token_positions": 6000000,
+    "sft_target_token_positions": 8000000,
     "private_body_sampling_weight": 16.0,
     "learning_rate": 0.0003,
     "min_learning_rate": 0.00003,
@@ -45,7 +47,7 @@
     "completion_pool_multiplier": 8,
     "length_penalty": 0.7,
     "grammar_top_k": 64,
-    "decode_max_target_tokens": 180,
+    "decode_max_target_tokens": 320,
     "timeout_seconds_per_task": 20,
     "batched_beam_advance": true
   },

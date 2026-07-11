@@ -18,6 +18,8 @@ from standard_causal_transformer_survival import (
     beam_rank_score,
     batched_beam_advance,
     completion_pool_target,
+    canonical_model_signature,
+    encode_model_source,
     assign_body_balanced_sampling_weights,
     normalized_sampling_probabilities,
     phase_target_positions,
@@ -28,6 +30,7 @@ from standard_causal_transformer_survival import (
     select_preference_train_rows,
     stage_materialization_lock,
     stage_signature,
+    target_token_offset,
     training_callable_signature,
     training_targets_complete,
     validate_config,
@@ -49,6 +52,7 @@ from standard_causal_transformer_survival_gate import (
 from generation_mode_gate import audit_comparison, read_report_ref
 from policy_optimization_gate import extract_behavior_metrics, summarize_behavior_evidence
 from code_lm_decoder_contracts import visible_arg_count_hint_for_task
+from broad_private_generalization_ladder_v1 import row_from_template, template_bank
 
 
 def test_decoder_is_causal_and_cached_decode_matches_full_decode() -> None:
@@ -117,7 +121,10 @@ def test_visible_eval_source_does_not_read_solution_or_tests() -> None:
         "decoder_contract": {"visible_arg_count_hint": 1},
     }
     visible = visible_eval_source(row)
-    assert visible == "Return the input length.\nsignature def length(data):"
+    assert visible == (
+        "Return the input length.\n"
+        "signature def solve(data=None, other=None, *extra):"
+    )
     assert "SECRET" not in visible
     changed_hidden = {
         **row,
@@ -147,6 +154,13 @@ def test_family_disjoint_split_is_deterministic_and_nonempty() -> None:
     assert len(rows_a) == len(rows_b) == len(families_a) * config["evaluation"]["rows_per_family"]
     assert {row["concept_residual_label"] for row in rows_a} == set(families_a)
     assert len({(row["prompt"], row["solution_body"]) for row in rows_a}) == len(rows_a) == 24
+    target_limit = config["tokenization"]["max_target_tokens"] - 2
+    from neural_seed_token_decoder_support import body_tokens
+
+    assert max(len(body_tokens(row["solution_body"])) for row in rows_a) <= target_limit
+    assert config["evaluation"]["decode_max_target_tokens"] >= max(
+        len(body_tokens(row["solution_body"])) for row in rows_a
+    )
 
 
 def test_config_rejects_fallback_or_external_inference() -> None:
@@ -162,6 +176,16 @@ def test_config_rejects_fallback_or_external_inference() -> None:
     thin["evaluation"]["rows_per_family"] = 4
     with pytest.raises(ValueError, match="24 distinct families"):
         validate_config(thin)
+
+    missing_vocab_mode = json.loads(json.dumps(config))
+    del missing_vocab_mode["tokenization"]["shared_source_target_vocabulary"]
+    with pytest.raises(ValueError, match="explicitly boolean"):
+        validate_config(missing_vocab_mode)
+
+    task_named = json.loads(json.dumps(config))
+    task_named["tokenization"]["canonical_model_signature_name"] = "task_name"
+    with pytest.raises(ValueError, match="must remain solve"):
+        validate_config(task_named)
 
 
 def test_blind_audit_inspects_the_new_inference_surface(tmp_path: Path) -> None:
@@ -233,7 +257,7 @@ def test_semantic_stage_source_rejects_placeholders_and_strips_metadata() -> Non
     assert semantic.startswith("Return unique input values")
     assert "visible_intent_tags" not in semantic
     assert "prompt_operation_hints" not in semantic
-    assert semantic.endswith("signature def dedupe(data):")
+    assert semantic.endswith("signature def solve(data):")
     assert semantic_audit == {"placeholder": False, "too_short": False, "metadata_tagged": True}
 
 
@@ -283,6 +307,48 @@ def test_explicit_callable_signature_is_preserved_without_hidden_derivation() ->
     assert receipt == {"source": "explicit_callable_signature", "arity": 2}
 
 
+def test_model_signature_canonicalizes_name_but_preserves_declared_arguments() -> None:
+    config = {"tokenization": {"canonical_model_signature_name": "solve"}}
+    assert canonical_model_signature("def task_123(left, right, *extra):", config) == (
+        "def solve(left, right, *extra):"
+    )
+
+
+def test_shared_source_encoding_uses_target_vocabulary_id_space() -> None:
+    config = {"tokenization": {"shared_source_target_vocabulary": True}}
+    source_vocab = {"Return": 0}
+    target_vocab = json.loads(
+        (ROOT / "checkpoints" / "strict_generator_mlx_dense_body_open_vocab" /
+         "strict_generator_mlx_strict_generator_dense_right_sized_v1_vocab.json").read_text()
+    )["target_vocab"]
+    ids, receipt = encode_model_source("Return data", source_vocab, target_vocab, config)
+    assert ids
+    assert receipt["unknown_token_count"] == 0
+    assert receipt["model_stream"] == "shared_source_target"
+    assert target_token_offset(config, source_vocab) == 3
+
+
+def test_broad_private_rows_declare_prompt_visible_signature_from_template_contract() -> None:
+    by_category = {row.category: row for row in template_bank()}
+    one_arg = row_from_template(
+        by_category["bpg_gcd_positive"], split="eval", task_index=1, variant=1
+    )
+    two_arg = row_from_template(
+        by_category["bpg_lcs_length"], split="eval", task_index=2, variant=2
+    )
+    four_arg = row_from_template(
+        by_category["bpg_shortest_hops"], split="eval", task_index=3, variant=3
+    )
+    assert one_arg["callable_signature"].endswith("(data):")
+    assert two_arg["callable_signature"].endswith("(data, other):")
+    assert four_arg["callable_signature"].endswith("(data, other, *extra):")
+    assert all(
+        row["provenance"]["callable_signature_source"]
+        == "template_declared_argument_contract"
+        for row in (one_arg, two_arg, four_arg)
+    )
+
+
 def test_decoder_interface_hint_ignores_private_tests_and_solution() -> None:
     row = {
         "category": "",
@@ -313,12 +379,12 @@ def test_family_disjoint_eval_freezes_normalized_callable_signature() -> None:
     config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
     rows, _families = select_family_disjoint_eval(config)
     lcs = next(row for row in rows if row["concept_residual_label"] == "bpg_lcs_length")
-    assert lcs["callable_signature"].endswith("(data=None, other=None, *extra):")
+    assert lcs["callable_signature"].endswith("(data, other):")
     assert lcs["callable_signature_receipt"] == {
-        "source": "generic_prompt_only_interface",
-        "arity": "variable",
+        "source": "explicit_callable_signature",
+        "arity": 2,
     }
-    assert visible_eval_source(lcs).endswith("signature " + lcs["callable_signature"])
+    assert visible_eval_source(lcs).endswith("signature def solve(data, other):")
 
 
 def test_private_prompt_variants_share_fixed_body_sampling_mass() -> None:
@@ -368,6 +434,18 @@ def test_stage_signature_ignores_decode_only_knobs_but_tracks_staging_contract()
     staging_change = json.loads(json.dumps(config))
     staging_change["tokenization"]["max_source_tokens"] += 1
     assert stage_signature(staging_change) != baseline
+
+
+def test_stage_signature_binds_each_admitted_training_source(tmp_path: Path) -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    source = tmp_path / "private.jsonl"
+    source.write_text('{"prompt":"p","solution_body":"return data"}\n')
+    admission = tmp_path / "admission.json"
+    admission.write_text(json.dumps({"train_admitted_sources": [{"path": str(source)}]}))
+    config["sources"]["training_admission"] = str(admission)
+    baseline = stage_signature(config)
+    source.write_text('{"prompt":"p","solution_body":"return data + 1"}\n')
+    assert stage_signature(config) != baseline
 
 
 def test_stage_materialization_lock_blocks_duplicate_writer_and_recovers_stale_owner(

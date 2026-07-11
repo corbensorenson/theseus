@@ -67,13 +67,16 @@ DEFAULT_MD = ROOT / "reports" / "blind_information_flow_audit.md"
 
 AUDITED_INFERENCE_FUNCTIONS = {
     "callable_signature",
+    "canonical_model_signature",
     "decode_beams",
+    "encode_model_source",
     "grammar_choices",
     "row_to_text",
     "prompt_contract_score",
     "prompt_signature_score",
     "rank_actions",
     "render_visible_signature",
+    "model_prompt",
     "sanitize_task",
     "signature_names",
     "training_callable_signature",

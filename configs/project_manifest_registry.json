@@ -204,11 +204,11 @@
       "content_bindings": {
         "checkpoint": {
           "path": "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz",
-          "sha256": "da55c7701eacccd08695e72563ffeffb4fefcf1d4babb9aa844fcf5885bc3671"
+          "sha256": "668ed50ff58148f41570c1df244b34855a034dc5670cf1b7b6414bcac13c8013"
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-          "sha256": "5e55f8bc8dbf832761046b58544096050e5f0f4ec14cbd8a0386dd3c7d984707"
+          "sha256": "a702f3b055afcba78041438574507c742185b5e5dab09a96a991da26146fb246"
         },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
@@ -220,7 +220,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "ea89b5bd7440448d02afd29c7fa8887796f3a8084f38cfdf0466aaab960fc989"
+          "sha256": "babf6a91be4a9e6f8c8d082ed39e7c9900da0f20873e737fac28e696fddf00ed"
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
@@ -248,31 +248,31 @@
         },
         "canonical_report": {
           "path": "reports/standard_causal_transformer_survival.json",
-          "sha256": "36e134128481a2dba8733c847dd84ae6ac36a251bac5619edb3c91e8acdb8c11"
+          "sha256": "77a4a0a143cddcffe3a92786fc713cea117b5bb960a20b075fd2cdee6f4b9dbb"
         },
         "candidate_manifest": {
           "path": "reports/standard_causal_transformer_survival_candidates.jsonl",
-          "sha256": "01857901c39b853bd7e93f74b69c7ed568bf8b3874ec057ce20dffbbfbbe5199"
+          "sha256": "dc5770f92b7230c4d597aff958e65e09b0ec640cc5248ad772200ee4fe87e97c"
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "dfb5de51eb01396cf6f625dd3a8e05a379cda682747df8fae9d7d5e36a27ce27"
+          "sha256": "d9998e1dad5f0d29b30d82bdbed56760ad6f7a910d1eabd2ff286a06db2edade"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "eac7a53125f18ef639d6756b739390bcc23876f33c7296e77256d10157f0bfb9"
+          "sha256": "1788695fa8739918de254fafc449c5713aaa70fa27596d7209e24a610a993372"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "cfacdb7ca545f7a67d2a92d2489054efb1a18644b2ecbcd47e27cc31be04691f"
+          "sha256": "58d603192e65448e1cbf9f43454ad1ddd52cfdddd2f0706d71ec8dfed384771a"
         },
         "policy_report": {
           "path": "reports/policy_optimization_program.json",
-          "sha256": "52edf53b36ac22a0953d6ec74434755a08af0266ec3a394de64f41dd4ad19792"
+          "sha256": "68855154457997e1a88c9791b6637591c214c7febc6cf827480d192d99e433c6"
         },
         "generation_mode_report": {
           "path": "reports/generation_mode_registry.json",
-          "sha256": "4e02ebc29ae28abbcab3f3bcb6c0c8db94b2a949e5b7ef75d8433515cca8444a"
+          "sha256": "444ab4a46167eb1a7ea0a60406f6325a7e028e4b05a7e21654eba42f18c67fbd"
         }
       },
       "evidence_refs": [
@@ -300,7 +300,7 @@
         ]
       },
       "claim_boundary": {
-        "supported_claim": "The clean prompt/signature-only 6.6M-parameter MLX decoder produces direct full-body candidates but scores 0/24 on the frozen family-disjoint private verifier, so the successor is contained and not canonical or routable.",
+        "supported_claim": "The source-bound prompt/signature-only 6.6M-parameter MLX decoder produces 88 syntax-valid transformer-family candidates across 23 tasks after a corrected two-million-position continuation. Independent integrity verifies 38 and rejects 50 as inert stubs; model-only behavior scores 0/24 on the frozen family-disjoint private verifier, so the successor is contained and not canonical or routable.",
         "non_claims": [
           "not Phase 10 completion",
           "not broad public transfer",
@@ -600,9 +600,13 @@
           "freshness_mode": "source_bound",
           "source_paths": [
             "configs/standard_causal_transformer_survival.json",
+            "data/training_sources/training_data_admission_v1.json",
+            "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
             "scripts/standard_causal_transformer_survival.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
+            "scripts/neural_seed_open_vocab.py",
+            "scripts/neural_seed_token_decoder_support.py",
             "scripts/code_lm_private_verifier.py",
             "scripts/standard_causal_transformer_survival_gate.py"
           ],
@@ -619,6 +623,8 @@
             "scripts/standard_causal_transformer_survival.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
+            "scripts/neural_seed_open_vocab.py",
+            "scripts/neural_seed_token_decoder_support.py",
             "scripts/candidate_integrity.py"
           ],
           "acceptance": {
@@ -635,6 +641,8 @@
             "scripts/standard_causal_transformer_survival.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
+            "scripts/neural_seed_open_vocab.py",
+            "scripts/neural_seed_token_decoder_support.py",
             "scripts/blind_information_flow_audit.py"
           ],
           "acceptance": {
@@ -4794,6 +4802,10 @@
         "scripts/standard_causal_transformer_survival.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_preference.py",
+        "scripts/neural_seed_open_vocab.py",
+        "scripts/neural_seed_token_decoder_support.py",
+        "data/training_sources/training_data_admission_v1.json",
+        "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
         "scripts/standard_causal_transformer_survival_gate.py",
         "scripts/code_lm_private_verifier.py",
         "scripts/policy_optimization_gate.py",
@@ -4834,7 +4846,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. A clean retrain uses only explicit signatures or a target-independent generic interface, records zero hidden-derived signatures, and scores 0/24 despite 94 syntax-valid candidates and zero integrity mismatches. Batched beam is a 3.690720x runtime-only optimization, not a default route. The successor is contained and semantic prompt-to-body quality remains the Phase 10 wall.",
+      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. The corrected split-vocabulary route binds all admitted source content, encodes all 24 heldout targets, extends decode context to cover them, and uses only explicit signatures or a target-independent generic interface. A two-million-position SFT continuation improves corrected heldout loss 2.212320 -> 1.667694 and emits 88 syntax-valid transformer-family candidates across 23 tasks, but independent integrity verifies only 38 and rejects 50 as inert stubs; model-only behavior remains 0/24 with zero integrity mismatches. Wider beam emitted 376 syntax-valid candidates and the shared-vocabulary arm also scored 0/24, so search width, target truncation, signature recovery, and tokenizer sharing are ruled out as the immediate wall. The successor remains contained; prompt-conditioned semantic learning and inert-body collapse are the Phase 10 wall.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",
@@ -4898,6 +4910,10 @@
             "scripts/standard_causal_transformer_survival.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
+            "scripts/neural_seed_open_vocab.py",
+            "scripts/neural_seed_token_decoder_support.py",
+            "data/training_sources/training_data_admission_v1.json",
+            "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
             "scripts/standard_causal_transformer_survival_gate.py",
             "scripts/code_lm_private_verifier.py",
             "scripts/policy_optimization_gate.py",

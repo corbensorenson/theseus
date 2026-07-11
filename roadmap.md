@@ -451,8 +451,8 @@ run and it meets the Quality Bars below.
 (Owns Track 0 and teacher-side learning authority.)
 
 Implementation status (2026-07-10): `implemented`. The canonical admission path
-now writes and replays `64,196` content-bound candidate receipts, admits
-`63,892`, rejects `304` heldout rows, and exposes zero detected exact/semantic
+now writes and replays `92,032` content-bound candidate receipts, admits
+`91,725`, rejects `307` rows, and exposes zero detected exact/semantic
 public overlap, fallback markers, or raw-user rows. All nine adversarial cases,
 five frozen continual-policy simulations, and the 11-kind positive/negative
 descendant-deletion fixture pass. Curriculum and survival-lane materialization
@@ -534,14 +534,19 @@ deletion closure is graph evidence, not physical unlearning.
   current survival model.
 - The standard 6.6M-parameter MLX decoder follow-up exposed and removed a
   hidden-information leak: its earlier `1/24` result inferred callable arity
-  from private tests. A clean prompt/signature-only retrain uses a generic
-  target-independent interface when no explicit signature exists, records zero
-  hidden-derived signatures, emits `94` syntax-valid candidates with zero
-  integrity mismatches, and scores `0/24`. It is contained as an experimental
-  successor rather than promoted. Batched beam is `3.690720x` faster with exact
-  candidate parity but remains runtime-only because useful verified output is
-  zero. This resets the honest proposer floor to zero and makes semantic
-  prompt-to-body learning the active wall.
+  from private tests. The corrected split-vocabulary route binds all admitted
+  source content, uses a target-independent interface when no explicit
+  signature exists, and encodes all `24/24` heldout targets with zero overflow.
+  A bounded `2,001,802`-position continuation improves corrected heldout loss
+  `2.212320 -> 1.667694`, emits `88` syntax-valid transformer-family candidates
+  over `23` tasks with zero integrity mismatches, and still scores `0/24`.
+  Independent integrity verifies `38` and rejects `50` as inert stubs. Wider beam emits `376`
+  syntax-valid candidates at `0/24`; a shared-vocabulary arm also remains
+  `0/24` while weakening prompt conditioning. The route is contained as an
+  experimental successor. Search width, truncation, signature recovery,
+  tokenizer sharing, and more same-distribution SFT are now falsified as the
+  immediate repair; prompt-conditioned semantic learning and inert-body collapse
+  are the active wall.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

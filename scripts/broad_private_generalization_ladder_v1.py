@@ -214,6 +214,7 @@ def row_from_template(template: Template, *, split: str, task_index: int, varian
         "category": template.category,
         "prompt": template.prompt,
         "entry_point": entry,
+        "callable_signature": declared_callable_signature(template, entry),
         "solution_expr": "",
         "solution_body": template.body,
         "tests": normalize_test_source(template.tests(entry, variant)),
@@ -242,8 +243,20 @@ def row_from_template(template: Template, *, split: str, task_index: int, varian
             "public_prompts_used": False,
             "public_score_labels_used": False,
             "semantics": "private synthetic broad generalization pressure only",
+            "callable_signature_source": "template_declared_argument_contract",
         },
     }
+
+
+def declared_callable_signature(template: Template, entry: str) -> str:
+    """Render the task's declared interface without consulting tests or its body."""
+
+    count = max(1, int(template.visible_arg_count_hint))
+    if count == 1:
+        return f"def {entry}(data):"
+    if count == 2:
+        return f"def {entry}(data, other):"
+    return f"def {entry}(data, other, *extra):"
 
 
 def decoder_contract(template: Template) -> dict[str, Any]:

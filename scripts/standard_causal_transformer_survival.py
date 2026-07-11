@@ -63,6 +63,7 @@ PAD_ID = 0
 GLOBAL_BOS_ID = 1
 SOURCE_TARGET_SEPARATOR_ID = 2
 SPECIAL_COUNT = 3
+CANONICAL_MODEL_SIGNATURE_NAME = "solve"
 
 
 @dataclass
@@ -152,7 +153,7 @@ def run(
     random.seed(seed)
     mx.random.seed(seed)
     stage = materialize_stage(config, stage_dir=stage_dir, force=force_restage)
-    vocab_size = SPECIAL_COUNT + len(stage.source_vocab) + len(stage.target_vocab)
+    vocab_size = model_vocab_size(config, stage.source_vocab, stage.target_vocab)
     model_cfg = CausalTransformerConfig(vocab_size=vocab_size, **config["model"])
     model = build_model(model_cfg, mx=mx, nn=nn)
     params = parameter_count(model, mlx_utils)
@@ -190,8 +191,25 @@ def run(
     elif resume:
         prior = read_json(report_path)
         prior_training = prior.get("training") if isinstance(prior.get("training"), dict) else {}
-        conditioning = prior.get("conditioning") if isinstance(prior.get("conditioning"), dict) else {}
-        eval_loss_before = float(prior_training.get("eval_loss_before") or float("inf"))
+        prior_conditioning = (
+            prior.get("conditioning") if isinstance(prior.get("conditioning"), dict) else {}
+        )
+        resume_base_checkpoint_sha256 = file_content_sha256(checkpoint)
+        eval_loss_before = evaluate_loss(
+            model,
+            stage.eval_inputs,
+            stage.eval_labels,
+            stage.eval_mask,
+            batch_size=int(training_cfg["batch_size"]),
+            mx=mx,
+            nn=nn,
+        )
+        conditioning = {
+            **prior_conditioning,
+            "resume_base_checkpoint_sha256": resume_base_checkpoint_sha256,
+            "resume_eval_loss_before": eval_loss_before,
+            "resume_stage_signature": stage.summary["stage_signature"],
+        }
         phase_reports = list(prior_training.get("phases") or [])
         consumed_steps = sum(int(row.get("optimizer_steps") or 0) for row in phase_reports)
         optimizer = optim.AdamW(
@@ -474,7 +492,7 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
     source_vocab = dict(vocab_payload["source_vocab"])
     target_vocab = dict(vocab_payload["target_vocab"])
     eval_rows, holdout_families = select_family_disjoint_eval(config)
-    eval_prompt_hashes = {sha(str(row.get("prompt") or "")) for row in eval_rows}
+    eval_prompt_hashes = {sha(model_prompt(row)) for row in eval_rows}
     eval_body_hashes = {sha(str(row.get("solution_body") or "")) for row in eval_rows}
     eval_body_token_sequences = {
         tuple(body_tokens(str(row.get("solution_body") or ""))) for row in eval_rows
@@ -507,6 +525,8 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "sft_target_positions": int(sft[2].sum()),
         "sft_sampling_weight_sum": round(float(sft[3].sum()), 6),
         "family_disjoint_eval_task_count": len(eval_rows),
+        "encoded_family_disjoint_eval_task_count": int(eval_arrays[0].shape[0]),
+        "eval_target_overflow_count": len(eval_rows) - int(eval_arrays[0].shape[0]),
         "preference_train_task_count": len(preference_rows),
         "preference_train_family_count": len(
             {str(row.get("concept_residual_label") or "") for row in preference_rows}
@@ -543,6 +563,8 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
             "private_hidden_derived_signature_count"
         ],
         "private_sampling_probability": sft_audit["private_sampling_probability"],
+        "shared_source_target_vocabulary": shared_vocabulary_enabled(config),
+        "model_vocabulary_size": model_vocab_size(config, source_vocab, target_vocab),
         "eval_hidden_derived_signature_count": sum(
             int(
                 str((row.get("callable_signature_receipt") or {}).get("source") or "")
@@ -687,7 +709,8 @@ def build_pretrain_windows(
     token_cfg = config["tokenization"]
     max_seq = int(token_cfg["max_sequence_tokens"])
     stride = int(token_cfg["raw_code_window_stride"])
-    target_offset = SPECIAL_COUNT + len(read_json(resolve(token_cfg["source_vocab"]))["source_vocab"])
+    source_vocab = read_json(resolve(token_cfg["source_vocab"]))["source_vocab"]
+    target_offset = target_token_offset(config, source_vocab)
     wanted = int(config["training"]["pretrain_target_token_positions"])
     windows: list[list[int]] = []
     positions = 0
@@ -818,7 +841,7 @@ def load_sft_examples(
             if family in holdout_families:
                 observed_holdout_families.add(family)
                 continue
-            prompt = str(row.get("prompt") or "").strip()
+            prompt = model_prompt(row)
             body = str(row.get("solution_body") or "").strip()
             if not prompt or not body:
                 continue
@@ -833,7 +856,7 @@ def load_sft_examples(
             signature, signature_receipt = training_callable_signature(row)
             if not signature:
                 continue
-            source_text = f"{prompt}\nsignature {signature}"
+            source_text = f"{prompt}\nsignature {canonical_model_signature(signature, config)}"
             pair_hash = sha(f"{source_text}\n{body}")
             if pair_hash in seen_pairs:
                 continue
@@ -901,11 +924,12 @@ def encode_sft_training_examples(
     max_seq = int(token_cfg["max_sequence_tokens"])
     max_source = int(token_cfg["max_source_tokens"])
     max_target = int(token_cfg["max_target_tokens"])
-    source_offset = SPECIAL_COUNT
-    target_offset = SPECIAL_COUNT + len(source_vocab)
+    target_offset = target_token_offset(config, source_vocab)
     rows: list[tuple[list[int], int, float]] = []
     for row in examples:
-        source_ids, source_receipt = encode_tokens(source_tokens(row["source_text"]), source_vocab, stream="source")
+        source_ids, source_receipt = encode_model_source(
+            row["source_text"], source_vocab, target_vocab, config
+        )
         target_ids, target_receipt = encode_tokens(body_tokens(row["body"]), target_vocab, stream="target")
         if source_receipt.get("unknown_token_count") or target_receipt.get("unknown_token_count"):
             continue
@@ -913,7 +937,7 @@ def encode_sft_training_examples(
             continue
         source_ids = head_tail(source_ids, max_source)
         sequence = [GLOBAL_BOS_ID]
-        sequence.extend(source_offset + int(value) for value in source_ids)
+        sequence.extend(target_offset + int(value) for value in source_ids)
         sequence.append(SOURCE_TARGET_SEPARATOR_ID)
         sequence.append(target_offset + int(target_vocab["<bos>"]))
         target_start = len(sequence)
@@ -1096,7 +1120,7 @@ def eval_example(row: dict[str, Any]) -> dict[str, Any]:
 
 def visible_eval_source(row: dict[str, Any]) -> str:
     """Compile the only generator-visible eval fields without touching answers/tests."""
-    return f"{str(row.get('prompt') or '').strip()}\nsignature {callable_signature(row)}"
+    return f"{model_prompt(row)}\nsignature {canonical_model_signature(callable_signature(row))}"
 
 
 def minimal_stage_source(row: dict[str, Any]) -> str:
@@ -1145,7 +1169,8 @@ def semantic_stage_source(row: dict[str, Any]) -> tuple[str, dict[str, bool]]:
     too_short = len(source_tokens(description)) < 12
     if placeholder or too_short:
         return "", {"placeholder": placeholder, "too_short": too_short, "metadata_tagged": metadata_tagged}
-    return f"{description}\n{signature_line}", {
+    signature = signature_line.removeprefix("signature ")
+    return f"{description}\nsignature {canonical_model_signature(signature)}", {
         "placeholder": False,
         "too_short": False,
         "metadata_tagged": metadata_tagged,
@@ -1157,8 +1182,59 @@ def callable_signature(row: dict[str, Any]) -> str:
     explicit = str(row.get("callable_signature") or "").strip()
     if explicit:
         return explicit
-    count = int((row.get("decoder_contract") or {}).get("visible_arg_count_hint") or 1)
-    return signature_for_arity(entry, count)
+    return f"def {entry}(data=None, other=None, *extra):"
+
+
+def model_prompt(row: dict[str, Any]) -> str:
+    prompt = str(row.get("prompt") or "").strip()
+    entry = str(row.get("entry_point") or "").strip()
+    named_prefix = f"Write a Python function named {entry}." if entry else ""
+    if named_prefix and prompt.startswith(named_prefix):
+        return prompt[len(named_prefix) :].strip()
+    return prompt
+
+
+def canonical_model_signature(
+    signature: str, config: dict[str, Any] | None = None
+) -> str:
+    tokenization = config.get("tokenization", {}) if isinstance(config, dict) else {}
+    name = str(tokenization.get("canonical_model_signature_name") or CANONICAL_MODEL_SIGNATURE_NAME)
+    try:
+        parsed = ast.parse(signature + "\n    pass\n")
+    except SyntaxError:
+        return signature
+    function = parsed.body[0] if parsed.body else None
+    if not isinstance(function, ast.FunctionDef):
+        return signature
+    opening = signature.find("(")
+    return f"def {name}{signature[opening:]}" if opening >= 0 else signature
+
+
+def shared_vocabulary_enabled(config: dict[str, Any]) -> bool:
+    return bool(config.get("tokenization", {}).get("shared_source_target_vocabulary"))
+
+
+def target_token_offset(config: dict[str, Any], source_vocab: dict[str, int]) -> int:
+    return SPECIAL_COUNT if shared_vocabulary_enabled(config) else SPECIAL_COUNT + len(source_vocab)
+
+
+def model_vocab_size(
+    config: dict[str, Any], source_vocab: dict[str, int], target_vocab: dict[str, int]
+) -> int:
+    return target_token_offset(config, source_vocab) + len(target_vocab)
+
+
+def encode_model_source(
+    text: str,
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+    config: dict[str, Any],
+) -> tuple[list[int], dict[str, Any]]:
+    if shared_vocabulary_enabled(config):
+        ids, receipt = encode_tokens(source_tokens(text), target_vocab, stream="target")
+        return ids, {**receipt, "model_stream": "shared_source_target"}
+    ids, receipt = encode_tokens(source_tokens(text), source_vocab, stream="source")
+    return ids, {**receipt, "model_stream": "split_source_target"}
 
 
 def training_callable_signature(row: dict[str, Any]) -> tuple[str, dict[str, Any]]:
@@ -1430,15 +1506,15 @@ def generate_candidates(
     for task in eval_rows:
         task_started = time.perf_counter()
         visible = visible_eval_source(task)
-        source_ids, receipt = encode_tokens(source_tokens(visible), source_vocab, stream="source")
+        source_ids, receipt = encode_model_source(visible, source_vocab, target_vocab, config)
         if receipt.get("unknown_token_count"):
             decode_faults += 1
             continue
         source_ids = head_tail(source_ids, int(config["tokenization"]["max_source_tokens"]))
         prompt_ids = [GLOBAL_BOS_ID]
-        prompt_ids.extend(SPECIAL_COUNT + int(value) for value in source_ids)
+        target_offset = target_token_offset(config, source_vocab)
+        prompt_ids.extend(target_offset + int(value) for value in source_ids)
         prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
-        target_offset = SPECIAL_COUNT + len(source_vocab)
         prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
         beams = decode_beams(
             model,
@@ -2111,6 +2187,12 @@ def build_gates(
             stage.summary["unique_semantic_eval_task_count"]
             == stage.summary["family_disjoint_eval_task_count"],
         ),
+        (
+            "all_family_disjoint_eval_targets_encoded",
+            stage.summary["encoded_family_disjoint_eval_task_count"]
+            == stage.summary["family_disjoint_eval_task_count"]
+            and stage.summary["eval_target_overflow_count"] == 0,
+        ),
         ("prompt_overlap_zero", stage.summary["train_eval_prompt_overlap_count"] == 0),
         ("body_overlap_zero", stage.summary["train_eval_body_overlap_count"] == 0),
         (
@@ -2146,6 +2228,11 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("external inference is forbidden")
     if boundary.get("fallback_returns_allowed") is not False:
         raise ValueError("fallback returns must remain forbidden")
+    tokenization = config.get("tokenization") or {}
+    if not isinstance(tokenization.get("shared_source_target_vocabulary"), bool):
+        raise ValueError("source/target vocabulary mode must be explicitly boolean")
+    if tokenization.get("canonical_model_signature_name") != CANONICAL_MODEL_SIGNATURE_NAME:
+        raise ValueError("canonical model signature name must remain solve")
     evaluation = config.get("evaluation") or {}
     if int(evaluation.get("holdout_family_count") or 0) < 24:
         raise ValueError("family-disjoint evaluation requires at least 24 distinct families")
@@ -2187,7 +2274,10 @@ def stage_signature(config: dict[str, Any]) -> str:
         resolve(config["sources"]["training_admission"]),
         resolve(config["sources"]["private_eval"]),
         resolve(config["tokenization"]["source_vocab"]),
+        SCRIPTS / "neural_seed_open_vocab.py",
+        SCRIPTS / "neural_seed_token_decoder_support.py",
     ]
+    paths.extend(admitted_training_source_paths(config))
     stage_config = {
         "seed": config["seed"],
         "sources": config["sources"],
@@ -2214,13 +2304,42 @@ def stage_signature(config: dict[str, Any]) -> str:
         eval_example,
         semantic_stage_source,
         training_callable_signature,
+        model_prompt,
+        canonical_model_signature,
+        shared_vocabulary_enabled,
+        target_token_offset,
+        model_vocab_size,
+        encode_model_source,
+        admitted_training_source_paths,
+        file_content_sha256,
     )
     stage_logic_sha256 = sha("\n".join(inspect.getsource(function) for function in stage_functions))
     payload = json.dumps(stage_config, sort_keys=True) + f"|stage_logic:{stage_logic_sha256}|" + "|".join(
-        f"{rel(path)}:{path.stat().st_size if path.exists() else -1}:{path.stat().st_mtime_ns if path.exists() else -1}"
+        f"{rel(path)}:{file_content_sha256(path) if path.exists() and path.is_file() else 'missing'}"
         for path in paths
     )
     return sha(payload)
+
+
+def admitted_training_source_paths(config: dict[str, Any]) -> list[Path]:
+    admission_path = resolve(config["sources"]["training_admission"])
+    if not admission_path.exists():
+        return []
+    admission = read_json(admission_path)
+    paths = {
+        resolve(str(row.get("path") or ""))
+        for row in admission.get("train_admitted_sources", [])
+        if isinstance(row, dict) and str(row.get("path") or "")
+    }
+    return sorted(paths, key=rel)
+
+
+def file_content_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def sha(value: str) -> str:
