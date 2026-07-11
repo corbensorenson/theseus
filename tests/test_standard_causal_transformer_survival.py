@@ -26,6 +26,7 @@ from standard_causal_transformer_survival import (
     semantic_stage_source,
     select_family_disjoint_eval,
     select_preference_train_rows,
+    stage_materialization_lock,
     stage_signature,
     training_callable_signature,
     training_targets_complete,
@@ -47,6 +48,7 @@ from standard_causal_transformer_survival_gate import (
 )
 from generation_mode_gate import audit_comparison, read_report_ref
 from policy_optimization_gate import extract_behavior_metrics, summarize_behavior_evidence
+from code_lm_decoder_contracts import visible_arg_count_hint_for_task
 
 
 def test_decoder_is_causal_and_cached_decode_matches_full_decode() -> None:
@@ -247,25 +249,75 @@ def test_finished_beam_pool_does_not_collapse_to_fanout_size() -> None:
     assert beam_rank_score(retained[0], 0.7) >= beam_rank_score(retained[-1], 0.7)
 
 
-def test_private_callable_signature_repairs_stale_hint_from_executable_contract() -> None:
+def test_private_callable_signature_is_invariant_to_hidden_tests_body_and_decoder_metadata() -> None:
+    base = {
+        "entry_point": "pair_sum",
+        "solution_body": "return data + other",
+        "tests": "assert pair_sum(2, 3) == 5\n",
+        "decoder_contract": {"visible_arg_count_hint": 2, "return_shape": "number"},
+    }
+    changed_hidden = {
+        **base,
+        "solution_body": "return None",
+        "tests": "assert pair_sum(1) == 99\n",
+        "decoder_contract": {"visible_arg_count_hint": 1, "return_shape": "dict"},
+    }
+    expected = (
+        "def pair_sum(data=None, other=None, *extra):",
+        {"source": "generic_prompt_only_interface", "arity": "variable"},
+    )
+    assert training_callable_signature(base) == expected
+    assert training_callable_signature(changed_hidden) == expected
+
+
+def test_explicit_callable_signature_is_preserved_without_hidden_derivation() -> None:
     signature, receipt = training_callable_signature(
         {
             "entry_point": "pair_sum",
-            "solution_body": "return data + other",
-            "tests": "assert pair_sum(2, 3) == 5\n",
-            "decoder_contract": {"visible_arg_count_hint": 1},
+            "callable_signature": "def pair_sum(left, right):",
+            "tests": "assert pair_sum(1) == 99\n",
+            "solution_body": "return None",
         }
     )
-    assert signature == "def pair_sum(data, other):"
-    assert receipt == {"source": "private_tests", "arity": 2}
+    assert signature == "def pair_sum(left, right):"
+    assert receipt == {"source": "explicit_callable_signature", "arity": 2}
+
+
+def test_decoder_interface_hint_ignores_private_tests_and_solution() -> None:
+    row = {
+        "category": "",
+        "prompt": "Transform the input sequence.",
+        "tests": "assert solve(1, 2, 3, 4) == 10",
+        "solution_body": "return data + other + extra[0] + extra[1]",
+        "public_benchmark": False,
+    }
+    assert visible_arg_count_hint_for_task(row) is None
+    row["prompt"] = "Compare two strings and return the shorter one."
+    assert visible_arg_count_hint_for_task(row) == 2
+
+
+def test_blind_audit_rejects_hidden_test_derived_signature_helper(tmp_path: Path) -> None:
+    source = tmp_path / "leaky_signature.py"
+    source.write_text(
+        "def training_callable_signature(row):\n"
+        "    tests = row.get('tests')\n"
+        "    return 'def solve(data):' if tests else 'def solve():'\n"
+    )
+    audit = audit_source(source)
+    assert audit["violation_count"] == 1
+    assert audit["violations"][0]["kind"] == "forbidden_field_in_inference_path"
+    assert audit["violations"][0]["field"] == "tests"
 
 
 def test_family_disjoint_eval_freezes_normalized_callable_signature() -> None:
     config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
     rows, _families = select_family_disjoint_eval(config)
     lcs = next(row for row in rows if row["concept_residual_label"] == "bpg_lcs_length")
-    assert lcs["callable_signature"].endswith("(data, other):")
-    assert lcs["callable_signature_receipt"] == {"source": "private_tests", "arity": 2}
+    assert lcs["callable_signature"].endswith("(data=None, other=None, *extra):")
+    assert lcs["callable_signature_receipt"] == {
+        "source": "generic_prompt_only_interface",
+        "arity": "variable",
+    }
     assert visible_eval_source(lcs).endswith("signature " + lcs["callable_signature"])
 
 
@@ -316,6 +368,20 @@ def test_stage_signature_ignores_decode_only_knobs_but_tracks_staging_contract()
     staging_change = json.loads(json.dumps(config))
     staging_change["tokenization"]["max_source_tokens"] += 1
     assert stage_signature(staging_change) != baseline
+
+
+def test_stage_materialization_lock_blocks_duplicate_writer_and_recovers_stale_owner(
+    tmp_path: Path,
+) -> None:
+    with stage_materialization_lock(tmp_path, timeout_seconds=0.1):
+        with pytest.raises(TimeoutError):
+            with stage_materialization_lock(tmp_path, timeout_seconds=0.05):
+                pass
+    lock_path = tmp_path / ".materialize.lock"
+    lock_path.write_text(json.dumps({"owner_token": "dead", "pid": 99999999, "created_epoch": 0}))
+    with stage_materialization_lock(tmp_path, timeout_seconds=0.1):
+        assert lock_path.exists()
+    assert not lock_path.exists()
 
 
 def test_preference_rows_are_private_verifier_bearing_and_eval_disjoint() -> None:
@@ -510,6 +576,14 @@ def test_generation_mode_gate_recomputes_speed_and_nonregression() -> None:
     kinds = {row["kind"] for row in invalid["hard_gaps"]}
     assert "generation_mode_behavior_decision_mismatch" in kinds
     assert "generation_mode_adoption_state_mismatch" in kinds
+
+    canary["serial"]["passed_task_count"] = 0
+    canary["batched"]["passed_task_count"] = 0
+    canary["behavior_non_regression"] = True
+    canary["adoption_state"] = "BATCHED_RUNTIME_ONLY"
+    runtime_only = audit_generation_mode_canary(canary)
+    assert runtime_only["hard_gaps"] == []
+    assert runtime_only["adoption_state"] == "BATCHED_RUNTIME_ONLY"
 
 
 def test_policy_gate_treats_margin_only_preference_regression_as_negative_evidence() -> None:

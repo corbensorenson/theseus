@@ -531,13 +531,6 @@ def visible_arg_count_hint_for_category(category: str) -> int | None:
 def visible_arg_count_hint_for_task(task: dict[str, Any]) -> int | None:
     category = str(task.get("category") or "")
     hints = [visible_arg_count_hint_for_category(category), visible_arg_count_from_prompt(task)]
-    if not bool(task.get("public_benchmark")):
-        hints.extend(
-            [
-                visible_arg_count_from_private_tests(task),
-                visible_arg_count_from_private_solution(task),
-            ]
-        )
     observed = [hint for hint in hints if hint is not None]
     return max(observed) if observed else None
 
@@ -968,5 +961,4 @@ def required_constructs_for_category(category: str) -> list[str]:
         if category in {"private_exec_process_restart", "private_exec_csv_command_outputs"}:
             constructs.append("system_api")
     return constructs
-
 

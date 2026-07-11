@@ -72,20 +72,21 @@ because recursive synthetic share is `0.824771`; this is a
 curriculum-distribution warning, not a model-collapse, forgetting, unlearning,
 or capability claim.
 
-Phase `10` now has a canonical 6.6M-parameter MLX decoder-only causal
-transformer trained on `12,001,413` licensed pretraining positions and
-`6,000,982` private SFT positions. On the frozen 24-family private heldout it
-emits `94` syntax-valid direct full-body candidates, `71` independently pass
-integrity, and one task passes model-only. Exact cached-beam batching preserves
-candidate hashes/order, behavior, and integrity while reducing generation
-runtime from `113638ms` to `34185ms` (`3.324207x`) and improving accepted
-verified output from `0.008800/s` to `0.029253/s`. The first real DPO canary is
-negative: one exact pair moves preference margin `+1.803796` but regresses
-heldout behavior `1/24 -> 0/24`; the reward-removed control stays `1/24` with
-zero margin movement. Both shadow checkpoints are quarantined. The remaining
-wall is semantic candidate quality and verifier-positive pair density, not
-decode speed or preference plumbing. This is private proposer evidence, not
-public transfer or runtime-serving readiness.
+Phase `10` has a clean 6.6M-parameter MLX decoder-only causal transformer
+trained on `12,001,413` licensed pretraining positions and `6,000,191` private
+SFT positions. The previous `1/24` floor is invalid: private tests had influenced
+an inferred callable signature. The clean retrain uses only an explicit
+signature or a target-independent generic interface, records zero hidden-derived
+private/eval signatures, and scores `0/24` on the frozen family-disjoint heldout
+despite `94` syntax-valid direct full-body candidates and `83` independently
+verified candidates with zero integrity mismatches. The successor is therefore
+contained, non-canonical, and non-routable. Exact cached-beam batching preserves
+candidate hashes/order and is `3.690720x` faster, but is classified as
+runtime-only because useful verified output remains zero. The DPO canary found
+one exact private pair and moved its preference margin `+6.625639`, but both the
+base and heldout variants score zero; it is not adopted. The remaining wall is
+semantic prompt-to-body quality and verifier-positive pair density. This is
+negative private proposer evidence, not public transfer or runtime readiness.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.

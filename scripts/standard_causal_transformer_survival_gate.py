@@ -82,6 +82,8 @@ def build_gate(
         "train_eval_prompt_overlap_count",
         "train_eval_body_overlap_count",
         "licensed_pretrain_eval_body_overlap_source_surviving_count",
+        "private_hidden_derived_signature_count",
+        "eval_hidden_derived_signature_count",
         "public_training_rows",
         "external_inference_calls",
     ):
@@ -329,13 +331,20 @@ def audit_generation_mode_canary(value: Any) -> dict[str, Any]:
     serial_runtime = int(serial.get("generation_runtime_ms") or 0)
     batched_runtime = int(batched.get("generation_runtime_ms") or 0)
     recomputed_speedup = serial_runtime / max(1, batched_runtime)
-    qualified = (
+    runtime_qualified = (
         canary.get("candidate_manifest_equal") is True
         and recomputed_behavior
         and recomputed_integrity
         and recomputed_speedup > 1.0
     )
-    expected_adoption = "BATCHED_DEFAULT" if qualified else "NOT_ADOPTED"
+    behavior_qualified = runtime_qualified and int(batched.get("passed_task_count") or 0) > 0
+    expected_adoption = (
+        "BATCHED_DEFAULT"
+        if behavior_qualified
+        else "BATCHED_RUNTIME_ONLY"
+        if runtime_qualified
+        else "NOT_ADOPTED"
+    )
     if bool(canary.get("behavior_non_regression")) != recomputed_behavior:
         hard_gaps.append(gap("generation_mode_behavior_decision_mismatch", {}))
     if bool(canary.get("integrity_non_regression")) != recomputed_integrity:

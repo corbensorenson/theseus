@@ -532,6 +532,16 @@ deletion closure is graph evidence, not physical unlearning.
   replay exceeds the five-minute child budget. These results retain open-vocabulary
   encoding as correctness infrastructure but falsify both representations as the
   current survival model.
+- The standard 6.6M-parameter MLX decoder follow-up exposed and removed a
+  hidden-information leak: its earlier `1/24` result inferred callable arity
+  from private tests. A clean prompt/signature-only retrain uses a generic
+  target-independent interface when no explicit signature exists, records zero
+  hidden-derived signatures, emits `94` syntax-valid candidates with zero
+  integrity mismatches, and scores `0/24`. It is contained as an experimental
+  successor rather than promoted. Batched beam is `3.690720x` faster with exact
+  candidate parity but remains runtime-only because useful verified output is
+  zero. This resets the honest proposer floor to zero and makes semantic
+  prompt-to-body learning the active wall.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

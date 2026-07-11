@@ -1685,20 +1685,49 @@ def implementation_replacement_gaps(
             add_gap("replacement_successor_lineage_mismatch", transaction)
         if predecessor and str(predecessor.get("superseded_by_implementation_id") or "") != successor_id:
             add_gap("replacement_predecessor_lineage_mismatch", transaction)
-        if str(transaction.get("decision") or "") != "adopt_canonical":
-            add_gap("replacement_decision_not_adopted", transaction, decision=transaction.get("decision"))
-        if str(transaction.get("state") or "") != "qualified":
-            add_gap("replacement_transaction_not_qualified", transaction, state=transaction.get("state"))
-        if abstraction and str(abstraction.get("canonical_implementation_id") or "") != successor_id:
-            add_gap("replacement_successor_not_canonical", transaction)
-        if successor and str(successor.get("status") or "") != "live":
-            add_gap("replacement_successor_not_live", transaction, status=successor.get("status"))
-        if predecessor and str(predecessor.get("status") or "") not in {"retained", "deprecated", "retired"}:
-            add_gap("replacement_predecessor_still_live", transaction, status=predecessor.get("status"))
+        decision = str(transaction.get("decision") or "")
+        state = str(transaction.get("state") or "")
+        adopted = decision == "adopt_canonical" and state == "qualified"
+        rolled_back = decision == "rollback_contain_successor" and state == "rolled_back"
+        if not adopted and not rolled_back:
+            add_gap(
+                "replacement_transaction_state_invalid",
+                transaction,
+                decision=decision,
+                state=state,
+            )
+        if adopted:
+            if abstraction and str(abstraction.get("canonical_implementation_id") or "") != successor_id:
+                add_gap("replacement_successor_not_canonical", transaction)
+            if successor and str(successor.get("status") or "") != "live":
+                add_gap("replacement_successor_not_live", transaction, status=successor.get("status"))
+            if predecessor and str(predecessor.get("status") or "") not in {"retained", "deprecated", "retired"}:
+                add_gap("replacement_predecessor_still_live", transaction, status=predecessor.get("status"))
+        elif rolled_back:
+            if abstraction and str(abstraction.get("canonical_implementation_id") or "") != predecessor_id:
+                add_gap("replacement_rollback_predecessor_not_canonical", transaction)
+            if successor and str(successor.get("status") or "") not in {
+                "experimental",
+                "retained",
+                "quarantined",
+            }:
+                add_gap(
+                    "replacement_rollback_successor_not_contained",
+                    transaction,
+                    status=successor.get("status"),
+                )
+            if predecessor and str(predecessor.get("status") or "") != "live":
+                add_gap(
+                    "replacement_rollback_predecessor_not_live",
+                    transaction,
+                    status=predecessor.get("status"),
+                )
         checks = transaction.get("checks") if isinstance(transaction.get("checks"), dict) else {}
         failed_checks = [name for name in required_checks if checks.get(name) is not True]
-        if failed_checks:
+        if adopted and failed_checks:
             add_gap("replacement_required_checks_failed", transaction, failed_checks=failed_checks)
+        if rolled_back and not failed_checks:
+            add_gap("replacement_rollback_missing_failed_check", transaction)
         no_cheat = transaction.get("no_cheat_counters") if isinstance(transaction.get("no_cheat_counters"), dict) else {}
         bad_counters = {
             key: value

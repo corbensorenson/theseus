@@ -302,6 +302,20 @@ class LiveRegistryContractTests(unittest.TestCase):
         self.assertIn("replacement_required_checks_failed", kinds)
         self.assertIn("replacement_no_cheat_counters_invalid", kinds)
 
+    def test_failed_successor_can_be_contained_without_erasing_lineage(self) -> None:
+        policy = self.replacement_policy()
+        transaction = policy["implementation_replacement_transactions"][0]
+        transaction["decision"] = "rollback_contain_successor"
+        transaction["state"] = "rolled_back"
+        transaction["checks"]["private_replay_above_zero"] = False
+        policy["abstractions"][0]["canonical_implementation_id"] = "impl.old"
+        policy["implementations"][0]["status"] = "live"
+        policy["implementations"][1]["status"] = "experimental"
+
+        gaps = registry.implementation_replacement_gaps(policy)
+
+        self.assertEqual(gaps, [])
+
     def test_forged_content_hash_blocks_replacement(self) -> None:
         policy = self.replacement_policy()
         policy["implementation_replacement_transactions"][0]["content_bindings"]["test_source"]["sha256"] = "0" * 64

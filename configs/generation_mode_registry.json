@@ -464,7 +464,7 @@
     {
       "id": "standard_causal_transformer_batched_beam_v1",
       "family": "canonical_transformer_cached_beam",
-      "status": "default",
+      "status": "shadow_candidate",
       "route": "standard_causal_transformer_survival",
       "execution_backend": "mlx_batched_cached_beam",
       "report_refs": [

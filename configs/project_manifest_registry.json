@@ -192,19 +192,19 @@
       "abstraction_id": "candidate_generation_contract",
       "predecessor_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
       "successor_implementation_id": "impl.standard_causal_transformer_survival.v1",
-      "decision": "adopt_canonical",
-      "state": "qualified",
+      "decision": "rollback_contain_successor",
+      "state": "rolled_back",
       "checks": {
         "contract_compatible": true,
         "independent_integrity_green": true,
         "blind_information_flow_green": true,
-        "private_replay_above_zero": true,
+        "private_replay_above_zero": false,
         "predecessor_retained": true
       },
       "content_bindings": {
         "checkpoint": {
           "path": "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz",
-          "sha256": "ed14d470531d4b565adbe86a43e040cc108eb47e7423283f378e3a34910fe1fa"
+          "sha256": "da55c7701eacccd08695e72563ffeffb4fefcf1d4babb9aa844fcf5885bc3671"
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
@@ -216,11 +216,11 @@
         },
         "generation_mode_config": {
           "path": "configs/generation_mode_registry.json",
-          "sha256": "a42e86a028f0590c11d70b498c015e57b7c5bfb9015002bbc13322f1b2d7521d"
+          "sha256": "d61930e7cbd0004833e4b678c94fdef98a10f1caa2ee755237535a914ca99a3a"
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "2868285ac3fbe2bf75a3ccee6072c39a207a20106589c7db7eec3375853d8d9e"
+          "sha256": "ea89b5bd7440448d02afd29c7fa8887796f3a8084f38cfdf0466aaab960fc989"
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
@@ -236,7 +236,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "d3f87bffa4f88b0075663b9e9c8bbfeb8d710d31eb4f8819cbdf19fc71ff0e53"
+          "sha256": "eec03bde1d3deea05b50379d6851484a3e632c1fd1f6e2a1af8c4951f0646306"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -248,31 +248,31 @@
         },
         "canonical_report": {
           "path": "reports/standard_causal_transformer_survival.json",
-          "sha256": "89b6dc6aa89723c4c35bc60475587b6e09ab8ca89c6121267cda238658e957bc"
+          "sha256": "36e134128481a2dba8733c847dd84ae6ac36a251bac5619edb3c91e8acdb8c11"
         },
         "candidate_manifest": {
           "path": "reports/standard_causal_transformer_survival_candidates.jsonl",
-          "sha256": "6f08c0eabfe7bdb346d6005e32bc8cb6fddb9d380714f84e5b5f886508d855ed"
+          "sha256": "01857901c39b853bd7e93f74b69c7ed568bf8b3874ec057ce20dffbbfbbe5199"
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "0bf1b6110b03ad13a3ee47f67f2aa6bec27380bcb86685dca8afce025a2fa912"
+          "sha256": "dfb5de51eb01396cf6f625dd3a8e05a379cda682747df8fae9d7d5e36a27ce27"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "fcb513c51edd36fbe01f470068386885c3440d22bf4c5180583a78ce061aef62"
+          "sha256": "eac7a53125f18ef639d6756b739390bcc23876f33c7296e77256d10157f0bfb9"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "c9b2ca64496e94820aef4e64a3a4dcc4591344c6049dda8ba428e9ecb440554d"
+          "sha256": "cfacdb7ca545f7a67d2a92d2489054efb1a18644b2ecbcd47e27cc31be04691f"
         },
         "policy_report": {
           "path": "reports/policy_optimization_program.json",
-          "sha256": "7443f4365e5d6e85cc4bc543b11680e949ff62834f0f0961b980c2792992820d"
+          "sha256": "52edf53b36ac22a0953d6ec74434755a08af0266ec3a394de64f41dd4ad19792"
         },
         "generation_mode_report": {
           "path": "reports/generation_mode_registry.json",
-          "sha256": "6b6af9d5c1834d1990a0b02816ee43b2259677c05a2be3934375893e494698c2"
+          "sha256": "4e02ebc29ae28abbcab3f3bcb6c0c8db94b2a949e5b7ef75d8433515cca8444a"
         }
       },
       "evidence_refs": [
@@ -300,7 +300,7 @@
         ]
       },
       "claim_boundary": {
-        "supported_claim": "A 6.6M-parameter MLX decoder-only causal transformer establishes a direct full-body model-only private proposer floor with one verifier-passing task out of 24 family-disjoint tasks.",
+        "supported_claim": "The clean prompt/signature-only 6.6M-parameter MLX decoder produces direct full-body candidates but scores 0/24 on the frozen family-disjoint private verifier, so the successor is contained and not canonical or routable.",
         "non_claims": [
           "not Phase 10 completion",
           "not broad public transfer",
@@ -1629,7 +1629,7 @@
         "blind information-flow audit",
         "private verifier replay"
       ],
-      "canonical_implementation_id": "impl.standard_causal_transformer_survival.v1",
+      "canonical_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
       "io_contract": {
         "inputs": [
           "registered artifacts",
@@ -4259,7 +4259,7 @@
       "route_evidence_contract_id": "route.neural_seed.source_bound",
       "abstraction_id": "candidate_generation_contract",
       "surface_id": "neural_seed_and_decoder",
-      "status": "retained",
+      "status": "live",
       "superseded_by_implementation_id": "impl.standard_causal_transformer_survival.v1",
       "implementation_type": "strict_blind_token_decoder_comparator_with_private_replay_receipt",
       "backend": "python_torch_transformer_plus_symliquid_comparator",
@@ -4776,7 +4776,7 @@
       "route_evidence_contract_id": "route.standard_causal_transformer.source_bound",
       "abstraction_id": "candidate_generation_contract",
       "surface_id": "neural_seed_and_decoder",
-      "status": "live",
+      "status": "experimental",
       "supersedes_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
       "implementation_type": "decoder_only_causal_transformer_direct_full_body_generator",
       "backend": "python_mlx_apple_rope_gqa_swiglu_tied_embeddings",
@@ -4823,7 +4823,7 @@
         "maintenance_packet_prefix": "registry_impl_standard_causal_transformer_survival_v1"
       },
       "routing_eligibility": {
-        "eligible": true,
+        "eligible": false,
         "roles": [
           "survival"
         ],
@@ -4834,7 +4834,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The registered proposer floor remains 1/24 model-only verifier-passing tasks. Exact batched cached-beam parity improves accepted verified output from 0.008800/s to 0.029253/s (3.324207x) without behavior or integrity regression. The first exact-pair DPO canary is quarantined: its preference margin rose by 1.803796 but heldout behavior regressed from 1/24 to 0/24 while the reward-removed control preserved 1/24. Semantic candidate quality and preference-pair density remain the Phase 10 wall.",
+      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. A clean retrain uses only explicit signatures or a target-independent generic interface, records zero hidden-derived signatures, and scores 0/24 despite 94 syntax-valid candidates and zero integrity mismatches. Batched beam is a 3.690720x runtime-only optimization, not a default route. The successor is contained and semantic prompt-to-body quality remains the Phase 10 wall.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",

@@ -14,6 +14,7 @@ import os
 import random
 import re
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -433,6 +434,12 @@ def run(
 
 def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -> Stage:
     stage_dir.mkdir(parents=True, exist_ok=True)
+    with stage_materialization_lock(stage_dir):
+        return _materialize_stage_unlocked(config, stage_dir=stage_dir, force=force)
+
+
+def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, force: bool) -> Stage:
+    stage_dir.mkdir(parents=True, exist_ok=True)
     arrays_path = stage_dir / "stage_arrays_v1.npz"
     metadata_path = stage_dir / "stage_metadata_v1.json"
     signature = stage_signature(config)
@@ -528,11 +535,19 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         "licensed_function_example_count": sft_audit["licensed_function_example_count"],
         "governed_private_unique_body_count": sft_audit["governed_private_unique_body_count"],
         "governed_private_prompt_pair_count": sft_audit["governed_private_prompt_pair_count"],
-        "private_signature_test_override_count": sft_audit["private_signature_test_override_count"],
-        "private_signature_body_override_count": sft_audit["private_signature_body_override_count"],
+        "private_explicit_signature_count": sft_audit["private_explicit_signature_count"],
+        "private_generic_prompt_only_signature_count": sft_audit[
+            "private_generic_prompt_only_signature_count"
+        ],
+        "private_hidden_derived_signature_count": sft_audit[
+            "private_hidden_derived_signature_count"
+        ],
         "private_sampling_probability": sft_audit["private_sampling_probability"],
-        "eval_signature_test_override_count": sum(
-            int((row.get("callable_signature_receipt") or {}).get("source") == "private_tests")
+        "eval_hidden_derived_signature_count": sum(
+            int(
+                str((row.get("callable_signature_receipt") or {}).get("source") or "")
+                not in {"explicit_callable_signature", "generic_prompt_only_interface"}
+            )
             for row in eval_rows
         ),
         "rejected_placeholder_source_count": sft_audit["rejected_placeholder_source_count"],
@@ -549,19 +564,24 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         "external_inference_calls": 0,
         "cache_status": "miss_rebuilt",
     }
-    np.savez(
-        arrays_path,
-        pretrain_inputs=pretrain[0],
-        pretrain_labels=pretrain[1],
-        pretrain_mask=pretrain[2],
-        sft_inputs=sft[0],
-        sft_labels=sft[1],
-        sft_mask=sft[2],
-        sft_sampling_weights=sft[3],
-        eval_inputs=eval_arrays[0],
-        eval_labels=eval_arrays[1],
-        eval_mask=eval_arrays[2],
-    )
+    arrays_temporary = arrays_path.with_suffix(arrays_path.suffix + f".{os.getpid()}.tmp.npz")
+    try:
+        np.savez(
+            arrays_temporary,
+            pretrain_inputs=pretrain[0],
+            pretrain_labels=pretrain[1],
+            pretrain_mask=pretrain[2],
+            sft_inputs=sft[0],
+            sft_labels=sft[1],
+            sft_mask=sft[2],
+            sft_sampling_weights=sft[3],
+            eval_inputs=eval_arrays[0],
+            eval_labels=eval_arrays[1],
+            eval_mask=eval_arrays[2],
+        )
+        arrays_temporary.replace(arrays_path)
+    finally:
+        arrays_temporary.unlink(missing_ok=True)
     write_json(
         metadata_path,
         {
@@ -588,6 +608,73 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         target_vocab=target_vocab,
         summary=summary,
     )
+
+
+@contextmanager
+def stage_materialization_lock(
+    stage_dir: Path, *, timeout_seconds: float = 600.0, stale_seconds: float = 14_400.0
+) -> Any:
+    """Serialize stage writes and recover only locks whose owner is gone or stale."""
+
+    lock_path = stage_dir / ".materialize.lock"
+    owner_token = f"{os.getpid()}:{time.time_ns()}"
+    started = time.monotonic()
+    while True:
+        try:
+            descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        except FileExistsError:
+            owner_pid, created = read_stage_lock_owner(lock_path)
+            stale = (created is not None and time.time() - created > stale_seconds) or (
+                owner_pid is not None and not process_is_alive(owner_pid)
+            )
+            if stale:
+                lock_path.unlink(missing_ok=True)
+                continue
+            if time.monotonic() - started >= timeout_seconds:
+                raise TimeoutError(
+                    f"stage materialization lock timed out: {lock_path} owner_pid={owner_pid}"
+                )
+            time.sleep(0.25)
+            continue
+        else:
+            payload = json.dumps(
+                {"owner_token": owner_token, "pid": os.getpid(), "created_epoch": time.time()}
+            ).encode("utf-8")
+            os.write(descriptor, payload)
+            os.close(descriptor)
+            break
+    try:
+        yield
+    finally:
+        try:
+            current = json.loads(lock_path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            current = {}
+        if current.get("owner_token") == owner_token:
+            lock_path.unlink(missing_ok=True)
+
+
+def read_stage_lock_owner(lock_path: Path) -> tuple[int | None, float | None]:
+    try:
+        payload = json.loads(lock_path.read_text(encoding="utf-8"))
+        return int(payload.get("pid")), float(payload.get("created_epoch"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError, TypeError, ValueError):
+        try:
+            return None, lock_path.stat().st_mtime
+        except OSError:
+            return None, None
+
+
+def process_is_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
 
 
 def build_pretrain_windows(
@@ -705,8 +792,9 @@ def load_sft_examples(
     admission = read_json(resolve(config["sources"]["training_admission"]))
     private_added = 0
     private_body_hashes: set[str] = set()
-    private_signature_test_overrides = 0
-    private_signature_body_overrides = 0
+    private_explicit_signatures = 0
+    private_generic_signatures = 0
+    private_hidden_derived_signatures = 0
     observed_holdout_families: set[str] = set()
     for source in admission.get("train_admitted_sources", []):
         path_text = str(source.get("path") or "")
@@ -743,12 +831,22 @@ def load_sft_examples(
                 rejected_body += 1
                 continue
             signature, signature_receipt = training_callable_signature(row)
+            if not signature:
+                continue
             source_text = f"{prompt}\nsignature {signature}"
             pair_hash = sha(f"{source_text}\n{body}")
             if pair_hash in seen_pairs:
                 continue
-            private_signature_test_overrides += int(signature_receipt["source"] == "private_tests")
-            private_signature_body_overrides += int(signature_receipt["source"] == "body_argument_use")
+            private_explicit_signatures += int(
+                signature_receipt["source"] == "explicit_callable_signature"
+            )
+            private_generic_signatures += int(
+                signature_receipt["source"] == "generic_prompt_only_interface"
+            )
+            private_hidden_derived_signatures += int(
+                signature_receipt["source"]
+                not in {"explicit_callable_signature", "generic_prompt_only_interface"}
+            )
             seen_pairs.add(pair_hash)
             unique_bodies.add(body_hash)
             private_body_hashes.add(body_hash)
@@ -765,8 +863,9 @@ def load_sft_examples(
         "licensed_function_example_count": licensed_count,
         "governed_private_unique_body_count": len(private_body_hashes),
         "governed_private_prompt_pair_count": private_added,
-        "private_signature_test_override_count": private_signature_test_overrides,
-        "private_signature_body_override_count": private_signature_body_overrides,
+        "private_explicit_signature_count": private_explicit_signatures,
+        "private_generic_prompt_only_signature_count": private_generic_signatures,
+        "private_hidden_derived_signature_count": private_hidden_derived_signatures,
         **sampling,
         "train_holdout_family_overlap_count": 0,
         "excluded_holdout_family_count": len(observed_holdout_families),
@@ -1063,39 +1162,14 @@ def callable_signature(row: dict[str, Any]) -> str:
 
 
 def training_callable_signature(row: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """Return only a declared signature or a target-independent generic interface."""
+
     entry = str(row.get("entry_point") or "solve")
     explicit = str(row.get("callable_signature") or "").strip()
     if explicit:
         return explicit, {"source": "explicit_callable_signature", "arity": signature_arity(explicit)}
-    arities = private_test_call_arities(row)
-    if len(arities) == 1:
-        arity = next(iter(arities))
-        return signature_for_arity(entry, arity), {"source": "private_tests", "arity": arity}
-    body = str(row.get("solution_body") or "")
-    try:
-        names = {node.id for node in ast.walk(ast.parse(body)) if isinstance(node, ast.Name)}
-    except SyntaxError:
-        names = set()
-    hint = int((row.get("decoder_contract") or {}).get("visible_arg_count_hint") or 1)
-    if "other" in names and hint < 2:
-        return signature_for_arity(entry, 2), {"source": "body_argument_use", "arity": 2}
-    return signature_for_arity(entry, hint), {"source": "visible_arg_count_hint", "arity": hint}
-
-
-def private_test_call_arities(row: dict[str, Any]) -> set[int]:
-    entry = str(row.get("entry_point") or "")
-    tests = str(row.get("tests") or "")
-    if not entry or not tests:
-        return set()
-    try:
-        tree = ast.parse(tests)
-    except SyntaxError:
-        return set()
-    return {
-        len(node.args) + len(node.keywords)
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == entry
-    }
+    signature = f"def {entry}(data=None, other=None, *extra):"
+    return signature, {"source": "generic_prompt_only_interface", "arity": "variable"}
 
 
 def signature_for_arity(entry: str, count: int) -> str:
@@ -1692,18 +1766,28 @@ def run_generation_mode_canary(
     serial_runtime = int(serial_summary["generation_runtime_ms"] or 0)
     batched_runtime = int(batched_summary["generation_runtime_ms"] or 0)
     speedup = serial_runtime / max(1, batched_runtime)
-    qualified = (
+    runtime_qualified = (
         candidate_manifest_equal
         and behavior_non_regression
         and integrity_non_regression
         and speedup > 1.0
+    )
+    behavior_qualified = (
+        runtime_qualified
+        and batched_summary["passed_task_count"] > 0
     )
     runtime_dir = checkpoint_dir.parent.parent / "runtime" / "standard_causal_transformer_survival_v1"
     serial_candidates_path = runtime_dir / "serial_beam_eval_candidates.jsonl"
     write_jsonl(serial_candidates_path, serial_candidates)
     return {
         "state": "GREEN",
-        "adoption_state": "BATCHED_DEFAULT" if qualified else "NOT_ADOPTED",
+        "adoption_state": (
+            "BATCHED_DEFAULT"
+            if behavior_qualified
+            else "BATCHED_RUNTIME_ONLY"
+            if runtime_qualified
+            else "NOT_ADOPTED"
+        ),
         "serial": serial_summary,
         "batched": batched_summary,
         "candidate_manifest_equal": candidate_manifest_equal,
@@ -2029,6 +2113,14 @@ def build_gates(
         ),
         ("prompt_overlap_zero", stage.summary["train_eval_prompt_overlap_count"] == 0),
         ("body_overlap_zero", stage.summary["train_eval_body_overlap_count"] == 0),
+        (
+            "private_signature_not_derived_from_hidden_targets",
+            stage.summary["private_hidden_derived_signature_count"] == 0,
+        ),
+        (
+            "eval_signature_not_derived_from_hidden_targets",
+            stage.summary["eval_hidden_derived_signature_count"] == 0,
+        ),
         (
             "licensed_pretrain_body_overlap_zero",
             stage.summary["licensed_pretrain_eval_body_overlap_source_surviving_count"] == 0,

@@ -76,6 +76,7 @@ AUDITED_INFERENCE_FUNCTIONS = {
     "render_visible_signature",
     "sanitize_task",
     "signature_names",
+    "training_callable_signature",
     "visible_eval_source",
 }
 

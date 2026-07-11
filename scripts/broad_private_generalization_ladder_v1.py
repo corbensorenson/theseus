@@ -266,7 +266,7 @@ def decoder_contract(template: Template) -> dict[str, Any]:
             "must_preserve_container_shape": template.return_shape in {"list", "dict", "tuple"},
         },
         "generation_plan": {
-            "policy": "signature -> semantic_family -> private_tests -> return_contract -> branch_loop_state -> body",
+            "policy": "prompt -> declared_callable_interface -> semantic_family -> branch_loop_state -> body",
             "skeleton_bias": list(template.required_constructs),
             "repair_strategy": "prefer reusable semantic-family bodies over benchmark-specific adapters",
             "public_tests_used": False,
@@ -308,7 +308,7 @@ def template_bank() -> list[Template]:
         Template("graph_search", "bpg_graph_components", "bpg_graph_components", "Return the number of connected components in an undirected graph edge list.", graph_components_body(), tests_graph_components, "number", "graph_search_algorithm", ("loop", "branch", "locals", "graph", "algorithmic_planning"), ("graph", "dfs"), 2, {"data": "node_count", "other": "edge_list"}),
         Template("graph_search", "bpg_shortest_hops", "bpg_shortest_hops", "Return shortest unweighted hop count between two nodes, or -1 when unreachable.", shortest_hops_body(), tests_shortest_hops, "number", "graph_search_algorithm", ("loop", "branch", "locals", "graph", "algorithmic_planning"), ("graph", "bfs"), 4, {"data": "node_count", "other": "edge_list", "start": "source", "goal": "target"}),
         Template("dynamic_programming", "bpg_max_non_adjacent_sum", "bpg_max_non_adjacent_sum", "Return the maximum sum of non-adjacent numeric values.", max_non_adjacent_body(), tests_max_non_adjacent, "number", "dynamic_programming", ("loop", "branch", "locals", "algorithmic_planning"), ("dynamic_programming", "state_update")),
-        Template("dynamic_programming", "bpg_lcs_length", "bpg_lcs_length", "Return longest common subsequence length for two strings.", lcs_length_body(), tests_lcs_length, "number", "dynamic_programming", ("loop", "branch", "locals", "algorithmic_planning", "index_or_string_ops"), ("dynamic_programming", "string")),
+        Template("dynamic_programming", "bpg_lcs_length", "bpg_lcs_length", "Return longest common subsequence length for two strings.", lcs_length_body(), tests_lcs_length, "number", "dynamic_programming", ("loop", "branch", "locals", "algorithmic_planning", "index_or_string_ops"), ("dynamic_programming", "string"), 2, {"data": "first_string", "other": "second_string"}),
         Template("intervals", "bpg_merge_intervals", "bpg_merge_intervals", "Merge half-open intervals and return sorted non-overlapping intervals.", merge_intervals_body(), tests_merge_intervals, "list", "grouped_interval_algorithm", ("loop", "branch", "locals", "algorithmic_planning", "type_and_return_shape"), ("intervals", "merge")),
         Template("intervals", "bpg_interval_coverage", "bpg_interval_coverage", "Return total covered half-open interval length after merging overlaps.", interval_coverage_body(), tests_interval_coverage, "number", "grouped_interval_algorithm", ("loop", "branch", "locals", "algorithmic_planning"), ("intervals", "coverage")),
         Template("state_machines", "bpg_longest_even_run", "bpg_longest_even_run", "Return length of the longest contiguous run of even integers.", longest_even_run_body(), tests_longest_even_run, "number", "state_machine", ("loop", "branch", "locals", "algorithmic_planning"), ("state_machine", "run_length")),
