@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from teacher_provider_policy import teacher_provider_decision
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -428,6 +430,7 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             "approved_teacher_provider_only",
             bool(manifest)
             and int(manifest_summary.get("teacher_provider_violation_count") or 0) == 0
+            and manifest_summary.get("teacher_receipt_provenance_verified") is True
             and not ledger_provider_violations
             and isinstance(admission_safety_checks, dict)
             and admission_safety_checks.get("approved_teacher_provider_only") is True,
@@ -436,6 +439,9 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
                 "allowed": get_path(policy, ["provider_policy", "allowed_providers"], []),
                 "model_prefixes": get_path(policy, ["provider_policy", "allowed_model_prefixes"], []),
                 "violation_count": manifest_summary.get("teacher_provider_violation_count"),
+                "receipt_provenance_verified": manifest_summary.get(
+                    "teacher_receipt_provenance_verified"
+                ),
                 "ledger_violations": ledger_provider_violations,
             },
         ),
@@ -466,6 +472,23 @@ def teacher_ledger_provider_violations(
         provider = str(row.get("teacher_provider") or "").strip().lower()
         model = str(row.get("teacher_model") or "").strip().lower()
         violation = teacher_identity_violation(policy, provider, model)
+        receipt = row.get("teacher_receipt") if isinstance(row.get("teacher_receipt"), dict) else {}
+        receipt_external_calls = int(receipt.get("external_inference_calls") or 0)
+        if not violation and (
+            receipt.get("accepted") is not True
+            or receipt.get("provider") != provider
+            or receipt.get("model") != model
+            or receipt.get("reject_reasons") not in ([], None)
+            or (
+                receipt_external_calls > 0
+                and (
+                    str(receipt.get("executable") or "").lower() not in {"codex", "codex.exe"}
+                    or receipt.get("command_model") != model
+                    or not str(receipt.get("command_sha256") or "")
+                )
+            )
+        ):
+            violation = "teacher_receipt_provenance_missing_or_invalid"
         if violation:
             violations.append(
                 {
@@ -481,27 +504,11 @@ def teacher_ledger_provider_violations(
 def teacher_identity_violation(
     policy: dict[str, Any], provider_value: str, model_value: str
 ) -> str | None:
-    provider_policy = policy.get("provider_policy") if isinstance(policy.get("provider_policy"), dict) else {}
-    provider = provider_value.strip().lower()
-    model = model_value.strip().lower()
-    allowed_providers = {
-        str(value).strip().lower() for value in provider_policy.get("allowed_providers", [])
-    }
-    allowed_prefixes = tuple(
-        str(value).strip().lower() for value in provider_policy.get("allowed_model_prefixes", [])
+    decision = teacher_provider_decision(
+        policy,
+        {"provider": provider_value, "model": model_value},
     )
-    forbidden = {
-        str(value).strip().lower() for value in provider_policy.get("forbidden_markers", [])
-    }
-    if provider_policy.get("fail_closed") is not True:
-        return "provider_policy_not_fail_closed"
-    if not provider or not model:
-        return "provider_or_model_missing"
-    if provider not in allowed_providers or not allowed_prefixes or not model.startswith(allowed_prefixes):
-        return "provider_or_model_not_approved"
-    if any(marker and marker in f"{provider} {model}" for marker in forbidden):
-        return "forbidden_provider_or_model_marker"
-    return None
+    return decision["reject_reasons"][0] if decision["reject_reasons"] else None
 
 
 def teacher_share_summary(policy: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:

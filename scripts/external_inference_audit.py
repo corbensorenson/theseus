@@ -3,8 +3,8 @@
 The project may fetch benchmark/data metadata under license gates, but it must
 not use outside intelligence for training, scoring, synthesis, routing, or
 normal autonomy. Local model libraries are allowed for local training/runtime;
-external provider inference is allowed only through the sparse teacher wrapper
-in ``scripts/teacher_oracle.py``.
+approved OpenAI inference is allowed only through the sparse teacher wrapper
+in ``scripts/teacher_oracle.py``. Anthropic and Claude are forbidden.
 """
 
 from __future__ import annotations
@@ -139,8 +139,9 @@ def main() -> int:
         "ok": not all_violations,
         "teacher_only_invariant": not all_violations,
         "rule": (
-            "External/API provider inference is allowed only through "
-            "scripts/teacher_oracle.py in sparse teacher mode. Local model "
+            "Approved OpenAI inference is allowed only through "
+            "scripts/teacher_oracle.py in sparse teacher mode; Anthropic and "
+            "Claude are forbidden. Local model "
             "libraries are allowed for local training/runtime. Network data, "
             "benchmark, and RL source discovery is not inference and remains "
             "governed by license/fetch policy."
@@ -190,7 +191,11 @@ def scan_code(files: list[Path]) -> tuple[list[dict[str, Any]], list[dict[str, A
                     "classification": "allowed_teacher_delegate",
                 }
             )
-        if rel not in TEACHER_FILES and rel not in SELF_FILES:
+        if (
+            rel not in TEACHER_FILES
+            and rel not in TEACHER_POLICY_OBSERVER_FILES
+            and rel not in SELF_FILES
+        ):
             codex_match = re.search(
                 r"(?is)(codex.{0,240}[\"']exec[\"']|[\"']exec[\"'].{0,240}codex)",
                 text,

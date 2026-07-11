@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
+from pathlib import Path
 from typing import Any
 
 
@@ -78,3 +81,82 @@ def teacher_launch_decision(
         "configured_command": configured_command,
         "reject_reasons": sorted(set(reject_reasons)),
     }
+
+
+def teacher_receipt_decision(
+    provider_policy: dict[str, Any],
+    row: dict[str, Any],
+) -> dict[str, Any]:
+    """Verify that a retained external call proves the declared OpenAI route.
+
+    Provider and model labels are not provenance. A real external call must
+    retain the exact executable argv and the model selected by that argv.
+    Zero-inference local fixtures may omit argv, but cannot claim a teacher
+    call was made.
+    """
+
+    decision = teacher_provider_decision(provider_policy, row)
+    reject_reasons = list(decision["reject_reasons"])
+    external_inference_calls = _external_inference_calls(row)
+    command_value = row.get("command")
+    command = [str(value) for value in command_value] if isinstance(command_value, list) else []
+    command_sha256 = (
+        hashlib.sha256(json.dumps(command, separators=(",", ":")).encode("utf-8")).hexdigest()
+        if command
+        else ""
+    )
+
+    if external_inference_calls > 0:
+        if decision["provider"] != "codex_cli":
+            reject_reasons.append("external_teacher_receipt_requires_codex_cli_provider")
+        if not command:
+            reject_reasons.append("external_teacher_receipt_command_missing")
+        else:
+            executable = Path(command[0]).name.lower()
+            if executable not in CODEX_EXECUTABLE_NAMES:
+                reject_reasons.append("external_teacher_receipt_executable_not_codex")
+            if len(command) < 2 or command[1] != "exec":
+                reject_reasons.append("external_teacher_receipt_not_codex_exec")
+            command_model = _command_option(command, "-m")
+            if not command_model:
+                reject_reasons.append("external_teacher_receipt_model_argument_missing")
+            elif command_model.strip().lower() != decision["model"]:
+                reject_reasons.append("external_teacher_receipt_model_mismatch")
+            combined_command = " ".join(command).lower()
+            if any(marker in combined_command for marker in HARD_FORBIDDEN_MARKERS):
+                reject_reasons.append("forbidden_teacher_executable_or_argument")
+    elif command:
+        combined_command = " ".join(command).lower()
+        if any(marker in combined_command for marker in HARD_FORBIDDEN_MARKERS):
+            reject_reasons.append("forbidden_teacher_executable_or_argument")
+
+    return {
+        **decision,
+        "accepted": not reject_reasons,
+        "external_inference_calls": external_inference_calls,
+        "command_retained": bool(command),
+        "command_sha256": command_sha256,
+        "executable": Path(command[0]).name if command else "",
+        "command_model": _command_option(command, "-m") if command else "",
+        "reject_reasons": sorted(set(reject_reasons)),
+    }
+
+
+def _external_inference_calls(row: dict[str, Any]) -> int:
+    recorded = row.get("external_inference_calls")
+    if recorded is not None:
+        try:
+            return max(0, int(recorded))
+        except (TypeError, ValueError):
+            return 0
+    if row.get("status") == "completed" and str(row.get("provider") or "") == "codex_cli":
+        return 1
+    return 0
+
+
+def _command_option(command: list[str], option: str) -> str:
+    try:
+        index = command.index(option)
+    except ValueError:
+        return ""
+    return command[index + 1] if index + 1 < len(command) else ""

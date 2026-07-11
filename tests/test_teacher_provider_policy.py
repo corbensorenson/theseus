@@ -41,6 +41,14 @@ assert PROVIDER_SPEC and PROVIDER_SPEC.loader
 PROVIDER = importlib.util.module_from_spec(PROVIDER_SPEC)
 PROVIDER_SPEC.loader.exec_module(PROVIDER)
 
+GATE_SPEC = importlib.util.spec_from_file_location(
+    "teacher_distillation_gate",
+    ROOT / "scripts" / "teacher_distillation_gate.py",
+)
+assert GATE_SPEC and GATE_SPEC.loader
+GATE = importlib.util.module_from_spec(GATE_SPEC)
+GATE_SPEC.loader.exec_module(GATE)
+
 
 class TeacherProviderPolicyTest(unittest.TestCase):
     def setUp(self) -> None:
@@ -126,6 +134,82 @@ class TeacherProviderPolicyTest(unittest.TestCase):
         self.assertEqual(1, forbidden_report["summary"]["teacher_provider_violation_count"])
         reasons = forbidden_report["manifest"]["rejected_candidates"][0]["reject_reasons"]
         self.assertIn("forbidden_teacher_provider_or_model", reasons)
+
+    def test_real_receipt_binds_codex_executable_and_model(self) -> None:
+        row = {
+            "provider": "codex_cli",
+            "model": "gpt-5.5",
+            "status": "completed",
+            "external_inference_calls": 1,
+            "command": [
+                "/Applications/Codex.app/Contents/Resources/codex",
+                "exec",
+                "-m",
+                "gpt-5.5",
+                "-s",
+                "read-only",
+                "-",
+            ],
+        }
+        result = PROVIDER.teacher_receipt_decision(self.policy, row)
+        self.assertTrue(result["accepted"])
+        self.assertEqual("codex", result["executable"])
+        self.assertEqual("gpt-5.5", result["command_model"])
+        self.assertTrue(result["command_sha256"])
+
+    def test_relabelled_non_openai_receipt_is_rejected(self) -> None:
+        row = {
+            "provider": "codex_cli",
+            "model": "gpt-5.5",
+            "status": "completed",
+            "external_inference_calls": 1,
+            "command": ["claude", "exec", "-m", "gpt-5.5", "-"],
+        }
+        result = PROVIDER.teacher_receipt_decision(self.policy, row)
+        self.assertFalse(result["accepted"])
+        self.assertIn("external_teacher_receipt_executable_not_codex", result["reject_reasons"])
+        self.assertIn("forbidden_teacher_executable_or_argument", result["reject_reasons"])
+
+    def test_real_receipt_without_command_fails_closed(self) -> None:
+        row = {
+            "provider": "codex_cli",
+            "model": "gpt-5.5",
+            "status": "completed",
+            "external_inference_calls": 1,
+        }
+        result = PROVIDER.teacher_receipt_decision(self.policy, row)
+        self.assertFalse(result["accepted"])
+        self.assertIn("external_teacher_receipt_command_missing", result["reject_reasons"])
+
+    def test_receipt_model_must_match_command(self) -> None:
+        row = {
+            "provider": "codex_cli",
+            "model": "gpt-5.5",
+            "status": "completed",
+            "external_inference_calls": 1,
+            "command": ["codex", "exec", "-m", "gpt-5.4", "-"],
+        }
+        result = PROVIDER.teacher_receipt_decision(self.policy, row)
+        self.assertFalse(result["accepted"])
+        self.assertIn("external_teacher_receipt_model_mismatch", result["reject_reasons"])
+
+    def test_gate_rejects_accepted_teacher_ledger_row_without_receipt_proof(self) -> None:
+        row = {
+            "ledger_event_id": "unproven_teacher_row",
+            "source_kind": "teacher_distillation",
+            "accepted": True,
+            "teacher_provider": "codex_cli",
+            "teacher_model": "gpt-5.5",
+        }
+        violations = GATE.teacher_ledger_provider_violations(
+            self.policy,
+            {"ledger_rows": [row]},
+        )
+        self.assertEqual(1, len(violations))
+        self.assertEqual(
+            "teacher_receipt_provenance_missing_or_invalid",
+            violations[0]["violation"],
+        )
 
     def test_external_audit_detects_claude_cli_invocation(self) -> None:
         with tempfile.NamedTemporaryFile(

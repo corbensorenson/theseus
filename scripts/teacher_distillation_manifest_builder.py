@@ -30,7 +30,10 @@ if str(SCRIPTS) not in sys.path:
 
 from code_lm_private_verifier import evaluate_private_candidates  # noqa: E402
 from neural_seed_code_proposer_comparator import render_private_function  # noqa: E402
-from teacher_provider_policy import teacher_provider_decision  # noqa: E402
+from teacher_provider_policy import (  # noqa: E402
+    teacher_provider_decision,
+    teacher_receipt_decision,
+)
 from theseus_archive_resolver import read_jsonl_follow_pointer  # noqa: E402
 
 REQUIRED_ADMISSION_KEYS = [
@@ -202,6 +205,7 @@ def build_manifest(
                 "teacher_mode": mode,
                 "teacher_provider": row.get("provider"),
                 "teacher_model": row.get("model"),
+                "teacher_receipt": decision["teacher_receipt"],
                 "prompt_sha256": row.get("prompt_sha256") or sha256_text(str(row.get("prompt") or "")),
                 "response_sha256": sha256_text(str(row.get("response_text") or row.get("stdout_tail") or "")),
                 "candidate_sha256": stable_hash(candidate),
@@ -242,7 +246,7 @@ def build_manifest(
     verifier_pass_rate_applicable = accepted_count > 0
     verifier_pass_rate = (verifier_pass_count / accepted_count) if accepted_count else 0.0
     external_inference_calls = sum(teacher_call_external_inference_calls(row) for row in teacher_calls)
-    provider_decisions = [teacher_provider_decision(policy, row) for row in teacher_calls]
+    provider_decisions = [teacher_receipt_decision(policy, row) for row in teacher_calls]
     provider_violation_count = sum(1 for decision in provider_decisions if not decision["accepted"])
     admission_safety_checks = {
         "provenance_retained": True,
@@ -286,6 +290,7 @@ def build_manifest(
         "teacher_share_metric_ready": True,
         "external_inference_calls": external_inference_calls,
         "teacher_provider_violation_count": provider_violation_count,
+        "teacher_receipt_provenance_verified": provider_violation_count == 0,
         "teacher_provider_policy": policy.get("provider_policy", {}),
         "public_training_rows_written": 0,
         "next_required_input": (
@@ -410,6 +415,8 @@ def ledger_event(row: dict[str, Any], *, accepted: bool, source_kind: str) -> di
         event["admission_checks"] = row.get("admission_checks")
     if row.get("local_verifier"):
         event["local_verifier"] = row.get("local_verifier")
+    if row.get("teacher_receipt"):
+        event["teacher_receipt"] = row.get("teacher_receipt")
     return event
 
 
@@ -420,7 +427,7 @@ def candidate_admission_decision(
     reject_reasons: list[str] = []
     mode = str(row.get("mode") or "")
     local_verifier = local_candidate_verifier(candidate, row)
-    provider = teacher_provider_decision(policy, row)
+    provider = teacher_receipt_decision(policy, row)
     reject_reasons.extend(provider["reject_reasons"])
     if mode != "distillation":
         reject_reasons.append("teacher_call_not_distillation_mode")
@@ -445,7 +452,8 @@ def candidate_admission_decision(
         "public_overlap_hits": public_hits,
         "holdout_overlap_hits": holdout_hits,
         "local_verifier": local_verifier,
-        "teacher_provider": provider,
+        "teacher_provider": teacher_provider_decision(policy, row),
+        "teacher_receipt": provider,
     }
 
 
