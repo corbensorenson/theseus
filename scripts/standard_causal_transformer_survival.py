@@ -36,6 +36,7 @@ from code_lm_private_verifier import (  # noqa: E402
     evaluate_private_candidates,
 )
 import semantic_ir  # noqa: E402
+import theseus_artifact_admission  # noqa: E402
 from neural_seed_open_vocab import encode_tokens  # noqa: E402
 from neural_seed_token_decoder_support import (  # noqa: E402
     body_tokens,
@@ -207,7 +208,7 @@ def run(
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     checkpoint = checkpoint_dir / "standard_causal_transformer_survival_v1.npz"
     if (resume or evaluate_only) and checkpoint.exists():
-        model.load_weights(str(checkpoint))
+        admitted_load_weights(model, checkpoint, config)
         mx.eval(model.parameters())
     elif evaluate_only:
         raise FileNotFoundError(f"evaluation checkpoint missing: {checkpoint}")
@@ -3254,7 +3255,7 @@ def run_preference_canary(
     reward_model = build_model(
         model_cfg, mx=mx, nn=nn, state_role_lookup=preference_state_lookup
     )
-    reward_model.load_weights(str(checkpoint))
+    admitted_load_weights(reward_model, checkpoint, config)
     reward_training = train_dpo(
         reward_model,
         reference_model,
@@ -3291,7 +3292,7 @@ def run_preference_canary(
     control_model = build_model(
         model_cfg, mx=mx, nn=nn, state_role_lookup=preference_state_lookup
     )
-    control_model.load_weights(str(checkpoint))
+    admitted_load_weights(control_model, checkpoint, config)
     control_training = train_dpo(
         control_model,
         reference_model,
@@ -4552,6 +4553,15 @@ def file_content_sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def admitted_load_weights(model: Any, checkpoint: Path, config: dict[str, Any]) -> dict[str, Any]:
+    """Verify configured artifact identity before MLX/NumPy deserialization."""
+    decision = theseus_artifact_admission.admit_from_config(checkpoint, config)
+    if decision.get("required") and not decision.get("admitted"):
+        raise ValueError(f"artifact admission rejected before load: {decision.get('reason')}")
+    model.load_weights(str(checkpoint))
+    return decision
 
 
 def sha(value: str) -> str:

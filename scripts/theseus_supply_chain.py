@@ -313,14 +313,27 @@ def build_aibom(root: Path, policy: dict[str, Any], entries: list[dict[str, Any]
     missing = {artifact_id for artifact_id, row in artifacts.items() if row.get("identity_state") == "missing"}
     invalidation = descendant_invalidation(set(artifacts), dependencies, missing)
     artifact_rows = sorted(artifacts.values(), key=lambda row: str(row["artifact_id"]))
+    identity_artifacts = [
+        row
+        for row in artifact_rows
+        if row.get("artifact_kind") != "derived_evidence"
+        and not (row.get("artifact_kind") == "surface_bundle" and row.get("artifact_domain") == "generated_artifact")
+    ]
+    identity_artifact_ids = {str(row["artifact_id"]) for row in identity_artifacts}
+    identity_dependencies = [
+        row
+        for row in dependencies
+        if row.get("dependency_artifact_id") in identity_artifact_ids
+        and row.get("dependent_artifact_id") in identity_artifact_ids
+    ]
     build_basis = {
         "git_revision": revision,
         "policy_sha256": _digest(policy),
         "artifact_identities": [
             {"artifact_id": row["artifact_id"], "observed_identity": row["observed_identity"]}
-            for row in artifact_rows
+            for row in identity_artifacts
         ],
-        "dependencies": sorted(dependencies, key=lambda row: _canonical(row)),
+        "dependencies": sorted(identity_dependencies, key=lambda row: _canonical(row)),
     }
     observed_count = sum(row.get("identity_state") == "observed" for row in artifact_rows)
     unavailable_count = sum(row.get("identity_state") == "unavailable_current_environment" for row in artifact_rows)
@@ -347,6 +360,8 @@ def build_aibom(root: Path, policy: dict[str, Any], entries: list[dict[str, Any]
             "invalidated_artifact_count": len(invalidation["invalidated_artifact_ids"]),
             "requested_resolved_observed_distinct": True,
             "artifact_domain_counts": dict(sorted(domain_counts.items())),
+            "build_identity_artifact_count": len(identity_artifacts),
+            "build_identity_excludes_self_referential_derived_evidence": True,
         },
         "attestation": {
             "kind": "local_content_bound_materialization",

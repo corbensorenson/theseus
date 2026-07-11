@@ -216,7 +216,7 @@
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-          "sha256": "fb62085117d90ac781d46c95dfbd2595a39b442e1493345c44140512d7e748ff"
+          "sha256": "46b2aa6483620be08ddf062bddc9a3baceba1d37bbab7f76b4ab64a932579ad8"
         },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
@@ -228,7 +228,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "1778ba72edae1dba2f98784f4618d9e31f85f496594439911959e6ef468720f9"
+          "sha256": "241ea00a93a02881e4eb095a87f61664b97926b425432284ebf7e1eb34da58d2"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -284,7 +284,7 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "91e3c0ef9a8979ff2e03fe62de8dbc9379e955338c67e2cd732e249b139d61c1"
+          "sha256": "22f66671646649f594bc93416d2b453f58b22c2f377d8864a95bde39d286aec3"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
@@ -3722,7 +3722,7 @@
       "canonical_entrypoint": "scripts/theseus_project_registry.py",
       "swappable_under_contract": true,
       "replacement_policy": "A replacement must materialize the same abstraction and implementation bindings before this implementation is deprecated.",
-      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_roadmap_pretraining_gate.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
+      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_theseus_artifact_admission.py tests/test_roadmap_pretraining_gate.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
       "role": "governance",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -3730,7 +3730,10 @@
         "configs/roadmap_implementation_matrix.json",
         "scripts/theseus_project_registry.py",
         "scripts/theseus_supply_chain.py",
+        "scripts/theseus_artifact_admission.py",
+        "configs/artifact_admission_policy.json",
         "tests/test_theseus_supply_chain.py",
+        "tests/test_theseus_artifact_admission.py",
         "tests/test_roadmap_pretraining_gate.py",
         "scripts/roadmap_implementation_gate.py",
         "scripts/scf_reference_kernel_v1.py",
@@ -4342,6 +4345,8 @@
         "scripts/neural_seed_full_state_pretraining.py",
         "scripts/neural_seed_open_vocab.py",
         "scripts/neural_seed_token_model_backend.py",
+        "scripts/theseus_artifact_admission.py",
+        "configs/artifact_admission_policy.json",
         "scripts/neural_seed_candidate_generation.py",
         "scripts/neural_seed_report_io.py",
         "scripts/neural_seed_route_memory.py",
@@ -4847,7 +4852,7 @@
       "canonical_entrypoint": "scripts/standard_causal_transformer_survival.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve prompt/signature-only visibility, reversible tokenization, direct learned full-body generation, independent integrity and blind-flow audits, private verifier replay, exact checkpoint binding, and zero fallback/template/router/tool credit.",
-      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
+      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_theseus_artifact_admission.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
       "role": "survival",
       "trust_tier": "governed_training_candidate",
       "dependencies": [
@@ -4857,6 +4862,9 @@
         "configs/policy_optimization_program.json",
         "configs/generation_mode_registry.json",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/theseus_artifact_admission.py",
+        "configs/artifact_admission_policy.json",
+        "tests/test_theseus_artifact_admission.py",
         "scripts/standard_causal_transformer_conditioning.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_preference.py",
@@ -7118,7 +7126,10 @@
         "configs/module_definition_of_done.json",
         "scripts/theseus_project_registry.py",
         "scripts/theseus_supply_chain.py",
+        "scripts/theseus_artifact_admission.py",
+        "configs/artifact_admission_policy.json",
         "tests/test_theseus_supply_chain.py",
+        "tests/test_theseus_artifact_admission.py",
         "tests/test_roadmap_pretraining_gate.py",
         "scripts/roadmap_implementation_gate.py",
         "scripts/module_definition_of_done_gate.py",
@@ -7138,7 +7149,7 @@
         "reports/scf_reference_kernel_v1.json",
         "reports/scf_reference_kernel_v1.md"
       ],
-      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_roadmap_pretraining_gate.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/module_definition_of_done_gate.py && python3 scripts/scf_reference_kernel_v1.py --gate",
+      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_theseus_artifact_admission.py tests/test_roadmap_pretraining_gate.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/module_definition_of_done_gate.py && python3 scripts/scf_reference_kernel_v1.py --gate",
       "cleanup_policy": "must exist before cleanup/autonomy claims; no deletion decisions without registry evidence",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,

@@ -30,6 +30,14 @@ are `0` missing required identities on this machine, `9` optional packages are
 unavailable, and one Windows-only evidence output is not materialized. Signing,
 advisory freshness, reproducible builds/training, release admission, and weight
 custody remain explicitly unclaimed.
+Checkpoint admission is now wired before both Torch and practical
+MLX/NumPy deserialization. Signed Ed25519 artifact attestations bind content,
+purpose, advisory snapshot, generation, and custody; tamper, stale advisory,
+revocation, rollback, unsafe ownership/mode, and missing valuable-weight
+encryption/key-release evidence fail closed. The current transformer checkpoint
+is explicitly a development-only, non-routeable legacy exemption. No private
+signing key, signed release, encrypted-weight custody, or hardware attestation is
+claimed.
 Canonical VCM now embeds `256` stable semantic objects, typed temporal
 relations, ontology `1.0.0`, sparse-BM25 plus graph retrieval, hot/warm/cold
 lifecycle decisions, retraction/quarantine suppression, bounded snapshot
@@ -43,11 +51,11 @@ The pre-training readiness gate now uses an explicit, exhaustive phase
 partition. Architecture prerequisites are Phases `0, 1, 2, 3, 4, 6, 8, 11,
 14, 15, 18, 19`; training/empirical/behavior qualification phases are `5, 7,
 10, 12, 13, 16, 17`; external-environment proof is Phase `9`. The remaining
-local architecture blockers are therefore Phases `0, 1, 2, 14, 18`, not the
+local architecture blockers are therefore Phases `1, 2, 14, 18`, not the
 training and behavior phases themselves.
 The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
-book reconciliation. Phases `15` and `19` are `implemented`; phases `3`, `4`, `6`,
-`8`, `11`, `12`, and `17` are `wired`; phases `0`, `1`, `2`, `5`, `7`,
+book reconciliation. Phases `15` and `19` are `implemented`; phases `0`, `3`, `4`, `6`,
+`8`, `11`, `12`, and `17` are `wired`; phases `1`, `2`, `5`, `7`,
 `10`, `13`, `14`, `16`, and `18` are honestly `partial`; and only Phase `9`
 remains externally frozen until trusted peers are reachable. The local partial
 states now include durable semantic memory inside VCM, useful governed-effect

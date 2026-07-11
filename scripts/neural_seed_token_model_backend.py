@@ -21,6 +21,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
+import theseus_artifact_admission  # noqa: E402
 from neural_seed_code_proposer_comparator import (  # noqa: E402
     count_params,
     dict_or_empty,
@@ -378,6 +379,7 @@ def build_pretraining_initializers(config: dict[str, Any], *, torch: Any, device
             checkpoint_path=checkpoint_path,
             torch=torch,
             device=device,
+            admission_config=cfg,
         )
     return {
         "enabled": True,
@@ -401,11 +403,21 @@ def load_pretraining_initializer_for_arm(
     checkpoint_path: Path,
     torch: Any,
     device: Any,
+    admission_config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not tokenizer or not dict_or_empty(tokenizer.get("vocab")):
         return {"active": False, "arm_id": arm_id, "reason": "missing_or_invalid_tokenizer", "tokenizer": rel(tokenizer_path)}
     if not checkpoint_path.exists():
         return {"active": False, "arm_id": arm_id, "reason": "missing_checkpoint", "checkpoint": rel(checkpoint_path)}
+    admission = theseus_artifact_admission.admit_from_config(checkpoint_path, admission_config or {})
+    if admission.get("required") and not admission.get("admitted"):
+        return {
+            "active": False,
+            "arm_id": arm_id,
+            "reason": f"artifact_admission_rejected:{admission.get('reason')}",
+            "checkpoint": rel(checkpoint_path),
+            "artifact_admission": admission,
+        }
     try:
         checkpoint = torch.load(checkpoint_path, map_location=device)
     except Exception as exc:  # pragma: no cover - depends on local torch serialization.
@@ -440,6 +452,7 @@ def load_pretraining_initializer_for_arm(
         "from_scratch": bool(checkpoint.get("open_or_pretrained_model_weights_used") is False) if isinstance(checkpoint, dict) else True,
         "public_training_rows": int(checkpoint.get("public_training_rows") or 0) if isinstance(checkpoint, dict) else 0,
         "external_inference_calls": int(checkpoint.get("external_inference_calls") or 0) if isinstance(checkpoint, dict) else 0,
+        "artifact_admission": admission,
     }
 
 
@@ -523,6 +536,15 @@ def load_strict_generator_checkpoint_vocab_override(config: dict[str, Any], *, t
     checkpoint_path = resolve(str(cfg.get("checkpoint") or ""))
     if not checkpoint_path.exists():
         return {"enabled": True, "active": False, "reason": "missing_strict_generator_checkpoint", "checkpoint": rel(checkpoint_path)}
+    admission = theseus_artifact_admission.admit_from_config(checkpoint_path, cfg)
+    if admission.get("required") and not admission.get("admitted"):
+        return {
+            "enabled": True,
+            "active": False,
+            "reason": f"artifact_admission_rejected:{admission.get('reason')}",
+            "checkpoint": rel(checkpoint_path),
+            "artifact_admission": admission,
+        }
     try:
         checkpoint = torch.load(checkpoint_path, map_location="cpu")
     except Exception as exc:  # pragma: no cover - local torch serialization surface.
@@ -583,6 +605,7 @@ def load_strict_generator_checkpoint_vocab_override(config: dict[str, Any], *, t
         "public_training_rows": 0,
         "external_inference_calls": 0,
         "open_or_pretrained_model_weights_used": False,
+        "artifact_admission": admission,
         "score_semantics": (
             "Optional checkpoint-vocab replay for strict generator checkpoint evaluation. "
             "It imports only the saved tokenizer dictionaries from a clean local checkpoint "

@@ -1,0 +1,23 @@
+{
+  "policy": "project_theseus_artifact_admission_policy_v1",
+  "purpose": "local_private_model_runtime",
+  "max_advisory_age_hours": 24,
+  "trusted_public_keys": {},
+  "revoked_key_ids": [],
+  "revoked_artifact_hashes": [],
+  "minimum_generation_by_artifact": {},
+  "default_behavior": "deny_when_admission_is_required_and_identity_or_custody_evidence_is_missing",
+  "key_enrollment": "Public verification keys are enrolled explicitly; private signing keys never belong in the repository.",
+  "valuable_weight_policy": {
+    "private_file_mode_required": true,
+    "encrypted_storage_observation_required": true,
+    "key_release_record_required": true,
+    "anti_rollback_state_required": true
+  },
+  "claims": {
+    "repository_contains_private_signing_key": false,
+    "mac_filevault_enabled": false,
+    "hardware_attestation_available": false,
+    "remote_key_broker_available": false
+  }
+}

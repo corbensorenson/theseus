@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 import tempfile
 import unittest
@@ -78,6 +79,41 @@ class AIBOMTests(unittest.TestCase):
 
         self.assertFalse(record["closure_complete"])
         self.assertEqual(record["unknown_artifact_ids"], ["unregistered-release"])
+
+    def test_build_identity_is_relocation_stable_and_ignores_derived_output(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            one = Path(temp) / "one"
+            two = Path(temp) / "two"
+            (one / "scripts").mkdir(parents=True)
+            (one / "reports").mkdir()
+            (one / "scripts" / "worker.py").write_text("VALUE = 1\n", encoding="utf-8")
+            (one / "reports" / "result.json").write_text('{"run": 1}\n', encoding="utf-8")
+            shutil.copytree(one, two)
+            policy = {
+                "surfaces": [
+                    {"id": "worker", "artifact_type": "runtime"},
+                    {"id": "generated", "artifact_type": "generated_artifact"},
+                ],
+                "implementations": [
+                    {
+                        "id": "impl.worker",
+                        "surface_id": "worker",
+                        "canonical_entrypoint": "scripts/worker.py",
+                        "dependencies": ["scripts/worker.py"],
+                        "evidence_outputs": ["reports/result.json"],
+                    }
+                ],
+            }
+            entries = [
+                {"kind": "file", "path": "scripts/worker.py", "surface_id": "worker", "bytes": 10},
+                {"kind": "file", "path": "reports/result.json", "surface_id": "generated", "bytes": 11},
+            ]
+            first = supply_chain.build_aibom(one, policy, entries)
+            (two / "reports" / "result.json").write_text('{"run": 2}\n', encoding="utf-8")
+            second = supply_chain.build_aibom(two, policy, entries)
+
+        self.assertEqual(first["build_identity"], second["build_identity"])
+        self.assertTrue(first["summary"]["build_identity_excludes_self_referential_derived_evidence"])
 
 
 if __name__ == "__main__":

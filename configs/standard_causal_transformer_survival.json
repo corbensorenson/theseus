@@ -1,6 +1,13 @@
 {
   "policy": "project_theseus_standard_causal_transformer_survival_v1",
   "seed": 734,
+  "artifact_admission": {
+    "required": false,
+    "profile": "development_non_routeable_checkpoint",
+    "production_or_default_route_requires_admission": true,
+    "policy": "configs/artifact_admission_policy.json",
+    "reason": "Existing research checkpoints predate signed attestations; no production/default route may use this exemption."
+  },
   "sources": {
     "licensed_code_manifest": "data/training_sources/narrow_corpus_manifest_ladder_v1.json",
     "function_stage_report": "reports/strict_generator_mlx_dense_right_sized_v1_contrast_5_6m.json",

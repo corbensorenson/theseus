@@ -52,8 +52,8 @@ unfinished roadmap item. Phases `0, 1, 2, 3, 4, 6, 8, 11, 14, 15, 18, 19` are
 architecture prerequisites; phases `5, 7, 10, 12, 13, 16, 17` require training,
 real-use time, public calibration, or behavior-positive candidates and therefore
 cannot circularly block architecture readiness; Phase `9` remains an external
-environment proof. The current local architecture blockers are Phases `0, 1, 2,
-3, 14, 18`.
+environment proof. The current local architecture blockers are Phases `1, 2,
+14, 18`.
 
 ## Non-Negotiable Rules
 
@@ -392,6 +392,15 @@ run and it meets the Quality Bars below.
   what Theseus is without scanning historical reports.
 - Do not: turn a gate green with another `_vN` family; hide negatives; treat cleanup
   as capability progress.
+- Current implementation evidence: the registry materializes a content-bound
+  AIBOM with requested/resolved/observed identities, surface Merkle roots,
+  derivative invalidation, relocation-stable build identity, and zero missing
+  required local identities. Ed25519 attestations and advisory snapshots can
+  gate Torch and MLX/NumPy checkpoint loads before deserialization; tamper,
+  stale advisory, revoked key/artifact, generation rollback, bad ownership/mode,
+  wrong purpose, and incomplete valuable-weight custody fail closed. The repo
+  contains no private signing key. Real signed release/build/training/custody
+  evidence remains unclaimed until a routeable trained artifact exists.
 
 ### Phase 1: VIEA Execution Spine
 - Canonical trace: `IntentContract -> CommandContract -> PlanForgeDAG ->

@@ -707,7 +707,7 @@
     {
       "phase": 0,
       "title": "Repository Self-Model And Registry Discipline",
-      "status": "partial",
+      "status": "wired",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-0",
       "ai_book_source_basis": [
@@ -753,7 +753,10 @@
         "reports/theseus_generated_artifact_gc.json",
         "reports/theseus_generated_artifact_gc_manifest.json",
         "scripts/theseus_supply_chain.py",
-        "tests/test_theseus_supply_chain.py"
+        "scripts/theseus_artifact_admission.py",
+        "configs/artifact_admission_policy.json",
+        "tests/test_theseus_supply_chain.py",
+        "tests/test_theseus_artifact_admission.py"
       ],
       "implemented_items": [
         "roadmap matrix, roadmap gate, module DoD gate, and book-to-Theseus crosswalk are registered under the project_manifest_registry surface and verification sequence",
@@ -761,12 +764,12 @@
         "registry cleanup queue has 16/16 items covered by active steward decisions",
         "bounded generated-artifact cleanup canary quarantines only safe tmp/smoke artifacts with manifest checksums and no deletion",
         "the canonical registry embeds a local content-bound AIBOM over more than 500 requested/resolved/observed identities across 19 artifact domains, surface content Merkle roots, runtime identity, dependency edges, derivative invalidation closure, zero missing required identities, and explicit non-claims for signing, advisory freshness, reproducibility, and weight custody",
-        "negative tests propagate a substituted dependency through implementation, checkpoint, and release descendants and reject an unknown descendant as incomplete closure"
+        "negative tests propagate a substituted dependency through implementation, checkpoint, and release descendants and reject an unknown descendant as incomplete closure",
+        "content-bound Ed25519 admission verifies signed artifact attestations and advisory snapshots before Torch or MLX/NumPy deserialization, with stale advisory, tamper, revocation, generation rollback, relocation, owner/mode, purpose, and valuable-weight custody controls",
+        "the current transformer checkpoint exemption is explicitly development-only and non-routeable; production/default routes require admission, while private signing keys remain outside the repository"
       ],
-      "missing_items": [
-        "release-grade signed advisory snapshots, reproducible build and training attestations, attestation-gated model loading, relocation checks, valuable-weight custody, revocation, and key lifecycle"
-      ],
-      "smallest_next_patch": "Bind a reproducible two-run build/training attestation and signed advisory snapshot to the existing AIBOM, then fail release admission on stale advisories, substituted identities, incomplete descendant invalidation, or absent weight-custody evidence.",
+      "missing_items": [],
+      "smallest_next_patch": "When the first routeable trained artifact exists, enroll an external public verification key, issue real signed build/training/advisory/custody records, and prove release admission on encrypted storage; no release or custody claim exists before that evidence.",
       "integration_smoke": [
         "python3 scripts/theseus_project_registry.py --gate",
         "reports/theseus_project_registry.json trigger_state=GREEN",
@@ -912,11 +915,13 @@
         "reports/governance_rights_receipt_suite.json",
         "reports/vcm_context_governor.json",
         "reports/theseus_assistant_product_spine_smoke.json",
-        "reports/hive_network_doctor.json"
+        "reports/hive_network_doctor.json",
+        "scripts/theseus_artifact_admission.py",
+        "configs/artifact_admission_policy.json",
+        "tests/test_theseus_artifact_admission.py"
       ],
       "missing_items": [
         "authority and adapter records are normalized across assistant, planner, execution-spine, Hive scheduler route records, Hive task-submission execution receipt schema smoke, candidate-integrity audit records, private verifier records, project registry SCF route validator, and assistant/Hive runtime route-decision receipt traces; remaining external-frozen work is a real reachable-peer registered-task receipt proof. Current network doctor evidence reports coordinator_unreachable, registered_peers_unreachable, peer_inbound_only_outbound_blocked, and No route to host for the trusted Windows coordinator",
-        "weight custody and attestation-gated load contract",
         "real local default swap with complete rollback inventory"
       ],
       "smallest_next_patch": "Exercise one local model/tool default replacement and rollback, then add custody/load denial controls for tampered weights, stale attestations, revoked keys, and anti-rollback identity before the external peer proof.",
@@ -928,7 +933,8 @@
       "completion_rule": "Every routable implementation can emit a fail-closed authority receipt and exact content-bound route receipt.",
       "implemented_items": [
         "A2 replacement transaction kernel is synthetic-test-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters.",
-        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
+        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters.",
+        "routeable checkpoint loaders support fail-closed Ed25519 attestation/advisory admission before deserialization, generation anti-rollback, key/artifact revocation, relocation-safe content identity, custody observation, and explicit valuable-weight encrypted-storage/key-release requirements"
       ]
     },
     {
