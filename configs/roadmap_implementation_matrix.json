@@ -2023,10 +2023,13 @@
         "runtime/standard_causal_transformer_latent_plan_dropout/report.json",
         "runtime/standard_causal_transformer_slot_plan_semantic/report.json",
         "runtime/standard_causal_transformer_slot_plan_shuffled/report.json",
-        "runtime/standard_causal_transformer_slot_plan_dropout/report.json"
+        "runtime/standard_causal_transformer_slot_plan_dropout/report.json",
+        "runtime/standard_causal_transformer_slot_categorical_plan_semantic/report.json",
+        "runtime/standard_causal_transformer_slot_categorical_plan_shuffled/report.json",
+        "runtime/standard_causal_transformer_slot_categorical_plan_dropout/report.json"
       ],
       "missing_items": [
-        "Emitted plans, global additive latent plans, and per-layer slot-addressable plan attention all learn source-only plan targets but remain 0/24 exact; structurally closed Semantic-IR receipts do not yet prove prompt-algorithm adequacy or intended behavior"
+        "Emitted plans, global additive latent plans, sigmoid slot attention, and categorical slot attention all learn source-only plan targets but remain 0/24 exact; semantic plan metrics improve while shuffled-label body behavior can remain better, so structurally closed Semantic-IR receipts do not yet prove prompt-algorithm adequacy or intended behavior"
       ],
       "smallest_next_patch": "Measure prompt-to-plan grounding directly: derive target-independent private obligation queries from prompt/signature contracts, align predicted ordered slots to those obligations with source-contrastive negatives, and score per-slot operation/value/binding adequacy before body decode. Reuse the registered slot-attention route and unchanged body-token stream only if this grounding signal beats shuffled/dropout controls and yields exact family-disjoint verifier behavior. Do not add another attention mechanism, label-only head, renderer, deterministic repair, fallback, generic capacity increase, or behavior-flat scale run.",
       "integration_smoke": [
@@ -2093,8 +2096,8 @@
         ,"reports/standard_causal_transformer_survival_gate.json summary.slot_ordered_plan_state=GREEN"
         ,"reports/standard_causal_transformer_survival_gate.json summary.slot_ordered_plan_adoption_state=NOT_ADOPTED"
         ,"slot-plan body-only, semantic, shuffled, and dropout arms each consume exactly 1202267 optimizer body positions"
-        ,"slot semantic plan F1 0.44933921 beats shuffled 0.26199262 and dropout 0.0; semantic covers 24/24 at reward 0.441538 but remains 0/24 exact and does not beat dropout reward 0.442105"
-        ,"slot semantic decode costs 35705 ms versus body-only 23325 ms, and accepted verified output per second remains 0 for every arm"
+        ,"categorical slot semantic plan F1 0.42211055 beats shuffled 0.34459459 and dropout 0.0, but semantic remains 0/24 and scores reward 0.414167 below shuffled 0.429921"
+        ,"categorical slot semantic decode costs 43794 ms versus body-only 23325 ms, and accepted verified output per second remains 0 for every arm"
         ,"all slot-plan integrity and blind-information-flow audits are GREEN with zero mismatches or invalid claims"
       ],
       "completion_rule": "Plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependencies, obligations, repair scopes, and replayed receipts. Completion additionally requires a learned Semantic-IR route to improve family-disjoint direct model behavior under a matched body-only ablation. Assisted compiler/repair output remains zero-credit."

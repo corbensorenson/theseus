@@ -73,9 +73,9 @@ DEFAULT_LATENT_ORDERED_PLAN_ARM_DIRS = {
 }
 DEFAULT_SLOT_ORDERED_PLAN_ARM_DIRS = {
     "body_only": ROOT / "runtime" / "standard_causal_transformer_latent_plan_body_control",
-    "semantic": ROOT / "runtime" / "standard_causal_transformer_slot_plan_semantic",
-    "shuffled": ROOT / "runtime" / "standard_causal_transformer_slot_plan_shuffled",
-    "dropout": ROOT / "runtime" / "standard_causal_transformer_slot_plan_dropout",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_slot_categorical_plan_semantic",
+    "shuffled": ROOT / "runtime" / "standard_causal_transformer_slot_categorical_plan_shuffled",
+    "dropout": ROOT / "runtime" / "standard_causal_transformer_slot_categorical_plan_dropout",
 }
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
@@ -946,6 +946,8 @@ def audit_latent_ordered_plan_ablation(
     arm_dirs: dict[str, Path],
     *,
     conditioning_mode: str = "global_additive",
+    loss_mode: str = "binary_multilabel",
+    probability_mode: str = "independent_sigmoid",
     gap_prefix: str = "latent_ordered_plan",
     policy: str = "project_theseus_latent_ordered_plan_ablation_v1",
 ) -> dict[str, Any]:
@@ -1001,6 +1003,7 @@ def audit_latent_ordered_plan_ablation(
             "semantic_plan_bottleneck_dim",
             "semantic_plan_slot_count",
             "semantic_plan_conditioning_mode",
+            "semantic_plan_probability_mode",
         ):
             model.pop(key, None)
         copied.pop("semantic_plan_training", None)
@@ -1040,6 +1043,19 @@ def audit_latent_ordered_plan_ablation(
             or "global_additive"
         )
         == conditioning_mode
+        for name in ("semantic", "shuffled", "dropout")
+    )
+    objective_contract_clean = all(
+        str(
+            (configs[name].get("semantic_plan_training") or {}).get("loss_mode")
+            or "binary_multilabel"
+        )
+        == loss_mode
+        and str(
+            (configs[name].get("model") or {}).get("semantic_plan_probability_mode")
+            or "independent_sigmoid"
+        )
+        == probability_mode
         for name in ("semantic", "shuffled", "dropout")
     )
     if conditioning_mode == "slot_attention":
@@ -1148,6 +1164,7 @@ def audit_latent_ordered_plan_ablation(
         "modes_expected": modes_correct,
         "body_target_stream_unchanged": target_contract_clean,
         "conditioning_contract_matches": conditioning_contract_clean,
+        "objective_contract_matches": objective_contract_clean,
         "optimizer_body_exposure_equal": exposure_equal,
         "training_and_holdout_lineage_equal": lineage_equal,
         "plan_parameter_counts_equal": parameter_contract,
@@ -1174,6 +1191,12 @@ def audit_latent_ordered_plan_ablation(
             "mean_verification_reward": float(private.get("mean_verification_reward") or 0.0),
             "body_eval_loss": float((report.get("training") or {}).get("eval_loss_after") or 0.0),
             "plan_micro_f1": float(plan_eval.get("micro_f1") or 0.0),
+            "plan_objective_loss": float(
+                plan_eval.get("categorical_cross_entropy")
+                if plan_eval.get("categorical_cross_entropy") is not None
+                else plan_eval.get("binary_cross_entropy")
+                or 0.0
+            ),
             "decode_runtime_ms": decode_runtime_ms,
             "accepted_verified_output_per_second": round(
                 passed_task_count / max(decode_runtime_ms / 1000.0, 1e-9), 8
@@ -1236,6 +1259,8 @@ def audit_latent_ordered_plan_ablation(
         "deltas": deltas,
         "ordered_plan_signal_learned": plan_signal_learned,
         "conditioning_mode": conditioning_mode,
+        "loss_mode": loss_mode,
+        "probability_mode": probability_mode,
         "artifacts": artifacts,
         "non_claims": [
             "ordered plan classification quality is not body-generation capability",
@@ -1259,6 +1284,8 @@ def audit_slot_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any
     return audit_latent_ordered_plan_ablation(
         arm_dirs,
         conditioning_mode="slot_attention",
+        loss_mode="slot_categorical",
+        probability_mode="slot_categorical",
         gap_prefix="slot_ordered_plan",
         policy="project_theseus_slot_ordered_plan_ablation_v1",
     )

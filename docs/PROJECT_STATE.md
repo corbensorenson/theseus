@@ -159,10 +159,19 @@ scores `23/24` at `0.442105`; every arm remains `0/24` exact and semantic decode
 cost rises from `23,325 ms` to `35,705 ms`. Independent integrity and blind-flow
 audits are GREEN. The canonical gate is GREEN evidence and `NOT_ADOPTED`: learned
 plan recognition and addressable consumption still do not establish intended
-behavior. Phase 13 now needs prompt-to-plan semantic grounding and independently
-measured obligation adequacy that changes direct verifier behavior, not another
-label head, generic capacity increase, renderer, repair, or behavior-flat scale
-run. A separate
+behavior. A stricter follow-on treats each slot as one categorical protocol token
+or an implicit EMPTY class instead of `5,488` independent binary labels. It keeps
+the same `8,348,528` parameters and `1,202,267` body positions in semantic,
+shuffled, and dropout arms. Semantic heldout slot F1 beats shuffled
+(`0.422111` vs `0.344595`) and body loss improves (`1.781374` vs `1.790626`), but
+behavior reverses: semantic emits `71` candidates at reward `0.414167`, while
+shuffled emits `78` at `0.429921`; dropout emits `70` at `0.411765`. All remain
+`0/24`, semantic decode costs `43,794 ms`, and accepted verified output per second
+is zero. Independent audits are GREEN and the canonical slot gate remains
+`NOT_ADOPTED`. Phase 13 now needs prompt-to-plan semantic grounding and
+independently measured obligation adequacy that changes direct verifier behavior, not another
+label objective, generic capacity increase, renderer, repair, or behavior-flat
+scale run. A separate
 standalone-SFT admission canary rejected `10,526` licensed rows that depended on
 hidden module context and preserved exact private sampling mass. It decoded
 `49,000 ms` faster, but regressed task coverage `20 -> 19`, candidate count

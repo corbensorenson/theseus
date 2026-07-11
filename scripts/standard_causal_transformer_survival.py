@@ -273,6 +273,8 @@ def run(
             stage.eval_plan_labels,
             batch_size=int(training_cfg["batch_size"]),
             enabled=plan_training["enabled"],
+            loss_mode=plan_training["loss_mode"],
+            slot_count=plan_training["ordered_slot_count"],
             mx=mx,
         )
         ordered_plan_eval_before = evaluate_ordered_plan_loss(
@@ -324,6 +326,8 @@ def run(
                 plan_label_mode=plan_training["label_mode"],
                 plan_auxiliary_weight=plan_training["auxiliary_loss_weight"],
                 plan_shuffle_seed=plan_training["shuffle_seed"],
+                plan_loss_mode=plan_training["loss_mode"],
+                plan_slot_count=plan_training["ordered_slot_count"],
                 phase_name="prompt_signature_body_sft_continuation",
                 target_positions=remaining_sft_positions,
                 batch_size=int(training_cfg["batch_size"]),
@@ -364,6 +368,8 @@ def run(
             stage.eval_plan_labels,
             batch_size=int(training_cfg["batch_size"]),
             enabled=plan_training["enabled"],
+            loss_mode=plan_training["loss_mode"],
+            slot_count=plan_training["ordered_slot_count"],
             mx=mx,
         )
         ordered_plan_eval_before = evaluate_ordered_plan_loss(
@@ -440,6 +446,8 @@ def run(
                     else 0.0
                 ),
                 plan_shuffle_seed=plan_training["shuffle_seed"],
+                plan_loss_mode=plan_training["loss_mode"],
+                plan_slot_count=plan_training["ordered_slot_count"],
                 phase_name=phase_name,
                 target_positions=target_positions,
                 batch_size=int(training_cfg["batch_size"]),
@@ -484,6 +492,8 @@ def run(
         stage.eval_plan_labels,
         batch_size=int(training_cfg["batch_size"]),
         enabled=plan_training["enabled"],
+        loss_mode=plan_training["loss_mode"],
+        slot_count=plan_training["ordered_slot_count"],
         mx=mx,
     )
     ordered_plan_eval_after = evaluate_ordered_plan_loss(
@@ -2220,6 +2230,7 @@ def semantic_plan_training_contract(config: dict[str, Any]) -> dict[str, Any]:
         "shuffle_seed": int(cfg.get("shuffle_seed") or int(config.get("seed") or 0) + 1709),
         "target": target,
         "ordered_slot_count": int(cfg.get("ordered_slot_count") or 0),
+        "loss_mode": str(cfg.get("loss_mode") or "binary_multilabel"),
         "inference_source": "prompt_signature_only",
         "body_target_stream_unchanged": True,
         "renderer_or_repair_used": False,
@@ -2327,6 +2338,8 @@ def causal_loss(
     plan_labels: Any | None = None,
     plan_weight: float = 0.0,
     plan_positive_weights: Any | None = None,
+    plan_loss_mode: str = "binary_multilabel",
+    plan_slot_count: int = 0,
 ) -> Any:
     if plan_labels is not None and plan_weight > 0.0:
         logits, _cache, plan_logits = model(inputs, return_plan_logits=True)
@@ -2341,6 +2354,25 @@ def causal_loss(
     if plan_logits is None:
         return body_loss
     plan_targets = plan_labels.astype(mx.float32)
+    if plan_loss_mode == "slot_categorical":
+        slots = int(plan_slot_count)
+        if slots <= 0 or int(plan_logits.shape[-1]) % slots:
+            raise ValueError("slot-categorical plan loss requires an evenly divided slot field")
+        width = int(plan_logits.shape[-1]) // slots
+        slot_logits = plan_logits.reshape(-1, width)
+        slot_targets = plan_targets.reshape(-1, width)
+        active = mx.sum(slot_targets, axis=-1) > 0.5
+        target_ids = mx.where(
+            active,
+            mx.argmax(slot_targets, axis=-1).astype(mx.int32) + 1,
+            mx.zeros(active.shape, dtype=mx.int32),
+        )
+        empty_logits = mx.zeros((int(slot_logits.shape[0]), 1), dtype=slot_logits.dtype)
+        categorical_logits = mx.concatenate([empty_logits, slot_logits], axis=-1)
+        plan_loss = mx.mean(nn.losses.cross_entropy(categorical_logits, target_ids))
+        return body_loss + float(plan_weight) * plan_loss
+    if plan_loss_mode != "binary_multilabel":
+        raise ValueError(f"unsupported semantic plan loss mode: {plan_loss_mode}")
     softplus_positive = mx.maximum(-plan_logits, 0.0) + mx.log1p(
         mx.exp(-mx.abs(plan_logits))
     )
@@ -2374,6 +2406,8 @@ def train_phase(
     plan_label_mode: str,
     plan_auxiliary_weight: float,
     plan_shuffle_seed: int,
+    plan_loss_mode: str,
+    plan_slot_count: int,
     phase_name: str,
     target_positions: int,
     batch_size: int,
@@ -2398,9 +2432,25 @@ def train_phase(
         mode=plan_label_mode,
         seed=plan_shuffle_seed,
     )
-    positive_weights, positive_weight_receipt = semantic_plan_positive_weights(
-        prepared_plan_labels
-    )
+    if prepared_plan_labels is not None and plan_loss_mode == "slot_categorical":
+        if plan_slot_count <= 0 or prepared_plan_labels.shape[1] % plan_slot_count:
+            raise ValueError("slot-categorical labels require an evenly divided slot field")
+        slot_sums = prepared_plan_labels.reshape(
+            len(prepared_plan_labels), plan_slot_count, -1
+        ).sum(axis=-1)
+        if np.any(slot_sums > 1.0):
+            raise ValueError("slot-categorical labels must be zero-or-one-hot per slot")
+    if plan_loss_mode == "slot_categorical":
+        positive_weights = None
+        positive_weight_receipt = {
+            "state": "NOT_APPLICABLE",
+            "reason": "mutually_exclusive_slot_categorical_objective",
+            "weight_sha256": "",
+        }
+    else:
+        positive_weights, positive_weight_receipt = semantic_plan_positive_weights(
+            prepared_plan_labels
+        )
     matrix_plan = (
         mx.array(prepared_plan_labels, dtype=mx.float32)
         if prepared_plan_labels is not None
@@ -2413,7 +2463,9 @@ def train_phase(
     )
     mx.eval(matrix_x, matrix_y, matrix_mask, matrix_progress_mask)
     if matrix_plan is not None:
-        mx.eval(matrix_plan, matrix_positive_weights)
+        mx.eval(matrix_plan)
+    if matrix_positive_weights is not None:
+        mx.eval(matrix_positive_weights)
     order = list(range(len(inputs)))
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
     consumed = 0
@@ -2452,6 +2504,8 @@ def train_phase(
                 batch_plan,
                 float(plan_auxiliary_weight),
                 matrix_positive_weights,
+                plan_loss_mode,
+                plan_slot_count,
             )
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
@@ -2509,6 +2563,8 @@ def train_phase(
         "semantic_plan_labels": plan_label_receipt,
         "semantic_plan_auxiliary_weight": float(plan_auxiliary_weight),
         "semantic_plan_positive_weights": positive_weight_receipt,
+        "semantic_plan_loss_mode": plan_loss_mode,
+        "semantic_plan_slot_count": int(plan_slot_count),
         "external_inference_calls": 0,
     }
 
@@ -2590,6 +2646,120 @@ def evaluate_ordered_plan_loss(
     }
 
 
+def semantic_plan_metrics_from_logits(
+    logits: np.ndarray,
+    targets: np.ndarray,
+    *,
+    loss_mode: str,
+    slot_count: int,
+) -> dict[str, Any]:
+    """Recompute plan quality under the exact objective used by training."""
+
+    values = np.asarray(logits, dtype=np.float32)
+    truth_values = np.asarray(targets, dtype=np.float32)
+    if values.shape != truth_values.shape or values.ndim != 2 or not len(values):
+        raise ValueError("semantic plan metrics require aligned non-empty rank-two arrays")
+    if loss_mode == "slot_categorical":
+        slots = int(slot_count)
+        if slots <= 0 or values.shape[1] % slots:
+            raise ValueError("slot-categorical metrics require an evenly divided slot field")
+        width = values.shape[1] // slots
+        slot_logits = values.reshape(len(values), slots, width)
+        slot_targets = truth_values.reshape(len(values), slots, width)
+        positive_counts = slot_targets.sum(axis=-1)
+        if np.any(positive_counts > 1.0):
+            raise ValueError("slot-categorical targets must be zero-or-one-hot per slot")
+        target_classes = np.where(
+            positive_counts > 0.5,
+            np.argmax(slot_targets, axis=-1) + 1,
+            0,
+        )
+        categorical_logits = np.concatenate(
+            [np.zeros((len(values), slots, 1), dtype=np.float32), slot_logits],
+            axis=-1,
+        )
+        predicted_classes = np.argmax(categorical_logits, axis=-1)
+        shifted = categorical_logits - categorical_logits.max(axis=-1, keepdims=True)
+        log_denominator = np.log(np.exp(shifted).sum(axis=-1))
+        selected = np.take_along_axis(
+            shifted, target_classes[:, :, None], axis=-1
+        ).squeeze(-1)
+        objective_loss = float((log_denominator - selected).mean())
+        correct_nonempty = np.logical_and(
+            target_classes > 0, predicted_classes == target_classes
+        )
+        false_positive = np.logical_and(
+            predicted_classes > 0, predicted_classes != target_classes
+        )
+        false_negative = np.logical_and(
+            target_classes > 0, predicted_classes != target_classes
+        )
+        true_positive_count = int(correct_nonempty.sum())
+        false_positive_count = int(false_positive.sum())
+        false_negative_count = int(false_negative.sum())
+        precision = true_positive_count / max(
+            1, true_positive_count + false_positive_count
+        )
+        recall = true_positive_count / max(
+            1, true_positive_count + false_negative_count
+        )
+        return {
+            "loss_mode": loss_mode,
+            "slot_count": slots,
+            "slot_width": width,
+            "categorical_cross_entropy": round(objective_loss, 8),
+            "binary_cross_entropy": None,
+            "micro_accuracy": round(
+                float((predicted_classes == target_classes).mean()), 8
+            ),
+            "micro_precision": round(float(precision), 8),
+            "micro_recall": round(float(recall), 8),
+            "micro_f1": round(
+                float(2 * precision * recall / max(1e-12, precision + recall)), 8
+            ),
+            "exact_row_accuracy": round(
+                float(np.all(predicted_classes == target_classes, axis=1).mean()), 8
+            ),
+            "active_slot_count": int((target_classes > 0).sum()),
+            "predicted_active_slot_count": int((predicted_classes > 0).sum()),
+            "empty_slot_accuracy": round(
+                float(
+                    np.logical_and(
+                        target_classes == 0, predicted_classes == 0
+                    ).sum()
+                    / max(1, int((target_classes == 0).sum()))
+                ),
+                8,
+            ),
+        }
+    if loss_mode != "binary_multilabel":
+        raise ValueError(f"unsupported semantic plan loss mode: {loss_mode}")
+    predictions = values >= 0.0
+    truth = truth_values >= 0.5
+    true_positive = int(np.logical_and(predictions, truth).sum())
+    false_positive = int(np.logical_and(predictions, ~truth).sum())
+    false_negative = int(np.logical_and(~predictions, truth).sum())
+    precision = true_positive / max(1, true_positive + false_positive)
+    recall = true_positive / max(1, true_positive + false_negative)
+    binary_loss = (
+        np.maximum(values, 0.0)
+        - values * truth_values
+        + np.log1p(np.exp(-np.abs(values)))
+    )
+    return {
+        "loss_mode": loss_mode,
+        "slot_count": 0,
+        "binary_cross_entropy": round(float(binary_loss.mean()), 8),
+        "micro_accuracy": round(float((predictions == truth).mean()), 8),
+        "micro_precision": round(float(precision), 8),
+        "micro_recall": round(float(recall), 8),
+        "micro_f1": round(
+            float(2 * precision * recall / max(1e-12, precision + recall)), 8
+        ),
+        "exact_row_accuracy": round(float(np.all(predictions == truth, axis=1).mean()), 8),
+    }
+
+
 def evaluate_semantic_plan_head(
     model: Any,
     inputs: np.ndarray,
@@ -2597,6 +2767,8 @@ def evaluate_semantic_plan_head(
     *,
     batch_size: int,
     enabled: bool,
+    loss_mode: str,
+    slot_count: int,
     mx: Any,
 ) -> dict[str, Any]:
     """Measure source-only plan predictions without feeding target labels to generation."""
@@ -2616,28 +2788,16 @@ def evaluate_semantic_plan_head(
         logits_rows.append(np.asarray(plan_logits, dtype=np.float32))
     logits = np.concatenate(logits_rows, axis=0)
     targets = np.asarray(labels, dtype=np.float32)
-    predictions = logits >= 0.0
-    truth = targets >= 0.5
-    true_positive = int(np.logical_and(predictions, truth).sum())
-    false_positive = int(np.logical_and(predictions, ~truth).sum())
-    false_negative = int(np.logical_and(~predictions, truth).sum())
-    precision = true_positive / max(1, true_positive + false_positive)
-    recall = true_positive / max(1, true_positive + false_negative)
-    binary_loss = (
-        np.maximum(logits, 0.0)
-        - logits * targets
-        + np.log1p(np.exp(-np.abs(logits)))
-    )
     return {
         "state": "MEASURED",
         "row_count": len(targets),
         "feature_count": int(targets.shape[1]),
-        "binary_cross_entropy": round(float(binary_loss.mean()), 8),
-        "micro_accuracy": round(float((predictions == truth).mean()), 8),
-        "micro_precision": round(float(precision), 8),
-        "micro_recall": round(float(recall), 8),
-        "micro_f1": round(float(2 * precision * recall / max(1e-12, precision + recall)), 8),
-        "exact_row_accuracy": round(float(np.all(predictions == truth, axis=1).mean()), 8),
+        **semantic_plan_metrics_from_logits(
+            logits,
+            targets,
+            loss_mode=loss_mode,
+            slot_count=slot_count,
+        ),
         "source_contract": "prompt_signature_only_before_separator",
         "target_labels_visible_at_inference": False,
     }
@@ -3749,6 +3909,9 @@ def validate_config(config: dict[str, Any]) -> None:
     plan_conditioning_mode = str(
         model.get("semantic_plan_conditioning_mode") or "global_additive"
     )
+    plan_probability_mode = str(
+        model.get("semantic_plan_probability_mode") or "independent_sigmoid"
+    )
     plan_separator = int(
         model.get("semantic_plan_separator_token_id", SOURCE_TARGET_SEPARATOR_ID)
     )
@@ -3787,6 +3950,8 @@ def validate_config(config: dict[str, Any]) -> None:
             raise ValueError("semantic plan head must use the canonical source-target separator")
         if plan_training["label_mode"] not in {"semantic", "shuffled", "dropout"}:
             raise ValueError("semantic plan label mode must be semantic, shuffled, or dropout")
+        if plan_training["loss_mode"] not in {"binary_multilabel", "slot_categorical"}:
+            raise ValueError("semantic plan loss mode is not registered")
         if not 0.0 < plan_training["auxiliary_loss_weight"] <= 4.0:
             raise ValueError("semantic plan auxiliary loss weight must be in (0, 4]")
         if plan_bottleneck_dim < 0 or plan_bottleneck_dim > int(model.get("d_model") or 0):
@@ -3802,6 +3967,19 @@ def validate_config(config: dict[str, Any]) -> None:
                 raise ValueError("slot-attention memory count must match ordered plan slots")
         elif plan_slot_count:
             raise ValueError("global additive plan conditioning cannot declare attention slots")
+        if plan_probability_mode not in {"independent_sigmoid", "slot_categorical"}:
+            raise ValueError("semantic plan probability mode is not registered")
+        if plan_training["loss_mode"] == "slot_categorical":
+            if plan_conditioning_mode != "slot_attention":
+                raise ValueError("slot-categorical plan loss requires slot attention")
+            if plan_probability_mode != "slot_categorical":
+                raise ValueError(
+                    "slot-categorical plan loss requires categorical slot probabilities"
+                )
+        elif plan_probability_mode != "independent_sigmoid":
+            raise ValueError(
+                "binary-multilabel plan loss requires independent sigmoid probabilities"
+            )
     elif plan_feature_count:
         raise ValueError("semantic plan model parameters require enabled semantic plan training")
     evaluation = config.get("evaluation") or {}

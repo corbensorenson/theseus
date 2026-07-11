@@ -29,6 +29,7 @@ class CausalTransformerConfig:
     semantic_plan_bottleneck_dim: int = 0
     semantic_plan_slot_count: int = 0
     semantic_plan_conditioning_mode: str = "global_additive"
+    semantic_plan_probability_mode: str = "independent_sigmoid"
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -59,6 +60,18 @@ class CausalTransformerConfig:
             raise ValueError("semantic plan bottleneck requires semantic plan features")
         if self.semantic_plan_conditioning_mode not in {"global_additive", "slot_attention"}:
             raise ValueError("semantic plan conditioning must be global_additive or slot_attention")
+        if self.semantic_plan_probability_mode not in {
+            "independent_sigmoid",
+            "slot_categorical",
+        }:
+            raise ValueError(
+                "semantic plan probability mode must be independent_sigmoid or slot_categorical"
+            )
+        if (
+            self.semantic_plan_probability_mode == "slot_categorical"
+            and self.semantic_plan_conditioning_mode != "slot_attention"
+        ):
+            raise ValueError("slot-categorical probabilities require slot attention")
         if self.semantic_plan_conditioning_mode == "slot_attention":
             if self.semantic_plan_slot_count <= 0:
                 raise ValueError("slot attention requires positive semantic plan slots")
@@ -436,16 +449,25 @@ def build_model(
                     else source_summary
                 )
                 plan_logits = self.semantic_plan_classifier(plan_summary)
-                probabilities = mx.sigmoid(plan_logits)
                 feature_matrix = self.semantic_plan_features(
                     mx.arange(config.semantic_plan_feature_count, dtype=mx.int32)
                 )
                 if plan_slot_attention_enabled:
                     slot_count = config.semantic_plan_slot_count
                     slot_width = config.semantic_plan_feature_count // slot_count
-                    slot_probabilities = probabilities.reshape(
+                    slot_logits = plan_logits.reshape(
                         int(tokens.shape[0]), slot_count, slot_width
                     )
+                    if config.semantic_plan_probability_mode == "slot_categorical":
+                        empty_logits = mx.zeros(
+                            (int(tokens.shape[0]), slot_count, 1), dtype=slot_logits.dtype
+                        )
+                        slot_probabilities = mx.softmax(
+                            mx.concatenate([empty_logits, slot_logits], axis=-1),
+                            axis=-1,
+                        )[:, :, 1:]
+                    else:
+                        slot_probabilities = mx.sigmoid(slot_logits)
                     slot_features = feature_matrix.reshape(
                         slot_count, slot_width, int(feature_matrix.shape[-1])
                     )
@@ -458,6 +480,7 @@ def build_model(
                         :, None, None
                     ]
                 else:
+                    probabilities = mx.sigmoid(plan_logits)
                     context = mx.matmul(probabilities, feature_matrix) / mx.maximum(
                         mx.sum(probabilities, axis=-1, keepdims=True), 1.0
                     )

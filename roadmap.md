@@ -668,11 +668,19 @@ deletion closure is graph evidence, not physical unlearning.
   coverage/reward is `24/24` and `0.441538`, versus shuffled `23/24` and
   `0.436154`. It still passes `0/24`, fails to beat dropout reward `0.442105`, and
   costs `35,705 ms` versus body-only `23,325 ms`. Its integrity and blind-flow
-  audits are GREEN, while the gate records `NOT_ADOPTED`. Phase completion now
-  requires prompt-to-plan semantic grounding and independently measured
+  audits are GREEN, while the gate records `NOT_ADOPTED`. A stricter follow-up
+  adds a per-slot categorical objective with an implicit EMPTY class. Under the
+  same `8,348,528` parameters and `1,202,267` body
+  positions, semantic slot F1 beats shuffled (`0.422111` vs `0.344595`) and body
+  loss improves (`1.781374` vs `1.790626`), but behavior is worse: semantic emits
+  `71` candidates at reward `0.414167`, versus shuffled `78` at `0.429921`;
+  dropout emits `70` at `0.411765`. All remain `0/24`, accepted verified output
+  per second remains zero, and the canonical slot gate is `NOT_ADOPTED`. Phase
+  completion requires prompt-to-plan semantic grounding and independently measured
   obligation adequacy to improve exact family-disjoint behavior under the same
   controls; plan loss, deterministic rendering, repair, generic extra capacity,
-  another attention mechanism, or behavior-flat scaling cannot substitute.
+  another attention mechanism or label objective, or behavior-flat scaling cannot
+  substitute.
 
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,

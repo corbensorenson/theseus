@@ -228,7 +228,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "cb008403192ecb65f36f9cbd994911e570f7ac1856465e5fa3f1b418a52e8a94"
+          "sha256": "a5818e0875aada03e4a2dffd87cc5ce29c83569a980d8fab6c80e40155cfd3e9"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -252,7 +252,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "a9ea68ce36371307e83f95da64e3e4ef00b8f05501998e01f1f6fbfbdfc19b64"
+          "sha256": "c9a06b15312821314d913370a26d7c068b6d01090f5e5dc1013bc64ee25e5463"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -264,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "edbcfdb5b4a57b2143fdae8b416f1fcb8164c3b207bb33a9aeaec440e38e4c57"
+          "sha256": "59b788b373f19a856789ce13aa5034ee9314d48721edcfaa9a65abc31bf5505a"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -284,15 +284,15 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "d915e6fa429c599ae565d3554edc7db992e6e9073b904e731ebb2c036fd5afa6"
+          "sha256": "0f6da1979ae2b3b8d987d0912046f21cc93c9a4aab8d4958a1754fb4eea8c8a6"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "f5c3295ae58a105045ba38688c127708e8df8faba0aef16a272392471830cc23"
+          "sha256": "5cd987ccc8ef9ac8cbb37df859f7e83de9ff3e16fc52bc4fa39a062a008eaad5"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "4da5485c6ab60c939fdae1c128c2f66ed65cddf5117a1fff5cb15af152fff508"
+          "sha256": "4675f7e5ccaa1856942953cac045cef89d746b6ec7495904499478fb9dd6de07"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -338,7 +338,7 @@
         ]
       },
       "claim_boundary": {
-        "supported_claim": "Correcting the split-vocabulary source offset raises independently integrity-verified canonical body-only candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but model-only behavior remains 0/24 and training provenance remains incomplete. Matched emitted-plan, global latent-plan, and per-layer slot-addressable plan-attention arms learn source-only plan targets but remain 0/24 exact. Slot attention modestly improves coverage/reward over shuffled labels, fails to beat dropout reward, and regresses decode cost; it is NOT_ADOPTED. The successor remains contained, body-only, and non-routable.",
+        "supported_claim": "Correcting the split-vocabulary source offset raises independently integrity-verified canonical body-only candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but model-only behavior remains 0/24 and training provenance remains incomplete. Matched emitted-plan, global latent-plan, sigmoid slot-attention, and categorical slot-attention arms learn source-only plan targets but remain 0/24 exact. Under categorical slots, semantic plan F1 and body loss beat shuffled labels while verifier reward regresses below shuffled and decode cost rises; it is NOT_ADOPTED. The successor remains contained, body-only, and non-routable.",
         "non_claims": [
           "not Phase 10 completion",
           "not broad public transfer",
@@ -4900,7 +4900,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. Emitted-plan, rank-64 global latent-plan, and per-layer slot-addressable plan-attention ablations each retain matched direct-body exposure and clean independent audits. Slot attention learns the source-only plan field (semantic F1 0.449339 versus shuffled 0.261993 and dropout 0.0) and modestly improves coverage/reward over shuffled, but semantic remains 0/24 exact, does not beat dropout reward, and costs 35,705 ms versus body-only 23,325 ms. The qualification gate records all three interventions NOT_ADOPTED and leaves body-only canonical. The Phase 10/13 wall is prompt-to-plan semantic grounding and independently measured obligation adequacy that produces verifier-positive family-disjoint behavior, plus a fresh complete canonical training receipt.",
+      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. Emitted-plan, rank-64 global latent-plan, sigmoid slot-attention, and categorical slot-attention ablations each retain matched direct-body exposure and clean independent audits. Under categorical slots, semantic plan F1 beats shuffled 0.422111 versus 0.344595 and body loss improves 1.781374 versus 1.790626, but semantic reward is worse, 0.414167 versus 0.429921, all arms remain 0/24 exact, and semantic decode costs 43,794 ms versus body-only 23,325 ms. The qualification gate records every intervention NOT_ADOPTED and leaves body-only canonical. The Phase 10/13 wall is prompt-to-plan semantic grounding and independently measured obligation adequacy that produces verifier-positive family-disjoint behavior, plus a fresh complete canonical training receipt.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",

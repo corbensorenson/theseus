@@ -42,6 +42,7 @@ from standard_causal_transformer_survival import (
     render_visible_signature,
     semantic_plan_feature_contract,
     semantic_plan_labels_for_body,
+    semantic_plan_metrics_from_logits,
     semantic_stage_source,
     select_family_disjoint_eval,
     select_preference_train_rows,
@@ -290,6 +291,93 @@ def test_slot_plan_attention_is_source_only_and_cache_partition_invariant() -> N
     assert all(float(mx.sum(mx.abs(value)).item()) > 0.0 for value in plan_output_gradients)
 
 
+def test_slot_categorical_plan_objective_handles_empty_slots_and_rejects_multihot() -> None:
+    logits = np.asarray(
+        [
+            [4.0, -2.0, -3.0, -3.0, -2.0, -1.0],
+            [-2.0, 5.0, -3.0, -2.0, -3.0, 6.0],
+        ],
+        dtype=np.float32,
+    )
+    targets = np.asarray(
+        [
+            [1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
+        ],
+        dtype=np.float32,
+    )
+    metrics = semantic_plan_metrics_from_logits(
+        logits, targets, loss_mode="slot_categorical", slot_count=2
+    )
+    assert metrics["micro_accuracy"] == 1.0
+    assert metrics["micro_f1"] == 1.0
+    assert metrics["exact_row_accuracy"] == 1.0
+    assert metrics["empty_slot_accuracy"] == 1.0
+    assert metrics["active_slot_count"] == 3
+    assert metrics["predicted_active_slot_count"] == 3
+
+    malformed = targets.copy()
+    malformed[0, 1] = 1.0
+    with pytest.raises(ValueError, match="zero-or-one-hot"):
+        semantic_plan_metrics_from_logits(
+            logits, malformed, loss_mode="slot_categorical", slot_count=2
+        )
+
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    mx.random.seed(47)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=96,
+            d_model=32,
+            num_layers=2,
+            num_heads=4,
+            num_kv_heads=2,
+            ff_dim=64,
+            semantic_plan_feature_count=48,
+            semantic_plan_separator_token_id=2,
+            semantic_plan_bottleneck_dim=8,
+            semantic_plan_slot_count=4,
+            semantic_plan_conditioning_mode="slot_attention",
+            semantic_plan_probability_mode="slot_categorical",
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    sequence = mx.array([[1, 12, 13, 2, 21, 22]], dtype=mx.int32)
+    token_targets = mx.array([[12, 13, 2, 21, 22, 0]], dtype=mx.int32)
+    body_mask = mx.array([[0, 0, 0, 1, 1, 0]], dtype=mx.float32)
+    plan_targets = np.zeros((1, 48), dtype=np.float32)
+    plan_targets[0, 0] = 1.0
+    plan_targets[0, 13] = 1.0
+    value_and_grad = nn.value_and_grad(model, causal_loss)
+    loss, gradients = value_and_grad(
+        model,
+        sequence,
+        token_targets,
+        body_mask,
+        mx,
+        nn,
+        mx.array(plan_targets),
+        0.25,
+        None,
+        "slot_categorical",
+        4,
+    )
+    mx.eval(loss, gradients)
+    classifier_gradients = [
+        value
+        for name, value in mlx_utils.tree_flatten(gradients)
+        if "semantic_plan_classifier" in name
+    ]
+    assert classifier_gradients
+    assert any(
+        float(mx.sum(mx.abs(value)).item()) > 0.0 for value in classifier_gradients
+    )
+
+
 def test_semantic_plan_auxiliary_loss_updates_plan_parameters() -> None:
     import mlx.core as mx
     import mlx.nn as nn
@@ -433,6 +521,17 @@ def test_latent_ordered_plan_field_is_closed_low_rank_and_body_stream_preserving
     mismatched_slots["model"]["semantic_plan_slot_count"] = slot_count - 1
     with pytest.raises(ValueError, match="must match ordered plan slots"):
         validate_config(mismatched_slots)
+
+    categorical = json.loads(json.dumps(slot_attention))
+    categorical["model"]["semantic_plan_probability_mode"] = "slot_categorical"
+    categorical["semantic_plan_training"]["loss_mode"] = "slot_categorical"
+    validate_config(categorical)
+    mismatched_objective = json.loads(json.dumps(categorical))
+    mismatched_objective["model"]["semantic_plan_probability_mode"] = (
+        "independent_sigmoid"
+    )
+    with pytest.raises(ValueError, match="requires categorical slot probabilities"):
+        validate_config(mismatched_objective)
 
     semantic, semantic_receipt = prepare_semantic_plan_labels(
         np.asarray([labels, labels], dtype=np.float32), mode="semantic", seed=7
@@ -703,8 +802,10 @@ def test_latent_ordered_plan_gate_requires_semantic_body_gain(tmp_path: Path) ->
             {
                 "semantic_plan_slot_count": 8,
                 "semantic_plan_conditioning_mode": "slot_attention",
+                "semantic_plan_probability_mode": "slot_categorical",
             }
         )
+        config["semantic_plan_training"]["loss_mode"] = "slot_categorical"
         config_path.write_text(json.dumps(config), encoding="utf-8")
     slot_adopted = audit_slot_ordered_plan_ablation(directories)
     assert slot_adopted["state"] == "GREEN"
