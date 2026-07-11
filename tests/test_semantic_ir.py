@@ -196,6 +196,62 @@ def test_ordered_plan_slot_field_preserves_order_without_identifiers() -> None:
     assert labels == renamed
 
 
+def test_factorized_step_field_breaks_truncated_algorithm_collision() -> None:
+    rle = """out = []
+for item in data:
+    if out and out[-1][0] == item:
+        out[-1] = (item, out[-1][1] + 1)
+    else:
+        out.append((item, 1))
+return out
+"""
+    merge = """intervals = []
+for item in data:
+    if isinstance(item, (list, tuple)) and len(item) >= 2:
+        a, b = item[0], item[1]
+        if b > a:
+            intervals.append((a, b))
+merged = []
+for a, b in sorted(intervals):
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+return [tuple(item) for item in merged]
+"""
+    assert semantic_ir.body_to_ordered_plan_slot_labels(
+        rle, slot_count=16
+    ) == semantic_ir.body_to_ordered_plan_slot_labels(merge, slot_count=16)
+
+    step_count = semantic_ir.PLAN_MAX_STEPS
+    group_sizes = semantic_ir.ordered_plan_step_factor_group_sizes()
+    features = semantic_ir.ordered_plan_step_features(step_count)
+    rle_labels = semantic_ir.body_to_ordered_plan_step_labels(
+        rle, step_count=step_count
+    )
+    merge_labels = semantic_ir.body_to_ordered_plan_step_labels(
+        merge, step_count=step_count
+    )
+    assert len(features) == len(rle_labels) == step_count * sum(group_sizes)
+    assert rle_labels != merge_labels
+    assert all(identifier not in feature for feature in features for identifier in ("out", "item", "data", "intervals", "merged"))
+
+    slot_width = sum(group_sizes)
+    for labels in (rle_labels, merge_labels):
+        for slot in range(step_count):
+            row = labels[slot * slot_width : (slot + 1) * slot_width]
+            presence = row[0]
+            offset = 1
+            for width in group_sizes[1:]:
+                assert sum(row[offset : offset + width]) == presence
+                offset += width
+
+    renamed = rle.replace("out", "result").replace("item", "entry").replace("data", "records")
+    assert rle_labels == semantic_ir.body_to_ordered_plan_step_labels(
+        renamed, step_count=step_count
+    )
+
+
 def test_closed_plan_protocol_covers_generated_tokens_and_rejects_bad_transitions() -> None:
     generated = semantic_ir.body_to_plan_tokens(BODY, max_tokens=32)
     protocol = set(semantic_ir.plan_protocol_tokens())

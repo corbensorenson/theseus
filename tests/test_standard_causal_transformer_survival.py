@@ -15,6 +15,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
+import semantic_ir
 from standard_causal_transformer_model import CausalTransformerConfig, build_model
 from standard_causal_transformer_survival import (
     EXECUTABLE_STATE_ROLES,
@@ -378,6 +379,116 @@ def test_slot_categorical_plan_objective_handles_empty_slots_and_rejects_multiho
     )
 
 
+def test_factorized_step_plan_objective_is_group_closed_and_cache_invariant() -> None:
+    groups = (1, 2, 3)
+    logits = np.asarray(
+        [[3.0, -2.0, 4.0, -3.0, -2.0, 5.0, -4.0, 2.0, -2.0, 1.0, 0.0, -1.0]],
+        dtype=np.float32,
+    )
+    targets = np.asarray(
+        [[1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
+        dtype=np.float32,
+    )
+    metrics = semantic_plan_metrics_from_logits(
+        logits,
+        targets,
+        loss_mode="factorized_step_categorical",
+        slot_count=2,
+        factor_group_sizes=groups,
+    )
+    assert metrics["micro_f1"] == 1.0
+    assert metrics["exact_row_accuracy"] == 1.0
+    assert metrics["empty_slot_accuracy"] == 1.0
+    assert metrics["factor_accuracy_on_active_slots"] == 1.0
+
+    malformed = targets.copy()
+    malformed[0, 2] = 0.0
+    with pytest.raises(ValueError, match="one category per active factor"):
+        semantic_plan_metrics_from_logits(
+            logits,
+            malformed,
+            loss_mode="factorized_step_categorical",
+            slot_count=2,
+            factor_group_sizes=groups,
+        )
+
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    model_groups = (1, 2, 3, 6)
+    mx.random.seed(53)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=96,
+            d_model=32,
+            num_layers=2,
+            num_heads=4,
+            num_kv_heads=2,
+            ff_dim=64,
+            semantic_plan_feature_count=48,
+            semantic_plan_separator_token_id=2,
+            semantic_plan_bottleneck_dim=8,
+            semantic_plan_slot_count=4,
+            semantic_plan_conditioning_mode="slot_attention",
+            semantic_plan_probability_mode="factorized_step",
+            semantic_plan_factor_group_sizes=model_groups,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    sequence = mx.array([[1, 12, 13, 2, 21, 22]], dtype=mx.int32)
+    full_logits, full_cache, _plan_logits = model(
+        sequence, return_plan_logits=True
+    )
+    _prefix_logits, prefix_cache, _prefix_plan = model(
+        sequence[:, :4], return_plan_logits=True
+    )
+    cached_logits, cached_state = model(sequence[:, 4:], prefix_cache)
+    mx.eval(
+        full_logits,
+        cached_logits,
+        *cache_arrays(full_cache),
+        *cache_arrays(cached_state),
+    )
+    assert bool(mx.allclose(cached_logits, full_logits[:, 4:], atol=1e-4))
+
+    token_targets = mx.array([[12, 13, 2, 21, 22, 0]], dtype=mx.int32)
+    body_mask = mx.array([[0, 0, 0, 1, 1, 0]], dtype=mx.float32)
+    plan_targets = np.zeros((1, 48), dtype=np.float32)
+    offset = 0
+    plan_targets[0, offset] = 1.0
+    offset += 1
+    for width in model_groups[1:]:
+        plan_targets[0, offset] = 1.0
+        offset += width
+    value_and_grad = nn.value_and_grad(model, causal_loss)
+    loss, gradients = value_and_grad(
+        model,
+        sequence,
+        token_targets,
+        body_mask,
+        mx,
+        nn,
+        mx.array(plan_targets),
+        0.25,
+        None,
+        "factorized_step_categorical",
+        4,
+        model_groups,
+    )
+    mx.eval(loss, gradients)
+    classifier_gradients = [
+        value
+        for name, value in mlx_utils.tree_flatten(gradients)
+        if "semantic_plan_classifier" in name
+    ]
+    assert classifier_gradients
+    assert any(
+        float(mx.sum(mx.abs(value)).item()) > 0.0 for value in classifier_gradients
+    )
+
+
 def test_semantic_plan_auxiliary_loss_updates_plan_parameters() -> None:
     import mlx.core as mx
     import mlx.nn as nn
@@ -532,6 +643,33 @@ def test_latent_ordered_plan_field_is_closed_low_rank_and_body_stream_preserving
     )
     with pytest.raises(ValueError, match="requires categorical slot probabilities"):
         validate_config(mismatched_objective)
+
+    factorized = json.loads(json.dumps(slot_attention))
+    factor_slot_count = semantic_ir.PLAN_MAX_STEPS
+    factorized["model"].update(
+        {
+            "semantic_plan_feature_count": len(
+                semantic_ir.ordered_plan_step_features(factor_slot_count)
+            ),
+            "semantic_plan_slot_count": factor_slot_count,
+            "semantic_plan_probability_mode": "factorized_step",
+            "semantic_plan_factor_group_sizes": list(
+                semantic_ir.ordered_plan_step_factor_group_sizes()
+            ),
+        }
+    )
+    factorized["semantic_plan_training"].update(
+        {
+            "target": "ordered_plan_step_factor_field",
+            "ordered_slot_count": factor_slot_count,
+            "loss_mode": "factorized_step_categorical",
+        }
+    )
+    validate_config(factorized)
+    mismatched_factors = json.loads(json.dumps(factorized))
+    mismatched_factors["model"]["semantic_plan_factor_group_sizes"][-1] -= 1
+    with pytest.raises(ValueError, match="must match the registered IR field"):
+        validate_config(mismatched_factors)
 
     semantic, semantic_receipt = prepare_semantic_plan_labels(
         np.asarray([labels, labels], dtype=np.float32), mode="semantic", seed=7
@@ -750,6 +888,7 @@ def test_latent_ordered_plan_gate_requires_semantic_body_gain(tmp_path: Path) ->
                 "train_holdout_family_overlap_count": 0,
                 "train_eval_prompt_overlap_count": 0,
                 "train_eval_body_overlap_count": 0,
+                "unique_semantic_eval_task_count": 24,
                 "holdout_families": [f"family-{index}" for index in range(24)],
             },
             "training": {
@@ -802,13 +941,29 @@ def test_latent_ordered_plan_gate_requires_semantic_body_gain(tmp_path: Path) ->
             {
                 "semantic_plan_slot_count": 8,
                 "semantic_plan_conditioning_mode": "slot_attention",
-                "semantic_plan_probability_mode": "slot_categorical",
+                "semantic_plan_probability_mode": "factorized_step",
+                "semantic_plan_factor_group_sizes": [1, 2, 3],
             }
         )
-        config["semantic_plan_training"]["loss_mode"] = "slot_categorical"
+        config["semantic_plan_training"].update(
+            {
+                "loss_mode": "factorized_step_categorical",
+                "target": "ordered_plan_step_factor_field",
+            }
+        )
         config_path.write_text(json.dumps(config), encoding="utf-8")
+    plan_labels = np.zeros((24, 48), dtype=np.float32)
+    for row in range(24):
+        for slot, code in ((0, row % 6), (1, row // 6)):
+            offset = slot * 6
+            plan_labels[row, offset] = 1.0
+            plan_labels[row, offset + 1 + code % 2] = 1.0
+            plan_labels[row, offset + 3 + code // 2] = 1.0
+    stage_dir = directories["semantic"] / "stage"
+    stage_dir.mkdir()
+    np.savez_compressed(stage_dir / "stage_arrays_v1.npz", eval_plan_labels=plan_labels)
     slot_adopted = audit_slot_ordered_plan_ablation(directories)
-    assert slot_adopted["state"] == "GREEN"
+    assert slot_adopted["state"] == "GREEN", slot_adopted["hard_gaps"]
     assert slot_adopted["adoption_state"] == "ADOPTED"
 
     shuffled_config_path = directories["shuffled"] / "config.json"

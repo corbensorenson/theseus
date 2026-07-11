@@ -675,12 +675,24 @@ deletion closure is graph evidence, not physical unlearning.
   loss improves (`1.781374` vs `1.790626`), but behavior is worse: semantic emits
   `71` candidates at reward `0.414167`, versus shuffled `78` at `0.429921`;
   dropout emits `70` at `0.411765`. All remain `0/24`, accepted verified output
-  per second remains zero, and the canonical slot gate is `NOT_ADOPTED`. Phase
-  completion requires prompt-to-plan semantic grounding and independently measured
-  obligation adequacy to improve exact family-disjoint behavior under the same
-  controls; plan loss, deterministic rendering, repair, generic extra capacity,
-  another attention mechanism or label objective, or behavior-flat scaling cannot
-  substitute.
+  per second remains zero, and the canonical slot gate is `NOT_ADOPTED`. The
+  next audit identifies a representation defect hidden by those aggregate
+  metrics: the 16 token slots encode only `17` distinct plans for `24` heldout
+  tasks and collapse seven unrelated algorithms onto the same truncated prefix.
+  The replacement factorizes eight complete statement steps into presence,
+  depth, kind, intent, flow, data roles, value kind, and feature groups. It cuts
+  the field from `5,488` to `1,856` features, parameters from `8,348,528` to
+  `7,880,000`, and staged arrays from `373,789,062` to `199,714,566` bytes. The
+  independent gate verifies `24/24` unique, group-closed heldout plans with zero
+  collisions. Behavior still regresses: semantic factorized plans emit `63`
+  candidates over `21/24` tasks at reward `0.386842`, versus shuffled `74`,
+  `23/24`, `0.421138`; dropout `82`, `23/24`, `0.438168`; and body-only `83`,
+  `23/24`, `0.440152`. Every arm remains `0/24`, and the gate stays
+  `NOT_ADOPTED`. Phase completion still requires a learned Semantic-IR route to
+  improve exact family-disjoint behavior under the same controls. The immediate
+  dependency is the Phase 10 direct proposer floor: another plan loss, renderer,
+  deterministic repair, generic capacity increase, attention variant, or
+  behavior-flat scale run cannot substitute.
 
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,

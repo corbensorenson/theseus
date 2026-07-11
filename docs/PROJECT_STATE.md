@@ -171,7 +171,25 @@ is zero. Independent audits are GREEN and the canonical slot gate remains
 `NOT_ADOPTED`. Phase 13 now needs prompt-to-plan semantic grounding and
 independently measured obligation adequacy that changes direct verifier behavior, not another
 label objective, generic capacity increase, renderer, repair, or behavior-flat
-scale run. A separate
+scale run. An independent representation audit then found that the 16-slot
+token field itself truncated plans too early: only `17/24` heldout tasks had a
+distinct plan, including one exact collision shared by seven unrelated
+algorithms. The in-place replacement represents eight complete statement steps
+as presence, depth, statement kind, semantic intent, flow, data roles, value
+kind, and feature factors. It reduces the field from `5,488` to `1,856`
+features, the plan arm from `8,348,528` to `7,880,000` parameters, and its
+staged array from `373,789,062` to `199,714,566` bytes. The independent gate
+recomputes `24/24` distinct, group-closed heldout plans with zero collisions.
+That representation repair still does not repair behavior. Under the same
+`1,202,267` body positions, semantic factorized plans learn better than shuffled
+labels (`0.272894` versus `0.229266` F1) but emit only `63` candidates over
+`21/24` tasks at reward `0.386842`; shuffled emits `74` over `23/24` at
+`0.421138`, dropout emits `82` over `23/24` at `0.438168`, and body-only emits
+`83` over `23/24` at `0.440152`. Every arm remains `0/24`. Integrity and blind
+flow are GREEN, and the slot gate is correctly `NOT_ADOPTED`. Phase 13 remains
+partial: its representation collision is fixed, but behavioral acceptance now
+depends on first raising the Phase 10 direct proposer floor above zero. Another
+plan-label objective is not authorized by this evidence. A separate
 standalone-SFT admission canary rejected `10,526` licensed rows that depended on
 hidden module context and preserved exact private sampling mass. It decoded
 `49,000 ms` faster, but regressed task coverage `20 -> 19`, candidate count

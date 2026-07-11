@@ -30,6 +30,7 @@ class CausalTransformerConfig:
     semantic_plan_slot_count: int = 0
     semantic_plan_conditioning_mode: str = "global_additive"
     semantic_plan_probability_mode: str = "independent_sigmoid"
+    semantic_plan_factor_group_sizes: tuple[int, ...] = ()
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -63,15 +64,16 @@ class CausalTransformerConfig:
         if self.semantic_plan_probability_mode not in {
             "independent_sigmoid",
             "slot_categorical",
+            "factorized_step",
         }:
             raise ValueError(
-                "semantic plan probability mode must be independent_sigmoid or slot_categorical"
+                "semantic plan probability mode must be independent_sigmoid, slot_categorical, or factorized_step"
             )
         if (
-            self.semantic_plan_probability_mode == "slot_categorical"
+            self.semantic_plan_probability_mode in {"slot_categorical", "factorized_step"}
             and self.semantic_plan_conditioning_mode != "slot_attention"
         ):
-            raise ValueError("slot-categorical probabilities require slot attention")
+            raise ValueError("structured slot probabilities require slot attention")
         if self.semantic_plan_conditioning_mode == "slot_attention":
             if self.semantic_plan_slot_count <= 0:
                 raise ValueError("slot attention requires positive semantic plan slots")
@@ -79,6 +81,13 @@ class CausalTransformerConfig:
                 raise ValueError("semantic plan features must divide evenly across slots")
             if self.semantic_plan_bottleneck_dim <= 0:
                 raise ValueError("slot attention requires a low-rank semantic plan bottleneck")
+        if self.semantic_plan_probability_mode == "factorized_step":
+            groups = tuple(int(value) for value in self.semantic_plan_factor_group_sizes)
+            slot_width = self.semantic_plan_feature_count // self.semantic_plan_slot_count
+            if len(groups) < 2 or groups[0] != 1 or sum(groups) != slot_width:
+                raise ValueError(
+                    "factorized plan groups must begin with presence and cover one slot"
+                )
         if self.semantic_plan_feature_count > 0 and not (
             0 <= self.semantic_plan_separator_token_id < self.vocab_size
         ):
@@ -458,7 +467,37 @@ def build_model(
                     slot_logits = plan_logits.reshape(
                         int(tokens.shape[0]), slot_count, slot_width
                     )
-                    if config.semantic_plan_probability_mode == "slot_categorical":
+                    slot_features = feature_matrix.reshape(
+                        slot_count, slot_width, int(feature_matrix.shape[-1])
+                    )
+                    if config.semantic_plan_probability_mode == "factorized_step":
+                        groups = tuple(
+                            int(value) for value in config.semantic_plan_factor_group_sizes
+                        )
+                        presence = mx.sigmoid(slot_logits[:, :, :1])
+                        presence_state = presence[:, :, :, None] * slot_features[
+                            None, :, :1, :
+                        ]
+                        factor_states = [presence_state[:, :, 0, :]]
+                        offset = 1
+                        for width in groups[1:]:
+                            probabilities = mx.softmax(
+                                slot_logits[:, :, offset : offset + width], axis=-1
+                            )
+                            factor_states.append(
+                                mx.sum(
+                                    probabilities[:, :, :, None]
+                                    * slot_features[
+                                        None, :, offset : offset + width, :
+                                    ],
+                                    axis=2,
+                                )
+                            )
+                            offset += width
+                        slot_state = presence * mx.mean(
+                            mx.stack(factor_states, axis=2), axis=2
+                        )
+                    elif config.semantic_plan_probability_mode == "slot_categorical":
                         empty_logits = mx.zeros(
                             (int(tokens.shape[0]), slot_count, 1), dtype=slot_logits.dtype
                         )
@@ -468,14 +507,13 @@ def build_model(
                         )[:, :, 1:]
                     else:
                         slot_probabilities = mx.sigmoid(slot_logits)
-                    slot_features = feature_matrix.reshape(
-                        slot_count, slot_width, int(feature_matrix.shape[-1])
-                    )
-                    slot_mass = mx.sum(slot_probabilities, axis=-1, keepdims=True)
-                    slot_state = mx.sum(
-                        slot_probabilities[:, :, :, None] * slot_features[None, :, :, :],
-                        axis=2,
-                    ) / mx.maximum(slot_mass, 1.0)
+                    if config.semantic_plan_probability_mode != "factorized_step":
+                        slot_mass = mx.sum(slot_probabilities, axis=-1, keepdims=True)
+                        slot_state = mx.sum(
+                            slot_probabilities[:, :, :, None]
+                            * slot_features[None, :, :, :],
+                            axis=2,
+                        ) / mx.maximum(slot_mass, 1.0)
                     context = self.semantic_plan_projection(slot_state) * has_separator[
                         :, None, None
                     ]

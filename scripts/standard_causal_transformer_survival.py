@@ -275,6 +275,7 @@ def run(
             enabled=plan_training["enabled"],
             loss_mode=plan_training["loss_mode"],
             slot_count=plan_training["ordered_slot_count"],
+            factor_group_sizes=plan_training["factor_group_sizes"],
             mx=mx,
         )
         ordered_plan_eval_before = evaluate_ordered_plan_loss(
@@ -328,6 +329,7 @@ def run(
                 plan_shuffle_seed=plan_training["shuffle_seed"],
                 plan_loss_mode=plan_training["loss_mode"],
                 plan_slot_count=plan_training["ordered_slot_count"],
+                plan_factor_group_sizes=plan_training["factor_group_sizes"],
                 phase_name="prompt_signature_body_sft_continuation",
                 target_positions=remaining_sft_positions,
                 batch_size=int(training_cfg["batch_size"]),
@@ -370,6 +372,7 @@ def run(
             enabled=plan_training["enabled"],
             loss_mode=plan_training["loss_mode"],
             slot_count=plan_training["ordered_slot_count"],
+            factor_group_sizes=plan_training["factor_group_sizes"],
             mx=mx,
         )
         ordered_plan_eval_before = evaluate_ordered_plan_loss(
@@ -448,6 +451,7 @@ def run(
                 plan_shuffle_seed=plan_training["shuffle_seed"],
                 plan_loss_mode=plan_training["loss_mode"],
                 plan_slot_count=plan_training["ordered_slot_count"],
+                plan_factor_group_sizes=plan_training["factor_group_sizes"],
                 phase_name=phase_name,
                 target_positions=target_positions,
                 batch_size=int(training_cfg["batch_size"]),
@@ -494,6 +498,7 @@ def run(
         enabled=plan_training["enabled"],
         loss_mode=plan_training["loss_mode"],
         slot_count=plan_training["ordered_slot_count"],
+        factor_group_sizes=plan_training["factor_group_sizes"],
         mx=mx,
     )
     ordered_plan_eval_after = evaluate_ordered_plan_loss(
@@ -2231,6 +2236,11 @@ def semantic_plan_training_contract(config: dict[str, Any]) -> dict[str, Any]:
         "target": target,
         "ordered_slot_count": int(cfg.get("ordered_slot_count") or 0),
         "loss_mode": str(cfg.get("loss_mode") or "binary_multilabel"),
+        "factor_group_sizes": (
+            semantic_ir.ordered_plan_step_factor_group_sizes()
+            if target == "ordered_plan_step_factor_field"
+            else ()
+        ),
         "inference_source": "prompt_signature_only",
         "body_target_stream_unchanged": True,
         "renderer_or_repair_used": False,
@@ -2239,6 +2249,8 @@ def semantic_plan_training_contract(config: dict[str, Any]) -> dict[str, Any]:
 
 def semantic_plan_feature_contract(config: dict[str, Any]) -> tuple[str, ...]:
     contract = semantic_plan_training_contract(config)
+    if contract["target"] == "ordered_plan_step_factor_field":
+        return semantic_ir.ordered_plan_step_features(contract["ordered_slot_count"])
     if contract["target"] == "ordered_plan_slot_token_field":
         return semantic_ir.ordered_plan_slot_features(contract["ordered_slot_count"])
     return semantic_ir.plan_obligation_features()
@@ -2246,6 +2258,11 @@ def semantic_plan_feature_contract(config: dict[str, Any]) -> tuple[str, ...]:
 
 def semantic_plan_labels_for_body(body: str, config: dict[str, Any]) -> tuple[int, ...]:
     contract = semantic_plan_training_contract(config)
+    if contract["target"] == "ordered_plan_step_factor_field":
+        return semantic_ir.body_to_ordered_plan_step_labels(
+            body,
+            step_count=contract["ordered_slot_count"],
+        )
     if contract["target"] == "ordered_plan_slot_token_field":
         return semantic_ir.body_to_ordered_plan_slot_labels(
             body,
@@ -2340,6 +2357,7 @@ def causal_loss(
     plan_positive_weights: Any | None = None,
     plan_loss_mode: str = "binary_multilabel",
     plan_slot_count: int = 0,
+    plan_factor_group_sizes: tuple[int, ...] = (),
 ) -> Any:
     if plan_labels is not None and plan_weight > 0.0:
         logits, _cache, plan_logits = model(inputs, return_plan_logits=True)
@@ -2354,6 +2372,39 @@ def causal_loss(
     if plan_logits is None:
         return body_loss
     plan_targets = plan_labels.astype(mx.float32)
+    if plan_loss_mode == "factorized_step_categorical":
+        slots = int(plan_slot_count)
+        groups = tuple(int(value) for value in plan_factor_group_sizes)
+        if (
+            slots <= 0
+            or int(plan_logits.shape[-1]) % slots
+            or len(groups) < 2
+            or groups[0] != 1
+            or sum(groups) != int(plan_logits.shape[-1]) // slots
+        ):
+            raise ValueError("factorized plan loss requires a complete grouped slot field")
+        width = int(plan_logits.shape[-1]) // slots
+        slot_logits = plan_logits.reshape(-1, width)
+        slot_targets = plan_targets.reshape(-1, width)
+        presence_logits = slot_logits[:, 0]
+        presence_targets = slot_targets[:, 0]
+        presence_loss = mx.mean(
+            mx.maximum(presence_logits, 0.0)
+            - presence_logits * presence_targets
+            + mx.log1p(mx.exp(-mx.abs(presence_logits)))
+        )
+        active_mass = mx.maximum(mx.sum(presence_targets), 1.0)
+        factor_losses = []
+        offset = 1
+        for group_width in groups[1:]:
+            group_logits = slot_logits[:, offset : offset + group_width]
+            group_targets = slot_targets[:, offset : offset + group_width]
+            target_ids = mx.argmax(group_targets, axis=-1).astype(mx.int32)
+            per_slot = nn.losses.cross_entropy(group_logits, target_ids)
+            factor_losses.append(mx.sum(per_slot * presence_targets) / active_mass)
+            offset += group_width
+        plan_loss = presence_loss + mx.mean(mx.stack(factor_losses))
+        return body_loss + float(plan_weight) * plan_loss
     if plan_loss_mode == "slot_categorical":
         slots = int(plan_slot_count)
         if slots <= 0 or int(plan_logits.shape[-1]) % slots:
@@ -2408,6 +2459,7 @@ def train_phase(
     plan_shuffle_seed: int,
     plan_loss_mode: str,
     plan_slot_count: int,
+    plan_factor_group_sizes: tuple[int, ...],
     phase_name: str,
     target_positions: int,
     batch_size: int,
@@ -2440,7 +2492,26 @@ def train_phase(
         ).sum(axis=-1)
         if np.any(slot_sums > 1.0):
             raise ValueError("slot-categorical labels must be zero-or-one-hot per slot")
-    if plan_loss_mode == "slot_categorical":
+    if prepared_plan_labels is not None and plan_loss_mode == "factorized_step_categorical":
+        groups = tuple(int(value) for value in plan_factor_group_sizes)
+        if (
+            plan_slot_count <= 0
+            or prepared_plan_labels.shape[1] % plan_slot_count
+            or len(groups) < 2
+            or groups[0] != 1
+            or sum(groups) != prepared_plan_labels.shape[1] // plan_slot_count
+        ):
+            raise ValueError("factorized plan labels require a complete grouped slot field")
+        slots = prepared_plan_labels.reshape(len(prepared_plan_labels), plan_slot_count, -1)
+        presence = slots[:, :, 0]
+        offset = 1
+        for width in groups[1:]:
+            if np.any(slots[:, :, offset : offset + width].sum(axis=-1) != presence):
+                raise ValueError(
+                    "factorized plan labels require one category per active factor"
+                )
+            offset += width
+    if plan_loss_mode in {"slot_categorical", "factorized_step_categorical"}:
         positive_weights = None
         positive_weight_receipt = {
             "state": "NOT_APPLICABLE",
@@ -2506,6 +2577,7 @@ def train_phase(
                 matrix_positive_weights,
                 plan_loss_mode,
                 plan_slot_count,
+                plan_factor_group_sizes,
             )
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
@@ -2565,6 +2637,7 @@ def train_phase(
         "semantic_plan_positive_weights": positive_weight_receipt,
         "semantic_plan_loss_mode": plan_loss_mode,
         "semantic_plan_slot_count": int(plan_slot_count),
+        "semantic_plan_factor_group_sizes": list(plan_factor_group_sizes),
         "external_inference_calls": 0,
     }
 
@@ -2652,6 +2725,7 @@ def semantic_plan_metrics_from_logits(
     *,
     loss_mode: str,
     slot_count: int,
+    factor_group_sizes: tuple[int, ...] = (),
 ) -> dict[str, Any]:
     """Recompute plan quality under the exact objective used by training."""
 
@@ -2659,6 +2733,102 @@ def semantic_plan_metrics_from_logits(
     truth_values = np.asarray(targets, dtype=np.float32)
     if values.shape != truth_values.shape or values.ndim != 2 or not len(values):
         raise ValueError("semantic plan metrics require aligned non-empty rank-two arrays")
+    if loss_mode == "factorized_step_categorical":
+        slots = int(slot_count)
+        groups = tuple(int(value) for value in factor_group_sizes)
+        if (
+            slots <= 0
+            or values.shape[1] % slots
+            or len(groups) < 2
+            or groups[0] != 1
+            or sum(groups) != values.shape[1] // slots
+        ):
+            raise ValueError("factorized plan metrics require a complete grouped slot field")
+        width = values.shape[1] // slots
+        slot_logits = values.reshape(len(values), slots, width)
+        slot_targets = truth_values.reshape(len(values), slots, width)
+        target_presence = slot_targets[:, :, 0] >= 0.5
+        predicted_presence = slot_logits[:, :, 0] >= 0.0
+        presence_logits = slot_logits[:, :, 0]
+        presence_loss = (
+            np.maximum(presence_logits, 0.0)
+            - presence_logits * target_presence.astype(np.float32)
+            + np.log1p(np.exp(-np.abs(presence_logits)))
+        ).mean()
+        group_losses: list[float] = []
+        target_classes: list[np.ndarray] = []
+        predicted_classes: list[np.ndarray] = []
+        offset = 1
+        for group_width in groups[1:]:
+            group_logits = slot_logits[:, :, offset : offset + group_width]
+            group_targets = slot_targets[:, :, offset : offset + group_width]
+            if np.any(group_targets.sum(axis=-1) != target_presence.astype(np.float32)):
+                raise ValueError(
+                    "factorized plan targets require one category per active factor"
+                )
+            truth_class = np.argmax(group_targets, axis=-1)
+            predicted_class = np.argmax(group_logits, axis=-1)
+            shifted = group_logits - group_logits.max(axis=-1, keepdims=True)
+            log_denominator = np.log(np.exp(shifted).sum(axis=-1))
+            selected = np.take_along_axis(
+                shifted, truth_class[:, :, None], axis=-1
+            ).squeeze(-1)
+            group_losses.append(
+                float(
+                    ((log_denominator - selected) * target_presence).sum()
+                    / max(1, int(target_presence.sum()))
+                )
+            )
+            target_classes.append(truth_class)
+            predicted_classes.append(predicted_class)
+            offset += group_width
+        target_stack = np.stack(target_classes, axis=-1)
+        predicted_stack = np.stack(predicted_classes, axis=-1)
+        correct_factors = np.logical_and(
+            np.logical_and(target_presence, predicted_presence)[:, :, None],
+            predicted_stack == target_stack,
+        )
+        true_positive = int(correct_factors.sum())
+        predicted_atom_count = int(predicted_presence.sum()) * len(target_classes)
+        target_atom_count = int(target_presence.sum()) * len(target_classes)
+        precision = true_positive / max(1, predicted_atom_count)
+        recall = true_positive / max(1, target_atom_count)
+        slot_exact = np.logical_and(
+            predicted_presence == target_presence,
+            np.logical_or(
+                ~target_presence,
+                np.all(predicted_stack == target_stack, axis=-1),
+            ),
+        )
+        return {
+            "loss_mode": loss_mode,
+            "slot_count": slots,
+            "slot_width": width,
+            "factor_group_sizes": list(groups),
+            "factorized_cross_entropy": round(
+                float(presence_loss + np.mean(group_losses)), 8
+            ),
+            "binary_cross_entropy": None,
+            "micro_accuracy": round(float(slot_exact.mean()), 8),
+            "micro_precision": round(float(precision), 8),
+            "micro_recall": round(float(recall), 8),
+            "micro_f1": round(
+                float(2 * precision * recall / max(1e-12, precision + recall)), 8
+            ),
+            "exact_row_accuracy": round(float(np.all(slot_exact, axis=1).mean()), 8),
+            "active_slot_count": int(target_presence.sum()),
+            "predicted_active_slot_count": int(predicted_presence.sum()),
+            "empty_slot_accuracy": round(
+                float(
+                    np.logical_and(~target_presence, ~predicted_presence).sum()
+                    / max(1, int((~target_presence).sum()))
+                ),
+                8,
+            ),
+            "factor_accuracy_on_active_slots": round(
+                float(correct_factors.sum() / max(1, target_atom_count)), 8
+            ),
+        }
     if loss_mode == "slot_categorical":
         slots = int(slot_count)
         if slots <= 0 or values.shape[1] % slots:
@@ -2769,6 +2939,7 @@ def evaluate_semantic_plan_head(
     enabled: bool,
     loss_mode: str,
     slot_count: int,
+    factor_group_sizes: tuple[int, ...],
     mx: Any,
 ) -> dict[str, Any]:
     """Measure source-only plan predictions without feeding target labels to generation."""
@@ -2797,6 +2968,7 @@ def evaluate_semantic_plan_head(
             targets,
             loss_mode=loss_mode,
             slot_count=slot_count,
+            factor_group_sizes=factor_group_sizes,
         ),
         "source_contract": "prompt_signature_only_before_separator",
         "target_labels_visible_at_inference": False,
@@ -3938,9 +4110,13 @@ def validate_config(config: dict[str, Any]) -> None:
         if plan_training["target"] not in {
             "fixed_multilabel_semantic_ir_obligations",
             "ordered_plan_slot_token_field",
+            "ordered_plan_step_factor_field",
         }:
             raise ValueError("semantic plan target is not registered")
-        if plan_training["target"] == "ordered_plan_slot_token_field" and not (
+        if plan_training["target"] in {
+            "ordered_plan_slot_token_field",
+            "ordered_plan_step_factor_field",
+        } and not (
             8 <= plan_training["ordered_slot_count"] <= semantic_ir.PLAN_MAX_TOKENS
         ):
             raise ValueError("ordered latent plan slot count must fit the registered protocol")
@@ -3950,24 +4126,38 @@ def validate_config(config: dict[str, Any]) -> None:
             raise ValueError("semantic plan head must use the canonical source-target separator")
         if plan_training["label_mode"] not in {"semantic", "shuffled", "dropout"}:
             raise ValueError("semantic plan label mode must be semantic, shuffled, or dropout")
-        if plan_training["loss_mode"] not in {"binary_multilabel", "slot_categorical"}:
+        if plan_training["loss_mode"] not in {
+            "binary_multilabel",
+            "slot_categorical",
+            "factorized_step_categorical",
+        }:
             raise ValueError("semantic plan loss mode is not registered")
         if not 0.0 < plan_training["auxiliary_loss_weight"] <= 4.0:
             raise ValueError("semantic plan auxiliary loss weight must be in (0, 4]")
         if plan_bottleneck_dim < 0 or plan_bottleneck_dim > int(model.get("d_model") or 0):
             raise ValueError("semantic plan bottleneck must be within the model width")
-        if plan_training["target"] == "ordered_plan_slot_token_field" and plan_bottleneck_dim <= 0:
+        if plan_training["target"] in {
+            "ordered_plan_slot_token_field",
+            "ordered_plan_step_factor_field",
+        } and plan_bottleneck_dim <= 0:
             raise ValueError("ordered latent plan field requires a positive low-rank bottleneck")
         if plan_conditioning_mode not in {"global_additive", "slot_attention"}:
             raise ValueError("semantic plan conditioning mode is not registered")
         if plan_conditioning_mode == "slot_attention":
-            if plan_training["target"] != "ordered_plan_slot_token_field":
-                raise ValueError("slot attention requires the ordered plan slot field")
+            if plan_training["target"] not in {
+                "ordered_plan_slot_token_field",
+                "ordered_plan_step_factor_field",
+            }:
+                raise ValueError("slot attention requires an ordered plan field")
             if plan_slot_count != plan_training["ordered_slot_count"]:
                 raise ValueError("slot-attention memory count must match ordered plan slots")
         elif plan_slot_count:
             raise ValueError("global additive plan conditioning cannot declare attention slots")
-        if plan_probability_mode not in {"independent_sigmoid", "slot_categorical"}:
+        if plan_probability_mode not in {
+            "independent_sigmoid",
+            "slot_categorical",
+            "factorized_step",
+        }:
             raise ValueError("semantic plan probability mode is not registered")
         if plan_training["loss_mode"] == "slot_categorical":
             if plan_conditioning_mode != "slot_attention":
@@ -3976,6 +4166,23 @@ def validate_config(config: dict[str, Any]) -> None:
                 raise ValueError(
                     "slot-categorical plan loss requires categorical slot probabilities"
                 )
+        elif plan_training["loss_mode"] == "factorized_step_categorical":
+            if plan_training["target"] != "ordered_plan_step_factor_field":
+                raise ValueError(
+                    "factorized plan loss requires the ordered step-factor field"
+                )
+            if plan_conditioning_mode != "slot_attention":
+                raise ValueError("factorized plan loss requires slot attention")
+            if plan_probability_mode != "factorized_step":
+                raise ValueError(
+                    "factorized plan loss requires factorized slot probabilities"
+                )
+            model_groups = tuple(
+                int(value)
+                for value in (model.get("semantic_plan_factor_group_sizes") or [])
+            )
+            if model_groups != tuple(plan_training["factor_group_sizes"]):
+                raise ValueError("factorized plan groups must match the registered IR field")
         elif plan_probability_mode != "independent_sigmoid":
             raise ValueError(
                 "binary-multilabel plan loss requires independent sigmoid probabilities"

@@ -114,6 +114,29 @@ PLAN_VALUE_KINDS = (
     "unary_operation",
     "other",
 )
+PLAN_STEP_FACTOR_GROUPS = (
+    ("depth", tuple(str(depth) for depth in PLAN_DEPTH_BUCKETS)),
+    ("kind", PLAN_STATEMENT_KINDS),
+    ("semantic", PLAN_SEMANTIC_INTENTS),
+    (
+        "flow",
+        tuple(
+            f"R{read_count}:W{write_count}"
+            for read_count in PLAN_COUNT_BUCKETS
+            for write_count in PLAN_COUNT_BUCKETS
+        ),
+    ),
+    (
+        "data",
+        tuple(
+            f"R{read_role}:W{write_role}"
+            for read_role in PLAN_DATA_ROLES
+            for write_role in PLAN_DATA_ROLES
+        ),
+    ),
+    ("value", PLAN_VALUE_KINDS),
+    ("feature", ("none", *PLAN_FEATURES)),
+)
 PROGRAM_BEGIN = "IR:PROGRAM"
 PROGRAM_END = "IR:PROGRAM_END"  # Reserved so older fault fixtures fail explicitly.
 NODE_END = "IR:NODE_END"  # Reserved; compact v1 uses AST field arity.
@@ -218,6 +241,55 @@ def body_to_ordered_plan_slot_labels(body: str, *, slot_count: int) -> tuple[int
     return tuple(labels)
 
 
+def ordered_plan_step_factor_group_sizes() -> tuple[int, ...]:
+    """Return presence plus closed categorical group widths for one plan step."""
+
+    return (1, *(len(values) for _name, values in PLAN_STEP_FACTOR_GROUPS))
+
+
+def ordered_plan_step_features(step_count: int) -> tuple[str, ...]:
+    """Return a compact factorized field that preserves up to eight full steps."""
+
+    steps = int(step_count)
+    if not 1 <= steps <= PLAN_MAX_STEPS:
+        raise SemanticIRFault("IR_PLAN_STEP_COUNT_INVALID", str(step_count))
+    features: list[str] = []
+    for step in range(steps):
+        features.append(f"IRP:STEP_SLOT:{step}:PRESENT")
+        for group, values in PLAN_STEP_FACTOR_GROUPS:
+            features.extend(
+                f"IRP:STEP_SLOT:{step}:{group.upper()}:{value}" for value in values
+            )
+    return tuple(features)
+
+
+def body_to_ordered_plan_step_labels(body: str, *, step_count: int) -> tuple[int, ...]:
+    """Encode complete generic statement factors without identifiers or rendering actions."""
+
+    steps = int(step_count)
+    if not 1 <= steps <= PLAN_MAX_STEPS:
+        raise SemanticIRFault("IR_PLAN_STEP_COUNT_INVALID", str(step_count))
+    group_sizes = ordered_plan_step_factor_group_sizes()
+    slot_width = sum(group_sizes)
+    labels = [0] * (steps * slot_width)
+    for slot, tokens in enumerate(body_to_plan_steps(body, max_steps=steps)):
+        factors = _plan_step_factor_values(tokens)
+        offset = slot * slot_width
+        labels[offset] = 1
+        offset += 1
+        for group, values in PLAN_STEP_FACTOR_GROUPS:
+            value = factors[group]
+            try:
+                index = values.index(value)
+            except ValueError as exc:
+                raise SemanticIRFault(
+                    "IR_PLAN_STEP_FACTOR_OUT_OF_PROTOCOL", f"{group}={value}"
+                ) from exc
+            labels[offset + index] = 1
+            offset += len(values)
+    return tuple(labels)
+
+
 @lru_cache(maxsize=1)
 def plan_protocol_token_set() -> frozenset[str]:
     return frozenset(plan_protocol_tokens())
@@ -286,17 +358,49 @@ def body_to_plan_tokens(body: str, *, max_tokens: int = PLAN_MAX_TOKENS) -> list
     The model must still emit the complete Python body after this plan.
     """
 
-    function = parse_body(body)
     budget = max(4, int(max_tokens or PLAN_MAX_TOKENS))
-    name_roles = _plan_name_roles(function.body)
     content: list[str] = []
-    for step in _plan_statement_groups(function.body, name_roles=name_roles):
+    for step in body_to_plan_steps(body, max_steps=PLAN_MAX_STEPS):
         if len(content) + len(step) > budget - 2:
             break
         content.extend(step)
         if sum(token.startswith("IRP:STEP:") for token in content) >= PLAN_MAX_STEPS:
             break
     return [PLAN_BEGIN, *content, PLAN_END]
+
+
+def body_to_plan_steps(body: str, *, max_steps: int = PLAN_MAX_STEPS) -> list[list[str]]:
+    """Return complete identifier-free statement factors before token-budget truncation."""
+
+    function = parse_body(body)
+    name_roles = _plan_name_roles(function.body)
+    return [
+        list(step)
+        for index, step in enumerate(
+            _plan_statement_groups(function.body, name_roles=name_roles)
+        )
+        if index < max(1, min(int(max_steps), PLAN_MAX_STEPS))
+    ]
+
+
+def _plan_step_factor_values(tokens: Iterable[str]) -> dict[str, str]:
+    values = [str(token) for token in tokens]
+    if len(values) not in {5, 6}:
+        raise SemanticIRFault("IR_PLAN_STEP_ARITY_INVALID", str(len(values)))
+    step = values[0].removeprefix("IRP:STEP:D")
+    depth, separator, kind = step.partition(":")
+    if not separator:
+        raise SemanticIRFault("IR_PLAN_STEP_TOKEN_INVALID", values[0])
+    feature = values[5].removeprefix("IRP:FEATURE:") if len(values) == 6 else "none"
+    return {
+        "depth": depth,
+        "kind": kind,
+        "semantic": values[1].removeprefix("IRP:SEM:"),
+        "flow": values[2].removeprefix("IRP:FLOW:"),
+        "data": values[3].removeprefix("IRP:DATA:"),
+        "value": values[4].removeprefix("IRP:VALUE:"),
+        "feature": feature,
+    }
 
 
 def _plan_statement_groups(

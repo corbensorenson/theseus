@@ -1960,7 +1960,8 @@
         "ordered_alpha_renamed_semantic_plan",
         "hierarchical_plan_then_body_beam",
         "low_rank_latent_ordered_plan_field",
-        "per_layer_slot_addressable_plan_attention"
+        "per_layer_slot_addressable_plan_attention",
+        "factorized_complete_statement_plan_field"
       ],
       "required_records": [
         "semantic_ir_atom",
@@ -2026,12 +2027,15 @@
         "runtime/standard_causal_transformer_slot_plan_dropout/report.json",
         "runtime/standard_causal_transformer_slot_categorical_plan_semantic/report.json",
         "runtime/standard_causal_transformer_slot_categorical_plan_shuffled/report.json",
-        "runtime/standard_causal_transformer_slot_categorical_plan_dropout/report.json"
+        "runtime/standard_causal_transformer_slot_categorical_plan_dropout/report.json",
+        "runtime/standard_causal_transformer_slot_factorized_plan_semantic/report.json",
+        "runtime/standard_causal_transformer_slot_factorized_plan_shuffled/report.json",
+        "runtime/standard_causal_transformer_slot_factorized_plan_dropout/report.json"
       ],
       "missing_items": [
-        "Emitted plans, global additive latent plans, sigmoid slot attention, and categorical slot attention all learn source-only plan targets but remain 0/24 exact; semantic plan metrics improve while shuffled-label body behavior can remain better, so structurally closed Semantic-IR receipts do not yet prove prompt-algorithm adequacy or intended behavior"
+        "The factorized full-step field removes the old 17/24 representation collision and independently proves 24/24 distinct group-closed plans, but emitted, latent, categorical-slot, and factorized-slot routes all remain 0/24 exact; Phase 13 behavioral acceptance depends on first raising the Phase 10 direct proposer floor above zero"
       ],
-      "smallest_next_patch": "Measure prompt-to-plan grounding directly: derive target-independent private obligation queries from prompt/signature contracts, align predicted ordered slots to those obligations with source-contrastive negatives, and score per-slot operation/value/binding adequacy before body decode. Reuse the registered slot-attention route and unchanged body-token stream only if this grounding signal beats shuffled/dropout controls and yields exact family-disjoint verifier behavior. Do not add another attention mechanism, label-only head, renderer, deterministic repair, fallback, generic capacity increase, or behavior-flat scale run.",
+      "smallest_next_patch": "Raise the Phase 10 prompt/signature-only direct full-body proposer above zero exact family-disjoint verifier passes with the body-only transformer route and durable training provenance. Then reuse the collision-free factorized field in a body-likelihood-driven semantic ablation. Do not add another plan objective, attention variant, renderer, deterministic repair, fallback, generic capacity increase, or behavior-flat scale run.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -2099,6 +2103,10 @@
         ,"categorical slot semantic plan F1 0.42211055 beats shuffled 0.34459459 and dropout 0.0, but semantic remains 0/24 and scores reward 0.414167 below shuffled 0.429921"
         ,"categorical slot semantic decode costs 43794 ms versus body-only 23325 ms, and accepted verified output per second remains 0 for every arm"
         ,"all slot-plan integrity and blind-information-flow audits are GREEN with zero mismatches or invalid claims"
+        ,"factorized slot representation reduces the plan field from 5488 to 1856 features and the semantic arm from 8348528 to 7880000 parameters"
+        ,"reports/standard_causal_transformer_survival_gate.json slot_ordered_plan_ablation.representation_audit proves 24/24 unique group-closed heldout plans with zero collisions"
+        ,"factorized semantic, shuffled, dropout, and body-only arms each consume exactly 1202267 optimizer body positions and remain 0/24 exact"
+        ,"factorized semantic coverage/reward 21/24 and 0.386842 regress against shuffled 23/24 and 0.421138, dropout 23/24 and 0.438168, and body-only 23/24 and 0.440152"
       ],
       "completion_rule": "Plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependencies, obligations, repair scopes, and replayed receipts. Completion additionally requires a learned Semantic-IR route to improve family-disjoint direct model behavior under a matched body-only ablation. Assisted compiler/repair output remains zero-credit."
     },

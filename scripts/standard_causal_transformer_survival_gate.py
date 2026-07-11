@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports" / "standard_causal_transformer_survival.json"
@@ -73,9 +75,9 @@ DEFAULT_LATENT_ORDERED_PLAN_ARM_DIRS = {
 }
 DEFAULT_SLOT_ORDERED_PLAN_ARM_DIRS = {
     "body_only": ROOT / "runtime" / "standard_causal_transformer_latent_plan_body_control",
-    "semantic": ROOT / "runtime" / "standard_causal_transformer_slot_categorical_plan_semantic",
-    "shuffled": ROOT / "runtime" / "standard_causal_transformer_slot_categorical_plan_shuffled",
-    "dropout": ROOT / "runtime" / "standard_causal_transformer_slot_categorical_plan_dropout",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_slot_factorized_plan_semantic",
+    "shuffled": ROOT / "runtime" / "standard_causal_transformer_slot_factorized_plan_shuffled",
+    "dropout": ROOT / "runtime" / "standard_causal_transformer_slot_factorized_plan_dropout",
 }
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
@@ -948,6 +950,7 @@ def audit_latent_ordered_plan_ablation(
     conditioning_mode: str = "global_additive",
     loss_mode: str = "binary_multilabel",
     probability_mode: str = "independent_sigmoid",
+    target_contract: str = "ordered_plan_slot_token_field",
     gap_prefix: str = "latent_ordered_plan",
     policy: str = "project_theseus_latent_ordered_plan_ablation_v1",
 ) -> dict[str, Any]:
@@ -1004,6 +1007,7 @@ def audit_latent_ordered_plan_ablation(
             "semantic_plan_slot_count",
             "semantic_plan_conditioning_mode",
             "semantic_plan_probability_mode",
+            "semantic_plan_factor_group_sizes",
         ):
             model.pop(key, None)
         copied.pop("semantic_plan_training", None)
@@ -1032,7 +1036,7 @@ def audit_latent_ordered_plan_ablation(
         for name in required_arms
     ) and all(
         (configs[name].get("semantic_plan_training") or {}).get("target")
-        == "ordered_plan_slot_token_field"
+        == target_contract
         and int((configs[name].get("semantic_plan_training") or {}).get("ordered_slot_count") or 0)
         > 0
         for name in ("semantic", "shuffled", "dropout")
@@ -1058,6 +1062,120 @@ def audit_latent_ordered_plan_ablation(
         == probability_mode
         for name in ("semantic", "shuffled", "dropout")
     )
+    factor_group_contract_clean = True
+    factor_groups: dict[str, tuple[int, ...]] = {}
+    if probability_mode == "factorized_step":
+        factor_groups = {
+            name: tuple(
+                int(value)
+                for value in (
+                    (configs[name].get("model") or {}).get(
+                        "semantic_plan_factor_group_sizes"
+                    )
+                    or []
+                )
+            )
+            for name in ("semantic", "shuffled", "dropout")
+        }
+        factor_group_contract_clean = (
+            len(set(factor_groups.values())) == 1
+            and all(groups and groups[0] == 1 for groups in factor_groups.values())
+            and all(
+                sum(factor_groups[name])
+                * int(
+                    (configs[name].get("model") or {}).get(
+                        "semantic_plan_slot_count"
+                    )
+                    or 0
+                )
+                == int(
+                    (configs[name].get("model") or {}).get(
+                        "semantic_plan_feature_count"
+                    )
+                    or 0
+                )
+                for name in factor_groups
+            )
+        )
+    representation_audit: dict[str, Any] = {
+        "state": "NOT_APPLICABLE",
+        "reason": "non_factorized_plan_contract",
+    }
+    representation_collision_free = True
+    if probability_mode == "factorized_step":
+        arrays_path = arm_dirs["semantic"] / "stage" / "stage_arrays_v1.npz"
+        if arrays_path.exists():
+            with np.load(arrays_path) as arrays:
+                labels = np.asarray(arrays["eval_plan_labels"], dtype=np.float32)
+            slots = int(
+                (configs["semantic"].get("model") or {}).get(
+                    "semantic_plan_slot_count"
+                )
+                or 0
+            )
+            groups = factor_groups.get("semantic", ())
+            width = sum(groups)
+            shape_valid = (
+                labels.ndim == 2
+                and slots > 0
+                and width > 0
+                and labels.shape[1] == slots * width
+            )
+            group_closed = shape_valid
+            if shape_valid:
+                slot_labels = labels.reshape(len(labels), slots, width)
+                presence = slot_labels[:, :, 0]
+                group_closed = bool(
+                    np.all((presence == 0.0) | (presence == 1.0))
+                )
+                offset = 1
+                for group_width in groups[1:]:
+                    group_closed = group_closed and bool(
+                        np.all(
+                            slot_labels[:, :, offset : offset + group_width].sum(
+                                axis=-1
+                            )
+                            == presence
+                        )
+                    )
+                    offset += group_width
+            unique_count = (
+                int(np.unique(labels, axis=0).shape[0]) if shape_valid else 0
+            )
+            row_count = int(labels.shape[0]) if labels.ndim == 2 else 0
+            expected_rows = int(
+                (reports["semantic"].get("stage") or {}).get(
+                    "unique_semantic_eval_task_count"
+                )
+                or 0
+            )
+            representation_collision_free = (
+                shape_valid
+                and group_closed
+                and row_count == expected_rows
+                and unique_count == row_count
+            )
+            representation_audit = {
+                "state": "GREEN" if representation_collision_free else "RED",
+                "path": rel(arrays_path),
+                "sha256": file_sha256(arrays_path),
+                "row_count": row_count,
+                "expected_semantic_task_count": expected_rows,
+                "unique_plan_count": unique_count,
+                "collision_row_count": row_count - unique_count,
+                "feature_count": int(labels.shape[1]) if labels.ndim == 2 else 0,
+                "slot_count": slots,
+                "factor_group_sizes": list(groups),
+                "group_closed": group_closed,
+                "measurement_only": True,
+            }
+        else:
+            representation_collision_free = False
+            representation_audit = {
+                "state": "RED",
+                "reason": "factorized_eval_plan_labels_missing",
+                "path": rel(arrays_path),
+            }
     if conditioning_mode == "slot_attention":
         conditioning_contract_clean = conditioning_contract_clean and all(
             int((configs[name].get("model") or {}).get("semantic_plan_slot_count") or 0)
@@ -1165,6 +1283,8 @@ def audit_latent_ordered_plan_ablation(
         "body_target_stream_unchanged": target_contract_clean,
         "conditioning_contract_matches": conditioning_contract_clean,
         "objective_contract_matches": objective_contract_clean,
+        "factor_group_contract_matches": factor_group_contract_clean,
+        "factorized_representation_collision_free": representation_collision_free,
         "optimizer_body_exposure_equal": exposure_equal,
         "training_and_holdout_lineage_equal": lineage_equal,
         "plan_parameter_counts_equal": parameter_contract,
@@ -1192,10 +1312,18 @@ def audit_latent_ordered_plan_ablation(
             "body_eval_loss": float((report.get("training") or {}).get("eval_loss_after") or 0.0),
             "plan_micro_f1": float(plan_eval.get("micro_f1") or 0.0),
             "plan_objective_loss": float(
-                plan_eval.get("categorical_cross_entropy")
-                if plan_eval.get("categorical_cross_entropy") is not None
-                else plan_eval.get("binary_cross_entropy")
-                or 0.0
+                next(
+                    (
+                        plan_eval.get(key)
+                        for key in (
+                            "factorized_cross_entropy",
+                            "categorical_cross_entropy",
+                            "binary_cross_entropy",
+                        )
+                        if plan_eval.get(key) is not None
+                    ),
+                    0.0,
+                )
             ),
             "decode_runtime_ms": decode_runtime_ms,
             "accepted_verified_output_per_second": round(
@@ -1261,6 +1389,7 @@ def audit_latent_ordered_plan_ablation(
         "conditioning_mode": conditioning_mode,
         "loss_mode": loss_mode,
         "probability_mode": probability_mode,
+        "representation_audit": representation_audit,
         "artifacts": artifacts,
         "non_claims": [
             "ordered plan classification quality is not body-generation capability",
@@ -1279,13 +1408,14 @@ def audit_latent_ordered_plan_ablation(
 
 
 def audit_slot_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
-    """Qualify per-layer slot-addressable plan memory without generic capacity credit."""
+    """Qualify factorized per-layer plan memory without generic capacity credit."""
 
     return audit_latent_ordered_plan_ablation(
         arm_dirs,
         conditioning_mode="slot_attention",
-        loss_mode="slot_categorical",
-        probability_mode="slot_categorical",
+        loss_mode="factorized_step_categorical",
+        probability_mode="factorized_step",
+        target_contract="ordered_plan_step_factor_field",
         gap_prefix="slot_ordered_plan",
         policy="project_theseus_slot_ordered_plan_ablation_v1",
     )
