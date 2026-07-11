@@ -250,6 +250,7 @@ def test_role_shuffle_changes_reads_before_any_state_write_commits() -> None:
         state_memory_chunk_size=4,
         state_memory_local_window=8,
         state_memory_mode="semantic_roles",
+        state_memory_read_policy="role_dependency",
     )
     mx.random.seed(41)
     normal = build_model(

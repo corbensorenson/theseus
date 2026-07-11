@@ -450,7 +450,7 @@ def run(
                 "auxiliary_target_count": 0,
                 "deterministic_renderer_credit": 0,
                 "read_policy": (
-                    "fixed_role_dependency_bias_plus_local_causal_window"
+                    model_cfg.state_memory_read_policy
                     if model_cfg.state_memory_mode != "none"
                     else "not_applicable"
                 ),
@@ -2636,10 +2636,13 @@ def validate_config(config: dict[str, Any]) -> None:
     state_mode = str(model.get("state_memory_mode") or "none")
     state_slots = int(model.get("state_memory_slots") or 0)
     state_ablation = str(model.get("state_memory_ablation") or "none")
+    state_read_policy = str(model.get("state_memory_read_policy") or "unrestricted")
     if state_mode not in {"none", "semantic_roles", "hash_control"}:
         raise ValueError("state memory mode must be none, semantic_roles, or hash_control")
     if state_ablation not in {"none", "zero", "shuffle"}:
         raise ValueError("state memory ablation must be none, zero, or shuffle")
+    if state_read_policy not in {"unrestricted", "role_dependency"}:
+        raise ValueError("state memory read policy must be unrestricted or role_dependency")
     if state_mode != "none":
         if target_mode != "body_tokens":
             raise ValueError("executable state memory requires the unchanged body-token target stream")

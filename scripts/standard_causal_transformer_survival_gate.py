@@ -354,6 +354,7 @@ def audit_state_memory_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
         "state_memory_local_window",
         "state_memory_mode",
         "state_memory_ablation",
+        "state_memory_read_policy",
     }
 
     def matched_config(value: dict[str, Any]) -> dict[str, Any]:

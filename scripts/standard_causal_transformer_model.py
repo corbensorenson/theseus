@@ -23,6 +23,7 @@ class CausalTransformerConfig:
     state_memory_local_window: int = 96
     state_memory_mode: str = "none"
     state_memory_ablation: str = "none"
+    state_memory_read_policy: str = "unrestricted"
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -35,6 +36,8 @@ class CausalTransformerConfig:
             raise ValueError("state memory mode must be none, semantic_roles, or hash_control")
         if self.state_memory_ablation not in {"none", "zero", "shuffle"}:
             raise ValueError("state memory ablation must be none, zero, or shuffle")
+        if self.state_memory_read_policy not in {"unrestricted", "role_dependency"}:
+            raise ValueError("state memory read policy must be unrestricted or role_dependency")
         if self.state_memory_mode == "none" and self.state_memory_slots != 0:
             raise ValueError("state memory slots must be zero when state memory is disabled")
         if self.state_memory_mode != "none" and self.state_memory_slots <= 1:
@@ -156,7 +159,7 @@ def build_model(
                         mx.array(0.0, dtype=mx.float32),
                         mx.array(-1e9, dtype=mx.float32),
                     )
-                if role_weights is not None:
+                if role_weights is not None and config.state_memory_read_policy == "role_dependency":
                     read_access = mx.minimum(
                         mx.matmul(role_weights, state_role_interaction),
                         mx.array(1.0, dtype=mx.float32),
