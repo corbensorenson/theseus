@@ -1789,8 +1789,8 @@
         "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=GREEN invalid_claim_count=0 static_information_flow_violation_count=0"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence.",
-      "current_wall": "The prior 1/24 standard-transformer floor is invalid because private tests influenced inferred callable arity. A later ID-space audit found split source IDs shifted into the target embedding segment. The repaired 6.6M-parameter MLX mapping binds all admitted source content, encodes all 24 heldout targets, raises independently integrity-verified candidates from 38/88 to 57/87, and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. The old evaluation-only CLI then overwrote the completed training receipt; the checkpoint and heartbeat are retained, but the canonical gate records incomplete training provenance. The successor is contained and non-routable; semantic prompt-to-body behavior, full task coverage, verifier-positive pair density, and durable training receipts remain the wall.",
-      "next_required_work": "Increase genuine prompt/signature-conditioned semantic behavior through a matched data/objective/architecture comparison, not more beam width, truncation repair, tokenizer sharing, source-offset work, or same-distribution SFT. Preserve training receipts before replay. Use semantic-IR receipts and verifier obligations for accounting without deterministic repair credit; compare any update against the frozen checkpoint and reward-removed control. Do not scale preference/RL, run public calibration, or claim runtime serving while heldout behavior is flat or negative.",
+      "current_wall": "The repaired 6.6M-parameter MLX mapping binds all admitted source content, encodes all 24 heldout targets, yields 57/87 independently verified canonical body-only candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. A new same-model learned Semantic-IR plan-prefix arm is independently trace-audited and no-cheat clean, but under matched data/model/seed/target-position/evaluation/fanout budgets it covers 15/24 tasks with 42 candidates and mean verifier reward 0.296970 versus body-only 20/24, 70 candidates, and 0.401639; both pass 0/24 and plan decode is 11,252 ms slower. The plan arm is NOT_ADOPTED and body-only remains canonical. Genuine prompt-conditioned semantic behavior, full task coverage, verifier-positive pair density, and durable training receipts remain the wall.",
+      "next_required_work": "Mine the matched body-only and plan/body wrong-answer traces for prompt-visible semantic obligations, then run one bounded behavior-relevant data/objective comparison against body-only. Preserve training receipts before replay. Do not add another plan/head/marker variant, scale preference/RL, run public calibration, or claim runtime serving until a candidate family produces a family-disjoint verifier pass above zero.",
       "implemented_items": [
         "latest graph/operation source-condition adequacy summary reports/strict_generator_mlx_operation_graph_adequacy_summary_20260706.json: prompt-visible graph/type obligations now require graph-walk AST evidence; the private train replay moved from 4 admitted wrong rows to 0 admitted rows with explicit graph_walk_evidence and operation_evidence residuals, preserving no-cheat counters.",
         "graph role-signal patch: graph traversal methods and graph-state identifiers now map into existing body-action/body-operand role heads, and the action trace emits missing_graph_walk_evidence for graph/hops/path plans without traversal-shaped AST evidence after normalizing plan/source_plan/semantic_plan/expected_plan/plan_tags visible plan fields. reports/strict_generator_graph_role_signal_smoke_summary_20260706.json confirms trainable-path consumption but rejects the checkpoint because heldout LM/transition/action losses regress.",
@@ -1806,7 +1806,8 @@
         ,"The all-candidate private verifier labels every generated candidate instead of early-stopping after the first pass, enabling exact pass-vs-hard-negative preference pairs without exposing tests to generation."
         ,"A real length-normalized MLX DPO canary ran against a frozen reference checkpoint with a reward-removed control. One exact clean pair moved the reward-present margin +6.625639 while the control stayed at zero, but all base/reward/control heldouts score 0/24; the shadow update is NOT_ADOPTED."
         ,"Manual batch-safe RoPE and explicit compact-KV GQA expansion restore serial/batched cache parity. Exact batched cached-beam generation preserves candidate hashes/order, behavior, and integrity while reducing runtime 127817 ms -> 34632 ms (3.690720x); it is runtime-only because accepted verified output is zero."
-        ,"The stage-cache signature now binds staging-relevant data, configuration, and source functions rather than decode-only orchestration, so beam/preference tuning does not force unnecessary corpus restaging."
+        ,"The stage-cache signature now binds staging-relevant data, configuration, and source functions rather than decode-only orchestration, so beam/preference tuning does not force unnecessary corpus restaging.",
+        "A closed target-independent Semantic-IR plan protocol is now emitted autoregressively by the same causal model before direct body tokens. Independent integrity replays raw token hashes, plan transitions, reversible body decoding, and candidate-body equality. The matched plan/body canary is retained as a clean negative: 0/24 versus 0/24, task coverage 15 versus 20, candidates 42 versus 70, mean verifier reward 0.296970 versus 0.401639, and decode runtime +11,252 ms. It is NOT_ADOPTED and body-only remains canonical."
       ]
     },
     {
@@ -1927,7 +1928,7 @@
     {
       "phase": 13,
       "title": "Semantic IR And Substrate-Neutral Reasoning Atoms",
-      "status": "implemented",
+      "status": "partial",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-13",
       "ai_book_source_basis": [
@@ -1940,7 +1941,8 @@
       "scf_required": true,
       "implementation_ids": [
         "impl.theseus_plan_compiler.v1",
-        "impl.simulation_fidelity_receipt_suite.v1"
+        "impl.simulation_fidelity_receipt_suite.v1",
+        "impl.standard_causal_transformer_survival.v1"
       ],
       "execution_spine_hooks": [
         "semantic_ir_node",
@@ -1949,7 +1951,9 @@
         "artifact_graph",
         "verifier_obligation",
         "tool_binding",
-        "localized_dependent_atom_replay"
+        "localized_dependent_atom_replay",
+        "learned_semantic_plan_prefix",
+        "direct_plan_body_token_trace"
       ],
       "required_records": [
         "semantic_ir_atom",
@@ -1957,12 +1961,15 @@
         "dependency_edge",
         "evidence_binding",
         "typed_semantic_ir_candidate_receipt",
-        "semantic_ir_source_repair_ablation"
+        "semantic_ir_source_repair_ablation",
+        "matched_target_mode_ablation",
+        "direct_plan_body_trace_receipt"
       ],
       "required_gates": [
         "python3 scripts/semantic_ir_obligation_gate.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
-        "python3 -m pytest -q tests/test_semantic_ir.py",
+        "python3 -m pytest -q tests/test_semantic_ir.py tests/test_standard_causal_transformer_survival.py",
+        "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
         "python3 scripts/roadmap_implementation_gate.py --gate"
       ],
       "required_docs": [
@@ -1986,10 +1993,16 @@
         "reports/strict_generator_mlx_decode_eval_semantic_operation_value_construction_canary_v4_20260706.json",
         "reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706.json",
         "reports/strict_generator_semantic_ir_repair_apply_v9.json",
-        "reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl"
+        "reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl",
+        "reports/standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_candidates.jsonl",
+        "reports/candidate_integrity_standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_gate.json"
       ],
-      "missing_items": [],
-      "smallest_next_patch": "Proceed to the Phase 10 direct proposer floor using typed_semantic_ir_tokens_v1 as an available trainable target/diagnostic representation, while keeping compiler-rendered candidates zero-credit. The current localized replay reduces two type-handling failures to zero but still has zero intended-behavior passes; that semantic-quality wall belongs to learned full-body generation and must not be hidden by the assisted path.",
+      "missing_items": [
+        "A learned Semantic-IR intervention has not improved family-disjoint direct model behavior: the matched plan/body arm remains 0/24 and regresses task coverage, verifier reward, and decode runtime versus body-only"
+      ],
+      "smallest_next_patch": "Use the retained matched plan/body failures to derive prompt-visible, family-disjoint semantic training pressure and compare one bounded update against the canonical body-only arm. Complete Phase 13 only on a direct verifier-pass gain with independent trace integrity; deterministic compilation/repair remains zero-credit.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -2004,9 +2017,15 @@
         "reports/semantic_ir_obligation_gate.json trigger_state=GREEN",
         "reports/semantic_ir_obligation_gate.json summary.typed_semantic_ir_ready_count=2/2",
         "reports/semantic_ir_obligation_gate.json summary.typed_semantic_ir_receipt_mismatch_count=0",
-        "reports/semantic_ir_obligation_gate.json summary.typed_semantic_ir_credit_violation_count=0"
+        "reports/semantic_ir_obligation_gate.json summary.typed_semantic_ir_credit_violation_count=0",
+        "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+        "reports/standard_causal_transformer_survival_gate.json summary.target_mode_comparison_state=GREEN",
+        "reports/standard_causal_transformer_survival_gate.json summary.target_mode_adoption_state=NOT_ADOPTED",
+        "reports/standard_causal_transformer_survival_gate.json summary.target_mode_deltas.passed_task_count=0",
+        "reports/standard_causal_transformer_survival_gate.json summary.target_mode_deltas.candidate_task_count=-5",
+        "reports/standard_causal_transformer_survival_gate.json summary.target_mode_deltas.mean_verification_reward=-0.104669"
       ],
-      "completion_rule": "Implemented: plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependency edges, obligations, repair scopes, and independently replayed receipts. The generic IR round-trips nested Python AST bodies with typed faults and no fallback. Assisted compiler/repair output remains zero-credit, and zero intended-behavior lift remains an explicit Phase 10 model-quality wall rather than a Phase 13 cohesion claim."
+      "completion_rule": "Plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependencies, obligations, repair scopes, and replayed receipts. Completion additionally requires a learned Semantic-IR route to improve family-disjoint direct model behavior under a matched body-only ablation. Assisted compiler/repair output remains zero-credit."
     },
     {
       "phase": 14,

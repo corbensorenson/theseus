@@ -40,6 +40,11 @@ from neural_seed_token_decoder_support import (  # noqa: E402
     syntax_complete_body_prefix,
     token_allowed_by_policy,
 )
+from neural_seed_token_decoder_rendering import (  # noqa: E402
+    PLAN_BODY_START_TOKEN,
+    learned_semantic_ir_plan_body_target_mode,
+    split_learned_plan_prefix_tokens,
+)
 from standard_causal_transformer_model import (  # noqa: E402
     CausalTransformerConfig,
     build_model,
@@ -452,8 +457,10 @@ def run(
         "gates": build_gates(stage, training_complete, eval_loss_before, eval_loss_after, decode_summary, verifier_summary),
         "score_semantics": (
             "Direct decoder-only causal model generation from prompt plus callable signature. "
-            "Reversible token decoding adds no body content; no repair, template, renderer, router, "
-            "tool, fallback return, public benchmark payload, or external inference is credited."
+            "An optional learned semantic-plan prefix is emitted by the same model and stripped before "
+            "the directly generated body; it does not render or repair code. Reversible token decoding "
+            "adds no body content, and no template, renderer, router, tool, fallback return, public "
+            "benchmark payload, or external inference is credited."
         ),
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "public_training_rows_written": 0,
@@ -479,6 +486,8 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         if metadata.get("stage_signature") == signature:
             arrays = np.load(arrays_path)
             vocab_payload = read_json(resolve(config["tokenization"]["source_vocab"]))
+            source_vocab = dict(metadata.get("source_vocab") or vocab_payload["source_vocab"])
+            target_vocab = dict(metadata.get("target_vocab") or vocab_payload["target_vocab"])
             return Stage(
                 pretrain_inputs=arrays["pretrain_inputs"],
                 pretrain_labels=arrays["pretrain_labels"],
@@ -496,14 +505,15 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
                 eval_mask=arrays["eval_mask"],
                 eval_rows=list(metadata["eval_rows"]),
                 preference_rows=list(metadata.get("preference_rows") or []),
-                source_vocab=dict(vocab_payload["source_vocab"]),
-                target_vocab=dict(vocab_payload["target_vocab"]),
+                source_vocab=source_vocab,
+                target_vocab=target_vocab,
                 summary={**metadata["summary"], "cache_status": "hit"},
             )
 
     vocab_payload = read_json(resolve(config["tokenization"]["source_vocab"]))
     source_vocab = dict(vocab_payload["source_vocab"])
     target_vocab = dict(vocab_payload["target_vocab"])
+    target_vocab_extension = extend_target_vocab_for_mode(config, target_vocab)
     eval_rows, holdout_families = select_family_disjoint_eval(config)
     eval_prompt_hashes = {sha(model_prompt(row)) for row in eval_rows}
     eval_body_hashes = {sha(str(row.get("solution_body") or "")) for row in eval_rows}
@@ -577,6 +587,8 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         ],
         "private_sampling_probability": sft_audit["private_sampling_probability"],
         "shared_source_target_vocabulary": shared_vocabulary_enabled(config),
+        "target_mode": str(config["tokenization"]["target_mode"]),
+        "target_vocab_extension": target_vocab_extension,
         "model_vocabulary_size": model_vocab_size(config, source_vocab, target_vocab),
         "eval_hidden_derived_signature_count": sum(
             int(
@@ -624,6 +636,8 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
             "summary": summary,
             "eval_rows": eval_rows,
             "preference_rows": preference_rows,
+            "source_vocab": source_vocab,
+            "target_vocab": target_vocab,
         },
     )
     return Stage(
@@ -944,7 +958,11 @@ def encode_sft_training_examples(
         source_ids, source_receipt = encode_model_source(
             row["source_text"], source_vocab, target_vocab, config
         )
-        target_ids, target_receipt = encode_tokens(body_tokens(row["body"]), target_vocab, stream="target")
+        target_ids, target_receipt = encode_tokens(
+            training_target_tokens(str(row["body"]), config),
+            target_vocab,
+            stream="target",
+        )
         if source_receipt.get("unknown_token_count") or target_receipt.get("unknown_token_count"):
             continue
         if len(target_ids) > max_target - 2:
@@ -971,6 +989,40 @@ def encode_sft_training_examples(
         mask[index, mask_start:width] = 1.0
         weights[index] = max(0.0, sampling_weight)
     return inputs, labels, mask, weights
+
+
+def training_target_tokens(body: str, config: dict[str, Any]) -> list[str]:
+    tokenization = config.get("tokenization") if isinstance(config.get("tokenization"), dict) else {}
+    target_mode = str(tokenization.get("target_mode") or "body_tokens")
+    if learned_semantic_ir_plan_body_target_mode(target_mode):
+        max_plan_tokens = int(tokenization.get("semantic_plan_max_tokens") or semantic_ir.PLAN_MAX_TOKENS)
+        return [
+            *semantic_ir.body_to_plan_tokens(body, max_tokens=max_plan_tokens),
+            PLAN_BODY_START_TOKEN,
+            *body_tokens(body),
+        ]
+    return body_tokens(body)
+
+
+def extend_target_vocab_for_mode(config: dict[str, Any], target_vocab: dict[str, int]) -> dict[str, Any]:
+    target_mode = str(config.get("tokenization", {}).get("target_mode") or "body_tokens")
+    before = len(target_vocab)
+    added: list[str] = []
+    if learned_semantic_ir_plan_body_target_mode(target_mode):
+        for token in (*semantic_ir.plan_protocol_tokens(), PLAN_BODY_START_TOKEN):
+            if token in target_vocab:
+                continue
+            target_vocab[token] = len(target_vocab)
+            added.append(token)
+    return {
+        "policy": "project_theseus_standard_causal_target_vocab_extension_v1",
+        "target_mode": target_mode,
+        "size_before": before,
+        "size_after": len(target_vocab),
+        "added_token_count": len(added),
+        "added_token_sha256": sha("\n".join(added)),
+        "target_independent_closed_protocol": learned_semantic_ir_plan_body_target_mode(target_mode),
+    }
 
 
 def assign_body_balanced_sampling_weights(
@@ -1523,6 +1575,7 @@ def generate_candidates(
     timed_out = 0
     cross_task_duplicate_body_rejected = 0
     global_body_hashes: set[str] = set()
+    target_mode = str(config["tokenization"]["target_mode"])
     for task in eval_rows:
         task_started = time.perf_counter()
         visible = visible_eval_source(task)
@@ -1544,6 +1597,7 @@ def generate_candidates(
             target_offset=target_offset,
             allowed_names=signature_names(callable_signature(task)),
             config=config["evaluation"],
+            target_mode=target_mode,
             started=task_started,
             mx=mx,
         )
@@ -1551,7 +1605,7 @@ def generate_candidates(
             timed_out += 1
         seen_code: set[str] = set()
         for rank, beam in enumerate(beams, start=1):
-            body, meta = decode_candidate_body_tokens(beam["tokens"], {}, target_mode="body_tokens")
+            body, meta = decode_candidate_body_tokens(beam["tokens"], {}, target_mode=target_mode)
             if not body:
                 empty_rejected += 1
                 continue
@@ -1577,7 +1631,11 @@ def generate_candidates(
                     "entry_point": str(task.get("entry_point") or "solve"),
                     "phase": "private_eval",
                     "candidate_source": "standard_causal_transformer_survival",
-                    "candidate_generation_mode": "direct_decoder_only_causal_body_tokens",
+                    "candidate_generation_mode": (
+                        "direct_decoder_only_causal_semantic_plan_body_tokens"
+                        if learned_semantic_ir_plan_body_target_mode(target_mode)
+                        else "direct_decoder_only_causal_body_tokens"
+                    ),
                     "code": code,
                     "candidate_sha256": code_hash,
                     "substrate_arm": "transformer_hybrid_survival",
@@ -1586,6 +1644,7 @@ def generate_candidates(
                     "rank_score": round(float(beam["score"]), 8),
                     "decoded_token_count": len(beam["tokens"]),
                     "decoded_token_sha256": sha(" ".join(beam["tokens"])),
+                    "decoded_target_tokens": list(beam["tokens"]),
                     "body_structure_decode": meta,
                     "template_id": "",
                     "template_sha256": "",
@@ -1609,6 +1668,9 @@ def generate_candidates(
                         "body_template_selected": False,
                         "renderer_used": False,
                         "grammar_constraint_only": True,
+                        "learned_semantic_plan_prefix": learned_semantic_ir_plan_body_target_mode(
+                            target_mode
+                        ),
                     },
                 }
             )
@@ -1616,6 +1678,7 @@ def generate_candidates(
                 code,
                 prompt=str(task.get("prompt") or ""),
                 callable_signature=callable_signature(task),
+                learned_prefix_tokens=list(meta.get("learned_plan_prefix_tokens") or []),
             )
             if len(seen_code) >= int(config["evaluation"]["fanout"]):
                 break
@@ -1944,6 +2007,7 @@ def decode_beams(
     target_offset: int,
     allowed_names: set[str],
     config: dict[str, Any],
+    target_mode: str,
     started: float,
     mx: Any,
 ) -> list[dict[str, Any]]:
@@ -1968,6 +2032,7 @@ def decode_beams(
                 top_k=int(config["grammar_top_k"]),
                 branching=int(config["branching_factor"]),
                 allowed_names=allowed_names,
+                target_mode=target_mode,
             )
             for local_id, token, log_probability in choices:
                 if local_id == eos_local:
@@ -2016,7 +2081,7 @@ def decode_beams(
         if not beams:
             break
     for beam in beams:
-        if syntax_complete_body_prefix(beam["tokens"]):
+        if generation_prefix_complete(beam["tokens"], target_mode=target_mode):
             complete.append({"tokens": beam["tokens"], "score": beam["score"]})
     unique: dict[tuple[str, ...], dict[str, Any]] = {}
     for row in complete:
@@ -2137,6 +2202,7 @@ def grammar_choices(
     top_k: int,
     branching: int,
     allowed_names: set[str],
+    target_mode: str,
 ) -> list[tuple[int, str, float]]:
     values = np.asarray(logits[target_offset : target_offset + len(target_vocab)], dtype=np.float64)
     maximum = float(values.max())
@@ -2147,18 +2213,49 @@ def grammar_choices(
         local_id = int(raw_id)
         token = inverse.get(local_id, "<unk>")
         if local_id == eos_local:
-            if syntax_complete_body_prefix(prefix):
+            if generation_prefix_complete(prefix, target_mode=target_mode):
                 choices.append((local_id, token, float(log_probs[local_id])))
-        elif token not in {"<pad>", "<bos>", "<eos>", "<unk>"} and token_allowed_by_policy(
-            prefix,
-            token,
-            policy="strict_body_token_legality_v1",
-            allowed_names=allowed_names,
-        ):
-            choices.append((local_id, token, float(log_probs[local_id])))
+        elif token not in {"<pad>", "<bos>", "<eos>", "<unk>"}:
+            body_prefix, prefix_meta = split_generation_prefix(prefix, target_mode=target_mode)
+            if prefix_meta["phase"] == "plan":
+                allowed = semantic_ir.plan_prefix_token_allowed(
+                    prefix,
+                    token,
+                    body_start_token=PLAN_BODY_START_TOKEN,
+                )
+            else:
+                allowed = token_allowed_by_policy(
+                    body_prefix,
+                    token,
+                    policy="strict_body_token_legality_v1",
+                    allowed_names=allowed_names,
+                )
+            if allowed:
+                choices.append((local_id, token, float(log_probs[local_id])))
         if len(choices) >= branching:
             break
     return choices
+
+
+def split_generation_prefix(prefix: list[str], *, target_mode: str) -> tuple[list[str], dict[str, Any]]:
+    if not learned_semantic_ir_plan_body_target_mode(target_mode):
+        return list(prefix), {"phase": "body", "plan_complete": False, "body_started": True}
+    body, metadata = split_learned_plan_prefix_tokens(prefix)
+    body_started = PLAN_BODY_START_TOKEN in prefix
+    return body, {
+        "phase": "body" if body_started else "plan",
+        "plan_complete": bool(metadata.get("semantic_ir_plan_complete")),
+        "body_started": body_started,
+    }
+
+
+def generation_prefix_complete(prefix: list[str], *, target_mode: str) -> bool:
+    body, metadata = split_generation_prefix(prefix, target_mode=target_mode)
+    if learned_semantic_ir_plan_body_target_mode(target_mode) and not (
+        metadata["body_started"] and metadata["plan_complete"]
+    ):
+        return False
+    return syntax_complete_body_prefix(body)
 
 
 def render_visible_signature(signature: str, body: str) -> str:
@@ -2254,6 +2351,12 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("source/target vocabulary mode must be explicitly boolean")
     if tokenization.get("canonical_model_signature_name") != CANONICAL_MODEL_SIGNATURE_NAME:
         raise ValueError("canonical model signature name must remain solve")
+    target_mode = str(tokenization.get("target_mode") or "")
+    if target_mode not in {"body_tokens", semantic_ir.PLAN_BODY_TARGET_MODE}:
+        raise ValueError("target mode must be direct body tokens or learned semantic-plan plus body tokens")
+    plan_budget = int(tokenization.get("semantic_plan_max_tokens") or 0)
+    if learned_semantic_ir_plan_body_target_mode(target_mode) and not 8 <= plan_budget <= semantic_ir.PLAN_MAX_TOKENS:
+        raise ValueError("semantic plan token budget must be between 8 and the protocol maximum")
     evaluation = config.get("evaluation") or {}
     if int(evaluation.get("holdout_family_count") or 0) < 24:
         raise ValueError("family-disjoint evaluation requires at least 24 distinct families")
@@ -2288,6 +2391,140 @@ def planned_report(
     }
 
 
+def compare_target_mode_canaries(
+    plan_report: dict[str, Any],
+    control_report: dict[str, Any],
+    *,
+    plan_config: dict[str, Any],
+    control_config: dict[str, Any],
+    plan_integrity: dict[str, Any],
+    control_integrity: dict[str, Any],
+) -> dict[str, Any]:
+    """Compare a learned-plan target against body-only under equal exposure."""
+
+    def matched_tokenization(config: dict[str, Any]) -> dict[str, Any]:
+        tokenization = dict(config.get("tokenization") or {})
+        tokenization.pop("target_mode", None)
+        tokenization.pop("semantic_plan_max_tokens", None)
+        return tokenization
+
+    def metric(report: dict[str, Any]) -> dict[str, Any]:
+        summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
+        training = report.get("training") if isinstance(report.get("training"), dict) else {}
+        verifier = private_verifier_summary(report.get("private_verifier") or {})
+        decode = report.get("decode") if isinstance(report.get("decode"), dict) else {}
+        return {
+            "target_mode": str(report.get("stage", {}).get("target_mode") or ""),
+            "parameter_count": int(report.get("architecture", {}).get("parameter_count") or 0),
+            "training_complete": training.get("complete") is True,
+            "eval_loss_after": float(training.get("eval_loss_after") or float("inf")),
+            "candidate_count": int(summary.get("candidate_count") or 0),
+            "candidate_task_count": int(summary.get("candidate_task_count") or 0),
+            "syntax_valid_candidate_count": int(summary.get("syntax_valid_candidate_count") or 0),
+            "passed_task_count": int(verifier.get("passed_task_count") or 0),
+            "mean_verification_reward": float(
+                (report.get("private_verifier", {}).get("private_verification") or {}).get(
+                    "mean_verification_reward"
+                )
+                or 0.0
+            ),
+            "generation_runtime_ms": int(decode.get("runtime_ms") or 0),
+            "total_runtime_ms": int(report.get("runtime_ms") or 0),
+            "integrity_mismatch_count": int(
+                (plan_integrity if report is plan_report else control_integrity)
+                .get("summary", {})
+                .get("integrity_mismatch_count")
+                or 0
+            ),
+            "integrity_verified_candidate_count": int(
+                (plan_integrity if report is plan_report else control_integrity)
+                .get("summary", {})
+                .get("integrity_verified_candidate_count")
+                or 0
+            ),
+        }
+
+    config_pairs = (
+        ("seed", plan_config.get("seed"), control_config.get("seed")),
+        ("sources", plan_config.get("sources"), control_config.get("sources")),
+        ("tokenization_except_target_mode", matched_tokenization(plan_config), matched_tokenization(control_config)),
+        ("model", plan_config.get("model"), control_config.get("model")),
+        ("training", plan_config.get("training"), control_config.get("training")),
+        ("evaluation", plan_config.get("evaluation"), control_config.get("evaluation")),
+        ("preference", plan_config.get("preference"), control_config.get("preference")),
+        ("boundaries", plan_config.get("boundaries"), control_config.get("boundaries")),
+    )
+    matched_checks = {name: left == right for name, left, right in config_pairs}
+    plan = metric(plan_report)
+    control = metric(control_report)
+    matched_checks["target_modes_expected"] = (
+        plan["target_mode"] == semantic_ir.PLAN_BODY_TARGET_MODE
+        and str((plan_config.get("tokenization") or {}).get("target_mode") or "")
+        == semantic_ir.PLAN_BODY_TARGET_MODE
+        and control["target_mode"] == "body_tokens"
+        and str((control_config.get("tokenization") or {}).get("target_mode") or "") == "body_tokens"
+    )
+    boundaries_clean = all(
+        int(report.get(key) or 0) == 0
+        for report in (plan_report, control_report)
+        for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
+    )
+    behavior_better = plan["passed_task_count"] > control["passed_task_count"]
+    coverage_non_regression = plan["candidate_task_count"] >= control["candidate_task_count"]
+    reward_non_regression = plan["mean_verification_reward"] >= control["mean_verification_reward"]
+    integrity_clean = plan["integrity_mismatch_count"] == control["integrity_mismatch_count"] == 0
+    adopted = (
+        all(matched_checks.values())
+        and boundaries_clean
+        and integrity_clean
+        and behavior_better
+        and coverage_non_regression
+        and reward_non_regression
+    )
+    rejection_reasons: list[str] = []
+    if not all(matched_checks.values()):
+        rejection_reasons.append("matched_configuration_failed")
+    if not boundaries_clean:
+        rejection_reasons.append("no_cheat_boundary_failed")
+    if not integrity_clean:
+        rejection_reasons.append("candidate_integrity_failed")
+    if not behavior_better:
+        rejection_reasons.append("no_verifier_pass_gain")
+    if not coverage_non_regression:
+        rejection_reasons.append("candidate_task_coverage_regressed")
+    if not reward_non_regression:
+        rejection_reasons.append("mean_verification_reward_regressed")
+    return {
+        "policy": "project_theseus_standard_causal_target_mode_matched_comparison_v1",
+        "created_utc": now(),
+        "trigger_state": "GREEN" if all(matched_checks.values()) and boundaries_clean else "RED",
+        "adoption_state": "ADOPTED" if adopted else "NOT_ADOPTED",
+        "adoption_rejection_reasons": rejection_reasons,
+        "matched_checks": matched_checks,
+        "boundaries_clean": boundaries_clean,
+        "plan": plan,
+        "control": control,
+        "deltas": {
+            "passed_task_count": plan["passed_task_count"] - control["passed_task_count"],
+            "candidate_task_count": plan["candidate_task_count"] - control["candidate_task_count"],
+            "candidate_count": plan["candidate_count"] - control["candidate_count"],
+            "mean_verification_reward": round(
+                plan["mean_verification_reward"] - control["mean_verification_reward"], 6
+            ),
+            "generation_runtime_ms": plan["generation_runtime_ms"] - control["generation_runtime_ms"],
+            "total_runtime_ms": plan["total_runtime_ms"] - control["total_runtime_ms"],
+        },
+        "non_claims": [
+            "lower language-model loss is not behavior improvement",
+            "learned plan tokens do not receive body-generation credit",
+            "deterministic Semantic IR compilation or repair is not used",
+        ],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
 def stage_signature(config: dict[str, Any]) -> str:
     paths = [
         resolve(config["sources"]["licensed_code_manifest"]),
@@ -2297,6 +2534,8 @@ def stage_signature(config: dict[str, Any]) -> str:
         resolve(config["tokenization"]["source_vocab"]),
         SCRIPTS / "neural_seed_open_vocab.py",
         SCRIPTS / "neural_seed_token_decoder_support.py",
+        SCRIPTS / "neural_seed_token_decoder_rendering.py",
+        SCRIPTS / "semantic_ir.py",
     ]
     paths.extend(admitted_training_source_paths(config))
     stage_config = {
@@ -2319,6 +2558,8 @@ def stage_signature(config: dict[str, Any]) -> str:
         load_sft_examples,
         encode_sft_examples,
         encode_sft_training_examples,
+        training_target_tokens,
+        extend_target_vocab_for_mode,
         assign_body_balanced_sampling_weights,
         select_family_disjoint_eval,
         select_preference_train_rows,

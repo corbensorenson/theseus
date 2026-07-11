@@ -16,6 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports" / "standard_causal_transformer_survival.json"
 DEFAULT_CANDIDATES = ROOT / "reports" / "standard_causal_transformer_survival_candidates.jsonl"
 DEFAULT_OUT = ROOT / "reports" / "standard_causal_transformer_survival_gate.json"
+DEFAULT_TARGET_MODE_COMPARISON = (
+    ROOT / "runtime" / "standard_causal_transformer_plan_body_canary" / "matched_comparison.json"
+)
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -24,13 +27,20 @@ def main() -> int:
     parser.add_argument("--report", default=rel(DEFAULT_REPORT))
     parser.add_argument("--candidates", default=rel(DEFAULT_CANDIDATES))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
+    parser.add_argument("--target-mode-comparison", default=rel(DEFAULT_TARGET_MODE_COMPARISON))
     parser.add_argument("--gate", action="store_true")
     args = parser.parse_args()
     report_path = resolve(args.report)
     candidates_path = resolve(args.candidates)
     report = read_json(report_path)
     candidates = read_jsonl(candidates_path)
-    gate = build_gate(report_path, candidates_path, report, candidates)
+    gate = build_gate(
+        report_path,
+        candidates_path,
+        report,
+        candidates,
+        target_mode_comparison_path=resolve(args.target_mode_comparison),
+    )
     write_json(resolve(args.out), gate)
     view = {
         "trigger_state": gate["trigger_state"],
@@ -47,6 +57,8 @@ def build_gate(
     candidates_path: Path,
     report: dict[str, Any],
     candidates: list[dict[str, Any]],
+    *,
+    target_mode_comparison_path: Path = DEFAULT_TARGET_MODE_COMPARISON,
 ) -> dict[str, Any]:
     hard_gaps: list[dict[str, Any]] = []
     adoption_gaps: list[dict[str, Any]] = []
@@ -59,6 +71,8 @@ def build_gate(
     hard_gaps.extend(preference_audit["hard_gaps"])
     generation_mode_audit = audit_generation_mode_canary(report.get("generation_mode_canary"))
     hard_gaps.extend(generation_mode_audit["hard_gaps"])
+    target_mode_audit = audit_target_mode_comparison(target_mode_comparison_path)
+    hard_gaps.extend(target_mode_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -217,6 +231,11 @@ def build_gate(
             "generation_mode_canary_state": generation_mode_audit["state"],
             "generation_mode_adoption_state": generation_mode_audit["adoption_state"],
             "generation_mode_speedup": generation_mode_audit["speedup"],
+            "target_mode_comparison_state": target_mode_audit["state"],
+            "target_mode_adoption_state": target_mode_audit["adoption_state"],
+            "target_mode_comparison_sha256": target_mode_audit["comparison_sha256"],
+            "target_mode_adoption_rejection_reasons": target_mode_audit["adoption_rejection_reasons"],
+            "target_mode_deltas": target_mode_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -228,6 +247,117 @@ def build_gate(
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
+        "target_mode_comparison": target_mode_audit["receipt"],
+    }
+
+
+def audit_target_mode_comparison(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {
+            "state": "NOT_RUN",
+            "adoption_state": "NOT_RUN",
+            "comparison_sha256": "",
+            "adoption_rejection_reasons": [],
+            "deltas": {},
+            "receipt": {"state": "NOT_RUN", "path": rel(path)},
+            "hard_gaps": [],
+        }
+    comparison = read_json(path)
+    hard_gaps: list[dict[str, Any]] = []
+    if comparison.get("policy") != "project_theseus_standard_causal_target_mode_matched_comparison_v1":
+        hard_gaps.append(gap("target_mode_comparison_policy_mismatch", {"path": rel(path)}))
+    if comparison.get("trigger_state") != "GREEN":
+        hard_gaps.append(
+            gap("target_mode_comparison_not_green", {"state": comparison.get("trigger_state")})
+        )
+    for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count"):
+        if int(comparison.get(key) or 0) != 0:
+            hard_gaps.append(gap(f"target_mode_comparison_{key}_nonzero", {"observed": comparison.get(key)}))
+    matched_checks = comparison.get("matched_checks") if isinstance(comparison.get("matched_checks"), dict) else {}
+    plan = comparison.get("plan") if isinstance(comparison.get("plan"), dict) else {}
+    control = comparison.get("control") if isinstance(comparison.get("control"), dict) else {}
+    integrity_clean = int(plan.get("integrity_mismatch_count") or 0) == int(
+        control.get("integrity_mismatch_count") or 0
+    ) == 0
+    expected_adoption = (
+        "ADOPTED"
+        if matched_checks
+        and all(value is True for value in matched_checks.values())
+        and comparison.get("boundaries_clean") is True
+        and integrity_clean
+        and int(plan.get("passed_task_count") or 0) > int(control.get("passed_task_count") or 0)
+        and int(plan.get("candidate_task_count") or 0) >= int(control.get("candidate_task_count") or 0)
+        and float(plan.get("mean_verification_reward") or 0.0)
+        >= float(control.get("mean_verification_reward") or 0.0)
+        else "NOT_ADOPTED"
+    )
+    if comparison.get("adoption_state") != expected_adoption:
+        hard_gaps.append(
+            gap(
+                "target_mode_adoption_decision_mismatch",
+                {"observed": comparison.get("adoption_state"), "expected": expected_adoption},
+            )
+        )
+    artifacts = comparison.get("artifacts") if isinstance(comparison.get("artifacts"), dict) else {}
+    required_artifacts = {
+        "plan_report",
+        "plan_config",
+        "plan_candidates",
+        "plan_checkpoint",
+        "plan_integrity",
+        "control_report",
+        "control_config",
+        "control_candidates",
+        "control_checkpoint",
+        "control_integrity",
+    }
+    if set(artifacts) != required_artifacts:
+        hard_gaps.append(
+            gap(
+                "target_mode_artifact_set_mismatch",
+                {"observed": sorted(artifacts), "required": sorted(required_artifacts)},
+            )
+        )
+    artifact_receipts: dict[str, Any] = {}
+    for name, item in artifacts.items():
+        record = item if isinstance(item, dict) else {}
+        artifact_path = resolve(str(record.get("path") or ""))
+        observed_sha256 = file_sha256(artifact_path) if artifact_path.exists() else ""
+        observed_bytes = artifact_path.stat().st_size if artifact_path.exists() else 0
+        matches = (
+            artifact_path.exists()
+            and observed_sha256 == str(record.get("sha256") or "")
+            and observed_bytes == int(record.get("bytes") or 0)
+        )
+        artifact_receipts[name] = {
+            "path": rel(artifact_path),
+            "sha256": observed_sha256,
+            "bytes": observed_bytes,
+            "matches": matches,
+        }
+        if not matches:
+            hard_gaps.append(gap("target_mode_artifact_binding_mismatch", {"artifact": name}))
+    receipt = {
+        "state": "GREEN" if not hard_gaps else "RED",
+        "path": rel(path),
+        "sha256": file_sha256(path),
+        "adoption_state": comparison.get("adoption_state"),
+        "adoption_rejection_reasons": list(comparison.get("adoption_rejection_reasons") or []),
+        "matched_checks": matched_checks,
+        "plan": plan,
+        "control": control,
+        "deltas": comparison.get("deltas") or {},
+        "artifact_receipts": artifact_receipts,
+        "non_claims": list(comparison.get("non_claims") or []),
+    }
+    return {
+        "state": receipt["state"],
+        "adoption_state": str(comparison.get("adoption_state") or ""),
+        "comparison_sha256": receipt["sha256"],
+        "adoption_rejection_reasons": receipt["adoption_rejection_reasons"],
+        "deltas": receipt["deltas"],
+        "receipt": receipt,
+        "hard_gaps": hard_gaps,
     }
 
 

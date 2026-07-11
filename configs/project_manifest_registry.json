@@ -228,7 +228,19 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "79b0ff920f5ca6b46512873618ee0f9765aa1078f1ada508caf42ef6a9743af5"
+          "sha256": "c3cafbc783229653a497dc615b007d29f6a5c5c0319453faab4668b9b86b2828"
+        },
+        "semantic_ir": {
+          "path": "scripts/semantic_ir.py",
+          "sha256": "f2cc00c496c637ffed0f50e9a893ec8adf1c68f029d84c53fdc3a167080662d1"
+        },
+        "token_renderer": {
+          "path": "scripts/neural_seed_token_decoder_rendering.py",
+          "sha256": "1f4f43d8a9d64d1972d70ac553f7c6cf854da64a6e603847be3de8cdd9ea35c0"
+        },
+        "candidate_integrity_implementation": {
+          "path": "scripts/candidate_integrity.py",
+          "sha256": "72b119c74a843af7c9dc89d18592db3274d2b46c82be2517126a17bda7830906"
         },
         "conditioning_config": {
           "path": "configs/standard_causal_transformer_conditioning.json",
@@ -252,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "eec03bde1d3deea05b50379d6851484a3e632c1fd1f6e2a1af8c4951f0646306"
+          "sha256": "3b26dc02fc2566681345bb64965a70815a82fb42c00ac38d36fcb6dfd8613aa7"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -264,23 +276,23 @@
         },
         "canonical_report": {
           "path": "reports/standard_causal_transformer_survival.json",
-          "sha256": "4a3a8fc6a5ba055c4b83ca39eb8a4b3ea273813251090c76b3a82f4418977c5b"
+          "sha256": "d7800fa00ca66251aee9b78eb18bbd19d35a5ba33da7192ed06004cbe464c1bf"
         },
         "candidate_manifest": {
           "path": "reports/standard_causal_transformer_survival_candidates.jsonl",
-          "sha256": "125442fcc47575f483391b5f1864456612b7c2f4e6dbd6320bc03460db02ddcf"
+          "sha256": "20f6276db60bf35d55c18d7c60054c3ddb9b1efba97e1cc840a12aca38842ca5"
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "c5bdc8ca478ecdaf3865d19dd0a6011bca3d70517b0decebad4c43f4b502b807"
+          "sha256": "3699bbae1a40c26a7d1af5a0b274433d8e5508ccbd64e7be352d6c17a741c1e6"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "56a66d0e4f34bf26011fe70e71638c2af7d13f63a1f6da77dd7ab99c4c8b4ab5"
+          "sha256": "27a6c16b73ad2e5bd77174e5df5d62554f42bb27e57c2c95b33070da8aa1be02"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "b48081ac1dbcd6afab99eed5eb2cdc21976305d876d3934ba58c1ad4e5750259"
+          "sha256": "1ade3d3739a10805ff9f53725801b7fe70d84ff39a5c1de49a60988eabfb798a"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -292,11 +304,11 @@
         },
         "policy_report": {
           "path": "reports/policy_optimization_program.json",
-          "sha256": "15f5f883bc618445ed0d4d7807f5c82e04f2c55d66ec24c6ca042b1626bb1aa9"
+          "sha256": "068e24b1f5fde92e8efc9fa5805c74f4e435a7e7773796400fa4b5cba219d4c1"
         },
         "generation_mode_report": {
           "path": "reports/generation_mode_registry.json",
-          "sha256": "5e21c9b6ef4eb24caf3b68c1ca1cd8f7bebf0bff09f60c866172bf570bef2e96"
+          "sha256": "04c0bfbde84e33cd2cca325a3772a1e51b57a00487c04fbb33a45cb814bc8eb5"
         }
       },
       "evidence_refs": [
@@ -326,12 +338,13 @@
         ]
       },
       "claim_boundary": {
-        "supported_claim": "Correcting the split-vocabulary source offset raises independently integrity-verified candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but model-only behavior remains 0/24 on the frozen family-disjoint private verifier. The evaluate-only CLI overwrote the completed training receipt; the canonical gate therefore records both incomplete training provenance and zero behavior as adoption gaps. The successor remains contained and non-routable.",
+        "supported_claim": "Correcting the split-vocabulary source offset raises independently integrity-verified canonical body-only candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but model-only behavior remains 0/24 and training provenance remains incomplete. A matched same-model learned Semantic-IR plan-prefix arm is independently trace-valid but remains 0/24 while regressing task coverage, verifier reward, and decode runtime; it is NOT_ADOPTED. The successor remains contained, body-only, and non-routable.",
         "non_claims": [
           "not Phase 10 completion",
           "not broad public transfer",
           "not production runtime serving",
           "not selector or ranking quality",
+          "not a Semantic-IR behavior improvement",
           "not SymLiquid superiority"
         ]
       }
@@ -633,6 +646,8 @@
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
             "scripts/neural_seed_token_decoder_support.py",
+            "scripts/neural_seed_token_decoder_rendering.py",
+            "scripts/semantic_ir.py",
             "scripts/code_lm_private_verifier.py",
             "scripts/standard_causal_transformer_survival_gate.py"
           ],
@@ -651,6 +666,8 @@
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
             "scripts/neural_seed_token_decoder_support.py",
+            "scripts/neural_seed_token_decoder_rendering.py",
+            "scripts/semantic_ir.py",
             "scripts/candidate_integrity.py"
           ],
           "acceptance": {
@@ -669,6 +686,8 @@
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
             "scripts/neural_seed_token_decoder_support.py",
+            "scripts/neural_seed_token_decoder_rendering.py",
+            "scripts/semantic_ir.py",
             "scripts/blind_information_flow_audit.py"
           ],
           "acceptance": {
@@ -684,9 +703,14 @@
       "requirements": [
         {
           "id": "candidate_integrity_gate",
-          "path": "reports/candidate_integrity_audit.json",
+          "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
           "freshness_mode": "source_bound",
-          "source_paths": ["scripts/candidate_integrity.py"],
+          "source_paths": [
+            "scripts/candidate_integrity.py",
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/neural_seed_token_decoder_rendering.py",
+            "scripts/semantic_ir.py"
+          ],
           "acceptance": {
             "field": "trigger_state",
             "allowed": ["GREEN"]
@@ -4832,6 +4856,8 @@
         "scripts/standard_causal_transformer_preference.py",
         "scripts/neural_seed_open_vocab.py",
         "scripts/neural_seed_token_decoder_support.py",
+        "scripts/neural_seed_token_decoder_rendering.py",
+        "scripts/semantic_ir.py",
         "data/training_sources/training_data_admission_v1.json",
         "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
         "scripts/standard_causal_transformer_survival_gate.py",
@@ -4874,7 +4900,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The prior 1/24 proposer floor was invalidated because private tests influenced an inferred callable signature. The source-offset repair then proved split source IDs had been shifted into the target embedding segment. A fresh corrected-map run lowers heldout loss to 1.662704, raises independently integrity-verified candidates from 38/88 to 57/87, and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. An exact-bound measurement across all 24 heldouts records matched loss 1.662704 versus deterministic wrong-source loss 1.766282 (positive gap 0.103578), so the checkpoint is not wholly source-blind. Its completed training receipt was overwritten by the old evaluation-only CLI behavior, so the canonical gate records incomplete training provenance and the conditioning route refuses optimization. Conditioning now has explicit preflight/measure/train modes, exact stage/checkpoint/report binding, target-mask-preserving derangement, atomic publication, and a dedicated runtime receipt; it cannot overwrite canonical survival evidence. The successor remains contained; source-conditioned semantic behavior, task coverage, and durable training provenance are the Phase 10 wall.",
+      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. A same-model learned Semantic-IR plan-prefix arm is independently trace-audited, but under matched data/model/seed/target-position/evaluation/fanout budgets it covers 15 tasks with 42 candidates and mean verifier reward 0.296970 versus body-only 20 tasks, 70 candidates, and 0.401639; both pass 0/24 and plan decode is 11,252 ms slower. The flagship gate recomputes the exact-bound comparison and records NOT_ADOPTED, so body-only remains canonical. Source-conditioned semantic behavior, full task coverage, verifier-positive pair density, and durable training provenance remain the Phase 10/13 wall.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",
@@ -4943,6 +4969,8 @@
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
             "scripts/neural_seed_token_decoder_support.py",
+            "scripts/neural_seed_token_decoder_rendering.py",
+            "scripts/semantic_ir.py",
             "data/training_sources/training_data_admission_v1.json",
             "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
             "scripts/standard_causal_transformer_survival_gate.py",
@@ -4958,6 +4986,7 @@
             "checkpoint_loaded_or_trained",
             "candidate_generated",
             "candidate_integrity_recomputed",
+            "matched_target_mode_ablation_replayed",
             "private_verifier_replayed",
             "typed_failure_or_abstention",
             "route_evidence_bound"
@@ -5027,7 +5056,7 @@
       "canonical_entrypoint": "scripts/candidate_integrity.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must recompute candidate family/provenance independently and preserve replay-pass-required promotion semantics.",
-      "verification_command": "python3 scripts/candidate_integrity.py && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "governance",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -5038,11 +5067,15 @@
         "scripts/neural_seed_full_state_pretraining.py",
         "scripts/neural_seed_token_model_backend.py",
         "scripts/neural_seed_candidate_generation.py",
-        "scripts/neural_seed_report_io.py"
+        "scripts/neural_seed_report_io.py",
+        "scripts/neural_seed_token_decoder_rendering.py",
+        "scripts/semantic_ir.py"
       ],
       "evidence_outputs": [
         "reports/candidate_integrity_audit.json",
-        "reports/candidate_integrity_audit.md"
+        "reports/candidate_integrity_audit.md",
+        "reports/candidate_integrity_standard_causal_transformer_survival.json",
+        "reports/candidate_integrity_standard_causal_transformer_survival.md"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -5097,6 +5130,8 @@
           "writes": [
             "reports/candidate_integrity_audit.json",
             "reports/candidate_integrity_audit.md",
+            "reports/candidate_integrity_standard_causal_transformer_survival.json",
+            "reports/candidate_integrity_standard_causal_transformer_survival.md",
             "reports/candidate_integrity_transformer_hybrid_clean64_v1.json",
             "reports/candidate_integrity_transformer_hybrid_clean64_v1.md",
             "reports/private_candidate_replay_contract_audit_v1.json",
@@ -5119,6 +5154,8 @@
           "evidence_outputs": [
             "reports/candidate_integrity_audit.json",
             "reports/candidate_integrity_audit.md",
+            "reports/candidate_integrity_standard_causal_transformer_survival.json",
+            "reports/candidate_integrity_standard_causal_transformer_survival.md",
             "reports/candidate_integrity_transformer_hybrid_clean64_v1.json",
             "reports/candidate_integrity_transformer_hybrid_clean64_v1.md",
             "reports/private_candidate_replay_contract_audit_v1.json",
@@ -5130,11 +5167,14 @@
             "reports/blind_information_flow_audit.json",
             "reports/blind_information_flow_audit.md"
           ],
-          "verification_command": "python3 scripts/candidate_integrity.py && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
-            "scripts/candidate_integrity.py"
+            "scripts/candidate_integrity.py",
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/neural_seed_token_decoder_rendering.py",
+            "scripts/semantic_ir.py"
           ]
         },
         "observability_binding": {
@@ -7335,7 +7375,9 @@
       "canonical": "scripts/candidate_integrity.py",
       "report_outputs": [
         "reports/candidate_integrity_audit.json",
-        "reports/candidate_integrity_audit.md"
+        "reports/candidate_integrity_audit.md",
+        "reports/candidate_integrity_standard_causal_transformer_survival.json",
+        "reports/candidate_integrity_standard_causal_transformer_survival.md"
       ],
       "verification_command": "python3 scripts/blind_information_flow_audit.py && python3 scripts/candidate_integrity.py && python3 scripts/private_heldout_transfer_baseline_v1.py && python3 scripts/canonical_survival_lane_ablation_v1.py && python3 -m py_compile scripts/blind_information_flow_audit.py scripts/candidate_integrity.py scripts/real_code_benchmark_runtime.py scripts/real_code_benchmark_graduation.py scripts/student_first_evidence_audit.py scripts/private_candidate_replay_contract_audit_v1.py scripts/private_heldout_transfer_baseline_v1.py scripts/canonical_survival_lane_ablation_v1.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "promotion and public-transfer reports must use blind information-flow evidence, recomputed candidate family, and functional replay evidence; fixed action catalogs/renderers are baselines or tools, never learned-generation proof",

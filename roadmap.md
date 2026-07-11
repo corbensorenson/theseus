@@ -33,7 +33,7 @@ module must meet.
 | Verifier-guided search | Track 2 / Phases 6, 10 | not started | propose->verify->repair search; beat one-shot on held-out |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
-| Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | stop custom-head tuning; scale governed code data and a standard causal decoder behind the same integrity/verifier contract |
+| Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | retain body-only as the practical baseline; improve prompt-conditioned semantic behavior before preference/RL or scale |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
 | VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
 | Claim ledger + belief revision | Phase 14 | implemented; synthetic/replay infrastructure evidence | keep new citeable gates in the canonical pack/TCB/dependency audit; earn empirical support from real revisions |
@@ -568,6 +568,17 @@ deletion closure is graph evidence, not physical unlearning.
   It correctly refuses training while the base completion receipt is incomplete.
   The pre-repair conditioned checkpoint is retained under an explicitly stale
   lineage path and is absent from the configured output location.
+- The registered Semantic IR now has a closed, target-independent learned-plan
+  protocol that the same causal model can emit before direct body tokens. The
+  independent integrity path replays the raw token trace, validates every plan
+  transition, reversibly decodes the body subsequence, normalizes only implicit
+  terminal dedents, and demotes corrupt traces without trusting candidate flags.
+  Under matched MLX data, model, seed, target-position, evaluation, and fanout
+  budgets, plan-plus-body is a clean negative: `42` syntax-valid candidates over
+  `15/24` tasks versus body-only `70` over `20/24`; mean verifier reward is
+  `0.296970` versus `0.401639`; decode is `11.252` seconds slower; both score
+  `0/24`. The plan mode is therefore `NOT_ADOPTED`, body-only remains canonical,
+  and lower plan-arm LM loss receives no capability credit.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled
@@ -629,6 +640,12 @@ deletion closure is graph evidence, not physical unlearning.
   dependent-node replay.
 - Do not: count IR rendered by a deterministic compiler as learned generation or
   add another auxiliary target whose only win is its own loss.
+- Current status: `partial`. The generic AST IR, obligations, localized assisted
+  repair, and independently audited learned plan/body protocol are integrated,
+  but the matched learned-plan canary regresses candidate coverage, verifier
+  reward, and runtime while remaining `0/24`. Phase completion requires a learned
+  Semantic-IR intervention to improve family-disjoint direct model behavior; the
+  existing negative cannot be relabeled as completion.
 
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,

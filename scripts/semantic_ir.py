@@ -15,6 +15,7 @@ import json
 import textwrap
 from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Iterable
 
 
@@ -26,6 +27,60 @@ PLAN_END = "IRP:END"
 PLAN_PREFIX = "IRP:"
 PLAN_MAX_TOKENS = 48
 PLAN_MAX_STEPS = 8
+PLAN_DEPTH_BUCKETS = tuple(range(8))
+PLAN_COUNT_BUCKETS = ("0", "1", "2", "M")
+PLAN_STATEMENT_KINDS = (
+    "assert",
+    "bind",
+    "branch",
+    "break",
+    "continue",
+    "dependency",
+    "effect",
+    "failure_boundary",
+    "iterate",
+    "iterate_condition",
+    "nested_definition",
+    "pass",
+    "raise",
+    "resource_scope",
+    "return",
+    "statement",
+    "update",
+)
+PLAN_SEMANTIC_INTENTS = (
+    "binding_reference",
+    "branch_constraint",
+    "collection_construction",
+    "control_finalizer",
+    "effect_expression",
+    "literal_value",
+    "return_closure",
+    "semantic_operation",
+    "state_update",
+    "traversal",
+    "value_expression",
+    "verification_or_failure_boundary",
+)
+PLAN_FEATURES = (
+    "call_convert",
+    "call_inspect",
+    "call_iterate",
+    "call_mapping",
+    "call_mutate",
+    "call_numeric",
+    "call_order",
+    "call_other",
+    "call_text",
+    "comprehension",
+    "container_literal",
+    "op_arithmetic",
+    "op_boolean",
+    "op_compare",
+    "op_identity",
+    "op_membership",
+    "op_other",
+)
 PROGRAM_BEGIN = "IR:PROGRAM"
 PROGRAM_END = "IR:PROGRAM_END"  # Reserved so older fault fixtures fail explicitly.
 NODE_END = "IR:NODE_END"  # Reserved; compact v1 uses AST field arity.
@@ -72,6 +127,60 @@ def semantic_ir_target_mode(value: str) -> bool:
 
 def semantic_ir_plan_body_target_mode(value: str) -> bool:
     return str(value or "") == PLAN_BODY_TARGET_MODE
+
+
+@lru_cache(maxsize=1)
+def plan_protocol_tokens() -> tuple[str, ...]:
+    """Return the closed, target-independent vocabulary for compact plans."""
+
+    values = [PLAN_BEGIN, PLAN_END]
+    values.extend(
+        f"IRP:STEP:D{depth}:{kind}"
+        for depth in PLAN_DEPTH_BUCKETS
+        for kind in PLAN_STATEMENT_KINDS
+    )
+    values.extend(f"IRP:SEM:{intent}" for intent in PLAN_SEMANTIC_INTENTS)
+    values.extend(
+        f"IRP:FLOW:R{read_count}:W{write_count}"
+        for read_count in PLAN_COUNT_BUCKETS
+        for write_count in PLAN_COUNT_BUCKETS
+    )
+    values.extend(f"IRP:FEATURE:{feature}" for feature in PLAN_FEATURES)
+    return tuple(values)
+
+
+@lru_cache(maxsize=1)
+def plan_protocol_token_set() -> frozenset[str]:
+    return frozenset(plan_protocol_tokens())
+
+
+def plan_prefix_token_allowed(prefix: Iterable[str], token: str, *, body_start_token: str) -> bool:
+    """Validate one learned plan-prefix transition without reading a target body."""
+
+    stream = [str(value) for value in prefix]
+    value = str(token)
+    if body_start_token in stream:
+        return False
+    if not stream:
+        return value == PLAN_BEGIN
+    if stream[0] != PLAN_BEGIN or len(stream) >= PLAN_MAX_TOKENS + 1:
+        return False
+    previous = stream[-1]
+    if previous == PLAN_END:
+        return value == body_start_token
+    if value in {PLAN_BEGIN, body_start_token} or value not in plan_protocol_token_set():
+        return False
+    if previous == PLAN_BEGIN:
+        return value.startswith("IRP:STEP:")
+    if previous.startswith("IRP:FEATURE:"):
+        return value == PLAN_END or value.startswith("IRP:STEP:")
+    if previous.startswith("IRP:STEP:"):
+        return value.startswith("IRP:SEM:")
+    if previous.startswith("IRP:SEM:"):
+        return value.startswith("IRP:FLOW:")
+    if previous.startswith("IRP:FLOW:"):
+        return value == PLAN_END or value.startswith(("IRP:FEATURE:", "IRP:STEP:"))
+    return False
 
 
 def body_to_plan_tokens(body: str, *, max_tokens: int = PLAN_MAX_TOKENS) -> list[str]:

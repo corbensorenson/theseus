@@ -17,20 +17,20 @@ records, gates, docs, evidence, and an integration smoke. This prevents the
 roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The project registry is now `GREEN` with `0` hard violations and `0` route
-blockers. Route health uses `17` minimal source-bound, TTL-bound, or
-current-invocation receipts; `168` other declared outputs are supporting
+blockers. Route health uses `14` minimal source-bound, TTL-bound, or
+current-invocation receipts; `171` other declared outputs are supporting
 evidence and no longer force daily regeneration. Stale, invalid, missing, or
 acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
-`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `7`, `13`,
-`14`, `15`, and `16` are `implemented`; phase `10` is the sole local partial
-phase; and phases `1`, `2`, `9`, and `18` are
+`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `7`, `14`,
+`15`, and `16` are `implemented`; phases `10` and `13` are local partial
+phases; and phases `1`, `2`, `9`, and `18` are
 externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
-current local AI_book manifest contains `50` chapters, all mapped through the
+current local AI_book manifest contains `54` chapters, all mapped through the
 roadmap implementation matrix. The newly admitted adversarial-evaluation chapter
 is routed into existing phases `4`, `10`, `12`, `14`, and `18`; mapping it is not
 evidence that Theseus detects deception or that any local model is deceptive.
@@ -104,6 +104,19 @@ runtime evidence, and typed failure. Continued optimization is correctly denied
 until a fresh base run retains a complete non-replay training receipt. The old
 conditioned checkpoint is retained under an explicitly stale pre-source-offset
 path and cannot be mistaken for the configured next output.
+
+Phase `13` now reaches the practical causal generator through a closed,
+target-independent learned Semantic-IR plan prefix followed by direct body
+tokens from the same model. Independent integrity recomputes the raw token hash,
+plan transitions, reversible body decode, and exact candidate-body relation;
+all `42` plan-arm candidates classify as transformer/hybrid with zero integrity
+mismatches. The matched MLX canary remains negative: plan/body covers `15/24`
+tasks with mean verifier reward `0.296970` and `125,587 ms` decode, while
+body-only covers `20/24` with reward `0.401639` and `114,335 ms`; both pass
+`0/24`. The flagship gate records `NOT_ADOPTED`, preserves exact negative
+artifact bindings, and leaves body-only canonical. Semantic IR therefore remains
+partial until it changes family-disjoint learned behavior rather than only loss
+or internal representation quality.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.

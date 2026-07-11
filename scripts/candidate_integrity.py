@@ -13,13 +13,17 @@ import argparse
 import ast
 import hashlib
 import json
-import re
+import textwrap
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import viea_spine_records
+import semantic_ir
+from neural_seed_open_vocab import decode_target_tokens
+from neural_seed_token_decoder_rendering import PLAN_BODY_START_TOKEN, split_learned_plan_prefix_tokens
+from neural_seed_token_decoder_support import body_tokens
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -175,7 +179,14 @@ def recompute_candidate_integrity(row: dict[str, Any]) -> dict[str, Any]:
         ]
     ).lower()
     shape = code_shape(code)
-    family, reasons = classify_family(text, shape, row, benchmark_integrity)
+    direct_plan_body_trace = verify_direct_plan_body_trace(row, code)
+    family, reasons = classify_family(
+        text,
+        shape,
+        row,
+        benchmark_integrity,
+        direct_plan_body_trace=direct_plan_body_trace,
+    )
 
     claimed = {
         "token_level_code_generation_learned": truthy(
@@ -256,6 +267,7 @@ def recompute_candidate_integrity(row: dict[str, Any]) -> dict[str, Any]:
         "self_declared_flags": claimed,
         "integrity_mismatches": mismatches,
         "code_shape": shape,
+        "direct_plan_body_trace": direct_plan_body_trace,
     }
 
 
@@ -264,6 +276,8 @@ def classify_family(
     shape: dict[str, Any],
     row: dict[str, Any],
     benchmark_integrity: dict[str, Any],
+    *,
+    direct_plan_body_trace: dict[str, Any] | None = None,
 ) -> tuple[str, list[str]]:
     reasons: list[str] = []
     if row.get("phase") == "private_baseline" or row.get("substrate_adapter") == "shared_null_baseline":
@@ -302,6 +316,13 @@ def classify_family(
     ):
         reasons.append("private_train_body_ngram_inventory")
         return "private_ngram_body", reasons
+
+    if direct_plan_body_trace and direct_plan_body_trace.get("valid") is True:
+        if "transformer" in text or "hybrid" in text:
+            reasons.append("independently_verified_direct_transformer_plan_body_trace")
+            return "transformer_hybrid", reasons
+        reasons.append("independently_verified_direct_learned_plan_body_trace")
+        return "learned_full_body_token", reasons
 
     structural_tokens = [
         "structural_action",
@@ -378,6 +399,80 @@ def classify_family(
 
     reasons.append("no_recomputed_family_rule_matched")
     return "unknown", reasons
+
+
+def verify_direct_plan_body_trace(row: dict[str, Any], code: str) -> dict[str, Any]:
+    mode = str(row.get("candidate_generation_mode") or "")
+    if mode != "direct_decoder_only_causal_semantic_plan_body_tokens":
+        return {"applicable": False, "valid": False, "faults": []}
+    faults: list[str] = []
+    raw_tokens = row.get("decoded_target_tokens")
+    if not isinstance(raw_tokens, list) or not raw_tokens or not all(isinstance(token, str) for token in raw_tokens):
+        return {
+            "applicable": True,
+            "valid": False,
+            "faults": ["decoded_target_token_trace_missing"],
+        }
+    tokens = [str(token) for token in raw_tokens]
+    if sha256_text(" ".join(tokens)) != str(row.get("decoded_token_sha256") or ""):
+        faults.append("decoded_target_token_hash_mismatch")
+    body_stream, prefix_metadata = split_learned_plan_prefix_tokens(tokens)
+    prefix = list(prefix_metadata.get("learned_plan_prefix_tokens") or [])
+    transition_prefix: list[str] = []
+    for token in prefix:
+        if not semantic_ir.plan_prefix_token_allowed(
+            transition_prefix,
+            token,
+            body_start_token=PLAN_BODY_START_TOKEN,
+        ):
+            faults.append("semantic_plan_transition_invalid")
+            break
+        transition_prefix.append(token)
+    if prefix_metadata.get("semantic_ir_plan_complete") is not True:
+        faults.append("semantic_plan_incomplete")
+    decoded_body_tokens, decode_receipt = decode_target_tokens(body_stream)
+    if decode_receipt.get("state") != "READY" or decode_receipt.get("faults"):
+        faults.append("body_trace_decode_fault")
+    expected_body_tokens = function_body_tokens(code)
+    if not expected_body_tokens:
+        faults.append("candidate_function_body_missing")
+    elif strip_implicit_terminal_dedents(decoded_body_tokens) != strip_implicit_terminal_dedents(
+        expected_body_tokens
+    ):
+        faults.append("decoded_body_trace_code_mismatch")
+    return {
+        "applicable": True,
+        "valid": not faults,
+        "faults": faults,
+        "decoded_target_token_count": len(tokens),
+        "learned_plan_token_count": len(prefix),
+        "direct_body_token_count": len(body_stream),
+        "body_token_sha256": sha256_text(" ".join(expected_body_tokens)),
+        "failure_behavior": "reject_without_family_credit" if faults else "verified_direct_body_subsequence",
+    }
+
+
+def function_body_tokens(code: str) -> list[str]:
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+    functions = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    if len(functions) != 1 or not functions[0].body:
+        return []
+    function = functions[0]
+    lines = str(code).splitlines()
+    start = int(function.body[0].lineno) - 1
+    end = int(getattr(function, "end_lineno", len(lines)))
+    body_source = textwrap.dedent("\n".join(lines[start:end]))
+    return body_tokens(body_source)
+
+
+def strip_implicit_terminal_dedents(tokens: list[str]) -> list[str]:
+    values = list(tokens)
+    while values and values[-1] == "DEDENT:":
+        values.pop()
+    return values
 
 
 def code_shape(code: str) -> dict[str, Any]:

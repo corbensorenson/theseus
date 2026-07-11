@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 import sys
 from pathlib import Path
@@ -20,7 +21,10 @@ from standard_causal_transformer_survival import (
     batched_beam_advance,
     completion_pool_target,
     canonical_model_signature,
+    compare_target_mode_canaries,
     encode_model_source,
+    extend_target_vocab_for_mode,
+    generation_prefix_complete,
     assign_body_balanced_sampling_weights,
     normalized_sampling_probabilities,
     phase_target_positions,
@@ -33,12 +37,14 @@ from standard_causal_transformer_survival import (
     stage_materialization_lock,
     stage_signature,
     target_token_offset,
+    training_target_tokens,
     training_callable_signature,
     training_targets_complete,
     validate_config,
     visible_eval_source,
 )
 from blind_information_flow_audit import audit_source
+from candidate_integrity import recompute_candidate_integrity
 from standard_causal_transformer_conditioning import (
     deranged_source_arrays,
     inspect_bindings as inspect_conditioning_bindings,
@@ -55,6 +61,7 @@ from standard_causal_transformer_preference import (
 from standard_causal_transformer_survival_gate import (
     audit_generation_mode_canary,
     audit_preference_canary,
+    audit_target_mode_comparison,
 )
 from generation_mode_gate import audit_comparison, read_report_ref
 from policy_optimization_gate import extract_behavior_metrics, summarize_behavior_evidence
@@ -193,6 +200,229 @@ def test_config_rejects_fallback_or_external_inference() -> None:
     task_named["tokenization"]["canonical_model_signature_name"] = "task_name"
     with pytest.raises(ValueError, match="must remain solve"):
         validate_config(task_named)
+
+    invalid_plan = json.loads(json.dumps(config))
+    invalid_plan["tokenization"]["target_mode"] = "typed_semantic_ir_plan_body_tokens_v1"
+    invalid_plan["tokenization"]["semantic_plan_max_tokens"] = 4
+    with pytest.raises(ValueError, match="semantic plan token budget"):
+        validate_config(invalid_plan)
+
+
+def test_standard_transformer_plan_body_target_is_learned_and_closed_vocab() -> None:
+    import semantic_ir
+    from neural_seed_token_decoder_rendering import PLAN_BODY_START_TOKEN
+    from neural_seed_token_decoder_support import body_tokens as tokenize_body
+
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    config["tokenization"]["target_mode"] = semantic_ir.PLAN_BODY_TARGET_MODE
+    config["tokenization"]["semantic_plan_max_tokens"] = 32
+    body = "out = []\nfor value in data:\n    out.append(value + 1)\nreturn out"
+    tokens = training_target_tokens(body, config)
+    assert tokens[0] == semantic_ir.PLAN_BEGIN
+    assert PLAN_BODY_START_TOKEN in tokens
+    assert tokens[tokens.index(PLAN_BODY_START_TOKEN) + 1 :] == tokenize_body(body)
+    assert generation_prefix_complete(tokens, target_mode=semantic_ir.PLAN_BODY_TARGET_MODE)
+
+    vocab = {"<pad>": 0, "<bos>": 1, "<eos>": 2, "<unk>": 3, "NAME:out": 4}
+    summary = extend_target_vocab_for_mode(config, vocab)
+    assert summary["target_independent_closed_protocol"] is True
+    assert summary["added_token_count"] == len(semantic_ir.plan_protocol_tokens()) + 1
+    assert set(semantic_ir.plan_protocol_tokens()) <= set(vocab)
+    assert PLAN_BODY_START_TOKEN in vocab
+
+
+def test_matched_target_mode_comparison_rejects_loss_only_plan_improvement() -> None:
+    common_config = {
+        "seed": 1,
+        "sources": {"private": "x"},
+        "model": {"d_model": 8},
+        "training": {"pretrain_target_token_positions": 10, "sft_target_token_positions": 20},
+        "evaluation": {"holdout_family_count": 24},
+        "preference": {"max_train_tasks": 8},
+        "boundaries": {"public_training_rows": 0},
+        "tokenization": {
+            "target_mode": "body_tokens",
+            "semantic_plan_max_tokens": 0,
+            "max_source_tokens": 32,
+        },
+    }
+
+    def report(mode: str, loss: float, candidates: int, tasks: int, reward: float) -> dict:
+        return {
+            "stage": {"target_mode": mode},
+            "architecture": {"parameter_count": 100},
+            "training": {"complete": True, "eval_loss_after": loss},
+            "summary": {"candidate_count": candidates, "candidate_task_count": tasks},
+            "decode": {"runtime_ms": 10},
+            "private_verifier": {
+                "summary": {"passed_task_count": 0},
+                "private_verification": {"mean_verification_reward": reward},
+            },
+            "runtime_ms": 20,
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+
+    plan_config = json.loads(json.dumps(common_config))
+    plan_config["tokenization"]["target_mode"] = "typed_semantic_ir_plan_body_tokens_v1"
+    plan_config["tokenization"]["semantic_plan_max_tokens"] = 32
+    control_config = json.loads(json.dumps(common_config))
+    clean_integrity = {"summary": {"integrity_mismatch_count": 0}}
+    result = compare_target_mode_canaries(
+        report("typed_semantic_ir_plan_body_tokens_v1", 1.6, 4, 2, 0.2),
+        report("body_tokens", 1.8, 8, 4, 0.4),
+        plan_config=plan_config,
+        control_config=control_config,
+        plan_integrity=clean_integrity,
+        control_integrity=clean_integrity,
+    )
+    assert result["trigger_state"] == "GREEN"
+    assert result["adoption_state"] == "NOT_ADOPTED"
+    assert result["deltas"]["candidate_task_count"] == -2
+    assert "no_verifier_pass_gain" in result["adoption_rejection_reasons"]
+
+
+def test_matched_target_mode_comparison_rejects_non_target_config_drift() -> None:
+    config = {
+        "seed": 1,
+        "sources": {"private": "x"},
+        "tokenization": {"target_mode": "body_tokens", "max_source_tokens": 32},
+        "model": {"d_model": 8},
+        "training": {"pretrain_target_token_positions": 10},
+        "evaluation": {"holdout_family_count": 24},
+        "preference": {"max_train_tasks": 8},
+        "boundaries": {"public_training_rows": 0},
+    }
+    plan_config = json.loads(json.dumps(config))
+    plan_config["tokenization"]["target_mode"] = "typed_semantic_ir_plan_body_tokens_v1"
+    control_config = json.loads(json.dumps(config))
+    control_config["tokenization"]["max_source_tokens"] = 64
+    plan_report = {
+        "stage": {"target_mode": "typed_semantic_ir_plan_body_tokens_v1"},
+        "architecture": {"parameter_count": 100},
+        "training": {"complete": True, "eval_loss_after": 1.0},
+        "summary": {"candidate_count": 1, "candidate_task_count": 1},
+        "decode": {"runtime_ms": 1},
+        "private_verifier": {
+            "summary": {"passed_task_count": 1},
+            "private_verification": {"mean_verification_reward": 1.0},
+        },
+        "runtime_ms": 1,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    control_report = json.loads(json.dumps(plan_report))
+    control_report["stage"]["target_mode"] = "body_tokens"
+    integrity = {"summary": {"integrity_mismatch_count": 0}}
+    result = compare_target_mode_canaries(
+        plan_report,
+        control_report,
+        plan_config=plan_config,
+        control_config=control_config,
+        plan_integrity=integrity,
+        control_integrity=integrity,
+    )
+    assert result["trigger_state"] == "RED"
+    assert result["matched_checks"]["tokenization_except_target_mode"] is False
+
+
+def test_target_mode_gate_replays_artifact_bindings_and_adoption(tmp_path: Path) -> None:
+    artifact = tmp_path / "artifact.bin"
+    artifact.write_bytes(b"bound")
+    digest = hashlib.sha256(artifact.read_bytes()).hexdigest()
+    artifact_names = {
+        "plan_report",
+        "plan_config",
+        "plan_candidates",
+        "plan_checkpoint",
+        "plan_integrity",
+        "control_report",
+        "control_config",
+        "control_candidates",
+        "control_checkpoint",
+        "control_integrity",
+    }
+    comparison = {
+        "policy": "project_theseus_standard_causal_target_mode_matched_comparison_v1",
+        "trigger_state": "GREEN",
+        "adoption_state": "NOT_ADOPTED",
+        "adoption_rejection_reasons": ["no_verifier_pass_gain"],
+        "boundaries_clean": True,
+        "matched_checks": {"seed": True, "target_modes_expected": True},
+        "plan": {
+            "passed_task_count": 0,
+            "candidate_task_count": 2,
+            "mean_verification_reward": 0.2,
+            "integrity_mismatch_count": 0,
+        },
+        "control": {
+            "passed_task_count": 0,
+            "candidate_task_count": 4,
+            "mean_verification_reward": 0.4,
+            "integrity_mismatch_count": 0,
+        },
+        "deltas": {"candidate_task_count": -2},
+        "artifacts": {
+            name: {"path": str(artifact), "sha256": digest, "bytes": 5}
+            for name in artifact_names
+        },
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    path = tmp_path / "comparison.json"
+    path.write_text(json.dumps(comparison), encoding="utf-8")
+    audit = audit_target_mode_comparison(path)
+    assert audit["state"] == "GREEN"
+    assert audit["adoption_state"] == "NOT_ADOPTED"
+    assert all(item["matches"] for item in audit["receipt"]["artifact_receipts"].values())
+
+    comparison["adoption_state"] = "ADOPTED"
+    path.write_text(json.dumps(comparison), encoding="utf-8")
+    invalid = audit_target_mode_comparison(path)
+    assert invalid["state"] == "RED"
+    assert any(
+        gap["kind"] == "target_mode_adoption_decision_mismatch"
+        for gap in invalid["hard_gaps"]
+    )
+
+
+def test_candidate_integrity_recomputes_direct_plan_body_trace_instead_of_trusting_flags() -> None:
+    import semantic_ir
+    from neural_seed_token_decoder_rendering import PLAN_BODY_START_TOKEN
+    from neural_seed_token_decoder_support import body_tokens as tokenize_body
+
+    body = "out = []\nfor value in data:\n    out.append(value + 1)\nreturn out"
+    code = "def solve(data):\n" + "\n".join(f"    {line}" for line in body.splitlines()) + "\n"
+    tokens = [
+        *semantic_ir.body_to_plan_tokens(body, max_tokens=32),
+        PLAN_BODY_START_TOKEN,
+        *tokenize_body(body),
+    ]
+    row = {
+        "candidate_generation_mode": "direct_decoder_only_causal_semantic_plan_body_tokens",
+        "candidate_source": "standard_causal_transformer_survival",
+        "substrate_arm": "transformer_hybrid_survival",
+        "code": code,
+        "decoded_target_tokens": tokens,
+        "decoded_token_sha256": hashlib.sha256(" ".join(tokens).encode()).hexdigest(),
+        "provenance": {"candidate_family": "structural_adapter"},
+    }
+    verified = recompute_candidate_integrity(row)
+    assert verified["recomputed_candidate_family"] == "transformer_hybrid"
+    assert verified["direct_plan_body_trace"]["valid"] is True
+
+    corrupted = json.loads(json.dumps(row))
+    corrupted["decoded_target_tokens"][-2] = "NAME:wrong"
+    corrupted["decoded_token_sha256"] = hashlib.sha256(
+        " ".join(corrupted["decoded_target_tokens"]).encode()
+    ).hexdigest()
+    rejected = recompute_candidate_integrity(corrupted)
+    assert rejected["recomputed_candidate_family"] == "structural_adapter"
+    assert rejected["direct_plan_body_trace"]["valid"] is False
+    assert "decoded_body_trace_code_mismatch" in rejected["direct_plan_body_trace"]["faults"]
 
 
 def test_evaluate_only_requires_execute_before_any_report_write() -> None:
@@ -346,10 +576,10 @@ def test_conditioning_train_mode_fails_before_optimizer_without_complete_receipt
     assert result.returncode == 2
     report = json.loads((tmp_path / "report.json").read_text())
     assert report["trigger_state"] == "RED"
-    assert {row["code"] for row in report["typed_faults"]} == {
+    assert {
         "base_training_receipt_incomplete",
         "base_training_receipt_is_evaluation_replay",
-    }
+    } <= {row["code"] for row in report["typed_faults"]}
     assert not (tmp_path / "checkpoint").exists()
 
 

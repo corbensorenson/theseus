@@ -115,6 +115,35 @@ def test_compact_plan_keeps_complete_steps_within_budget() -> None:
     assert sum(token.startswith("IRP:FLOW:") for token in tokens) == 5
 
 
+def test_closed_plan_protocol_covers_generated_tokens_and_rejects_bad_transitions() -> None:
+    generated = semantic_ir.body_to_plan_tokens(BODY, max_tokens=32)
+    protocol = set(semantic_ir.plan_protocol_tokens())
+    assert set(generated) <= protocol
+    prefix: list[str] = []
+    for token in generated:
+        assert semantic_ir.plan_prefix_token_allowed(
+            prefix,
+            token,
+            body_start_token=PLAN_BODY_START_TOKEN,
+        )
+        prefix.append(token)
+    assert semantic_ir.plan_prefix_token_allowed(
+        prefix,
+        PLAN_BODY_START_TOKEN,
+        body_start_token=PLAN_BODY_START_TOKEN,
+    )
+    assert not semantic_ir.plan_prefix_token_allowed(
+        [semantic_ir.PLAN_BEGIN],
+        "NAME:return",
+        body_start_token=PLAN_BODY_START_TOKEN,
+    )
+    assert not semantic_ir.plan_prefix_token_allowed(
+        [semantic_ir.PLAN_BEGIN],
+        PLAN_BODY_START_TOKEN,
+        body_start_token=PLAN_BODY_START_TOKEN,
+    )
+
+
 def test_generic_semantic_ir_roundtrips_nested_program() -> None:
     tokens = semantic_ir.body_to_tokens(BODY)
     rendered, receipt = semantic_ir.compile_body_tokens(tokens)
