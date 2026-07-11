@@ -55,6 +55,10 @@ def build_gate(
     training = report.get("training") if isinstance(report.get("training"), dict) else {}
     architecture = report.get("architecture") if isinstance(report.get("architecture"), dict) else {}
     checkpoint = resolve(str((report.get("artifacts") or {}).get("checkpoint") or ""))
+    preference_audit = audit_preference_canary(report.get("preference_canary"), checkpoint)
+    hard_gaps.extend(preference_audit["hard_gaps"])
+    generation_mode_audit = audit_generation_mode_canary(report.get("generation_mode_canary"))
+    hard_gaps.extend(generation_mode_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -205,6 +209,12 @@ def build_gate(
             "adoption_state": adoption_state,
             "checkpoint": rel(checkpoint),
             "checkpoint_sha256": file_sha256(checkpoint) if checkpoint.exists() else "",
+            "preference_canary_state": preference_audit["state"],
+            "preference_adoption_state": preference_audit["adoption_state"],
+            "preference_reward_behavior_delta": preference_audit["reward_behavior_delta"],
+            "generation_mode_canary_state": generation_mode_audit["state"],
+            "generation_mode_adoption_state": generation_mode_audit["adoption_state"],
+            "generation_mode_speedup": generation_mode_audit["speedup"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -216,6 +226,139 @@ def build_gate(
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
+    }
+
+
+def audit_preference_canary(value: Any, canonical_checkpoint: Path) -> dict[str, Any]:
+    canary = value if isinstance(value, dict) else {}
+    state = str(canary.get("state") or "NOT_RUN")
+    adoption_state = str(canary.get("adoption_state") or "NOT_RUN")
+    hard_gaps: list[dict[str, Any]] = []
+    if state in {"NOT_RUN", "TYPED_NO_REWARD_PAIRS"}:
+        return {
+            "state": state,
+            "adoption_state": adoption_state,
+            "reward_behavior_delta": 0,
+            "hard_gaps": [],
+        }
+    if state != "GREEN":
+        hard_gaps.append(gap("preference_canary_state_invalid", {"state": state}))
+    for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count"):
+        if int(canary.get(key) or 0) != 0:
+            hard_gaps.append(gap(f"preference_canary_{key}_nonzero", {"observed": canary.get(key)}))
+    base = canary.get("base_heldout") if isinstance(canary.get("base_heldout"), dict) else {}
+    reward = canary.get("reward_present_heldout") if isinstance(canary.get("reward_present_heldout"), dict) else {}
+    control = canary.get("reward_removed_heldout") if isinstance(canary.get("reward_removed_heldout"), dict) else {}
+    reward_training = canary.get("reward_present_training") if isinstance(canary.get("reward_present_training"), dict) else {}
+    control_training = canary.get("reward_removed_training") if isinstance(canary.get("reward_removed_training"), dict) else {}
+    pair_summary = canary.get("preference_pair_summary") if isinstance(canary.get("preference_pair_summary"), dict) else {}
+    reward_passes = int(reward.get("passed_task_count") or 0)
+    base_passes = int(base.get("passed_task_count") or 0)
+    control_passes = int(control.get("passed_task_count") or 0)
+    reward_rank1 = int(reward.get("rank1_passed_task_count") or 0)
+    base_rank1 = int(base.get("rank1_passed_task_count") or 0)
+    control_rank1 = int(control.get("rank1_passed_task_count") or 0)
+    independently_improves = (reward_passes > base_passes and reward_passes > control_passes) or (
+        reward_passes >= base_passes
+        and reward_passes >= control_passes
+        and reward_rank1 > max(base_rank1, control_rank1)
+    )
+    if bool(canary.get("reward_improves_behavior")) != independently_improves:
+        hard_gaps.append(
+            gap(
+                "preference_behavior_decision_mismatch",
+                {
+                    "claimed": canary.get("reward_improves_behavior"),
+                    "recomputed": independently_improves,
+                },
+            )
+        )
+    expected_adoption = "QUALIFIED_SHADOW" if independently_improves else "NOT_ADOPTED"
+    if adoption_state != expected_adoption:
+        hard_gaps.append(
+            gap(
+                "preference_adoption_state_mismatch",
+                {"observed": adoption_state, "expected": expected_adoption},
+            )
+        )
+    if int(pair_summary.get("selected_pair_count") or 0) <= 0:
+        hard_gaps.append(gap("preference_pair_evidence_missing", {"pair_summary": pair_summary}))
+    if float(reward_training.get("preference_margin_delta") or 0.0) <= 0:
+        hard_gaps.append(gap("reward_present_margin_not_improved", {"training": reward_training}))
+    if abs(float(control_training.get("preference_margin_delta") or 0.0)) > 1e-8:
+        hard_gaps.append(gap("reward_removed_control_margin_changed", {"training": control_training}))
+    for label, heldout in (("reward", reward), ("control", control)):
+        if int(heldout.get("integrity_mismatch_count") or 0) != 0:
+            hard_gaps.append(gap(f"preference_{label}_integrity_mismatch", {"heldout": heldout}))
+    artifacts = canary.get("artifacts") if isinstance(canary.get("artifacts"), dict) else {}
+    for key in ("reward_checkpoint", "control_checkpoint"):
+        path = resolve(str(artifacts.get(key) or ""))
+        if path == canonical_checkpoint:
+            hard_gaps.append(gap("preference_shadow_overwrote_canonical_checkpoint", {"artifact": key}))
+    return {
+        "state": state,
+        "adoption_state": adoption_state,
+        "reward_behavior_delta": reward_passes - base_passes,
+        "hard_gaps": hard_gaps,
+    }
+
+
+def audit_generation_mode_canary(value: Any) -> dict[str, Any]:
+    canary = value if isinstance(value, dict) else {}
+    state = str(canary.get("state") or "NOT_RUN")
+    adoption_state = str(canary.get("adoption_state") or "NOT_RUN")
+    speedup = float(canary.get("generation_speedup") or 0.0)
+    if state == "NOT_RUN":
+        return {"state": state, "adoption_state": adoption_state, "speedup": speedup, "hard_gaps": []}
+    hard_gaps: list[dict[str, Any]] = []
+    if state != "GREEN":
+        hard_gaps.append(gap("generation_mode_canary_state_invalid", {"state": state}))
+    for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count"):
+        if int(canary.get(key) or 0) != 0:
+            hard_gaps.append(gap(f"generation_mode_{key}_nonzero", {"observed": canary.get(key)}))
+    serial = canary.get("serial") if isinstance(canary.get("serial"), dict) else {}
+    batched = canary.get("batched") if isinstance(canary.get("batched"), dict) else {}
+    recomputed_behavior = (
+        int(batched.get("passed_task_count") or 0) >= int(serial.get("passed_task_count") or 0)
+        and int(batched.get("rank1_passed_task_count") or 0)
+        >= int(serial.get("rank1_passed_task_count") or 0)
+    )
+    recomputed_integrity = int(batched.get("integrity_mismatch_count") or 0) <= int(
+        serial.get("integrity_mismatch_count") or 0
+    )
+    serial_runtime = int(serial.get("generation_runtime_ms") or 0)
+    batched_runtime = int(batched.get("generation_runtime_ms") or 0)
+    recomputed_speedup = serial_runtime / max(1, batched_runtime)
+    qualified = (
+        canary.get("candidate_manifest_equal") is True
+        and recomputed_behavior
+        and recomputed_integrity
+        and recomputed_speedup > 1.0
+    )
+    expected_adoption = "BATCHED_DEFAULT" if qualified else "NOT_ADOPTED"
+    if bool(canary.get("behavior_non_regression")) != recomputed_behavior:
+        hard_gaps.append(gap("generation_mode_behavior_decision_mismatch", {}))
+    if bool(canary.get("integrity_non_regression")) != recomputed_integrity:
+        hard_gaps.append(gap("generation_mode_integrity_decision_mismatch", {}))
+    if abs(speedup - recomputed_speedup) > 1e-5:
+        hard_gaps.append(
+            gap(
+                "generation_mode_speedup_mismatch",
+                {"reported": speedup, "recomputed": recomputed_speedup},
+            )
+        )
+    if adoption_state != expected_adoption:
+        hard_gaps.append(
+            gap(
+                "generation_mode_adoption_state_mismatch",
+                {"observed": adoption_state, "expected": expected_adoption},
+            )
+        )
+    return {
+        "state": state,
+        "adoption_state": adoption_state,
+        "speedup": round(recomputed_speedup, 6),
+        "hard_gaps": hard_gaps,
     }
 
 

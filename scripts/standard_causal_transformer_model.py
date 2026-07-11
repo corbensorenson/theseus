@@ -33,6 +33,24 @@ def build_model(config: CausalTransformerConfig, *, mx: Any, nn: Any) -> Any:
 
     config.validate()
     head_dim = config.d_model // config.num_heads
+    half_head_dim = head_dim // 2
+    rope_inverse_frequency = mx.array(
+        [config.rope_base ** (-(2.0 * index) / head_dim) for index in range(half_head_dim)],
+        dtype=mx.float32,
+    )
+
+    def apply_rope(value: Any, *, offset: int) -> Any:
+        length = int(value.shape[2])
+        positions = mx.arange(offset, offset + length, dtype=mx.float32)
+        angles = positions[:, None] * rope_inverse_frequency[None, :]
+        cosine = mx.cos(angles)[None, None, :, :]
+        sine = mx.sin(angles)[None, None, :, :]
+        first = value[..., :half_head_dim]
+        second = value[..., half_head_dim:]
+        return mx.concatenate(
+            [first * cosine - second * sine, first * sine + second * cosine],
+            axis=-1,
+        )
 
     class CausalAttention(nn.Module):
         def __init__(self) -> None:
@@ -41,7 +59,6 @@ def build_model(config: CausalTransformerConfig, *, mx: Any, nn: Any) -> Any:
             self.k_proj = nn.Linear(config.d_model, config.num_kv_heads * head_dim, bias=False)
             self.v_proj = nn.Linear(config.d_model, config.num_kv_heads * head_dim, bias=False)
             self.out_proj = nn.Linear(config.num_heads * head_dim, config.d_model, bias=False)
-            self.rope = nn.RoPE(head_dim, traditional=False, base=config.rope_base)
 
         def __call__(
             self,
@@ -53,16 +70,22 @@ def build_model(config: CausalTransformerConfig, *, mx: Any, nn: Any) -> Any:
             query = self.q_proj(hidden).reshape(batch, length, config.num_heads, head_dim).transpose(0, 2, 1, 3)
             key = self.k_proj(hidden).reshape(batch, length, config.num_kv_heads, head_dim).transpose(0, 2, 1, 3)
             value = self.v_proj(hidden).reshape(batch, length, config.num_kv_heads, head_dim).transpose(0, 2, 1, 3)
-            query = self.rope(query, offset=offset)
-            key = self.rope(key, offset=offset)
+            query = apply_rope(query, offset=offset)
+            key = apply_rope(key, offset=offset)
             if cache is not None:
                 key = mx.concatenate([cache[0], key], axis=2)
                 value = mx.concatenate([cache[1], value], axis=2)
             mask = "causal" if cache is None and length > 1 else None
+            attention_key = key
+            attention_value = value
+            if config.num_kv_heads != config.num_heads:
+                repeats = config.num_heads // config.num_kv_heads
+                attention_key = mx.repeat(key, repeats=repeats, axis=1)
+                attention_value = mx.repeat(value, repeats=repeats, axis=1)
             attended = mx.fast.scaled_dot_product_attention(
                 query,
-                key,
-                value,
+                attention_key,
+                attention_value,
                 scale=head_dim ** -0.5,
                 mask=mask,
             )

@@ -208,23 +208,71 @@
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-          "sha256": "dbf196894d087aea3b65a320c8d60051926f1c08d4e95201b3aa0204cbaad094"
+          "sha256": "5e55f8bc8dbf832761046b58544096050e5f0f4ec14cbd8a0386dd3c7d984707"
+        },
+        "policy_config": {
+          "path": "configs/policy_optimization_program.json",
+          "sha256": "48d96e9f0f831830c522129dc5c7a7e4f00bd07f4698211a79f17f24005b8bf1"
+        },
+        "generation_mode_config": {
+          "path": "configs/generation_mode_registry.json",
+          "sha256": "a42e86a028f0590c11d70b498c015e57b7c5bfb9015002bbc13322f1b2d7521d"
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "f62b6290a6f9f0a46524d9ecbf0a1000d8da003ee94dd161ee7163ef911db387"
+          "sha256": "2868285ac3fbe2bf75a3ccee6072c39a207a20106589c7db7eec3375853d8d9e"
+        },
+        "model": {
+          "path": "scripts/standard_causal_transformer_model.py",
+          "sha256": "af628161a8243db776a1d345ab74af5eb9bfe53d5695b524692a415ab79e5826"
+        },
+        "preference": {
+          "path": "scripts/standard_causal_transformer_preference.py",
+          "sha256": "bcfc7673ec4e07d0cf38fb47f634b9176b73776f323d27aa9e2cc77eb238bdfe"
+        },
+        "private_verifier": {
+          "path": "scripts/code_lm_private_verifier.py",
+          "sha256": "9932028648784ad715b8986e49246376f47474d5e58b1b9cee2c355986bf04a5"
+        },
+        "qualification_gate": {
+          "path": "scripts/standard_causal_transformer_survival_gate.py",
+          "sha256": "d3f87bffa4f88b0075663b9e9c8bbfeb8d710d31eb4f8819cbdf19fc71ff0e53"
+        },
+        "policy_gate": {
+          "path": "scripts/policy_optimization_gate.py",
+          "sha256": "b6e8049cb94aacf09ffddcfdee35fa66f88e50d6823f8445764c36be8a85384b"
+        },
+        "generation_mode_gate": {
+          "path": "scripts/generation_mode_gate.py",
+          "sha256": "bb4ed9aa9593aecd248012155e0aa500c2223824fa64478503074b1f90d86213"
+        },
+        "canonical_report": {
+          "path": "reports/standard_causal_transformer_survival.json",
+          "sha256": "89b6dc6aa89723c4c35bc60475587b6e09ab8ca89c6121267cda238658e957bc"
         },
         "candidate_manifest": {
           "path": "reports/standard_causal_transformer_survival_candidates.jsonl",
-          "sha256": "151e89efc8557664fbb6cb420fe682bd1fca53faa418814a7b155468bddc95de"
+          "sha256": "6f08c0eabfe7bdb346d6005e32bc8cb6fddb9d380714f84e5b5f886508d855ed"
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "a2937877dc455f198b2c37ee4b6efd3f825aa8ff0012631edb9fc65d7fd51731"
+          "sha256": "0bf1b6110b03ad13a3ee47f67f2aa6bec27380bcb86685dca8afce025a2fa912"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "8630734fe5d7a42d2b21291bd123047236ccc5ff751b75386eb77f7fa45b73ac"
+          "sha256": "fcb513c51edd36fbe01f470068386885c3440d22bf4c5180583a78ce061aef62"
+        },
+        "qualification_report": {
+          "path": "reports/standard_causal_transformer_survival_gate.json",
+          "sha256": "c9b2ca64496e94820aef4e64a3a4dcc4591344c6049dda8ba428e9ecb440554d"
+        },
+        "policy_report": {
+          "path": "reports/policy_optimization_program.json",
+          "sha256": "7443f4365e5d6e85cc4bc543b11680e949ff62834f0f0961b980c2792992820d"
+        },
+        "generation_mode_report": {
+          "path": "reports/generation_mode_registry.json",
+          "sha256": "6b6af9d5c1834d1990a0b02816ee43b2259677c05a2be3934375893e494698c2"
         }
       },
       "evidence_refs": [
@@ -232,7 +280,9 @@
         "reports/standard_causal_transformer_survival_candidates.jsonl",
         "reports/candidate_integrity_standard_causal_transformer_survival.json",
         "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-        "reports/standard_causal_transformer_survival_gate.json"
+        "reports/standard_causal_transformer_survival_gate.json",
+        "reports/policy_optimization_program.json",
+        "reports/generation_mode_registry.json"
       ],
       "no_cheat_counters": {
         "public_training_rows_written": 0,
@@ -551,6 +601,9 @@
           "source_paths": [
             "configs/standard_causal_transformer_survival.json",
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/standard_causal_transformer_preference.py",
+            "scripts/code_lm_private_verifier.py",
             "scripts/standard_causal_transformer_survival_gate.py"
           ],
           "acceptance": {
@@ -564,6 +617,8 @@
           "freshness_mode": "source_bound",
           "source_paths": [
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/standard_causal_transformer_preference.py",
             "scripts/candidate_integrity.py"
           ],
           "acceptance": {
@@ -578,6 +633,8 @@
           "source_paths": [
             "configs/standard_causal_transformer_survival.json",
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/standard_causal_transformer_preference.py",
             "scripts/blind_information_flow_audit.py"
           ],
           "acceptance": {
@@ -4726,14 +4783,21 @@
       "canonical_entrypoint": "scripts/standard_causal_transformer_survival.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve prompt/signature-only visibility, reversible tokenization, direct learned full-body generation, independent integrity and blind-flow audits, private verifier replay, exact checkpoint binding, and zero fallback/template/router/tool credit.",
-      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
       "role": "survival",
       "trust_tier": "governed_training_candidate",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "configs/standard_causal_transformer_survival.json",
+        "configs/policy_optimization_program.json",
+        "configs/generation_mode_registry.json",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_model.py",
+        "scripts/standard_causal_transformer_preference.py",
         "scripts/standard_causal_transformer_survival_gate.py",
+        "scripts/code_lm_private_verifier.py",
+        "scripts/policy_optimization_gate.py",
+        "scripts/generation_mode_gate.py",
         "scripts/candidate_integrity.py",
         "scripts/blind_information_flow_audit.py",
         "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz"
@@ -4770,7 +4834,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The registered proposer floor is 1/24 model-only verifier-passing tasks. Rank quality is weak, 23 tasks remain unsolved, and 23 of 94 candidates are independently classified as inert or stub-like. This is not Phase 10 completion or public-transfer evidence.",
+      "current_wall": "The registered proposer floor remains 1/24 model-only verifier-passing tasks. Exact batched cached-beam parity improves accepted verified output from 0.008800/s to 0.029253/s (3.324207x) without behavior or integrity regression. The first exact-pair DPO canary is quarantined: its preference margin rose by 1.803796 but heldout behavior regressed from 1/24 to 0/24 while the reward-removed control preserved 1/24. Semantic candidate quality and preference-pair density remain the Phase 10 wall.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",
@@ -4824,13 +4888,20 @@
             "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
             "reports/standard_causal_transformer_survival_gate.json"
           ],
-          "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+          "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
             "configs/standard_causal_transformer_survival.json",
+            "configs/policy_optimization_program.json",
+            "configs/generation_mode_registry.json",
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/standard_causal_transformer_preference.py",
             "scripts/standard_causal_transformer_survival_gate.py",
+            "scripts/code_lm_private_verifier.py",
+            "scripts/policy_optimization_gate.py",
+            "scripts/generation_mode_gate.py",
             "scripts/candidate_integrity.py",
             "scripts/blind_information_flow_audit.py"
           ]
@@ -7505,6 +7576,8 @@
         "scripts/sts_broad_regression_audit_v1.py",
         "scripts/trainable_transformer_hybrid_code_generator_v1.py",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_model.py",
+        "scripts/standard_causal_transformer_preference.py",
         "scripts/standard_causal_transformer_survival_gate.py",
         "configs/standard_causal_transformer_survival.json",
         "scripts/canonical_survival_lane_ablation_v1.py",

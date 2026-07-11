@@ -17,17 +17,16 @@ records, gates, docs, evidence, and an integration smoke. This prevents the
 roadmap from becoming another prose-only claim surface while preserving the
 late AI_book phases instead of deleting them for a cosmetic green state.
 The project registry is now `GREEN` with `0` hard violations and `0` route
-blockers. Route health uses `16` minimal source-bound, TTL-bound, or
-current-invocation receipts; `156` other declared outputs are supporting
+blockers. Route health uses `17` minimal source-bound, TTL-bound, or
+current-invocation receipts; `168` other declared outputs are supporting
 evidence and no longer force daily regeneration. Stale, invalid, missing, or
 acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
 The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
 Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
-`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3` and `7` are
-`implemented`; phase `13` is now `implemented`; phases `10`, `14`, `15`, and
-`16` are intentionally `partial` after the latest
-ASI Stack/Claude book-mining pass; and phases `1`, `2`, `9`, and `18` are
+`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `7`, `13`,
+`14`, `15`, and `16` are `implemented`; phase `10` is the sole local partial
+phase; and phases `1`, `2`, `9`, and `18` are
 externally frozen until trusted peers are reachable. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
@@ -73,17 +72,23 @@ because recursive synthetic share is `0.824771`; this is a
 curriculum-distribution warning, not a model-collapse, forgetting, unlearning,
 or capability claim.
 
-Phase `10` now has a real MLX sparse-specialist implementation and matched dense
-active-compute control. The sparse model has `102,579,886` total parameters,
-routes top-2 experts, keeps `22/32` experts active after the 100K proof, and
-matches dense active parameters within `0.000235`. It is not adopted: dense
-trains at `2377` versus `821` token positions/sec, has lower heldout loss
-(`3.602533` versus `3.732045`), emits more admissible canary candidates, and
-neither arm passes heldout behavior. The dense 5M run is `GREEN` as training
-evidence (`8.438594 -> 2.807992` LM loss; source gap `-0.000857 -> 0.299505`),
-but its frozen direct replay and one governed private adaptation remain `0/8`
-behavior. The adaptation's near-zero private LM loss with zero behavior is
-falsifying evidence against more tuning of this checkpoint family.
+Phase `10` now has a canonical 6.6M-parameter MLX decoder-only causal
+transformer trained on `12,001,413` licensed pretraining positions and
+`6,000,982` private SFT positions. On the frozen 24-family private heldout it
+emits `94` syntax-valid direct full-body candidates, `71` independently pass
+integrity, and one task passes model-only. Exact cached-beam batching preserves
+candidate hashes/order, behavior, and integrity while reducing generation
+runtime from `113638ms` to `34185ms` (`3.324207x`) and improving accepted
+verified output from `0.008800/s` to `0.029253/s`. The first real DPO canary is
+negative: one exact pair moves preference margin `+1.803796` but regresses
+heldout behavior `1/24 -> 0/24`; the reward-removed control stays `1/24` with
+zero margin movement. Both shadow checkpoints are quarantined. The remaining
+wall is semantic candidate quality and verifier-positive pair density, not
+decode speed or preference plumbing. This is private proposer evidence, not
+public transfer or runtime-serving readiness.
+
+The earlier sparse-specialist and compact encoder-decoder experiments below
+remain retained negative evidence rather than current routes.
 
 The data-right-sized model has now received a direct behavior verdict. Corpus
 selection scans the

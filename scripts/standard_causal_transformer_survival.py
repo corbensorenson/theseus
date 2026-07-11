@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import ast
+import copy
 import hashlib
+import inspect
 import json
 import math
 import os
@@ -25,7 +27,11 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in os.sys.path:
     os.sys.path.insert(0, str(SCRIPTS))
 
-from code_lm_private_verifier import evaluate_private_candidates  # noqa: E402
+from code_lm_private_verifier import (  # noqa: E402
+    evaluate_all_private_candidates,
+    evaluate_private_candidates,
+)
+import semantic_ir  # noqa: E402
 from neural_seed_open_vocab import encode_tokens  # noqa: E402
 from neural_seed_token_decoder_support import (  # noqa: E402
     body_tokens,
@@ -37,6 +43,12 @@ from standard_causal_transformer_model import (  # noqa: E402
     CausalTransformerConfig,
     build_model,
     parameter_count,
+)
+from standard_causal_transformer_preference import (  # noqa: E402
+    build_preference_pairs,
+    encode_preference_arrays,
+    reward_removed_pairs,
+    train_dpo,
 )
 
 
@@ -65,6 +77,7 @@ class Stage:
     eval_labels: np.ndarray
     eval_mask: np.ndarray
     eval_rows: list[dict[str, Any]]
+    preference_rows: list[dict[str, Any]]
     source_vocab: dict[str, int]
     target_vocab: dict[str, int]
     summary: dict[str, Any]
@@ -81,6 +94,8 @@ def main() -> int:
     parser.add_argument("--force-restage", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--evaluate-only", action="store_true")
+    parser.add_argument("--preference-canary", action="store_true")
+    parser.add_argument("--generation-mode-canary", action="store_true")
     parser.add_argument("--max-steps", type=int, default=0)
     args = parser.parse_args()
 
@@ -95,6 +110,8 @@ def main() -> int:
         force_restage=args.force_restage,
         resume=args.resume,
         evaluate_only=args.evaluate_only,
+        preference_canary=args.preference_canary,
+        generation_mode_canary=args.generation_mode_canary,
         max_steps=max(0, args.max_steps),
         report_path=resolve(args.out),
         started=started,
@@ -115,6 +132,8 @@ def run(
     force_restage: bool,
     resume: bool,
     evaluate_only: bool,
+    preference_canary: bool,
+    generation_mode_canary: bool,
     max_steps: int,
     report_path: Path,
     started: float,
@@ -305,6 +324,46 @@ def run(
     verifier = evaluate_private_candidates(stage.eval_rows, candidates)
     verifier_summary = private_verifier_summary(verifier)
     model_pass_count = int(verifier_summary.get("passed_task_count") or 0)
+    decode_runtime_seconds = float(decode_summary.get("runtime_ms") or 0) / 1000.0
+    decode_summary["accepted_verified_output_per_second"] = (
+        round(model_pass_count / max(1e-9, decode_runtime_seconds), 8)
+        if decode_runtime_seconds > 0
+        else None
+    )
+    preference_report: dict[str, Any] = {
+        "state": "NOT_RUN",
+        "reason": "enable --preference-canary for the bounded private reward-present/control comparison",
+    }
+    if preference_canary:
+        preference_report = run_preference_canary(
+            reference_model=model,
+            model_cfg=model_cfg,
+            checkpoint=checkpoint,
+            checkpoint_dir=checkpoint_dir,
+            stage=stage,
+            config=config,
+            base_verifier=verifier,
+            base_candidates=candidates,
+            base_decode=decode_summary,
+            mx=mx,
+            nn=nn,
+            optim=optim,
+        )
+    generation_mode_report: dict[str, Any] = {
+        "state": "NOT_RUN",
+        "reason": "enable --generation-mode-canary for matched serial-versus-batched beam evidence",
+    }
+    if generation_mode_canary:
+        generation_mode_report = run_generation_mode_canary(
+            reference_model=model,
+            stage=stage,
+            config=config,
+            batched_candidates=candidates,
+            batched_decode=decode_summary,
+            batched_verifier=verifier,
+            checkpoint_dir=checkpoint_dir,
+            mx=mx,
+        )
     trigger_state = "GREEN" if training_complete and model_pass_count > 0 else "YELLOW"
     report = {
         "policy": config["policy"],
@@ -342,6 +401,8 @@ def run(
         "conditioning": conditioning,
         "decode": decode_summary,
         "private_verifier": verifier,
+        "preference_canary": preference_report,
+        "generation_mode_canary": generation_mode_report,
         "summary": {
             "family_disjoint_eval_task_count": len(stage.eval_rows),
             "candidate_count": len(candidates),
@@ -396,6 +457,7 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
                 eval_labels=arrays["eval_labels"],
                 eval_mask=arrays["eval_mask"],
                 eval_rows=list(metadata["eval_rows"]),
+                preference_rows=list(metadata.get("preference_rows") or []),
                 source_vocab=dict(vocab_payload["source_vocab"]),
                 target_vocab=dict(vocab_payload["target_vocab"]),
                 summary={**metadata["summary"], "cache_status": "hit"},
@@ -410,6 +472,12 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
     eval_body_token_sequences = {
         tuple(body_tokens(str(row.get("solution_body") or ""))) for row in eval_rows
     }
+    preference_rows, preference_audit = select_preference_train_rows(
+        config,
+        holdout_families=holdout_families,
+        eval_prompt_hashes=eval_prompt_hashes,
+        eval_body_hashes=eval_body_hashes,
+    )
     sft_examples, sft_audit = load_sft_examples(
         config,
         holdout_families=holdout_families,
@@ -432,6 +500,19 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         "sft_target_positions": int(sft[2].sum()),
         "sft_sampling_weight_sum": round(float(sft[3].sum()), 6),
         "family_disjoint_eval_task_count": len(eval_rows),
+        "preference_train_task_count": len(preference_rows),
+        "preference_train_family_count": len(
+            {str(row.get("concept_residual_label") or "") for row in preference_rows}
+        ),
+        "preference_train_eval_family_overlap_count": preference_audit[
+            "train_eval_family_overlap_count"
+        ],
+        "preference_train_eval_prompt_overlap_count": preference_audit[
+            "train_eval_prompt_overlap_count"
+        ],
+        "preference_train_eval_body_overlap_count": preference_audit[
+            "train_eval_body_overlap_count"
+        ],
         "unique_semantic_eval_task_count": len(
             {
                 (str(row.get("prompt") or ""), str(row.get("solution_body") or ""))
@@ -481,7 +562,15 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         eval_labels=eval_arrays[1],
         eval_mask=eval_arrays[2],
     )
-    write_json(metadata_path, {"stage_signature": signature, "summary": summary, "eval_rows": eval_rows})
+    write_json(
+        metadata_path,
+        {
+            "stage_signature": signature,
+            "summary": summary,
+            "eval_rows": eval_rows,
+            "preference_rows": preference_rows,
+        },
+    )
     return Stage(
         pretrain_inputs=pretrain[0],
         pretrain_labels=pretrain[1],
@@ -494,6 +583,7 @@ def materialize_stage(config: dict[str, Any], *, stage_dir: Path, force: bool) -
         eval_labels=eval_arrays[1],
         eval_mask=eval_arrays[2],
         eval_rows=eval_rows,
+        preference_rows=preference_rows,
         source_vocab=source_vocab,
         target_vocab=target_vocab,
         summary=summary,
@@ -796,6 +886,105 @@ def select_family_disjoint_eval(config: dict[str, Any]) -> tuple[list[dict[str, 
             item["callable_signature_receipt"] = receipt
             selected.append(item)
     return selected, selected_families
+
+
+def select_preference_train_rows(
+    config: dict[str, Any],
+    *,
+    holdout_families: list[str],
+    eval_prompt_hashes: set[str],
+    eval_body_hashes: set[str],
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """Select verifier-bearing private train tasks without exposing their tests to generation."""
+
+    preference = config.get("preference") if isinstance(config.get("preference"), dict) else {}
+    limit = max(0, int(preference.get("max_train_tasks") or 0))
+    admission = read_json(resolve(config["sources"]["training_admission"]))
+    holdouts = set(holdout_families)
+    eligible: list[dict[str, Any]] = []
+    seen_tasks: set[str] = set()
+    excluded_family = 0
+    excluded_prompt = 0
+    excluded_body = 0
+    for source in admission.get("train_admitted_sources", []):
+        path_text = str(source.get("path") or "")
+        if "conversation" in path_text or not path_text.endswith(".jsonl"):
+            continue
+        path = resolve(path_text)
+        if not path.exists():
+            continue
+        for row in read_jsonl(path):
+            if row.get("public_benchmark") is True or any(
+                row.get(key) is True
+                for key in (
+                    "public_prompts_included",
+                    "public_tests_included",
+                    "public_benchmark_solutions_included",
+                    "public_score_labels_included",
+                )
+            ):
+                continue
+            task_id = str(row.get("task_id") or "")
+            family = str(row.get("concept_residual_label") or "")
+            prompt = str(row.get("prompt") or "").strip()
+            body = str(row.get("solution_body") or "").strip()
+            tests = str(row.get("tests") or "").strip()
+            if not task_id or task_id in seen_tasks or not prompt or not body or not tests:
+                continue
+            if family in holdouts:
+                excluded_family += 1
+                continue
+            if sha(prompt) in eval_prompt_hashes:
+                excluded_prompt += 1
+                continue
+            if sha(body) in eval_body_hashes:
+                excluded_body += 1
+                continue
+            signature, receipt = training_callable_signature(row)
+            item = dict(row)
+            item["split"] = "eval"
+            item["callable_signature"] = signature
+            item["callable_signature_receipt"] = receipt
+            item["preference_source_path"] = path_text
+            eligible.append(item)
+            seen_tasks.add(task_id)
+    seed = int(config["seed"])
+    eligible.sort(
+        key=lambda row: sha(
+            f"{seed}:preference:{row.get('concept_residual_label')}:{row.get('task_id')}:{row.get('prompt')}"
+        )
+    )
+    selected: list[dict[str, Any]] = []
+    selected_families: set[str] = set()
+    for row in eligible:
+        family = str(row.get("concept_residual_label") or "")
+        if family and family not in selected_families:
+            selected.append(row)
+            selected_families.add(family)
+        if len(selected) >= limit:
+            break
+    if len(selected) < limit:
+        selected_ids = {str(row.get("task_id") or "") for row in selected}
+        selected.extend(
+            row for row in eligible if str(row.get("task_id") or "") not in selected_ids
+        )
+        selected = selected[:limit]
+    return selected, {
+        "eligible_task_count": len(eligible),
+        "selected_task_count": len(selected),
+        "train_eval_family_overlap_count": sum(
+            str(row.get("concept_residual_label") or "") in holdouts for row in selected
+        ),
+        "train_eval_prompt_overlap_count": sum(
+            sha(str(row.get("prompt") or "")) in eval_prompt_hashes for row in selected
+        ),
+        "train_eval_body_overlap_count": sum(
+            sha(str(row.get("solution_body") or "")) in eval_body_hashes for row in selected
+        ),
+        "excluded_holdout_family_row_count": excluded_family,
+        "excluded_eval_prompt_row_count": excluded_prompt,
+        "excluded_eval_body_row_count": excluded_body,
+    }
 
 
 def eval_example(row: dict[str, Any]) -> dict[str, Any]:
@@ -1155,6 +1344,7 @@ def generate_candidates(
     *,
     mx: Any,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    generation_started = time.perf_counter()
     model.eval()
     candidates: list[dict[str, Any]] = []
     syntax_valid = 0
@@ -1210,7 +1400,7 @@ def generate_candidates(
             seen_code.add(code_hash)
             syntax_valid += 1
             candidates.append(
-                {
+                candidate_row := {
                     "task_id": str(task.get("task_id") or ""),
                     "source_task_id": str(task.get("source_task_id") or ""),
                     "entry_point": str(task.get("entry_point") or "solve"),
@@ -1251,6 +1441,11 @@ def generate_candidates(
                     },
                 }
             )
+            candidate_row["semantic_ir"] = semantic_ir.candidate_receipt(
+                code,
+                prompt=str(task.get("prompt") or ""),
+                callable_signature=callable_signature(task),
+            )
             if len(seen_code) >= int(config["evaluation"]["fanout"]):
                 break
     return candidates, {
@@ -1263,6 +1458,290 @@ def generate_candidates(
         "cross_task_duplicate_body_rejected_count": cross_task_duplicate_body_rejected,
         "fallback_return_count": 0,
         "template_renderer_router_tool_credit_count": 0,
+        "runtime_ms": int((time.perf_counter() - generation_started) * 1000),
+        "accepted_verified_output_per_second": None,
+    }
+
+
+def run_preference_canary(
+    *,
+    reference_model: Any,
+    model_cfg: CausalTransformerConfig,
+    checkpoint: Path,
+    checkpoint_dir: Path,
+    stage: Stage,
+    config: dict[str, Any],
+    base_verifier: dict[str, Any],
+    base_candidates: list[dict[str, Any]],
+    base_decode: dict[str, Any],
+    mx: Any,
+    nn: Any,
+    optim: Any,
+) -> dict[str, Any]:
+    preference_cfg = config["preference"]
+    canary_started = time.perf_counter()
+    train_generation_config = copy.deepcopy(config)
+    train_generation_config["evaluation"].update(
+        {
+            "fanout": int(preference_cfg["candidate_fanout"]),
+            "beam_width": int(preference_cfg["beam_width"]),
+            "branching_factor": int(preference_cfg["branching_factor"]),
+            "completion_pool_multiplier": int(preference_cfg["completion_pool_multiplier"]),
+            "timeout_seconds_per_task": float(preference_cfg["timeout_seconds_per_task"]),
+        }
+    )
+    train_candidates, train_decode = generate_candidates(
+        reference_model,
+        stage.preference_rows,
+        stage.source_vocab,
+        stage.target_vocab,
+        train_generation_config,
+        mx=mx,
+    )
+    train_verifier = evaluate_all_private_candidates(stage.preference_rows, train_candidates)
+    pairs, pair_summary = build_preference_pairs(
+        stage.preference_rows,
+        train_candidates,
+        train_verifier,
+        max_pairs=int(preference_cfg["max_pairs"]),
+        seed=int(config["seed"]),
+    )
+    runtime_dir = checkpoint_dir.parent.parent / "runtime" / "standard_causal_transformer_survival_v1"
+    runtime_dir.mkdir(parents=True, exist_ok=True)
+    train_candidates_path = runtime_dir / "preference_train_candidates.jsonl"
+    write_jsonl(train_candidates_path, train_candidates)
+    if not pairs:
+        return {
+            "state": "TYPED_NO_REWARD_PAIRS",
+            "typed_failure": "no_private_verifier_preference_pairs",
+            "preference_train_decode": train_decode,
+            "preference_pair_summary": pair_summary,
+            "artifacts": {"preference_train_candidates": rel(train_candidates_path)},
+            "runtime_ms": int((time.perf_counter() - canary_started) * 1000),
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+
+    def encode_examples(examples: list[dict[str, Any]]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        return encode_sft_examples(config, examples, stage.source_vocab, stage.target_vocab)
+
+    reward_arrays = encode_preference_arrays(
+        pairs,
+        encode_examples=encode_examples,
+        visible_source=visible_eval_source,
+    )
+    control_pairs, control_pair_summary = reward_removed_pairs(
+        pairs, seed=int(config["seed"]) + 104729
+    )
+    control_arrays = encode_preference_arrays(
+        control_pairs,
+        encode_examples=encode_examples,
+        visible_source=visible_eval_source,
+    )
+    reward_model = build_model(model_cfg, mx=mx, nn=nn)
+    reward_model.load_weights(str(checkpoint))
+    reward_training = train_dpo(
+        reward_model,
+        reference_model,
+        reward_arrays,
+        optimizer_steps=int(preference_cfg["optimizer_steps"]),
+        batch_size=int(preference_cfg["batch_size"]),
+        learning_rate=float(preference_cfg["learning_rate"]),
+        beta=float(preference_cfg["beta"]),
+        gradient_clip_norm=float(preference_cfg["gradient_clip_norm"]),
+        seed=int(config["seed"]) + 17,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+    )
+    reward_checkpoint = checkpoint_dir / "standard_causal_transformer_preference_reward_v1.npz"
+    reward_model.save_weights(str(reward_checkpoint))
+    mx.eval(reward_model.parameters())
+    reward_candidates, reward_decode = generate_candidates(
+        reward_model,
+        stage.eval_rows,
+        stage.source_vocab,
+        stage.target_vocab,
+        config,
+        mx=mx,
+    )
+    reward_verifier = evaluate_private_candidates(stage.eval_rows, reward_candidates)
+    reward_summary = verifier_generation_summary(reward_verifier, reward_decode, reward_candidates)
+    reward_candidates_path = runtime_dir / "preference_reward_eval_candidates.jsonl"
+    write_jsonl(reward_candidates_path, reward_candidates)
+    del reward_model
+    if hasattr(mx, "clear_cache"):
+        mx.clear_cache()
+
+    control_model = build_model(model_cfg, mx=mx, nn=nn)
+    control_model.load_weights(str(checkpoint))
+    control_training = train_dpo(
+        control_model,
+        reference_model,
+        control_arrays,
+        optimizer_steps=int(preference_cfg["optimizer_steps"]),
+        batch_size=int(preference_cfg["batch_size"]),
+        learning_rate=float(preference_cfg["learning_rate"]),
+        beta=float(preference_cfg["beta"]),
+        gradient_clip_norm=float(preference_cfg["gradient_clip_norm"]),
+        seed=int(config["seed"]) + 17,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+    )
+    control_checkpoint = checkpoint_dir / "standard_causal_transformer_preference_control_v1.npz"
+    control_model.save_weights(str(control_checkpoint))
+    mx.eval(control_model.parameters())
+    control_candidates, control_decode = generate_candidates(
+        control_model,
+        stage.eval_rows,
+        stage.source_vocab,
+        stage.target_vocab,
+        config,
+        mx=mx,
+    )
+    control_verifier = evaluate_private_candidates(stage.eval_rows, control_candidates)
+    control_summary = verifier_generation_summary(control_verifier, control_decode, control_candidates)
+    control_candidates_path = runtime_dir / "preference_control_eval_candidates.jsonl"
+    write_jsonl(control_candidates_path, control_candidates)
+
+    base_summary = verifier_generation_summary(base_verifier, base_decode, base_candidates)
+    reward_improves_behavior = (
+        reward_summary["passed_task_count"] > base_summary["passed_task_count"]
+        and reward_summary["passed_task_count"] > control_summary["passed_task_count"]
+    ) or (
+        reward_summary["passed_task_count"] >= base_summary["passed_task_count"]
+        and reward_summary["passed_task_count"] >= control_summary["passed_task_count"]
+        and reward_summary["rank1_passed_task_count"]
+        > max(base_summary["rank1_passed_task_count"], control_summary["rank1_passed_task_count"])
+    )
+    adoption_state = "QUALIFIED_SHADOW" if reward_improves_behavior else "NOT_ADOPTED"
+    return {
+        "state": "GREEN",
+        "adoption_state": adoption_state,
+        "preference_train_decode": train_decode,
+        "preference_pair_summary": pair_summary,
+        "reward_removed_control": control_pair_summary,
+        "reward_present_training": reward_training,
+        "reward_removed_training": control_training,
+        "base_heldout": base_summary,
+        "reward_present_heldout": reward_summary,
+        "reward_removed_heldout": control_summary,
+        "reward_improves_behavior": reward_improves_behavior,
+        "artifacts": {
+            "preference_train_candidates": rel(train_candidates_path),
+            "reward_checkpoint": rel(reward_checkpoint),
+            "reward_eval_candidates": rel(reward_candidates_path),
+            "control_checkpoint": rel(control_checkpoint),
+            "control_eval_candidates": rel(control_candidates_path),
+        },
+        "claim_boundary": {
+            "deterministic_semantic_ir_repair_credit": 0,
+            "learned_generation_credit": "shadow only until independent audit and route replacement",
+            "non_claims": [
+                "private preference canary is not public transfer",
+                "shadow checkpoint is not runtime serving",
+                "semantic-IR receipts and verifier labels are not candidate generation",
+            ],
+        },
+        "runtime_ms": int((time.perf_counter() - canary_started) * 1000),
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def run_generation_mode_canary(
+    *,
+    reference_model: Any,
+    stage: Stage,
+    config: dict[str, Any],
+    batched_candidates: list[dict[str, Any]],
+    batched_decode: dict[str, Any],
+    batched_verifier: dict[str, Any],
+    checkpoint_dir: Path,
+    mx: Any,
+) -> dict[str, Any]:
+    serial_config = copy.deepcopy(config)
+    serial_config["evaluation"]["batched_beam_advance"] = False
+    serial_candidates, serial_decode = generate_candidates(
+        reference_model,
+        stage.eval_rows,
+        stage.source_vocab,
+        stage.target_vocab,
+        serial_config,
+        mx=mx,
+    )
+    serial_verifier = evaluate_private_candidates(stage.eval_rows, serial_candidates)
+    batched_summary = verifier_generation_summary(
+        batched_verifier, batched_decode, batched_candidates
+    )
+    serial_summary = verifier_generation_summary(serial_verifier, serial_decode, serial_candidates)
+    batched_hashes = [str(row.get("candidate_sha256") or "") for row in batched_candidates]
+    serial_hashes = [str(row.get("candidate_sha256") or "") for row in serial_candidates]
+    candidate_manifest_equal = batched_hashes == serial_hashes
+    behavior_non_regression = (
+        batched_summary["passed_task_count"] >= serial_summary["passed_task_count"]
+        and batched_summary["rank1_passed_task_count"] >= serial_summary["rank1_passed_task_count"]
+    )
+    integrity_non_regression = (
+        batched_summary["integrity_mismatch_count"]
+        <= serial_summary["integrity_mismatch_count"]
+    )
+    serial_runtime = int(serial_summary["generation_runtime_ms"] or 0)
+    batched_runtime = int(batched_summary["generation_runtime_ms"] or 0)
+    speedup = serial_runtime / max(1, batched_runtime)
+    qualified = (
+        candidate_manifest_equal
+        and behavior_non_regression
+        and integrity_non_regression
+        and speedup > 1.0
+    )
+    runtime_dir = checkpoint_dir.parent.parent / "runtime" / "standard_causal_transformer_survival_v1"
+    serial_candidates_path = runtime_dir / "serial_beam_eval_candidates.jsonl"
+    write_jsonl(serial_candidates_path, serial_candidates)
+    return {
+        "state": "GREEN",
+        "adoption_state": "BATCHED_DEFAULT" if qualified else "NOT_ADOPTED",
+        "serial": serial_summary,
+        "batched": batched_summary,
+        "candidate_manifest_equal": candidate_manifest_equal,
+        "behavior_non_regression": behavior_non_regression,
+        "integrity_non_regression": integrity_non_regression,
+        "generation_speedup": round(speedup, 6),
+        "artifacts": {"serial_candidates": rel(serial_candidates_path)},
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "non_claims": [
+            "beam batching is a runtime optimization, not learned capability",
+            "speedup does not imply public transfer or runtime-serving readiness",
+        ],
+    }
+
+
+def verifier_generation_summary(
+    verifier: dict[str, Any], decode: dict[str, Any], candidates: list[dict[str, Any]]
+) -> dict[str, Any]:
+    passed = int(verifier.get("trained_passed") or 0)
+    rank1 = int(verifier.get("trained_rank1_passed") or 0)
+    runtime_seconds = float(decode.get("runtime_ms") or 0) / 1000.0
+    from candidate_integrity import recompute_candidate_integrity
+
+    integrity = [recompute_candidate_integrity(row) for row in candidates]
+    verified = sum(bool(row.get("integrity_verified")) for row in integrity)
+    mismatches = sum(bool(row.get("integrity_mismatch")) for row in integrity)
+    return {
+        "passed_task_count": passed,
+        "rank1_passed_task_count": rank1,
+        "candidate_count": len(candidates),
+        "integrity_verified_candidate_count": verified,
+        "integrity_mismatch_count": mismatches,
+        "generation_runtime_ms": int(decode.get("runtime_ms") or 0),
+        "accepted_verified_output_per_second": round(passed / max(1e-9, runtime_seconds), 8)
+        if runtime_seconds > 0
+        else None,
     }
 
 
@@ -1296,7 +1775,7 @@ def decode_beams(
     for _step in range(int(config["decode_max_target_tokens"])):
         if time.perf_counter() - started >= float(config["timeout_seconds_per_task"]):
             break
-        expanded: list[dict[str, Any]] = []
+        expansion_specs: list[dict[str, Any]] = []
         for beam in beams:
             choices = grammar_choices(
                 beam["logits"],
@@ -1313,19 +1792,29 @@ def decode_beams(
                 if local_id == eos_local:
                     complete.append({"tokens": list(beam["tokens"]), "score": beam["score"] + log_probability})
                     continue
-                next_logits, next_cache = model(
-                    mx.array([[target_offset + local_id]], dtype=mx.int32),
-                    beam["cache"],
-                )
-                mx.eval(next_logits, *[value for pair in next_cache for value in pair])
-                expanded.append(
+                expansion_specs.append(
                     {
-                        "tokens": [*beam["tokens"], token],
-                        "score": beam["score"] + log_probability,
-                        "cache": next_cache,
-                        "logits": next_logits[0, -1],
+                        "beam": beam,
+                        "local_id": local_id,
+                        "token": token,
+                        "log_probability": log_probability,
                     }
                 )
+        expanded = (
+            batched_beam_advance(
+                model,
+                expansion_specs,
+                target_offset=target_offset,
+                mx=mx,
+            )
+            if config.get("batched_beam_advance", True)
+            else serial_beam_advance(
+                model,
+                expansion_specs,
+                target_offset=target_offset,
+                mx=mx,
+            )
+        )
         dedup: dict[tuple[str, ...], dict[str, Any]] = {}
         for row in expanded:
             key = tuple(row["tokens"])
@@ -1358,6 +1847,75 @@ def decode_beams(
         key=lambda row: beam_rank_score(row, float(config["length_penalty"])),
         reverse=True,
     )[: int(config["fanout"])]
+
+
+def batched_beam_advance(
+    model: Any,
+    expansion_specs: list[dict[str, Any]],
+    *,
+    target_offset: int,
+    mx: Any,
+) -> list[dict[str, Any]]:
+    """Advance equal-length beam branches in one MLX call while preserving per-branch caches."""
+
+    if not expansion_specs:
+        return []
+    tokens = mx.array(
+        [[target_offset + int(spec["local_id"])] for spec in expansion_specs],
+        dtype=mx.int32,
+    )
+    layer_count = len(expansion_specs[0]["beam"]["cache"])
+    batched_cache = []
+    for layer_index in range(layer_count):
+        keys = [spec["beam"]["cache"][layer_index][0] for spec in expansion_specs]
+        values = [spec["beam"]["cache"][layer_index][1] for spec in expansion_specs]
+        batched_cache.append(
+            (
+                mx.contiguous(mx.concatenate(keys, axis=0)),
+                mx.contiguous(mx.concatenate(values, axis=0)),
+            )
+        )
+    logits, next_cache = model(tokens, batched_cache)
+    mx.eval(logits, *[value for pair in next_cache for value in pair])
+    rows = []
+    for index, spec in enumerate(expansion_specs):
+        branch_cache = [(key[index : index + 1], value[index : index + 1]) for key, value in next_cache]
+        beam = spec["beam"]
+        rows.append(
+            {
+                "tokens": [*beam["tokens"], str(spec["token"])],
+                "score": float(beam["score"]) + float(spec["log_probability"]),
+                "cache": branch_cache,
+                "logits": logits[index, -1],
+            }
+        )
+    return rows
+
+
+def serial_beam_advance(
+    model: Any,
+    expansion_specs: list[dict[str, Any]],
+    *,
+    target_offset: int,
+    mx: Any,
+) -> list[dict[str, Any]]:
+    rows = []
+    for spec in expansion_specs:
+        beam = spec["beam"]
+        next_logits, next_cache = model(
+            mx.array([[target_offset + int(spec["local_id"])]], dtype=mx.int32),
+            beam["cache"],
+        )
+        mx.eval(next_logits, *[value for pair in next_cache for value in pair])
+        rows.append(
+            {
+                "tokens": [*beam["tokens"], str(spec["token"])],
+                "score": float(beam["score"]) + float(spec["log_probability"]),
+                "cache": next_cache,
+                "logits": next_logits[0, -1],
+            }
+        )
+    return rows
 
 
 def completion_pool_target(config: dict[str, Any]) -> int:
@@ -1501,6 +2059,15 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("family-disjoint evaluation requires at least 24 distinct families")
     if int(evaluation.get("rows_per_family") or 0) != 1:
         raise ValueError("evaluation must use one unique semantic row per holdout family")
+    preference = config.get("preference") if isinstance(config.get("preference"), dict) else {}
+    if int(preference.get("max_train_tasks") or 0) < 8:
+        raise ValueError("preference canary requires at least eight private training tasks")
+    if not 0 < int(preference.get("max_pairs") or 0) <= int(preference["max_train_tasks"]):
+        raise ValueError("preference pair budget must be positive and bounded by training tasks")
+    if not 0 < int(preference.get("optimizer_steps") or 0) <= 128:
+        raise ValueError("preference optimizer steps must stay within the bounded canary budget")
+    if float(preference.get("beta") or 0.0) <= 0:
+        raise ValueError("preference beta must be positive")
 
 
 def planned_report(
@@ -1523,14 +2090,41 @@ def planned_report(
 
 def stage_signature(config: dict[str, Any]) -> str:
     paths = [
-        Path(__file__),
         resolve(config["sources"]["licensed_code_manifest"]),
         resolve(config["sources"]["function_stage_report"]),
         resolve(config["sources"]["training_admission"]),
         resolve(config["sources"]["private_eval"]),
         resolve(config["tokenization"]["source_vocab"]),
     ]
-    payload = json.dumps(config, sort_keys=True) + "|" + "|".join(
+    stage_config = {
+        "seed": config["seed"],
+        "sources": config["sources"],
+        "tokenization": config["tokenization"],
+        "training": {
+            "pretrain_target_token_positions": config["training"]["pretrain_target_token_positions"],
+            "private_body_sampling_weight": config["training"]["private_body_sampling_weight"],
+        },
+        "evaluation": {
+            "holdout_family_count": config["evaluation"]["holdout_family_count"],
+            "rows_per_family": config["evaluation"]["rows_per_family"],
+        },
+        "preference": {"max_train_tasks": config["preference"]["max_train_tasks"]},
+    }
+    stage_functions = (
+        build_pretrain_windows,
+        window_arrays,
+        load_sft_examples,
+        encode_sft_examples,
+        encode_sft_training_examples,
+        assign_body_balanced_sampling_weights,
+        select_family_disjoint_eval,
+        select_preference_train_rows,
+        eval_example,
+        semantic_stage_source,
+        training_callable_signature,
+    )
+    stage_logic_sha256 = sha("\n".join(inspect.getsource(function) for function in stage_functions))
+    payload = json.dumps(stage_config, sort_keys=True) + f"|stage_logic:{stage_logic_sha256}|" + "|".join(
         f"{rel(path)}:{path.stat().st_size if path.exists() else -1}:{path.stat().st_mtime_ns if path.exists() else -1}"
         for path in paths
     )

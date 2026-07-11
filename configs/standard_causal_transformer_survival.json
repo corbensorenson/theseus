@@ -46,7 +46,22 @@
     "length_penalty": 0.7,
     "grammar_top_k": 64,
     "decode_max_target_tokens": 180,
-    "timeout_seconds_per_task": 20
+    "timeout_seconds_per_task": 20,
+    "batched_beam_advance": true
+  },
+  "preference": {
+    "max_train_tasks": 16,
+    "candidate_fanout": 4,
+    "beam_width": 4,
+    "branching_factor": 2,
+    "completion_pool_multiplier": 8,
+    "timeout_seconds_per_task": 24,
+    "max_pairs": 16,
+    "optimizer_steps": 24,
+    "batch_size": 4,
+    "learning_rate": 0.00001,
+    "beta": 0.1,
+    "gradient_clip_norm": 1.0
   },
   "boundaries": {
     "public_training_rows": 0,

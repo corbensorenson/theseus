@@ -175,6 +175,79 @@ def evaluate_private_candidates(private_rows: list[dict[str, Any]], candidates: 
     }
 
 
+def evaluate_all_private_candidates(
+    private_rows: list[dict[str, Any]],
+    candidates: list[dict[str, Any]],
+    *,
+    phase: str = "private_eval",
+) -> dict[str, Any]:
+    """Label every private candidate independently for offline preference training."""
+
+    task_by_id = {
+        str(row.get("task_id") or ""): row
+        for row in private_rows
+        if row.get("split") == "eval" and row.get("task_id")
+    }
+    jobs = [
+        (task_by_id[str(candidate.get("task_id") or "")], candidate)
+        for candidate in candidates
+        if str(candidate.get("task_id") or "") in task_by_id
+    ]
+    cache_before = private_verifier_cache_snapshot()
+
+    def evaluate_one(root: Path, task: dict[str, Any], candidate: dict[str, Any]) -> dict[str, Any]:
+        result = run_any(root, task, [candidate], phase=phase)
+        traces = [row for row in result.get("attempt_traces", []) if int(row.get("attempt_index") or 0) == 1]
+        return traces[0] if traces else {
+            "task_id": task.get("task_id"),
+            "phase": phase,
+            "candidate_sha256": candidate.get("candidate_sha256"),
+            "passed": False,
+            "verification_stage": "typed_missing_candidate_trace",
+            "verification_reward": 0.0,
+        }
+
+    traces: list[dict[str, Any]] = []
+    worker_count = bounded_private_verification_workers(len(jobs))
+    with tempfile.TemporaryDirectory(prefix="theseus_code_lm_private_all_", dir=runtime_tmp_dir()) as tmp:
+        root = Path(tmp)
+        if worker_count <= 1:
+            traces = [evaluate_one(root, task, candidate) for task, candidate in jobs]
+        else:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
+                futures = [
+                    executor.submit(evaluate_one, root, task, candidate)
+                    for task, candidate in jobs
+                ]
+                traces = [future.result() for future in futures]
+    cache_after = private_verifier_cache_snapshot()
+    return {
+        "policy": "project_theseus_private_all_candidate_preference_labels_v1",
+        "eval_task_count": len(task_by_id),
+        "candidate_count": len(candidates),
+        "labeled_candidate_count": len(traces),
+        "trained_passed": len({str(row.get("task_id") or "") for row in traces if row.get("passed")}),
+        "trained_rank1_passed": sum(
+            row.get("passed") is True and int(row.get("rank") or 0) == 1 for row in traces
+        ),
+        "verification_attempt_labels": traces,
+        "private_verification": summarize_private_verification(traces),
+        "correctness_labels": correctness_label_summary(traces),
+        "verifier_cache_warmup": private_verifier_cache_warmup_summary(
+            cache_before,
+            cache_after,
+            worker_count=worker_count,
+            eval_task_count=len(task_by_id),
+            candidate_count=len(candidates),
+        ),
+        "generation_read_set": ["prompt", "entry_point", "callable_signature"],
+        "uses_eval_tests_or_solutions_for_generation": False,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
 def rank1_passed(result: dict[str, Any]) -> bool:
     traces = [row for row in result.get("attempt_traces", []) if int(row.get("attempt_index") or 0) == 1]
     return bool(traces and traces[0].get("passed"))

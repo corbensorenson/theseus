@@ -43,7 +43,7 @@
         ]
       },
       "update_constraint": {
-        "method": "DPO_or_IPO_style_pairwise_loss_first",
+        "method": "length_normalized_DPO_on_exact_private_verifier_pairs_with_frozen_reference_and_reward_removed_control",
         "allowed_training_rows": "private_and_licensed_only",
         "promotion_metric": "private_behavioral_verifier_pass_or_accepted_output_quality",
         "loss_only_promotion_allowed": false,
@@ -59,24 +59,22 @@
         ]
       },
       "evaluation_refs": [
-        "reports/strict_generator_mlx_private_adaptation_dpo_pairwise_smoke_20260706.json",
-        "reports/strict_generator_mlx_private_adaptation_simple_return_pairwise_value_v1.json",
-        "reports/strict_generator_mlx_decode_eval_simple_return_pairwise_value_v1.json",
-        "reports/candidate_integrity_audit.json",
-        "reports/blind_information_flow_audit.json",
-        "reports/strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json",
-        "reports/candidate_integrity_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json",
-        "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json"
+        "reports/standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_gate.json",
+        "reports/candidate_integrity_standard_causal_transformer_survival.json",
+        "reports/blind_information_flow_audit_standard_causal_transformer_survival.json"
       ],
       "governance_gate": "reports/policy_optimization_program.json",
-      "rollback_plan": "Keep prior strict-generator checkpoint as default; retain failed update as residual and do not route it as default until private verifier behavior lifts without leakage.",
+      "rollback_plan": "The canonical standard-transformer checkpoint remains byte-identical and default. Reward-present and reward-removed checkpoints stay shadow-only; retain the failed update as negative evidence and do not route it until independent heldout verifier behavior beats both the canonical checkpoint and reward-removed control.",
       "residuals": [
         "LM loss can improve while verifier pass stays flat",
         "pairwise negatives may overfit shallow failure signatures",
         "behavior lift must be measured on private heldout rows, not public calibration",
         "DPO shadow update now moves private accepted-vs-rejected policy/reference gap, but behavior replay remains unproven until a private decode/verifier report improves.",
         "DPO shadow replay emitted zero learned candidate rows and 0/16 private heldout behavior passes; preference-gap movement did not translate into decode/verifier behavior.",
-        "Standalone candidate-integrity audit classified all 16 replay JSONL rows as fallback_or_template baseline rows, so no learned-generation promotion evidence exists."
+        "Standalone candidate-integrity audit classified all 16 legacy replay JSONL rows as fallback_or_template baseline rows, so no learned-generation promotion evidence exists.",
+        "The canonical standard-transformer canary found only one exact pass-vs-hard-negative pair across 16 private train tasks; DPO moved the length-normalized preference margin by +1.803796 but regressed family-disjoint heldout behavior from 1/24 to 0/24.",
+        "The reward-removed control preserved 1/24 and had exactly zero preference-margin movement, so the reward path is causally active but behavior-negative at this data volume."
       ],
       "reward_hacking_probes": [
         "shallow_identity_loop",
@@ -95,14 +93,16 @@
         "authority_expansion_allowed": false
       },
       "default_allowed": false,
-      "status": "shadow",
+      "status": "quarantined",
       "non_claims": [
         "This is not public benchmark transfer.",
         "This is not learned-code-generation promotion by itself.",
         "This is not evidence that SymLiquid or the transformer substrate won.",
         "This does not allow fallback/template/router/tool credit as learned generation.",
         "The DPO smoke is policy-update evidence only; it is not default routing, verifier behavior lift, public transfer, or learned-generation promotion.",
-        "The DPO replay failure means this checkpoint stays quarantined; do not scale DPO/GRPO from it until direct learned body emission and private verifier behavior improve."
+        "The DPO replay failure means this checkpoint stays quarantined; do not scale DPO/GRPO from it until direct learned body emission and private verifier behavior improve.",
+        "Preference-margin improvement is not behavior improvement and cannot authorize routing or promotion.",
+        "The current canonical canary is private evidence only and does not establish public transfer."
       ]
     },
     {

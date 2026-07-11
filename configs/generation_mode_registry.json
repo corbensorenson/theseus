@@ -435,6 +435,61 @@
       ]
     },
     {
+      "id": "standard_causal_transformer_serial_beam_v1",
+      "family": "canonical_transformer_cached_beam",
+      "status": "diagnostic_baseline",
+      "route": "standard_causal_transformer_survival",
+      "execution_backend": "mlx_serial_cached_beam",
+      "report_refs": [
+        "reports/standard_causal_transformer_survival.json"
+      ],
+      "metric_path": "generation_mode_canary.serial",
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "candidate_count",
+        "accepted_tokens_or_spans_source": "passed_task_count",
+        "task_pass_count_source": "passed_task_count",
+        "verifier_wall_time_ms_source": "included_in_end_to_end_generation_runtime_ms",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "same checkpoint, split, grammar, fanout, verifier, and candidate ordering as the batched candidate",
+        "candidate manifest must match byte-for-byte",
+        "serves only as the serial control for the canonical route"
+      ],
+      "non_claims": [
+        "Serial cached-beam behavior is a runtime control, not a separate model implementation.",
+        "One private verifier pass is not public transfer or runtime-serving readiness."
+      ]
+    },
+    {
+      "id": "standard_causal_transformer_batched_beam_v1",
+      "family": "canonical_transformer_cached_beam",
+      "status": "default",
+      "route": "standard_causal_transformer_survival",
+      "execution_backend": "mlx_batched_cached_beam",
+      "report_refs": [
+        "reports/standard_causal_transformer_survival.json"
+      ],
+      "metric_path": "generation_mode_canary.batched",
+      "accounting_contract": {
+        "proposed_tokens_or_spans_source": "candidate_count",
+        "accepted_tokens_or_spans_source": "passed_task_count",
+        "task_pass_count_source": "passed_task_count",
+        "verifier_wall_time_ms_source": "included_in_end_to_end_generation_runtime_ms",
+        "runtime_memory_mib_source": "not_recorded_yet"
+      },
+      "promotion_rules": [
+        "same checkpoint, split, grammar, fanout, verifier, and candidate ordering as serial control",
+        "exact candidate-manifest parity and zero integrity mismatches",
+        "private verifier behavior and useful verified output rate must not regress",
+        "standard_causal_transformer_survival_gate must independently recompute the adoption decision"
+      ],
+      "non_claims": [
+        "Beam batching is a runtime optimization, not learned capability.",
+        "The measured private speedup does not establish public transfer, CUDA parity, or production serving readiness."
+      ]
+    },
+    {
       "id": "speculative_draft_decode_research_v1",
       "family": "speculative_draft",
       "status": "planned",
@@ -739,6 +794,21 @@
       "required_non_regression": [
         "task_pass_rate",
         "candidate_integrity",
+        "fallback burden",
+        "public_training_rows",
+        "external_inference_calls"
+      ]
+    },
+    {
+      "id": "standard_causal_transformer_serial_vs_batched_beam_v1",
+      "suite": "standard_causal_transformer_family_disjoint_private_24_same_checkpoint",
+      "baseline_mode_id": "standard_causal_transformer_serial_beam_v1",
+      "candidate_mode_id": "standard_causal_transformer_batched_beam_v1",
+      "promotion_decision": "batched_default_after_exact_candidate_parity_behavior_integrity_and_useful_verified_output_speed_nonregression",
+      "required_non_regression": [
+        "exact candidate manifest",
+        "task pass rate",
+        "candidate integrity",
         "fallback burden",
         "public_training_rows",
         "external_inference_calls"

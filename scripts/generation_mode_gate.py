@@ -144,9 +144,11 @@ def audit_mode(record: dict[str, Any]) -> dict[str, Any]:
     accounting = dict_value(record.get("accounting_contract"))
     missing_accounting = sorted(REQUIRED_ACCOUNTING_KEYS - set(accounting))
     refs = [str(x) for x in list_values(record.get("report_refs"))]
-    evidence = [read_report_ref(ref) for ref in refs]
+    metric_path = str(record.get("metric_path") or "")
+    evidence = [read_report_ref(ref, metric_path=metric_path) for ref in refs]
     metrics = combine_metrics(evidence)
     missing_refs = [row["path"] for row in evidence if not row["present"]]
+    missing_metric_paths = [row["path"] for row in evidence if row["present"] and not row["metric_path_present"]]
 
     status = str(record.get("status") or "")
     promotion_status = status in PROMOTION_STATUSES
@@ -161,12 +163,18 @@ def audit_mode(record: dict[str, Any]) -> dict[str, Any]:
         hard_gaps.append(mode_gap(mode_id, "no_cheat_counter_failure", {"failures": no_cheat_failures}))
     if promotion_status and missing_refs:
         hard_gaps.append(mode_gap(mode_id, "promotion_mode_missing_report_refs", {"missing": missing_refs}))
+    if promotion_status and missing_metric_paths:
+        hard_gaps.append(mode_gap(mode_id, "promotion_mode_missing_metric_path", {"missing": missing_metric_paths, "metric_path": metric_path}))
     if promotion_status and metrics["task_pass_count"] <= 0:
         hard_gaps.append(mode_gap(mode_id, "promotion_mode_without_task_pass_evidence", metrics))
     if promotion_status and metrics["integrity_mismatch_count"] > 0:
         hard_gaps.append(mode_gap(mode_id, "promotion_mode_with_integrity_mismatches", metrics))
+    if promotion_status and metrics["candidate_manifest_equal"] is not True:
+        hard_gaps.append(mode_gap(mode_id, "promotion_mode_without_exact_candidate_parity", metrics))
     if missing_refs and not promotion_status:
         warnings.append(mode_gap(mode_id, "missing_report_refs", {"missing": missing_refs}, severity="warning"))
+    if missing_metric_paths and not promotion_status:
+        warnings.append(mode_gap(mode_id, "missing_metric_path", {"missing": missing_metric_paths, "metric_path": metric_path}, severity="warning"))
     if metrics["runtime_ms"] is None and refs:
         warnings.append(mode_gap(mode_id, "runtime_ms_missing", {"refs": refs}, severity="warning"))
     if not refs and status != "planned":
@@ -180,6 +188,7 @@ def audit_mode(record: dict[str, Any]) -> dict[str, Any]:
         "status": status,
         "route": str(record.get("route") or ""),
         "execution_backend": str(record.get("execution_backend") or ""),
+        "metric_path": metric_path,
         "promotion_status": promotion_status,
         "report_refs": evidence,
         "missing_report_refs": missing_refs,
@@ -214,6 +223,7 @@ def audit_comparison(row: dict[str, Any], modes: dict[str, dict[str, Any]]) -> d
     integrity_non_regression = cand_metrics["integrity_mismatch_count"] <= base_metrics["integrity_mismatch_count"]
     fallback_non_regression = cand_metrics["repair_or_fallback_count"] <= base_metrics["repair_or_fallback_count"]
     no_cheat_clean = not no_cheat_failures_for(cand_metrics)
+    candidate_parity = cand_metrics["candidate_manifest_equal"] is True
     accepted_speed_lift = metric_gt(cand_metrics["accepted_span_per_second"], base_metrics["accepted_span_per_second"])
     useful_speed_lift = metric_gt(cand_metrics["useful_solution_per_second"], base_metrics["useful_solution_per_second"])
     promotable = all([
@@ -221,6 +231,7 @@ def audit_comparison(row: dict[str, Any], modes: dict[str, dict[str, Any]]) -> d
         integrity_non_regression,
         fallback_non_regression,
         no_cheat_clean,
+        candidate_parity,
         bool(accepted_speed_lift or useful_speed_lift),
         cand_metrics["task_pass_count"] > 0,
     ])
@@ -236,6 +247,7 @@ def audit_comparison(row: dict[str, Any], modes: dict[str, dict[str, Any]]) -> d
                     "accepted_speed_lift": accepted_speed_lift,
                     "useful_speed_lift": useful_speed_lift,
                     "candidate_task_pass_count": cand_metrics["task_pass_count"],
+                    "candidate_manifest_equal": cand_metrics["candidate_manifest_equal"],
                 },
                 severity="warning",
             )
@@ -254,6 +266,7 @@ def audit_comparison(row: dict[str, Any], modes: dict[str, dict[str, Any]]) -> d
         "pass_non_regression": pass_non_regression,
         "integrity_non_regression": integrity_non_regression,
         "fallback_non_regression": fallback_non_regression,
+        "candidate_manifest_equal": candidate_parity,
         "promotable": promotable,
         "promotion_decision": str(row.get("promotion_decision") or ""),
         "hard_gaps": hard_gaps,
@@ -276,26 +289,35 @@ def empty_comparison(row: dict[str, Any], hard_gaps: list[dict[str, Any]], warni
     }
 
 
-def read_report_ref(path_text: str) -> dict[str, Any]:
+def read_report_ref(path_text: str, *, metric_path: str = "") -> dict[str, Any]:
     path = resolve(path_text)
     row: dict[str, Any] = {
         "path": rel(path),
         "present": path.exists(),
         "trigger_state": "",
+        "metric_path": metric_path,
+        "metric_path_present": not metric_path,
         "metrics": empty_metrics(),
     }
     if not path.exists() or path.suffix != ".json":
         return row
     payload = read_json(path)
     row["trigger_state"] = str(payload.get("trigger_state") or payload.get("status") or "")
-    row["metrics"] = extract_metrics(payload)
+    view = nested_dict(payload, metric_path)
+    row["metric_path_present"] = view is not None
+    if view is not None:
+        row["metrics"] = extract_metrics(view, root=payload)
     return row
 
 
-def extract_metrics(payload: dict[str, Any]) -> dict[str, Any]:
+def extract_metrics(payload: dict[str, Any], *, root: dict[str, Any] | None = None) -> dict[str, Any]:
+    root = payload if root is None else root
     summary = dict_value(payload.get("summary"))
-    runtime_ms = numeric(payload.get("runtime_ms") or payload.get("wall_time_ms") or summary.get("runtime_ms") or summary.get("wall_time_ms"))
+    root_summary = dict_value(root.get("summary"))
+    root_generation = dict_value(root.get("generation_mode_canary"))
+    runtime_ms = numeric(payload.get("generation_runtime_ms") or payload.get("runtime_ms") or payload.get("wall_time_ms") or summary.get("runtime_ms") or summary.get("wall_time_ms"))
     proposed = first_numeric(
+        payload.get("candidate_count"),
         summary.get("manifest_candidate_rows"),
         summary.get("generated_candidate_rows"),
         summary.get("private_candidate_count"),
@@ -303,16 +325,17 @@ def extract_metrics(payload: dict[str, Any]) -> dict[str, Any]:
         payload.get("candidate_rows"),
     )
     accepted = first_numeric(
+        payload.get("passed_task_count") if "accepted_verified_output_per_second" in payload else None,
         summary.get("candidate_rows"),
         summary.get("generated_candidate_rows"),
         summary.get("private_candidate_count"),
         payload.get("candidate_rows"),
     )
     split_passes = dict_value(summary.get("split_passes"))
-    task_pass_count = sum(int(v or 0) for v in split_passes.values()) if split_passes else int(first_numeric(summary.get("task_pass_count"), summary.get("pass_count"), 0) or 0)
-    task_count = int(first_numeric(summary.get("task_count"), summary.get("manifest_candidate_rows"), summary.get("candidate_rows"), 0) or 0)
+    task_pass_count = sum(int(v or 0) for v in split_passes.values()) if split_passes else int(first_numeric(payload.get("passed_task_count"), summary.get("task_pass_count"), summary.get("pass_count"), 0) or 0)
+    task_count = int(first_numeric(payload.get("task_count"), summary.get("task_count"), root_summary.get("family_disjoint_eval_task_count"), summary.get("manifest_candidate_rows"), summary.get("candidate_rows"), 0) or 0)
     integrity = dict_value(summary.get("candidate_integrity"))
-    fallback_count = int(first_numeric(summary.get("fallback_template_router_tool_credit_count"), 0) or 0)
+    fallback_count = int(first_numeric(payload.get("fallback_return_count"), summary.get("fallback_template_router_tool_credit_count"), root_summary.get("fallback_return_count"), 0) or 0)
     if "fallback_or_template" in dict_value(integrity.get("family_counts")):
         fallback_count += int(dict_value(integrity.get("family_counts")).get("fallback_or_template") or 0)
     runtime_seconds = runtime_ms / 1000.0 if runtime_ms and runtime_ms > 0 else None
@@ -322,14 +345,15 @@ def extract_metrics(payload: dict[str, Any]) -> dict[str, Any]:
         "accepted_tokens_or_spans": accepted,
         "task_pass_count": task_pass_count,
         "task_count": task_count,
-        "integrity_mismatch_count": int(first_numeric(integrity.get("integrity_mismatch_count"), 0) or 0),
+        "integrity_mismatch_count": int(first_numeric(payload.get("integrity_mismatch_count"), integrity.get("integrity_mismatch_count"), 0) or 0),
         "repair_or_fallback_count": fallback_count,
-        "public_training_rows": int(first_numeric(summary.get("public_training_rows"), payload.get("public_training_rows"), 0) or 0),
-        "external_inference_calls": int(first_numeric(summary.get("external_inference_calls"), payload.get("external_inference_calls"), 0) or 0),
+        "public_training_rows": int(first_numeric(payload.get("public_training_rows_written"), summary.get("public_training_rows"), payload.get("public_training_rows"), root_summary.get("public_training_rows"), root_generation.get("public_training_rows_written"), 0) or 0),
+        "external_inference_calls": int(first_numeric(summary.get("external_inference_calls"), payload.get("external_inference_calls"), root_summary.get("external_inference_calls"), root_generation.get("external_inference_calls"), 0) or 0),
         "runtime_memory_mib": first_numeric(summary.get("runtime_memory_mib"), summary.get("peak_memory_mib")),
         "verifier_wall_time_ms": first_numeric(summary.get("verifier_wall_time_ms")),
-        "accepted_span_per_second": round((accepted / runtime_seconds), 6) if accepted is not None and runtime_seconds else None,
+        "accepted_span_per_second": first_numeric(payload.get("accepted_verified_output_per_second"), round((accepted / runtime_seconds), 6) if accepted is not None and runtime_seconds else None),
         "useful_solution_per_second": round((task_pass_count / runtime_seconds), 6) if runtime_seconds else None,
+        "candidate_manifest_equal": root_generation.get("candidate_manifest_equal") if root_generation else payload.get("candidate_manifest_equal"),
     }
 
 
@@ -352,6 +376,8 @@ def combine_metrics(evidence: list[dict[str, Any]]) -> dict[str, Any]:
         combined[key] = sum(int(row.get(key) or 0) for row in present)
     combined["runtime_memory_mib"] = max_or_none(row.get("runtime_memory_mib") for row in present)
     combined["verifier_wall_time_ms"] = sum_or_none(row.get("verifier_wall_time_ms") for row in present)
+    parity_values = [row.get("candidate_manifest_equal") for row in present if row.get("candidate_manifest_equal") is not None]
+    combined["candidate_manifest_equal"] = all(value is True for value in parity_values) if parity_values else None
     seconds = combined["runtime_ms"] / 1000.0 if combined["runtime_ms"] and combined["runtime_ms"] > 0 else None
     combined["accepted_span_per_second"] = round(combined["accepted_tokens_or_spans"] / seconds, 6) if seconds else None
     combined["useful_solution_per_second"] = round(combined["task_pass_count"] / seconds, 6) if seconds else None
@@ -373,7 +399,19 @@ def empty_metrics() -> dict[str, Any]:
         "verifier_wall_time_ms": None,
         "accepted_span_per_second": None,
         "useful_solution_per_second": None,
+        "candidate_manifest_equal": None,
     }
+
+
+def nested_dict(payload: dict[str, Any], dotted_path: str) -> dict[str, Any] | None:
+    current: Any = payload
+    if not dotted_path:
+        return payload
+    for part in dotted_path.split("."):
+        if not isinstance(current, dict) or part not in current:
+            return None
+        current = current[part]
+    return current if isinstance(current, dict) else None
 
 
 def no_cheat_failures_for(metrics: dict[str, Any]) -> list[dict[str, Any]]:

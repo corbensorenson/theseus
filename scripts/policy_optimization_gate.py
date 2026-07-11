@@ -343,6 +343,35 @@ def extract_behavior_metrics(payload: dict[str, Any]) -> dict[str, Any]:
         split_pass_metrics = strict_decode_split_pass_metrics(section)
         for key, value in split_pass_metrics.items():
             metrics.setdefault(key, value)
+    preference = dict_value(payload.get("preference_canary"))
+    if preference:
+        base = dict_value(preference.get("base_heldout"))
+        reward = dict_value(preference.get("reward_present_heldout"))
+        control = dict_value(preference.get("reward_removed_heldout"))
+        reward_training = dict_value(preference.get("reward_present_training"))
+        control_training = dict_value(preference.get("reward_removed_training"))
+        pairs = dict_value(preference.get("preference_pair_summary"))
+        base_passes = int(base.get("passed_task_count") or 0)
+        reward_passes = int(reward.get("passed_task_count") or 0)
+        control_passes = int(control.get("passed_task_count") or 0)
+        metrics.update(
+            {
+                "preference_adoption_state": str(preference.get("adoption_state") or ""),
+                "preference_reward_improves_behavior": preference.get("reward_improves_behavior") is True,
+                "preference_pair_count": int(pairs.get("selected_pair_count") or 0),
+                "preference_margin_delta": numeric(reward_training.get("preference_margin_delta")),
+                "preference_control_margin_delta": numeric(control_training.get("preference_margin_delta")),
+                "preference_base_pass_count": base_passes,
+                "preference_reward_pass_count": reward_passes,
+                "preference_control_pass_count": control_passes,
+                "preference_reward_behavior_delta": reward_passes - base_passes,
+                "preference_reward_vs_control_delta": reward_passes - control_passes,
+                "preference_integrity_mismatch_count": int(reward.get("integrity_mismatch_count") or 0),
+                "public_training_rows": int(preference.get("public_training_rows_written") or 0),
+                "external_inference_calls": int(preference.get("external_inference_calls") or 0),
+                "fallback_return_candidate_count": int(preference.get("fallback_return_count") or 0),
+            }
+        )
     return metrics
 
 
@@ -370,6 +399,7 @@ def summarize_behavior_evidence(evidence: list[dict[str, Any]]) -> dict[str, Any
     has_loss_only_lift = False
     positive_refs: list[str] = []
     loss_refs: list[str] = []
+    regression_refs: list[str] = []
     no_cheat_failures: list[dict[str, Any]] = []
     for row in evidence:
         metrics = dict_value(row.get("behavior_metrics"))
@@ -388,10 +418,28 @@ def summarize_behavior_evidence(evidence: list[dict[str, Any]]) -> dict[str, Any
         if selected is not None and non_sts is not None and selected > non_sts:
             has_behavior_lift = True
             positive_refs.append(row["path"])
-        private_pass = numeric(metrics.get("private_verifier_pass_rate") or metrics.get("pass_rate"))
-        if private_pass is not None and private_pass > 0:
-            has_behavior_lift = True
-            positive_refs.append(row["path"])
+        preference_delta = numeric(metrics.get("preference_reward_behavior_delta"))
+        if preference_delta is not None:
+            reward_vs_control = numeric(metrics.get("preference_reward_vs_control_delta"))
+            preference_lift = (
+                preference_delta > 0
+                and reward_vs_control is not None
+                and reward_vs_control > 0
+                and metrics.get("preference_reward_improves_behavior") is True
+            )
+            if preference_lift:
+                has_behavior_lift = True
+                positive_refs.append(row["path"])
+            elif preference_delta < 0 or (reward_vs_control is not None and reward_vs_control < 0):
+                regression_refs.append(row["path"])
+            if numeric(metrics.get("preference_margin_delta")) not in (None, 0.0) and not preference_lift:
+                has_loss_only_lift = True
+                loss_refs.append(row["path"])
+        else:
+            private_pass = numeric(metrics.get("private_verifier_pass_rate") or metrics.get("pass_rate"))
+            if private_pass is not None and private_pass > 0:
+                has_behavior_lift = True
+                positive_refs.append(row["path"])
         if metrics.get("accepted_output_quality") not in (None, "", 0, 0.0, "0"):
             has_behavior_lift = True
             positive_refs.append(row["path"])
@@ -403,6 +451,7 @@ def summarize_behavior_evidence(evidence: list[dict[str, Any]]) -> dict[str, Any
         "has_loss_only_lift": has_loss_only_lift,
         "positive_behavior_refs": sorted(set(positive_refs)),
         "loss_only_refs": sorted(set(loss_refs)),
+        "behavior_regression_refs": sorted(set(regression_refs)),
         "no_cheat_failures": no_cheat_failures,
     }
 
