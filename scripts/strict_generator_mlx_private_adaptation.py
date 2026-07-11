@@ -918,6 +918,12 @@ def main() -> int:
     parser.add_argument("--max-train-rows", type=int, default=512)
     parser.add_argument("--max-eval-rows", type=int, default=128)
     parser.add_argument(
+        "--teacher-curriculum-mode",
+        choices=["on", "off"],
+        default="on",
+        help="Enable or disable manifest-admitted teacher rows for matched causal ablations.",
+    )
+    parser.add_argument(
         "--supplemental-private-train-jsonl",
         action="append",
         default=[],
@@ -1260,6 +1266,11 @@ def main() -> int:
 
     semantic_construction_repair_profile = apply_semantic_construction_repair_profile(args)
     config = read_json(resolve(args.config))
+    if args.teacher_curriculum_mode == "off":
+        config = json.loads(json.dumps(config))
+        teacher_cfg = dict_or_empty(config.get("teacher_distillation"))
+        teacher_cfg["enabled"] = False
+        config["teacher_distillation"] = teacher_cfg
     checkpoint_report = read_json(resolve(args.checkpoint_report)) if str(args.checkpoint_report or "").strip() else {}
     checkpoint, vocab = resolve_checkpoint_paths(args, checkpoint_report)
     report = run_adaptation(

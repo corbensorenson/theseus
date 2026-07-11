@@ -1005,8 +1005,8 @@ Current teacher contract:
 | Setting | Value |
 | --- | --- |
 | Provider | `codex_cli` |
-| Model | `gpt-5.5` |
-| Reasoning effort | `xhigh` |
+| Model | `gpt-5.6-sol` |
+| Reasoning effort | `high` |
 | Default mode | `proposal` |
 | Proposal sandbox | `read-only` |
 | Apply sandbox | `workspace-write`, but human-gated by policy |

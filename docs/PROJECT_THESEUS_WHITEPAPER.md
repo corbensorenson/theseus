@@ -457,7 +457,8 @@ noisiest logs.
 
 ## 12. Sparse Teacher Bootstrapping
 
-The teacher is currently Codex CLI with GPT-5.5 configured through policy. It is
+The teacher is currently Codex CLI with GPT-5.6 Sol at high reasoning effort,
+configured through policy. It is
 not supposed to be the system's everyday intelligence. Its role is to bootstrap
 the local system when measured evidence shows a real wall.
 

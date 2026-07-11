@@ -335,7 +335,7 @@ Allow a teacher call only when the policy triggers:
 py -3.13 scripts\autonomy_cycle.py --profile inner_loop --execute --allow-teacher --out reports\autonomy_cycle_last.json
 ```
 
-Teacher calls use `configs/teacher_policy.json`. The default teacher is Codex CLI with `gpt-5.5` and `xhigh` reasoning. Ordinary teacher calls remain proposal-oriented. `scripts/teacher_oracle.py` wraps every request with a reason-specific intent, compact wall packet, local evidence summaries, anti-goals, and the JSON experiment-spec output contract, so the teacher is asked for one bounded diagnosis rather than a vague brainstorm. Source edits are only allowed through the guarded branch-and-gate lane in `scripts/teacher_self_edit_runner.py`, governed by `configs/self_evolution_policy.json`. Without `--allow-teacher`, requests are written to `reports/teacher_request_queue.jsonl` instead of being executed.
+Teacher calls use `configs/teacher_policy.json`. The default teacher is Codex CLI with `gpt-5.6-sol` and `high` reasoning. Ordinary teacher calls remain proposal-oriented. `scripts/teacher_oracle.py` wraps every request with a reason-specific intent, compact wall packet, local evidence summaries, anti-goals, and the JSON experiment-spec output contract, so the teacher is asked for one bounded diagnosis rather than a vague brainstorm. Source edits are only allowed through the guarded branch-and-gate lane in `scripts/teacher_self_edit_runner.py`, governed by `configs/self_evolution_policy.json`. Without `--allow-teacher`, requests are written to `reports/teacher_request_queue.jsonl` instead of being executed.
 
 Verify the full-training teacher path before trusting an online run:
 

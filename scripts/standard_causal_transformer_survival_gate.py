@@ -1550,7 +1550,7 @@ def audit_teacher_residual_ablation(
         provider_audit.get("ok") is True
         and int((provider_audit.get("summary") or {}).get("teacher_receipt_violations") or 0) == 0
         and bool(provider_counts)
-        and set(provider_counts) == {"codex_cli/gpt-5.5"}
+        and all(str(identity).startswith("codex_cli/gpt-") for identity in provider_counts)
     )
     checks = {
         "configs_equal_except_state_policy": configs_equal,
