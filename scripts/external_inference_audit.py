@@ -129,12 +129,27 @@ def main() -> int:
 
     files = scannable_files()
     code_hits, violations, delegate_hits = scan_code(files)
-    report_violations, report_scan = (
-        scan_report_external_inference(include_large_reports=args.include_large_reports)
-        if args.scan_reports
-        else ([], {"scanned_report_files": 0, "skipped_large_report_files": 0})
-    )
     teacher_receipt_violations, teacher_receipt_scan = scan_teacher_receipts()
+    verified_teacher_calls = (
+        int(teacher_receipt_scan.get("verified_external_teacher_calls", 0))
+        if not teacher_receipt_violations
+        else 0
+    )
+    report_violations, report_scan = (
+        scan_report_external_inference(
+            include_large_reports=args.include_large_reports,
+            verified_external_teacher_calls=verified_teacher_calls,
+        )
+        if args.scan_reports
+        else (
+            [],
+            {
+                "scanned_report_files": 0,
+                "skipped_large_report_files": 0,
+                "verified_teacher_report_counters": 0,
+            },
+        )
+    )
     all_violations = violations + report_violations + teacher_receipt_violations
     allowed_teacher_hits = [hit for hit in code_hits if hit["classification"] == "allowed_teacher"]
     benign_hits = [hit for hit in code_hits if hit["classification"].startswith("benign")]
@@ -202,6 +217,7 @@ def audit_teacher_receipt_rows(
     violations: list[dict[str, Any]] = []
     provider_counts: dict[str, int] = {}
     scanned = 0
+    verified_external_teacher_calls = 0
     for index, row in enumerate(rows):
         if not isinstance(row, dict):
             violations.append(
@@ -232,9 +248,12 @@ def audit_teacher_receipt_rows(
                     "classification": "violation",
                 }
             )
+        else:
+            verified_external_teacher_calls += int(decision["external_inference_calls"])
     return violations, {
         "scanned_teacher_receipts": scanned,
         "teacher_provider_counts": dict(sorted(provider_counts.items())),
+        "verified_external_teacher_calls": verified_external_teacher_calls,
     }
 
 
@@ -323,9 +342,17 @@ def classify(rel: Path, pattern_name: str) -> str:
     return "violation"
 
 
-def scan_report_external_inference(*, include_large_reports: bool) -> tuple[list[dict[str, Any]], dict[str, int]]:
+def scan_report_external_inference(
+    *,
+    include_large_reports: bool,
+    verified_external_teacher_calls: int = 0,
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
     violations: list[dict[str, Any]] = []
-    stats = {"scanned_report_files": 0, "skipped_large_report_files": 0}
+    stats = {
+        "scanned_report_files": 0,
+        "skipped_large_report_files": 0,
+        "verified_teacher_report_counters": 0,
+    }
     if not REPORTS.exists():
         return violations, stats
     for path in REPORTS.glob("*.json"):
@@ -354,6 +381,14 @@ def scan_report_external_inference(*, include_large_reports: bool) -> tuple[list
             if is_allowed_teacher_report(rel, value):
                 continue
             if key == "external_inference_calls" and number(raw) > 0:
+                if is_verified_teacher_counter(
+                    item["path"],
+                    raw,
+                    verified_external_teacher_calls=verified_external_teacher_calls,
+                    report=value,
+                ):
+                    stats["verified_teacher_report_counters"] += 1
+                    continue
                 violations.append(
                     {
                         "path": as_posix(rel),
@@ -374,6 +409,51 @@ def scan_report_external_inference(*, include_large_reports: bool) -> tuple[list
                     }
                 )
     return violations, stats
+
+
+def is_verified_teacher_counter(
+    path: list[str],
+    value: Any,
+    *,
+    verified_external_teacher_calls: int,
+    report: Any = None,
+) -> bool:
+    """Accept only receipt-bounded counters explicitly scoped to teacher work."""
+
+    if verified_external_teacher_calls <= 0:
+        return False
+    count = number(value)
+    if count <= 0 or count > verified_external_teacher_calls:
+        return False
+    context = report_counter_context(report, path)
+    return "teacher" in context or "distillation" in context
+
+
+def report_counter_context(report: Any, path: list[str]) -> str:
+    """Collect narrow, structural context for one nested report counter."""
+
+    context = [str(segment).lower() for segment in path[:-1]]
+    current = report
+    for segment in path[:-1]:
+        if isinstance(current, dict):
+            for key in ("name", "policy", "source_path", "source_policy"):
+                value = current.get(key)
+                if isinstance(value, str):
+                    context.append(value.lower())
+            current = current.get(segment)
+        elif isinstance(current, list):
+            try:
+                current = current[int(segment)]
+            except (ValueError, IndexError):
+                break
+        else:
+            break
+    if isinstance(current, dict):
+        for key in ("name", "policy", "source_path", "source_policy"):
+            value = current.get(key)
+            if isinstance(value, str):
+                context.append(value.lower())
+    return " ".join(context)
 
 
 def report_may_contain_external_inference(path: Path) -> bool:

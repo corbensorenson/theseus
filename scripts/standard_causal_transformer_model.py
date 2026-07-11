@@ -24,6 +24,8 @@ class CausalTransformerConfig:
     state_memory_mode: str = "none"
     state_memory_ablation: str = "none"
     state_memory_read_policy: str = "unrestricted"
+    semantic_plan_feature_count: int = 0
+    semantic_plan_separator_token_id: int = 2
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -46,6 +48,12 @@ class CausalTransformerConfig:
             raise ValueError("state memory chunk and local-window sizes must be positive")
         if self.state_memory_chunk_size > self.state_memory_local_window:
             raise ValueError("state memory chunk size cannot exceed its local attention window")
+        if self.semantic_plan_feature_count < 0:
+            raise ValueError("semantic plan feature count cannot be negative")
+        if self.semantic_plan_feature_count > 0 and not (
+            0 <= self.semantic_plan_separator_token_id < self.vocab_size
+        ):
+            raise ValueError("semantic plan separator token must be in vocabulary")
 
 
 def build_model(
@@ -65,6 +73,7 @@ def build_model(
         dtype=mx.float32,
     )
     state_enabled = config.state_memory_mode != "none"
+    plan_enabled = config.semantic_plan_feature_count > 0
     if state_enabled:
         if state_role_lookup is None:
             raise ValueError("enabled state memory requires a causal token-role lookup")
@@ -130,6 +139,14 @@ def build_model(
                 key = mx.concatenate([cache[0], key], axis=2)
                 value = mx.concatenate([cache[1], value], axis=2)
             mask = "causal" if cache is None and length > 1 and memory is None else None
+            if cache is not None and length > 1 and memory is None:
+                key_positions = mx.arange(offset + length, dtype=mx.int32)
+                allowed_through = offset + mx.arange(length, dtype=mx.int32) + 1
+                mask = mx.where(
+                    key_positions[None, :] < allowed_through[:, None],
+                    mx.array(0.0, dtype=mx.float32),
+                    mx.array(-1e9, dtype=mx.float32),
+                )
             attention_key = key
             attention_value = value
             memory_width = 0
@@ -288,6 +305,19 @@ def build_model(
             self.layers = [DecoderBlock() for _ in range(config.num_layers)]
             self.final_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.scale = math.sqrt(config.d_model)
+            if plan_enabled:
+                self.semantic_plan_classifier = nn.Linear(
+                    config.d_model, config.semantic_plan_feature_count, bias=True
+                )
+                self.semantic_plan_features = nn.Embedding(
+                    config.semantic_plan_feature_count, config.d_model
+                )
+                self.semantic_plan_projection = nn.Linear(
+                    config.d_model, config.d_model, bias=False
+                )
+                self.semantic_plan_projection.weight = mx.zeros_like(
+                    self.semantic_plan_projection.weight
+                )
 
         def role_weights(self, tokens: Any) -> Any | None:
             if not state_enabled:
@@ -298,31 +328,77 @@ def build_model(
                 weights = weights[:, :, permutation]
             return weights
 
+        def conditioned_embeddings(
+            self,
+            tokens: Any,
+            cached_plan_context: Any | None,
+        ) -> tuple[Any, Any | None, Any | None]:
+            hidden = self.token_embedding(tokens) * self.scale
+            if not plan_enabled:
+                return hidden, None, None
+            if cached_plan_context is not None:
+                context = cached_plan_context
+                plan_logits = None
+                target_mask = mx.ones(tokens.shape, dtype=mx.float32)
+            else:
+                separator = tokens == config.semantic_plan_separator_token_id
+                seen_separator = mx.cumsum(separator.astype(mx.int32), axis=1)
+                has_separator = (mx.sum(separator.astype(mx.int32), axis=1) > 0).astype(
+                    mx.float32
+                )
+                source_mask = (seen_separator == 0).astype(mx.float32) * has_separator[:, None]
+                denominator = mx.maximum(mx.sum(source_mask, axis=1, keepdims=True), 1.0)
+                source_summary = mx.sum(hidden * source_mask[:, :, None], axis=1) / denominator
+                plan_logits = self.semantic_plan_classifier(source_summary)
+                probabilities = mx.sigmoid(plan_logits)
+                feature_matrix = self.semantic_plan_features(
+                    mx.arange(config.semantic_plan_feature_count, dtype=mx.int32)
+                )
+                context = mx.matmul(probabilities, feature_matrix) / mx.maximum(
+                    mx.sum(probabilities, axis=-1, keepdims=True), 1.0
+                )
+                context = self.semantic_plan_projection(context) * has_separator[:, None]
+                target_mask = ((seen_separator > 0) & ~separator).astype(mx.float32)
+            hidden = hidden + context[:, None, :] * target_mask[:, :, None]
+            return hidden, context, plan_logits
+
         def __call__(
             self,
             tokens: Any,
             cache: list[tuple[Any, ...]] | None = None,
-        ) -> tuple[Any, list[tuple[Any, ...]]]:
+            *,
+            return_plan_logits: bool = False,
+        ) -> Any:
+            cached_plan_context = None
+            layer_cache_input = cache
+            if plan_enabled and cache is not None and len(cache) == config.num_layers + 1:
+                cached_plan_context = cache[-1][0]
+                layer_cache_input = cache[:-1]
+            conditioned_hidden, plan_context, plan_logits = self.conditioned_embeddings(
+                tokens, cached_plan_context
+            )
             if not state_enabled:
-                hidden = self.token_embedding(tokens) * self.scale
+                hidden = conditioned_hidden
                 next_cache: list[tuple[Any, ...]] = []
                 for index, layer in enumerate(self.layers):
-                    layer_cache = cache[index] if cache is not None else None
+                    layer_cache = layer_cache_input[index] if layer_cache_input is not None else None
                     hidden, layer_next = layer(hidden, layer_cache)
                     next_cache.append(layer_next)
+                if plan_enabled:
+                    next_cache.append((plan_context,))
                 logits = self.token_embedding.as_linear(self.final_norm(hidden))
-                return logits, next_cache
+                return (logits, next_cache, plan_logits) if return_plan_logits else (logits, next_cache)
 
             role_weights = self.role_weights(tokens)
-            current_cache = cache
+            current_cache = layer_cache_input
             outputs = []
-            offset = int(cache[0][0].shape[2]) if cache is not None else 0
+            offset = int(layer_cache_input[0][0].shape[2]) if layer_cache_input is not None else 0
             start = 0
             while start < int(tokens.shape[1]):
                 position_in_chunk = (offset + start) % config.state_memory_chunk_size
                 remaining_in_chunk = config.state_memory_chunk_size - position_in_chunk
                 stop = min(int(tokens.shape[1]), start + remaining_in_chunk)
-                hidden = self.token_embedding(tokens[:, start:stop]) * self.scale
+                hidden = conditioned_hidden[:, start:stop, :]
                 chunk_roles = role_weights[:, start:stop, :]
                 commit_state = (offset + stop) % config.state_memory_chunk_size == 0
                 next_cache = []
@@ -339,7 +415,10 @@ def build_model(
                 current_cache = next_cache
                 start = stop
             logits = self.token_embedding.as_linear(mx.concatenate(outputs, axis=1))
-            return logits, current_cache or []
+            final_cache = current_cache or []
+            if plan_enabled:
+                final_cache.append((plan_context,))
+            return (logits, final_cache, plan_logits) if return_plan_logits else (logits, final_cache)
 
     return StandardCausalTransformer()
 

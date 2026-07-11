@@ -62,6 +62,24 @@ def test_ordered_plan_is_generic_bounded_and_non_compilable() -> None:
     assert receipt["candidate_generation_credit"] == 0
 
 
+def test_plan_obligation_labels_are_fixed_generic_and_identifier_free() -> None:
+    first = "quux = 0\nfor widget in payload:\n    quux += widget\nreturn quux"
+    renamed = "zorb = 0\nfor flarn in records:\n    zorb += flarn\nreturn zorb"
+    features = semantic_ir.plan_obligation_features()
+    first_labels = semantic_ir.body_to_plan_obligation_labels(first)
+    renamed_labels = semantic_ir.body_to_plan_obligation_labels(renamed)
+    assert len(features) == len(first_labels) == len(renamed_labels)
+    assert first_labels == renamed_labels
+    assert any(first_labels)
+    assert len(features) == len(set(features))
+    assert all(token.startswith("IRP:") for token in features)
+    assert not any(
+        identifier in token
+        for token in features
+        for identifier in ("quux", "widget", "payload", "zorb", "flarn", "records")
+    )
+
+
 def test_semantic_plan_decode_boundary_uses_only_plan_vocabulary() -> None:
     vocab = {
         "<pad>": 0,

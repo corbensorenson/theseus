@@ -642,10 +642,15 @@ deletion closure is graph evidence, not physical unlearning.
   add another auxiliary target whose only win is its own loss.
 - Current status: `partial`. The generic AST IR, obligations, localized assisted
   repair, and independently audited learned plan/body protocol are integrated,
-  but the matched learned-plan canary regresses candidate coverage, verifier
-  reward, and runtime while remaining `0/24`. Phase completion requires a learned
-  Semantic-IR intervention to improve family-disjoint direct model behavior; the
-  existing negative cannot be relabeled as completion.
+  and the standard transformer now has an opt-in prompt/signature-only learned
+  181-feature obligation head with class-balanced labels, zero-initialized causal
+  body conditioning, cache replay, and a no-fixed-point shuffled-label control.
+  Under equal 600k pretraining and 1.2M SFT body exposure, semantic labels beat
+  shuffled labels on heldout plan F1 (`0.595819` vs `0.522488`) and slightly on
+  verifier reward (`0.343636` vs `0.340367`), but all arms remain `0/24` exact.
+  The route therefore stays disabled. Phase completion requires ordered learned
+  plan execution to improve family-disjoint direct model behavior; neither plan
+  prediction quality nor deterministic repair may be relabeled as completion.
 
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,

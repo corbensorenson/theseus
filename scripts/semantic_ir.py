@@ -154,6 +154,27 @@ def plan_protocol_token_set() -> frozenset[str]:
     return frozenset(plan_protocol_tokens())
 
 
+@lru_cache(maxsize=1)
+def plan_obligation_features() -> tuple[str, ...]:
+    """Return the fixed multi-label feature space for learned planning.
+
+    Begin/end framing is excluded because it carries no semantic information.
+    The remaining closed protocol contains only generic AST operation, intent,
+    flow, and feature atoms; it cannot reconstruct identifiers or code.
+    """
+
+    return tuple(
+        token for token in plan_protocol_tokens() if token not in {PLAN_BEGIN, PLAN_END}
+    )
+
+
+def body_to_plan_obligation_labels(body: str) -> tuple[int, ...]:
+    """Compile an admitted training body into a fixed multi-hot plan target."""
+
+    active = set(body_to_plan_tokens(body))
+    return tuple(int(feature in active) for feature in plan_obligation_features())
+
+
 def plan_prefix_token_allowed(prefix: Iterable[str], token: str, *, body_start_token: str) -> bool:
     """Validate one learned plan-prefix transition without reading a target body."""
 

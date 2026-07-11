@@ -227,6 +227,7 @@ class TeacherProviderPolicyTest(unittest.TestCase):
         self.assertEqual([], violations)
         self.assertEqual(1, summary["scanned_teacher_receipts"])
         self.assertEqual({"codex_cli/gpt-5.5": 1}, summary["teacher_provider_counts"])
+        self.assertEqual(1, summary["verified_external_teacher_calls"])
 
         forbidden = copy.deepcopy(approved)
         forbidden["provider_metadata"] = {"vendor": "Anthropic"}
@@ -235,6 +236,45 @@ class TeacherProviderPolicyTest(unittest.TestCase):
         self.assertIn(
             "forbidden_teacher_identity_in_receipt_provenance",
             violations[0]["reject_reasons"],
+        )
+
+    def test_report_teacher_counter_requires_scope_and_receipt_bound(self) -> None:
+        self.assertTrue(
+            AUDIT.is_verified_teacher_counter(
+                ["summary", "teacher_training", "external_inference_calls"],
+                2,
+                verified_external_teacher_calls=3,
+            )
+        )
+        nested_teacher_report = {
+            "gates": [
+                {
+                    "name": "teacher_distillation_governed_or_forbidden",
+                    "evidence": {"external_inference_calls": 2},
+                }
+            ]
+        }
+        self.assertTrue(
+            AUDIT.is_verified_teacher_counter(
+                ["gates", "0", "evidence", "external_inference_calls"],
+                2,
+                verified_external_teacher_calls=3,
+                report=nested_teacher_report,
+            )
+        )
+        self.assertFalse(
+            AUDIT.is_verified_teacher_counter(
+                ["summary", "runtime", "external_inference_calls"],
+                1,
+                verified_external_teacher_calls=3,
+            )
+        )
+        self.assertFalse(
+            AUDIT.is_verified_teacher_counter(
+                ["summary", "teacher_training", "external_inference_calls"],
+                4,
+                verified_external_teacher_calls=3,
+            )
         )
 
     def test_gate_rejects_accepted_teacher_ledger_row_without_receipt_proof(self) -> None:

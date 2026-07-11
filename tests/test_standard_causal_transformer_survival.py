@@ -21,6 +21,7 @@ from standard_causal_transformer_survival import (
     beam_rank_score,
     batched_beam_advance,
     cache_arrays,
+    causal_loss,
     completion_pool_target,
     canonical_model_signature,
     compare_target_mode_canaries,
@@ -31,6 +32,7 @@ from standard_causal_transformer_survival import (
     generation_prefix_complete,
     assign_body_balanced_sampling_weights,
     normalized_sampling_probabilities,
+    prepare_semantic_plan_labels,
     phase_target_positions,
     prune_complete_beams,
     render_visible_signature,
@@ -66,6 +68,7 @@ from standard_causal_transformer_preference import (
 from standard_causal_transformer_survival_gate import (
     audit_generation_mode_canary,
     audit_preference_canary,
+    audit_semantic_plan_head_ablation,
     audit_sft_contract_admission,
     audit_state_memory_ablation,
     audit_state_memory_continuation,
@@ -104,6 +107,155 @@ def test_decoder_is_causal_and_cached_decode_matches_full_decode() -> None:
     full, _ = model(prefix_a)
     mx.eval(prefill, cached, full)
     assert bool(mx.allclose(cached[:, -1], full[:, -1], atol=1e-4))
+
+
+def test_semantic_plan_head_is_source_only_and_cache_partition_invariant() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import semantic_ir
+
+    mx.random.seed(13)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        semantic_plan_feature_count=len(semantic_ir.plan_obligation_features()),
+        semantic_plan_separator_token_id=2,
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    sequence_a = mx.array([[1, 12, 13, 2, 21, 22]], dtype=mx.int32)
+    sequence_b = mx.array([[1, 12, 13, 2, 44, 45]], dtype=mx.int32)
+    logits_a, cache_a, plan_a = model(sequence_a, return_plan_logits=True)
+    _logits_b, _cache_b, plan_b = model(sequence_b, return_plan_logits=True)
+    sequence_c = mx.array([[1, 14, 15, 2, 21, 22]], dtype=mx.int32)
+    _logits_c, _cache_c, plan_c = model(sequence_c, return_plan_logits=True)
+    prefix_logits, prefix_cache, prefix_plan = model(
+        sequence_a[:, :4], return_plan_logits=True
+    )
+    cached_logits, cached_state = model(sequence_a[:, 4:], prefix_cache)
+    mx.eval(
+        logits_a,
+        plan_a,
+        plan_b,
+        plan_c,
+        prefix_logits,
+        prefix_plan,
+        cached_logits,
+        *cache_arrays(cache_a),
+        *cache_arrays(cached_state),
+    )
+    assert bool(mx.allclose(plan_a, plan_b, atol=1e-6))
+    assert not bool(mx.allclose(plan_a, plan_c, atol=1e-6))
+    assert bool(mx.allclose(plan_a, prefix_plan, atol=1e-6))
+    assert bool(mx.allclose(cached_logits, logits_a[:, 4:], atol=1e-4))
+    assert len(cache_a) == config.num_layers + 1
+
+
+def test_semantic_plan_auxiliary_loss_updates_plan_parameters() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+    import semantic_ir
+
+    mx.random.seed(29)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=96,
+            d_model=32,
+            num_layers=1,
+            num_heads=4,
+            num_kv_heads=2,
+            ff_dim=64,
+            semantic_plan_feature_count=len(semantic_ir.plan_obligation_features()),
+            semantic_plan_separator_token_id=2,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    inputs = mx.array([[1, 12, 13, 2, 21, 22], [1, 14, 15, 2, 23, 24]], dtype=mx.int32)
+    labels = mx.array([[12, 13, 2, 21, 22, 0], [14, 15, 2, 23, 24, 0]], dtype=mx.int32)
+    mask = mx.array([[0, 0, 0, 1, 1, 0], [0, 0, 0, 1, 1, 0]], dtype=mx.float32)
+    plan_targets = np.zeros(
+        (2, len(semantic_ir.plan_obligation_features())), dtype=np.float32
+    )
+    plan_targets[:, 0] = 1.0
+    plan_labels = mx.array(plan_targets, dtype=mx.float32)
+    optimizer = optim.SGD(learning_rate=0.05)
+    value_and_grad = nn.value_and_grad(model, causal_loss)
+    before = {
+        name: np.asarray(value).copy()
+        for name, value in mlx_utils.tree_flatten(model.parameters())
+        if "semantic_plan" in name
+    }
+    loss, gradients = value_and_grad(
+        model, inputs, labels, mask, mx, nn, plan_labels, 0.5
+    )
+    optimizer.update(model, gradients)
+    mx.eval(model.parameters(), optimizer.state, loss)
+    after = {
+        name: np.asarray(value).copy()
+        for name, value in mlx_utils.tree_flatten(model.parameters())
+        if "semantic_plan" in name
+    }
+    assert before.keys() == after.keys()
+    assert before
+    assert all(np.isfinite(value).all() for value in after.values())
+    assert any(not np.array_equal(before[name], after[name]) for name in before)
+
+
+def test_zero_initialized_plan_residual_starts_body_logit_neutral() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import semantic_ir
+
+    common = dict(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(37)
+    body_model = build_model(CausalTransformerConfig(**common), mx=mx, nn=nn)
+    mx.random.seed(37)
+    plan_model = build_model(
+        CausalTransformerConfig(
+            **common,
+            semantic_plan_feature_count=len(semantic_ir.plan_obligation_features()),
+            semantic_plan_separator_token_id=2,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    tokens = mx.array([[1, 12, 13, 2, 21, 22]], dtype=mx.int32)
+    body_logits, _body_cache = body_model(tokens)
+    plan_logits, _plan_cache, obligations = plan_model(
+        tokens, return_plan_logits=True
+    )
+    mx.eval(body_logits, plan_logits, obligations)
+    assert bool(mx.allclose(body_logits, plan_logits, atol=1e-6))
+
+
+def test_semantic_plan_shuffled_control_is_deranged_and_mass_matched() -> None:
+    labels = np.eye(8, dtype=np.float32)
+    semantic, semantic_receipt = prepare_semantic_plan_labels(
+        labels, mode="semantic", seed=17
+    )
+    shuffled, shuffled_receipt = prepare_semantic_plan_labels(
+        labels, mode="shuffled", seed=17
+    )
+    assert np.array_equal(semantic, labels)
+    assert shuffled is not None
+    assert not any(np.array_equal(shuffled[index], labels[index]) for index in range(len(labels)))
+    assert np.array_equal(shuffled.sum(axis=0), labels.sum(axis=0))
+    assert semantic_receipt["positive_label_count"] == shuffled_receipt["positive_label_count"]
+    assert shuffled_receipt["fixed_point_count"] == 0
+    assert shuffled_receipt["label_sha256"] != semantic_receipt["label_sha256"]
 
 
 def test_batched_beam_advance_matches_serial_cached_model_calls() -> None:
@@ -355,6 +507,29 @@ def test_config_rejects_fallback_or_external_inference() -> None:
     invalid_plan["tokenization"]["semantic_plan_max_tokens"] = 4
     with pytest.raises(ValueError, match="semantic plan token budget"):
         validate_config(invalid_plan)
+
+    plan_head = json.loads(json.dumps(config))
+    import semantic_ir
+
+    plan_head["model"]["semantic_plan_feature_count"] = len(
+        semantic_ir.plan_obligation_features()
+    )
+    plan_head["model"]["semantic_plan_separator_token_id"] = 2
+    plan_head["semantic_plan_training"] = {
+        "enabled": True,
+        "label_mode": "semantic",
+        "auxiliary_loss_weight": 0.2,
+        "shuffle_seed": 19,
+    }
+    validate_config(plan_head)
+    mismatched_features = json.loads(json.dumps(plan_head))
+    mismatched_features["model"]["semantic_plan_feature_count"] -= 1
+    with pytest.raises(ValueError, match="fixed registered IR contract"):
+        validate_config(mismatched_features)
+    missing_control = json.loads(json.dumps(plan_head))
+    missing_control["semantic_plan_training"]["label_mode"] = "none"
+    with pytest.raises(ValueError, match="semantic or shuffled"):
+        validate_config(missing_control)
 
 
 def test_standard_transformer_plan_body_target_is_learned_and_closed_vocab() -> None:
@@ -957,6 +1132,120 @@ def test_teacher_residual_ablation_requires_exact_private_behavior_gain(tmp_path
     assert "no_family_disjoint_verifier_pass_gain" in rejected["adoption_rejection_reasons"]
 
 
+def test_semantic_plan_head_ablation_requires_shuffled_control_and_exact_gain(
+    tmp_path: Path,
+) -> None:
+    arm_dirs: dict[str, Path] = {}
+    for name in ("body_only", "semantic", "shuffled"):
+        directory = tmp_path / name
+        directory.mkdir()
+        arm_dirs[name] = directory
+        config = {
+            "seed": 7,
+            "model": {"d_model": 32},
+            "training": {"sft_target_token_positions": 100},
+        }
+        if name != "body_only":
+            config["model"].update(
+                {
+                    "semantic_plan_feature_count": 181,
+                    "semantic_plan_separator_token_id": 2,
+                }
+            )
+            config["semantic_plan_training"] = {
+                "enabled": True,
+                "label_mode": name,
+                "auxiliary_loss_weight": 0.2,
+                "shuffle_seed": 19,
+            }
+        (directory / "config.json").write_text(json.dumps(config), encoding="utf-8")
+        (directory / "candidates.jsonl").write_text("{}\n", encoding="utf-8")
+        passed = 1 if name == "semantic" else 0
+        reward = 0.5 if name == "semantic" else 0.4
+        f1 = 0.7 if name == "semantic" else (0.3 if name == "shuffled" else 0.0)
+        binary_loss = 0.4 if name == "semantic" else (0.8 if name == "shuffled" else 0.0)
+        label_receipt = {
+            "label_mode": name if name != "body_only" else "none",
+            "row_count": 20 if name != "body_only" else 0,
+            "positive_label_count": 50 if name != "body_only" else 0,
+            "fixed_point_count": 20 if name == "semantic" else 0,
+            "label_sha256": name if name != "body_only" else "",
+        }
+        report = {
+            "architecture": {"parameter_count": 200 if name != "body_only" else 150},
+            "stage": {"stage_signature": "same"},
+            "training": {
+                "phases": [
+                    {
+                        "phase": "prompt_signature_body_sft",
+                        "optimizer_body_positions_consumed": 100,
+                        "semantic_plan_labels": label_receipt,
+                        "semantic_plan_positive_weights": {
+                            "weight_sha256": "matched" if name != "body_only" else ""
+                        },
+                    }
+                ],
+                "eval_loss_after": 1.0,
+                "semantic_plan_eval_after": (
+                    {
+                        "source_contract": "prompt_signature_only_before_separator",
+                        "target_labels_visible_at_inference": False,
+                        "micro_f1": f1,
+                        "binary_cross_entropy": binary_loss,
+                    }
+                    if name != "body_only"
+                    else {"state": "NOT_APPLICABLE"}
+                ),
+            },
+            "summary": {
+                "model_only_passed_task_count": passed,
+                "candidate_task_count": 24,
+                "candidate_count": 60,
+            },
+            "private_verifier": {
+                "private_verification": {"mean_verification_reward": reward}
+            },
+            "decode": {"runtime_ms": 10},
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+        (directory / "report.json").write_text(json.dumps(report), encoding="utf-8")
+        (directory / "integrity.json").write_text(
+            json.dumps(
+                {
+                    "source": str(directory / "candidates.jsonl"),
+                    "trigger_state": "GREEN",
+                    "summary": {"candidate_count": 1, "integrity_mismatch_count": 0},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (directory / "blind_audit.json").write_text(
+            json.dumps(
+                {"trigger_state": "GREEN", "summary": {"invalid_claim_count": 0}}
+            ),
+            encoding="utf-8",
+        )
+
+    adopted = audit_semantic_plan_head_ablation(arm_dirs)
+    assert adopted["state"] == "GREEN"
+    assert adopted["adoption_state"] == "ADOPTED"
+    assert adopted["receipt"]["semantic_label_causal_gain"] is True
+
+    shuffled_path = arm_dirs["shuffled"] / "report.json"
+    shuffled = json.loads(shuffled_path.read_text())
+    shuffled["training"]["semantic_plan_eval_after"]["micro_f1"] = 0.8
+    shuffled["training"]["semantic_plan_eval_after"]["binary_cross_entropy"] = 0.3
+    shuffled_path.write_text(json.dumps(shuffled), encoding="utf-8")
+    rejected = audit_semantic_plan_head_ablation(arm_dirs)
+    assert rejected["state"] == "GREEN"
+    assert rejected["adoption_state"] == "NOT_ADOPTED"
+    assert "semantic_labels_did_not_beat_shuffled_labels" in rejected[
+        "adoption_rejection_reasons"
+    ]
+
+
 def test_candidate_integrity_recomputes_direct_plan_body_trace_instead_of_trusting_flags() -> None:
     import semantic_ir
     from neural_seed_token_decoder_rendering import PLAN_BODY_START_TOKEN
@@ -1454,6 +1743,23 @@ def test_stage_signature_binds_each_admitted_training_source(tmp_path: Path) -> 
     config["sources"]["training_admission"] = str(admission)
     baseline = stage_signature(config)
     source.write_text('{"prompt":"p","solution_body":"return data + 1"}\n')
+    assert stage_signature(config) != baseline
+
+
+def test_stage_signature_binds_teacher_admission_inputs(tmp_path: Path) -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    manifest = tmp_path / "teacher_manifest.json"
+    gate = tmp_path / "teacher_gate.json"
+    manifest.write_text(json.dumps({"rows": []}), encoding="utf-8")
+    gate.write_text(json.dumps({"trigger_state": "GREEN"}), encoding="utf-8")
+    config["teacher_distillation"]["manifest"] = str(manifest)
+    config["teacher_distillation"]["gate"] = str(gate)
+    baseline = stage_signature(config)
+    manifest.write_text(json.dumps({"rows": [{"row_id": "changed"}]}), encoding="utf-8")
+    assert stage_signature(config) != baseline
+    manifest.write_text(json.dumps({"rows": []}), encoding="utf-8")
+    assert stage_signature(config) == baseline
+    config["teacher_distillation"]["teacher_sampling_probability_target"] = 0.15
     assert stage_signature(config) != baseline
 
 

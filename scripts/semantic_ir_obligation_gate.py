@@ -29,7 +29,7 @@ import semantic_ir  # noqa: E402
 
 
 DEFAULT_VIEW = ROOT / "reports" / "viea_spine_materialized_view.json"
-DEFAULT_CANDIDATE = ROOT / "reports" / "candidate_integrity_audit.json"
+DEFAULT_CANDIDATE = ROOT / "reports" / "candidate_integrity_standard_causal_transformer_survival.json"
 DEFAULT_VERIFIER = ROOT / "reports" / "private_verifier_spine_smoke.json"
 DEFAULT_GENERATOR = ROOT / "reports" / "neural_seed_token_decoder_comparator.json"
 DEFAULT_STRICT_GENERATOR_REPAIR = ROOT / "reports" / "strict_generator_semantic_ir_repair_bridge.json"

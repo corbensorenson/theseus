@@ -1954,7 +1954,9 @@
         "tool_binding",
         "localized_dependent_atom_replay",
         "learned_semantic_plan_prefix",
-        "direct_plan_body_token_trace"
+        "direct_plan_body_token_trace",
+        "learned_semantic_plan_obligation_head",
+        "semantic_plan_shuffled_label_control"
       ],
       "required_records": [
         "semantic_ir_atom",
@@ -1964,7 +1966,8 @@
         "typed_semantic_ir_candidate_receipt",
         "semantic_ir_source_repair_ablation",
         "matched_target_mode_ablation",
-        "direct_plan_body_trace_receipt"
+        "direct_plan_body_trace_receipt",
+        "semantic_plan_head_ablation_receipt"
       ],
       "required_gates": [
         "python3 scripts/semantic_ir_obligation_gate.py",
@@ -1998,12 +2001,15 @@
         "reports/standard_causal_transformer_survival.json",
         "reports/standard_causal_transformer_survival_candidates.jsonl",
         "reports/candidate_integrity_standard_causal_transformer_survival.json",
-        "reports/standard_causal_transformer_survival_gate.json"
+        "reports/standard_causal_transformer_survival_gate.json",
+        "runtime/standard_causal_transformer_plan_head_body_control/report.json",
+        "runtime/standard_causal_transformer_plan_head_semantic/report.json",
+        "runtime/standard_causal_transformer_plan_head_shuffled/report.json"
       ],
       "missing_items": [
-        "State architecture, same-data continuation, and the bounded governed OpenAI residual tranche are exhausted on the frozen private surface: all matched arms remain 0/24, teacher continuation worsens heldout loss in both body-only and unrestricted-state arms, and body-only coverage regresses"
+        "The fixed multi-label Semantic-IR head learns a causal source-to-obligation signal and modestly improves partial verifier reward, but body-only, semantic-label, and shuffled-label arms remain 0/24 exact; unordered global obligations do not yet realize ordered executable bodies"
       ],
-      "smallest_next_patch": "Add one separately supervised learned Semantic-IR plan/obligation head to the existing standard causal transformer. Derive plan labels only from admitted training bodies, predict plans from prompt/signature only, and causally condition the unchanged direct body decoder without a renderer or repair. Compare body-only, learned-plan, and deterministically shuffled-plan arms at equal body-token exposure; require an exact family-disjoint verifier pass and clean integrity before adoption.",
+      "smallest_next_patch": "Upgrade the same registered head from an unordered multi-label summary to a compact ordered learned Semantic-IR plan decoder over traversal, update, finalizer, value-expression, return-closure, and verifier-obligation steps. Predict plans from prompt/signature only, condition the unchanged direct body decoder through a zero-initialized learned route, and compare semantic-plan, shuffled-plan, plan-dropout, and body-only arms at equal body-token exposure. Do not use a renderer, repair, teacher-forced heldout plan, or fallback; require an exact family-disjoint verifier pass before adoption.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -2044,6 +2050,14 @@
         ,"reports/standard_causal_transformer_survival_gate.json summary.state_continuation_state=GREEN"
         ,"reports/standard_causal_transformer_survival_gate.json summary.state_continuation_adoption_state=NOT_ADOPTED"
         ,"reports/standard_causal_transformer_survival_gate.json summary.state_continuation_rejection_reasons includes no_continuation_verifier_pass_gain, no_exact_gain_over_matched_controls, and semantic_heldout_loss_worsened"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.semantic_plan_head_state=GREEN"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.semantic_plan_head_adoption_state=NOT_ADOPTED"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.semantic_plan_head_rejection_reasons includes no_family_disjoint_verifier_pass_gain"
+        ,"reports/standard_causal_transformer_survival_gate.json semantic_plan_head_ablation matched_checks are all true"
+        ,"runtime/standard_causal_transformer_plan_head_semantic/report.json training.semantic_plan_eval_after.micro_f1=0.59581882"
+        ,"runtime/standard_causal_transformer_plan_head_shuffled/report.json training.semantic_plan_eval_after.micro_f1=0.52248804"
+        ,"matched body positions are 1201454 for body-only, semantic-label, and shuffled-label arms"
+        ,"all three semantic-plan-head ablation arms remain 0/24 exact with zero public training rows, external inference, or fallback returns"
       ],
       "completion_rule": "Plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependencies, obligations, repair scopes, and replayed receipts. Completion additionally requires a learned Semantic-IR route to improve family-disjoint direct model behavior under a matched body-only ablation. Assisted compiler/repair output remains zero-credit."
     },

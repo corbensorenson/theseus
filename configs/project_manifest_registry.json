@@ -228,11 +228,11 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "05655fb7e471e77653da689bfea15e629fd22723a6b30e696b90d7ca4c90444d"
+          "sha256": "59df23e43f522bf59bdca94ec5e80ca9035bc3db00fd25aa6c6952cbb7a2b94a"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
-          "sha256": "f2cc00c496c637ffed0f50e9a893ec8adf1c68f029d84c53fdc3a167080662d1"
+          "sha256": "c7b184057fb0fb4d86770275b39c3b423631987f2f18bec2074525ee4311b398"
         },
         "token_renderer": {
           "path": "scripts/neural_seed_token_decoder_rendering.py",
@@ -252,7 +252,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "637231bf764f64629c76739d299514e5023ea0c690267a690bc6c9029a7f18d3"
+          "sha256": "81ba2ef0c11c7214826e9f9558aa68cc4c5147555153b94a282105b64f52a66a"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -264,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "2149ee99db26eef83594f30fadc0ae5eb0e875b0848c771796e04de8980a715c"
+          "sha256": "3d3dce72f399a2108f2b47b2b1087d0d0fee9d9f74f0cb5c5109088340ce1f4c"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -284,7 +284,7 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "c772808019c86cd49cc86bbd777114eae55e98ff0f9f665aadcc512f69b3ddc9"
+          "sha256": "95da7c96b69670b55029119777f9fb400ba9cf724c4e4d5297bda83cc1fb11c2"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
@@ -292,7 +292,7 @@
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "aaa558100f8398773aa49a706ec63154344c3052a527e6b3749ab101ea909d76"
+          "sha256": "628617671ef052d848807ff6987e8a91587d054a52fd270a1d50ee5dc206225a"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",

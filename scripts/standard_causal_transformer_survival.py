@@ -96,9 +96,11 @@ class Stage:
     sft_labels: np.ndarray
     sft_mask: np.ndarray
     sft_sampling_weights: np.ndarray
+    sft_plan_labels: np.ndarray
     eval_inputs: np.ndarray
     eval_labels: np.ndarray
     eval_mask: np.ndarray
+    eval_plan_labels: np.ndarray
     eval_rows: list[dict[str, Any]]
     preference_rows: list[dict[str, Any]]
     source_vocab: dict[str, int]
@@ -197,6 +199,7 @@ def run(
         nn=nn,
         state_role_lookup=state_role_lookup,
     )
+    plan_training = semantic_plan_training_contract(config)
     params = parameter_count(model, mlx_utils)
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     checkpoint = checkpoint_dir / "standard_causal_transformer_survival_v1.npz"
@@ -245,6 +248,14 @@ def run(
             mx=mx,
             nn=nn,
         )
+        plan_eval_before = evaluate_semantic_plan_head(
+            model,
+            stage.eval_inputs,
+            stage.eval_plan_labels,
+            batch_size=int(training_cfg["batch_size"]),
+            enabled=plan_training["enabled"],
+            mx=mx,
+        )
         conditioning = {
             **prior_conditioning,
             "resume_base_checkpoint_sha256": resume_base_checkpoint_sha256,
@@ -278,6 +289,10 @@ def run(
                 stage.sft_labels,
                 stage.sft_mask,
                 sample_weights=stage.sft_sampling_weights,
+                plan_labels=stage.sft_plan_labels,
+                plan_label_mode=plan_training["label_mode"],
+                plan_auxiliary_weight=plan_training["auxiliary_loss_weight"],
+                plan_shuffle_seed=plan_training["shuffle_seed"],
                 phase_name="prompt_signature_body_sft_continuation",
                 target_positions=remaining_sft_positions,
                 batch_size=int(training_cfg["batch_size"]),
@@ -312,15 +327,33 @@ def run(
             mx=mx,
             nn=nn,
         )
+        plan_eval_before = evaluate_semantic_plan_head(
+            model,
+            stage.eval_inputs,
+            stage.eval_plan_labels,
+            batch_size=int(training_cfg["batch_size"]),
+            enabled=plan_training["enabled"],
+            mx=mx,
+        )
         heartbeat = stage_dir / "training_heartbeat.json"
         phase_reports = []
         consumed_steps = 0
-        for phase_name, inputs, labels, mask, sample_weights, target_positions, planned_steps in (
+        for (
+            phase_name,
+            inputs,
+            labels,
+            mask,
+            sample_weights,
+            phase_plan_labels,
+            target_positions,
+            planned_steps,
+        ) in (
             (
                 "licensed_module_causal_pretraining",
                 stage.pretrain_inputs,
                 stage.pretrain_labels,
                 stage.pretrain_mask,
+                None,
                 None,
                 int(training_cfg["pretrain_target_token_positions"]),
                 pretrain_steps,
@@ -331,6 +364,7 @@ def run(
                 stage.sft_labels,
                 stage.sft_mask,
                 stage.sft_sampling_weights,
+                stage.sft_plan_labels,
                 int(training_cfg["sft_target_token_positions"]),
                 sft_steps,
             ),
@@ -346,6 +380,16 @@ def run(
                 labels,
                 mask,
                 sample_weights=sample_weights,
+                plan_labels=phase_plan_labels,
+                plan_label_mode=(
+                    plan_training["label_mode"] if phase_plan_labels is not None else "none"
+                ),
+                plan_auxiliary_weight=(
+                    plan_training["auxiliary_loss_weight"]
+                    if phase_plan_labels is not None
+                    else 0.0
+                ),
+                plan_shuffle_seed=plan_training["shuffle_seed"],
                 phase_name=phase_name,
                 target_positions=target_positions,
                 batch_size=int(training_cfg["batch_size"]),
@@ -372,6 +416,20 @@ def run(
         batch_size=int(training_cfg["batch_size"]),
         mx=mx,
         nn=nn,
+    )
+    if evaluate_only:
+        plan_eval_before = (
+            prior_training.get("semantic_plan_eval_before")
+            if isinstance(prior_training.get("semantic_plan_eval_before"), dict)
+            else {"state": "NOT_RETAINED"}
+        )
+    plan_eval_after = evaluate_semantic_plan_head(
+        model,
+        stage.eval_inputs,
+        stage.eval_plan_labels,
+        batch_size=int(training_cfg["batch_size"]),
+        enabled=plan_training["enabled"],
+        mx=mx,
     )
     candidates, decode_summary = generate_candidates(
         model,
@@ -458,6 +516,16 @@ def run(
                     else "not_applicable"
                 ),
             },
+            "semantic_plan_head": {
+                **plan_training,
+                "feature_count": model_cfg.semantic_plan_feature_count,
+                "feature_contract_sha256": stage.summary[
+                    "semantic_plan_feature_contract_sha256"
+                ],
+                "source_fields": ["natural_language_prompt", "callable_signature"],
+                "target_body_visible_at_inference": False,
+                "deterministic_renderer_credit": 0,
+            },
         },
         "artifacts": {
             "config": config_path,
@@ -477,6 +545,8 @@ def run(
             "eval_loss_before": eval_loss_before,
             "eval_loss_after": eval_loss_after,
             "eval_loss_improved": eval_loss_after < eval_loss_before,
+            "semantic_plan_eval_before": plan_eval_before,
+            "semantic_plan_eval_after": plan_eval_after,
         },
         "conditioning": conditioning,
         "decode": decode_summary,
@@ -500,10 +570,12 @@ def run(
         "gates": build_gates(stage, training_complete, eval_loss_before, eval_loss_after, decode_summary, verifier_summary),
         "score_semantics": (
             "Direct decoder-only causal model generation from prompt plus callable signature. "
-            "An optional learned semantic-plan prefix is emitted by the same model and stripped before "
-            "the directly generated body; it does not render or repair code. Optional executable-state "
+            "An optional learned semantic-plan prefix or latent multi-label obligation head is predicted "
+            "from that visible source and causally conditions the directly generated body; neither path "
+            "renders or repairs code. Optional executable-state "
             "memory is updated only from visible prompt/signature tokens and the causal generated prefix, "
-            "and is trained only through ordinary body-token likelihood with no auxiliary target. "
+            "while the latent plan head may receive fixed generic IR obligation labels only on admitted "
+            "training bodies. Heldout labels are measurement-only and never enter generation. "
             "Reversible token decoding "
             "adds no body content, and no template, renderer, router, tool, fallback return, public "
             "benchmark payload, or external inference is credited."
@@ -546,9 +618,25 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
                     if "sft_sampling_weights" in arrays.files
                     else np.ones((len(arrays["sft_inputs"]),), dtype=np.float32)
                 ),
+                sft_plan_labels=(
+                    arrays["sft_plan_labels"]
+                    if "sft_plan_labels" in arrays.files
+                    else np.zeros(
+                        (len(arrays["sft_inputs"]), len(semantic_ir.plan_obligation_features())),
+                        dtype=np.float32,
+                    )
+                ),
                 eval_inputs=arrays["eval_inputs"],
                 eval_labels=arrays["eval_labels"],
                 eval_mask=arrays["eval_mask"],
+                eval_plan_labels=(
+                    arrays["eval_plan_labels"]
+                    if "eval_plan_labels" in arrays.files
+                    else np.zeros(
+                        (len(arrays["eval_inputs"]), len(semantic_ir.plan_obligation_features())),
+                        dtype=np.float32,
+                    )
+                ),
                 eval_rows=list(metadata["eval_rows"]),
                 preference_rows=list(metadata.get("preference_rows") or []),
                 source_vocab=source_vocab,
@@ -585,7 +673,10 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
     )
     sft = encode_sft_training_examples(config, sft_examples, source_vocab, target_vocab)
     eval_examples = [eval_example(row) for row in eval_rows]
-    eval_arrays = encode_sft_examples(config, eval_examples, source_vocab, target_vocab)
+    eval_encoded = encode_sft_training_examples(
+        config, eval_examples, source_vocab, target_vocab
+    )
+    eval_arrays = eval_encoded[:3]
     summary = {
         "stage_signature": signature,
         "licensed_pretrain_window_count": int(pretrain[0].shape[0]),
@@ -594,6 +685,12 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "sft_target_positions": int(sft[2].sum()),
         "unique_body_target_positions": int(sft[2].sum()),
         "sft_sampling_weight_sum": round(float(sft[3].sum()), 6),
+        "semantic_plan_feature_count": int(sft[4].shape[1]) if sft[4].ndim == 2 else 0,
+        "semantic_plan_positive_label_count": int(sft[4].sum()),
+        "semantic_plan_label_density": round(float(sft[4].mean()), 8) if sft[4].size else 0.0,
+        "semantic_plan_feature_contract_sha256": sha(
+            "\n".join(semantic_ir.plan_obligation_features())
+        ),
         "family_disjoint_eval_task_count": len(eval_rows),
         "encoded_family_disjoint_eval_task_count": int(eval_arrays[0].shape[0]),
         "eval_target_overflow_count": len(eval_rows) - int(eval_arrays[0].shape[0]),
@@ -687,9 +784,11 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
             sft_labels=sft[1],
             sft_mask=sft[2],
             sft_sampling_weights=sft[3],
+            sft_plan_labels=sft[4],
             eval_inputs=eval_arrays[0],
             eval_labels=eval_arrays[1],
             eval_mask=eval_arrays[2],
+            eval_plan_labels=eval_encoded[4],
         )
         arrays_temporary.replace(arrays_path)
     finally:
@@ -713,9 +812,11 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         sft_labels=sft[1],
         sft_mask=sft[2],
         sft_sampling_weights=sft[3],
+        sft_plan_labels=sft[4],
         eval_inputs=eval_arrays[0],
         eval_labels=eval_arrays[1],
         eval_mask=eval_arrays[2],
+        eval_plan_labels=eval_encoded[4],
         eval_rows=eval_rows,
         preference_rows=preference_rows,
         source_vocab=source_vocab,
@@ -1127,7 +1228,7 @@ def encode_sft_examples(
     source_vocab: dict[str, int],
     target_vocab: dict[str, int],
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    inputs, labels, mask, _weights = encode_sft_training_examples(
+    inputs, labels, mask, _weights, _plan_labels = encode_sft_training_examples(
         config, examples, source_vocab, target_vocab
     )
     return inputs, labels, mask
@@ -1138,14 +1239,14 @@ def encode_sft_training_examples(
     examples: list[dict[str, Any]],
     source_vocab: dict[str, int],
     target_vocab: dict[str, int],
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     token_cfg = config["tokenization"]
     max_seq = int(token_cfg["max_sequence_tokens"])
     max_source = int(token_cfg["max_source_tokens"])
     max_target = int(token_cfg["max_target_tokens"])
     source_offset = source_token_offset(config, source_vocab)
     target_offset = target_token_offset(config, source_vocab)
-    rows: list[tuple[list[int], int, float]] = []
+    rows: list[tuple[list[int], int, float, tuple[int, ...]]] = []
     for row in examples:
         source_ids, source_receipt = encode_model_source(
             row["source_text"], source_vocab, target_vocab, config
@@ -1169,18 +1270,30 @@ def encode_sft_training_examples(
         sequence.append(target_offset + int(target_vocab["<eos>"]))
         if len(sequence) > max_seq + 1:
             continue
-        rows.append((sequence, target_start - 1, float(row.get("sampling_weight") or 1.0)))
+        plan_labels = semantic_ir.body_to_plan_obligation_labels(str(row["body"]))
+        rows.append(
+            (
+                sequence,
+                target_start - 1,
+                float(row.get("sampling_weight") or 1.0),
+                plan_labels,
+            )
+        )
     inputs = np.zeros((len(rows), max_seq), dtype=np.int32)
     labels = np.zeros((len(rows), max_seq), dtype=np.int32)
     mask = np.zeros((len(rows), max_seq), dtype=np.float32)
     weights = np.ones((len(rows),), dtype=np.float32)
-    for index, (sequence, mask_start, sampling_weight) in enumerate(rows):
+    plan_labels = np.zeros(
+        (len(rows), len(semantic_ir.plan_obligation_features())), dtype=np.float32
+    )
+    for index, (sequence, mask_start, sampling_weight, row_plan_labels) in enumerate(rows):
         width = len(sequence) - 1
         inputs[index, :width] = sequence[:-1]
         labels[index, :width] = sequence[1:]
         mask[index, mask_start:width] = 1.0
         weights[index] = max(0.0, sampling_weight)
-    return inputs, labels, mask, weights
+        plan_labels[index] = np.asarray(row_plan_labels, dtype=np.float32)
+    return inputs, labels, mask, weights, plan_labels
 
 
 def training_target_tokens(body: str, config: dict[str, Any]) -> list[str]:
@@ -1784,11 +1897,135 @@ def build_schedule(optim: Any, mx: Any, cfg: dict[str, Any], total_steps: int) -
     )
 
 
-def causal_loss(model: Any, inputs: Any, labels: Any, mask: Any, mx: Any, nn: Any) -> Any:
-    logits, _cache = model(inputs)
+def semantic_plan_training_contract(config: dict[str, Any]) -> dict[str, Any]:
+    cfg = (
+        config.get("semantic_plan_training")
+        if isinstance(config.get("semantic_plan_training"), dict)
+        else {}
+    )
+    return {
+        "enabled": bool(cfg.get("enabled", False)),
+        "label_mode": str(cfg.get("label_mode") or "none"),
+        "auxiliary_loss_weight": float(cfg.get("auxiliary_loss_weight") or 0.0),
+        "shuffle_seed": int(cfg.get("shuffle_seed") or int(config.get("seed") or 0) + 1709),
+        "target": "fixed_multilabel_semantic_ir_obligations",
+        "inference_source": "prompt_signature_only",
+        "body_target_stream_unchanged": True,
+        "renderer_or_repair_used": False,
+    }
+
+
+def prepare_semantic_plan_labels(
+    labels: np.ndarray | None,
+    *,
+    mode: str,
+    seed: int,
+) -> tuple[np.ndarray | None, dict[str, Any]]:
+    """Prepare the semantic or causally-invalid shuffled control labels."""
+
+    if labels is None or mode == "none":
+        return None, {
+            "label_mode": "none",
+            "row_count": 0,
+            "fixed_point_count": 0,
+            "label_sha256": "",
+        }
+    matrix = np.asarray(labels, dtype=np.float32)
+    if matrix.ndim != 2 or not len(matrix):
+        raise ValueError("semantic plan labels must be a non-empty rank-two matrix")
+    if mode == "semantic":
+        prepared = matrix
+        fixed_points = len(matrix)
+    elif mode == "shuffled":
+        if len(matrix) < 2:
+            raise ValueError("shuffled semantic plan control requires at least two rows")
+        order = np.random.default_rng(seed).permutation(len(matrix))
+        assignment = np.empty_like(order)
+        assignment[order] = np.roll(order, 1)
+        prepared = matrix[assignment]
+        fixed_points = int(np.sum(assignment == np.arange(len(matrix))))
+        if fixed_points:
+            raise AssertionError("semantic plan shuffled control contains fixed points")
+    else:
+        raise ValueError(f"unsupported semantic plan label mode: {mode}")
+    return prepared, {
+        "label_mode": mode,
+        "row_count": len(prepared),
+        "feature_count": int(prepared.shape[1]),
+        "positive_label_count": int(prepared.sum()),
+        "label_density": round(float(prepared.mean()), 8),
+        "fixed_point_count": fixed_points,
+        "label_sha256": hashlib.sha256(prepared.tobytes()).hexdigest(),
+    }
+
+
+def semantic_plan_positive_weights(
+    labels: np.ndarray | None, *, maximum: float = 16.0
+) -> tuple[np.ndarray | None, dict[str, Any]]:
+    """Balance sparse plan obligations without changing row or feature mass."""
+
+    if labels is None:
+        return None, {"state": "NOT_APPLICABLE", "weight_sha256": ""}
+    matrix = np.asarray(labels, dtype=np.float32)
+    positives = matrix.sum(axis=0)
+    negatives = len(matrix) - positives
+    weights = np.ones((matrix.shape[1],), dtype=np.float32)
+    observed = positives > 0
+    weights[observed] = np.clip(
+        negatives[observed] / positives[observed], 1.0, float(maximum)
+    )
+    return weights, {
+        "state": "MEASURED",
+        "feature_count": int(len(weights)),
+        "unobserved_feature_count": int((~observed).sum()),
+        "minimum": round(float(weights.min()), 8),
+        "maximum": round(float(weights.max()), 8),
+        "mean": round(float(weights.mean()), 8),
+        "cap": float(maximum),
+        "weight_sha256": hashlib.sha256(weights.tobytes()).hexdigest(),
+    }
+
+
+def causal_loss(
+    model: Any,
+    inputs: Any,
+    labels: Any,
+    mask: Any,
+    mx: Any,
+    nn: Any,
+    plan_labels: Any | None = None,
+    plan_weight: float = 0.0,
+    plan_positive_weights: Any | None = None,
+) -> Any:
+    if plan_labels is not None and plan_weight > 0.0:
+        logits, _cache, plan_logits = model(inputs, return_plan_logits=True)
+        if plan_logits is None:
+            raise ValueError("semantic plan labels require an enabled learned plan head")
+    else:
+        logits, _cache = model(inputs)
+        plan_logits = None
     token_loss = nn.losses.cross_entropy(logits, labels)
     denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
-    return mx.sum(token_loss * mask) / denominator
+    body_loss = mx.sum(token_loss * mask) / denominator
+    if plan_logits is None:
+        return body_loss
+    plan_targets = plan_labels.astype(mx.float32)
+    softplus_positive = mx.maximum(-plan_logits, 0.0) + mx.log1p(
+        mx.exp(-mx.abs(plan_logits))
+    )
+    softplus_negative = mx.maximum(plan_logits, 0.0) + mx.log1p(
+        mx.exp(-mx.abs(plan_logits))
+    )
+    positive_weights = (
+        plan_positive_weights
+        if plan_positive_weights is not None
+        else mx.ones((plan_logits.shape[-1],), dtype=mx.float32)
+    )
+    plan_loss = mx.mean(
+        (1.0 - plan_targets) * softplus_negative
+        + plan_targets * positive_weights[None, :] * softplus_positive
+    )
+    return body_loss + float(plan_weight) * plan_loss
 
 
 def train_phase(
@@ -1800,6 +2037,10 @@ def train_phase(
     mask: np.ndarray,
     *,
     sample_weights: np.ndarray | None,
+    plan_labels: np.ndarray | None,
+    plan_label_mode: str,
+    plan_auxiliary_weight: float,
+    plan_shuffle_seed: int,
     phase_name: str,
     target_positions: int,
     batch_size: int,
@@ -1818,7 +2059,27 @@ def train_phase(
     matrix_x = mx.array(inputs, dtype=mx.int32)
     matrix_y = mx.array(labels, dtype=mx.int32)
     matrix_mask = mx.array(mask, dtype=mx.float32)
+    prepared_plan_labels, plan_label_receipt = prepare_semantic_plan_labels(
+        plan_labels,
+        mode=plan_label_mode,
+        seed=plan_shuffle_seed,
+    )
+    positive_weights, positive_weight_receipt = semantic_plan_positive_weights(
+        prepared_plan_labels
+    )
+    matrix_plan = (
+        mx.array(prepared_plan_labels, dtype=mx.float32)
+        if prepared_plan_labels is not None
+        else None
+    )
+    matrix_positive_weights = (
+        mx.array(positive_weights, dtype=mx.float32)
+        if positive_weights is not None
+        else None
+    )
     mx.eval(matrix_x, matrix_y, matrix_mask)
+    if matrix_plan is not None:
+        mx.eval(matrix_plan, matrix_positive_weights)
     order = list(range(len(inputs)))
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
     consumed = 0
@@ -1842,7 +2103,18 @@ def train_phase(
             x = matrix_x[take]
             y = matrix_y[take]
             m = matrix_mask[take]
-            loss, grads = loss_and_grad(model, x, y, m, mx, __import__("mlx.nn", fromlist=["nn"]))
+            batch_plan = matrix_plan[take] if matrix_plan is not None else None
+            loss, grads = loss_and_grad(
+                model,
+                x,
+                y,
+                m,
+                mx,
+                __import__("mlx.nn", fromlist=["nn"]),
+                batch_plan,
+                float(plan_auxiliary_weight),
+                matrix_positive_weights,
+            )
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
             mx.eval(model.parameters(), optimizer.state, loss, grad_norm)
@@ -1893,6 +2165,9 @@ def train_phase(
             if probabilities is not None
             else len(inputs)
         ),
+        "semantic_plan_labels": plan_label_receipt,
+        "semantic_plan_auxiliary_weight": float(plan_auxiliary_weight),
+        "semantic_plan_positive_weights": positive_weight_receipt,
         "external_inference_calls": 0,
     }
 
@@ -1936,6 +2211,59 @@ def evaluate_loss(
         weighted += float(loss.item()) * count
         positions += count
     return round(weighted / max(1, positions), 6)
+
+
+def evaluate_semantic_plan_head(
+    model: Any,
+    inputs: np.ndarray,
+    labels: np.ndarray,
+    *,
+    batch_size: int,
+    enabled: bool,
+    mx: Any,
+) -> dict[str, Any]:
+    """Measure source-only plan predictions without feeding target labels to generation."""
+
+    if not enabled:
+        return {"state": "NOT_APPLICABLE", "reason": "semantic_plan_head_disabled"}
+    if not len(inputs) or len(inputs) != len(labels):
+        raise ValueError("semantic plan evaluation requires aligned non-empty inputs and labels")
+    model.eval()
+    logits_rows: list[np.ndarray] = []
+    for start in range(0, len(inputs), batch_size):
+        x = mx.array(inputs[start : start + batch_size], dtype=mx.int32)
+        _token_logits, _cache, plan_logits = model(x, return_plan_logits=True)
+        if plan_logits is None:
+            raise ValueError("semantic plan evaluation requires an enabled learned plan head")
+        mx.eval(plan_logits)
+        logits_rows.append(np.asarray(plan_logits, dtype=np.float32))
+    logits = np.concatenate(logits_rows, axis=0)
+    targets = np.asarray(labels, dtype=np.float32)
+    predictions = logits >= 0.0
+    truth = targets >= 0.5
+    true_positive = int(np.logical_and(predictions, truth).sum())
+    false_positive = int(np.logical_and(predictions, ~truth).sum())
+    false_negative = int(np.logical_and(~predictions, truth).sum())
+    precision = true_positive / max(1, true_positive + false_positive)
+    recall = true_positive / max(1, true_positive + false_negative)
+    binary_loss = (
+        np.maximum(logits, 0.0)
+        - logits * targets
+        + np.log1p(np.exp(-np.abs(logits)))
+    )
+    return {
+        "state": "MEASURED",
+        "row_count": len(targets),
+        "feature_count": int(targets.shape[1]),
+        "binary_cross_entropy": round(float(binary_loss.mean()), 8),
+        "micro_accuracy": round(float((predictions == truth).mean()), 8),
+        "micro_precision": round(float(precision), 8),
+        "micro_recall": round(float(recall), 8),
+        "micro_f1": round(float(2 * precision * recall / max(1e-12, precision + recall)), 8),
+        "exact_row_accuracy": round(float(np.all(predictions == truth, axis=1).mean()), 8),
+        "source_contract": "prompt_signature_only_before_separator",
+        "target_labels_visible_at_inference": False,
+    }
 
 
 def generate_candidates(
@@ -2770,6 +3098,11 @@ def validate_config(config: dict[str, Any]) -> None:
     state_slots = int(model.get("state_memory_slots") or 0)
     state_ablation = str(model.get("state_memory_ablation") or "none")
     state_read_policy = str(model.get("state_memory_read_policy") or "unrestricted")
+    plan_training = semantic_plan_training_contract(config)
+    plan_feature_count = int(model.get("semantic_plan_feature_count") or 0)
+    plan_separator = int(
+        model.get("semantic_plan_separator_token_id", SOURCE_TARGET_SEPARATOR_ID)
+    )
     if state_mode not in {"none", "semantic_roles", "hash_control"}:
         raise ValueError("state memory mode must be none, semantic_roles, or hash_control")
     if state_ablation not in {"none", "zero", "shuffle"}:
@@ -2787,6 +3120,19 @@ def validate_config(config: dict[str, Any]) -> None:
             model.get("state_memory_chunk_size") or 0
         ):
             raise ValueError("state memory local window must cover one complete chunk")
+    if plan_training["enabled"]:
+        if target_mode != "body_tokens":
+            raise ValueError("learned semantic plan head requires the unchanged body-token stream")
+        if plan_feature_count != len(semantic_ir.plan_obligation_features()):
+            raise ValueError("semantic plan feature count must match the fixed registered IR contract")
+        if plan_separator != SOURCE_TARGET_SEPARATOR_ID:
+            raise ValueError("semantic plan head must use the canonical source-target separator")
+        if plan_training["label_mode"] not in {"semantic", "shuffled"}:
+            raise ValueError("semantic plan label mode must be semantic or shuffled")
+        if not 0.0 < plan_training["auxiliary_loss_weight"] <= 4.0:
+            raise ValueError("semantic plan auxiliary loss weight must be in (0, 4]")
+    elif plan_feature_count:
+        raise ValueError("semantic plan model parameters require enabled semantic plan training")
     evaluation = config.get("evaluation") or {}
     if int(evaluation.get("holdout_family_count") or 0) < 24:
         raise ValueError("family-disjoint evaluation requires at least 24 distinct families")
@@ -2980,8 +3326,18 @@ def stage_signature(config: dict[str, Any]) -> str:
         SCRIPTS / "neural_seed_open_vocab.py",
         SCRIPTS / "neural_seed_token_decoder_support.py",
         SCRIPTS / "neural_seed_token_decoder_rendering.py",
+        SCRIPTS / "neural_seed_teacher_distillation_rows.py",
         SCRIPTS / "semantic_ir.py",
     ]
+    teacher_config = (
+        config.get("teacher_distillation")
+        if isinstance(config.get("teacher_distillation"), dict)
+        else {}
+    )
+    for teacher_artifact_key in ("manifest", "gate"):
+        teacher_artifact = str(teacher_config.get(teacher_artifact_key) or "")
+        if teacher_artifact:
+            paths.append(resolve(teacher_artifact))
     paths.extend(admitted_training_source_paths(config))
     stage_config = {
         "seed": config["seed"],
@@ -2992,6 +3348,7 @@ def stage_signature(config: dict[str, Any]) -> str:
             "private_body_sampling_weight": config["training"]["private_body_sampling_weight"],
         },
         "sft_contract_admission": config.get("sft_contract_admission", {}),
+        "teacher_distillation": teacher_config,
         "evaluation": {
             "holdout_family_count": config["evaluation"]["holdout_family_count"],
             "rows_per_family": config["evaluation"]["rows_per_family"],

@@ -77,13 +77,11 @@ contains `35` source receipts and `30` executed external calls, all through
 `codex_cli/gpt-5.5`; the admitted manifest contains `11` receipt-verified
 OpenAI rows and zero provider violations. All `11` admitted rows are currently
 utility-quarantined after a matched negative canary, so the canonical trainer
-assigns them zero sampling mass. A prior narrative claim of a 128-row
-transaction, 250 accepted paraphrases, four Claude receipts, and `$0.471678`
-cost has no corresponding receipt, manifest, ledger, or training artifact and
-is invalid. Claude and Anthropic are forbidden for teacher use and project
-review. Provider identity is recomputed from retained executable/model
-receipts, including nested provenance, rather than accepted from a narrated
-status or a relabelled top-level field.
+assigns them zero sampling mass. No non-OpenAI teacher transaction is supported
+by a receipt, manifest, ledger, or training artifact. Claude and Anthropic are
+forbidden for teacher use and project review. Provider identity is recomputed
+from retained executable/model receipts, including nested provenance, rather
+than accepted from narrated status or a relabelled top-level field.
 
 Phase `10` has a clean 6.6M-parameter MLX decoder-only causal transformer. The
 previous `1/24` floor is invalid because private tests influenced inferred
@@ -675,6 +673,23 @@ candidate-integrity audit remains clean with `0` integrity mismatches while
 explicitly retaining syntax-invalid learned rows as negative candidate
 evidence. The remaining zero-pass semantic-quality wall belongs to the Phase 10
 direct learned proposer and is not hidden by the Phase 13 assisted path.
+The next registered Phase 13 intervention is also complete as a bounded negative.
+`standard_causal_transformer_survival.py` now materializes a fixed 181-feature
+Semantic-IR obligation label for each admitted training body, predicts it only
+from prompt/signature tokens before the source-target separator, and conditions
+the unchanged direct body decoder through a zero-initialized learned residual.
+The matched MLX ablation uses identical `600119` pretraining positions and
+`1201454` SFT body positions for body-only, semantic-label, and deterministic
+no-fixed-point shuffled-label arms. Semantic labels improve heldout plan F1 from
+`0.183857` to `0.595819`, beating shuffled `0.522488`; semantic verifier reward
+is `0.343636` versus shuffled `0.340367` and body-only `0.327523`. Semantic and
+shuffled each cover `16/24` tasks, while body-only covers `14/24`. All three
+remain `0/24` exact and the semantic body loss is slightly worse than both
+controls. Independent integrity and blind-flow audits are GREEN with zero
+mismatches or invalid claims. The survival gate is GREEN as evidence and marks
+the head `NOT_ADOPTED`; the canonical route remains body-only. This moves the
+wall from unordered obligation recognition to ordered learned plan execution
+and body realization, not another scalar auxiliary-loss or deterministic repair.
 The first trainable semantic-slot consumption patch is now in the registered
 MLX private adaptation path rather than a side lane:
 `scripts/strict_generator_mlx_private_adaptation.py` can train/evaluate the
