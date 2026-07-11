@@ -11,6 +11,8 @@ from typing import Any
 
 HARD_ALLOWED_PROVIDERS = frozenset({"openai", "chatgpt", "codex", "codex_cli"})
 HARD_ALLOWED_MODEL_PREFIXES = ("gpt-", "chatgpt", "codex")
+HARD_ALLOWED_LIVE_MODELS = frozenset({"gpt-5.6-sol"})
+HARD_ALLOWED_LIVE_REASONING_EFFORTS = frozenset({"medium", "high"})
 HARD_FORBIDDEN_MARKERS = frozenset({"anthropic", "claude", "haiku", "opus", "sonnet"})
 CODEX_EXECUTABLE_NAMES = frozenset({"codex", "codex.exe"})
 IDENTITY_FIELD_MARKERS = (
@@ -78,16 +80,41 @@ def teacher_launch_decision(
     )
     reject_reasons = list(decision["reject_reasons"])
     provider = decision["provider"]
+    model = decision["model"]
+    reasoning_effort = str(teacher_policy.get("reasoning_effort") or "").strip().lower()
+    approved_live_models = {
+        str(value).strip().lower()
+        for value in provider_policy.get("provider_policy", {}).get("approved_live_models", [])
+    }
+    allowed_reasoning_efforts = {
+        str(value).strip().lower()
+        for value in provider_policy.get("provider_policy", {}).get(
+            "allowed_live_reasoning_efforts", []
+        )
+    }
     configured_command = str(teacher_policy.get("codex_command") or "").strip()
     command_name = configured_command.lower()
     if provider != "codex_cli":
         reject_reasons.append("teacher_oracle_requires_codex_cli_provider")
     if command_name not in CODEX_EXECUTABLE_NAMES:
         reject_reasons.append("teacher_oracle_requires_codex_executable")
+    if (
+        not approved_live_models
+        or model not in approved_live_models
+        or model not in HARD_ALLOWED_LIVE_MODELS
+    ):
+        reject_reasons.append("live_teacher_model_not_approved")
+    if (
+        not allowed_reasoning_efforts
+        or reasoning_effort not in allowed_reasoning_efforts
+        or reasoning_effort not in HARD_ALLOWED_LIVE_REASONING_EFFORTS
+    ):
+        reject_reasons.append("live_teacher_reasoning_effort_not_approved")
     return {
         **decision,
         "accepted": not reject_reasons,
         "configured_command": configured_command,
+        "reasoning_effort": reasoning_effort,
         "reject_reasons": sorted(set(reject_reasons)),
     }
 

@@ -111,6 +111,26 @@ class TeacherProviderPolicyTest(unittest.TestCase):
             disguised_rejected["reject_reasons"],
         )
 
+        stale_model = copy.deepcopy(teacher_policy)
+        stale_model["model"] = "gpt-5.5"
+        stale_rejected = PROVIDER.teacher_launch_decision(self.policy, stale_model)
+        self.assertFalse(stale_rejected["accepted"])
+        self.assertIn("live_teacher_model_not_approved", stale_rejected["reject_reasons"])
+
+        low_effort = copy.deepcopy(teacher_policy)
+        low_effort["reasoning_effort"] = "low"
+        low_effort_rejected = PROVIDER.teacher_launch_decision(self.policy, low_effort)
+        self.assertFalse(low_effort_rejected["accepted"])
+        self.assertIn(
+            "live_teacher_reasoning_effort_not_approved",
+            low_effort_rejected["reject_reasons"],
+        )
+
+        medium_effort = copy.deepcopy(teacher_policy)
+        medium_effort["reasoning_effort"] = "medium"
+        medium_approved = PROVIDER.teacher_launch_decision(self.policy, medium_effort)
+        self.assertTrue(medium_approved["accepted"])
+
     def test_manifest_admits_openai_and_rejects_anthropic(self) -> None:
         approved = SMOKE.build_fixture_call()
         approved_report = MODULE.build_manifest(
@@ -140,14 +160,14 @@ class TeacherProviderPolicyTest(unittest.TestCase):
     def test_real_receipt_binds_codex_executable_and_model(self) -> None:
         row = {
             "provider": "codex_cli",
-            "model": "gpt-5.5",
+            "model": "gpt-5.6-sol",
             "status": "completed",
             "external_inference_calls": 1,
             "command": [
                 "/Applications/Codex.app/Contents/Resources/codex",
                 "exec",
                 "-m",
-                "gpt-5.5",
+                "gpt-5.6-sol",
                 "-s",
                 "read-only",
                 "-",
@@ -156,16 +176,16 @@ class TeacherProviderPolicyTest(unittest.TestCase):
         result = PROVIDER.teacher_receipt_decision(self.policy, row)
         self.assertTrue(result["accepted"])
         self.assertEqual("codex", result["executable"])
-        self.assertEqual("gpt-5.5", result["command_model"])
+        self.assertEqual("gpt-5.6-sol", result["command_model"])
         self.assertTrue(result["command_sha256"])
 
     def test_relabelled_non_openai_receipt_is_rejected(self) -> None:
         row = {
             "provider": "codex_cli",
-            "model": "gpt-5.5",
+            "model": "gpt-5.6-sol",
             "status": "completed",
             "external_inference_calls": 1,
-            "command": ["claude", "exec", "-m", "gpt-5.5", "-"],
+            "command": ["claude", "exec", "-m", "gpt-5.6-sol", "-"],
         }
         result = PROVIDER.teacher_receipt_decision(self.policy, row)
         self.assertFalse(result["accepted"])
@@ -175,7 +195,7 @@ class TeacherProviderPolicyTest(unittest.TestCase):
     def test_real_receipt_without_command_fails_closed(self) -> None:
         row = {
             "provider": "codex_cli",
-            "model": "gpt-5.5",
+            "model": "gpt-5.6-sol",
             "status": "completed",
             "external_inference_calls": 1,
         }
@@ -186,7 +206,7 @@ class TeacherProviderPolicyTest(unittest.TestCase):
     def test_receipt_model_must_match_command(self) -> None:
         row = {
             "provider": "codex_cli",
-            "model": "gpt-5.5",
+            "model": "gpt-5.6-sol",
             "status": "completed",
             "external_inference_calls": 1,
             "command": ["codex", "exec", "-m", "gpt-5.4", "-"],
@@ -198,10 +218,10 @@ class TeacherProviderPolicyTest(unittest.TestCase):
     def test_relabelled_nested_provider_provenance_is_rejected(self) -> None:
         row = {
             "provider": "codex_cli",
-            "model": "gpt-5.5",
+            "model": "gpt-5.6-sol",
             "status": "completed",
             "external_inference_calls": 1,
-            "command": ["codex", "exec", "-m", "gpt-5.5", "-"],
+            "command": ["codex", "exec", "-m", "gpt-5.6-sol", "-"],
             "transport_receipt": {
                 "upstream_provider": "anthropic",
                 "upstream_model": "claude-sonnet",
@@ -218,15 +238,15 @@ class TeacherProviderPolicyTest(unittest.TestCase):
     def test_external_audit_recomputes_teacher_provider_summary(self) -> None:
         approved = {
             "provider": "codex_cli",
-            "model": "gpt-5.5",
+            "model": "gpt-5.6-sol",
             "status": "completed",
             "external_inference_calls": 1,
-            "command": ["codex", "exec", "-m", "gpt-5.5", "-"],
+            "command": ["codex", "exec", "-m", "gpt-5.6-sol", "-"],
         }
         violations, summary = AUDIT.audit_teacher_receipt_rows([approved], self.policy)
         self.assertEqual([], violations)
         self.assertEqual(1, summary["scanned_teacher_receipts"])
-        self.assertEqual({"codex_cli/gpt-5.5": 1}, summary["teacher_provider_counts"])
+        self.assertEqual({"codex_cli/gpt-5.6-sol": 1}, summary["teacher_provider_counts"])
         self.assertEqual(1, summary["verified_external_teacher_calls"])
 
         forbidden = copy.deepcopy(approved)
@@ -308,7 +328,7 @@ class TeacherProviderPolicyTest(unittest.TestCase):
             "source_kind": "teacher_distillation",
             "accepted": True,
             "teacher_provider": "codex_cli",
-            "teacher_model": "gpt-5.5",
+            "teacher_model": "gpt-5.6-sol",
         }
         violations = GATE.teacher_ledger_provider_violations(
             self.policy,

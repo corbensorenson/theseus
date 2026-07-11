@@ -1866,7 +1866,7 @@ def test_teacher_residual_ablation_requires_exact_private_behavior_gain(tmp_path
                 "ok": True,
                 "summary": {
                     "teacher_receipt_violations": 0,
-                    "teacher_provider_counts": {"codex_cli/gpt-5.5": 2},
+                    "teacher_provider_counts": {"codex_cli/gpt-5.6-sol": 2},
                 },
             }
         ),
