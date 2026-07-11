@@ -72,6 +72,15 @@ because recursive synthetic share is `0.824771`; this is a
 curriculum-distribution warning, not a model-collapse, forgetting, unlearning,
 or capability claim.
 
+Teacher-provider correction: the active retained teacher-call log contains `12`
+calls, all through `codex_cli/gpt-5.5`; the admitted manifest contains `3`
+OpenAI rows. A prior narrative claim of a 128-row transaction, 250 accepted
+paraphrases, four Claude receipts, and `$0.471678` cost has no corresponding
+receipt, manifest, ledger, or training artifact and is invalid. Claude and
+Anthropic are forbidden for teacher use and project review. Provider identity
+is now recomputed from retained receipts, including nested provenance, rather
+than accepted from a narrated status or a relabelled top-level field.
+
 Phase `10` has a clean 6.6M-parameter MLX decoder-only causal transformer. The
 previous `1/24` floor is invalid because private tests influenced inferred
 callable arity. The next audit found that split-vocabulary source IDs were also

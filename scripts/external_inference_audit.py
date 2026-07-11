@@ -16,9 +16,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from teacher_provider_policy import teacher_receipt_decision
+from theseus_archive_resolver import read_jsonl_follow_pointer
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
+TEACHER_POLICY_PATH = ROOT / "configs" / "teacher_distillation_policy.json"
+TEACHER_CALLS_PATH = REPORTS / "teacher_calls.jsonl"
 REPORT_JSON_PARSE_MAX_BYTES = 8 * 1024 * 1024
 REPORT_EXTERNAL_KEYS = (
     b'"external_inference_calls"',
@@ -129,7 +134,8 @@ def main() -> int:
         if args.scan_reports
         else ([], {"scanned_report_files": 0, "skipped_large_report_files": 0})
     )
-    all_violations = violations + report_violations
+    teacher_receipt_violations, teacher_receipt_scan = scan_teacher_receipts()
+    all_violations = violations + report_violations + teacher_receipt_violations
     allowed_teacher_hits = [hit for hit in code_hits if hit["classification"] == "allowed_teacher"]
     benign_hits = [hit for hit in code_hits if hit["classification"].startswith("benign")]
 
@@ -154,8 +160,10 @@ def main() -> int:
             "benign_metadata_or_policy_hits": len(benign_hits),
             "code_violations": len(violations),
             "report_violations": len(report_violations),
+            "teacher_receipt_violations": len(teacher_receipt_violations),
             "total_violations": len(all_violations),
             **report_scan,
+            **teacher_receipt_scan,
         },
         "allowed_teacher_surfaces": [
             {
@@ -172,6 +180,62 @@ def main() -> int:
     write_json(ROOT / args.out, payload)
     print(json.dumps(payload, indent=2))
     return 0 if payload["ok"] else 2
+
+
+def scan_teacher_receipts() -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    policy = read_json(TEACHER_POLICY_PATH)
+    rows = read_jsonl_follow_pointer(TEACHER_CALLS_PATH)
+    if not isinstance(policy, dict):
+        return [
+            {
+                "path": as_posix(TEACHER_POLICY_PATH.relative_to(ROOT)),
+                "kind": "teacher_provider_policy_missing_or_invalid",
+                "classification": "violation",
+            }
+        ], {"scanned_teacher_receipts": 0, "teacher_provider_counts": {}}
+    return audit_teacher_receipt_rows(rows, policy)
+
+
+def audit_teacher_receipt_rows(
+    rows: list[Any], policy: dict[str, Any]
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    violations: list[dict[str, Any]] = []
+    provider_counts: dict[str, int] = {}
+    scanned = 0
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            violations.append(
+                {
+                    "path": as_posix(TEACHER_CALLS_PATH.relative_to(ROOT)),
+                    "kind": "teacher_receipt_not_object",
+                    "row_index": index,
+                    "classification": "violation",
+                }
+            )
+            continue
+        scanned += 1
+        provider = str(row.get("provider") or "missing").strip().lower()
+        model = str(row.get("model") or "missing").strip().lower()
+        provider_key = f"{provider}/{model}"
+        provider_counts[provider_key] = provider_counts.get(provider_key, 0) + 1
+        decision = teacher_receipt_decision(policy, row)
+        if not decision["accepted"]:
+            violations.append(
+                {
+                    "path": as_posix(TEACHER_CALLS_PATH.relative_to(ROOT)),
+                    "kind": "teacher_receipt_provider_provenance_invalid",
+                    "row_index": index,
+                    "request_id": row.get("request_id"),
+                    "provider": provider,
+                    "model": model,
+                    "reject_reasons": decision["reject_reasons"],
+                    "classification": "violation",
+                }
+            )
+    return violations, {
+        "scanned_teacher_receipts": scanned,
+        "teacher_provider_counts": dict(sorted(provider_counts.items())),
+    }
 
 
 def scan_code(files: list[Path]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:

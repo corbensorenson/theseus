@@ -193,6 +193,48 @@ class TeacherProviderPolicyTest(unittest.TestCase):
         self.assertFalse(result["accepted"])
         self.assertIn("external_teacher_receipt_model_mismatch", result["reject_reasons"])
 
+    def test_relabelled_nested_provider_provenance_is_rejected(self) -> None:
+        row = {
+            "provider": "codex_cli",
+            "model": "gpt-5.5",
+            "status": "completed",
+            "external_inference_calls": 1,
+            "command": ["codex", "exec", "-m", "gpt-5.5", "-"],
+            "transport_receipt": {
+                "upstream_provider": "anthropic",
+                "upstream_model": "claude-sonnet",
+            },
+        }
+        result = PROVIDER.teacher_receipt_decision(self.policy, row)
+        self.assertFalse(result["accepted"])
+        self.assertIn(
+            "forbidden_teacher_identity_in_receipt_provenance",
+            result["reject_reasons"],
+        )
+        self.assertEqual(2, len(result["forbidden_identity_values"]))
+
+    def test_external_audit_recomputes_teacher_provider_summary(self) -> None:
+        approved = {
+            "provider": "codex_cli",
+            "model": "gpt-5.5",
+            "status": "completed",
+            "external_inference_calls": 1,
+            "command": ["codex", "exec", "-m", "gpt-5.5", "-"],
+        }
+        violations, summary = AUDIT.audit_teacher_receipt_rows([approved], self.policy)
+        self.assertEqual([], violations)
+        self.assertEqual(1, summary["scanned_teacher_receipts"])
+        self.assertEqual({"codex_cli/gpt-5.5": 1}, summary["teacher_provider_counts"])
+
+        forbidden = copy.deepcopy(approved)
+        forbidden["provider_metadata"] = {"vendor": "Anthropic"}
+        violations, _summary = AUDIT.audit_teacher_receipt_rows([forbidden], self.policy)
+        self.assertEqual(1, len(violations))
+        self.assertIn(
+            "forbidden_teacher_identity_in_receipt_provenance",
+            violations[0]["reject_reasons"],
+        )
+
     def test_gate_rejects_accepted_teacher_ledger_row_without_receipt_proof(self) -> None:
         row = {
             "ledger_event_id": "unproven_teacher_row",

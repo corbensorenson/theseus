@@ -13,6 +13,15 @@ HARD_ALLOWED_PROVIDERS = frozenset({"openai", "chatgpt", "codex", "codex_cli"})
 HARD_ALLOWED_MODEL_PREFIXES = ("gpt-", "chatgpt", "codex")
 HARD_FORBIDDEN_MARKERS = frozenset({"anthropic", "claude", "haiku", "opus", "sonnet"})
 CODEX_EXECUTABLE_NAMES = frozenset({"codex", "codex.exe"})
+IDENTITY_FIELD_MARKERS = (
+    "provider",
+    "vendor",
+    "model",
+    "executable",
+    "command",
+    "endpoint",
+    "api_base",
+)
 
 
 def teacher_provider_decision(policy: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
@@ -130,6 +139,10 @@ def teacher_receipt_decision(
         if any(marker in combined_command for marker in HARD_FORBIDDEN_MARKERS):
             reject_reasons.append("forbidden_teacher_executable_or_argument")
 
+    forbidden_identity_values = _forbidden_identity_values(row)
+    if forbidden_identity_values:
+        reject_reasons.append("forbidden_teacher_identity_in_receipt_provenance")
+
     return {
         **decision,
         "accepted": not reject_reasons,
@@ -138,6 +151,7 @@ def teacher_receipt_decision(
         "command_sha256": command_sha256,
         "executable": Path(command[0]).name if command else "",
         "command_model": _command_option(command, "-m") if command else "",
+        "forbidden_identity_values": forbidden_identity_values,
         "reject_reasons": sorted(set(reject_reasons)),
     }
 
@@ -160,3 +174,34 @@ def _command_option(command: list[str], option: str) -> str:
     except ValueError:
         return ""
     return command[index + 1] if index + 1 < len(command) else ""
+
+
+def _forbidden_identity_values(value: Any, path: tuple[str, ...] = ()) -> list[str]:
+    """Find forbidden vendors/models in identity-bearing receipt metadata.
+
+    Response and prompt text are intentionally excluded: a valid OpenAI teacher
+    may discuss another provider. Provider provenance may not be relabelled or
+    hidden in a nested receipt, usage, or transport object.
+    """
+
+    findings: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            key_text = str(key).strip().lower()
+            child_path = (*path, key_text)
+            identity_field = any(marker in key_text for marker in IDENTITY_FIELD_MARKERS)
+            if identity_field and isinstance(child, (str, int, float, bool)):
+                child_text = str(child).strip().lower()
+                if any(marker in child_text for marker in HARD_FORBIDDEN_MARKERS):
+                    findings.append(f"{'.'.join(child_path)}={child_text[:120]}")
+            elif identity_field and isinstance(child, list):
+                child_text = " ".join(str(item) for item in child).strip().lower()
+                if any(marker in child_text for marker in HARD_FORBIDDEN_MARKERS):
+                    findings.append(f"{'.'.join(child_path)}={child_text[:120]}")
+            if isinstance(child, (dict, list)):
+                findings.extend(_forbidden_identity_values(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            if isinstance(child, (dict, list)):
+                findings.extend(_forbidden_identity_values(child, (*path, str(index))))
+    return sorted(set(findings))
