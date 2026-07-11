@@ -45,6 +45,11 @@ DEFAULT_STATE_ROLE_READ_ARM_DIRS = {
     "zero": ROOT / "runtime" / "standard_causal_transformer_state_role_read_zero_replay",
     "shuffle": ROOT / "runtime" / "standard_causal_transformer_state_role_read_shuffle_replay",
 }
+DEFAULT_STATE_CONTINUATION_ARM_DIRS = {
+    "body_only": ROOT / "runtime" / "standard_causal_transformer_body_only_continuation",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_state_semantic_continuation",
+    "hash_control": ROOT / "runtime" / "standard_causal_transformer_state_hash_control_continuation",
+}
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -122,6 +127,8 @@ def build_gate(
     hard_gaps.extend(state_memory_audit["hard_gaps"])
     state_role_read_audit = audit_state_memory_ablation(DEFAULT_STATE_ROLE_READ_ARM_DIRS)
     hard_gaps.extend(state_role_read_audit["hard_gaps"])
+    state_continuation_audit = audit_state_memory_continuation(DEFAULT_STATE_CONTINUATION_ARM_DIRS)
+    hard_gaps.extend(state_continuation_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -296,6 +303,10 @@ def build_gate(
             "state_role_read_adoption_state": state_role_read_audit["adoption_state"],
             "state_role_read_rejection_reasons": state_role_read_audit["adoption_rejection_reasons"],
             "state_role_read_deltas": state_role_read_audit["deltas"],
+            "state_continuation_state": state_continuation_audit["state"],
+            "state_continuation_adoption_state": state_continuation_audit["adoption_state"],
+            "state_continuation_rejection_reasons": state_continuation_audit["adoption_rejection_reasons"],
+            "state_continuation_deltas": state_continuation_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -311,6 +322,195 @@ def build_gate(
         "sft_contract_admission_ablation": sft_contract_audit["receipt"],
         "state_memory_ablation": state_memory_audit["receipt"],
         "state_role_read_ablation": state_role_read_audit["receipt"],
+        "state_continuation": state_continuation_audit["receipt"],
+    }
+
+
+def audit_state_memory_continuation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
+    required_arms = {"body_only", "semantic", "hash_control"}
+    required_files = ("report.json", "config.json", "candidates.jsonl", "integrity.json", "blind_audit.json")
+    if set(arm_dirs) != required_arms:
+        return {
+            "state": "RED",
+            "adoption_state": "NOT_ADOPTED",
+            "adoption_rejection_reasons": ["arm_set_mismatch"],
+            "deltas": {},
+            "receipt": {"state": "RED"},
+            "hard_gaps": [gap("state_continuation_arm_set_mismatch", {"observed": sorted(arm_dirs)})],
+        }
+    missing = [
+        rel(directory / filename)
+        for directory in arm_dirs.values()
+        for filename in required_files
+        if not (directory / filename).exists()
+    ]
+    if missing:
+        return {
+            "state": "NOT_RUN",
+            "adoption_state": "NOT_RUN",
+            "adoption_rejection_reasons": [],
+            "deltas": {},
+            "receipt": {"state": "NOT_RUN", "missing": missing},
+            "hard_gaps": [],
+        }
+    reports = {name: read_json(path / "report.json") for name, path in arm_dirs.items()}
+    configs = {name: read_json(path / "config.json") for name, path in arm_dirs.items()}
+    integrities = {name: read_json(path / "integrity.json") for name, path in arm_dirs.items()}
+    blind = {name: read_json(path / "blind_audit.json") for name, path in arm_dirs.items()}
+    prior_paths = {
+        name: resolve(str((report.get("artifacts") or {}).get("prior_training_receipt") or ""))
+        for name, report in reports.items()
+    }
+    priors = {name: read_json(path) for name, path in prior_paths.items()}
+    hard_gaps: list[dict[str, Any]] = []
+    state_keys = {
+        "state_memory_slots", "state_memory_chunk_size", "state_memory_local_window",
+        "state_memory_mode", "state_memory_ablation", "state_memory_read_policy",
+    }
+
+    def normalized_config(value: dict[str, Any]) -> dict[str, Any]:
+        copy = json.loads(json.dumps(value))
+        for key in state_keys:
+            (copy.get("model") or {}).pop(key, None)
+        return copy
+
+    configs_equal = len({json.dumps(normalized_config(value), sort_keys=True) for value in configs.values()}) == 1
+    expected_modes = {"body_only": "none", "semantic": "semantic_roles", "hash_control": "hash_control"}
+    modes_correct = all(
+        str((configs[name].get("model") or {}).get("state_memory_mode") or "none") == mode
+        for name, mode in expected_modes.items()
+    )
+    stages_equal = len({str((report.get("stage") or {}).get("stage_signature") or "") for report in reports.values()}) == 1
+    parameter_counts = {
+        name: int((report.get("architecture") or {}).get("parameter_count") or 0)
+        for name, report in reports.items()
+    }
+    state_parameters_equal = parameter_counts["semantic"] == parameter_counts["hash_control"] > 0
+
+    def phase_positions(report: dict[str, Any]) -> tuple[int, int]:
+        rows = [row for row in (report.get("training") or {}).get("phases", []) if isinstance(row, dict)]
+        total = sum(int(row.get("optimizer_body_positions_consumed") or 0) for row in rows)
+        continuation = sum(
+            int(row.get("optimizer_body_positions_consumed") or 0)
+            for row in rows
+            if str(row.get("phase") or "").endswith("_continuation")
+        )
+        return total, continuation
+
+    positions = {name: phase_positions(report) for name, report in reports.items()}
+    exposure_equal = len(set(positions.values())) == 1 and next(iter(positions.values()))[1] > 0
+    prior_bound = all(path.exists() and bool(priors[name]) for name, path in prior_paths.items())
+    resume_hash_bound = all(
+        (
+            lambda checkpoint, expected: checkpoint.exists()
+            and file_sha256(checkpoint) == expected
+        )(
+            resolve(str((priors[name].get("artifacts") or {}).get("checkpoint") or "")),
+            str((reports[name].get("conditioning") or {}).get("resume_base_checkpoint_sha256") or ""),
+        )
+        for name in required_arms
+    )
+    integrity_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("integrity_mismatch_count") or 0) == 0
+        and resolve(str(value.get("source") or "")) == arm_dirs[name] / "candidates.jsonl"
+        and int((value.get("summary") or {}).get("candidate_count") or 0)
+        == len(read_jsonl(arm_dirs[name] / "candidates.jsonl"))
+        for name, value in integrities.items()
+    )
+    blind_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("invalid_claim_count") or 0) == 0
+        for value in blind.values()
+    )
+    boundaries_clean = all(
+        int(report.get(key) or 0) == 0
+        for report in reports.values()
+        for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
+    )
+    checks = {
+        "configs_equal_except_state_policy": configs_equal,
+        "modes_expected": modes_correct,
+        "stage_signature_equal": stages_equal,
+        "state_parameter_counts_equal": state_parameters_equal,
+        "body_exposure_equal": exposure_equal,
+        "prior_receipts_bound": prior_bound,
+        "resume_checkpoint_hashes_present": resume_hash_bound,
+        "integrity_clean": integrity_clean,
+        "blind_information_flow_clean": blind_clean,
+        "boundaries_clean": boundaries_clean,
+    }
+    for name, passed in checks.items():
+        if not passed:
+            hard_gaps.append(gap(f"state_continuation_{name}_failed", {}))
+
+    def metrics(report: dict[str, Any]) -> dict[str, Any]:
+        summary = report.get("summary") or {}
+        private = (report.get("private_verifier") or {}).get("private_verification") or {}
+        return {
+            "passed_task_count": int(summary.get("model_only_passed_task_count") or 0),
+            "candidate_task_count": int(summary.get("candidate_task_count") or 0),
+            "candidate_count": int(summary.get("candidate_count") or 0),
+            "mean_verification_reward": float(private.get("mean_verification_reward") or 0.0),
+            "eval_loss_after": float((report.get("training") or {}).get("eval_loss_after") or 0.0),
+            "decode_runtime_ms": int((report.get("decode") or {}).get("runtime_ms") or 0),
+        }
+
+    current = {name: metrics(report) for name, report in reports.items()}
+    previous = {name: metrics(report) for name, report in priors.items()}
+    deltas = {
+        name: {key: round(float(current[name][key]) - float(previous[name][key]), 6) for key in current[name]}
+        for name in required_arms
+    }
+    semantic = current["semantic"]
+    exact_gain = semantic["passed_task_count"] > previous["semantic"]["passed_task_count"]
+    control_gain = semantic["passed_task_count"] > max(
+        current["body_only"]["passed_task_count"], current["hash_control"]["passed_task_count"]
+    )
+    loss_improved = semantic["eval_loss_after"] < previous["semantic"]["eval_loss_after"]
+    adoption_state = "ADOPTED" if not hard_gaps and exact_gain and control_gain and loss_improved else "NOT_ADOPTED"
+    rejection_reasons = []
+    if not exact_gain:
+        rejection_reasons.append("no_continuation_verifier_pass_gain")
+    if not control_gain:
+        rejection_reasons.append("no_exact_gain_over_matched_controls")
+    if not loss_improved:
+        rejection_reasons.append("semantic_heldout_loss_worsened")
+    artifacts = {
+        arm: {
+            filename: {
+                "path": rel(directory / filename),
+                "sha256": file_sha256(directory / filename),
+                "bytes": (directory / filename).stat().st_size,
+            }
+            for filename in required_files
+        }
+        for arm, directory in arm_dirs.items()
+    }
+    receipt = {
+        "state": "GREEN" if not hard_gaps else "RED",
+        "adoption_state": adoption_state,
+        "adoption_rejection_reasons": rejection_reasons,
+        "matched_checks": checks,
+        "optimizer_body_positions": positions,
+        "parameter_counts": parameter_counts,
+        "prior_metrics": previous,
+        "continuation_metrics": current,
+        "deltas": deltas,
+        "artifacts": artifacts,
+        "decision": "stop_state_scaling_branch" if adoption_state == "NOT_ADOPTED" else "qualify_shadow_only",
+        "non_claims": [
+            "partial reward movement without an exact pass is not capability promotion",
+            "continuation evidence does not authorize preference/RL or public calibration",
+        ],
+    }
+    return {
+        "state": receipt["state"],
+        "adoption_state": adoption_state,
+        "adoption_rejection_reasons": rejection_reasons,
+        "deltas": deltas,
+        "receipt": receipt,
+        "hard_gaps": hard_gaps,
     }
 
 

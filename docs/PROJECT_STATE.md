@@ -154,7 +154,15 @@ All arms remain `0/24`; four additional integrity/blind-flow audits are GREEN.
 The gate records `NOT_ADOPTED` with three reasons: no verifier-pass gain, zero
 memory did not degrade, and role shuffle did not degrade. Restricting reads by
 the hand-specified role graph is therefore a retained negative, not the state
-memory default.
+memory default. One predeclared continuation rung then adds exactly `1,200,725`
+body positions to semantic state, hash state, and body-only checkpoints. Every
+arm remains `0/24` and every heldout loss worsens: semantic
+`1.623448 -> 1.667523`, hash `1.668364 -> 1.676777`, and body-only
+`1.737719 -> 1.748454`. Semantic partial reward rises to `0.449635`, but
+coverage falls `24 -> 23`; hash reaches `0.415625`, while body-only remains
+`0.401639`. Three more integrity/blind-flow audits are GREEN. The independent
+gate records `NOT_ADOPTED` and `stop_state_scaling_branch`; more same-data state
+training is no longer authorized by this evidence.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.

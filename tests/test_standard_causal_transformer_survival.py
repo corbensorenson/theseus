@@ -68,6 +68,7 @@ from standard_causal_transformer_survival_gate import (
     audit_preference_canary,
     audit_sft_contract_admission,
     audit_state_memory_ablation,
+    audit_state_memory_continuation,
     audit_target_mode_comparison,
 )
 from generation_mode_gate import audit_comparison, read_report_ref
@@ -718,6 +719,95 @@ def test_state_memory_ablation_requires_behavior_gain_and_both_causal_controls(
     assert rejected["state"] == "GREEN"
     assert rejected["adoption_state"] == "NOT_ADOPTED"
     assert "role_shuffle_did_not_causally_degrade" in rejected["adoption_rejection_reasons"]
+
+
+def test_state_continuation_requires_exact_gain_and_improved_loss(tmp_path: Path) -> None:
+    modes = {"body_only": "none", "semantic": "semantic_roles", "hash_control": "hash_control"}
+    arm_dirs: dict[str, Path] = {}
+    for name, mode in modes.items():
+        directory = tmp_path / name
+        directory.mkdir()
+        arm_dirs[name] = directory
+        model = {"d_model": 32}
+        if mode != "none":
+            model.update(
+                {
+                    "state_memory_slots": 8,
+                    "state_memory_chunk_size": 4,
+                    "state_memory_local_window": 8,
+                    "state_memory_mode": mode,
+                    "state_memory_ablation": "none",
+                    "state_memory_read_policy": "unrestricted",
+                }
+            )
+        (directory / "config.json").write_text(
+            json.dumps({"seed": 1, "model": model, "training": {"positions": 200}}), encoding="utf-8"
+        )
+        candidate_path = directory / "candidates.jsonl"
+        candidate_path.write_text("{}\n", encoding="utf-8")
+        prior_checkpoint = directory / "prior.npz"
+        prior_checkpoint.write_bytes(name.encode())
+        prior_report = directory / "prior.json"
+        prior_report.write_text(
+            json.dumps(
+                {
+                    "artifacts": {"checkpoint": str(prior_checkpoint)},
+                    "summary": {"model_only_passed_task_count": 0, "candidate_task_count": 20, "candidate_count": 60},
+                    "private_verifier": {"private_verification": {"mean_verification_reward": 0.4}},
+                    "training": {"eval_loss_after": 1.5},
+                    "decode": {"runtime_ms": 20},
+                }
+            ),
+            encoding="utf-8",
+        )
+        passed = 1 if name == "semantic" else 0
+        loss = 1.2 if name == "semantic" else 1.4
+        report = {
+            "artifacts": {"prior_training_receipt": str(prior_report)},
+            "architecture": {"parameter_count": 200 if mode != "none" else 150},
+            "conditioning": {"resume_base_checkpoint_sha256": hashlib.sha256(prior_checkpoint.read_bytes()).hexdigest()},
+            "stage": {"stage_signature": "same"},
+            "training": {
+                "eval_loss_after": loss,
+                "phases": [
+                    {"phase": "prompt_signature_body_sft", "optimizer_body_positions_consumed": 100},
+                    {"phase": "prompt_signature_body_sft_continuation", "optimizer_body_positions_consumed": 100},
+                ],
+            },
+            "summary": {"model_only_passed_task_count": passed, "candidate_task_count": 21, "candidate_count": 70},
+            "private_verifier": {"private_verification": {"mean_verification_reward": 0.5}},
+            "decode": {"runtime_ms": 10},
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+        (directory / "report.json").write_text(json.dumps(report), encoding="utf-8")
+        (directory / "integrity.json").write_text(
+            json.dumps(
+                {
+                    "source": str(candidate_path),
+                    "trigger_state": "GREEN",
+                    "summary": {"candidate_count": 1, "integrity_mismatch_count": 0},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (directory / "blind_audit.json").write_text(
+            json.dumps({"trigger_state": "GREEN", "summary": {"invalid_claim_count": 0}}), encoding="utf-8"
+        )
+
+    adopted = audit_state_memory_continuation(arm_dirs)
+    assert adopted["state"] == "GREEN"
+    assert adopted["adoption_state"] == "ADOPTED"
+
+    semantic_path = arm_dirs["semantic"] / "report.json"
+    semantic = json.loads(semantic_path.read_text())
+    semantic["training"]["eval_loss_after"] = 1.6
+    semantic_path.write_text(json.dumps(semantic), encoding="utf-8")
+    rejected = audit_state_memory_continuation(arm_dirs)
+    assert rejected["state"] == "GREEN"
+    assert rejected["adoption_state"] == "NOT_ADOPTED"
+    assert "semantic_heldout_loss_worsened" in rejected["adoption_rejection_reasons"]
 
 
 def test_candidate_integrity_recomputes_direct_plan_body_trace_instead_of_trusting_flags() -> None:
