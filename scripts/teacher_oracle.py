@@ -24,6 +24,12 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+from teacher_provider_policy import teacher_launch_decision  # noqa: E402
+
 DEFAULT_POLICY = ROOT / "configs" / "teacher_policy.json"
 DEFAULT_CODEX_MIRROR = Path.home() / ".codex" / "external-bin" / "codex.exe"
 MAX_EVIDENCE_CHARS = 3200
@@ -117,6 +123,22 @@ def main() -> int:
     args = parser.parse_args()
 
     policy = read_json(ROOT / args.policy)
+    provider_policy_path = resolve_path(
+        policy.get("provider_policy_path", "configs/teacher_distillation_policy.json")
+    )
+    provider_policy = read_json(provider_policy_path)
+    launch_decision = teacher_launch_decision(provider_policy, policy)
+    if not launch_decision["accepted"]:
+        blocked = {
+            "status": "blocked_by_teacher_policy",
+            "blocked_reason": "teacher_provider_or_executable_forbidden",
+            "provider_policy_path": rel(provider_policy_path),
+            "provider_decision": launch_decision,
+            "external_inference_calls": 0,
+        }
+        write_json(ROOT / args.out, blocked)
+        print(json.dumps(blocked, indent=2))
+        return 1
     mode = args.mode or policy.get("default_mode", "proposal")
     request = build_request(policy, args, mode)
     if mode == "apply" and not bool((policy.get("budget") or {}).get("apply_mode_enabled", False)):

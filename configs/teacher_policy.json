@@ -2,6 +2,7 @@
   "policy": "sparkstream_teacher_oracle_v0",
   "provider": "codex_cli",
   "model": "gpt-5.5",
+  "provider_policy_path": "configs/teacher_distillation_policy.json",
   "reasoning_effort": "xhigh",
   "default_mode": "proposal",
   "proposal_sandbox": "read-only",

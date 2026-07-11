@@ -30,6 +30,7 @@ if str(SCRIPTS) not in sys.path:
 
 from code_lm_private_verifier import evaluate_private_candidates  # noqa: E402
 from neural_seed_code_proposer_comparator import render_private_function  # noqa: E402
+from teacher_provider_policy import teacher_provider_decision  # noqa: E402
 from theseus_archive_resolver import read_jsonl_follow_pointer  # noqa: E402
 
 REQUIRED_ADMISSION_KEYS = [
@@ -445,41 +446,6 @@ def candidate_admission_decision(
         "holdout_overlap_hits": holdout_hits,
         "local_verifier": local_verifier,
         "teacher_provider": provider,
-    }
-
-
-def teacher_provider_decision(policy: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
-    """Independently enforce the OpenAI-only governed-teacher boundary."""
-
-    provider_policy = policy.get("provider_policy") if isinstance(policy.get("provider_policy"), dict) else {}
-    provider = str(row.get("provider") or "").strip().lower()
-    model = str(row.get("model") or "").strip().lower()
-    allowed_providers = {str(value).strip().lower() for value in provider_policy.get("allowed_providers", [])}
-    allowed_prefixes = tuple(
-        str(value).strip().lower() for value in provider_policy.get("allowed_model_prefixes", [])
-    )
-    forbidden_markers = {
-        str(value).strip().lower() for value in provider_policy.get("forbidden_markers", [])
-    }
-    reject_reasons: list[str] = []
-    if provider_policy.get("fail_closed") is not True:
-        reject_reasons.append("teacher_provider_policy_not_fail_closed")
-    if provider_policy.get("require_explicit_provider") is not True or not provider:
-        reject_reasons.append("teacher_provider_missing")
-    if provider_policy.get("require_explicit_model") is not True or not model:
-        reject_reasons.append("teacher_model_missing")
-    if provider not in allowed_providers:
-        reject_reasons.append("teacher_provider_not_approved")
-    if not allowed_prefixes or not model.startswith(allowed_prefixes):
-        reject_reasons.append("teacher_model_not_approved")
-    combined = f"{provider} {model}"
-    if any(marker and marker in combined for marker in forbidden_markers):
-        reject_reasons.append("forbidden_teacher_provider_or_model")
-    return {
-        "accepted": not reject_reasons,
-        "provider": provider,
-        "model": model,
-        "reject_reasons": sorted(set(reject_reasons)),
     }
 
 

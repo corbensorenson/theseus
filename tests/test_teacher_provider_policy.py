@@ -33,6 +33,14 @@ assert AUDIT_SPEC and AUDIT_SPEC.loader
 AUDIT = importlib.util.module_from_spec(AUDIT_SPEC)
 AUDIT_SPEC.loader.exec_module(AUDIT)
 
+PROVIDER_SPEC = importlib.util.spec_from_file_location(
+    "teacher_provider_policy",
+    ROOT / "scripts" / "teacher_provider_policy.py",
+)
+assert PROVIDER_SPEC and PROVIDER_SPEC.loader
+PROVIDER = importlib.util.module_from_spec(PROVIDER_SPEC)
+PROVIDER_SPEC.loader.exec_module(PROVIDER)
+
 
 class TeacherProviderPolicyTest(unittest.TestCase):
     def setUp(self) -> None:
@@ -62,11 +70,36 @@ class TeacherProviderPolicyTest(unittest.TestCase):
     def test_policy_cannot_be_silently_widened(self) -> None:
         policy = copy.deepcopy(self.policy)
         policy["provider_policy"]["allowed_providers"].append("anthropic")
+        policy["provider_policy"]["allowed_model_prefixes"].append("claude")
+        policy["provider_policy"]["forbidden_markers"] = []
         result = MODULE.teacher_provider_decision(
             policy, {"provider": "anthropic", "model": "claude-opus"}
         )
         self.assertFalse(result["accepted"])
         self.assertIn("forbidden_teacher_provider_or_model", result["reject_reasons"])
+
+    def test_oracle_launch_requires_codex_cli_and_executable(self) -> None:
+        teacher_policy = json.loads((ROOT / "configs" / "teacher_policy.json").read_text())
+        approved = PROVIDER.teacher_launch_decision(self.policy, teacher_policy)
+        self.assertTrue(approved["accepted"])
+
+        forbidden = copy.deepcopy(teacher_policy)
+        forbidden["provider"] = "anthropic"
+        forbidden["model"] = "claude-opus"
+        forbidden["codex_command"] = "claude"
+        rejected = PROVIDER.teacher_launch_decision(self.policy, forbidden)
+        self.assertFalse(rejected["accepted"])
+        self.assertIn("teacher_oracle_requires_codex_executable", rejected["reject_reasons"])
+        self.assertIn("forbidden_teacher_provider_or_model", rejected["reject_reasons"])
+
+        disguised = copy.deepcopy(teacher_policy)
+        disguised["codex_command"] = "/tmp/codex"
+        disguised_rejected = PROVIDER.teacher_launch_decision(self.policy, disguised)
+        self.assertFalse(disguised_rejected["accepted"])
+        self.assertIn(
+            "teacher_oracle_requires_codex_executable",
+            disguised_rejected["reject_reasons"],
+        )
 
     def test_manifest_admits_openai_and_rejects_anthropic(self) -> None:
         approved = SMOKE.build_fixture_call()

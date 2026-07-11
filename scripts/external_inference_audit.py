@@ -41,6 +41,7 @@ TEACHER_DELEGATE_FILES = {
 
 TEACHER_POLICY_OBSERVER_FILES = {
     Path("scripts/autonomy_launch_readiness.py"),
+    Path("scripts/teacher_provider_policy.py"),
 }
 TEACHER_REPORT_PREFIXES = (
     "teacher_budget",
