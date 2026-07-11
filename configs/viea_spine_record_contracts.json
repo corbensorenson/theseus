@@ -75,6 +75,30 @@
       ]
     },
     {
+      "id": "assurance_evaluation_integrity_spine_v1",
+      "producer_surface": "evidence_store",
+      "source_kind": "record_list_report",
+      "required": true,
+      "path": "reports/report_evidence_store.json",
+      "record_list_fields": [
+        "assurance_case_records",
+        "evaluation_integrity_records"
+      ],
+      "required_record_types": [
+        "assurance_case_record",
+        "evaluation_integrity_record"
+      ],
+      "required_evidence": [
+        "assurance_evaluation_integrity.state=GREEN",
+        "assurance_case_record_count=1",
+        "evaluation_integrity_record_count=1",
+        "all stale/discrepancy/interference/defeater invalid controls rejected",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0"
+      ]
+    },
+    {
       "id": "artifact_retention_replay_gate_v1",
       "producer_surface": "artifact_retention_replay_gate",
       "source_kind": "record_list_report",
@@ -1025,7 +1049,10 @@
         "failure_boundary_records",
         "artifact_graph_records",
         "claim_records",
-        "evidence_transition_records"
+        "evidence_transition_records",
+        "oversight_protocol_records",
+        "capability_commitment_records",
+        "inter_stack_exchange_records"
       ],
       "required_record_types": [
         "constitutional_predicate",
@@ -1033,7 +1060,10 @@
         "failure_boundary",
         "artifact_graph_record",
         "claim_record",
-        "evidence_transition_record"
+        "evidence_transition_record",
+        "oversight_protocol_record",
+        "capability_commitment_record",
+        "inter_stack_exchange_record"
       ],
       "required_evidence": [
         "policy=project_theseus_governance_rights_receipt_suite_v1",
@@ -1045,6 +1075,8 @@
         "material_audit_scenario_count=2",
         "portable_exit_scenario_count=1",
         "fork_safety_scenario_count=1",
+        "architecture_governance_kernel_state=GREEN",
+        "all architecture governance invalid controls rejected",
         "public_training_rows_written=0",
         "external_inference_calls=0",
         "fallback_return_count=0",

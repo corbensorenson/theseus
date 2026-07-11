@@ -18,6 +18,96 @@
     "constitutional_migration_requires_record",
     "self_modification_weakening_rejected"
   ],
+  "architecture_governance": {
+    "oversight_protocol": {
+      "protocol_id": "oversight.local_architecture_change.v1",
+      "roles": {
+        "proposer": "principal.proposer.local",
+        "trusted_monitor": "principal.monitor.trusted.local",
+        "untrusted_monitor": "principal.monitor.untrusted.local",
+        "observer": "principal.observer.local",
+        "evaluator": "principal.evaluator.local",
+        "promotion_authority": "principal.promotion_authority.local"
+      },
+      "private_state_partitions": {
+        "principal.proposer.local": ["proposal"],
+        "principal.monitor.trusted.local": ["effect_receipt", "policy"],
+        "principal.monitor.untrusted.local": ["sanitized_trace"],
+        "principal.observer.local": ["observed_effect"],
+        "principal.evaluator.local": ["declared_effect", "observed_effect", "rollback_receipt"],
+        "principal.promotion_authority.local": ["evaluation_decision", "assurance_status"]
+      },
+      "correlation_groups": {
+        "principal.proposer.local": "proposal",
+        "principal.monitor.trusted.local": "trusted_control",
+        "principal.monitor.untrusted.local": "advisory_control",
+        "principal.observer.local": "observation",
+        "principal.evaluator.local": "evaluation",
+        "principal.promotion_authority.local": "authority"
+      },
+      "risk_routes": {
+        "low": "direct_review",
+        "medium": "assisted_consultation",
+        "high": "adversarial_review",
+        "critical": "abstain_and_escalate"
+      },
+      "random_audit_rate": 0.2,
+      "max_pairwise_correlation": 0.35,
+      "disagreement_route": "independent_replay_then_escalate",
+      "weak_supervisor_failure_route": "abstain_and_preserve_residual",
+      "operator_load_budget": 4
+    },
+    "capability_commitment": {
+      "commitment_id": "commitment.side_effect_authority.v1",
+      "version": "1.0.0",
+      "domain": "local_assistant_side_effect_authority",
+      "metric": "declared_side_effect_count",
+      "comparator": ">=",
+      "threshold": 1,
+      "assessment_source": "reports/theseus_assistant_effect_complete_canary.json",
+      "assessment_max_age_hours": 168,
+      "required_safeguards": [
+        "declared_effect_inventory",
+        "independent_effect_observer",
+        "independent_evaluator",
+        "exact_rollback_or_owned_residual",
+        "zero_network_training_and_fallback_counters"
+      ],
+      "exception_expiry_required": true,
+      "assurance_source": "reports/report_evidence_store.json",
+      "affected_route": "local_assistant_side_effects"
+    },
+    "inter_stack_exchange": {
+      "exchange_id": "exchange.local_distinct_principals.v1",
+      "schema_version": "1.0.0",
+      "source_stack_id": "stack.theseus.control.local",
+      "destination_stack_id": "stack.theseus.effect_observer.local",
+      "source_principal_id": "principal.proposer.local",
+      "destination_principal_id": "principal.observer.local",
+      "credential_chain": ["credential.local_root.v1", "delegation.effect_observation.v1"],
+      "delegation": {
+        "scope": ["observe_declared_local_effect"],
+        "authority_ceiling": ["read_single_declared_effect_target"],
+        "expires_utc": "2030-01-01T00:00:00Z",
+        "revocation_id": "revocation.delegation.effect_observation.v1"
+      },
+      "schema_negotiation": {
+        "offered": ["1.0.0"],
+        "accepted": "1.0.0"
+      },
+      "budget": {
+        "resource_units_reserved": 1,
+        "value_units_reserved": 0,
+        "max_duration_seconds": 10
+      },
+      "nonce": "local-effect-observation-transaction-v1",
+      "accounting_receipt_required": true,
+      "dispute_path": "configs/project_steward.json",
+      "partition_behavior": "abort_without_authority_expansion",
+      "shutdown_handoff": "return residual and revoke delegation",
+      "transport": "transport_independent_local_fixture"
+    }
+  },
   "fixtures": [
     {
       "scenario": "complete_audit_response",

@@ -272,6 +272,10 @@ def main() -> int:
         evidence_packs,
         stored_claim_versions=stored_claim_versions,
     )
+    assurance_integrity = report_evidence_integrity.build_assurance_and_evaluation_integrity(
+        claim_revision,
+        evidence_packs,
+    )
     receipt_audit = report_evidence_integrity.audit_receipt_faithfulness(
         evidence_packs,
         claim_revision,
@@ -282,6 +286,7 @@ def main() -> int:
         "evidence_packs": evidence_pack_export["trigger_state"],
         "epistemic_tcb": epistemic_tcb["state"],
         "claim_revision": claim_revision["state"],
+        "assurance_evaluation_integrity": assurance_integrity["state"],
         "receipt_faithfulness": receipt_audit["state"],
         "db_compaction": db_compaction["state"],
     }
@@ -316,6 +321,12 @@ def main() -> int:
             "claim_emitting_run_family_count": claim_revision["claim_emitting_run_family_count"],
             "claim_dependent_surface_edge_count": claim_revision["dependent_surface_edge_count"],
             "claim_dependent_invalidation_count": claim_revision["dependent_invalidation_count"],
+            "assurance_case_record_count": len(assurance_integrity["assurance_case_records"]),
+            "evaluation_integrity_record_count": len(assurance_integrity["evaluation_integrity_records"]),
+            "assurance_expected_invalid_control_count": len(assurance_integrity["expected_invalid_controls"]),
+            "assurance_expected_invalid_rejected_count": sum(
+                1 for row in assurance_integrity["expected_invalid_controls"] if row.get("rejected")
+            ),
             "stored_material_claim_version_count": len(stored_claim_versions),
             "receipt_randomized_deep_replay_count": receipt_audit["randomized_deep_replay_count"],
             "receipt_rejected_trap_fixture_count": receipt_audit["rejected_trap_fixture_count"],
@@ -334,6 +345,9 @@ def main() -> int:
         "standard_evidence_pack_export": rel_or_abs(pack_out),
         "epistemic_trusted_computing_base": epistemic_tcb,
         "material_claim_revision": claim_revision,
+        "assurance_evaluation_integrity": assurance_integrity,
+        "assurance_case_records": assurance_integrity["assurance_case_records"],
+        "evaluation_integrity_records": assurance_integrity["evaluation_integrity_records"],
         "receipt_faithfulness_audit": receipt_audit,
         "integrity_states": integrity_states,
         "rules": {

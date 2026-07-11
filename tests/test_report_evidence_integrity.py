@@ -254,3 +254,79 @@ def test_report_ingest_follows_archive_pointer_instead_of_scoring_pointer(tmp_pa
 
     assert payload["policy"] == "real_gate"
     assert payload["trigger_state"] == "RED"
+
+
+def test_assurance_compiler_binds_live_claim_and_rejects_integrity_faults() -> None:
+    claim_revision = {
+        "claim_samples": [
+            {
+                "claim_id": "claim.live",
+                "claim": "The scoped fixture gate passed.",
+                "support_state": "synthetic-test-backed",
+                "source_paths": ["reports/gate.json"],
+            }
+        ]
+    }
+    packs = [
+        {
+            "source_path": "reports/gate.json",
+            "source_sha256": "a" * 64,
+            "validation_state": "GREEN",
+        }
+    ]
+
+    result = integrity.build_assurance_and_evaluation_integrity(claim_revision, packs)
+
+    assert result["state"] == "GREEN"
+    assert result["support_state"] == "synthetic-test-backed"
+    assert all(row["rejected"] for row in result["expected_invalid_controls"])
+    assert result["evaluation_integrity_records"][0]["validation"]["valid"]
+    assert result["assurance_case_records"][0]["validation"]["valid"]
+
+
+def test_assurance_and_evaluation_validators_fail_closed() -> None:
+    invalid_evaluation = {
+        "stale": False,
+        "cross_context_probe": {
+            "comparable": True,
+            "source_identity_equal": False,
+            "support_state_equal": True,
+            "discrepancy_count": 1,
+        },
+        "monitor_provenance": {
+            "trusted_monitor_ids": ["trusted"],
+            "untrusted_monitor_ids": ["untrusted"],
+            "shared_answer_state": False,
+            "monitor_interference_detected": False,
+        },
+        "selection_context": {
+            "selection_frozen_before_integrity_decision": True,
+            "selection_adaptation_detected": False,
+        },
+        "interference_controls": ["deny mutation"],
+    }
+    invalid_assurance = {
+        "case_version": "1",
+        "top_claim": {"claim_id": "x"},
+        "deployment_context": "local",
+        "hazard_context": ["stale evidence"],
+        "argument_strategy": "replay",
+        "evidence_dependencies": [{"stale": True}],
+        "assumptions": ["scoped"],
+        "defeaters": [{"status": "open"}],
+        "countercase_review": {"reviewed": False},
+        "acceptance_criterion": "",
+        "residual_owner": "steward",
+        "decision_authority": "gate",
+        "affected_release_path": "architecture",
+        "evaluation_integrity_record_id": "eval",
+    }
+
+    evaluation = integrity.validate_evaluation_integrity_record(invalid_evaluation)
+    assurance = integrity.validate_assurance_case_record(invalid_assurance)
+
+    assert not evaluation["valid"]
+    assert "cross_context_discrepancy" in evaluation["faults"]
+    assert not assurance["valid"]
+    assert "stale_dependency" in assurance["faults"]
+    assert "unresolved_defeater" in assurance["faults"]

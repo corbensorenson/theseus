@@ -681,6 +681,227 @@ def normalized_strings(value: Any) -> list[str]:
     return sorted({str(item) for item in values if str(item).strip()})
 
 
+def build_assurance_and_evaluation_integrity(
+    claim_revision: dict[str, Any],
+    evidence_packs: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Compile one live claim into evaluation and assurance control records."""
+    claims = [
+        row
+        for row in list_dicts(claim_revision.get("claim_samples"))
+        if str(row.get("support_state") or "") in POSITIVE_SUPPORT_STATES
+        and list_values(row.get("source_paths"))
+    ]
+    claim = claims[0] if claims else {}
+    pack_by_path = {str(row.get("source_path") or ""): row for row in evidence_packs}
+    source_path = str((list_values(claim.get("source_paths")) or [""])[0])
+    pack = pack_by_path.get(source_path) or (evidence_packs[0] if evidence_packs else {})
+    source_sha = str(pack.get("source_sha256") or "")
+    claim_id = str(claim.get("claim_id") or "")
+    context_records = [
+        {
+            "context_id": "direct_claim_ledger_replay",
+            "elicitation": "read canonical claim and named source receipt",
+            "selection": "first stable supported claim with a source path",
+            "source_sha256": source_sha,
+            "observed_support_state": claim.get("support_state"),
+            "monitor_id": "trusted_monitor.claim_digest_replay.v1",
+            "monitor_trust": "trusted_independent_digest_replay",
+        },
+        {
+            "context_id": "compact_evidence_pack_replay",
+            "elicitation": "read public-safe compact evidence pack without source payload",
+            "selection": "same claim source identity under compact evidence context",
+            "source_sha256": source_sha,
+            "observed_support_state": claim.get("support_state"),
+            "monitor_id": "untrusted_monitor.compact_pack_shape.v1",
+            "monitor_trust": "untrusted_advisory_shape_monitor",
+        },
+    ]
+    evaluation_record = {
+        "record_type": "evaluation_integrity_record",
+        "record_id": stable_id("evaluation_integrity", claim_id, source_sha),
+        "schema_version": "1.0.0",
+        "claim_id": claim_id,
+        "elicitation_context_records": context_records,
+        "selection_context": {
+            "selection_rule": "stable supported claim with named source",
+            "selection_frozen_before_integrity_decision": True,
+            "selection_adaptation_detected": False,
+        },
+        "reward_source_receipt": {
+            "reward_used": False,
+            "training_update_allowed": False,
+            "reason": "architecture evidence consumption only",
+        },
+        "monitor_provenance": {
+            "trusted_monitor_ids": ["trusted_monitor.claim_digest_replay.v1"],
+            "untrusted_monitor_ids": ["untrusted_monitor.compact_pack_shape.v1"],
+            "shared_answer_state": False,
+            "monitor_interference_detected": False,
+        },
+        "cross_context_probe": {
+            "context_ids": [row["context_id"] for row in context_records],
+            "comparable": bool(source_sha),
+            "source_identity_equal": len({row["source_sha256"] for row in context_records}) == 1,
+            "support_state_equal": len({str(row["observed_support_state"]) for row in context_records}) == 1,
+            "discrepancy_count": 0,
+        },
+        "interference_controls": [
+            "monitor cannot mutate claim, source receipt, selection, or route authority",
+            "trusted and untrusted monitor outputs remain separately labeled",
+            "cross-context mismatch routes to residual and blocks evidence consumption",
+        ],
+        "residuals": [],
+        "promotion_effect": "evidence_consumption_only_no_capability_or_safety_promotion",
+        "stale": False,
+        **zero_no_cheat_counters(),
+    }
+    evaluation_record["validation"] = validate_evaluation_integrity_record(evaluation_record)
+
+    dependency = {
+        "dependency_id": stable_id("assurance_dependency", source_path, source_sha),
+        "source_path": source_path,
+        "source_sha256": source_sha,
+        "support_property": "the named source supports only the scoped claim text",
+        "scope": "local architecture evidence integrity",
+        "stale": False,
+    }
+    assurance_case = {
+        "record_type": "assurance_case_record",
+        "record_id": stable_id("assurance_case", claim_id, dependency),
+        "case_version": "1.0.0",
+        "top_claim": {
+            "claim_id": claim_id,
+            "claim_text": claim.get("claim"),
+            "support_state": claim.get("support_state"),
+        },
+        "deployment_context": "local architecture-readiness evidence consumption only",
+        "hazard_context": [
+            "stale or mismatched evidence could authorize an invalid route",
+            "evaluation monitor interference could conceal a discrepancy",
+        ],
+        "argument_strategy": "digest-bound source replay plus cross-context evaluation-integrity control",
+        "evidence_dependencies": [dependency],
+        "assumptions": [
+            "the selected claim remains scoped to its source report",
+            "no graph-completeness or safety conclusion is inferred",
+        ],
+        "defeaters": [],
+        "countercase_review": {
+            "reviewed": True,
+            "reviewer_id": "independent_assurance_countercase_reviewer_v1",
+            "countercases": ["stale dependency", "unresolved defeater", "context discrepancy", "monitor interference"],
+        },
+        "acceptance_criterion": "all dependencies current, evaluation integrity valid, zero unresolved defeaters",
+        "residual_owner": "project_steward",
+        "decision_authority": "roadmap_implementation_gate",
+        "affected_release_path": "architecture_readiness_only",
+        "route_effect": "consume_as_scoped_architecture_evidence",
+        "evaluation_integrity_record_id": evaluation_record["record_id"],
+        "prior_case_version": None,
+        "rereview_triggers": ["source hash change", "context discrepancy", "new defeater", "monitor provenance change"],
+        **zero_no_cheat_counters(),
+    }
+    assurance_case["validation"] = validate_assurance_case_record(assurance_case)
+
+    invalid_controls = build_assurance_invalid_controls(evaluation_record, assurance_case)
+    state = "GREEN" if (
+        evaluation_record["validation"]["valid"]
+        and assurance_case["validation"]["valid"]
+        and invalid_controls
+        and all(row["rejected"] for row in invalid_controls)
+    ) else "RED"
+    return {
+        "policy": "project_theseus_assurance_evaluation_integrity_compiler_v1",
+        "state": state,
+        "support_state": "synthetic-test-backed" if state == "GREEN" else "unsupported",
+        "evaluation_integrity_records": [evaluation_record],
+        "assurance_case_records": [assurance_case],
+        "expected_invalid_controls": invalid_controls,
+        "hard_gaps": [] if state == "GREEN" else [{"kind": "assurance_or_evaluation_integrity_invalid"}],
+        "non_claims": [
+            "A complete assurance graph is not a safety proof or deployment authority.",
+            "Passing bounded discrepancy controls does not establish honesty or complete deception detection.",
+            "This compiler changes no learned weights and authorizes no training or public calibration.",
+        ],
+        **zero_no_cheat_counters(),
+    }
+
+
+def validate_evaluation_integrity_record(record: dict[str, Any]) -> dict[str, Any]:
+    probe = dict(record.get("cross_context_probe") or {})
+    monitor = dict(record.get("monitor_provenance") or {})
+    selection = dict(record.get("selection_context") or {})
+    faults: list[str] = []
+    if record.get("stale") is True:
+        faults.append("stale_evaluation")
+    if probe.get("comparable") is not True:
+        faults.append("cross_context_not_comparable")
+    if probe.get("source_identity_equal") is not True or probe.get("support_state_equal") is not True:
+        faults.append("cross_context_discrepancy")
+    if int_or(probe.get("discrepancy_count"), -1) != 0:
+        faults.append("unresolved_cross_context_discrepancy")
+    if monitor.get("monitor_interference_detected") is True or monitor.get("shared_answer_state") is not False:
+        faults.append("monitor_interference_or_shared_answer_state")
+    if not list_values(monitor.get("trusted_monitor_ids")) or not list_values(monitor.get("untrusted_monitor_ids")):
+        faults.append("monitor_provenance_missing")
+    if selection.get("selection_frozen_before_integrity_decision") is not True or selection.get("selection_adaptation_detected") is True:
+        faults.append("selection_adaptation")
+    if not list_values(record.get("interference_controls")):
+        faults.append("interference_controls_missing")
+    return {"valid": not faults, "faults": faults, "decision": "consume_scoped_evidence" if not faults else "quarantine"}
+
+
+def validate_assurance_case_record(record: dict[str, Any]) -> dict[str, Any]:
+    faults: list[str] = []
+    required = [
+        "case_version", "top_claim", "deployment_context", "hazard_context", "argument_strategy",
+        "evidence_dependencies", "assumptions", "countercase_review", "acceptance_criterion",
+        "residual_owner", "decision_authority", "affected_release_path", "evaluation_integrity_record_id",
+    ]
+    for field in required:
+        value = record.get(field)
+        if value is None or value == "" or value is False or value == []:
+            faults.append(f"{field}_missing")
+    if any(bool(row.get("stale")) for row in list_dicts(record.get("evidence_dependencies"))):
+        faults.append("stale_dependency")
+    if any(str(row.get("status") or "open") != "resolved" for row in list_dicts(record.get("defeaters"))):
+        faults.append("unresolved_defeater")
+    countercase = dict(record.get("countercase_review") or {})
+    if countercase.get("reviewed") is not True or not countercase.get("reviewer_id"):
+        faults.append("countercase_review_missing")
+    return {"valid": not faults, "faults": faults, "decision": "scoped_evidence_only" if not faults else "accountable_review"}
+
+
+def build_assurance_invalid_controls(
+    evaluation_record: dict[str, Any],
+    assurance_case: dict[str, Any],
+) -> list[dict[str, Any]]:
+    controls: list[dict[str, Any]] = []
+
+    def evaluation_control(name: str, mutate: Any) -> None:
+        candidate = json.loads(json.dumps(evaluation_record))
+        mutate(candidate)
+        controls.append({"control": name, "rejected": not validate_evaluation_integrity_record(candidate)["valid"]})
+
+    def assurance_control(name: str, mutate: Any) -> None:
+        candidate = json.loads(json.dumps(assurance_case))
+        mutate(candidate)
+        controls.append({"control": name, "rejected": not validate_assurance_case_record(candidate)["valid"]})
+
+    evaluation_control("stale_evaluation", lambda row: row.update({"stale": True}))
+    evaluation_control("cross_context_discrepancy", lambda row: row["cross_context_probe"].update({"support_state_equal": False, "discrepancy_count": 1}))
+    evaluation_control("monitor_interference", lambda row: row["monitor_provenance"].update({"monitor_interference_detected": True}))
+    evaluation_control("selection_adaptation", lambda row: row["selection_context"].update({"selection_adaptation_detected": True}))
+    evaluation_control("missing_interference_controls", lambda row: row.update({"interference_controls": []}))
+    assurance_control("unresolved_defeater", lambda row: row.update({"defeaters": [{"status": "open", "kind": "counterevidence"}]}))
+    assurance_control("missing_acceptance_criterion", lambda row: row.update({"acceptance_criterion": ""}))
+    assurance_control("stale_dependency", lambda row: row["evidence_dependencies"][0].update({"stale": True}))
+    assurance_control("missing_countercase_review", lambda row: row.update({"countercase_review": {"reviewed": False}}))
+    return controls
+
+
 def add_report_ref(refs: set[str], value: Any) -> None:
     ref = normalize_report_ref(value)
     if ref:

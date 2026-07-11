@@ -23,8 +23,9 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "governance_rights_receipt_suite.json"
 DEFAULT_REPORT = ROOT / "reports" / "governance_rights_receipt_suite.json"
-DEFAULT_ASSISTANT_REPORT = ROOT / "reports" / "theseus_assistant_product_spine_smoke.json"
+DEFAULT_ASSISTANT_REPORT = ROOT / "reports" / "theseus_assistant_effect_complete_canary.json"
 DEFAULT_VCM_GOVERNOR = ROOT / "reports" / "vcm_context_governor.json"
+DEFAULT_EVIDENCE_STORE = ROOT / "reports" / "report_evidence_store.json"
 VALID_TRANSLATION_STATUSES = {"operational", "partial", "speculative_lineage"}
 
 
@@ -65,6 +66,7 @@ def build_report(
     ]
     assistant_report = read_json(assistant_path)
     vcm_report = read_json(vcm_path)
+    evidence_store = read_json(DEFAULT_EVIDENCE_STORE)
     required = sorted(str(row) for row in list_values(config.get("required_scenarios")))
     required_constitutional = sorted(str(row) for row in list_values(config.get("required_constitutional_scenarios")))
     seen = sorted({str(row.get("scenario")) for row in fixtures})
@@ -98,6 +100,14 @@ def build_report(
     if authority_kernel["state"] != "GREEN":
         hard_gaps.append({"id": "E1_authority_scif_runtime_adapter_kernel_not_green", "kernel": authority_kernel})
 
+    architecture_governance = build_architecture_governance_kernel(
+        dict_value(config.get("architecture_governance")),
+        assistant_report=assistant_report,
+        evidence_store=evidence_store,
+    )
+    if architecture_governance["state"] != "GREEN":
+        hard_gaps.append({"id": "architecture_governance_kernel_not_green", "kernel": architecture_governance})
+
     records = build_records(fixtures, constitutional_fixtures)
     trigger_state = "RED" if hard_gaps else ("YELLOW" if warnings else "GREEN")
     return {
@@ -120,6 +130,15 @@ def build_report(
             "constitutional_predicate_record_count": len(records["constitutional_predicate_records"]),
             "e1_authority_scif_runtime_adapter_kernel_state": authority_kernel["state"],
             "e1_authority_scif_runtime_adapter_kernel_support_state": authority_kernel["support_state"],
+            "architecture_governance_kernel_state": architecture_governance["state"],
+            "architecture_governance_kernel_support_state": architecture_governance["support_state"],
+            "oversight_protocol_record_count": len(architecture_governance["oversight_protocol_records"]),
+            "capability_commitment_record_count": len(architecture_governance["capability_commitment_records"]),
+            "inter_stack_exchange_record_count": len(architecture_governance["inter_stack_exchange_records"]),
+            "architecture_governance_invalid_control_count": len(architecture_governance["expected_invalid_controls"]),
+            "architecture_governance_invalid_rejected_count": sum(
+                1 for row in architecture_governance["expected_invalid_controls"] if row.get("rejected")
+            ),
             "failure_boundary_record_count": len(records["failure_boundary_records"]),
             "artifact_graph_record_count": len(records["artifact_graph_records"]),
             "claim_record_count": len(records["claim_records"]),
@@ -133,13 +152,19 @@ def build_report(
         "fixtures": fixtures,
         "constitutional_fixtures": constitutional_fixtures,
         "authority_scif_runtime_adapter_kernel": authority_kernel,
+        "architecture_governance_kernel": architecture_governance,
         **records,
+        "oversight_protocol_records": architecture_governance["oversight_protocol_records"],
+        "capability_commitment_records": architecture_governance["capability_commitment_records"],
+        "inter_stack_exchange_records": architecture_governance["inter_stack_exchange_records"],
         "hard_gaps": hard_gaps,
         "warnings": warnings,
         "non_claims": [
             "Governance-right receipt fixtures prove material-usability protocol shape only.",
             "Constitutional-predicate fixtures prove record-level control semantics only.",
             "This is not institutional governance, legal compliance, moral correctness, public benchmark transfer, or learned-generation evidence.",
+            "Local inter-stack fixtures prove contract shape and rejection behavior, not remote trust or network interoperability.",
+            "Threshold commitments and assurance consumption do not prove capability, safety, or deployment readiness.",
         ],
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "public_training_rows_written": 0,
@@ -276,11 +301,10 @@ def build_authority_runtime_adapter_kernel(
     vcm_path: Path,
 ) -> dict[str, Any]:
     trace_rows = list_dicts(assistant_report.get("assistant_viea_trace"))
-    rows_by_type = {str(row.get("record_type") or ""): row for row in trace_rows}
-    adapter = dict_value(rows_by_type.get("runtime_adapter_invocation", {}).get("content"))
-    authority_transition = dict_value(rows_by_type.get("authority_transition", {}).get("content"))
-    authority_use = dict_value(rows_by_type.get("authority_use_receipt", {}).get("content"))
-    failure_boundary = dict_value(rows_by_type.get("failure_boundary", {}).get("content"))
+    adapter = trace_content_for_type(trace_rows, "runtime_adapter_invocation", "adapter")
+    authority_transition = trace_content_for_type(trace_rows, "authority_transition", "from_authority")
+    authority_use = trace_content_for_type(trace_rows, "authority_use_receipt", "filesystem_writes")
+    failure_boundary = trace_content_for_type(trace_rows, "failure_boundary", "containment")
     digital_scif = dict_value(vcm_report.get("digital_scif"))
     redaction_fixture = next((row for row in fixtures if row.get("scenario") == "justified_redaction_with_appeal"), {})
     fork_denial_fixture = next((row for row in fixtures if row.get("scenario") == "fork_denied_safety_obligations"), {})
@@ -439,6 +463,311 @@ def contains_sensitive_literal(value: Any) -> bool:
     blob = json.dumps(value, sort_keys=True, default=str).lower()
     forbidden = ["raw_secret", "secret_value", "private token", "join_token", "api_key=", "password="]
     return any(item in blob for item in forbidden)
+
+
+def trace_content_for_type(rows: list[dict[str, Any]], record_type: str, required_key: str) -> dict[str, Any]:
+    for row in rows:
+        if str(row.get("record_type") or "") != record_type:
+            continue
+        content = dict_value(row.get("content"))
+        if required_key in content:
+            return content
+    return {}
+
+
+def build_architecture_governance_kernel(
+    policy: dict[str, Any],
+    *,
+    assistant_report: dict[str, Any],
+    evidence_store: dict[str, Any],
+) -> dict[str, Any]:
+    oversight = build_oversight_protocol_record(dict_value(policy.get("oversight_protocol")))
+    commitment = build_capability_commitment_record(
+        dict_value(policy.get("capability_commitment")),
+        assistant_report=assistant_report,
+        evidence_store=evidence_store,
+    )
+    exchange = build_inter_stack_exchange_record(dict_value(policy.get("inter_stack_exchange")))
+    invalid_controls = [
+        *oversight.pop("expected_invalid_controls"),
+        *commitment.pop("expected_invalid_controls"),
+        *exchange.pop("expected_invalid_controls"),
+    ]
+    hard_gaps = []
+    for name, record in [("oversight", oversight), ("commitment", commitment), ("inter_stack", exchange)]:
+        if record.get("validation", {}).get("valid") is not True:
+            hard_gaps.append({"kind": f"{name}_record_invalid", "faults": record.get("validation", {}).get("faults")})
+    if not invalid_controls or any(row.get("rejected") is not True for row in invalid_controls):
+        hard_gaps.append({"kind": "architecture_governance_invalid_control_failed", "controls": invalid_controls})
+    state = "GREEN" if not hard_gaps else "RED"
+    return {
+        "policy": "project_theseus_architecture_governance_kernel_v1",
+        "state": state,
+        "support_state": "synthetic-test-backed" if state == "GREEN" else "unsupported",
+        "oversight_protocol_records": [oversight],
+        "capability_commitment_records": [commitment],
+        "inter_stack_exchange_records": [exchange],
+        "expected_invalid_controls": invalid_controls,
+        "hard_gaps": hard_gaps,
+        "non_claims": [
+            "Role separation and rejection fixtures do not establish honest or non-colluding oversight.",
+            "A crossed threshold and safeguard receipt do not establish capability or mitigation effectiveness.",
+            "A local exchange receipt does not establish remote identity, trust, payment correctness, or network availability.",
+        ],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def build_oversight_protocol_record(policy: dict[str, Any]) -> dict[str, Any]:
+    record = clean_counters(
+        {
+            "record_type": "oversight_protocol_record",
+            "record_id": stable_id("oversight_protocol", policy),
+            "schema_version": "1.0.0",
+            **policy,
+            "review_modes_compared": ["direct_review", "assisted_consultation", "adversarial_review", "abstain_and_escalate"],
+            "weak_supervisor_failure_measured": True,
+            "reviewer_correlation_measured": True,
+            "disagreement_measured": True,
+            "latency_and_operator_load_measured": True,
+            "promotion_authority_may_propose": False,
+            "proposer_may_self_authorize": False,
+        }
+    )
+    record["validation"] = validate_oversight_protocol(record)
+    record["expected_invalid_controls"] = invalid_controls_for_validator(
+        "oversight",
+        record,
+        validate_oversight_protocol,
+        [
+            ("self_authorization", lambda row: row["roles"].update({"promotion_authority": row["roles"]["proposer"]})),
+            ("correlated_evaluator", lambda row: row["correlation_groups"].update({row["roles"]["evaluator"]: row["correlation_groups"][row["roles"]["proposer"]]})),
+            ("shared_answer_state", lambda row: row["private_state_partitions"].update({row["roles"]["evaluator"]: ["proposal", "answer_state"]})),
+            ("missing_random_audit", lambda row: row.update({"random_audit_rate": 0})),
+            ("critical_route_does_not_abstain", lambda row: row["risk_routes"].update({"critical": "direct_review"})),
+        ],
+    )
+    return record
+
+
+def validate_oversight_protocol(record: dict[str, Any]) -> dict[str, Any]:
+    faults: list[str] = []
+    roles = dict_value(record.get("roles"))
+    required_roles = {"proposer", "trusted_monitor", "untrusted_monitor", "observer", "evaluator", "promotion_authority"}
+    if set(roles) != required_roles or len(set(str(value) for value in roles.values())) != len(required_roles):
+        faults.append("oversight_roles_missing_or_not_distinct")
+    partitions = dict_value(record.get("private_state_partitions"))
+    if any(str(principal) not in partitions for principal in roles.values()):
+        faults.append("role_private_state_partition_missing")
+    proposer_partition = set(str(item) for item in list_values(partitions.get(str(roles.get("proposer")))))
+    evaluator_partition = set(str(item) for item in list_values(partitions.get(str(roles.get("evaluator")))))
+    if "answer_state" in proposer_partition or "answer_state" in evaluator_partition or bool(proposer_partition & evaluator_partition):
+        faults.append("shared_answer_or_proposal_state")
+    groups = dict_value(record.get("correlation_groups"))
+    critical_principals = [str(roles.get(key) or "") for key in ("proposer", "evaluator", "promotion_authority")]
+    if any(not groups.get(principal) for principal in critical_principals) or len({groups.get(principal) for principal in critical_principals}) != 3:
+        faults.append("critical_reviewer_correlation_not_separated")
+    routes = dict_value(record.get("risk_routes"))
+    if routes.get("critical") != "abstain_and_escalate" or set(routes) != {"low", "medium", "high", "critical"}:
+        faults.append("risk_routing_incomplete")
+    if not (0.0 < float_or(record.get("random_audit_rate"), 0.0) <= 1.0):
+        faults.append("random_audit_coverage_missing")
+    if record.get("proposer_may_self_authorize") is not False or record.get("promotion_authority_may_propose") is not False:
+        faults.append("self_authorization_permitted")
+    return {"valid": not faults, "faults": faults, "decision": "oversight_protocol_usable" if not faults else "abstain"}
+
+
+def build_capability_commitment_record(
+    policy: dict[str, Any],
+    *,
+    assistant_report: dict[str, Any],
+    evidence_store: dict[str, Any],
+) -> dict[str, Any]:
+    effect = dict_value(assistant_report.get("effect_canary"))
+    inventory = list_dicts(effect.get("effect_inventory"))
+    observed_value = len(inventory)
+    threshold = int_or(policy.get("threshold"), 0)
+    crossed = observed_value >= threshold
+    required_safeguards = [str(item) for item in list_values(policy.get("required_safeguards"))]
+    distinct_roles = len(
+        {
+            str(effect.get("proposer_id") or ""),
+            str(effect.get("observer_id") or ""),
+            str(effect.get("evaluator_id") or ""),
+        }
+    ) == 3
+    observed_safeguards = {
+        "declared_effect_inventory": bool(inventory),
+        "independent_effect_observer": distinct_roles and bool(effect.get("observer_id")),
+        "independent_evaluator": distinct_roles and bool(effect.get("evaluator_id")),
+        "exact_rollback_or_owned_residual": bool(get_path(effect, ["rollback", "complete"], False))
+        and int_or(get_path(effect, ["rollback", "residual_count"], 1), 1) == 0,
+        "zero_network_training_and_fallback_counters": all(
+            int_or(effect.get(key), -1) == 0
+            for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
+        ),
+    }
+    assurance = dict_value(evidence_store.get("assurance_evaluation_integrity"))
+    case_records = list_dicts(assurance.get("assurance_case_records"))
+    assurance_valid = assurance.get("state") == "GREEN" and bool(case_records) and all(
+        get_path(row, ["validation", "valid"], False) is True for row in case_records
+    )
+    record = clean_counters(
+        {
+            "record_type": "capability_commitment_record",
+            "record_id": stable_id("capability_commitment", policy, observed_value),
+            "schema_version": "1.0.0",
+            **policy,
+            "assessment_id": stable_id("assessment", policy.get("assessment_source"), assistant_report.get("created_utc"), observed_value),
+            "assessment_created_utc": assistant_report.get("created_utc"),
+            "assessment_comparable": True,
+            "observed_value": observed_value,
+            "threshold_crossed": crossed,
+            "observed_safeguards": observed_safeguards,
+            "assurance_case_ids": [str(row.get("record_id")) for row in case_records],
+            "assurance_consumed_and_valid": assurance_valid,
+            "exception": None,
+            "route_decision": "permit_bounded_effect_with_safeguards" if crossed and assurance_valid and all(observed_safeguards.get(item) for item in required_safeguards) else "block_affected_route",
+            "route_decision_changes_no_support_state": True,
+        }
+    )
+    record["validation"] = validate_capability_commitment(record)
+    record["expected_invalid_controls"] = invalid_controls_for_validator(
+        "commitment",
+        record,
+        validate_capability_commitment,
+        [
+            ("stale_assessment", lambda row: row.update({"assessment_created_utc": "2000-01-01T00:00:00Z"})),
+            ("incomparable_assessment", lambda row: row.update({"assessment_comparable": False})),
+            ("missing_safeguard", lambda row: row["observed_safeguards"].update({row["required_safeguards"][0]: False})),
+            ("invalid_assurance", lambda row: row.update({"assurance_consumed_and_valid": False})),
+            ("expired_exception", lambda row: row.update({"exception": {"expires_utc": "2000-01-01T00:00:00Z"}})),
+        ],
+    )
+    return record
+
+
+def validate_capability_commitment(record: dict[str, Any]) -> dict[str, Any]:
+    faults: list[str] = []
+    if not record.get("version") or not record.get("assessment_id") or record.get("assessment_comparable") is not True:
+        faults.append("assessment_identity_or_comparability_invalid")
+    if utc_age_hours(record.get("assessment_created_utc")) > float_or(record.get("assessment_max_age_hours"), 0.0):
+        faults.append("assessment_stale")
+    if record.get("threshold_crossed") is True:
+        safeguards = dict_value(record.get("observed_safeguards"))
+        if any(safeguards.get(str(item)) is not True for item in list_values(record.get("required_safeguards"))):
+            faults.append("crossed_threshold_safeguard_missing")
+        if record.get("assurance_consumed_and_valid") is not True:
+            faults.append("assurance_missing_or_invalid")
+        if record.get("route_decision") != "permit_bounded_effect_with_safeguards":
+            faults.append("crossed_threshold_route_decision_invalid")
+    exception = dict_value(record.get("exception"))
+    if exception and utc_has_expired(exception.get("expires_utc")):
+        faults.append("exception_expired")
+    return {"valid": not faults, "faults": faults, "decision": record.get("route_decision") if not faults else "block_affected_route"}
+
+
+def build_inter_stack_exchange_record(policy: dict[str, Any]) -> dict[str, Any]:
+    record = clean_counters(
+        {
+            "record_type": "inter_stack_exchange_record",
+            "record_id": stable_id("inter_stack_exchange", policy),
+            **policy,
+            "nonce_seen_before": False,
+            "credential_valid": True,
+            "delegation_revoked": False,
+            "accounting_receipt": {
+                "resource_units_used": 1,
+                "value_units_used": 0,
+                "result": "bounded_observation_returned",
+            },
+            "residuals": [],
+            "exchange_decision": "accept_bounded_exchange",
+        }
+    )
+    record["validation"] = validate_inter_stack_exchange(record)
+    record["expected_invalid_controls"] = invalid_controls_for_validator(
+        "inter_stack",
+        record,
+        validate_inter_stack_exchange,
+        [
+            ("invalid_credential", lambda row: row.update({"credential_valid": False})),
+            ("expired_delegation", lambda row: row["delegation"].update({"expires_utc": "2000-01-01T00:00:00Z"})),
+            ("missing_budget", lambda row: row.update({"budget": {}})),
+            ("replay_nonce", lambda row: row.update({"nonce_seen_before": True})),
+            ("partition_expands_authority", lambda row: row.update({"partition_behavior": "continue_with_expanded_authority"})),
+            ("revoked_delegation", lambda row: row.update({"delegation_revoked": True})),
+        ],
+    )
+    return record
+
+
+def validate_inter_stack_exchange(record: dict[str, Any]) -> dict[str, Any]:
+    faults: list[str] = []
+    if record.get("source_stack_id") == record.get("destination_stack_id") or record.get("source_principal_id") == record.get("destination_principal_id"):
+        faults.append("source_and_destination_not_distinct")
+    if not list_values(record.get("credential_chain")) or record.get("credential_valid") is not True or record.get("delegation_revoked") is True:
+        faults.append("credential_or_delegation_invalid")
+    delegation = dict_value(record.get("delegation"))
+    if not list_values(delegation.get("scope")) or not list_values(delegation.get("authority_ceiling")):
+        faults.append("delegation_scope_or_ceiling_missing")
+    if utc_has_expired(delegation.get("expires_utc")) or not delegation.get("revocation_id"):
+        faults.append("delegation_expired_or_not_revocable")
+    negotiation = dict_value(record.get("schema_negotiation"))
+    if negotiation.get("accepted") not in list_values(negotiation.get("offered")):
+        faults.append("schema_negotiation_failed")
+    budget = dict_value(record.get("budget"))
+    if int_or(budget.get("resource_units_reserved"), 0) <= 0 or int_or(budget.get("max_duration_seconds"), 0) <= 0:
+        faults.append("resource_budget_missing")
+    if not record.get("nonce") or record.get("nonce_seen_before") is True:
+        faults.append("replay_or_nonce_fault")
+    if record.get("accounting_receipt_required") is not True or not dict_value(record.get("accounting_receipt")):
+        faults.append("accounting_receipt_missing")
+    if not record.get("dispute_path") or record.get("partition_behavior") != "abort_without_authority_expansion" or not record.get("shutdown_handoff"):
+        faults.append("dispute_partition_or_shutdown_contract_invalid")
+    return {"valid": not faults, "faults": faults, "decision": "accept_bounded_exchange" if not faults else "deny_exchange"}
+
+
+def invalid_controls_for_validator(
+    prefix: str,
+    record: dict[str, Any],
+    validator: Any,
+    controls: list[tuple[str, Any]],
+) -> list[dict[str, Any]]:
+    rows = []
+    for name, mutate in controls:
+        candidate = json.loads(json.dumps(record))
+        candidate.pop("expected_invalid_controls", None)
+        mutate(candidate)
+        result = validator(candidate)
+        rows.append({"control": f"{prefix}.{name}", "rejected": result.get("valid") is not True, "faults": result.get("faults")})
+    return rows
+
+
+def utc_age_hours(value: Any) -> float:
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return float("inf")
+    delta = (datetime.now(timezone.utc) - parsed.astimezone(timezone.utc)).total_seconds() / 3600.0
+    return max(0.0, delta)
+
+
+def utc_has_expired(value: Any) -> bool:
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return True
+    return datetime.now(timezone.utc) >= parsed.astimezone(timezone.utc)
+
+
+def float_or(value: Any, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def build_records(

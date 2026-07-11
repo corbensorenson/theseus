@@ -578,7 +578,7 @@
         18
       ],
       "track_id": "E_authority_security_rights_kernel",
-      "status": "planned",
+      "status": "wired",
       "dependency": "requires explicit proposer, trusted-monitor, untrusted-monitor, observer, evaluator, and promotion-authority roles with non-shared answer state",
       "acceptance_gate": "A risk-routed protocol compares direct review, assisted consultation, adversarial review, and abstention; measures weak-supervisor failure, reviewer correlation/collusion, random audit coverage, disagreement, escalation, latency, and operator load; and rejects correlated-reviewer and self-authorization controls.",
       "support_state_target": "synthetic-test-backed",
@@ -596,7 +596,7 @@
         18
       ],
       "track_id": "A_reference_evidence_spine",
-      "status": "planned",
+      "status": "wired",
       "dependency": "extends candidate integrity, policy-update leases, benchmark ratchets, claim evidence, and promotion routing with one shared evaluation-integrity record",
       "acceptance_gate": "Bind elicitation, selection, reward, monitor, evaluator, heldout and cross-context probes, discrepancies, interference controls, residuals, mitigation evidence, and promotion effect; stale, incomparable, monitor-interference, selection-adaptation, and missing-control fixtures fail closed.",
       "support_state_target": "synthetic-test-backed",
@@ -613,7 +613,7 @@
         18
       ],
       "track_id": "E_authority_security_rights_kernel",
-      "status": "planned",
+      "status": "wired",
       "dependency": "requires versioned assessment identities and assurance dependencies consumed by default-route and release decisions",
       "acceptance_gate": "Crossed thresholds trigger preregistered safeguards; stale/incomparable assessments, missing acceptance criteria, unresolved defeaters, expired exceptions, and stale dependencies block the affected route; changes invalidate and require review of dependent assurance nodes.",
       "support_state_target": "synthetic-test-backed",
@@ -632,7 +632,7 @@
         18
       ],
       "track_id": "D_repo_stewardship_and_evidence_hygiene",
-      "status": "planned",
+      "status": "wired",
       "dependency": "requires one AIBOM and custody graph across code, data, model, tokenizer, evaluator, runtime, hardware, build, and derivative artifacts",
       "acceptance_gate": "A clean rebuild plus poisoned/substituted dependency, stale advisory, invalid signature, tampered weight, revoked key, stale attestation, relocation, anti-rollback, and derivative-revocation controls verify requested/resolved/observed identity, affected closure, quarantine, and load denial.",
       "support_state_target": "replayable-reference-backed",
@@ -651,7 +651,7 @@
         18
       ],
       "track_id": "E_authority_security_rights_kernel",
-      "status": "planned",
+      "status": "wired",
       "dependency": "requires a second bounded stack or distinct-principal Hive endpoint and a transport-independent typed exchange contract",
       "acceptance_gate": "Two stacks exchange a task and artifact with principal identity, credential/delegation chain, schema/version negotiation, authority ceiling, expiry/revocation, reserved resource/value budget, accounting receipt, dispute path, residual, and shutdown handoff; invalid credentials, expired delegation, missing budget, replay, and partition controls fail closed.",
       "support_state_target": "synthetic-test-backed",
@@ -2299,7 +2299,7 @@
     {
       "phase": 14,
       "title": "Compression, Proof, And Claim Evidence Records",
-      "status": "partial",
+      "status": "wired",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-14",
       "ai_book_source_basis": [
@@ -2371,19 +2371,17 @@
         "reports/theseus_artifact_budget_gate.json",
         "reports/theseus_artifact_budget_gate.md"
       ],
-      "missing_items": [
-        "dependency-invalidating structured assurance graph consumed by route/release decisions",
-        "cross-context evaluation-integrity record and monitor-interference controls"
-      ],
+      "missing_items": [],
       "implemented_items": [
         "The canonical report evidence store now emits a named eight-root epistemic TCB and five primary-plus-shadow audit assignments rotated by ISO week; producer/self-audit, missing-root, and insufficient-independent-auditor states fail closed.",
         "The registry/roadmap-derived evidence-pack emitter covers every currently citeable GREEN report without copying private payloads. The live run validates 91/91 packs with source digest, commands, baseline/control shape, residual shape, non-claims, support state, and source-activity counters.",
         "Material claim discovery now spans 1,532 stable claims across 43 emitting report families, records 9,166 dependent-surface edges, merges repeated projections by stable claim ID, rejects contradictory text/cycles, persists 3,963 authoritative append-only claim versions, and emits 13 downgrade transitions only for genuinely non-GREEN dependencies.",
         "Receipt faithfulness now performs 64 deterministic randomized deep replays plus seven expected-invalid traps covering digest/source/trigger/payload/counter, TCB self-audit, and claim-cycle faults; all live replays pass and all traps are rejected.",
         "The append-only SQLite store moved 571 oversized inline payloads (860,781,217 bytes) to exact digest-replayed snapshots and reclaimed 866,529,280 database bytes without losing a payload.",
-        "Current-reference-aware compaction protects operational configs, route-required reports, roadmap citations, active promoted manifests, mutable ledgers, and explicit pins. It archived 13+ GiB of unreferenced weights, hard-linked ten byte-identical weight files, and archived 115 superseded hot-report views while reclaiming about 299 MiB. A manifest audit repaired 36 missing historical pointers only after archive-hash verification and then replayed 1,361/1,361 cumulative archived entries. The final artifact budget is GREEN with zero hard gaps and zero warnings."
+        "Current-reference-aware compaction protects operational configs, route-required reports, roadmap citations, active promoted manifests, mutable ledgers, and explicit pins. It archived 13+ GiB of unreferenced weights, hard-linked ten byte-identical weight files, and archived 115 superseded hot-report views while reclaiming about 299 MiB. A manifest audit repaired 36 missing historical pointers only after archive-hash verification and then replayed 1,361/1,361 cumulative archived entries. The final artifact budget is GREEN with zero hard gaps and zero warnings.",
+        "The canonical evidence-store integrity kernel compiles a live supported claim into a digest-bound evaluation-integrity record and versioned assurance case. It keeps trusted/untrusted monitors separate, compares direct and compact contexts, preserves scoped non-claims, and rejects 9/9 stale, discrepancy, interference, selection-adaptation, missing-control, unresolved-defeater, stale-dependency, and countercase faults."
       ],
-      "smallest_next_patch": "Compile one live claim into an assurance graph and evaluation-integrity record, then prove stale evidence, unresolved defeaters, cross-context discrepancies, and monitor interference invalidate the affected route without promoting safety claims.",
+      "smallest_next_patch": "Maintain assurance and evaluation-integrity compilation inside the canonical evidence store; new route/release claims must supply current dependencies, countercase review, scoped acceptance criteria, and clean context/monitor controls.",
       "integration_smoke": [
         "python3 scripts/theseus_artifact_retention.py --execute --include-report-snapshots --min-bytes 7000000 --max-files 1",
         "python3 scripts/theseus_artifact_retention_replay_gate.py",
@@ -2717,7 +2715,7 @@
     {
       "phase": 18,
       "title": "Governance Rights, Constitutional Predicates, And Failure Boundaries",
-      "status": "partial",
+      "status": "wired",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-18",
       "ai_book_source_basis": [
@@ -2779,13 +2777,11 @@
         "reports/vcm_context_governor.json",
         "reports/hive_network_doctor.json"
       ],
-      "missing_items": [
-        "trusted-peer Hive artifact endpoint proof remains pending until a trusted peer is reachable; local operator audit/export receipts and local artifact payload citations are now live and VIEA-gated. Current network doctor evidence reports coordinator_unreachable, registered_peers_unreachable, peer_inbound_only_outbound_blocked, and No route to host for the trusted Windows coordinator",
-        "scalable oversight role-separation and collusion/correlation protocol",
-        "capability-threshold commitment and assurance consumption",
-        "inter-stack identity/delegation/budget/exchange/dispute contract"
+      "missing_items": [],
+      "external_followups": [
+        "Prove the same inter-stack identity/delegation/budget/exchange contract against a real trusted-peer Hive endpoint when another node is reachable; the local transport-independent contract is wired and Phase 9 owns remote proof."
       ],
-      "smallest_next_patch": "Implement local rejecting fixtures and one bounded transaction for oversight role separation, threshold/safeguard commitments, and inter-stack identity/budget/revocation; keep remote multi-node transfer as an external follow-up.",
+      "smallest_next_patch": "Maintain the governance kernel as the authority boundary: new effect classes or stack exchanges must preserve distinct roles, threshold safeguards, assurance consumption, replay protection, finite budgets, revocation, dispute, and shutdown behavior.",
       "integration_smoke": [
         "python3 scripts/governance_rights_receipt_suite.py",
         "reports/governance_rights_receipt_suite.json summary.passed_fixture_count=4",
@@ -2804,7 +2800,8 @@
       ],
       "completion_rule": "Every material route has explicit rights, authority, hard vetoes, typed failure boundaries, and incident/abstention behavior.",
       "implemented_items": [
-        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters."
+        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters.",
+        "The same canonical governance suite now emits role-separated oversight, side-effect-threshold commitment, and transport-independent inter-stack exchange records. It consumes the live effect-complete assistant receipt and assurance case, and rejects 16/16 self-authorization, reviewer correlation, shared-state, missing-audit, missing-safeguard, stale/incomparable assessment, invalid assurance, expired exception/delegation, credential, budget, replay, partition-authority, and revocation controls."
       ]
     },
     {
