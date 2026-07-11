@@ -175,6 +175,7 @@ from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     BODY_STATE_EVENT_ROLES,
     MlxStrictGenerator,
     body_action_role_id_for_token,
+    body_operand_prefix_context,
     body_operand_role_id_for_token,
     body_state_event_role_id_for_token,
 )
@@ -3125,12 +3126,14 @@ def body_operand_biased_probability_row(
     if weight <= 0.0:
         return values
     generated_tokens = [str(inverse.get(int(idx), "")) for idx in list(generated or [])]
+    prefix_context = body_operand_prefix_context(generated_tokens, allowed_names=allowed_names)
     biased = np.array(values, dtype=np.float64, copy=True)
     for idx in range(len(biased)):
         role_id = body_operand_role_id_for_token(
             str(inverse.get(int(idx), "")),
             allowed_names=allowed_names,
             generated_tokens=generated_tokens,
+            prefix_context=prefix_context,
         )
         role_prob = float(roles[role_id]) if 0 <= int(role_id) < len(roles) else 0.0
         biased[idx] = max(float(biased[idx]), 1e-12) * (max(role_prob, 1e-9) ** weight)
@@ -3157,12 +3160,14 @@ def body_state_event_biased_probability_row(
     if weight <= 0.0:
         return values
     generated_tokens = [str(inverse.get(int(idx), "")) for idx in list(generated or [])]
+    prefix_context = body_operand_prefix_context(generated_tokens, allowed_names=allowed_names)
     biased = np.array(values, dtype=np.float64, copy=True)
     for idx in range(len(biased)):
         event_id = body_state_event_role_id_for_token(
             str(inverse.get(int(idx), "")),
             allowed_names=allowed_names,
             generated_tokens=generated_tokens,
+            prefix_context=prefix_context,
         )
         role_prob = float(roles[event_id]) if 0 <= int(event_id) < len(roles) else 0.0
         biased[idx] = max(float(biased[idx]), 1e-12) * (max(role_prob, 1e-9) ** weight)

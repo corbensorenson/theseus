@@ -83,3 +83,36 @@ def test_adaptation_reserves_teacher_rows_for_train_only() -> None:
     assert all(row["task_id"] != teacher["task_id"] for row in eval_rows)
     assert audit["reserved_train_position_count"] == 1
     assert audit["teacher_rows_in_eval_count"] == 0
+
+
+def test_direct_body_profile_closes_auxiliary_dependencies() -> None:
+    profile = adaptation.SEMANTIC_CONSTRUCTION_REPAIR_PROFILES[
+        "strict_direct_body_emission_path_v1"
+    ]
+    required = set(profile["required_components"])
+    overrides = profile["overrides"]
+
+    assert "body_transition_auxiliary" in required
+    assert float(overrides["body_transition_loss_weight"]) > 0.0
+    assert "body_action_auxiliary" in required
+    assert float(overrides["body_action_loss_weight"]) > 0.0
+    assert "body_operand_auxiliary" in required
+    assert float(overrides["body_operand_loss_weight"]) > 0.0
+    assert "body_state_event_auxiliary" in required
+    assert float(overrides["body_state_event_loss_weight"]) > 0.0
+
+
+def test_teacher_curriculum_auto_honors_adoption_and_explicit_ablation_isolated() -> None:
+    configured = {"teacher_distillation": {"enabled": False, "mode": "governed_training_rows_only"}}
+
+    automatic = adaptation.config_with_teacher_curriculum_mode(configured, "auto")
+    enabled = adaptation.config_with_teacher_curriculum_mode(configured, "on")
+    disabled = adaptation.config_with_teacher_curriculum_mode(
+        {"teacher_distillation": {"enabled": True}},
+        "off",
+    )
+
+    assert automatic["teacher_distillation"]["enabled"] is False
+    assert enabled["teacher_distillation"]["enabled"] is True
+    assert disabled["teacher_distillation"]["enabled"] is False
+    assert configured["teacher_distillation"]["enabled"] is False

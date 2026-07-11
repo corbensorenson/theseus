@@ -679,6 +679,26 @@ deletion closure is graph evidence, not physical unlearning.
   `0.296970` versus `0.401639`; decode is `11.252` seconds slower; both score
   `0/24`. The plan mode is therefore `NOT_ADOPTED`, body-only remains canonical,
   and lower plan-arm LM loss receives no capability credit.
+- The first architecture-qualified Sol 5.6 teacher curriculum ablation is also a
+  clean negative. Matched MLX arms resumed the same frozen checkpoint with the
+  same `1,024` train rows, `192` heldouts, seed, optimizer, four epochs, and
+  direct-body auxiliary profile; the teacher-on arm reserved `14` governed rows
+  to train only. Teacher-off reached heldout LM loss `0.352542`; teacher-on was
+  worse at `0.371843`. On the same `24` family-disjoint plus `24` broad-private
+  tasks, both arms scored `0/48`. Teacher-on emitted fewer independently verified
+  learned candidates (`110` versus `135`), increased decode-starved tasks (`11`
+  versus `2`), and lowered mean verifier reward on both splits. Candidate-integrity
+  and blind-information-flow audits are GREEN with zero learned credit for the
+  `48` baseline/fallback rows in each manifest. These rows remain admitted and
+  provenance-bound, but this curriculum is `NOT_ADOPTED`; verifier acceptance is
+  not a substitute for causal heldout utility.
+- The same ablation exposed and removed a canonical decoder hot-loop defect.
+  Operand and state-event bias recomputed generated-prefix context once per
+  vocabulary token. Prefix context is now computed once per probability row and
+  reused, preserving bit-identical probabilities; the focused benchmark improved
+  `27.96x`. The full `48`-task/four-candidate control still required `1,658.502`
+  seconds, so incremental KV/prefix caching, progress receipts, and resumable
+  decode remain required before this gate is suitable for routine iteration.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

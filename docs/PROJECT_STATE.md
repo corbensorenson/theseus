@@ -50,18 +50,18 @@ remains capability evidence rather than architecture completion evidence.
 The pre-training readiness gate now uses an explicit, exhaustive phase
 partition. Architecture prerequisites are Phases `0, 1, 2, 3, 4, 6, 8, 11,
 14, 15, 18, 19`; training/empirical/behavior qualification phases are `5, 7,
-10, 12, 13, 16, 17`; external-environment proof is Phase `9`. The remaining
-local architecture blockers are therefore Phases `1, 2, 14, 18`, not the
-training and behavior phases themselves.
+10, 12, 13, 16, 17`; external-environment proof is Phase `9`. All locally
+actionable architecture prerequisites are now wired or implemented. The gate
+reports `pre_training_architecture_ready=true`, zero architecture blockers, and
+zero architecture warnings; this authorizes governed training but is not model
+quality evidence.
 The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
-book reconciliation. Phases `15` and `19` are `implemented`; phases `0`, `3`, `4`, `6`,
-`8`, `11`, `12`, and `17` are `wired`; phases `1`, `2`, `5`, `7`,
-`10`, `13`, `14`, `16`, and `18` are honestly `partial`; and only Phase `9`
-remains externally frozen until trusted peers are reachable. The local partial
-states now include durable semantic memory inside VCM, useful governed-effect
-rollback, full-state update/unlearning causality, ambiguous routing/adaptive
-deliberation, scalable oversight, assurance/threshold commitments, supply-chain
-and weight custody, and inter-stack exchange. This is roadmap
+book reconciliation. Phases `15` and `19` are `implemented`; phases `0`, `1`,
+`2`, `3`, `4`, `6`, `8`, `11`, `12`, `14`, `17`, and `18` are `wired`; phases
+`5`, `7`, `10`, `13`, and `16` are honestly `partial`; and only Phase `9`
+remains externally frozen until trusted peers are reachable. The remaining
+partial states require real-use, training, behavior, or routing evidence rather
+than another local architecture scaffold. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 current local AI_book manifest contains `54` chapters, all mapped through the
@@ -108,16 +108,20 @@ because recursive synthetic share is `0.824771`; this is a
 curriculum-distribution warning, not a model-collapse, forgetting, unlearning,
 or capability claim.
 
-Teacher-provider correction: the reconstructed retained teacher-call log
-contains `35` source receipts and `30` executed external calls, all through
-`codex_cli/gpt-5.5`; the admitted manifest contains `11` receipt-verified
-OpenAI rows and zero provider violations. All `11` admitted rows are currently
-utility-quarantined after a matched negative canary, so the canonical trainer
-assigns them zero sampling mass. No non-OpenAI teacher transaction is supported
-by a receipt, manifest, ledger, or training artifact. Claude and Anthropic are
-forbidden for teacher use and project review. Provider identity is recomputed
-from retained executable/model receipts, including nested provenance, rather
-than accepted from narrated status or a relabelled top-level field.
+Teacher policy is now `codex_cli/gpt-5.6-sol` at `high` reasoning effort. The
+retained external-inference audit contains `39` verified receipts: `38`
+historical `gpt-5.5` receipts and one current `gpt-5.6-sol` receipt, with zero
+provider violations. The admitted manifest contains `15` provenance-verified
+OpenAI rows; the canonical code-LM loader retains `14` as available and
+utility-quarantines one retained negative row. Default model training consumes
+none because the matched curriculum is `NOT_ADOPTED`; explicit causal ablations
+may still opt in. A matched MLX teacher-on/off run consumed those `14`
+rows only in the training split and made no runtime external call. No non-OpenAI
+teacher transaction is supported by a receipt, manifest, ledger, or training
+artifact. Claude and Anthropic are forbidden for teacher use and project review.
+Provider identity is recomputed from retained executable/model receipts,
+including nested provenance, rather than accepted from narrated status or a
+relabelled top-level field.
 
 Phase `10` has a clean 6.6M-parameter MLX decoder-only causal transformer. The
 previous `1/24` floor is invalid because private tests influenced inferred
@@ -139,6 +143,20 @@ the source-offset repair, and more same-distribution SFT all fail to move exact
 behavior above zero. The successor remains contained, non-canonical, and
 non-routable. The wall is prompt-conditioned semantic behavior, complete task
 coverage, verifier-positive pair density, and durable training provenance.
+The first architecture-qualified teacher curriculum ablation confirms that the
+new teacher rows do not solve this wall. Matched teacher-off/on adaptations use
+the same frozen checkpoint, `1,024` training rows, `192` heldouts, seed,
+optimizer, and four-epoch budget. Teacher-off reaches heldout LM loss `0.352542`;
+teacher-on reaches `0.371843`. Both score `0/48` on the same family-disjoint and
+broad-private tasks. Teacher-on emits `110` integrity-verified learned candidates
+versus `135`, starves `11` tasks versus `2`, and lowers mean verifier reward on
+both splits. Independent candidate-integrity and blind-flow audits are GREEN.
+The teacher curriculum is therefore retained but not adopted.
+The run also removed a decoder hot-loop defect: generated-prefix operand context
+was recomputed for every vocabulary token. Reusing one context per probability
+row preserves exact probabilities and measures `27.96x` focused speedup. The
+full 48-task/four-candidate control still takes `1,658.502` seconds, leaving
+incremental KV/prefix caching and resumable progress receipts as runtime walls.
 An exact-bound conditioning diagnostic over all `24` heldouts measures matched
 loss `1.662704` versus deterministic wrong-source loss `1.766282`, a positive
 gap of `0.103578`. This rules out complete source blindness but does not support

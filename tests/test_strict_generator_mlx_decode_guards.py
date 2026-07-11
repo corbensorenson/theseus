@@ -23,8 +23,57 @@ from neural_seed_token_decoder_support import (
     target_tokens,
 )
 from neural_seed_decode_static_guard import decode_static_guard
+import strict_generator_mlx_decode_eval as decode_eval
 from strict_generator_mlx_decode_eval import broad_private_decode_token_budget, mlx_token_choices
 from strict_generator_mlx_pretraining_probe import body_start_span_mask_mlx, parameter_is_optional_auxiliary
+
+
+def test_operand_bias_parses_prefix_once_per_probability_row(monkeypatch) -> None:
+    calls = 0
+    original = decode_eval.body_operand_prefix_context
+
+    def counted(tokens, *, allowed_names=None):
+        nonlocal calls
+        calls += 1
+        return original(tokens, allowed_names=allowed_names)
+
+    monkeypatch.setattr(decode_eval, "body_operand_prefix_context", counted)
+    inverse = {0: "NAME:item", 1: "NAME:total", 2: "OP:+", 3: "<eos>"}
+    result = decode_eval.body_operand_biased_probability_row(
+        np.asarray([0.25, 0.25, 0.25, 0.25]),
+        np.ones(20, dtype=np.float64) / 20.0,
+        inverse,
+        [0, 2],
+        allowed_names={"item"},
+        blend=0.5,
+    )
+
+    assert calls == 1
+    assert np.isclose(float(np.sum(result)), 1.0)
+
+
+def test_state_event_bias_parses_prefix_once_per_probability_row(monkeypatch) -> None:
+    calls = 0
+    original = decode_eval.body_operand_prefix_context
+
+    def counted(tokens, *, allowed_names=None):
+        nonlocal calls
+        calls += 1
+        return original(tokens, allowed_names=allowed_names)
+
+    monkeypatch.setattr(decode_eval, "body_operand_prefix_context", counted)
+    inverse = {0: "NAME:item", 1: "NAME:total", 2: "OP:+", 3: "<eos>"}
+    result = decode_eval.body_state_event_biased_probability_row(
+        np.asarray([0.25, 0.25, 0.25, 0.25]),
+        np.ones(7, dtype=np.float64) / 7.0,
+        inverse,
+        [0, 2],
+        allowed_names={"item"},
+        blend=0.5,
+    )
+
+    assert calls == 1
+    assert np.isclose(float(np.sum(result)), 1.0)
 
 
 def test_nested_isinstance_type_tuple_is_legal() -> None:

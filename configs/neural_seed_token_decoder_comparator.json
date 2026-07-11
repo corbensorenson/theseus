@@ -12,8 +12,16 @@
     "long_unattended_training_allowed": true
   },
   "teacher_distillation": {
-    "enabled": true,
+    "enabled": false,
     "mode": "governed_training_rows_only",
+    "curriculum_adoption_state": "NOT_ADOPTED",
+    "curriculum_adoption_reason": "Matched MLX teacher-on/off behavior ablation remained 0/48 and teacher-on regressed candidate coverage, decode starvation, verifier reward, and heldout LM loss.",
+    "curriculum_adoption_evidence": {
+      "teacher_off_adaptation": "reports/strict_generator_mlx_private_adaptation_phase10_teacher_ablation_off_sol56_v2.json",
+      "teacher_on_adaptation": "reports/strict_generator_mlx_private_adaptation_phase10_teacher_ablation_on_sol56_v2.json",
+      "teacher_off_decode": "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_off_sol56_v2.json",
+      "teacher_on_decode": "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_on_sol56_v2.json"
+    },
     "manifest": "reports/teacher_distillation_manifest.json",
     "gate": "reports/teacher_distillation_gate.json",
     "max_code_lm_rows": 64,

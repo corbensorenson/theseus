@@ -1825,7 +1825,15 @@
         "reports/standard_causal_transformer_survival_candidates.jsonl",
         "reports/candidate_integrity_standard_causal_transformer_survival.json",
         "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-        "reports/standard_causal_transformer_survival_gate.json"
+        "reports/standard_causal_transformer_survival_gate.json",
+        "reports/strict_generator_mlx_private_adaptation_phase10_teacher_ablation_off_sol56_v2.json",
+        "reports/strict_generator_mlx_private_adaptation_phase10_teacher_ablation_on_sol56_v2.json",
+        "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_off_sol56_v2.json",
+        "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_on_sol56_v2.json",
+        "reports/candidate_integrity_mlx_phase10_teacher_ablation_off_sol56_v2.json",
+        "reports/candidate_integrity_mlx_phase10_teacher_ablation_on_sol56_v2.json",
+        "reports/blind_information_flow_audit_mlx_phase10_teacher_ablation_off_sol56_v2.json",
+        "reports/blind_information_flow_audit_mlx_phase10_teacher_ablation_on_sol56_v2.json"
       ],
       "missing_items": [
         "offline preference comparison across DPO/IPO/ORPO/KTO/SimPO on the same private accepted/rejected pair split, same reference checkpoint, same optimizer budget, same heldout verifier, and same no-cheat/candidate-integrity audit",
@@ -1850,10 +1858,22 @@
         "The operation-adequacy decode pass is diagnostic/ranking evidence only: it now reports missing_expected_update_call when the learned prefix predicts a call update but the body emits only assignment transforms, ranks prompt-visible operation evidence ahead of generic loop-score proxies, and lets prompt-visible operation tags propose operation-bearing branch/update tokens before the generic loop path preempts them. The bounded private canaries remain clean but behavior-zero: 4 integrity-verified generated rows, 0 integrity mismatches, nontrivial-return rate 1.0, and 0/2 private passes. The follow-up zero-credit semantic-operation value-construction canary preserves clean candidate integrity and emits 2 nontrivial transformer/hybrid private-eval rows, but still scores 0/2 private passes and exposes repeated max(max(... starvation plus shallow accumulator/type-handling failures rather than operation-bearing clamp/round or absolute-distance bodies.",
         "The next governed step is broad semantic expression/body construction repair through semantic IR localized repair or a trainable AST/state-transition head, not another target-side weighting family, source-condition ranker, or diagnostic guard. Prompt/signature body-token decode now produces admitted non-fallback, non-template, nontrivial candidates under the canonical prefix-governed route, but those candidates are semantically shallow and must pass private verifier behavior before preference/RL scaling. DPO/IPO/ORPO/KTO/SimPO and GRPO/RLOO/ReMax/RLVR remain downstream of verifier behavior, not substitutes for it.",
         "The state-machine event target canary is residual/training-signal evidence only: it activates a sharper private event policy and improves LM plus transition loss, but action/operand metrics still fail and no checkpoint is routeable. It does not support learned-generation promotion, public-transfer claims, or default routing.",
-        "The executable-span canary is also residual/training-signal evidence only: the dedicated span head and opt-in span-to-hidden body constructor improve LM/span/event metrics, but action/operand or tensor-update gates still fail and no checkpoint is routeable. It does not support learned-generation promotion, public-transfer claims, or default routing."
+        "The executable-span canary is also residual/training-signal evidence only: the dedicated span head and opt-in span-to-hidden body constructor improve LM/span/event metrics, but action/operand or tensor-update gates still fail and no checkpoint is routeable. It does not support learned-generation promotion, public-transfer claims, or default routing.",
+        "The first matched Sol 5.6 teacher curriculum ablation is valid negative evidence, not a promotion. Both arms score 0/48 across the same family-disjoint and broad-private tasks; teacher-on worsens heldout LM loss, emits 110 versus 135 integrity-verified learned candidates, increases decode starvation to 11 versus 2 tasks, and lowers mean verifier reward on both splits. The 14 manifest-admitted rows remain provenance-valid but are not causally useful under this recipe.",
+        "The operand/state-event prefix-context optimization is behavior-exact runtime evidence only. It removes a repeated vocabulary-times-prefix parse and measures a focused 27.96x speedup, but the full 48-task four-candidate control still takes 1658502 ms. KV/prefix-cache parity, incremental progress receipts, and resumable decode remain unproven."
       ],
-      "smallest_next_patch": "Use the canonical all-candidate verifier labels and semantic-IR receipts to identify the dominant wrong-answer obligations, then compare a stronger source-conditioning objective or architecture against the frozen split under matched optimizer positions. Improve prompt/signature-conditioned semantic body generation enough to produce a materially denser exact pass-vs-hard-negative private pair set. Do not widen beam, share vocabularies, add same-distribution SFT epochs, or scale DPO from the current behavior-zero evidence.",
+      "smallest_next_patch": "Keep the Sol 5.6 teacher tranche unpromoted and use the canonical all-candidate verifier labels to extract the repeated unfinished-expression, algorithm-choice, and state-transition residuals without exposing eval answers. In parallel, add incremental KV/prefix caching plus atomic per-task progress/resume receipts to the existing MLX decoder. Then compare a stronger sequence-level source-conditioned architecture against the frozen split under matched optimizer positions; require an exact family-disjoint behavior gain before teacher curriculum, preference/RL, scale, or public calibration advances.",
       "integration_smoke": [
+        "python3 -m pytest -q tests/test_mlx_teacher_curriculum_integration.py tests/test_strict_generator_mlx_decode_guards.py",
+        "configs/neural_seed_token_decoder_comparator.json teacher_distillation.curriculum_adoption_state=NOT_ADOPTED",
+        "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_off_sol56_v2.json summary.split_passes.family_disjoint=0",
+        "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_off_sol56_v2.json summary.split_passes.broad_private_heldout=0",
+        "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_on_sol56_v2.json summary.split_passes.family_disjoint=0",
+        "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_on_sol56_v2.json summary.split_passes.broad_private_heldout=0",
+        "reports/candidate_integrity_mlx_phase10_teacher_ablation_off_sol56_v2.json trigger_state=GREEN",
+        "reports/candidate_integrity_mlx_phase10_teacher_ablation_on_sol56_v2.json trigger_state=GREEN",
+        "reports/blind_information_flow_audit_mlx_phase10_teacher_ablation_off_sol56_v2.json trigger_state=GREEN",
+        "reports/blind_information_flow_audit_mlx_phase10_teacher_ablation_on_sol56_v2.json trigger_state=GREEN",
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "reports/neural_seed_survival_readiness_gate.json trigger_state=GREEN",
         "reports/neural_seed_survival_readiness_gate.json summary.phase10_survival_lane_support_state=synthetic-test-backed",

@@ -1626,6 +1626,7 @@ def body_state_event_role_id_for_token(
     *,
     allowed_names: set[str] | None = None,
     generated_tokens: list[str] | None = None,
+    prefix_context: dict[str, set[str]] | None = None,
 ) -> int:
     """Map a candidate token to the coarse state-machine event role.
 
@@ -1641,6 +1642,7 @@ def body_state_event_role_id_for_token(
         str(token_text or ""),
         allowed_names=allowed_names,
         generated_tokens=generated_tokens,
+        prefix_context=prefix_context,
     )
     operand_role = (
         BODY_OPERAND_ROLES[operand_role_id]
@@ -3858,6 +3860,7 @@ def body_operand_role_for_token_text(
     *,
     allowed_names: set[str] | None = None,
     generated_tokens: list[str] | None = None,
+    prefix_context: dict[str, set[str]] | None = None,
 ) -> str:
     token = str(token_text or "")
     allowed = {str(name) for name in (allowed_names or set()) if str(name)}
@@ -3889,7 +3892,11 @@ def body_operand_role_for_token_text(
         return "attribute_name" if token == "OP:." else "punctuation"
     if token.startswith("NAME:"):
         name = token.removeprefix("NAME:")
-        context = body_operand_prefix_context(generated_tokens or [], allowed_names=allowed)
+        context = (
+            prefix_context
+            if isinstance(prefix_context, dict)
+            else body_operand_prefix_context(generated_tokens or [], allowed_names=allowed)
+        )
         if (generated_tokens or []) and str((generated_tokens or [""])[-1]) == "OP:.":
             return "method_name" if name in METHOD_OR_ATTRIBUTE_NAMES else "attribute_name"
         if name in allowed:
@@ -4004,12 +4011,14 @@ def body_operand_role_id_for_token(
     *,
     allowed_names: set[str] | None = None,
     generated_tokens: list[str] | None = None,
+    prefix_context: dict[str, set[str]] | None = None,
 ) -> int:
     return BODY_OPERAND_ROLE_TO_ID.get(
         body_operand_role_for_token_text(
             token_text,
             allowed_names=allowed_names,
             generated_tokens=generated_tokens,
+            prefix_context=prefix_context,
         ),
         BODY_OPERAND_ROLE_TO_ID["other"],
     )
