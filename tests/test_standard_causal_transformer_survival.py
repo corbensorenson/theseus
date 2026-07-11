@@ -69,6 +69,7 @@ from standard_causal_transformer_survival_gate import (
     audit_sft_contract_admission,
     audit_state_memory_ablation,
     audit_state_memory_continuation,
+    audit_teacher_residual_ablation,
     audit_target_mode_comparison,
 )
 from generation_mode_gate import audit_comparison, read_report_ref
@@ -810,6 +811,152 @@ def test_state_continuation_requires_exact_gain_and_improved_loss(tmp_path: Path
     assert "semantic_heldout_loss_worsened" in rejected["adoption_rejection_reasons"]
 
 
+def test_teacher_residual_ablation_requires_exact_private_behavior_gain(tmp_path: Path) -> None:
+    teacher_gate = tmp_path / "teacher_gate.json"
+    teacher_gate.write_text(
+        json.dumps({"trigger_state": "GREEN", "distillation_allowed": True}),
+        encoding="utf-8",
+    )
+    provider_audit = tmp_path / "provider_audit.json"
+    provider_audit.write_text(
+        json.dumps(
+            {
+                "ok": True,
+                "summary": {
+                    "teacher_receipt_violations": 0,
+                    "teacher_provider_counts": {"codex_cli/gpt-5.5": 2},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    arm_dirs: dict[str, Path] = {}
+    for name, state_mode in {"body_only": "none", "semantic": "semantic_roles"}.items():
+        directory = tmp_path / name
+        directory.mkdir()
+        arm_dirs[name] = directory
+        model = {"d_model": 32}
+        if state_mode != "none":
+            model.update(
+                {
+                    "state_memory_slots": 8,
+                    "state_memory_chunk_size": 4,
+                    "state_memory_local_window": 8,
+                    "state_memory_mode": state_mode,
+                    "state_memory_ablation": "none",
+                    "state_memory_read_policy": "unrestricted",
+                }
+            )
+        (directory / "config.json").write_text(
+            json.dumps(
+                {
+                    "seed": 1,
+                    "model": model,
+                    "training": {"positions": 200},
+                    "teacher_distillation": {
+                        "minimum_code_lm_rows_for_sampling": 2,
+                        "teacher_sampling_probability_target": 0.1,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        candidates = directory / "candidates.jsonl"
+        candidates.write_text("{}\n", encoding="utf-8")
+        checkpoint = directory / "prior.npz"
+        checkpoint.write_bytes(name.encode())
+        prior = directory / "prior.json"
+        prior.write_text(
+            json.dumps(
+                {
+                    "artifacts": {"checkpoint": str(checkpoint)},
+                    "summary": {
+                        "model_only_passed_task_count": 0,
+                        "candidate_task_count": 20,
+                        "candidate_count": 60,
+                    },
+                    "private_verifier": {"private_verification": {"mean_verification_reward": 0.4}},
+                    "training": {"eval_loss_after": 1.5},
+                    "decode": {"runtime_ms": 20},
+                }
+            ),
+            encoding="utf-8",
+        )
+        passed = 1 if name == "semantic" else 0
+        report = {
+            "artifacts": {"prior_training_receipt": str(prior)},
+            "conditioning": {
+                "resume_base_checkpoint_sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest()
+            },
+            "stage": {
+                "stage_signature": "same",
+                "governed_teacher_prompt_pair_count": 2,
+                "governed_teacher_unique_body_count": 2,
+                "teacher_sampling_probability": 0.1,
+                "governed_teacher_source_summary": {"gate_green": True, "tranche_ready": True},
+                "train_holdout_family_overlap_count": 0,
+                "train_eval_prompt_overlap_count": 0,
+                "train_eval_body_overlap_count": 0,
+                "governed_teacher_current_holdout_rejected_count": 0,
+                "governed_teacher_eval_overlap_rejected_count": 0,
+            },
+            "training": {
+                "eval_loss_after": 1.2 if name == "semantic" else 1.4,
+                "phases": [
+                    {"phase": "prompt_signature_body_sft", "optimizer_body_positions_consumed": 100},
+                    {"phase": "prompt_signature_body_sft_continuation", "optimizer_body_positions_consumed": 100},
+                ],
+            },
+            "summary": {
+                "model_only_passed_task_count": passed,
+                "candidate_task_count": 21,
+                "candidate_count": 70,
+            },
+            "private_verifier": {"private_verification": {"mean_verification_reward": 0.5}},
+            "decode": {"runtime_ms": 10},
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+        (directory / "report.json").write_text(json.dumps(report), encoding="utf-8")
+        (directory / "integrity.json").write_text(
+            json.dumps(
+                {
+                    "source": str(candidates),
+                    "trigger_state": "GREEN",
+                    "summary": {"candidate_count": 1, "integrity_mismatch_count": 0},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (directory / "blind_audit.json").write_text(
+            json.dumps({"trigger_state": "GREEN", "summary": {"invalid_claim_count": 0}}),
+            encoding="utf-8",
+        )
+
+    adopted = audit_teacher_residual_ablation(
+        arm_dirs,
+        teacher_gate_path=teacher_gate,
+        provider_audit_path=provider_audit,
+    )
+    assert adopted["state"] == "GREEN"
+    assert adopted["adoption_state"] == "ADOPTED_STATE_SHADOW"
+
+    semantic_path = arm_dirs["semantic"] / "report.json"
+    semantic = json.loads(semantic_path.read_text())
+    semantic["summary"]["model_only_passed_task_count"] = 0
+    semantic["training"]["eval_loss_after"] = 1.6
+    semantic_path.write_text(json.dumps(semantic), encoding="utf-8")
+    rejected = audit_teacher_residual_ablation(
+        arm_dirs,
+        teacher_gate_path=teacher_gate,
+        provider_audit_path=provider_audit,
+    )
+    assert rejected["state"] == "GREEN"
+    assert rejected["adoption_state"] == "NOT_ADOPTED"
+    assert "no_family_disjoint_verifier_pass_gain" in rejected["adoption_rejection_reasons"]
+
+
 def test_candidate_integrity_recomputes_direct_plan_body_trace_instead_of_trusting_flags() -> None:
     import semantic_ir
     from neural_seed_token_decoder_rendering import PLAN_BODY_START_TOKEN
@@ -1234,6 +1381,31 @@ def test_standalone_sft_contract_requires_declared_signature() -> None:
     decision = standalone_sft_contract_decision("Compute a sum.", "return sum(data)")
     assert decision["accepted"] is False
     assert "declared_signature_missing" in decision["reject_reasons"]
+
+
+def test_teacher_sampling_target_is_exact_and_body_balanced() -> None:
+    examples = [
+        {"source": "licensed_function", "source_text": "a", "body": "return 1"},
+        {"source": "licensed_function", "source_text": "b", "body": "return 2"},
+        {"source": "governed_private", "source_text": "c", "body": "return 3"},
+        {"source": "governed_openai_teacher", "source_text": "d", "body": "return 4"},
+        {"source": "governed_openai_teacher", "source_text": "e", "body": "return 4"},
+        {"source": "governed_openai_teacher", "source_text": "f", "body": "return 5"},
+    ]
+    weighted, summary = assign_body_balanced_sampling_weights(
+        examples,
+        private_body_weight=2.0,
+        teacher_sampling_probability_target=0.2,
+    )
+    teacher = [row for row in weighted if row["source"] == "governed_openai_teacher"]
+    duplicate_body_mass = sum(
+        row["sampling_weight"] for row in teacher if row["body"] == "return 4"
+    )
+    unique_body_mass = sum(
+        row["sampling_weight"] for row in teacher if row["body"] == "return 5"
+    )
+    assert duplicate_body_mass == unique_body_mass
+    assert summary["teacher_sampling_probability"] == 0.2
 
 
 def test_training_completion_uses_consumed_positions_not_estimated_steps() -> None:

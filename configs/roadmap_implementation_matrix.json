@@ -2001,9 +2001,9 @@
         "reports/standard_causal_transformer_survival_gate.json"
       ],
       "missing_items": [
-        "State architecture and same-data continuation are exhausted on the frozen private surface: all semantic/hash/body/zero/shuffle/role-read/continuation arms remain 0/24, and continuation worsens heldout loss in every matched arm"
+        "State architecture, same-data continuation, and the bounded governed OpenAI residual tranche are exhausted on the frozen private surface: all matched arms remain 0/24, teacher continuation worsens heldout loss in both body-only and unrestricted-state arms, and body-only coverage regresses"
       ],
-      "smallest_next_patch": "Construct and admit a bounded OpenAI-teacher private residual tranche through the existing teacher gate, with heldout exclusion and executable verifier acceptance, then run one equal-exposure body-only/state comparison. Complete Phase 13 only on direct verifier-pass gain with independent integrity; deterministic compilation/repair remains zero-credit.",
+      "smallest_next_patch": "Add one separately supervised learned Semantic-IR plan/obligation head to the existing standard causal transformer. Derive plan labels only from admitted training bodies, predict plans from prompt/signature only, and causally condition the unchanged direct body decoder without a renderer or repair. Compare body-only, learned-plan, and deterministically shuffled-plan arms at equal body-token exposure; require an exact family-disjoint verifier pass and clean integrity before adoption.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",

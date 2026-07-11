@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import copy
+import gzip
 import importlib.util
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -266,6 +268,59 @@ class TeacherProviderPolicyTest(unittest.TestCase):
         self.assertTrue(
             any(item["kind"] == "claude_cli_invocation_forbidden" for item in violations)
         )
+
+    def test_teacher_row_loader_fails_closed_when_gate_is_red(self) -> None:
+        import neural_seed_teacher_distillation_rows as rows_module
+
+        config = {
+            "safety": {"teacher_distillation_allowed": True},
+            "teacher_distillation": {
+                "enabled": True,
+                "manifest": "reports/teacher_distillation_manifest.json",
+                "gate": "reports/teacher_distillation_gate.json",
+            },
+        }
+        manifest = {
+            "summary": {"row_count": 1, "admission_safety_checks_clean": True},
+            "rows": [],
+        }
+        with mock.patch.object(
+            rows_module,
+            "read_json",
+            side_effect=[
+                {"trigger_state": "RED", "distillation_allowed": False},
+                manifest,
+                {},
+            ],
+        ):
+            result = rows_module.load_governed_teacher_code_lm_training_rows(config)
+        self.assertEqual([], result["rows"])
+        self.assertFalse(result["summary"]["gate_green"])
+        self.assertEqual(0, result["summary"]["accepted_code_lm_training_rows"])
+
+    def test_archive_pointer_jsonl_replays_live_append_tail(self) -> None:
+        import theseus_archive_resolver as resolver
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            archive = root / "teacher_calls.jsonl.gz"
+            with gzip.open(archive, "wt", encoding="utf-8") as handle:
+                handle.write(json.dumps({"request_id": "historical"}) + "\n")
+            pointer = root / "teacher_calls.jsonl"
+            pointer.write_text(
+                json.dumps(
+                    {
+                        "policy": resolver.ARCHIVE_POINTER_POLICY,
+                        "archive_path": str(archive),
+                    }
+                )
+                + "\n"
+                + json.dumps({"request_id": "live_tail"})
+                + "\n",
+                encoding="utf-8",
+            )
+            rows = resolver.read_jsonl_follow_pointer(pointer)
+        self.assertEqual(["historical", "live_tail"], [row["request_id"] for row in rows])
 
 
 if __name__ == "__main__":

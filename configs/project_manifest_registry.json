@@ -216,7 +216,7 @@
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-          "sha256": "a702f3b055afcba78041438574507c742185b5e5dab09a96a991da26146fb246"
+          "sha256": "fb62085117d90ac781d46c95dfbd2595a39b442e1493345c44140512d7e748ff"
         },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
@@ -228,7 +228,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "c3cafbc783229653a497dc615b007d29f6a5c5c0319453faab4668b9b86b2828"
+          "sha256": "05655fb7e471e77653da689bfea15e629fd22723a6b30e696b90d7ca4c90444d"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -248,11 +248,11 @@
         },
         "conditioning_implementation": {
           "path": "scripts/standard_causal_transformer_conditioning.py",
-          "sha256": "32d8c9b0073ae4eda93400386e4a5b3fa55932e28ab7301b0f9a6db940e7b0da"
+          "sha256": "7d846e2641810509fa1d9194b5c6f62da1b2cb7812e50ac7ec315442bd5934c4"
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "af628161a8243db776a1d345ab74af5eb9bfe53d5695b524692a415ab79e5826"
+          "sha256": "637231bf764f64629c76739d299514e5023ea0c690267a690bc6c9029a7f18d3"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -264,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "3b26dc02fc2566681345bb64965a70815a82fb42c00ac38d36fcb6dfd8613aa7"
+          "sha256": "2149ee99db26eef83594f30fadc0ae5eb0e875b0848c771796e04de8980a715c"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -284,15 +284,15 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "3699bbae1a40c26a7d1af5a0b274433d8e5508ccbd64e7be352d6c17a741c1e6"
+          "sha256": "c772808019c86cd49cc86bbd777114eae55e98ff0f9f665aadcc512f69b3ddc9"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "27a6c16b73ad2e5bd77174e5df5d62554f42bb27e57c2c95b33070da8aa1be02"
+          "sha256": "12178549e249b33b8e78f72ff250f6c2b6445c6cac2afc7ff06512e5370ab14b"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "1ade3d3739a10805ff9f53725801b7fe70d84ff39a5c1de49a60988eabfb798a"
+          "sha256": "aaa558100f8398773aa49a706ec63154344c3052a527e6b3749ab101ea909d76"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",

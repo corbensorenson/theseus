@@ -50,6 +50,10 @@ DEFAULT_STATE_CONTINUATION_ARM_DIRS = {
     "semantic": ROOT / "runtime" / "standard_causal_transformer_state_semantic_continuation",
     "hash_control": ROOT / "runtime" / "standard_causal_transformer_state_hash_control_continuation",
 }
+DEFAULT_TEACHER_RESIDUAL_ARM_DIRS = {
+    "body_only": ROOT / "runtime" / "standard_causal_transformer_teacher_body_canary",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_teacher_state_canary",
+}
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -129,6 +133,8 @@ def build_gate(
     hard_gaps.extend(state_role_read_audit["hard_gaps"])
     state_continuation_audit = audit_state_memory_continuation(DEFAULT_STATE_CONTINUATION_ARM_DIRS)
     hard_gaps.extend(state_continuation_audit["hard_gaps"])
+    teacher_residual_audit = audit_teacher_residual_ablation(DEFAULT_TEACHER_RESIDUAL_ARM_DIRS)
+    hard_gaps.extend(teacher_residual_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -307,6 +313,12 @@ def build_gate(
             "state_continuation_adoption_state": state_continuation_audit["adoption_state"],
             "state_continuation_rejection_reasons": state_continuation_audit["adoption_rejection_reasons"],
             "state_continuation_deltas": state_continuation_audit["deltas"],
+            "teacher_residual_state": teacher_residual_audit["state"],
+            "teacher_residual_adoption_state": teacher_residual_audit["adoption_state"],
+            "teacher_residual_rejection_reasons": teacher_residual_audit[
+                "adoption_rejection_reasons"
+            ],
+            "teacher_residual_deltas": teacher_residual_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -323,6 +335,235 @@ def build_gate(
         "state_memory_ablation": state_memory_audit["receipt"],
         "state_role_read_ablation": state_role_read_audit["receipt"],
         "state_continuation": state_continuation_audit["receipt"],
+        "teacher_residual_ablation": teacher_residual_audit["receipt"],
+    }
+
+
+def audit_teacher_residual_ablation(
+    arm_dirs: dict[str, Path],
+    *,
+    teacher_gate_path: Path = ROOT / "reports" / "teacher_distillation_gate.json",
+    provider_audit_path: Path = ROOT / "reports" / "external_inference_audit.json",
+) -> dict[str, Any]:
+    required_arms = {"body_only", "semantic"}
+    required_files = ("report.json", "config.json", "candidates.jsonl", "integrity.json", "blind_audit.json")
+    if set(arm_dirs) != required_arms:
+        return {
+            "state": "RED",
+            "adoption_state": "NOT_ADOPTED",
+            "adoption_rejection_reasons": ["arm_set_mismatch"],
+            "deltas": {},
+            "receipt": {"state": "RED"},
+            "hard_gaps": [gap("teacher_residual_arm_set_mismatch", {"observed": sorted(arm_dirs)})],
+        }
+    missing = [
+        rel(directory / filename)
+        for directory in arm_dirs.values()
+        for filename in required_files
+        if not (directory / filename).exists()
+    ]
+    if missing:
+        return {
+            "state": "NOT_RUN",
+            "adoption_state": "NOT_RUN",
+            "adoption_rejection_reasons": [],
+            "deltas": {},
+            "receipt": {"state": "NOT_RUN", "missing": missing},
+            "hard_gaps": [],
+        }
+
+    reports = {name: read_json(path / "report.json") for name, path in arm_dirs.items()}
+    configs = {name: read_json(path / "config.json") for name, path in arm_dirs.items()}
+    integrities = {name: read_json(path / "integrity.json") for name, path in arm_dirs.items()}
+    blind = {name: read_json(path / "blind_audit.json") for name, path in arm_dirs.items()}
+    prior_paths = {
+        name: resolve(str((report.get("artifacts") or {}).get("prior_training_receipt") or ""))
+        for name, report in reports.items()
+    }
+    priors = {name: read_json(path) for name, path in prior_paths.items()}
+    teacher_gate = read_json(teacher_gate_path)
+    provider_audit = read_json(provider_audit_path)
+    hard_gaps: list[dict[str, Any]] = []
+    state_keys = {
+        "state_memory_slots", "state_memory_chunk_size", "state_memory_local_window",
+        "state_memory_mode", "state_memory_ablation", "state_memory_read_policy",
+    }
+
+    def normalized_config(value: dict[str, Any]) -> dict[str, Any]:
+        copy = json.loads(json.dumps(value))
+        for key in state_keys:
+            (copy.get("model") or {}).pop(key, None)
+        return copy
+
+    configs_equal = len({json.dumps(normalized_config(value), sort_keys=True) for value in configs.values()}) == 1
+    modes_correct = (
+        str((configs["body_only"].get("model") or {}).get("state_memory_mode") or "none") == "none"
+        and str((configs["semantic"].get("model") or {}).get("state_memory_mode") or "") == "semantic_roles"
+        and str((configs["semantic"].get("model") or {}).get("state_memory_read_policy") or "") == "unrestricted"
+    )
+    stage_signatures = {str((report.get("stage") or {}).get("stage_signature") or "") for report in reports.values()}
+    teacher_cfg = configs["body_only"].get("teacher_distillation") or {}
+    minimum_rows = int(teacher_cfg.get("minimum_code_lm_rows_for_sampling") or 0)
+    target_probability = float(teacher_cfg.get("teacher_sampling_probability_target") or 0.0)
+    stages = {name: report.get("stage") or {} for name, report in reports.items()}
+    tranche_bound = all(
+        int(stage.get("governed_teacher_prompt_pair_count") or 0) >= minimum_rows > 0
+        and int(stage.get("governed_teacher_unique_body_count") or 0)
+        == int(stage.get("governed_teacher_prompt_pair_count") or 0)
+        and abs(float(stage.get("teacher_sampling_probability") or 0.0) - target_probability) <= 1e-9
+        and bool((stage.get("governed_teacher_source_summary") or {}).get("gate_green"))
+        and bool((stage.get("governed_teacher_source_summary") or {}).get("tranche_ready"))
+        for stage in stages.values()
+    )
+    overlaps_clean = all(
+        int(stage.get(key) or 0) == 0
+        for stage in stages.values()
+        for key in (
+            "train_holdout_family_overlap_count",
+            "train_eval_prompt_overlap_count",
+            "train_eval_body_overlap_count",
+            "governed_teacher_current_holdout_rejected_count",
+            "governed_teacher_eval_overlap_rejected_count",
+        )
+    )
+
+    def phase_positions(report: dict[str, Any]) -> tuple[int, int]:
+        rows = [row for row in (report.get("training") or {}).get("phases", []) if isinstance(row, dict)]
+        total = sum(int(row.get("optimizer_body_positions_consumed") or 0) for row in rows)
+        latest = int(rows[-1].get("optimizer_body_positions_consumed") or 0) if rows else 0
+        return total, latest
+
+    positions = {name: phase_positions(report) for name, report in reports.items()}
+    exposure_equal = len(set(positions.values())) == 1 and next(iter(positions.values()))[1] > 0
+    prior_bound = all(path.exists() and bool(priors[name]) for name, path in prior_paths.items())
+    resume_hash_bound = all(
+        (
+            lambda checkpoint, expected: checkpoint.exists() and file_sha256(checkpoint) == expected
+        )(
+            resolve(str((priors[name].get("artifacts") or {}).get("checkpoint") or "")),
+            str((reports[name].get("conditioning") or {}).get("resume_base_checkpoint_sha256") or ""),
+        )
+        for name in required_arms
+    )
+    integrity_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("integrity_mismatch_count") or 0) == 0
+        and resolve(str(value.get("source") or "")) == arm_dirs[name] / "candidates.jsonl"
+        and int((value.get("summary") or {}).get("candidate_count") or 0)
+        == len(read_jsonl(arm_dirs[name] / "candidates.jsonl"))
+        for name, value in integrities.items()
+    )
+    blind_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("invalid_claim_count") or 0) == 0
+        for value in blind.values()
+    )
+    boundaries_clean = all(
+        int(report.get(key) or 0) == 0
+        for report in reports.values()
+        for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
+    )
+    provider_counts = (provider_audit.get("summary") or {}).get("teacher_provider_counts") or {}
+    provider_clean = (
+        provider_audit.get("ok") is True
+        and int((provider_audit.get("summary") or {}).get("teacher_receipt_violations") or 0) == 0
+        and bool(provider_counts)
+        and set(provider_counts) == {"codex_cli/gpt-5.5"}
+    )
+    checks = {
+        "configs_equal_except_state_policy": configs_equal,
+        "modes_expected": modes_correct,
+        "stage_signature_equal": len(stage_signatures) == 1 and "" not in stage_signatures,
+        "teacher_tranche_bound": tranche_bound,
+        "teacher_gate_green": teacher_gate.get("trigger_state") == "GREEN" and bool(teacher_gate.get("distillation_allowed")),
+        "openai_provider_receipts_clean": provider_clean,
+        "holdout_and_eval_overlap_clean": overlaps_clean,
+        "body_exposure_equal": exposure_equal,
+        "prior_receipts_bound": prior_bound,
+        "resume_checkpoint_hashes_present": resume_hash_bound,
+        "integrity_clean": integrity_clean,
+        "blind_information_flow_clean": blind_clean,
+        "boundaries_clean": boundaries_clean,
+    }
+    for name, passed in checks.items():
+        if not passed:
+            hard_gaps.append(gap(f"teacher_residual_{name}_failed", {}))
+
+    def metrics(report: dict[str, Any]) -> dict[str, Any]:
+        summary = report.get("summary") or {}
+        private = (report.get("private_verifier") or {}).get("private_verification") or {}
+        return {
+            "passed_task_count": int(summary.get("model_only_passed_task_count") or 0),
+            "candidate_task_count": int(summary.get("candidate_task_count") or 0),
+            "candidate_count": int(summary.get("candidate_count") or 0),
+            "mean_verification_reward": float(private.get("mean_verification_reward") or 0.0),
+            "eval_loss_after": float((report.get("training") or {}).get("eval_loss_after") or 0.0),
+            "decode_runtime_ms": int((report.get("decode") or {}).get("runtime_ms") or 0),
+        }
+
+    current = {name: metrics(report) for name, report in reports.items()}
+    previous = {name: metrics(report) for name, report in priors.items()}
+    deltas = {
+        name: {key: round(float(current[name][key]) - float(previous[name][key]), 6) for key in current[name]}
+        for name in required_arms
+    }
+    body_gain = current["body_only"]["passed_task_count"] > previous["body_only"]["passed_task_count"]
+    state_gain = (
+        current["semantic"]["passed_task_count"] > previous["semantic"]["passed_task_count"]
+        and current["semantic"]["passed_task_count"] > current["body_only"]["passed_task_count"]
+    )
+    if not hard_gaps and state_gain:
+        adoption_state = "ADOPTED_STATE_SHADOW"
+    elif not hard_gaps and body_gain:
+        adoption_state = "ADOPTED_BODY_ONLY_SHADOW"
+    else:
+        adoption_state = "NOT_ADOPTED"
+    rejection_reasons: list[str] = []
+    if not body_gain and not state_gain:
+        rejection_reasons.append("no_family_disjoint_verifier_pass_gain")
+    if current["body_only"]["eval_loss_after"] >= previous["body_only"]["eval_loss_after"]:
+        rejection_reasons.append("body_only_heldout_loss_worsened")
+    if current["semantic"]["eval_loss_after"] >= previous["semantic"]["eval_loss_after"]:
+        rejection_reasons.append("semantic_heldout_loss_worsened")
+    if current["body_only"]["candidate_task_count"] < previous["body_only"]["candidate_task_count"]:
+        rejection_reasons.append("body_only_candidate_coverage_regressed")
+    artifacts = {
+        arm: {
+            filename: {
+                "path": rel(directory / filename),
+                "sha256": file_sha256(directory / filename),
+                "bytes": (directory / filename).stat().st_size,
+            }
+            for filename in required_files
+        }
+        for arm, directory in arm_dirs.items()
+    }
+    receipt = {
+        "state": "GREEN" if not hard_gaps else "RED",
+        "adoption_state": adoption_state,
+        "adoption_rejection_reasons": rejection_reasons,
+        "matched_checks": checks,
+        "teacher_row_count": int(stages["body_only"].get("governed_teacher_prompt_pair_count") or 0),
+        "teacher_sampling_probability": float(stages["body_only"].get("teacher_sampling_probability") or 0.0),
+        "optimizer_body_positions": positions,
+        "prior_metrics": previous,
+        "continuation_metrics": current,
+        "deltas": deltas,
+        "artifacts": artifacts,
+        "decision": "quarantine_teacher_tranche" if adoption_state == "NOT_ADOPTED" else "retain_shadow_only",
+        "non_claims": [
+            "teacher-row verifier acceptance is not student capability",
+            "syntax and candidate coverage without an exact pass receive no promotion credit",
+            "this private result does not authorize preference/RL or public calibration",
+        ],
+    }
+    return {
+        "state": receipt["state"],
+        "adoption_state": adoption_state,
+        "adoption_rejection_reasons": rejection_reasons,
+        "deltas": deltas,
+        "receipt": receipt,
+        "hard_gaps": hard_gaps,
     }
 
 

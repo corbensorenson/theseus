@@ -35,6 +35,10 @@ def load_governed_teacher_code_lm_training_rows(config: dict[str, Any]) -> dict[
     manifest_summary = dict_or_empty(manifest.get("summary"))
     strict_holdout = strict_report_holdout_families()
     accepted_rows = manifest.get("rows") if isinstance(manifest.get("rows"), list) else []
+    gate_green = (
+        gate_report.get("trigger_state") == "GREEN"
+        and bool(gate_report.get("distillation_allowed", False))
+    )
     rows: list[dict[str, Any]] = []
     rejected: list[dict[str, Any]] = []
     for admitted in accepted_rows:
@@ -78,21 +82,21 @@ def load_governed_teacher_code_lm_training_rows(config: dict[str, Any]) -> dict[
         "enabled": enabled,
         "manifest": rel(manifest_path),
         "gate": rel(gate_path),
-        "gate_green": gate_report.get("trigger_state") == "GREEN" and bool(gate_report.get("distillation_allowed", False)),
+        "gate_green": gate_green,
         "manifest_present": bool(manifest),
         "manifest_row_count": int(manifest_summary.get("row_count") or len(accepted_rows) or 0),
         "manifest_safety_clean": bool(manifest_summary.get("admission_safety_checks_clean")),
         "manifest_verifier_pass_rate": float(manifest_summary.get("verifier_pass_rate") or 0.0),
         "public_overlap_hits": int(manifest_summary.get("public_overlap_hits") or manifest.get("public_overlap_hits") or 0),
         "holdout_overlap_hits": int(manifest_summary.get("holdout_overlap_hits") or manifest.get("holdout_overlap_hits") or 0),
-        "accepted_code_lm_training_rows": len(rows) if enabled else 0,
+        "accepted_code_lm_training_rows": len(rows) if enabled and gate_green else 0,
         "available_code_lm_training_rows": len(rows),
         "rejected_code_lm_training_rows": len(rejected),
         "rejected_examples": rejected[:8],
         "utility_quarantine": teacher_code_lm_utility_quarantine_summary(teacher_cfg),
         "strict_holdout_families": sorted(strict_holdout),
         "holdout_family_code_lm_training_rows": len(holdout_rows),
-        "external_inference_calls": external_calls if enabled else 0,
+        "external_inference_calls": external_calls if enabled and gate_green else 0,
         "public_training_rows": 0,
         "runtime_serving_external_tokens": "forbidden",
         "visible_to_generation": "prompt_and_entry_point_only_after_row_admission",
@@ -103,7 +107,7 @@ def load_governed_teacher_code_lm_training_rows(config: dict[str, Any]) -> dict[
         ),
     }
     return {
-        "rows": rows if enabled else [],
+        "rows": rows if enabled and gate_green else [],
         "summary": summary,
     }
 

@@ -38,6 +38,37 @@
     "gradient_clip_norm": 1.0,
     "checkpoint_every_steps": 500
   },
+  "teacher_distillation": {
+    "enabled": true,
+    "mode": "governed_training_rows_only",
+    "manifest": "reports/teacher_distillation_manifest.json",
+    "gate": "reports/teacher_distillation_gate.json",
+    "max_code_lm_rows": 32,
+    "minimum_code_lm_rows_for_sampling": 10,
+    "teacher_sampling_probability_target": 0.05,
+    "utility_quarantine": {
+      "enabled": true,
+      "blocked_task_ids": [
+        "private_body_token_discipline_accumulator_v1",
+        "private_return_shape_batch_validation_report_v1",
+        "private_return_shape_invoice_audit_ordered_v1",
+        "private_selector_ranking_catalog_state_transition_v1",
+        "private_state_window_relay_v1",
+        "private_stateful_inventory_reconciliation_v1",
+        "private_verifier_contract_config_precedence_001",
+        "private_verifier_contract_duplicate_events_zero_missing_v1",
+        "private_verifier_contract_encounter_threshold_ties_v1",
+        "private_verifier_contract_mixed_payload_precedence_v1",
+        "teacher_seed_private_filtered_abs_sum_v1"
+      ],
+      "reason": "Retain all verifier-accepted rows as negative evidence. The matched standard-transformer body/state continuation stayed 0/24, worsened heldout loss in both arms, and regressed body-only coverage; do not reuse this tranche until a new utility experiment independently reverses that result."
+    },
+    "requires_execution_verified_code_lm_task": true,
+    "exclude_current_family_disjoint_holdout_families": true,
+    "runtime_serving_external_tokens": "forbidden",
+    "live_teacher_calls_in_trainer": false,
+    "score_semantics": "The trainer consumes only manifest-admitted OpenAI/Codex private code rows after current holdout-family and exact prompt/body exclusion. Teacher provenance and tests are never model-visible inputs."
+  },
   "evaluation": {
     "holdout_family_count": 24,
     "rows_per_family": 1,

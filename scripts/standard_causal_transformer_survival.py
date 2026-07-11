@@ -48,6 +48,9 @@ from neural_seed_token_decoder_rendering import (  # noqa: E402
     learned_semantic_ir_plan_body_target_mode,
     split_learned_plan_prefix_tokens,
 )
+from neural_seed_teacher_distillation_rows import (  # noqa: E402
+    load_governed_teacher_code_lm_training_rows,
+)
 from standard_causal_transformer_model import (  # noqa: E402
     CausalTransformerConfig,
     build_model,
@@ -629,7 +632,24 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "private_hidden_derived_signature_count": sft_audit[
             "private_hidden_derived_signature_count"
         ],
+        "governed_teacher_unique_body_count": sft_audit[
+            "governed_teacher_unique_body_count"
+        ],
+        "governed_teacher_prompt_pair_count": sft_audit[
+            "governed_teacher_prompt_pair_count"
+        ],
+        "governed_teacher_current_holdout_rejected_count": sft_audit[
+            "governed_teacher_current_holdout_rejected_count"
+        ],
+        "governed_teacher_eval_overlap_rejected_count": sft_audit[
+            "governed_teacher_eval_overlap_rejected_count"
+        ],
+        "governed_teacher_source_summary": sft_audit[
+            "governed_teacher_source_summary"
+        ],
         "private_sampling_probability": sft_audit["private_sampling_probability"],
+        "teacher_sampling_probability": sft_audit["teacher_sampling_probability"],
+        "teacher_sampling_mass": sft_audit["teacher_sampling_mass"],
         "sft_contract_admission": sft_audit["sft_contract_admission"],
         "shared_source_target_vocabulary": shared_vocabulary_enabled(config),
         "target_mode": str(config["tokenization"]["target_mode"]),
@@ -972,12 +992,90 @@ def load_sft_examples(
             examples.append({"source_text": source_text, "body": body, "source": "governed_private"})
             private_added += 1
             private_contract_accepted += int(contract_filter_enabled)
+
+    teacher_bundle = load_governed_teacher_code_lm_training_rows(config)
+    teacher_summary = (
+        teacher_bundle.get("summary")
+        if isinstance(teacher_bundle.get("summary"), dict)
+        else {}
+    )
+    teacher_rows = teacher_bundle.get("rows") if isinstance(teacher_bundle.get("rows"), list) else []
+    teacher_cfg = (
+        config.get("teacher_distillation")
+        if isinstance(config.get("teacher_distillation"), dict)
+        else {}
+    )
+    teacher_minimum_rows = max(
+        0, int(teacher_cfg.get("minimum_code_lm_rows_for_sampling") or 0)
+    )
+    teacher_tranche_ready = len(teacher_rows) >= teacher_minimum_rows
+    if not teacher_tranche_ready:
+        teacher_rows = []
+    teacher_summary = {
+        **teacher_summary,
+        "minimum_code_lm_rows_for_sampling": teacher_minimum_rows,
+        "tranche_ready": teacher_tranche_ready,
+    }
+    teacher_added = 0
+    teacher_body_hashes: set[str] = set()
+    teacher_contract_accepted = 0
+    teacher_contract_rejected = 0
+    teacher_current_holdout_rejected = 0
+    teacher_overlap_rejected = 0
+    for row in teacher_rows:
+        if not isinstance(row, dict):
+            continue
+        family = str(row.get("concept_residual_label") or "")
+        if family in holdout_families:
+            teacher_current_holdout_rejected += 1
+            observed_holdout_families.add(family)
+            continue
+        prompt = model_prompt(row)
+        body = str(row.get("solution_body") or "").strip()
+        if not prompt or not body:
+            continue
+        prompt_hash = sha(prompt)
+        body_hash = sha(body)
+        if prompt_hash in eval_prompt_hashes or body_hash in eval_body_hashes:
+            teacher_overlap_rejected += 1
+            continue
+        signature, _signature_receipt = training_callable_signature(row)
+        if not signature:
+            continue
+        source_text = f"{prompt}\nsignature {canonical_model_signature(signature, config)}"
+        if contract_filter_enabled:
+            contract = standalone_sft_contract_decision(source_text, body)
+            if not contract["accepted"]:
+                teacher_contract_rejected += 1
+                contract_rejections.update(contract["reject_reasons"])
+                continue
+        pair_hash = sha(f"{source_text}\n{body}")
+        if pair_hash in seen_pairs:
+            continue
+        seen_pairs.add(pair_hash)
+        unique_bodies.add(body_hash)
+        teacher_body_hashes.add(body_hash)
+        examples.append(
+            {
+                "source_text": source_text,
+                "body": body,
+                "source": "governed_openai_teacher",
+            }
+        )
+        teacher_added += 1
+        teacher_contract_accepted += int(contract_filter_enabled)
     examples, sampling = assign_body_balanced_sampling_weights(
         examples,
         private_body_weight=float(config["training"]["private_body_sampling_weight"]),
         private_sampling_probability_target=(
             float(contract_policy["private_sampling_probability_target"])
             if contract_policy.get("private_sampling_probability_target") is not None
+            else None
+        ),
+        teacher_sampling_probability_target=(
+            float(config["teacher_distillation"]["teacher_sampling_probability_target"])
+            if isinstance(config.get("teacher_distillation"), dict)
+            and config["teacher_distillation"].get("teacher_sampling_probability_target") is not None
             else None
         ),
     )
@@ -991,6 +1089,11 @@ def load_sft_examples(
         "private_explicit_signature_count": private_explicit_signatures,
         "private_generic_prompt_only_signature_count": private_generic_signatures,
         "private_hidden_derived_signature_count": private_hidden_derived_signatures,
+        "governed_teacher_unique_body_count": len(teacher_body_hashes),
+        "governed_teacher_prompt_pair_count": teacher_added,
+        "governed_teacher_current_holdout_rejected_count": teacher_current_holdout_rejected,
+        "governed_teacher_eval_overlap_rejected_count": teacher_overlap_rejected,
+        "governed_teacher_source_summary": teacher_summary,
         **sampling,
         "train_holdout_family_overlap_count": 0,
         "excluded_holdout_family_count": len(observed_holdout_families),
@@ -1008,6 +1111,8 @@ def load_sft_examples(
             "licensed_rejected_count": licensed_contract_rejected,
             "private_accepted_count": private_contract_accepted,
             "private_rejected_count": private_contract_rejected,
+            "teacher_accepted_count": teacher_contract_accepted,
+            "teacher_rejected_count": teacher_contract_rejected,
             "reject_reason_counts": dict(sorted(contract_rejections.items())),
             "target_body_used_for_admission_only": contract_filter_enabled,
             "target_body_fields_added_to_model_source": 0,
@@ -1117,6 +1222,7 @@ def assign_body_balanced_sampling_weights(
     *,
     private_body_weight: float,
     private_sampling_probability_target: float | None = None,
+    teacher_sampling_probability_target: float | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, float]]:
     private_counts: dict[str, int] = {}
     for row in examples:
@@ -1124,8 +1230,17 @@ def assign_body_balanced_sampling_weights(
             continue
         body_hash = sha(str(row.get("body") or ""))
         private_counts[body_hash] = private_counts.get(body_hash, 0) + 1
+    teacher_counts: dict[str, int] = {}
+    for row in examples:
+        if row.get("source") != "governed_openai_teacher":
+            continue
+        body_hash = sha(str(row.get("body") or ""))
+        teacher_counts[body_hash] = teacher_counts.get(body_hash, 0) + 1
     configured_private_body_weight = float(private_body_weight)
-    licensed_example_count = sum(row.get("source") != "governed_private" for row in examples)
+    licensed_example_count = sum(
+        row.get("source") not in {"governed_private", "governed_openai_teacher"}
+        for row in examples
+    )
     if private_sampling_probability_target is not None and private_counts and licensed_example_count:
         target = float(private_sampling_probability_target)
         if not 0.0 < target < 1.0:
@@ -1133,25 +1248,43 @@ def assign_body_balanced_sampling_weights(
         private_body_weight = (
             target * licensed_example_count / ((1.0 - target) * len(private_counts))
         )
+    teacher_body_weight = 1.0
+    base_mass = licensed_example_count + max(0.0, private_body_weight) * len(private_counts)
+    if teacher_sampling_probability_target is not None and teacher_counts:
+        teacher_target = float(teacher_sampling_probability_target)
+        if not 0.0 < teacher_target < 1.0:
+            raise ValueError("teacher sampling probability target must be between zero and one")
+        teacher_body_weight = (
+            teacher_target * base_mass / ((1.0 - teacher_target) * len(teacher_counts))
+        )
     weighted: list[dict[str, Any]] = []
     licensed_mass = 0.0
     private_mass = 0.0
+    teacher_mass = 0.0
     for row in examples:
         item = dict(row)
         if item.get("source") == "governed_private":
             body_hash = sha(str(item.get("body") or ""))
             weight = max(0.0, private_body_weight) / max(1, private_counts.get(body_hash, 1))
             private_mass += weight
+        elif item.get("source") == "governed_openai_teacher":
+            body_hash = sha(str(item.get("body") or ""))
+            weight = max(0.0, teacher_body_weight) / max(1, teacher_counts.get(body_hash, 1))
+            teacher_mass += weight
         else:
             weight = 1.0
             licensed_mass += weight
         item["sampling_weight"] = weight
         weighted.append(item)
-    total = licensed_mass + private_mass
+    total = licensed_mass + private_mass + teacher_mass
     return weighted, {
         "licensed_sampling_mass": round(licensed_mass, 6),
         "private_sampling_mass": round(private_mass, 6),
         "private_sampling_probability": round(private_mass / total, 6) if total else 0.0,
+        "teacher_sampling_mass": round(teacher_mass, 6),
+        "teacher_sampling_probability": round(teacher_mass / total, 6) if total else 0.0,
+        "teacher_body_sampling_weight": float(teacher_body_weight),
+        "teacher_sampling_probability_target": teacher_sampling_probability_target,
         "private_body_sampling_weight": float(private_body_weight),
         "configured_private_body_sampling_weight": configured_private_body_weight,
         "private_sampling_probability_target": private_sampling_probability_target,

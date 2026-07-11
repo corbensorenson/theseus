@@ -57,7 +57,11 @@ def iter_jsonl_follow_pointer(path: str | Path) -> Iterator[Any]:
             row = json.loads(stripped)
             if row.get("policy") == ARCHIVE_POINTER_POLICY and row.get("archive_path"):
                 yield from iter_jsonl_follow_pointer(str(row["archive_path"]))
-                return
+                # Append-only ledgers may receive new rows after retention has
+                # replaced their historical prefix with an archive pointer.
+                # Replay the archived prefix, then continue through the live
+                # tail instead of silently dropping post-archive events.
+                continue
             yield row
 
 

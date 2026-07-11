@@ -173,6 +173,35 @@ coverage falls `24 -> 23`; hash reaches `0.415625`, while body-only remains
 gate records `NOT_ADOPTED` and `stop_state_scaling_branch`; more same-data state
 training is no longer authorized by this evidence.
 
+The next bounded pressure used only the governed OpenAI teacher path. The
+receipt audit resolves the archived call prefix plus live append tail and finds
+`35` retained calls, all `codex_cli/gpt-5.5`, with zero provider violations.
+The manifest admits `11` executable private rows and rejects `16`; one earlier
+utility-negative row remains quarantined, leaving `10` distinct bodies across
+algorithm planning, return shape, verifier-contract, selector/ranking, and
+body-discipline pressure. The standard causal trainer now consumes admitted
+teacher rows through its canonical SFT materializer only when the teacher gate
+is GREEN and a minimum diverse tranche is present. It applies current 24-family
+holdout exclusion, exact prompt/body exclusion, self-containment admission,
+body-balanced sampling, and a fixed `0.05` sampling probability; provenance,
+tests, target metadata, and teacher identity are never model-visible features.
+An archive-pointer replay defect that previously dropped post-archive ledger
+appends is fixed and regression tested. The matched continuation adds exactly
+`1,198,331` new body positions to both retained checkpoints. Body-only remains
+`0/24`, regresses coverage `20 -> 16`, reward `0.401639 -> 0.353097`, and loss
+`1.748454 -> 1.764196`. Unrestricted state remains `0/24`, preserves coverage
+at `23`, changes reward `0.449635 -> 0.447794`, and worsens loss
+`1.667523 -> 1.707276`. Both integrity and blind-flow audits are GREEN. The
+survival gate records `NOT_ADOPTED` and `quarantine_teacher_tranche`; all eleven
+accepted task IDs are retained as negative evidence but excluded from the
+canonical survival trainer. The failure is now narrower: sequence likelihood
+absorbs valid bodies without learning prompt-conditioned algorithm plans. The
+next intervention must be a separately supervised learned plan/obligation head
+whose prediction is derived from prompt/signature only and causally conditions
+the direct body decoder, with shuffled-plan and body-only controls. More scalar
+teacher weighting, same-data continuation, or state-memory tuning is not
+supported.
+
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.
 
