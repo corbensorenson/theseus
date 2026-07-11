@@ -4,10 +4,10 @@
   "purpose": "Machine-readable implementation state for the AI_book-derived Theseus roadmap. This is the governed bridge between roadmap.md prose and registry-owned implementation work.",
   "roadmap_source": "roadmap.md",
   "registry_source": "configs/project_manifest_registry.json",
-  "latest_claude_mining_reconciliation": {
+  "latest_ai_book_technique_reconciliation": {
     "date": "2026-07-06",
     "status": "coverage_integrated_critical_path_tightened",
-    "source_attachment": "/Users/corbensorenson/.codex/attachments/f08752f6-9be1-440d-9c6c-65169a852670/pasted-text.txt",
+    "source_basis": "AI_book chapter-level Planned Codex test inventories and locally reproduced Theseus evidence",
     "coverage_result": "The packet confirms existing planned_codex_test_backlog coverage for policy optimization, fast generation, GVR, semantic IR, verification bandwidth, VCM transaction certificates, Circle/Coil cyclic baselines, belief revision, and procedural memory.",
     "important_correction": "DPO over accepted/rejected verifier pairs is no longer simply missing: a governed shadow update already moved private loss/preference-gap metrics and then failed strict private replay behaviorally. The durable semantic-IR obligation MLX private rung now trains from aggregate private failure obligations and improves heldout LM loss 2.019539 -> 1.467591 with clean public/external/fallback counters, but paired strict decode still scores 0 behavior passes on broad_private_heldout and private_train_replay. The newest graph/operation source-condition adequacy pass tightens admission rather than claiming behavior: prompt-visible graph/type tags now require task-blind graph-walk AST evidence, clip/window operation tags no longer accept shallow summary bodies, and the same train replay moves from emitted-but-wrong rows to zero admitted rows under --require-source-condition-adequacy with graph_walk_evidence and operation_evidence residuals. A dedicated state-event auxiliary head now improves its own private heldout event loss/accuracy, but direct event-head decode bias drops manifest candidate emission from 2 rows to 0 on the same private replay checkpoint. Future DPO/IPO/ORPO/KTO/SimPO, GRPO/RLVR, MTP, diffusion, or scale work must depend on direct prompt/signature body-token generation producing behavior-positive, non-fallback, non-template learned candidates beyond narrow simple-return replay. The follow-up soft compatibility coupling test is also no longer missing: reports/strict_generator_state_event_consistency_smoke_summary_20260706.json implements opt-in body-action/body-operand compatibility losses against private state-event targets, but the bounded canary is RED. LM/event metrics improve while action/operand metrics regress and compatible-role mass worsens, so simple soft coupling must not become a default profile setting. The first architecture-level predicted-state-event body constructor is also now tested: reports/strict_generator_coupled_state_body_constructor_smoke_summary_20260706.json wires an opt-in shared body hidden state conditioned on the model's own event distribution. Scale 0.25 and 0.05 ablations are both RED; LM/transition/event metrics improve, but action/operand losses regress and tensor-update coverage misses the hard gate. A one-step residual event-probability blend is therefore not enough. The executable-span follow-up in reports/strict_generator_executable_span_constructor_smoke_summary_20260706.json adds a dedicated span head and opt-in span-to-hidden constructor; both canaries improve LM/span/event metrics, but the constructor run still regresses body-action metrics, the head-only run regresses action and operand losses, both miss tensor-update coverage, and both checkpoints are rejected.",
     "immediate_capability_wall": "phase_10_direct_full_body_semantic_quality_zero_behavior",
@@ -20,7 +20,7 @@
       "test_mtp_gvr_lookahead_diffusion_and_scale_under_generation_mode_accounting",
       "harden_vcm_verification_bandwidth_procedural_memory_and_cyclic_baselines_without_learned_generation_credit"
     ],
-    "no_claim_boundary": "Claude/AI_book technique recommendations are planning coverage, not evidence. Routers, tools, templates, semantic renderers, fallback bodies, public benchmark artifacts, and external runtime inference remain noncredit for learned generation."
+    "no_claim_boundary": "AI_book technique recommendations are planning coverage, not evidence. Routers, tools, templates, semantic renderers, fallback bodies, public benchmark artifacts, and external runtime inference remain noncredit for learned generation."
   },
   "latest_ai_book_reconciliation": {
     "date": "2026-07-10",
@@ -334,12 +334,12 @@
     "AI_book chapter-level Planned Codex tests are treated as missing technique obligations until a registered Theseus implementation has matched controls, negative controls, no-cheat audit, retained residuals, and explicit non-claims.",
     "Negative, inconclusive, and regression evidence must remain attached to the claim or phase it constrains; do not replace a negative report with a nearby positive family.",
     "Before training becomes the primary roadmap focus again, the book-reference core must be represented as runnable claim-ledger, replacement-transaction, authority/SCIF, assistant-product, and evidence-hygiene slices.",
-    "Claude/AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it."
+    "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it."
   ],
   "planned_codex_test_backlog": [
     {
       "backlog_id": "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
-      "source_basis": "AI_book Chapter 38 planned tests plus Claude fourth-pass mining",
+      "source_basis": "AI_book Chapter 38 planned tests plus locally reproduced Theseus evidence",
       "technique_family": "offline_preference_optimization",
       "owned_phase_refs": [
         10
