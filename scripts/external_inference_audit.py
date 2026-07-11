@@ -29,6 +29,7 @@ REPORT_EXTERNAL_KEYS = (
     b'"external_inference_calls"',
     b'"external_inference_violations"',
 )
+REPORT_LEXICAL_COUNTER_MAP_KEYS = {"retrieval_vector"}
 
 TEACHER_FILES = {
     Path("scripts/teacher_oracle.py"),
@@ -552,11 +553,25 @@ def report_external_values(value: Any, path: list[str]) -> list[dict[str, Any]]:
             next_path = [*path, str(key)]
             if key in {"external_inference_calls", "external_inference_violations"}:
                 rows.append({"path": next_path, "value": child})
+            if key in REPORT_LEXICAL_COUNTER_MAP_KEYS and lexical_counter_map(child):
+                continue
             rows.extend(report_external_values(child, next_path))
     elif isinstance(value, list):
         for idx, child in enumerate(value):
             rows.extend(report_external_values(child, [*path, str(idx)]))
     return rows
+
+
+def lexical_counter_map(value: Any) -> bool:
+    """Recognize typed sparse lexical data without laundering nested controls."""
+
+    return isinstance(value, dict) and all(
+        isinstance(key, str)
+        and isinstance(count, int)
+        and not isinstance(count, bool)
+        and count >= 0
+        for key, count in value.items()
+    )
 
 
 def truthy_violation_value(value: Any) -> bool:

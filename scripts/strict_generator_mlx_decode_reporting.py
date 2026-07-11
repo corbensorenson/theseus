@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -284,6 +285,153 @@ def read_json(path: Path) -> dict[str, Any]:
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def stable_json_hash(payload: Any) -> str:
+    encoded = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def atomic_write_json_durable(path: Path, payload: dict[str, Any]) -> None:
+    """Commit a private runtime record without exposing a partial replacement."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink():
+        raise ValueError(f"refusing to replace symlinked progress path: {path}")
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    if temporary.exists() or temporary.is_symlink():
+        temporary.unlink()
+    encoded = (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    try:
+        descriptor = os.open(
+            temporary,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+            0o600,
+        )
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(encoded)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        directory_descriptor = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_descriptor)
+        finally:
+            os.close(directory_descriptor)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def initialize_decode_progress(
+    path: Path,
+    *,
+    run_contract: dict[str, Any],
+    resume: bool,
+) -> dict[str, Any]:
+    contract_hash = stable_json_hash(run_contract)
+    if path.is_symlink():
+        raise ValueError(f"refusing symlinked decode progress path: {path}")
+    if resume and path.exists():
+        try:
+            payload = read_json(path)
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            raise ValueError(f"decode progress is corrupt or unreadable: {path}") from exc
+        if payload.get("policy") != "project_theseus_strict_mlx_decode_progress_v1":
+            raise ValueError("decode progress policy mismatch")
+        if str(payload.get("run_contract_hash") or "") != contract_hash:
+            raise ValueError("decode progress run contract mismatch")
+        if not isinstance(payload.get("splits"), dict):
+            raise ValueError("decode progress split inventory is malformed")
+        payload["resume_count"] = int(payload.get("resume_count") or 0) + 1
+        payload["updated_utc"] = now()
+        atomic_write_json_durable(path, payload)
+        return payload
+    payload = {
+        "policy": "project_theseus_strict_mlx_decode_progress_v1",
+        "created_utc": now(),
+        "updated_utc": now(),
+        "run_contract": run_contract,
+        "run_contract_hash": contract_hash,
+        "resume_count": 0,
+        "splits": {},
+        "public_training_rows": 0,
+        "external_inference_calls": 0,
+        "fallback_template_router_tool_credit_count": 0,
+        "score_semantics": (
+            "Atomic private task-progress state only. It stores generated candidate payloads and "
+            "task-blind diagnostics after generation, never tests, solutions, expected answers, or "
+            "public benchmark payloads, and grants no capability credit."
+        ),
+    }
+    atomic_write_json_durable(path, payload)
+    return payload
+
+
+def bind_decode_progress_split(
+    progress: dict[str, Any],
+    path: Path,
+    *,
+    split_name: str,
+    task_input_hashes: list[str],
+) -> dict[str, Any]:
+    splits = progress.setdefault("splits", {})
+    expected_hash = stable_json_hash(task_input_hashes)
+    existing = splits.get(split_name)
+    if existing is not None:
+        if not isinstance(existing, dict):
+            raise ValueError(f"decode progress split is malformed: {split_name}")
+        if str(existing.get("task_inventory_hash") or "") != expected_hash:
+            raise ValueError(f"decode progress task inventory mismatch: {split_name}")
+        if list(existing.get("task_input_hashes") or []) != task_input_hashes:
+            raise ValueError(f"decode progress task order mismatch: {split_name}")
+        if not isinstance(existing.get("completed"), dict):
+            raise ValueError(f"decode progress completed inventory is malformed: {split_name}")
+        return existing
+    created = {
+        "split_name": split_name,
+        "task_input_hashes": task_input_hashes,
+        "task_inventory_hash": expected_hash,
+        "completed": {},
+        "batch_receipts": [],
+    }
+    splits[split_name] = created
+    progress["updated_utc"] = now()
+    atomic_write_json_durable(path, progress)
+    return created
+
+
+def commit_decode_progress_batch(
+    progress: dict[str, Any],
+    path: Path,
+    *,
+    split_name: str,
+    records: list[dict[str, Any]],
+    batch_receipt: dict[str, Any],
+) -> None:
+    split = dict_or_empty(dict_or_empty(progress.get("splits")).get(split_name))
+    completed = split.get("completed")
+    if not isinstance(completed, dict):
+        raise ValueError(f"decode progress completed inventory is malformed: {split_name}")
+    for record in records:
+        index = int(record.get("task_index"))
+        task_hashes = list(split.get("task_input_hashes") or [])
+        if index < 0 or index >= len(task_hashes):
+            raise ValueError(f"decode progress task index out of range: {index}")
+        if str(record.get("task_input_hash") or "") != str(task_hashes[index]):
+            raise ValueError(f"decode progress task hash mismatch at index {index}")
+        completed[str(index)] = record
+    receipts = split.setdefault("batch_receipts", [])
+    if not isinstance(receipts, list):
+        raise ValueError(f"decode progress receipt inventory is malformed: {split_name}")
+    receipts.append(batch_receipt)
+    progress["updated_utc"] = now()
+    atomic_write_json_durable(path, progress)
 
 
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:

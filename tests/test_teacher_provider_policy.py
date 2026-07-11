@@ -269,6 +269,31 @@ class TeacherProviderPolicyTest(unittest.TestCase):
                 verified_external_teacher_calls=3,
             )
         )
+
+    def test_external_audit_distinguishes_sparse_terms_from_real_counters(self) -> None:
+        values = AUDIT.report_external_values(
+            {
+                "semantic_object": {
+                    "retrieval_vector": {"external_inference_calls": 4, "teacher": 2},
+                },
+                "runtime": {"external_inference_calls": 1},
+            },
+            [],
+        )
+        self.assertEqual(
+            [{"path": ["runtime", "external_inference_calls"], "value": 1}],
+            values,
+        )
+        malformed = AUDIT.report_external_values(
+            {
+                "retrieval_vector": {
+                    "nested": {"external_inference_calls": 3},
+                }
+            },
+            [],
+        )
+        self.assertEqual(1, len(malformed))
+        self.assertEqual(3, malformed[0]["value"])
         self.assertFalse(
             AUDIT.is_verified_teacher_counter(
                 ["summary", "teacher_training", "external_inference_calls"],

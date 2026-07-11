@@ -696,9 +696,18 @@ deletion closure is graph evidence, not physical unlearning.
   Operand and state-event bias recomputed generated-prefix context once per
   vocabulary token. Prefix context is now computed once per probability row and
   reused, preserving bit-identical probabilities; the focused benchmark improved
-  `27.96x`. The full `48`-task/four-candidate control still required `1,658.502`
-  seconds, so incremental KV/prefix caching, progress receipts, and resumable
-  decode remain required before this gate is suitable for routine iteration.
+  `27.96x`. The ordinary MLX decoder now also uses checkpoint-compatible
+  incremental source/cross/self-attention state with an explicit full-prefix
+  control. Every materialized output head is numerically equivalent within
+  `1e-5`, candidate/token identity is exact, and a real 48-token checkpoint
+  canary improves pre-verifier decode from `832 ms` to `500 ms` (`1.664x`) while
+  reducing source encodes from `47` to `1`. Decode progress is committed with
+  fsync plus atomic replacement and bound to config, checkpoint, vocabulary,
+  options, task order, and opaque model-visible-input hashes. A forced stop after
+  two tasks resumed the third and reproduced all six candidate identities from
+  a clean control. Corrupt, stale, symlinked, reordered, or hash-mismatched state
+  fails closed. This is runtime/replay evidence only, not semantic capability or
+  CUDA/MLX parity.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

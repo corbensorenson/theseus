@@ -10,10 +10,8 @@ templates/renderers/tools/fallbacks as learned-generation evidence.
 from __future__ import annotations
 
 import argparse
-import ast
 import json
 import math
-import random
 import sys
 import time
 from collections import Counter
@@ -44,14 +42,11 @@ from neural_seed_token_decoder_comparator import (  # noqa: E402
     body_structure_summary,
     broad_private_heldout_manifest_rows,
     candidate_schema_summary,
-    decode_beam_sort_key,
     family_disjoint_manifest_rows,
-    final_decode_beam_sort_key,
     grammar_repair_summary,
     no_cheat_candidate_evidence,
     static_coherence_candidate_pool_size,
     static_coherence_ranker_enabled,
-    static_coherence_sort_key,
     static_coherence_summary,
     token_candidate_rows_for_view,
 )
@@ -60,67 +55,43 @@ from neural_seed_token_decoder_support import (  # noqa: E402
     baseline_candidate,
     body_like_target_mode,
     body_tokens_for_target_mode,
-    call_arg_count,
     current_line_tokens,
     decode_body_tokens,
     forced_lightweight_python_token,
-    innermost_open_paren_index,
-    invalid_known_builtin_arity,
-    invalid_known_method_arity,
     learned_plan_prefix_target_mode,
     learned_plan_semantic_slots_body_target_mode,
     learned_semantic_ir_plan_body_target_mode,
     normalize_body_text,
-    strict_body_expression_is_likely_noniterable,
-    strict_body_prefix_local_static_types,
-    strict_body_static_type_from_values,
     split_learned_plan_prefix_tokens,
     token_allowed_by_policy,
     token_values,
 )
 from neural_seed_decode_static_guard import (  # noqa: E402
-    action_trace_call_name,
-    ast_expr_is_trivial_constant_like,
-    ast_text_for_decode_guard,
-    body_has_nontrivial_return,
-    body_has_top_level_valued_return,
-    body_uses_allowed_parameter,
     completion_ready,
-    control_flow_pathology_summary,
-    decode_guard_parameter_names,
-    decode_guard_return_dependency_summary,
     decode_static_guard,
-    definitely_bound_return_summary,
-    expression_complexity_for_decode_guard,
-    expression_is_direct_parameter_identity,
-    expression_load_names,
-    expression_store_names,
-    parsed_decode_guard_function,
-    static_guard_candidate_code,
 )
 from neural_seed_expression_value_guard import (  # noqa: E402
-    EXPRESSION_VALUE_BARE_BUILTINS,
-    expression_value_has_bare_builtin_value,
     expression_value_quality_summary,
 )
 from strict_generator_mlx_replay_selection import (  # noqa: E402
-    exclude_configured_holdout_rows_for_replay,
-    private_solution_body_features,
-    private_train_replay_tier_inventory,
-    private_train_replay_tier_match,
     select_broad_private_heldout_rows,
     select_family_disjoint_rows,
     select_private_train_replay_rows,
 )
 from strict_generator_mlx_decode_reporting import (  # noqa: E402
+    atomic_write_json_durable,
+    bind_decode_progress_split,
     build_gates,
     candidate_integrity_summary,
+    commit_decode_progress_batch,
+    initialize_decode_progress,
     now,
     read_json,
     resolve_checkpoint_paths,
     resolve_checkpoint_paths_from_report,
     selection_summary,
     stable_hash_file,
+    stable_json_hash,
     stamp_mlx_rows,
     syntax_summary_from_rows,
     write_json,
@@ -128,29 +99,8 @@ from strict_generator_mlx_decode_reporting import (  # noqa: E402
 )
 from strict_generator_mlx_decode_guards import (  # noqa: E402
     allowed_signature_names_for_task,
-    condition_prefix_is_only_negation,
     current_body_line_values,
-    current_branch_receiver_type,
-    current_else_excludes_receiver_type,
-    current_prefix_control_depth,
-    expression_tail_values,
-    first_call_argument_values,
-    infer_receiver_tail_kind,
-    isinstance_guard_matches,
-    isinstance_guard_type,
-    isinstance_guard_type_token_redundant_or_contradictory,
-    known_builtin_first_arg_type_invalid,
-    known_call_prefix_would_be_invalid,
-    known_positional_max_args,
-    method_receiver_known_invalid,
-    normalized_condition_values,
     prefix_lines_with_depth,
-    prefix_mentions_allowed_parameter,
-    receiver_tail_call_name,
-    receiver_tail_is_known_non_dict,
-    receiver_tail_is_known_non_string,
-    receiver_tail_is_temporary_expression,
-    repeated_condition_chain_on_indent,
     token_blocked_by_strict_decode_guard,
 )
 from strict_generator_mlx_source_text import (  # noqa: E402
@@ -187,76 +137,32 @@ from strict_generator_mlx_decode_plans import (  # noqa: E402
     source_condition_exploration_choices,
     expression_closure_guard_choices,
     direct_local_return_continuation_choices,
-    current_line_expected_closer,
-    current_line_tail_needs_operand,
-    current_line_needs_colon_from_values,
     expression_closure_line_can_end,
-    expression_closure_can_dedent,
     source_condition_priority_prefix,
     source_condition_preempts_loop_plan,
-    source_condition_prefix_can_add_truthiness,
     source_condition_expectation_from_source_text,
-    visible_argument_names_from_source_text,
     source_condition_expectations_summary,
     source_condition_decode_beam_sort_key,
     learned_prefix_decision_final_decode_beam_sort_key,
     learned_prefix_decision_rank_score,
     learned_prefix_loop_plan_adequacy_metadata,
     learned_prefix_loop_expectation_from_tokens,
-    loop_plan_adequacy_for_body,
     learned_prefix_body_action_trace_metadata,
-    body_action_trace_for_body,
-    unreachable_statement_count_after_control_flow,
-    expression_has_constant,
-    loop_plan_value_shape,
-    loop_plan_value_has_stateful_transform,
-    loop_iter_mentions_source,
-    expression_is_direct_source_return,
-    loop_plan_update_arg_is_semantic,
     loop_plan_exploration_choices,
     loop_plan_priority_prefix,
     token_blocked_by_loop_plan,
     filter_loop_plan_blocked_choices,
     filter_expression_value_blocked_choices,
     token_blocked_by_expression_value_guard,
-    token_value_for_guard,
-    expression_value_allows_empty_initializer,
     expression_value_inside_update_call,
-    expression_value_current_call_arg_values,
-    expression_value_arg_is_empty_literal,
-    loop_plan_initializer_continuation,
-    loop_plan_loop_header_continuation,
-    loop_plan_update_continuation,
-    loop_plan_return_continuation,
-    loop_plan_blocks_shallow_identity_append,
-    loop_plan_allows_direct_loop_append,
     loop_plan_accumulator_name,
-    loop_plan_loop_var_name,
-    loop_plan_highest_probability_name,
     loop_plan_source_arg,
-    loop_plan_primary_init_shape,
-    loop_plan_update_method,
     loop_plan_has_initializer,
-    loop_plan_first_assigned_local,
-    loop_plan_first_loop_var,
     loop_plan_has_loop_over_source,
     loop_plan_has_update_call,
     loop_plan_has_local_return,
     loop_plan_inside_loop,
-    source_condition_final_decode_beam_sort_key,
-    source_condition_prefix_progress,
     source_condition_adequacy_for_body,
-    source_condition_body_has_truthiness_guard,
-    source_condition_body_has_default_return,
-    source_condition_body_has_sequence_type_guard,
-    isinstance_guard_covers_types,
-    source_condition_body_has_guarded_first_item_return,
-    source_condition_body_has_guarded_data_return,
-    expr_is_first_index_of_name,
-    bool_expr_has_and_name,
-    bool_expr_is_direct_name_operand,
-    bool_expr_contains_name,
-    expr_contains_name,
     source_plan_compatibility_for_plan_token,
     source_plan_compatibility_summary,
     source_condition_candidate_summary,
@@ -388,6 +294,32 @@ def main() -> int:
         ),
     )
     parser.add_argument("--body-state-event-head-blend", type=float, default=0.35)
+    parser.add_argument(
+        "--decode-cache-mode",
+        choices=["incremental", "full_prefix"],
+        default="incremental",
+        help=(
+            "Use checkpoint-compatible incremental self/cross attention caches, or the "
+            "full-prefix parity control."
+        ),
+    )
+    parser.add_argument(
+        "--progress-path",
+        default="",
+        help="Atomic per-task progress state; defaults beside --out during execute mode.",
+    )
+    parser.add_argument(
+        "--resume-progress",
+        action="store_true",
+        help="Resume only when the progress contract matches exactly; stale/corrupt state fails closed.",
+    )
+    parser.add_argument("--decode-task-batch-size", type=int, default=8)
+    parser.add_argument(
+        "--interrupt-after-tasks",
+        type=int,
+        default=0,
+        help="Deterministic restart-test hook: interrupt only after atomically committing this many tasks.",
+    )
     parser.add_argument("--prefer-learned-prefix-decision-adequacy", action="store_true")
     parser.add_argument("--prefer-source-condition-adequacy", action="store_true")
     parser.add_argument("--require-source-condition-adequacy", action="store_true")
@@ -470,6 +402,14 @@ def main() -> int:
     checkpoint_report = read_json(resolve(args.checkpoint_report)) if str(args.checkpoint_report or "").strip() else {}
     checkpoint, vocab = resolve_checkpoint_paths(args, checkpoint_report)
     specialist_specs = parse_specialist_checkpoint_report_specs(list(args.specialist_checkpoint_report or []))
+    progress_path = None
+    if bool(args.execute):
+        output_path = resolve(args.out)
+        progress_path = (
+            resolve(args.progress_path)
+            if str(args.progress_path or "").strip()
+            else output_path.with_suffix(output_path.suffix + ".progress.json")
+        )
     report, candidates = run_decode_eval(
         config,
         config_path=str(args.config),
@@ -509,6 +449,11 @@ def main() -> int:
         enable_expression_value_guard=bool(args.enable_expression_value_guard),
         enable_semantic_operation_value_construction=bool(args.enable_semantic_operation_value_construction),
         require_binding_prefix_groups=bool(args.require_binding_prefix_groups),
+        decode_cache_mode=str(args.decode_cache_mode),
+        progress_path=progress_path,
+        resume_progress=bool(args.resume_progress),
+        decode_task_batch_size=max(1, int(args.decode_task_batch_size or 1)),
+        interrupt_after_tasks=max(0, int(args.interrupt_after_tasks or 0)),
         execute=bool(args.execute),
     )
     write_json(resolve(args.out), report)
@@ -592,6 +537,11 @@ def run_decode_eval(
     enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
     execute: bool,
+    decode_cache_mode: str = "incremental",
+    progress_path: Path | None = None,
+    resume_progress: bool = False,
+    decode_task_batch_size: int = 8,
+    interrupt_after_tasks: int = 0,
     preselected_splits: dict[str, dict[str, Any]] | None = None,
     checkpoint_loader_cache: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -636,6 +586,7 @@ def run_decode_eval(
                     "enable_expression_value_guard": bool(enable_expression_value_guard),
                     "enable_semantic_operation_value_construction": bool(enable_semantic_operation_value_construction),
                     "require_binding_prefix_groups": bool(require_binding_prefix_groups),
+                    "decode_cache_mode": str(decode_cache_mode),
                     "public_training_rows": 0,
                     "external_inference_calls": 0,
                 },
@@ -664,6 +615,68 @@ def run_decode_eval(
                 "runtime_ms": int((time.perf_counter() - started) * 1000),
             },
             [],
+        )
+
+    progress_state = None
+    if progress_path is not None:
+        run_contract = {
+            "policy": "strict_mlx_decode_run_contract_v1",
+            "config_path": str(config_path),
+            "config_sha256": stable_hash_file(resolve(config_path)),
+            "checkpoint_report_path": str(checkpoint_report_path),
+            "checkpoint_sha256": stable_hash_file(checkpoint_path),
+            "vocab_sha256": stable_hash_file(vocab_path),
+            "specialist_checkpoints": {
+                tier: {
+                    "checkpoint_sha256": stable_hash_file(spec["checkpoint"]),
+                    "vocab_sha256": stable_hash_file(spec["vocab"]),
+                }
+                for tier, spec in sorted(specialist_checkpoint_specs.items())
+            },
+            "split": split,
+            "max_family_rows": int(max_family_rows),
+            "max_broad_rows": int(max_broad_rows),
+            "max_train_replay_rows": int(max_train_replay_rows),
+            "max_target_tokens_override": int(max_target_tokens_override),
+            "train_replay_tier": train_replay_tier,
+            "output_top_k": int(output_top_k),
+            "decode_task_batch_size": int(decode_task_batch_size),
+            "decode_cache_mode": str(decode_cache_mode),
+            "decode_flags": {
+                "require_parameter_use": bool(require_parameter_use),
+                "require_nontrivial_return": bool(require_nontrivial_return),
+                "require_top_level_return": bool(require_top_level_return),
+                "use_semantic_plan_head_prefix": bool(use_semantic_plan_head_prefix),
+                "prefer_source_plan_compatibility": bool(prefer_source_plan_compatibility),
+                "use_semantic_slot_head_prefix": bool(use_semantic_slot_head_prefix),
+                "enable_learned_expression_token_bias": bool(enable_learned_expression_token_bias),
+                "use_body_transition_head": bool(use_body_transition_head),
+                "body_transition_head_blend": float(body_transition_head_blend),
+                "use_body_action_head": bool(use_body_action_head),
+                "body_action_head_blend": float(body_action_head_blend),
+                "use_body_operand_head": bool(use_body_operand_head),
+                "body_operand_head_blend": float(body_operand_head_blend),
+                "use_body_state_event_head": bool(use_body_state_event_head),
+                "body_state_event_head_blend": float(body_state_event_head_blend),
+                "prefer_learned_prefix_decision_adequacy": bool(prefer_learned_prefix_decision_adequacy),
+                "prefer_source_condition_adequacy": bool(prefer_source_condition_adequacy),
+                "require_source_condition_adequacy": bool(require_source_condition_adequacy),
+                "block_shallow_loop_identity_update": bool(block_shallow_loop_identity_update),
+                "enable_loop_progress_guard": bool(enable_loop_progress_guard),
+                "enable_expression_closure_guard": bool(enable_expression_closure_guard),
+                "enable_expression_value_guard": bool(enable_expression_value_guard),
+                "enable_semantic_operation_value_construction": bool(enable_semantic_operation_value_construction),
+                "require_binding_prefix_groups": bool(require_binding_prefix_groups),
+                "use_specialist_route_profiles": bool(use_specialist_route_profiles),
+            },
+            "preselected_split_inventory_hash": (
+                stable_json_hash(preselected_splits) if preselected_splits else ""
+            ),
+        }
+        progress_state = initialize_decode_progress(
+            progress_path,
+            run_contract=run_contract,
+            resume=bool(resume_progress),
         )
 
     loaded = load_mlx_checkpoint(vocab_path, checkpoint_path, mx=mx, nn=nn, loader_cache=checkpoint_loader_cache)
@@ -746,6 +759,12 @@ def run_decode_eval(
             enable_expression_value_guard=enable_expression_value_guard,
             enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
             require_binding_prefix_groups=require_binding_prefix_groups,
+            decode_cache_mode=decode_cache_mode,
+            progress_state=progress_state,
+            progress_path=progress_path,
+            progress_key="family_disjoint",
+            decode_task_batch_size=decode_task_batch_size,
+            interrupt_after_tasks=interrupt_after_tasks,
         )
         selected["family_disjoint"] = family_report
         all_candidates.extend(family_candidates)
@@ -795,6 +814,12 @@ def run_decode_eval(
             enable_expression_value_guard=enable_expression_value_guard,
             enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
             require_binding_prefix_groups=require_binding_prefix_groups,
+            decode_cache_mode=decode_cache_mode,
+            progress_state=progress_state,
+            progress_path=progress_path,
+            progress_key="broad_private_heldout",
+            decode_task_batch_size=decode_task_batch_size,
+            interrupt_after_tasks=interrupt_after_tasks,
         )
         selected["broad_private_heldout"] = broad_report
         all_candidates.extend(broad_candidates)
@@ -840,6 +865,7 @@ def run_decode_eval(
                 enable_expression_value_guard=enable_expression_value_guard,
                 enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
                 require_binding_prefix_groups=require_binding_prefix_groups,
+                decode_cache_mode=decode_cache_mode,
             )
             route["decode_options"] = route_options
             train_replay_selection = select_private_train_replay_rows(
@@ -883,6 +909,12 @@ def run_decode_eval(
                 enable_expression_value_guard=bool(route_options["enable_expression_value_guard"]),
                 enable_semantic_operation_value_construction=bool(route_options.get("enable_semantic_operation_value_construction", enable_semantic_operation_value_construction)),
                 require_binding_prefix_groups=bool(route_options["require_binding_prefix_groups"]),
+                decode_cache_mode=str(route_options.get("decode_cache_mode", decode_cache_mode)),
+                progress_state=progress_state,
+                progress_path=progress_path,
+                progress_key=split_key,
+                decode_task_batch_size=decode_task_batch_size,
+                interrupt_after_tasks=interrupt_after_tasks,
             )
             selected[split_key] = train_replay_report
             all_candidates.extend(train_replay_candidates)
@@ -896,6 +928,36 @@ def run_decode_eval(
     if trigger_state == "GREEN" and any(not row["passed"] for row in gates):
         trigger_state = "YELLOW"
 
+    progress_receipt = {
+        "policy": "project_theseus_strict_mlx_decode_progress_receipt_v1",
+        "enabled": False,
+        "candidate_generation_credit": 0,
+    }
+    if progress_state is not None and progress_path is not None:
+        split_states = [dict_or_empty(row) for row in dict_or_empty(progress_state.get("splits")).values()]
+        completed_task_count = sum(len(dict_or_empty(row.get("completed"))) for row in split_states)
+        expected_task_count = sum(len(list(row.get("task_input_hashes") or [])) for row in split_states)
+        complete = bool(split_states) and completed_task_count == expected_task_count
+        progress_state["complete"] = complete
+        progress_state["completed_task_count"] = completed_task_count
+        progress_state["expected_task_count"] = expected_task_count
+        progress_state["finalized_utc"] = now() if complete else None
+        atomic_write_json_durable(progress_path, progress_state)
+        progress_receipt = {
+            "policy": "project_theseus_strict_mlx_decode_progress_receipt_v1",
+            "enabled": True,
+            "path": rel(progress_path),
+            "run_contract_hash": str(progress_state.get("run_contract_hash") or ""),
+            "resume_count": int(progress_state.get("resume_count") or 0),
+            "completed_task_count": completed_task_count,
+            "expected_task_count": expected_task_count,
+            "complete": complete,
+            "raw_prompt_stored": False,
+            "tests_or_solutions_stored": False,
+            "uses_public_data": False,
+            "candidate_generation_credit": 0,
+        }
+
     summary = {
         "split": split,
         "checkpoint": rel(checkpoint_path),
@@ -906,6 +968,7 @@ def run_decode_eval(
         "backend": "mlx_high_level_transformer_direct_decode",
         "decode_scheduler": "mlx_batched_active_beam_scheduler_v1",
         "decode_topk_selection": strict_mlx_decode_topk_selection_receipt(),
+        "decode_progress": progress_receipt,
         "checkpoint_loader_reuse": dict_or_empty(loaded.get("loader_reuse_receipt")),
         "device": str(mx.default_device()),
         "dims": vocab_payload.get("dims"),
@@ -1300,6 +1363,12 @@ def evaluate_split(
     enable_expression_value_guard: bool,
     enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
+    decode_cache_mode: str = "incremental",
+    progress_state: dict[str, Any] | None = None,
+    progress_path: Path | None = None,
+    progress_key: str | None = None,
+    decode_task_batch_size: int = 8,
+    interrupt_after_tasks: int = 0,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     started = time.perf_counter()
     if not selection.get("active"):
@@ -1393,53 +1462,161 @@ def evaluate_split(
         for type_name in dict_or_empty(hints).values()
         if str(type_name)
     )
+    allowed_name_sets = [allowed_signature_names_for_task(row) for row in eval_rows]
+    task_input_hashes = [
+        stable_json_hash(
+            {
+                "split": split_name,
+                "task_index": index,
+                "source_text": source_texts[index],
+                "source_token_ids": source_rows[index],
+                "allowed_names": sorted(allowed_name_sets[index]),
+                "input_type_hints": input_type_hints_by_row[index],
+                "source_condition_expectation": source_condition_expectations[index],
+            }
+        )
+        for index in range(len(eval_rows))
+    ]
+    progress_split = None
+    effective_progress_key = str(progress_key or split_name)
+    if progress_state is not None:
+        if progress_path is None:
+            raise ValueError("decode progress state requires a progress path")
+        progress_split = bind_decode_progress_split(
+            progress_state,
+            progress_path,
+            split_name=effective_progress_key,
+            task_input_hashes=task_input_hashes,
+        )
+
+    decoded_by_index: dict[int, list[dict[str, Any]]] = {}
+    diagnostic_by_index: dict[int, dict[str, Any]] = {}
+    if progress_split is not None:
+        for raw_index, raw_record in dict_or_empty(progress_split.get("completed")).items():
+            try:
+                index = int(raw_index)
+            except (TypeError, ValueError) as exc:
+                raise ValueError("decode progress contains a non-integer task index") from exc
+            record = dict_or_empty(raw_record)
+            if index < 0 or index >= len(task_input_hashes):
+                raise ValueError(f"decode progress task index out of range: {index}")
+            if int(record.get("task_index", -1)) != index:
+                raise ValueError(f"decode progress record index mismatch: {index}")
+            if str(record.get("task_input_hash") or "") != task_input_hashes[index]:
+                raise ValueError(f"decode progress task hash mismatch: {index}")
+            if not isinstance(record.get("decoded"), list) or not isinstance(record.get("diagnostic"), dict):
+                raise ValueError(f"decode progress task payload malformed: {index}")
+            decoded_by_index[index] = list(record["decoded"])
+            diagnostic_by_index[index] = dict(record["diagnostic"])
+    resumed_task_count = len(decoded_by_index)
+
     decode_started = time.perf_counter()
-    decoded, decode_guard_diagnostics = generate_candidates_mlx(
-        model,
-        source_rows,
-        target_vocab,
-        max_target_tokens=max_target_tokens,
-        fanout_top_k=pool_size,
-        grammar_top_k=grammar_top_k,
-        decode_beam_width=beam_width,
-        decode_branching_factor=branch_factor,
-        target_mode=target_mode,
-        body_token_decode_policy=decode_policy,
-        source_texts=source_texts,
-        allowed_name_sets=[allowed_signature_names_for_task(row) for row in eval_rows],
-        input_type_hints_by_row=input_type_hints_by_row,
-        source_condition_expectations=source_condition_expectations,
-        require_parameter_use=require_parameter_use,
-        require_nontrivial_return=require_nontrivial_return,
-        require_top_level_return=require_top_level_return,
-        use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
-        prefer_source_plan_compatibility=prefer_source_plan_compatibility,
-        use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
-        enable_learned_expression_token_bias=enable_learned_expression_token_bias,
-        use_body_transition_head=use_body_transition_head,
-        body_transition_head_blend=body_transition_head_blend,
-        use_body_action_head=use_body_action_head,
-        body_action_head_blend=body_action_head_blend,
-        use_body_operand_head=use_body_operand_head,
-        body_operand_head_blend=body_operand_head_blend,
-        use_body_state_event_head=use_body_state_event_head,
-        body_state_event_head_blend=body_state_event_head_blend,
-        prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
-        prefer_source_condition_adequacy=prefer_source_condition_adequacy or require_source_condition_adequacy,
-        require_source_condition_adequacy=require_source_condition_adequacy,
-        block_shallow_loop_identity_update=block_shallow_loop_identity_update,
-        enable_loop_progress_guard=enable_loop_progress_guard,
-        enable_expression_closure_guard=enable_expression_closure_guard,
-        enable_expression_value_guard=enable_expression_value_guard,
-        enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
-        require_binding_prefix_groups=require_binding_prefix_groups,
-        mx=mx,
-    )
+    remaining = [index for index in range(len(eval_rows)) if index not in decoded_by_index]
+    task_batch_size = max(1, int(decode_task_batch_size or 1))
+    transient_batch_receipts: list[dict[str, Any]] = []
+    for offset in range(0, len(remaining), task_batch_size):
+        indices = remaining[offset : offset + task_batch_size]
+        batch_decoded, batch_diagnostics = generate_candidates_mlx(
+            model,
+            [source_rows[index] for index in indices],
+            target_vocab,
+            max_target_tokens=max_target_tokens,
+            fanout_top_k=pool_size,
+            grammar_top_k=grammar_top_k,
+            decode_beam_width=beam_width,
+            decode_branching_factor=branch_factor,
+            target_mode=target_mode,
+            body_token_decode_policy=decode_policy,
+            source_texts=[source_texts[index] for index in indices],
+            allowed_name_sets=[allowed_name_sets[index] for index in indices],
+            input_type_hints_by_row=[input_type_hints_by_row[index] for index in indices],
+            source_condition_expectations=[source_condition_expectations[index] for index in indices],
+            require_parameter_use=require_parameter_use,
+            require_nontrivial_return=require_nontrivial_return,
+            require_top_level_return=require_top_level_return,
+            use_semantic_plan_head_prefix=use_semantic_plan_head_prefix,
+            prefer_source_plan_compatibility=prefer_source_plan_compatibility,
+            use_semantic_slot_head_prefix=use_semantic_slot_head_prefix,
+            enable_learned_expression_token_bias=enable_learned_expression_token_bias,
+            use_body_transition_head=use_body_transition_head,
+            body_transition_head_blend=body_transition_head_blend,
+            use_body_action_head=use_body_action_head,
+            body_action_head_blend=body_action_head_blend,
+            use_body_operand_head=use_body_operand_head,
+            body_operand_head_blend=body_operand_head_blend,
+            use_body_state_event_head=use_body_state_event_head,
+            body_state_event_head_blend=body_state_event_head_blend,
+            prefer_learned_prefix_decision_adequacy=prefer_learned_prefix_decision_adequacy,
+            prefer_source_condition_adequacy=prefer_source_condition_adequacy or require_source_condition_adequacy,
+            require_source_condition_adequacy=require_source_condition_adequacy,
+            block_shallow_loop_identity_update=block_shallow_loop_identity_update,
+            enable_loop_progress_guard=enable_loop_progress_guard,
+            enable_expression_closure_guard=enable_expression_closure_guard,
+            enable_expression_value_guard=enable_expression_value_guard,
+            enable_semantic_operation_value_construction=enable_semantic_operation_value_construction,
+            require_binding_prefix_groups=require_binding_prefix_groups,
+            mx=mx,
+            decode_cache_mode=decode_cache_mode,
+        )
+        if len(batch_decoded) != len(indices) or len(batch_diagnostics) != len(indices):
+            raise ValueError("strict MLX decode returned a task-count mismatch")
+        batch_receipt = (
+            dict_or_empty(batch_diagnostics[0].get("decode_cache_receipt"))
+            if batch_diagnostics
+            else strict_mlx_decode_cache_receipt(decode_cache_mode, task_count=0)
+        )
+        transient_batch_receipts.append(batch_receipt)
+        progress_records: list[dict[str, Any]] = []
+        for batch_index, task_index in enumerate(indices):
+            decoded_by_index[task_index] = batch_decoded[batch_index]
+            diagnostic_by_index[task_index] = batch_diagnostics[batch_index]
+            progress_records.append(
+                {
+                    "task_index": task_index,
+                    "task_input_hash": task_input_hashes[task_index],
+                    "decoded": batch_decoded[batch_index],
+                    "diagnostic": batch_diagnostics[batch_index],
+                }
+            )
+        if progress_state is not None and progress_path is not None:
+            commit_decode_progress_batch(
+                progress_state,
+                progress_path,
+                split_name=effective_progress_key,
+                records=progress_records,
+                batch_receipt={
+                    "task_input_hashes": [task_input_hashes[index] for index in indices],
+                    "decode_cache_receipt": batch_receipt,
+                },
+            )
+            completed_total = sum(
+                len(dict_or_empty(dict_or_empty(row).get("completed")))
+                for row in dict_or_empty(progress_state.get("splits")).values()
+            )
+            if int(interrupt_after_tasks or 0) > 0 and completed_total >= int(interrupt_after_tasks):
+                raise RuntimeError(
+                    f"intentional decode interruption after {completed_total} atomically committed tasks"
+                )
+
+    decoded = [decoded_by_index[index] for index in range(len(eval_rows))]
+    decode_guard_diagnostics = [diagnostic_by_index[index] for index in range(len(eval_rows))]
     for index, diag in enumerate(decode_guard_diagnostics):
         if index < len(eval_rows):
             diag["task_id"] = str(eval_rows[index].get("task_id") or "")
             diag["category"] = str(eval_rows[index].get("category") or "")
     decode_wall_ms = int((time.perf_counter() - decode_started) * 1000)
+    persisted_batch_receipts = (
+        [dict_or_empty(row).get("decode_cache_receipt") for row in list(progress_split.get("batch_receipts") or [])]
+        if progress_split is not None
+        else transient_batch_receipts
+    )
+    decode_cache_receipt = aggregate_strict_mlx_decode_cache_receipts(
+        [dict_or_empty(row) for row in persisted_batch_receipts],
+        mode=decode_cache_mode,
+        task_count=len(eval_rows),
+    )
+    for diagnostic in decode_guard_diagnostics:
+        diagnostic["decode_cache_receipt"] = decode_cache_receipt
     decode_guard_rejections = decode_guard_rejection_summary(decode_guard_diagnostics)
     decode_starvation = decode_starvation_summary(decode_guard_diagnostics)
     source_plan_compatibility = source_plan_compatibility_summary(
@@ -1497,6 +1674,17 @@ def evaluate_split(
         "specialist_route": dict_or_empty(selection.get("specialist_route")),
         "candidate_rows": len(rows),
         "candidate_tasks": len(eval_rows),
+        "decode_progress": {
+            "enabled": progress_split is not None,
+            "progress_key": effective_progress_key if progress_split is not None else "",
+            "resumed_task_count": resumed_task_count,
+            "newly_decoded_task_count": len(eval_rows) - resumed_task_count,
+            "task_batch_size": task_batch_size,
+            "complete": len(decoded_by_index) == len(eval_rows),
+            "raw_prompt_stored": False,
+            "tests_or_solutions_stored": False,
+            "candidate_generation_credit": 0,
+        },
         "fanout_top_k": fanout_top_k,
         "candidate_pool_size": pool_size,
         "emitted_learned_top_k": emitted_top_k,
@@ -1507,6 +1695,7 @@ def evaluate_split(
         "ranker": "prompt_signature_static_coherence_then_sequence_log_probability",
             "decoder_constraints": {
                 "beam_scheduler": "mlx_batched_active_beam_scheduler_v1",
+                "decode_cache": decode_cache_receipt,
                 "top_token_selection_policy": "argpartition_bounded_topk_v1",
                 "search_width_policy": "output_top_k_bounded_beam_branch_override_v1",
             "body_transition_head": {
@@ -1873,6 +2062,147 @@ def strict_mlx_decode_topk_selection_receipt() -> dict[str, Any]:
     }
 
 
+def strict_mlx_decode_cache_receipt(
+    mode: str,
+    *,
+    task_count: int,
+    source_encode_batch_calls: int = 0,
+    decoder_forward_batch_calls: int = 0,
+    autoregressive_token_evaluations: int = 0,
+    cache_invalidations: int = 0,
+) -> dict[str, Any]:
+    normalized = str(mode or "incremental")
+    return {
+        "policy": "strict_mlx_incremental_decode_cache_v1",
+        "mode": normalized,
+        "task_count": int(task_count),
+        "source_encode_batch_calls": int(source_encode_batch_calls),
+        "cross_attention_projection_reused": normalized == "incremental" and task_count > 0,
+        "decoder_forward_batch_calls": int(decoder_forward_batch_calls),
+        "autoregressive_token_evaluations": int(autoregressive_token_evaluations),
+        "full_prefix_recomputation_batch_calls": (
+            int(decoder_forward_batch_calls) if normalized == "full_prefix" else 0
+        ),
+        "cache_invalidations": int(cache_invalidations),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+        "score_semantics": (
+            "Runtime-economics and replay evidence only. Incremental mode reuses checkpoint-compatible "
+            "source, cross-attention, and immutable per-beam self-attention state. Full-prefix mode is "
+            "the exact control. Cache use does not change model visibility or grant capability credit."
+        ),
+    }
+
+
+def aggregate_strict_mlx_decode_cache_receipts(
+    receipts: list[dict[str, Any]],
+    *,
+    mode: str,
+    task_count: int,
+) -> dict[str, Any]:
+    aggregate = strict_mlx_decode_cache_receipt(
+        mode,
+        task_count=task_count,
+        source_encode_batch_calls=sum(int(row.get("source_encode_batch_calls") or 0) for row in receipts),
+        decoder_forward_batch_calls=sum(int(row.get("decoder_forward_batch_calls") or 0) for row in receipts),
+        autoregressive_token_evaluations=sum(
+            int(row.get("autoregressive_token_evaluations") or 0) for row in receipts
+        ),
+        cache_invalidations=sum(int(row.get("cache_invalidations") or 0) for row in receipts),
+    )
+    aggregate["task_batch_count"] = len(receipts)
+    aggregate["all_batch_modes_match"] = all(
+        str(row.get("mode") or "") == str(mode) for row in receipts
+    )
+    return aggregate
+
+
+def _eval_incremental_context(context: dict[str, Any], mx: Any) -> None:
+    arrays = [context["memory_mask"]]
+    arrays.extend(list(context.get("cross_keys") or []))
+    arrays.extend(list(context.get("cross_values") or []))
+    if arrays:
+        mx.eval(*arrays)
+
+
+def _slice_incremental_context(context: dict[str, Any], index: int) -> dict[str, Any]:
+    return {
+        "memory_mask": context["memory_mask"][index : index + 1],
+        "cross_keys": [value[index : index + 1] for value in context["cross_keys"]],
+        "cross_values": [value[index : index + 1] for value in context["cross_values"]],
+        "source_length": int(context.get("source_length") or 0),
+        "layer_count": int(context.get("layer_count") or 0),
+    }
+
+
+def _combine_incremental_contexts(contexts: list[dict[str, Any]], mx: Any) -> dict[str, Any]:
+    if not contexts:
+        raise ValueError("cannot combine an empty incremental decode context list")
+    layer_count = int(contexts[0].get("layer_count") or 0)
+    source_length = int(contexts[0].get("source_length") or 0)
+    if layer_count <= 0 or any(int(row.get("layer_count") or 0) != layer_count for row in contexts):
+        raise ValueError("incremental decode context layer count mismatch")
+    if any(int(row.get("source_length") or 0) != source_length for row in contexts):
+        raise ValueError("incremental decode context source length mismatch")
+    return {
+        "memory_mask": mx.concatenate([row["memory_mask"] for row in contexts], axis=0),
+        "cross_keys": [
+            mx.concatenate([row["cross_keys"][layer] for row in contexts], axis=0)
+            for layer in range(layer_count)
+        ],
+        "cross_values": [
+            mx.concatenate([row["cross_values"][layer] for row in contexts], axis=0)
+            for layer in range(layer_count)
+        ],
+        "source_length": source_length,
+        "layer_count": layer_count,
+    }
+
+
+def _combine_incremental_self_caches(
+    caches: list[list[dict[str, Any]] | None],
+    *,
+    expected_prefix_length: int,
+    mx: Any,
+) -> list[dict[str, Any]] | None:
+    if expected_prefix_length == 0:
+        if any(cache is not None for cache in caches):
+            raise ValueError("incremental self-cache unexpectedly present at empty prefix")
+        return None
+    if not caches or any(cache is None for cache in caches):
+        raise ValueError("incremental self-cache missing for a non-empty prefix")
+    concrete = [cache for cache in caches if cache is not None]
+    layer_count = len(concrete[0])
+    if layer_count <= 0 or any(len(cache) != layer_count for cache in concrete):
+        raise ValueError("incremental self-cache layer count mismatch")
+    combined: list[dict[str, Any]] = []
+    for layer in range(layer_count):
+        keys = [cache[layer]["keys"] for cache in concrete]
+        values = [cache[layer]["values"] for cache in concrete]
+        if any(int(value.shape[2]) != expected_prefix_length for value in keys + values):
+            raise ValueError("incremental self-cache prefix length mismatch")
+        combined.append(
+            {
+                "keys": mx.concatenate(keys, axis=0),
+                "values": mx.concatenate(values, axis=0),
+            }
+        )
+    return combined
+
+
+def _slice_incremental_self_cache(
+    cache: list[dict[str, Any]], index: int
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "keys": layer["keys"][index : index + 1],
+            "values": layer["values"][index : index + 1],
+        }
+        for layer in cache
+    ]
+
+
 
 def generate_candidates_mlx(
     model: Any,
@@ -1915,7 +2245,16 @@ def generate_candidates_mlx(
     enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
     mx: Any,
+    decode_cache_mode: str = "incremental",
 ) -> tuple[list[list[dict[str, Any]]], list[dict[str, Any]]]:
+    decode_cache_mode = str(decode_cache_mode or "incremental")
+    if decode_cache_mode not in {"incremental", "full_prefix"}:
+        raise ValueError(f"unsupported MLX decode cache mode: {decode_cache_mode}")
+    if decode_cache_mode == "incremental" and not all(
+        hasattr(model, name)
+        for name in ("prepare_incremental_decode", "incremental_logits_bundle")
+    ):
+        raise ValueError("incremental MLX decode requested for a model without cache support")
     inverse = {idx: tok for tok, idx in target_vocab.items()}
     token_to_id = {str(tok): int(idx) for tok, idx in target_vocab.items()}
     bos = int(target_vocab["<bos>"])
@@ -1942,6 +2281,17 @@ def generate_candidates_mlx(
         enabled=bool(use_semantic_slot_head_prefix),
         mx=mx,
     )
+    incremental_context_rows: list[dict[str, Any]] = []
+    source_encode_batch_calls = 0
+    if decode_cache_mode == "incremental" and source_rows:
+        all_context = model.prepare_incremental_decode(mx.array(source_rows, dtype=mx.int32))
+        _eval_incremental_context(all_context, mx)
+        incremental_context_rows = [
+            _slice_incremental_context(all_context, index) for index in range(len(source_rows))
+        ]
+        source_encode_batch_calls = 1
+    decoder_forward_batch_calls = 0
+    autoregressive_token_evaluations = 0
     states: list[dict[str, Any]] = []
     for i, source_row in enumerate(source_rows):
         plan_choices = plan_prefix_choices_by_row[i] if i < len(plan_prefix_choices_by_row) else None
@@ -1971,7 +2321,12 @@ def generate_candidates_mlx(
                 ),
                 "slot_prefix_probs": slot_probs,
                 "slot_prefix_source": "semantic_slot_head" if slot_probs else "decoder_autoregressive_slots",
-                "beams": [{"generated": [bos], "logprob": 0.0, "done": False}],
+                "decode_context": (
+                    incremental_context_rows[i] if i < len(incremental_context_rows) else None
+                ),
+                "beams": [
+                    {"generated": [bos], "logprob": 0.0, "done": False, "self_cache": None}
+                ],
                 "completed": [],
                 "guard_rejection_counts": Counter(),
                 "guard_rejection_examples": [],
@@ -1997,24 +2352,59 @@ def generate_candidates_mlx(
             break
 
         for generated_len, refs in sorted(refs_by_len.items()):
-            src = mx.array([states[task_idx]["source_row"] for task_idx, _beam, _generated in refs], dtype=mx.int32)
-            tgt = mx.array([generated for _task_idx, _beam, generated in refs], dtype=mx.int32)
-            logits = model(src, tgt)[:, -1, :]
+            if decode_cache_mode == "incremental":
+                decode_context = _combine_incremental_contexts(
+                    [states[task_idx]["decode_context"] for task_idx, _beam, _generated in refs],
+                    mx,
+                )
+                self_cache = _combine_incremental_self_caches(
+                    [beam.get("self_cache") for _task_idx, beam, _generated in refs],
+                    expected_prefix_length=generated_len - 1,
+                    mx=mx,
+                )
+                token = mx.array([[generated[-1]] for _task_idx, _beam, generated in refs], dtype=mx.int32)
+                bundle, next_self_cache = model.incremental_logits_bundle(
+                    token,
+                    position=generated_len - 1,
+                    decode_context=decode_context,
+                    self_cache=self_cache,
+                )
+                eval_arrays = list(bundle.values())
+                for layer in next_self_cache:
+                    eval_arrays.extend([layer["keys"], layer["values"]])
+                mx.eval(*eval_arrays)
+                next_self_cache_rows = [
+                    _slice_incremental_self_cache(next_self_cache, index)
+                    for index in range(len(refs))
+                ]
+            else:
+                src = mx.array(
+                    [states[task_idx]["source_row"] for task_idx, _beam, _generated in refs],
+                    dtype=mx.int32,
+                )
+                tgt = mx.array([generated for _task_idx, _beam, generated in refs], dtype=mx.int32)
+                bundle = model.logits_bundle(src, tgt)
+                mx.eval(*list(bundle.values()))
+                next_self_cache_rows = [None] * len(refs)
+                source_encode_batch_calls += 1
+            decoder_forward_batch_calls += 1
+            autoregressive_token_evaluations += len(refs)
+            logits = bundle["token"][:, -1, :]
             transition_blend = max(0.0, min(1.0, float(body_transition_head_blend or 0.0)))
-            if bool(use_body_transition_head) and transition_blend > 0.0 and hasattr(model, "body_transition_logits"):
-                transition_logits = model.body_transition_logits(src, tgt)[:, -1, :]
+            if bool(use_body_transition_head) and transition_blend > 0.0:
+                transition_logits = bundle["body_transition"][:, -1, :]
                 logits = (logits * (1.0 - transition_blend)) + (transition_logits * transition_blend)
             action_prob_rows = None
             action_blend = max(0.0, min(1.0, float(body_action_head_blend or 0.0)))
-            if bool(use_body_action_head) and action_blend > 0.0 and hasattr(model, "body_action_logits"):
-                action_logits = model.body_action_logits(src, tgt)[:, -1, :]
+            if bool(use_body_action_head) and action_blend > 0.0:
+                action_logits = bundle["body_action"][:, -1, :]
                 action_probs = mx.softmax(action_logits, axis=-1)
                 mx.eval(action_probs)
                 action_prob_rows = np.asarray(action_probs, dtype=np.float64)
             operand_prob_rows = None
             operand_blend = max(0.0, min(1.0, float(body_operand_head_blend or 0.0)))
-            if bool(use_body_operand_head) and operand_blend > 0.0 and hasattr(model, "body_operand_logits"):
-                operand_logits = model.body_operand_logits(src, tgt)[:, -1, :]
+            if bool(use_body_operand_head) and operand_blend > 0.0:
+                operand_logits = bundle["body_operand"][:, -1, :]
                 operand_probs = mx.softmax(operand_logits, axis=-1)
                 mx.eval(operand_probs)
                 operand_prob_rows = np.asarray(operand_probs, dtype=np.float64)
@@ -2023,9 +2413,8 @@ def generate_candidates_mlx(
             if (
                 bool(use_body_state_event_head)
                 and state_event_blend > 0.0
-                and hasattr(model, "body_state_event_logits")
             ):
-                state_event_logits = model.body_state_event_logits(src, tgt)[:, -1, :]
+                state_event_logits = bundle["body_state_event"][:, -1, :]
                 state_event_probs = mx.softmax(state_event_logits, axis=-1)
                 mx.eval(state_event_probs)
                 state_event_prob_rows = np.asarray(state_event_probs, dtype=np.float64)
@@ -2097,6 +2486,7 @@ def generate_candidates_mlx(
                             "generated": next_generated,
                             "logprob": next_logprob,
                             "done": int(next_id) == eos,
+                            "self_cache": next_self_cache_rows[row_index],
                         }
                     )
                     prefix_tokens = [inverse.get(idx, "<unk>") for idx in next_generated[1:]]
@@ -2118,6 +2508,7 @@ def generate_candidates_mlx(
                                 "logprob": next_logprob,
                                 "done": True,
                                 "completion_source": "mlx_batched_syntax_complete_prefix",
+                                "self_cache": next_self_cache_rows[row_index],
                             }
                         )
 
@@ -2163,6 +2554,13 @@ def generate_candidates_mlx(
 
     all_rows: list[list[dict[str, Any]]] = []
     diagnostics: list[dict[str, Any]] = []
+    cache_receipt = strict_mlx_decode_cache_receipt(
+        decode_cache_mode,
+        task_count=len(states),
+        source_encode_batch_calls=source_encode_batch_calls,
+        decoder_forward_batch_calls=decoder_forward_batch_calls,
+        autoregressive_token_evaluations=autoregressive_token_evaluations,
+    )
     for state in states:
         seen: set[str] = set()
         task_rows: list[dict[str, Any]] = []
@@ -2335,6 +2733,7 @@ def generate_candidates_mlx(
                 "guard_rejection_counts": dict(rejection_counts) if isinstance(rejection_counts, Counter) else {},
                 "guard_rejection_examples": list(state.get("guard_rejection_examples") or []),
                 "source_condition_expectation": dict_or_empty(state.get("source_condition_expectation")),
+                "decode_cache_receipt": cache_receipt,
                 "decode_starvation": decode_starvation_for_state(
                     state,
                     inverse,
@@ -4023,3 +4422,5 @@ def learned_plan_prefix_metadata(decoded_tokens: list[str], *, target_mode: str)
 
 if __name__ == "__main__":
     raise SystemExit(main())
+    commit_decode_progress_batch,
+    initialize_decode_progress,

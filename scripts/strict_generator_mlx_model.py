@@ -7,6 +7,7 @@ render code, inspect verifier data, or change the candidate-integrity contract.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 
@@ -333,6 +334,126 @@ class MlxStrictGenerator:
                 memory, _pooled = self.encode_source(src)
                 return self.decoder(target, memory, tgt_mask, src_mask)
 
+            @staticmethod
+            def _project_attention_keys_values(attention: Any, values: Any) -> tuple[Any, Any]:
+                keys = attention.key_proj(values)
+                projected_values = attention.value_proj(values)
+                keys = mx.unflatten(keys, -1, (attention.num_heads, -1)).transpose(0, 2, 1, 3)
+                projected_values = mx.unflatten(
+                    projected_values, -1, (attention.num_heads, -1)
+                ).transpose(0, 2, 1, 3)
+                return keys, projected_values
+
+            @staticmethod
+            def _attention_from_projected(
+                attention: Any,
+                queries: Any,
+                keys: Any,
+                values: Any,
+                mask: Any | None = None,
+            ) -> Any:
+                projected_queries = attention.query_proj(queries)
+                projected_queries = mx.unflatten(
+                    projected_queries, -1, (attention.num_heads, -1)
+                ).transpose(0, 2, 1, 3)
+                output = mx.fast.scaled_dot_product_attention(
+                    projected_queries,
+                    keys,
+                    values,
+                    scale=math.sqrt(1 / projected_queries.shape[-1]),
+                    mask=mask,
+                )
+                output = output.transpose(0, 2, 1, 3).flatten(-2, -1)
+                return attention.out_proj(output)
+
+            def prepare_incremental_decode(self, src: Any) -> dict[str, Any]:
+                """Encode source and cross-attention K/V once for autoregressive decode."""
+
+                memory_mask = additive_padding_mask(src, mx)
+                memory, _pooled = self.encode_source(src)
+                cross_keys: list[Any] = []
+                cross_values: list[Any] = []
+                for layer in self.decoder.layers:
+                    keys, values = self._project_attention_keys_values(
+                        layer.cross_attention, memory
+                    )
+                    cross_keys.append(keys)
+                    cross_values.append(values)
+                return {
+                    "memory_mask": memory_mask,
+                    "cross_keys": cross_keys,
+                    "cross_values": cross_values,
+                    "source_length": int(src.shape[1]),
+                    "layer_count": len(self.decoder.layers),
+                }
+
+            def incremental_decode_hidden(
+                self,
+                token: Any,
+                *,
+                position: int,
+                decode_context: dict[str, Any],
+                self_cache: list[dict[str, Any]] | None = None,
+            ) -> tuple[Any, list[dict[str, Any]]]:
+                """Decode one token using immutable per-layer self-attention K/V state."""
+
+                if token.shape[1] != 1:
+                    raise ValueError("incremental decode requires exactly one target token")
+                if int(position) < 0 or int(position) >= int(self.target_position.shape[1]):
+                    raise ValueError(f"incremental decode position out of range: {position}")
+                layer_count = len(self.decoder.layers)
+                if int(decode_context.get("layer_count") or 0) != layer_count:
+                    raise ValueError("incremental decode context layer count mismatch")
+                if self_cache is not None and len(self_cache) != layer_count:
+                    raise ValueError("incremental self-cache layer count mismatch")
+
+                hidden = self.target_embedding(token) + self.target_position[
+                    :, int(position) : int(position) + 1, :
+                ]
+                next_cache: list[dict[str, Any]] = []
+                for layer_index, layer in enumerate(self.decoder.layers):
+                    if not bool(layer.norm_first):
+                        raise ValueError("incremental decode supports norm-first checkpoints only")
+                    normalized = layer.ln1(hidden)
+                    new_keys, new_values = self._project_attention_keys_values(
+                        layer.self_attention, normalized
+                    )
+                    prior = self_cache[layer_index] if self_cache is not None else {}
+                    prior_keys = prior.get("keys") if isinstance(prior, dict) else None
+                    prior_values = prior.get("values") if isinstance(prior, dict) else None
+                    keys = (
+                        mx.concatenate([prior_keys, new_keys], axis=2)
+                        if prior_keys is not None
+                        else new_keys
+                    )
+                    values = (
+                        mx.concatenate([prior_values, new_values], axis=2)
+                        if prior_values is not None
+                        else new_values
+                    )
+                    attended = self._attention_from_projected(
+                        layer.self_attention, normalized, keys, values
+                    )
+                    hidden = hidden + layer.dropout1(attended)
+
+                    normalized = layer.ln2(hidden)
+                    attended = self._attention_from_projected(
+                        layer.cross_attention,
+                        normalized,
+                        decode_context["cross_keys"][layer_index],
+                        decode_context["cross_values"][layer_index],
+                        decode_context["memory_mask"],
+                    )
+                    hidden = hidden + layer.dropout2(attended)
+
+                    normalized = layer.ln3(hidden)
+                    feedforward = layer.linear2(
+                        layer.dropout3(layer.activation(layer.linear1(normalized)))
+                    )
+                    hidden = hidden + feedforward
+                    next_cache.append({"keys": keys, "values": values})
+                return self.decoder.ln(hidden), next_cache
+
             def _specialize(self, hidden: Any, valid_mask: Any | None = None) -> tuple[Any, dict[str, Any]]:
                 if specialist_cfg["mode"] == "sparse_moe":
                     delta, route = self.specialist_core(hidden, valid_mask)
@@ -343,8 +464,9 @@ class MlxStrictGenerator:
                     }
                 return hidden, {"weighted_aux_loss": mx.array(0.0, dtype=mx.float32)}
 
-            def body_constructor_hidden_with_route(self, src: Any, tgt_in: Any) -> tuple[Any, dict[str, Any]]:
-                hidden = self.decode_hidden(src, tgt_in)
+            def body_constructor_hidden_from_decoded(
+                self, hidden: Any, valid_mask: Any
+            ) -> tuple[Any, dict[str, Any]]:
                 if self.coupled_state_body_constructor_enabled:
                     event_probs = mx.softmax(self.body_state_event_router(hidden), axis=-1)
                     hidden = hidden + self.coupled_state_body_constructor_scale * mx.tanh(
@@ -355,7 +477,11 @@ class MlxStrictGenerator:
                     hidden = hidden + self.executable_span_body_constructor_scale * mx.tanh(
                         self.body_executable_span_to_hidden(span_probs)
                     )
-                return self._specialize(hidden, tgt_in != 0)
+                return self._specialize(hidden, valid_mask)
+
+            def body_constructor_hidden_with_route(self, src: Any, tgt_in: Any) -> tuple[Any, dict[str, Any]]:
+                hidden = self.decode_hidden(src, tgt_in)
+                return self.body_constructor_hidden_from_decoded(hidden, tgt_in != 0)
 
             def body_constructor_hidden(self, src: Any, tgt_in: Any) -> Any:
                 hidden, _route = self.body_constructor_hidden_with_route(src, tgt_in)
@@ -423,6 +549,52 @@ class MlxStrictGenerator:
 
             def body_executable_span_logits(self, src: Any, tgt_in: Any) -> Any:
                 return self.body_executable_span_router(self.decode_hidden(src, tgt_in))
+
+            def logits_bundle_from_decoded(
+                self, decoded_hidden: Any, valid_mask: Any
+            ) -> dict[str, Any]:
+                body_hidden, _route = self.body_constructor_hidden_from_decoded(
+                    decoded_hidden, valid_mask
+                )
+                bundle = {
+                    "token": self.project_output(body_hidden),
+                    "body_transition": (
+                        self.body_transition_router(body_hidden)
+                        if self.auxiliary_head_policy == "legacy_materialized_v1"
+                        else self.project_output(body_hidden)
+                    ),
+                    "body_action": self.body_action_router(body_hidden),
+                    "body_operand": self.body_operand_router(body_hidden),
+                    "body_state_event": self.body_state_event_router(decoded_hidden),
+                }
+                if self.body_executable_span_head_enabled:
+                    bundle["body_executable_span"] = self.body_executable_span_router(
+                        decoded_hidden
+                    )
+                return bundle
+
+            def logits_bundle(self, src: Any, tgt_in: Any) -> dict[str, Any]:
+                return self.logits_bundle_from_decoded(
+                    self.decode_hidden(src, tgt_in), tgt_in != 0
+                )
+
+            def incremental_logits_bundle(
+                self,
+                token: Any,
+                *,
+                position: int,
+                decode_context: dict[str, Any],
+                self_cache: list[dict[str, Any]] | None = None,
+            ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+                decoded_hidden, next_cache = self.incremental_decode_hidden(
+                    token,
+                    position=position,
+                    decode_context=decode_context,
+                    self_cache=self_cache,
+                )
+                return self.logits_bundle_from_decoded(
+                    decoded_hidden, token != 0
+                ), next_cache
 
             def __call__(self, src: Any, tgt_in: Any) -> Any:
                 logits, _router_loss = self.forward_with_router_loss(src, tgt_in)

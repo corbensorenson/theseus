@@ -155,8 +155,17 @@ The teacher curriculum is therefore retained but not adopted.
 The run also removed a decoder hot-loop defect: generated-prefix operand context
 was recomputed for every vocabulary token. Reusing one context per probability
 row preserves exact probabilities and measures `27.96x` focused speedup. The
-full 48-task/four-candidate control still takes `1,658.502` seconds, leaving
-incremental KV/prefix caching and resumable progress receipts as runtime walls.
+ordinary MLX decode route now additionally encodes source/cross-attention state
+once and carries immutable per-beam self-attention K/V state. Full-prefix versus
+incremental tests cover all materialized heads with a `1e-5` numerical bound and
+exact token/candidate identity. On the same real checkpoint and 48-token canary,
+pre-verifier decode improves `832 ms -> 500 ms` (`1.664x`) and source encodes drop
+`47 -> 1`. Atomic per-task progress binds config, checkpoint, vocabulary, decode
+options, exact task order, and opaque model-visible-input hashes. An intentional
+stop after two tasks resumed the remaining task and reproduced all six candidate
+identities from a clean run. Corrupt, stale, symlinked, reordered, and
+hash-mismatched progress is rejected. This closes the local incremental
+cache/restart wall only; it is not model-quality or CUDA/MLX parity evidence.
 An exact-bound conditioning diagnostic over all `24` heldouts measures matched
 loss `1.662704` versus deterministic wrong-source loss `1.766282`, a positive
 gap of `0.103578`. This rules out complete source blindness but does not support
