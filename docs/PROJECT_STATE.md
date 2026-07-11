@@ -145,7 +145,16 @@ assignments barely changes reward (`0.437500`) and slightly improves loss
 (`1.622655`). Every arm remains `0/24`. Five independent integrity and blind
 information-flow audits are GREEN with zero mismatches or invalid claims. The
 survival gate therefore records `NOT_ADOPTED`: recurrent memory is useful, but
-semantic role specificity and exact behavior remain unproven.
+semantic role specificity and exact behavior remain unproven. A follow-up
+role-dependent read bias made role identity causal before state writes, but it
+also failed: semantic beats its matched hash control on reward
+`0.396667 -> 0.415625` and loss `1.607417 -> 1.600515`, while zero and shuffle
+replays improve coverage `20 -> 21` and reward to `0.425385`/`0.429545`.
+All arms remain `0/24`; four additional integrity/blind-flow audits are GREEN.
+The gate records `NOT_ADOPTED` with three reasons: no verifier-pass gain, zero
+memory did not degrade, and role shuffle did not degrade. Restricting reads by
+the hand-specified role graph is therefore a retained negative, not the state
+memory default.
 
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.

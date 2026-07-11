@@ -38,6 +38,13 @@ DEFAULT_STATE_MEMORY_ARM_DIRS = {
     "zero": ROOT / "runtime" / "standard_causal_transformer_state_zero_replay",
     "shuffle": ROOT / "runtime" / "standard_causal_transformer_state_shuffle_replay",
 }
+DEFAULT_STATE_ROLE_READ_ARM_DIRS = {
+    "body_only": ROOT / "runtime" / "standard_causal_transformer_body_only_current_control",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_state_role_read_semantic_canary",
+    "hash_control": ROOT / "runtime" / "standard_causal_transformer_state_role_read_hash_control_canary",
+    "zero": ROOT / "runtime" / "standard_causal_transformer_state_role_read_zero_replay",
+    "shuffle": ROOT / "runtime" / "standard_causal_transformer_state_role_read_shuffle_replay",
+}
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -113,6 +120,8 @@ def build_gate(
     hard_gaps.extend(sft_contract_audit["hard_gaps"])
     state_memory_audit = audit_state_memory_ablation(DEFAULT_STATE_MEMORY_ARM_DIRS)
     hard_gaps.extend(state_memory_audit["hard_gaps"])
+    state_role_read_audit = audit_state_memory_ablation(DEFAULT_STATE_ROLE_READ_ARM_DIRS)
+    hard_gaps.extend(state_role_read_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -283,6 +292,10 @@ def build_gate(
             "state_memory_adoption_state": state_memory_audit["adoption_state"],
             "state_memory_rejection_reasons": state_memory_audit["adoption_rejection_reasons"],
             "state_memory_deltas": state_memory_audit["deltas"],
+            "state_role_read_ablation_state": state_role_read_audit["state"],
+            "state_role_read_adoption_state": state_role_read_audit["adoption_state"],
+            "state_role_read_rejection_reasons": state_role_read_audit["adoption_rejection_reasons"],
+            "state_role_read_deltas": state_role_read_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -297,6 +310,7 @@ def build_gate(
         "target_mode_comparison": target_mode_audit["receipt"],
         "sft_contract_admission_ablation": sft_contract_audit["receipt"],
         "state_memory_ablation": state_memory_audit["receipt"],
+        "state_role_read_ablation": state_role_read_audit["receipt"],
     }
 
 
