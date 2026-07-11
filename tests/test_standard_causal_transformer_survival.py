@@ -233,6 +233,45 @@ def test_structured_and_hash_state_models_are_parameter_matched() -> None:
     assert semantic_count == control_count
 
 
+def test_role_shuffle_changes_reads_before_any_state_write_commits() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    slots = len(EXECUTABLE_STATE_ROLES)
+    lookup = np.eye(slots, dtype=np.float32)[np.arange(64) % slots]
+    common = dict(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        state_memory_slots=slots,
+        state_memory_chunk_size=4,
+        state_memory_local_window=8,
+        state_memory_mode="semantic_roles",
+    )
+    mx.random.seed(41)
+    normal = build_model(
+        CausalTransformerConfig(**common, state_memory_ablation="none"),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=lookup,
+    )
+    mx.random.seed(41)
+    shuffled = build_model(
+        CausalTransformerConfig(**common, state_memory_ablation="shuffle"),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=lookup,
+    )
+    tokens = mx.array([[1, 2]], dtype=mx.int32)
+    normal_logits, _ = normal(tokens)
+    shuffled_logits, _ = shuffled(tokens)
+    mx.eval(normal_logits, shuffled_logits)
+    assert not bool(mx.allclose(normal_logits, shuffled_logits, atol=1e-6))
+
+
 def test_visible_eval_source_does_not_read_solution_or_tests() -> None:
     row = {
         "prompt": "Return the input length.",

@@ -449,6 +449,11 @@ def run(
                 "target_stream": str(config["tokenization"]["target_mode"]),
                 "auxiliary_target_count": 0,
                 "deterministic_renderer_credit": 0,
+                "read_policy": (
+                    "fixed_role_dependency_bias_plus_local_causal_window"
+                    if model_cfg.state_memory_mode != "none"
+                    else "not_applicable"
+                ),
             },
         },
         "artifacts": {

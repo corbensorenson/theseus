@@ -68,6 +68,25 @@ def build_model(
         if tuple(state_role_lookup.shape) != (config.vocab_size, config.state_memory_slots):
             raise ValueError("state-role lookup shape must match vocabulary and slot counts")
         state_role_lookup = mx.array(state_role_lookup, dtype=mx.float32)
+        state_role_interaction = mx.eye(config.state_memory_slots, dtype=mx.float32)
+        if config.state_memory_slots == 8:
+            dependencies = {
+                0: (5, 7),
+                1: (0, 5),
+                2: (0, 1, 5),
+                3: (1, 2, 5),
+                4: (2, 3, 5),
+                5: (1, 2, 3, 4),
+                6: (2, 3, 4, 5),
+                7: (0, 1, 5),
+            }
+            rows = []
+            for query_role in range(config.state_memory_slots):
+                row = [1.0 if memory_role == query_role else 0.0 for memory_role in range(config.state_memory_slots)]
+                for memory_role in dependencies[query_role]:
+                    row[memory_role] = max(row[memory_role], 0.5)
+                rows.append(row)
+            state_role_interaction = mx.array(rows, dtype=mx.float32)
 
     def apply_rope(value: Any, *, offset: int) -> Any:
         length = int(value.shape[2])
@@ -95,6 +114,7 @@ def build_model(
             hidden: Any,
             cache: tuple[Any, Any] | None = None,
             memory: Any | None = None,
+            role_weights: Any | None = None,
         ) -> tuple[Any, tuple[Any, Any]]:
             batch, length, _dims = hidden.shape
             offset = int(cache[0].shape[2]) if cache is not None else 0
@@ -136,6 +156,20 @@ def build_model(
                         mx.array(0.0, dtype=mx.float32),
                         mx.array(-1e9, dtype=mx.float32),
                     )
+                if role_weights is not None:
+                    read_access = mx.minimum(
+                        mx.matmul(role_weights, state_role_interaction),
+                        mx.array(1.0, dtype=mx.float32),
+                    )
+                    memory_bias = mx.log(mx.maximum(read_access, 0.05))
+                    local_bias = mx.zeros(
+                        (batch, length, local_width), dtype=mx.float32
+                    )
+                    role_bias = mx.concatenate([memory_bias, local_bias], axis=-1)[:, None, :, :]
+                    if mask is None:
+                        mask = role_bias
+                    else:
+                        mask = mask[None, None, :, :] + role_bias
             if config.num_kv_heads != config.num_heads:
                 repeats = config.num_heads // config.num_kv_heads
                 attention_key = mx.repeat(attention_key, repeats=repeats, axis=1)
@@ -220,6 +254,7 @@ def build_model(
                 self.attention_norm(hidden),
                 token_cache,
                 mx.zeros_like(memory) if config.state_memory_ablation == "zero" else memory,
+                role_weights,
             )
             hidden = hidden + attended
             hidden = hidden + self.feed_forward(self.ffn_norm(hidden))
