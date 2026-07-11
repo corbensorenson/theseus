@@ -228,11 +228,11 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "59df23e43f522bf59bdca94ec5e80ca9035bc3db00fd25aa6c6952cbb7a2b94a"
+          "sha256": "2d660bc66177eee9f2bf5ab203dc3cb811af6dae2529b0532c2bb8ec46e02b64"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
-          "sha256": "c7b184057fb0fb4d86770275b39c3b423631987f2f18bec2074525ee4311b398"
+          "sha256": "ee634f82d3b9b153c82a0b0dbc32d14d2b56637d8a60bd66d285283d8ae6347e"
         },
         "token_renderer": {
           "path": "scripts/neural_seed_token_decoder_rendering.py",
@@ -240,7 +240,7 @@
         },
         "candidate_integrity_implementation": {
           "path": "scripts/candidate_integrity.py",
-          "sha256": "72b119c74a843af7c9dc89d18592db3274d2b46c82be2517126a17bda7830906"
+          "sha256": "7b850e415e423630d90664c51d5547afe14deb38324c60f00588b3dd6a8d1b91"
         },
         "conditioning_config": {
           "path": "configs/standard_causal_transformer_conditioning.json",
@@ -264,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "3d3dce72f399a2108f2b47b2b1087d0d0fee9d9f74f0cb5c5109088340ce1f4c"
+          "sha256": "cf701df2275a9a7778d64428559c036ea79681b61bf37361dee739ec127831f6"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -284,15 +284,15 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "95da7c96b69670b55029119777f9fb400ba9cf724c4e4d5297bda83cc1fb11c2"
+          "sha256": "015e2ba6bb1d00042ac244bdf53b37905aa59a6c9686fb72d9a1185d08440934"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "12178549e249b33b8e78f72ff250f6c2b6445c6cac2afc7ff06512e5370ab14b"
+          "sha256": "43f86f24a276ff3c2065a315eb7c5619e23a49bd2da5fa787f7333a56dd3611e"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "628617671ef052d848807ff6987e8a91587d054a52fd270a1d50ee5dc206225a"
+          "sha256": "26337af3a21fe3ad49f555b0117a1ce28a58390721925d3bd524f421b753d625"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -4900,7 +4900,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. A same-model learned Semantic-IR plan-prefix arm is independently trace-audited, but under matched data/model/seed/target-position/evaluation/fanout budgets it covers 15 tasks with 42 candidates and mean verifier reward 0.296970 versus body-only 20 tasks, 70 candidates, and 0.401639; both pass 0/24 and plan decode is 11,252 ms slower. The flagship gate recomputes the exact-bound comparison and records NOT_ADOPTED, so body-only remains canonical. Source-conditioned semantic behavior, full task coverage, verifier-positive pair density, and durable training provenance remain the Phase 10/13 wall.",
+      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. The corrected four-arm ordered Semantic-IR MLX ablation consumes exactly 1,202,267 direct body positions per arm. Semantic plans are causally learned and improve heldout body loss, but content-bound hierarchical replay covers only 17/24 tasks with 40 candidates and mean reward 0.294737 versus body-only 23/24, 83 candidates, and 0.440152; every arm remains 0/24. Independent trace integrity and blind-flow audits are GREEN, while the qualification gate records NOT_ADOPTED and leaves body-only canonical. The Phase 10/13 wall is a learned plan-state/body realization path that produces verifier-positive family-disjoint behavior without regressing coverage or reward, plus a fresh complete canonical training receipt.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",

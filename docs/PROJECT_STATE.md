@@ -1,6 +1,6 @@
 # Project State
 
-Last consolidated: 2026-07-09 local / 2026-07-10 UTC.
+Last consolidated: 2026-07-11 local / 2026-07-11 UTC.
 
 This is the current-wall page for Project Theseus. Historical state was moved
 to `docs/archive/PROJECT_STATE_2026_06_22_pre_reality_harness.md`.
@@ -119,19 +119,28 @@ path and cannot be mistaken for the configured next output.
 Phase `13` now reaches the practical causal generator through a closed,
 target-independent learned Semantic-IR plan prefix followed by direct body
 tokens from the same model. Independent integrity recomputes the raw token hash,
-plan transitions, reversible body decode, and exact candidate-body relation;
-all `42` plan-arm candidates classify as transformer/hybrid with zero integrity
-mismatches. The matched MLX canary remains negative: plan/body covers `15/24`
-tasks with mean verifier reward `0.296970` and `125,587 ms` decode, while
-body-only covers `20/24` with reward `0.401639` and `114,335 ms`; both pass
-`0/24`. The flagship gate records `NOT_ADOPTED`, preserves exact negative
-artifact bindings, and leaves body-only canonical. Semantic IR therefore remains
-partial until it changes family-disjoint learned behavior rather than only loss
-or internal representation quality. A stricter replay found that this was not an
+plan transitions, abstract alpha-renamed dataflow/value roles, reversible body
+decode, and exact candidate-body relation. The first canary was not an
 equal-body-exposure comparison: emitted plan tokens consumed the same target
 budget as Python body tokens, yielding `598` plan-arm SFT steps versus `687`
-body-only steps and changing both vocabulary and parameter count. That result is
-still valid negative evidence, but it is not a substrate verdict. A separate
+body-only steps and changing both vocabulary and parameter count. It remains
+retained negative evidence, not a substrate verdict. The corrected four-arm MLX
+ablation reserves identical plan space and consumes exactly `1,202,267` direct
+body positions in body-only, semantic-plan, shuffled-plan, and plan-dropout arms.
+The semantic signal is real at representation level: teacher-forced plan loss is
+`0.930240`, versus `1.558662` shuffled and `10.722825` dropout, and semantic body
+loss is `1.787126`, versus body-only `1.808397`. Direct generation remains
+negative. A content-bound hierarchical replay produces `40` semantic candidates
+over `17/24` tasks at mean reward `0.294737` and `31,086 ms`, versus body-only
+`83` over `23/24` at `0.440152` and `22,291 ms`; all four arms remain `0/24`.
+The hierarchical strategy cuts semantic decode from the retained flat replay's
+`58,690 ms`, but worsens coverage and reward. All four integrity and blind-flow
+audits are GREEN; the three plan arms are independently classified as direct
+transformer/hybrid traces with zero mismatches. Evaluation-only evidence binds
+distinct completed training receipts and exact checkpoint hashes. The flagship
+gate is `GREEN` evidence and `NOT_ADOPTED`, preserving body-only as canonical.
+Semantic IR remains partial until a learned plan-state/body realization mechanism
+improves family-disjoint behavior under the same matched controls. A separate
 standalone-SFT admission canary rejected `10,526` licensed rows that depended on
 hidden module context and preserved exact private sampling mass. It decoded
 `49,000 ms` faster, but regressed task coverage `20 -> 19`, candidate count

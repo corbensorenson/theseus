@@ -95,11 +95,13 @@ class Stage:
     sft_inputs: np.ndarray
     sft_labels: np.ndarray
     sft_mask: np.ndarray
+    sft_body_mask: np.ndarray
     sft_sampling_weights: np.ndarray
     sft_plan_labels: np.ndarray
     eval_inputs: np.ndarray
     eval_labels: np.ndarray
     eval_mask: np.ndarray
+    eval_body_mask: np.ndarray
     eval_plan_labels: np.ndarray
     eval_rows: list[dict[str, Any]]
     preference_rows: list[dict[str, Any]]
@@ -200,6 +202,7 @@ def run(
         state_role_lookup=state_role_lookup,
     )
     plan_training = semantic_plan_training_contract(config)
+    ordered_plan_training = ordered_plan_training_contract(config)
     params = parameter_count(model, mlx_utils)
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     checkpoint = checkpoint_dir / "standard_causal_transformer_survival_v1.npz"
@@ -216,7 +219,7 @@ def run(
         int(training_cfg["pretrain_target_token_positions"]),
     )
     sft_steps = required_steps(
-        stage.sft_mask,
+        stage.sft_body_mask,
         int(training_cfg["batch_size"]),
         int(training_cfg["sft_target_token_positions"]),
         sample_weights=stage.sft_sampling_weights,
@@ -227,7 +230,23 @@ def run(
     if evaluate_only:
         prior = read_json(prior_report_path)
         prior_training = prior.get("training") if isinstance(prior.get("training"), dict) else {}
-        conditioning = prior.get("conditioning") if isinstance(prior.get("conditioning"), dict) else {}
+        if prior_training.get("complete") is not True:
+            raise ValueError("evaluation-only replay requires a complete prior training receipt")
+        prior_checkpoint = resolve(
+            str((prior.get("artifacts") or {}).get("checkpoint") or "")
+        )
+        if prior_checkpoint != checkpoint or not checkpoint.exists():
+            raise ValueError("evaluation-only replay checkpoint does not match prior receipt")
+        conditioning = {
+            **(
+                prior.get("conditioning")
+                if isinstance(prior.get("conditioning"), dict)
+                else {}
+            ),
+            "evaluation_base_checkpoint_sha256": file_content_sha256(checkpoint),
+            "prior_training_receipt_sha256": file_content_sha256(prior_report_path),
+            "evaluation_replay_contract": "content_bound_checkpoint_and_training_receipt_v1",
+        }
         eval_loss_before = float(prior_training.get("eval_loss_before") or float("inf"))
         phase_reports = list(prior_training.get("phases") or [])
         consumed_steps = int(prior_training.get("optimizer_steps") or 0)
@@ -243,7 +262,7 @@ def run(
             model,
             stage.eval_inputs,
             stage.eval_labels,
-            stage.eval_mask,
+            stage.eval_body_mask,
             batch_size=int(training_cfg["batch_size"]),
             mx=mx,
             nn=nn,
@@ -255,6 +274,16 @@ def run(
             batch_size=int(training_cfg["batch_size"]),
             enabled=plan_training["enabled"],
             mx=mx,
+        )
+        ordered_plan_eval_before = evaluate_ordered_plan_loss(
+            model,
+            stage.eval_inputs,
+            stage.eval_labels,
+            stage.eval_mask,
+            stage.eval_body_mask,
+            batch_size=int(training_cfg["batch_size"]),
+            mx=mx,
+            nn=nn,
         )
         conditioning = {
             **prior_conditioning,
@@ -276,7 +305,7 @@ def run(
         )
         if remaining_sft_positions:
             continuation_steps = required_steps(
-                stage.sft_mask,
+                stage.sft_body_mask,
                 int(training_cfg["batch_size"]),
                 remaining_sft_positions,
                 sample_weights=stage.sft_sampling_weights,
@@ -288,6 +317,8 @@ def run(
                 stage.sft_inputs,
                 stage.sft_labels,
                 stage.sft_mask,
+                progress_mask=stage.sft_body_mask,
+                ordered_plan_loss_weight=ordered_plan_training["plan_loss_weight"],
                 sample_weights=stage.sft_sampling_weights,
                 plan_labels=stage.sft_plan_labels,
                 plan_label_mode=plan_training["label_mode"],
@@ -322,7 +353,7 @@ def run(
             model,
             stage.eval_inputs,
             stage.eval_labels,
-            stage.eval_mask,
+            stage.eval_body_mask,
             batch_size=int(training_cfg["batch_size"]),
             mx=mx,
             nn=nn,
@@ -335,6 +366,16 @@ def run(
             enabled=plan_training["enabled"],
             mx=mx,
         )
+        ordered_plan_eval_before = evaluate_ordered_plan_loss(
+            model,
+            stage.eval_inputs,
+            stage.eval_labels,
+            stage.eval_mask,
+            stage.eval_body_mask,
+            batch_size=int(training_cfg["batch_size"]),
+            mx=mx,
+            nn=nn,
+        )
         heartbeat = stage_dir / "training_heartbeat.json"
         phase_reports = []
         consumed_steps = 0
@@ -343,6 +384,7 @@ def run(
             inputs,
             labels,
             mask,
+            progress_mask,
             sample_weights,
             phase_plan_labels,
             target_positions,
@@ -352,6 +394,7 @@ def run(
                 "licensed_module_causal_pretraining",
                 stage.pretrain_inputs,
                 stage.pretrain_labels,
+                stage.pretrain_mask,
                 stage.pretrain_mask,
                 None,
                 None,
@@ -363,6 +406,7 @@ def run(
                 stage.sft_inputs,
                 stage.sft_labels,
                 stage.sft_mask,
+                stage.sft_body_mask,
                 stage.sft_sampling_weights,
                 stage.sft_plan_labels,
                 int(training_cfg["sft_target_token_positions"]),
@@ -379,6 +423,12 @@ def run(
                 inputs,
                 labels,
                 mask,
+                progress_mask=progress_mask,
+                ordered_plan_loss_weight=(
+                    ordered_plan_training["plan_loss_weight"]
+                    if phase_plan_labels is not None
+                    else 1.0
+                ),
                 sample_weights=sample_weights,
                 plan_labels=phase_plan_labels,
                 plan_label_mode=(
@@ -412,7 +462,7 @@ def run(
         model,
         stage.eval_inputs,
         stage.eval_labels,
-        stage.eval_mask,
+        stage.eval_body_mask,
         batch_size=int(training_cfg["batch_size"]),
         mx=mx,
         nn=nn,
@@ -423,6 +473,11 @@ def run(
             if isinstance(prior_training.get("semantic_plan_eval_before"), dict)
             else {"state": "NOT_RETAINED"}
         )
+        ordered_plan_eval_before = (
+            prior_training.get("ordered_plan_eval_before")
+            if isinstance(prior_training.get("ordered_plan_eval_before"), dict)
+            else {"state": "NOT_RETAINED"}
+        )
     plan_eval_after = evaluate_semantic_plan_head(
         model,
         stage.eval_inputs,
@@ -430,6 +485,16 @@ def run(
         batch_size=int(training_cfg["batch_size"]),
         enabled=plan_training["enabled"],
         mx=mx,
+    )
+    ordered_plan_eval_after = evaluate_ordered_plan_loss(
+        model,
+        stage.eval_inputs,
+        stage.eval_labels,
+        stage.eval_mask,
+        stage.eval_body_mask,
+        batch_size=int(training_cfg["batch_size"]),
+        mx=mx,
+        nn=nn,
     )
     candidates, decode_summary = generate_candidates(
         model,
@@ -526,6 +591,15 @@ def run(
                 "target_body_visible_at_inference": False,
                 "deterministic_renderer_credit": 0,
             },
+            "ordered_semantic_plan": {
+                **ordered_plan_training,
+                "protocol_sha256": str(
+                    stage.summary["ordered_plan_label_receipt"].get("protocol_sha256")
+                    or ""
+                ),
+                "target_body_visible_at_inference": False,
+                "direct_body_decoder": True,
+            },
         },
         "artifacts": {
             "config": config_path,
@@ -547,6 +621,8 @@ def run(
             "eval_loss_improved": eval_loss_after < eval_loss_before,
             "semantic_plan_eval_before": plan_eval_before,
             "semantic_plan_eval_after": plan_eval_after,
+            "ordered_plan_eval_before": ordered_plan_eval_before,
+            "ordered_plan_eval_after": ordered_plan_eval_after,
         },
         "conditioning": conditioning,
         "decode": decode_summary,
@@ -613,6 +689,11 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
                 sft_inputs=arrays["sft_inputs"],
                 sft_labels=arrays["sft_labels"],
                 sft_mask=arrays["sft_mask"],
+                sft_body_mask=(
+                    arrays["sft_body_mask"]
+                    if "sft_body_mask" in arrays.files
+                    else arrays["sft_mask"]
+                ),
                 sft_sampling_weights=(
                     arrays["sft_sampling_weights"]
                     if "sft_sampling_weights" in arrays.files
@@ -629,6 +710,11 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
                 eval_inputs=arrays["eval_inputs"],
                 eval_labels=arrays["eval_labels"],
                 eval_mask=arrays["eval_mask"],
+                eval_body_mask=(
+                    arrays["eval_body_mask"]
+                    if "eval_body_mask" in arrays.files
+                    else arrays["eval_mask"]
+                ),
                 eval_plan_labels=(
                     arrays["eval_plan_labels"]
                     if "eval_plan_labels" in arrays.files
@@ -671,10 +757,21 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         target_vocab,
         eval_body_token_sequences=eval_body_token_sequences,
     )
-    sft = encode_sft_training_examples(config, sft_examples, source_vocab, target_vocab)
+    ordered_plan = ordered_plan_training_contract(config)
+    sft = encode_sft_training_examples(
+        config,
+        sft_examples,
+        source_vocab,
+        target_vocab,
+        ordered_plan_mode=ordered_plan["label_mode"],
+    )
     eval_examples = [eval_example(row) for row in eval_rows]
     eval_encoded = encode_sft_training_examples(
-        config, eval_examples, source_vocab, target_vocab
+        config,
+        eval_examples,
+        source_vocab,
+        target_vocab,
+        ordered_plan_mode="semantic",
     )
     eval_arrays = eval_encoded[:3]
     summary = {
@@ -683,7 +780,13 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "licensed_pretrain_target_positions": int(pretrain[2].sum()),
         "sft_example_count": int(sft[0].shape[0]),
         "sft_target_positions": int(sft[2].sum()),
-        "unique_body_target_positions": int(sft[2].sum()),
+        "unique_body_target_positions": int(sft[5].sum()),
+        "ordered_plan_target_positions": int(
+            np.maximum(sft[2] - sft[5], 0.0).sum()
+        ),
+        "ordered_plan_training": ordered_plan,
+        "ordered_plan_label_receipt": sft[6],
+        "ordered_plan_eval_receipt": eval_encoded[6],
         "sft_sampling_weight_sum": round(float(sft[3].sum()), 6),
         "semantic_plan_feature_count": int(sft[4].shape[1]) if sft[4].ndim == 2 else 0,
         "semantic_plan_positive_label_count": int(sft[4].sum()),
@@ -750,6 +853,9 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "sft_contract_admission": sft_audit["sft_contract_admission"],
         "shared_source_target_vocabulary": shared_vocabulary_enabled(config),
         "target_mode": str(config["tokenization"]["target_mode"]),
+        "sequence_plan_reserve_tokens": int(
+            config["tokenization"].get("sequence_plan_reserve_tokens") or 0
+        ),
         "target_vocab_extension": target_vocab_extension,
         "model_vocabulary_size": model_vocab_size(config, source_vocab, target_vocab),
         "eval_hidden_derived_signature_count": sum(
@@ -783,11 +889,13 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
             sft_inputs=sft[0],
             sft_labels=sft[1],
             sft_mask=sft[2],
+            sft_body_mask=sft[5],
             sft_sampling_weights=sft[3],
             sft_plan_labels=sft[4],
             eval_inputs=eval_arrays[0],
             eval_labels=eval_arrays[1],
             eval_mask=eval_arrays[2],
+            eval_body_mask=eval_encoded[5],
             eval_plan_labels=eval_encoded[4],
         )
         arrays_temporary.replace(arrays_path)
@@ -811,11 +919,13 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         sft_inputs=sft[0],
         sft_labels=sft[1],
         sft_mask=sft[2],
+        sft_body_mask=sft[5],
         sft_sampling_weights=sft[3],
         sft_plan_labels=sft[4],
         eval_inputs=eval_arrays[0],
         eval_labels=eval_arrays[1],
         eval_mask=eval_arrays[2],
+        eval_body_mask=eval_encoded[5],
         eval_plan_labels=eval_encoded[4],
         eval_rows=eval_rows,
         preference_rows=preference_rows,
@@ -1228,7 +1338,15 @@ def encode_sft_examples(
     source_vocab: dict[str, int],
     target_vocab: dict[str, int],
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    inputs, labels, mask, _weights, _plan_labels = encode_sft_training_examples(
+    (
+        inputs,
+        labels,
+        mask,
+        _weights,
+        _plan_labels,
+        _body_mask,
+        _ordered_plan_receipt,
+    ) = encode_sft_training_examples(
         config, examples, source_vocab, target_vocab
     )
     return inputs, labels, mask
@@ -1239,28 +1357,56 @@ def encode_sft_training_examples(
     examples: list[dict[str, Any]],
     source_vocab: dict[str, int],
     target_vocab: dict[str, int],
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    *,
+    ordered_plan_mode: str | None = None,
+) -> tuple[
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    dict[str, Any],
+]:
     token_cfg = config["tokenization"]
     max_seq = int(token_cfg["max_sequence_tokens"])
     max_source = int(token_cfg["max_source_tokens"])
     max_target = int(token_cfg["max_target_tokens"])
+    plan_reserve = int(token_cfg.get("sequence_plan_reserve_tokens") or 0)
     source_offset = source_token_offset(config, source_vocab)
     target_offset = target_token_offset(config, source_vocab)
-    rows: list[tuple[list[int], int, float, tuple[int, ...]]] = []
-    for row in examples:
+    ordered_plans, ordered_plan_receipt = prepare_ordered_plan_sequences(
+        examples,
+        config,
+        mode=ordered_plan_mode,
+    )
+    rows: list[tuple[list[int], int, int, float, tuple[int, ...]]] = []
+    for row_index, row in enumerate(examples):
         source_ids, source_receipt = encode_model_source(
             row["source_text"], source_vocab, target_vocab, config
         )
+        ordered_plan_tokens = ordered_plans[row_index]
+        direct_body_tokens = body_tokens(str(row["body"]))
+        target_tokens = training_target_tokens(
+            str(row["body"]), config, ordered_plan_tokens=ordered_plan_tokens
+        )
         target_ids, target_receipt = encode_tokens(
-            training_target_tokens(str(row["body"]), config),
+            target_tokens,
             target_vocab,
             stream="target",
         )
         if source_receipt.get("unknown_token_count") or target_receipt.get("unknown_token_count"):
             continue
-        if len(target_ids) > max_target - 2:
+        if len(direct_body_tokens) > max_target - 2:
             continue
-        source_ids = head_tail(source_ids, max_source)
+        encoded_plan_positions = (
+            len(ordered_plan_tokens) + 1 if ordered_plan_tokens is not None else 0
+        )
+        unoccupied_plan_reserve = max(0, plan_reserve - encoded_plan_positions)
+        available_source = max_seq - 3 - len(target_ids) - unoccupied_plan_reserve
+        if available_source <= 0:
+            continue
+        source_ids = head_tail(source_ids, min(max_source, available_source))
         sequence = [GLOBAL_BOS_ID]
         sequence.extend(source_offset + int(value) for value in source_ids)
         sequence.append(SOURCE_TARGET_SEPARATOR_ID)
@@ -1271,10 +1417,12 @@ def encode_sft_training_examples(
         if len(sequence) > max_seq + 1:
             continue
         plan_labels = semantic_ir.body_to_plan_obligation_labels(str(row["body"]))
+        body_target_offset = encoded_plan_positions
         rows.append(
             (
                 sequence,
                 target_start - 1,
+                target_start - 1 + body_target_offset,
                 float(row.get("sampling_weight") or 1.0),
                 plan_labels,
             )
@@ -1282,31 +1430,192 @@ def encode_sft_training_examples(
     inputs = np.zeros((len(rows), max_seq), dtype=np.int32)
     labels = np.zeros((len(rows), max_seq), dtype=np.int32)
     mask = np.zeros((len(rows), max_seq), dtype=np.float32)
+    body_mask = np.zeros((len(rows), max_seq), dtype=np.float32)
     weights = np.ones((len(rows),), dtype=np.float32)
     plan_labels = np.zeros(
         (len(rows), len(semantic_ir.plan_obligation_features())), dtype=np.float32
     )
-    for index, (sequence, mask_start, sampling_weight, row_plan_labels) in enumerate(rows):
+    for index, (
+        sequence,
+        mask_start,
+        body_mask_start,
+        sampling_weight,
+        row_plan_labels,
+    ) in enumerate(rows):
         width = len(sequence) - 1
         inputs[index, :width] = sequence[:-1]
         labels[index, :width] = sequence[1:]
         mask[index, mask_start:width] = 1.0
+        body_mask[index, body_mask_start:width] = 1.0
         weights[index] = max(0.0, sampling_weight)
         plan_labels[index] = np.asarray(row_plan_labels, dtype=np.float32)
-    return inputs, labels, mask, weights, plan_labels
+    return inputs, labels, mask, weights, plan_labels, body_mask, {
+        **ordered_plan_receipt,
+        "encoded_row_count": len(rows),
+        "encoded_target_position_count": int(mask.sum()),
+        "encoded_body_position_count": int(body_mask.sum()),
+        "encoded_plan_position_count": int(np.maximum(mask - body_mask, 0.0).sum()),
+    }
 
 
-def training_target_tokens(body: str, config: dict[str, Any]) -> list[str]:
+def training_target_tokens(
+    body: str,
+    config: dict[str, Any],
+    *,
+    ordered_plan_tokens: list[str] | None = None,
+) -> list[str]:
     tokenization = config.get("tokenization") if isinstance(config.get("tokenization"), dict) else {}
     target_mode = str(tokenization.get("target_mode") or "body_tokens")
     if learned_semantic_ir_plan_body_target_mode(target_mode):
         max_plan_tokens = int(tokenization.get("semantic_plan_max_tokens") or semantic_ir.PLAN_MAX_TOKENS)
+        plan = (
+            list(ordered_plan_tokens)
+            if ordered_plan_tokens is not None
+            else semantic_ir.body_to_plan_tokens(body, max_tokens=max_plan_tokens)
+        )
         return [
-            *semantic_ir.body_to_plan_tokens(body, max_tokens=max_plan_tokens),
+            *plan,
             PLAN_BODY_START_TOKEN,
             *body_tokens(body),
         ]
     return body_tokens(body)
+
+
+def ordered_plan_training_contract(config: dict[str, Any]) -> dict[str, Any]:
+    target_mode = str(config.get("tokenization", {}).get("target_mode") or "body_tokens")
+    enabled = learned_semantic_ir_plan_body_target_mode(target_mode)
+    cfg = (
+        config.get("ordered_plan_training")
+        if isinstance(config.get("ordered_plan_training"), dict)
+        else {}
+    )
+    return {
+        "enabled": enabled,
+        "label_mode": str(cfg.get("label_mode") or ("semantic" if enabled else "none")),
+        "plan_loss_weight": float(cfg.get("plan_loss_weight") or (0.25 if enabled else 0.0)),
+        "shuffle_seed": int(cfg.get("shuffle_seed") or int(config.get("seed") or 0) + 2713),
+        "body_progress_unit": "direct_body_token_positions",
+        "plan_target": "ordered_alpha_renamed_semantic_ir",
+        "deterministic_renderer_or_repair_credit": 0,
+    }
+
+
+def prepare_ordered_plan_sequences(
+    examples: list[dict[str, Any]],
+    config: dict[str, Any],
+    *,
+    mode: str | None = None,
+) -> tuple[list[list[str] | None], dict[str, Any]]:
+    contract = ordered_plan_training_contract(config)
+    if not contract["enabled"]:
+        return [None for _row in examples], {
+            "label_mode": "none",
+            "row_count": len(examples),
+            "token_count": 0,
+            "fixed_point_count": 0,
+            "plan_sha256": "",
+            "protocol_sha256": sha("\n".join(semantic_ir.plan_protocol_tokens())),
+            "identifier_free": True,
+            "target_body_visible_at_inference": False,
+        }
+    selected_mode = str(mode or contract["label_mode"])
+    max_tokens = int(
+        config.get("tokenization", {}).get("semantic_plan_max_tokens")
+        or semantic_ir.PLAN_MAX_TOKENS
+    )
+    semantic = [
+        semantic_ir.body_to_plan_tokens(str(row["body"]), max_tokens=max_tokens)
+        for row in examples
+    ]
+    fixed_points = len(semantic)
+    if selected_mode == "semantic":
+        prepared = semantic
+    elif selected_mode == "shuffled":
+        if len(semantic) < 2:
+            raise ValueError("ordered-plan shuffled control requires at least two rows")
+        order = np.random.default_rng(contract["shuffle_seed"]).permutation(len(semantic))
+        assignment = np.empty_like(order)
+        assignment[order] = np.roll(order, 1)
+        prepared = [
+            project_plan_content(semantic[int(source)], semantic[index])
+            for index, source in enumerate(assignment)
+        ]
+        fixed_points = sum(left == right for left, right in zip(prepared, semantic))
+        if fixed_points:
+            raise AssertionError("ordered-plan shuffled control contains fixed plans")
+    elif selected_mode == "dropout":
+        prepared = [semantic_ir.dropout_plan_tokens(plan) for plan in semantic]
+        fixed_points = sum(left == right for left, right in zip(prepared, semantic))
+    else:
+        raise ValueError(f"unsupported ordered-plan label mode: {selected_mode}")
+    flattened = "\n".join(" ".join(plan) for plan in prepared)
+    return prepared, {
+        "label_mode": selected_mode,
+        "row_count": len(prepared),
+        "token_count": sum(len(plan) for plan in prepared),
+        "semantic_token_count": sum(len(plan) for plan in semantic),
+        "fixed_point_count": fixed_points,
+        "plan_sha256": sha(flattened),
+        "protocol_sha256": sha("\n".join(semantic_ir.plan_protocol_tokens())),
+        "identifier_free": True,
+        "target_body_visible_at_inference": False,
+    }
+
+
+def project_plan_content(donor: list[str], shape: list[str]) -> list[str]:
+    """Project a deranged donor onto another plan's exact protocol shape."""
+
+    pools: dict[str, list[str]] = {}
+    for token in donor:
+        token_class = ordered_plan_token_class(token)
+        if token_class:
+            pools.setdefault(token_class, []).append(token)
+    cursors: dict[str, int] = Counter()
+    projected: list[str] = []
+    neutral = semantic_ir.dropout_plan_tokens(shape)
+    for index, token in enumerate(shape):
+        token_class = ordered_plan_token_class(token)
+        if token_class in {"BEGIN", "END"}:
+            projected.append(token)
+            continue
+        choices = pools.get(token_class) or []
+        if choices:
+            cursor = cursors[token_class]
+            projected.append(choices[cursor % len(choices)])
+            cursors[token_class] += 1
+        else:
+            projected.append(neutral[index])
+    if projected == shape:
+        projected = neutral
+    if projected == shape:
+        for index, token in enumerate(projected):
+            if token.startswith("IRP:STEP:"):
+                projected[index] = (
+                    "IRP:STEP:D0:return"
+                    if token != "IRP:STEP:D0:return"
+                    else "IRP:STEP:D0:statement"
+                )
+                break
+    return projected
+
+
+def ordered_plan_token_class(token: str) -> str:
+    value = str(token)
+    if value == semantic_ir.PLAN_BEGIN:
+        return "BEGIN"
+    if value == semantic_ir.PLAN_END:
+        return "END"
+    for prefix, name in (
+        ("IRP:STEP:", "STEP"),
+        ("IRP:SEM:", "SEM"),
+        ("IRP:FLOW:", "FLOW"),
+        ("IRP:DATA:", "DATA"),
+        ("IRP:VALUE:", "VALUE"),
+        ("IRP:FEATURE:", "FEATURE"),
+    ):
+        if value.startswith(prefix):
+            return name
+    return ""
 
 
 def extend_target_vocab_for_mode(config: dict[str, Any], target_vocab: dict[str, int]) -> dict[str, Any]:
@@ -2036,6 +2345,8 @@ def train_phase(
     labels: np.ndarray,
     mask: np.ndarray,
     *,
+    progress_mask: np.ndarray,
+    ordered_plan_loss_weight: float,
     sample_weights: np.ndarray | None,
     plan_labels: np.ndarray | None,
     plan_label_mode: str,
@@ -2059,6 +2370,7 @@ def train_phase(
     matrix_x = mx.array(inputs, dtype=mx.int32)
     matrix_y = mx.array(labels, dtype=mx.int32)
     matrix_mask = mx.array(mask, dtype=mx.float32)
+    matrix_progress_mask = mx.array(progress_mask, dtype=mx.float32)
     prepared_plan_labels, plan_label_receipt = prepare_semantic_plan_labels(
         plan_labels,
         mode=plan_label_mode,
@@ -2077,12 +2389,13 @@ def train_phase(
         if positive_weights is not None
         else None
     )
-    mx.eval(matrix_x, matrix_y, matrix_mask)
+    mx.eval(matrix_x, matrix_y, matrix_mask, matrix_progress_mask)
     if matrix_plan is not None:
         mx.eval(matrix_plan, matrix_positive_weights)
     order = list(range(len(inputs)))
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
     consumed = 0
+    all_target_consumed = 0
     steps = 0
     losses: list[float] = []
     started = time.perf_counter()
@@ -2102,7 +2415,10 @@ def train_phase(
             take = mx.array(indices, dtype=mx.int32)
             x = matrix_x[take]
             y = matrix_y[take]
-            m = matrix_mask[take]
+            all_targets = matrix_mask[take]
+            body_targets = matrix_progress_mask[take]
+            plan_targets = mx.maximum(all_targets - body_targets, 0.0)
+            m = body_targets + float(ordered_plan_loss_weight) * plan_targets
             batch_plan = matrix_plan[take] if matrix_plan is not None else None
             loss, grads = loss_and_grad(
                 model,
@@ -2120,7 +2436,8 @@ def train_phase(
             mx.eval(model.parameters(), optimizer.state, loss, grad_norm)
             loss_value = float(loss.item())
             losses.append(loss_value)
-            consumed += int(mask[indices].sum())
+            consumed += int(progress_mask[indices].sum())
+            all_target_consumed += int(mask[indices].sum())
             steps += 1
             global_step = global_step_offset + steps
             if global_step % 25 == 0:
@@ -2156,6 +2473,8 @@ def train_phase(
         "optimizer_body_positions_consumed": (
             consumed if phase_name.startswith("prompt_signature_body_sft") else 0
         ),
+        "optimizer_all_target_positions_consumed": all_target_consumed,
+        "ordered_plan_loss_weight": float(ordered_plan_loss_weight),
         "mean_loss": round(sum(losses) / max(1, len(losses)), 6),
         "final_loss": round(losses[-1], 6) if losses else None,
         "tokens_per_second": round(consumed / max(1e-9, time.perf_counter() - started), 3),
@@ -2211,6 +2530,42 @@ def evaluate_loss(
         weighted += float(loss.item()) * count
         positions += count
     return round(weighted / max(1, positions), 6)
+
+
+def evaluate_ordered_plan_loss(
+    model: Any,
+    inputs: np.ndarray,
+    labels: np.ndarray,
+    target_mask: np.ndarray,
+    body_mask: np.ndarray,
+    *,
+    batch_size: int,
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    plan_mask = np.maximum(target_mask - body_mask, 0.0).astype(np.float32)
+    positions = int(plan_mask.sum())
+    if positions <= 0:
+        return {
+            "state": "NOT_APPLICABLE",
+            "reason": "ordered_plan_prefix_disabled",
+            "target_positions": 0,
+        }
+    return {
+        "state": "MEASURED",
+        "target_positions": positions,
+        "teacher_forced_loss": evaluate_loss(
+            model,
+            inputs,
+            labels,
+            plan_mask,
+            batch_size=batch_size,
+            mx=mx,
+            nn=nn,
+        ),
+        "measurement_only": True,
+        "heldout_plan_labels_visible_to_generation": False,
+    }
 
 
 def evaluate_semantic_plan_head(
@@ -2341,7 +2696,11 @@ def generate_candidates(
                     "phase": "private_eval",
                     "candidate_source": "standard_causal_transformer_survival",
                     "candidate_generation_mode": (
-                        "direct_decoder_only_causal_semantic_plan_body_tokens"
+                        (
+                            "direct_decoder_only_hierarchical_semantic_plan_body_tokens"
+                            if config["evaluation"].get("hierarchical_plan_decode", False)
+                            else "direct_decoder_only_causal_semantic_plan_body_tokens"
+                        )
                         if learned_semantic_ir_plan_body_target_mode(target_mode)
                         else "direct_decoder_only_causal_body_tokens"
                     ),
@@ -2380,6 +2739,10 @@ def generate_candidates(
                         "learned_semantic_plan_prefix": learned_semantic_ir_plan_body_target_mode(
                             target_mode
                         ),
+                        "hierarchical_plan_body_beam": bool(
+                            learned_semantic_ir_plan_body_target_mode(target_mode)
+                            and config["evaluation"].get("hierarchical_plan_decode", False)
+                        ),
                         "executable_state_memory_mode": str(
                             config.get("model", {}).get("state_memory_mode") or "none"
                         ),
@@ -2407,6 +2770,12 @@ def generate_candidates(
         "cross_task_duplicate_body_rejected_count": cross_task_duplicate_body_rejected,
         "fallback_return_count": 0,
         "template_renderer_router_tool_credit_count": 0,
+        "decode_strategy": (
+            "hierarchical_plan_then_body_beam"
+            if learned_semantic_ir_plan_body_target_mode(target_mode)
+            and config["evaluation"].get("hierarchical_plan_decode", False)
+            else "flat_causal_beam"
+        ),
         "runtime_ms": int((time.perf_counter() - generation_started) * 1000),
         "accepted_verified_output_per_second": None,
     }
@@ -2733,6 +3102,20 @@ def decode_beams(
     started: float,
     mx: Any,
 ) -> list[dict[str, Any]]:
+    if learned_semantic_ir_plan_body_target_mode(target_mode) and config.get(
+        "hierarchical_plan_decode", False
+    ):
+        return decode_hierarchical_plan_beams(
+            model,
+            prompt_ids,
+            target_vocab,
+            target_offset=target_offset,
+            allowed_names=allowed_names,
+            config=config,
+            target_mode=target_mode,
+            started=started,
+            mx=mx,
+        )
     inverse = {int(value): key for key, value in target_vocab.items()}
     eos_local = int(target_vocab["<eos>"])
     logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
@@ -2817,6 +3200,226 @@ def decode_beams(
     )[: int(config["fanout"])]
 
 
+def decode_hierarchical_plan_beams(
+    model: Any,
+    prompt_ids: list[int],
+    target_vocab: dict[str, int],
+    *,
+    target_offset: int,
+    allowed_names: set[str],
+    config: dict[str, Any],
+    target_mode: str,
+    started: float,
+    mx: Any,
+) -> list[dict[str, Any]]:
+    """Allocate independent body-search budgets to learned plan prefixes."""
+
+    inverse = {int(value): key for key, value in target_vocab.items()}
+    eos_local = int(target_vocab["<eos>"])
+    logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
+    mx.eval(logits, *cache_arrays(cache))
+    plan_beams = [{"tokens": [], "score": 0.0, "cache": cache, "logits": logits[0, -1]}]
+    complete_plans: list[dict[str, Any]] = []
+    plan_limit = int(config.get("plan_beam_width") or config["beam_width"])
+    plan_fanout = max(1, min(int(config.get("plan_fanout") or 1), int(config["fanout"])))
+    for _step in range(semantic_ir.PLAN_MAX_TOKENS + 1):
+        if time.perf_counter() - started >= float(config["timeout_seconds_per_task"]):
+            break
+        specs: list[dict[str, Any]] = []
+        for beam in plan_beams:
+            for local_id, token, log_probability in grammar_choices(
+                beam["logits"],
+                beam["tokens"],
+                target_vocab,
+                inverse,
+                target_offset=target_offset,
+                eos_local=eos_local,
+                top_k=int(config["grammar_top_k"]),
+                branching=int(config["branching_factor"]),
+                allowed_names=allowed_names,
+                target_mode=target_mode,
+            ):
+                if local_id != eos_local:
+                    specs.append(
+                        {
+                            "beam": beam,
+                            "local_id": local_id,
+                            "token": token,
+                            "log_probability": log_probability,
+                        }
+                    )
+        expanded = batched_beam_advance(
+            model, specs, target_offset=target_offset, mx=mx
+        )
+        active: list[dict[str, Any]] = []
+        for row in expanded:
+            _body, prefix_meta = split_generation_prefix(
+                row["tokens"], target_mode=target_mode
+            )
+            if prefix_meta["body_started"] and prefix_meta["plan_complete"]:
+                row["plan_score"] = float(row["score"])
+                row["plan_token_count"] = len(row["tokens"])
+                complete_plans.append(row)
+            else:
+                active.append(row)
+        plan_beams = prune_active_beams(
+            active,
+            limit=plan_limit,
+            length_penalty=float(config["length_penalty"]),
+        )
+        complete_plans = prune_active_beams(
+            complete_plans,
+            limit=max(plan_fanout * 4, plan_fanout),
+            length_penalty=float(config["length_penalty"]),
+        )
+        if not plan_beams:
+            break
+    selected_plans = prune_active_beams(
+        complete_plans,
+        limit=plan_fanout,
+        length_penalty=float(config["length_penalty"]),
+    )
+    if not selected_plans:
+        return []
+
+    final_rows: list[dict[str, Any]] = []
+    per_plan_fanout = max(1, math.ceil(int(config["fanout"]) / len(selected_plans)))
+    body_beam_width = int(config.get("body_beam_width") or config["beam_width"])
+    for plan in selected_plans:
+        beams = [plan]
+        complete: list[dict[str, Any]] = []
+        remaining_steps = max(
+            1, int(config["decode_max_target_tokens"]) - len(plan["tokens"])
+        )
+        for _step in range(remaining_steps):
+            if time.perf_counter() - started >= float(config["timeout_seconds_per_task"]):
+                break
+            specs = []
+            for beam in beams:
+                for local_id, token, log_probability in grammar_choices(
+                    beam["logits"],
+                    beam["tokens"],
+                    target_vocab,
+                    inverse,
+                    target_offset=target_offset,
+                    eos_local=eos_local,
+                    top_k=int(config["grammar_top_k"]),
+                    branching=int(config["branching_factor"]),
+                    allowed_names=allowed_names,
+                    target_mode=target_mode,
+                ):
+                    if local_id == eos_local:
+                        complete.append(
+                            {
+                                "tokens": list(beam["tokens"]),
+                                "score": float(beam["score"]) + float(log_probability),
+                                "plan_score": float(beam["plan_score"]),
+                                "plan_token_count": int(beam["plan_token_count"]),
+                            }
+                        )
+                    else:
+                        specs.append(
+                            {
+                                "beam": beam,
+                                "local_id": local_id,
+                                "token": token,
+                                "log_probability": log_probability,
+                            }
+                        )
+            expanded = batched_beam_advance(
+                model, specs, target_offset=target_offset, mx=mx
+            )
+            beams = prune_active_beams(
+                expanded,
+                limit=body_beam_width,
+                length_penalty=float(config["length_penalty"]),
+                hierarchical=True,
+                plan_score_weight=float(config.get("plan_score_weight") or 0.25),
+            )
+            complete = prune_active_beams(
+                complete,
+                limit=max(
+                    per_plan_fanout,
+                    per_plan_fanout
+                    * max(1, int(config.get("completion_pool_multiplier") or 1)),
+                ),
+                length_penalty=float(config["length_penalty"]),
+                hierarchical=True,
+                plan_score_weight=float(config.get("plan_score_weight") or 0.25),
+            )
+            if len(complete) >= per_plan_fanout or not beams:
+                break
+        for beam in beams:
+            if generation_prefix_complete(beam["tokens"], target_mode=target_mode):
+                complete.append(beam)
+        final_rows.extend(
+            prune_active_beams(
+                complete,
+                limit=per_plan_fanout,
+                length_penalty=float(config["length_penalty"]),
+                hierarchical=True,
+                plan_score_weight=float(config.get("plan_score_weight") or 0.25),
+            )
+        )
+    return prune_active_beams(
+        final_rows,
+        limit=int(config["fanout"]),
+        length_penalty=float(config["length_penalty"]),
+        hierarchical=True,
+        plan_score_weight=float(config.get("plan_score_weight") or 0.25),
+    )
+
+
+def prune_active_beams(
+    rows: list[dict[str, Any]],
+    *,
+    limit: int,
+    length_penalty: float,
+    hierarchical: bool = False,
+    plan_score_weight: float = 0.25,
+) -> list[dict[str, Any]]:
+    unique: dict[tuple[str, ...], dict[str, Any]] = {}
+    for row in rows:
+        key = tuple(row.get("tokens") or [])
+        score = (
+            hierarchical_beam_rank_score(row, length_penalty, plan_score_weight)
+            if hierarchical
+            else beam_rank_score(row, length_penalty)
+        )
+        prior = unique.get(key)
+        prior_score = (
+            hierarchical_beam_rank_score(prior, length_penalty, plan_score_weight)
+            if hierarchical and prior is not None
+            else beam_rank_score(prior, length_penalty)
+            if prior is not None
+            else float("-inf")
+        )
+        if prior is None or score > prior_score:
+            unique[key] = row
+    return sorted(
+        unique.values(),
+        key=(
+            (lambda row: hierarchical_beam_rank_score(row, length_penalty, plan_score_weight))
+            if hierarchical
+            else (lambda row: beam_rank_score(row, length_penalty))
+        ),
+        reverse=True,
+    )[: max(1, limit)]
+
+
+def hierarchical_beam_rank_score(
+    row: dict[str, Any], length_penalty: float, plan_score_weight: float
+) -> float:
+    plan_score = float(row.get("plan_score") or 0.0)
+    total_score = float(row.get("score") or 0.0)
+    plan_length = max(1, int(row.get("plan_token_count") or 0))
+    body_length = max(1, len(row.get("tokens") or []) - plan_length)
+    penalty = max(0.0, float(length_penalty))
+    return (total_score - plan_score) / (body_length**penalty) + float(
+        plan_score_weight
+    ) * plan_score / (plan_length**penalty)
+
+
 def batched_beam_advance(
     model: Any,
     expansion_specs: list[dict[str, Any]],
@@ -2860,13 +3463,16 @@ def batched_beam_advance(
         ]
         beam = spec["beam"]
         rows.append(
-            {
+            next_row := {
                 "tokens": [*beam["tokens"], str(spec["token"])],
                 "score": float(beam["score"]) + float(spec["log_probability"]),
                 "cache": branch_cache,
                 "logits": logits[index, -1],
             }
         )
+        for key in ("plan_score", "plan_token_count"):
+            if key in beam:
+                next_row[key] = beam[key]
     return rows
 
 
@@ -2886,13 +3492,16 @@ def serial_beam_advance(
         )
         mx.eval(next_logits, *cache_arrays(next_cache))
         rows.append(
-            {
+            next_row := {
                 "tokens": [*beam["tokens"], str(spec["token"])],
                 "score": float(beam["score"]) + float(spec["log_probability"]),
                 "cache": next_cache,
                 "logits": next_logits[0, -1],
             }
         )
+        for key in ("plan_score", "plan_token_count"):
+            if key in beam:
+                next_row[key] = beam[key]
     return rows
 
 
@@ -3091,8 +3700,21 @@ def validate_config(config: dict[str, Any]) -> None:
     if target_mode not in {"body_tokens", semantic_ir.PLAN_BODY_TARGET_MODE}:
         raise ValueError("target mode must be direct body tokens or learned semantic-plan plus body tokens")
     plan_budget = int(tokenization.get("semantic_plan_max_tokens") or 0)
+    plan_reserve = int(tokenization.get("sequence_plan_reserve_tokens") or 0)
+    if not 0 <= plan_reserve <= semantic_ir.PLAN_MAX_TOKENS + 1:
+        raise ValueError("sequence plan reserve must fit the registered plan protocol")
     if learned_semantic_ir_plan_body_target_mode(target_mode) and not 8 <= plan_budget <= semantic_ir.PLAN_MAX_TOKENS:
         raise ValueError("semantic plan token budget must be between 8 and the protocol maximum")
+    if learned_semantic_ir_plan_body_target_mode(target_mode) and plan_reserve < plan_budget + 1:
+        raise ValueError("sequence plan reserve must cover the plan budget and body boundary")
+    ordered_plan = ordered_plan_training_contract(config)
+    if ordered_plan["enabled"]:
+        if ordered_plan["label_mode"] not in {"semantic", "shuffled", "dropout"}:
+            raise ValueError("ordered plan label mode must be semantic, shuffled, or dropout")
+        if not 0.0 < ordered_plan["plan_loss_weight"] <= 1.0:
+            raise ValueError("ordered plan loss weight must be in (0, 1]")
+    elif config.get("ordered_plan_training"):
+        raise ValueError("ordered plan training requires the learned plan-body target mode")
     model = config.get("model") if isinstance(config.get("model"), dict) else {}
     state_mode = str(model.get("state_memory_mode") or "none")
     state_slots = int(model.get("state_memory_slots") or 0)
@@ -3138,6 +3760,19 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("family-disjoint evaluation requires at least 24 distinct families")
     if int(evaluation.get("rows_per_family") or 0) != 1:
         raise ValueError("evaluation must use one unique semantic row per holdout family")
+    if evaluation.get("hierarchical_plan_decode", False):
+        if not isinstance(evaluation.get("hierarchical_plan_decode"), bool):
+            raise ValueError("hierarchical plan decode flag must be boolean")
+        if not 1 <= int(evaluation.get("plan_fanout") or 0) <= int(
+            evaluation.get("fanout") or 0
+        ):
+            raise ValueError("hierarchical plan fanout must be within candidate fanout")
+        if int(evaluation.get("plan_beam_width") or 0) <= 0 or int(
+            evaluation.get("body_beam_width") or 0
+        ) <= 0:
+            raise ValueError("hierarchical plan and body beam widths must be positive")
+        if not 0.0 <= float(evaluation.get("plan_score_weight") or 0.0) <= 1.0:
+            raise ValueError("hierarchical plan score weight must be in [0, 1]")
     preference = config.get("preference") if isinstance(config.get("preference"), dict) else {}
     if int(preference.get("max_train_tasks") or 0) < 8:
         raise ValueError("preference canary requires at least eight private training tasks")
@@ -3199,10 +3834,19 @@ def compare_target_mode_canaries(
         training = report.get("training") if isinstance(report.get("training"), dict) else {}
         verifier = private_verifier_summary(report.get("private_verifier") or {})
         decode = report.get("decode") if isinstance(report.get("decode"), dict) else {}
+        phases = training.get("phases") if isinstance(training.get("phases"), list) else []
         return {
             "target_mode": str(report.get("stage", {}).get("target_mode") or ""),
             "parameter_count": int(report.get("architecture", {}).get("parameter_count") or 0),
             "training_complete": training.get("complete") is True,
+            "optimizer_body_positions": sum(
+                int(row.get("optimizer_body_positions_consumed") or 0)
+                for row in phases
+                if isinstance(row, dict)
+            ),
+            "unique_body_target_positions": int(
+                report.get("stage", {}).get("unique_body_target_positions") or 0
+            ),
             "eval_loss_after": float(training.get("eval_loss_after") or float("inf")),
             "candidate_count": int(summary.get("candidate_count") or 0),
             "candidate_task_count": int(summary.get("candidate_task_count") or 0),
@@ -3254,6 +3898,12 @@ def compare_target_mode_canaries(
         == semantic_ir.PLAN_BODY_TARGET_MODE
         and control["target_mode"] == "body_tokens"
         and str((control_config.get("tokenization") or {}).get("target_mode") or "") == "body_tokens"
+    )
+    matched_checks["optimizer_body_positions_equal"] = (
+        plan["optimizer_body_positions"] == control["optimizer_body_positions"]
+    )
+    matched_checks["unique_body_target_positions_equal"] = (
+        plan["unique_body_target_positions"] == control["unique_body_target_positions"]
     )
     boundaries_clean = all(
         int(report.get(key) or 0) == 0
@@ -3348,6 +3998,7 @@ def stage_signature(config: dict[str, Any]) -> str:
             "private_body_sampling_weight": config["training"]["private_body_sampling_weight"],
         },
         "sft_contract_admission": config.get("sft_contract_admission", {}),
+        "ordered_plan_training": config.get("ordered_plan_training", {}),
         "teacher_distillation": teacher_config,
         "evaluation": {
             "holdout_family_count": config["evaluation"]["holdout_family_count"],
@@ -3362,6 +4013,8 @@ def stage_signature(config: dict[str, Any]) -> str:
         encode_sft_examples,
         encode_sft_training_examples,
         training_target_tokens,
+        ordered_plan_training_contract,
+        prepare_ordered_plan_sequences,
         extend_target_vocab_for_mode,
         assign_body_balanced_sampling_weights,
         standalone_sft_contract_decision,

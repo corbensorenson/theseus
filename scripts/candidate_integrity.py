@@ -403,7 +403,10 @@ def classify_family(
 
 def verify_direct_plan_body_trace(row: dict[str, Any], code: str) -> dict[str, Any]:
     mode = str(row.get("candidate_generation_mode") or "")
-    if mode != "direct_decoder_only_causal_semantic_plan_body_tokens":
+    if mode not in {
+        "direct_decoder_only_causal_semantic_plan_body_tokens",
+        "direct_decoder_only_hierarchical_semantic_plan_body_tokens",
+    }:
         return {"applicable": False, "valid": False, "faults": []}
     faults: list[str] = []
     raw_tokens = row.get("decoded_target_tokens")

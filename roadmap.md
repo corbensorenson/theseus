@@ -642,15 +642,22 @@ deletion closure is graph evidence, not physical unlearning.
   add another auxiliary target whose only win is its own loss.
 - Current status: `partial`. The generic AST IR, obligations, localized assisted
   repair, and independently audited learned plan/body protocol are integrated,
-  and the standard transformer now has an opt-in prompt/signature-only learned
-  181-feature obligation head with class-balanced labels, zero-initialized causal
-  body conditioning, cache replay, and a no-fixed-point shuffled-label control.
-  Under equal 600k pretraining and 1.2M SFT body exposure, semantic labels beat
-  shuffled labels on heldout plan F1 (`0.595819` vs `0.522488`) and slightly on
-  verifier reward (`0.343636` vs `0.340367`), but all arms remain `0/24` exact.
-  The route therefore stays disabled. Phase completion requires ordered learned
-  plan execution to improve family-disjoint direct model behavior; neither plan
-  prediction quality nor deterministic repair may be relabeled as completion.
+  and the standard transformer has both an opt-in source-only obligation head and
+  a compact ordered, alpha-renamed plan language covering operation, semantic
+  role, control flow, abstract dataflow, value kind, and feature obligations.
+  The ordered four-arm MLX ablation reserves identical plan space and trains all
+  arms on the same `1,202,267` direct body positions. Semantic plans are causally
+  learned: teacher-forced plan loss is `0.930240`, versus `1.558662` shuffled and
+  `10.722825` dropout, and body loss is best at `1.787126` versus `1.808397`
+  body-only. This does not transfer to behavior. Content-bound hierarchical
+  replay yields `40` candidates over `17/24` tasks with reward `0.294737`, versus
+  body-only `83` over `23/24` at `0.440152`; every arm remains `0/24` exact.
+  Independent integrity classifies every emitted candidate as transformer/hybrid
+  with zero mismatches, and the gate records `GREEN` evidence but `NOT_ADOPTED`.
+  The route stays disabled. Phase completion now requires a learned plan-state to
+  body realization mechanism that improves family-disjoint direct behavior under
+  the same semantic, shuffled, dropout, and body-only controls; plan loss,
+  deterministic rendering, repair, or search-time plan fanout cannot substitute.
 
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,

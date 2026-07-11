@@ -10,6 +10,7 @@ tool surface and never receives learned-generation credit.
 from __future__ import annotations
 
 import ast
+import builtins
 import hashlib
 import json
 import textwrap
@@ -81,6 +82,38 @@ PLAN_FEATURES = (
     "op_membership",
     "op_other",
 )
+PLAN_DATA_ROLES = (
+    "NONE",
+    "ARG0",
+    "ARG1",
+    "ARG2",
+    "ARG3",
+    "ARGN",
+    "LOCAL0",
+    "LOCAL1",
+    "LOCAL2",
+    "LOCAL3",
+    "LOCALN",
+    "MULTI",
+)
+PLAN_VALUE_KINDS = (
+    "none",
+    "name",
+    "number",
+    "text",
+    "boolean",
+    "container",
+    "call",
+    "binary_operation",
+    "boolean_operation",
+    "comparison",
+    "subscript",
+    "attribute",
+    "conditional",
+    "comprehension",
+    "unary_operation",
+    "other",
+)
 PROGRAM_BEGIN = "IR:PROGRAM"
 PROGRAM_END = "IR:PROGRAM_END"  # Reserved so older fault fixtures fail explicitly.
 NODE_END = "IR:NODE_END"  # Reserved; compact v1 uses AST field arity.
@@ -145,6 +178,12 @@ def plan_protocol_tokens() -> tuple[str, ...]:
         for read_count in PLAN_COUNT_BUCKETS
         for write_count in PLAN_COUNT_BUCKETS
     )
+    values.extend(
+        f"IRP:DATA:R{read_role}:W{write_role}"
+        for read_role in PLAN_DATA_ROLES
+        for write_role in PLAN_DATA_ROLES
+    )
+    values.extend(f"IRP:VALUE:{kind}" for kind in PLAN_VALUE_KINDS)
     values.extend(f"IRP:FEATURE:{feature}" for feature in PLAN_FEATURES)
     return tuple(values)
 
@@ -200,6 +239,10 @@ def plan_prefix_token_allowed(prefix: Iterable[str], token: str, *, body_start_t
     if previous.startswith("IRP:SEM:"):
         return value.startswith("IRP:FLOW:")
     if previous.startswith("IRP:FLOW:"):
+        return value.startswith("IRP:DATA:")
+    if previous.startswith("IRP:DATA:"):
+        return value.startswith("IRP:VALUE:")
+    if previous.startswith("IRP:VALUE:"):
         return value == PLAN_END or value.startswith(("IRP:FEATURE:", "IRP:STEP:"))
     return False
 
@@ -215,8 +258,9 @@ def body_to_plan_tokens(body: str, *, max_tokens: int = PLAN_MAX_TOKENS) -> list
 
     function = parse_body(body)
     budget = max(4, int(max_tokens or PLAN_MAX_TOKENS))
+    name_roles = _plan_name_roles(function.body)
     content: list[str] = []
-    for step in _plan_statement_groups(function.body):
+    for step in _plan_statement_groups(function.body, name_roles=name_roles):
         if len(content) + len(step) > budget - 2:
             break
         content.extend(step)
@@ -225,7 +269,12 @@ def body_to_plan_tokens(body: str, *, max_tokens: int = PLAN_MAX_TOKENS) -> list
     return [PLAN_BEGIN, *content, PLAN_END]
 
 
-def _plan_statement_groups(statements: Iterable[ast.stmt], *, depth: int = 0) -> Iterable[list[str]]:
+def _plan_statement_groups(
+    statements: Iterable[ast.stmt],
+    *,
+    name_roles: dict[str, str],
+    depth: int = 0,
+) -> Iterable[list[str]]:
     """Yield compact, complete plan steps in execution order.
 
     The former plan used five to ten tokens per statement and routinely spent
@@ -240,12 +289,136 @@ def _plan_statement_groups(statements: Iterable[ast.stmt], *, depth: int = 0) ->
             f"IRP:STEP:D{min(max(0, int(depth)), 7)}:{_plan_statement_kind(statement)}",
             f"IRP:SEM:{semantic_intent(statement)}",
             _plan_flow_token(statement),
+            _plan_data_token(statement, name_roles),
+            f"IRP:VALUE:{_plan_value_kind(_plan_value_node(statement))}",
         ]
         feature = _plan_primary_feature(statement)
         if feature:
             step.append(f"IRP:FEATURE:{feature}")
         yield step
-        yield from _plan_statement_groups(_nested_statements(statement), depth=depth + 1)
+        yield from _plan_statement_groups(
+            _nested_statements(statement), name_roles=name_roles, depth=depth + 1
+        )
+
+
+def dropout_plan_tokens(tokens: Iterable[str]) -> list[str]:
+    """Remove semantic information while preserving plan framing and token mass."""
+
+    dropped: list[str] = []
+    for raw in tokens:
+        token = str(raw)
+        if token in {PLAN_BEGIN, PLAN_END}:
+            dropped.append(token)
+        elif token.startswith("IRP:STEP:"):
+            dropped.append("IRP:STEP:D0:statement")
+        elif token.startswith("IRP:SEM:"):
+            dropped.append("IRP:SEM:semantic_operation")
+        elif token.startswith("IRP:FLOW:"):
+            dropped.append("IRP:FLOW:R0:W0")
+        elif token.startswith("IRP:DATA:"):
+            dropped.append("IRP:DATA:RNONE:WNONE")
+        elif token.startswith("IRP:VALUE:"):
+            dropped.append("IRP:VALUE:other")
+        elif token.startswith("IRP:FEATURE:"):
+            dropped.append("IRP:FEATURE:call_other")
+        else:
+            raise SemanticIRFault("IR_PLAN_DROPOUT_UNKNOWN_TOKEN", token)
+    return dropped
+
+
+def _plan_name_roles(statements: Iterable[ast.stmt]) -> dict[str, str]:
+    stored: list[str] = []
+    loaded: list[str] = []
+    for statement in statements:
+        for node in ast.walk(statement):
+            if not isinstance(node, ast.Name):
+                continue
+            target = stored if isinstance(node.ctx, ast.Store) else loaded
+            if node.id not in target:
+                target.append(node.id)
+    local_set = set(stored)
+    external = [
+        name
+        for name in loaded
+        if name not in local_set and not hasattr(builtins, name)
+    ]
+    roles: dict[str, str] = {}
+    for index, name in enumerate(external):
+        roles[name] = f"ARG{index}" if index < 4 else "ARGN"
+    for index, name in enumerate(stored):
+        roles[name] = f"LOCAL{index}" if index < 4 else "LOCALN"
+    return roles
+
+
+def _plan_data_token(statement: ast.stmt, name_roles: dict[str, str]) -> str:
+    reads: list[str] = []
+    writes: list[str] = []
+    for node in _walk_direct_statement_scope(statement):
+        if not isinstance(node, ast.Name):
+            continue
+        role = name_roles.get(node.id)
+        if role is None:
+            continue
+        target = writes if isinstance(node.ctx, ast.Store) else reads
+        if role not in target:
+            target.append(role)
+    return f"IRP:DATA:R{_plan_role_summary(reads)}:W{_plan_role_summary(writes)}"
+
+
+def _plan_role_summary(roles: list[str]) -> str:
+    if not roles:
+        return "NONE"
+    return roles[0] if len(roles) == 1 else "MULTI"
+
+
+def _plan_value_node(statement: ast.stmt) -> ast.AST | None:
+    if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.NamedExpr)):
+        return statement.value
+    if isinstance(statement, (ast.For, ast.AsyncFor)):
+        return statement.iter
+    if isinstance(statement, (ast.If, ast.While, ast.Assert)):
+        return statement.test
+    if isinstance(statement, (ast.Return, ast.Raise, ast.Expr)):
+        return getattr(statement, "value", None) or getattr(statement, "exc", None)
+    if isinstance(statement, (ast.With, ast.AsyncWith)):
+        return statement.items[0].context_expr if statement.items else None
+    return None
+
+
+def _plan_value_kind(node: ast.AST | None) -> str:
+    if node is None:
+        return "none"
+    if isinstance(node, ast.Name):
+        return "name"
+    if isinstance(node, ast.Constant):
+        if isinstance(node.value, bool):
+            return "boolean"
+        if isinstance(node.value, (int, float, complex)):
+            return "number"
+        if isinstance(node.value, (str, bytes)):
+            return "text"
+        return "other"
+    if isinstance(node, (ast.List, ast.Tuple, ast.Set, ast.Dict)):
+        return "container"
+    if isinstance(node, ast.Call):
+        return "call"
+    if isinstance(node, ast.BinOp):
+        return "binary_operation"
+    if isinstance(node, ast.BoolOp):
+        return "boolean_operation"
+    if isinstance(node, ast.Compare):
+        return "comparison"
+    if isinstance(node, ast.Subscript):
+        return "subscript"
+    if isinstance(node, ast.Attribute):
+        return "attribute"
+    if isinstance(node, ast.IfExp):
+        return "conditional"
+    if isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
+        return "comprehension"
+    if isinstance(node, ast.UnaryOp):
+        return "unary_operation"
+    return "other"
 
 
 def _plan_statement_kind(statement: ast.stmt) -> str:

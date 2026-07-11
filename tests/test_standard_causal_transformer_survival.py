@@ -25,15 +25,19 @@ from standard_causal_transformer_survival import (
     completion_pool_target,
     canonical_model_signature,
     compare_target_mode_canaries,
+    encode_sft_training_examples,
     encode_model_source,
     executable_state_role_lookup,
     executable_state_token_roles,
     extend_target_vocab_for_mode,
     generation_prefix_complete,
+    hierarchical_beam_rank_score,
     assign_body_balanced_sampling_weights,
     normalized_sampling_probabilities,
     prepare_semantic_plan_labels,
+    prepare_ordered_plan_sequences,
     phase_target_positions,
+    prune_active_beams,
     prune_complete_beams,
     render_visible_signature,
     semantic_stage_source,
@@ -41,6 +45,7 @@ from standard_causal_transformer_survival import (
     select_preference_train_rows,
     standalone_sft_contract_decision,
     source_token_offset,
+    source_tokens,
     stage_materialization_lock,
     stage_signature,
     target_token_offset,
@@ -67,6 +72,7 @@ from standard_causal_transformer_preference import (
 )
 from standard_causal_transformer_survival_gate import (
     audit_generation_mode_canary,
+    audit_ordered_plan_ablation,
     audit_preference_canary,
     audit_semantic_plan_head_ablation,
     audit_sft_contract_admission,
@@ -74,6 +80,7 @@ from standard_causal_transformer_survival_gate import (
     audit_state_memory_continuation,
     audit_teacher_residual_ablation,
     audit_target_mode_comparison,
+    evaluation_replay_is_content_bound,
 )
 from generation_mode_gate import audit_comparison, read_report_ref
 from policy_optimization_gate import extract_behavior_metrics, summarize_behavior_evidence
@@ -258,6 +265,164 @@ def test_semantic_plan_shuffled_control_is_deranged_and_mass_matched() -> None:
     assert shuffled_receipt["label_sha256"] != semantic_receipt["label_sha256"]
 
 
+def test_ordered_plan_gate_requires_exact_gain_and_invalid_controls(tmp_path: Path) -> None:
+    modes = {
+        "body_only": ("body_tokens", "none"),
+        "semantic": ("typed_semantic_ir_plan_body_tokens_v1", "semantic"),
+        "shuffled": ("typed_semantic_ir_plan_body_tokens_v1", "shuffled"),
+        "dropout": ("typed_semantic_ir_plan_body_tokens_v1", "dropout"),
+    }
+    directories: dict[str, Path] = {}
+    for name, (target_mode, label_mode) in modes.items():
+        directory = tmp_path / name
+        directory.mkdir()
+        directories[name] = directory
+        config = {
+            "seed": 1,
+            "sources": {"private": "x"},
+            "model": {"d_model": 32},
+            "tokenization": {
+                "target_mode": target_mode,
+                "max_source_tokens": 32,
+                "sequence_plan_reserve_tokens": 33,
+            },
+            "training": {"sft_target_token_positions": 100},
+            "evaluation": {"holdout_family_count": 24},
+        }
+        if label_mode != "none":
+            config["tokenization"]["semantic_plan_max_tokens"] = 32
+            config["ordered_plan_training"] = {
+                "label_mode": label_mode,
+                "plan_loss_weight": 0.25,
+                "shuffle_seed": 7,
+            }
+        (directory / "config.json").write_text(json.dumps(config), encoding="utf-8")
+        candidates = directory / "candidates.jsonl"
+        candidates.write_text("{}\n", encoding="utf-8")
+        receipt = {
+            "label_mode": label_mode,
+            "row_count": 10,
+            "fixed_point_count": 10 if label_mode == "semantic" else 0,
+            "encoded_plan_position_count": 0 if label_mode == "none" else 200,
+            "encoded_body_position_count": 500,
+            "plan_sha256": "" if label_mode == "none" else f"hash-{label_mode}",
+        }
+        report = {
+            "architecture": {"parameter_count": 100 if name == "body_only" else 120},
+            "stage": {
+                "family_disjoint_eval_task_count": 24,
+                "unique_body_target_positions": 500,
+                "unique_sft_body_count": 50,
+                "train_holdout_family_overlap_count": 0,
+                "train_eval_prompt_overlap_count": 0,
+                "train_eval_body_overlap_count": 0,
+                "holdout_families": [f"family-{index}" for index in range(24)],
+                "ordered_plan_label_receipt": receipt,
+            },
+            "training": {
+                "eval_loss_after": 1.0,
+                "ordered_plan_eval_after": (
+                    {"state": "NOT_APPLICABLE"}
+                    if name == "body_only"
+                    else {
+                        "state": "MEASURED",
+                        "teacher_forced_loss": {
+                            "semantic": 0.5,
+                            "shuffled": 0.8,
+                            "dropout": 0.9,
+                        }[name],
+                    }
+                ),
+                "phases": [
+                    {
+                        "phase": "prompt_signature_body_sft",
+                        "optimizer_body_positions_consumed": 100,
+                    }
+                ],
+            },
+            "summary": {
+                "model_only_passed_task_count": 1 if name == "semantic" else 0,
+                "candidate_task_count": 8 if name == "semantic" else 7,
+                "candidate_count": 12 if name == "semantic" else 10,
+            },
+            "private_verifier": {
+                "private_verification": {
+                    "mean_verification_reward": 0.6 if name == "semantic" else 0.5
+                }
+            },
+            "decode": {"runtime_ms": 10},
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+        (directory / "report.json").write_text(json.dumps(report), encoding="utf-8")
+        (directory / "integrity.json").write_text(
+            json.dumps(
+                {
+                    "source": str(candidates),
+                    "trigger_state": "GREEN",
+                    "summary": {"candidate_count": 1, "integrity_mismatch_count": 0},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (directory / "blind_audit.json").write_text(
+            json.dumps({"trigger_state": "GREEN", "summary": {"invalid_claim_count": 0}}),
+            encoding="utf-8",
+        )
+
+    adopted = audit_ordered_plan_ablation(directories)
+    assert adopted["state"] == "GREEN"
+    assert adopted["adoption_state"] == "ADOPTED"
+
+    semantic_report_path = directories["semantic"] / "report.json"
+    semantic_report = json.loads(semantic_report_path.read_text())
+    semantic_report["summary"]["model_only_passed_task_count"] = 0
+    semantic_report_path.write_text(json.dumps(semantic_report), encoding="utf-8")
+    rejected = audit_ordered_plan_ablation(directories)
+    assert rejected["state"] == "GREEN"
+    assert rejected["adoption_state"] == "NOT_ADOPTED"
+    assert "no_family_disjoint_verifier_pass_gain" in rejected["adoption_rejection_reasons"]
+
+
+def test_evaluation_replay_requires_distinct_content_bound_training_receipt(
+    tmp_path: Path,
+) -> None:
+    checkpoint = tmp_path / "checkpoint.npz"
+    checkpoint.write_bytes(b"retained-weights")
+    prior = tmp_path / "completed-training.json"
+    prior.write_text(json.dumps({"training": {"complete": True}}), encoding="utf-8")
+    live = tmp_path / "report.json"
+    report = {
+        "training": {"evaluation_only_replay": True},
+        "artifacts": {
+            "checkpoint": str(checkpoint),
+            "prior_training_receipt": str(prior),
+        },
+        "conditioning": {
+            "evaluation_base_checkpoint_sha256": hashlib.sha256(
+                checkpoint.read_bytes()
+            ).hexdigest(),
+            "prior_training_receipt_sha256": hashlib.sha256(prior.read_bytes()).hexdigest(),
+            "evaluation_replay_contract": "content_bound_checkpoint_and_training_receipt_v1",
+        },
+    }
+    assert evaluation_replay_is_content_bound(report, live)
+
+    report["conditioning"]["prior_training_receipt_sha256"] = "0" * 64
+    assert not evaluation_replay_is_content_bound(report, live)
+
+    report["conditioning"]["prior_training_receipt_sha256"] = hashlib.sha256(
+        prior.read_bytes()
+    ).hexdigest()
+    report["artifacts"]["prior_training_receipt"] = str(live)
+    live.write_text(json.dumps(report), encoding="utf-8")
+    report["conditioning"]["prior_training_receipt_sha256"] = hashlib.sha256(
+        live.read_bytes()
+    ).hexdigest()
+    assert not evaluation_replay_is_content_bound(report, live)
+
+
 def test_batched_beam_advance_matches_serial_cached_model_calls() -> None:
     import mlx.core as mx
     import mlx.nn as nn
@@ -285,6 +450,30 @@ def test_batched_beam_advance_matches_serial_cached_model_calls() -> None:
         ):
             assert bool(mx.allclose(batch_key, serial_key, atol=1e-5))
             assert bool(mx.allclose(batch_value, serial_value, atol=1e-5))
+
+
+def test_hierarchical_beam_ranks_body_conditionally() -> None:
+    body_better = {
+        "tokens": ["plan-a", "body-a", "body-b"],
+        "score": -10.0,
+        "plan_score": -4.0,
+        "plan_token_count": 1,
+    }
+    flat_better = {
+        "tokens": ["plan-b", "body-a", "body-b"],
+        "score": -9.0,
+        "plan_score": -1.0,
+        "plan_token_count": 1,
+    }
+    assert hierarchical_beam_rank_score(body_better, 0.0, 0.0) == -6.0
+    assert hierarchical_beam_rank_score(flat_better, 0.0, 0.0) == -8.0
+    assert prune_active_beams(
+        [flat_better, body_better],
+        limit=1,
+        length_penalty=0.0,
+        hierarchical=True,
+        plan_score_weight=0.0,
+    ) == [body_better]
 
 
 def test_executable_state_role_lookup_has_matched_semantic_and_hash_density() -> None:
@@ -531,6 +720,25 @@ def test_config_rejects_fallback_or_external_inference() -> None:
     with pytest.raises(ValueError, match="semantic or shuffled"):
         validate_config(missing_control)
 
+    ordered = json.loads(json.dumps(config))
+    ordered["tokenization"].update(
+        {
+            "target_mode": "typed_semantic_ir_plan_body_tokens_v1",
+            "semantic_plan_max_tokens": 32,
+            "sequence_plan_reserve_tokens": 33,
+        }
+    )
+    ordered["ordered_plan_training"] = {
+        "label_mode": "semantic",
+        "plan_loss_weight": 0.25,
+        "shuffle_seed": 31,
+    }
+    validate_config(ordered)
+    invalid_ordered = json.loads(json.dumps(ordered))
+    invalid_ordered["ordered_plan_training"]["label_mode"] = "random"
+    with pytest.raises(ValueError, match="semantic, shuffled, or dropout"):
+        validate_config(invalid_ordered)
+
 
 def test_standard_transformer_plan_body_target_is_learned_and_closed_vocab() -> None:
     import semantic_ir
@@ -540,6 +748,7 @@ def test_standard_transformer_plan_body_target_is_learned_and_closed_vocab() -> 
     config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
     config["tokenization"]["target_mode"] = semantic_ir.PLAN_BODY_TARGET_MODE
     config["tokenization"]["semantic_plan_max_tokens"] = 32
+    config["tokenization"]["sequence_plan_reserve_tokens"] = 33
     body = "out = []\nfor value in data:\n    out.append(value + 1)\nreturn out"
     tokens = training_target_tokens(body, config)
     assert tokens[0] == semantic_ir.PLAN_BEGIN
@@ -553,6 +762,98 @@ def test_standard_transformer_plan_body_target_is_learned_and_closed_vocab() -> 
     assert summary["added_token_count"] == len(semantic_ir.plan_protocol_tokens()) + 1
     assert set(semantic_ir.plan_protocol_tokens()) <= set(vocab)
     assert PLAN_BODY_START_TOKEN in vocab
+
+
+def test_ordered_plan_controls_preserve_token_mass_and_derange_rows() -> None:
+    import semantic_ir
+
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    config["tokenization"].update(
+        {
+            "target_mode": semantic_ir.PLAN_BODY_TARGET_MODE,
+            "semantic_plan_max_tokens": 32,
+            "sequence_plan_reserve_tokens": 33,
+        }
+    )
+    config["ordered_plan_training"] = {
+        "label_mode": "semantic",
+        "plan_loss_weight": 0.25,
+        "shuffle_seed": 41,
+    }
+    examples = [
+        {"body": "return data"},
+        {"body": "out = []\nfor item in data:\n    out.append(item)\nreturn out"},
+        {"body": "total = 0\nfor item in data:\n    total += item\nreturn total"},
+    ]
+    semantic, semantic_receipt = prepare_ordered_plan_sequences(
+        examples, config, mode="semantic"
+    )
+    shuffled, shuffled_receipt = prepare_ordered_plan_sequences(
+        examples, config, mode="shuffled"
+    )
+    dropped, dropped_receipt = prepare_ordered_plan_sequences(
+        examples, config, mode="dropout"
+    )
+    assert semantic_receipt["token_count"] == shuffled_receipt["token_count"]
+    assert semantic_receipt["token_count"] == dropped_receipt["token_count"]
+    assert shuffled_receipt["fixed_point_count"] == 0
+    assert all(left != right for left, right in zip(semantic, shuffled))
+    assert all(len(left) == len(right) for left, right in zip(semantic, dropped))
+    assert semantic_receipt["plan_sha256"] != shuffled_receipt["plan_sha256"]
+    assert semantic_receipt["plan_sha256"] != dropped_receipt["plan_sha256"]
+
+
+def test_ordered_plan_stage_counts_body_exposure_separately() -> None:
+    import semantic_ir
+    from neural_seed_token_decoder_support import body_tokens as tokenize_body
+
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    config["tokenization"].update(
+        {
+            "target_mode": semantic_ir.PLAN_BODY_TARGET_MODE,
+            "semantic_plan_max_tokens": 32,
+            "sequence_plan_reserve_tokens": 33,
+            "max_sequence_tokens": 128,
+            "max_source_tokens": 32,
+            "max_target_tokens": 96,
+        }
+    )
+    config["ordered_plan_training"] = {
+        "label_mode": "semantic",
+        "plan_loss_weight": 0.25,
+        "shuffle_seed": 43,
+    }
+    body = "out = []\nfor item in data:\n    out.append(item)\nreturn out"
+    source = "Copy each item into a new list.\nsignature def solve(data):"
+    examples = [{"source_text": source, "body": body, "sampling_weight": 1.0}]
+    source_vocab = {
+        token: index
+        for index, token in enumerate(
+            ["<pad>", "<bos>", "<eos>", "<unk>", *dict.fromkeys(source_tokens(source))]
+        )
+    }
+    target_stream = training_target_tokens(body, config)
+    target_vocab = {
+        token: index
+        for index, token in enumerate(
+            ["<pad>", "<bos>", "<eos>", "<unk>", *dict.fromkeys(target_stream)]
+        )
+    }
+    _x, _y, all_mask, _weights, _labels, body_mask, receipt = (
+        encode_sft_training_examples(
+            config,
+            examples,
+            source_vocab,
+            target_vocab,
+            ordered_plan_mode="semantic",
+        )
+    )
+    assert int(body_mask.sum()) == len(tokenize_body(body)) + 1
+    assert int(all_mask.sum()) > int(body_mask.sum())
+    assert receipt["encoded_body_position_count"] == int(body_mask.sum())
+    assert receipt["encoded_plan_position_count"] == int(
+        np.maximum(all_mask - body_mask, 0.0).sum()
+    )
 
 
 def test_matched_target_mode_comparison_rejects_loss_only_plan_improvement() -> None:
@@ -1280,6 +1581,14 @@ def test_candidate_integrity_recomputes_direct_plan_body_trace_instead_of_trusti
     assert rejected["recomputed_candidate_family"] == "structural_adapter"
     assert rejected["direct_plan_body_trace"]["valid"] is False
     assert "decoded_body_trace_code_mismatch" in rejected["direct_plan_body_trace"]["faults"]
+
+    hierarchical = json.loads(json.dumps(row))
+    hierarchical["candidate_generation_mode"] = (
+        "direct_decoder_only_hierarchical_semantic_plan_body_tokens"
+    )
+    hierarchical_verified = recompute_candidate_integrity(hierarchical)
+    assert hierarchical_verified["direct_plan_body_trace"]["valid"] is True
+    assert hierarchical_verified["recomputed_candidate_family"] == "transformer_hybrid"
 
 
 def test_evaluate_only_requires_execute_before_any_report_write() -> None:

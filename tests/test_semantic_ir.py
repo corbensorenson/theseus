@@ -89,6 +89,8 @@ def test_semantic_plan_decode_boundary_uses_only_plan_vocabulary() -> None:
         "IRP:STEP:D0:return": 4,
         "IRP:SEM:return_closure": 5,
         "IRP:FLOW:R1:W0": 6,
+        "IRP:DATA:RARG0:WNONE": 7,
+        "IRP:VALUE:name": 8,
         semantic_ir.PLAN_END: 9,
         PLAN_BODY_START_TOKEN: 10,
         "NAME:return": 11,
@@ -116,6 +118,8 @@ def test_semantic_plan_decode_boundary_uses_only_plan_vocabulary() -> None:
             "IRP:STEP:D0:return",
             "IRP:SEM:return_closure",
             "IRP:FLOW:R1:W0",
+            "IRP:DATA:RARG0:WNONE",
+            "IRP:VALUE:name",
             semantic_ir.PLAN_END,
         ],
         max_choices=2,
@@ -128,9 +132,43 @@ def test_compact_plan_keeps_complete_steps_within_budget() -> None:
     tokens = semantic_ir.body_to_plan_tokens(body, max_tokens=17)
     assert len(tokens) <= 17
     assert tokens[-1] == semantic_ir.PLAN_END
-    assert sum(token.startswith("IRP:STEP:") for token in tokens) == 5
-    assert sum(token.startswith("IRP:SEM:") for token in tokens) == 5
-    assert sum(token.startswith("IRP:FLOW:") for token in tokens) == 5
+    assert sum(token.startswith("IRP:STEP:") for token in tokens) == 3
+    assert sum(token.startswith("IRP:SEM:") for token in tokens) == 3
+    assert sum(token.startswith("IRP:FLOW:") for token in tokens) == 3
+    assert sum(token.startswith("IRP:DATA:") for token in tokens) == 3
+    assert sum(token.startswith("IRP:VALUE:") for token in tokens) == 3
+
+
+def test_plan_dataflow_is_identifier_free_and_renaming_invariant() -> None:
+    first = "out = []\nfor item in data:\n    out.append(item)\nreturn out"
+    renamed = "result = []\nfor value in payload:\n    result.append(value)\nreturn result"
+    first_plan = semantic_ir.body_to_plan_tokens(first)
+    renamed_plan = semantic_ir.body_to_plan_tokens(renamed)
+    assert first_plan == renamed_plan
+    assert "IRP:DATA:RARG0:WLOCAL1" in first_plan
+    assert "IRP:DATA:RLOCAL0:WNONE" in first_plan
+    assert all(
+        name not in token
+        for token in first_plan
+        for name in ("out", "item", "data", "result", "value", "payload")
+    )
+
+
+def test_plan_information_dropout_preserves_protocol_shape_and_mass() -> None:
+    plan = semantic_ir.body_to_plan_tokens(
+        "total = 0\nfor value in data:\n    total += value\nreturn total"
+    )
+    dropped = semantic_ir.dropout_plan_tokens(plan)
+    assert len(dropped) == len(plan)
+    assert dropped[0] == semantic_ir.PLAN_BEGIN
+    assert dropped[-1] == semantic_ir.PLAN_END
+    assert dropped != plan
+    prefix: list[str] = []
+    for token in dropped:
+        assert semantic_ir.plan_prefix_token_allowed(
+            prefix, token, body_start_token=PLAN_BODY_START_TOKEN
+        )
+        prefix.append(token)
 
 
 def test_closed_plan_protocol_covers_generated_tokens_and_rejects_bad_transitions() -> None:
