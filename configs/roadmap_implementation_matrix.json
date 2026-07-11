@@ -4,6 +4,36 @@
   "purpose": "Machine-readable implementation state for the AI_book-derived Theseus roadmap. This is the governed bridge between roadmap.md prose and registry-owned implementation work.",
   "roadmap_source": "roadmap.md",
   "registry_source": "configs/project_manifest_registry.json",
+  "pre_training_architecture_contract": {
+    "required_phase_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      11,
+      14,
+      15,
+      18,
+      19
+    ],
+    "training_or_behavior_qualification_phase_ids": [
+      5,
+      7,
+      10,
+      12,
+      13,
+      16,
+      17
+    ],
+    "external_environment_phase_ids": [
+      9
+    ],
+    "rule": "Architecture readiness requires every architecture prerequisite to be implemented or wired, while training, empirical product qualification, public calibration, behavior-dependent routing, and sim-to-real evidence remain follow-through rather than circular prerequisites.",
+    "no_shortcut": "A phase may be deferred only because its remaining acceptance evidence intrinsically requires learned behavior, training, public calibration, real-use time, or unavailable external peers; missing contracts, authority, memory, evidence, deterministic tooling, runtime, or governance remain architecture blockers."
+  },
   "latest_ai_book_technique_reconciliation": {
     "date": "2026-07-06",
     "status": "coverage_integrated_critical_path_tightened",
@@ -730,7 +760,7 @@
         "registry gate is GREEN with zero unregistered active source files and zero hard governance violations",
         "registry cleanup queue has 16/16 items covered by active steward decisions",
         "bounded generated-artifact cleanup canary quarantines only safe tmp/smoke artifacts with manifest checksums and no deletion",
-        "the canonical registry embeds a local content-bound AIBOM with 559 requested/resolved/observed identities across 19 artifact domains, surface content Merkle roots, runtime identity, 358 dependency edges, derivative invalidation closure, zero missing required identities, and explicit non-claims for signing, advisory freshness, reproducibility, and weight custody",
+        "the canonical registry embeds a local content-bound AIBOM over more than 500 requested/resolved/observed identities across 19 artifact domains, surface content Merkle roots, runtime identity, dependency edges, derivative invalidation closure, zero missing required identities, and explicit non-claims for signing, advisory freshness, reproducibility, and weight custody",
         "negative tests propagate a substituted dependency through implementation, checkpoint, and release descendants and reject an unknown descendant as incomplete closure"
       ],
       "missing_items": [

@@ -3722,7 +3722,7 @@
       "canonical_entrypoint": "scripts/theseus_project_registry.py",
       "swappable_under_contract": true,
       "replacement_policy": "A replacement must materialize the same abstraction and implementation bindings before this implementation is deprecated.",
-      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
+      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_roadmap_pretraining_gate.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
       "role": "governance",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -3731,6 +3731,7 @@
         "scripts/theseus_project_registry.py",
         "scripts/theseus_supply_chain.py",
         "tests/test_theseus_supply_chain.py",
+        "tests/test_roadmap_pretraining_gate.py",
         "scripts/roadmap_implementation_gate.py",
         "scripts/scf_reference_kernel_v1.py",
         "scripts/report_evidence_store.py",
@@ -7118,6 +7119,7 @@
         "scripts/theseus_project_registry.py",
         "scripts/theseus_supply_chain.py",
         "tests/test_theseus_supply_chain.py",
+        "tests/test_roadmap_pretraining_gate.py",
         "scripts/roadmap_implementation_gate.py",
         "scripts/module_definition_of_done_gate.py",
         "scripts/scf_reference_kernel_v1.py"
@@ -7136,7 +7138,7 @@
         "reports/scf_reference_kernel_v1.json",
         "reports/scf_reference_kernel_v1.md"
       ],
-      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/module_definition_of_done_gate.py && python3 scripts/scf_reference_kernel_v1.py --gate",
+      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_roadmap_pretraining_gate.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/module_definition_of_done_gate.py && python3 scripts/scf_reference_kernel_v1.py --gate",
       "cleanup_policy": "must exist before cleanup/autonomy claims; no deletion decisions without registry evidence",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,

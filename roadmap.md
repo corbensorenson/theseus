@@ -47,6 +47,14 @@ module must meet.
 | Book test obligations | Phase 19 + routed owners | 504 authored Codex tests; 102 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
 | Book futures intake | Phase 19 + routed owners | 9 chapter candidates + 2 section routes remain outside the 54-chapter manifest | activate only at source/ownership and operational entry gates |
 
+Pre-training readiness uses the matrix-owned phase partition rather than every
+unfinished roadmap item. Phases `0, 1, 2, 3, 4, 6, 8, 11, 14, 15, 18, 19` are
+architecture prerequisites; phases `5, 7, 10, 12, 13, 16, 17` require training,
+real-use time, public calibration, or behavior-positive candidates and therefore
+cannot circularly block architecture readiness; Phase `9` remains an external
+environment proof. The current local architecture blockers are Phases `0, 1, 2,
+3, 14, 18`.
+
 ## Non-Negotiable Rules
 
 - No open/base/pretrained model weights, ever, for the from-scratch student lanes.
@@ -955,7 +963,7 @@ gaps route into the phases above:
 | Authority kernel / SCIF / failure boundaries / adapter receipts | no universal authority-transition ledger or SCIF receipt layer | 18 |
 | Scalable oversight | no trusted/untrusted monitor separation, correlation/collusion probe, weak-supervisor boundary, randomized audit policy, operator-load ledger, or recursion-bottom contract | 4, 14, 18 |
 | Capability commitments + safety cases | threshold/safeguard/exception commitments and dependency-invalidating assurance graphs are not consumed by release/default-route decisions | 2, 12, 14, 18 |
-| Weight custody + AI supply chain | local AIBOM now distinguishes 559 requested/resolved/observed identities across 19 domains, surface Merkle roots, runtime identity, and derivative invalidation; signed advisories, reproducible training/build attestation, attestation-gated load, weight custody, and key lifecycle remain | 0, 2, 7, 8, 14, 18 |
+| Weight custody + AI supply chain | local AIBOM now distinguishes more than 500 requested/resolved/observed identities across 19 domains, surface Merkle roots, runtime identity, and derivative invalidation; signed advisories, reproducible training/build attestation, attestation-gated load, weight custody, and key lifecycle remain | 0, 2, 7, 8, 14, 18 |
 | Inter-stack identity and exchange | federation lacks credential/delegation expiry, reserved budgets, value/accounting receipts, dispute, revocation, and shutdown-handoff interoperability | 1, 2, 9, 16, 18 |
 | Constitutional predicates / agency / value conflicts / governance rights | not first-class records consumed by planning and self-improvement | 18 |
 | Resource budgets + costed routes + generation-mode records | costed routes + accepted-output accounting not the normal artifact | 8 |

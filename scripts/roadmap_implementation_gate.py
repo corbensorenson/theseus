@@ -912,6 +912,43 @@ def audit_pre_training_architecture_readiness(
         str(row.get("state") or ""): idx
         for idx, row in enumerate(list_dicts(matrix.get("claim_support_ladder")))
     }
+    architecture_contract = dict_value(matrix.get("pre_training_architecture_contract"))
+    required_architecture_phase_ids = {
+        int_or(value, -1)
+        for value in list_values(architecture_contract.get("required_phase_ids"))
+    }
+    deferred_phase_ids = {
+        int_or(value, -1)
+        for value in list_values(architecture_contract.get("training_or_behavior_qualification_phase_ids"))
+    }
+    external_environment_phase_ids = {
+        int_or(value, -1)
+        for value in list_values(architecture_contract.get("external_environment_phase_ids"))
+    }
+    declared_phase_ids = set(phase_by_id)
+    contract_phase_ids = required_architecture_phase_ids | deferred_phase_ids | external_environment_phase_ids
+    overlap_phase_ids = (
+        (required_architecture_phase_ids & deferred_phase_ids)
+        | (required_architecture_phase_ids & external_environment_phase_ids)
+        | (deferred_phase_ids & external_environment_phase_ids)
+    )
+    if not required_architecture_phase_ids:
+        blockers.append(
+            {
+                "kind": "pre_training_architecture_contract_missing_required_phases",
+                "required_action": "Declare architecture prerequisites separately from training and behavior qualification phases.",
+            }
+        )
+    if contract_phase_ids != declared_phase_ids or overlap_phase_ids:
+        blockers.append(
+            {
+                "kind": "pre_training_architecture_contract_phase_partition_invalid",
+                "missing_phase_ids": sorted(declared_phase_ids - contract_phase_ids),
+                "unknown_phase_ids": sorted(contract_phase_ids - declared_phase_ids),
+                "overlap_phase_ids": sorted(overlap_phase_ids),
+                "required_action": "Partition every roadmap phase into exactly one readiness class.",
+            }
+        )
 
     if current_hard_gap_count:
         blockers.append(
@@ -946,17 +983,31 @@ def audit_pre_training_architecture_readiness(
             "smallest_next_patch": str(row.get("smallest_next_patch") or ""),
         }
         for row in phases
-        if str(row.get("status") or "") not in DONE_STATES and not phase_is_external_frozen(row)
+        if int_or(row.get("phase"), -1) in required_architecture_phase_ids
+        and str(row.get("status") or "") not in DONE_STATES
+        and not phase_is_external_frozen(row)
     ]
     if unfinished:
         blockers.append(
             {
-                "kind": "unfinished_roadmap_phases",
+                "kind": "unfinished_architecture_prerequisite_phases",
                 "count": len(unfinished),
                 "phases": unfinished,
-                "required_action": "Complete or explicitly external-freeze every implementation phase before making training the primary roadmap focus.",
+                "required_action": "Complete or explicitly external-freeze every architecture prerequisite before making training the primary roadmap focus.",
             }
         )
+
+    deferred_unfinished = [
+        {
+            "phase": int_or(row.get("phase"), -1),
+            "title": str(row.get("title") or ""),
+            "status": str(row.get("status") or ""),
+            "reason": "training_or_behavior_qualification_follow_through",
+        }
+        for row in phases
+        if int_or(row.get("phase"), -1) in deferred_phase_ids
+        and str(row.get("status") or "") not in DONE_STATES
+    ]
 
     frozen_without_external_reason = []
     for row in phases:
@@ -1059,11 +1110,15 @@ def audit_pre_training_architecture_readiness(
         "phase_status_counts": phase_status_counts,
         "externally_frozen_phase_count": len(externally_frozen),
         "externally_frozen_phases": externally_frozen,
+        "required_architecture_phase_ids": sorted(required_architecture_phase_ids),
+        "training_or_behavior_qualification_phase_ids": sorted(deferred_phase_ids),
+        "external_environment_phase_ids": sorted(external_environment_phase_ids),
+        "deferred_unfinished_phases": deferred_unfinished,
         "core_slice_count": len(core_slices),
         "support_rank": support_rank,
         "rules": {
             "scope": "This gate decides whether architecture is ready for training/public calibration focus; it does not run training.",
-            "training_boundary": "No long training, public calibration, or score chasing should be primary while ready=false.",
+            "training_boundary": "No long training, public calibration, or score chasing should be primary while required architecture remains unfinished; training and behavior qualification phases cannot circularly block architecture readiness.",
             "external_frozen_exception": "A frozen item can remain only when it names a concrete external-environment blocker such as unreachable trusted peers.",
             "claim_boundary": "Tools, routers, templates, deterministic solvers, and assisted product traces stay separate from learned-generation claims.",
         },

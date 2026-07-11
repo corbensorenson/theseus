@@ -22,8 +22,8 @@ current-invocation receipts; `171` other declared outputs are supporting
 evidence and no longer force daily regeneration. Stale, invalid, missing, or
 acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
-The registry now embeds a local content-bound AIBOM with `559` identities across
-`19` artifact domains and `358` dependency edges. Requested, resolved, and
+The registry now embeds a local content-bound AIBOM over more than `500`
+identities across `19` artifact domains and their dependency edges. Requested, resolved, and
 observed identity are separate; registered surfaces carry content Merkle roots;
 substituted dependencies propagate through derivative invalidation tests. There
 are `0` missing required identities on this machine, `9` optional packages are
@@ -36,6 +36,12 @@ lifecycle decisions, retraction/quarantine suppression, bounded snapshot
 certificates, and deterministic serialization/query replay. This is not a
 dense-embedding, parametric-unlearning, physical-compaction, or process-level
 migration/restart claim; those lifecycle mechanics remain Phase 3 work.
+The pre-training readiness gate now uses an explicit, exhaustive phase
+partition. Architecture prerequisites are Phases `0, 1, 2, 3, 4, 6, 8, 11,
+14, 15, 18, 19`; training/empirical/behavior qualification phases are `5, 7,
+10, 12, 13, 16, 17`; external-environment proof is Phase `9`. The remaining
+local architecture blockers are therefore Phases `0, 1, 2, 3, 14, 18`, not the
+training and behavior phases themselves.
 The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
 book reconciliation. Phases `15` and `19` are `implemented`; phases `4`, `6`,
 `8`, `11`, `12`, and `17` are `wired`; phases `0`, `1`, `2`, `3`, `5`, `7`,
