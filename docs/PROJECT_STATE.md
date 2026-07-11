@@ -30,21 +30,24 @@ are `0` missing required identities on this machine, `9` optional packages are
 unavailable, and one Windows-only evidence output is not materialized. Signing,
 advisory freshness, reproducible builds/training, release admission, and weight
 custody remain explicitly unclaimed.
-Canonical VCM now embeds `256` stable semantic objects, `1,871` typed temporal
+Canonical VCM now embeds `256` stable semantic objects, typed temporal
 relations, ontology `1.0.0`, sparse-BM25 plus graph retrieval, hot/warm/cold
 lifecycle decisions, retraction/quarantine suppression, bounded snapshot
-certificates, and deterministic serialization/query replay. This is not a
-dense-embedding, parametric-unlearning, physical-compaction, or process-level
-migration/restart claim; those lifecycle mechanics remain Phase 3 work.
+certificates, and deterministic serialization/query replay. Merge,
+supersession, retraction, and cold compaction execute as typed transactions;
+a fresh process migrates a persisted ontology `0.9.0` fixture and preserves
+state/query replay. Phase 3 is therefore wired. Dense-embedding and parametric
+unlearning remain explicit non-claims, and the public-memory release profile
+remains capability evidence rather than architecture completion evidence.
 The pre-training readiness gate now uses an explicit, exhaustive phase
 partition. Architecture prerequisites are Phases `0, 1, 2, 3, 4, 6, 8, 11,
 14, 15, 18, 19`; training/empirical/behavior qualification phases are `5, 7,
 10, 12, 13, 16, 17`; external-environment proof is Phase `9`. The remaining
-local architecture blockers are therefore Phases `0, 1, 2, 3, 14, 18`, not the
+local architecture blockers are therefore Phases `0, 1, 2, 14, 18`, not the
 training and behavior phases themselves.
 The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
-book reconciliation. Phases `15` and `19` are `implemented`; phases `4`, `6`,
-`8`, `11`, `12`, and `17` are `wired`; phases `0`, `1`, `2`, `3`, `5`, `7`,
+book reconciliation. Phases `15` and `19` are `implemented`; phases `3`, `4`, `6`,
+`8`, `11`, `12`, and `17` are `wired`; phases `0`, `1`, `2`, `5`, `7`,
 `10`, `13`, `14`, `16`, and `18` are honestly `partial`; and only Phase `9`
 remains externally frozen until trusted peers are reachable. The local partial
 states now include durable semantic memory inside VCM, useful governed-effect

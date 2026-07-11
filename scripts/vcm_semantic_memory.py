@@ -8,12 +8,14 @@ in the existing VCM graph/report artifacts.
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import re
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timezone
 from hashlib import sha256
+from pathlib import Path
 from typing import Any
 
 
@@ -276,6 +278,163 @@ def _consolidation_records(objects: list[dict[str, Any]]) -> list[dict[str, Any]
     return records
 
 
+def derive_lifecycle_operations(
+    objects: list[dict[str, Any]],
+    relations: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    operations: list[dict[str, Any]] = []
+    for row in objects:
+        object_id = str(row.get("semantic_object_id") or "")
+        lifecycle = str(row.get("lifecycle_state") or "active")
+        if lifecycle == "retracted":
+            operations.append({"operation": "retract", "target_object_id": object_id, "reason": "vcm_invalidation_closure"})
+        if str(row.get("consolidation_tier") or "") == "cold":
+            operations.append({"operation": "compact", "target_object_id": object_id, "reason": f"cold_lifecycle_{lifecycle}"})
+    for row in relations:
+        if row.get("relation_type") != "supersedes" or row.get("endpoint_scope") != "internal":
+            continue
+        operations.append(
+            {
+                "operation": "supersede",
+                "target_object_id": row.get("target_object_id"),
+                "successor_object_id": row.get("source_object_id"),
+                "reason": "typed_supersedes_relation",
+            }
+        )
+    unique = {_digest(row): row for row in operations}
+    return [unique[key] for key in sorted(unique)]
+
+
+def apply_lifecycle_transactions(
+    objects: list[dict[str, Any]],
+    relations: list[dict[str, Any]],
+    operations: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    by_id = {str(row.get("semantic_object_id") or ""): json.loads(_canonical(row)) for row in objects}
+    relation_rows = [json.loads(_canonical(row)) for row in relations]
+    transactions: list[dict[str, Any]] = []
+    for index, operation in enumerate(operations):
+        kind = str(operation.get("operation") or "")
+        target_id = str(operation.get("target_object_id") or "")
+        target = by_id.get(target_id)
+        touched_ids = [target_id] if target_id else []
+        failure = ""
+        if kind not in {"compact", "merge", "retract", "supersede"}:
+            failure = "unsupported_lifecycle_operation"
+        elif target is None:
+            failure = "target_semantic_object_missing"
+        elif kind == "compact" and target.get("consolidation_tier") != "cold":
+            failure = "compaction_requires_cold_tier"
+        before = {object_id: by_id.get(object_id) for object_id in touched_ids if object_id in by_id}
+        added_relations: list[dict[str, Any]] = []
+        if not failure and target is not None:
+            if kind == "retract":
+                target["lifecycle_state"] = "retracted"
+                target["consolidation_tier"] = "cold"
+                target["retrieval_vector"] = {}
+                target["payload_policy"]["materialization"] = "tombstoned"
+                target["payload_policy"]["erasure_closure"] = [
+                    "semantic_retrieval_vector",
+                    "bounded_snapshot_membership",
+                    "compiled_context_eligibility",
+                    "runtime_cache_materialization",
+                ]
+            elif kind == "compact":
+                target["retrieval_vector"] = {}
+                target["payload_policy"]["materialization"] = "compacted_metadata_and_provenance_only"
+                target["payload_policy"]["physical_payload_present_in_semantic_state"] = False
+                target["payload_policy"]["compaction_receipt_required"] = True
+            elif kind == "supersede":
+                successor_id = str(operation.get("successor_object_id") or "")
+                successor = by_id.get(successor_id)
+                if successor is None:
+                    failure = "successor_semantic_object_missing"
+                elif successor_id == target_id:
+                    failure = "self_supersession_forbidden"
+                else:
+                    touched_ids.append(successor_id)
+                    before[successor_id] = json.loads(_canonical(successor))
+                    target["lifecycle_state"] = "superseded"
+                    target["consolidation_tier"] = "cold"
+                    target["superseded_by_object_id"] = successor_id
+                    added_relations.append(
+                        _lifecycle_relation(successor_id, target_id, "supersedes", str(operation.get("reason") or "lifecycle_transaction"))
+                    )
+            elif kind == "merge":
+                source_ids = sorted({str(value) for value in operation.get("source_object_ids", []) if value})
+                missing = [value for value in source_ids if value not in by_id]
+                if missing:
+                    failure = f"merge_source_missing:{','.join(missing)}"
+                elif target_id in source_ids:
+                    failure = "merge_target_cannot_be_source"
+                else:
+                    for source_id in source_ids:
+                        source = by_id[source_id]
+                        touched_ids.append(source_id)
+                        before[source_id] = json.loads(_canonical(source))
+                        source["lifecycle_state"] = "superseded"
+                        source["consolidation_tier"] = "cold"
+                        source["merged_into_object_id"] = target_id
+                        added_relations.append(
+                            _lifecycle_relation(target_id, source_id, "derived_from", str(operation.get("reason") or "lifecycle_merge"))
+                        )
+                    target["merge_source_object_ids"] = source_ids
+                    target["merge_provenance"] = [by_id[source_id].get("provenance") for source_id in source_ids]
+        if failure:
+            for object_id, snapshot in before.items():
+                by_id[object_id] = snapshot
+            added_relations = []
+        else:
+            relation_rows.extend(added_relations)
+        after = {object_id: by_id.get(object_id) for object_id in touched_ids if object_id in by_id}
+        transaction_basis = {"index": index, "operation": operation, "before": before, "after": after, "failure": failure}
+        transactions.append(
+            {
+                "record_type": "semantic_memory_lifecycle_transaction",
+                "transaction_id": _stable_id("semtxn", _canonical(transaction_basis)),
+                "operation": kind,
+                "read_set": sorted(before),
+                "write_set": [] if failure else sorted(after),
+                "before_hash": _digest(before),
+                "after_hash": _digest(after),
+                "status": "rejected" if failure else "committed",
+                "typed_failure": failure or None,
+                "reason": operation.get("reason"),
+                "provenance_preserved": all(bool((row or {}).get("provenance")) for row in after.values()),
+                "rollback": {
+                    "mode": "restore_touched_semantic_objects",
+                    "before_object_hashes": {
+                        object_id: _digest(snapshot) for object_id, snapshot in before.items()
+                    },
+                },
+            }
+        )
+    unique_relations = {str(row.get("relation_id") or _digest(row)): row for row in relation_rows}
+    return (
+        sorted(by_id.values(), key=lambda row: str(row.get("semantic_object_id") or "")),
+        sorted(unique_relations.values(), key=lambda row: str(row.get("relation_id") or "")),
+        transactions,
+    )
+
+
+def _lifecycle_relation(source_id: str, target_id: str, relation_type: str, reason: str) -> dict[str, Any]:
+    body = {
+        "source_object_id": source_id,
+        "target_object_id": target_id,
+        "source_ref": source_id,
+        "target_ref": target_id,
+        "relation_type": relation_type,
+        "endpoint_scope": "internal",
+        "temporal": {"valid_from_utc": None, "valid_to_utc": None, "observed_utc": _now()},
+        "provenance_kind": reason,
+    }
+    return {
+        "record_type": "semantic_relation_record",
+        "relation_id": _stable_id("semrel", _canonical(body)),
+        **body,
+    }
+
+
 def query_semantic_memory(
     semantic_memory: dict[str, Any],
     query: str,
@@ -448,6 +607,8 @@ def build_semantic_memory(
     ]
     object_by_address = {str(row["current_address"]): str(row["semantic_object_id"]) for row in objects}
     relations, rejected_relations = _relation_records(graph, object_by_address)
+    lifecycle_operations = derive_lifecycle_operations(objects, relations)
+    objects, relations, lifecycle_transactions = apply_lifecycle_transactions(objects, relations, lifecycle_operations)
     ontology = {
         "record_type": "semantic_memory_ontology",
         "version": ONTOLOGY_VERSION,
@@ -465,6 +626,7 @@ def build_semantic_memory(
         "objects": objects,
         "relations": relations,
         "rejected_relations": rejected_relations,
+        "lifecycle_transactions": lifecycle_transactions,
         "consolidation_records": _consolidation_records(objects),
         "bounded_snapshot": _bounded_snapshot(objects, relations, task=task),
         "claims": {
@@ -473,6 +635,7 @@ def build_semantic_memory(
             "ontology_migration": True,
             "graph_sparse_vector_hybrid_retrieval": True,
             "provenance_preserving_compaction": True,
+            "transactional_merge_supersession_retraction_compaction": True,
             "parametric_unlearning": False,
             "dense_embedding_retrieval": False,
         },
@@ -484,3 +647,45 @@ def build_semantic_memory(
     )
     return semantic_memory
 
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", choices=["replay", "migrate-replay"])
+    parser.add_argument("--graph", required=True)
+    parser.add_argument("--pages", default="")
+    parser.add_argument("--task", default="persisted semantic memory migration")
+    parser.add_argument("--query", default="current project policy")
+    parser.add_argument("--out", default="")
+    args = parser.parse_args()
+    payload = json.loads(Path(args.graph).read_text(encoding="utf-8"))
+    semantic_memory = payload.get("semantic_memory") if isinstance(payload.get("semantic_memory"), dict) else payload
+    migration = None
+    if args.command == "migrate-replay":
+        if not args.pages:
+            parser.error("--pages is required for migrate-replay")
+        page_text = Path(args.pages).read_text(encoding="utf-8")
+        if page_text.lstrip().startswith("["):
+            pages = json.loads(page_text)
+        else:
+            pages = [json.loads(line) for line in page_text.splitlines() if line.strip()]
+        base_graph = {key: value for key, value in payload.items() if key != "semantic_memory"}
+        semantic_memory = build_semantic_memory(
+            [row for row in pages if isinstance(row, dict)],
+            base_graph,
+            previous=semantic_memory,
+            task=args.task,
+        )
+        migration = semantic_memory.get("ontology_migrations", [None])[0]
+    receipt = restart_replay_receipt(semantic_memory, query=args.query)
+    receipt["process_replay"] = True
+    receipt["ontology_version"] = (semantic_memory.get("ontology") or {}).get("version")
+    receipt["object_count"] = len(semantic_memory.get("objects") or [])
+    receipt["migration"] = migration
+    if args.out:
+        Path(args.out).write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(receipt, indent=2, sort_keys=True))
+    return 0 if receipt["state_digest_match"] and receipt["query_replay_match"] else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -36,7 +36,7 @@ module must meet.
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
 | Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | retain body-only as the practical baseline; improve prompt-conditioned semantic behavior before preference/RL or scale |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
-| VCM ABI + transactions/certificates | Phase 3 | ABI plus stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle tiers, and restart replay implemented; durable lifecycle execution partial | add provenance-preserving merge/compaction execution and process-level migration rehearsal, then consume it in Phase 7/10 |
+| VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
 | Replacement transactions | Phase 2 | synthetic-test-backed | one real default swap with rollback |
 | Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
@@ -471,8 +471,10 @@ run and it meets the Quality Bars below.
   suppression, certified bounded subgraph snapshots, and deterministic
   serialization/query replay. This is a durable semantic projection over VCM
   pages, not a dense-embedding, parametric-unlearning, or completed physical
-  compaction claim. Process-level restart/migration rehearsal and executable
-  merge/compaction transactions remain open. The equal-budget private context
+  parametric-unlearning claim. Merge, supersession, retraction, and cold
+  compaction now execute as typed transactions with rollback hashes and typed
+  rejection; a fresh process migrates a persisted `0.9.0` ontology fixture to
+  `1.0.0` and preserves state/query replay. The equal-budget private context
   ablation is `1.0` VCM-on versus `0.5625` VCM-off
   over 16 cases with zero fallback returns; it is integration evidence, not a
   broad public-capability claim. The separate `VCM-Governed` release profile
@@ -946,7 +948,7 @@ gaps route into the phases above:
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
 | Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
-| Durable semantic memory inside VCM | stable objects, typed/temporal relations, additive ontology migration, retraction suppression, sparse-vector/graph retrieval, lifecycle tiers, bounded snapshots, and deterministic replay now exist; executable merge/physical compaction plus process-level migration/restart rehearsal remain | 3, 14, 15 |
+| Durable semantic memory inside VCM | wired: stable objects, typed/temporal relations, additive ontology migration, transactional merge/supersession/retraction/compaction, sparse-vector/graph retrieval, bounded snapshots, and fresh-process replay; dense embedding and parametric unlearning remain explicit non-claims | 3, 14, 15 |
 | Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |
 | Claim ledgers + belief revision | claim/transition records + contradiction links not first-class per run | 14 |
 | Proof-carrying + tribunal/adversarial review | broader independent-review records not standard for architecture changes | 14, 18 |

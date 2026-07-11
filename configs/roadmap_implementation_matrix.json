@@ -461,7 +461,7 @@
         19
       ],
       "track_id": "A_reference_evidence_spine",
-      "status": "partial",
+      "status": "wired",
       "dependency": "requires immutable revision history attached to evidence transitions",
       "acceptance_gate": "Claims support downgrade, split, merge, contradiction-link, retire, and replacement transitions without overwriting earlier evidence; contradictions remain linked to affected routes and docs.",
       "support_state_target": "replayable-reference-backed",
@@ -934,7 +934,7 @@
     {
       "phase": 3,
       "title": "Virtual Context Memory As Default Context Substrate",
-      "status": "partial",
+      "status": "wired",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-3",
       "ai_book_source_basis": [
@@ -1025,12 +1025,11 @@
         "the canonical VCM graph embeds stable semantic object IDs independent of page revision, revision history, typed temporal relations, ontology 1.0.0 with additive migration records, and provenance-bound lifecycle state",
         "sparse BM25 plus graph retrieval emits explainable score components while quarantined and retracted objects fail closed; dense embedding retrieval and parametric unlearning are explicitly not claimed",
         "hot/warm/cold consolidation decisions preserve provenance, bounded subgraph snapshots carry deterministic content certificates, and canonical serialization/query replay is restart-consistent",
-        "negative tests cover revision identity, restart replay, poisoned and retracted retrieval suppression, consolidation actions, hybrid ranking, and bounded snapshot size"
+        "merge, supersession, retraction, and cold compaction execute as typed lifecycle transactions with read/write sets, before/after hashes, provenance checks, rollback hashes, typed rejection, and retrieval-vector/payload suppression",
+        "a fresh Python process migrates a persisted ontology 0.9.0 graph plus current pages to 1.0.0 and proves state and query replay; negative tests cover revision identity, poisoned/retracted suppression, invalid compaction, merge provenance, hybrid ranking, and bounded snapshots"
       ],
-      "missing_items": [
-        "executable provenance-preserving merge transactions, physical payload compaction and erasure closure, and process-level restart plus ontology migration rehearsal against persisted prior-version fixtures"
-      ],
-      "smallest_next_patch": "Execute merge, supersession, retraction, and cold-compaction as transactional VCM lifecycle operations; then restart a fresh process over prior-ontology persisted state and prove IDs, claims, provenance, deletion closure, retrieval suppression, and bounded snapshots survive migration.",
+      "missing_items": [],
+      "smallest_next_patch": "Consume the wired semantic lifecycle records in Phase 7 continual-update/deletion campaigns and Phase 10 model context paths; keep dense embedding, parametric unlearning, and public-memory capability claims separately evidence-gated.",
       "integration_smoke": [
         "python3 scripts/vcm_context_governor_gate.py",
         "reports/vcm_context_governor.json summary.context_abi_fixture_status=ready",

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sys
+import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -101,6 +103,89 @@ class DurableSemanticMemoryTests(unittest.TestCase):
         self.assertLessEqual(len(state["bounded_snapshot"]["object_ids"]), 32)
         self.assertFalse(state["claims"]["dense_embedding_retrieval"])
         self.assertFalse(state["claims"]["parametric_unlearning"])
+
+    def test_lifecycle_merge_compaction_and_rejection_are_transactional(self) -> None:
+        target = page("vcm://theseus/memory/target@v1", "merged durable target", page_type="policy")
+        source = page("vcm://theseus/memory/source@v1", "legacy source evidence")
+        state = semantic.build_semantic_memory(
+            [target, source],
+            {"edges": [], "invalidation": {"invalidated_addresses": []}},
+            task="merge memory",
+        )
+        by_address = {row["current_address"]: row for row in state["objects"]}
+        target_id = by_address[target["address"]]["semantic_object_id"]
+        source_id = by_address[source["address"]]["semantic_object_id"]
+
+        objects, relations, transactions = semantic.apply_lifecycle_transactions(
+            state["objects"],
+            state["relations"],
+            [
+                {"operation": "merge", "target_object_id": target_id, "source_object_ids": [source_id], "reason": "test_merge"},
+                {"operation": "compact", "target_object_id": target_id, "reason": "invalid_hot_compaction"},
+            ],
+        )
+
+        updated = {row["semantic_object_id"]: row for row in objects}
+        self.assertEqual(updated[source_id]["lifecycle_state"], "superseded")
+        self.assertEqual(updated[source_id]["merged_into_object_id"], target_id)
+        self.assertEqual(updated[target_id]["merge_source_object_ids"], [source_id])
+        self.assertEqual(transactions[0]["status"], "committed")
+        self.assertEqual(transactions[1]["status"], "rejected")
+        self.assertEqual(transactions[1]["typed_failure"], "compaction_requires_cold_tier")
+        self.assertTrue(any(row["relation_type"] == "derived_from" for row in relations))
+
+    def test_prior_ontology_persists_through_fresh_process_replay(self) -> None:
+        old = semantic.build_semantic_memory(
+            [page("vcm://theseus/project/state@v1", "current project policy")],
+            {"edges": [], "invalidation": {"invalidated_addresses": []}},
+            task="current project",
+        )
+        old["ontology"]["version"] = "0.9.0"
+        migrated = semantic.build_semantic_memory(
+            [page("vcm://theseus/project/state@v2", "current project policy revised")],
+            {"edges": [], "invalidation": {"invalidated_addresses": []}},
+            previous=old,
+            task="current project",
+        )
+        self.assertEqual(migrated["ontology_migrations"][0]["from_version"], "0.9.0")
+        self.assertEqual(migrated["ontology_migrations"][0]["mode"], "additive_projection")
+
+        with tempfile.TemporaryDirectory() as temp:
+            graph_path = Path(temp) / "graph.json"
+            pages_path = Path(temp) / "pages.json"
+            receipt_path = Path(temp) / "receipt.json"
+            graph_path.write_text(
+                json.dumps({"semantic_memory": old, "edges": [], "invalidation": {"invalidated_addresses": []}}),
+                encoding="utf-8",
+            )
+            pages_path.write_text(
+                json.dumps([page("vcm://theseus/project/state@v2", "current project policy revised")]),
+                encoding="utf-8",
+            )
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "vcm_semantic_memory.py"),
+                    "migrate-replay",
+                    "--graph",
+                    str(graph_path),
+                    "--pages",
+                    str(pages_path),
+                    "--out",
+                    str(receipt_path),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+
+        self.assertTrue(receipt["process_replay"])
+        self.assertTrue(receipt["state_digest_match"])
+        self.assertTrue(receipt["query_replay_match"])
+        self.assertEqual(receipt["ontology_version"], "1.0.0")
+        self.assertEqual(receipt["migration"]["from_version"], "0.9.0")
+        self.assertEqual(receipt["migration"]["to_version"], "1.0.0")
 
 
 if __name__ == "__main__":
