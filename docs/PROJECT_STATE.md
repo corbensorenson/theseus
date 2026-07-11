@@ -22,16 +22,21 @@ current-invocation receipts; `171` other declared outputs are supporting
 evidence and no longer force daily regeneration. Stale, invalid, missing, or
 acceptance-rejected route receipts still fail closed. This is registry
 correctness and iteration-efficiency evidence, not model capability.
-The current roadmap gate is `YELLOW` with `0` hard gaps: phase `0`
-Repository Self-Model/Registry Discipline is `implemented`; phases `4`, `5`,
-`6`, `8`, `11`, `12`, `17`, and `19` are `wired`; phases `3`, `7`, `14`,
-`15`, and `16` are `implemented`; phases `10` and `13` are local partial
-phases; and phases `1`, `2`, `9`, and `18` are
-externally frozen until trusted peers are reachable. This is roadmap
+The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
+book reconciliation. Phases `15` and `19` are `implemented`; phases `4`, `6`,
+`8`, `11`, `12`, and `17` are `wired`; phases `0`, `1`, `2`, `3`, `5`, `7`,
+`10`, `13`, `14`, `16`, and `18` are honestly `partial`; and only Phase `9`
+remains externally frozen until trusted peers are reachable. The local partial
+states now include durable semantic memory inside VCM, useful governed-effect
+rollback, full-state update/unlearning causality, ambiguous routing/adaptive
+deliberation, scalable oversight, assurance/threshold commitments, supply-chain
+and weight custody, and inter-stack exchange. This is roadmap
 implementation state only; it is not a learned-generation or public transfer
 claim. The active flagship core slice is `A1_claim_ledger_trace_kernel`; the
 current local AI_book manifest contains `54` chapters, all mapped through the
-roadmap implementation matrix. The newly admitted adversarial-evaluation chapter
+roadmap implementation matrix in exact order with zero book-owned field drift.
+The gate binds the reviewed manifest digest and reports `504` authored Codex
+tests, `102` of which remain planned or partial in the book. The newly admitted adversarial-evaluation chapter
 is routed into existing phases `4`, `10`, `12`, `14`, and `18`; mapping it is not
 evidence that Theseus detects deception or that any local model is deceptive.
 The concurrently added Open-Ended Improvement Engines chapter is mapped to
@@ -265,6 +270,16 @@ supported.
 The earlier sparse-specialist and compact encoder-decoder experiments below
 remain retained negative evidence rather than current routes.
 
+A follow-up target-independent SFT curriculum retains every licensed row while
+weighting self-contained bodies `3.0x` and context-dependent bodies `0.5x`, with
+private sampling fixed at `0.269068`. The matched 6.6M MLX canary improves
+heldout loss `1.808397 -> 1.706521`, emits `84` syntax-valid candidates over
+`23/24` tasks, and remains `0/24`; reward changes only
+`0.440152 -> 0.442105`. Candidate integrity and blind-flow audits are GREEN,
+external inference/public training/fallback/tool/template/router credit are all
+zero, and the route is not adopted. This is a clean negative against reweighting
+standalone licensed bodies as the missing semantic transfer mechanism.
+
 The data-right-sized model has now received a direct behavior verdict. Corpus
 selection scans the
 entire admitted manifest instead of stopping at the first `max_examples`,
@@ -318,13 +333,12 @@ training-data readiness evidence, not conversation capability.
 architecture-readiness mode:
 `python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready`.
 The normal roadmap gate remains `YELLOW` with `0` hard gaps so implementation
-work can continue, but strict pre-training architecture readiness is now `RED`
-with one blocker: two book-derived implementation phases are still partial.
-Those phases are practical neural seed survival/policy optimization/generation
-modes (`10`) and verification-bandwidth/governance-tax routing (`16`).
-Evidence/retention (`14`) and procedural-memory lookahead/lifecycle/toolification
-(`15`) are implemented. The external-frozen
-phases `1`, `2`, `9`, and `18` still cite current network-doctor evidence:
+and bounded model work can continue, but strict pre-training architecture
+readiness is `RED` with one aggregate blocker covering eleven partial phases.
+This is a sequencing view, not a ban on local canaries or inference work.
+Procedural-memory lookahead/lifecycle/toolification (`15`) and exact book
+synchronization (`19`) are implemented. Only Phase `9` remains externally
+frozen and cites current network-doctor evidence:
 `coordinator_unreachable`, `registered_peers_unreachable`,
 `peer_inbound_only_outbound_blocked`, and `No route to host` for the trusted
 Windows coordinator. All five pre-training book-reference core slices still
@@ -536,12 +550,14 @@ counters and both rejected checkpoints were removed after compact hashes were
 retained. The current wall is therefore an action-aware executable-span or
 localized semantic-IR constructor that directly couples traversal, update,
 finalizer, value-expression, and return construction.
-The AI_book crosswalk remains sticky by design: it currently indexes `1703`
-AI_book source files and has `38` active roadmap backlog items, `0`
-stale-source phase candidates, `58` public-safe evidence pointers, and `136`
-active source-sync
-review decisions. That keeps book-to-Theseus follow-up visible instead of
-clearing it with superficial steward decisions.
+The AI_book crosswalk remains sticky by design: it currently indexes `2552`
+AI_book source files and has `84` active roadmap backlog items, `0`
+stale-source phase candidates, and `63` public-safe evidence pointers. The
+54-row chapter crosswalk is manifest-ordered, digest-bound, and exact over
+book-owned titles, parts, files, claim/evidence labels, implementation horizons,
+interfaces, invariants, failure modes, and test inventories. That keeps
+book-to-Theseus follow-up visible instead of clearing it with superficial
+steward decisions.
 
 The latest AI_book technique inventory is reconciled into `roadmap.md` and
 `configs/roadmap_implementation_matrix.json` as planning evidence. The book's

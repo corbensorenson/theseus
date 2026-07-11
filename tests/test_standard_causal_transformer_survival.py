@@ -2518,6 +2518,42 @@ def test_private_sampling_mass_can_match_a_frozen_probability() -> None:
     assert sum(row["sampling_weight"] for row in weighted[2:]) == pytest.approx(2 / 3)
 
 
+def test_licensed_curriculum_reweights_without_dropping_rows_or_private_mass() -> None:
+    examples = [
+        {
+            "source": "licensed_function",
+            "source_text": "standalone",
+            "body": "return data",
+            "sampling_multiplier": 3.0,
+        },
+        {
+            "source": "licensed_function",
+            "source_text": "context dependent",
+            "body": "return module.value",
+            "sampling_multiplier": 0.5,
+        },
+        {
+            "source": "governed_private",
+            "source_text": "private-a",
+            "body": "return data + 1",
+        },
+        {
+            "source": "governed_private",
+            "source_text": "private-b",
+            "body": "return data - 1",
+        },
+    ]
+    weighted, audit = assign_body_balanced_sampling_weights(
+        examples,
+        private_body_weight=16.0,
+        private_sampling_probability_target=0.25,
+    )
+    assert len(weighted) == len(examples)
+    assert [row["sampling_weight"] for row in weighted[:2]] == [3.0, 0.5]
+    assert audit["licensed_sampling_mass"] == 3.5
+    assert audit["private_sampling_probability"] == pytest.approx(0.25)
+
+
 def test_standalone_sft_contract_accepts_imports_and_lexical_closures() -> None:
     source = "Compute a rounded square root.\nsignature def solve(data):"
     body = (

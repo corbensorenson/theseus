@@ -94,6 +94,23 @@ REQUIRED_BOOK_FUTURE_CANDIDATE_FIELDS = {
     "non_claim_boundary",
 }
 ALLOWED_BOOK_FUTURE_ITEM_KINDS = {"chapter_candidate", "cross_cutting_section"}
+BOOK_CROSSWALK_SOURCE_FIELDS = {
+    "chapter_ordinal": "chapter_ordinal",
+    "chapter_id": "chapter_id",
+    "chapter_title": "chapter_title",
+    "part_id": "part_id",
+    "part_title": "part_title",
+    "book_file": "book_file",
+    "book_claim_label": "book_claim_label",
+    "book_evidence_level": "book_evidence_level",
+    "book_minimal_implementation": "book_minimal_implementation",
+    "book_beyond_state_of_art": "book_beyond_state_of_art",
+    "book_interfaces": "book_interfaces",
+    "book_invariants": "book_invariants",
+    "book_failure_modes": "book_failure_modes",
+    "codex_test_count": "codex_test_count",
+    "representative_codex_tests": "representative_codex_tests",
+}
 HIVE_ARTIFACT_CITATION_REPORTS = [
     "reports/hive_installer_artifacts.json",
     "reports/hive_artifact_index_smoke.json",
@@ -244,6 +261,19 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
             "book_implementation_track_count": book_contract_report["summary"]["track_count"],
             "book_chapter_implementation_crosswalk_count": book_contract_report["summary"]["chapter_crosswalk_count"],
             "book_manifest_chapter_count": book_contract_report["summary"]["book_manifest_chapter_count"],
+            "book_manifest_order_match": book_contract_report["summary"]["book_manifest_order_match"],
+            "book_manifest_digest_match": book_contract_report["summary"]["book_manifest_digest_match"],
+            "book_manifest_sha256": book_contract_report["summary"]["book_manifest_sha256"],
+            "book_manifest_source_field_drift_chapter_count": book_contract_report["summary"][
+                "book_manifest_source_field_drift_chapter_count"
+            ],
+            "book_manifest_source_field_drift_count": book_contract_report["summary"][
+                "book_manifest_source_field_drift_count"
+            ],
+            "book_codex_test_count": book_contract_report["summary"]["book_codex_test_count"],
+            "book_pending_or_partial_codex_test_count": book_contract_report["summary"][
+                "book_pending_or_partial_codex_test_count"
+            ],
             "book_chapter_crosswalk_missing_required_field_count": book_contract_report["summary"]["missing_required_field_count"],
             "book_chapter_invalid_phase_ref_count": book_contract_report["summary"]["invalid_phase_ref_count"],
             "book_active_flagship_lane_id": book_contract_report["summary"]["active_flagship_lane_id"],
@@ -452,7 +482,9 @@ def audit_phase(
     }
 
 
-def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]:
+def audit_book_implementation_contract(
+    matrix: dict[str, Any], ai_book_root: Path = DEFAULT_AI_BOOK_ROOT
+) -> dict[str, Any]:
     tracks = list_dicts(matrix.get("book_implementation_tracks"))
     track_ids = {str(row.get("track_id") or "") for row in tracks}
     support_ladder = list_dicts(matrix.get("claim_support_ladder"))
@@ -464,7 +496,8 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
     core = dict_value(matrix.get("book_reference_core_before_training"))
     core_slices = list_dicts(core.get("required_slices"))
     phases = {int_or(row.get("phase"), -1) for row in list_dicts(matrix.get("phases"))}
-    book_manifest_count = count_ai_book_manifest_chapters(DEFAULT_AI_BOOK_ROOT)
+    book_manifest_chapters = load_ai_book_manifest_chapters(ai_book_root)
+    book_manifest_count = len(book_manifest_chapters)
     hard_gaps: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
 
@@ -538,6 +571,74 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
                 "book_chapter_implementation_crosswalk",
                 "book_manifest_chapter_count_mismatch",
                 {"crosswalk_count": len(crosswalk), "book_manifest_chapter_count": book_manifest_count},
+            )
+        )
+
+    expected_chapter_ids = [str(row.get("chapter_id") or "") for row in book_manifest_chapters]
+    actual_chapter_ids = [str(row.get("chapter_id") or "") for row in crosswalk]
+    manifest_order_match = actual_chapter_ids == expected_chapter_ids
+    if book_manifest_count and not manifest_order_match:
+        hard_gaps.append(
+            gap(
+                "book_chapter_implementation_crosswalk",
+                "book_manifest_chapter_id_order_mismatch",
+                {
+                    "expected": expected_chapter_ids,
+                    "actual": actual_chapter_ids,
+                },
+            )
+        )
+
+    crosswalk_by_id = {
+        str(row.get("chapter_id") or ""): row
+        for row in crosswalk
+        if str(row.get("chapter_id") or "")
+    }
+    source_field_drifts: list[dict[str, Any]] = []
+    for expected in book_manifest_chapters:
+        chapter_id = str(expected.get("chapter_id") or "")
+        actual = crosswalk_by_id.get(chapter_id)
+        if actual is None:
+            continue
+        drift_fields = [
+            matrix_field
+            for matrix_field, expected_field in BOOK_CROSSWALK_SOURCE_FIELDS.items()
+            if actual.get(matrix_field) != expected.get(expected_field)
+        ]
+        if drift_fields:
+            source_field_drifts.append(
+                {
+                    "chapter_id": chapter_id,
+                    "drift_fields": drift_fields,
+                }
+            )
+    if source_field_drifts:
+        hard_gaps.append(
+            gap(
+                "book_chapter_implementation_crosswalk",
+                "book_manifest_source_field_drift",
+                {
+                    "chapter_count": len(source_field_drifts),
+                    "field_count": sum(len(row["drift_fields"]) for row in source_field_drifts),
+                    "chapters": source_field_drifts,
+                },
+            )
+        )
+
+    manifest_path = ai_book_root / "book_structure.json"
+    actual_manifest_sha256 = hash_file(manifest_path) if manifest_path.exists() else ""
+    reconciliation = dict_value(matrix.get("latest_ai_book_reconciliation"))
+    expected_manifest_sha256 = str(reconciliation.get("manifest_sha256") or "")
+    manifest_digest_match = bool(expected_manifest_sha256) and expected_manifest_sha256 == actual_manifest_sha256
+    if book_manifest_count and not manifest_digest_match:
+        hard_gaps.append(
+            gap(
+                "book_chapter_implementation_crosswalk",
+                "book_manifest_digest_mismatch",
+                {
+                    "expected_sha256": expected_manifest_sha256,
+                    "actual_sha256": actual_manifest_sha256,
+                },
             )
         )
     elif not book_manifest_count:
@@ -728,6 +829,20 @@ def audit_book_implementation_contract(matrix: dict[str, Any]) -> dict[str, Any]
             "track_count": len(tracks),
             "chapter_crosswalk_count": len(crosswalk),
             "book_manifest_chapter_count": book_manifest_count,
+            "book_manifest_order_match": manifest_order_match,
+            "book_manifest_digest_match": manifest_digest_match,
+            "book_manifest_sha256": actual_manifest_sha256,
+            "book_manifest_source_field_drift_chapter_count": len(source_field_drifts),
+            "book_manifest_source_field_drift_count": sum(
+                len(row["drift_fields"]) for row in source_field_drifts
+            ),
+            "book_codex_test_count": sum(
+                int_or(row.get("codex_test_count"), 0) for row in book_manifest_chapters
+            ),
+            "book_pending_or_partial_codex_test_count": sum(
+                int_or(row.get("pending_or_partial_codex_test_count"), 0)
+                for row in book_manifest_chapters
+            ),
             "active_flagship_lane_id": active_flagship_lane_id,
             "active_track_id": active_track_id,
             "active_core_slice_count": len(active_slices),
@@ -970,14 +1085,55 @@ def phase_is_external_frozen(row: dict[str, Any]) -> bool:
 
 
 def count_ai_book_manifest_chapters(ai_book_root: Path) -> int:
+    return len(load_ai_book_manifest_chapters(ai_book_root))
+
+
+def load_ai_book_manifest_chapters(ai_book_root: Path) -> list[dict[str, Any]]:
     manifest = ai_book_root / "book_structure.json"
     if not manifest.exists():
-        return 0
+        return []
     payload = read_json(manifest)
-    total = 0
+    rows: list[dict[str, Any]] = []
     for part in list_dicts(payload.get("parts")):
-        total += len(list_dicts(part.get("chapters")))
-    return total
+        for chapter in list_dicts(part.get("chapters")):
+            codex_tests = list_values(chapter.get("codex_tests"))
+            test_names = [book_codex_test_name(item) for item in codex_tests]
+            rows.append(
+                {
+                    "chapter_ordinal": len(rows) + 1,
+                    "chapter_id": str(chapter.get("id") or ""),
+                    "chapter_title": str(chapter.get("title") or ""),
+                    "part_id": str(part.get("id") or ""),
+                    "part_title": str(part.get("title") or ""),
+                    "book_file": str(chapter.get("file") or ""),
+                    "book_claim_label": str(chapter.get("claim_label") or ""),
+                    "book_evidence_level": str(chapter.get("evidence_level") or ""),
+                    "book_minimal_implementation": str(chapter.get("minimal_implementation") or ""),
+                    "book_beyond_state_of_art": str(chapter.get("beyond_state_of_art") or ""),
+                    "book_interfaces": list_values(chapter.get("interfaces")),
+                    "book_invariants": list_values(chapter.get("invariants")),
+                    "book_failure_modes": list_values(chapter.get("failure_modes")),
+                    "codex_test_count": len(codex_tests),
+                    "pending_or_partial_codex_test_count": sum(
+                        1 for item in codex_tests if not book_codex_test_is_implemented(item)
+                    ),
+                    "representative_codex_tests": test_names[:3],
+                }
+            )
+    return rows
+
+
+def book_codex_test_name(value: Any) -> str:
+    if isinstance(value, dict):
+        return str(value.get("name") or "")
+    return str(value)
+
+
+def book_codex_test_is_implemented(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    status = str(value.get("implementation_status") or value.get("status") or "").strip().lower()
+    return status == "implemented" or status.startswith("implemented ") or status.startswith("implemented;")
 
 
 def count_values(values: list[str]) -> dict[str, int]:
@@ -1008,6 +1164,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Public-safe evidence smoke passed: `{summary.get('public_safe_evidence_smoke_passed', False)}`",
         f"- Book implementation tracks: `{summary.get('book_implementation_track_count', 0)}`",
         f"- Book chapter implementation crosswalk: `{summary.get('book_chapter_implementation_crosswalk_count', 0)}/{summary.get('book_manifest_chapter_count', 0)}`",
+        f"- Book manifest order match: `{summary.get('book_manifest_order_match', False)}`",
+        f"- Book manifest digest match: `{summary.get('book_manifest_digest_match', False)}`",
+        f"- Book source-field drift: `{summary.get('book_manifest_source_field_drift_count', 0)}` fields across `{summary.get('book_manifest_source_field_drift_chapter_count', 0)}` chapters",
+        f"- Book Codex tests: `{summary.get('book_codex_test_count', 0)}` total; `{summary.get('book_pending_or_partial_codex_test_count', 0)}` pending/partial",
         f"- Book future candidates/sections: `{summary.get('book_future_candidate_count', 0)}`",
         f"- Book future candidate missing fields: `{summary.get('book_future_candidate_missing_required_field_count', 0)}`",
         f"- Book future candidate invalid refs: `{summary.get('book_future_candidate_invalid_ref_count', 0)}`",
@@ -1667,6 +1827,14 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "book_implementation_track_count": summary.get("book_implementation_track_count", 0),
         "book_chapter_implementation_crosswalk_count": summary.get("book_chapter_implementation_crosswalk_count", 0),
         "book_manifest_chapter_count": summary.get("book_manifest_chapter_count", 0),
+        "book_manifest_order_match": summary.get("book_manifest_order_match", False),
+        "book_manifest_digest_match": summary.get("book_manifest_digest_match", False),
+        "book_manifest_source_field_drift_chapter_count": summary.get(
+            "book_manifest_source_field_drift_chapter_count", 0
+        ),
+        "book_manifest_source_field_drift_count": summary.get("book_manifest_source_field_drift_count", 0),
+        "book_codex_test_count": summary.get("book_codex_test_count", 0),
+        "book_pending_or_partial_codex_test_count": summary.get("book_pending_or_partial_codex_test_count", 0),
         "book_future_candidate_count": summary.get("book_future_candidate_count", 0),
         "book_future_candidate_chapter_count": summary.get("book_future_candidate_chapter_count", 0),
         "book_future_cross_cutting_section_count": summary.get("book_future_cross_cutting_section_count", 0),

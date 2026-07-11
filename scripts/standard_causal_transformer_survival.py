@@ -1106,9 +1106,21 @@ def load_sft_examples(
         else {}
     )
     contract_filter_enabled = contract_policy.get("require_self_contained_body") is True
+    licensed_self_contained_weight = float(
+        contract_policy.get("licensed_self_contained_sampling_weight", 1.0)
+    )
+    licensed_context_dependent_weight = float(
+        contract_policy.get("licensed_context_dependent_sampling_weight", 1.0)
+    )
+    contract_curriculum_enabled = (
+        licensed_self_contained_weight != 1.0
+        or licensed_context_dependent_weight != 1.0
+    )
     contract_rejections: Counter[str] = Counter()
     licensed_contract_accepted = 0
     licensed_contract_rejected = 0
+    licensed_self_contained_count = 0
+    licensed_context_dependent_count = 0
     private_contract_accepted = 0
     private_contract_rejected = 0
     seen_pairs: set[str] = set()
@@ -1125,8 +1137,13 @@ def load_sft_examples(
             continue
         if not source_text:
             continue
-        if contract_filter_enabled:
+        contract = None
+        if contract_filter_enabled or contract_curriculum_enabled:
             contract = standalone_sft_contract_decision(source_text, body)
+            licensed_self_contained_count += int(contract["accepted"])
+            licensed_context_dependent_count += int(not contract["accepted"])
+        if contract_filter_enabled:
+            assert contract is not None
             if not contract["accepted"]:
                 licensed_contract_rejected += 1
                 contract_rejections.update(contract["reject_reasons"])
@@ -1144,7 +1161,20 @@ def load_sft_examples(
             continue
         seen_pairs.add(pair_hash)
         unique_bodies.add(body_hash)
-        examples.append({"source_text": source_text, "body": body, "source": "licensed_function"})
+        examples.append(
+            {
+                "source_text": source_text,
+                "body": body,
+                "source": "licensed_function",
+                "sampling_multiplier": (
+                    licensed_self_contained_weight
+                    if contract is not None and contract["accepted"]
+                    else licensed_context_dependent_weight
+                    if contract is not None
+                    else 1.0
+                ),
+            }
+        )
         licensed_contract_accepted += int(contract_filter_enabled)
     licensed_count = len(examples)
 
@@ -1332,6 +1362,7 @@ def load_sft_examples(
         "metadata_tagged_source_count": metadata_tagged_source_count,
         "sft_contract_admission": {
             "enabled": contract_filter_enabled,
+            "sampling_curriculum_enabled": contract_curriculum_enabled,
             "policy": "target_body_self_containment_filter_no_source_feature_derivation",
             "licensed_accepted_count": licensed_contract_accepted,
             "licensed_rejected_count": licensed_contract_rejected,
@@ -1339,8 +1370,13 @@ def load_sft_examples(
             "private_rejected_count": private_contract_rejected,
             "teacher_accepted_count": teacher_contract_accepted,
             "teacher_rejected_count": teacher_contract_rejected,
+            "licensed_self_contained_count": licensed_self_contained_count,
+            "licensed_context_dependent_count": licensed_context_dependent_count,
+            "licensed_self_contained_sampling_weight": licensed_self_contained_weight,
+            "licensed_context_dependent_sampling_weight": licensed_context_dependent_weight,
             "reject_reason_counts": dict(sorted(contract_rejections.items())),
             "target_body_used_for_admission_only": contract_filter_enabled,
+            "target_body_used_for_sampling_weight_only": contract_curriculum_enabled,
             "target_body_fields_added_to_model_source": 0,
             "heldout_rows_read_by_filter": 0,
         },
@@ -1674,19 +1710,20 @@ def assign_body_balanced_sampling_weights(
         body_hash = sha(str(row.get("body") or ""))
         teacher_counts[body_hash] = teacher_counts.get(body_hash, 0) + 1
     configured_private_body_weight = float(private_body_weight)
-    licensed_example_count = sum(
-        row.get("source") not in {"governed_private", "governed_openai_teacher"}
+    licensed_base_mass = sum(
+        max(0.0, float(row.get("sampling_multiplier", 1.0)))
         for row in examples
+        if row.get("source") not in {"governed_private", "governed_openai_teacher"}
     )
-    if private_sampling_probability_target is not None and private_counts and licensed_example_count:
+    if private_sampling_probability_target is not None and private_counts and licensed_base_mass:
         target = float(private_sampling_probability_target)
         if not 0.0 < target < 1.0:
             raise ValueError("private sampling probability target must be between zero and one")
         private_body_weight = (
-            target * licensed_example_count / ((1.0 - target) * len(private_counts))
+            target * licensed_base_mass / ((1.0 - target) * len(private_counts))
         )
     teacher_body_weight = 1.0
-    base_mass = licensed_example_count + max(0.0, private_body_weight) * len(private_counts)
+    base_mass = licensed_base_mass + max(0.0, private_body_weight) * len(private_counts)
     if teacher_sampling_probability_target is not None and teacher_counts:
         teacher_target = float(teacher_sampling_probability_target)
         if not 0.0 < teacher_target < 1.0:
@@ -1709,7 +1746,7 @@ def assign_body_balanced_sampling_weights(
             weight = max(0.0, teacher_body_weight) / max(1, teacher_counts.get(body_hash, 1))
             teacher_mass += weight
         else:
-            weight = 1.0
+            weight = max(0.0, float(item.get("sampling_multiplier", 1.0)))
             licensed_mass += weight
         item["sampling_weight"] = weight
         weighted.append(item)
@@ -4045,6 +4082,23 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("external inference is forbidden")
     if boundary.get("fallback_returns_allowed") is not False:
         raise ValueError("fallback returns must remain forbidden")
+    contract_policy = (
+        config.get("sft_contract_admission")
+        if isinstance(config.get("sft_contract_admission"), dict)
+        else {}
+    )
+    curriculum_weights = (
+        float(contract_policy.get("licensed_self_contained_sampling_weight", 1.0)),
+        float(
+            contract_policy.get(
+                "licensed_context_dependent_sampling_weight", 1.0
+            )
+        ),
+    )
+    if any(not math.isfinite(value) or value < 0.0 for value in curriculum_weights):
+        raise ValueError("licensed SFT curriculum weights must be finite and non-negative")
+    if not any(value > 0.0 for value in curriculum_weights):
+        raise ValueError("licensed SFT curriculum must retain positive sampling mass")
     tokenization = config.get("tokenization") or {}
     if not isinstance(tokenization.get("shared_source_target_vocabulary"), bool):
         raise ValueError("source/target vocabulary mode must be explicitly boolean")

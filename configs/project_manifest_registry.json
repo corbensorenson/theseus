@@ -228,7 +228,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "f094e2a402a11265a8640bc2f25134db1b7a76103ae43fde9146ce0b229b8edf"
+          "sha256": "1778ba72edae1dba2f98784f4618d9e31f85f496594439911959e6ef468720f9"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -284,7 +284,7 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "7d2d0f63d36e1a93f65c470033cdad54a0bacff80af62eb4ae03ef9774246c72"
+          "sha256": "91e3c0ef9a8979ff2e03fe62de8dbc9379e955338c67e2cd732e249b139d61c1"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
@@ -292,7 +292,7 @@
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "666d6be9927d88266120ffa31f74849e9fd6c20fb43adff6a3f89ddc220638dd"
+          "sha256": "863ba17526c86d1991854abd15edc872c0bb7352a3636a3bed558925a974831a"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",

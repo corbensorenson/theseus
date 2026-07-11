@@ -1,6 +1,7 @@
 # Project Theseus Roadmap
 
-Consolidated 2026-07-07; reconciled with the 2026-07-09 AI Stack manifest. This
+Consolidated 2026-07-07; reconciled with the 2026-07-11 AI Stack manifest and
+post-v2.1 evidence cycle. This
 roadmap lists only work that still needs doing. It is the forward plan; it is not
 an audit trail. Historical execution logs, dated
 book-mining/review passes, and per-experiment records were removed from this file
@@ -35,15 +36,16 @@ module must meet.
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
 | Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | retain body-only as the practical baseline; improve prompt-conditioned semantic behavior before preference/RL or scale |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
-| VCM ABI + transactions/certificates | Phase 3 | implemented; synthetic + exact-backend runtime evidence | use the ABI in Phase 7/10 model work; preserve equal-budget on/off and backend-scoped claims |
-| Claim ledger + belief revision | Phase 14 | implemented; synthetic/replay infrastructure evidence | keep new citeable gates in the canonical pack/TCB/dependency audit; earn empirical support from real revisions |
+| VCM ABI + transactions/certificates | Phase 3 | ABI implemented; durable semantic object layer partial | add ontology/versioned graph persistence inside VCM, then consume it in Phase 7/10 |
+| Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
 | Replacement transactions | Phase 2 | synthetic-test-backed | one real default swap with rollback |
 | Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
 | Authority kernel / SCIF | Phase 18 | synthetic-test-backed | one real side-effecting run |
 | Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
 | Report hygiene | Phases 0, 8, 14 | budget GREEN: hot reports 1.02 GB, active index 211 MB, checkpoints 6.32 GB physical | keep current-reference compaction and exact replay mandatory as artifacts grow |
-| Book crosswalk / parity | Phase 19 | 49 chapters mapped | keep matrix synced; import Theseus evidence into AI_book |
-| Book futures intake | Phase 19 + routed owners | 19 chapter candidates + 2 section routes mapped | activate only at source/ownership and operational entry gates |
+| Book crosswalk / parity | Phase 19 | 54 chapters mapped in manifest order; no beyond-SOTA completion implied | keep book-owned fields, tests, and source identity checksum-bound |
+| Book test obligations | Phase 19 + routed owners | 504 authored Codex tests; 102 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
+| Book futures intake | Phase 19 + routed owners | 9 chapter candidates + 2 section routes remain outside the 54-chapter manifest | activate only at source/ownership and operational entry gates |
 
 ## Non-Negotiable Rules
 
@@ -312,6 +314,47 @@ held-out verifiable benchmark plotted against published dense-model curves
 teacher-share; self-generated-verified-row count; and every falsification condition
 with its current status.
 
+### Current Book-Derived Closure Wave (2026-07-11)
+
+The current ASI Stack is not asking Theseus for more architecture names. Its
+post-v2.1 evidence identifies four concrete integration failures. Close them in
+this dependency order while preserving the Phase-10 direct-generator floor as
+the capability critical path:
+
+1. **Book/source truth and durable memory ownership (Phases 0, 3, 14, 19).** Bind
+   every chapter row to exact manifest order and book-owned fields. Add durable
+   semantic objects inside VCM: stable identity, typed/temporal relations,
+   ontology version/migration, provenance-preserving merge/supersession/
+   retraction, graph/vector retrieval, contradiction retention, consolidation,
+   forgetting/compaction, and restart-consistent persistence. VCM still owns
+   bounded context materialization; claim ledgers, artifact graphs, context
+   transactions, and procedural memory keep their existing authorities.
+2. **Useful governed execution and effect-complete rollback (Phases 1, 2, 5,
+   14, 18).** A real assistant task must inventory every allowed observable
+   effect, separate proposer/observer/evaluator/promotion roles, preserve
+   first-effect and final-effect identity, and prove exact rollback or name the
+   residual. Measure useful release, unsafe release, false accept/reject,
+   refusal/quarantine, latency, operator burden, and governance tax together.
+3. **Discriminative routing and adaptive deliberation (Phases 4, 6, 8, 10, 14,
+   16, 18).** Build naturally ambiguous requests that exercise specialist,
+   generalist, clarification, fallback, and abstention routes without label
+   leakage. Compare no-deliberation, fixed, adaptive, and overcompute routes on
+   real model candidates; retain first-hit, last-correct, stop reason, verifier
+   disagreement, branch credit, and cases where more compute destroys a correct
+   answer. Route selection quality and answer generation quality remain separate.
+4. **Full-state update, unlearning, and open-ended campaign causality (Phases 0,
+   2, 7, 10, 12, 14, 15, 18).** Inventory model, optimizer, scheduler, RNG,
+   caches, checkpoints, backups, indexes, descendants, and external effects;
+   predeclare best-versus-final checkpoint authority; measure target gain,
+   forgetting, retained utility, deletion influence, storage erasure, rollback,
+   and invalidation separately. Improvement campaigns require independent
+   generator/evaluator roles, single-axis champion/challenger changes, matched
+   budgets, a negative-knowledge archive, debt ceilings, and stop authority.
+
+The closure wave does not suspend model work. It prevents the book-derived stack
+from being represented by schemas that are never consumed by a useful task or a
+real state change.
+
 ## Governed-Surface Work (Phases)
 
 Each phase lists remaining deliverables, acceptance gates, and prohibitions. A
@@ -331,6 +374,11 @@ run and it meets the Quality Bars below.
 - Enforce live report/checkpoint retention, current-reference-aware compaction, and
   one flagship claim record per metric family; generated bulk is runtime state, not
   source or capability evidence.
+- Maintain an AI bill of materials spanning code, data, models, tokenizers,
+  evaluators, tools, hardware/runtime profiles, build inputs, derived artifacts,
+  signatures, advisories, and descendant invalidation. Requested, resolved, and
+  observed identities remain distinct; reproducible build evidence and relocation
+  tests are required before release claims.
 - Acceptance: registry/hygiene/module-definition gates have no hard gaps, every
   active route resolves through one current implementation, and the repo can answer
   what Theseus is without scanning historical reports.
@@ -365,6 +413,10 @@ run and it meets the Quality Bars below.
   evaluator -> regression -> residual escrow -> canary -> monitor -> decision.
 - Normalize authority transitions and runtime-adapter receipts across assistant,
   planner, tools, training, verifier, Hive, model/router, VCM, and teacher paths.
+- Bind default model loads and valuable-weight movement to custody records: exact
+  artifact/derivative identity, encrypted-storage reference, key-release policy,
+  environment measurement, attestation freshness, access scope, revocation,
+  anti-rollback, relocation, incident response, and open-weight irreversibility.
 - Acceptance: one non-trivial real default swap can fail, roll back, and preserve
   its negative evidence; stale/unqualified implementations are not route-eligible;
   a capability cannot expand its own authority during replacement.
@@ -385,6 +437,11 @@ run and it meets the Quality Bars below.
   public imports/dogfood/deletions. Deleted or revoked material must not reappear
   through summaries, embeddings, caches, retrieval, reports, or training rows
   without an explicit closure fault.
+- Implement durable semantic memory inside VCM rather than as another sidecar:
+  stable object identity; typed and temporal relations; ontology versions and
+  migrations; provenance-preserving merge, supersession, retraction, and conflict;
+  graph/vector hybrid navigation; hot/warm/cold consolidation; forgetting and
+  compaction; restart consistency; and certified bounded subgraph snapshots.
 - Acceptance: assistant answers "what is the current wall?" from VCM-backed state
   with source refs; generator train/eval records exactly what context was allowed;
   public rows are tainted calibration-only; mandatory misses fail closed; context-on
@@ -450,7 +507,9 @@ run and it meets the Quality Bars below.
 ### Phase 7: Teacher and Data Governance
 (Owns Track 0 and teacher-side learning authority.)
 
-Implementation status (2026-07-10): `implemented`. The canonical admission path
+Admission-substrate status (2026-07-10): `implemented`; Phase 7 remains `partial`
+under the 2026-07-11 book reconciliation until full-state update/unlearning
+causality runs. The canonical admission path
 now writes and replays `92,032` content-bound candidate receipts, admits
 `91,725`, rejects `307` rows, and exposes zero detected exact/semantic
 public overlap, fallback markers, or raw-user rows. All nine adversarial cases,
@@ -471,6 +530,11 @@ deletion closure is graph evidence, not physical unlearning.
 - Compare replacement, accumulation, replay, quarantine, and retraining on a frozen
   continual-learning workload. Propagate revocation/deletion obligations through
   every declared descendant and retain unverified closure states.
+- Make update causality full-state: predeclare best-versus-final checkpoint
+  authority and inventory model, optimizer, scheduler, RNG, caches, backups,
+  indexes, checkpoints, descendants, and external effects. Measure target gain,
+  forgetting, retained utility, lineage invalidation, deletion influence, privacy,
+  and physical storage erasure as separate claims.
 - Acceptance: the data-policy comparison and a negative descendant-deletion case
   replay independently; teacher rows enter only through their gate; public
   calibration payloads remain excluded; `teacher_share` trends down.
@@ -547,6 +611,15 @@ deletion closure is graph evidence, not physical unlearning.
   tokenizer sharing, and more same-distribution SFT are now falsified as the
   immediate repair; prompt-conditioned semantic learning and inert-body collapse
   are the active wall.
+- A target-independent curriculum canary retains all `13,474` licensed rows but
+  weights self-contained bodies `3.0x` and context-dependent bodies `0.5x` while
+  freezing private sampling probability at `0.269068`. It improves heldout loss
+  `1.808397 -> 1.706521` and emits `84` syntax-valid candidates over `23/24`
+  tasks, but still passes `0/24`; mean verifier reward changes only
+  `0.440152 -> 0.442105`. Integrity and blind-flow audits are GREEN with zero
+  fallback/tool/template/router credit. This rejects standalone-body weighting as
+  a capability fix while retaining the general sampling mechanism for future
+  data-quality studies.
 - A subsequent ID-space audit found that split source-vocabulary IDs were
   incorrectly shifted into the target embedding segment. The repaired mapping
   raises independently integrity-verified candidates from `38/88` to `57/87`
@@ -705,6 +778,10 @@ deletion closure is graph evidence, not physical unlearning.
 - Compression receipts declare reconstruction, residual coding, determinism,
   supported use, authority/taint preservation, and exact-replay boundary. Proof and
   Lean artifacts support only their finite stated claims.
+- Compile structured assurance graphs from existing claims, evidence, assumptions,
+  hazards, contexts, acceptance criteria, defeaters, mitigations, dependencies,
+  owners, and review/expiry state. Changes invalidate affected nodes; a complete
+  graph never becomes safety or deployment authority by itself.
 - Acceptance: one live claim undergoes evidence-backed belief revision; stale or
   contradicted evidence blocks route/promotion; a compressed artifact cannot replace
   source evidence without its declared-use replay gate.
@@ -749,6 +826,11 @@ deletion closure is graph evidence, not physical unlearning.
   verification burden, selection/rejection, fallback, residuals, and ledger refs.
 - Tie sparse experts and Octopus arms to registry implementations/SCF route validity;
   learn routing only from governed traces and attribute activation to action families.
+- Calibrate on naturally ambiguous requests where specialist, generalist,
+  clarification, fallback, and abstention can all be correct. Preserve request-
+  feature provenance, persistent budget ownership, rejected alternatives,
+  interference counterfactuals, outcome calibration, and the distinction between
+  correct routing action and correct generated answer.
 - Acceptance: diverse real traces support a replayable route policy that explains
   why alternatives lost; stale/unqualified experts are ineligible; sparse routing
   beats a matched active-parameter dense control before default adoption.
@@ -793,6 +875,18 @@ deletion closure is graph evidence, not physical unlearning.
   the model while privileged adapters substitute secrets outside model-visible text.
 - Model distributed revocation, stale grants, partitions, confused-deputy attacks,
   amendment legitimacy, and human oversight degradation/rubber-stamping.
+- Add a scalable-oversight protocol that separates proposer, trusted monitor,
+  untrusted monitor, effect observer, evaluator, and promotion authority; measures
+  correlation/collusion, weak-supervisor limits, random audit coverage, oversight
+  latency, operator load, dissent, escalation, and abstention; and prevents review
+  output from silently becoming training or execution authority.
+- Add versioned capability-threshold commitments and safety-case consumption:
+  comparable assessment identity, context, threshold, safeguard bundle, exception
+  expiry, compensating controls, residual owner, and fail-closed route effect.
+- Before cross-stack federation, require protocol/identity/exchange records for
+  principal, credential, delegation chain, expiry/revocation, task/artifact schema,
+  reserved resource/value budget, payment or accounting receipt, dispute path,
+  residual, and shutdown handoff.
 - Acceptance: one real side-effecting task emits authority/adapter/effect/rollback
   receipts; secret and confused-deputy fixtures fail correctly; self-improvement
   cannot weaken protected predicates; user governance rights are inspectable.
@@ -807,6 +901,10 @@ deletion closure is graph evidence, not physical unlearning.
   coverage; reconcile it first when this file and the matrix disagree; refresh the
   crosswalk against the current book tree; register new book concepts as backlog
   rows routed to an existing phase (see Book-Parity Backlog).
+- Check exact chapter identity/order and every book-owned title, part, file, claim
+  label, evidence level, minimal implementation, mature endpoint, interface,
+  invariant, failure mode, and Codex-test inventory. Count equality alone is not
+  synchronization. Preserve the book commit and manifest digest used for review.
 - Acceptance: `roadmap_implementation_gate.py --gate` reports full chapter coverage
   with 0 stale phases; every book mechanism represented in Theseus meets the
   Book-Parity Invariants below; public-safe Theseus evidence can flow back into the
@@ -824,17 +922,22 @@ gaps route into the phases above:
 |---|---|---|
 | Stable Capability Fields | evidence for live implementations stale; routing eligibility mostly blocked | 2 |
 | Replacement + rollback | replacement transactions not yet the ordinary route for model/router/tool changes | 2 |
+| Effect-complete governed execution | useful release, first/final effect identity, observer separation, exact rollback inventory, and governance tax are not one ordinary assistant transaction | 1, 2, 5, 14, 18 |
 | Recursive self-improvement boundaries | canonical transition record not yet universal across policy, data, route, and model changes | 2, 14 |
+| Open-ended improvement campaigns | no canonical campaign admission, generator/evaluator separation, single-axis champion/challenger frontier, negative-knowledge archive, debt ceiling, or stop-authority transaction | 7, 10, 12, 14, 15, 18 |
 | Intent-to-execution contracts | runtime path does not yet require contracts for every meaningful task | 1 |
 | PlanForge DAGs + adequacy + arbitrage | not the default execution spine; adequacy contracts + arbitrage ledger missing | 1 |
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
+| Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
+| Durable semantic memory inside VCM | stable semantic objects, typed/temporal graph relations, ontology migration, provenance-preserving merge/retraction, consolidation, graph/vector retrieval, and restart persistence are incomplete | 3, 14, 15 |
 | Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |
 | Claim ledgers + belief revision | claim/transition records + contradiction links not first-class per run | 14 |
 | Proof-carrying + tribunal/adversarial review | broader independent-review records not standard for architecture changes | 14, 18 |
 | Labor OS typed jobs / artifact graphs | typed job + unified artifact graph not the universal unit | 1, 14 |
 | Procedural memory | adoption discipline applied to only one trace so far | 15 |
 | Routing heads + MoECOT + specialist cores | one canonical live MoECOT orchestration record missing; sparse specialist model unbuilt | 16 |
+| Ambiguous routing + adaptive deliberation | naturally ambiguous route corpus, fallback/abstention calibration, first-hit/last-correct, overthinking harm, branch credit, and verifier-disagreement accounting are missing on useful model outputs | 4, 6, 8, 10, 14, 16, 18 |
 | Readiness gates + residual escrow | stale outputs/duplicate families reduce trust | 0, 2 |
 | Generate-verify-repair | correctness still eval-only, not a training/search signal | 6, 10, 13 |
 | Deterministic math/search substrates | not yet attached universally to planning/VCM/claim-ledger/assistant | 6 |
@@ -842,6 +945,10 @@ gaps route into the phases above:
 | Policy optimization (DPO/GRPO/RLVR) | not yet the generator's central learning mechanism | 7, 10 |
 | Integrated reference architecture | the missing canonical spine | 1 |
 | Authority kernel / SCIF / failure boundaries / adapter receipts | no universal authority-transition ledger or SCIF receipt layer | 18 |
+| Scalable oversight | no trusted/untrusted monitor separation, correlation/collusion probe, weak-supervisor boundary, randomized audit policy, operator-load ledger, or recursion-bottom contract | 4, 14, 18 |
+| Capability commitments + safety cases | threshold/safeguard/exception commitments and dependency-invalidating assurance graphs are not consumed by release/default-route decisions | 2, 12, 14, 18 |
+| Weight custody + AI supply chain | no model/data/code/hardware AIBOM, reproducible training/build attestation, advisory quarantine, derivative revocation, attestation-gated load, or key lifecycle | 0, 2, 7, 8, 14, 18 |
+| Inter-stack identity and exchange | federation lacks credential/delegation expiry, reserved budgets, value/accounting receipts, dispute, revocation, and shutdown-handoff interoperability | 1, 2, 9, 16, 18 |
 | Constitutional predicates / agency / value conflicts / governance rights | not first-class records consumed by planning and self-improvement | 18 |
 | Resource budgets + costed routes + generation-mode records | costed routes + accepted-output accounting not the normal artifact | 8 |
 | Simulation contracts | no contract separating map from territory | 17 |
@@ -856,35 +963,23 @@ gaps route into the phases above:
 
 ## Book-Futures Intake (provisional, phase-routed)
 
-The ASI Stack's `2026-07-09 Controlled ASI Completeness Intake` names future
-chapter candidates and section-level obligations that are not all in the active
-46-chapter manifest. Theseus tracks them now so the architecture does not discover
-the omissions after deployment. They are **not new active lanes**: each is owned by
-existing phases, remains planning-only until its book source/ownership gate passes,
-and activates only at the entry condition below. Except for work that directly
-governs the current data/update path, these rows do not block bounded private
-training; they block the higher-authority operation they govern.
+The ASI Stack now has 54 active chapters. Ten items from the earlier completeness
+intake have been admitted and are owned by the chapter crosswalk rather than this
+future queue. The 11 remaining candidates/section routes below are **not new active
+lanes**: each is owned by existing phases, remains planning-only until its source,
+ownership, and operational entry gates pass, and blocks only the higher-authority
+operation it governs.
 
 | Book candidate or section | Theseus owner phases | Entry condition / disposition |
 |---|---|---|
-| Governed Deliberation and Test-Time Scaling | 6, 8, 10, 13 | after direct model-only pass is nonzero; own think/search budgets, verifier selection, stopping, diminishing returns, and residuals |
-| Data Engines, Continual Learning, and Unlearning | 3, 7, 12, 14 | admitted to the local 47-chapter manifest; current Phase-7 receipt/lifecycle work |
-| Scalable Oversight and Adversarial AI Control | 4, 14, 18 | before high-impact or self-improving routes; weak-supervisor limits, trusted/untrusted monitors, collusion resistance, oversight recursion |
-| Adversarial Evaluation, Sandbagging, and Training-Time Deception | 4, 10, 12, 14, 18 | admitted to the local 47-chapter manifest; before promotion/public claims, bind elicitation/selection/monitor context and cross-context discrepancies to existing evidence and promotion routes |
-| Capability Thresholds and Deployment Commitments | 2, 8, 12, 18 | before production serving or authority growth; if-then safeguards, autonomy/time horizon, automated-R&D share, open-weight decisions |
 | Reasoning-Trace Faithfulness (section route) | 1, 4, 14 | now as an evidence boundary; distinguish traces from receipts and test trace/action consistency without treating hidden reasoning as authoritative |
-| Inter-Stack Protocols, Identity, and Economic Exchange | 1, 2, 9, 18 | before cross-Hive/external-agent federation; protocol, identity, credential, payment, authority, and receipt interoperability |
 | World Models and Model-Based Cognition | 10, 13, 17 | after the core proposer floor; prediction/error ledgers, model-predictive control, imagination/search, causal limits, sim-to-real |
-| Safety Cases and Structured Assurance | 14, 17, 18 | before production/high-impact routes; claims, arguments, assumptions, hazards, defeaters, context, and invalidation lifecycle |
-| Model-Weight Custody and Hardware Roots of Trust | 0, 8, 18 | before distributing valuable weights or production loading; exfiltration, key release, attestation, TEE/GPU limits, open-weight custody |
 | Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |
 | Persuasion, Epistemic Security, and Human Agency | 5, 14, 18 | source-contingent; require stronger empirical anchors before activation or claims |
-| Open-Ended Improvement Engines | 7, 10, 12, 14, 15, 18 | admitted to the local 47-chapter manifest; implement the bounded campaign/admission contract now, then run empirical campaigns only after a verifier-positive proposer exists |
 | CAIS, Embedded Agency, and Corrigibility Foundations (section route) | 1, 18, 19 | prior-art/foundations work only unless a distinct mechanism and proof program earns a chapter boundary |
 | Perception, Grounding, and Observation Trust | 3, 8, 17, 18 | when a vision/audio/sensor modality starts; observation contracts, provenance/taint, fusion disagreement, uncertainty, refresh, spoofing/occlusion |
 | Embodied Execution and Physical-World Safety | 1, 8, 17, 18 | before physical actuation; control periods, hazard envelopes, interlocks, fallback controllers, stop authority, degraded modes |
 | Operational Resilience, Incident Response, and Decommissioning | 0, 8, 9, 14, 18 | before production/fleet dependence; criticality, impact tolerance, monitoring, containment, failover, recovery, disclosure, secure retirement |
-| AI Supply-Chain Integrity and Lifecycle Provenance | 0, 7, 8, 14, 18 | before reproducible releases/training fleets; AIBOM, signed build/training attestations, dependency/data integrity, supplier trust, revocation |
 | Privacy, Data Rights, and Multi-Agent Memory | 3, 5, 7, 9, 18 | before multi-user or shared-memory production; purpose limitation, consent, minimization, access/export/correction, privacy budgets, leakage, deletion closure |
 | Autonomous Replication, Proliferation, and Containment | 2, 8, 9, 14, 18 | before any replication/provisioning authority; descendant identity, principal binding, resource acquisition, persistence, containment, shutdown tests |
 | Scientific Discovery and Experimental Governance | 1, 6, 7, 14, 17, 18 | when Theseus begins autonomous experiments; hypothesis provenance, preregistration, instrument authority, statistics/causality limits, replication, dual-use review |
