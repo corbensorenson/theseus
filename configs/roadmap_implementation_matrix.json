@@ -1959,7 +1959,8 @@
         "semantic_plan_shuffled_label_control",
         "ordered_alpha_renamed_semantic_plan",
         "hierarchical_plan_then_body_beam",
-        "low_rank_latent_ordered_plan_field"
+        "low_rank_latent_ordered_plan_field",
+        "per_layer_slot_addressable_plan_attention"
       ],
       "required_records": [
         "semantic_ir_atom",
@@ -1973,7 +1974,8 @@
         "semantic_plan_head_ablation_receipt",
         "ordered_plan_four_arm_ablation_receipt",
         "content_bound_evaluation_replay_receipt",
-        "latent_ordered_plan_four_arm_ablation_receipt"
+        "latent_ordered_plan_four_arm_ablation_receipt",
+        "slot_ordered_plan_four_arm_ablation_receipt"
       ],
       "required_gates": [
         "python3 scripts/semantic_ir_obligation_gate.py",
@@ -2018,12 +2020,15 @@
         "runtime/standard_causal_transformer_latent_plan_body_control/report.json",
         "runtime/standard_causal_transformer_latent_plan_semantic/report.json",
         "runtime/standard_causal_transformer_latent_plan_shuffled/report.json",
-        "runtime/standard_causal_transformer_latent_plan_dropout/report.json"
+        "runtime/standard_causal_transformer_latent_plan_dropout/report.json",
+        "runtime/standard_causal_transformer_slot_plan_semantic/report.json",
+        "runtime/standard_causal_transformer_slot_plan_shuffled/report.json",
+        "runtime/standard_causal_transformer_slot_plan_dropout/report.json"
       ],
       "missing_items": [
-        "Both emitted ordered plans and a low-rank global additive ordered-plan field learn their plan targets but fail to improve direct body behavior; slot-addressable per-layer plan realization remains missing and all arms remain 0/24 exact"
+        "Emitted plans, global additive latent plans, and per-layer slot-addressable plan attention all learn source-only plan targets but remain 0/24 exact; structurally closed Semantic-IR receipts do not yet prove prompt-algorithm adequacy or intended behavior"
       ],
-      "smallest_next_patch": "Keep the same registered ordered-plan slot field and four-arm controls, but replace global additive superposition with slot-addressable per-layer plan attention so each body token can query distinct predicted plan atoms. Preserve prompt/signature-only plan prediction, the unchanged body-token target stream, exact equal direct-body exposure, low-rank parameter matching, and content-bound replay. Require semantic labels to beat shuffled and dropout on exact family-disjoint verifier behavior without regressing coverage or reward. Do not add a renderer, deterministic repair, fallback, generic capacity-only adapter, or another label-only auxiliary head.",
+      "smallest_next_patch": "Measure prompt-to-plan grounding directly: derive target-independent private obligation queries from prompt/signature contracts, align predicted ordered slots to those obligations with source-contrastive negatives, and score per-slot operation/value/binding adequacy before body decode. Reuse the registered slot-attention route and unchanged body-token stream only if this grounding signal beats shuffled/dropout controls and yields exact family-disjoint verifier behavior. Do not add another attention mechanism, label-only head, renderer, deterministic repair, fallback, generic capacity increase, or behavior-flat scale run.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -2085,6 +2090,12 @@
         ,"latent-plan body-only, semantic, shuffled, and dropout arms each consume exactly 1202267 optimizer body positions"
         ,"latent semantic plan F1 0.44919786 beats shuffled 0.25354462 and dropout 0.0, but semantic and shuffled have identical 0/24 behavior, 76 candidates, 23-task coverage, and 0.425600 reward"
         ,"latent dropout exactly matches body-only behavior at 0/24, 83 candidates, 23-task coverage, and 0.440152 reward"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.slot_ordered_plan_state=GREEN"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.slot_ordered_plan_adoption_state=NOT_ADOPTED"
+        ,"slot-plan body-only, semantic, shuffled, and dropout arms each consume exactly 1202267 optimizer body positions"
+        ,"slot semantic plan F1 0.44933921 beats shuffled 0.26199262 and dropout 0.0; semantic covers 24/24 at reward 0.441538 but remains 0/24 exact and does not beat dropout reward 0.442105"
+        ,"slot semantic decode costs 35705 ms versus body-only 23325 ms, and accepted verified output per second remains 0 for every arm"
+        ,"all slot-plan integrity and blind-information-flow audits are GREEN with zero mismatches or invalid claims"
       ],
       "completion_rule": "Plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependencies, obligations, repair scopes, and replayed receipts. Completion additionally requires a learned Semantic-IR route to improve family-disjoint direct model behavior under a matched body-only ablation. Assisted compiler/repair output remains zero-credit."
     },

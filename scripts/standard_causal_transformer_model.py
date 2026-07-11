@@ -27,6 +27,8 @@ class CausalTransformerConfig:
     semantic_plan_feature_count: int = 0
     semantic_plan_separator_token_id: int = 2
     semantic_plan_bottleneck_dim: int = 0
+    semantic_plan_slot_count: int = 0
+    semantic_plan_conditioning_mode: str = "global_additive"
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -55,6 +57,15 @@ class CausalTransformerConfig:
             raise ValueError("semantic plan bottleneck dimension cannot be negative")
         if self.semantic_plan_feature_count == 0 and self.semantic_plan_bottleneck_dim:
             raise ValueError("semantic plan bottleneck requires semantic plan features")
+        if self.semantic_plan_conditioning_mode not in {"global_additive", "slot_attention"}:
+            raise ValueError("semantic plan conditioning must be global_additive or slot_attention")
+        if self.semantic_plan_conditioning_mode == "slot_attention":
+            if self.semantic_plan_slot_count <= 0:
+                raise ValueError("slot attention requires positive semantic plan slots")
+            if self.semantic_plan_feature_count % self.semantic_plan_slot_count:
+                raise ValueError("semantic plan features must divide evenly across slots")
+            if self.semantic_plan_bottleneck_dim <= 0:
+                raise ValueError("slot attention requires a low-rank semantic plan bottleneck")
         if self.semantic_plan_feature_count > 0 and not (
             0 <= self.semantic_plan_separator_token_id < self.vocab_size
         ):
@@ -79,6 +90,9 @@ def build_model(
     )
     state_enabled = config.state_memory_mode != "none"
     plan_enabled = config.semantic_plan_feature_count > 0
+    plan_slot_attention_enabled = (
+        plan_enabled and config.semantic_plan_conditioning_mode == "slot_attention"
+    )
     if state_enabled:
         if state_role_lookup is None:
             raise ValueError("enabled state memory requires a causal token-role lookup")
@@ -209,6 +223,43 @@ def build_model(
             attended = attended.transpose(0, 2, 1, 3).reshape(batch, length, config.num_heads * head_dim)
             return self.out_proj(attended), (key, value)
 
+    class PlanCrossAttention(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.q_proj = nn.Linear(config.d_model, config.num_heads * head_dim, bias=False)
+            self.k_proj = nn.Linear(config.d_model, config.num_kv_heads * head_dim, bias=False)
+            self.v_proj = nn.Linear(config.d_model, config.num_kv_heads * head_dim, bias=False)
+            self.out_proj = nn.Linear(config.num_heads * head_dim, config.d_model, bias=False)
+            self.out_proj.weight = mx.zeros_like(self.out_proj.weight)
+
+        def __call__(self, hidden: Any, plan_memory: Any) -> Any:
+            batch, length, _dims = hidden.shape
+            slots = int(plan_memory.shape[1])
+            query = self.q_proj(hidden).reshape(
+                batch, length, config.num_heads, head_dim
+            ).transpose(0, 2, 1, 3)
+            key = self.k_proj(plan_memory).reshape(
+                batch, slots, config.num_kv_heads, head_dim
+            ).transpose(0, 2, 1, 3)
+            value = self.v_proj(plan_memory).reshape(
+                batch, slots, config.num_kv_heads, head_dim
+            ).transpose(0, 2, 1, 3)
+            if config.num_kv_heads != config.num_heads:
+                repeats = config.num_heads // config.num_kv_heads
+                key = mx.repeat(key, repeats=repeats, axis=1)
+                value = mx.repeat(value, repeats=repeats, axis=1)
+            attended = mx.fast.scaled_dot_product_attention(
+                query,
+                key,
+                value,
+                scale=head_dim ** -0.5,
+                mask=None,
+            )
+            attended = attended.transpose(0, 2, 1, 3).reshape(
+                batch, length, config.num_heads * head_dim
+            )
+            return self.out_proj(attended)
+
     class SwiGLU(nn.Module):
         def __init__(self) -> None:
             super().__init__()
@@ -265,6 +316,8 @@ def build_model(
             cache: tuple[Any, ...] | None = None,
             role_weights: Any | None = None,
             commit_state: bool = False,
+            plan_memory: Any | None = None,
+            plan_access: Any | None = None,
         ) -> tuple[Any, tuple[Any, ...]]:
             token_cache = (cache[0], cache[1]) if cache is not None else None
             memory = cache[2] if cache is not None and len(cache) >= 3 else None
@@ -282,6 +335,16 @@ def build_model(
                 role_weights,
             )
             hidden = hidden + attended
+            if plan_slot_attention_enabled and plan_memory is not None:
+                plan_attended = self.plan_attention(
+                    self.plan_attention_norm(hidden), plan_memory
+                )
+                access = (
+                    plan_access
+                    if plan_access is not None
+                    else mx.ones(hidden.shape[:2], dtype=mx.float32)
+                )
+                hidden = hidden + plan_attended * access[:, :, None]
             hidden = hidden + self.feed_forward(self.ffn_norm(hidden))
             if not state_enabled:
                 return hidden, next_cache
@@ -310,6 +373,12 @@ def build_model(
             self.layers = [DecoderBlock() for _ in range(config.num_layers)]
             self.final_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.scale = math.sqrt(config.d_model)
+            if plan_slot_attention_enabled:
+                for layer in self.layers:
+                    layer.plan_attention_norm = nn.RMSNorm(
+                        config.d_model, eps=config.rms_norm_eps
+                    )
+                    layer.plan_attention = PlanCrossAttention()
             if plan_enabled:
                 plan_dim = config.semantic_plan_bottleneck_dim or config.d_model
                 self.semantic_plan_encoder = (
@@ -326,9 +395,10 @@ def build_model(
                 self.semantic_plan_projection = nn.Linear(
                     plan_dim, config.d_model, bias=False
                 )
-                self.semantic_plan_projection.weight = mx.zeros_like(
-                    self.semantic_plan_projection.weight
-                )
+                if not plan_slot_attention_enabled:
+                    self.semantic_plan_projection.weight = mx.zeros_like(
+                        self.semantic_plan_projection.weight
+                    )
 
         def role_weights(self, tokens: Any) -> Any | None:
             if not state_enabled:
@@ -343,10 +413,10 @@ def build_model(
             self,
             tokens: Any,
             cached_plan_context: Any | None,
-        ) -> tuple[Any, Any | None, Any | None]:
+        ) -> tuple[Any, Any | None, Any | None, Any | None]:
             hidden = self.token_embedding(tokens) * self.scale
             if not plan_enabled:
-                return hidden, None, None
+                return hidden, None, None, None
             if cached_plan_context is not None:
                 context = cached_plan_context
                 plan_logits = None
@@ -370,13 +440,32 @@ def build_model(
                 feature_matrix = self.semantic_plan_features(
                     mx.arange(config.semantic_plan_feature_count, dtype=mx.int32)
                 )
-                context = mx.matmul(probabilities, feature_matrix) / mx.maximum(
-                    mx.sum(probabilities, axis=-1, keepdims=True), 1.0
-                )
-                context = self.semantic_plan_projection(context) * has_separator[:, None]
+                if plan_slot_attention_enabled:
+                    slot_count = config.semantic_plan_slot_count
+                    slot_width = config.semantic_plan_feature_count // slot_count
+                    slot_probabilities = probabilities.reshape(
+                        int(tokens.shape[0]), slot_count, slot_width
+                    )
+                    slot_features = feature_matrix.reshape(
+                        slot_count, slot_width, int(feature_matrix.shape[-1])
+                    )
+                    slot_mass = mx.sum(slot_probabilities, axis=-1, keepdims=True)
+                    slot_state = mx.sum(
+                        slot_probabilities[:, :, :, None] * slot_features[None, :, :, :],
+                        axis=2,
+                    ) / mx.maximum(slot_mass, 1.0)
+                    context = self.semantic_plan_projection(slot_state) * has_separator[
+                        :, None, None
+                    ]
+                else:
+                    context = mx.matmul(probabilities, feature_matrix) / mx.maximum(
+                        mx.sum(probabilities, axis=-1, keepdims=True), 1.0
+                    )
+                    context = self.semantic_plan_projection(context) * has_separator[:, None]
                 target_mask = ((seen_separator > 0) & ~separator).astype(mx.float32)
-            hidden = hidden + context[:, None, :] * target_mask[:, :, None]
-            return hidden, context, plan_logits
+            if not plan_slot_attention_enabled:
+                hidden = hidden + context[:, None, :] * target_mask[:, :, None]
+            return hidden, context, plan_logits, target_mask
 
         def __call__(
             self,
@@ -390,7 +479,7 @@ def build_model(
             if plan_enabled and cache is not None and len(cache) == config.num_layers + 1:
                 cached_plan_context = cache[-1][0]
                 layer_cache_input = cache[:-1]
-            conditioned_hidden, plan_context, plan_logits = self.conditioned_embeddings(
+            conditioned_hidden, plan_context, plan_logits, plan_access = self.conditioned_embeddings(
                 tokens, cached_plan_context
             )
             if not state_enabled:
@@ -398,7 +487,12 @@ def build_model(
                 next_cache: list[tuple[Any, ...]] = []
                 for index, layer in enumerate(self.layers):
                     layer_cache = layer_cache_input[index] if layer_cache_input is not None else None
-                    hidden, layer_next = layer(hidden, layer_cache)
+                    hidden, layer_next = layer(
+                        hidden,
+                        layer_cache,
+                        plan_memory=plan_context if plan_slot_attention_enabled else None,
+                        plan_access=plan_access,
+                    )
                     next_cache.append(layer_next)
                 if plan_enabled:
                     next_cache.append((plan_context,))
@@ -425,6 +519,8 @@ def build_model(
                         layer_cache,
                         chunk_roles,
                         commit_state=commit_state,
+                        plan_memory=plan_context if plan_slot_attention_enabled else None,
+                        plan_access=plan_access[:, start:stop] if plan_access is not None else None,
                     )
                     next_cache.append(layer_next)
                 outputs.append(self.final_norm(hidden))

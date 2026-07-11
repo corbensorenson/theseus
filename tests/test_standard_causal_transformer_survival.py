@@ -78,6 +78,7 @@ from standard_causal_transformer_survival_gate import (
     audit_ordered_plan_ablation,
     audit_preference_canary,
     audit_semantic_plan_head_ablation,
+    audit_slot_ordered_plan_ablation,
     audit_sft_contract_admission,
     audit_state_memory_ablation,
     audit_state_memory_continuation,
@@ -196,6 +197,97 @@ def test_low_rank_semantic_plan_bottleneck_is_source_only_and_trainable() -> Non
     assert float(loss.item()) > 0.0
     assert tuple(model.semantic_plan_classifier.weight.shape) == (48, 8)
     assert tuple(model.semantic_plan_features.weight.shape) == (48, 8)
+
+
+def test_slot_plan_attention_is_source_only_and_cache_partition_invariant() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    mx.random.seed(23)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        semantic_plan_feature_count=48,
+        semantic_plan_separator_token_id=2,
+        semantic_plan_bottleneck_dim=8,
+        semantic_plan_slot_count=4,
+        semantic_plan_conditioning_mode="slot_attention",
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    sequence_a = mx.array([[1, 12, 13, 2, 21, 22]], dtype=mx.int32)
+    sequence_b = mx.array([[1, 12, 13, 2, 44, 45]], dtype=mx.int32)
+    sequence_c = mx.array([[1, 14, 15, 2, 21, 22]], dtype=mx.int32)
+    logits_a, cache_a, plan_a = model(sequence_a, return_plan_logits=True)
+    _logits_b, _cache_b, plan_b = model(sequence_b, return_plan_logits=True)
+    _logits_c, _cache_c, plan_c = model(sequence_c, return_plan_logits=True)
+    prefix_logits, prefix_cache, prefix_plan = model(
+        sequence_a[:, :4], return_plan_logits=True
+    )
+    cached_logits, cached_state = model(sequence_a[:, 4:], prefix_cache)
+    mx.eval(
+        logits_a,
+        plan_a,
+        plan_b,
+        plan_c,
+        prefix_logits,
+        prefix_plan,
+        cached_logits,
+        *cache_arrays(cache_a),
+        *cache_arrays(cached_state),
+    )
+    assert bool(mx.allclose(plan_a, plan_b, atol=1e-6))
+    assert not bool(mx.allclose(plan_a, plan_c, atol=1e-6))
+    assert bool(mx.allclose(plan_a, prefix_plan, atol=1e-6))
+    assert bool(mx.allclose(cached_logits, logits_a[:, 4:], atol=1e-4))
+    assert tuple(cache_a[-1][0].shape) == (1, 4, 32)
+
+    common = dict(
+        vocab_size=96,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(31)
+    body_model = build_model(CausalTransformerConfig(**common), mx=mx, nn=nn)
+    mx.random.seed(31)
+    slot_model = build_model(
+        CausalTransformerConfig(
+            **common,
+            semantic_plan_feature_count=48,
+            semantic_plan_separator_token_id=2,
+            semantic_plan_bottleneck_dim=8,
+            semantic_plan_slot_count=4,
+            semantic_plan_conditioning_mode="slot_attention",
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    body_logits, _body_cache = body_model(sequence_a)
+    slot_logits, _slot_cache = slot_model(sequence_a)
+    mx.eval(body_logits, slot_logits)
+    assert bool(mx.allclose(body_logits, slot_logits, atol=1e-6))
+
+    target = mx.array([[12, 13, 2, 21, 22, 0]], dtype=mx.int32)
+    mask = mx.array([[0, 0, 0, 1, 1, 0]], dtype=mx.float32)
+    value_and_grad = nn.value_and_grad(slot_model, causal_loss)
+    body_loss, gradients = value_and_grad(
+        slot_model, sequence_a, target, mask, mx, nn, None, 0.0, None
+    )
+    mx.eval(body_loss, gradients)
+    plan_output_gradients = [
+        value
+        for name, value in mlx_utils.tree_flatten(gradients)
+        if "plan_attention.out_proj.weight" in name
+    ]
+    assert len(plan_output_gradients) == config.num_layers
+    assert all(float(mx.sum(mx.abs(value)).item()) > 0.0 for value in plan_output_gradients)
 
 
 def test_semantic_plan_auxiliary_loss_updates_plan_parameters() -> None:
@@ -328,6 +420,19 @@ def test_latent_ordered_plan_field_is_closed_low_rank_and_body_stream_preserving
     assert len(features) == len(labels) == feature_count
     assert sum(labels) == len(semantic_ir.body_to_plan_tokens("return data", max_tokens=slot_count))
     assert config["tokenization"]["target_mode"] == "body_tokens"
+
+    slot_attention = json.loads(json.dumps(config))
+    slot_attention["model"].update(
+        {
+            "semantic_plan_slot_count": slot_count,
+            "semantic_plan_conditioning_mode": "slot_attention",
+        }
+    )
+    validate_config(slot_attention)
+    mismatched_slots = json.loads(json.dumps(slot_attention))
+    mismatched_slots["model"]["semantic_plan_slot_count"] = slot_count - 1
+    with pytest.raises(ValueError, match="must match ordered plan slots"):
+        validate_config(mismatched_slots)
 
     semantic, semantic_receipt = prepare_semantic_plan_labels(
         np.asarray([labels, labels], dtype=np.float32), mode="semantic", seed=7
@@ -591,11 +696,38 @@ def test_latent_ordered_plan_gate_requires_semantic_body_gain(tmp_path: Path) ->
     assert adopted["state"] == "GREEN"
     assert adopted["adoption_state"] == "ADOPTED"
 
+    for name in ("semantic", "shuffled", "dropout"):
+        config_path = directories[name] / "config.json"
+        config = json.loads(config_path.read_text())
+        config["model"].update(
+            {
+                "semantic_plan_slot_count": 8,
+                "semantic_plan_conditioning_mode": "slot_attention",
+            }
+        )
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+    slot_adopted = audit_slot_ordered_plan_ablation(directories)
+    assert slot_adopted["state"] == "GREEN"
+    assert slot_adopted["adoption_state"] == "ADOPTED"
+
+    shuffled_config_path = directories["shuffled"] / "config.json"
+    shuffled_config = json.loads(shuffled_config_path.read_text())
+    shuffled_config["model"]["semantic_plan_slot_count"] = 7
+    shuffled_config_path.write_text(json.dumps(shuffled_config), encoding="utf-8")
+    invalid_slots = audit_slot_ordered_plan_ablation(directories)
+    assert invalid_slots["state"] == "RED"
+    assert any(
+        row["kind"] == "slot_ordered_plan_conditioning_contract_matches_failed"
+        for row in invalid_slots["hard_gaps"]
+    )
+    shuffled_config["model"]["semantic_plan_slot_count"] = 8
+    shuffled_config_path.write_text(json.dumps(shuffled_config), encoding="utf-8")
+
     semantic = directories["semantic"] / "report.json"
     value = json.loads(semantic.read_text())
     value["summary"]["model_only_passed_task_count"] = 0
     semantic.write_text(json.dumps(value), encoding="utf-8")
-    rejected = audit_latent_ordered_plan_ablation(directories)
+    rejected = audit_slot_ordered_plan_ablation(directories)
     assert rejected["adoption_state"] == "NOT_ADOPTED"
     assert "no_family_disjoint_verifier_pass_gain" in rejected[
         "adoption_rejection_reasons"

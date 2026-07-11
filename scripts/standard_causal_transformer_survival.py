@@ -3745,6 +3745,10 @@ def validate_config(config: dict[str, Any]) -> None:
     plan_training = semantic_plan_training_contract(config)
     plan_feature_count = int(model.get("semantic_plan_feature_count") or 0)
     plan_bottleneck_dim = int(model.get("semantic_plan_bottleneck_dim") or 0)
+    plan_slot_count = int(model.get("semantic_plan_slot_count") or 0)
+    plan_conditioning_mode = str(
+        model.get("semantic_plan_conditioning_mode") or "global_additive"
+    )
     plan_separator = int(
         model.get("semantic_plan_separator_token_id", SOURCE_TARGET_SEPARATOR_ID)
     )
@@ -3789,6 +3793,15 @@ def validate_config(config: dict[str, Any]) -> None:
             raise ValueError("semantic plan bottleneck must be within the model width")
         if plan_training["target"] == "ordered_plan_slot_token_field" and plan_bottleneck_dim <= 0:
             raise ValueError("ordered latent plan field requires a positive low-rank bottleneck")
+        if plan_conditioning_mode not in {"global_additive", "slot_attention"}:
+            raise ValueError("semantic plan conditioning mode is not registered")
+        if plan_conditioning_mode == "slot_attention":
+            if plan_training["target"] != "ordered_plan_slot_token_field":
+                raise ValueError("slot attention requires the ordered plan slot field")
+            if plan_slot_count != plan_training["ordered_slot_count"]:
+                raise ValueError("slot-attention memory count must match ordered plan slots")
+        elif plan_slot_count:
+            raise ValueError("global additive plan conditioning cannot declare attention slots")
     elif plan_feature_count:
         raise ValueError("semantic plan model parameters require enabled semantic plan training")
     evaluation = config.get("evaluation") or {}

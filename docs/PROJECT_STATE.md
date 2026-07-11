@@ -147,9 +147,22 @@ additive context is behaviorally non-semantic: semantic and shuffled both emit
 plan-dropout exactly reproduces body-only's `83` candidates, `23/24`, `0.440152`,
 and `0/24`. All four independent integrity and blind-flow audits are GREEN. The
 gate records `NOT_ADOPTED`; global additive plan superposition is not the next
-route. Semantic IR remains partial until slot-addressable per-layer plan attention
-or another direct realization mechanism improves family-disjoint behavior under
-the same matched controls. A separate
+route. The follow-on slot-addressable implementation gives every decoder layer a
+separate cross-attention read over `16` predicted ordered-plan slots while keeping
+the source-only plan boundary, direct body-token targets, and exactly `1,202,267`
+body positions per arm. It is base-model identical at initialization, cache/full
+decode equivalent, and body-loss gradients reach every plan-attention output
+projection. Semantic plan F1 is `0.449339`, versus `0.261993` shuffled and `0.0`
+dropout. The semantic arm covers `24/24` tasks at reward `0.441538`, versus
+shuffled `23/24` at `0.436154` and body-only `23/24` at `0.440152`, but dropout
+scores `23/24` at `0.442105`; every arm remains `0/24` exact and semantic decode
+cost rises from `23,325 ms` to `35,705 ms`. Independent integrity and blind-flow
+audits are GREEN. The canonical gate is GREEN evidence and `NOT_ADOPTED`: learned
+plan recognition and addressable consumption still do not establish intended
+behavior. Phase 13 now needs prompt-to-plan semantic grounding and independently
+measured obligation adequacy that changes direct verifier behavior, not another
+label head, generic capacity increase, renderer, repair, or behavior-flat scale
+run. A separate
 standalone-SFT admission canary rejected `10,526` licensed rows that depended on
 hidden module context and preserved exact private sampling mass. It decoded
 `49,000 ms` faster, but regressed task coverage `20 -> 19`, candidate count

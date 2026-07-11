@@ -661,10 +661,18 @@ deletion closure is graph evidence, not physical unlearning.
   reward `0.425600`, and pass `0/24`; dropout exactly reproduces body-only's `83`,
   `23/24`, `0.440152`, and `0/24`. The gate records `GREEN` evidence and
   `NOT_ADOPTED`. Global additive plan superposition is therefore retired as the
-  next lever. Phase completion requires slot-addressable per-layer plan attention
-  or an equally direct realization mechanism to improve family-disjoint behavior
-  under the same controls; plan loss, deterministic rendering, repair, generic
-  extra capacity, or search-time plan fanout cannot substitute.
+  next lever. The slot-addressable follow-up adds a separate cross-attention read
+  over `16` predicted plan slots at every decoder layer while preserving the same
+  direct body target and `1,202,267` body positions in each arm. Semantic plan F1
+  improves to `0.449339` versus `0.261993` shuffled and `0.0` dropout; semantic
+  coverage/reward is `24/24` and `0.441538`, versus shuffled `23/24` and
+  `0.436154`. It still passes `0/24`, fails to beat dropout reward `0.442105`, and
+  costs `35,705 ms` versus body-only `23,325 ms`. Its integrity and blind-flow
+  audits are GREEN, while the gate records `NOT_ADOPTED`. Phase completion now
+  requires prompt-to-plan semantic grounding and independently measured
+  obligation adequacy to improve exact family-disjoint behavior under the same
+  controls; plan loss, deterministic rendering, repair, generic extra capacity,
+  another attention mechanism, or behavior-flat scaling cannot substitute.
 
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,

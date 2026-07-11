@@ -71,6 +71,12 @@ DEFAULT_LATENT_ORDERED_PLAN_ARM_DIRS = {
     "shuffled": ROOT / "runtime" / "standard_causal_transformer_latent_plan_shuffled",
     "dropout": ROOT / "runtime" / "standard_causal_transformer_latent_plan_dropout",
 }
+DEFAULT_SLOT_ORDERED_PLAN_ARM_DIRS = {
+    "body_only": ROOT / "runtime" / "standard_causal_transformer_latent_plan_body_control",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_slot_plan_semantic",
+    "shuffled": ROOT / "runtime" / "standard_causal_transformer_slot_plan_shuffled",
+    "dropout": ROOT / "runtime" / "standard_causal_transformer_slot_plan_dropout",
+}
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -162,6 +168,10 @@ def build_gate(
         DEFAULT_LATENT_ORDERED_PLAN_ARM_DIRS
     )
     hard_gaps.extend(latent_ordered_plan_audit["hard_gaps"])
+    slot_ordered_plan_audit = audit_slot_ordered_plan_ablation(
+        DEFAULT_SLOT_ORDERED_PLAN_ARM_DIRS
+    )
+    hard_gaps.extend(slot_ordered_plan_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -368,6 +378,14 @@ def build_gate(
                 "adoption_rejection_reasons"
             ],
             "latent_ordered_plan_deltas": latent_ordered_plan_audit["deltas"],
+            "slot_ordered_plan_state": slot_ordered_plan_audit["state"],
+            "slot_ordered_plan_adoption_state": slot_ordered_plan_audit[
+                "adoption_state"
+            ],
+            "slot_ordered_plan_rejection_reasons": slot_ordered_plan_audit[
+                "adoption_rejection_reasons"
+            ],
+            "slot_ordered_plan_deltas": slot_ordered_plan_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -388,6 +406,7 @@ def build_gate(
         "semantic_plan_head_ablation": semantic_plan_head_audit["receipt"],
         "ordered_plan_ablation": ordered_plan_audit["receipt"],
         "latent_ordered_plan_ablation": latent_ordered_plan_audit["receipt"],
+        "slot_ordered_plan_ablation": slot_ordered_plan_audit["receipt"],
     }
 
 
@@ -923,7 +942,13 @@ def audit_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
     }
 
 
-def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
+def audit_latent_ordered_plan_ablation(
+    arm_dirs: dict[str, Path],
+    *,
+    conditioning_mode: str = "global_additive",
+    gap_prefix: str = "latent_ordered_plan",
+    policy: str = "project_theseus_latent_ordered_plan_ablation_v1",
+) -> dict[str, Any]:
     """Qualify the low-rank ordered plan field against invalid matched controls."""
 
     required_arms = {"body_only", "semantic", "shuffled", "dropout"}
@@ -942,7 +967,7 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
             "deltas": {},
             "receipt": {"state": "RED", "observed_arms": sorted(arm_dirs)},
             "hard_gaps": [
-                gap("latent_ordered_plan_arm_set_mismatch", {"observed": sorted(arm_dirs)})
+                gap(f"{gap_prefix}_arm_set_mismatch", {"observed": sorted(arm_dirs)})
             ],
         }
     missing = [
@@ -974,6 +999,8 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
             "semantic_plan_feature_count",
             "semantic_plan_separator_token_id",
             "semantic_plan_bottleneck_dim",
+            "semantic_plan_slot_count",
+            "semantic_plan_conditioning_mode",
         ):
             model.pop(key, None)
         copied.pop("semantic_plan_training", None)
@@ -1007,6 +1034,32 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
         > 0
         for name in ("semantic", "shuffled", "dropout")
     )
+    conditioning_contract_clean = all(
+        str(
+            (configs[name].get("model") or {}).get("semantic_plan_conditioning_mode")
+            or "global_additive"
+        )
+        == conditioning_mode
+        for name in ("semantic", "shuffled", "dropout")
+    )
+    if conditioning_mode == "slot_attention":
+        conditioning_contract_clean = conditioning_contract_clean and all(
+            int((configs[name].get("model") or {}).get("semantic_plan_slot_count") or 0)
+            == int(
+                (configs[name].get("semantic_plan_training") or {}).get(
+                    "ordered_slot_count"
+                )
+                or 0
+            )
+            > 0
+            for name in ("semantic", "shuffled", "dropout")
+        )
+    else:
+        conditioning_contract_clean = conditioning_contract_clean and all(
+            int((configs[name].get("model") or {}).get("semantic_plan_slot_count") or 0)
+            == 0
+            for name in ("semantic", "shuffled", "dropout")
+        )
 
     def body_positions(report: dict[str, Any]) -> int:
         return sum(
@@ -1094,6 +1147,7 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
         "configs_equal_except_latent_plan_policy": configs_equal,
         "modes_expected": modes_correct,
         "body_target_stream_unchanged": target_contract_clean,
+        "conditioning_contract_matches": conditioning_contract_clean,
         "optimizer_body_exposure_equal": exposure_equal,
         "training_and_holdout_lineage_equal": lineage_equal,
         "plan_parameter_counts_equal": parameter_contract,
@@ -1105,20 +1159,25 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
     }
     for name, passed in checks.items():
         if not passed:
-            hard_gaps.append(gap(f"latent_ordered_plan_{name}_failed", {}))
+            hard_gaps.append(gap(f"{gap_prefix}_{name}_failed", {}))
 
     def metrics(report: dict[str, Any]) -> dict[str, Any]:
         summary = report.get("summary") or {}
         private = (report.get("private_verifier") or {}).get("private_verification") or {}
         plan_eval = (report.get("training") or {}).get("semantic_plan_eval_after") or {}
+        passed_task_count = int(summary.get("model_only_passed_task_count") or 0)
+        decode_runtime_ms = int((report.get("decode") or {}).get("runtime_ms") or 0)
         return {
-            "passed_task_count": int(summary.get("model_only_passed_task_count") or 0),
+            "passed_task_count": passed_task_count,
             "candidate_task_count": int(summary.get("candidate_task_count") or 0),
             "candidate_count": int(summary.get("candidate_count") or 0),
             "mean_verification_reward": float(private.get("mean_verification_reward") or 0.0),
             "body_eval_loss": float((report.get("training") or {}).get("eval_loss_after") or 0.0),
             "plan_micro_f1": float(plan_eval.get("micro_f1") or 0.0),
-            "decode_runtime_ms": int((report.get("decode") or {}).get("runtime_ms") or 0),
+            "decode_runtime_ms": decode_runtime_ms,
+            "accepted_verified_output_per_second": round(
+                passed_task_count / max(decode_runtime_ms / 1000.0, 1e-9), 8
+            ),
         }
 
     arm_metrics = {name: metrics(report) for name, report in reports.items()}
@@ -1166,7 +1225,7 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
         for name, directory in arm_dirs.items()
     }
     receipt = {
-        "policy": "project_theseus_latent_ordered_plan_ablation_v1",
+        "policy": policy,
         "state": "RED" if hard_gaps else "GREEN",
         "adoption_state": adoption_state,
         "adoption_rejection_reasons": rejection_reasons,
@@ -1176,6 +1235,7 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
         "metrics": arm_metrics,
         "deltas": deltas,
         "ordered_plan_signal_learned": plan_signal_learned,
+        "conditioning_mode": conditioning_mode,
         "artifacts": artifacts,
         "non_claims": [
             "ordered plan classification quality is not body-generation capability",
@@ -1191,6 +1251,17 @@ def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, A
         "receipt": receipt,
         "hard_gaps": hard_gaps,
     }
+
+
+def audit_slot_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
+    """Qualify per-layer slot-addressable plan memory without generic capacity credit."""
+
+    return audit_latent_ordered_plan_ablation(
+        arm_dirs,
+        conditioning_mode="slot_attention",
+        gap_prefix="slot_ordered_plan",
+        policy="project_theseus_slot_ordered_plan_ablation_v1",
+    )
 
 
 def audit_teacher_residual_ablation(
