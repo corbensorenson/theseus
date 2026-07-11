@@ -30,6 +30,7 @@ from standard_causal_transformer_survival import (  # noqa: E402
     encode_sft_examples,
     eval_example,
     evaluate_loss,
+    executable_state_role_lookup,
     model_vocab_size,
     stage_signature,
     visible_eval_source,
@@ -95,7 +96,14 @@ def run(config: dict[str, Any], *, bindings: dict[str, Any] | None = None) -> di
         vocab_size=model_vocab_size(base_cfg, vocab["source_vocab"], vocab["target_vocab"]),
         **base_cfg["model"],
     )
-    model = build_model(model_cfg, mx=mx, nn=nn)
+    model = build_model(
+        model_cfg,
+        mx=mx,
+        nn=nn,
+        state_role_lookup=executable_state_role_lookup(
+            base_cfg, vocab["source_vocab"], vocab["target_vocab"]
+        ),
+    )
     model.load_weights(str(base_checkpoint))
     mx.eval(model.parameters())
 
@@ -269,7 +277,14 @@ def measure(config: dict[str, Any], bindings: dict[str, Any]) -> dict[str, Any]:
         vocab_size=model_vocab_size(base_cfg, vocab["source_vocab"], vocab["target_vocab"]),
         **base_cfg["model"],
     )
-    model = build_model(model_cfg, mx=mx, nn=nn)
+    model = build_model(
+        model_cfg,
+        mx=mx,
+        nn=nn,
+        state_role_lookup=executable_state_role_lookup(
+            base_cfg, vocab["source_vocab"], vocab["target_vocab"]
+        ),
+    )
     model.load_weights(str(base_checkpoint))
     mx.eval(model.parameters())
     eval_rows, matched_eval, mismatched_eval = conditioning_eval_arrays(base_cfg, metadata, vocab)

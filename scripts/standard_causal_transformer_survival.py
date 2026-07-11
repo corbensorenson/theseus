@@ -72,6 +72,16 @@ GLOBAL_BOS_ID = 1
 SOURCE_TARGET_SEPARATOR_ID = 2
 SPECIAL_COUNT = 3
 CANONICAL_MODEL_SIGNATURE_NAME = "solve"
+EXECUTABLE_STATE_ROLES = (
+    "control_stack",
+    "bindings",
+    "traversal",
+    "state_update",
+    "finalizer",
+    "value_expression",
+    "return_closure",
+    "open_obligations",
+)
 
 
 @dataclass
@@ -175,7 +185,15 @@ def run(
     stage = materialize_stage(config, stage_dir=stage_dir, force=force_restage)
     vocab_size = model_vocab_size(config, stage.source_vocab, stage.target_vocab)
     model_cfg = CausalTransformerConfig(vocab_size=vocab_size, **config["model"])
-    model = build_model(model_cfg, mx=mx, nn=nn)
+    state_role_lookup = executable_state_role_lookup(
+        config, stage.source_vocab, stage.target_vocab
+    )
+    model = build_model(
+        model_cfg,
+        mx=mx,
+        nn=nn,
+        state_role_lookup=state_role_lookup,
+    )
     params = parameter_count(model, mlx_utils)
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     checkpoint = checkpoint_dir / "standard_causal_transformer_survival_v1.npz"
@@ -418,6 +436,20 @@ def run(
             "parameter_count": params,
             "config": model_cfg.__dict__,
             "backend": "mlx_apple",
+            "executable_state_memory": {
+                "enabled": model_cfg.state_memory_mode != "none",
+                "mode": model_cfg.state_memory_mode,
+                "ablation": model_cfg.state_memory_ablation,
+                "roles": list(EXECUTABLE_STATE_ROLES),
+                "role_lookup_sha256": (
+                    hashlib.sha256(state_role_lookup.tobytes()).hexdigest()
+                    if state_role_lookup is not None
+                    else ""
+                ),
+                "target_stream": str(config["tokenization"]["target_mode"]),
+                "auxiliary_target_count": 0,
+                "deterministic_renderer_credit": 0,
+            },
         },
         "artifacts": {
             "config": config_path,
@@ -461,7 +493,10 @@ def run(
         "score_semantics": (
             "Direct decoder-only causal model generation from prompt plus callable signature. "
             "An optional learned semantic-plan prefix is emitted by the same model and stripped before "
-            "the directly generated body; it does not render or repair code. Reversible token decoding "
+            "the directly generated body; it does not render or repair code. Optional executable-state "
+            "memory is updated only from visible prompt/signature tokens and the causal generated prefix, "
+            "and is trained only through ordinary body-token likelihood with no auxiliary target. "
+            "Reversible token decoding "
             "adds no body content, and no template, renderer, router, tool, fallback return, public "
             "benchmark payload, or external inference is credited."
         ),
@@ -549,6 +584,7 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "licensed_pretrain_target_positions": int(pretrain[2].sum()),
         "sft_example_count": int(sft[0].shape[0]),
         "sft_target_positions": int(sft[2].sum()),
+        "unique_body_target_positions": int(sft[2].sum()),
         "sft_sampling_weight_sum": round(float(sft[3].sum()), 6),
         "family_disjoint_eval_task_count": len(eval_rows),
         "encoded_family_disjoint_eval_task_count": int(eval_arrays[0].shape[0]),
@@ -1419,6 +1455,87 @@ def model_vocab_size(
     return target_token_offset(config, source_vocab) + len(target_vocab)
 
 
+def executable_state_token_roles(token: str) -> tuple[str, ...]:
+    """Map one visible token to causal state roles without reading future targets."""
+
+    value = str(token)
+    if ":" in value and value.split(":", 1)[0] in {
+        "NAME",
+        "OP",
+        "NUMBER",
+        "STRING",
+        "INDENT",
+        "DEDENT",
+        "NEWLINE",
+    }:
+        value = value.split(":", 1)[1]
+    word = value.strip().lower()
+    roles: set[str] = set()
+    if word in {"if", "elif", "else", "while", "try", "except", "finally", "with", "match", "case", "break", "continue"}:
+        roles.add("control_stack")
+    if word in {"def", "lambda", "as", "=", ":=", "assign", "bind", "binding", "argument", "parameter"}:
+        roles.add("bindings")
+    if word in {"for", "in", "iter", "next", "range", "enumerate", "zip", "traverse", "walk", "each", "loop"}:
+        roles.add("traversal")
+    if word in {"+=", "-=", "*=", "/=", "%=", "append", "extend", "add", "update", "setdefault", "accumulate", "increment", "decrement"}:
+        roles.add("state_update")
+    if word in {"join", "sort", "sorted", "reverse", "reversed", "final", "finalize", "result", "output"}:
+        roles.add("finalizer")
+    if word in {"return", "yield"}:
+        roles.add("return_closure")
+    if word in {"assert", "raise", "isinstance", "hasattr", "getattr", "error", "invalid", "require", "must", "ensure", "default"}:
+        roles.add("open_obligations")
+    if not roles or word in {
+        "+", "-", "*", "/", "//", "%", "**", "==", "!=", "<", ">", "<=", ">=", "and", "or", "not",
+        "len", "sum", "min", "max", "str", "int", "float", "bool", "list", "dict", "set", "tuple",
+    }:
+        roles.add("value_expression")
+    return tuple(role for role in EXECUTABLE_STATE_ROLES if role in roles)
+
+
+def executable_state_role_lookup(
+    config: dict[str, Any],
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+) -> np.ndarray | None:
+    model = config.get("model") if isinstance(config.get("model"), dict) else {}
+    mode = str(model.get("state_memory_mode") or "none")
+    if mode == "none":
+        return None
+    slot_count = int(model.get("state_memory_slots") or 0)
+    if slot_count != len(EXECUTABLE_STATE_ROLES):
+        raise ValueError(
+            f"executable state memory requires {len(EXECUTABLE_STATE_ROLES)} registered roles"
+        )
+    lookup = np.zeros((model_vocab_size(config, source_vocab, target_vocab), slot_count), dtype=np.float32)
+
+    def assign(global_id: int, token: str) -> None:
+        semantic = executable_state_token_roles(token)
+        active_count = max(1, len(semantic))
+        if mode == "semantic_roles":
+            indices = [EXECUTABLE_STATE_ROLES.index(role) for role in semantic]
+        elif mode == "hash_control":
+            digest = hashlib.sha256(str(token).encode("utf-8")).digest()
+            indices = []
+            for value in digest:
+                index = int(value) % slot_count
+                if index not in indices:
+                    indices.append(index)
+                if len(indices) >= active_count:
+                    break
+        else:
+            raise ValueError(f"unsupported executable state-memory mode: {mode}")
+        lookup[global_id, indices] = 1.0
+
+    source_offset = source_token_offset(config, source_vocab)
+    target_offset = target_token_offset(config, source_vocab)
+    for token, local_id in source_vocab.items():
+        assign(source_offset + int(local_id), str(token))
+    for token, local_id in target_vocab.items():
+        assign(target_offset + int(local_id), str(token))
+    return lookup
+
+
 def encode_model_source(
     text: str,
     source_vocab: dict[str, int],
@@ -1626,6 +1743,9 @@ def train_phase(
         "epochs_touched": epoch,
         "target_positions_consumed": consumed,
         "target_positions_requested": target_positions,
+        "optimizer_body_positions_consumed": (
+            consumed if phase_name.startswith("prompt_signature_body_sft") else 0
+        ),
         "mean_loss": round(sum(losses) / max(1, len(losses)), 6),
         "final_loss": round(losses[-1], 6) if losses else None,
         "tokens_per_second": round(consumed / max(1e-9, time.perf_counter() - started), 3),
@@ -1794,6 +1914,12 @@ def generate_candidates(
                         "learned_semantic_plan_prefix": learned_semantic_ir_plan_body_target_mode(
                             target_mode
                         ),
+                        "executable_state_memory_mode": str(
+                            config.get("model", {}).get("state_memory_mode") or "none"
+                        ),
+                        "executable_state_memory_ablation": str(
+                            config.get("model", {}).get("state_memory_ablation") or "none"
+                        ),
                     },
                 }
             )
@@ -1896,7 +2022,12 @@ def run_preference_canary(
         encode_examples=encode_examples,
         visible_source=visible_eval_source,
     )
-    reward_model = build_model(model_cfg, mx=mx, nn=nn)
+    preference_state_lookup = executable_state_role_lookup(
+        config, stage.source_vocab, stage.target_vocab
+    )
+    reward_model = build_model(
+        model_cfg, mx=mx, nn=nn, state_role_lookup=preference_state_lookup
+    )
     reward_model.load_weights(str(checkpoint))
     reward_training = train_dpo(
         reward_model,
@@ -1931,7 +2062,9 @@ def run_preference_canary(
     if hasattr(mx, "clear_cache"):
         mx.clear_cache()
 
-    control_model = build_model(model_cfg, mx=mx, nn=nn)
+    control_model = build_model(
+        model_cfg, mx=mx, nn=nn, state_role_lookup=preference_state_lookup
+    )
     control_model.load_weights(str(checkpoint))
     control_training = train_dpo(
         control_model,
@@ -2137,7 +2270,7 @@ def decode_beams(
     inverse = {int(value): key for key, value in target_vocab.items()}
     eos_local = int(target_vocab["<eos>"])
     logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
-    mx.eval(logits, *[value for pair in cache for value in pair])
+    mx.eval(logits, *cache_arrays(cache))
     beams = [{"tokens": [], "score": 0.0, "cache": cache, "logits": logits[0, -1]}]
     complete: list[dict[str, Any]] = []
     for _step in range(int(config["decode_max_target_tokens"])):
@@ -2236,19 +2369,29 @@ def batched_beam_advance(
     layer_count = len(expansion_specs[0]["beam"]["cache"])
     batched_cache = []
     for layer_index in range(layer_count):
-        keys = [spec["beam"]["cache"][layer_index][0] for spec in expansion_specs]
-        values = [spec["beam"]["cache"][layer_index][1] for spec in expansion_specs]
+        component_count = len(expansion_specs[0]["beam"]["cache"][layer_index])
         batched_cache.append(
-            (
-                mx.contiguous(mx.concatenate(keys, axis=0)),
-                mx.contiguous(mx.concatenate(values, axis=0)),
+            tuple(
+                mx.contiguous(
+                    mx.concatenate(
+                        [
+                            spec["beam"]["cache"][layer_index][component_index]
+                            for spec in expansion_specs
+                        ],
+                        axis=0,
+                    )
+                )
+                for component_index in range(component_count)
             )
         )
     logits, next_cache = model(tokens, batched_cache)
-    mx.eval(logits, *[value for pair in next_cache for value in pair])
+    mx.eval(logits, *cache_arrays(next_cache))
     rows = []
     for index, spec in enumerate(expansion_specs):
-        branch_cache = [(key[index : index + 1], value[index : index + 1]) for key, value in next_cache]
+        branch_cache = [
+            tuple(value[index : index + 1] for value in layer_cache)
+            for layer_cache in next_cache
+        ]
         beam = spec["beam"]
         rows.append(
             {
@@ -2275,7 +2418,7 @@ def serial_beam_advance(
             mx.array([[target_offset + int(spec["local_id"])]], dtype=mx.int32),
             beam["cache"],
         )
-        mx.eval(next_logits, *[value for pair in next_cache for value in pair])
+        mx.eval(next_logits, *cache_arrays(next_cache))
         rows.append(
             {
                 "tokens": [*beam["tokens"], str(spec["token"])],
@@ -2285,6 +2428,10 @@ def serial_beam_advance(
             }
         )
     return rows
+
+
+def cache_arrays(cache: list[tuple[Any, ...]]) -> list[Any]:
+    return [value for layer_cache in cache for value in layer_cache]
 
 
 def completion_pool_target(config: dict[str, Any]) -> int:
@@ -2480,6 +2627,25 @@ def validate_config(config: dict[str, Any]) -> None:
     plan_budget = int(tokenization.get("semantic_plan_max_tokens") or 0)
     if learned_semantic_ir_plan_body_target_mode(target_mode) and not 8 <= plan_budget <= semantic_ir.PLAN_MAX_TOKENS:
         raise ValueError("semantic plan token budget must be between 8 and the protocol maximum")
+    model = config.get("model") if isinstance(config.get("model"), dict) else {}
+    state_mode = str(model.get("state_memory_mode") or "none")
+    state_slots = int(model.get("state_memory_slots") or 0)
+    state_ablation = str(model.get("state_memory_ablation") or "none")
+    if state_mode not in {"none", "semantic_roles", "hash_control"}:
+        raise ValueError("state memory mode must be none, semantic_roles, or hash_control")
+    if state_ablation not in {"none", "zero", "shuffle"}:
+        raise ValueError("state memory ablation must be none, zero, or shuffle")
+    if state_mode != "none":
+        if target_mode != "body_tokens":
+            raise ValueError("executable state memory requires the unchanged body-token target stream")
+        if state_slots != len(EXECUTABLE_STATE_ROLES):
+            raise ValueError("executable state memory slot count must match the registered role set")
+        if int(model.get("state_memory_chunk_size") or 0) <= 0:
+            raise ValueError("state memory chunk size must be positive")
+        if int(model.get("state_memory_local_window") or 0) < int(
+            model.get("state_memory_chunk_size") or 0
+        ):
+            raise ValueError("state memory local window must cover one complete chunk")
     evaluation = config.get("evaluation") or {}
     if int(evaluation.get("holdout_family_count") or 0) < 24:
         raise ValueError("family-disjoint evaluation requires at least 24 distinct families")

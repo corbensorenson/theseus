@@ -17,12 +17,16 @@ if str(SCRIPTS) not in sys.path:
 
 from standard_causal_transformer_model import CausalTransformerConfig, build_model
 from standard_causal_transformer_survival import (
+    EXECUTABLE_STATE_ROLES,
     beam_rank_score,
     batched_beam_advance,
+    cache_arrays,
     completion_pool_target,
     canonical_model_signature,
     compare_target_mode_canaries,
     encode_model_source,
+    executable_state_role_lookup,
+    executable_state_token_roles,
     extend_target_vocab_for_mode,
     generation_prefix_complete,
     assign_body_balanced_sampling_weights,
@@ -108,7 +112,7 @@ def test_batched_beam_advance_matches_serial_cached_model_calls() -> None:
     model = build_model(config, mx=mx, nn=nn)
     prefix = mx.array([[1, 2, 3]], dtype=mx.int32)
     logits, cache = model(prefix)
-    mx.eval(logits, *[value for pair in cache for value in pair])
+    mx.eval(logits, *cache_arrays(cache))
     beam = {"tokens": ["x"], "score": -0.5, "cache": cache, "logits": logits[0, -1]}
     specs = [
         {"beam": beam, "local_id": 4, "token": "a", "log_probability": -0.1},
@@ -119,13 +123,113 @@ def test_batched_beam_advance_matches_serial_cached_model_calls() -> None:
         serial_logits, serial_cache = model(
             mx.array([[10 + spec["local_id"]]], dtype=mx.int32), cache
         )
-        mx.eval(serial_logits, *[value for pair in serial_cache for value in pair])
+        mx.eval(serial_logits, *cache_arrays(serial_cache))
         assert bool(mx.allclose(batched[index]["logits"], serial_logits[0, -1], atol=1e-5))
         for (batch_key, batch_value), (serial_key, serial_value) in zip(
             batched[index]["cache"], serial_cache
         ):
             assert bool(mx.allclose(batch_key, serial_key, atol=1e-5))
             assert bool(mx.allclose(batch_value, serial_value, atol=1e-5))
+
+
+def test_executable_state_role_lookup_has_matched_semantic_and_hash_density() -> None:
+    base = {
+        "model": {"state_memory_slots": len(EXECUTABLE_STATE_ROLES)},
+        "tokenization": {"shared_source_target_vocabulary": False},
+    }
+    source_vocab = {"walk": 0, "return": 1, "value": 2}
+    target_vocab = {"NAME:for": 0, "NAME:return": 1, "OP:+=": 2}
+    semantic = executable_state_role_lookup(
+        {**base, "model": {**base["model"], "state_memory_mode": "semantic_roles"}},
+        source_vocab,
+        target_vocab,
+    )
+    hashed = executable_state_role_lookup(
+        {**base, "model": {**base["model"], "state_memory_mode": "hash_control"}},
+        source_vocab,
+        target_vocab,
+    )
+    assert semantic is not None and hashed is not None
+    assert semantic.shape == hashed.shape
+    assert np.array_equal(semantic.sum(axis=1), hashed.sum(axis=1))
+    assert not np.array_equal(semantic, hashed)
+    assert executable_state_token_roles("NAME:return") == ("return_closure",)
+    assert "traversal" in executable_state_token_roles("walk")
+    assert "state_update" in executable_state_token_roles("OP:+=")
+
+
+def test_executable_state_memory_is_causal_and_cache_partition_invariant() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(29)
+    slots = len(EXECUTABLE_STATE_ROLES)
+    lookup = np.zeros((64, slots), dtype=np.float32)
+    for token_id in range(64):
+        lookup[token_id, token_id % slots] = 1.0
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        state_memory_slots=slots,
+        state_memory_chunk_size=2,
+        state_memory_local_window=4,
+        state_memory_mode="semantic_roles",
+    )
+    model = build_model(config, mx=mx, nn=nn, state_role_lookup=lookup)
+    sequence_a = mx.array([[1, 2, 3, 4, 5]], dtype=mx.int32)
+    sequence_b = mx.array([[1, 2, 3, 4, 9]], dtype=mx.int32)
+    logits_a, _ = model(sequence_a)
+    logits_b, _ = model(sequence_b)
+    mx.eval(logits_a, logits_b)
+    assert bool(mx.allclose(logits_a[:, :4], logits_b[:, :4], atol=1e-5))
+
+    prefix_logits, cache = model(sequence_a[:, :3])
+    cached_logits, cached_state = model(sequence_a[:, 3:], cache)
+    full_logits, full_state = model(sequence_a)
+    mx.eval(prefix_logits, cached_logits, full_logits, *cache_arrays(cached_state), *cache_arrays(full_state))
+    assert bool(mx.allclose(cached_logits, full_logits[:, 3:], atol=1e-4))
+    for cached_layer, full_layer in zip(cached_state, full_state):
+        for cached_value, full_value in zip(cached_layer, full_layer):
+            assert bool(mx.allclose(cached_value, full_value, atol=1e-4))
+
+
+def test_structured_and_hash_state_models_are_parameter_matched() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    slots = len(EXECUTABLE_STATE_ROLES)
+    lookup = np.eye(slots, dtype=np.float32)[np.arange(64) % slots]
+    common = dict(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        state_memory_slots=slots,
+        state_memory_chunk_size=2,
+        state_memory_local_window=4,
+    )
+    semantic = build_model(
+        CausalTransformerConfig(**common, state_memory_mode="semantic_roles"),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=lookup,
+    )
+    control = build_model(
+        CausalTransformerConfig(**common, state_memory_mode="hash_control"),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=lookup,
+    )
+    semantic_count = sum(value.size for _name, value in mlx_utils.tree_flatten(semantic.parameters()))
+    control_count = sum(value.size for _name, value in mlx_utils.tree_flatten(control.parameters()))
+    assert semantic_count == control_count
 
 
 def test_visible_eval_source_does_not_read_solution_or_tests() -> None:
