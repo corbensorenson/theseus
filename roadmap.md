@@ -654,10 +654,17 @@ deletion closure is graph evidence, not physical unlearning.
   body-only `83` over `23/24` at `0.440152`; every arm remains `0/24` exact.
   Independent integrity classifies every emitted candidate as transformer/hybrid
   with zero mismatches, and the gate records `GREEN` evidence but `NOT_ADOPTED`.
-  The route stays disabled. Phase completion now requires a learned plan-state to
-  body realization mechanism that improves family-disjoint direct behavior under
-  the same semantic, shuffled, dropout, and body-only controls; plan loss,
-  deterministic rendering, repair, or search-time plan fanout cannot substitute.
+  A follow-up rank-64 latent ordered field keeps the target stream body-only and
+  consumes exactly `1,202,267` body positions in every arm. It also fails
+  causally: semantic labels improve plan F1 (`0.449198` vs `0.253545` shuffled),
+  but semantic and shuffled emit the same `76` candidates, cover `23/24`, score
+  reward `0.425600`, and pass `0/24`; dropout exactly reproduces body-only's `83`,
+  `23/24`, `0.440152`, and `0/24`. The gate records `GREEN` evidence and
+  `NOT_ADOPTED`. Global additive plan superposition is therefore retired as the
+  next lever. Phase completion requires slot-addressable per-layer plan attention
+  or an equally direct realization mechanism to improve family-disjoint behavior
+  under the same controls; plan loss, deterministic rendering, repair, generic
+  extra capacity, or search-time plan fanout cannot substitute.
 
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,

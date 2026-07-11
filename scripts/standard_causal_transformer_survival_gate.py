@@ -65,6 +65,12 @@ DEFAULT_ORDERED_PLAN_ARM_DIRS = {
     "shuffled": ROOT / "runtime" / "standard_causal_transformer_ordered_plan_shuffled",
     "dropout": ROOT / "runtime" / "standard_causal_transformer_ordered_plan_dropout",
 }
+DEFAULT_LATENT_ORDERED_PLAN_ARM_DIRS = {
+    "body_only": ROOT / "runtime" / "standard_causal_transformer_latent_plan_body_control",
+    "semantic": ROOT / "runtime" / "standard_causal_transformer_latent_plan_semantic",
+    "shuffled": ROOT / "runtime" / "standard_causal_transformer_latent_plan_shuffled",
+    "dropout": ROOT / "runtime" / "standard_causal_transformer_latent_plan_dropout",
+}
 ALLOWED_READ_SET = {"prompt", "entry_point", "callable_signature"}
 
 
@@ -152,6 +158,10 @@ def build_gate(
     hard_gaps.extend(semantic_plan_head_audit["hard_gaps"])
     ordered_plan_audit = audit_ordered_plan_ablation(DEFAULT_ORDERED_PLAN_ARM_DIRS)
     hard_gaps.extend(ordered_plan_audit["hard_gaps"])
+    latent_ordered_plan_audit = audit_latent_ordered_plan_ablation(
+        DEFAULT_LATENT_ORDERED_PLAN_ARM_DIRS
+    )
+    hard_gaps.extend(latent_ordered_plan_audit["hard_gaps"])
 
     if not report_path.exists():
         hard_gaps.append(gap("report_missing", {"path": rel(report_path)}))
@@ -350,6 +360,14 @@ def build_gate(
                 "adoption_rejection_reasons"
             ],
             "ordered_plan_deltas": ordered_plan_audit["deltas"],
+            "latent_ordered_plan_state": latent_ordered_plan_audit["state"],
+            "latent_ordered_plan_adoption_state": latent_ordered_plan_audit[
+                "adoption_state"
+            ],
+            "latent_ordered_plan_rejection_reasons": latent_ordered_plan_audit[
+                "adoption_rejection_reasons"
+            ],
+            "latent_ordered_plan_deltas": latent_ordered_plan_audit["deltas"],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -369,6 +387,7 @@ def build_gate(
         "teacher_residual_ablation": teacher_residual_audit["receipt"],
         "semantic_plan_head_ablation": semantic_plan_head_audit["receipt"],
         "ordered_plan_ablation": ordered_plan_audit["receipt"],
+        "latent_ordered_plan_ablation": latent_ordered_plan_audit["receipt"],
     }
 
 
@@ -897,6 +916,276 @@ def audit_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
     return {
         "state": receipt["state"],
         "adoption_state": receipt["adoption_state"],
+        "adoption_rejection_reasons": rejection_reasons,
+        "deltas": deltas,
+        "receipt": receipt,
+        "hard_gaps": hard_gaps,
+    }
+
+
+def audit_latent_ordered_plan_ablation(arm_dirs: dict[str, Path]) -> dict[str, Any]:
+    """Qualify the low-rank ordered plan field against invalid matched controls."""
+
+    required_arms = {"body_only", "semantic", "shuffled", "dropout"}
+    required_files = (
+        "report.json",
+        "config.json",
+        "candidates.jsonl",
+        "integrity.json",
+        "blind_audit.json",
+    )
+    if set(arm_dirs) != required_arms:
+        return {
+            "state": "RED",
+            "adoption_state": "NOT_ADOPTED",
+            "adoption_rejection_reasons": ["arm_set_mismatch"],
+            "deltas": {},
+            "receipt": {"state": "RED", "observed_arms": sorted(arm_dirs)},
+            "hard_gaps": [
+                gap("latent_ordered_plan_arm_set_mismatch", {"observed": sorted(arm_dirs)})
+            ],
+        }
+    missing = [
+        rel(directory / filename)
+        for directory in arm_dirs.values()
+        for filename in required_files
+        if not (directory / filename).exists()
+    ]
+    if missing:
+        return {
+            "state": "NOT_RUN",
+            "adoption_state": "NOT_RUN",
+            "adoption_rejection_reasons": [],
+            "deltas": {},
+            "receipt": {"state": "NOT_RUN", "missing": missing},
+            "hard_gaps": [],
+        }
+
+    reports = {name: read_json(directory / "report.json") for name, directory in arm_dirs.items()}
+    configs = {name: read_json(directory / "config.json") for name, directory in arm_dirs.items()}
+    integrities = {name: read_json(directory / "integrity.json") for name, directory in arm_dirs.items()}
+    blind = {name: read_json(directory / "blind_audit.json") for name, directory in arm_dirs.items()}
+    hard_gaps: list[dict[str, Any]] = []
+
+    def normalized_config(value: dict[str, Any]) -> dict[str, Any]:
+        copied = json.loads(json.dumps(value))
+        model = copied.get("model") if isinstance(copied.get("model"), dict) else {}
+        for key in (
+            "semantic_plan_feature_count",
+            "semantic_plan_separator_token_id",
+            "semantic_plan_bottleneck_dim",
+        ):
+            model.pop(key, None)
+        copied.pop("semantic_plan_training", None)
+        return copied
+
+    configs_equal = len(
+        {json.dumps(normalized_config(value), sort_keys=True) for value in configs.values()}
+    ) == 1
+    expected_modes = {
+        "body_only": "none",
+        "semantic": "semantic",
+        "shuffled": "shuffled",
+        "dropout": "dropout",
+    }
+    modes_correct = all(
+        str(
+            ((configs[name].get("semantic_plan_training") or {}).get("label_mode"))
+            or "none"
+        )
+        == expected
+        for name, expected in expected_modes.items()
+    )
+    target_contract_clean = all(
+        str((configs[name].get("tokenization") or {}).get("target_mode") or "")
+        == "body_tokens"
+        for name in required_arms
+    ) and all(
+        (configs[name].get("semantic_plan_training") or {}).get("target")
+        == "ordered_plan_slot_token_field"
+        and int((configs[name].get("semantic_plan_training") or {}).get("ordered_slot_count") or 0)
+        > 0
+        for name in ("semantic", "shuffled", "dropout")
+    )
+
+    def body_positions(report: dict[str, Any]) -> int:
+        return sum(
+            int(row.get("optimizer_body_positions_consumed") or 0)
+            for row in (report.get("training") or {}).get("phases", [])
+            if isinstance(row, dict)
+        )
+
+    exposures = {name: body_positions(report) for name, report in reports.items()}
+    exposure_equal = len(set(exposures.values())) == 1 and next(iter(exposures.values())) > 0
+    lineage_fields = (
+        "sft_example_count",
+        "unique_body_target_positions",
+        "unique_sft_body_count",
+        "train_holdout_family_overlap_count",
+        "train_eval_prompt_overlap_count",
+        "train_eval_body_overlap_count",
+        "holdout_families",
+    )
+    lineage_equal = all(
+        len(
+            {
+                json.dumps((report.get("stage") or {}).get(field), sort_keys=True)
+                for report in reports.values()
+            }
+        )
+        == 1
+        for field in lineage_fields
+    )
+    parameters = {
+        name: int((report.get("architecture") or {}).get("parameter_count") or 0)
+        for name, report in reports.items()
+    }
+    parameter_contract = (
+        parameters["semantic"] == parameters["shuffled"] == parameters["dropout"]
+        and parameters["semantic"] > parameters["body_only"] > 0
+    )
+    feature_contracts = {
+        name: (report.get("architecture") or {}).get("semantic_plan_head") or {}
+        for name, report in reports.items()
+    }
+    feature_contract_clean = (
+        len(
+            {
+                str(feature_contracts[name].get("feature_contract_sha256") or "")
+                for name in ("semantic", "shuffled", "dropout")
+            }
+        )
+        == 1
+        and "" not in {
+            str(feature_contracts[name].get("feature_contract_sha256") or "")
+            for name in ("semantic", "shuffled", "dropout")
+        }
+        and len(
+            {
+                int(feature_contracts[name].get("feature_count") or 0)
+                for name in ("semantic", "shuffled", "dropout")
+            }
+        )
+        == 1
+    )
+    integrity_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("integrity_mismatch_count") or 0) == 0
+        and resolve(str(value.get("source") or "")) == arm_dirs[name] / "candidates.jsonl"
+        and int((value.get("summary") or {}).get("candidate_count") or 0)
+        == len(read_jsonl(arm_dirs[name] / "candidates.jsonl"))
+        for name, value in integrities.items()
+    )
+    blind_clean = all(
+        value.get("trigger_state") == "GREEN"
+        and int((value.get("summary") or {}).get("invalid_claim_count") or 0) == 0
+        for value in blind.values()
+    )
+    boundaries_clean = all(
+        int(report.get(key) or 0) == 0
+        for report in reports.values()
+        for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")
+    )
+    replay_bound = all(
+        evaluation_replay_is_content_bound(report, arm_dirs[name] / "report.json")
+        for name, report in reports.items()
+    )
+    checks = {
+        "configs_equal_except_latent_plan_policy": configs_equal,
+        "modes_expected": modes_correct,
+        "body_target_stream_unchanged": target_contract_clean,
+        "optimizer_body_exposure_equal": exposure_equal,
+        "training_and_holdout_lineage_equal": lineage_equal,
+        "plan_parameter_counts_equal": parameter_contract,
+        "ordered_feature_contract_equal": feature_contract_clean,
+        "integrity_clean_and_bound": integrity_clean,
+        "blind_information_flow_clean": blind_clean,
+        "boundaries_clean": boundaries_clean,
+        "evaluation_replay_content_bound": replay_bound,
+    }
+    for name, passed in checks.items():
+        if not passed:
+            hard_gaps.append(gap(f"latent_ordered_plan_{name}_failed", {}))
+
+    def metrics(report: dict[str, Any]) -> dict[str, Any]:
+        summary = report.get("summary") or {}
+        private = (report.get("private_verifier") or {}).get("private_verification") or {}
+        plan_eval = (report.get("training") or {}).get("semantic_plan_eval_after") or {}
+        return {
+            "passed_task_count": int(summary.get("model_only_passed_task_count") or 0),
+            "candidate_task_count": int(summary.get("candidate_task_count") or 0),
+            "candidate_count": int(summary.get("candidate_count") or 0),
+            "mean_verification_reward": float(private.get("mean_verification_reward") or 0.0),
+            "body_eval_loss": float((report.get("training") or {}).get("eval_loss_after") or 0.0),
+            "plan_micro_f1": float(plan_eval.get("micro_f1") or 0.0),
+            "decode_runtime_ms": int((report.get("decode") or {}).get("runtime_ms") or 0),
+        }
+
+    arm_metrics = {name: metrics(report) for name, report in reports.items()}
+    semantic = arm_metrics["semantic"]
+    controls = [arm_metrics[name] for name in ("body_only", "shuffled", "dropout")]
+    plan_signal_learned = semantic["plan_micro_f1"] > max(
+        arm_metrics["shuffled"]["plan_micro_f1"],
+        arm_metrics["dropout"]["plan_micro_f1"],
+    )
+    behavior_gain = semantic["passed_task_count"] > max(
+        row["passed_task_count"] for row in controls
+    )
+    coverage_non_regressed = semantic["candidate_task_count"] >= max(
+        row["candidate_task_count"] for row in controls
+    )
+    reward_non_regressed = semantic["mean_verification_reward"] >= max(
+        row["mean_verification_reward"] for row in controls
+    )
+    rejection_reasons: list[str] = []
+    if not plan_signal_learned:
+        rejection_reasons.append("ordered_plan_signal_not_learned")
+    if not behavior_gain:
+        rejection_reasons.append("no_family_disjoint_verifier_pass_gain")
+    if not coverage_non_regressed:
+        rejection_reasons.append("candidate_task_coverage_regressed")
+    if not reward_non_regressed:
+        rejection_reasons.append("mean_verification_reward_regressed")
+    adoption_state = "ADOPTED" if not hard_gaps and not rejection_reasons else "NOT_ADOPTED"
+    deltas = {
+        name: {
+            key: round(float(semantic[key]) - float(values[key]), 8)
+            for key in semantic
+        }
+        for name, values in arm_metrics.items()
+        if name != "semantic"
+    }
+    artifacts = {
+        name: {
+            filename: {
+                "path": rel(directory / filename),
+                "sha256": file_sha256(directory / filename),
+            }
+            for filename in required_files
+        }
+        for name, directory in arm_dirs.items()
+    }
+    receipt = {
+        "policy": "project_theseus_latent_ordered_plan_ablation_v1",
+        "state": "RED" if hard_gaps else "GREEN",
+        "adoption_state": adoption_state,
+        "adoption_rejection_reasons": rejection_reasons,
+        "matched_checks": checks,
+        "optimizer_body_positions": exposures,
+        "parameter_counts": parameters,
+        "metrics": arm_metrics,
+        "deltas": deltas,
+        "ordered_plan_signal_learned": plan_signal_learned,
+        "artifacts": artifacts,
+        "non_claims": [
+            "ordered plan classification quality is not body-generation capability",
+            "generic extra parameters or latent context are not semantic-plan credit",
+            "no route is enabled without exact verifier gain and non-regressed coverage/reward",
+        ],
+    }
+    return {
+        "state": receipt["state"],
+        "adoption_state": adoption_state,
         "adoption_rejection_reasons": rejection_reasons,
         "deltas": deltas,
         "receipt": receipt,

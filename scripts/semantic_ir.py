@@ -188,6 +188,36 @@ def plan_protocol_tokens() -> tuple[str, ...]:
     return tuple(values)
 
 
+def ordered_plan_slot_features(slot_count: int) -> tuple[str, ...]:
+    """Return a closed identifier-free feature field for ordered plan slots."""
+
+    slots = int(slot_count)
+    if not 1 <= slots <= PLAN_MAX_TOKENS:
+        raise SemanticIRFault("IR_PLAN_SLOT_COUNT_INVALID", str(slot_count))
+    return tuple(
+        f"IRP:SLOT:{slot}:{token}"
+        for slot in range(slots)
+        for token in plan_protocol_tokens()
+    )
+
+
+def body_to_ordered_plan_slot_labels(body: str, *, slot_count: int) -> tuple[int, ...]:
+    """Encode an ordered plan as one active closed-protocol feature per used slot."""
+
+    slots = int(slot_count)
+    protocol = plan_protocol_tokens()
+    token_ids = {token: index for index, token in enumerate(protocol)}
+    plan = body_to_plan_tokens(body, max_tokens=slots)
+    labels = [0] * (slots * len(protocol))
+    for slot, token in enumerate(plan[:slots]):
+        try:
+            token_id = token_ids[token]
+        except KeyError as exc:
+            raise SemanticIRFault("IR_PLAN_SLOT_TOKEN_OUT_OF_PROTOCOL", token) from exc
+        labels[slot * len(protocol) + token_id] = 1
+    return tuple(labels)
+
+
 @lru_cache(maxsize=1)
 def plan_protocol_token_set() -> frozenset[str]:
     return frozenset(plan_protocol_tokens())

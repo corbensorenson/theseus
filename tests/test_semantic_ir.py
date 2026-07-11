@@ -171,6 +171,31 @@ def test_plan_information_dropout_preserves_protocol_shape_and_mass() -> None:
         prefix.append(token)
 
 
+def test_ordered_plan_slot_field_preserves_order_without_identifiers() -> None:
+    slots = 16
+    protocol_width = len(semantic_ir.plan_protocol_tokens())
+    features = semantic_ir.ordered_plan_slot_features(slots)
+    labels = semantic_ir.body_to_ordered_plan_slot_labels(
+        "out = []\nfor item in data:\n    out.append(item)\nreturn out",
+        slot_count=slots,
+    )
+    assert len(features) == len(labels) == slots * protocol_width
+    active = [index for index, value in enumerate(labels) if value]
+    expected_plan = semantic_ir.body_to_plan_tokens(
+        "out = []\nfor item in data:\n    out.append(item)\nreturn out",
+        max_tokens=slots,
+    )
+    assert len(active) == len(expected_plan)
+    assert [index // protocol_width for index in active] == list(range(len(expected_plan)))
+    assert all(name not in feature for feature in features for name in ("out", "item", "data"))
+
+    renamed = semantic_ir.body_to_ordered_plan_slot_labels(
+        "result = []\nfor value in payload:\n    result.append(value)\nreturn result",
+        slot_count=slots,
+    )
+    assert labels == renamed
+
+
 def test_closed_plan_protocol_covers_generated_tokens_and_rejects_bad_transitions() -> None:
     generated = semantic_ir.body_to_plan_tokens(BODY, max_tokens=32)
     protocol = set(semantic_ir.plan_protocol_tokens())

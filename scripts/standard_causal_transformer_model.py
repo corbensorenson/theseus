@@ -26,6 +26,7 @@ class CausalTransformerConfig:
     state_memory_read_policy: str = "unrestricted"
     semantic_plan_feature_count: int = 0
     semantic_plan_separator_token_id: int = 2
+    semantic_plan_bottleneck_dim: int = 0
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -50,6 +51,10 @@ class CausalTransformerConfig:
             raise ValueError("state memory chunk size cannot exceed its local attention window")
         if self.semantic_plan_feature_count < 0:
             raise ValueError("semantic plan feature count cannot be negative")
+        if self.semantic_plan_bottleneck_dim < 0:
+            raise ValueError("semantic plan bottleneck dimension cannot be negative")
+        if self.semantic_plan_feature_count == 0 and self.semantic_plan_bottleneck_dim:
+            raise ValueError("semantic plan bottleneck requires semantic plan features")
         if self.semantic_plan_feature_count > 0 and not (
             0 <= self.semantic_plan_separator_token_id < self.vocab_size
         ):
@@ -306,14 +311,20 @@ def build_model(
             self.final_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.scale = math.sqrt(config.d_model)
             if plan_enabled:
+                plan_dim = config.semantic_plan_bottleneck_dim or config.d_model
+                self.semantic_plan_encoder = (
+                    nn.Linear(config.d_model, plan_dim, bias=False)
+                    if plan_dim != config.d_model
+                    else None
+                )
                 self.semantic_plan_classifier = nn.Linear(
-                    config.d_model, config.semantic_plan_feature_count, bias=True
+                    plan_dim, config.semantic_plan_feature_count, bias=True
                 )
                 self.semantic_plan_features = nn.Embedding(
-                    config.semantic_plan_feature_count, config.d_model
+                    config.semantic_plan_feature_count, plan_dim
                 )
                 self.semantic_plan_projection = nn.Linear(
-                    config.d_model, config.d_model, bias=False
+                    plan_dim, config.d_model, bias=False
                 )
                 self.semantic_plan_projection.weight = mx.zeros_like(
                     self.semantic_plan_projection.weight
@@ -349,7 +360,12 @@ def build_model(
                 source_mask = (seen_separator == 0).astype(mx.float32) * has_separator[:, None]
                 denominator = mx.maximum(mx.sum(source_mask, axis=1, keepdims=True), 1.0)
                 source_summary = mx.sum(hidden * source_mask[:, :, None], axis=1) / denominator
-                plan_logits = self.semantic_plan_classifier(source_summary)
+                plan_summary = (
+                    self.semantic_plan_encoder(source_summary)
+                    if self.semantic_plan_encoder is not None
+                    else source_summary
+                )
+                plan_logits = self.semantic_plan_classifier(plan_summary)
                 probabilities = mx.sigmoid(plan_logits)
                 feature_matrix = self.semantic_plan_features(
                     mx.arange(config.semantic_plan_feature_count, dtype=mx.int32)

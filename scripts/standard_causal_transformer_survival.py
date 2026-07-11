@@ -792,7 +792,7 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "semantic_plan_positive_label_count": int(sft[4].sum()),
         "semantic_plan_label_density": round(float(sft[4].mean()), 8) if sft[4].size else 0.0,
         "semantic_plan_feature_contract_sha256": sha(
-            "\n".join(semantic_ir.plan_obligation_features())
+            "\n".join(semantic_plan_feature_contract(config))
         ),
         "family_disjoint_eval_task_count": len(eval_rows),
         "encoded_family_disjoint_eval_task_count": int(eval_arrays[0].shape[0]),
@@ -1416,7 +1416,7 @@ def encode_sft_training_examples(
         sequence.append(target_offset + int(target_vocab["<eos>"]))
         if len(sequence) > max_seq + 1:
             continue
-        plan_labels = semantic_ir.body_to_plan_obligation_labels(str(row["body"]))
+        plan_labels = semantic_plan_labels_for_body(str(row["body"]), config)
         body_target_offset = encoded_plan_positions
         rows.append(
             (
@@ -1433,7 +1433,7 @@ def encode_sft_training_examples(
     body_mask = np.zeros((len(rows), max_seq), dtype=np.float32)
     weights = np.ones((len(rows),), dtype=np.float32)
     plan_labels = np.zeros(
-        (len(rows), len(semantic_ir.plan_obligation_features())), dtype=np.float32
+        (len(rows), len(semantic_plan_feature_contract(config))), dtype=np.float32
     )
     for index, (
         sequence,
@@ -2212,16 +2212,35 @@ def semantic_plan_training_contract(config: dict[str, Any]) -> dict[str, Any]:
         if isinstance(config.get("semantic_plan_training"), dict)
         else {}
     )
+    target = str(cfg.get("target") or "fixed_multilabel_semantic_ir_obligations")
     return {
         "enabled": bool(cfg.get("enabled", False)),
         "label_mode": str(cfg.get("label_mode") or "none"),
         "auxiliary_loss_weight": float(cfg.get("auxiliary_loss_weight") or 0.0),
         "shuffle_seed": int(cfg.get("shuffle_seed") or int(config.get("seed") or 0) + 1709),
-        "target": "fixed_multilabel_semantic_ir_obligations",
+        "target": target,
+        "ordered_slot_count": int(cfg.get("ordered_slot_count") or 0),
         "inference_source": "prompt_signature_only",
         "body_target_stream_unchanged": True,
         "renderer_or_repair_used": False,
     }
+
+
+def semantic_plan_feature_contract(config: dict[str, Any]) -> tuple[str, ...]:
+    contract = semantic_plan_training_contract(config)
+    if contract["target"] == "ordered_plan_slot_token_field":
+        return semantic_ir.ordered_plan_slot_features(contract["ordered_slot_count"])
+    return semantic_ir.plan_obligation_features()
+
+
+def semantic_plan_labels_for_body(body: str, config: dict[str, Any]) -> tuple[int, ...]:
+    contract = semantic_plan_training_contract(config)
+    if contract["target"] == "ordered_plan_slot_token_field":
+        return semantic_ir.body_to_ordered_plan_slot_labels(
+            body,
+            slot_count=contract["ordered_slot_count"],
+        )
+    return semantic_ir.body_to_plan_obligation_labels(body)
 
 
 def prepare_semantic_plan_labels(
@@ -2255,6 +2274,9 @@ def prepare_semantic_plan_labels(
         fixed_points = int(np.sum(assignment == np.arange(len(matrix))))
         if fixed_points:
             raise AssertionError("semantic plan shuffled control contains fixed points")
+    elif mode == "dropout":
+        prepared = np.zeros_like(matrix)
+        fixed_points = int(np.sum(np.all(prepared == matrix, axis=1)))
     else:
         raise ValueError(f"unsupported semantic plan label mode: {mode}")
     return prepared, {
@@ -3722,6 +3744,7 @@ def validate_config(config: dict[str, Any]) -> None:
     state_read_policy = str(model.get("state_memory_read_policy") or "unrestricted")
     plan_training = semantic_plan_training_contract(config)
     plan_feature_count = int(model.get("semantic_plan_feature_count") or 0)
+    plan_bottleneck_dim = int(model.get("semantic_plan_bottleneck_dim") or 0)
     plan_separator = int(
         model.get("semantic_plan_separator_token_id", SOURCE_TARGET_SEPARATOR_ID)
     )
@@ -3745,14 +3768,27 @@ def validate_config(config: dict[str, Any]) -> None:
     if plan_training["enabled"]:
         if target_mode != "body_tokens":
             raise ValueError("learned semantic plan head requires the unchanged body-token stream")
-        if plan_feature_count != len(semantic_ir.plan_obligation_features()):
+        if plan_training["target"] not in {
+            "fixed_multilabel_semantic_ir_obligations",
+            "ordered_plan_slot_token_field",
+        }:
+            raise ValueError("semantic plan target is not registered")
+        if plan_training["target"] == "ordered_plan_slot_token_field" and not (
+            8 <= plan_training["ordered_slot_count"] <= semantic_ir.PLAN_MAX_TOKENS
+        ):
+            raise ValueError("ordered latent plan slot count must fit the registered protocol")
+        if plan_feature_count != len(semantic_plan_feature_contract(config)):
             raise ValueError("semantic plan feature count must match the fixed registered IR contract")
         if plan_separator != SOURCE_TARGET_SEPARATOR_ID:
             raise ValueError("semantic plan head must use the canonical source-target separator")
-        if plan_training["label_mode"] not in {"semantic", "shuffled"}:
-            raise ValueError("semantic plan label mode must be semantic or shuffled")
+        if plan_training["label_mode"] not in {"semantic", "shuffled", "dropout"}:
+            raise ValueError("semantic plan label mode must be semantic, shuffled, or dropout")
         if not 0.0 < plan_training["auxiliary_loss_weight"] <= 4.0:
             raise ValueError("semantic plan auxiliary loss weight must be in (0, 4]")
+        if plan_bottleneck_dim < 0 or plan_bottleneck_dim > int(model.get("d_model") or 0):
+            raise ValueError("semantic plan bottleneck must be within the model width")
+        if plan_training["target"] == "ordered_plan_slot_token_field" and plan_bottleneck_dim <= 0:
+            raise ValueError("ordered latent plan field requires a positive low-rank bottleneck")
     elif plan_feature_count:
         raise ValueError("semantic plan model parameters require enabled semantic plan training")
     evaluation = config.get("evaluation") or {}
@@ -3999,6 +4035,7 @@ def stage_signature(config: dict[str, Any]) -> str:
         },
         "sft_contract_admission": config.get("sft_contract_admission", {}),
         "ordered_plan_training": config.get("ordered_plan_training", {}),
+        "semantic_plan_training": config.get("semantic_plan_training", {}),
         "teacher_distillation": teacher_config,
         "evaluation": {
             "holdout_family_count": config["evaluation"]["holdout_family_count"],
@@ -4015,6 +4052,9 @@ def stage_signature(config: dict[str, Any]) -> str:
         training_target_tokens,
         ordered_plan_training_contract,
         prepare_ordered_plan_sequences,
+        semantic_plan_training_contract,
+        semantic_plan_feature_contract,
+        semantic_plan_labels_for_body,
         extend_target_vocab_for_mode,
         assign_body_balanced_sampling_weights,
         standalone_sft_contract_decision,

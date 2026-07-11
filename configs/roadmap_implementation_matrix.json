@@ -1958,7 +1958,8 @@
         "learned_semantic_plan_obligation_head",
         "semantic_plan_shuffled_label_control",
         "ordered_alpha_renamed_semantic_plan",
-        "hierarchical_plan_then_body_beam"
+        "hierarchical_plan_then_body_beam",
+        "low_rank_latent_ordered_plan_field"
       ],
       "required_records": [
         "semantic_ir_atom",
@@ -1971,7 +1972,8 @@
         "direct_plan_body_trace_receipt",
         "semantic_plan_head_ablation_receipt",
         "ordered_plan_four_arm_ablation_receipt",
-        "content_bound_evaluation_replay_receipt"
+        "content_bound_evaluation_replay_receipt",
+        "latent_ordered_plan_four_arm_ablation_receipt"
       ],
       "required_gates": [
         "python3 scripts/semantic_ir_obligation_gate.py",
@@ -2012,12 +2014,16 @@
         "runtime/standard_causal_transformer_ordered_plan_body_control/report.json",
         "runtime/standard_causal_transformer_ordered_plan_semantic/report.json",
         "runtime/standard_causal_transformer_ordered_plan_shuffled/report.json",
-        "runtime/standard_causal_transformer_ordered_plan_dropout/report.json"
+        "runtime/standard_causal_transformer_ordered_plan_dropout/report.json",
+        "runtime/standard_causal_transformer_latent_plan_body_control/report.json",
+        "runtime/standard_causal_transformer_latent_plan_semantic/report.json",
+        "runtime/standard_causal_transformer_latent_plan_shuffled/report.json",
+        "runtime/standard_causal_transformer_latent_plan_dropout/report.json"
       ],
       "missing_items": [
-        "The ordered Semantic-IR language is causally learned and improves heldout body loss, but both flat and hierarchical plan-conditioned decode regress family-disjoint candidate coverage and verifier reward and remain 0/24 exact; a learned plan-state/body realization mechanism is still missing"
+        "Both emitted ordered plans and a low-rank global additive ordered-plan field learn their plan targets but fail to improve direct body behavior; slot-addressable per-layer plan realization remains missing and all arms remain 0/24 exact"
       ],
-      "smallest_next_patch": "Keep the same registered ordered-plan vocabulary and four-arm controls, but replace emitted plan tokens in the body beam with a learned plan-state bottleneck or cross-attention path that conditions body realization without spending body search width on plan alternatives. Train from prompt/signature-only plan supervision, preserve exact equal direct-body exposure and content-bound replay, and require an exact family-disjoint verifier gain plus non-regressed coverage/reward before adoption. Do not add a renderer, deterministic repair, fallback, or another label-only auxiliary head.",
+      "smallest_next_patch": "Keep the same registered ordered-plan slot field and four-arm controls, but replace global additive superposition with slot-addressable per-layer plan attention so each body token can query distinct predicted plan atoms. Preserve prompt/signature-only plan prediction, the unchanged body-token target stream, exact equal direct-body exposure, low-rank parameter matching, and content-bound replay. Require semantic labels to beat shuffled and dropout on exact family-disjoint verifier behavior without regressing coverage or reward. Do not add a renderer, deterministic repair, fallback, generic capacity-only adapter, or another label-only auxiliary head.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -2073,6 +2079,12 @@
         ,"ordered semantic teacher-forced plan loss 0.930240 beats shuffled 1.558662 and dropout 10.722825, while all arms remain 0/24 exact"
         ,"content-bound hierarchical semantic replay covers 17/24 tasks with 40 candidates and reward 0.294737 versus body-only 23/24, 83, and 0.440152"
         ,"all ordered-plan evaluation-only reports bind a distinct completed training receipt and exact checkpoint hash"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.latent_ordered_plan_state=GREEN"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.latent_ordered_plan_adoption_state=NOT_ADOPTED"
+        ,"reports/standard_causal_transformer_survival_gate.json summary.latent_ordered_plan_rejection_reasons includes no_family_disjoint_verifier_pass_gain and mean_verification_reward_regressed"
+        ,"latent-plan body-only, semantic, shuffled, and dropout arms each consume exactly 1202267 optimizer body positions"
+        ,"latent semantic plan F1 0.44919786 beats shuffled 0.25354462 and dropout 0.0, but semantic and shuffled have identical 0/24 behavior, 76 candidates, 23-task coverage, and 0.425600 reward"
+        ,"latent dropout exactly matches body-only behavior at 0/24, 83 candidates, 23-task coverage, and 0.440152 reward"
       ],
       "completion_rule": "Plans, direct code-generation attempts, deterministic assisted compilation/repair, tool bindings, and verifier attempts share typed semantic atoms, dependencies, obligations, repair scopes, and replayed receipts. Completion additionally requires a learned Semantic-IR route to improve family-disjoint direct model behavior under a matched body-only ablation. Assisted compiler/repair output remains zero-credit."
     },

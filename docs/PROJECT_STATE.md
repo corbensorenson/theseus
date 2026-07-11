@@ -139,8 +139,17 @@ audits are GREEN; the three plan arms are independently classified as direct
 transformer/hybrid traces with zero mismatches. Evaluation-only evidence binds
 distinct completed training receipts and exact checkpoint hashes. The flagship
 gate is `GREEN` evidence and `NOT_ADOPTED`, preserving body-only as canonical.
-Semantic IR remains partial until a learned plan-state/body realization mechanism
-improves family-disjoint behavior under the same matched controls. A separate
+The next rank-64 latent ordered field keeps direct body targets unchanged and
+matches all arms at `1,202,267` optimizer body positions. It learns the source to
+plan task (`0.449198` semantic F1 versus `0.253545` shuffled), but its global
+additive context is behaviorally non-semantic: semantic and shuffled both emit
+`76` candidates, cover `23/24`, score reward `0.425600`, and remain `0/24`, while
+plan-dropout exactly reproduces body-only's `83` candidates, `23/24`, `0.440152`,
+and `0/24`. All four independent integrity and blind-flow audits are GREEN. The
+gate records `NOT_ADOPTED`; global additive plan superposition is not the next
+route. Semantic IR remains partial until slot-addressable per-layer plan attention
+or another direct realization mechanism improves family-disjoint behavior under
+the same matched controls. A separate
 standalone-SFT admission canary rejected `10,526` licensed rows that depended on
 hidden module context and preserved exact private sampling mass. It decoded
 `49,000 ms` faster, but regressed task coverage `20 -> 19`, candidate count

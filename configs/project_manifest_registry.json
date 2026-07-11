@@ -228,11 +228,11 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "2d660bc66177eee9f2bf5ab203dc3cb811af6dae2529b0532c2bb8ec46e02b64"
+          "sha256": "fe12e40682e1caab94c9039163f3fcf4cc15f40234bc30a5f1232cc48c735a89"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
-          "sha256": "ee634f82d3b9b153c82a0b0dbc32d14d2b56637d8a60bd66d285283d8ae6347e"
+          "sha256": "93f93a7db0ac4b355c9910e174354ea1959b0ddeba6cd67c6a82e599067b3132"
         },
         "token_renderer": {
           "path": "scripts/neural_seed_token_decoder_rendering.py",
@@ -252,7 +252,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "81ba2ef0c11c7214826e9f9558aa68cc4c5147555153b94a282105b64f52a66a"
+          "sha256": "0b5c4eac3b9e16961a60974dfd884daa61e045e8db773597ee5d155dace13dad"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -264,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "cf701df2275a9a7778d64428559c036ea79681b61bf37361dee739ec127831f6"
+          "sha256": "b335d540b86450a8f79f2c9d0e6306f95be8342d5f3ec7fe77275f1b5c1acd7c"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -284,15 +284,15 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "015e2ba6bb1d00042ac244bdf53b37905aa59a6c9686fb72d9a1185d08440934"
+          "sha256": "68fc94596a111254f394b1749087b47655e85a7bde0c3b1b07ae3d133a9c5267"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "43f86f24a276ff3c2065a315eb7c5619e23a49bd2da5fa787f7333a56dd3611e"
+          "sha256": "6a1c22968068fa29d2394852524180ecd1e42a19a26174833ed6e3056ec03a79"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "26337af3a21fe3ad49f555b0117a1ce28a58390721925d3bd524f421b753d625"
+          "sha256": "b271e79dd14b2f58b88c81d347620acd01640e529312336be07e919de1a760e4"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -4900,7 +4900,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. The corrected four-arm ordered Semantic-IR MLX ablation consumes exactly 1,202,267 direct body positions per arm. Semantic plans are causally learned and improve heldout body loss, but content-bound hierarchical replay covers only 17/24 tasks with 40 candidates and mean reward 0.294737 versus body-only 23/24, 83 candidates, and 0.440152; every arm remains 0/24. Independent trace integrity and blind-flow audits are GREEN, while the qualification gate records NOT_ADOPTED and leaves body-only canonical. The Phase 10/13 wall is a learned plan-state/body realization path that produces verifier-positive family-disjoint behavior without regressing coverage or reward, plus a fresh complete canonical training receipt.",
+      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. The corrected ordered-plan and rank-64 latent-plan ablations each consume exactly 1,202,267 direct body positions per arm. Plans are learnable, but neither emitted-plan search nor global additive plan context changes behavior causally: latent semantic and shuffled arms are identical at 0/24, 76 candidates, 23-task coverage, and 0.425600 reward, while dropout exactly matches body-only at 0/24, 83 candidates, 23-task coverage, and 0.440152. Independent integrity and blind-flow audits are GREEN, while the qualification gate records both interventions NOT_ADOPTED and leaves body-only canonical. The Phase 10/13 wall is slot-addressable per-layer plan realization that produces verifier-positive family-disjoint behavior without regressing coverage or reward, plus a fresh complete canonical training receipt.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",
