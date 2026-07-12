@@ -569,9 +569,15 @@ def run(
         "created_utc": now(),
         "trigger_state": trigger_state,
         "execute": True,
+        "seed": seed,
         "architecture": {
             "family": "standard_decoder_only_causal_transformer",
-            "attention": "RoPE_grouped_query_causal_attention",
+            "attention": (
+                "RoPE_grouped_query_prefix_lm_attention"
+                if model_cfg.attention_policy == "prefix_lm"
+                else "RoPE_grouped_query_causal_attention"
+            ),
+            "attention_policy": model_cfg.attention_policy,
             "normalization": "pre_norm_RMSNorm",
             "feed_forward": "SwiGLU",
             "embedding": "tied_input_output",
@@ -661,7 +667,10 @@ def run(
         },
         "gates": build_gates(stage, training_complete, eval_loss_before, eval_loss_after, decode_summary, verifier_summary),
         "score_semantics": (
-            "Direct decoder-only causal model generation from prompt plus callable signature. "
+            "Direct decoder-only transformer generation from prompt plus callable signature. "
+            f"The sequence attention policy is {model_cfg.attention_policy}; prefix-LM, when "
+            "selected, is bidirectional only through the canonical source separator and remains "
+            "causal on every generated target position. "
             "An optional learned semantic-plan prefix or latent multi-label obligation head is predicted "
             "from that visible source and causally conditions the directly generated body; neither path "
             "renders or repairs code. Optional executable-state "
@@ -790,6 +799,23 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         ordered_plan_mode="semantic",
     )
     eval_arrays = eval_encoded[:3]
+    sequence_partition = {
+        "pretrain": sequence_partition_audit(
+            pretrain[0], pretrain[2], require_separator=False
+        ),
+        "sft": sequence_partition_audit(sft[0], sft[2], require_separator=True),
+        "eval": sequence_partition_audit(
+            eval_arrays[0], eval_arrays[2], require_separator=True
+        ),
+    }
+    invalid_partitions = [
+        name for name, receipt in sequence_partition.items() if receipt["valid"] is not True
+    ]
+    if invalid_partitions:
+        raise ValueError(
+            "source-target sequence partition audit failed: "
+            + ", ".join(invalid_partitions)
+        )
     summary = {
         "stage_signature": signature,
         "licensed_pretrain_window_count": int(pretrain[0].shape[0]),
@@ -803,6 +829,7 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "ordered_plan_training": ordered_plan,
         "ordered_plan_label_receipt": sft[6],
         "ordered_plan_eval_receipt": eval_encoded[6],
+        "sequence_partition_audit": sequence_partition,
         "sft_sampling_weight_sum": round(float(sft[3].sum()), 6),
         "semantic_plan_feature_count": int(sft[4].shape[1]) if sft[4].ndim == 2 else 0,
         "semantic_plan_positive_label_count": int(sft[4].sum()),
@@ -1402,6 +1429,73 @@ def encode_sft_examples(
         config, examples, source_vocab, target_vocab
     )
     return inputs, labels, mask
+
+
+def sequence_partition_audit(
+    inputs: np.ndarray,
+    loss_mask: np.ndarray,
+    *,
+    require_separator: bool,
+    separator_id: int = SOURCE_TARGET_SEPARATOR_ID,
+) -> dict[str, Any]:
+    """Recompute the source/target information boundary from encoded arrays."""
+
+    if inputs.ndim != 2 or loss_mask.shape != inputs.shape:
+        raise ValueError("sequence partition audit requires aligned rank-two arrays")
+    missing_separator_rows: list[int] = []
+    multiple_separator_rows: list[int] = []
+    unexpected_separator_rows: list[int] = []
+    empty_supervision_rows: list[int] = []
+    target_not_strictly_after_separator_rows: list[int] = []
+    for row_index in range(inputs.shape[0]):
+        separator_positions = np.flatnonzero(inputs[row_index] == separator_id)
+        supervised_positions = np.flatnonzero(loss_mask[row_index] > 0.0)
+        if require_separator:
+            if len(separator_positions) == 0:
+                missing_separator_rows.append(row_index)
+                continue
+            if len(separator_positions) > 1:
+                multiple_separator_rows.append(row_index)
+                continue
+            if len(supervised_positions) == 0:
+                empty_supervision_rows.append(row_index)
+                continue
+            if int(supervised_positions[0]) <= int(separator_positions[0]):
+                target_not_strictly_after_separator_rows.append(row_index)
+        elif len(separator_positions):
+            unexpected_separator_rows.append(row_index)
+    valid = not any(
+        (
+            missing_separator_rows,
+            multiple_separator_rows,
+            unexpected_separator_rows,
+            empty_supervision_rows,
+            target_not_strictly_after_separator_rows,
+        )
+    )
+    return {
+        "policy": "canonical_source_target_sequence_partition_v1",
+        "valid": valid,
+        "row_count": int(inputs.shape[0]),
+        "separator_required": require_separator,
+        "separator_token_id": separator_id,
+        "missing_separator_row_count": len(missing_separator_rows),
+        "multiple_separator_row_count": len(multiple_separator_rows),
+        "unexpected_separator_row_count": len(unexpected_separator_rows),
+        "empty_supervision_row_count": len(empty_supervision_rows),
+        "target_not_strictly_after_separator_row_count": len(
+            target_not_strictly_after_separator_rows
+        ),
+        "invalid_row_indices": sorted(
+            set(
+                missing_separator_rows
+                + multiple_separator_rows
+                + unexpected_separator_rows
+                + empty_supervision_rows
+                + target_not_strictly_after_separator_rows
+            )
+        ),
+    }
 
 
 def encode_sft_training_examples(
@@ -3094,7 +3188,12 @@ def generate_candidates(
                             else "direct_decoder_only_causal_semantic_plan_body_tokens"
                         )
                         if learned_semantic_ir_plan_body_target_mode(target_mode)
-                        else "direct_decoder_only_causal_body_tokens"
+                        else (
+                            "direct_decoder_only_prefix_lm_body_tokens"
+                            if str(config.get("model", {}).get("attention_policy") or "causal")
+                            == "prefix_lm"
+                            else "direct_decoder_only_causal_body_tokens"
+                        )
                     ),
                     "code": code,
                     "candidate_sha256": code_hash,
@@ -3123,6 +3222,9 @@ def generate_candidates(
                         "policy": config["policy"],
                         "candidate_family": "learned_full_body_token",
                         "model_family": "standard_decoder_only_causal_transformer",
+                        "attention_policy": str(
+                            config.get("model", {}).get("attention_policy") or "causal"
+                        ),
                         "tests_used_for_generation": False,
                         "solutions_used_for_generation": False,
                         "body_template_selected": False,
@@ -4062,6 +4164,15 @@ def build_gates(
             "licensed_pretrain_body_overlap_zero",
             stage.summary["licensed_pretrain_eval_body_overlap_source_surviving_count"] == 0,
         ),
+        (
+            "sequence_partitions_valid",
+            all(
+                receipt.get("valid") is True
+                for receipt in stage.summary.get("sequence_partition_audit", {}).values()
+            )
+            and set(stage.summary.get("sequence_partition_audit", {}))
+            == {"pretrain", "sft", "eval"},
+        ),
         ("training_complete", training_complete),
         ("heldout_lm_loss_improved", loss_after < loss_before),
         ("syntax_valid_candidate_present", decode["syntax_valid_candidate_count"] > 0),
@@ -4125,6 +4236,10 @@ def validate_config(config: dict[str, Any]) -> None:
     elif config.get("ordered_plan_training"):
         raise ValueError("ordered plan training requires the learned plan-body target mode")
     model = config.get("model") if isinstance(config.get("model"), dict) else {}
+    attention_policy = str(model.get("attention_policy") or "causal")
+    source_target_separator = int(
+        model.get("source_target_separator_token_id", SOURCE_TARGET_SEPARATOR_ID)
+    )
     state_mode = str(model.get("state_memory_mode") or "none")
     state_slots = int(model.get("state_memory_slots") or 0)
     state_ablation = str(model.get("state_memory_ablation") or "none")
@@ -4142,6 +4257,14 @@ def validate_config(config: dict[str, Any]) -> None:
     plan_separator = int(
         model.get("semantic_plan_separator_token_id", SOURCE_TARGET_SEPARATOR_ID)
     )
+    if attention_policy not in {"causal", "prefix_lm"}:
+        raise ValueError("attention policy must be causal or prefix_lm")
+    if source_target_separator != SOURCE_TARGET_SEPARATOR_ID:
+        raise ValueError("model attention must use the canonical source-target separator")
+    if attention_policy == "prefix_lm" and state_mode != "none":
+        raise ValueError(
+            "prefix-LM attention is not compatible with chunked executable state memory"
+        )
     if state_mode not in {"none", "semantic_roles", "hash_control"}:
         raise ValueError("state memory mode must be none, semantic_roles, or hash_control")
     if state_ablation not in {"none", "zero", "shuffle"}:
@@ -4291,10 +4414,164 @@ def planned_report(
         "created_utc": now(),
         "trigger_state": "PLANNED",
         "execute": False,
+        "seed": int(config["seed"]),
         "artifacts": {"config": config_path, "checkpoint_dir": rel(checkpoint_dir), "stage_dir": rel(stage_dir)},
-        "architecture": {"family": "standard_decoder_only_causal_transformer", **config["model"]},
+        "architecture": {
+            "family": "standard_decoder_only_causal_transformer",
+            "attention_policy": str(config["model"].get("attention_policy") or "causal"),
+            **config["model"],
+        },
         "boundaries": config["boundaries"],
         "runtime_ms": int((time.perf_counter() - started) * 1000),
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def compare_attention_policy_canaries(
+    causal_report: dict[str, Any],
+    prefix_report: dict[str, Any],
+) -> dict[str, Any]:
+    """Audit a parameter-neutral causal versus prefix-LM private comparison."""
+
+    def architecture_without_policy(report: dict[str, Any]) -> dict[str, Any]:
+        config = dict((report.get("architecture") or {}).get("config") or {})
+        config.pop("attention_policy", None)
+        return config
+
+    def phase_exposure(report: dict[str, Any]) -> list[tuple[str, int, int]]:
+        phases = (report.get("training") or {}).get("phases") or []
+        return [
+            (
+                str(row.get("phase") or ""),
+                int(row.get("optimizer_steps") or 0),
+                int(row.get("target_positions_consumed") or 0),
+            )
+            for row in phases
+            if isinstance(row, dict)
+        ]
+
+    def metrics(report: dict[str, Any]) -> dict[str, Any]:
+        summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
+        verifier = private_verifier_summary(report.get("private_verifier") or {})
+        verification = (
+            (report.get("private_verifier") or {}).get("private_verification") or {}
+        )
+        training_phases = (report.get("training") or {}).get("phases") or []
+        sft_phase = next(
+            (
+                row
+                for row in training_phases
+                if isinstance(row, dict)
+                and str(row.get("phase") or "").startswith("prompt_signature_body_sft")
+            ),
+            {},
+        )
+        return {
+            "passed_task_count": int(verifier.get("passed_task_count") or 0),
+            "candidate_task_count": int(summary.get("candidate_task_count") or 0),
+            "syntax_valid_candidate_count": int(
+                summary.get("syntax_valid_candidate_count") or 0
+            ),
+            "mean_verification_reward": float(
+                verification.get("mean_verification_reward") or 0.0
+            ),
+            "eval_loss_after": float(
+                (report.get("training") or {}).get("eval_loss_after") or float("inf")
+            ),
+            "training_tokens_per_second": float(
+                sft_phase.get("tokens_per_second") or 0.0
+            ),
+            "decode_runtime_ms": int((report.get("decode") or {}).get("runtime_ms") or 0),
+        }
+
+    causal_architecture = causal_report.get("architecture") or {}
+    prefix_architecture = prefix_report.get("architecture") or {}
+    matched_checks = {
+        "policy": causal_report.get("policy") == prefix_report.get("policy"),
+        "seed": causal_report.get("seed") == prefix_report.get("seed"),
+        "parameter_count": int(causal_architecture.get("parameter_count") or 0)
+        == int(prefix_architecture.get("parameter_count") or 0)
+        > 0,
+        "model_config_except_attention_policy": architecture_without_policy(causal_report)
+        == architecture_without_policy(prefix_report),
+        "causal_policy_declared": causal_architecture.get("attention_policy") == "causal",
+        "prefix_policy_declared": prefix_architecture.get("attention_policy") == "prefix_lm",
+        "stage_signature": (causal_report.get("stage") or {}).get("stage_signature")
+        == (prefix_report.get("stage") or {}).get("stage_signature"),
+        "holdout_families": (causal_report.get("stage") or {}).get("holdout_families")
+        == (prefix_report.get("stage") or {}).get("holdout_families"),
+        "optimizer_exposure": phase_exposure(causal_report)
+        == phase_exposure(prefix_report),
+        "training_complete": (causal_report.get("training") or {}).get("complete") is True
+        and (prefix_report.get("training") or {}).get("complete") is True,
+        "sequence_partitions_valid": all(
+            receipt.get("valid") is True
+            for report in (causal_report, prefix_report)
+            for receipt in (
+                (report.get("stage") or {}).get("sequence_partition_audit") or {}
+            ).values()
+        ),
+        "no_public_training": all(
+            int((report.get("summary") or {}).get("public_training_rows") or 0) == 0
+            for report in (causal_report, prefix_report)
+        ),
+        "no_external_inference": all(
+            int((report.get("summary") or {}).get("external_inference_calls") or 0) == 0
+            for report in (causal_report, prefix_report)
+        ),
+        "no_fallback_or_assisted_credit": all(
+            int((report.get("summary") or {}).get("fallback_return_count") or 0) == 0
+            and int(
+                (report.get("summary") or {}).get(
+                    "template_renderer_router_tool_credit_count"
+                )
+                or 0
+            )
+            == 0
+            for report in (causal_report, prefix_report)
+        ),
+    }
+    causal_metrics = metrics(causal_report)
+    prefix_metrics = metrics(prefix_report)
+    hard_gaps = [name for name, passed in matched_checks.items() if not passed]
+    behavior_gain = (
+        prefix_metrics["passed_task_count"] > causal_metrics["passed_task_count"]
+        and prefix_metrics["candidate_task_count"]
+        >= causal_metrics["candidate_task_count"]
+        and prefix_metrics["mean_verification_reward"]
+        >= causal_metrics["mean_verification_reward"]
+    )
+    adopted = not hard_gaps and behavior_gain
+    rejection_reasons: list[str] = []
+    if hard_gaps:
+        rejection_reasons.append("matched_comparison_contract_failed")
+    if prefix_metrics["passed_task_count"] <= causal_metrics["passed_task_count"]:
+        rejection_reasons.append("no_family_disjoint_verifier_pass_gain")
+    if prefix_metrics["candidate_task_count"] < causal_metrics["candidate_task_count"]:
+        rejection_reasons.append("candidate_task_coverage_regressed")
+    if prefix_metrics["mean_verification_reward"] < causal_metrics["mean_verification_reward"]:
+        rejection_reasons.append("mean_verification_reward_regressed")
+    return {
+        "policy": "standard_transformer_attention_policy_matched_ablation_v1",
+        "created_utc": now(),
+        "trigger_state": "GREEN" if not hard_gaps else "RED",
+        "adoption_state": "ADOPTED" if adopted else "NOT_ADOPTED",
+        "matched_checks": matched_checks,
+        "hard_gaps": hard_gaps,
+        "causal": causal_metrics,
+        "prefix_lm": prefix_metrics,
+        "deltas": {
+            key: round(prefix_metrics[key] - causal_metrics[key], 8)
+            for key in causal_metrics
+        },
+        "rejection_reasons": rejection_reasons,
+        "score_semantics": (
+            "Private family-disjoint model-only behavior decides adoption. Lower loss alone, "
+            "templates, renderers, routers, tools, fallback returns, public payloads, and external "
+            "inference cannot support adoption."
+        ),
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -4502,6 +4779,7 @@ def stage_signature(config: dict[str, Any]) -> str:
         load_sft_examples,
         encode_sft_examples,
         encode_sft_training_examples,
+        sequence_partition_audit,
         training_target_tokens,
         ordered_plan_training_contract,
         prepare_ordered_plan_sequences,

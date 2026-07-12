@@ -21,7 +21,9 @@
     "num_kv_heads": 2,
     "ff_dim": 768,
     "rope_base": 10000.0,
-    "rms_norm_eps": 1e-05
+    "rms_norm_eps": 1e-05,
+    "attention_policy": "causal",
+    "source_target_separator_token_id": 2
   },
   "tokenization": {
     "source_vocab": "checkpoints/strict_generator_mlx_dense_body_open_vocab/strict_generator_mlx_strict_generator_dense_right_sized_v1_vocab.json",

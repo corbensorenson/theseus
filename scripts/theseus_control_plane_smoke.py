@@ -215,7 +215,15 @@ def test_gc_quarantine(tmp: Path) -> dict[str, Any]:
         "age_hours": 48.0,
         "reason": "safe_generated_suffix_tmp",
     }
-    args = type("Args", (), {"delete": False, "quarantine_root": str(quarantine)})()
+    args = type(
+        "Args",
+        (),
+        {
+            "delete": False,
+            "compress_json": False,
+            "quarantine_root": str(quarantine),
+        },
+    )()
     actions = gc.apply_actions([row], args)
     target = Path(actions[0].get("quarantine_path", ""))
     passed = bool(actions and actions[0].get("status") == "quarantined" and not source.exists() and target.exists())

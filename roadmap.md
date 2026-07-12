@@ -382,6 +382,10 @@ run and it meets the Quality Bars below.
 - Enforce live report/checkpoint retention, current-reference-aware compaction, and
   one flagship claim record per metric family; generated bulk is runtime state, not
   source or capability evidence.
+- Artifact consumers resolve both inline and retention-sidecar archive pointers,
+  prefer live originals over stale sidecars, and verify reconstructed bytes against
+  the owning receipt before a checkpoint can satisfy readiness. Missing or corrupt
+  archive payloads fail closed rather than forcing needless retraining.
 - Maintain an AI bill of materials spanning code, data, models, tokenizers,
   evaluators, tools, hardware/runtime profiles, build inputs, derived artifacts,
   signatures, advisories, and descendant invalidation. Requested, resolved, and
@@ -708,6 +712,20 @@ deletion closure is graph evidence, not physical unlearning.
   a clean control. Corrupt, stale, symlinked, reordered, or hash-mismatched state
   fails closed. This is runtime/replay evidence only, not semantic capability or
   CUDA/MLX parity.
+- A parameter-neutral prefix-LM control now tests whether full bidirectional source
+  encoding helps the same direct body decoder. The canonical sequence contract has
+  exactly one source/target separator on all `12,111` SFT rows and `24` eval rows,
+  no separator on `17,643` raw-code windows, and no supervised position at or before
+  the separator. Unit and MLX causal tests prove later-source influence, zero
+  target-to-source leakage, cached/full-prefix equivalence, unchanged checkpoint
+  schema, and fail-closed malformed partitions. Under matched seed `20260711`,
+  parameters, `47` optimizer steps, `100,260` supervised positions, and `24`
+  family-disjoint tasks, causal and prefix-LM both emit zero syntax-valid candidates
+  and pass `0/24`; prefix-LM slightly worsens loss (`4.700036 -> 4.704584`), SFT
+  throughput (`13,113.833 -> 12,843.229` tokens/s), and decode (`10,000 -> 10,065`
+  ms). The comparison is `GREEN` but prefix-LM is `NOT_ADOPTED`; causal remains the
+  canonical attention policy. This falsifies source-prefix masking as the next
+  capability lever at the bounded diagnostic rung.
 - Scale toward a 100M sparse specialist proposer with matched dense active-compute
   control, expert attribution, prompt/signature-only visibility, strict direct-body
   replay, and family-disjoint heldouts. Keep the old body-template inventory disabled

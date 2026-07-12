@@ -16,7 +16,11 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import semantic_ir
-from standard_causal_transformer_model import CausalTransformerConfig, build_model
+from standard_causal_transformer_model import (
+    CausalTransformerConfig,
+    build_model,
+    parameter_count,
+)
 from standard_causal_transformer_survival import (
     EXECUTABLE_STATE_ROLES,
     beam_rank_score,
@@ -25,6 +29,7 @@ from standard_causal_transformer_survival import (
     causal_loss,
     completion_pool_target,
     canonical_model_signature,
+    compare_attention_policy_canaries,
     compare_target_mode_canaries,
     encode_sft_training_examples,
     encode_model_source,
@@ -45,6 +50,7 @@ from standard_causal_transformer_survival import (
     semantic_plan_labels_for_body,
     semantic_plan_metrics_from_logits,
     semantic_stage_source,
+    sequence_partition_audit,
     select_family_disjoint_eval,
     select_preference_train_rows,
     standalone_sft_contract_decision,
@@ -120,6 +126,254 @@ def test_decoder_is_causal_and_cached_decode_matches_full_decode() -> None:
     full, _ = model(prefix_a)
     mx.eval(prefill, cached, full)
     assert bool(mx.allclose(cached[:, -1], full[:, -1], atol=1e-4))
+
+
+def test_attention_policy_configuration_fails_closed() -> None:
+    common = {
+        "vocab_size": 64,
+        "d_model": 32,
+        "num_layers": 2,
+        "num_heads": 4,
+        "num_kv_heads": 2,
+        "ff_dim": 64,
+    }
+    with pytest.raises(ValueError, match="attention policy"):
+        CausalTransformerConfig(**common, attention_policy="bidirectional").validate()
+    with pytest.raises(ValueError, match="separator token"):
+        CausalTransformerConfig(
+            **common, source_target_separator_token_id=64
+        ).validate()
+    with pytest.raises(ValueError, match="prefix-LM attention"):
+        CausalTransformerConfig(
+            **common,
+            attention_policy="prefix_lm",
+            state_memory_mode="semantic_roles",
+            state_memory_slots=8,
+        ).validate()
+
+
+def test_prefix_lm_mask_is_bidirectional_only_inside_source_partition() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="prefix_lm",
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    mask = np.asarray(
+        model.sequence_attention_mask(
+            mx.array([[1, 10, 11, 2, 20, 21]], dtype=mx.int32), None
+        )
+    )[0, 0]
+    assert np.all(mask[:4, :4] == 0.0)
+    assert np.all(mask[:4, 4:] < -1e8)
+    assert np.all(mask[4, :5] == 0.0)
+    assert mask[4, 5] < -1e8
+    assert np.all(mask[5] == 0.0)
+
+    no_separator = np.asarray(
+        model.sequence_attention_mask(
+            mx.array([[1, 10, 11, 12]], dtype=mx.int32), None
+        )
+    )[0, 0]
+    assert np.all(no_separator[np.tril_indices(4)] == 0.0)
+    assert np.all(no_separator[np.triu_indices(4, 1)] < -1e8)
+
+
+def test_prefix_lm_has_source_lookahead_without_target_leakage() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(29)
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="prefix_lm",
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    base = mx.array([[1, 10, 11, 2, 20, 21]], dtype=mx.int32)
+    later_source_changed = mx.array([[1, 10, 19, 2, 20, 21]], dtype=mx.int32)
+    future_target_changed = mx.array([[1, 10, 11, 2, 20, 31]], dtype=mx.int32)
+    base_logits, _ = model(base)
+    source_logits, _ = model(later_source_changed)
+    target_logits, _ = model(future_target_changed)
+    mx.eval(base_logits, source_logits, target_logits)
+    assert not bool(mx.allclose(base_logits[:, :2], source_logits[:, :2], atol=1e-6))
+    assert bool(mx.allclose(base_logits[:, :5], target_logits[:, :5], atol=1e-6))
+
+
+def test_prefix_lm_cache_partition_matches_full_sequence() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(31)
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="prefix_lm",
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    sequence = mx.array([[1, 10, 11, 2, 20, 21, 22]], dtype=mx.int32)
+    full_logits, full_cache = model(sequence)
+    _prefill_logits, prefill_cache = model(sequence[:, :5])
+    cached_logits, cached_state = model(sequence[:, 5:], prefill_cache)
+    mx.eval(
+        full_logits,
+        cached_logits,
+        *cache_arrays(full_cache),
+        *cache_arrays(cached_state),
+    )
+    assert bool(mx.allclose(cached_logits, full_logits[:, 5:], atol=1e-4))
+
+
+def test_prefix_lm_is_parameter_neutral_and_loads_causal_checkpoint(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    common = {
+        "vocab_size": 64,
+        "d_model": 32,
+        "num_layers": 2,
+        "num_heads": 4,
+        "num_kv_heads": 2,
+        "ff_dim": 64,
+    }
+    mx.random.seed(37)
+    causal = build_model(CausalTransformerConfig(**common), mx=mx, nn=nn)
+    prefix = build_model(
+        CausalTransformerConfig(**common, attention_policy="prefix_lm"),
+        mx=mx,
+        nn=nn,
+    )
+    assert parameter_count(causal, mlx_utils) == parameter_count(prefix, mlx_utils)
+    checkpoint = tmp_path / "causal_checkpoint.npz"
+    causal.save_weights(str(checkpoint))
+    prefix.load_weights(str(checkpoint))
+    no_separator = mx.array([[1, 10, 11, 12]], dtype=mx.int32)
+    causal_logits, _ = causal(no_separator)
+    prefix_logits, _ = prefix(no_separator)
+    mx.eval(causal_logits, prefix_logits)
+    assert bool(mx.allclose(causal_logits, prefix_logits, atol=1e-6))
+
+
+def test_sequence_partition_audit_rejects_boundary_corruption() -> None:
+    valid_inputs = np.array([[1, 10, 11, 2, 20, 21, 0]], dtype=np.int32)
+    valid_mask = np.array([[0, 0, 0, 0, 1, 1, 0]], dtype=np.float32)
+    assert sequence_partition_audit(
+        valid_inputs, valid_mask, require_separator=True
+    )["valid"]
+
+    target_leak = valid_mask.copy()
+    target_leak[0, 2] = 1.0
+    leak_receipt = sequence_partition_audit(
+        valid_inputs, target_leak, require_separator=True
+    )
+    assert not leak_receipt["valid"]
+    assert leak_receipt["target_not_strictly_after_separator_row_count"] == 1
+
+    duplicate = valid_inputs.copy()
+    duplicate[0, 1] = 2
+    duplicate_receipt = sequence_partition_audit(
+        duplicate, valid_mask, require_separator=True
+    )
+    assert not duplicate_receipt["valid"]
+    assert duplicate_receipt["multiple_separator_row_count"] == 1
+
+    raw_code_receipt = sequence_partition_audit(
+        valid_inputs, valid_mask, require_separator=False
+    )
+    assert not raw_code_receipt["valid"]
+    assert raw_code_receipt["unexpected_separator_row_count"] == 1
+
+
+def test_attention_policy_ablation_requires_matched_behavior_gain() -> None:
+    def report(policy: str, passed: int, coverage: int, reward: float) -> dict:
+        return {
+            "policy": "project_theseus_standard_causal_transformer_survival_v1",
+            "seed": 41,
+            "architecture": {
+                "family": "standard_decoder_only_causal_transformer",
+                "attention_policy": policy,
+                "parameter_count": 1000,
+                "config": {
+                    "vocab_size": 64,
+                    "d_model": 32,
+                    "attention_policy": policy,
+                    "source_target_separator_token_id": 2,
+                },
+            },
+            "stage": {
+                "stage_signature": "same-stage",
+                "holdout_families": ["a", "b"],
+                "sequence_partition_audit": {
+                    "pretrain": {"valid": True},
+                    "sft": {"valid": True},
+                    "eval": {"valid": True},
+                },
+            },
+            "training": {
+                "complete": True,
+                "eval_loss_after": 1.0,
+                "phases": [
+                    {
+                        "phase": "prompt_signature_body_sft",
+                        "optimizer_steps": 10,
+                        "target_positions_consumed": 1000,
+                    }
+                ],
+            },
+            "private_verifier": {
+                "summary": {"passed_task_count": passed},
+                "private_verification": {"mean_verification_reward": reward},
+            },
+            "summary": {
+                "candidate_task_count": coverage,
+                "syntax_valid_candidate_count": coverage,
+                "public_training_rows": 0,
+                "external_inference_calls": 0,
+                "fallback_return_count": 0,
+                "template_renderer_router_tool_credit_count": 0,
+            },
+            "runtime_ms": 100,
+        }
+
+    causal = report("causal", 1, 20, 0.25)
+    improved = compare_attention_policy_canaries(
+        causal, report("prefix_lm", 2, 20, 0.30)
+    )
+    assert improved["trigger_state"] == "GREEN"
+    assert improved["adoption_state"] == "ADOPTED"
+
+    loss_only = report("prefix_lm", 1, 20, 0.30)
+    loss_only["training"]["eval_loss_after"] = 0.5
+    rejected = compare_attention_policy_canaries(causal, loss_only)
+    assert rejected["trigger_state"] == "GREEN"
+    assert rejected["adoption_state"] == "NOT_ADOPTED"
+    assert "no_family_disjoint_verifier_pass_gain" in rejected["rejection_reasons"]
+
+    mismatched = report("prefix_lm", 2, 20, 0.30)
+    mismatched["seed"] = 42
+    invalid = compare_attention_policy_canaries(causal, mismatched)
+    assert invalid["trigger_state"] == "RED"
+    assert invalid["adoption_state"] == "NOT_ADOPTED"
+    assert "seed" in invalid["hard_gaps"]
 
 
 def test_semantic_plan_head_is_source_only_and_cache_partition_invariant() -> None:

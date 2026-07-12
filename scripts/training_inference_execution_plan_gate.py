@@ -9,6 +9,7 @@ the Project Theseus no-cheat boundaries before training/inference work begins.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -23,6 +24,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import report_evidence_store  # noqa: E402
+from theseus_archive_resolver import is_archive_pointer, resolve_archived_path  # noqa: E402
 
 
 REPORTS = ROOT / "reports"
@@ -437,16 +439,34 @@ def check_current_t2_training_smoke_if_present(current: dict[str, dict[str, Any]
         "fallback_template_router_tool_credit_count": int_value(smoke.get("fallback_template_router_tool_credit_count")),
     }
     faults = {}
+    checkpoint_logical = resolve(checkpoint) if checkpoint else None
+    checkpoint_resolved = (
+        resolve_archived_path(checkpoint_logical) if checkpoint_logical is not None else None
+    )
+    checkpoint_from_archive = bool(
+        checkpoint_logical is not None and is_archive_pointer(checkpoint_logical)
+    )
+    vocab_path = resolve(vocab) if vocab else None
     if smoke.get("trigger_state") != "GREEN":
         faults["trigger_state"] = smoke.get("trigger_state")
     if smoke.get("backend") != "mlx_high_level_transformer":
         faults["backend"] = smoke.get("backend")
     if "gpu" not in str(smoke.get("device", "")).lower():
         faults["device"] = smoke.get("device")
-    if not checkpoint or not resolve(checkpoint).exists():
+    if not checkpoint or checkpoint_resolved is None or not checkpoint_resolved.exists():
         faults["checkpoint"] = checkpoint or None
-    if not vocab or not resolve(vocab).exists():
+    elif file_sha256(checkpoint_resolved) != str(smoke.get("checkpoint_sha256") or ""):
+        faults["checkpoint_sha256_mismatch"] = {
+            "expected": smoke.get("checkpoint_sha256"),
+            "actual": file_sha256(checkpoint_resolved),
+        }
+    if not vocab or vocab_path is None or not vocab_path.exists():
         faults["vocab"] = vocab or None
+    elif file_sha256(vocab_path) != str(smoke.get("vocab_sha256") or ""):
+        faults["vocab_sha256_mismatch"] = {
+            "expected": smoke.get("vocab_sha256"),
+            "actual": file_sha256(vocab_path),
+        }
     if not valid_sha256(smoke.get("checkpoint_sha256")):
         faults["checkpoint_sha256"] = smoke.get("checkpoint_sha256")
     if not valid_sha256(smoke.get("vocab_sha256")):
@@ -476,6 +496,8 @@ def check_current_t2_training_smoke_if_present(current: dict[str, dict[str, Any]
             "present": True,
             "faults": faults,
             "checkpoint": checkpoint,
+            "checkpoint_resolved": rel(checkpoint_resolved) if checkpoint_resolved else None,
+            "checkpoint_from_archive": checkpoint_from_archive,
             "checkpoint_sha256": smoke.get("checkpoint_sha256"),
             "vocab": vocab,
             "vocab_sha256": smoke.get("vocab_sha256"),
@@ -489,6 +511,14 @@ def check_current_t2_training_smoke_if_present(current: dict[str, dict[str, Any]
             "no_cheat_counts": no_cheat_counts,
         },
     )
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def check_current_assistant_canary(current: dict[str, dict[str, Any]]) -> dict[str, Any]:

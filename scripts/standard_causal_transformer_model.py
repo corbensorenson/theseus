@@ -18,6 +18,8 @@ class CausalTransformerConfig:
     ff_dim: int = 768
     rope_base: float = 10000.0
     rms_norm_eps: float = 1e-5
+    attention_policy: str = "causal"
+    source_target_separator_token_id: int = 2
     state_memory_slots: int = 0
     state_memory_chunk_size: int = 32
     state_memory_local_window: int = 96
@@ -39,6 +41,10 @@ class CausalTransformerConfig:
             raise ValueError("query heads must divide evenly across KV heads")
         if self.num_layers <= 0 or self.vocab_size <= 0 or self.ff_dim <= 0:
             raise ValueError("model dimensions must be positive")
+        if self.attention_policy not in {"causal", "prefix_lm"}:
+            raise ValueError("attention policy must be causal or prefix_lm")
+        if not 0 <= self.source_target_separator_token_id < self.vocab_size:
+            raise ValueError("source-target separator token must be in vocabulary")
         if self.state_memory_mode not in {"none", "semantic_roles", "hash_control"}:
             raise ValueError("state memory mode must be none, semantic_roles, or hash_control")
         if self.state_memory_ablation not in {"none", "zero", "shuffle"}:
@@ -47,6 +53,10 @@ class CausalTransformerConfig:
             raise ValueError("state memory read policy must be unrestricted or role_dependency")
         if self.state_memory_mode == "none" and self.state_memory_slots != 0:
             raise ValueError("state memory slots must be zero when state memory is disabled")
+        if self.attention_policy == "prefix_lm" and self.state_memory_mode != "none":
+            raise ValueError(
+                "prefix-LM attention is not yet compatible with chunked executable state memory"
+            )
         if self.state_memory_mode != "none" and self.state_memory_slots <= 1:
             raise ValueError("enabled state memory requires at least two slots")
         if self.state_memory_chunk_size <= 0 or self.state_memory_local_window <= 0:
@@ -168,6 +178,7 @@ def build_model(
             cache: tuple[Any, Any] | None = None,
             memory: Any | None = None,
             role_weights: Any | None = None,
+            attention_mask: Any | None = None,
         ) -> tuple[Any, tuple[Any, Any]]:
             batch, length, _dims = hidden.shape
             offset = int(cache[0].shape[2]) if cache is not None else 0
@@ -179,7 +190,13 @@ def build_model(
             if cache is not None:
                 key = mx.concatenate([cache[0], key], axis=2)
                 value = mx.concatenate([cache[1], value], axis=2)
-            mask = "causal" if cache is None and length > 1 and memory is None else None
+            mask = (
+                attention_mask
+                if attention_mask is not None and cache is None and memory is None
+                else "causal"
+                if cache is None and length > 1 and memory is None
+                else None
+            )
             if cache is not None and length > 1 and memory is None:
                 key_positions = mx.arange(offset + length, dtype=mx.int32)
                 allowed_through = offset + mx.arange(length, dtype=mx.int32) + 1
@@ -340,6 +357,7 @@ def build_model(
             commit_state: bool = False,
             plan_memory: Any | None = None,
             plan_access: Any | None = None,
+            attention_mask: Any | None = None,
         ) -> tuple[Any, tuple[Any, ...]]:
             token_cache = (cache[0], cache[1]) if cache is not None else None
             memory = cache[2] if cache is not None and len(cache) >= 3 else None
@@ -355,6 +373,7 @@ def build_model(
                 token_cache,
                 mx.zeros_like(memory) if config.state_memory_ablation == "zero" else memory,
                 role_weights,
+                attention_mask,
             )
             hidden = hidden + attended
             if plan_slot_attention_enabled and plan_memory is not None:
@@ -430,6 +449,31 @@ def build_model(
                 permutation = mx.arange(config.state_memory_slots - 1, -1, -1, dtype=mx.int32)
                 weights = weights[:, :, permutation]
             return weights
+
+        def sequence_attention_mask(self, tokens: Any, cache: Any | None) -> Any | None:
+            if config.attention_policy != "prefix_lm" or cache is not None:
+                return None
+            batch, length = int(tokens.shape[0]), int(tokens.shape[1])
+            if length <= 1:
+                return None
+            separator = tokens == config.source_target_separator_token_id
+            has_separator = mx.sum(separator.astype(mx.int32), axis=1) > 0
+            separator_position = mx.argmax(separator.astype(mx.int32), axis=1)
+            query_positions = mx.arange(length, dtype=mx.int32)[None, :, None]
+            key_positions = mx.arange(length, dtype=mx.int32)[None, None, :]
+            causal = key_positions <= query_positions
+            source_query = query_positions <= separator_position[:, None, None]
+            source_key = key_positions <= separator_position[:, None, None]
+            prefix_bidirectional = (
+                source_query & source_key & has_separator[:, None, None]
+            )
+            allowed = causal | prefix_bidirectional
+            additive = mx.where(
+                allowed,
+                mx.array(0.0, dtype=mx.float32),
+                mx.array(-1e9, dtype=mx.float32),
+            )
+            return additive[:, None, :, :].reshape(batch, 1, length, length)
 
         def conditioned_embeddings(
             self,
@@ -543,6 +587,7 @@ def build_model(
             conditioned_hidden, plan_context, plan_logits, plan_access = self.conditioned_embeddings(
                 tokens, cached_plan_context
             )
+            attention_mask = self.sequence_attention_mask(tokens, cache)
             if not state_enabled:
                 hidden = conditioned_hidden
                 next_cache: list[tuple[Any, ...]] = []
@@ -553,6 +598,7 @@ def build_model(
                         layer_cache,
                         plan_memory=plan_context if plan_slot_attention_enabled else None,
                         plan_access=plan_access,
+                        attention_mask=attention_mask,
                     )
                     next_cache.append(layer_next)
                 if plan_enabled:

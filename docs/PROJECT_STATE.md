@@ -166,6 +166,21 @@ stop after two tasks resumed the remaining task and reproduced all six candidate
 identities from a clean run. Corrupt, stale, symlinked, reordered, and
 hash-mismatched progress is rejected. This closes the local incremental
 cache/restart wall only; it is not model-quality or CUDA/MLX parity evidence.
+A parameter-neutral prefix-LM control is now implemented behind the same model and
+checkpoint schema. The independent stage audit proves zero separators in `17,643`
+raw-code windows and exactly one canonical separator with strictly target-side loss
+for all `12,111` SFT and `24` eval rows. The matched 64-wide diagnostic gives both
+causal and prefix-LM `0/24` passes and zero syntax-valid candidates; prefix-LM also
+worsens loss `4.700036 -> 4.704584`, SFT throughput `13,113.833 -> 12,843.229`
+tokens/s, and decode `10,000 -> 10,065` ms. The comparison contract is GREEN,
+prefix-LM is `NOT_ADOPTED`, and causal remains canonical. This closes the sequence
+mask hypothesis without claiming capability.
+The training/inference plan no longer mistakes a compacted T2 checkpoint for a
+missing artifact. The shared archive resolver follows the retention sidecar to the
+archived payload, and the gate recomputes both checkpoint and vocabulary hashes.
+The retained T2 receipt is now GREEN without retraining, so bounded private T3 work
+and the local assisted-inference canary are allowed; model-only serving, production
+MLX routing, and public calibration remain correctly unavailable on behavior quality.
 An exact-bound conditioning diagnostic over all `24` heldouts measures matched
 loss `1.662704` versus deterministic wrong-source loss `1.766282`, a positive
 gap of `0.103578`. This rules out complete source blindness but does not support

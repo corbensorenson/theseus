@@ -756,7 +756,8 @@
         "scripts/theseus_artifact_admission.py",
         "configs/artifact_admission_policy.json",
         "tests/test_theseus_supply_chain.py",
-        "tests/test_theseus_artifact_admission.py"
+        "tests/test_theseus_artifact_admission.py",
+        "tests/test_training_inference_execution_plan_gate.py"
       ],
       "implemented_items": [
         "roadmap matrix, roadmap gate, module DoD gate, and book-to-Theseus crosswalk are registered under the project_manifest_registry surface and verification sequence",
@@ -766,7 +767,8 @@
         "the canonical registry embeds a local content-bound AIBOM over more than 500 requested/resolved/observed identities across 19 artifact domains, surface content Merkle roots, runtime identity, dependency edges, derivative invalidation closure, zero missing required identities, and explicit non-claims for signing, advisory freshness, reproducibility, and weight custody",
         "negative tests propagate a substituted dependency through implementation, checkpoint, and release descendants and reject an unknown descendant as incomplete closure",
         "content-bound Ed25519 admission verifies signed artifact attestations and advisory snapshots before Torch or MLX/NumPy deserialization, with stale advisory, tamper, revocation, generation rollback, relocation, owner/mode, purpose, and valuable-weight custody controls",
-        "the current transformer checkpoint exemption is explicitly development-only and non-routeable; production/default routes require admission, while private signing keys remain outside the repository"
+        "the current transformer checkpoint exemption is explicitly development-only and non-routeable; production/default routes require admission, while private signing keys remain outside the repository",
+        "shared archive resolution follows inline or retention-sidecar pointers, prefers live originals, and makes the T2 readiness gate recompute archived checkpoint and live vocabulary hashes; corrupted archived bytes fail closed"
       ],
       "missing_items": [],
       "smallest_next_patch": "When the first routeable trained artifact exists, enroll an external public verification key, issue real signed build/training/advisory/custody records, and prove release admission on encrypted storage; no release or custody claim exists before that evidence.",
@@ -775,6 +777,9 @@
         "reports/theseus_project_registry.json trigger_state=GREEN",
         "reports/theseus_project_registry.json summary.unregistered_active_source_count=0",
         "reports/theseus_project_registry.json summary.registry_hard_governance_violation_count=0",
+        "python3 -m pytest -q tests/test_training_inference_execution_plan_gate.py",
+        "reports/training_inference_execution_plan_gate.json trigger_state=GREEN",
+        "reports/training_inference_execution_plan_gate.json summary.t2_private_training_smoke_passed=true",
         "python3 scripts/roadmap_implementation_gate.py --gate",
         "python3 scripts/module_definition_of_done_gate.py"
       ],
@@ -1841,7 +1846,8 @@
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json",
         "reports/strict_generator_mlx_decode_eval_cache_full_prefix_control_20260711.json",
         "reports/strict_generator_mlx_decode_eval_restart_canary_20260711.json",
-        "reports/strict_generator_mlx_decode_eval_restart_clean_control_20260711.json"
+        "reports/strict_generator_mlx_decode_eval_restart_clean_control_20260711.json",
+        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json"
       ],
       "missing_items": [
         "offline preference comparison across DPO/IPO/ORPO/KTO/SimPO on the same private accepted/rejected pair split, same reference checkpoint, same optimizer budget, same heldout verifier, and same no-cheat/candidate-integrity audit",
@@ -1868,9 +1874,10 @@
         "The state-machine event target canary is residual/training-signal evidence only: it activates a sharper private event policy and improves LM plus transition loss, but action/operand metrics still fail and no checkpoint is routeable. It does not support learned-generation promotion, public-transfer claims, or default routing.",
         "The executable-span canary is also residual/training-signal evidence only: the dedicated span head and opt-in span-to-hidden body constructor improve LM/span/event metrics, but action/operand or tensor-update gates still fail and no checkpoint is routeable. It does not support learned-generation promotion, public-transfer claims, or default routing.",
         "The first matched Sol 5.6 teacher curriculum ablation is valid negative evidence, not a promotion. Both arms score 0/48 across the same family-disjoint and broad-private tasks; teacher-on worsens heldout LM loss, emits 110 versus 135 integrity-verified learned candidates, increases decode starvation to 11 versus 2 tasks, and lowers mean verifier reward on both splits. The 14 manifest-admitted rows remain provenance-valid but are not causally useful under this recipe.",
-        "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence."
+        "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
+        "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Keep the Sol 5.6 teacher tranche unpromoted and use the canonical all-candidate verifier labels to extract the repeated unfinished-expression, algorithm-choice, and state-transition residuals without exposing eval answers. The cache/restart dependency is closed; next compare a stronger sequence-level source-conditioned architecture against the frozen split under matched optimizer positions and require an exact family-disjoint behavior gain before teacher curriculum, preference/RL, scale, or public calibration advances.",
+      "smallest_next_patch": "Keep the Sol 5.6 teacher and prefix-LM tranches unpromoted. The cache/restart and source-partition hypotheses are closed. Next improve direct prompt/signature body-token syntax and semantic completion using the canonical all-candidate verifier residuals for unfinished expressions, algorithm choice, return shape, and state transitions without exposing eval answers. Require a syntax-valid candidate and exact family-disjoint verifier-pass gain before teacher curriculum, preference/RL, scale, or public calibration advances.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -1878,6 +1885,11 @@
         "reports/strict_generator_mlx_decode_eval_cache_full_prefix_control_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.full_prefix_recomputation_batch_calls=47",
         "reports/strict_generator_mlx_decode_eval_restart_canary_20260711.json summary.decode_progress.resume_count=1",
         "reports/strict_generator_mlx_decode_eval_restart_canary_20260711.json summary.decode_progress.complete=true",
+        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json trigger_state=GREEN",
+        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json adoption_state=NOT_ADOPTED",
+        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json matched_checks are all true",
+        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json deltas.passed_task_count=0",
+        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json deltas.eval_loss_after=0.004548",
         "python3 -m pytest -q tests/test_mlx_teacher_curriculum_integration.py tests/test_strict_generator_mlx_decode_guards.py",
         "configs/neural_seed_token_decoder_comparator.json teacher_distillation.curriculum_adoption_state=NOT_ADOPTED",
         "reports/strict_generator_mlx_decode_eval_phase10_teacher_ablation_off_sol56_v2.json summary.split_passes.family_disjoint=0",
@@ -1981,11 +1993,11 @@
         "python3 -m py_compile scripts/code_lm_train_once_fanout.py scripts/neural_seed_strict_generator_fanout_receipt.py scripts/correctness_generator_survival_lane_gate.py scripts/strict_generator_mlx_decode_eval.py scripts/strict_generator_mlx_decode_plans.py",
         "scripts/code_lm_train_once_fanout.py contains strict_generator_fanout_receipt_summary closure gate; next refreshed closure report must cite summary.strict_generator_fanout_receipt.ready=true",
         "python3 scripts/training_inference_execution_plan_gate.py --gate",
-        "reports/training_inference_execution_plan_gate.json trigger_state=RED",
-        "reports/training_inference_execution_plan_gate.json summary.ready_for_private_training_smoke=false",
-        "reports/training_inference_execution_plan_gate.json summary.ready_for_bounded_private_training_rung=false",
+        "reports/training_inference_execution_plan_gate.json trigger_state=GREEN",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_private_training_smoke=true",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_bounded_private_training_rung=true",
         "reports/training_inference_execution_plan_gate.json summary.ready_for_model_only_general_chat_runtime=false",
-        "reports/training_inference_execution_plan_gate.json readiness_decision.next_allowed_step=complete_partial_book_derived_phases_before_training_focus",
+        "reports/training_inference_execution_plan_gate.json readiness_decision.next_allowed_step=T3_bounded_private_training_rung",
         "reports/strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json trigger_state=GREEN",
         "reports/strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json summary.heldout_lm_loss_after < summary.heldout_lm_loss_before",
         "reports/strict_generator_mlx_private_adaptation_t3_semantic_private_rung_20260706.json trigger_state=GREEN",
@@ -2912,9 +2924,9 @@
         "reports/theseus_weekly_focus_20260706.json summary.preregistered_experiment_count=1",
         "reports/module_definition_of_done.json summary.source_backlog_work_card_count=38",
         "python3 scripts/training_inference_execution_plan_gate.py --gate",
-        "reports/training_inference_execution_plan_gate.json trigger_state=RED",
-        "reports/training_inference_execution_plan_gate.json summary.ready_for_governed_private_training_focus=false",
-        "reports/training_inference_execution_plan_gate.json readiness_decision.next_allowed_step=complete_partial_book_derived_phases_before_training_focus"
+        "reports/training_inference_execution_plan_gate.json trigger_state=GREEN",
+        "reports/training_inference_execution_plan_gate.json summary.ready_for_governed_private_training_focus=true",
+        "reports/training_inference_execution_plan_gate.json readiness_decision.next_allowed_step=T3_bounded_private_training_rung"
       ],
       "completion_rule": "The roadmap, registry, PROJECT_STATE, AI_book crosswalk, project steward decisions, Fourth-Pass parity backlog, and public-safe evidence-pack exports agree on what exists, what is missing, what evidence supports each claim, and which source-drift or book-parity rows were reviewed, implemented, deferred, or blocked.",
       "implemented_items": [

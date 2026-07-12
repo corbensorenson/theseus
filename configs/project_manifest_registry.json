@@ -216,7 +216,7 @@
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-          "sha256": "46b2aa6483620be08ddf062bddc9a3baceba1d37bbab7f76b4ab64a932579ad8"
+          "sha256": "a358f85f3c0b21b1006e24079a56e427a641abf4feea188405199e122fedd865"
         },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
@@ -228,7 +228,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "241ea00a93a02881e4eb095a87f61664b97926b425432284ebf7e1eb34da58d2"
+          "sha256": "a8018c74f57018f757fed971a77114827110071dbc2a1dbbb395ad6bac232b60"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -252,7 +252,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "14ab0d52b08e939bf9dc46bc33f2c1be75eeb1cf6e64cb61a43fe8f737847df9"
+          "sha256": "5d38153be892f1c9797401a24bc9d884359adf8912866bd97b6e1e7a38420e61"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -264,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-          "sha256": "b66135ac0ab8c6bed811cbd9a8a5b5911e143a0f95d12db89e3b9fd6884b67b2"
+          "sha256": "f02011baa68b0d0169b411d359fc1794571066238f65daafc0be20e84966b2f0"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -284,15 +284,15 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "22f66671646649f594bc93416d2b453f58b22c2f377d8864a95bde39d286aec3"
+          "sha256": "6427af29a8d8b3525adce1216ca46bc6c1f78ead351b6c129779aafa44e7d1a7"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "sha256": "17962c156280fa451f6bd69f4111ab343395a54cf9e5b96666886d93e226319b"
+          "sha256": "11531a95766414f005c52e062f8d71d41249778d2ef67258de2152bb18ea370a"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-          "sha256": "44385e9b9b6d799a50cf280f14debc6e9d844ec7e2424b58ad13907447806ae5"
+          "sha256": "0fe2ea032ed6db1327594ebc478532180b886ac7a5f8702e1075e8ae86602d41"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -4849,6 +4849,29 @@
       "supersedes_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
       "implementation_type": "decoder_only_causal_transformer_direct_full_body_generator",
       "backend": "python_mlx_apple_rope_gqa_swiglu_tied_embeddings",
+      "sequence_attention_policy": {
+        "canonical": "causal",
+        "canonical_source_target_separator_token_id": 2,
+        "matched_control": "prefix_lm",
+        "matched_control_disposition": "NOT_ADOPTED",
+        "matched_control_evidence": {
+          "seed": 20260711,
+          "parameter_neutral": true,
+          "optimizer_steps_per_arm": 47,
+          "supervised_target_positions_per_arm": 100260,
+          "family_disjoint_tasks": 24,
+          "causal_passed_tasks": 0,
+          "prefix_lm_passed_tasks": 0,
+          "causal_eval_loss": 4.700036,
+          "prefix_lm_eval_loss": 4.704584,
+          "causal_training_tokens_per_second": 13113.833,
+          "prefix_lm_training_tokens_per_second": 12843.229,
+          "causal_decode_runtime_ms": 10000,
+          "prefix_lm_decode_runtime_ms": 10065,
+          "no_cheat_counters_zero": true
+        },
+        "adoption_rule": "Require exact family-disjoint verifier-pass gain without candidate coverage or mean-reward regression; lower loss alone is never sufficient."
+      },
       "canonical_entrypoint": "scripts/standard_causal_transformer_survival.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve prompt/signature-only visibility, reversible tokenization, direct learned full-body generation, independent integrity and blind-flow audits, private verifier replay, exact checkpoint binding, and zero fallback/template/router/tool credit.",
@@ -4898,7 +4921,8 @@
           "checkpoint_binding_changed",
           "private_replay_zero",
           "candidate_integrity_regression",
-          "blind_information_flow_regression"
+          "blind_information_flow_regression",
+          "sequence_partition_regression"
         ],
         "maintenance_packet_prefix": "registry_impl_standard_causal_transformer_survival_v1"
       },
@@ -7518,7 +7542,7 @@
         "reports/theseus_artifact_budget_gate.json",
         "reports/theseus_artifact_budget_gate.md"
       ],
-      "verification_command": "python3 scripts/theseus_workspace_hygiene_audit.py && python3 scripts/theseus_deprecation_registry.py && python3 scripts/theseus_artifact_retention_replay_gate.py && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m pytest -q tests/test_artifact_retention_reference.py && python3 -m py_compile scripts/theseus_artifact_retention.py scripts/artifact_retention_reference.py scripts/theseus_artifact_retention_replay_gate.py",
+      "verification_command": "python3 scripts/theseus_workspace_hygiene_audit.py && python3 scripts/theseus_deprecation_registry.py && python3 scripts/theseus_artifact_retention_replay_gate.py && python3 scripts/theseus_artifact_retention.py --budget-gate && python3 -m pytest -q tests/test_artifact_retention_reference.py tests/test_training_inference_execution_plan_gate.py && python3 -m py_compile scripts/theseus_archive_resolver.py scripts/theseus_artifact_retention.py scripts/artifact_retention_reference.py scripts/theseus_artifact_retention_replay_gate.py",
       "cleanup_policy": "non-destructive by default; archive/quarantine requires manifest pointers",
       "abstraction_id": "project_self_model_registry",
       "major_surface": true,
@@ -7633,7 +7657,7 @@
         "reports/training_inference_execution_plan_gate.json",
         "reports/training_inference_execution_plan_gate.md"
       ],
-      "verification_command": "python3 scripts/maturity_integrity_audit.py && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py && python3 scripts/training_inference_execution_plan_gate.py --gate && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/maturity_integrity_audit.py && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py && python3 scripts/training_inference_execution_plan_gate.py --gate && python3 -m pytest -q tests/test_training_inference_execution_plan_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/training_inference_execution_plan_gate.py",
       "cleanup_policy": "gates protect evidence quality; do not add artificial locks unrelated to leakage, reruns, provenance, or runtime safety",
       "abstraction_id": "candidate_integrity_contract",
       "major_surface": true,

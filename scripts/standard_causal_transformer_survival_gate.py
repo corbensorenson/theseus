@@ -183,6 +183,22 @@ def build_gate(
         hard_gaps.append(gap("report_policy_mismatch", {"policy": report.get("policy")}))
     if architecture.get("family") != "standard_decoder_only_causal_transformer":
         hard_gaps.append(gap("architecture_family_mismatch", {"architecture": architecture}))
+    reported_attention_policy = str(
+        architecture.get("attention_policy")
+        or (architecture.get("config") or {}).get("attention_policy")
+        or ""
+    )
+    if not reported_attention_policy and architecture.get("attention") == "RoPE_grouped_query_causal_attention":
+        reported_attention_policy = "causal"
+        adoption_gaps.append(
+            gap(
+                "legacy_report_attention_policy_inferred",
+                {"inferred_policy": reported_attention_policy},
+                severity="adoption_gap",
+            )
+        )
+    if reported_attention_policy not in {"causal", "prefix_lm"}:
+        hard_gaps.append(gap("attention_policy_missing_or_invalid", {"architecture": architecture}))
     if int(architecture.get("parameter_count") or 0) <= 0:
         hard_gaps.append(gap("parameter_count_missing", {"architecture": architecture}))
     if not checkpoint.exists() or checkpoint.stat().st_size <= 0:
@@ -204,6 +220,36 @@ def build_gate(
     ):
         if int(stage.get(key) or 0) != 0:
             hard_gaps.append(gap(f"stage_{key}_nonzero", {"observed": stage.get(key)}))
+    sequence_partition = (
+        stage.get("sequence_partition_audit")
+        if isinstance(stage.get("sequence_partition_audit"), dict)
+        else {}
+    )
+    if not sequence_partition:
+        adoption_gaps.append(
+            gap(
+                "legacy_report_sequence_partition_receipt_missing",
+                {
+                    "required_on_next_report": ["pretrain", "sft", "eval"],
+                    "current_code_tests_fail_closed": True,
+                },
+                severity="adoption_gap",
+            )
+        )
+    else:
+        for partition_name in ("pretrain", "sft", "eval"):
+            receipt = (
+                sequence_partition.get(partition_name)
+                if isinstance(sequence_partition.get(partition_name), dict)
+                else {}
+            )
+            if receipt.get("valid") is not True:
+                hard_gaps.append(
+                    gap(
+                        f"{partition_name}_sequence_partition_invalid",
+                        {"receipt": receipt},
+                    )
+                )
     if int(stage.get("unique_semantic_eval_task_count") or 0) != int(
         stage.get("family_disjoint_eval_task_count") or 0
     ):

@@ -18,9 +18,10 @@ ARCHIVE_POINTER_POLICY = "project_theseus_archived_artifact_pointer_v1"
 
 
 def resolve_archived_path(path: str | Path) -> Path:
-    """Return the archived target when *path* is an archive pointer."""
+    """Return the archived target for an inline or retention-sidecar pointer."""
     original = resolve(path)
-    pointer = read_json(original, {})
+    pointer_path = archive_pointer_path(original)
+    pointer = read_json(pointer_path, {}) if pointer_path is not None else {}
     if pointer.get("policy") != ARCHIVE_POINTER_POLICY:
         return original
     archive_path = pointer.get("archive_path")
@@ -28,6 +29,18 @@ def resolve_archived_path(path: str | Path) -> Path:
         return original
     resolved = resolve(str(archive_path))
     return resolved if resolved.exists() else original
+
+
+def archive_pointer_path(path: str | Path) -> Path | None:
+    """Locate a pointer without allowing a stale sidecar to shadow live bytes."""
+
+    original = resolve(path)
+    if original.exists():
+        return original if read_json(original, {}).get("policy") == ARCHIVE_POINTER_POLICY else None
+    sidecar = original.with_name(original.name + ".archive-pointer.json")
+    if sidecar.exists() and read_json(sidecar, {}).get("policy") == ARCHIVE_POINTER_POLICY:
+        return sidecar
+    return None
 
 
 def read_json_follow_pointer(path: str | Path, default: Any = None) -> Any:
@@ -70,7 +83,7 @@ def read_jsonl_follow_pointer(path: str | Path) -> list[Any]:
 
 
 def is_archive_pointer(path: str | Path) -> bool:
-    return read_json(resolve(path), {}).get("policy") == ARCHIVE_POINTER_POLICY
+    return archive_pointer_path(path) is not None
 
 
 def read_json(path: Path, default: Any = None) -> Any:
