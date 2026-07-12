@@ -359,6 +359,7 @@ def matched_decoder_only_config(
     candidate.pop("source_copy_mode", None)
     candidate.pop("source_copy_auxiliary_loss_weight", None)
     candidate.pop("expert_adapter_dim", None)
+    candidate.pop("source_expert_adapter_dim", None)
     candidate["ff_dim"] = 1
     low_count = int(count(candidate))
     candidate["ff_dim"] = 2
@@ -1869,13 +1870,17 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("unexpected MoECOT shared-trunk topology")
     arm_model = dict(config.get("arm_model") or {})
     expert_dim = int(arm_model.pop("expert_adapter_dim", 0))
+    source_expert_dim = int(arm_model.pop("source_expert_adapter_dim", 0))
     if arm_model != dict(config.get("shared_trunk_model") or {}):
         raise ValueError("language expert model must exactly extend the shared trunk")
     if expert_dim != int(topology.get("expert_adapter_dim") or 0) or expert_dim <= 0:
         raise ValueError("language expert dimension must match the topology contract")
+    if source_expert_dim != int(topology.get("source_expert_adapter_dim") or 0):
+        raise ValueError("source expert dimension must match the topology contract")
     if topology.get("expert_trainable_scope") not in {
         "adapter_only",
         "source_conditioned_delta",
+        "low_rank_source_adapters",
     }:
         raise ValueError("unsupported language expert trainable scope")
     bootstrap = topology.get("shared_trunk_bootstrap") or {}

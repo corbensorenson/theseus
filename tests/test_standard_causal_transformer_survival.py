@@ -926,9 +926,58 @@ def test_source_conditioned_expert_scope_owns_only_specialist_modules() -> None:
     assert not any(".feed_forward." in name and not name.startswith("source_layers.") for name in trainable)
 
 
+def test_low_rank_source_expert_scope_stays_inside_data_bounded_adapters() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=64,
+            d_model=32,
+            num_layers=2,
+            num_heads=4,
+            num_kv_heads=2,
+            ff_dim=64,
+            attention_policy="encoder_decoder",
+            source_encoder_layers=1,
+            source_copy_mode="pointer_generator",
+            source_copy_auxiliary_loss_weight=0.25,
+            expert_adapter_dim=8,
+            source_expert_adapter_dim=4,
+        ),
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=mx.arange(64, dtype=mx.int32),
+    )
+    model.freeze_to_language_expert("low_rank_source_adapters")
+    trainable = {
+        name for name, _value in mlx_utils.tree_flatten(model.trainable_parameters())
+    }
+    assert any(".expert_adapter." in name for name in trainable)
+    assert any(".source_expert_adapter." in name for name in trainable)
+    assert any(
+        name.startswith("source_layers.") and ".expert_adapter." in name
+        for name in trainable
+    )
+    assert {"copy_gate.weight", "copy_gate.bias"}.issubset(trainable)
+    assert "copy_query.weight" not in trainable
+    assert "copy_key.weight" not in trainable
+    assert not any(".source_attention." in name for name in trainable)
+    assert not any(
+        name.startswith("source_layers.")
+        and ".expert_adapter." not in name
+        for name in trainable
+    )
+
+
 def test_expert_adapter_configuration_fails_closed() -> None:
     with pytest.raises(ValueError, match="cannot be negative"):
         CausalTransformerConfig(vocab_size=64, expert_adapter_dim=-1).validate()
+    with pytest.raises(ValueError, match="cannot be negative"):
+        CausalTransformerConfig(vocab_size=64, source_expert_adapter_dim=-1).validate()
+    with pytest.raises(ValueError, match="require encoder-decoder"):
+        CausalTransformerConfig(vocab_size=64, source_expert_adapter_dim=4).validate()
 
 
 def test_sequence_partition_audit_rejects_boundary_corruption() -> None:

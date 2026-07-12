@@ -256,7 +256,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "3de292e11c97641fc2f1d1c909012adf14775e98f0b4706277362eef8f28eb20"
+          "sha256": "4dee760d716fd61d8e79dd0ba180d4cfdc77f8f328836a457b6c5a456028b249"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",

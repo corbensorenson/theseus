@@ -24,6 +24,7 @@ class CausalTransformerConfig:
     source_copy_mode: str = "none"
     source_copy_auxiliary_loss_weight: float = 0.0
     expert_adapter_dim: int = 0
+    source_expert_adapter_dim: int = 0
     state_memory_slots: int = 0
     state_memory_chunk_size: int = 32
     state_memory_local_window: int = 96
@@ -65,6 +66,10 @@ class CausalTransformerConfig:
             raise ValueError("source copy auxiliary loss requires source copying")
         if self.expert_adapter_dim < 0:
             raise ValueError("expert adapter dimension cannot be negative")
+        if self.source_expert_adapter_dim < 0:
+            raise ValueError("source expert adapter dimension cannot be negative")
+        if self.source_expert_adapter_dim and self.attention_policy != "encoder_decoder":
+            raise ValueError("source expert adapters require encoder-decoder attention")
         if not 0 <= self.source_target_separator_token_id < self.vocab_size:
             raise ValueError("source-target separator token must be in vocabulary")
         if self.state_memory_mode not in {"none", "semantic_roles", "hash_control"}:
@@ -151,6 +156,7 @@ def build_model(
     source_encoder_enabled = config.attention_policy == "encoder_decoder"
     pointer_generator_enabled = config.source_copy_mode == "pointer_generator"
     expert_adapter_enabled = config.expert_adapter_dim > 0
+    source_expert_adapter_enabled = config.source_expert_adapter_dim > 0
     if pointer_generator_enabled:
         if source_to_target_lookup is None:
             raise ValueError("pointer-generator mode requires a source-to-target lookup")
@@ -356,6 +362,8 @@ def build_model(
             self.attention = CausalAttention()
             self.ffn_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.feed_forward = SwiGLU()
+            if source_expert_adapter_enabled:
+                self.expert_adapter = ExpertAdapter(config.source_expert_adapter_dim)
 
         def __call__(self, hidden: Any, source_mask: Any) -> Any:
             key_mask = mx.where(
@@ -367,7 +375,10 @@ def build_model(
                 self.attention_norm(hidden), attention_mask=key_mask
             )
             hidden = hidden + attended
-            return hidden + self.feed_forward(self.ffn_norm(hidden))
+            hidden = hidden + self.feed_forward(self.ffn_norm(hidden))
+            if source_expert_adapter_enabled:
+                hidden = hidden + self.expert_adapter(hidden)
+            return hidden
 
     class SwiGLU(nn.Module):
         def __init__(self) -> None:
@@ -380,15 +391,11 @@ def build_model(
             return self.down(nn.silu(self.gate(hidden)) * self.up(hidden))
 
     class ExpertAdapter(nn.Module):
-        def __init__(self) -> None:
+        def __init__(self, dimension: int) -> None:
             super().__init__()
             self.norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
-            self.down = nn.Linear(
-                config.d_model, config.expert_adapter_dim, bias=False
-            )
-            self.up = nn.Linear(
-                config.expert_adapter_dim, config.d_model, bias=False
-            )
+            self.down = nn.Linear(config.d_model, dimension, bias=False)
+            self.up = nn.Linear(dimension, config.d_model, bias=False)
             self.up.weight = mx.zeros_like(self.up.weight)
 
         def __call__(self, hidden: Any) -> Any:
@@ -402,7 +409,11 @@ def build_model(
             self.ffn_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.feed_forward = SwiGLU()
             if expert_adapter_enabled:
-                self.expert_adapter = ExpertAdapter()
+                self.expert_adapter = ExpertAdapter(config.expert_adapter_dim)
+            if source_expert_adapter_enabled:
+                self.source_expert_adapter = ExpertAdapter(
+                    config.source_expert_adapter_dim
+                )
             if state_enabled:
                 self.state_embedding = nn.Embedding(config.state_memory_slots, config.d_model)
                 self.state_candidate = nn.Linear(config.d_model * 2, config.d_model, bias=False)
@@ -476,6 +487,8 @@ def build_model(
                     else mx.ones(hidden.shape[:2], dtype=mx.float32)
                 )
                 hidden = hidden + source_attended * access[:, :, None]
+                if source_expert_adapter_enabled:
+                    hidden = hidden + self.source_expert_adapter(hidden) * access[:, :, None]
             if plan_slot_attention_enabled and plan_memory is not None:
                 plan_attended = self.plan_attention(
                     self.plan_attention_norm(hidden), plan_memory
@@ -577,7 +590,11 @@ def build_model(
         def freeze_to_language_expert(self, scope: str) -> None:
             if not expert_adapter_enabled:
                 raise ValueError("model has no expert adapter to train")
-            if scope not in {"adapter_only", "source_conditioned_delta"}:
+            if scope not in {
+                "adapter_only",
+                "source_conditioned_delta",
+                "low_rank_source_adapters",
+            }:
                 raise ValueError(f"unsupported language expert scope: {scope}")
             self.freeze()
             for layer in self.layers:
@@ -596,6 +613,17 @@ def build_model(
                 self.copy_query.unfreeze()
                 self.copy_key.unfreeze()
                 self.copy_gate.unfreeze()
+            elif scope == "low_rank_source_adapters":
+                if not source_encoder_enabled or not source_expert_adapter_enabled:
+                    raise ValueError(
+                        "low-rank source expert scope requires source expert adapters"
+                    )
+                for layer in self.layers:
+                    layer.source_expert_adapter.unfreeze()
+                for layer in self.source_layers:
+                    layer.expert_adapter.unfreeze()
+                if pointer_generator_enabled:
+                    self.copy_gate.unfreeze()
 
         def sequence_attention_mask(self, tokens: Any, cache: Any | None) -> Any | None:
             if config.attention_policy != "prefix_lm" or cache is not None:
