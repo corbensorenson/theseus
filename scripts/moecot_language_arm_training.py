@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train independent MoECOT language arms and preregister dense controls.
+"""Train a shared MoECOT trunk, language experts, and matched dense controls.
 
 The runtime consumes the immutable canonical stage produced by the standard
 transformer corpus path. It does not build another corpus, route answers, or
@@ -49,6 +49,7 @@ from neural_seed_open_vocab import (
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
+SHARED_TRUNK_ID = "shared_trunk"
 CONTROL_IDS = ("dense_total_parameter", "dense_active_parameter")
 
 
@@ -57,7 +58,11 @@ def main() -> int:
     parser.add_argument("--config", default=relative(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
     parser.add_argument("--execute", action="store_true")
-    parser.add_argument("--target", action="append", choices=[*ARM_IDS, *CONTROL_IDS])
+    parser.add_argument(
+        "--target",
+        action="append",
+        choices=[SHARED_TRUNK_ID, *ARM_IDS, *CONTROL_IDS],
+    )
     parser.add_argument("--max-steps", type=int, default=0)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
@@ -282,19 +287,28 @@ def model_accounting(
         )
         return int(parameter_count(model, mlx_utils))
 
+    trunk_count = count(config["shared_trunk_model"])
     arm_count = count(config["arm_model"])
+    expert_count = arm_count - trunk_count
+    if expert_count <= 0:
+        raise ValueError("language expert must add parameters to the shared trunk")
+    system_total = trunk_count + expert_count * len(ARM_IDS)
     dense_active_model, dense_active_count = matched_decoder_only_config(
         arm_count, config["arm_model"], count=count
     )
     dense_total_model, dense_total_count = matched_decoder_only_config(
-        arm_count * len(ARM_IDS), base["model"], count=count
+        system_total, base["model"], count=count
     )
     return {
         "moecot_system": {
+            "topology": config["topology"],
+            "shared_trunk_model": config["shared_trunk_model"],
+            "shared_trunk_parameter_count": trunk_count,
             "arm_model": config["arm_model"],
             "arm_parameter_count": arm_count,
+            "expert_parameter_count_per_arm": expert_count,
             "arm_count": len(ARM_IDS),
-            "total_parameter_count": arm_count * len(ARM_IDS),
+            "total_parameter_count": system_total,
             "active_parameter_count_per_request": arm_count,
             "router_parameter_count": 0,
             "router_accounting_state": "EXCLUDED_UNTIL_LANGUAGE_ROUTER_IS_TRAINED",
@@ -304,7 +318,7 @@ def model_accounting(
             "parameter_count": dense_total_count,
             "active_parameter_count_per_request": dense_total_count,
             "parameter_delta_vs_moecot_total": dense_total_count
-            - arm_count * len(ARM_IDS),
+            - system_total,
             "architecture": "decoder_only_prefix_lm_control",
         },
         "dense_active_parameter": {
@@ -331,6 +345,7 @@ def matched_decoder_only_config(
     candidate.pop("source_encoder_layers", None)
     candidate.pop("source_copy_mode", None)
     candidate.pop("source_copy_auxiliary_loss_weight", None)
+    candidate.pop("expert_adapter_dim", None)
     candidate["ff_dim"] = 1
     low_count = int(count(candidate))
     candidate["ff_dim"] = 2
@@ -376,27 +391,50 @@ def target_contracts(
 ) -> dict[str, Any]:
     root = resolve(str(config["checkpoint_root"]))
     targets: dict[str, Any] = {}
-    for target in (*ARM_IDS, *CONTROL_IDS):
-        if target in ARM_IDS:
+    for target in (SHARED_TRUNK_ID, *ARM_IDS, *CONTROL_IDS):
+        if target == SHARED_TRUNK_ID:
+            view = arm_views.get("mixed_dense_control") or {}
+            model_key = "moecot_system"
+            model = (models.get(model_key) or {}).get("shared_trunk_model") or config[
+                "shared_trunk_model"
+            ]
+            parameter_count_value = int(
+                (models.get(model_key) or {}).get("shared_trunk_parameter_count") or 0
+            )
+            role = "shared_trunk"
+        elif target in ARM_IDS:
             view = (arm_views.get("arms") or {}).get(target) or {}
             model_key = "moecot_system"
             model = (models.get(model_key) or {}).get("arm_model") or config["arm_model"]
             parameter_count_value = int((models.get(model_key) or {}).get("arm_parameter_count") or 0)
+            role = "language_expert"
         else:
             view = arm_views.get("mixed_dense_control") or {}
             model = (models.get(target) or {}).get("model") or {}
             parameter_count_value = int((models.get(target) or {}).get("parameter_count") or 0)
+            role = "dense_control"
         directory = root / target
         targets[target] = {
             "target_id": target,
-            "role": "language_arm" if target in ARM_IDS else "dense_control",
+            "role": role,
             "row_ranges": list(view.get("row_ranges") or []),
             "row_count": sum(int(row["stop"]) - int(row["start"]) for row in view.get("row_ranges") or []),
-            "unique_target_positions": int(view.get("target_positions") or 0),
+            "unique_target_positions": (
+                0 if target in ARM_IDS else int(view.get("target_positions") or 0)
+            ),
             "model": model,
             "parameter_count": parameter_count_value,
-            "estimated_parameter_token_product": parameter_count_value * int(view.get("target_positions") or 0),
-            "checkpoint": relative(directory / "weights.npz"),
+            "estimated_parameter_token_product": parameter_count_value
+            * (0 if target in ARM_IDS else int(view.get("target_positions") or 0)),
+            "checkpoint": relative(
+                directory
+                / ("expert_adapter.safetensors" if target in ARM_IDS else "weights.npz")
+            ),
+            "shared_trunk_checkpoint": (
+                relative(root / SHARED_TRUNK_ID / "weights.npz")
+                if target in ARM_IDS
+                else ""
+            ),
             "optimizer_state": relative(directory / "optimizer.safetensors"),
             "receipt": relative(directory / "training_receipt.json"),
             "plan_sha256": plan_identity,
@@ -856,7 +894,14 @@ def evaluate_target(
         source_to_target_lookup=build_source_to_target_lookup(base, metadata),
     )
     checkpoint = resolve(str(target["checkpoint"]))
-    model.load_weights(str(checkpoint))
+    if target.get("role") == "language_expert":
+        shared = resolve(str(target.get("shared_trunk_checkpoint") or ""))
+        if not shared.is_file():
+            raise ValueError("expert evaluation requires shared trunk checkpoint")
+        model.load_weights(str(shared), strict=False)
+        model.load_weights(str(checkpoint), strict=False)
+    else:
+        model.load_weights(str(checkpoint))
     mx.eval(model.parameters())
     model.eval()
     artifacts = target.get("supervision_artifacts") or {}
@@ -1179,9 +1224,34 @@ def train_target(
         state_role_lookup=None,
         source_to_target_lookup=copy_lookup,
     )
+    expert_mode = target.get("role") == "language_expert"
+    shared_trunk_checkpoint = resolve(str(target.get("shared_trunk_checkpoint") or ""))
+    shared_trunk_checkpoint_sha256 = ""
+    if expert_mode:
+        if not shared_trunk_checkpoint.is_file():
+            raise ValueError("language expert requires a completed shared trunk checkpoint")
+        shared_receipt_path = shared_trunk_checkpoint.parent / "training_receipt.json"
+        shared_receipt = read_json(shared_receipt_path)
+        if not bool(shared_receipt.get("complete")):
+            raise ValueError("language expert requires a complete shared trunk receipt")
+        shared_trunk_checkpoint_sha256 = sha256_file(shared_trunk_checkpoint)
+        if shared_trunk_checkpoint_sha256 != shared_receipt.get("checkpoint_sha256"):
+            raise ValueError("shared trunk checkpoint identity mismatch")
+        model.load_weights(str(shared_trunk_checkpoint), strict=False)
+        model.freeze_to_expert_adapter()
     observed_parameters = int(parameter_count(model, mlx_utils))
     if observed_parameters != int(target["parameter_count"]):
         raise ValueError("target model parameter identity changed after preregistration")
+    trainable_parameters = int(
+        sum(
+            value.size
+            for _name, value in mlx_utils.tree_flatten(model.trainable_parameters())
+        )
+    )
+    if expert_mode and trainable_parameters != int(
+        plan["models"]["moecot_system"]["expert_parameter_count_per_arm"]
+    ):
+        raise ValueError("expert trainable parameter ownership mismatch")
     checkpoint = resolve(str(target["checkpoint"]))
     optimizer_path = resolve(str(target["optimizer_state"]))
     receipt_path = resolve(str(target["receipt"]))
@@ -1231,7 +1301,7 @@ def train_target(
     if resume:
         prior = read_json(receipt_path)
         validate_resume(prior, plan, target, checkpoint, optimizer_path)
-        model.load_weights(str(checkpoint))
+        model.load_weights(str(checkpoint), strict=not expert_mode)
         optimizer.state = mlx_utils.tree_unflatten(list(mx.load(str(optimizer_path)).items()))
         mx.eval(model.parameters(), optimizer.state)
         prior_steps = int(prior.get("optimizer_steps") or 0)
@@ -1251,7 +1321,9 @@ def train_target(
         if max_steps
         else planned_steps + source_planned_steps + sft_planned_steps + 128
     )
-    temporary_checkpoint = checkpoint.with_name("weights.partial.npz")
+    temporary_checkpoint = checkpoint.with_name(
+        checkpoint.stem + ".partial" + checkpoint.suffix
+    )
     heartbeat = checkpoint.parent / "training_heartbeat.json"
     started = time.perf_counter()
     random.seed(int(config["seed"]) + stable_int(target_id) + prior_steps)
@@ -1371,7 +1443,14 @@ def train_target(
             mx=mx,
             optim=optim,
         )
-    publish_model(model, checkpoint, temporary_checkpoint)
+    publish_model(
+        model,
+        checkpoint,
+        temporary_checkpoint,
+        mx=mx,
+        mlx_utils=mlx_utils,
+        trainable_only=expert_mode,
+    )
     publish_optimizer(mx, mlx_utils, optimizer, optimizer_path)
     total_steps = prior_steps + used_steps + int(supervision_phase["optimizer_steps"])
     total_pretrain_positions = prior_pretrain_positions + int(
@@ -1395,6 +1474,11 @@ def train_target(
         "stage_metadata_sha256": plan["stage"]["metadata_sha256"],
         "row_ranges": target["row_ranges"],
         "parameter_count": observed_parameters,
+        "trainable_parameter_count": trainable_parameters,
+        "shared_trunk_checkpoint": (
+            relative(shared_trunk_checkpoint) if expert_mode else ""
+        ),
+        "shared_trunk_checkpoint_sha256": shared_trunk_checkpoint_sha256,
         "optimizer_steps": total_steps,
         "optimizer_positions": total_positions,
         "pretrain_optimizer_positions": total_pretrain_positions,
@@ -1451,9 +1535,28 @@ def range_view(array: np.ndarray, ranges: list[dict[str, int]]) -> np.ndarray:
     return np.concatenate([array[start:stop] for start, stop in normalized], axis=0)
 
 
-def publish_model(model: Any, checkpoint: Path, temporary: Path) -> None:
+def publish_model(
+    model: Any,
+    checkpoint: Path,
+    temporary: Path,
+    *,
+    mx: Any,
+    mlx_utils: Any,
+    trainable_only: bool,
+) -> None:
     temporary.unlink(missing_ok=True)
-    model.save_weights(str(temporary))
+    if trainable_only:
+        weights = {
+            name: value
+            for name, value in mlx_utils.tree_flatten(model.trainable_parameters())
+        }
+        mx.save_safetensors(
+            str(temporary),
+            weights,
+            metadata={"policy": "moecot_language_expert_adapter_v1"},
+        )
+    else:
+        model.save_weights(str(temporary))
     if not temporary.is_file():
         raise ValueError("MLX model checkpoint publication failed")
     os.replace(temporary, checkpoint)
@@ -1481,6 +1584,14 @@ def validate_resume(
         faults.append("stage_identity_mismatch")
     if receipt.get("row_ranges") != target["row_ranges"]:
         faults.append("stage_range_mismatch")
+    if target.get("role") == "language_expert":
+        shared = resolve(str(target.get("shared_trunk_checkpoint") or ""))
+        if (
+            not shared.is_file()
+            or sha256_file(shared)
+            != receipt.get("shared_trunk_checkpoint_sha256")
+        ):
+            faults.append("shared_trunk_checkpoint_identity_mismatch")
     if not checkpoint.is_file() or sha256_file(checkpoint) != receipt.get("checkpoint_sha256"):
         faults.append("checkpoint_identity_mismatch")
     if not optimizer.is_file() or sha256_file(optimizer) != receipt.get("optimizer_state_sha256"):
@@ -1528,6 +1639,19 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("unexpected MoECOT training policy")
     if config.get("comparison_contract", {}).get("preregistered_before_training") is not True:
         raise ValueError("comparison contract must be preregistered")
+    topology = config.get("topology") or {}
+    if (
+        topology.get("policy")
+        != "project_theseus_moecot_shared_trunk_language_experts_v1"
+        or topology.get("mode") != "shared_trunk_language_experts"
+    ):
+        raise ValueError("unexpected MoECOT shared-trunk topology")
+    arm_model = dict(config.get("arm_model") or {})
+    expert_dim = int(arm_model.pop("expert_adapter_dim", 0))
+    if arm_model != dict(config.get("shared_trunk_model") or {}):
+        raise ValueError("language expert model must exactly extend the shared trunk")
+    if expert_dim != int(topology.get("expert_adapter_dim") or 0) or expert_dim <= 0:
+        raise ValueError("language expert dimension must match the topology contract")
     boundaries = config.get("boundaries") or {}
     if any(int(boundaries.get(key) or 0) for key in (
         "public_training_rows_written", "external_inference_calls", "fallback_return_count",

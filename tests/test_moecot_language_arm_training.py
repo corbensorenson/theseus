@@ -59,6 +59,22 @@ def tiny_config(tmp_path: Path) -> dict:
         "policy": "project_theseus_moecot_language_arm_training_v1",
         "seed": 7,
         "checkpoint_root": str(tmp_path / "checkpoints"),
+        "topology": {
+            "policy": "project_theseus_moecot_shared_trunk_language_experts_v1",
+            "mode": "shared_trunk_language_experts",
+            "expert_adapter_dim": 4,
+        },
+        "shared_trunk_model": {
+            "d_model": 16,
+            "num_layers": 1,
+            "num_heads": 4,
+            "num_kv_heads": 1,
+            "ff_dim": 32,
+            "rope_base": 10000.0,
+            "rms_norm_eps": 0.00001,
+            "attention_policy": "causal",
+            "source_target_separator_token_id": 2,
+        },
         "arm_model": {
             "d_model": 16,
             "num_layers": 1,
@@ -69,6 +85,7 @@ def tiny_config(tmp_path: Path) -> dict:
             "rms_norm_eps": 0.00001,
             "attention_policy": "causal",
             "source_target_separator_token_id": 2,
+            "expert_adapter_dim": 4,
         },
         "training": {
             "batch_size": 2,
@@ -513,3 +530,110 @@ def test_source_conditioned_phase_is_accounted_separately_before_sft(tmp_path: P
     assert result["supervision_optimizer_positions"] == 0
     assert result["phases"]["source_conditioned_pretraining"]["optimizer_steps"] == 1
     assert result["source_conditioned_stage"]["policy"].endswith("arrays_v1")
+
+
+def test_shared_trunk_and_expert_checkpoint_ownership_are_separate(tmp_path: Path) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = tiny_config(tmp_path)
+    trunk_model = build_model(
+        CausalTransformerConfig(vocab_size=64, **config["shared_trunk_model"]),
+        mx=mx,
+        nn=nn,
+    )
+    expert_model = build_model(
+        CausalTransformerConfig(vocab_size=64, **config["arm_model"]),
+        mx=mx,
+        nn=nn,
+    )
+    trunk_count = int(parameter_count(trunk_model, mlx_utils))
+    expert_total = int(parameter_count(expert_model, mlx_utils))
+    expert_delta = expert_total - trunk_count
+    inputs = np.asarray(
+        [[1, 4, 5, 6], [1, 7, 8, 9]], dtype=np.int32
+    )
+    base_stage = SimpleNamespace(
+        pretrain_inputs=inputs,
+        pretrain_labels=np.asarray(
+            [[4, 5, 6, 2], [7, 8, 9, 2]], dtype=np.int32
+        ),
+        pretrain_mask=np.ones_like(inputs, dtype=np.uint8),
+    )
+    root = tmp_path / "checkpoints"
+    trunk_checkpoint = root / "shared_trunk" / "weights.npz"
+    plan = {
+        "plan_sha256": "e" * 64,
+        "stage": {"stage_signature": "stage-e", "metadata_sha256": "f" * 64},
+        "models": {
+            "vocab_size": 64,
+            "moecot_system": {"expert_parameter_count_per_arm": expert_delta},
+        },
+    }
+    trunk_target = {
+        "target_id": "shared_trunk",
+        "role": "shared_trunk",
+        "row_ranges": [{"start": 0, "stop": 2}],
+        "unique_target_positions": 8,
+        "model": config["shared_trunk_model"],
+        "parameter_count": trunk_count,
+        "checkpoint": str(trunk_checkpoint),
+        "optimizer_state": str(trunk_checkpoint.parent / "optimizer.safetensors"),
+        "receipt": str(trunk_checkpoint.parent / "training_receipt.json"),
+    }
+    trunk_result = train_target(
+        config,
+        plan,
+        trunk_target,
+        stage=base_stage,
+        max_steps=1,
+        resume=False,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+    )
+    assert trunk_result["complete"] is True
+
+    expert_checkpoint = root / "rust" / "expert_adapter.safetensors"
+    source_stage = SimpleNamespace(
+        inputs=np.asarray([[1, 10, 2, 20], [1, 11, 2, 21]], dtype=np.int32),
+        labels=np.asarray([[10, 2, 20, 3], [11, 2, 21, 3]], dtype=np.int32),
+        mask=np.asarray([[0, 0, 1, 1], [0, 0, 1, 1]], dtype=np.uint8),
+        loss_mask=np.asarray([[0, 0, 1, 1], [0, 0, 1, 1]], dtype=np.float32),
+        receipt={"policy": "project_theseus_moecot_source_conditioned_arrays_v1"},
+    )
+    expert_target = {
+        "target_id": "rust",
+        "role": "language_expert",
+        "row_ranges": [{"start": 0, "stop": 2}],
+        "unique_target_positions": 0,
+        "model": config["arm_model"],
+        "parameter_count": expert_total,
+        "checkpoint": str(expert_checkpoint),
+        "shared_trunk_checkpoint": str(trunk_checkpoint),
+        "optimizer_state": str(expert_checkpoint.parent / "optimizer.safetensors"),
+        "receipt": str(expert_checkpoint.parent / "training_receipt.json"),
+    }
+    expert_result = train_target(
+        config,
+        plan,
+        expert_target,
+        stage=base_stage,
+        source_conditioned_stage=source_stage,
+        max_steps=1,
+        resume=False,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+    )
+    assert expert_result["trainable_parameter_count"] == expert_delta
+    assert expert_result["shared_trunk_checkpoint_sha256"] == trunk_result[
+        "checkpoint_sha256"
+    ]
+    adapter_keys = set(mx.load(str(expert_checkpoint)))
+    assert adapter_keys
+    assert all(".expert_adapter." in key for key in adapter_keys)

@@ -256,7 +256,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "3280b897a0d01c634c69a887027a7a1e12b7428f93bc1ecd98f3eb4d14c10a09"
+          "sha256": "a7644e8f608aaf3c9dced3830f5a9885f97bbb9744a2776deb6f7cf84478ded4"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5116,7 +5116,7 @@
       "surface_id": "neural_seed_and_decoder",
       "status": "experimental",
       "implementation_type": "independent_language_arm_mlx_training_runtime",
-      "backend": "python_mlx_apple_target_isolated_source_encoder_decoder_cross_attention_pointer_generator_independent_weights_and_optimizer_state",
+      "backend": "python_mlx_apple_all_data_shared_trunk_target_isolated_encoder_decoder_pointer_generator_language_expert_adapters",
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
@@ -5158,6 +5158,7 @@
           "source_target_isolation_or_cache_parity_changed",
           "copy_gate_or_exact_token_identity_mapping_changed",
           "copy_alignment_auxiliary_or_training_only_target_flow_changed",
+          "shared_trunk_or_expert_checkpoint_ownership_changed",
           "direct_behavior_remains_zero"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
@@ -5174,7 +5175,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The lossless stage and licensed three-way split are GREEN. Explicit pointer alignment v5 remains 0/60 development exact with 60/60 serialization after 731 seconds; sampled edit similarity is 0.10-0.33 and seen reconstruction similarity 0.02-0.12. Standalone complete language-arm LMs are falsified: aggregate system scaling is reasonable, but the Rust arm sees only 8.08M causal positions for 1.43M active parameters and cannot learn the shared substrate from other arms. No more local objective/repetition patches are authorized. The next implementation must use an all-data shared transformer trunk plus independently checkpointed language experts/adapters with matched active/total controls. Confirmation remains unspent. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no capability credit."
+      "current_wall": "Standalone complete language-arm LMs are retained as falsified at 0/60 Rust development. The canonical successor is now implemented as a 3,716,001-parameter all-data shared trunk plus five independently checkpointed 52,000-parameter language experts: 3,768,001 active and 3,976,001 total parameters. Zero-init/partial-load parity, exact frozen-trunk gradients, adapter-only checkpoints, trunk-digest replay binding, source isolation, and the eight-target plan are GREEN. Decoder-only controls match active parameters within 159 and total parameters within 2,239. This is architecture readiness only; shared-trunk training and direct behavior are pending, and confirmation remains unspent. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no capability credit."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

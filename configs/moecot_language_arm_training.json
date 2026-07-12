@@ -2,7 +2,7 @@
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
   "stage_dir": "runtime/standard_causal_transformer_survival_v1",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v5",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v6",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
   "vocabulary": {
@@ -17,19 +17,41 @@
     "broad_english_root": "data/training_data/open_conversation_pantry/broad_text/private_train/shards",
     "code_to_source_count_divisor": 50
   },
-  "arm_model": {
-    "d_model": 96,
-    "num_layers": 4,
-    "num_heads": 4,
+  "topology": {
+    "policy": "project_theseus_moecot_shared_trunk_language_experts_v1",
+    "mode": "shared_trunk_language_experts",
+    "shared_parameter_ownership": "one_checkpoint_loaded_once",
+    "expert_parameter_ownership": "one_independent_adapter_checkpoint_per_language",
+    "expert_adapter_dim": 32
+  },
+  "shared_trunk_model": {
+    "d_model": 160,
+    "num_layers": 5,
+    "num_heads": 5,
     "num_kv_heads": 1,
-    "ff_dim": 288,
+    "ff_dim": 480,
     "rope_base": 10000.0,
     "rms_norm_eps": 0.00001,
     "attention_policy": "encoder_decoder",
     "source_target_separator_token_id": 2,
-    "source_encoder_layers": 1,
+    "source_encoder_layers": 2,
     "source_copy_mode": "pointer_generator",
     "source_copy_auxiliary_loss_weight": 0.25
+  },
+  "arm_model": {
+    "d_model": 160,
+    "num_layers": 5,
+    "num_heads": 5,
+    "num_kv_heads": 1,
+    "ff_dim": 480,
+    "rope_base": 10000.0,
+    "rms_norm_eps": 0.00001,
+    "attention_policy": "encoder_decoder",
+    "source_target_separator_token_id": 2,
+    "source_encoder_layers": 2,
+    "source_copy_mode": "pointer_generator",
+    "source_copy_auxiliary_loss_weight": 0.25,
+    "expert_adapter_dim": 32
   },
   "controls": {
     "dense_total_parameter": {

@@ -124,7 +124,10 @@ share toward zero. Public benchmarks are calibration only.
   Standalone full-model arms are now falsified: aggregate data/model scaling is
   reasonable, but each independent arm is data-starved. The next topology is an
   all-data shared transformer trunk plus independently checkpointed language
-  experts/adapters. Confirmation remains unspent.
+  experts/adapters. That successor is now implemented: 3,716,001 shared parameters,
+  52,000 per expert, exact frozen-trunk gradient ownership, adapter-only checkpoints,
+  trunk-digest replay binding, and matched active/total controls. The plan is GREEN;
+  shared-trunk training and behavior remain pending. Confirmation remains unspent.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile

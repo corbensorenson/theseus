@@ -23,6 +23,7 @@ class CausalTransformerConfig:
     source_encoder_layers: int = 0
     source_copy_mode: str = "none"
     source_copy_auxiliary_loss_weight: float = 0.0
+    expert_adapter_dim: int = 0
     state_memory_slots: int = 0
     state_memory_chunk_size: int = 32
     state_memory_local_window: int = 96
@@ -62,6 +63,8 @@ class CausalTransformerConfig:
             raise ValueError("source copy auxiliary loss weight must be between zero and two")
         if self.source_copy_auxiliary_loss_weight and self.source_copy_mode == "none":
             raise ValueError("source copy auxiliary loss requires source copying")
+        if self.expert_adapter_dim < 0:
+            raise ValueError("expert adapter dimension cannot be negative")
         if not 0 <= self.source_target_separator_token_id < self.vocab_size:
             raise ValueError("source-target separator token must be in vocabulary")
         if self.state_memory_mode not in {"none", "semantic_roles", "hash_control"}:
@@ -147,6 +150,7 @@ def build_model(
     state_enabled = config.state_memory_mode != "none"
     source_encoder_enabled = config.attention_policy == "encoder_decoder"
     pointer_generator_enabled = config.source_copy_mode == "pointer_generator"
+    expert_adapter_enabled = config.expert_adapter_dim > 0
     if pointer_generator_enabled:
         if source_to_target_lookup is None:
             raise ValueError("pointer-generator mode requires a source-to-target lookup")
@@ -375,6 +379,21 @@ def build_model(
         def __call__(self, hidden: Any) -> Any:
             return self.down(nn.silu(self.gate(hidden)) * self.up(hidden))
 
+    class ExpertAdapter(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
+            self.down = nn.Linear(
+                config.d_model, config.expert_adapter_dim, bias=False
+            )
+            self.up = nn.Linear(
+                config.expert_adapter_dim, config.d_model, bias=False
+            )
+            self.up.weight = mx.zeros_like(self.up.weight)
+
+        def __call__(self, hidden: Any) -> Any:
+            return self.up(nn.silu(self.down(self.norm(hidden))))
+
     class DecoderBlock(nn.Module):
         def __init__(self) -> None:
             super().__init__()
@@ -382,6 +401,8 @@ def build_model(
             self.attention = CausalAttention()
             self.ffn_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.feed_forward = SwiGLU()
+            if expert_adapter_enabled:
+                self.expert_adapter = ExpertAdapter()
             if state_enabled:
                 self.state_embedding = nn.Embedding(config.state_memory_slots, config.d_model)
                 self.state_candidate = nn.Linear(config.d_model * 2, config.d_model, bias=False)
@@ -466,6 +487,8 @@ def build_model(
                 )
                 hidden = hidden + plan_attended * access[:, :, None]
             hidden = hidden + self.feed_forward(self.ffn_norm(hidden))
+            if expert_adapter_enabled:
+                hidden = hidden + self.expert_adapter(hidden)
             if not state_enabled:
                 return hidden, next_cache
             next_memory = memory
@@ -547,6 +570,13 @@ def build_model(
                 permutation = mx.arange(config.state_memory_slots - 1, -1, -1, dtype=mx.int32)
                 weights = weights[:, :, permutation]
             return weights
+
+        def freeze_to_expert_adapter(self) -> None:
+            if not expert_adapter_enabled:
+                raise ValueError("model has no expert adapter to train")
+            self.freeze()
+            for layer in self.layers:
+                layer.expert_adapter.unfreeze()
 
         def sequence_attention_mask(self, tokens: Any, cache: Any | None) -> Any | None:
             if config.attention_policy != "prefix_lm" or cache is not None:

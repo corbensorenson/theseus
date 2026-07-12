@@ -846,6 +846,47 @@ def test_encoder_decoder_preserves_separator_free_causal_pretraining_cache() -> 
     assert bool(mx.allclose(cached[:, -1], full[:, -1], atol=1e-4))
 
 
+def test_zero_initialized_expert_adapter_preserves_trunk_and_freezes_exactly() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    common = {
+        "vocab_size": 64,
+        "d_model": 32,
+        "num_layers": 2,
+        "num_heads": 4,
+        "num_kv_heads": 2,
+        "ff_dim": 64,
+    }
+    mx.random.seed(53)
+    trunk = build_model(CausalTransformerConfig(**common), mx=mx, nn=nn)
+    mx.random.seed(53)
+    expert = build_model(
+        CausalTransformerConfig(**common, expert_adapter_dim=8), mx=mx, nn=nn
+    )
+    expert.load_weights(
+        list(mlx_utils.tree_flatten(trunk.parameters())), strict=False
+    )
+    sequence = mx.array([[1, 10, 11, 12]], dtype=mx.int32)
+    trunk_logits, _ = trunk(sequence)
+    expert_logits, _ = expert(sequence)
+    mx.eval(trunk_logits, expert_logits)
+    assert bool(mx.allclose(trunk_logits, expert_logits, atol=1e-6))
+    expert.freeze_to_expert_adapter()
+    trainable = {
+        name for name, _value in mlx_utils.tree_flatten(expert.trainable_parameters())
+    }
+    assert trainable
+    assert all(".expert_adapter." in name for name in trainable)
+    assert parameter_count(expert, mlx_utils) > parameter_count(trunk, mlx_utils)
+
+
+def test_expert_adapter_configuration_fails_closed() -> None:
+    with pytest.raises(ValueError, match="cannot be negative"):
+        CausalTransformerConfig(vocab_size=64, expert_adapter_dim=-1).validate()
+
+
 def test_sequence_partition_audit_rejects_boundary_corruption() -> None:
     valid_inputs = np.array([[1, 10, 11, 2, 20, 21, 0]], dtype=np.int32)
     valid_mask = np.array([[0, 0, 0, 0, 1, 1, 0]], dtype=np.float32)
