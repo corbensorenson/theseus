@@ -19,6 +19,7 @@ from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
     audit_arm_views,
     audit_tokenizer_stage,
+    build_source_to_target_lookup,
     generate_model_text,
     matched_decoder_only_config,
     materialize_target_supervision,
@@ -267,6 +268,9 @@ def test_target_only_loss_trains_source_encoder_and_cross_attention() -> None:
     import mlx.nn as nn
     import mlx.utils as mlx_utils
 
+    lookup = np.full(64, -1, dtype=np.int32)
+    lookup[10] = 20
+    lookup[11] = 21
     model = build_model(
         CausalTransformerConfig(
             vocab_size=64,
@@ -277,9 +281,11 @@ def test_target_only_loss_trains_source_encoder_and_cross_attention() -> None:
             ff_dim=32,
             attention_policy="encoder_decoder",
             source_encoder_layers=1,
+            source_copy_mode="pointer_generator",
         ),
         mx=mx,
         nn=nn,
+        source_to_target_lookup=lookup,
     )
     inputs = mx.array([[1, 10, 11, 2, 20, 21]], dtype=mx.int32)
     labels = mx.array([[10, 11, 2, 20, 21, 3]], dtype=mx.int32)
@@ -299,6 +305,22 @@ def test_target_only_loss_trains_source_encoder_and_cross_attention() -> None:
     assert sum(
         value for name, value in gradient_mass.items() if ".source_attention." in name
     ) > 0.0
+    assert sum(
+        value for name, value in gradient_mass.items() if name.startswith("copy_")
+    ) > 0.0
+
+
+def test_source_target_lookup_uses_exact_token_identity_only() -> None:
+    base = {"tokenization": {"shared_source_target_vocabulary": False}}
+    metadata = {
+        "source_vocab": {"<pad>": 0, "same": 1, "source-only": 2},
+        "target_vocab": {"<pad>": 0, "same": 1, "target-only": 2},
+    }
+    lookup = build_source_to_target_lookup(base, metadata)
+    source_offset = 3
+    target_offset = 6
+    assert int(lookup[source_offset + 1]) == target_offset + 1
+    assert int(lookup[source_offset + 2]) == -1
 
 
 def test_byte_span_grammar_never_forces_completion_or_allows_invalid_tokens() -> None:

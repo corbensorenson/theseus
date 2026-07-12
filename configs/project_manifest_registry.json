@@ -256,7 +256,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "57f23f5edd1b3b412bee3ea8fea2726ddece8b3f7c1bb5917d8b8a1d266379df"
+          "sha256": "7532ae5837bae805df2f679657f0c8634f3515ef3a3ee933a11acddbe8973e9f"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5116,7 +5116,7 @@
       "surface_id": "neural_seed_and_decoder",
       "status": "experimental",
       "implementation_type": "independent_language_arm_mlx_training_runtime",
-      "backend": "python_mlx_apple_target_isolated_source_encoder_decoder_cross_attention_independent_weights_and_optimizer_state",
+      "backend": "python_mlx_apple_target_isolated_source_encoder_decoder_cross_attention_pointer_generator_independent_weights_and_optimizer_state",
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
@@ -5153,6 +5153,7 @@
           "checkpoint_or_optimizer_lineage_changed",
           "matched_control_contract_changed",
           "source_target_isolation_or_cache_parity_changed",
+          "copy_gate_or_exact_token_identity_mapping_changed",
           "direct_behavior_remains_zero"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
@@ -5169,7 +5170,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The lossless stage and licensed three-way split are GREEN. The Rust causal baseline is 0/64 confirmation, while causal, prefix-LM, and 32-pass SFT variants remain 0/60 development exact. A target-isolated source encoder plus decoder cross-attention is now implemented with adversarial isolation, cache-parity, separator-free pretraining, and target-only gradient tests. Mechanically derived decoder-only prefix-LM controls match one active arm within 0.034% and the five-arm total within 96 parameters. Semantic capability remains RED until the frozen Rust development comparison runs; confirmation remains unspent. Routing, templates, tools, forced closure, and assisted output receive no capability credit."
+      "current_wall": "The lossless stage and licensed three-way split are GREEN. Causal, prefix-LM, 32-pass SFT, and target-isolated plain encoder-decoder Rust variants remain 0/60 development exact. The plain encoder-decoder emits 60/60 valid sequences but sampled outputs remain unrelated boilerplate. A learned pointer-generator now addresses the measured copy/edit representation gap across disjoint source/target token IDs, with exact-identity mapping, target isolation, cache parity, gradient, and production-shape MLX canaries. Decoder-only controls match one 1,428,865-parameter active arm within 0.027% and the five-arm total within 389 parameters. Pointer behavior remains unmeasured; confirmation remains unspent. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no capability credit."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

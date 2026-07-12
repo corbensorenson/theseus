@@ -21,6 +21,7 @@ class CausalTransformerConfig:
     attention_policy: str = "causal"
     source_target_separator_token_id: int = 2
     source_encoder_layers: int = 0
+    source_copy_mode: str = "none"
     state_memory_slots: int = 0
     state_memory_chunk_size: int = 32
     state_memory_local_window: int = 96
@@ -52,6 +53,10 @@ class CausalTransformerConfig:
             raise ValueError("encoder-decoder attention requires source encoder layers")
         if self.attention_policy != "encoder_decoder" and self.source_encoder_layers:
             raise ValueError("source encoder layers require encoder-decoder attention")
+        if self.source_copy_mode not in {"none", "pointer_generator"}:
+            raise ValueError("source copy mode must be none or pointer_generator")
+        if self.source_copy_mode != "none" and self.attention_policy != "encoder_decoder":
+            raise ValueError("source copying requires encoder-decoder attention")
         if not 0 <= self.source_target_separator_token_id < self.vocab_size:
             raise ValueError("source-target separator token must be in vocabulary")
         if self.state_memory_mode not in {"none", "semantic_roles", "hash_control"}:
@@ -123,6 +128,7 @@ def build_model(
     mx: Any,
     nn: Any,
     state_role_lookup: Any | None = None,
+    source_to_target_lookup: Any | None = None,
 ) -> Any:
     """Build a pre-norm RoPE/GQA/SwiGLU causal LM with tied embeddings."""
 
@@ -135,6 +141,13 @@ def build_model(
     )
     state_enabled = config.state_memory_mode != "none"
     source_encoder_enabled = config.attention_policy == "encoder_decoder"
+    pointer_generator_enabled = config.source_copy_mode == "pointer_generator"
+    if pointer_generator_enabled:
+        if source_to_target_lookup is None:
+            raise ValueError("pointer-generator mode requires a source-to-target lookup")
+        if tuple(source_to_target_lookup.shape) != (config.vocab_size,):
+            raise ValueError("source-to-target lookup must match the model vocabulary")
+        source_to_target_lookup = mx.array(source_to_target_lookup, dtype=mx.int32)
     plan_enabled = config.semantic_plan_feature_count > 0
     plan_slot_attention_enabled = (
         plan_enabled and config.semantic_plan_conditioning_mode == "slot_attention"
@@ -487,6 +500,10 @@ def build_model(
                         config.d_model, eps=config.rms_norm_eps
                     )
                     layer.source_attention = CrossAttention()
+                if pointer_generator_enabled:
+                    self.copy_query = nn.Linear(config.d_model, config.d_model, bias=False)
+                    self.copy_key = nn.Linear(config.d_model, config.d_model, bias=False)
+                    self.copy_gate = nn.Linear(config.d_model, 1, bias=True)
             if plan_slot_attention_enabled:
                 for layer in self.layers:
                     layer.plan_attention_norm = nn.RMSNorm(
@@ -560,21 +577,77 @@ def build_model(
             target_access = ((seen_separator > 0) & ~separator).astype(mx.float32)
             return source_mask, target_access, has_separator
 
-        def encode_source(self, tokens: Any) -> tuple[Any | None, Any | None, Any | None]:
+        def encode_source(
+            self, tokens: Any
+        ) -> tuple[Any | None, Any | None, Any | None, Any | None]:
             """Encode only the prompt partition; target values cannot affect this memory."""
 
             if not source_encoder_enabled:
-                return None, None, None
+                return None, None, None, None
             source_mask, target_access, has_separator = self.source_partition(tokens)
             if not bool(mx.any(has_separator > 0)):
-                return None, None, None
+                return None, None, None, None
             hidden = self.token_embedding(tokens) * self.scale
             hidden = hidden * source_mask[:, :, None]
             for layer in self.source_layers:
                 hidden = layer(hidden, source_mask)
                 hidden = hidden * source_mask[:, :, None]
             memory = self.source_final_norm(hidden) * source_mask[:, :, None]
-            return memory, source_mask, target_access
+            copy_ids = source_to_target_lookup[tokens] if pointer_generator_enabled else None
+            return memory, source_mask, target_access, copy_ids
+
+        def output_logits(
+            self,
+            hidden: Any,
+            source_memory: Any | None,
+            source_mask: Any | None,
+            source_copy_ids: Any | None,
+        ) -> Any:
+            generator_logits = self.token_embedding.as_linear(hidden)
+            if (
+                not pointer_generator_enabled
+                or source_memory is None
+                or source_mask is None
+                or source_copy_ids is None
+            ):
+                return generator_logits
+            query = self.copy_query(hidden)
+            key = self.copy_key(source_memory)
+            pointer_scores = mx.matmul(query, key.transpose(0, 2, 1)) / math.sqrt(
+                config.d_model
+            )
+            valid = (source_mask > 0) & (source_copy_ids >= 0)
+            source_length = int(source_copy_ids.shape[1])
+            positions = mx.arange(source_length, dtype=mx.int32)
+            same_id = source_copy_ids[:, :, None] == source_copy_ids[:, None, :]
+            later = positions[None, None, :] > positions[None, :, None]
+            has_later_copy = mx.any(
+                same_id & later & valid[:, None, :], axis=-1
+            )
+            unique_valid = valid & ~has_later_copy
+            pointer_scores = mx.where(
+                unique_valid[:, None, :],
+                pointer_scores,
+                mx.array(-1e9, dtype=mx.float32),
+            )
+            indices = mx.broadcast_to(
+                mx.maximum(source_copy_ids, 0)[:, None, :], pointer_scores.shape
+            )
+            pointer_logits = mx.full(generator_logits.shape, -1e9, dtype=mx.float32)
+            pointer_logits = mx.put_along_axis(
+                pointer_logits, indices, pointer_scores, axis=2
+            )
+            generator_log_probs = generator_logits - mx.logsumexp(
+                generator_logits, axis=-1, keepdims=True
+            )
+            pointer_log_probs = pointer_logits - mx.logsumexp(
+                pointer_logits, axis=-1, keepdims=True
+            )
+            gate = mx.sigmoid(self.copy_gate(hidden))
+            return mx.logaddexp(
+                generator_log_probs + mx.log(mx.maximum(gate, 1e-6)),
+                pointer_log_probs + mx.log(mx.maximum(1.0 - gate, 1e-6)),
+            )
 
         def conditioned_embeddings(
             self,
@@ -689,6 +762,7 @@ def build_model(
             cached_plan_context = None
             cached_source_memory = None
             cached_source_mask = None
+            cached_source_copy_ids = None
             layer_cache_input = cache
             trailing = 0
             if (
@@ -704,16 +778,22 @@ def build_model(
                 and len(cache) > config.num_layers + trailing
             ):
                 source_entry = cache[-(trailing + 1)]
-                cached_source_memory, cached_source_mask = source_entry
+                cached_source_memory, cached_source_mask, cached_source_copy_ids = source_entry
                 trailing += 1
             if trailing:
                 layer_cache_input = cache[:-trailing]
             source_memory = cached_source_memory
             source_mask = cached_source_mask
+            source_copy_ids = cached_source_copy_ids
             source_access = None
             if source_encoder_enabled:
                 if source_memory is None:
-                    source_memory, source_mask, source_access = self.encode_source(tokens)
+                    (
+                        source_memory,
+                        source_mask,
+                        source_access,
+                        source_copy_ids,
+                    ) = self.encode_source(tokens)
                 elif cache is not None:
                     source_access = mx.ones(tokens.shape, dtype=mx.float32)
             conditioned_hidden, plan_context, plan_logits, plan_access = self.conditioned_embeddings(
@@ -739,10 +819,15 @@ def build_model(
                     )
                     next_cache.append(layer_next)
                 if source_encoder_enabled and source_memory is not None:
-                    next_cache.append((source_memory, source_mask))
+                    next_cache.append((source_memory, source_mask, source_copy_ids))
                 if plan_enabled:
                     next_cache.append((plan_context,))
-                logits = self.token_embedding.as_linear(self.final_norm(hidden))
+                logits = self.output_logits(
+                    self.final_norm(hidden),
+                    source_memory,
+                    source_mask,
+                    source_copy_ids,
+                )
                 return (logits, next_cache, plan_logits) if return_plan_logits else (logits, next_cache)
 
             role_weights = self.role_weights(tokens)

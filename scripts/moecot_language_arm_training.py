@@ -260,6 +260,7 @@ def model_accounting(
         dict(metadata.get("source_vocab") or {}),
         dict(metadata.get("target_vocab") or {}),
     )
+    copy_lookup = build_source_to_target_lookup(base, metadata)
 
     def count(model_config: dict[str, Any]) -> int:
         model = build_model(
@@ -267,6 +268,7 @@ def model_accounting(
             mx=mx,
             nn=nn,
             state_role_lookup=None,
+            source_to_target_lookup=copy_lookup,
         )
         return int(parameter_count(model, mlx_utils))
 
@@ -317,6 +319,7 @@ def matched_decoder_only_config(
     candidate = dict(seed)
     candidate["attention_policy"] = "prefix_lm"
     candidate.pop("source_encoder_layers", None)
+    candidate.pop("source_copy_mode", None)
     candidate["ff_dim"] = 1
     low_count = int(count(candidate))
     candidate["ff_dim"] = 2
@@ -331,6 +334,24 @@ def matched_decoder_only_config(
         choices.append((abs(observed - reference_parameters), observed, model))
     _delta, observed, selected = min(choices, key=lambda row: (row[0], row[1]))
     return selected, observed
+
+
+def build_source_to_target_lookup(
+    base: dict[str, Any], metadata: dict[str, Any]
+) -> np.ndarray:
+    """Map exact source token identities into target IDs for learned copying."""
+
+    source_vocab = dict(metadata.get("source_vocab") or {})
+    target_vocab = dict(metadata.get("target_vocab") or {})
+    vocab_size = model_vocab_size(base, source_vocab, target_vocab)
+    lookup = np.full(vocab_size, -1, dtype=np.int32)
+    source_offset = source_token_offset(base, source_vocab)
+    target_offset = target_token_offset(base, source_vocab)
+    for token, source_id in source_vocab.items():
+        target_id = target_vocab.get(token)
+        if target_id is not None:
+            lookup[source_offset + int(source_id)] = target_offset + int(target_id)
+    return lookup
 
 
 def target_contracts(
@@ -742,6 +763,7 @@ def evaluate_target(
         mx=mx,
         nn=nn,
         state_role_lookup=None,
+        source_to_target_lookup=build_source_to_target_lookup(base, metadata),
     )
     checkpoint = resolve(str(target["checkpoint"]))
     model.load_weights(str(checkpoint))
@@ -1053,11 +1075,18 @@ def train_target(
     inputs = range_view(stage.pretrain_inputs, target["row_ranges"])
     labels = range_view(stage.pretrain_labels, target["row_ranges"])
     mask = range_view(stage.pretrain_mask, target["row_ranges"])
+    copy_lookup = None
+    if str((target.get("model") or {}).get("source_copy_mode") or "none") != "none":
+        copy_lookup = build_source_to_target_lookup(
+            read_json(resolve(str(config["base_config"]))),
+            read_json(resolve(str(config["stage_dir"])) / "stage_metadata_v1.json"),
+        )
     model = build_model(
         CausalTransformerConfig(vocab_size=int(plan["models"]["vocab_size"]), **target["model"]),
         mx=mx,
         nn=nn,
         state_role_lookup=None,
+        source_to_target_lookup=copy_lookup,
     )
     observed_parameters = int(parameter_count(model, mlx_utils))
     if observed_parameters != int(target["parameter_count"]):

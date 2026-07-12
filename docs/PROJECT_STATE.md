@@ -103,8 +103,12 @@ share toward zero. Public benchmarks are calibration only.
   authorized as a semantic repair. The encoder-decoder successor is now implemented
   with target-isolated source memory, decoder cross-attention, and mechanically
   matched decoder-only controls. Isolation, cache parity, separator-free pretraining,
-  and target-only gradient flow are unit-proven; semantic capability remains
-  unmeasured until the frozen Rust development run.
+  and target-only gradient flow are unit-proven. Its Rust run completed in 458
+  seconds with 60/60 valid model-emitted sequences but 0/60 exact; sampled outputs
+  remain unrelated boilerplate. The next bounded repair is a learned
+  pointer-generator over exact source/target token identities, because this
+  copy-and-edit corpus uses disjoint source and target token IDs. The pointer path
+  is unit- and full-shape-gradient-proven but not yet behavior-evaluated.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile

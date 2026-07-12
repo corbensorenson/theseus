@@ -714,6 +714,45 @@ def test_encoder_decoder_configuration_fails_closed() -> None:
             state_memory_mode="semantic_roles",
             state_memory_slots=8,
         ).validate()
+    with pytest.raises(ValueError, match="source copying requires"):
+        CausalTransformerConfig(
+            **common, source_copy_mode="pointer_generator"
+        ).validate()
+
+
+def test_pointer_generator_requires_lookup_and_only_copies_source_partition() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=16,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=1,
+        ff_dim=32,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+    )
+    with pytest.raises(ValueError, match="source-to-target lookup"):
+        build_model(config, mx=mx, nn=nn)
+    lookup = np.full(64, -1, dtype=np.int32)
+    lookup[10] = 40
+    lookup[11] = 41
+    model = build_model(
+        config, mx=mx, nn=nn, source_to_target_lookup=lookup
+    )
+    model.copy_gate.weight = mx.zeros_like(model.copy_gate.weight)
+    model.copy_gate.bias = mx.full(model.copy_gate.bias.shape, -20.0)
+    tokens = mx.array([[1, 10, 11, 2, 20]], dtype=mx.int32)
+    logits, cache = model(tokens)
+    changed_target = mx.array([[1, 10, 11, 2, 33]], dtype=mx.int32)
+    changed_logits, _ = model(changed_target)
+    mx.eval(logits, changed_logits, *cache_arrays(cache))
+    assert float(logits[0, -1, 40].item()) > float(logits[0, -1, 42].item())
+    assert float(logits[0, -1, 41].item()) > float(logits[0, -1, 42].item())
+    assert bool(mx.allclose(logits[:, :4], changed_logits[:, :4], atol=1e-6))
 
 
 def test_encoder_decoder_source_memory_excludes_target_values() -> None:
@@ -735,9 +774,9 @@ def test_encoder_decoder_source_memory_excludes_target_values() -> None:
     base = mx.array([[1, 10, 11, 2, 20, 21]], dtype=mx.int32)
     changed_target = mx.array([[1, 10, 11, 2, 33, 34]], dtype=mx.int32)
     changed_source = mx.array([[1, 10, 19, 2, 20, 21]], dtype=mx.int32)
-    base_memory, base_mask, _ = model.encode_source(base)
-    target_memory, target_mask, _ = model.encode_source(changed_target)
-    source_memory, _source_mask, _ = model.encode_source(changed_source)
+    base_memory, base_mask, _, _ = model.encode_source(base)
+    target_memory, target_mask, _, _ = model.encode_source(changed_target)
+    source_memory, _source_mask, _, _ = model.encode_source(changed_source)
     mx.eval(base_memory, target_memory, source_memory, base_mask, target_mask)
     assert bool(mx.allclose(base_memory, target_memory, atol=1e-7))
     assert bool(mx.all(base_mask == target_mask))

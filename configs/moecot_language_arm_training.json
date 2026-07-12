@@ -2,7 +2,7 @@
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
   "stage_dir": "runtime/standard_causal_transformer_survival_v1",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v2",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v3",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
   "vocabulary": {
@@ -27,7 +27,8 @@
     "rms_norm_eps": 0.00001,
     "attention_policy": "encoder_decoder",
     "source_target_separator_token_id": 2,
-    "source_encoder_layers": 1
+    "source_encoder_layers": 1,
+    "source_copy_mode": "pointer_generator"
   },
   "controls": {
     "dense_total_parameter": {

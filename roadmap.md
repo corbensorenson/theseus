@@ -31,11 +31,11 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | causal, prefix-LM, and 32-pass SFT Rust runs all score 0/60 development exact; the canonical successor now has a target-isolated source encoder, decoder cross-attention, cache parity, target-only gradient proof, and mechanically matched decoder-only controls | run the frozen Rust development comparison; stop increasing repetition and spend confirmation only after nonzero development recovery |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | causal, prefix-LM, 32-pass SFT, and plain encoder-decoder Rust runs all score 0/60 development exact; sampled encoder-decoder outputs remain unrelated boilerplate, exposing the missing copy/edit channel across disjoint source/target token IDs | run one pointer-generator repair under matched controls; stop repetition and spend confirmation only after nonzero development recovery |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - termination is repaired and explicit encoder-decoder cross-attention is implemented, but no semantic result exists for it yet; the retained prefix-LM floor is 0/60 | run the preregistered Rust development comparison; require nonzero development recovery and fresh confirmation before promotion |
+| Generator capability (held-out pass) | Phase 10 | RED - explicit encoder-decoder cross-attention is also 0/60 on Rust development, with 60/60 serialization but semantically unrelated boilerplate | test a learned pointer-generator copy/edit channel once; require nonzero development recovery and fresh confirmation before promotion |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -855,7 +855,22 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   encoder and cross-attention weights. The 1,410,336-parameter active arm is matched
   by a 1,410,816-parameter decoder-only prefix-LM control (0.034% delta); the
   five-arm 7,051,680 total is matched within 96 parameters. These are architecture
-  and fairness proofs only; semantic capability remains RED pending the Rust run.
+  and fairness proofs only. The resulting run completed 8,077,440 pretraining and
+  460,756 optimizer SFT positions in 458 seconds, emitted 60/60 valid sequences,
+  and remained 0/60 exact. Bounded samples still ignored simple requested edits and
+  emitted unrelated Rust boilerplate. Plain cross-attention is therefore retained
+  as a negative; confirmation remains unspent.
+- **Learned copy/edit repair:** the source and target vocabularies intentionally own
+  disjoint IDs, while localized CommitPack supervision mostly requires retaining a
+  source span and changing a few tokens. The next candidate adds a pointer-generator:
+  learned source-position scores are mapped only through exact tokenizer identity
+  and mixed with learned vocabulary probabilities by a trainable gate. It does not
+  render an answer, force a return, or receive tool/template credit. Adversarial
+  tests bind target isolation, pointer availability, gradients, cached generation,
+  and exact vocabulary mapping. Its 1,428,865 active parameters are matched by a
+  1,429,248-parameter decoder-only control (0.027% delta); the five-arm total is
+  matched within 389 parameters. A production-shape MLX gradient canary passes;
+  direct Rust development behavior is not yet measured.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact
