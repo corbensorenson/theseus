@@ -54,9 +54,9 @@
   },
   "latest_ai_book_reconciliation": {
     "date": "2026-07-12",
-    "book_commit": "f14df17ec19a97bedc06f536e65f0e686d1edde4",
-    "book_worktree_state": "reviewed_uncommitted_qcsa_source_integration_over_base_commit",
-    "manifest_sha256": "f184f76cd31014940df493e50eb30c355d3880eceae0ae732e50af190c93cd1c",
+    "book_commit": "e0abdddbfdd39f8d6e32bae5d9f956907127ff92",
+    "book_worktree_state": "reviewed_committed_qcsa_manifest_with_unrelated_worktree_edits_outside_book_structure",
+    "manifest_sha256": "ab709cdb6a2102a6ffe9ff64bc9bbf9883f35acd96734e373fa854ce29bdec16",
     "book_manifest_chapter_count": 54,
     "source_state": "The reviewed AI_book working tree still has 54 active chapters and 504 authored Codex tests. It adds the Corben-authored qcsa_whitepaper source and source-note mappings across existing semantic-IR, VCM, claim-ledger, runtime-authority, inter-stack, routing, compact-generation, data-lifecycle, and integrated-architecture chapters; a standalone QCSA chapter is not yet present in book_structure.json.",
     "decision": "Keep the Phase-10 data-supported dense-generator floor as the capability flagship. Route QCSA into existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus ownership as a source-available manifest-pending chapter candidate, with deterministic contract/migration fixtures allowed as maintenance and learned atlas/question-policy claims deferred until the dense proposer has positive behavior.",
@@ -990,8 +990,8 @@
       ],
       "completion_rule": "Every routable implementation can emit a fail-closed authority receipt and exact content-bound route receipt.",
       "implemented_items": [
-        "A2 replacement transaction kernel is synthetic-test-backed: reports/procedural_memory_route_adoption.json now proves one guarded default-route adoption through prechecks, independent evaluators, regression guard, residual escrow, rollback criteria, support-state transition, expected-invalid controls, and clean no-cheat counters.",
-        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters.",
+        "A2 replacement transaction kernel is replayable-reference-backed for one bounded local route-authority filesystem effect: the gate independently recomputes inventory, role separation, content identity, route binding, observation, exact rollback, VIEA linkage, no-cheat counters, and eight mutation controls rather than trusting producer-ready flags.",
+        "E1 authority/SCIF runtime-adapter kernel is replayable-reference-backed for that same bounded local effect while its wider SCIF and authority fixtures remain synthetic: the governance gate consumes the independent effect audit and preserves narrow non-claims.",
         "routeable checkpoint loaders support fail-closed Ed25519 attestation/advisory admission before deserialization, generation anti-rollback, key/artifact revocation, relocation-safe content identity, custody observation, and explicit valuable-weight encrypted-storage/key-release requirements",
         "The canonical local assistant performed and consumed a guarded procedural route-authority swap, independently observed its exact candidate bytes, and rolled the runtime state back to the byte-identical prior identity with a complete declared effect inventory and zero residuals."
       ]
@@ -2915,7 +2915,7 @@
       ],
       "completion_rule": "Every material route has explicit rights, authority, hard vetoes, typed failure boundaries, and incident/abstention behavior.",
       "implemented_items": [
-        "E1 authority/SCIF runtime-adapter kernel is synthetic-test-backed: reports/governance_rights_receipt_suite.json proves one side-effecting assistant/tool fixture through runtime adapter invocation, authority transition/use receipts, effect receipt, rollback/no-rollback boundary, confused-deputy denial, Digital SCIF handle proof, expected-invalid controls, and clean no-cheat counters.",
+        "E1 authority/SCIF runtime-adapter kernel is replayable-reference-backed for one bounded local route-authority filesystem effect: reports/governance_rights_receipt_suite.json independently binds its declared inventory, distinct roles, observed content, route identity, exact rollback, VIEA records, and mutation controls; broader SCIF and authority fixtures remain synthetic.",
         "The same canonical governance suite now emits role-separated oversight, side-effect-threshold commitment, and transport-independent inter-stack exchange records. It consumes the live effect-complete assistant receipt and assurance case, and rejects 16/16 self-authorization, reviewer correlation, shared-state, missing-audit, missing-safeguard, stale/incomparable assessment, invalid assurance, expired exception/delegation, credential, budget, replay, partition-authority, and revocation controls."
       ]
     },
@@ -3229,13 +3229,14 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One default route or implementation swap executes through precheck, independent evaluator, regression, residual escrow, rollback/no-rollback record, and support-state transition.",
-        "current_support_state": "synthetic-test-backed",
+        "current_support_state": "replayable-reference-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/procedural_memory_route_adoption.json",
           "reports/procedural_memory_toolification.json",
           "reports/procedural_memory_canary_execution.json",
-          "reports/theseus_project_registry.json"
+          "reports/theseus_project_registry.json",
+          "reports/theseus_assistant_effect_complete_canary.json"
         ],
         "current_validation_commands": [
           "python3 scripts/procedural_memory_toolification_gate.py",
@@ -3244,7 +3245,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "synthetic-test-backed A2 proves one guarded route replacement transaction with prechecks, independent evaluators, rollback guard, residual escrow, and expected-invalid controls only",
+          "replayable-reference-backed A2 covers one bounded local route-authority filesystem effect with independently recomputed inventory, observation, route binding, exact rollback, VIEA linkage, and mutation controls",
           "the adopted route is local metadata workflow compression, not learned generation",
           "the transaction does not prove model quality, public transfer, external inference serving, or ASI capability"
         ]
@@ -3260,10 +3261,11 @@
         ],
         "target_support_state": "synthetic-test-backed",
         "minimum_done": "One side-effecting assistant/tool task emits authority transition, adapter invocation, effect receipt, rollback/no-rollback residual, confused-deputy denial, and fake-secret handle proof.",
-        "current_support_state": "synthetic-test-backed",
+        "current_support_state": "replayable-reference-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
           "reports/governance_rights_receipt_suite.json",
+          "reports/theseus_assistant_effect_complete_canary.json",
           "reports/theseus_assistant_product_spine_smoke.json",
           "reports/vcm_context_governor.json"
         ],
@@ -3273,7 +3275,7 @@
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "synthetic-test-backed E1 proves one authority/SCIF/runtime-adapter receipt fixture with expected-invalid controls, not universal deployed runtime enforcement",
+          "replayable-reference-backed E1 covers one bounded local route-authority filesystem effect; broader authority and SCIF fixtures remain synthetic and do not prove universal deployed enforcement",
           "Digital SCIF proof exchanges handles and sanitized summaries, not raw secret or private user payloads",
           "assistant/tool receipts remain product/governance evidence and do not support learned-generation claims"
         ]

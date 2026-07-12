@@ -7,6 +7,7 @@ validation semantics.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -106,6 +107,172 @@ def trace_complete(
 
 def no_cheat_counters_clean(payload: dict[str, Any]) -> bool:
     return all(int_or(payload.get(key), 0) == 0 for key in NO_CHEAT_COUNTERS)
+
+
+def audit_effect_complete_transaction(
+    assistant_report: dict[str, Any],
+    *,
+    expected_route_ids: set[str] | None = None,
+) -> dict[str, Any]:
+    """Independently audit one declared, observed, and exactly rolled-back effect.
+
+    This deliberately ignores the producer's aggregate ``ready`` claim until the
+    underlying inventory, observation, rollback, and VIEA records agree.  The
+    mutation controls ensure that support cannot be raised by a self-declared
+    flag or by one internally inconsistent receipt.
+    """
+    audit = _effect_transaction_audit(assistant_report, expected_route_ids=expected_route_ids)
+    mutations: list[tuple[str, Any]] = [
+        ("role_collision", lambda row: row["effect_canary"].__setitem__("evaluator_id", row["effect_canary"].get("proposer_id"))),
+        ("undeclared_extra_effect", lambda row: row["effect_canary"]["effect_inventory"].append({"effect_id": "undeclared"})),
+        ("observation_digest_mismatch", lambda row: row["effect_canary"]["observation"].__setitem__("sha256", "0" * 64)),
+        ("summary_identity_mismatch", lambda row: row.setdefault("summary", {}).__setitem__("effect_canary_first_effect_identity", "0" * 64)),
+        ("rollback_incomplete", lambda row: row["effect_canary"]["rollback"].__setitem__("complete", False)),
+        ("rollback_residual", lambda row: row["effect_canary"]["rollback"].__setitem__("residual_count", 1)),
+        ("identity_not_restored", lambda row: row["effect_canary"]["rollback"].__setitem__("final_identity", "f" * 64)),
+        ("route_binding_mismatch", lambda row: row["effect_canary"]["observation"].__setitem__("expected_route_id", "route.not.adopted")),
+    ]
+    controls = []
+    for control, mutate in mutations:
+        candidate = copy.deepcopy(assistant_report)
+        mutate(candidate)
+        rejected = not _effect_transaction_audit(candidate, expected_route_ids=expected_route_ids)["valid"]
+        controls.append({"control": control, "rejected": rejected})
+    audit["expected_invalid_controls"] = controls
+    audit["expected_invalid_control_count"] = len(controls)
+    audit["expected_invalid_rejected_count"] = sum(1 for row in controls if row["rejected"])
+    audit["valid"] = audit["valid"] and all(row["rejected"] for row in controls)
+    audit["support_state"] = "replayable-reference-backed" if audit["valid"] else "unsupported"
+    audit["receipt_digest"] = stable_hash(
+        {
+            "transaction_id": audit["transaction_id"],
+            "route_id": audit["route_id"],
+            "checks": audit["checks"],
+            "controls": controls,
+        }
+    )
+    return audit
+
+
+def _effect_transaction_audit(
+    assistant_report: dict[str, Any],
+    *,
+    expected_route_ids: set[str] | None,
+) -> dict[str, Any]:
+    effect = assistant_report.get("effect_canary") if isinstance(assistant_report.get("effect_canary"), dict) else {}
+    summary = assistant_report.get("summary") if isinstance(assistant_report.get("summary"), dict) else {}
+    inventory = effect.get("effect_inventory") if isinstance(effect.get("effect_inventory"), list) else []
+    declared = inventory[0] if len(inventory) == 1 and isinstance(inventory[0], dict) else {}
+    observation = effect.get("observation") if isinstance(effect.get("observation"), dict) else {}
+    rollback = effect.get("rollback") if isinstance(effect.get("rollback"), dict) else {}
+    parsed = observation.get("parsed_json") if isinstance(observation.get("parsed_json"), dict) else {}
+    transaction_id = str(effect.get("transaction_id") or "")
+    route_id = str(observation.get("expected_route_id") or parsed.get("route_id") or "")
+    roles = [str(effect.get(key) or "") for key in ("proposer_id", "observer_id", "evaluator_id")]
+    trace = assistant_report.get("assistant_viea_trace") if isinstance(assistant_report.get("assistant_viea_trace"), list) else []
+    trace_by_type: dict[str, list[dict[str, Any]]] = {}
+    for row in trace:
+        if isinstance(row, dict):
+            trace_by_type.setdefault(canonical_record_type(row.get("record_type")), []).append(row)
+    effect_rows = {
+        kind: [
+            row for row in trace_by_type.get(kind, [])
+            if isinstance(row.get("content"), dict) and row["content"].get("transaction_id") == transaction_id
+        ]
+        for kind in ("effect_inventory", "effect_observation_record", "rollback_completeness_record")
+    }
+    inventory_row = effect_rows["effect_inventory"][0] if len(effect_rows["effect_inventory"]) == 1 else {}
+    observation_row = effect_rows["effect_observation_record"][0] if len(effect_rows["effect_observation_record"]) == 1 else {}
+    rollback_row = effect_rows["rollback_completeness_record"][0] if len(effect_rows["rollback_completeness_record"]) == 1 else {}
+    inventory_content = inventory_row.get("content") if isinstance(inventory_row.get("content"), dict) else {}
+    observation_content = observation_row.get("content") if isinstance(observation_row.get("content"), dict) else {}
+    rollback_content = rollback_row.get("content") if isinstance(rollback_row.get("content"), dict) else {}
+    trace_counters_clean = bool(trace) and all(
+        all(key in row for key in NO_CHEAT_COUNTERS) and no_cheat_counters_clean(row)
+        for row in trace
+        if isinstance(row, dict)
+    )
+    target_path = str(effect.get("target") or "")
+    explicit_counter_payloads = [assistant_report, effect, parsed]
+    checks = {
+        "assistant_green": assistant_report.get("trigger_state") == "GREEN",
+        "bounded_effect_policy": effect.get("policy") == "project_theseus_bounded_local_effect_transaction_v1",
+        "effect_enabled_and_ready": effect.get("enabled") is True and effect.get("ready") is True,
+        "one_declared_effect": len(inventory) == 1 and bool(declared.get("effect_id")),
+        "roles_present_and_distinct": all(roles) and len(set(roles)) == 3,
+        "observer_role_matches": observation.get("observer_id") == roles[1],
+        "transaction_identity_matches": bool(transaction_id) and parsed.get("transaction_id") == transaction_id,
+        "route_identity_matches": bool(route_id) and parsed.get("route_id") == route_id,
+        "route_is_expected": expected_route_ids is None or route_id in expected_route_ids,
+        "target_is_bounded_local_effect": target_path.startswith("runtime/assistant_effects/")
+        and not Path(target_path).is_absolute()
+        and ".." not in Path(target_path).parts,
+        "target_path_matches": bool(effect.get("target")) and effect.get("target") == declared.get("path") == observation.get("path"),
+        "content_digest_matches": bool(declared.get("intended_content_sha256"))
+        and declared.get("intended_content_sha256") == observation.get("expected_content_sha256") == observation.get("sha256"),
+        "observation_matches_intent": observation.get("exists") is True and observation.get("matches_intent") is True and not observation.get("write_fault"),
+        "first_effect_identity_matches": bool(observation.get("identity")) and observation.get("identity") == rollback.get("first_effect_identity"),
+        "rollback_exact_and_residual_free": rollback.get("complete") is True
+        and rollback.get("before_identity") == rollback.get("final_identity")
+        and int_or(rollback.get("residual_count"), -1) == 0
+        and effect.get("residuals") == []
+        and not rollback.get("fault"),
+        "rollback_operation_matches_prior_state": (
+            rollback.get("prior_path_existed") is True
+            and rollback.get("restored_prior_bytes") is True
+            and declared.get("operation") == "replace"
+        ) or (
+            rollback.get("prior_path_existed") is False
+            and rollback.get("removed_new_path") is True
+            and declared.get("operation") == "create"
+        ),
+        "effect_was_material": bool(rollback.get("first_effect_identity"))
+        and rollback.get("first_effect_identity") != rollback.get("before_identity"),
+        "summary_matches_receipt": summary.get("effect_canary_enabled") is True
+        and summary.get("effect_canary_ready") is True
+        and summary.get("effect_canary_transaction_id") == transaction_id
+        and summary.get("effect_canary_first_effect_identity") == rollback.get("first_effect_identity")
+        and summary.get("effect_canary_final_effect_identity") == rollback.get("final_identity")
+        and summary.get("effect_canary_rollback_complete") is True,
+        "viea_effect_records_unique": all(len(rows) == 1 for rows in effect_rows.values()),
+        "viea_inventory_matches": inventory_content.get("declared_effects") == inventory
+        and inventory_content.get("proposer_id") == roles[0]
+        and inventory_content.get("undeclared_effects_permitted") is False,
+        "viea_observation_matches": observation_content.get("observation") == observation
+        and observation_content.get("observer_id") == roles[1]
+        and observation_content.get("observer_independent_from_proposer") is True
+        and observation_content.get("effect_inventory_record_id") == inventory_row.get("record_id"),
+        "viea_rollback_matches": rollback_content.get("rollback") == rollback
+        and rollback_content.get("evaluator_id") == roles[2]
+        and rollback_content.get("evaluator_independent_from_proposer_and_observer") is True
+        and rollback_content.get("ready") is True
+        and rollback_content.get("residuals") == []
+        and rollback_content.get("effect_inventory_record_id") == inventory_row.get("record_id")
+        and rollback_content.get("effect_observation_record_id") == observation_row.get("record_id"),
+        "no_cheat_counters_explicit_and_clean": all(
+            all(key in payload for key in NO_CHEAT_COUNTERS) and no_cheat_counters_clean(payload)
+            for payload in explicit_counter_payloads
+        )
+        and summary.get("public_training_rows_written") == 0
+        and summary.get("fallback_return_count") == 0
+        and int_or(summary.get("runtime_external_inference_calls", summary.get("external_inference_calls")), -1) == 0
+        and trace_counters_clean,
+    }
+    hard_gaps = [key for key, passed in checks.items() if not passed]
+    return {
+        "policy": "project_theseus_independent_effect_transaction_audit_v1",
+        "valid": not hard_gaps,
+        "support_state": "replayable-reference-backed" if not hard_gaps else "unsupported",
+        "transaction_id": transaction_id,
+        "route_id": route_id,
+        "effect_id": str(declared.get("effect_id") or ""),
+        "checks": checks,
+        "hard_gaps": hard_gaps,
+        "non_claims": [
+            "This audit covers one bounded local route-authority filesystem effect class.",
+            "It does not prove general tool safety, model capability, public transfer, or ASI.",
+        ],
+    }
 
 
 def compact_record_payload(payload: dict[str, Any]) -> dict[str, Any]:

@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from viea_spine_records import audit_effect_complete_transaction
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "procedural_memory_toolification.json"
@@ -23,6 +25,7 @@ DEFAULT_TOOLIFICATION = ROOT / "reports" / "procedural_memory_toolification.json
 DEFAULT_CANARY = ROOT / "reports" / "procedural_memory_canary_execution.json"
 DEFAULT_REGISTRY = ROOT / "reports" / "theseus_project_registry.json"
 DEFAULT_STEWARD = ROOT / "configs" / "project_steward.json"
+DEFAULT_ASSISTANT_REPORT = ROOT / "reports" / "theseus_assistant_effect_complete_canary.json"
 DEFAULT_OUT = ROOT / "reports" / "procedural_memory_route_adoption.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "procedural_memory_route_adoption.md"
 
@@ -34,6 +37,7 @@ def main() -> int:
     parser.add_argument("--canary-execution", default=rel(DEFAULT_CANARY))
     parser.add_argument("--registry", default=rel(DEFAULT_REGISTRY))
     parser.add_argument("--steward", default=rel(DEFAULT_STEWARD))
+    parser.add_argument("--assistant-report", default=rel(DEFAULT_ASSISTANT_REPORT))
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     args = parser.parse_args()
@@ -45,6 +49,7 @@ def main() -> int:
         canary_path=resolve(args.canary_execution),
         registry_path=resolve(args.registry),
         steward_path=resolve(args.steward),
+        assistant_path=resolve(args.assistant_report),
         started=started,
     )
     write_json(resolve(args.out), report)
@@ -60,6 +65,7 @@ def build_report(
     canary_path: Path,
     registry_path: Path,
     steward_path: Path,
+    assistant_path: Path,
     started: float,
 ) -> dict[str, Any]:
     config = read_json(config_path)
@@ -67,9 +73,18 @@ def build_report(
     canary = read_json(canary_path)
     registry = read_json(registry_path)
     steward = read_json(steward_path)
+    assistant_report = read_json(assistant_path)
     policies = adoption_policies(config)
     transactions = [evaluate_policy(policy, toolification, canary, registry, steward) for policy in policies]
     default_routes = [dict_value(row.get("default_route")) for row in transactions if row.get("default_route")]
+    adopted_route_ids = {
+        str(row.get("id")) for row in default_routes
+        if row.get("default_route_adopted") is True and row.get("id")
+    }
+    effect_transaction_audit = audit_effect_complete_transaction(
+        assistant_report,
+        expected_route_ids=adopted_route_ids,
+    )
     records = [record for transaction in transactions for record in build_viea_records(transaction)]
     replacement_kernels = [
         build_replacement_transaction_kernel(
@@ -85,13 +100,28 @@ def build_report(
     replacement_kernel = {
         "policy": "project_theseus_a2_replacement_transaction_kernel_set_v1",
         "state": "GREEN" if replacement_kernels and all(row.get("state") == "GREEN" for row in replacement_kernels) else "RED",
-        "support_state": "synthetic-test-backed" if replacement_kernels and all(row.get("support_state") == "synthetic-test-backed" for row in replacement_kernels) else "unsupported",
+        "support_state": (
+            "replayable-reference-backed"
+            if replacement_kernels
+            and all(row.get("state") == "GREEN" for row in replacement_kernels)
+            and effect_transaction_audit["valid"]
+            else "synthetic-test-backed"
+            if replacement_kernels and all(row.get("support_state") == "synthetic-test-backed" for row in replacement_kernels)
+            else "unsupported"
+        ),
         "kernel_count": len(replacement_kernels),
         "kernels": replacement_kernels,
+        "effect_complete_transaction_audit": effect_transaction_audit,
     }
     hard_gaps = [gap_item for transaction in transactions for gap_item in list_dicts(transaction.get("hard_gaps"))]
     if replacement_kernel["state"] != "GREEN":
         hard_gaps.append(gap("A2_replacement_transaction_kernel", "replacement_transaction_kernel_not_green", replacement_kernel))
+    if not effect_transaction_audit["valid"]:
+        hard_gaps.append(gap(
+            "A2_replacement_transaction_kernel",
+            "effect_complete_reference_not_valid",
+            effect_transaction_audit,
+        ))
     warnings = [warning for transaction in transactions for warning in list_dicts(transaction.get("warnings"))]
     trigger_state = "GREEN"
     if hard_gaps:
@@ -104,11 +134,15 @@ def build_report(
         "canary_execution": rel(canary_path),
         "registry": rel(registry_path),
         "steward": rel(steward_path),
+        "assistant_report": rel(assistant_path),
         "transaction_count": len(transactions),
         "default_route_adopted_count": sum(1 for row in default_routes if row.get("default_route_adopted")),
         "default_route_guarded_count": sum(1 for row in default_routes if row.get("continued_regression_guard", {}).get("armed")),
         "a2_replacement_transaction_kernel_state": replacement_kernel["state"],
         "a2_replacement_transaction_kernel_support_state": replacement_kernel["support_state"],
+        "effect_complete_transaction_valid": effect_transaction_audit["valid"],
+        "effect_complete_invalid_control_count": effect_transaction_audit["expected_invalid_control_count"],
+        "effect_complete_invalid_rejected_count": effect_transaction_audit["expected_invalid_rejected_count"],
         "learned_generation_claim_count": sum(1 for row in default_routes if row.get("learned_generation_claim_allowed")),
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -126,6 +160,7 @@ def build_report(
         "adoption_transaction": transactions[0] if transactions else {},
         "adoption_transactions": transactions,
         "replacement_transaction_kernel": replacement_kernel,
+        "effect_complete_transaction_audit": effect_transaction_audit,
         "default_routes": default_routes,
         "viea_route_adoption_records": records,
         "hard_gaps": hard_gaps,
@@ -134,6 +169,7 @@ def build_report(
             "Default procedural routes are workflow compression, not learned model generation.",
             "Tool/router/procedural route behavior must be reported separately from learned code generation.",
             "This adoption gate does not train on public benchmarks or serve external inference.",
+            "Replayable-reference-backed support covers one bounded local route-authority filesystem effect, not general replacement safety.",
         ],
         "public_training_rows_written": 0,
         "external_inference_calls": 0,

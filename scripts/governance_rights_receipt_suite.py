@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from viea_spine_records import audit_effect_complete_transaction
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "governance_rights_receipt_suite.json"
@@ -300,6 +302,7 @@ def build_authority_runtime_adapter_kernel(
     assistant_path: Path,
     vcm_path: Path,
 ) -> dict[str, Any]:
+    effect_transaction_audit = audit_effect_complete_transaction(assistant_report)
     trace_rows = list_dicts(assistant_report.get("assistant_viea_trace"))
     adapter = trace_content_for_type(trace_rows, "runtime_adapter_invocation", "adapter")
     authority_transition = trace_content_for_type(trace_rows, "authority_transition", "from_authority")
@@ -383,6 +386,14 @@ def build_authority_runtime_adapter_kernel(
             "reason": "E1 cannot pass with public-training, external-inference, or fallback counter faults",
         },
     ]
+    expected_invalid_controls.extend(
+        {
+            "control": f"effect_transaction_{row['control']}",
+            "rejected": row["rejected"],
+            "reason": "independent effect receipt audit must fail closed under this mutation",
+        }
+        for row in effect_transaction_audit["expected_invalid_controls"]
+    )
     hard_gaps = []
     if assistant_report.get("trigger_state") != "GREEN":
         hard_gaps.append({"kind": "assistant_report_not_green", "state": assistant_report.get("trigger_state")})
@@ -396,6 +407,11 @@ def build_authority_runtime_adapter_kernel(
         hard_gaps.append({"kind": "confused_deputy_denial_missing", "confused_deputy_denial": confused_deputy_denial})
     if not rollback_or_residual["rollback_handle_present"] and not rollback_or_residual["no_rollback_residual"]:
         hard_gaps.append({"kind": "rollback_or_residual_missing", "rollback_or_residual": rollback_or_residual})
+    if not effect_transaction_audit["valid"]:
+        hard_gaps.append({
+            "kind": "effect_complete_transaction_not_valid",
+            "audit": effect_transaction_audit,
+        })
     if any(not row["rejected"] for row in expected_invalid_controls):
         hard_gaps.append({"kind": "expected_invalid_control_not_rejected", "controls": expected_invalid_controls})
 
@@ -414,7 +430,15 @@ def build_authority_runtime_adapter_kernel(
         and confused_deputy_denial["authority_widening_denied_by_vcm"]
         and (rollback_or_residual["rollback_handle_present"] or bool(rollback_or_residual["no_rollback_residual"]))
     )
-    support_state = "synthetic-test-backed" if synthetic_support_ready else ("prototype-backed" if state == "GREEN" else "unsupported")
+    support_state = (
+        "replayable-reference-backed"
+        if synthetic_support_ready and effect_transaction_audit["valid"]
+        else "synthetic-test-backed"
+        if synthetic_support_ready
+        else "prototype-backed"
+        if state == "GREEN"
+        else "unsupported"
+    )
     return {
         "policy": "project_theseus_e1_authority_scif_runtime_adapter_kernel_v1",
         "state": state,
@@ -431,12 +455,15 @@ def build_authority_runtime_adapter_kernel(
             "raw_secret_visible": scif_proof["raw_secret_visible"],
             "confused_deputy_denial_present": confused_deputy_denial["fork_denial_fixture_passed"] and confused_deputy_denial["authority_widening_denied_by_vcm"],
             "rollback_or_no_rollback_present": rollback_or_residual["rollback_handle_present"] or bool(rollback_or_residual["no_rollback_residual"]),
+            "effect_complete_transaction_valid": effect_transaction_audit["valid"],
+            "effect_complete_receipt_digest": effect_transaction_audit["receipt_digest"],
         },
         "slice_id": "E1_authority_scif_runtime_adapter_kernel",
         "side_effecting_task": side_effecting_task,
         "scif_proof": scif_proof,
         "confused_deputy_denial": confused_deputy_denial,
         "rollback_or_residual": rollback_or_residual,
+        "effect_complete_transaction_audit": effect_transaction_audit,
         "expected_invalid_controls": expected_invalid_controls,
         "support_state_transition": {
             "from_state": "argument",
@@ -449,7 +476,7 @@ def build_authority_runtime_adapter_kernel(
         },
         "hard_gaps": hard_gaps,
         "non_claims": [
-            "E1 synthetic-test-backed proves one local authority/SCIF/runtime-adapter fixture chain plus expected-invalid controls only.",
+            "E1 replayable-reference-backed covers one real bounded local route-authority filesystem effect plus synthetic authority/SCIF fixtures.",
             "It is not legal compliance, deployed security certification, learned generation, public transfer, or ASI evidence.",
             "SCIF handles and redaction receipts are evidence boundaries, not permission to expose raw secrets.",
         ],
