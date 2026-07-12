@@ -13,9 +13,12 @@ from typing import Any
 
 import numpy as np
 
+from standard_causal_transformer_survival import build_data_model_scaling_contract
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports" / "standard_causal_transformer_survival.json"
+DEFAULT_CONFIG = ROOT / "configs" / "standard_causal_transformer_survival.json"
 DEFAULT_CANDIDATES = ROOT / "reports" / "standard_causal_transformer_survival_candidates.jsonl"
 DEFAULT_OUT = ROOT / "reports" / "standard_causal_transformer_survival_gate.json"
 DEFAULT_TARGET_MODE_COMPARISON = (
@@ -98,6 +101,7 @@ def main() -> int:
     candidates_path = resolve(args.candidates)
     report = read_json(report_path)
     candidates = read_jsonl(candidates_path)
+    scaling_contract = build_data_model_scaling_contract(read_json(DEFAULT_CONFIG))
     gate = build_gate(
         report_path,
         candidates_path,
@@ -108,6 +112,7 @@ def main() -> int:
         sft_contract_integrity_path=resolve(args.sft_contract_integrity),
         sft_contract_blind_audit_path=resolve(args.sft_contract_blind_audit),
         sft_contract_control_report_path=resolve(args.sft_contract_control_report),
+        scaling_contract=scaling_contract,
     )
     write_json(resolve(args.out), gate)
     view = {
@@ -131,9 +136,32 @@ def build_gate(
     sft_contract_integrity_path: Path = DEFAULT_SFT_CONTRACT_INTEGRITY,
     sft_contract_blind_audit_path: Path = DEFAULT_SFT_CONTRACT_BLIND_AUDIT,
     sft_contract_control_report_path: Path = DEFAULT_SFT_CONTRACT_CONTROL_REPORT,
+    scaling_contract: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     hard_gaps: list[dict[str, Any]] = []
     adoption_gaps: list[dict[str, Any]] = []
+    scaling_contract = scaling_contract or {
+        "training_authorized": False,
+        "hard_gaps": ["data_model_scaling_contract_missing"],
+    }
+    scaling_infrastructure_gaps = [
+        gap for gap in scaling_contract.get("hard_gaps") or []
+        if gap != "canonical_mixed_corpus_receipt_missing"
+    ]
+    if scaling_infrastructure_gaps:
+        hard_gaps.append(gap(
+            "data_model_scaling_contract_invalid",
+            {"hard_gaps": scaling_infrastructure_gaps},
+        ))
+    if scaling_contract.get("training_authorized") is not True:
+        adoption_gaps.append(gap(
+            "data_model_scaling_contract_not_ready",
+            {
+                "hard_gaps": scaling_contract.get("hard_gaps") or [],
+                "planning_estimate_shortfall_positions": scaling_contract.get("planning_estimate_shortfall_positions"),
+            },
+            severity="adoption_gap",
+        ))
     summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
     stage = report.get("stage") if isinstance(report.get("stage"), dict) else {}
     training = report.get("training") if isinstance(report.get("training"), dict) else {}
@@ -434,6 +462,9 @@ def build_gate(
                 "adoption_rejection_reasons"
             ],
             "slot_ordered_plan_deltas": slot_ordered_plan_audit["deltas"],
+            "data_model_scaling_contract_state": scaling_contract.get("state"),
+            "data_model_scaling_training_authorized": scaling_contract.get("training_authorized") is True,
+            "data_model_scaling_shortfall_positions": scaling_contract.get("planning_estimate_shortfall_positions"),
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,
@@ -455,6 +486,7 @@ def build_gate(
         "ordered_plan_ablation": ordered_plan_audit["receipt"],
         "latent_ordered_plan_ablation": latent_ordered_plan_audit["receipt"],
         "slot_ordered_plan_ablation": slot_ordered_plan_audit["receipt"],
+        "data_model_scaling_contract": scaling_contract,
     }
 
 

@@ -1469,6 +1469,8 @@
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/training_data_admission_v1.py",
         "python3 scripts/training_data_lineage_audit.py",
+        "python3 scripts/standard_causal_transformer_survival.py --out /tmp/standard_causal_transformer_scaling_plan.json --candidates-out /tmp/standard_causal_transformer_scaling_candidates.jsonl",
+        "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
         "python3 scripts/broad_capability_curriculum_v1.py",
         "python3 scripts/broad_capability_survival_lane_run_v1.py",
         "python3 tests/test_training_data_lineage_audit.py",
@@ -1493,6 +1495,8 @@
         "reports/training_data_admission_v1.json",
         "reports/training_data_lineage_audit.json",
         "reports/training_data_lineage_audit.md",
+        "configs/standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_gate.json",
         "runtime/data_governance/data_admission_receipts_v1.jsonl.gz",
         "reports/broad_capability_curriculum_v1.json",
         "reports/broad_capability_survival_lane_run_v1.json",
@@ -1504,9 +1508,10 @@
         "reports/theseus_assistant_teacher_share_smoke.json"
       ],
       "missing_items": [
+        "canonical mixed English/code corpus receipt under the frozen standard-transformer tokenizer ABI with 132,464,640 unique positions and all domain/language/evidence minima",
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
-      "smallest_next_patch": "Extend the existing admitted-row ledger into one frozen full-state update/unlearning campaign; separately report utility, forgetting, lineage invalidation, behavioral influence, privacy, and physical storage/backup erasure.",
+      "smallest_next_patch": "Extend the canonical standard-transformer stage to materialize a content-bound mixed English/code corpus under its actual tokenizer ABI, then expand governed unique data to the frozen 132,464,640-position floor without weakening domain, language, contamination, or lifecycle evidence.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/training_data_admission_v1.py",
@@ -1815,6 +1820,7 @@
         "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+        "python3 scripts/standard_causal_transformer_survival.py --out /tmp/standard_causal_transformer_scaling_plan.json --candidates-out /tmp/standard_causal_transformer_scaling_candidates.jsonl",
         "python3 scripts/training_inference_execution_plan_gate.py --gate",
         "python3 scripts/policy_optimization_gate.py",
         "python3 scripts/generation_mode_gate.py"
@@ -1831,6 +1837,8 @@
         "reports/strict_generator_mlx_dense_active_control_100m_5m_private_adaptation_decode_canary.json",
         "reports/strict_generator_mlx_dense_right_sized_v1_contrast_5_6m.json",
         "reports/strict_generator_mlx_dense_right_sized_v1_contrast_rung_sweep.json",
+        "configs/standard_causal_transformer_survival.json",
+        "reports/standard_causal_transformer_survival_gate.json",
         "reports/strict_generator_mlx_dense_semantic_plan_body_pieces_5_8m.json",
         "reports/strict_generator_mlx_dense_semantic_plan_body_pieces_rung_sweep.json",
         "reports/strict_generator_mlx_dense_body_open_vocab_5_5m.json",
@@ -2089,9 +2097,10 @@
         "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=GREEN invalid_claim_count=0 static_information_flow_violation_count=0"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence.",
-      "current_wall": "The repaired standard causal lane remains 0/24 exact. Unrestricted recurrent state improves partial metrics but is role-insensitive; fixed role reads are outperformed by zero/shuffle. A predeclared continuation adds exactly 1,200,725 body positions to semantic, hash, and body-only arms. All stay 0/24 and heldout loss worsens: semantic 1.623448 -> 1.667523, hash 1.668364 -> 1.676777, body 1.737719 -> 1.748454. Semantic reward rises to 0.449635 but coverage falls 24 -> 23. Three continuation integrity/blind audits are GREEN. The gate records NOT_ADOPTED and stop_state_scaling_branch. Architecture/extra-SFT churn is no longer justified by this surface.",
-      "next_required_work": "Use the all-candidate wrong-answer labels and Semantic-IR obligations to build one bounded governed OpenAI-teacher distillation tranche over private algorithm, return-shape, verifier-contract, and selector residuals. Exclude all heldout families/prompts/bodies, require executable tests, verifier acceptance, provenance/license/leakage receipts, and runtime exclusion. Compare the same body-only and unrestricted-state routes on the frozen family-disjoint split with equal exposure; require an exact pass above zero before preference/RL or public calibration.",
+      "current_wall": "The repaired standard causal lane remains 0/24 exact, and architecture/extra-SFT/teacher/head churn is falsified on this surface. The frozen 6,623,232-active-parameter scaling contract requires 132,464,640 unique canonical positions. Existing content-bound code and conversation receipts estimate 9,866,701 positions under incompatible accounting ABIs, only 1.489711 per active parameter, leaving a 122,597,939-position shortfall. No canonical mixed-corpus receipt exists, so training is correctly unauthorized.",
+      "next_required_work": "Build the mixed English/code corpus through the existing standard-transformer stage and tokenizer ABI; independently prove authority/license, content provenance, exact+semantic deduplication, public exclusion, completeness, capability/tail coverage, recursive synthetic share, lifecycle, domain/language minima, and repetition accounting. Expand to the frozen floor, then run the complete dense MLX rung before any amplifier, challenger, or public calibration.",
       "implemented_items": [
+        "A frozen data/model scaling contract is now canonical in configs/standard_causal_transformer_survival.json and consumed by both the trainer and independent survival gate. It binds the 6,623,232-active-parameter rung to a 132,464,640 unique-position floor, domain/language minima, eleven evidence dimensions, maximum 4x repetition, exact planning/governance receipt identities, and fail-closed training authorization. Current noncanonical planning evidence is 9,866,701 positions with a 122,597,939-position shortfall; no capability or training-readiness claim is made.",
         "latest graph/operation source-condition adequacy summary reports/strict_generator_mlx_operation_graph_adequacy_summary_20260706.json: prompt-visible graph/type obligations now require graph-walk AST evidence; the private train replay moved from 4 admitted wrong rows to 0 admitted rows with explicit graph_walk_evidence and operation_evidence residuals, preserving no-cheat counters.",
         "graph role-signal patch: graph traversal methods and graph-state identifiers now map into existing body-action/body-operand role heads, and the action trace emits missing_graph_walk_evidence for graph/hops/path plans without traversal-shaped AST evidence after normalizing plan/source_plan/semantic_plan/expected_plan/plan_tags visible plan fields. reports/strict_generator_graph_role_signal_smoke_summary_20260706.json confirms trainable-path consumption but rejects the checkpoint because heldout LM/transition/action losses regress.",
         "body-action/body-operand role class balancing: optional inverse-sqrt train-split role-frequency weighting is now recorded in target summaries. reports/strict_generator_graph_role_balance_canary_summary_20260706.json shows the lower auxiliary mix fixes LM regression and preserves operand improvement, but transition/action losses still regress; class balancing is wired but not sufficient in the one-epoch 64-row canary.",

@@ -25,6 +25,7 @@ from standard_causal_transformer_survival import (
     EXECUTABLE_STATE_ROLES,
     beam_rank_score,
     batched_beam_advance,
+    build_data_model_scaling_contract,
     cache_arrays,
     causal_loss,
     completion_pool_target,
@@ -98,6 +99,67 @@ from generation_mode_gate import audit_comparison, read_report_ref
 from policy_optimization_gate import extract_behavior_metrics, summarize_behavior_evidence
 from code_lm_decoder_contracts import visible_arg_count_hint_for_task
 from broad_private_generalization_ladder_v1 import row_from_template, template_bank
+
+
+def test_frozen_scaling_contract_reports_noncanonical_shortfall_without_authorizing_training() -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+
+    contract = build_data_model_scaling_contract(config)
+
+    assert contract["training_authorized"] is False
+    assert contract["planning_estimate_positions"] == 9_866_701
+    assert contract["planning_estimate_tokens_per_active_parameter"] == 1.489711
+    assert contract["planning_estimate_shortfall_positions"] == 122_597_939
+    assert contract["planning_estimate_is_training_authority"] is False
+    assert contract["hard_gaps"] == ["canonical_mixed_corpus_receipt_missing"]
+
+
+def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetition_inflation(tmp_path: Path) -> None:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    scaling = config["data_model_scaling_contract"]
+    required = scaling["required_unique_positions"]
+    receipt_path = tmp_path / "canonical-corpus.json"
+    receipt = {
+        "policy": "project_theseus_canonical_mixed_corpus_receipt_v1",
+        "trigger_state": "GREEN",
+        "summary": {
+            "tokenizer_abi": scaling["selected_rung"]["tokenizer_abi"],
+            "active_parameter_count": scaling["selected_rung"]["active_parameter_count"],
+            "unique_model_visible_positions": required,
+            "optimizer_token_positions": required * 4,
+            "optimizer_repetition_counted_as_unique_data": False,
+            "domain_unique_positions": scaling["domain_minimum_positions"],
+            "code_language_unique_positions": scaling["code_language_minimum_positions"],
+            "evidence_dimensions": {key: True for key in scaling["required_evidence_dimensions"]},
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        },
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+    def bind(payload: dict) -> None:
+        receipt_path.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
+        scaling["canonical_corpus_receipt"] = {
+            "path": str(receipt_path),
+            "sha256": hashlib.sha256(receipt_path.read_bytes()).hexdigest(),
+        }
+
+    bind(receipt)
+    accepted = build_data_model_scaling_contract(config)
+    assert accepted["training_authorized"] is True
+    assert accepted["canonical_corpus_receipt"]["optimizer_repetition_factor"] == 4.0
+
+    receipt["summary"]["optimizer_token_positions"] = required * 4 + 1
+    receipt["summary"]["evidence_dimensions"]["semantic_deduplication"] = False
+    bind(receipt)
+    rejected = build_data_model_scaling_contract(config)
+    assert rejected["training_authorized"] is False
+    gaps = rejected["canonical_corpus_receipt"]["hard_gaps"]
+    assert "optimizer_repetition_above_predeclared_maximum" in gaps
+    assert any(gap.startswith("required_evidence_dimensions_missing:") for gap in gaps)
 
 
 def test_decoder_is_causal_and_cached_decode_matches_full_decode() -> None:

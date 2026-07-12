@@ -29,7 +29,7 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | governed, but materially under-scaled for the current from-scratch model | current code plus conversation exposure is at most 9.87M one-pass positions for a 6.6M-parameter dense model; establish a unique-token/active-parameter contract, then expand licensed, deduplicated English and code data before another capability training run |
+| Data engine + curriculum | Track 0 / Phase 7 | governed scaling contract frozen; canonical mixed-corpus receipt absent | noncanonical planning estimates total 9.87M positions (1.489711/active parameter), leaving a 122.60M-position shortfall against the 132.46M floor; materialize and expand the corpus under the actual model tokenizer ABI before training |
 | Dense transformer survival baseline | Phase 10 | canonical practical lane; architecture clean, behavior flat | freeze one MLX causal-transformer contract and train a data-supported scale ladder; no more plan heads, state variants, or preference tuning until model-only family-disjoint behavior moves above zero |
 | Sparse specialist core (100M) | Track 1 / Phases 10, 16 | challenger deferred | do not fund a 100M sparse rung until the corpus supports it and a matched dense baseline has positive behavior; adopt sparse/Octopus only on repeated active-compute wins |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
@@ -694,6 +694,16 @@ require admitted row hashes. The lifecycle surface remains `YELLOW`, not
 `GREEN`, because recursive synthetic share is `0.824771`; that is a data-risk
 warning, not proof of model collapse. The policy comparison is simulation, and
 deletion closure is graph evidence, not physical unlearning.
+The dense survival lane now owns a frozen pre-training scaling contract rather
+than an informal token estimate. It selects the existing 6,623,232-active-parameter
+MLX rung and requires 132,464,640 unique admitted model-visible positions (20:1),
+with 60M English conversation/instruction, 60M code, a 12.46M tail reserve, and
+explicit Python, JS/TS, HTML/CSS, and Rust minima. Current code and conversation
+receipts are content-bound but use different accounting ABIs, so their combined
+9,866,701 positions are planning evidence only. The standard trainer fails closed
+until one canonical mixed-corpus receipt proves all license/provenance, exact and
+semantic deduplication, contamination, completeness, coverage/tail, synthetic-share,
+lifecycle, tokenizer, domain, language, and repetition requirements.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
   provenance/authority, lineage, permitted use, split exclusions, exact + semantic
   contamination, retention, deletion scope, evaluation refs, residuals, bounded
@@ -756,6 +766,14 @@ deletion closure is graph evidence, not physical unlearning.
   router, or public calibration. Success is direct model-only family-disjoint
   verifier behavior above zero with complete lineage; loss or syntax alone cannot
   adopt the checkpoint.
+- **Frozen scaling decision:** the selected rung is exactly 6,623,232 active
+  parameters with a 132,464,640 unique-position floor and maximum 4x optimizer
+  repetition. The current 5,580,951 code and 4,285,750 conversation estimates are
+  not additive training authority because neither was counted under the canonical
+  standard-transformer tokenizer/stage ABI. `standard_causal_transformer_survival`
+  and its independent gate now deny training/adoption until the content-bound
+  canonical mixed-corpus receipt is GREEN. This prevents both epoch inflation and
+  accidental training on an architecture whose data contract is still incomplete.
 - Training sequence is fixed by prerequisites: broad causal English+code
   pretraining -> governed instruction/conversation and direct-body SFT ->
   verifier-positive pair construction -> preference optimization -> verifier-reward

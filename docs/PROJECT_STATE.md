@@ -25,12 +25,14 @@ share toward zero. Public benchmarks are calibration only.
   `0/24`. The model can emit integrity-clean candidates but does not yet reliably
   learn prompt/signature-conditioned state transitions, operands, algorithms, and
   final-return semantics.
-- **Data wall:** the admitted one-pass inventory is approximately 5.58M code
-  positions plus 4.29M conversation positions. This is diagnostic exposure for a
-  6.6M-parameter model, not a credible capability-scale corpus.
-- **Immediate dependency:** freeze architecture, declare a data/model scaling
-  contract, expand licensed and deduplicated English/code data, and complete one
-  durable dense MLX training rung before adding amplifiers.
+- **Data wall:** the frozen contract selects 6,623,232 active parameters and a
+  132,464,640 unique-position floor (20:1). Existing code and conversation receipts
+  estimate 9,866,701 positions, or 1.489711 per active parameter, leaving a
+  122,597,939-position shortfall. Their tokenizer/accounting ABIs differ, so this is
+  planning evidence rather than training authorization.
+- **Immediate dependency:** materialize one content-bound mixed English/code corpus
+  under the canonical transformer tokenizer ABI, satisfy the frozen domain/language
+  and evidence requirements, then complete one durable dense MLX training rung.
 
 ## Evidence Boundaries
 
@@ -105,8 +107,9 @@ share toward zero. Public benchmarks are calibration only.
 ## Roadmap Order
 
 1. Keep repository/registry/effect evidence coherent and compact.
-2. Freeze a data/model scaling contract with heldout families and stop criteria.
-3. Build the licensed, deduplicated English/Python-first code corpus and train the
+2. Keep the frozen data/model scaling contract and heldout/stop criteria fail-closed.
+3. Build the licensed, deduplicated English/Python-first code corpus, obtain its
+   canonical mixed-corpus receipt, and train the
    dense MLX survival lane with durable checkpoints and receipts.
 4. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
@@ -139,8 +142,9 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Write and validate the frozen data/model scaling contract, then train one complete
-dense MLX rung on a materially larger governed corpus. Success requires durable
+Build the canonical mixed-corpus materializer and close the 122,597,939-position
+shortfall without weakening evidence or domain minima, then train one complete
+dense MLX rung. Success requires durable
 provenance, heldout lineage, nonzero independently verified family-disjoint behavior,
 and better results than the frozen current baseline. If those conditions fail, mine
 the observed semantic residuals; do not add another architecture lane or nearby

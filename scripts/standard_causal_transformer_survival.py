@@ -179,8 +179,21 @@ def run(
     started: float,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     validate_config(config)
+    scaling_contract = build_data_model_scaling_contract(config)
     if not execute:
-        return planned_report(config, config_path, checkpoint_dir, stage_dir, started), []
+        return planned_report(
+            config,
+            config_path,
+            checkpoint_dir,
+            stage_dir,
+            started,
+            scaling_contract=scaling_contract,
+        ), []
+    if scaling_contract["training_authorized"] is not True and not evaluate_only:
+        raise ValueError(
+            "dense MLX training denied by frozen data/model scaling contract: "
+            + ", ".join(scaling_contract["hard_gaps"])
+        )
 
     import mlx.core as mx
     import mlx.nn as nn
@@ -623,6 +636,7 @@ def run(
                 "direct_body_decoder": True,
             },
         },
+        "data_model_scaling_contract": scaling_contract,
         "artifacts": {
             "config": config_path,
             "checkpoint": rel(checkpoint),
@@ -4127,6 +4141,215 @@ def private_verifier_summary(report: dict[str, Any]) -> dict[str, Any]:
     return {"passed_task_count": passed, "raw_summary": summary}
 
 
+def build_data_model_scaling_contract(config: dict[str, Any]) -> dict[str, Any]:
+    contract = config.get("data_model_scaling_contract")
+    if not isinstance(contract, dict):
+        return {
+            "policy": "project_theseus_dense_mlx_data_model_scaling_contract_missing_v1",
+            "training_authorized": False,
+            "hard_gaps": ["data_model_scaling_contract_missing"],
+        }
+    selected = contract.get("selected_rung") if isinstance(contract.get("selected_rung"), dict) else {}
+    planning = contract.get("planning_basis") if isinstance(contract.get("planning_basis"), dict) else {}
+    active_parameters = int(selected.get("active_parameter_count") or 0)
+    minimum_ratio = float(planning.get("minimum_unique_positions_per_active_parameter") or 0.0)
+    required_positions = int(contract.get("required_unique_positions") or 0)
+    expected_required = math.ceil(active_parameters * minimum_ratio)
+    receipt_audits = []
+    planning_positions = 0
+    for row in contract.get("planning_receipts") or []:
+        if not isinstance(row, dict):
+            continue
+        path = resolve(str(row.get("path") or ""))
+        actual_sha = file_content_sha256(path) if path.exists() and path.is_file() else ""
+        payload = read_json(path) if actual_sha else {}
+        declared_positions = int(row.get("one_pass_positions") or 0)
+        if str(row.get("domain") or "").startswith("code"):
+            observed_positions = int(
+                (((payload.get("summary") or {}).get("data_exposure") or {}).get("one_pass_total_token_positions"))
+                or 0
+            )
+        else:
+            observed_positions = int((payload.get("summary") or {}).get("one_pass_token_positions") or 0)
+        summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+        internally_content_bound = bool(
+            (str(row.get("domain") or "").startswith("code") and summary.get("checkpoint_sha256"))
+            or (
+                not str(row.get("domain") or "").startswith("code")
+                and summary.get("public_contamination_index_digest")
+                and int(summary.get("shard_count") or 0) > 0
+            )
+        )
+        valid = bool(
+            actual_sha
+            and internally_content_bound
+            and declared_positions > 0
+            and declared_positions == observed_positions
+            and payload.get("trigger_state") in {"GREEN", "YELLOW"}
+        )
+        if valid:
+            planning_positions += declared_positions
+        receipt_audits.append(
+            {
+                "id": str(row.get("id") or ""),
+                "domain": str(row.get("domain") or ""),
+                "path": rel(path),
+                "content_bound": internally_content_bound,
+                "declared_positions": declared_positions,
+                "observed_positions": observed_positions,
+                "accounting_abi": str(row.get("accounting_abi") or ""),
+                "canonical_accounting": row.get("canonical_accounting") is True,
+                "valid_planning_receipt": valid,
+            }
+        )
+    governance_audits = []
+    governance_ledger_identities: list[tuple[str, int]] = []
+    for row in contract.get("governance_receipts") or []:
+        if not isinstance(row, dict):
+            continue
+        path = resolve(str(row.get("path") or ""))
+        actual_sha = file_content_sha256(path) if path.exists() and path.is_file() else ""
+        payload = read_json(path) if actual_sha else {}
+        summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+        ledger = (
+            ((payload.get("candidate_lineage") or {}).get("candidate_receipt_ledger") or {})
+            if isinstance(payload.get("candidate_lineage"), dict)
+            else payload.get("candidate_receipt_ledger") or {}
+        )
+        ledger_sha = str(ledger.get("sha256") or "") if isinstance(ledger, dict) else ""
+        ledger_count = int(ledger.get("receipt_count") or 0) if isinstance(ledger, dict) else 0
+        clean = bool(
+            actual_sha
+            and payload.get("trigger_state") in {"GREEN", "YELLOW"}
+            and len(ledger_sha) == 64
+            and ledger_count > 0
+            and ledger.get("replay_valid") is True
+            and int(payload.get("public_training_rows_written", summary.get("public_training_rows_written", 0)) or 0) == 0
+            and int(payload.get("external_inference_calls", summary.get("runtime_external_inference_calls", 0)) or 0) == 0
+            and int(payload.get("fallback_return_count", summary.get("fallback_return_count", 0)) or 0) == 0
+        )
+        if clean:
+            governance_ledger_identities.append((ledger_sha, ledger_count))
+        governance_audits.append({
+            "path": rel(path),
+            "content_bound_and_clean": clean,
+            "ledger_sha256": ledger_sha,
+            "ledger_receipt_count": ledger_count,
+        })
+
+    canonical_cfg = contract.get("canonical_corpus_receipt")
+    canonical_audit: dict[str, Any] = {
+        "configured": isinstance(canonical_cfg, dict),
+        "valid": False,
+        "path": "",
+        "hard_gaps": ["canonical_mixed_corpus_receipt_missing"],
+    }
+    if isinstance(canonical_cfg, dict):
+        canonical_audit = audit_canonical_mixed_corpus_receipt(contract, canonical_cfg)
+
+    hard_gaps = []
+    if contract.get("state") != "frozen_before_training":
+        hard_gaps.append("contract_not_frozen_before_training")
+    if active_parameters <= 0:
+        hard_gaps.append("active_parameter_count_missing")
+    if minimum_ratio <= 0.0 or required_positions != expected_required:
+        hard_gaps.append("required_unique_positions_not_bound_to_selected_rung")
+    if not receipt_audits or any(not row["valid_planning_receipt"] for row in receipt_audits):
+        hard_gaps.append("planning_receipt_invalid_or_stale")
+    if not governance_audits or any(not row["content_bound_and_clean"] for row in governance_audits):
+        hard_gaps.append("governance_receipt_invalid_or_stale")
+    if len(set(governance_ledger_identities)) != 1:
+        hard_gaps.append("governance_ledger_identity_disagreement")
+    if not canonical_audit["valid"]:
+        hard_gaps.extend(canonical_audit["hard_gaps"])
+    if any(int(contract.get(key) or 0) != 0 for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")):
+        hard_gaps.append("no_cheat_counter_fault")
+    hard_gaps = list(dict.fromkeys(hard_gaps))
+    return {
+        "policy": str(contract.get("policy") or ""),
+        "state": str(contract.get("state") or ""),
+        "selected_rung": selected,
+        "planning_basis": planning,
+        "required_unique_positions": required_positions,
+        "domain_minimum_positions": contract.get("domain_minimum_positions") or {},
+        "code_language_minimum_positions": contract.get("code_language_minimum_positions") or {},
+        "required_evidence_dimensions": contract.get("required_evidence_dimensions") or [],
+        "planning_receipts": receipt_audits,
+        "governance_receipts": governance_audits,
+        "planning_estimate_positions": planning_positions,
+        "planning_estimate_tokens_per_active_parameter": round(planning_positions / max(1, active_parameters), 6),
+        "planning_estimate_shortfall_positions": max(0, required_positions - planning_positions),
+        "planning_estimate_is_training_authority": False,
+        "canonical_corpus_receipt": canonical_audit,
+        "maximum_optimizer_repetition_factor": float(planning.get("maximum_optimizer_repetition_factor") or 0.0),
+        "optimizer_repetition_counted_as_unique_data": False,
+        "training_authorized": not hard_gaps,
+        "hard_gaps": hard_gaps,
+        "non_claims": [
+            "Planning estimates from noncanonical tokenizers are not training authorization.",
+            "The scaling contract is architecture/data adequacy evidence, not model capability.",
+            "Repeated optimizer exposure never increases unique-data credit.",
+        ],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def audit_canonical_mixed_corpus_receipt(contract: dict[str, Any], receipt_ref: dict[str, Any]) -> dict[str, Any]:
+    path = resolve(str(receipt_ref.get("path") or ""))
+    actual_sha = file_content_sha256(path) if path.exists() and path.is_file() else ""
+    payload = read_json(path) if actual_sha else {}
+    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    selected = contract.get("selected_rung") if isinstance(contract.get("selected_rung"), dict) else {}
+    domain_positions = summary.get("domain_unique_positions") if isinstance(summary.get("domain_unique_positions"), dict) else {}
+    language_positions = summary.get("code_language_unique_positions") if isinstance(summary.get("code_language_unique_positions"), dict) else {}
+    evidence = summary.get("evidence_dimensions") if isinstance(summary.get("evidence_dimensions"), dict) else {}
+    required_evidence = [str(value) for value in contract.get("required_evidence_dimensions") or []]
+    gaps = []
+    if not actual_sha or actual_sha != str(receipt_ref.get("sha256") or ""):
+        gaps.append("canonical_corpus_receipt_content_identity_mismatch")
+    if payload.get("policy") != "project_theseus_canonical_mixed_corpus_receipt_v1" or payload.get("trigger_state") != "GREEN":
+        gaps.append("canonical_corpus_receipt_not_green")
+    if summary.get("tokenizer_abi") != selected.get("tokenizer_abi"):
+        gaps.append("canonical_tokenizer_abi_mismatch")
+    if int(summary.get("active_parameter_count") or 0) != int(selected.get("active_parameter_count") or 0):
+        gaps.append("canonical_active_parameter_count_mismatch")
+    unique_positions = int(summary.get("unique_model_visible_positions") or 0)
+    if unique_positions < int(contract.get("required_unique_positions") or 0):
+        gaps.append("canonical_unique_position_floor_not_met")
+    for key, minimum in (contract.get("domain_minimum_positions") or {}).items():
+        if int(domain_positions.get(key) or 0) < int(minimum or 0):
+            gaps.append(f"domain_minimum_not_met:{key}")
+    for key, minimum in (contract.get("code_language_minimum_positions") or {}).items():
+        if int(language_positions.get(key) or 0) < int(minimum or 0):
+            gaps.append(f"code_language_minimum_not_met:{key}")
+    missing_evidence = [key for key in required_evidence if evidence.get(key) is not True]
+    if missing_evidence:
+        gaps.append("required_evidence_dimensions_missing:" + ",".join(missing_evidence))
+    optimizer_positions = int(summary.get("optimizer_token_positions") or 0)
+    repetition = optimizer_positions / max(1, unique_positions)
+    if summary.get("optimizer_repetition_counted_as_unique_data") is not False:
+        gaps.append("optimizer_repetition_counted_as_unique_data")
+    if repetition > float((contract.get("planning_basis") or {}).get("maximum_optimizer_repetition_factor") or 0.0):
+        gaps.append("optimizer_repetition_above_predeclared_maximum")
+    if any(int(payload.get(key, summary.get(key, -1)) or 0) != 0 for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count")):
+        gaps.append("canonical_corpus_no_cheat_counter_fault")
+    return {
+        "configured": True,
+        "valid": not gaps,
+        "path": rel(path),
+        "content_bound": bool(actual_sha) and actual_sha == str(receipt_ref.get("sha256") or ""),
+        "unique_model_visible_positions": unique_positions,
+        "optimizer_token_positions": optimizer_positions,
+        "optimizer_repetition_factor": round(repetition, 6),
+        "domain_unique_positions": domain_positions,
+        "code_language_unique_positions": language_positions,
+        "evidence_dimensions": evidence,
+        "hard_gaps": gaps,
+    }
+
+
 def build_gates(
     stage: Stage,
     training_complete: bool,
@@ -4194,6 +4417,20 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("external inference is forbidden")
     if boundary.get("fallback_returns_allowed") is not False:
         raise ValueError("fallback returns must remain forbidden")
+    scaling = config.get("data_model_scaling_contract")
+    if isinstance(scaling, dict):
+        if scaling.get("policy") != "project_theseus_dense_mlx_data_model_scaling_contract_v1":
+            raise ValueError("unexpected data/model scaling contract policy")
+        selected = scaling.get("selected_rung") or {}
+        planning = scaling.get("planning_basis") or {}
+        expected = math.ceil(
+            int(selected.get("active_parameter_count") or 0)
+            * float(planning.get("minimum_unique_positions_per_active_parameter") or 0.0)
+        )
+        if int(scaling.get("required_unique_positions") or 0) != expected:
+            raise ValueError("scaling unique-position floor must equal active parameters times planning ratio")
+        if sum(int(value or 0) for value in (scaling.get("domain_minimum_positions") or {}).values()) != expected:
+            raise ValueError("scaling domain minima must partition the unique-position floor")
     contract_policy = (
         config.get("sft_contract_admission")
         if isinstance(config.get("sft_contract_admission"), dict)
@@ -4407,7 +4644,8 @@ def validate_config(config: dict[str, Any]) -> None:
 
 
 def planned_report(
-    config: dict[str, Any], config_path: str, checkpoint_dir: Path, stage_dir: Path, started: float
+    config: dict[str, Any], config_path: str, checkpoint_dir: Path, stage_dir: Path, started: float,
+    *, scaling_contract: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "policy": config["policy"],
@@ -4421,6 +4659,7 @@ def planned_report(
             "attention_policy": str(config["model"].get("attention_policy") or "causal"),
             **config["model"],
         },
+        "data_model_scaling_contract": scaling_contract or build_data_model_scaling_contract(config),
         "boundaries": config["boundaries"],
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "public_training_rows_written": 0,
