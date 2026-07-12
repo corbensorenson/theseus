@@ -330,9 +330,11 @@ def source_documents(source: dict[str, Any], scale: dict[str, Any]) -> Iterator[
         from datasets import load_dataset
     except ImportError as exc:
         raise RuntimeError("datasets is required for governed document intake") from exc
+    kwargs = {"split": str(source.get("split") or "train"), "streaming": True}
+    if source.get("revision"):
+        kwargs["revision"] = str(source["revision"])
     stream = load_dataset(
-        str(source.get("dataset") or ""), str(source.get("config") or "default"),
-        split=str(source.get("split") or "train"), streaming=True,
+        str(source.get("dataset") or ""), str(source.get("config") or "default"), **kwargs,
     )
     max_scan = max(1, int(source.get("max_scan_rows") or 5_000))
     max_chars = int(scale.get("max_chars_per_chunk") or 12_000)
@@ -481,7 +483,10 @@ def source_conversations(source: dict[str, Any]) -> Iterator[tuple[list[dict[str
     dataset = str(source.get("dataset") or "")
     config = str(source.get("config") or "default")
     split = str(source.get("split") or "train")
-    stream = load_dataset(dataset, config, split=split, streaming=True)
+    kwargs = {"split": split, "streaming": True}
+    if source.get("revision"):
+        kwargs["revision"] = str(source["revision"])
+    stream = load_dataset(dataset, config, **kwargs)
     fmt = str(source.get("format") or "messages")
     if fmt == "oasst_tree":
         yield from reconstruct_oasst_conversations(stream, source)

@@ -34,9 +34,11 @@ share toward zero. Public benchmarks are calibration only.
   13,257,091 HTML/CSS, 57,626,478 Rust, and 3,881,800 other code. Generated,
   vendored, minified, decode-damaged, low-diversity, and invalid sources receive no
   credit. Every total/domain/language/evidence minimum still passes.
-- **Immediate dependency:** freeze language-appropriate supervised and direct
-  family-disjoint evaluation contracts before spending the full training budget;
-  then complete bounded pretraining for the five MLX arms and two dense controls.
+- **Immediate dependency:** the licensed language-arm supervision contract is now
+  frozen at 20,000 train and 1,032 heldout rows with zero split overlap or public
+  payloads. The first complete Rust run consumed 8.08M pretrain and 114,790 SFT
+  positions in 338 seconds, then scored 0/64 exact recovery. Repair model-only
+  termination and semantic generation before spending the other six full budgets.
 
 ## Evidence Boundaries
 
@@ -80,15 +82,18 @@ share toward zero. Public benchmarks are calibration only.
   HTML/CSS, and Rust weights/data/checkpoint lifecycles and typed single, sequential,
   parallel, verification, and adjudicated routes. All five 1.211M-parameter arms,
   the 6.623M total-control, and the 1.211M active-control have distinct bounded MLX
-  model/optimizer receipts; Python resume is content-bound and replayed. All remain
-  incomplete and `NOT_EVALUATED`. Route success cannot count as answer success and
-  hidden generalist fallback is forbidden.
+  model/optimizer receipts. Rust is the first complete arm: its pretrain and SFT
+  receipts are content-bound and resumable, but direct prompt-only evaluation is
+  honestly negative at 0/64 exact recovery. Only 13/64 greedy outputs formed valid
+  byte streams and none emitted EOS. Route success cannot count as answer success
+  and hidden generalist fallback is forbidden.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
-  reversible text streams; 18,004 selected documents prove their category/profile
+  reversible text streams; 38,435 selected documents prove their category/profile
   binding, zero round-trip failures occurred, and no unknown token position entered
-  training. The prior seven smokes were rejected by changed plan/stage/range identity
-  and replaced against stage `2fc4d283...`. This is data-path correctness only.
+  training. The current seven one-step receipts bind stage `30b57793...`; data
+  identities are scoped to vocabulary/supervision contracts so evaluation-only edits
+  do not force corpus rebuilds. This is data-path correctness only.
 - **Deterministic tools:** exact tools are evidence-producing instruments, not learned
   generation. `UNKNOWN`, `UNSOLVED`, and typed faults are preferred to fabricated
   answers.
@@ -171,11 +176,12 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Freeze arm-specific supervised and direct family-disjoint evaluation contracts,
-including generator-visible field boundaries and independent language validators.
-Then complete bounded English, Python, JS/TS, HTML/CSS, Rust, total-control, and
-active-control pretraining under the frozen plan. Success requires durable
-provenance, heldout lineage, nonzero independently verified arm behavior, and an
-honest two-view modular-versus-dense verdict. If those conditions fail, retain the
-falsification; do not hide it with routing accuracy, loss, another auxiliary head,
-or a nearby green report.
+Preserve the completed Rust `0/64` result, then repair direct model-only decoding
+and instruction following on train-derived development pressure without consulting
+the frozen answers during generation. The concrete defects are failure to emit EOS
+and unfinished reversible-byte spans, followed by semantic mismatch. Use
+model-probability beam search with serialization validity only, add a development
+split distinct from the frozen confirmation split, and require nonzero exact recovery
+before spending the other six full training budgets. Then complete the matched
+MoECOT-versus-dense comparison. Do not count routing, loss, syntax, templates,
+renderers, deterministic tools, or forced fallback completion as capability.

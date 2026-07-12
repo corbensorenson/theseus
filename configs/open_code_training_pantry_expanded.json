@@ -2,7 +2,7 @@
   "policy": "project_theseus_open_code_training_pantry_expanded_v0",
   "purpose": "Curated permissive open-source repositories for train-only code expression pressure. Public benchmark repositories and benchmark-named paths remain excluded by the pantry script.",
   "defaults": {
-    "max_repos": 90,
+    "max_repos": 100,
     "max_files_per_repo": 1000,
     "max_bytes_per_file": 220000,
     "max_expressions": 5000,
@@ -100,6 +100,15 @@
     {"repo": "uikit/uikit", "why": "production Less CSS component framework, MIT"},
     {"repo": "patternfly/patternfly", "why": "enterprise Sass and HTML design system, MIT"},
     {"repo": "carbon-design-system/carbon", "why": "production Sass design system, Apache-2.0"},
-    {"repo": "shoelace-style/shoelace", "why": "web components with authored CSS, MIT"}
+    {"repo": "shoelace-style/shoelace", "why": "web components with authored CSS, MIT"},
+    {"repo": "ant-design/ant-design", "why": "production component library with authored Less and CSS, MIT"},
+    {"repo": "StartBootstrap/startbootstrap-sb-admin-2", "why": "maintained Bootstrap dashboard with complete HTML and CSS, MIT"},
+    {"repo": "StartBootstrap/startbootstrap-agency", "why": "maintained complete HTML and CSS site template, MIT"},
+    {"repo": "ColorlibHQ/gentelella", "why": "large production dashboard with authored HTML and CSS, MIT"},
+    {"repo": "coreui/coreui-free-bootstrap-admin-template", "why": "production admin interface with HTML and Sass, MIT"},
+    {"repo": "mdbootstrap/bootstrap-material-design", "why": "authored Bootstrap-compatible CSS component system, MIT"},
+    {"repo": "saadeghi/daisyui", "why": "large production Tailwind component CSS corpus, MIT"},
+    {"repo": "mdn/pwa-examples", "why": "small standards-focused web application examples, CC0-1.0"},
+    {"repo": "GoogleChrome/samples", "why": "standards-focused browser examples with HTML and CSS, Apache-2.0"}
   ]
 }

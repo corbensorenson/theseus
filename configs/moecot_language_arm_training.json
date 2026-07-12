@@ -5,6 +5,18 @@
   "checkpoint_root": "checkpoints/moecot_language_seed_v1",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
+  "vocabulary": {
+    "policy": "project_theseus_moecot_exact_language_vocabulary_v1",
+    "output": "runtime/moecot_language_seed_v1/exact_language_vocab.json",
+    "report": "reports/moecot_language_vocabulary.json",
+    "source_max_vocab": 4096,
+    "target_max_vocab": 4096,
+    "byte_piece_budget": 512,
+    "code_samples": "data/training_data/open_code_pantry/samples/open_code_samples.jsonl",
+    "conversation_root": "data/training_data/open_conversation_pantry/private_train/shards",
+    "broad_english_root": "data/training_data/open_conversation_pantry/broad_text/private_train/shards",
+    "code_to_source_count_divisor": 50
+  },
   "arm_model": {
     "d_model": 96,
     "num_layers": 4,
@@ -37,6 +49,103 @@
     "gradient_clip_norm": 1.0,
     "checkpoint_every_steps": 500,
     "maximum_optimizer_repetitions": 4
+  },
+  "evaluation": {
+    "policy": "project_theseus_moecot_direct_model_only_evaluation_v1",
+    "decode_max_target_tokens": 208,
+    "decoder": "greedy_exact_text_with_byte_span_grammar_v1",
+    "primary_metric": "exact_target_match_rate",
+    "target_visible_to_generator": false,
+    "templates_renderers_routers_tools_allowed": false
+  },
+  "supervision": {
+    "policy": "project_theseus_moecot_language_supervision_v1",
+    "stage_root": "data/training_data/moecot_language_supervision_v1",
+    "report": "reports/moecot_language_supervision_stage.json",
+    "split_seed": 20260712,
+    "train_rows_by_arm": {
+      "english": 5000,
+      "python": 5000,
+      "javascript_typescript": 5000,
+      "html_css": 4000,
+      "rust": 1000
+    },
+    "heldout_rows_by_arm": {
+      "english": 256,
+      "python": 256,
+      "javascript_typescript": 256,
+      "html_css": 200,
+      "rust": 64
+    },
+    "minimum_instruction_characters": 12,
+    "maximum_instruction_characters": 512,
+    "maximum_context_characters": 16000,
+    "maximum_target_characters": 16000,
+    "minimum_target_characters": 8,
+    "maximum_source_encoded_tokens": 300,
+    "maximum_target_encoded_tokens": 208,
+    "code_task_format": "localized_old_excerpt_to_new_excerpt_v1",
+    "code_context_lines": 3,
+    "rust_quota_basis": {
+      "policy": "pretraining_result_blind_source_availability_measurement_v1",
+      "original_requested_train_rows": 2000,
+      "original_requested_heldout_rows": 100,
+      "eligible_train_rows_observed": 1138,
+      "eligible_heldout_rows_observed": 67,
+      "frozen_train_rows": 1000,
+      "frozen_heldout_rows": 64,
+      "reason": "retain only complete in-window rows under the existing permissive-license allowlist; do not truncate targets or widen licenses to fill a quota",
+      "capability_results_seen": false
+    },
+    "forbidden_benchmark_markers": [
+      "humaneval",
+      "evalplus",
+      "mbpp",
+      "bigcodebench",
+      "livecodebench",
+      "human_eval"
+    ],
+    "code_source": {
+      "dataset_id": "bigcode/commitpackft",
+      "revision": "fc56fe33c030c6daa414c2b112c932b8eed085e6",
+      "dataset_license": "MIT",
+      "dataset_card": "https://huggingface.co/datasets/bigcode/commitpackft",
+      "url_template": "https://huggingface.co/datasets/bigcode/commitpackft/resolve/{revision}/data/{language}/data.jsonl",
+      "allowed_row_licenses": [
+        "apache-2.0",
+        "bsd-2-clause",
+        "bsd-3-clause",
+        "cc0-1.0",
+        "isc",
+        "mit",
+        "unlicense"
+      ],
+      "arm_languages": {
+        "python": ["python"],
+        "javascript_typescript": ["javascript", "typescript"],
+        "html_css": ["html", "css"],
+        "rust": ["rust"]
+      }
+    },
+    "english_source": {
+      "dataset_id": "databricks/databricks-dolly-15k",
+      "revision": "bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a",
+      "dataset_license": "CC-BY-SA-3.0",
+      "dataset_card": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+      "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/resolve/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/databricks-dolly-15k.jsonl"
+    },
+    "split_contract": {
+      "selection": "smallest_content_hash_per_arm_and_split",
+      "heldout_modulus": 20,
+      "heldout_remainder": 0,
+      "cross_split_prompt_target_hash_overlap_allowed": false,
+      "post_result_split_changes_allowed": false
+    },
+    "generator_visible_fields": ["prompt"],
+    "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0
   },
   "comparison_contract": {
     "policy": "project_theseus_moecot_dense_falsification_comparison_v1",

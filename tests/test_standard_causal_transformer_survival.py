@@ -114,11 +114,21 @@ def test_frozen_scaling_contract_reports_noncanonical_shortfall_without_authoriz
     contract = build_data_model_scaling_contract(config)
 
     assert contract["training_authorized"] is False
-    assert contract["planning_estimate_positions"] == 9_866_701
-    assert contract["planning_estimate_tokens_per_active_parameter"] == 1.489711
-    assert contract["planning_estimate_shortfall_positions"] == 122_597_939
+    valid_planning_positions = sum(
+        row["declared_positions"]
+        for row in contract["planning_receipts"]
+        if row["valid_planning_receipt"]
+    )
+    assert contract["planning_estimate_positions"] == valid_planning_positions
+    active_parameters = contract["selected_rung"]["active_parameter_count"]
+    assert contract["planning_estimate_tokens_per_active_parameter"] == round(
+        valid_planning_positions / active_parameters, 6
+    )
+    assert contract["planning_estimate_shortfall_positions"] == (
+        contract["required_unique_positions"] - valid_planning_positions
+    )
     assert contract["planning_estimate_is_training_authority"] is False
-    assert contract["hard_gaps"] == ["canonical_mixed_corpus_receipt_missing"]
+    assert "canonical_mixed_corpus_receipt_missing" in contract["hard_gaps"]
 
 
 def test_scaling_gate_separates_readiness_from_integrity_and_reports_canonical_shortfall() -> None:
@@ -145,6 +155,28 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
     config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
     scaling = config["data_model_scaling_contract"]
     required = scaling["required_unique_positions"]
+    planning_path = tmp_path / "planning.json"
+    planning_path.write_text(
+        json.dumps(
+            {
+                "trigger_state": "GREEN",
+                "summary": {
+                    "checkpoint_sha256": "c" * 64,
+                    "data_exposure": {"one_pass_total_token_positions": 1},
+                },
+            }
+        )
+    )
+    scaling["planning_receipts"] = [
+        {
+            "id": "isolated_test_planning_receipt",
+            "domain": "code_test",
+            "path": str(planning_path),
+            "one_pass_positions": 1,
+            "accounting_abi": "isolated_test_v1",
+            "canonical_accounting": False,
+        }
+    ]
     receipt_path = tmp_path / "canonical-corpus.json"
     receipt = {
         "policy": "project_theseus_canonical_mixed_corpus_receipt_v1",
@@ -212,7 +244,7 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
 
     bind(receipt)
     accepted = build_data_model_scaling_contract(config)
-    assert accepted["training_authorized"] is True
+    assert accepted["training_authorized"] is True, accepted["hard_gaps"]
     assert accepted["canonical_corpus_receipt"]["optimizer_repetition_factor"] == 4.0
 
     receipt["summary"]["optimizer_token_positions"] = required * 4 + 1

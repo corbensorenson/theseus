@@ -244,6 +244,7 @@
     "code_shard_manifests": [
       "data/training_data/open_code_pantry/samples_manifest.json"
     ],
+    "supervision_manifest": "data/training_data/moecot_language_supervision_v1/manifest.json",
     "conversation_manifest": "data/training_data/open_conversation_pantry/scalable_manifest.json",
     "conversation_root": "data/training_data/open_conversation_pantry",
     "broad_text_manifest": "data/training_data/open_conversation_pantry/broad_text/scalable_manifest.json",
@@ -265,7 +266,7 @@
     "source_target_separator_token_id": 2
   },
   "tokenization": {
-    "source_vocab": "checkpoints/strict_generator_mlx_dense_body_open_vocab/strict_generator_mlx_strict_generator_dense_right_sized_v1_vocab.json",
+    "source_vocab": "runtime/moecot_language_seed_v1/exact_language_vocab.json",
     "target_mode": "body_tokens",
     "canonical_language_profiles": {
       "policy": "project_theseus_moecot_language_tokenizer_v1",

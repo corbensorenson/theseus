@@ -20,6 +20,7 @@ from typing import Any
 
 import vcm_consumer_abi
 import training_data_lineage_audit
+from theseus_archive_resolver import read_json_follow_pointer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -540,7 +541,7 @@ def audit_teacher_distillation_gate() -> dict[str, Any]:
     manifest_path = ROOT / "reports" / "teacher_distillation_manifest.json"
     gate_path = ROOT / "reports" / "teacher_distillation_gate.json"
     ledger_path = ROOT / "reports" / "teacher_distillation_ledger.jsonl"
-    manifest = read_json(manifest_path)
+    manifest = read_json_follow_pointer(manifest_path, {})
     gate_report = read_json(gate_path)
     manifest_summary = manifest.get("summary") if isinstance(manifest.get("summary"), dict) else {}
     rows = manifest.get("rows") if isinstance(manifest.get("rows"), list) else []

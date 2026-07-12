@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import inspect
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -18,6 +19,8 @@ from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
     audit_arm_views,
     audit_tokenizer_stage,
+    generate_model_text,
+    materialize_target_supervision,
     range_view,
     train_target,
     validate_config,
@@ -28,6 +31,7 @@ from standard_causal_transformer_model import (  # noqa: E402
     build_model,
     parameter_count,
 )
+from neural_seed_open_vocab import reserve_byte_fallback_tokens  # noqa: E402
 
 
 def arm_views() -> dict:
@@ -148,6 +152,59 @@ def test_range_view_coalesces_adjacent_ranges_without_copy() -> None:
     view = range_view(array, [{"start": 1, "stop": 3}, {"start": 3, "stop": 5}])
     assert np.shares_memory(array, view)
     assert view.tolist() == array[1:5].tolist()
+
+
+def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path) -> None:
+    source_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3, "Fix": 4}
+    target_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3, "done": 4}
+    reserve_byte_fallback_tokens(source_vocab, max_vocab=270, stream="source")
+    reserve_byte_fallback_tokens(target_vocab, max_vocab=270, stream="target")
+    row = {
+        "split": "private_train",
+        "arm_id": "english",
+        "public_benchmark": False,
+        "prompt": "Fix this",
+        "target": "done",
+    }
+    artifact = tmp_path / "train.jsonl"
+    artifact.write_text(json.dumps(row) + "\n")
+    import hashlib
+
+    target = {
+        "target_id": "english",
+        "supervision_artifacts": {
+            "private_train": {
+                "path": str(artifact),
+                "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+                "row_count": 1,
+            }
+        },
+    }
+    base = {
+        "tokenization": {"max_sequence_tokens": 32, "shared_source_target_vocabulary": False}
+    }
+    stage = materialize_target_supervision(
+        {}, base, target, metadata={"source_vocab": source_vocab, "target_vocab": target_vocab}
+    )
+    separator = int(np.flatnonzero(stage.inputs[0] == 2)[0])
+    supervised = np.flatnonzero(stage.mask[0])
+    assert supervised[0] > separator
+    assert stage.receipt["source_truncation_count"] == 0
+    assert stage.receipt["target_truncation_count"] == 0
+    assert stage.receipt["public_training_rows_written"] == 0
+
+    base["tokenization"]["max_sequence_tokens"] = 4
+    with pytest.raises(ValueError, match="requires truncation"):
+        materialize_target_supervision(
+            {}, base, target, metadata={"source_vocab": source_vocab, "target_vocab": target_vocab}
+        )
+
+
+def test_generation_api_cannot_receive_hidden_target() -> None:
+    parameters = inspect.signature(generate_model_text).parameters
+    assert "prompt" in parameters
+    assert "target" not in parameters
+    assert "expected" not in parameters
 
 
 def test_resume_rejects_tampered_checkpoint_optimizer_and_plan(tmp_path: Path) -> None:

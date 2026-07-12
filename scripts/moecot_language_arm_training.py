@@ -9,6 +9,7 @@ turn training loss into a capability claim.
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -24,11 +25,24 @@ import numpy as np
 from standard_causal_transformer_model import CausalTransformerConfig, build_model, parameter_count
 from standard_causal_transformer_corpus import load_pretrain_memmaps, pretrain_array_paths
 from standard_causal_transformer_survival import (
+    GLOBAL_BOS_ID,
+    SOURCE_TARGET_SEPARATOR_ID,
     build_schedule,
     causal_loss,
     model_vocab_size,
     required_steps,
+    source_token_offset,
+    target_token_offset,
     train_phase,
+)
+from moecot_language_tokenizer import exact_text_tokens
+from neural_seed_open_vocab import (
+    TARGET_BYTE_BEGIN,
+    TARGET_BYTE_END,
+    active_target_span,
+    decode_target_tokens,
+    encode_tokens,
+    is_byte_token,
 )
 
 
@@ -98,6 +112,8 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     gaps.extend(range_audit["hard_gaps"])
     tokenizer_audit = audit_tokenizer_stage(base, canonical)
     gaps.extend(tokenizer_audit["hard_gaps"])
+    supervision_audit = audit_supervision_stage(config, config_path=config_path)
+    gaps.extend(supervision_audit["hard_gaps"])
     stage_arrays = canonical.get("array_artifacts") if isinstance(canonical.get("array_artifacts"), dict) else {}
     for key, row in stage_arrays.items():
         path = resolve(str(row.get("path") or ""))
@@ -117,8 +133,10 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
             models["moecot_system"]["active_parameter_count_per_request"]
         ):
             gaps.append("active_parameter_control_mismatch")
-    plan_identity = plan_sha256(config, metadata, models)
-    targets = target_contracts(config, arm_views, models, plan_identity)
+    plan_identity = plan_sha256(config, metadata, models, supervision_audit)
+    targets = target_contracts(
+        config, arm_views, models, plan_identity, supervision_audit=supervision_audit
+    )
     checkpoint_inventory = inspect_checkpoint_inventory(targets, plan_identity, summary.get("stage_signature"))
     gaps.extend(checkpoint_inventory["hard_gaps"])
     return {
@@ -141,6 +159,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
             "tokenizer_audit": tokenizer_audit,
         },
         "models": models,
+        "supervision": supervision_audit,
         "targets": targets,
         "checkpoint_inventory": checkpoint_inventory,
         "comparison_contract": config["comparison_contract"],
@@ -272,7 +291,12 @@ def model_accounting(
 
 
 def target_contracts(
-    config: dict[str, Any], arm_views: dict[str, Any], models: dict[str, Any], plan_identity: str
+    config: dict[str, Any],
+    arm_views: dict[str, Any],
+    models: dict[str, Any],
+    plan_identity: str,
+    *,
+    supervision_audit: dict[str, Any],
 ) -> dict[str, Any]:
     root = resolve(str(config["checkpoint_root"]))
     targets: dict[str, Any] = {}
@@ -300,6 +324,18 @@ def target_contracts(
             "optimizer_state": relative(directory / "optimizer.safetensors"),
             "receipt": relative(directory / "training_receipt.json"),
             "plan_sha256": plan_identity,
+            "supervision_artifacts": (
+                {
+                    split: supervision_audit["artifacts"].get(f"{target}:{split}")
+                    for split in ("private_train", "private_eval")
+                }
+                if target in ARM_IDS
+                else {
+                    f"{arm}:{split}": supervision_audit["artifacts"].get(f"{arm}:{split}")
+                    for arm in ARM_IDS
+                    for split in ("private_train", "private_eval")
+                }
+            ),
         }
     return targets
 
@@ -389,6 +425,59 @@ def audit_tokenizer_stage(base: dict[str, Any], canonical: dict[str, Any]) -> di
     }
 
 
+def audit_supervision_stage(
+    config: dict[str, Any], *, config_path: Path
+) -> dict[str, Any]:
+    cfg = config.get("supervision") if isinstance(config.get("supervision"), dict) else {}
+    root = resolve(str(cfg.get("stage_root") or ""))
+    manifest_path = root / "manifest.json"
+    gaps: list[str] = []
+    manifest = read_json(manifest_path) if manifest_path.is_file() else {}
+    if not manifest:
+        gaps.append("moecot_supervision_manifest_missing")
+    if manifest.get("policy") != "project_theseus_moecot_language_supervision_v1":
+        gaps.append("moecot_supervision_manifest_policy_mismatch")
+    if manifest.get("trigger_state") != "GREEN":
+        gaps.append("moecot_supervision_manifest_not_green")
+    expected_supervision_contract = hashlib.sha256(
+        json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if manifest.get("contract_sha256") != expected_supervision_contract:
+        gaps.append("moecot_supervision_contract_identity_mismatch")
+    artifacts = manifest.get("artifacts") if isinstance(manifest.get("artifacts"), dict) else {}
+    for arm in ARM_IDS:
+        for split, wanted in (
+            ("private_train", int((cfg.get("train_rows_by_arm") or {}).get(arm) or 0)),
+            ("private_eval", int((cfg.get("heldout_rows_by_arm") or {}).get(arm) or 0)),
+        ):
+            key = f"{arm}:{split}"
+            row = artifacts.get(key) if isinstance(artifacts.get(key), dict) else {}
+            path = resolve(str(row.get("path") or ""))
+            if not path.is_file() or sha256_file(path) != str(row.get("sha256") or ""):
+                gaps.append(f"moecot_supervision_artifact_identity_mismatch:{key}")
+            if int(row.get("row_count") or 0) != wanted:
+                gaps.append(f"moecot_supervision_row_count_mismatch:{key}")
+    overlap = manifest.get("split_overlap_audit") if isinstance(manifest.get("split_overlap_audit"), dict) else {}
+    if int(overlap.get("prompt_overlap_count") or 0):
+        gaps.append("moecot_supervision_prompt_overlap")
+    if int(overlap.get("target_overlap_count") or 0):
+        gaps.append("moecot_supervision_target_overlap")
+    for key in ("public_training_rows_written", "external_inference_calls", "fallback_return_count"):
+        if int(manifest.get(key) or 0):
+            gaps.append(f"moecot_supervision_nonzero_boundary:{key}")
+    return {
+        "state": "GREEN" if not gaps else "RED",
+        "manifest": relative(manifest_path),
+        "manifest_sha256": sha256_file(manifest_path) if manifest_path.is_file() else "",
+        "artifacts": artifacts,
+        "row_counts": manifest.get("row_counts") or {},
+        "split_overlap_audit": overlap,
+        "source_receipts": manifest.get("source_receipts") or [],
+        "hard_gaps": gaps,
+        "score_semantics": "frozen supervision provenance and split integrity only",
+    }
+
+
 def execute_targets(
     config: dict[str, Any], plan: dict[str, Any], *, targets: list[str], max_steps: int, resume: bool
 ) -> dict[str, Any]:
@@ -399,6 +488,7 @@ def execute_targets(
 
     stage_dir = resolve(str(config["stage_dir"]))
     metadata = read_json(stage_dir / "stage_metadata_v1.json")
+    base = read_json(resolve(str(config["base_config"])))
     canonical = metadata["summary"]["canonical_pretrain_stage"]
     shape = (int(canonical["window_count"]), int(canonical["max_sequence_tokens"]))
     arrays = load_pretrain_memmaps(
@@ -411,15 +501,24 @@ def execute_targets(
         pretrain_labels=arrays[1],
         pretrain_mask=arrays[2],
     )
+    supervision_stages = {
+        target_id: materialize_target_supervision(
+            config,
+            base,
+            plan["targets"][target_id],
+            metadata=metadata,
+        )
+        for target_id in targets
+    }
     results = []
     for target_id in targets:
         target = plan["targets"][target_id]
-        results.append(
-            train_target(
+        result = train_target(
                 config,
                 plan,
                 target,
                 stage=stage,
+                supervision_stage=supervision_stages[target_id],
                 max_steps=max_steps,
                 resume=resume,
                 mx=mx,
@@ -427,7 +526,17 @@ def execute_targets(
                 optim=optim,
                 mlx_utils=mlx_utils,
             )
-        )
+        if result.get("complete"):
+            result["evaluation"] = evaluate_target(
+                config,
+                base,
+                plan,
+                target,
+                metadata=metadata,
+                mx=mx,
+                nn=nn,
+            )
+        results.append(result)
     gaps = [f"{row['target_id']}:{gap}" for row in results for gap in row.get("hard_gaps") or []]
     return {
         **plan,
@@ -439,6 +548,341 @@ def execute_targets(
         "hard_gaps": gaps,
         "all_requested_targets_complete": bool(results) and all(row.get("complete") for row in results),
         **no_cheat(config),
+    }
+
+
+def materialize_target_supervision(
+    config: dict[str, Any],
+    base: dict[str, Any],
+    target: dict[str, Any],
+    *,
+    metadata: dict[str, Any],
+) -> Any:
+    """Encode the frozen train split without truncation or hidden-field routing."""
+
+    source_vocab = dict(metadata.get("source_vocab") or {})
+    target_vocab = dict(metadata.get("target_vocab") or {})
+    if not source_vocab or not target_vocab:
+        raise ValueError("canonical stage metadata is missing exact vocabularies")
+    source_offset = source_token_offset(base, source_vocab)
+    target_offset = target_token_offset(base, source_vocab)
+    max_sequence = int((base.get("tokenization") or {}).get("max_sequence_tokens") or 0)
+    artifacts = target.get("supervision_artifacts") or {}
+    selected = [
+        (key, row)
+        for key, row in artifacts.items()
+        if key == "private_train" or str(key).endswith(":private_train")
+    ]
+    if not selected:
+        raise ValueError(f"target has no frozen supervision train artifact: {target['target_id']}")
+
+    sequences: list[list[int]] = []
+    mask_starts: list[int] = []
+    row_hashes: list[str] = []
+    artifact_receipts: list[dict[str, Any]] = []
+    for key, artifact in selected:
+        if not isinstance(artifact, dict):
+            raise ValueError(f"invalid supervision artifact contract: {key}")
+        path = resolve(str(artifact.get("path") or ""))
+        if not path.is_file() or sha256_file(path) != str(artifact.get("sha256") or ""):
+            raise ValueError(f"supervision artifact identity mismatch: {key}")
+        observed_rows = 0
+        with path.open(encoding="utf-8") as handle:
+            for line in handle:
+                row = json.loads(line)
+                if row.get("split") != "private_train" or row.get("public_benchmark") is not False:
+                    raise ValueError(f"invalid supervision boundary: {key}:{observed_rows}")
+                prompt = str(row.get("prompt") or "")
+                answer = str(row.get("target") or "")
+                source_ids, source_receipt = encode_tokens(
+                    exact_text_tokens(prompt), source_vocab, stream="source"
+                )
+                target_ids, target_receipt = encode_tokens(
+                    exact_text_tokens(answer), target_vocab, stream="target"
+                )
+                if int(source_receipt.get("unknown_token_count") or 0) or int(
+                    target_receipt.get("unknown_token_count") or 0
+                ):
+                    raise ValueError(f"frozen supervision row became unrepresentable: {key}")
+                sequence = [GLOBAL_BOS_ID]
+                sequence.extend(source_offset + int(value) for value in source_ids)
+                sequence.append(SOURCE_TARGET_SEPARATOR_ID)
+                sequence.append(target_offset + int(target_vocab["<bos>"]))
+                target_start = len(sequence)
+                sequence.extend(target_offset + int(value) for value in target_ids)
+                sequence.append(target_offset + int(target_vocab["<eos>"]))
+                if len(sequence) > max_sequence + 1:
+                    raise ValueError(f"frozen supervision row requires truncation: {key}")
+                sequences.append(sequence)
+                mask_starts.append(target_start - 1)
+                row_hashes.append(
+                    hashlib.sha256((prompt + "\0" + answer).encode()).hexdigest()
+                )
+                observed_rows += 1
+        if observed_rows != int(artifact.get("row_count") or 0):
+            raise ValueError(f"supervision row count changed: {key}")
+        artifact_receipts.append(
+            {
+                "key": key,
+                "path": relative(path),
+                "sha256": str(artifact["sha256"]),
+                "row_count": observed_rows,
+            }
+        )
+
+    inputs = np.zeros((len(sequences), max_sequence), dtype=np.int32)
+    labels = np.zeros((len(sequences), max_sequence), dtype=np.int32)
+    mask = np.zeros((len(sequences), max_sequence), dtype=np.uint8)
+    for index, (sequence, mask_start) in enumerate(zip(sequences, mask_starts)):
+        width = len(sequence) - 1
+        inputs[index, :width] = sequence[:-1]
+        labels[index, :width] = sequence[1:]
+        mask[index, mask_start:width] = 1
+    receipt = {
+        "policy": "project_theseus_moecot_exact_supervision_arrays_v1",
+        "target_id": target["target_id"],
+        "artifacts": artifact_receipts,
+        "row_count": len(sequences),
+        "target_positions": int(mask.sum()),
+        "sequence_width": max_sequence,
+        "content_digest": hashlib.sha256("\n".join(row_hashes).encode()).hexdigest(),
+        "generator_visible_fields": ["prompt"],
+        "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
+        "source_truncation_count": 0,
+        "target_truncation_count": 0,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    return SimpleNamespace(inputs=inputs, labels=labels, mask=mask, receipt=receipt)
+
+
+def evaluate_target(
+    config: dict[str, Any],
+    base: dict[str, Any],
+    plan: dict[str, Any],
+    target: dict[str, Any],
+    *,
+    metadata: dict[str, Any],
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    """Evaluate frozen rows while keeping answers outside the generation call."""
+
+    source_vocab = dict(metadata.get("source_vocab") or {})
+    target_vocab = dict(metadata.get("target_vocab") or {})
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=int(plan["models"]["vocab_size"]), **target["model"]
+        ),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=None,
+    )
+    checkpoint = resolve(str(target["checkpoint"]))
+    model.load_weights(str(checkpoint))
+    mx.eval(model.parameters())
+    model.eval()
+    artifacts = target.get("supervision_artifacts") or {}
+    selected = [
+        (key, row)
+        for key, row in artifacts.items()
+        if key == "private_eval" or str(key).endswith(":private_eval")
+    ]
+    rows: list[dict[str, Any]] = []
+    for key, artifact in selected:
+        path = resolve(str((artifact or {}).get("path") or ""))
+        if not path.is_file() or sha256_file(path) != str((artifact or {}).get("sha256") or ""):
+            raise ValueError(f"evaluation artifact identity mismatch: {key}")
+        with path.open(encoding="utf-8") as handle:
+            for line in handle:
+                row = json.loads(line)
+                if row.get("split") != "private_eval" or row.get("public_benchmark") is not False:
+                    raise ValueError(f"invalid evaluation boundary: {key}")
+                generated, generation = generate_model_text(
+                    model,
+                    str(row.get("prompt") or ""),
+                    source_vocab,
+                    target_vocab,
+                    base,
+                    max_tokens=int(config["evaluation"]["decode_max_target_tokens"]),
+                    max_source_tokens=int(
+                        config["supervision"]["maximum_source_encoded_tokens"]
+                    ),
+                    mx=mx,
+                )
+                expected = str(row.get("target") or "")
+                arm_id = str(row.get("arm_id") or "")
+                rows.append(
+                    {
+                        "row_id": row.get("row_id"),
+                        "arm_id": arm_id,
+                        "prompt_sha256": row.get("prompt_sha256"),
+                        "expected_sha256": row.get("target_sha256"),
+                        "generated_sha256": hashlib.sha256(generated.encode()).hexdigest(),
+                        "exact_match": generated == expected,
+                        "nonempty": bool(generated),
+                        "syntax": syntax_diagnostic(generated, arm_id),
+                        "generation": generation,
+                    }
+                )
+    by_arm: dict[str, Any] = {}
+    for arm_id in ARM_IDS:
+        arm_rows = [row for row in rows if row["arm_id"] == arm_id]
+        if arm_rows:
+            by_arm[arm_id] = evaluation_summary(arm_rows)
+    report = {
+        "policy": config["evaluation"]["policy"],
+        "created_utc": now(),
+        "trigger_state": "GREEN",
+        "target_id": target["target_id"],
+        "checkpoint": relative(checkpoint),
+        "checkpoint_sha256": sha256_file(checkpoint),
+        "row_count": len(rows),
+        "summary": evaluation_summary(rows),
+        "by_arm": by_arm,
+        "rows": rows,
+        "generator_visible_fields": ["prompt"],
+        "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
+        "target_visible_to_generator": False,
+        "candidate_family": "direct_autoregressive_model_text",
+        "templates_renderers_routers_tools_credit": 0,
+        "public_training_rows_written": 0,
+        "public_benchmark_payload_count": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "capability_claim": "PRIVATE_FROZEN_HELDOUT_ONLY",
+    }
+    output = resolve(str(target["receipt"])).with_name("evaluation_receipt.json")
+    write_json_atomic(output, report)
+    return {**report, "rows": {"path": relative(output), "embedded_row_count": len(rows)}}
+
+
+def generate_model_text(
+    model: Any,
+    prompt: str,
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+    base: dict[str, Any],
+    *,
+    max_tokens: int,
+    max_source_tokens: int,
+    mx: Any,
+) -> tuple[str, dict[str, Any]]:
+    """Generate from prompt only; the grammar constrains byte serialization, not meaning."""
+
+    source_ids, source_receipt = encode_tokens(
+        exact_text_tokens(prompt), source_vocab, stream="source"
+    )
+    if int(source_receipt.get("unknown_token_count") or 0):
+        return "", generation_fault("source_unrepresentable")
+    if len(source_ids) > max_source_tokens:
+        return "", generation_fault("source_requires_truncation")
+    source_offset = source_token_offset(base, source_vocab)
+    target_offset = target_token_offset(base, source_vocab)
+    prompt_ids = [GLOBAL_BOS_ID]
+    prompt_ids.extend(source_offset + int(value) for value in source_ids)
+    prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
+    prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
+    logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
+    mx.eval(logits)
+    inverse = {int(value): str(token) for token, value in target_vocab.items()}
+    generated_tokens: list[str] = []
+    stop_reason = "max_tokens"
+    for _ in range(max_tokens):
+        active = bool(active_target_span(generated_tokens)["active"])
+        values = np.asarray(
+            logits[0, -1, target_offset : target_offset + len(target_vocab)]
+        ).astype(np.float64)
+        allowed: list[int] = []
+        for local_id, token in inverse.items():
+            if active:
+                if is_byte_token(token) or token == TARGET_BYTE_END:
+                    allowed.append(local_id)
+            elif token == "<eos>" or token == TARGET_BYTE_BEGIN or (
+                token not in {"<pad>", "<unk>", "<bos>", TARGET_BYTE_END}
+                and not is_byte_token(token)
+            ):
+                allowed.append(local_id)
+        if not allowed:
+            return "", generation_fault("no_serialization_valid_token")
+        local_id = max(allowed, key=lambda index: float(values[index]))
+        token = inverse[local_id]
+        if token == "<eos>":
+            stop_reason = "eos"
+            break
+        generated_tokens.append(token)
+        logits, cache = model(
+            mx.array([[target_offset + local_id]], dtype=mx.int32), cache
+        )
+        mx.eval(logits)
+    decoded, decode_receipt = decode_target_tokens(generated_tokens)
+    if decode_receipt.get("state") != "READY":
+        return "", {
+            **generation_fault("byte_serialization_fault"),
+            "decode_receipt": decode_receipt,
+        }
+    text = "".join(decoded)
+    return text, {
+        "state": "GREEN",
+        "decoder": "greedy_exact_text_with_byte_span_grammar_v1",
+        "stop_reason": stop_reason,
+        "generated_token_count": len(generated_tokens),
+        "generated_token_sha256": hashlib.sha256(
+            "\n".join(generated_tokens).encode()
+        ).hexdigest(),
+        "byte_serialization_valid": True,
+        "target_visible_to_generator": False,
+        "fallback_return_count": 0,
+    }
+
+
+def generation_fault(reason: str) -> dict[str, Any]:
+    return {
+        "state": "FAULT",
+        "reason": reason,
+        "target_visible_to_generator": False,
+        "failure_behavior": "reject_without_fallback",
+        "fallback_return_count": 0,
+    }
+
+
+def syntax_diagnostic(text: str, arm_id: str) -> dict[str, Any]:
+    if arm_id == "python":
+        try:
+            ast.parse(text)
+        except SyntaxError as exc:
+            return {"state": "INVALID", "checker": "python_ast", "detail": str(exc)[:200]}
+        return {"state": "VALID", "checker": "python_ast"}
+    return {
+        "state": "NOT_CLAIMED",
+        "checker": "none",
+        "reason": "language-native parser not yet bound into this evaluation contract",
+    }
+
+
+def evaluation_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    total = len(rows)
+    exact = sum(bool(row.get("exact_match")) for row in rows)
+    nonempty = sum(bool(row.get("nonempty")) for row in rows)
+    serialization_valid = sum(
+        bool((row.get("generation") or {}).get("byte_serialization_valid")) for row in rows
+    )
+    syntax_valid = sum((row.get("syntax") or {}).get("state") == "VALID" for row in rows)
+    syntax_checked = sum(
+        (row.get("syntax") or {}).get("state") in {"VALID", "INVALID"} for row in rows
+    )
+    return {
+        "row_count": total,
+        "exact_match_count": exact,
+        "exact_target_match_rate": round(exact / max(1, total), 8),
+        "nonempty_count": nonempty,
+        "nonempty_rate": round(nonempty / max(1, total), 8),
+        "byte_serialization_valid_count": serialization_valid,
+        "byte_serialization_valid_rate": round(serialization_valid / max(1, total), 8),
+        "syntax_checked_count": syntax_checked,
+        "syntax_valid_count": syntax_valid,
+        "syntax_valid_rate_when_checked": round(syntax_valid / max(1, syntax_checked), 8),
     }
 
 
@@ -454,6 +898,7 @@ def train_target(
     nn: Any,
     optim: Any,
     mlx_utils: Any,
+    supervision_stage: Any | None = None,
 ) -> dict[str, Any]:
     target_id = str(target["target_id"])
     inputs = range_view(stage.pretrain_inputs, target["row_ranges"])
@@ -474,10 +919,21 @@ def train_target(
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
     training = config["training"]
     planned_steps = required_steps(mask, int(training["batch_size"]), int(target["unique_target_positions"]))
-    schedule = build_schedule(optim, mx, training, planned_steps + 128)
+    sft_positions = int(supervision_stage.mask.sum()) if supervision_stage is not None else 0
+    sft_planned_steps = (
+        required_steps(
+            supervision_stage.mask,
+            int(training["batch_size"]),
+            sft_positions,
+        )
+        if sft_positions
+        else 0
+    )
+    schedule = build_schedule(optim, mx, training, planned_steps + sft_planned_steps + 128)
     optimizer = optim.AdamW(learning_rate=schedule, weight_decay=float(training["weight_decay"]))
     prior_steps = 0
-    prior_positions = 0
+    prior_pretrain_positions = 0
+    prior_sft_positions = 0
     prior_checkpoint_hash = ""
     if resume:
         prior = read_json(receipt_path)
@@ -486,17 +942,21 @@ def train_target(
         optimizer.state = mlx_utils.tree_unflatten(list(mx.load(str(optimizer_path)).items()))
         mx.eval(model.parameters(), optimizer.state)
         prior_steps = int(prior.get("optimizer_steps") or 0)
-        prior_positions = int(prior.get("optimizer_positions") or 0)
+        prior_pretrain_positions = int(prior.get("pretrain_optimizer_positions") or 0)
+        prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
         prior_checkpoint_hash = sha256_file(checkpoint)
-    remaining_positions = max(0, int(target["unique_target_positions"]) - prior_positions)
-    allowed_steps = max_steps if max_steps else planned_steps + 64
+    remaining_positions = max(
+        0, int(target["unique_target_positions"]) - prior_pretrain_positions
+    )
+    remaining_sft_positions = max(0, sft_positions - prior_sft_positions)
+    allowed_steps = max_steps if max_steps else planned_steps + sft_planned_steps + 128
     temporary_checkpoint = checkpoint.with_name("weights.partial.npz")
     heartbeat = checkpoint.parent / "training_heartbeat.json"
     started = time.perf_counter()
     random.seed(int(config["seed"]) + stable_int(target_id) + prior_steps)
     mx.random.seed(int(config["seed"]) + stable_int(target_id) + prior_steps)
     loss_and_grad = nn.value_and_grad(model, causal_loss)
-    phase = train_phase(
+    pretrain_phase = train_phase(
         model,
         optimizer,
         loss_and_grad,
@@ -526,10 +986,56 @@ def train_target(
         mx=mx,
         optim=optim,
     )
+    used_steps = int(pretrain_phase["optimizer_steps"])
+    supervision_phase = {
+        "phase": f"moecot_supervision:{target_id}",
+        "optimizer_steps": 0,
+        "target_positions_consumed": 0,
+        "target_positions_requested": remaining_sft_positions,
+        "mean_loss": None,
+        "final_loss": None,
+    }
+    if supervision_stage is not None and remaining_sft_positions > 0 and used_steps < allowed_steps:
+        supervision_phase = train_phase(
+            model,
+            optimizer,
+            loss_and_grad,
+            supervision_stage.inputs,
+            supervision_stage.labels,
+            supervision_stage.mask,
+            progress_mask=supervision_stage.mask,
+            ordered_plan_loss_weight=1.0,
+            sample_weights=None,
+            plan_labels=None,
+            plan_label_mode="none",
+            plan_auxiliary_weight=0.0,
+            plan_shuffle_seed=0,
+            plan_loss_mode="binary_multilabel",
+            plan_slot_count=0,
+            plan_factor_group_sizes=(),
+            phase_name=f"moecot_supervision:{target_id}",
+            target_positions=remaining_sft_positions,
+            batch_size=int(training["batch_size"]),
+            gradient_clip=float(training["gradient_clip_norm"]),
+            seed=int(config["seed"]) + stable_int(target_id) + prior_steps + used_steps,
+            max_steps=allowed_steps - used_steps,
+            checkpoint=temporary_checkpoint,
+            checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
+            heartbeat=heartbeat,
+            global_step_offset=prior_steps + used_steps,
+            mx=mx,
+            optim=optim,
+        )
     publish_model(model, checkpoint, temporary_checkpoint)
     publish_optimizer(mx, mlx_utils, optimizer, optimizer_path)
-    total_steps = prior_steps + int(phase["optimizer_steps"])
-    total_positions = prior_positions + int(phase["target_positions_consumed"])
+    total_steps = prior_steps + used_steps + int(supervision_phase["optimizer_steps"])
+    total_pretrain_positions = prior_pretrain_positions + int(
+        pretrain_phase["target_positions_consumed"]
+    )
+    total_sft_positions = prior_sft_positions + int(
+        supervision_phase["target_positions_consumed"]
+    )
+    total_positions = total_pretrain_positions + total_sft_positions
     receipt = {
         "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
         "created_utc": now(),
@@ -543,15 +1049,27 @@ def train_target(
         "parameter_count": observed_parameters,
         "optimizer_steps": total_steps,
         "optimizer_positions": total_positions,
+        "pretrain_optimizer_positions": total_pretrain_positions,
+        "supervision_optimizer_positions": total_sft_positions,
         "unique_target_positions": int(target["unique_target_positions"]),
-        "complete": total_positions >= int(target["unique_target_positions"]),
+        "unique_supervision_target_positions": sft_positions,
+        "complete": (
+            total_pretrain_positions >= int(target["unique_target_positions"])
+            and total_sft_positions >= sft_positions
+        ),
         "checkpoint": relative(checkpoint),
         "checkpoint_sha256": sha256_file(checkpoint),
         "optimizer_state": relative(optimizer_path),
         "optimizer_state_sha256": sha256_file(optimizer_path),
         "resume": resume,
         "resume_base_checkpoint_sha256": prior_checkpoint_hash,
-        "phase": phase,
+        "phases": {
+            "pretraining": pretrain_phase,
+            "supervision": supervision_phase,
+        },
+        "supervision_stage": (
+            supervision_stage.receipt if supervision_stage is not None else None
+        ),
         "wall_seconds": round(time.perf_counter() - started, 6),
         "energy_joules": None,
         "energy_measurement_state": "NOT_AVAILABLE_FROM_MLX_RUNTIME",
@@ -610,12 +1128,19 @@ def validate_resume(
         raise ValueError("resume denied: " + ",".join(faults))
 
 
-def plan_sha256(config: dict[str, Any], metadata: dict[str, Any], models: dict[str, Any]) -> str:
+def plan_sha256(
+    config: dict[str, Any],
+    metadata: dict[str, Any],
+    models: dict[str, Any],
+    supervision: dict[str, Any],
+) -> str:
     payload = {
         "config": config,
         "stage_signature": (metadata.get("summary") or {}).get("stage_signature"),
         "arm_views": ((metadata.get("summary") or {}).get("canonical_pretrain_stage") or {}).get("arm_views"),
         "models": models,
+        "supervision_manifest_sha256": supervision.get("manifest_sha256"),
+        "supervision_artifacts": supervision.get("artifacts"),
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 

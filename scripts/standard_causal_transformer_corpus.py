@@ -307,6 +307,39 @@ def build_document_index(config: dict[str, Any], *, root: Path, index_path: Path
                 add_index_row(
                     connection, code_deduper, category, text, shard_path, offset, length, counts, exclusions
                 )
+        supervision_manifest_value = str(corpus.get("supervision_manifest") or "")
+        if supervision_manifest_value:
+            supervision_manifest = resolve(root, supervision_manifest_value)
+            supervision = read_json(supervision_manifest)
+            if supervision.get("policy") != "project_theseus_moecot_language_supervision_v1" or supervision.get("trigger_state") != "GREEN":
+                raise ValueError("canonical supervision manifest is not GREEN")
+            identities.append(identity_row(supervision_manifest))
+            artifacts = supervision.get("artifacts") if isinstance(supervision.get("artifacts"), dict) else {}
+            for arm in ("python", "javascript_typescript", "html_css", "rust"):
+                artifact_row = artifacts.get(f"{arm}:private_train") if isinstance(artifacts.get(f"{arm}:private_train"), dict) else {}
+                shard_path = resolve(root, str(artifact_row.get("path") or ""))
+                require_identity(shard_path, str(artifact_row.get("sha256") or ""))
+                identities.append(identity_row(shard_path))
+                for offset, length, row in iter_jsonl_ranges(shard_path):
+                    if row.get("split") != "private_train" or row.get("public_benchmark") is not False:
+                        raise ValueError(f"invalid canonical supervision row boundary: {shard_path}:{offset}")
+                    if str(row.get("arm_id") or "") != arm:
+                        raise ValueError(f"canonical supervision arm mismatch: {shard_path}:{offset}")
+                    text = str(row.get("target") or "")
+                    if hashlib.sha256(text.encode("utf-8")).hexdigest() != str(row.get("target_sha256") or ""):
+                        raise ValueError(f"canonical supervision target identity mismatch: {shard_path}:{offset}")
+                    provenance = row.get("provenance") if isinstance(row.get("provenance"), dict) else {}
+                    path_value = str(provenance.get("new_file") or f"supervision.{arm}")
+                    quality_reasons = code_quality_rejection_reasons(
+                        corpus, path=path_value, text=text, category=arm
+                    )
+                    if quality_reasons:
+                        for reason in quality_reasons:
+                            exclusions[f"supervision_quality:{reason}"] += 1
+                        continue
+                    add_index_row(
+                        connection, code_deduper, arm, text, shard_path, offset, length, counts, exclusions
+                    )
         conversation_root = resolve(root, corpus["conversation_root"])
         conversation_manifest = resolve(root, corpus["conversation_manifest"])
         manifest = read_json(conversation_manifest)

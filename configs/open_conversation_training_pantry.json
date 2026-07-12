@@ -29,8 +29,8 @@
     "score_semantics": "Scale is credited only from redacted, exact/near-deduplicated, decontaminated rows counted once. Repeated optimizer positions never increase data-scale credit."
   },
   "broad_text_intake": {
-    "target_one_pass_token_positions": 12000000,
-    "max_total_rows": 12000,
+    "target_one_pass_token_positions": 18000000,
+    "max_total_rows": 18000,
     "shard_rows": 500,
     "max_disk_bytes": 1500000000,
     "max_public_contamination_texts": 20000,
@@ -54,8 +54,8 @@
       "provenance_class": "human_public_domain",
       "required_language": "en",
       "require_row_public_domain_license": true,
-      "max_scan_rows": 5000,
-      "max_admitted_rows": 12000,
+      "max_scan_rows": 8000,
+      "max_admitted_rows": 18000,
       "why": "Human-authored English books whose row metadata identifies Project Gutenberg public-domain source text.",
       "use": "broad_english_self_supervised_pretraining_only"
     }
@@ -84,6 +84,7 @@
     {
       "id": "smol_smoltalk",
       "dataset": "HuggingFaceTB/smol-smoltalk",
+      "revision": "f73fe857d519ff6ac5af2ea67c4d3834da7b8bcc",
       "url": "https://huggingface.co/datasets/HuggingFaceTB/smol-smoltalk",
       "license_spdx": "apache-2.0",
       "source_kind": "huggingface_dataset",
@@ -93,9 +94,10 @@
       "offset": 0,
       "offsets": [0, 100, 200, 300, 400, 500, 600, 700, 800, 900],
       "length": 100,
-      "enabled": false,
+      "enabled": true,
       "scalable": true,
       "provenance_class": "external_teacher_generated",
+      "required_langs": ["en"],
       "static_open_corpus": true,
       "quality_tier": "curated_high",
       "max_admitted_rows": 8000,
@@ -105,6 +107,7 @@
     {
       "id": "ultrachat_200k",
       "dataset": "HuggingFaceH4/ultrachat_200k",
+      "revision": "8049631c405ae6576f93f445c6b8166f76f5505a",
       "url": "https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k",
       "license_spdx": "mit",
       "source_kind": "huggingface_dataset",
@@ -114,9 +117,10 @@
       "offset": 0,
       "offsets": [0, 100, 200, 300, 400, 500, 600, 700, 800, 900],
       "length": 100,
-      "enabled": false,
+      "enabled": true,
       "scalable": true,
       "provenance_class": "external_teacher_generated",
+      "required_langs": ["en"],
       "static_open_corpus": true,
       "quality_tier": "curated_high",
       "max_admitted_rows": 8000,
