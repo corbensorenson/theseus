@@ -62,6 +62,7 @@ from standard_causal_transformer_corpus import (  # noqa: E402
     code_quality_rejection_reasons,
     load_pretrain_memmaps,
     materialize_pretrain_stage,
+    measure_pretrain_index_capacity,
     pretrain_array_paths,
     validate_language_scope,
     validate_code_quality_policy,
@@ -140,6 +141,7 @@ def main() -> int:
     parser.add_argument("--preference-canary", action="store_true")
     parser.add_argument("--generation-mode-canary", action="store_true")
     parser.add_argument("--audit-corpus", action="store_true")
+    parser.add_argument("--measure-corpus-capacity", action="store_true")
     parser.add_argument("--canonical-corpus-receipt", default=rel(DEFAULT_CANONICAL_CORPUS_RECEIPT))
     parser.add_argument("--max-steps", type=int, default=0)
     args = parser.parse_args()
@@ -157,6 +159,31 @@ def main() -> int:
         write_json(resolve(args.canonical_corpus_receipt), receipt)
         print(json.dumps(receipt, indent=2, sort_keys=True))
         return 2 if receipt["trigger_state"] == "RED" else 0
+    if args.measure_corpus_capacity:
+        validate_config(config)
+        metadata = read_json(resolve(args.stage_dir) / "stage_metadata_v1.json")
+        index_path = Path(metadata["summary"]["canonical_pretrain_stage"]["index"]["path"])
+        vocab_payload = read_json(resolve(config["tokenization"]["source_vocab"]))
+        target_vocab = dict(vocab_payload["target_vocab"])
+        eval_rows, _families = select_family_disjoint_eval(config)
+        eval_patterns = {
+            " ".join(body_tokens(str(row.get("solution_body") or "")))
+            for row in eval_rows
+            if str(row.get("solution_body") or "")
+        }
+        receipt = measure_pretrain_index_capacity(
+            index_path,
+            tokenize_and_encode=lambda text, category: encode_canonical_pretrain_document(
+                text, target_vocab, category=category
+            ),
+            eval_body_patterns=eval_patterns,
+        )
+        receipt["created_utc"] = now()
+        receipt["config"] = rel(resolve(args.config))
+        receipt["config_sha256"] = file_content_sha256(resolve(args.config))
+        write_json(resolve(args.out), receipt)
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 0
     report, candidates = run(
         config,
         config_path=args.config,

@@ -212,6 +212,81 @@ def materialize_pretrain_stage(
     return arrays[0], arrays[1], arrays[2], report
 
 
+def measure_pretrain_index_capacity(
+    index_path: Path,
+    *,
+    tokenize_and_encode: Callable[[str, str], tuple[list[str], list[int], dict[str, Any]]],
+    eval_body_patterns: set[str],
+) -> dict[str, Any]:
+    """Measure every indexed document without materializing or admitting new sources."""
+
+    if not index_path.is_file():
+        raise FileNotFoundError(f"canonical pretrain index missing: {index_path}")
+    positions: Counter[str] = Counter()
+    documents: Counter[str] = Counter()
+    excluded: Counter[str] = Counter()
+    selected_digests: list[str] = []
+    handles: dict[str, Any] = {}
+    try:
+        with sqlite3.connect(index_path) as connection:
+            cursor = connection.execute(
+                "SELECT category, digest, path, byte_offset, byte_length "
+                "FROM documents ORDER BY category, digest"
+            )
+            for category, digest, path_value, byte_offset, byte_length in cursor:
+                handle = handles.get(path_value)
+                if handle is None:
+                    handle = Path(path_value).open("rb")
+                    handles[path_value] = handle
+                handle.seek(int(byte_offset))
+                row = json.loads(handle.read(int(byte_length)))
+                text = str(
+                    row.get("text")
+                    if category in CATEGORY_ORDER[2:]
+                    else row.get("causal_text") or ""
+                )
+                logical_tokens, encoded, receipt = tokenize_and_encode(text, category)
+                if int(receipt.get("unknown_token_count") or 0):
+                    excluded[f"{category}:tokenizer_unrepresentable"] += 1
+                    continue
+                roundtrip = receipt.get("roundtrip") if isinstance(receipt.get("roundtrip"), dict) else {}
+                if roundtrip and roundtrip.get("state") != "GREEN":
+                    excluded[f"{category}:tokenizer_roundtrip_failure"] += 1
+                    continue
+                normalized = " ".join(logical_tokens)
+                if any(pattern and pattern in normalized for pattern in eval_body_patterns):
+                    excluded[f"{category}:eval_body_overlap"] += 1
+                    continue
+                width = max(0, len(encoded) - 1)
+                if width <= 0:
+                    excluded[f"{category}:empty_or_single_token"] += 1
+                    continue
+                positions[category] += width
+                documents[category] += 1
+                selected_digests.append(f"{category}:{digest}")
+    finally:
+        for handle in handles.values():
+            handle.close()
+    total = sum(positions.values())
+    return {
+        "policy": "project_theseus_admitted_index_exact_capacity_measurement_v1",
+        "index": str(index_path),
+        "index_sha256": file_sha256(index_path),
+        "positions_by_category": {key: int(positions[key]) for key in CATEGORY_ORDER},
+        "documents_by_category": {key: int(documents[key]) for key in CATEGORY_ORDER},
+        "excluded_counts": dict(excluded),
+        "selected_document_count": len(selected_digests),
+        "selected_document_digest": sha256_text("\n".join(selected_digests)),
+        "total_unique_positions": total,
+        "max_active_parameters_at_20_to_1": total // 20,
+        "max_active_parameters_at_16_to_1": total // 16,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "score_semantics": "capacity planning only; no capability or training credit",
+    }
+
+
 def arm_views(
     config: dict[str, Any],
     category_ranges: dict[str, dict[str, int]],

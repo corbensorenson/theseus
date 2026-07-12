@@ -18,6 +18,7 @@ from standard_causal_transformer_corpus import (  # noqa: E402
     code_quality_rejection_reasons,
     load_pretrain_memmaps,
     materialize_pretrain_stage,
+    measure_pretrain_index_capacity,
     pretrain_array_paths,
 )
 
@@ -243,6 +244,40 @@ def test_materialization_is_content_bound_balanced_and_disk_backed(tmp_path: Pat
             (6, 4),
             expected=report["array_artifacts"],
         )
+
+
+def test_capacity_measurement_scans_only_the_content_bound_index(tmp_path: Path) -> None:
+    config = fixture(tmp_path)
+    stage_dir = tmp_path / "stage"
+    stage_dir.mkdir()
+    materialize_pretrain_stage(
+        config,
+        root=tmp_path,
+        stage_dir=stage_dir,
+        target_vocab={},
+        target_offset=100,
+        tokenize_and_encode=encode,
+        eval_body_patterns=set(),
+    )
+    measured = measure_pretrain_index_capacity(
+        stage_dir / "canonical_pretrain_index_v1.sqlite3",
+        tokenize_and_encode=encode,
+        eval_body_patterns=set(),
+    )
+    assert measured["total_unique_positions"] >= 24
+    assert set(measured["positions_by_category"]) == {
+        "english_conversation_instruction",
+        "english_broad",
+        "python",
+        "javascript_typescript",
+        "html_css",
+        "rust",
+    }
+    assert measured["selected_document_count"] == sum(
+        measured["documents_by_category"].values()
+    )
+    assert measured["public_training_rows_written"] == 0
+    assert measured["score_semantics"].startswith("capacity planning only")
 
 
 def test_materialization_refuses_stale_source_shard(tmp_path: Path) -> None:
