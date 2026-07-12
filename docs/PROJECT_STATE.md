@@ -38,7 +38,8 @@ share toward zero. Public benchmarks are calibration only.
   frozen at 20,000 train, 544 development, and 1,032 heldout rows with zero split
   overlap or public payloads. The Rust causal baseline scored 0/64 confirmation.
   Four-pass weighted SFT plus beam decoding now emits valid EOS-terminated text on
-  60/60 development rows but remains 0/60 exact. Source conditioning is the wall.
+  60/60 development rows but remains 0/60 exact. A matched prefix-LM rerun also
+  scores 0/60, so optimization depth is the next isolated variable.
 
 ## Evidence Boundaries
 
@@ -89,6 +90,10 @@ share toward zero. Public benchmarks are calibration only.
   on development, but exact recovery remains 0/60 with source-independent mode
   collapse. Route success cannot count as answer success and hidden generalist
   fallback is forbidden.
+- **Prefix-LM ablation:** bidirectional source attention leaves exact recovery at
+  0/60, although it produces 21 distinct development outputs. This negative is
+  retained. The next run keeps prefix-LM and changes only supervised optimizer
+  depth from four to 32 passes; repeated exposure never increases unique-data credit.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile

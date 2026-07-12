@@ -31,11 +31,11 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | Rust causal baseline is retained at 0/64 confirmation; weighted four-pass SFT plus beam repair reaches 60/60 clean EOS serialization but 0/60 development exact recovery | run a matched prefix-LM source-conditioning ablation before spending the other six full training budgets |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | causal and matched prefix-LM Rust runs both score 0/60 development exact; prefix-LM produces 21 distinct outputs but does not clear semantics | retain prefix-LM and test a bounded 32-pass SFT optimization-depth ablation before spending other full budgets |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - termination is repaired on development (60/60 EOS/serialization), but semantic exact recovery remains 0/60 with source-independent Rust mode collapse | improve source conditioning under a matched prefix-LM ablation; require nonzero development recovery and a fresh frozen confirmation before promotion |
+| Generator capability (held-out pass) | Phase 10 | RED - termination is repaired (60/60), but causal and prefix-LM semantic exact recovery remain 0/60; four-pass SFT loss is 2.34 | test deeper supervised optimization with repetitions reported separately from unique data; require nonzero development recovery and fresh confirmation before promotion |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -838,7 +838,9 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   model-emitted EOS to 60/60, without forced closure or fallback. Exact recovery
   remains 0/60 and bounded samples show source-independent crate-attribute mode
   collapse. The next matched ablation changes only source attention from causal to
-  prefix-LM; confirmation rows remain unspent.
+  prefix-LM; it also remains 0/60, though output diversity rises to 21 hashes. The
+  next ablation keeps prefix-LM and changes only supervised optimizer depth from 4
+  to 32 passes; confirmation rows remain unspent.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact

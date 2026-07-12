@@ -25,7 +25,7 @@
     "ff_dim": 288,
     "rope_base": 10000.0,
     "rms_norm_eps": 0.00001,
-    "attention_policy": "causal",
+    "attention_policy": "prefix_lm",
     "source_target_separator_token_id": 2
   },
   "controls": {
