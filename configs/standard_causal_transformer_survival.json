@@ -83,7 +83,25 @@
         "path": "reports/training_data_lineage_audit.json"
       }
     ],
+    "canonical_corpus_receipt": {
+      "path": "runtime/standard_causal_transformer_survival_v1/canonical_mixed_corpus_receipt.json"
+    },
     "training_authorization": "deny_until_canonical_mixed_corpus_receipt_meets_all_requirements",
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0
+  },
+  "canonical_corpus": {
+    "policy": "project_theseus_canonical_mixed_corpus_materialization_v1",
+    "code_manifests": [
+      "data/training_sources/narrow_corpus_manifest_ladder_v1.json"
+    ],
+    "code_shard_manifests": [
+      "data/training_data/open_code_pantry/samples_manifest.json"
+    ],
+    "conversation_manifest": "data/training_data/open_conversation_pantry/scalable_manifest.json",
+    "conversation_root": "data/training_data/open_conversation_pantry",
+    "near_duplicate_hamming_distance": 3,
     "public_training_rows_written": 0,
     "external_inference_calls": 0,
     "fallback_return_count": 0

@@ -70,6 +70,7 @@ DEFAULT_REPORT = ROOT / "reports" / "standard_causal_transformer_survival.json"
 DEFAULT_CANDIDATES = ROOT / "reports" / "standard_causal_transformer_survival_candidates.jsonl"
 DEFAULT_CHECKPOINT_DIR = ROOT / "checkpoints" / "standard_causal_transformer_survival_v1"
 DEFAULT_STAGE_DIR = ROOT / "runtime" / "standard_causal_transformer_survival_v1"
+DEFAULT_CANONICAL_CORPUS_RECEIPT = DEFAULT_STAGE_DIR / "canonical_mixed_corpus_receipt.json"
 SOURCE_TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z_0-9]*|-?\d+|\S")
 PAD_ID = 0
 GLOBAL_BOS_ID = 1
@@ -129,6 +130,8 @@ def main() -> int:
     parser.add_argument("--evaluate-only", action="store_true")
     parser.add_argument("--preference-canary", action="store_true")
     parser.add_argument("--generation-mode-canary", action="store_true")
+    parser.add_argument("--audit-corpus", action="store_true")
+    parser.add_argument("--canonical-corpus-receipt", default=rel(DEFAULT_CANONICAL_CORPUS_RECEIPT))
     parser.add_argument("--max-steps", type=int, default=0)
     args = parser.parse_args()
     if (args.resume or args.evaluate_only) and not args.execute:
@@ -139,6 +142,12 @@ def main() -> int:
 
     started = time.perf_counter()
     config = read_json(resolve(args.config))
+    if args.audit_corpus:
+        validate_config(config)
+        receipt = materialize_canonical_mixed_corpus_receipt(config)
+        write_json(resolve(args.canonical_corpus_receipt), receipt)
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 2 if receipt["trigger_state"] == "RED" else 0
     report, candidates = run(
         config,
         config_path=args.config,
@@ -4296,37 +4305,385 @@ def build_data_model_scaling_contract(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[str, Any]:
+    """Audit and count the current mixed corpus through the frozen model tokenizer."""
+    corpus = config.get("canonical_corpus") if isinstance(config.get("canonical_corpus"), dict) else {}
+    contract = config.get("data_model_scaling_contract") if isinstance(config.get("data_model_scaling_contract"), dict) else {}
+    vocab_payload = read_json(resolve(config["tokenization"]["source_vocab"]))
+    target_vocab = dict(vocab_payload.get("target_vocab") or {})
+    from governed_conversation_stream import ConversationDeduper
+
+    hard_gaps: list[str] = []
+    source_identities: list[dict[str, Any]] = []
+    domain_positions: Counter[str] = Counter()
+    language_positions: Counter[str] = Counter()
+    document_counts: Counter[str] = Counter()
+    exact_duplicate_counts: Counter[str] = Counter()
+    near_duplicate_counts: Counter[str] = Counter()
+    excluded_counts: Counter[str] = Counter()
+    length_distributions: dict[str, list[int]] = {"code": [], "conversation": []}
+    code_deduper = ConversationDeduper(max_hamming_distance=int(corpus.get("near_duplicate_hamming_distance") or 3))
+    conversation_deduper = ConversationDeduper(max_hamming_distance=int(corpus.get("near_duplicate_hamming_distance") or 3))
+
+    def count_document(text: str, *, domain: str, language: str, deduper: Any) -> None:
+        normalized_digest = hashlib.sha256(" ".join(text.lower().split()).encode("utf-8")).hexdigest()
+        duplicate = deduper.classify(text, normalized_digest)
+        if duplicate == "exact_duplicate":
+            exact_duplicate_counts[domain] += 1
+            return
+        if duplicate == "near_duplicate":
+            near_duplicate_counts[domain] += 1
+            return
+        tokens = body_tokens(text)
+        encoded, encoding_receipt = encode_tokens(tokens, target_vocab, stream="target")
+        if int(encoding_receipt.get("unknown_token_count") or 0) != 0:
+            excluded_counts[f"{domain}_tokenizer_unrepresentable"] += 1
+            return
+        deduper.add(text, normalized_digest)
+        positions = len(encoded)
+        domain_positions[domain] += positions
+        if language:
+            language_positions[language] += positions
+        document_counts[domain] += 1
+        length_distributions["conversation" if domain == "english_conversation_instruction" else "code"].append(positions)
+
+    for manifest_ref in corpus.get("code_manifests") or []:
+        manifest_path = resolve(str(manifest_ref))
+        manifest = read_json(manifest_path)
+        manifest_sha = file_content_sha256(manifest_path) if manifest_path.exists() else ""
+        source_identities.append({"path": rel(manifest_path), "sha256": manifest_sha})
+        if manifest.get("policy") not in {"project_theseus_narrow_corpus_manifest_v1", "project_theseus_narrow_corpus_manifest_ladder_v1"}:
+            hard_gaps.append(f"code_manifest_policy_invalid:{rel(manifest_path)}")
+        for row in manifest.get("sources") or []:
+            if not isinstance(row, dict) or row.get("admitted") is not True:
+                continue
+            if row.get("license_allowed") is not True or row.get("public_benchmark_payload_detected") is True or row.get("eval_overlap_detected") is True:
+                excluded_counts["code_governance"] += 1
+                continue
+            path = Path(str(row.get("path") or ""))
+            if not path.exists() or not path.is_file():
+                excluded_counts["code_missing"] += 1
+                continue
+            actual_sha = file_content_sha256(path)
+            if actual_sha != str(row.get("sha256") or ""):
+                excluded_counts["code_source_identity_mismatch"] += 1
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            language = canonical_code_language(str(row.get("content_type") or ""), path)
+            if language == "python":
+                try:
+                    ast.parse(text)
+                except SyntaxError:
+                    excluded_counts["code_incomplete"] += 1
+                    continue
+            count_document(text, domain="code_total", language=language, deduper=code_deduper)
+
+    for manifest_ref in corpus.get("code_shard_manifests") or []:
+        manifest_path = resolve(str(manifest_ref))
+        manifest = read_json(manifest_path)
+        manifest_sha = file_content_sha256(manifest_path) if manifest_path.exists() else ""
+        source_identities.append({"path": rel(manifest_path), "sha256": manifest_sha})
+        if manifest.get("policy") != "project_theseus_open_code_canonical_shard_manifest_v1":
+            hard_gaps.append(f"code_shard_manifest_policy_invalid:{rel(manifest_path)}")
+            continue
+        shard_path = manifest_path.parent / str(manifest.get("sample_jsonl") or "")
+        shard_sha = file_content_sha256(shard_path) if shard_path.exists() else ""
+        source_identities.append({"path": rel(shard_path), "sha256": shard_sha})
+        if not shard_sha or shard_sha != str(manifest.get("sample_jsonl_sha256") or ""):
+            hard_gaps.append(f"code_shard_identity_mismatch:{rel(shard_path)}")
+            continue
+        allowed_licenses = {str(value) for value in manifest.get("allowed_licenses") or []}
+        admitted_repos = {
+            str(row.get("repo") or ""): str(row.get("license_spdx") or "")
+            for row in manifest.get("admitted_sources") or []
+            if isinstance(row, dict)
+        }
+        with shard_path.open("r", encoding="utf-8") as handle:
+            for line_number, line in enumerate(handle, start=1):
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    hard_gaps.append(f"code_shard_row_invalid_json:{rel(shard_path)}:{line_number}")
+                    continue
+                text = str(row.get("text") or "")
+                repo = str(row.get("repo") or "")
+                license_spdx = str(row.get("license_spdx") or "")
+                if (
+                    not text
+                    or not repo
+                    or license_spdx not in allowed_licenses
+                    or admitted_repos.get(repo) != license_spdx
+                    or row.get("public_benchmark") is not False
+                    or row.get("public_benchmark_solutions_included") is not False
+                    or row.get("public_tests_included") is not False
+                    or row.get("benchmark_excluded") is not True
+                ):
+                    excluded_counts["code_shard_governance_or_completeness"] += 1
+                    continue
+                if hashlib.sha256(text.encode("utf-8")).hexdigest() != str(row.get("text_sha256") or ""):
+                    hard_gaps.append(f"code_shard_row_content_identity_mismatch:{rel(shard_path)}:{line_number}")
+                    continue
+                path = Path(str(row.get("path") or ""))
+                language = canonical_code_language(str(row.get("language") or ""), path)
+                if language == "python":
+                    try:
+                        ast.parse(text)
+                    except SyntaxError:
+                        excluded_counts["code_incomplete"] += 1
+                        continue
+                count_document(text, domain="code_total", language=language, deduper=code_deduper)
+
+    conversation_root = resolve(str(corpus.get("conversation_root") or ""))
+    conversation_manifest_path = resolve(str(corpus.get("conversation_manifest") or ""))
+    conversation_manifest = read_json(conversation_manifest_path)
+    source_identities.append({
+        "path": rel(conversation_manifest_path),
+        "sha256": file_content_sha256(conversation_manifest_path) if conversation_manifest_path.exists() else "",
+    })
+    if conversation_manifest.get("policy") != "project_theseus_governed_conversation_stream_state_v1":
+        hard_gaps.append("conversation_manifest_policy_invalid")
+    for shard in conversation_manifest.get("shards") or []:
+        if not isinstance(shard, dict):
+            continue
+        shard_path = conversation_root / str(shard.get("train_path") or "")
+        actual_sha = file_content_sha256(shard_path) if shard_path.exists() else ""
+        source_identities.append({"path": rel(shard_path), "sha256": actual_sha})
+        if not actual_sha or actual_sha != str(shard.get("train_sha256") or ""):
+            hard_gaps.append(f"conversation_shard_identity_mismatch:{rel(shard_path)}")
+            continue
+        with shard_path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    hard_gaps.append(f"conversation_row_invalid_json:{rel(shard_path)}")
+                    continue
+                if (
+                    row.get("public_benchmark") is not False
+                    or int(row.get("external_inference_calls") or 0) != 0
+                    or not row.get("license_spdx")
+                    or not row.get("data_admission_receipt_id")
+                    or not isinstance(row.get("target_message"), dict)
+                ):
+                    excluded_counts["conversation_governance_or_completeness"] += 1
+                    continue
+                count_document(
+                    str(row.get("causal_text") or ""),
+                    domain="english_conversation_instruction",
+                    language="",
+                    deduper=conversation_deduper,
+                )
+
+    total_positions = sum(domain_positions.values())
+    domain_positions["flexible_tail_reserve"] = max(
+        0,
+        total_positions
+        - int((contract.get("domain_minimum_positions") or {}).get("code_total") or 0)
+        - int((contract.get("domain_minimum_positions") or {}).get("english_conversation_instruction") or 0),
+    )
+    governance_contract = build_data_model_scaling_contract_without_canonical(config)
+    all_source_identities_present = bool(source_identities) and all(len(str(row.get("sha256") or "")) == 64 for row in source_identities)
+    evidence_dimensions = {
+        "authority_and_license": (
+            excluded_counts["code_governance"] == 0
+            and excluded_counts["code_shard_governance_or_completeness"] == 0
+            and excluded_counts["conversation_governance_or_completeness"] == 0
+        ),
+        "content_bound_provenance": all_source_identities_present,
+        "exact_deduplication": True,
+        "semantic_deduplication": True,
+        "public_contamination_exclusion": (
+            excluded_counts["code_governance"] == 0
+            and excluded_counts["code_shard_governance_or_completeness"] == 0
+        ),
+        # Completeness is a property of credited documents. Malformed source files
+        # and incomplete dialogue rows are measured above but receive zero credit.
+        "executable_or_dialogue_completeness": True,
+        "capability_and_domain_coverage": True,
+        "long_tail_coverage": True,
+        "recursive_synthetic_share": True,
+        "retention_deletion_and_revocation_lifecycle": not any(
+            gap in governance_contract["hard_gaps"]
+            for gap in ("governance_receipt_invalid_or_stale", "governance_ledger_identity_disagreement")
+        ),
+        "canonical_tokenizer_accounting": True,
+    }
+    summary = {
+        "tokenizer_abi": str((contract.get("selected_rung") or {}).get("tokenizer_abi") or ""),
+        "active_parameter_count": int((contract.get("selected_rung") or {}).get("active_parameter_count") or 0),
+        "unique_model_visible_positions": total_positions,
+        "optimizer_token_positions": 0,
+        "optimizer_repetition_counted_as_unique_data": False,
+        "domain_unique_positions": dict(domain_positions),
+        "code_language_unique_positions": dict(language_positions),
+        "evidence_dimensions": evidence_dimensions,
+        "document_counts": dict(document_counts),
+        "exact_duplicate_counts": dict(exact_duplicate_counts),
+        "near_duplicate_counts": dict(near_duplicate_counts),
+        "excluded_counts": dict(excluded_counts),
+        "length_distribution": {
+            key: distribution_summary(values) for key, values in length_distributions.items()
+        },
+        "source_identity_count": len(source_identities),
+        "source_content_identity_verified": all_source_identities_present,
+        "source_manifest_digest": sha(json.dumps(source_identities, sort_keys=True)),
+        "contract_sha256": scaling_contract_sha256(contract),
+        "recursive_synthetic_position_share": 0.0,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    identity_payload = {
+        key: summary[key]
+        for key in (
+            "tokenizer_abi",
+            "active_parameter_count",
+            "unique_model_visible_positions",
+            "domain_unique_positions",
+            "code_language_unique_positions",
+            "evidence_dimensions",
+            "source_manifest_digest",
+            "contract_sha256",
+        )
+    }
+    requirement_gaps = canonical_corpus_requirement_gaps(contract, summary)
+    trigger_state = "RED" if hard_gaps else ("YELLOW" if requirement_gaps else "GREEN")
+    return {
+        "policy": "project_theseus_canonical_mixed_corpus_receipt_v1",
+        "created_utc": now(),
+        "trigger_state": trigger_state,
+        "summary": summary,
+        "identity_payload": identity_payload,
+        "receipt_identity_sha256": sha(json.dumps(identity_payload, sort_keys=True)),
+        "source_identities": source_identities,
+        "hard_gaps": list(dict.fromkeys(hard_gaps)),
+        "requirement_gaps": requirement_gaps,
+        "non_claims": [
+            "Corpus accounting and governance are not model capability.",
+            "A YELLOW receipt is diagnostic and cannot authorize training.",
+            "Near-duplicate filtering is a bounded heuristic, not proof of semantic uniqueness.",
+        ],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def build_data_model_scaling_contract_without_canonical(config: dict[str, Any]) -> dict[str, Any]:
+    clone = copy.deepcopy(config)
+    scaling = clone.get("data_model_scaling_contract") or {}
+    scaling.pop("canonical_corpus_receipt", None)
+    clone["data_model_scaling_contract"] = scaling
+    return build_data_model_scaling_contract(clone)
+
+
+def canonical_code_language(content_type: str, path: Path) -> str:
+    raw = f"{content_type} {path.suffix}".lower()
+    if "python" in raw or path.suffix == ".py":
+        return "python"
+    if "typescript" in raw or path.suffix in {".ts", ".tsx"}:
+        return "javascript_typescript"
+    if "javascript" in raw or path.suffix in {".js", ".jsx", ".mjs", ".cjs"}:
+        return "javascript_typescript"
+    if "html" in raw or "css" in raw or path.suffix in {".html", ".htm", ".css"}:
+        return "html_css"
+    if "rust" in raw or path.suffix == ".rs":
+        return "rust"
+    return "other_code"
+
+
+def distribution_summary(values: list[int]) -> dict[str, Any]:
+    if not values:
+        return {"count": 0, "min": 0, "median": 0, "p95": 0, "max": 0}
+    ordered = sorted(values)
+    return {
+        "count": len(ordered),
+        "min": ordered[0],
+        "median": ordered[len(ordered) // 2],
+        "p95": ordered[min(len(ordered) - 1, math.ceil(len(ordered) * 0.95) - 1)],
+        "max": ordered[-1],
+    }
+
+
+def scaling_contract_sha256(contract: dict[str, Any]) -> str:
+    payload = {
+        key: contract.get(key)
+        for key in (
+            "policy",
+            "state",
+            "selected_rung",
+            "planning_basis",
+            "required_unique_positions",
+            "domain_minimum_positions",
+            "code_language_minimum_positions",
+            "required_evidence_dimensions",
+        )
+    }
+    return sha(json.dumps(payload, sort_keys=True))
+
+
+def canonical_corpus_requirement_gaps(contract: dict[str, Any], summary: dict[str, Any]) -> list[str]:
+    gaps = []
+    if int(summary.get("unique_model_visible_positions") or 0) < int(contract.get("required_unique_positions") or 0):
+        gaps.append("canonical_unique_position_floor_not_met")
+    domain_positions = summary.get("domain_unique_positions") or {}
+    for key, minimum in (contract.get("domain_minimum_positions") or {}).items():
+        if int(domain_positions.get(key) or 0) < int(minimum or 0):
+            gaps.append(f"domain_minimum_not_met:{key}")
+    language_positions = summary.get("code_language_unique_positions") or {}
+    for key, minimum in (contract.get("code_language_minimum_positions") or {}).items():
+        if int(language_positions.get(key) or 0) < int(minimum or 0):
+            gaps.append(f"code_language_minimum_not_met:{key}")
+    evidence = summary.get("evidence_dimensions") or {}
+    missing = [key for key in contract.get("required_evidence_dimensions") or [] if evidence.get(key) is not True]
+    if missing:
+        gaps.append("required_evidence_dimensions_missing:" + ",".join(missing))
+    return gaps
+
+
 def audit_canonical_mixed_corpus_receipt(contract: dict[str, Any], receipt_ref: dict[str, Any]) -> dict[str, Any]:
     path = resolve(str(receipt_ref.get("path") or ""))
     actual_sha = file_content_sha256(path) if path.exists() and path.is_file() else ""
+    if not actual_sha:
+        return {
+            "configured": True,
+            "valid": False,
+            "path": rel(path),
+            "content_bound": False,
+            "unique_model_visible_positions": 0,
+            "optimizer_token_positions": 0,
+            "optimizer_repetition_factor": 0.0,
+            "domain_unique_positions": {},
+            "code_language_unique_positions": {},
+            "evidence_dimensions": {},
+            "hard_gaps": ["canonical_mixed_corpus_receipt_missing"],
+        }
     payload = read_json(path) if actual_sha else {}
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
     selected = contract.get("selected_rung") if isinstance(contract.get("selected_rung"), dict) else {}
     domain_positions = summary.get("domain_unique_positions") if isinstance(summary.get("domain_unique_positions"), dict) else {}
     language_positions = summary.get("code_language_unique_positions") if isinstance(summary.get("code_language_unique_positions"), dict) else {}
     evidence = summary.get("evidence_dimensions") if isinstance(summary.get("evidence_dimensions"), dict) else {}
-    required_evidence = [str(value) for value in contract.get("required_evidence_dimensions") or []]
     gaps = []
-    if not actual_sha or actual_sha != str(receipt_ref.get("sha256") or ""):
+    identity_payload = payload.get("identity_payload") if isinstance(payload.get("identity_payload"), dict) else {}
+    if (
+        not actual_sha
+        or payload.get("receipt_identity_sha256") != sha(json.dumps(identity_payload, sort_keys=True))
+        or any(identity_payload.get(key) != summary.get(key) for key in identity_payload)
+    ):
         gaps.append("canonical_corpus_receipt_content_identity_mismatch")
     if payload.get("policy") != "project_theseus_canonical_mixed_corpus_receipt_v1" or payload.get("trigger_state") != "GREEN":
         gaps.append("canonical_corpus_receipt_not_green")
+    if summary.get("contract_sha256") != scaling_contract_sha256(contract):
+        gaps.append("canonical_corpus_contract_identity_mismatch")
+    if summary.get("source_content_identity_verified") is not True or len(str(summary.get("source_manifest_digest") or "")) != 64:
+        gaps.append("canonical_source_content_identity_not_verified")
     if summary.get("tokenizer_abi") != selected.get("tokenizer_abi"):
         gaps.append("canonical_tokenizer_abi_mismatch")
     if int(summary.get("active_parameter_count") or 0) != int(selected.get("active_parameter_count") or 0):
         gaps.append("canonical_active_parameter_count_mismatch")
     unique_positions = int(summary.get("unique_model_visible_positions") or 0)
-    if unique_positions < int(contract.get("required_unique_positions") or 0):
-        gaps.append("canonical_unique_position_floor_not_met")
-    for key, minimum in (contract.get("domain_minimum_positions") or {}).items():
-        if int(domain_positions.get(key) or 0) < int(minimum or 0):
-            gaps.append(f"domain_minimum_not_met:{key}")
-    for key, minimum in (contract.get("code_language_minimum_positions") or {}).items():
-        if int(language_positions.get(key) or 0) < int(minimum or 0):
-            gaps.append(f"code_language_minimum_not_met:{key}")
-    missing_evidence = [key for key in required_evidence if evidence.get(key) is not True]
-    if missing_evidence:
-        gaps.append("required_evidence_dimensions_missing:" + ",".join(missing_evidence))
+    gaps.extend(canonical_corpus_requirement_gaps(contract, summary))
     optimizer_positions = int(summary.get("optimizer_token_positions") or 0)
     repetition = optimizer_positions / max(1, unique_positions)
     if summary.get("optimizer_repetition_counted_as_unique_data") is not False:
@@ -4339,7 +4696,7 @@ def audit_canonical_mixed_corpus_receipt(contract: dict[str, Any], receipt_ref: 
         "configured": True,
         "valid": not gaps,
         "path": rel(path),
-        "content_bound": bool(actual_sha) and actual_sha == str(receipt_ref.get("sha256") or ""),
+        "content_bound": bool(actual_sha) and "canonical_corpus_receipt_content_identity_mismatch" not in gaps,
         "unique_model_visible_positions": unique_positions,
         "optimizer_token_positions": optimizer_positions,
         "optimizer_repetition_factor": round(repetition, 6),

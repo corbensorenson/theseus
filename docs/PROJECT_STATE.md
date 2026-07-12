@@ -26,13 +26,16 @@ share toward zero. Public benchmarks are calibration only.
   learn prompt/signature-conditioned state transitions, operands, algorithms, and
   final-return semantics.
 - **Data wall:** the frozen contract selects 6,623,232 active parameters and a
-  132,464,640 unique-position floor (20:1). Existing code and conversation receipts
-  estimate 9,866,701 positions, or 1.489711 per active parameter, leaving a
-  122,597,939-position shortfall. Their tokenizer/accounting ABIs differ, so this is
-  planning evidence rather than training authorization.
-- **Immediate dependency:** materialize one content-bound mixed English/code corpus
-  under the canonical transformer tokenizer ABI, satisfy the frozen domain/language
-  and evidence requirements, then complete one durable dense MLX training rung.
+  132,464,640 unique-position floor (20:1). The canonical mixed-corpus materializer
+  measures 62,981,127 unique positions under the frozen transformer tokenizer ABI,
+  or 9.509123 per active parameter: 18,947,648 English conversation/instruction and
+  44,033,479 code. The code mix contains 30,642,731 Python, 8,740,555 JS/TS,
+  570,505 HTML/CSS, 1,530,737 Rust, and 2,548,951 other-code positions. That leaves
+  69,483,513 total positions; every domain/language minimum remains incomplete. The
+  receipt is `YELLOW`, has zero integrity hard gaps, and does not authorize training.
+- **Immediate dependency:** expand this same content-bound corpus through governed
+  licensed sources until its frozen total, domain, language, and evidence requirements
+  are all met, then complete one durable dense MLX training rung.
 
 ## Evidence Boundaries
 
@@ -142,8 +145,10 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Build the canonical mixed-corpus materializer and close the 122,597,939-position
-shortfall without weakening evidence or domain minima, then train one complete
+Close the measured 69,483,513-position canonical-corpus shortfall without weakening
+evidence or domain minima. Exact remaining minima include 41,052,352 English,
+15,966,521 code total, 5,357,269 Python, 3,259,445 JS/TS, 5,429,495 HTML/CSS,
+4,469,263 Rust, and the 12,464,640 tail reserve. Then train one complete
 dense MLX rung. Success requires durable
 provenance, heldout lineage, nonzero independently verified family-disjoint behavior,
 and better results than the frozen current baseline. If those conditions fail, mine

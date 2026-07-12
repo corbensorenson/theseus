@@ -29,7 +29,7 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | governed scaling contract frozen; canonical mixed-corpus receipt absent | noncanonical planning estimates total 9.87M positions (1.489711/active parameter), leaving a 122.60M-position shortfall against the 132.46M floor; materialize and expand the corpus under the actual model tokenizer ABI before training |
+| Data engine + curriculum | Track 0 / Phase 7 | governed scaling contract frozen; canonical mixed-corpus audit `YELLOW` with zero integrity hard gaps | 62.98M unique canonical positions (9.509123/active parameter) leave a 69.48M-position shortfall; expand the same governed corpus to every total/domain/language minimum before training |
 | Dense transformer survival baseline | Phase 10 | canonical practical lane; architecture clean, behavior flat | freeze one MLX causal-transformer contract and train a data-supported scale ladder; no more plan heads, state variants, or preference tuning until model-only family-disjoint behavior moves above zero |
 | Sparse specialist core (100M) | Track 1 / Phases 10, 16 | challenger deferred | do not fund a 100M sparse rung until the corpus supports it and a matched dense baseline has positive behavior; adopt sparse/Octopus only on repeated active-compute wins |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
@@ -215,11 +215,12 @@ to Track 1).
 - Establish a data/model scaling contract before the next capability run. Count
   unique admitted model-visible positions separately from repeated optimizer
   exposure and choose a published compute-optimal planning band before training.
-  For the current 6.6M-parameter dense model, the existing 5.58M code positions
-  alone are less than one unique code position per parameter; even adding the
-  separate 4.29M conversation positions leaves the combined inventory far below a
-  conventional from-scratch scaling band. The exact target is selected and frozen
-  by the scaling contract, not reverse-engineered after results.
+  For the current 6.6M-parameter dense model, the canonical audit measures 62.98M
+  unique positions under the actual tokenizer ABI: 18.95M English
+  conversation/instruction and 44.03M code across Python, JS/TS, HTML/CSS, Rust,
+  and other code. At 9.509123 unique positions per active parameter, this remains
+  below the frozen 20:1 floor. The exact target is selected and frozen by the
+  scaling contract, not reverse-engineered after results.
 - Expand the corpus in the product's actual domains: English conversation and
   instruction following; Python first; then JS/TS/HTML/CSS and Rust. Measure
   executable completeness, dependency context, algorithm/contract coverage,
@@ -698,10 +699,12 @@ The dense survival lane now owns a frozen pre-training scaling contract rather
 than an informal token estimate. It selects the existing 6,623,232-active-parameter
 MLX rung and requires 132,464,640 unique admitted model-visible positions (20:1),
 with 60M English conversation/instruction, 60M code, a 12.46M tail reserve, and
-explicit Python, JS/TS, HTML/CSS, and Rust minima. Current code and conversation
-receipts are content-bound but use different accounting ABIs, so their combined
-9,866,701 positions are planning evidence only. The standard trainer fails closed
-until one canonical mixed-corpus receipt proves all license/provenance, exact and
+explicit Python, JS/TS, HTML/CSS, and Rust minima. The canonical materializer now
+measures 62,981,127 unique positions under the frozen tokenizer ABI: 18,947,648
+English conversation/instruction and 44,033,479 code. Its receipt is `YELLOW` with
+zero integrity hard gaps because the total and all domain/language minima remain
+incomplete. The standard trainer fails closed
+until the canonical mixed-corpus receipt proves all license/provenance, exact and
 semantic deduplication, contamination, completeness, coverage/tail, synthetic-share,
 lifecycle, tokenizer, domain, language, and repetition requirements.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
@@ -768,10 +771,12 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   adopt the checkpoint.
 - **Frozen scaling decision:** the selected rung is exactly 6,623,232 active
   parameters with a 132,464,640 unique-position floor and maximum 4x optimizer
-  repetition. The current 5,580,951 code and 4,285,750 conversation estimates are
-  not additive training authority because neither was counted under the canonical
-  standard-transformer tokenizer/stage ABI. `standard_causal_transformer_survival`
-  and its independent gate now deny training/adoption until the content-bound
+  repetition. The canonical materializer credits 62,981,127 unique positions under
+  the standard-transformer tokenizer/stage ABI and excludes stale source identities,
+  tokenizer-unrepresentable documents, and exact/near duplicates from that credit.
+  This measurement is corpus evidence, not training authority or capability.
+  `standard_causal_transformer_survival` and its independent gate deny
+  training/adoption until the content-bound
   canonical mixed-corpus receipt is GREEN. This prevents both epoch inflation and
   accidental training on an architecture whose data contract is still incomplete.
 - Training sequence is fixed by prerequisites: broad causal English+code

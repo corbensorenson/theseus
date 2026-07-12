@@ -24,7 +24,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ROOT = Path("D:/ProjectTheseus/training_data/open_code_pantry")
+DEFAULT_ROOT = ROOT / "data" / "training_data" / "open_code_pantry"
 DEFAULT_REPOS = "psf/requests,pallets/click,pallets/flask,pypa/packaging,pytest-dev/pluggy"
 ALLOWED_LICENSES = {
     "0BSD",
@@ -47,7 +47,10 @@ BENCHMARK_EXCLUSION_TOKENS = {
     "swe-bench",
     "swe_bench",
 }
-SOURCE_EXTENSIONS = {".py", ".rs", ".js", ".ts", ".go", ".java", ".c", ".cpp", ".h", ".hpp"}
+SOURCE_EXTENSIONS = {
+    ".py", ".rs", ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx",
+    ".html", ".htm", ".css", ".go", ".java", ".c", ".cpp", ".h", ".hpp",
+}
 BANNED_EXPR_FRAGMENTS = {
     "__",
     "eval(",
@@ -125,6 +128,7 @@ def main() -> int:
     root = Path(args.root)
     tarball_dir = root / "tarballs"
     samples_path = root / "samples" / "open_code_samples.jsonl"
+    samples_manifest_path = root / "samples_manifest.json"
     train_path = root / "private_train" / "open_code_expressions.jsonl"
     tarball_dir.mkdir(parents=True, exist_ok=True)
     samples_path.parent.mkdir(parents=True, exist_ok=True)
@@ -170,6 +174,7 @@ def main() -> int:
             "default_branch": default_branch,
             "html_url": meta.get("html_url"),
             "tarball": str(tarball_path).replace("\\", "/"),
+            "tarball_sha256": stable_hash_hex(tarball_path.read_bytes()),
         }
         try:
             for file_row in iter_tar_source_files(
@@ -215,12 +220,39 @@ def main() -> int:
 
     write_jsonl(samples_path, sample_rows)
     write_jsonl(train_path, train_rows)
+    samples_manifest = {
+        "policy": "project_theseus_open_code_canonical_shard_manifest_v1",
+        "created_utc": now(),
+        "sample_jsonl": str(samples_path.relative_to(root)).replace("\\", "/"),
+        "sample_jsonl_sha256": stable_hash_hex(samples_path.read_bytes()),
+        "sample_count": len(sample_rows),
+        "allowed_licenses": sorted(ALLOWED_LICENSES),
+        "admitted_sources": [
+            {
+                "repo": row["repo"],
+                "license_spdx": row["license_spdx"],
+                "default_branch": row["default_branch"],
+                "tarball": row["tarball"],
+                "tarball_sha256": row["tarball_sha256"],
+                "sample_count": row["sample_count"],
+            }
+            for row in admitted
+        ],
+        "public_benchmark": False,
+        "public_benchmark_solutions_included": False,
+        "public_tests_included": False,
+        "benchmark_excluded": True,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    write_json(samples_manifest_path, samples_manifest)
     report = {
         "policy": "project_theseus_open_code_training_pantry_v1",
         "created_utc": now(),
         "trigger_state": "GREEN" if admitted else "YELLOW",
         "root": str(root).replace("\\", "/"),
         "sample_jsonl": str(samples_path).replace("\\", "/"),
+        "sample_manifest": str(samples_manifest_path).replace("\\", "/"),
         "private_train_jsonl": str(train_path).replace("\\", "/"),
         "summary": {
             "admitted_repo_count": len(admitted),
@@ -335,6 +367,7 @@ def iter_tar_source_files(
                     "license_spdx": license_spdx,
                     "size_bytes": len(raw),
                     "sha256": stable_hash_hex(raw),
+                    "text_sha256": stable_hash_hex(text.encode("utf-8")),
                     "text": text,
                     "benchmark_evidence_level": "permissive_open_source_train_only",
                     "public_benchmark": False,
@@ -659,7 +692,14 @@ def language_for_extension(ext: str) -> str:
         ".py": "python",
         ".rs": "rust",
         ".js": "javascript",
+        ".jsx": "javascript",
+        ".mjs": "javascript",
+        ".cjs": "javascript",
         ".ts": "typescript",
+        ".tsx": "typescript",
+        ".html": "html",
+        ".htm": "html",
+        ".css": "css",
         ".go": "go",
         ".java": "java",
         ".c": "c",

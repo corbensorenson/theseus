@@ -16,6 +16,34 @@ import numpy as np
 from standard_causal_transformer_survival import build_data_model_scaling_contract
 
 
+SCALING_READINESS_GAP_PREFIXES = (
+    "canonical_mixed_corpus_receipt_missing",
+    "canonical_corpus_receipt_not_green",
+    "canonical_unique_position_floor_not_met",
+    "domain_minimum_not_met:",
+    "code_language_minimum_not_met:",
+    "required_evidence_dimensions_missing:",
+)
+
+
+def is_scaling_readiness_gap(value: str) -> bool:
+    return any(value == prefix or value.startswith(prefix) for prefix in SCALING_READINESS_GAP_PREFIXES)
+
+
+def scaling_shortfall_summary(contract: dict[str, Any]) -> dict[str, int | None]:
+    canonical = contract.get("canonical_corpus_receipt") if isinstance(contract.get("canonical_corpus_receipt"), dict) else {}
+    canonical_positions = int(canonical.get("unique_model_visible_positions") or 0)
+    required_positions = int(contract.get("required_unique_positions") or 0)
+    return {
+        "canonical_shortfall_positions": (
+            max(0, required_positions - canonical_positions)
+            if canonical.get("content_bound") is True
+            else None
+        ),
+        "planning_estimate_shortfall_positions": int(contract.get("planning_estimate_shortfall_positions") or 0),
+    }
+
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports" / "standard_causal_transformer_survival.json"
 DEFAULT_CONFIG = ROOT / "configs" / "standard_causal_transformer_survival.json"
@@ -145,9 +173,10 @@ def build_gate(
         "hard_gaps": ["data_model_scaling_contract_missing"],
     }
     scaling_infrastructure_gaps = [
-        gap for gap in scaling_contract.get("hard_gaps") or []
-        if gap != "canonical_mixed_corpus_receipt_missing"
+        value for value in scaling_contract.get("hard_gaps") or []
+        if not is_scaling_readiness_gap(str(value))
     ]
+    scaling_shortfalls = scaling_shortfall_summary(scaling_contract)
     if scaling_infrastructure_gaps:
         hard_gaps.append(gap(
             "data_model_scaling_contract_invalid",
@@ -158,7 +187,7 @@ def build_gate(
             "data_model_scaling_contract_not_ready",
             {
                 "hard_gaps": scaling_contract.get("hard_gaps") or [],
-                "planning_estimate_shortfall_positions": scaling_contract.get("planning_estimate_shortfall_positions"),
+                **scaling_shortfalls,
             },
             severity="adoption_gap",
         ))
@@ -464,7 +493,10 @@ def build_gate(
             "slot_ordered_plan_deltas": slot_ordered_plan_audit["deltas"],
             "data_model_scaling_contract_state": scaling_contract.get("state"),
             "data_model_scaling_training_authorized": scaling_contract.get("training_authorized") is True,
-            "data_model_scaling_shortfall_positions": scaling_contract.get("planning_estimate_shortfall_positions"),
+            "data_model_scaling_shortfall_positions": scaling_shortfalls["canonical_shortfall_positions"],
+            "data_model_scaling_planning_estimate_shortfall_positions": scaling_shortfalls[
+                "planning_estimate_shortfall_positions"
+            ],
         },
         "hard_gaps": hard_gaps,
         "adoption_gaps": adoption_gaps,

@@ -39,6 +39,7 @@ from standard_causal_transformer_survival import (
     extend_target_vocab_for_mode,
     generation_prefix_complete,
     hierarchical_beam_rank_score,
+    materialize_canonical_mixed_corpus_receipt,
     assign_body_balanced_sampling_weights,
     normalized_sampling_probabilities,
     prepare_semantic_plan_labels,
@@ -47,6 +48,7 @@ from standard_causal_transformer_survival import (
     prune_active_beams,
     prune_complete_beams,
     render_visible_signature,
+    scaling_contract_sha256,
     semantic_plan_feature_contract,
     semantic_plan_labels_for_body,
     semantic_plan_metrics_from_logits,
@@ -91,6 +93,8 @@ from standard_causal_transformer_survival_gate import (
     audit_sft_contract_admission,
     audit_state_memory_ablation,
     audit_state_memory_continuation,
+    is_scaling_readiness_gap,
+    scaling_shortfall_summary,
     audit_teacher_residual_ablation,
     audit_target_mode_comparison,
     evaluation_replay_is_content_bound,
@@ -101,8 +105,11 @@ from code_lm_decoder_contracts import visible_arg_count_hint_for_task
 from broad_private_generalization_ladder_v1 import row_from_template, template_bank
 
 
-def test_frozen_scaling_contract_reports_noncanonical_shortfall_without_authorizing_training() -> None:
+def test_frozen_scaling_contract_reports_noncanonical_shortfall_without_authorizing_training(tmp_path: Path) -> None:
     config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    config["data_model_scaling_contract"]["canonical_corpus_receipt"] = {
+        "path": str(tmp_path / "absent-canonical-corpus.json")
+    }
 
     contract = build_data_model_scaling_contract(config)
 
@@ -112,6 +119,26 @@ def test_frozen_scaling_contract_reports_noncanonical_shortfall_without_authoriz
     assert contract["planning_estimate_shortfall_positions"] == 122_597_939
     assert contract["planning_estimate_is_training_authority"] is False
     assert contract["hard_gaps"] == ["canonical_mixed_corpus_receipt_missing"]
+
+
+def test_scaling_gate_separates_readiness_from_integrity_and_reports_canonical_shortfall() -> None:
+    assert is_scaling_readiness_gap("canonical_unique_position_floor_not_met")
+    assert is_scaling_readiness_gap("domain_minimum_not_met:code_total")
+    assert not is_scaling_readiness_gap("canonical_corpus_contract_identity_mismatch")
+    summary = scaling_shortfall_summary(
+        {
+            "required_unique_positions": 100,
+            "planning_estimate_shortfall_positions": 90,
+            "canonical_corpus_receipt": {
+                "content_bound": True,
+                "unique_model_visible_positions": 60,
+            },
+        }
+    )
+    assert summary == {
+        "canonical_shortfall_positions": 40,
+        "planning_estimate_shortfall_positions": 90,
+    }
 
 
 def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetition_inflation(tmp_path: Path) -> None:
@@ -134,6 +161,9 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
             "public_training_rows_written": 0,
             "external_inference_calls": 0,
             "fallback_return_count": 0,
+            "source_content_identity_verified": True,
+            "source_manifest_digest": "a" * 64,
+            "contract_sha256": scaling_contract_sha256(scaling),
         },
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -141,10 +171,23 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
     }
 
     def bind(payload: dict) -> None:
+        identity_keys = (
+            "tokenizer_abi",
+            "active_parameter_count",
+            "unique_model_visible_positions",
+            "domain_unique_positions",
+            "code_language_unique_positions",
+            "evidence_dimensions",
+            "source_manifest_digest",
+            "contract_sha256",
+        )
+        payload["identity_payload"] = {key: payload["summary"][key] for key in identity_keys}
+        payload["receipt_identity_sha256"] = hashlib.sha256(
+            json.dumps(payload["identity_payload"], sort_keys=True).encode()
+        ).hexdigest()
         receipt_path.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
         scaling["canonical_corpus_receipt"] = {
             "path": str(receipt_path),
-            "sha256": hashlib.sha256(receipt_path.read_bytes()).hexdigest(),
         }
 
     bind(receipt)
@@ -160,6 +203,209 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
     gaps = rejected["canonical_corpus_receipt"]["hard_gaps"]
     assert "optimizer_repetition_above_predeclared_maximum" in gaps
     assert any(gap.startswith("required_evidence_dimensions_missing:") for gap in gaps)
+
+
+def canonical_corpus_fixture(tmp_path: Path) -> tuple[dict, Path, Path]:
+    config = json.loads((ROOT / "configs" / "standard_causal_transformer_survival.json").read_text())
+    code_path = tmp_path / "sample.py"
+    code_path.write_text("def add(a, b):\n    return a + b\n", encoding="utf-8")
+    code_manifest = tmp_path / "code-manifest.json"
+    code_manifest.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_narrow_corpus_manifest_ladder_v1",
+                "sources": [
+                    {
+                        "admitted": True,
+                        "license_allowed": True,
+                        "public_benchmark_payload_detected": False,
+                        "eval_overlap_detected": False,
+                        "path": str(code_path),
+                        "sha256": hashlib.sha256(code_path.read_bytes()).hexdigest(),
+                        "content_type": "code_python",
+                    }
+                ],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    conversation_root = tmp_path / "conversation"
+    shard_path = conversation_root / "private_train" / "shard.jsonl"
+    shard_path.parent.mkdir(parents=True)
+    valid_row = {
+        "causal_text": "user: hello\nassistant: hello there",
+        "target_message": {"role": "assistant", "content": "hello there"},
+        "license_spdx": "apache-2.0",
+        "data_admission_receipt_id": "receipt-1",
+        "public_benchmark": False,
+        "external_inference_calls": 0,
+    }
+    public_row = dict(valid_row, public_benchmark=True, data_admission_receipt_id="receipt-public")
+    shard_path.write_text(
+        "\n".join(json.dumps(row, sort_keys=True) for row in (valid_row, valid_row, public_row)) + "\n",
+        encoding="utf-8",
+    )
+    conversation_manifest = conversation_root / "manifest.json"
+    conversation_manifest.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_governed_conversation_stream_state_v1",
+                "shards": [
+                    {
+                        "train_path": "private_train/shard.jsonl",
+                        "train_sha256": hashlib.sha256(shard_path.read_bytes()).hexdigest(),
+                    }
+                ],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    config["canonical_corpus"] = {
+        "policy": "project_theseus_canonical_mixed_corpus_materialization_v1",
+        "code_manifests": [str(code_manifest)],
+        "conversation_manifest": str(conversation_manifest),
+        "conversation_root": str(conversation_root),
+        "near_duplicate_hamming_distance": 3,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    return config, code_manifest, shard_path
+
+
+def test_canonical_corpus_materializer_counts_only_content_bound_unique_governed_rows(tmp_path: Path) -> None:
+    config, _, _ = canonical_corpus_fixture(tmp_path)
+
+    receipt = materialize_canonical_mixed_corpus_receipt(config)
+
+    assert receipt["hard_gaps"] == []
+    assert receipt["summary"]["document_counts"] == {
+        "code_total": 1,
+        "english_conversation_instruction": 1,
+    }
+    assert receipt["summary"]["exact_duplicate_counts"] == {
+        "english_conversation_instruction": 1,
+    }
+    assert receipt["summary"]["excluded_counts"] == {
+        "conversation_governance_or_completeness": 1,
+    }
+    assert receipt["summary"]["source_content_identity_verified"] is True
+    assert receipt["summary"]["public_training_rows_written"] == 0
+    assert receipt["summary"]["external_inference_calls"] == 0
+    assert receipt["summary"]["fallback_return_count"] == 0
+    assert receipt["trigger_state"] == "YELLOW"
+
+
+def test_canonical_corpus_materializer_excludes_stale_code_without_position_credit(tmp_path: Path) -> None:
+    config, code_manifest, _ = canonical_corpus_fixture(tmp_path)
+    manifest = json.loads(code_manifest.read_text())
+    manifest["sources"][0]["sha256"] = "0" * 64
+    code_manifest.write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
+
+    receipt = materialize_canonical_mixed_corpus_receipt(config)
+
+    assert receipt["hard_gaps"] == []
+    assert receipt["summary"]["document_counts"].get("code_total", 0) == 0
+    assert receipt["summary"]["code_language_unique_positions"].get("python", 0) == 0
+    assert receipt["summary"]["excluded_counts"]["code_source_identity_mismatch"] == 1
+
+
+def test_canonical_corpus_materializer_excludes_incomplete_code_but_keeps_retained_completeness(tmp_path: Path) -> None:
+    config, code_manifest, _ = canonical_corpus_fixture(tmp_path)
+    invalid_path = tmp_path / "invalid.py"
+    invalid_path.write_text("def broken(:\n", encoding="utf-8")
+    manifest = json.loads(code_manifest.read_text())
+    manifest["sources"].append(
+        {
+            "admitted": True,
+            "license_allowed": True,
+            "public_benchmark_payload_detected": False,
+            "eval_overlap_detected": False,
+            "path": str(invalid_path),
+            "sha256": hashlib.sha256(invalid_path.read_bytes()).hexdigest(),
+            "content_type": "code_python",
+        }
+    )
+    code_manifest.write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
+
+    receipt = materialize_canonical_mixed_corpus_receipt(config)
+
+    assert receipt["summary"]["document_counts"]["code_total"] == 1
+    assert receipt["summary"]["excluded_counts"]["code_incomplete"] == 1
+    assert receipt["summary"]["evidence_dimensions"]["executable_or_dialogue_completeness"] is True
+
+
+def test_canonical_corpus_materializer_rejects_stale_conversation_shard(tmp_path: Path) -> None:
+    config, _, shard_path = canonical_corpus_fixture(tmp_path)
+    shard_path.write_text(shard_path.read_text() + "{}\n", encoding="utf-8")
+
+    receipt = materialize_canonical_mixed_corpus_receipt(config)
+
+    assert receipt["trigger_state"] == "RED"
+    assert any(gap.startswith("conversation_shard_identity_mismatch:") for gap in receipt["hard_gaps"])
+    assert receipt["summary"]["document_counts"].get("english_conversation_instruction", 0) == 0
+
+
+def test_canonical_corpus_materializer_counts_content_bound_multilingual_code_shard(tmp_path: Path) -> None:
+    config, _, _ = canonical_corpus_fixture(tmp_path)
+    rows = [
+        ("web/app.js", "javascript", "export function add(a, b) { return a + b; }"),
+        ("web/view.tsx", "typescript", "export const Label = (p: {text: string}) => <span>{p.text}</span>;"),
+        ("web/index.html", "html", "<main><h1>Theseus</h1></main>"),
+        ("web/style.css", "css", "main { display: grid; gap: 1rem; }"),
+        ("src/lib.rs", "rust", "pub fn add(a: i64, b: i64) -> i64 { a + b }"),
+    ]
+    shard_path = tmp_path / "code-shard.jsonl"
+    shard_rows = []
+    for path, language, text in rows:
+        shard_rows.append(
+            {
+                "repo": "example/project",
+                "path": path,
+                "language": language,
+                "license_spdx": "MIT",
+                "text": text,
+                "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                "public_benchmark": False,
+                "public_benchmark_solutions_included": False,
+                "public_tests_included": False,
+                "benchmark_excluded": True,
+            }
+        )
+    shard_path.write_text(
+        "\n".join(json.dumps(row, sort_keys=True) for row in shard_rows) + "\n",
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "code-shard-manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_open_code_canonical_shard_manifest_v1",
+                "sample_jsonl": shard_path.name,
+                "sample_jsonl_sha256": hashlib.sha256(shard_path.read_bytes()).hexdigest(),
+                "allowed_licenses": ["MIT"],
+                "admitted_sources": [{"repo": "example/project", "license_spdx": "MIT"}],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    config["canonical_corpus"]["code_shard_manifests"] = [str(manifest_path)]
+
+    receipt = materialize_canonical_mixed_corpus_receipt(config)
+
+    positions = receipt["summary"]["code_language_unique_positions"]
+    assert positions["javascript_typescript"] > 0
+    assert positions["html_css"] > 0
+    assert positions["rust"] > 0
+    assert receipt["hard_gaps"] == []
+
+    shard_path.write_text(shard_path.read_text() + "{}\n", encoding="utf-8")
+    tampered = materialize_canonical_mixed_corpus_receipt(config)
+    assert tampered["trigger_state"] == "RED"
+    assert any(gap.startswith("code_shard_identity_mismatch:") for gap in tampered["hard_gaps"])
 
 
 def test_decoder_is_causal_and_cached_decode_matches_full_decode() -> None:
