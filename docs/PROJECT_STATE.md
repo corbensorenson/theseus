@@ -107,8 +107,13 @@ share toward zero. Public benchmarks are calibration only.
   seconds with 60/60 valid model-emitted sequences but 0/60 exact; sampled outputs
   remain unrelated boilerplate. The next bounded repair is a learned
   pointer-generator over exact source/target token identities, because this
-  copy-and-edit corpus uses disjoint source and target token IDs. The pointer path
-  is unit- and full-shape-gradient-proven but not yet behavior-evaluated.
+  copy-and-edit corpus uses disjoint source and target token IDs. The pointer run is
+  also negative: 0/60 exact, 58/60 valid serialization, 521 seconds of training,
+  and slower beam replay. Samples use isolated prompt tokens but do not retain
+  spans. Frozen distribution analysis shows 75.9% target-token copyability and
+  0.907 median current/target character similarity on development. The next repair
+  is source-conditioned denoising pretraining from the existing licensed Rust
+  corpus so encoder/copy weights learn before edit SFT; confirmation remains unspent.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
