@@ -11,7 +11,8 @@
       "public_documentation",
       "public_code",
       "curated_public_educational_material",
-      "locally_materialized_open_conversation_samples"
+      "locally_materialized_open_conversation_samples",
+      "openly_licensed_model_derived_corpora"
     ],
     "required_metadata": [
       "source_id",
@@ -19,6 +20,8 @@
       "license_spdx",
       "source_hash",
       "provenance",
+      "quality_tier_and_filter_receipt",
+      "model_generation_lineage_when_known",
       "benchmark_decontamination"
     ],
     "license_allowlist": [
@@ -76,25 +79,29 @@
       "runtime_serving_forbidden",
       "teacher_share_accounting"
     ],
-    "initial_teacher_share_cap": 0.8,
+    "role": "sparse_residual_intervention_after_licensed_data_and_local_verification",
+    "primary_training_pressure": "high_quality_licensed_static_corpora_plus_verified_self_generated_and_dogfood_rows",
+    "initial_teacher_share_cap": 0.1,
     "downward_schedule": [
       {
         "phase": "bootstrap",
-        "max_teacher_share": 0.8
+        "max_teacher_share": 0.1
       },
       {
         "phase": "student_replay",
-        "max_teacher_share": 0.5
+        "max_teacher_share": 0.05
       },
       {
         "phase": "self_generated_majority",
-        "max_teacher_share": 0.2
+        "max_teacher_share": 0.02
       },
       {
         "phase": "graduation",
-        "max_teacher_share": 0.05
+        "max_teacher_share": 0.01
       }
-    ]
+    ],
+    "accounting_basis": "maximum_of_accepted_row_share_and_optimizer_sampling_share",
+    "bulk_teacher_generation": "forbidden"
   },
   "architecture_selection": {
     "compare_under_matched_compute_and_data": [

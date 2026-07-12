@@ -15,8 +15,18 @@
     "exact_consumed_public_surface_rerun_allowed": false,
     "public_benchmark_payloads_allowed_in_training": false,
     "licensed_open_nonbenchmark_training_allowed_with_provenance": true,
+    "licensed_model_derived_static_training_allowed_with_quality_and_lineage": true,
+    "natural_language_scope": "english_only",
+    "programming_language_scope": [
+      "python",
+      "javascript_typescript",
+      "html_css",
+      "rust"
+    ],
     "external_runtime_inference_allowed": false,
     "teacher_training_rows_allowed_only_through_distillation_gate": true,
+    "teacher_accepted_row_share_cap": 0.1,
+    "teacher_optimizer_sampling_share_cap": 0.02,
     "teacher_tokens_allowed_at_runtime_serving": false,
     "fallback_template_router_tool_credit_as_learned_generation": false,
     "deterministic_tool_results_count_as_tool_assisted_not_model_only": true,
@@ -88,7 +98,7 @@
       "id": "T1_data_and_context_manifest",
       "title": "Data And Context Manifest",
       "status": "ready",
-      "goal": "Materialize the exact private/licensed training rows and VCM context packets the first training rungs may consume.",
+      "goal": "Materialize exact English and Python/JS-TS/HTML-CSS/Rust training rows into independent arm views plus a mixed dense-control view, with VCM context packets and complete lineage.",
       "entry_criteria": [
         "T0 passes",
         "training rows are provenance-tagged",
@@ -103,6 +113,7 @@
       "allowed_inputs": [
         "private generated residual rows",
         "licensed non-benchmark open code rows",
+        "high-quality appropriately licensed static model-derived rows with retained generation lineage",
         "governed teacher-distillation rows accepted by verifier",
         "metadata-only dogfood outcomes",
         "VCM context packets with taint receipts"
@@ -135,11 +146,11 @@
       "id": "T2_private_training_smoke",
       "title": "Private Training Smoke",
       "status": "ready",
-      "goal": "Run a short private-only transformer/hybrid MLX adaptation smoke that proves the training command, checkpoint writing, VCM context, and no-cheat counters before a longer rung.",
+      "goal": "Run short MLX smokes for each independent language arm and the matched mixed dense control, proving separate optimizer/checkpoint lineage, VCM/context ABI, and no-cheat counters before longer rungs.",
       "entry_criteria": [
         "T1 manifest passes",
         "MLX route readiness is GREEN but production route remains disabled",
-        "baseline checkpoint digest is recorded"
+        "all five arm contracts and the dense-control digest target are recorded"
       ],
       "required_gates": [
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
@@ -168,7 +179,7 @@
         "reports/neural_seed_survival_readiness_gate.json"
       ],
       "exit_criteria": [
-        "checkpoint artifact written with digest",
+        "each arm/control checkpoint artifact is written with a distinct digest and optimizer lineage",
         "public training rows written equals zero",
         "external inference calls equals zero",
         "fallback/template/router/tool credit equals zero",
@@ -184,7 +195,7 @@
       "id": "T3_bounded_private_training_rung",
       "title": "Bounded Private Training Rung",
       "status": "planned",
-      "goal": "Train the practical transformer/hybrid survival lane against the current stateful-update semantic wall with verifier-positive and verifier-negative private evidence.",
+      "goal": "Train the English, Python, JS/TS, HTML/CSS, and Rust arms independently and train the 6.6M mixed dense transformer as a matched falsification control, using verifier-positive and verifier-negative private evidence only after direct behavior exists.",
       "entry_criteria": [
         "T2 smoke passes",
         "baseline replay is frozen",
@@ -199,7 +210,7 @@
         "private residual categories: missing_semantic_update_value, type_handling, wrong_answer, missing_finalizer",
         "accepted/rejected verifier stage labels",
         "family-disjoint private heldout",
-        "governed teacher rows if distillation manifest becomes ready"
+        "governed residual-only teacher rows if distillation manifest becomes ready and both teacher-share caps remain satisfied"
       ],
       "forbidden_inputs": [
         "public benchmark payloads",
@@ -213,7 +224,8 @@
         "reports/neural_seed_strict_generator_fanout_receipt.json"
       ],
       "exit_criteria": [
-        "same private heldout split is evaluated before and after",
+        "arm-specific and mixed-control heldouts are evaluated before and after",
+        "routing accuracy, direct answer utility, and composed answer utility are reported separately",
         "semantic verifier pass improves over baseline or a falsifying wall is recorded",
         "candidate integrity remains GREEN",
         "checkpoint size, load time, throughput, and memory are reported"
@@ -232,7 +244,7 @@
           "starvation DPO improved its preference objective but regressed emitted candidates from 14 to 0 and is not adopted"
         ],
         "current_wall": "Learn prompt/signature-conditioned state transitions, update operands, and final-return semantics with adequate source data/capacity. Do not substitute templates, renderers, deterministic tools, route labels, syntax rates, LM loss, or preference-gap improvement for model-only heldout behavior.",
-        "next_allowed_step": "Return to architecture-roadmap work; when Phase 10 training resumes, use a larger/fresher transformer-hybrid semantic constructor and require positive family-disjoint verifier behavior before preference/RL or scale."
+        "next_allowed_step": "Complete the five-arm MoECOT trainer/checkpoint topology and matched dense-control contract, then require positive arm-level family-disjoint verifier behavior before preference/RL, search, or scale."
       },
       "rollback_or_stop": "Do not promote if improvement is only syntax, nontrivial-return rate, lower LM loss, or wider fanout without behavior.",
       "no_claims": [
@@ -467,7 +479,7 @@
     "public_benchmark_training_rows_written": 0,
     "external_runtime_inference_calls": 0,
     "fallback_template_router_tool_credit_count": 0,
-    "teacher_share_metric": "reported every cycle and trends down as self-generated verified data improves",
+    "teacher_share_metric": "report accepted-row and optimizer-sampling shares every cycle; cap at 0.10 and 0.02 respectively and trend both toward zero as licensed, dogfood, and verified self-generated data improve",
     "assistant_usefulness": "accepted/completed dogfood outcomes increase while missed/ignored residuals are mined",
     "inference_latency_and_memory": "reported separately for assisted local runtime and model-only routes",
     "mlx_route_state": "mechanically ready, production disabled until private behavior quality is positive",

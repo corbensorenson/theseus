@@ -8,7 +8,7 @@
   "collapse_guard": {
     "synthetic_only_training_allowed": false,
     "max_synthetic_ratio": 0.12,
-    "max_external_pair_ratio": 0.6,
+    "max_external_pair_ratio": 0.1,
     "min_real_ratio": 0.4,
     "require_real_seed_data": true,
     "require_holdout_exclusion": true,
@@ -64,7 +64,9 @@
     "requires_retained_manifest": true,
     "requires_verifier_pass": true,
     "requires_public_and_holdout_exclusion": true,
-    "max_initial_training_ratio": 0.8
+    "max_initial_training_ratio": 0.1,
+    "maximum_optimizer_sampling_ratio": 0.02,
+    "role": "targeted_residual_only"
   },
   "blocked_without_human_approval": [
     "bulk_web_distillation",

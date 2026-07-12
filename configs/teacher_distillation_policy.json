@@ -89,26 +89,28 @@
     "must_keep_verifier_harness": true
   },
   "teacher_share": {
-    "max_initial_training_ratio": 0.8,
+    "max_initial_training_ratio": 0.1,
+    "maximum_optimizer_sampling_ratio": 0.02,
+    "role": "targeted_residual_only_after_licensed_data_and_local_failure_evidence",
     "target_trend": "decrease_over_cycles_as_verified_self_generated_data_increases",
     "graduation_metric": "teacher_accepted_row_share",
     "graduation_target": 0.05,
     "schedule": [
       {
         "phase": "bootstrap",
-        "max_training_ratio": 0.8
+        "max_training_ratio": 0.1
       },
       {
         "phase": "student_replay",
-        "max_training_ratio": 0.5
+        "max_training_ratio": 0.05
       },
       {
         "phase": "self_generated_majority",
-        "max_training_ratio": 0.2
+        "max_training_ratio": 0.02
       },
       {
         "phase": "graduation",
-        "max_training_ratio": 0.05
+        "max_training_ratio": 0.01
       }
     ]
   },

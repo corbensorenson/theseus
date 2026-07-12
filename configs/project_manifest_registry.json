@@ -216,7 +216,7 @@
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-      "sha256": "db2f1aa281c6505a833b7812fd3c2f21105262a30d33f1312a612117cc519ee8"
+          "sha256": "056d1d7ba4f3c963bc16879e2fd3713e89931472441e57a0bda6d0c861126d68"
         },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
@@ -228,7 +228,11 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-      "sha256": "60e12e9c413c8cc2bc42729713592a6f69a05db72268ded9c0ecee57a160036c"
+          "sha256": "53032a9e794ed4498c8834fd3d0c29046b9a59d26e63d3fa98074518a9741639"
+        },
+        "corpus_implementation": {
+          "path": "scripts/standard_causal_transformer_corpus.py",
+          "sha256": "51f0d3bceeb6b71ba34ba0618ee6b04342832247d419531e46e269258766ff72"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -284,15 +288,15 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-      "sha256": "5bfd28b90454fa8803d1ba9e4dec661011b70897830d62364985621c4b0da3da"
+          "sha256": "984f9da486610fee5c7371cbfa1537156de9d3fb126b97f050601b044ae51e18"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-      "sha256": "2905b715f1defd6d1811d556be7adbd605a2d417e700fc7d6ce2da23069147e6"
+          "sha256": "b6f8ef4e4b43f2b1fc70ada678ad7a6c927936b3c8ccd8eaa426b5114c94ef45"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-      "sha256": "08bc9f4629963d11d13083cfb72f6396ea999427bebe5919ec8209e5c9cc023b"
+          "sha256": "d8de0aa6c98d223ebfe77432639146a68fa213a49310308893746919ad8b1cff"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -4867,7 +4871,7 @@
       "surface_id": "neural_seed_and_decoder",
       "status": "experimental",
       "supersedes_implementation_id": "impl.neural_seed_strict_token_decoder.v1",
-      "implementation_type": "decoder_only_causal_transformer_direct_full_body_generator",
+      "implementation_type": "matched_mixed_dense_falsification_control",
       "backend": "python_mlx_apple_rope_gqa_swiglu_tied_embeddings",
       "sequence_attention_policy": {
         "canonical": "causal",
@@ -4895,8 +4899,8 @@
       "canonical_entrypoint": "scripts/standard_causal_transformer_survival.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve prompt/signature-only visibility, reversible tokenization, direct learned full-body generation, independent integrity and blind-flow audits, private verifier replay, exact checkpoint binding, and zero fallback/template/router/tool credit.",
-      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_theseus_artifact_admission.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
-      "role": "survival",
+      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py tests/test_theseus_artifact_admission.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
+      "role": "matched_control",
       "trust_tier": "governed_training_candidate",
       "dependencies": [
         "configs/project_manifest_registry.json",
@@ -4905,6 +4909,7 @@
         "configs/policy_optimization_program.json",
         "configs/generation_mode_registry.json",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_corpus.py",
         "scripts/theseus_artifact_admission.py",
         "configs/artifact_admission_policy.json",
         "tests/test_theseus_artifact_admission.py",
@@ -4918,6 +4923,7 @@
         "data/training_sources/training_data_admission_v1.json",
         "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
         "scripts/standard_causal_transformer_survival_gate.py",
+        "tests/test_standard_causal_transformer_corpus.py",
         "scripts/code_lm_private_verifier.py",
         "scripts/policy_optimization_gate.py",
         "scripts/generation_mode_gate.py",
@@ -4949,7 +4955,7 @@
       "routing_eligibility": {
         "eligible": false,
         "roles": [
-          "survival"
+          "matched_control"
         ],
         "requires_fresh_evidence": true,
         "requires_registry_green": true,
@@ -4958,7 +4964,7 @@
         "learned_generation_claim_allowed": true
       },
       "retirement_policy": "Retain the exact checkpoint, frozen split, negative predecessors, and replacement receipt until a registered successor passes the same contract and regression floor; never erase failed-arm evidence.",
-      "current_wall": "The corrected-map body-only checkpoint measures heldout loss 1.662704, yields 57/87 independently verified candidates over 22 tasks, and remains 0/24 with incomplete durable training provenance. Emitted-plan, rank-64 global latent-plan, sigmoid slot-attention, and categorical slot-attention ablations each retain matched direct-body exposure and clean independent audits. Under categorical slots, semantic plan F1 beats shuffled 0.422111 versus 0.344595 and body loss improves 1.781374 versus 1.790626, but semantic reward is worse, 0.414167 versus 0.429921, all arms remain 0/24 exact, and semantic decode costs 43,794 ms versus body-only 23,325 ms. The qualification gate records every intervention NOT_ADOPTED and leaves body-only canonical. The Phase 10/13 wall is prompt-to-plan semantic grounding and independently measured obligation adequacy that produces verifier-positive family-disjoint behavior, plus a fresh complete canonical training receipt.",
+      "current_wall": "The mixed dense checkpoint remains 0/24 and is now explicitly the matched falsification control, not the intended default seed. The immediate architecture wall is independently checkpointed English, Python, JS/TS, HTML/CSS, and Rust MLX arms over exact quality-filtered canonical ranges, plus governed Octopus single/composed routing whose route success remains separate from answer success.",
       "stable_capability_binding": {
         "field_id": "candidate_generation_contract",
         "contract_version": "1.0.0",
@@ -5750,6 +5756,7 @@
         "scripts/neural_seed_report_io.py"
       ],
       "evidence_outputs": [
+        "reports/teacher_distillation_manifest.json",
         "reports/teacher_distillation_gate.json",
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
@@ -8168,6 +8175,7 @@
       ],
       "canonical": "scripts/teacher_distillation_gate.py",
       "report_outputs": [
+        "reports/teacher_distillation_manifest.json",
         "reports/teacher_distillation_gate.json",
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",

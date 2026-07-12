@@ -57,6 +57,14 @@ from standard_causal_transformer_model import (  # noqa: E402
     build_model,
     parameter_count,
 )
+from standard_causal_transformer_corpus import (  # noqa: E402
+    code_quality_rejection_reasons,
+    load_pretrain_memmaps,
+    materialize_pretrain_stage,
+    pretrain_array_paths,
+    validate_language_scope,
+    validate_code_quality_policy,
+)
 from standard_causal_transformer_preference import (  # noqa: E402
     build_preference_pairs,
     encode_preference_arrays,
@@ -594,6 +602,8 @@ def run(
         "seed": seed,
         "architecture": {
             "family": "standard_decoder_only_causal_transformer",
+            "role": str(config["architecture_role"]),
+            "moecot_language_seed_contract": config["moecot_language_seed_contract"],
             "attention": (
                 "RoPE_grouped_query_prefix_lm_attention"
                 if model_cfg.attention_policy == "prefix_lm"
@@ -727,13 +737,23 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         metadata = read_json(metadata_path)
         if metadata.get("stage_signature") == signature:
             arrays = np.load(arrays_path)
+            pretrain_summary = metadata["summary"]["canonical_pretrain_stage"]
+            pretrain_shape = (
+                int(pretrain_summary["window_count"]),
+                int(pretrain_summary["max_sequence_tokens"]),
+            )
+            pretrain = load_pretrain_memmaps(
+                pretrain_array_paths(stage_dir),
+                pretrain_shape,
+                expected=pretrain_summary["array_artifacts"],
+            )
             vocab_payload = read_json(resolve(config["tokenization"]["source_vocab"]))
             source_vocab = dict(metadata.get("source_vocab") or vocab_payload["source_vocab"])
             target_vocab = dict(metadata.get("target_vocab") or vocab_payload["target_vocab"])
             return Stage(
-                pretrain_inputs=arrays["pretrain_inputs"],
-                pretrain_labels=arrays["pretrain_labels"],
-                pretrain_mask=arrays["pretrain_mask"],
+                pretrain_inputs=pretrain[0],
+                pretrain_labels=pretrain[1],
+                pretrain_mask=pretrain[2],
                 sft_inputs=arrays["sft_inputs"],
                 sft_labels=arrays["sft_labels"],
                 sft_mask=arrays["sft_mask"],
@@ -800,11 +820,20 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         eval_prompt_hashes=eval_prompt_hashes,
         eval_body_hashes=eval_body_hashes,
     )
-    pretrain, pretrain_audit = build_pretrain_windows(
+    target_offset = target_token_offset(config, source_vocab)
+    pretrain = materialize_pretrain_stage(
         config,
-        target_vocab,
-        eval_body_token_sequences=eval_body_token_sequences,
+        root=ROOT,
+        stage_dir=stage_dir,
+        target_vocab=target_vocab,
+        target_offset=target_offset,
+        tokenize_and_encode=lambda text: encode_canonical_pretrain_document(
+            text, target_vocab
+        ),
+        eval_body_patterns={" ".join(sequence) for sequence in eval_body_token_sequences if sequence},
     )
+    pretrain_arrays = pretrain[:3]
+    pretrain_audit = pretrain[3]
     ordered_plan = ordered_plan_training_contract(config)
     sft = encode_sft_training_examples(
         config,
@@ -824,7 +853,7 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
     eval_arrays = eval_encoded[:3]
     sequence_partition = {
         "pretrain": sequence_partition_audit(
-            pretrain[0], pretrain[2], require_separator=False
+            pretrain_arrays[0], pretrain_arrays[2], require_separator=False
         ),
         "sft": sequence_partition_audit(sft[0], sft[2], require_separator=True),
         "eval": sequence_partition_audit(
@@ -841,8 +870,9 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         )
     summary = {
         "stage_signature": signature,
-        "licensed_pretrain_window_count": int(pretrain[0].shape[0]),
-        "licensed_pretrain_target_positions": int(pretrain[2].sum()),
+        "licensed_pretrain_window_count": int(pretrain_arrays[0].shape[0]),
+        "licensed_pretrain_target_positions": int(pretrain_arrays[2].sum()),
+        "canonical_pretrain_stage": pretrain_audit,
         "sft_example_count": int(sft[0].shape[0]),
         "sft_target_positions": int(sft[2].sum()),
         "unique_body_target_positions": int(sft[5].sum()),
@@ -934,12 +964,10 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         "rejected_placeholder_source_count": sft_audit["rejected_placeholder_source_count"],
         "rejected_short_source_count": sft_audit["rejected_short_source_count"],
         "metadata_tagged_source_count": sft_audit["metadata_tagged_source_count"],
-        "licensed_pretrain_eval_body_overlap_source_detected_count": pretrain_audit[
-            "eval_body_overlap_source_detected_count"
-        ],
-        "licensed_pretrain_eval_body_overlap_sources_excluded": pretrain_audit[
-            "eval_body_overlap_sources_excluded"
-        ],
+        "licensed_pretrain_eval_body_overlap_source_detected_count": int(
+            pretrain_audit["excluded_counts"].get("eval_body_overlap", 0)
+        ),
+        "licensed_pretrain_eval_body_overlap_sources_excluded": [],
         "licensed_pretrain_eval_body_overlap_source_surviving_count": 0,
         "public_training_rows": 0,
         "external_inference_calls": 0,
@@ -949,9 +977,6 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
     try:
         np.savez(
             arrays_temporary,
-            pretrain_inputs=pretrain[0],
-            pretrain_labels=pretrain[1],
-            pretrain_mask=pretrain[2],
             sft_inputs=sft[0],
             sft_labels=sft[1],
             sft_mask=sft[2],
@@ -979,9 +1004,9 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         },
     )
     return Stage(
-        pretrain_inputs=pretrain[0],
-        pretrain_labels=pretrain[1],
-        pretrain_mask=pretrain[2],
+        pretrain_inputs=pretrain_arrays[0],
+        pretrain_labels=pretrain_arrays[1],
+        pretrain_mask=pretrain_arrays[2],
         sft_inputs=sft[0],
         sft_labels=sft[1],
         sft_mask=sft[2],
@@ -1121,6 +1146,14 @@ def build_pretrain_windows(
         "eval_body_overlap_source_detected_count": len(overlap_sources),
         "eval_body_overlap_sources_excluded": overlap_sources,
     }
+
+
+def encode_canonical_pretrain_document(
+    text: str, target_vocab: dict[str, int]
+) -> tuple[list[str], list[int], dict[str, Any]]:
+    logical_tokens = body_tokens(text)
+    encoded, receipt = encode_tokens(logical_tokens, target_vocab, stream="target")
+    return logical_tokens, encoded, receipt
 
 
 def window_arrays(windows: list[list[int]], max_seq: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -2630,10 +2663,6 @@ def train_phase(
 ) -> dict[str, Any]:
     if not len(inputs) or max_steps <= 0:
         return {"phase": phase_name, "optimizer_steps": 0, "target_positions_consumed": 0, "losses": []}
-    matrix_x = mx.array(inputs, dtype=mx.int32)
-    matrix_y = mx.array(labels, dtype=mx.int32)
-    matrix_mask = mx.array(mask, dtype=mx.float32)
-    matrix_progress_mask = mx.array(progress_mask, dtype=mx.float32)
     prepared_plan_labels, plan_label_receipt = prepare_semantic_plan_labels(
         plan_labels,
         mode=plan_label_mode,
@@ -2677,19 +2706,11 @@ def train_phase(
         positive_weights, positive_weight_receipt = semantic_plan_positive_weights(
             prepared_plan_labels
         )
-    matrix_plan = (
-        mx.array(prepared_plan_labels, dtype=mx.float32)
-        if prepared_plan_labels is not None
-        else None
-    )
     matrix_positive_weights = (
         mx.array(positive_weights, dtype=mx.float32)
         if positive_weights is not None
         else None
     )
-    mx.eval(matrix_x, matrix_y, matrix_mask, matrix_progress_mask)
-    if matrix_plan is not None:
-        mx.eval(matrix_plan)
     if matrix_positive_weights is not None:
         mx.eval(matrix_positive_weights)
     order = list(range(len(inputs)))
@@ -2712,14 +2733,17 @@ def train_phase(
             if consumed >= target_positions or steps >= max_steps:
                 break
             indices = order[start : start + batch_size]
-            take = mx.array(indices, dtype=mx.int32)
-            x = matrix_x[take]
-            y = matrix_y[take]
-            all_targets = matrix_mask[take]
-            body_targets = matrix_progress_mask[take]
+            x = mx.array(np.asarray(inputs[indices]), dtype=mx.int32)
+            y = mx.array(np.asarray(labels[indices]), dtype=mx.int32)
+            all_targets = mx.array(np.asarray(mask[indices]), dtype=mx.float32)
+            body_targets = mx.array(np.asarray(progress_mask[indices]), dtype=mx.float32)
             plan_targets = mx.maximum(all_targets - body_targets, 0.0)
             m = body_targets + float(ordered_plan_loss_weight) * plan_targets
-            batch_plan = matrix_plan[take] if matrix_plan is not None else None
+            batch_plan = (
+                mx.array(np.asarray(prepared_plan_labels[indices]), dtype=mx.float32)
+                if prepared_plan_labels is not None
+                else None
+            )
             loss, grads = loss_and_grad(
                 model,
                 x,
@@ -4315,6 +4339,16 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
     from governed_conversation_stream import ConversationDeduper
 
     hard_gaps: list[str] = []
+    try:
+        language_scope = validate_language_scope(corpus, root=ROOT)
+    except (ValueError, FileNotFoundError, IsADirectoryError) as exc:
+        language_scope = {"state": "INVALID", "error": str(exc)}
+        hard_gaps.append("canonical_natural_language_scope_invalid")
+    try:
+        code_quality_policy = validate_code_quality_policy(corpus, root=ROOT)
+    except (ValueError, FileNotFoundError, IsADirectoryError) as exc:
+        code_quality_policy = {"state": "INVALID", "error": str(exc)}
+        hard_gaps.append("canonical_code_quality_policy_invalid")
     source_identities: list[dict[str, Any]] = []
     domain_positions: Counter[str] = Counter()
     language_positions: Counter[str] = Counter()
@@ -4383,6 +4417,15 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
                 continue
             text = path.read_text(encoding="utf-8", errors="replace")
             language = canonical_code_language(str(row.get("content_type") or ""), path)
+            quality_reasons = code_quality_rejection_reasons(
+                corpus, path=str(path), text=text, category=language
+            )
+            if quality_reasons:
+                for reason in quality_reasons:
+                    excluded_counts[f"code_quality:{reason}"] += 1
+                if "python_syntax_invalid" in quality_reasons:
+                    excluded_counts["code_incomplete"] += 1
+                continue
             if language == "python":
                 try:
                     ast.parse(text)
@@ -4438,6 +4481,15 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
                     continue
                 path = Path(str(row.get("path") or ""))
                 language = canonical_code_language(str(row.get("language") or ""), path)
+                quality_reasons = code_quality_rejection_reasons(
+                    corpus, path=str(path), text=text, category=language
+                )
+                if quality_reasons:
+                    for reason in quality_reasons:
+                        excluded_counts[f"code_quality:{reason}"] += 1
+                    if "python_syntax_invalid" in quality_reasons:
+                        excluded_counts["code_incomplete"] += 1
+                    continue
                 if language == "python":
                     try:
                         ast.parse(text)
@@ -4597,6 +4649,8 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
         "source_content_identity_verified": all_source_identities_present,
         "source_manifest_digest": sha(json.dumps(source_identities, sort_keys=True)),
         "contract_sha256": scaling_contract_sha256(contract),
+        "language_scope": language_scope,
+        "code_quality_policy": code_quality_policy,
         "recursive_synthetic_position_share": round(
             recursive_synthetic_positions / max(1, total_positions), 8
         ),
@@ -4615,6 +4669,8 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
             "evidence_dimensions",
             "source_manifest_digest",
             "contract_sha256",
+            "language_scope",
+            "code_quality_policy",
         )
     }
     requirement_gaps = canonical_corpus_requirement_gaps(contract, summary)
@@ -4714,6 +4770,21 @@ def canonical_corpus_requirement_gaps(contract: dict[str, Any], summary: dict[st
     missing = [key for key in contract.get("required_evidence_dimensions") or [] if evidence.get(key) is not True]
     if missing:
         gaps.append("required_evidence_dimensions_missing:" + ",".join(missing))
+    language_scope = summary.get("language_scope") or {}
+    if (
+        language_scope.get("natural_languages") != ["en"]
+        or language_scope.get("non_allowed_action") != "quarantine"
+        or language_scope.get("programming_languages")
+        != ["python", "javascript_typescript", "html_css", "rust"]
+    ):
+        gaps.append("canonical_language_scope_not_english_plus_requested_code")
+    quality = summary.get("code_quality_policy") or {}
+    if (
+        quality.get("policy") != "project_theseus_curated_code_quality_v1"
+        or len(str(quality.get("curated_repo_config_sha256") or "")) != 64
+        or int(quality.get("curated_repo_count") or 0) <= 0
+    ):
+        gaps.append("canonical_code_quality_policy_not_content_bound")
     return gaps
 
 
@@ -4843,6 +4914,18 @@ def build_gates(
 def validate_config(config: dict[str, Any]) -> None:
     if config.get("policy") != "project_theseus_standard_causal_transformer_survival_v1":
         raise ValueError("unexpected standard causal transformer policy")
+    if config.get("architecture_role") != "matched_mixed_dense_falsification_control":
+        raise ValueError("standard dense transformer must remain the matched falsification control")
+    seed_contract = config.get("moecot_language_seed_contract") or {}
+    if seed_contract.get("policy") != "project_theseus_moecot_language_seed_contract_v1":
+        raise ValueError("MoECOT language seed contract missing")
+    arm_ids = [str(row.get("id") or "") for row in seed_contract.get("arms") or []]
+    if arm_ids != ["english", "python", "javascript_typescript", "html_css", "rust"]:
+        raise ValueError("MoECOT language arm order or membership mismatch")
+    if seed_contract.get("shared_weights_between_arms") is not False:
+        raise ValueError("MoECOT language arms must retain independent weights")
+    if seed_contract.get("hidden_generalist_fallback") != "forbidden":
+        raise ValueError("hidden generalist fallback must remain forbidden")
     boundary = config.get("boundaries") or {}
     if int(boundary.get("public_training_rows") or 0) != 0:
         raise ValueError("public training is forbidden")
@@ -5094,6 +5177,8 @@ def planned_report(
         "artifacts": {"config": config_path, "checkpoint_dir": rel(checkpoint_dir), "stage_dir": rel(stage_dir)},
         "architecture": {
             "family": "standard_decoder_only_causal_transformer",
+            "role": str(config["architecture_role"]),
+            "moecot_language_seed_contract": config["moecot_language_seed_contract"],
             "attention_policy": str(config["model"].get("attention_policy") or "causal"),
             **config["model"],
         },
@@ -5421,7 +5506,31 @@ def stage_signature(config: dict[str, Any]) -> str:
         SCRIPTS / "neural_seed_token_decoder_rendering.py",
         SCRIPTS / "neural_seed_teacher_distillation_rows.py",
         SCRIPTS / "semantic_ir.py",
+        SCRIPTS / "standard_causal_transformer_corpus.py",
     ]
+    canonical_corpus = config.get("canonical_corpus") or {}
+    for key in ("code_shard_manifests",):
+        paths.extend(resolve(value) for value in canonical_corpus.get(key) or [])
+    for key in ("conversation_manifest", "broad_text_manifest"):
+        value = str(canonical_corpus.get(key) or "")
+        if value:
+            paths.append(resolve(value))
+    language_policy = str(
+        (canonical_corpus.get("natural_language_scope") or {}).get("intake_policy") or ""
+    )
+    if language_policy:
+        paths.append(resolve(language_policy))
+    quality_policy = str(
+        (canonical_corpus.get("code_quality_policy") or {}).get("curated_repo_config")
+        or ""
+    )
+    if quality_policy:
+        paths.append(resolve(quality_policy))
+    canonical_receipt = str(
+        ((config.get("data_model_scaling_contract") or {}).get("canonical_corpus_receipt") or {}).get("path") or ""
+    )
+    if canonical_receipt:
+        paths.append(resolve(canonical_receipt))
     teacher_config = (
         config.get("teacher_distillation")
         if isinstance(config.get("teacher_distillation"), dict)
@@ -5440,6 +5549,10 @@ def stage_signature(config: dict[str, Any]) -> str:
             "pretrain_target_token_positions": config["training"]["pretrain_target_token_positions"],
             "private_body_sampling_weight": config["training"]["private_body_sampling_weight"],
         },
+        "canonical_corpus": canonical_corpus,
+        "architecture_role": config.get("architecture_role"),
+        "moecot_language_seed_contract": config.get("moecot_language_seed_contract", {}),
+        "data_model_scaling_contract": config.get("data_model_scaling_contract", {}),
         "sft_contract_admission": config.get("sft_contract_admission", {}),
         "ordered_plan_training": config.get("ordered_plan_training", {}),
         "semantic_plan_training": config.get("semantic_plan_training", {}),
@@ -5451,9 +5564,8 @@ def stage_signature(config: dict[str, Any]) -> str:
         "preference": {"max_train_tasks": config["preference"]["max_train_tasks"]},
     }
     stage_functions = (
-        build_pretrain_windows,
-        window_arrays,
         load_sft_examples,
+        encode_canonical_pretrain_document,
         encode_sft_examples,
         encode_sft_training_examples,
         sequence_partition_audit,

@@ -1,6 +1,6 @@
 # Project State
 
-Last consolidated: 2026-07-11 UTC.
+Last consolidated: 2026-07-12 UTC.
 
 This file is the bounded current-wall page for Project Theseus. The machine-readable
 implementation contract is `configs/roadmap_implementation_matrix.json`; the
@@ -17,24 +17,26 @@ share toward zero. Public benchmarks are calibration only.
 
 - **Architecture readiness:** locally actionable pre-training architecture is wired.
   This authorizes governed training; it does not prove model quality.
-- **Practical model lane:** a dense 6.6M-parameter decoder-only causal transformer on
-  MLX is the survival lane. SymLiquid, sparse/Octopus, search, preference/RL, and
-  fast-generation routes are challengers or amplifiers until they win matched
-  evidence.
+- **Practical model lane:** the intended seed is five independently trained
+  Octopus/MoECOT arms: English, Python, JS/TS, HTML/CSS, and Rust. The existing dense
+  6.6M-parameter MLX transformer is the matched mixed-control arm, not the default
+  product architecture. Search, preference/RL, and fast generation remain amplifiers.
 - **Capability wall:** the current clean family-disjoint model-only diagnostic is
   `0/24`. The model can emit integrity-clean candidates but does not yet reliably
   learn prompt/signature-conditioned state transitions, operands, algorithms, and
   final-return semantics.
 - **Data gate:** the frozen contract selects 6,623,232 active parameters and a
   132,464,640 unique-position floor (20:1). The canonical mixed-corpus receipt is
-  `GREEN` at 260,011,267 unique positions, or 39.257460 per active parameter, with
-  zero integrity hard gaps. It contains 77,351,958 English positions, including an
-  18,947,648 conversation/instruction subset, and 182,659,309 code positions:
-  44,191,145 Python, 59,347,703 JS/TS, 16,503,427 HTML/CSS, 58,311,735 Rust, and
-  4,305,299 other code. Every total/domain/language/evidence minimum passes.
-- **Immediate dependency:** replace the legacy Python-only 12M-position stage input
-  with a lineage-bound, balanced, streaming view of these exact canonical shards.
-  Only then complete one durable dense MLX training rung.
+  `GREEN` after file-level quality filtering at 247,908,698 unique positions, or
+  37.43 per dense-control parameter, with zero integrity hard gaps. It contains
+  77,351,958 English positions, including an 18,947,648 conversation/instruction
+  subset, and 170,556,740 code positions: 43,105,570 Python, 52,685,801 JS/TS,
+  13,257,091 HTML/CSS, 57,626,478 Rust, and 3,881,800 other code. Generated,
+  vendored, minified, decode-damaged, low-diversity, and invalid sources receive no
+  credit. Every total/domain/language/evidence minimum still passes.
+- **Immediate dependency:** finish exact per-arm MLX model/optimizer/checkpoint
+  consumers over the quality-filtered 132,464,640-position stage and preregister the
+  five-arm-versus-dense comparison before capability training.
 
 ## Evidence Boundaries
 
@@ -53,7 +55,11 @@ share toward zero. Public benchmarks are calibration only.
   provenance, permitted use, contamination, retention, and recursive synthetic share
   are measured. This is data admission, not live teacher authority.
 - Teacher rows require provenance, license, contamination, verifier, and retention
-  receipts. Teacher usefulness must beat a matched teacher-off control.
+  receipts. Live teacher use is residual-only: accepted rows are capped at 10% and
+  optimizer sampling at 2%, both trend down, and usefulness must beat a matched
+  teacher-off control. The first teacher tranche was negative and remains quarantined.
+- Natural-language training is English-only. Python, JS/TS, HTML/CSS, and Rust are
+  separate programming-language arms; other human languages are quarantined.
 
 ## Current Architecture
 
@@ -70,6 +76,11 @@ share toward zero. Public benchmarks are calibration only.
   budgets, independent integrity, sanitized feedback, replay, and separate learned,
   deterministic, and tool-assisted channels. It has not yet produced a behavior win
   on the clean model-only wall.
+- **Octopus/MoECOT:** the seed contract now defines separate English, Python, JS/TS,
+  HTML/CSS, and Rust weights/data/checkpoint lifecycles and typed single, sequential,
+  parallel, verification, and adjudicated routes. Arm training and live composition
+  remain the immediate implementation wall; route success cannot count as answer
+  success and hidden generalist fallback is forbidden.
 - **Deterministic tools:** exact tools are evidence-producing instruments, not learned
   generation. `UNKNOWN`, `UNSOLVED`, and typed faults are preferred to fabricated
   answers.
@@ -86,7 +97,8 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Training State
 
-- The current dense checkpoint is developmental and non-routeable.
+- The current dense checkpoint is developmental, non-routeable, and retained only as
+  the mixed falsification control.
 - A corrected causal-transformer training/evaluation contract enforces transitive
   family-disjoint lineage, target-independent interfaces, source/target vocabulary
   separation, content binding, and decode-ABI checks.
@@ -113,15 +125,16 @@ share toward zero. Public benchmarks are calibration only.
 
 1. Keep repository/registry/effect evidence coherent and compact.
 2. Keep the frozen data/model scaling contract and heldout/stop criteria fail-closed.
-3. Build the licensed, deduplicated English/Python-first code corpus, obtain its
-   canonical mixed-corpus receipt, and train the
-   dense MLX survival lane with durable checkpoints and receipts.
+3. Consume the licensed, quality-filtered canonical corpus through separate English,
+   Python, JS/TS, HTML/CSS, and Rust MLX arms, with independent optimizer/checkpoint
+   lineage, while training the mixed dense control under the same evidence contract.
 4. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
 5. Integrate Question-Compiled Semantic Addressing only through the registered VCM
    and planning abstractions, with leakage and route-authority controls.
-6. Run matched challengers. Promote transformer/hybrid by default unless SymLiquid
-   or another route wins repeated compute/data-matched evidence.
+6. Compare the five-arm MoECOT seed with the dense control under matched total/active
+   parameters, data, compute, and verifier budget. Keep the winning evidence-backed
+   topology; SymLiquid remains a later protected comparator.
 7. Calibrate once on fresh frozen public surfaces after material model improvement.
 8. Route the winning model into assistant dogfood; use accepted, missed, ignored,
    corrected, and completed outcomes to drive the governed improvement flywheel.
@@ -147,10 +160,10 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Replace the legacy Python-only 12M-position pretraining stage with a deterministic,
-lineage-bound balanced view of the GREEN 260,011,267-position corpus, then train one
-complete dense MLX rung. Success requires durable
-provenance, heldout lineage, nonzero independently verified family-disjoint behavior,
-and better results than the frozen current baseline. If those conditions fail, mine
-the observed semantic residuals; do not add another architecture lane or nearby
-green report.
+Finish the independently checkpointed English, Python, JS/TS, HTML/CSS, and Rust MLX
+arm consumers over the GREEN 247,908,698-position quality-filtered corpus and retain
+the 6.6M mixed dense model as the matched control. Freeze arm/router/composition/
+answer metrics before training. Success requires durable provenance, heldout lineage,
+nonzero independently verified arm behavior, and an honest modular-versus-dense
+verdict. If those conditions fail, retain the falsification; do not hide it with
+routing accuracy, another auxiliary head, or a nearby green report.

@@ -167,6 +167,21 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
             "source_content_identity_verified": True,
             "source_manifest_digest": "a" * 64,
             "contract_sha256": scaling_contract_sha256(scaling),
+            "language_scope": {
+                "natural_languages": ["en"],
+                "programming_languages": [
+                    "python",
+                    "javascript_typescript",
+                    "html_css",
+                    "rust",
+                ],
+                "non_allowed_action": "quarantine",
+            },
+            "code_quality_policy": {
+                "policy": "project_theseus_curated_code_quality_v1",
+                "curated_repo_config_sha256": "b" * 64,
+                "curated_repo_count": 1,
+            },
         },
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -183,6 +198,8 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
             "evidence_dimensions",
             "source_manifest_digest",
             "contract_sha256",
+            "language_scope",
+            "code_quality_policy",
         )
         payload["identity_payload"] = {key: payload["summary"][key] for key in identity_keys}
         payload["receipt_identity_sha256"] = hashlib.sha256(
@@ -278,8 +295,50 @@ def canonical_corpus_fixture(tmp_path: Path) -> tuple[dict, Path, Path]:
         ),
         encoding="utf-8",
     )
+    intake_policy = tmp_path / "english-intake-policy.json"
+    intake_policy.write_text(
+        json.dumps(
+            {
+                "sources": [
+                    {"id": "conversation", "enabled": True, "required_langs": ["en"]}
+                ],
+                "broad_text_sources": [
+                    {"id": "documents", "enabled": True, "required_language": "en"}
+                ],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    repo_policy = tmp_path / "repo-policy.json"
+    repo_policy.write_text(
+        json.dumps({"repos": [{"repo": "example/project"}]}, sort_keys=True),
+        encoding="utf-8",
+    )
     config["canonical_corpus"] = {
         "policy": "project_theseus_canonical_mixed_corpus_materialization_v1",
+        "natural_language_scope": {
+            "allowed_languages": ["en"],
+            "non_allowed_action": "quarantine",
+            "intake_policy": str(intake_policy),
+        },
+        "programming_language_scope": [
+            "python",
+            "javascript_typescript",
+            "html_css",
+            "rust",
+        ],
+        "code_quality_policy": {
+            "policy": "project_theseus_curated_code_quality_v1",
+            "curated_repo_config": str(repo_policy),
+            "minimum_logical_tokens": 1,
+            "maximum_line_characters": 2000,
+            "maximum_mean_nonempty_line_characters": 300,
+            "minimum_unique_token_ratio": 0.01,
+            "excluded_path_parts": ["vendor"],
+            "excluded_name_markers": [".min."],
+            "generated_text_markers": ["do not edit"],
+        },
         "code_manifests": [str(code_manifest)],
         "conversation_manifest": str(conversation_manifest),
         "conversation_root": str(conversation_root),

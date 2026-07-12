@@ -21,9 +21,9 @@
   "preserve_last_completed_on_budget_block": true,
   "budget": {
     "max_calls_per_cycle": 1,
-    "max_calls_per_day": "unlimited",
-    "cooldown_seconds": 0,
-    "critical_cooldown_seconds": 0,
+    "max_calls_per_day": 4,
+    "cooldown_seconds": 1800,
+    "critical_cooldown_seconds": 1800,
     "subscription_budget_hint": {
       "source": "user_codex_subscription",
       "posture": "Use teacher calls sparingly, but do not let stale proposal-only budget gates block architecture-wall diagnosis while real training would otherwise continue blind.",
@@ -42,17 +42,17 @@
       "benchmark_frontier_design",
       "frontier_exhausted"
     ],
-    "max_critical_calls_per_day": "unlimited",
+    "max_critical_calls_per_day": 2,
     "reason_overrides": {
       "architecture_wall": {
-        "max_calls_per_day": "unlimited",
-        "max_critical_calls_per_day": "unlimited",
-        "critical_cooldown_seconds": 0
+        "max_calls_per_day": 4,
+        "max_critical_calls_per_day": 2,
+        "critical_cooldown_seconds": 1800
       },
       "bigcodebench_execution_wall": {
-        "max_calls_per_day": "unlimited",
-        "max_critical_calls_per_day": "unlimited",
-        "critical_cooldown_seconds": 0
+        "max_calls_per_day": 4,
+        "max_critical_calls_per_day": 2,
+        "critical_cooldown_seconds": 1800
       }
     },
     "blocked_log_cooldown_seconds": 900,

@@ -23,7 +23,17 @@ zero external inference at serving time and a teacher bill that trends to zero.
    provider for interactive teacher or runtime inference.
 5. Do not add arbitrary remote execution, public gateway operation, or
    unbounded self-update behavior.
-6. Governed teachers must be OpenAI models accessed through ChatGPT, Codex, or
+6. High-quality static open-source/model-derived training data is eligible
+   regardless of provider when its license permits training and provenance,
+   quality, deduplication, contamination, synthetic-share, and retention checks
+   pass. Static corpus admission does not grant live-teacher authority.
+7. The current natural-language scope is English only. The programming-language
+   scope is Python, JavaScript/TypeScript, HTML/CSS, and Rust. Non-English natural
+   language is excluded or quarantined for this seed.
+8. Live teacher data is targeted residual pressure, not the bootstrap corpus.
+   Enforce the configured accepted-row and optimizer-sampling caps and drive both
+   toward zero; bulk teacher generation is forbidden.
+9. Governed teachers must be OpenAI models accessed through ChatGPT, Codex, or
    an explicitly approved OpenAI API path. Do not invoke Anthropic or Claude,
    and never admit their outputs into manifests, ledgers, training data, model
    checkpoints, evaluations, or project-review workflows.
@@ -51,10 +61,11 @@ violation with wording, a new label, a nearby green report, or a broader claim.
 
 ## Current Priorities
 
-1. Neural seed track: build a small student proposer behind the existing
-   verifier/fanout/STS harness. Compare the SymLiquid substrate against a
-   parameter- and compute-matched control arm before claiming the substrate
-   mattered.
+1. Neural seed track: build independently trained English, Python, JS/TS,
+   HTML/CSS, and Rust arms behind the governed Octopus/MoECOT route contract.
+   Keep the mixed dense transformer as a matched falsification control. Compare
+   arm, route, composition, and answer behavior separately before claiming the
+   modular substrate mattered.
 2. Teacher distillation track: make
    `teacher_share_of_accepted_training_rows` a durable ledger metric and drive
    that share down as verified self-generated data takes over.

@@ -29,13 +29,13 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | canonical mixed-corpus receipt `GREEN`; every total/domain/language/evidence floor passes | replace the legacy Python-only 12M-position stage with a balanced lineage-bound view of the 260.01M-position corpus before training |
-| Dense transformer survival baseline | Phase 10 | canonical practical lane; architecture clean, behavior flat | freeze one MLX causal-transformer contract and train a data-supported scale ladder; no more plan heads, state variants, or preference tuning until model-only family-disjoint behavior moves above zero |
-| Sparse specialist core (100M) | Track 1 / Phases 10, 16 | challenger deferred | do not fund a 100M sparse rung until the corpus supports it and a matched dense baseline has positive behavior; adopt sparse/Octopus only on repeated active-compute wins |
+| Data engine + curriculum | Track 0 / Phase 7 | quality-filtered canonical receipt and exact 132.46M-position five-arm/dense-control stage are `GREEN` | bind independent MLX arm trainers to the immutable arm ranges; licensed English + requested code families are primary and live teacher rows remain sparse residual pressure |
+| Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | intended topology now explicit; per-arm trainer/checkpoint views not yet wired | implement English, Python, JS/TS, HTML/CSS, and Rust arms with independent weights/data/lineage plus governed Octopus routing and typed composition before capability training |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - current clean MLX route remains 0/24; semantic adaptation emits 14 integrity-clean candidates and starvation DPO regresses emission to zero | fix data adequacy first, then train the frozen dense baseline; the next accepted intervention must improve direct model-only behavior, not loss, syntax, candidate count, or assisted output alone |
+| Generator capability (held-out pass) | Phase 10 | RED - current clean MLX route remains 0/24; prior monolithic interventions did not produce behavior | complete per-arm architecture and run the frozen MoECOT-versus-dense control; the next accepted intervention must improve direct model-only behavior, not routing, loss, syntax, candidate count, or assisted output alone |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -43,10 +43,10 @@ module must meet.
 | Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
 | Authority kernel / SCIF | Phase 18 | replayable-reference-backed for the same bounded local effect; SCIF and wider authority controls remain synthetic | preserve exact effect/rollback auditing and expand support only when another real effect class earns it |
 | Assistant product | Phase 5 | assisted runtime wired; model-only general chat unavailable | dogfood deterministic/verified assistance now, but earn model usefulness only from real multi-day use after the local model clears its behavior floor |
-| Report hygiene | Phases 0, 8, 14 | policy GREEN; generated/build state remains about 30.8 GiB | keep current-reference compaction and exact replay mandatory; cleanup is maintenance, not the capability flagship |
+| Report hygiene | Phases 0, 8, 14 | budget gate GREEN but hot reports are near the 1 GiB ceiling and total local generated/archive state remains large | compact to <=80% hot-budget headroom after the active stage build; run retention before long training and preserve exact replay pointers |
 | Book crosswalk / parity | Phase 19 | 54 chapters mapped in manifest order; no beyond-SOTA completion implied | keep book-owned fields, tests, and source identity checksum-bound |
 | Book test obligations | Phase 19 + routed owners | 504 authored Codex tests; 102 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
-| Book futures intake | Phase 19 + routed owners | 10 chapter candidates + 2 section routes remain outside the 54-chapter manifest; QCSA source is available and manifest pending | activate only at source/ownership and operational entry gates |
+| Book futures intake | Phase 19 + routed owners | requirements retained but capability-frozen; QCSA source is available and manifest pending | preserve the crosswalk without implementation expansion until a language arm or matched dense control clears non-zero heldout behavior, except concrete correctness/security defects |
 
 Pre-training readiness uses the matrix-owned phase partition rather than every
 unfinished roadmap item. Phases `0, 1, 2, 3, 4, 6, 8, 11, 14, 15, 18, 19` are
@@ -80,6 +80,17 @@ zero-pass floor.
   served to a user at runtime.
 - Teacher rows are allowed only when governed, provenance-tagged, license-checked,
   verifier-accepted, leakage-audited, and barred from runtime serving.
+- High-quality static open data is eligible regardless of which model/provider
+  generated it when its license permits training and its provenance, quality tier,
+  recursive-synthetic share, deduplication, contamination, and retention checks pass.
+  Static corpus admission does not grant live-teacher authority.
+- English is the only natural-language target in the current seed. The requested
+  programming-language scope is Python, JS/TS, HTML/CSS, and Rust. Other human
+  languages are excluded or quarantined rather than consuming model capacity.
+- Licensed static corpora, verified self-generation, and dogfood outcomes are the
+  primary learning pressure. Live OpenAI teacher data is residual-only: accepted-row
+  share is capped at 10%, optimizer sampling at 2%, both trend down, and bulk teacher
+  generation is forbidden.
 - No fallback returns for capability credit. Routers, templates, deterministic
   tools, semantic renderers, action catalogs, and search are tools/baselines,
   never learned generation. Always report model-only versus assisted separately.
@@ -133,8 +144,10 @@ Theseus tests the **Efficient ASI Hypothesis**: a from-scratch,
 verifier-and-search-governed cognitive architecture that reaches
 **frontier-competitive capability on verifiable domains (English + code) at 1-2
 orders of magnitude fewer active parameters** than published dense baselines,
-running fully local, with every claim falsifiable and no cheating. Sparse
-activation is a challenger mechanism, not a conclusion embedded in the hypothesis.
+running fully local, with every claim falsifiable and no cheating. The intended
+seed is MoECOT/Octopus modular intelligence: a lightweight governed head routes to
+bounded language-specialist arms. A mixed dense transformer remains the mandatory
+matched control, so modularity is still falsifiable rather than assumed superior.
 
 "Over the edge" is defined concretely as **capability-per-active-parameter**
 crossing published dense-model curves on a frozen held-out verifiable benchmark.
@@ -148,20 +161,22 @@ local system can actually reach the frontier.
 
 The fuzzy weights do only the irreducible reasoning. Everything else is
 deterministic architecture: verification, execution, retrieval, memory, syntax,
-and search. The current practical default is the simplest architecture that can
-establish a trustworthy learning curve: a dense causal transformer/hybrid trained
-from scratch on MLX. Sparse specialists and SymLiquid remain challengers and may
-replace it only after matched-data, matched-active-compute behavior wins.
+and search. The target seed is a governed Octopus/MoECOT system with one English arm
+and separate Python, JS/TS, HTML/CSS, and Rust arms. The head compiles visible user
+intent, VCM context, authority, and resource constraints into a task-local route;
+specialists exchange typed Semantic IR/artifacts rather than duplicating all domain
+knowledge inside one monolith. A 6.6M mixed dense transformer is trained as the
+matched control, not silently promoted as the intended product architecture.
 
-- **Data-supported scaling before architectural complexity.** Freeze a dense
-  baseline at each rung, predeclare unique admitted tokens per active parameter,
-  optimizer exposure, heldouts, and compute, then earn the next rung on a measured
-  scaling curve. A 100M sparse model is not authorized by ambition alone; its data
-  and matched dense control must be affordable first.
-- **Sparse specialists as an earned replacement.** If a data-supported dense model
-  has positive behavior, test MoE / Octopus / MoECOT at matched active compute.
-  Each expert is a stable capability field accountable for an action family, with
-  readiness, authority ceiling, attribution, interference, and residual accounting.
+- **Data-supported arms and matched control.** Predeclare unique admitted positions,
+  optimizer exposure, heldouts, parameter count, and compute for each arm and for the
+  mixed dense control. Reusing English/context rows across specialists is optimizer
+  exposure, not additional unique-data credit. No arm is scaled beyond its data.
+- **Language specialists are the intended seed, not an unmeasured assumption.** Each
+  arm is a stable capability field with its own weights, data view, tokenizer/profile,
+  checkpoint, readiness, authority ceiling, attribution, interference, residuals,
+  split/merge/retire lifecycle, and independent rollback. The dense control must be
+  capable of falsifying the modular thesis under matched total/active compute.
 - **Verifier-guided search in the generation loop** - the missing multiplier. The
   deterministic verifier guides proposal, not just grades it.
 - **Correctness trained into the weights** via the Chapter 38 RL/preference
@@ -177,25 +192,25 @@ replace it only after matched-data, matched-active-compute behavior wins.
 ### Critical Path (ordered - this is what moves capability)
 
 **Current execution order (binding for the next capability cycle):**
-1. Freeze the dense MLX causal-transformer architecture, tokenizer ABI, visible
-   input contract, heldout split, verifier, and replay contract. Architecture
-   changes require a demonstrated defect, not a hoped-for score gain.
-2. Produce a corpus-adequacy receipt for English and code: unique admitted tokens,
-   active parameters, token/parameter ratio, language/task balance, source and
-   semantic deduplication, authority/license, contamination, tail coverage, and
-   heldout exclusions. The present corpus is a diagnostic corpus, not a sufficient
-   from-scratch capability corpus.
-3. Expand governed unique data and train the smallest data-supported dense rung to
-   completion on MLX. Report model-only family-disjoint behavior, loss, syntax,
-   coverage, prompt-conditioning gap, throughput, energy/memory, and exact lineage.
-4. If direct behavior is positive, qualify search, STS/VCM conditioning, preference
-   learning, verifier-reward RL, and fast generation in that order with matched
-   ablations. If it remains zero after the predeclared data-supported run, diagnose
-   the representation/objective or increase the data-supported dense rung; do not
-   add another auxiliary head.
-5. Only after a dense positive baseline exists, test sparse/Octopus and SymLiquid
-   challengers. Only after a materially changed current model clears private
-   integrity and behavior gates, spend a fresh public calibration surface.
+1. Freeze the shared ABI: visible-input boundary, byte-safe tokenizer base, VCM and
+   Semantic-IR packet, arm registry/card schema, route lease, verifier, checkpoint,
+   replay, composition, and no-credit contracts. Freeze five arms: English, Python,
+   JS/TS, HTML/CSS, and Rust. Architecture changes then require a demonstrated defect.
+2. Materialize one content-bound corpus into non-overlapping per-arm views plus the
+   mixed dense-control view. Record arm-specific unique positions, shared-row reuse,
+   tokenizer efficiency, contamination, license/provenance, and exact row ranges.
+3. Select the smallest data-supported MLX model for each arm and a matched mixed
+   dense control. Predeclare total parameters, active parameters per route, FLOPs,
+   wall/energy budget, and heldouts. Train arms independently; do not allow one arm's
+   optimizer state or residuals to mutate another except through an explicit update.
+4. Evaluate arm behavior, router behavior, and composed behavior separately. Compare
+   MoECOT versus dense at matched total parameters, matched active compute, matched
+   data, and matched verifier/search budget. Route success never counts as answer
+   success; dense wins remain valid evidence against the thesis.
+5. After any direct arm behavior is positive, qualify STS/VCM conditioning, search,
+   preference/RL, and fast generation in that order. Only after a materially changed
+   current system clears private integrity/behavior gates, spend a fresh public
+   calibration surface. SymLiquid remains a later protected comparator.
 
 **Track 0 - Data and Curriculum Program** (foundational; runs ahead of and parallel
 to Track 1).
@@ -215,18 +230,30 @@ to Track 1).
 - Establish a data/model scaling contract before the next capability run. Count
   unique admitted model-visible positions separately from repeated optimizer
   exposure and choose a published compute-optimal planning band before training.
-  For the current 6.6M-parameter dense model, the canonical audit measures 62.98M
-  unique positions under the actual tokenizer ABI: 18.95M English
-  conversation/instruction and 44.03M code across Python, JS/TS, HTML/CSS, Rust,
-  and other code. At 9.509123 unique positions per active parameter, this remains
-  below the frozen 20:1 floor. The exact target is selected and frozen by the
-  scaling contract, not reverse-engineered after results.
+  For the current 6.6M-parameter dense model, the canonical audit now measures
+  247.91M unique positions after file-level quality filtering under the actual
+  tokenizer ABI: 77.35M English and 170.56M code across Python, JS/TS, HTML/CSS,
+  Rust, and a small uncredited other-code tail. This clears the frozen 20:1 floor;
+  the earlier 62.98M diagnostic accounting
+  is superseded. The exact 132.46M-position training view remains selected and frozen
+  before results rather than reverse-engineered afterward.
 - Expand the corpus in the product's actual domains: English conversation and
   instruction following; Python first; then JS/TS/HTML/CSS and Rust. Measure
   executable completeness, dependency context, algorithm/contract coverage,
   natural-language quality, dialogue continuity, corrections/tool traces, and
   long-tail representation. Avoid bulk intake that merely increases tokens while
   leaving the current semantic residuals untouched.
+- Natural-language scope is English. "Multilingual code" means Python, JS/TS,
+  HTML/CSS, and Rust, not broad human-language intake. Every natural-language source
+  carries an English filter/receipt; non-English rows quarantine.
+- Prefer high-quality licensed human/open corpora and static openly licensed
+  model-derived corpora over live teacher generation. Provider origin alone neither
+  admits nor rejects a static dataset; license, provenance, quality, diversity,
+  decontamination, and measured heldout utility decide.
+- Code volume is quality-filtered after repository/license curation: generated,
+  vendored, bundled/minified, decode-damaged, extreme-line, low-diversity,
+  tokenizer-unrepresentable, and invalid-Python files receive no scaling or training
+  credit. The frozen corpus floor must still pass after these exclusions.
 - Design a difficulty curriculum with tiers the current model can reach, growing
   toward harder algorithm families, so RL and search always have a non-zero reward
   signal to climb.
@@ -247,22 +274,32 @@ to Track 1).
   unlearning, training success, or capability. Beyond-SOTA endpoint: a stack-wide,
   descendant-aware, self-refreshing data governance plane, not a static dump.
 
-**Track 1 - Dense Baseline Then Sparse Specialist Challenger** (owned by Phases 10
-and 16).
-- First establish a data-supported dense causal-transformer behavior and scaling
-  curve. The dense model is the practical survival lane until displaced by evidence.
-- Then scale a sparse MoE proposer toward 100M total parameters only when the
-  admitted corpus supports that rung: top-k expert routing, small active count, and
-  a held-out behavior/loss curve versus a matched dense active-parameter control.
-- Octopus route head + live MoECOT: a learned router selects experts per
-  token/task and emits real `RoutingDecisionRecord` and `MoECOTOrchestrationRecord`
-  (why this expert, why not others, readiness, authority, residual).
-- Expert accountability: experts specialize to action families, verified by
-  activation attribution.
-- Acceptance (hard-to-fake): dense held-out family-disjoint verifier pass first
-  moves off 0; the sparse challenger then preserves or improves it with active
-  parameters much less than total, attributable expert activation, controlled
-  interference, and a repeated matched-active-compute win.
+**Track 1 - MoECOT Language Arms With Dense Falsification Control** (owned by Phases
+10 and 16).
+- Canonical seed topology: `english`, `python`, `javascript_typescript`, `html_css`,
+  and `rust` arms. English owns conversation, instruction understanding, and
+  user-facing synthesis. Code arms own direct generation/repair in their language.
+  Cross-language tasks use typed sequential/parallel/adjudicated composition rather
+  than a hidden generalist fallback.
+- The head/router is a governed hybrid: deterministic capability/extension/signature
+  evidence first, learned ambiguity ranking only after trace support, VCM for context,
+  and route leases for authority/readiness/budget. It may abstain or compose arms.
+- Each arm has separate weights, optimizer/checkpoint lineage, data receipt, context
+  contract, verifier suite, capability scorecard, and lifecycle. A shared ABI is not
+  shared weights. Arm updates are independent and cannot cause silent cross-arm drift.
+- Train a mixed dense 6.6M control from the same canonical rows. Compare at matched
+  total parameters, active parameters, data, optimizer positions, MLX wall/energy,
+  and verifier/search budget. Report routing accuracy, answer utility, interference,
+  transfer, and composition failure separately.
+- Scale total specialist capacity only when every arm's own unique-data ratio and
+  heldout curve support it. Shared/replayed English scaffolding is counted once as
+  unique system data and once per optimizer exposure; it cannot inflate an arm's
+  scaling receipt.
+- Acceptance (hard to fake): at least one arm produces direct family-disjoint
+  verifier-positive behavior; the router selects or composes the correct arm on
+  source-disjoint ambiguous tasks; MoECOT beats or matches the dense control on
+  useful verified output per active parameter/second without worsening tail arms;
+  otherwise the dense result falsifies or narrows the modular thesis at that rung.
 
 **Track 2 - Verifier-Guided Search** (owned by Phases 6 and 10).
 - Propose -> verify -> repair loop with a real search budget: beam/tree over
@@ -313,7 +350,8 @@ shot: generate -> verify -> admit -> retrain -> measure -> ratchet.
 
 ### Scaling Trajectory
 
-100M sparse is rung one. Define an explicit ladder (active params, expert count,
+The first five-arm seed is rung one; 100M total sparse capacity is a later rung.
+Define an explicit ladder (per-arm and total parameters, active params, expert count,
 corpus size, search budget, reasoning depth) with a governed step function: each
 rung requires a matched-baseline ablation, a capability-per-active-parameter
 datapoint, and a falsification condition before the next rung is funded. This is
@@ -695,17 +733,20 @@ require admitted row hashes. The lifecycle surface remains `YELLOW`, not
 `GREEN`, because recursive synthetic share is `0.824771`; that is a data-risk
 warning, not proof of model collapse. The policy comparison is simulation, and
 deletion closure is graph evidence, not physical unlearning.
-The dense survival lane now owns a frozen pre-training scaling contract rather
+The matched mixed dense control now owns a frozen pre-training scaling contract rather
 than an informal token estimate. It selects the existing 6,623,232-active-parameter
 MLX rung and requires 132,464,640 unique admitted model-visible positions (20:1),
 with 60M English conversation/instruction, 60M code, a 12.46M tail reserve, and
 explicit Python, JS/TS, HTML/CSS, and Rust minima. The canonical materializer now
-measures 260,011,267 unique positions under the frozen tokenizer ABI: 77,351,958
-English positions, including 18,947,648 conversation/instruction, and 182,659,309
-code positions. Its receipt is `GREEN` with zero integrity hard gaps and every
-total/domain/language/evidence minimum satisfied. The trainer now authorizes the
-data contract, but its stage remains noncanonical until it consumes the exact bound
-shards rather than the old Python-only 12M-position input. The receipt proves all license/provenance, exact and
+measures 247,908,698 unique positions after file-level quality filtering under the
+frozen tokenizer ABI: 77,351,958 English positions, including 18,947,648
+conversation/instruction, and 170,556,740 code positions. Its receipt is `GREEN`
+with zero integrity hard gaps and every total/domain/language/evidence minimum
+satisfied. The stage now consumes the exact bound shards as 273,951 disk-backed
+windows and exposes immutable arm views: 64.15M English, 38.08M Python, 14.08M
+JS/TS, 8.08M HTML/CSS, and 8.08M Rust positions, plus the identical mixed
+dense-control view. Independent arm trainer/checkpoint consumers remain pending.
+The receipt proves all license/provenance, exact and
 semantic deduplication, contamination, completeness, coverage/tail, synthetic-share,
 lifecycle, tokenizer, domain, language, and repetition requirements.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
@@ -716,6 +757,11 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
 - Govern teacher proposals/distillation with license, provenance, verifier,
   leakage, runtime-serving prohibition, and durable teacher-share ledgers. Track
   recursive synthetic share, coverage, diversity, tail loss, and provenance drift.
+- Keep live teacher use sparse and causal: at most 10% accepted-row share and 2%
+  optimizer sampling in bootstrap, decreasing toward zero as verified local data
+  grows. Require a predeclared residual family and matched teacher-on/off utility
+  test. The first Sol 5.6 code-row ablation was negative and remains quarantined;
+  verifier acceptance alone never justifies reuse.
 - Compare replacement, accumulation, replay, quarantine, and retraining on a frozen
   continual-learning workload. Propagate revocation/deletion obligations through
   every declared descendant and retain unverified closure states.
@@ -726,7 +772,8 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   and physical storage erasure as separate claims.
 - Acceptance: the data-policy comparison and a negative descendant-deletion case
   replay independently; teacher rows enter only through their gate; public
-  calibration payloads remain excluded; `teacher_share` trends down.
+  calibration payloads remain excluded; accepted-row and optimizer-sampling teacher
+  shares both remain under their caps and trend down.
 - Do not: call a complete receipt high-quality data, call deletion verified
   forgetting, or let the learner manufacture its own training authority.
 
@@ -761,18 +808,16 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
 
 ### Phase 10: Practical Neural Seed Survival Lane
 (Owns Tracks 1, 2's learned proposer/repair loop, 3, and 4's model path.)
-- **Current decision:** freeze the clean 6.6M MLX causal-transformer contract as
-  the dense survival baseline. Its architecture/replay/integrity path is adequate
-  for a real scaling experiment, but its current data exposure is not adequate for
-  a strong from-scratch capability conclusion. The next intervention is a
-  Track-0-governed unique-data expansion plus a completed dense training rung, not
-  another plan/state head, tiny adaptation, DPO run, beam-width change, sparse
-  router, or public calibration. Success is direct model-only family-disjoint
-  verifier behavior above zero with complete lineage; loss or syntax alone cannot
-  adopt the checkpoint.
+- **Current decision:** the practical seed is a five-arm MoECOT/Octopus topology,
+  not one dense model containing all English and programming-language knowledge.
+  Freeze English, Python, JS/TS, HTML/CSS, and Rust arm contracts with independent
+  weights, optimizer/checkpoint lineage, data views, verifiers, and rollback. The
+  existing clean 6.6M MLX causal transformer remains the mixed dense falsification
+  control. No arm or control receives promotion without direct family-disjoint
+  behavior; route correctness, loss, or syntax alone cannot adopt a checkpoint.
 - **Frozen scaling decision:** the selected rung is exactly 6,623,232 active
   parameters with a 132,464,640 unique-position floor and maximum 4x optimizer
-  repetition. The canonical materializer credits 260,011,267 unique positions under
+  repetition. The canonical materializer credits 247,908,698 quality-filtered unique positions under
   the standard-transformer tokenizer/stage ABI and excludes stale source identities,
   tokenizer-unrepresentable documents, and exact/near duplicates from that credit.
   This measurement is corpus evidence, not training authority or capability.
@@ -780,12 +825,22 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   training/adoption until the content-bound
   canonical mixed-corpus receipt is GREEN. This prevents both epoch inflation and
   accidental training on an architecture whose data contract is still incomplete.
+- The corpus is English natural language plus Python, JS/TS, HTML/CSS, and Rust.
+  The earlier "multilingual" label refers to programming-language coverage, not a
+  human-language expansion. High-quality appropriately licensed static datasets are
+  admissible even when model-derived; origin is retained and synthetic share is
+  measured rather than treated as an automatic ban.
 - Static openly licensed model-derived corpora are eligible data sources when their
   quality tier, provenance, permitted use, contamination, retention, and recursive
   synthetic position share are explicit. They do not authorize a live teacher
   provider and cannot enter runtime serving as external tokens.
-- Training sequence is fixed by prerequisites: broad causal English+code
-  pretraining -> governed instruction/conversation and direct-body SFT ->
+- Live teacher rows are not the bootstrap corpus. They are capped residual examples
+  after ordinary licensed-data coverage is exhausted: <=10% of accepted rows and
+  <=2% of optimizer sampling initially, with a downward schedule and matched utility
+  ablation. The existing negative teacher tranche remains retained but quarantined.
+- Training sequence is fixed by prerequisites: arm-specific causal pretraining plus
+  a matched mixed dense control -> governed English instruction/conversation and
+  language-specific direct-body SFT ->
   verifier-positive pair construction -> preference optimization -> verifier-reward
   RL -> search/fast-generation/sparse challengers. A later stage cannot be used to
   compensate for a missing earlier signal.
@@ -1087,6 +1142,15 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   bindings without widening authority.
 
 ### Phase 16: MoECOT and Octopus Router Integration
+- Make the first live specialist registry concrete: English, Python, JS/TS,
+  HTML/CSS, and Rust. Every arm card binds its own model/config/tokenizer profile,
+  corpus view, checkpoint/optimizer lineage, verifier families, VCM/context contract,
+  readiness, authority ceiling, cost profile, residuals, and split/merge/retire rule.
+  A shared ABI never implies shared weights or shared promotion.
+- Support single-arm, sequential, parallel, verification, and adjudicated routes for
+  cross-language work. Composition emits typed artifacts and verifier receipts;
+  there is no hidden dense/generalist fallback and no route success credited as
+  answer success.
 - Emit `RoutingDecisionRecord` for each specialist/tool/model route and
   `MoECOTOrchestrationRecord` for each multi-core run: capability request, candidate
   fields, readiness, authority, active parameters, cost/quality, context adequacy,
@@ -1236,7 +1300,10 @@ intake have been admitted and are owned by the chapter crosswalk rather than thi
 future queue. The 12 remaining candidates/section routes below are **not new active
 lanes**: each is owned by existing phases, remains planning-only until its source,
 ownership, and operational entry gates pass, and blocks only the higher-authority
-operation it governs.
+operation it governs. This queue is frozen while current model-only heldout behavior
+is zero: it remains the future design contract and is not deleted, but it cannot
+spawn implementation/report work unless a concrete correctness, security, or
+training-readiness defect requires it.
 
 | Book candidate or section | Theseus owner phases | Entry condition / disposition |
 |---|---|---|

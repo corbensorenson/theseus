@@ -269,7 +269,7 @@
         18,
         19
       ],
-      "entry_condition": "source text is available; admit to the active chapter crosswalk when AI_book book_structure.json adds the chapter, while learned atlas/question-policy qualification waits for a data-supported behavior-positive dense baseline",
+      "entry_condition": "source text is available; admit to the active chapter crosswalk when AI_book book_structure.json adds the chapter, while learned atlas/question-policy qualification waits for a data-supported behavior-positive language arm or matched dense control",
       "theseus_scope": "extend the existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus stack with opaque stable SOIDs independent of semantic addresses and physical routes, plural task-scoped atlas epochs, Semantic Address Certificates, information-value question compilation, open-world expressions, authority-safe semantic-to-physical translation, and lifecycle-safe migration",
       "acceptance_boundary": "existing private VCM/planner/router fixtures compare flat, random/frequency tree, one-semantic-tree, residual-quantized, multi-view-without-indirection, and QCSA variants under matched resources; identity, atlas, questioning, retrieval, routing, generation-round-trip, governance, and migration metrics show a meaningful Pareto gain or retain a falsifying result",
       "non_claim_boundary": "a coherent schema, stable ID, graph, certificate, question trace, or address hierarchy is not semantic correctness, interpretability, model capability, public transfer, or ASI evidence; semantic classification never grants execution authority"
@@ -286,15 +286,16 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-07-11",
-    "recommendation": "Close the architecture-first wave and make the capability survival lane the sole flagship: establish governed data adequacy, then train the frozen dense MLX transformer baseline until direct family-disjoint behavior is measured honestly.",
+    "recommendation": "Keep the capability survival lane as the sole flagship, but implement its intended five-arm MoECOT language topology before training. Use the frozen 6.6M dense MLX transformer as the matched control, then measure arm, route, composition, and direct answer behavior honestly.",
     "project_theseus_focus": [
-      "freeze_dense_mlx_causal_transformer_contract",
+      "freeze_five_language_arm_and_shared_abi_contracts",
+      "retain_dense_mlx_transformer_as_matched_control",
       "measure_unique_admitted_tokens_per_active_parameter",
       "expand_licensed_deduplicated_english_and_code_corpus",
-      "complete_data_supported_dense_training_rung",
-      "measure_direct_model_only_family_disjoint_behavior",
+      "complete_data_supported_per_arm_and_dense_control_training_rungs",
+      "measure_arm_route_composition_and_direct_answer_behavior_separately",
       "retain_negative_interventions_without_new_head_families",
-      "promote_search_preference_rl_or_sparse_routes_only_after_positive_behavior"
+      "promote_search_preference_rl_or_faster_modes_only_after_positive_behavior"
     ],
     "implementation_outputs": [
       "configs/training_inference_execution_roadmap.json",
@@ -317,7 +318,7 @@
       "strict_generator_marker_slot_guard_churn",
       "fresh_public_calibration_before_the_current_model_changes_materially",
       "DPO_GRPO_search_width_MTP_diffusion_before_direct_verifier_positive_behavior",
-      "100M_sparse_or_symliquid_scaling_before_a_data_supported_dense_behavior_floor"
+      "100M_scaling_or_symliquid_before_a_data_supported_five_arm_vs_dense_verdict"
     ]
   },
   "implementation_rules": [
@@ -719,7 +720,7 @@
       ],
       "track_id": "F_memory_planning_tool_substrate",
       "status": "planned",
-      "dependency": "extend existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus records rather than creating a new abstraction; deterministic contract/migration fixtures may proceed as maintenance, while learned atlas, question-policy, and semantic-generation qualification waits for a data-supported behavior-positive dense baseline",
+      "dependency": "extend existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus records rather than creating a new abstraction; deterministic contract/migration fixtures may proceed as maintenance, while learned atlas, question-policy, and semantic-generation qualification waits for a data-supported behavior-positive language arm or matched dense control",
       "acceptance_gate": "A registered QCSA extension independently separates opaque SOID, contextual semantic address, and physical route identity; issues consumer/task/epoch-bound Semantic Address Certificates; compiles cost/risk/privacy-aware question traces; translates certificates through SCF-authorized VIEA plans; and replays readdress/merge/split/rollback without silent misrouting. Matched private baselines include flat IDs, random/frequency trees, one semantic tree, residual-quantized IDs, multi-view IDs without stable identity, and ablations removing active questions, physical translation, soft routing, and migration governance. Identity, atlas, question, retrieval, route, round-trip generation, governance, and migration metrics must show a meaningful Pareto gain or retain falsification.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "A schema, graph, stable identifier, semantic hierarchy, certificate, question trace, or migration receipt is not semantic correctness, interpretability, model capability, public transfer, or ASI evidence; semantic resolution never grants execution authority, and assisted semantic-first output remains separate from direct learned generation."
@@ -1508,10 +1509,10 @@
         "reports/theseus_assistant_teacher_share_smoke.json"
       ],
       "missing_items": [
-        "lineage-bound balanced streaming training-stage consumption of the GREEN canonical mixed corpus rather than the legacy Python-only 12M-position window source",
+        "independent MLX arm model/optimizer/checkpoint consumers bound to the immutable English/Python/JS-TS/HTML-CSS/Rust stage ranges, plus the mixed dense-control consumer",
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
-      "smallest_next_patch": "Extend the canonical standard-transformer stage to materialize a content-bound mixed English/code corpus under its actual tokenizer ABI, then expand governed unique data to the frozen 132,464,640-position floor without weakening domain, language, contamination, or lifecycle evidence.",
+      "smallest_next_patch": "Bind separate English/Python/JS-TS/HTML-CSS/Rust MLX model, optimizer, checkpoint, and verifier state to the completed content-bound 132,464,640-position arm ranges, and bind the 6.6M mixed model only as the matched control.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/training_data_admission_v1.py",
@@ -1954,7 +1955,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Keep the Sol 5.6 teacher and prefix-LM tranches unpromoted. The cache/restart and source-partition hypotheses are closed. Next improve direct prompt/signature body-token syntax and semantic completion using the canonical all-candidate verifier residuals for unfinished expressions, algorithm choice, return shape, and state transitions without exposing eval answers. Require a syntax-valid candidate and exact family-disjoint verifier-pass gain before teacher curriculum, preference/RL, scale, or public calibration advances.",
+      "smallest_next_patch": "Keep the negative Sol 5.6 and prefix-LM tranches quarantined. Implement independently checkpointed English, Python, JS/TS, HTML/CSS, and Rust MLX arms over exact canonical stage ranges, retain the 6.6M mixed dense model as the matched control, and preregister arm/router/composition/answer metrics before any capability training.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -2097,10 +2098,11 @@
         "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_dpo_pairwise_smoke_broad8_replay16_20260706.json trigger_state=GREEN invalid_claim_count=0 static_information_flow_violation_count=0"
       ],
       "completion_rule": "A trainable student, not a renderer/router/template inventory, produces promotion-grade full-body candidates with independent replay evidence.",
-      "current_wall": "The repaired standard causal lane remains 0/24 exact, and architecture/extra-SFT/teacher/head churn is falsified on this surface. The canonical mixed-corpus receipt is GREEN at 260,011,267 unique positions under the frozen tokenizer ABI, or 39.257460 per active parameter, with every total/domain/language/evidence minimum satisfied and zero integrity hard gaps. The remaining integration wall is that build_pretrain_windows still reads the legacy Python-only manifest and caps at 12M positions, so it does not yet consume the corpus that authorized training.",
-      "next_required_work": "Replace the legacy pretrain window source with a deterministic lineage-bound balanced streaming view of the exact canonical code, conversation, and broad-English shards. Preserve train/eval contamination exclusion, source identities, domain/language accounting, resumability, and bounded memory; then run the complete dense MLX rung before any amplifier, challenger, or public calibration.",
+      "current_wall": "The repaired standard causal lane remains 0/24 exact, and architecture/extra-SFT/teacher/head churn is falsified on this surface. The canonical mixed-corpus receipt is GREEN at 247,908,698 quality-filtered unique positions under the frozen tokenizer ABI, with every total/domain/language/evidence minimum satisfied and zero integrity hard gaps. The remaining architecture wall is independently checkpointed English, Python, JS/TS, HTML/CSS, and Rust MLX arm consumers plus an honest five-arm-versus-dense comparison contract.",
+      "next_required_work": "Finish deterministic lineage-bound arm ranges over the exact canonical code, conversation, and broad-English shards. Preserve English-only admission, train/eval contamination exclusion, source identities, per-arm/system accounting, resumability, and bounded memory; then train the five independent MLX arms and matched dense control before any amplifier or public calibration.",
       "implemented_items": [
-        "A frozen data/model scaling contract is canonical in configs/standard_causal_transformer_survival.json and consumed by both the trainer and independent survival gate. It binds the 6,623,232-active-parameter rung to a 132,464,640 unique-position floor, partition and subset minima, required evidence dimensions, maximum 4x repetition, exact governance identities, and fail-closed authorization. The canonical receipt is GREEN at 260,011,267 unique positions with every total/domain/language/evidence minimum satisfied. This is corpus readiness, not model capability; stage consumption and training remain pending.",
+        "A frozen data/model scaling contract is canonical in configs/standard_causal_transformer_survival.json and consumed by both the trainer and independent survival gate. It binds the 6,623,232-active-parameter dense-control rung to a 132,464,640 unique-position floor, partition and subset minima, required evidence dimensions, maximum 4x repetition, exact governance identities, and fail-closed authorization. The canonical receipt is GREEN at 247,908,698 quality-filtered unique positions with every total/domain/language/evidence minimum satisfied. This is corpus readiness, not model capability; independent arm consumers and training remain pending.",
+        "The canonical stage materializes 273,951 non-overlapping disk-backed windows and exact arm views: English 64,154,880 positions, Python 38,077,440, JS/TS 14,077,440, HTML/CSS 8,077,440, and Rust 8,077,440, plus the identical 132,464,640-position mixed dense-control view. Source/shard/array hashes, English-only policy, code-quality exclusions, no-cheat counters, and hidden-generalist-fallback prohibition are bound; this is staging evidence, not trained-arm capability.",
         "latest graph/operation source-condition adequacy summary reports/strict_generator_mlx_operation_graph_adequacy_summary_20260706.json: prompt-visible graph/type obligations now require graph-walk AST evidence; the private train replay moved from 4 admitted wrong rows to 0 admitted rows with explicit graph_walk_evidence and operation_evidence residuals, preserving no-cheat counters.",
         "graph role-signal patch: graph traversal methods and graph-state identifiers now map into existing body-action/body-operand role heads, and the action trace emits missing_graph_walk_evidence for graph/hops/path plans without traversal-shaped AST evidence after normalizing plan/source_plan/semantic_plan/expected_plan/plan_tags visible plan fields. reports/strict_generator_graph_role_signal_smoke_summary_20260706.json confirms trainable-path consumption but rejects the checkpoint because heldout LM/transition/action losses regress.",
         "body-action/body-operand role class balancing: optional inverse-sqrt train-split role-frequency weighting is now recorded in target summaries. reports/strict_generator_graph_role_balance_canary_summary_20260706.json shows the lower auxiliary mix fixes LM regression and preserves operand improvement, but transition/action losses still regress; class balancing is wired but not sufficient in the one-epoch 64-row canary.",
@@ -2724,9 +2726,10 @@
         "reports/viea_spine_materialized_view.json"
       ],
       "missing_items": [
-        "natural ambiguous-routing workload with clarification, fallback, abstention, calibration, interference counterfactuals, and generated-answer utility separated from route correctness"
+        "live English/Python/JS-TS/HTML-CSS/Rust arm registry with independent model/data/checkpoint lineage and typed single/sequential/parallel/adjudicated composition",
+        "natural ambiguous-routing workload with clarification, abstention, calibration, interference counterfactuals, and generated-answer utility separated from route correctness"
       ],
-      "smallest_next_patch": "After Phase 10 produces useful candidates, run the learned/rule/generalist/specialist/fallback/abstention matrix on frozen naturally ambiguous requests and retain route-versus-answer outcomes separately.",
+      "smallest_next_patch": "Bind the five language-arm cards to Phase-10 model/data/checkpoint artifacts and make the existing Octopus route lease emit typed single/composed routes. Then run the learned/rule/generalist/specialist/abstention matrix on frozen naturally ambiguous requests and retain route-versus-answer outcomes separately.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -3091,8 +3094,8 @@
     "policy": "one_active_flagship_lane_v1",
     "active_flagship_lane_id": "C1_correctness_rl_and_generator_survival_lane",
     "active_track_id": "C_capability_research_survival_lane",
-    "rule": "Only the capability survival lane may drive new primary work. Other tracks may repair a demonstrated contract defect, maintain evidence, or support the lane's governed data and MLX dependencies, but cannot spawn competing architecture families.",
-    "why": "The architecture prerequisites are ready while direct learned behavior remains zero. Progress now means adequate governed data and a behavior-positive current model, not another adjacent architecture or report family.",
+    "rule": "Only the capability survival lane may drive new primary work. Its canonical target is the five-arm MoECOT language seed plus one mixed dense falsification control; other tracks may repair a demonstrated contract defect, maintain evidence, or support its governed data, router, and MLX dependencies, but cannot spawn competing architecture families.",
+    "why": "The general architecture prerequisites are ready while direct learned behavior remains zero, but the seed topology must reflect the book thesis before training: bounded language specialists rather than one monolith. Progress now means independent arm training plus a behavior-positive governed comparison, not another adjacent head or report family.",
     "allowed_parallel_work": [
       "security or no-cheat regression fix",
       "registry/steward cleanup on existing surfaces",
@@ -3105,7 +3108,7 @@
       "new benchmark family to avoid a failed one",
       "new strict-generator target-label family without preregistration",
       "new report family when an existing registry-owned report should be updated",
-      "preference_RL_search_fast_generation_or_sparse_scaling before direct verifier-positive behavior"
+      "preference_RL_search_fast_generation_or_100M_scaling before direct verifier-positive behavior"
     ]
   },
   "book_implementation_tracks": [
@@ -3138,7 +3141,7 @@
       "track_id": "C_capability_research_survival_lane",
       "name": "Capability Research Survival Lane",
       "status": "active_flagship",
-      "job": "Freeze the practical dense MLX causal-transformer contract, establish a governed unique-data-to-active-parameter scaling contract, expand licensed and deduplicated English plus code data, and complete the smallest data-supported training rung. Measure direct prompt/signature-conditioned family-disjoint behavior before activating search, preference/RL, fast generation, sparse/Octopus, or SymLiquid challengers. Prevent routers, templates, private n-grams, tools, semantic renderers, and fallback bodies from counting as learned generation.",
+      "job": "Build the practical seed as five independently trained MoECOT language arms (English, Python, JS/TS, HTML/CSS, Rust) behind the governed Octopus router, with per-arm data/model scaling, weights, optimizer/checkpoint lineage, verifiers, readiness, and rollback. Train the frozen 6.6M mixed dense MLX transformer only as a matched falsification control. Measure arm, route, composition, and answer behavior separately before activating search, preference/RL, fast generation, or SymLiquid. Prevent routing, templates, tools, renderers, and fallbacks from counting as learned generation.",
       "primary_phases": [
         7,
         10,
@@ -3146,7 +3149,7 @@
         12
       ],
       "support_state_target": "synthetic-test-backed",
-      "success_test": "A complete lineage-bound dense checkpoint trained on a predeclared data-supported rung moves direct model-only family-disjoint verifier behavior above zero with clean integrity and blind-flow audits. Only then may an amplifier or challenger advance under matched controls; otherwise record the scaling result and diagnose data, objective, representation, or capacity without spawning another marker/slot/guard family."
+      "success_test": "At least one lineage-bound language arm moves direct family-disjoint verifier behavior above zero, the router selects/composes arms on source-disjoint ambiguous tasks, and the five-arm system is compared with the dense control under matched total/active parameters, data, compute, and verifier budget. Only then may an amplifier advance; otherwise retain the dense result as a valid falsification or narrowing of the modular thesis."
     },
     {
       "track_id": "D_repo_stewardship_and_evidence_hygiene",

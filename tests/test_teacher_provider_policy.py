@@ -157,6 +157,39 @@ class TeacherProviderPolicyTest(unittest.TestCase):
         reasons = forbidden_report["manifest"]["rejected_candidates"][0]["reject_reasons"]
         self.assertIn("forbidden_teacher_provider_or_model", reasons)
 
+    def test_gate_replays_archived_teacher_manifest_pointer(self) -> None:
+        manifest = {
+            "policy": "project_theseus_teacher_distillation_manifest_v1",
+            "summary": {
+                "row_count": 1,
+                "teacher_receipt_provenance_verified": True,
+            },
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            archive = root / "teacher_manifest.json.gz"
+            with gzip.open(archive, "wt", encoding="utf-8") as handle:
+                json.dump(manifest, handle)
+            reports = root / "reports"
+            reports.mkdir()
+            pointer = reports / "teacher_distillation_manifest.json"
+            pointer.write_text(
+                json.dumps(
+                    {
+                        "policy": "project_theseus_archived_artifact_pointer_v1",
+                        "archive_path": str(archive),
+                    }
+                ),
+                encoding="utf-8",
+            )
+            policy = {
+                "manifest_path": str(pointer),
+                "ledger_path": str(reports / "teacher_distillation_ledger.jsonl"),
+            }
+            with mock.patch.object(GATE, "ROOT", root):
+                state = GATE.load_state(policy)
+        self.assertEqual(manifest, state["manifest"])
+
     def test_real_receipt_binds_codex_executable_and_model(self) -> None:
         row = {
             "provider": "codex_cli",

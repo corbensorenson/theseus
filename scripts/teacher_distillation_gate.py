@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from teacher_provider_policy import teacher_provider_decision
+from theseus_archive_resolver import read_json_follow_pointer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,6 +85,14 @@ def main() -> int:
             "teacher_accepted_row_share": teacher_share.get("teacher_accepted_row_share", 0.0),
             "teacher_share_within_cap": teacher_share.get("within_initial_cap", False),
             "teacher_share_cap": teacher_share.get("max_initial_training_ratio"),
+            "teacher_optimizer_sampling_target": get_path(
+                state.get("standard_transformer_policy") or {},
+                ["teacher_distillation", "teacher_sampling_probability_target"],
+                None,
+            ),
+            "teacher_optimizer_sampling_cap": get_path(
+                policy, ["teacher_share", "maximum_optimizer_sampling_ratio"], None
+            ),
             "teacher_share_ledger_path": teacher_share.get("ledger_path"),
             "teacher_share_ledger_present": teacher_share.get("ledger_present", False),
             "teacher_share_ledger_row_count": teacher_share.get("ledger_row_count", 0),
@@ -126,7 +135,7 @@ def load_state(policy: dict[str, Any]) -> dict[str, Any]:
     return {
         "operator_unlock_present": operator_unlock.exists(),
         "operator_unlock_path": rel(operator_unlock),
-        "manifest": read_json(manifest_path),
+        "manifest": read_json_follow_pointer(manifest_path, {}),
         "manifest_path": rel(manifest_path),
         "ledger_rows": read_jsonl(ledger_path),
         "ledger_path": rel(ledger_path),
@@ -135,6 +144,9 @@ def load_state(policy: dict[str, Any]) -> dict[str, Any]:
         "external_audit": read_json(reports / "external_inference_audit.json"),
         "teacher_policy": read_json(ROOT / "configs" / "teacher_policy.json"),
         "synthetic_data_policy": read_json(ROOT / "configs" / "synthetic_data_policy.json"),
+        "standard_transformer_policy": read_json(
+            ROOT / "configs" / "standard_causal_transformer_survival.json"
+        ),
         "license_status": read_json(reports / "license_status.json"),
     }
 
@@ -146,6 +158,15 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
     external_audit = state.get("external_audit") if isinstance(state.get("external_audit"), dict) else {}
     teacher_policy = state.get("teacher_policy") if isinstance(state.get("teacher_policy"), dict) else {}
     synthetic_policy = state.get("synthetic_data_policy") if isinstance(state.get("synthetic_data_policy"), dict) else {}
+    standard_policy = state.get("standard_transformer_policy") if isinstance(state.get("standard_transformer_policy"), dict) else {}
+    optimizer_sampling_target = float(
+        get_path(standard_policy, ["teacher_distillation", "teacher_sampling_probability_target"], 1.0)
+        or 0.0
+    )
+    optimizer_sampling_cap = float(
+        get_path(policy, ["teacher_share", "maximum_optimizer_sampling_ratio"], 0.0)
+        or 0.0
+    )
     unlock_required = operator_unlock_required(policy)
     public_boundary = str(boundary.get("public_benchmarks") or "")
     public_boundary_ok = (
@@ -456,6 +477,16 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             teacher_share_summary(policy, state).get("within_initial_cap", False),
             "readiness",
             teacher_share_summary(policy, state),
+        ),
+        check(
+            "teacher_optimizer_sampling_within_cap",
+            0.0 <= optimizer_sampling_target <= optimizer_sampling_cap <= 0.02,
+            "readiness",
+            {
+                "configured_sampling_target": optimizer_sampling_target,
+                "maximum_optimizer_sampling_ratio": optimizer_sampling_cap,
+                "semantics": "live teacher rows are residual-only and never the bootstrap corpus",
+            },
         ),
     ]
 

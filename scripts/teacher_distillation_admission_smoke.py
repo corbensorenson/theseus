@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import subprocess
 import sys
 import tempfile
@@ -63,7 +64,9 @@ def main() -> int:
                 str(audit_md),
             ]
         )
-        append_verified_self_rows(ledger_path, count=4)
+        teacher_cap = float(temp_policy["teacher_share"]["max_initial_training_ratio"])
+        self_row_count = max(1, math.ceil(1.0 / teacher_cap) - 1)
+        append_verified_self_rows(ledger_path, count=self_row_count)
         gate_proc = run(
             [
                 sys.executable,
@@ -100,7 +103,7 @@ def main() -> int:
             "manifest_holdout_overlap_hits": manifest_summary.get("holdout_overlap_hits"),
             "teacher_share": gate.get("teacher_share"),
             "teacher_share_within_cap": gate_summary.get("teacher_share_within_cap"),
-            "verified_self_rows_added_to_temp_ledger": 4,
+            "verified_self_rows_added_to_temp_ledger": self_row_count,
             "real_teacher_manifest_unchanged": before.get(str(REAL_MANIFEST)) == after.get(str(REAL_MANIFEST)),
             "real_teacher_ledger_unchanged": before.get(str(REAL_LEDGER)) == after.get(str(REAL_LEDGER)),
             "real_training_rows_written": 0,
@@ -221,10 +224,9 @@ def make_temp_policy(source_policy: dict[str, Any], manifest_path: Path, ledger_
     policy["operator_unlock_flag"] = str(manifest_path.parent / "operator_unlock_not_required.flag")
     policy["default_state"] = "governed_training_enabled"
     policy.setdefault("neural_seed", {})["required"] = False
-    policy.setdefault("teacher_share", {})["max_initial_training_ratio"] = max(
-        0.8,
-        float(policy.get("teacher_share", {}).get("max_initial_training_ratio", 0.8) or 0.8),
-    )
+    cap = float(policy.get("teacher_share", {}).get("max_initial_training_ratio", 0.1) or 0.1)
+    if not 0.0 < cap <= 0.1:
+        raise ValueError("teacher distillation smoke requires the configured sparse teacher cap")
     return policy
 
 
