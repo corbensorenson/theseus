@@ -75,6 +75,7 @@
 /data/training_data/open_conversation_pantry/stream_state.json
 /data/training_data/open_conversation_pantry/broad_text/
 /data/training_data/moecot_language_supervision_v1/
+/data/training_data/moecot_source_conditioned_pretraining_v1/
 /data/training_data/residual_code_curriculum/private_train/
 /data/training_sources/*materialized*.jsonl
 /data/training_sources/*training_rows*.jsonl

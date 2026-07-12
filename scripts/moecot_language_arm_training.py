@@ -114,6 +114,8 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     gaps.extend(tokenizer_audit["hard_gaps"])
     supervision_audit = audit_supervision_stage(config, config_path=config_path)
     gaps.extend(supervision_audit["hard_gaps"])
+    source_conditioned_audit = audit_source_conditioned_stage(config)
+    gaps.extend(source_conditioned_audit["hard_gaps"])
     stage_arrays = canonical.get("array_artifacts") if isinstance(canonical.get("array_artifacts"), dict) else {}
     for key, row in stage_arrays.items():
         path = resolve(str(row.get("path") or ""))
@@ -139,9 +141,16 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         )
         if active_delta > 0.01:
             gaps.append("active_parameter_control_mismatch")
-    plan_identity = plan_sha256(config, metadata, models, supervision_audit)
+    plan_identity = plan_sha256(
+        config, metadata, models, supervision_audit, source_conditioned_audit
+    )
     targets = target_contracts(
-        config, arm_views, models, plan_identity, supervision_audit=supervision_audit
+        config,
+        arm_views,
+        models,
+        plan_identity,
+        supervision_audit=supervision_audit,
+        source_conditioned_audit=source_conditioned_audit,
     )
     checkpoint_inventory = inspect_checkpoint_inventory(targets, plan_identity, summary.get("stage_signature"))
     gaps.extend(checkpoint_inventory["hard_gaps"])
@@ -166,6 +175,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         },
         "models": models,
         "supervision": supervision_audit,
+        "source_conditioned_pretraining": source_conditioned_audit,
         "targets": targets,
         "checkpoint_inventory": checkpoint_inventory,
         "comparison_contract": config["comparison_contract"],
@@ -361,6 +371,7 @@ def target_contracts(
     plan_identity: str,
     *,
     supervision_audit: dict[str, Any],
+    source_conditioned_audit: dict[str, Any],
 ) -> dict[str, Any]:
     root = resolve(str(config["checkpoint_root"]))
     targets: dict[str, Any] = {}
@@ -399,6 +410,20 @@ def target_contracts(
                     for arm in ARM_IDS
                     for split in ("private_train", "private_dev", "private_eval")
                 }
+            ),
+            "source_conditioned_artifacts": (
+                {
+                    "private_train": source_conditioned_audit["artifacts"].get(target)
+                }
+                if target in ARM_IDS
+                and source_conditioned_audit["artifacts"].get(target)
+                else {
+                    f"{arm}:private_train": source_conditioned_audit["artifacts"].get(arm)
+                    for arm in ARM_IDS
+                    if source_conditioned_audit["artifacts"].get(arm)
+                }
+                if target not in ARM_IDS
+                else {}
             ),
         }
     return targets
@@ -543,6 +568,52 @@ def audit_supervision_stage(
     }
 
 
+def audit_source_conditioned_stage(config: dict[str, Any]) -> dict[str, Any]:
+    cfg = config.get("source_conditioned_pretraining")
+    cfg = cfg if isinstance(cfg, dict) else {}
+    root = resolve(str(cfg.get("stage_root") or ""))
+    manifest_path = root / "manifest.json"
+    manifest = read_json(manifest_path) if manifest_path.is_file() else {}
+    gaps: list[str] = []
+    if manifest.get("policy") != "project_theseus_moecot_source_conditioned_pretraining_v1":
+        gaps.append("source_conditioned_manifest_policy_mismatch")
+    if manifest.get("trigger_state") != "GREEN":
+        gaps.append("source_conditioned_manifest_not_green")
+    expected_contract = hashlib.sha256(
+        json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if manifest.get("contract_sha256") != expected_contract:
+        gaps.append("source_conditioned_contract_identity_mismatch")
+    artifacts = manifest.get("artifacts") if isinstance(manifest.get("artifacts"), dict) else {}
+    for arm, wanted in (cfg.get("rows_by_arm") or {}).items():
+        if int(wanted) <= 0:
+            continue
+        row = artifacts.get(arm) if isinstance(artifacts.get(arm), dict) else {}
+        path = resolve(str(row.get("path") or ""))
+        if not path.is_file() or sha256_file(path) != str(row.get("sha256") or ""):
+            gaps.append(f"source_conditioned_artifact_identity_mismatch:{arm}")
+        if int(row.get("row_count") or 0) != int(wanted):
+            gaps.append(f"source_conditioned_row_count_mismatch:{arm}")
+    for key in (
+        "public_training_rows_written",
+        "public_benchmark_payload_count",
+        "external_inference_calls",
+        "fallback_return_count",
+    ):
+        if int(manifest.get(key) or 0):
+            gaps.append(f"source_conditioned_nonzero_boundary:{key}")
+    return {
+        "state": "GREEN" if not gaps else "RED",
+        "manifest": relative(manifest_path),
+        "manifest_sha256": sha256_file(manifest_path) if manifest_path.is_file() else "",
+        "artifacts": artifacts,
+        "copy_coverage_by_arm": manifest.get("copy_coverage_by_arm") or {},
+        "corruption": manifest.get("corruption") or {},
+        "hard_gaps": gaps,
+        "score_semantics": "source-conditioned objective readiness only",
+    }
+
+
 def execute_targets(
     config: dict[str, Any], plan: dict[str, Any], *, targets: list[str], max_steps: int, resume: bool
 ) -> dict[str, Any]:
@@ -575,6 +646,19 @@ def execute_targets(
         )
         for target_id in targets
     }
+    source_conditioned_stages = {
+        target_id: materialize_target_supervision(
+            config,
+            base,
+            plan["targets"][target_id],
+            metadata=metadata,
+            artifact_field="source_conditioned_artifacts",
+            receipt_policy="project_theseus_moecot_source_conditioned_arrays_v1",
+        )
+        if (plan["targets"][target_id].get("source_conditioned_artifacts") or {})
+        else None
+        for target_id in targets
+    }
     results = []
     for target_id in targets:
         target = plan["targets"][target_id]
@@ -583,6 +667,7 @@ def execute_targets(
                 plan,
                 target,
                 stage=stage,
+                source_conditioned_stage=source_conditioned_stages[target_id],
                 supervision_stage=supervision_stages[target_id],
                 max_steps=max_steps,
                 resume=resume,
@@ -622,6 +707,8 @@ def materialize_target_supervision(
     target: dict[str, Any],
     *,
     metadata: dict[str, Any],
+    artifact_field: str = "supervision_artifacts",
+    receipt_policy: str = "project_theseus_moecot_exact_supervision_arrays_v1",
 ) -> Any:
     """Encode the frozen train split without truncation or hidden-field routing."""
 
@@ -632,14 +719,16 @@ def materialize_target_supervision(
     source_offset = source_token_offset(base, source_vocab)
     target_offset = target_token_offset(base, source_vocab)
     max_sequence = int((base.get("tokenization") or {}).get("max_sequence_tokens") or 0)
-    artifacts = target.get("supervision_artifacts") or {}
+    artifacts = target.get(artifact_field) or {}
     selected = [
         (key, row)
         for key, row in artifacts.items()
         if key == "private_train" or str(key).endswith(":private_train")
     ]
     if not selected:
-        raise ValueError(f"target has no frozen supervision train artifact: {target['target_id']}")
+        raise ValueError(
+            f"target has no frozen {artifact_field} train artifact: {target['target_id']}"
+        )
 
     sequences: list[list[int]] = []
     mask_starts: list[int] = []
@@ -714,7 +803,7 @@ def materialize_target_supervision(
         (mask == 1) & ((labels == byte_begin_id) | (labels == byte_end_id))
     ] = float(config["training"]["byte_boundary_loss_weight"])
     receipt = {
-        "policy": "project_theseus_moecot_exact_supervision_arrays_v1",
+        "policy": receipt_policy,
         "target_id": target["target_id"],
         "artifacts": artifact_receipts,
         "row_count": len(sequences),
@@ -1069,6 +1158,7 @@ def train_target(
     nn: Any,
     optim: Any,
     mlx_utils: Any,
+    source_conditioned_stage: Any | None = None,
     supervision_stage: Any | None = None,
 ) -> dict[str, Any]:
     target_id = str(target["target_id"])
@@ -1109,10 +1199,32 @@ def train_target(
         if sft_positions
         else 0
     )
-    schedule = build_schedule(optim, mx, training, planned_steps + sft_planned_steps + 128)
+    unique_source_positions = (
+        int(source_conditioned_stage.mask.sum())
+        if source_conditioned_stage is not None
+        else 0
+    )
+    source_repetitions = int(training.get("source_conditioned_optimizer_repetitions") or 1)
+    source_positions = unique_source_positions * source_repetitions
+    source_planned_steps = (
+        required_steps(
+            source_conditioned_stage.mask,
+            int(training["batch_size"]),
+            source_positions,
+        )
+        if source_positions
+        else 0
+    )
+    schedule = build_schedule(
+        optim,
+        mx,
+        training,
+        planned_steps + source_planned_steps + sft_planned_steps + 128,
+    )
     optimizer = optim.AdamW(learning_rate=schedule, weight_decay=float(training["weight_decay"]))
     prior_steps = 0
     prior_pretrain_positions = 0
+    prior_source_positions = 0
     prior_sft_positions = 0
     prior_checkpoint_hash = ""
     if resume:
@@ -1123,13 +1235,21 @@ def train_target(
         mx.eval(model.parameters(), optimizer.state)
         prior_steps = int(prior.get("optimizer_steps") or 0)
         prior_pretrain_positions = int(prior.get("pretrain_optimizer_positions") or 0)
+        prior_source_positions = int(
+            prior.get("source_conditioned_optimizer_positions") or 0
+        )
         prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
         prior_checkpoint_hash = sha256_file(checkpoint)
     remaining_positions = max(
         0, int(target["unique_target_positions"]) - prior_pretrain_positions
     )
     remaining_sft_positions = max(0, sft_positions - prior_sft_positions)
-    allowed_steps = max_steps if max_steps else planned_steps + sft_planned_steps + 128
+    remaining_source_positions = max(0, source_positions - prior_source_positions)
+    allowed_steps = (
+        max_steps
+        if max_steps
+        else planned_steps + source_planned_steps + sft_planned_steps + 128
+    )
     temporary_checkpoint = checkpoint.with_name("weights.partial.npz")
     heartbeat = checkpoint.parent / "training_heartbeat.json"
     started = time.perf_counter()
@@ -1167,6 +1287,50 @@ def train_target(
         optim=optim,
     )
     used_steps = int(pretrain_phase["optimizer_steps"])
+    source_conditioned_phase = {
+        "phase": f"moecot_source_conditioned_pretraining:{target_id}",
+        "optimizer_steps": 0,
+        "target_positions_consumed": 0,
+        "target_positions_requested": remaining_source_positions,
+        "mean_loss": None,
+        "final_loss": None,
+    }
+    if (
+        source_conditioned_stage is not None
+        and remaining_source_positions > 0
+        and used_steps < allowed_steps
+    ):
+        source_conditioned_phase = train_phase(
+            model,
+            optimizer,
+            loss_and_grad,
+            source_conditioned_stage.inputs,
+            source_conditioned_stage.labels,
+            source_conditioned_stage.loss_mask,
+            progress_mask=source_conditioned_stage.mask,
+            ordered_plan_loss_weight=1.0,
+            sample_weights=None,
+            plan_labels=None,
+            plan_label_mode="none",
+            plan_auxiliary_weight=0.0,
+            plan_shuffle_seed=0,
+            plan_loss_mode="binary_multilabel",
+            plan_slot_count=0,
+            plan_factor_group_sizes=(),
+            phase_name=f"moecot_source_conditioned_pretraining:{target_id}",
+            target_positions=remaining_source_positions,
+            batch_size=int(training["batch_size"]),
+            gradient_clip=float(training["gradient_clip_norm"]),
+            seed=int(config["seed"]) + stable_int(target_id) + prior_steps + used_steps,
+            max_steps=allowed_steps - used_steps,
+            checkpoint=temporary_checkpoint,
+            checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
+            heartbeat=heartbeat,
+            global_step_offset=prior_steps + used_steps,
+            mx=mx,
+            optim=optim,
+        )
+        used_steps += int(source_conditioned_phase["optimizer_steps"])
     supervision_phase = {
         "phase": f"moecot_supervision:{target_id}",
         "optimizer_steps": 0,
@@ -1215,7 +1379,10 @@ def train_target(
     total_sft_positions = prior_sft_positions + int(
         supervision_phase["target_positions_consumed"]
     )
-    total_positions = total_pretrain_positions + total_sft_positions
+    total_source_positions = prior_source_positions + int(
+        source_conditioned_phase["target_positions_consumed"]
+    )
+    total_positions = total_pretrain_positions + total_source_positions + total_sft_positions
     receipt = {
         "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
         "created_utc": now(),
@@ -1230,13 +1397,18 @@ def train_target(
         "optimizer_steps": total_steps,
         "optimizer_positions": total_positions,
         "pretrain_optimizer_positions": total_pretrain_positions,
+        "source_conditioned_optimizer_positions": total_source_positions,
         "supervision_optimizer_positions": total_sft_positions,
         "unique_target_positions": int(target["unique_target_positions"]),
+        "unique_source_conditioned_target_positions": unique_source_positions,
+        "source_conditioned_optimizer_target_positions": source_positions,
+        "source_conditioned_optimizer_repetitions": source_repetitions,
         "unique_supervision_target_positions": unique_sft_positions,
         "supervision_optimizer_target_positions": sft_positions,
         "supervision_optimizer_repetitions": sft_repetitions,
         "complete": (
             total_pretrain_positions >= int(target["unique_target_positions"])
+            and total_source_positions >= source_positions
             and total_sft_positions >= sft_positions
         ),
         "checkpoint": relative(checkpoint),
@@ -1247,8 +1419,14 @@ def train_target(
         "resume_base_checkpoint_sha256": prior_checkpoint_hash,
         "phases": {
             "pretraining": pretrain_phase,
+            "source_conditioned_pretraining": source_conditioned_phase,
             "supervision": supervision_phase,
         },
+        "source_conditioned_stage": (
+            source_conditioned_stage.receipt
+            if source_conditioned_stage is not None
+            else None
+        ),
         "supervision_stage": (
             supervision_stage.receipt if supervision_stage is not None else None
         ),
@@ -1315,6 +1493,7 @@ def plan_sha256(
     metadata: dict[str, Any],
     models: dict[str, Any],
     supervision: dict[str, Any],
+    source_conditioned: dict[str, Any],
 ) -> str:
     training_artifacts = {
         key: value
@@ -1337,6 +1516,8 @@ def plan_sha256(
         "arm_views": ((metadata.get("summary") or {}).get("canonical_pretrain_stage") or {}).get("arm_views"),
         "models": models,
         "supervision_training_artifacts": training_artifacts,
+        "source_conditioned_training_artifacts": source_conditioned.get("artifacts")
+        or {},
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
@@ -1371,6 +1552,15 @@ def validate_config(config: dict[str, Any]) -> None:
         training.get("maximum_supervision_optimizer_repetitions") or 0
     ):
         raise ValueError("supervision repetition must remain within the frozen maximum")
+    source_repetitions = int(
+        training.get("source_conditioned_optimizer_repetitions") or 1
+    )
+    if not 1 <= source_repetitions <= int(
+        training.get("maximum_source_conditioned_optimizer_repetitions") or 1
+    ):
+        raise ValueError(
+            "source-conditioned repetition must remain within the frozen maximum"
+        )
     if not 1.0 <= float(training.get("termination_loss_weight") or 0.0) <= 8.0:
         raise ValueError("termination loss weight must remain bounded")
     if not 1.0 <= float(training.get("byte_boundary_loss_weight") or 0.0) <= 8.0:

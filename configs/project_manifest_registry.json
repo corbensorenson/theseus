@@ -5120,7 +5120,7 @@
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_moecot_language_arm_training.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_language_vocabulary.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 -m pytest -q tests/test_moecot_language_arm_training.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
@@ -5129,6 +5129,7 @@
         "configs/standard_causal_transformer_survival.json",
         "scripts/moecot_language_arm_training.py",
         "scripts/moecot_language_supervision.py",
+        "scripts/moecot_source_conditioned_pretraining.py",
         "scripts/moecot_language_tokenizer.py",
         "scripts/moecot_language_vocabulary.py",
         "scripts/standard_causal_transformer_corpus.py",
@@ -5136,6 +5137,7 @@
         "scripts/standard_causal_transformer_survival.py",
         "tests/test_moecot_language_arm_training.py",
         "tests/test_moecot_language_supervision.py",
+        "tests/test_moecot_source_conditioned_pretraining.py",
         "tests/test_moecot_language_tokenizer.py",
         "tests/test_moecot_language_vocabulary.py",
         "runtime/standard_causal_transformer_survival_v1/stage_metadata_v1.json"
@@ -5144,6 +5146,7 @@
         "reports/moecot_language_arm_training.json",
         "reports/moecot_language_arm_training_rust_complete.json",
         "reports/moecot_language_supervision.json",
+        "reports/moecot_source_conditioned_pretraining.json",
         "reports/moecot_language_vocabulary.json"
       ],
       "attd_hooks": {
@@ -5170,7 +5173,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The lossless stage and licensed three-way split are GREEN. Causal, prefix-LM, 32-pass SFT, plain encoder-decoder, and post-pretraining pointer-generator Rust variants remain 0/60 development exact. Pointer generation regresses serialization to 58/60, slows training to 521 seconds plus much slower replay, and emits prompt-related fragments without source-span retention. Frozen distribution analysis shows 75.9% target-token copyability and 0.907 median current/target character similarity, while source encoder/copy weights receive no signal during causal pretraining. The next bounded repair is source-conditioned denoising pretraining over the existing permissively licensed Rust corpus before unchanged edit SFT. Confirmation remains unspent. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no capability credit."
+      "current_wall": "The lossless stage and licensed three-way split are GREEN. Causal, prefix-LM, 32-pass SFT, plain encoder-decoder, and post-pretraining pointer-generator Rust variants remain 0/60 development exact. The measured objective gap is now implemented: 4,000 deterministic licensed span-deletion reconstruction rows per code arm, with exact provenance, one supervision overlap rejected, 97.5% Rust copy coverage, plan/resume binding, and a distinct source-conditioned optimizer phase before edit SFT. The architecture/objective path has 113 focused tests and a GREEN plan; direct Rust behavior is pending. Confirmation remains unspent. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no capability credit."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

@@ -2,7 +2,7 @@
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
   "stage_dir": "runtime/standard_causal_transformer_survival_v1",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v3",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v4",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
   "vocabulary": {
@@ -53,6 +53,8 @@
     "maximum_optimizer_repetitions": 4,
     "maximum_supervision_optimizer_repetitions": 32,
     "supervision_optimizer_repetitions": 4,
+    "maximum_source_conditioned_optimizer_repetitions": 2,
+    "source_conditioned_optimizer_repetitions": 1,
     "termination_loss_weight": 4.0,
     "byte_boundary_loss_weight": 2.0
   },
@@ -163,6 +165,45 @@
     },
     "generator_visible_fields": ["prompt"],
     "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0
+  },
+  "source_conditioned_pretraining": {
+    "policy": "project_theseus_moecot_source_conditioned_pretraining_v1",
+    "stage_root": "data/training_data/moecot_source_conditioned_pretraining_v1",
+    "report": "reports/moecot_source_conditioned_pretraining.json",
+    "source_jsonl": "data/training_data/open_code_pantry/samples/open_code_samples.jsonl",
+    "seed": 20260712,
+    "rows_by_arm": {
+      "english": 0,
+      "python": 4000,
+      "javascript_typescript": 4000,
+      "html_css": 4000,
+      "rust": 4000
+    },
+    "arm_languages": {
+      "python": ["python"],
+      "javascript_typescript": ["javascript", "typescript"],
+      "html_css": ["html", "css"],
+      "rust": ["rust"]
+    },
+    "allowed_licenses": [
+      "apache-2.0",
+      "bsd-2-clause",
+      "bsd-3-clause",
+      "cc0-1.0",
+      "isc",
+      "mit",
+      "unlicense"
+    ],
+    "minimum_target_logical_tokens": 48,
+    "maximum_target_logical_tokens": 150,
+    "maximum_source_encoded_tokens": 300,
+    "maximum_target_encoded_tokens": 208,
+    "maximum_windows_per_document": 4,
+    "deletion_fraction": 0.12,
+    "maximum_deletion_spans": 3,
     "public_training_rows_written": 0,
     "external_inference_calls": 0,
     "fallback_return_count": 0

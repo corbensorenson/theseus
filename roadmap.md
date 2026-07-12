@@ -31,11 +31,11 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | causal, prefix-LM, 32-pass SFT, plain encoder-decoder, and post-pretraining pointer-generator Rust runs all score 0/60 development exact; the pointer lowers throughput and yields prompt-related fragments but not span retention | pretrain source encoder/copy weights on licensed source-conditioned denoising before unchanged edit SFT; spend confirmation only after nonzero development recovery |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | five negative Rust variants are retained; the measured source-conditioning objective gap is now implemented with 4,000 licensed denoising rows per code arm, 97.5% Rust copy coverage, plan/resume binding, and a distinct pre-SFT optimizer phase | run the frozen Rust development comparison; spend confirmation only after nonzero development recovery |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - pointer-generator remains 0/60 and regresses serialization to 58/60 when introduced only during SFT | train the source-conditioned path before SFT using licensed denoising/copy-edit objectives; require nonzero development recovery and fresh confirmation before promotion |
+| Generator capability (held-out pass) | Phase 10 | RED - pointer-generator remains 0/60 when introduced only during SFT; source-conditioned pretraining is architecture/data/gradient ready but behavior-unmeasured | run the preregistered Rust development comparison; require nonzero development recovery and fresh confirmation before promotion |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -884,6 +884,15 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   permissively licensed Rust corpus. Corpus identity, corruption seed, unique vs
   optimizer positions, overlap exclusions, copy coverage, and no-cheat counters
   must be bound. This is training-objective repair, not another decoder patch.
+- **Source-conditioned objective implementation:** the governed stage materializes
+  4,000 deterministic reconstruction rows each for Python, JS/TS, HTML/CSS, and
+  Rust from the existing row-level permissive-license pantry. It rejects public
+  payloads and exact supervision-target overlap (one observed rejection), binds
+  source hash/license/window/corruption identity, and reports 97.5% mean Rust target
+  copyability. Plan identity, controls, optimizer ordering, resume lineage, unique
+  positions, and no-cheat counters consume the stage. The source-conditioned phase
+  runs after causal pretraining and before unchanged edit SFT. This is objective
+  readiness only; Rust behavior remains unmeasured.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact

@@ -450,3 +450,64 @@ def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(tmp_pa
     assert second["optimizer_positions"] > first["optimizer_positions"]
     assert second["resume_base_checkpoint_sha256"] == first["checkpoint_sha256"]
     assert json.loads(receipt_path.read_text())["optimizer_state_sha256"] == second["optimizer_state_sha256"]
+
+
+def test_source_conditioned_phase_is_accounted_separately_before_sft(tmp_path: Path) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = tiny_config(tmp_path)
+    model = build_model(
+        CausalTransformerConfig(vocab_size=64, **config["arm_model"]), mx=mx, nn=nn
+    )
+    count = int(parameter_count(model, mlx_utils))
+    base_inputs = np.asarray([[1, 4, 5, 6]], dtype=np.int32)
+    base_stage = SimpleNamespace(
+        pretrain_inputs=base_inputs,
+        pretrain_labels=np.asarray([[4, 5, 6, 2]], dtype=np.int32),
+        pretrain_mask=np.ones_like(base_inputs, dtype=np.uint8),
+    )
+    source_stage = SimpleNamespace(
+        inputs=np.asarray([[1, 10, 2, 20], [1, 11, 2, 21]], dtype=np.int32),
+        labels=np.asarray([[10, 2, 20, 3], [11, 2, 21, 3]], dtype=np.int32),
+        mask=np.asarray([[0, 0, 1, 1], [0, 0, 1, 1]], dtype=np.uint8),
+        loss_mask=np.asarray([[0, 0, 1, 1], [0, 0, 1, 1]], dtype=np.float32),
+        receipt={"policy": "project_theseus_moecot_source_conditioned_arrays_v1"},
+    )
+    checkpoint = tmp_path / "checkpoints" / "rust" / "weights.npz"
+    target = {
+        "target_id": "rust",
+        "role": "language_arm",
+        "row_ranges": [{"start": 0, "stop": 1}],
+        "unique_target_positions": 0,
+        "model": config["arm_model"],
+        "parameter_count": count,
+        "checkpoint": str(checkpoint),
+        "optimizer_state": str(checkpoint.parent / "optimizer.safetensors"),
+        "receipt": str(checkpoint.parent / "training_receipt.json"),
+    }
+    plan = {
+        "plan_sha256": "c" * 64,
+        "stage": {"stage_signature": "stage-c", "metadata_sha256": "d" * 64},
+        "models": {"vocab_size": 64},
+    }
+    result = train_target(
+        config,
+        plan,
+        target,
+        stage=base_stage,
+        source_conditioned_stage=source_stage,
+        max_steps=1,
+        resume=False,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+    )
+    assert result["pretrain_optimizer_positions"] == 0
+    assert result["source_conditioned_optimizer_positions"] == 4
+    assert result["supervision_optimizer_positions"] == 0
+    assert result["phases"]["source_conditioned_pretraining"]["optimizer_steps"] == 1
+    assert result["source_conditioned_stage"]["policy"].endswith("arrays_v1")

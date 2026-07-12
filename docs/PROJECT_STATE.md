@@ -112,8 +112,11 @@ share toward zero. Public benchmarks are calibration only.
   and slower beam replay. Samples use isolated prompt tokens but do not retain
   spans. Frozen distribution analysis shows 75.9% target-token copyability and
   0.907 median current/target character similarity on development. The next repair
-  is source-conditioned denoising pretraining from the existing licensed Rust
-  corpus so encoder/copy weights learn before edit SFT; confirmation remains unspent.
+  is now implemented as source-conditioned denoising pretraining from the existing
+  licensed code corpus: 4,000 rows per code arm, exact provenance and corruption
+  identity, one supervision overlap rejected, 97.5% Rust copy coverage, and a
+  separately accounted phase before edit SFT. The plan and 113 focused tests are
+  GREEN; Rust behavior remains unmeasured and confirmation remains unspent.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
