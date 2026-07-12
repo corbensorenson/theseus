@@ -25,6 +25,7 @@ from moecot_language_arm_training import (  # noqa: E402
     materialize_target_supervision,
     range_view,
     serialization_valid_local_ids,
+    should_evaluate_target,
     train_target,
     validate_config,
     validate_resume,
@@ -177,6 +178,13 @@ def test_config_rejects_capability_credit_and_hidden_fallback(tmp_path: Path) ->
     config["boundaries"]["hidden_generalist_fallback"] = "allowed"
     with pytest.raises(ValueError, match="hidden generalist"):
         validate_config(config)
+
+
+def test_only_executable_compositions_receive_direct_evaluation() -> None:
+    assert should_evaluate_target({"role": "language_expert"}) is True
+    assert should_evaluate_target({"role": "dense_control"}) is True
+    assert should_evaluate_target({"role": "shared_trunk"}) is False
+    assert should_evaluate_target({"role": ""}) is False
 
 
 def test_range_view_coalesces_adjacent_ranges_without_copy() -> None:

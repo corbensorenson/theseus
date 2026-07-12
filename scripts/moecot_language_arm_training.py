@@ -715,7 +715,7 @@ def execute_targets(
                 optim=optim,
                 mlx_utils=mlx_utils,
             )
-        if result.get("complete"):
+        if result.get("complete") and should_evaluate_target(target):
             result["evaluation"] = evaluate_target(
                 config,
                 base,
@@ -738,6 +738,13 @@ def execute_targets(
         "all_requested_targets_complete": bool(results) and all(row.get("complete") for row in results),
         **no_cheat(config),
     }
+
+
+def should_evaluate_target(target: dict[str, Any]) -> bool:
+    """Only executable model compositions receive direct behavior evaluation."""
+
+    role = str(target.get("role") or "")
+    return role in {"language_expert", "dense_control"}
 
 
 def materialize_target_supervision(
