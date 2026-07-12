@@ -1,0 +1,77 @@
+{
+  "policy": "project_theseus_moecot_language_arm_training_v1",
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "stage_dir": "runtime/standard_causal_transformer_survival_v1",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v1",
+  "report": "reports/moecot_language_arm_training.json",
+  "seed": 20260712,
+  "arm_model": {
+    "d_model": 96,
+    "num_layers": 4,
+    "num_heads": 4,
+    "num_kv_heads": 1,
+    "ff_dim": 288,
+    "rope_base": 10000.0,
+    "rms_norm_eps": 0.00001,
+    "attention_policy": "causal",
+    "source_target_separator_token_id": 2
+  },
+  "controls": {
+    "dense_total_parameter": {
+      "model_source": "base_config",
+      "data_view": "mixed_dense_control",
+      "purpose": "approximately match total MoECOT arm parameters while exposing the total-parameter control to the same unique system positions"
+    },
+    "dense_active_parameter": {
+      "model_source": "arm_model",
+      "data_view": "mixed_dense_control",
+      "purpose": "match one active arm parameter count while exposing one dense model to the same unique system positions"
+    }
+  },
+  "training": {
+    "batch_size": 16,
+    "learning_rate": 0.0003,
+    "min_learning_rate": 0.00003,
+    "warmup_steps": 120,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "checkpoint_every_steps": 500,
+    "maximum_optimizer_repetitions": 4
+  },
+  "comparison_contract": {
+    "policy": "project_theseus_moecot_dense_falsification_comparison_v1",
+    "preregistered_before_training": true,
+    "required_views": [
+      "equal_unique_system_positions_total_parameter_control",
+      "equal_active_parameters_active_compute_control"
+    ],
+    "required_metrics": [
+      "direct_family_disjoint_verifier_pass_rate",
+      "direct_answer_utility",
+      "arm_behavior_by_language",
+      "routing_accuracy",
+      "composition_success_and_failure",
+      "total_parameters",
+      "active_parameters_per_request",
+      "unique_positions",
+      "optimizer_positions",
+      "estimated_parameter_token_product",
+      "wall_seconds",
+      "peak_memory_bytes",
+      "energy_joules_when_available",
+      "verifier_and_search_budget"
+    ],
+    "adoption_rule": "MoECOT may become default only if it has nonzero direct model-only behavior, does not regress any required language arm below its frozen floor, and beats or Pareto-dominates both dense controls without selecting a favorable accounting view after results are known.",
+    "falsification_rule": "If either dense control wins repeated frozen direct-behavior comparisons, retain the result and route the practical assistant through the winning dense architecture.",
+    "route_success_is_answer_success": false,
+    "assisted_output_is_model_only_output": false
+  },
+  "boundaries": {
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "templates_renderers_routers_tools_credit": 0,
+    "hidden_generalist_fallback": "forbidden",
+    "runtime_serving_allowed": false
+  }
+}

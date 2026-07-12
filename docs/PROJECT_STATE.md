@@ -34,9 +34,9 @@ share toward zero. Public benchmarks are calibration only.
   13,257,091 HTML/CSS, 57,626,478 Rust, and 3,881,800 other code. Generated,
   vendored, minified, decode-damaged, low-diversity, and invalid sources receive no
   credit. Every total/domain/language/evidence minimum still passes.
-- **Immediate dependency:** finish exact per-arm MLX model/optimizer/checkpoint
-  consumers over the quality-filtered 132,464,640-position stage and preregister the
-  five-arm-versus-dense comparison before capability training.
+- **Immediate dependency:** complete bounded pretraining for the now independently
+  checkpointed five MLX arms and two dense controls, then add language-appropriate
+  direct family-disjoint evaluation before any amplifier or public calibration.
 
 ## Evidence Boundaries
 
@@ -78,9 +78,11 @@ share toward zero. Public benchmarks are calibration only.
   on the clean model-only wall.
 - **Octopus/MoECOT:** the seed contract now defines separate English, Python, JS/TS,
   HTML/CSS, and Rust weights/data/checkpoint lifecycles and typed single, sequential,
-  parallel, verification, and adjudicated routes. Arm training and live composition
-  remain the immediate implementation wall; route success cannot count as answer
-  success and hidden generalist fallback is forbidden.
+  parallel, verification, and adjudicated routes. All five 1.211M-parameter arms,
+  the 6.623M total-control, and the 1.211M active-control have distinct bounded MLX
+  model/optimizer receipts; Python resume is content-bound and replayed. All remain
+  incomplete and `NOT_EVALUATED`. Route success cannot count as answer success and
+  hidden generalist fallback is forbidden.
 - **Deterministic tools:** exact tools are evidence-producing instruments, not learned
   generation. `UNKNOWN`, `UNSOLVED`, and typed faults are preferred to fabricated
   answers.
@@ -99,6 +101,9 @@ share toward zero. Public benchmarks are calibration only.
 
 - The current dense checkpoint is developmental, non-routeable, and retained only as
   the mixed falsification control.
+- The frozen comparison reports equal-unique-position/total-parameter and
+  equal-active-parameter/active-compute views together. Neither accounting view may
+  be selected after results are known.
 - A corrected causal-transformer training/evaluation contract enforces transitive
   family-disjoint lineage, target-independent interfaces, source/target vocabulary
   separation, content binding, and decode-ABI checks.
@@ -160,10 +165,10 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Finish the independently checkpointed English, Python, JS/TS, HTML/CSS, and Rust MLX
-arm consumers over the GREEN 247,908,698-position quality-filtered corpus and retain
-the 6.6M mixed dense model as the matched control. Freeze arm/router/composition/
-answer metrics before training. Success requires durable provenance, heldout lineage,
-nonzero independently verified arm behavior, and an honest modular-versus-dense
-verdict. If those conditions fail, retain the falsification; do not hide it with
-routing accuracy, another auxiliary head, or a nearby green report.
+Complete bounded English, Python, JS/TS, HTML/CSS, Rust, total-control, and
+active-control pretraining under the frozen plan. Then add arm-specific supervised
+and direct family-disjoint evaluation contracts. Success requires durable
+provenance, heldout lineage, nonzero independently verified arm behavior, and an
+honest two-view modular-versus-dense verdict. If those conditions fail, retain the
+falsification; do not hide it with routing accuracy, loss, another auxiliary head,
+or a nearby green report.

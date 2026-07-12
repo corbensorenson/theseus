@@ -145,7 +145,7 @@
     {
       "id": "T2_private_training_smoke",
       "title": "Private Training Smoke",
-      "status": "ready",
+      "status": "completed",
       "goal": "Run short MLX smokes for each independent language arm and the matched mixed dense control, proving separate optimizer/checkpoint lineage, VCM/context ABI, and no-cheat counters before longer rungs.",
       "entry_criteria": [
         "T1 manifest passes",
@@ -153,6 +153,8 @@
         "all five arm contracts and the dense-control digest target are recorded"
       ],
       "required_gates": [
+        "python3 scripts/moecot_language_arm_training.py",
+        "python3 -m pytest -q tests/test_moecot_language_arm_training.py",
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "python3 scripts/strict_generator_mlx_pretraining_probe.py --help"
@@ -174,6 +176,8 @@
         "deterministic tool outputs as learned-generation targets"
       ],
       "evidence_outputs": [
+        "reports/moecot_language_arm_training.json",
+        "checkpoints/moecot_language_seed_v1/*/training_receipt.json",
         "reports/strict_generator_mlx_pretraining_probe_*.json",
         "reports/resource_mlx_route_readiness_gate.json",
         "reports/neural_seed_survival_readiness_gate.json"
@@ -188,7 +192,8 @@
       "rollback_or_stop": "Delete or quarantine checkpoint if any no-cheat counter is nonzero or checkpoint provenance is missing.",
       "no_claims": [
         "loss improvement alone is not capability progress",
-        "smoke does not authorize public calibration"
+        "smoke does not authorize public calibration",
+        "all seven checkpoints are incomplete and capability_claim is NOT_EVALUATED"
       ]
     },
     {

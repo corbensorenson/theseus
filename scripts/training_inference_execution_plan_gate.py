@@ -38,7 +38,7 @@ DEFAULT_CURRENT_REPORTS = {
     "training_data_admission": REPORTS / "training_data_admission_v1.json",
     "neural_seed_survival": REPORTS / "neural_seed_survival_readiness_gate.json",
     "resource_mlx_route": REPORTS / "resource_mlx_route_readiness_gate.json",
-    "t2_private_training_smoke": REPORTS / "strict_generator_mlx_pretraining_probe_t2_private_smoke_20260706.json",
+    "t2_private_training_smoke": REPORTS / "moecot_language_arm_training.json",
     "assistant_product_lane": REPORTS / "theseus_assistant_product_lane_gate.json",
     "public_calibration_proposal": REPORTS / "public_calibration_proposal_gate.json",
 }
@@ -74,6 +74,7 @@ REQUIRED_LANES = [
 
 ALLOWED_LANE_STATES = {
     "ready",
+    "completed",
     "planned",
     "blocked_until_private_quality_positive",
     "blocked_external_peers_unreachable",
@@ -427,6 +428,49 @@ def check_current_t2_training_smoke_if_present(current: dict[str, dict[str, Any]
     smoke = current["t2_private_training_smoke"]
     if not smoke:
         return check("current_t2_private_training_smoke_if_present", True, {"present": False, "state": "not_yet_run"})
+    if smoke.get("policy") == "project_theseus_moecot_language_arm_training_plan_v1":
+        inventory = dict_value(smoke.get("checkpoint_inventory"))
+        rows = list_dicts(inventory.get("rows"))
+        counters = {
+            "public_training_rows_written": int_value(smoke.get("public_training_rows_written")),
+            "external_inference_calls": int_value(smoke.get("external_inference_calls")),
+            "fallback_return_count": int_value(smoke.get("fallback_return_count")),
+            "templates_renderers_routers_tools_credit": int_value(
+                smoke.get("templates_renderers_routers_tools_credit")
+            ),
+        }
+        faults = {}
+        if smoke.get("trigger_state") != "GREEN":
+            faults["trigger_state"] = smoke.get("trigger_state")
+        if inventory.get("state") != "GREEN" or inventory.get("all_targets_smoke_ready") is not True:
+            faults["checkpoint_inventory"] = inventory.get("state")
+        if int_value(inventory.get("valid_smoke_count")) != 7 or len(rows) != 7:
+            faults["target_count"] = {"valid": inventory.get("valid_smoke_count"), "rows": len(rows)}
+        if int_value(inventory.get("distinct_checkpoint_digest_count")) != 7:
+            faults["checkpoint_digests_not_distinct"] = inventory.get("distinct_checkpoint_digest_count")
+        if int_value(inventory.get("distinct_optimizer_digest_count")) != 7:
+            faults["optimizer_digests_not_distinct"] = inventory.get("distinct_optimizer_digest_count")
+        if any(int_value(row.get("optimizer_steps")) <= 0 for row in rows):
+            faults["missing_optimizer_steps"] = [row.get("target_id") for row in rows if int_value(row.get("optimizer_steps")) <= 0]
+        if any(row.get("capability_claim") != "NOT_EVALUATED" for row in rows):
+            faults["smoke_overclaims_capability"] = True
+        dirty = {key: value for key, value in counters.items() if value}
+        if dirty:
+            faults["no_cheat_counts"] = dirty
+        return check(
+            "current_t2_private_training_smoke_clean_when_present",
+            not faults,
+            {
+                "present": True,
+                "format": "five_arm_two_control_mlx_smoke_v1",
+                "faults": faults,
+                "valid_smoke_count": inventory.get("valid_smoke_count"),
+                "distinct_checkpoint_digest_count": inventory.get("distinct_checkpoint_digest_count"),
+                "distinct_optimizer_digest_count": inventory.get("distinct_optimizer_digest_count"),
+                "no_cheat_counts": counters,
+                "capability_claim": inventory.get("capability_claim"),
+            },
+        )
     checkpoint = str(smoke.get("checkpoint") or "")
     vocab = str(smoke.get("vocab") or "")
     training_plan = dict_value(smoke.get("training_plan"))
@@ -719,6 +763,8 @@ def compact_report(report: dict[str, Any]) -> dict[str, Any]:
             continue
         if isinstance(value, (str, int, float, bool)) or value is None:
             compact[key] = value
+    if report.get("policy") == "project_theseus_moecot_language_arm_training_plan_v1":
+        compact["checkpoint_inventory"] = dict_value(report.get("checkpoint_inventory"))
     return compact
 
 

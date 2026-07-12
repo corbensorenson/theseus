@@ -29,9 +29,9 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | quality-filtered canonical receipt and exact 132.46M-position five-arm/dense-control stage are `GREEN` | bind independent MLX arm trainers to the immutable arm ranges; licensed English + requested code families are primary and live teacher rows remain sparse residual pressure |
+| Data engine + curriculum | Track 0 / Phase 7 | quality-filtered receipt, exact 132.46M-position stage, and seven-target MLX checkpoint smoke are `GREEN` | run bounded complete arm/control pretraining; licensed English + requested code families remain primary and teacher rows remain sparse residual pressure |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | intended topology now explicit; per-arm trainer/checkpoint views not yet wired | implement English, Python, JS/TS, HTML/CSS, and Rust arms with independent weights/data/lineage plus governed Octopus routing and typed composition before capability training |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | five independent MLX arms plus total- and active-parameter dense controls pass checkpoint/optimizer/resume smoke; capability unevaluated | complete bounded pretraining, add arm-specific supervised/eval contracts, then run the frozen two-view architecture comparison before routing adoption |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
@@ -815,6 +815,18 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   existing clean 6.6M MLX causal transformer remains the mixed dense falsification
   control. No arm or control receives promotion without direct family-disjoint
   behavior; route correctness, loss, or syntax alone cannot adopt a checkpoint.
+- **Trainer/checkpoint status:** `moecot_language_arm_training` now binds the five
+  immutable arm ranges to independent 1,211,520-parameter MLX models and binds both
+  a 6,623,232-parameter total-control and a 1,211,520-parameter active-control.
+  All seven bounded smokes write distinct model and optimizer digests; Python also
+  replays an exact content-bound resume. The five arms total 6,057,600 parameters,
+  8.54% below the total-control. This is T2 training-substrate evidence only: every
+  checkpoint is incomplete and carries `capability_claim=NOT_EVALUATED`.
+- **Frozen comparison:** report equal-unique-position/total-parameter and
+  equal-active-parameter/active-compute views together. MoECOT cannot be adopted by
+  choosing the favorable accounting view after results are known; it must show
+  nonzero direct behavior, avoid arm-floor regressions, and beat or Pareto-dominate
+  both controls. A dense win is retained as falsification, not routed around.
 - **Frozen scaling decision:** the selected rung is exactly 6,623,232 active
   parameters with a 132,464,640 unique-position floor and maximum 4x optimizer
   repetition. The canonical materializer credits 247,908,698 quality-filtered unique positions under
