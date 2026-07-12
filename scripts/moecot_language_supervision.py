@@ -50,6 +50,12 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("supervision train arm set/order mismatch")
     if tuple((cfg.get("heldout_rows_by_arm") or {}).keys()) != ARM_IDS:
         raise ValueError("supervision heldout arm set/order mismatch")
+    if tuple((cfg.get("development_rows_by_arm") or {}).keys()) != ARM_IDS:
+        raise ValueError("supervision development arm set/order mismatch")
+    if int((cfg.get("split_contract") or {}).get("development_remainder") or -1) == int(
+        (cfg.get("split_contract") or {}).get("heldout_remainder") or 0
+    ):
+        raise ValueError("development and heldout split remainders must be distinct")
     if (cfg.get("code_source") or {}).get("revision") != "fc56fe33c030c6daa414c2b112c932b8eed085e6":
         raise ValueError("CommitPackFT revision is not frozen")
     if (cfg.get("english_source") or {}).get("revision") != "bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a":
@@ -87,6 +93,7 @@ def materialize(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     selectors = {
         arm: {
             "private_train": BoundedRows(int(cfg["train_rows_by_arm"][arm])),
+            "private_dev": BoundedRows(int(cfg["development_rows_by_arm"][arm])),
             "private_eval": BoundedRows(int(cfg["heldout_rows_by_arm"][arm])),
         }
         for arm in ARM_IDS
@@ -140,13 +147,13 @@ def materialize(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     target_hash_sets: dict[str, set[str]] = {}
     for arm in ARM_IDS:
         row_counts[arm] = {}
-        for split in ("private_train", "private_eval"):
+        for split in ("private_train", "private_dev", "private_eval"):
             rows = selectors[arm][split].rows()
-            wanted = int(
-                cfg["train_rows_by_arm"][arm]
-                if split == "private_train"
-                else cfg["heldout_rows_by_arm"][arm]
-            )
+            wanted = int({
+                "private_train": cfg["train_rows_by_arm"],
+                "private_dev": cfg["development_rows_by_arm"],
+                "private_eval": cfg["heldout_rows_by_arm"],
+            }[split][arm])
             path = root / split / f"{arm}.jsonl"
             write_jsonl_atomic(path, rows)
             key = f"{arm}:{split}"
@@ -234,10 +241,12 @@ def admit_row(
     split_digest = sha256_text(f"{cfg['split_seed']}\n{row['arm_id']}\n{row['prompt_sha256']}")
     digest = sha256_text(f"{split_digest}\n{row['source_identity']}\n{row['target_sha256']}")
     split_cfg = cfg["split_contract"]
+    remainder = int(split_digest[:16], 16) % int(split_cfg["heldout_modulus"])
     split = (
         "private_eval"
-        if int(split_digest[:16], 16) % int(split_cfg["heldout_modulus"])
-        == int(split_cfg["heldout_remainder"])
+        if remainder == int(split_cfg["heldout_remainder"])
+        else "private_dev"
+        if remainder == int(split_cfg["development_remainder"])
         else "private_train"
     )
     row["split"] = split
@@ -467,8 +476,11 @@ def split_overlap(
     prompt_overlaps: set[str] = set()
     target_overlaps: set[str] = set()
     for arm in ARM_IDS:
-        prompt_overlaps |= prompts[f"{arm}:private_train"] & prompts[f"{arm}:private_eval"]
-        target_overlaps |= targets[f"{arm}:private_train"] & targets[f"{arm}:private_eval"]
+        splits = ("private_train", "private_dev", "private_eval")
+        for left_index, left in enumerate(splits):
+            for right in splits[left_index + 1 :]:
+                prompt_overlaps |= prompts[f"{arm}:{left}"] & prompts[f"{arm}:{right}"]
+                target_overlaps |= targets[f"{arm}:{left}"] & targets[f"{arm}:{right}"]
     return {
         "policy": "project_theseus_moecot_supervision_split_overlap_v1",
         "prompt_overlap_count": len(prompt_overlaps),
@@ -488,6 +500,7 @@ def validate_manifest(payload: dict[str, Any], cfg: dict[str, Any], root: Path) 
     for arm in ARM_IDS:
         for split, wanted in (
             ("private_train", int(cfg["train_rows_by_arm"][arm])),
+            ("private_dev", int(cfg["development_rows_by_arm"][arm])),
             ("private_eval", int(cfg["heldout_rows_by_arm"][arm])),
         ):
             key = f"{arm}:{split}"

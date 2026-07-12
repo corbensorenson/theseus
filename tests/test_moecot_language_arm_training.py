@@ -22,6 +22,7 @@ from moecot_language_arm_training import (  # noqa: E402
     generate_model_text,
     materialize_target_supervision,
     range_view,
+    serialization_valid_local_ids,
     train_target,
     validate_config,
     validate_resume,
@@ -75,8 +76,18 @@ def tiny_config(tmp_path: Path) -> dict:
             "gradient_clip_norm": 1.0,
             "checkpoint_every_steps": 1,
             "maximum_optimizer_repetitions": 4,
+            "supervision_optimizer_repetitions": 4,
+            "termination_loss_weight": 4.0,
+            "byte_boundary_loss_weight": 2.0,
         },
         "comparison_contract": {"preregistered_before_training": True},
+        "evaluation": {
+            "policy": "project_theseus_moecot_direct_model_only_evaluation_v1",
+            "beam_width": 2,
+            "branching_factor": 2,
+            "target_visible_to_generator": False,
+            "templates_renderers_routers_tools_allowed": False,
+        },
         "boundaries": {
             "public_training_rows_written": 0,
             "external_inference_calls": 0,
@@ -183,8 +194,14 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
     base = {
         "tokenization": {"max_sequence_tokens": 32, "shared_source_target_vocabulary": False}
     }
+    training_config = {
+        "training": {"termination_loss_weight": 4.0, "byte_boundary_loss_weight": 2.0}
+    }
     stage = materialize_target_supervision(
-        {}, base, target, metadata={"source_vocab": source_vocab, "target_vocab": target_vocab}
+        training_config,
+        base,
+        target,
+        metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
     )
     separator = int(np.flatnonzero(stage.inputs[0] == 2)[0])
     supervised = np.flatnonzero(stage.mask[0])
@@ -192,11 +209,15 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
     assert stage.receipt["source_truncation_count"] == 0
     assert stage.receipt["target_truncation_count"] == 0
     assert stage.receipt["public_training_rows_written"] == 0
+    assert stage.receipt["weighted_loss_positions"] > stage.receipt["target_positions"]
 
     base["tokenization"]["max_sequence_tokens"] = 4
     with pytest.raises(ValueError, match="requires truncation"):
         materialize_target_supervision(
-            {}, base, target, metadata={"source_vocab": source_vocab, "target_vocab": target_vocab}
+            training_config,
+            base,
+            target,
+            metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
         )
 
 
@@ -205,6 +226,24 @@ def test_generation_api_cannot_receive_hidden_target() -> None:
     assert "prompt" in parameters
     assert "target" not in parameters
     assert "expected" not in parameters
+
+
+def test_byte_span_grammar_never_forces_completion_or_allows_invalid_tokens() -> None:
+    inverse = {
+        0: "<pad>",
+        1: "<unk>",
+        2: "<bos>",
+        3: "<eos>",
+        4: "text",
+        5: "<target_token_bytes>",
+        6: "</target_token_bytes>",
+        7: "<byte:61>",
+    }
+    outside = serialization_valid_local_ids([], inverse)
+    assert 3 in outside and 4 in outside and 5 in outside
+    assert 6 not in outside and 7 not in outside
+    inside = serialization_valid_local_ids(["<target_token_bytes>"], inverse)
+    assert set(inside) == {6, 7}
 
 
 def test_resume_rejects_tampered_checkpoint_optimizer_and_plan(tmp_path: Path) -> None:

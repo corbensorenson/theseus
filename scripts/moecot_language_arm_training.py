@@ -327,13 +327,13 @@ def target_contracts(
             "supervision_artifacts": (
                 {
                     split: supervision_audit["artifacts"].get(f"{target}:{split}")
-                    for split in ("private_train", "private_eval")
+                    for split in ("private_train", "private_dev", "private_eval")
                 }
                 if target in ARM_IDS
                 else {
                     f"{arm}:{split}": supervision_audit["artifacts"].get(f"{arm}:{split}")
                     for arm in ARM_IDS
-                    for split in ("private_train", "private_eval")
+                    for split in ("private_train", "private_dev", "private_eval")
                 }
             ),
         }
@@ -448,6 +448,7 @@ def audit_supervision_stage(
     for arm in ARM_IDS:
         for split, wanted in (
             ("private_train", int((cfg.get("train_rows_by_arm") or {}).get(arm) or 0)),
+            ("private_dev", int((cfg.get("development_rows_by_arm") or {}).get(arm) or 0)),
             ("private_eval", int((cfg.get("heldout_rows_by_arm") or {}).get(arm) or 0)),
         ):
             key = f"{arm}:{split}"
@@ -638,12 +639,25 @@ def materialize_target_supervision(
         inputs[index, :width] = sequence[:-1]
         labels[index, :width] = sequence[1:]
         mask[index, mask_start:width] = 1
+    loss_mask = mask.astype(np.float32)
+    termination_id = target_offset + int(target_vocab["<eos>"])
+    byte_begin_id = target_offset + int(target_vocab[TARGET_BYTE_BEGIN])
+    byte_end_id = target_offset + int(target_vocab[TARGET_BYTE_END])
+    loss_mask[(mask == 1) & (labels == termination_id)] = float(
+        config["training"]["termination_loss_weight"]
+    )
+    loss_mask[
+        (mask == 1) & ((labels == byte_begin_id) | (labels == byte_end_id))
+    ] = float(config["training"]["byte_boundary_loss_weight"])
     receipt = {
         "policy": "project_theseus_moecot_exact_supervision_arrays_v1",
         "target_id": target["target_id"],
         "artifacts": artifact_receipts,
         "row_count": len(sequences),
         "target_positions": int(mask.sum()),
+        "weighted_loss_positions": float(loss_mask.sum()),
+        "termination_loss_weight": float(config["training"]["termination_loss_weight"]),
+        "byte_boundary_loss_weight": float(config["training"]["byte_boundary_loss_weight"]),
         "sequence_width": max_sequence,
         "content_digest": hashlib.sha256("\n".join(row_hashes).encode()).hexdigest(),
         "generator_visible_fields": ["prompt"],
@@ -654,7 +668,13 @@ def materialize_target_supervision(
         "external_inference_calls": 0,
         "fallback_return_count": 0,
     }
-    return SimpleNamespace(inputs=inputs, labels=labels, mask=mask, receipt=receipt)
+    return SimpleNamespace(
+        inputs=inputs,
+        labels=labels,
+        mask=mask,
+        loss_mask=loss_mask,
+        receipt=receipt,
+    )
 
 
 def evaluate_target(
@@ -666,6 +686,7 @@ def evaluate_target(
     metadata: dict[str, Any],
     mx: Any,
     nn: Any,
+    split: str = "private_dev",
 ) -> dict[str, Any]:
     """Evaluate frozen rows while keeping answers outside the generation call."""
 
@@ -687,17 +708,26 @@ def evaluate_target(
     selected = [
         (key, row)
         for key, row in artifacts.items()
-        if key == "private_eval" or str(key).endswith(":private_eval")
+        if key == split or str(key).endswith(f":{split}")
     ]
     rows: list[dict[str, Any]] = []
+    evaluation_artifacts: list[dict[str, Any]] = []
     for key, artifact in selected:
         path = resolve(str((artifact or {}).get("path") or ""))
         if not path.is_file() or sha256_file(path) != str((artifact or {}).get("sha256") or ""):
             raise ValueError(f"evaluation artifact identity mismatch: {key}")
+        evaluation_artifacts.append(
+            {
+                "key": key,
+                "path": relative(path),
+                "sha256": str(artifact["sha256"]),
+                "row_count": int(artifact["row_count"]),
+            }
+        )
         with path.open(encoding="utf-8") as handle:
             for line in handle:
                 row = json.loads(line)
-                if row.get("split") != "private_eval" or row.get("public_benchmark") is not False:
+                if row.get("split") != split or row.get("public_benchmark") is not False:
                     raise ValueError(f"invalid evaluation boundary: {key}")
                 generated, generation = generate_model_text(
                     model,
@@ -709,6 +739,9 @@ def evaluate_target(
                     max_source_tokens=int(
                         config["supervision"]["maximum_source_encoded_tokens"]
                     ),
+                    beam_width=int(config["evaluation"]["beam_width"]),
+                    branching_factor=int(config["evaluation"]["branching_factor"]),
+                    length_penalty=float(config["evaluation"]["length_penalty"]),
                     mx=mx,
                 )
                 expected = str(row.get("target") or "")
@@ -720,7 +753,11 @@ def evaluate_target(
                         "prompt_sha256": row.get("prompt_sha256"),
                         "expected_sha256": row.get("target_sha256"),
                         "generated_sha256": hashlib.sha256(generated.encode()).hexdigest(),
-                        "exact_match": generated == expected,
+                        "exact_match": (
+                            generated == expected
+                            and generation.get("state") == "GREEN"
+                            and generation.get("stop_reason") == "eos"
+                        ),
                         "nonempty": bool(generated),
                         "syntax": syntax_diagnostic(generated, arm_id),
                         "generation": generation,
@@ -736,6 +773,11 @@ def evaluate_target(
         "created_utc": now(),
         "trigger_state": "GREEN",
         "target_id": target["target_id"],
+        "split": split,
+        "evaluation_contract_sha256": hashlib.sha256(
+            json.dumps(config["evaluation"], sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest(),
+        "evaluation_artifacts": evaluation_artifacts,
         "checkpoint": relative(checkpoint),
         "checkpoint_sha256": sha256_file(checkpoint),
         "row_count": len(rows),
@@ -751,9 +793,13 @@ def evaluate_target(
         "public_benchmark_payload_count": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
-        "capability_claim": "PRIVATE_FROZEN_HELDOUT_ONLY",
+        "capability_claim": (
+            "PRIVATE_DEVELOPMENT_DIAGNOSTIC"
+            if split == "private_dev"
+            else "PRIVATE_FROZEN_CONFIRMATION_ONLY"
+        ),
     }
-    output = resolve(str(target["receipt"])).with_name("evaluation_receipt.json")
+    output = resolve(str(target["receipt"])).with_name(f"evaluation_{split}_receipt.json")
     write_json_atomic(output, report)
     return {**report, "rows": {"path": relative(output), "embedded_row_count": len(rows)}}
 
@@ -767,6 +813,9 @@ def generate_model_text(
     *,
     max_tokens: int,
     max_source_tokens: int,
+    beam_width: int,
+    branching_factor: int,
+    length_penalty: float,
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Generate from prompt only; the grammar constrains byte serialization, not meaning."""
@@ -787,35 +836,68 @@ def generate_model_text(
     logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
     mx.eval(logits)
     inverse = {int(value): str(token) for token, value in target_vocab.items()}
-    generated_tokens: list[str] = []
-    stop_reason = "max_tokens"
+    beams = [{"tokens": [], "score": 0.0, "logits": logits, "cache": cache}]
+    complete: list[dict[str, Any]] = []
     for _ in range(max_tokens):
-        active = bool(active_target_span(generated_tokens)["active"])
-        values = np.asarray(
-            logits[0, -1, target_offset : target_offset + len(target_vocab)]
-        ).astype(np.float64)
-        allowed: list[int] = []
-        for local_id, token in inverse.items():
-            if active:
-                if is_byte_token(token) or token == TARGET_BYTE_END:
-                    allowed.append(local_id)
-            elif token == "<eos>" or token == TARGET_BYTE_BEGIN or (
-                token not in {"<pad>", "<unk>", "<bos>", TARGET_BYTE_END}
-                and not is_byte_token(token)
-            ):
-                allowed.append(local_id)
-        if not allowed:
-            return "", generation_fault("no_serialization_valid_token")
-        local_id = max(allowed, key=lambda index: float(values[index]))
-        token = inverse[local_id]
-        if token == "<eos>":
-            stop_reason = "eos"
+        expansions: list[dict[str, Any]] = []
+        for beam in beams:
+            allowed = serialization_valid_local_ids(beam["tokens"], inverse)
+            if not allowed:
+                continue
+            values = np.asarray(
+                beam["logits"][0, -1, target_offset : target_offset + len(target_vocab)]
+            ).astype(np.float64)
+            allowed_values = np.asarray([values[index] for index in allowed], dtype=np.float64)
+            maximum = float(allowed_values.max())
+            normalizer = maximum + float(np.log(np.exp(allowed_values - maximum).sum()))
+            ranked = sorted(allowed, key=lambda index: float(values[index]), reverse=True)[
+                : max(1, branching_factor)
+            ]
+            for local_id in ranked:
+                token = inverse[local_id]
+                score = float(beam["score"]) + float(values[local_id]) - normalizer
+                if token == "<eos>":
+                    complete.append({"tokens": list(beam["tokens"]), "score": score})
+                    continue
+                next_logits, next_cache = model(
+                    mx.array([[target_offset + local_id]], dtype=mx.int32), beam["cache"]
+                )
+                mx.eval(next_logits)
+                expansions.append(
+                    {
+                        "tokens": [*beam["tokens"], token],
+                        "score": score,
+                        "logits": next_logits,
+                        "cache": next_cache,
+                    }
+                )
+        beams = sorted(
+            expansions,
+            key=lambda row: beam_score(row, length_penalty),
+            reverse=True,
+        )[: max(1, beam_width)]
+        complete = sorted(
+            complete,
+            key=lambda row: beam_score(row, length_penalty),
+            reverse=True,
+        )[: max(1, beam_width)]
+        if not beams or (
+            complete
+            and len(complete) >= beam_width
+            and beam_score(complete[0], length_penalty)
+            >= beam_score(beams[0], length_penalty)
+        ):
             break
-        generated_tokens.append(token)
-        logits, cache = model(
-            mx.array([[target_offset + local_id]], dtype=mx.int32), cache
-        )
-        mx.eval(logits)
+    if complete:
+        selected = max(complete, key=lambda row: beam_score(row, length_penalty))
+        generated_tokens = list(selected["tokens"])
+        stop_reason = "eos"
+    elif beams:
+        selected = max(beams, key=lambda row: beam_score(row, length_penalty))
+        generated_tokens = list(selected["tokens"])
+        stop_reason = "max_tokens"
+    else:
+        return "", generation_fault("no_serialization_valid_sequence")
     decoded, decode_receipt = decode_target_tokens(generated_tokens)
     if decode_receipt.get("state") != "READY":
         return "", {
@@ -825,7 +907,9 @@ def generate_model_text(
     text = "".join(decoded)
     return text, {
         "state": "GREEN",
-        "decoder": "greedy_exact_text_with_byte_span_grammar_v1",
+        "decoder": "beam_exact_text_with_byte_span_grammar_v1",
+        "beam_width": int(beam_width),
+        "branching_factor": int(branching_factor),
         "stop_reason": stop_reason,
         "generated_token_count": len(generated_tokens),
         "generated_token_sha256": hashlib.sha256(
@@ -835,6 +919,28 @@ def generate_model_text(
         "target_visible_to_generator": False,
         "fallback_return_count": 0,
     }
+
+
+def serialization_valid_local_ids(
+    generated_tokens: list[str], inverse: dict[int, str]
+) -> list[int]:
+    active = bool(active_target_span(generated_tokens)["active"])
+    allowed: list[int] = []
+    for local_id, token in inverse.items():
+        if active:
+            if is_byte_token(token) or token == TARGET_BYTE_END:
+                allowed.append(local_id)
+        elif token == "<eos>" or token == TARGET_BYTE_BEGIN or (
+            token not in {"<pad>", "<unk>", "<bos>", TARGET_BYTE_END}
+            and not is_byte_token(token)
+        ):
+            allowed.append(local_id)
+    return allowed
+
+
+def beam_score(row: dict[str, Any], length_penalty: float) -> float:
+    length = max(1, len(row.get("tokens") or []))
+    return float(row.get("score") or 0.0) / (length ** max(0.0, length_penalty))
 
 
 def generation_fault(reason: str) -> dict[str, Any]:
@@ -919,7 +1025,9 @@ def train_target(
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
     training = config["training"]
     planned_steps = required_steps(mask, int(training["batch_size"]), int(target["unique_target_positions"]))
-    sft_positions = int(supervision_stage.mask.sum()) if supervision_stage is not None else 0
+    unique_sft_positions = int(supervision_stage.mask.sum()) if supervision_stage is not None else 0
+    sft_repetitions = int(training.get("supervision_optimizer_repetitions") or 1)
+    sft_positions = unique_sft_positions * sft_repetitions
     sft_planned_steps = (
         required_steps(
             supervision_stage.mask,
@@ -1002,7 +1110,7 @@ def train_target(
             loss_and_grad,
             supervision_stage.inputs,
             supervision_stage.labels,
-            supervision_stage.mask,
+            supervision_stage.loss_mask,
             progress_mask=supervision_stage.mask,
             ordered_plan_loss_weight=1.0,
             sample_weights=None,
@@ -1052,7 +1160,9 @@ def train_target(
         "pretrain_optimizer_positions": total_pretrain_positions,
         "supervision_optimizer_positions": total_sft_positions,
         "unique_target_positions": int(target["unique_target_positions"]),
-        "unique_supervision_target_positions": sft_positions,
+        "unique_supervision_target_positions": unique_sft_positions,
+        "supervision_optimizer_target_positions": sft_positions,
+        "supervision_optimizer_repetitions": sft_repetitions,
         "complete": (
             total_pretrain_positions >= int(target["unique_target_positions"])
             and total_sft_positions >= sft_positions
@@ -1134,13 +1244,27 @@ def plan_sha256(
     models: dict[str, Any],
     supervision: dict[str, Any],
 ) -> str:
+    training_artifacts = {
+        key: value
+        for key, value in (supervision.get("artifacts") or {}).items()
+        if str(key).endswith(":private_train")
+    }
     payload = {
-        "config": config,
+        "training_contract": {
+            key: config.get(key)
+            for key in (
+                "policy",
+                "seed",
+                "arm_model",
+                "controls",
+                "training",
+                "boundaries",
+            )
+        },
         "stage_signature": (metadata.get("summary") or {}).get("stage_signature"),
         "arm_views": ((metadata.get("summary") or {}).get("canonical_pretrain_stage") or {}).get("arm_views"),
         "models": models,
-        "supervision_manifest_sha256": supervision.get("manifest_sha256"),
-        "supervision_artifacts": supervision.get("artifacts"),
+        "supervision_training_artifacts": training_artifacts,
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
@@ -1158,6 +1282,25 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("MoECOT training no-cheat counters must remain zero")
     if boundaries.get("hidden_generalist_fallback") != "forbidden":
         raise ValueError("hidden generalist fallback must remain forbidden")
+    evaluation = config.get("evaluation") or {}
+    if evaluation.get("policy") != "project_theseus_moecot_direct_model_only_evaluation_v1":
+        raise ValueError("unexpected MoECOT evaluation policy")
+    if not 1 <= int(evaluation.get("beam_width") or 0) <= 16:
+        raise ValueError("evaluation beam width must be bounded")
+    if not 1 <= int(evaluation.get("branching_factor") or 0) <= 16:
+        raise ValueError("evaluation branching factor must be bounded")
+    if evaluation.get("target_visible_to_generator") is not False:
+        raise ValueError("evaluation target must remain hidden from generation")
+    if evaluation.get("templates_renderers_routers_tools_allowed") is not False:
+        raise ValueError("assisted generation is forbidden in model-only evaluation")
+    training = config.get("training") or {}
+    repetitions = int(training.get("supervision_optimizer_repetitions") or 0)
+    if not 1 <= repetitions <= int(training.get("maximum_optimizer_repetitions") or 0):
+        raise ValueError("supervision repetition must remain within the frozen maximum")
+    if not 1.0 <= float(training.get("termination_loss_weight") or 0.0) <= 8.0:
+        raise ValueError("termination loss weight must remain bounded")
+    if not 1.0 <= float(training.get("byte_boundary_loss_weight") or 0.0) <= 8.0:
+        raise ValueError("byte-boundary loss weight must remain bounded")
 
 
 def no_cheat(config: dict[str, Any]) -> dict[str, Any]:

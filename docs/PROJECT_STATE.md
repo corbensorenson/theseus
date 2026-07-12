@@ -35,10 +35,10 @@ share toward zero. Public benchmarks are calibration only.
   vendored, minified, decode-damaged, low-diversity, and invalid sources receive no
   credit. Every total/domain/language/evidence minimum still passes.
 - **Immediate dependency:** the licensed language-arm supervision contract is now
-  frozen at 20,000 train and 1,032 heldout rows with zero split overlap or public
-  payloads. The first complete Rust run consumed 8.08M pretrain and 114,790 SFT
-  positions in 338 seconds, then scored 0/64 exact recovery. Repair model-only
-  termination and semantic generation before spending the other six full budgets.
+  frozen at 20,000 train, 544 development, and 1,032 heldout rows with zero split
+  overlap or public payloads. The Rust causal baseline scored 0/64 confirmation.
+  Four-pass weighted SFT plus beam decoding now emits valid EOS-terminated text on
+  60/60 development rows but remains 0/60 exact. Source conditioning is the wall.
 
 ## Evidence Boundaries
 
@@ -84,14 +84,16 @@ share toward zero. Public benchmarks are calibration only.
   the 6.623M total-control, and the 1.211M active-control have distinct bounded MLX
   model/optimizer receipts. Rust is the first complete arm: its pretrain and SFT
   receipts are content-bound and resumable, but direct prompt-only evaluation is
-  honestly negative at 0/64 exact recovery. Only 13/64 greedy outputs formed valid
-  byte streams and none emitted EOS. Route success cannot count as answer success
-  and hidden generalist fallback is forbidden.
+  honestly negative at 0/64 exact recovery. A train/dev repartition plus weighted
+  termination loss and beam decoding repaired byte serialization and EOS to 60/60
+  on development, but exact recovery remains 0/60 with source-independent mode
+  collapse. Route success cannot count as answer success and hidden generalist
+  fallback is forbidden.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
-  reversible text streams; 38,435 selected documents prove their category/profile
+  reversible text streams; 38,443 selected documents prove their category/profile
   binding, zero round-trip failures occurred, and no unknown token position entered
-  training. The current seven one-step receipts bind stage `30b57793...`; data
+  training. The current seven one-step receipts bind stage `45f26ca5...`; data
   identities are scoped to vocabulary/supervision contracts so evaluation-only edits
   do not force corpus rebuilds. This is data-path correctness only.
 - **Deterministic tools:** exact tools are evidence-producing instruments, not learned

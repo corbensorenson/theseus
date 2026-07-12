@@ -29,13 +29,13 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and frozen licensed SFT/eval splits are `GREEN`: 20,000 train rows plus 1,032 heldout rows, zero split overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
+| Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | seven-target MLX smoke is `GREEN`; Rust completed 8.08M pretrain + 114,790 SFT positions in 338s but direct exact recovery is 0/64 | fix model-only termination/semantic generation on a development split before spending the other six full training budgets; preserve the Rust negative result |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | Rust causal baseline is retained at 0/64 confirmation; weighted four-pass SFT plus beam repair reaches 60/60 clean EOS serialization but 0/60 development exact recovery | run a matched prefix-LM source-conditioning ablation before spending the other six full training budgets |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - legacy clean route is 0/24 and the first complete Rust arm is 0/64 exact recovery; only 13/64 greedy outputs serialize cleanly | improve direct autoregressive termination and semantic instruction following without target access, templates, renderers, tools, or fallback credit; require a fresh frozen confirmation split before promotion |
+| Generator capability (held-out pass) | Phase 10 | RED - termination is repaired on development (60/60 EOS/serialization), but semantic exact recovery remains 0/60 with source-independent Rust mode collapse | improve source conditioning under a matched prefix-LM ablation; require nonzero development recovery and a fresh frozen confirmation before promotion |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -823,7 +823,8 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   8.54% below the total-control. Six targets remain one-step substrate smokes; Rust
   is complete but remains non-routeable because its direct evaluation is negative.
 - **Frozen supervision and first complete rung:** exact-revision Dolly and
-  CommitPackFT intake now yields 20,000 licensed train rows and 1,032 heldout rows
+  CommitPackFT intake now yields 20,000 licensed train, 544 development, and 1,032
+  heldout rows
   across English, Python, JS/TS, HTML/CSS, and Rust, with prompt-only generation,
   target-only evaluator access, zero cross-split prompt/target overlap, no target
   truncation, and zero public payloads. Rust completed 8,077,440 causal positions
@@ -832,14 +833,20 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   serialized outputs, and no EOS completions. This blocks spending the other six
   complete training budgets until termination and semantic generation improve on a
   distinct development surface.
+- **Termination repair:** four bounded SFT passes with weighted EOS/byte-boundary
+  loss plus probability beam search improved Rust development serialization and
+  model-emitted EOS to 60/60, without forced closure or fallback. Exact recovery
+  remains 0/60 and bounded samples show source-independent crate-attribute mode
+  collapse. The next matched ablation changes only source attention from causal to
+  prefix-LM; confirmation rows remain unspent.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact
   reversible text profile for every pretraining category, proves all six
-  category/profile bindings over 38,435 selected documents, records zero round-trip
+  category/profile bindings over 38,443 selected documents, records zero round-trip
   failures, and admits zero unknown positions. The old seven smoke checkpoints fail
   plan/stage/range identity and were replaced by distinct one-step receipts bound to
-  stage `30b57793...`. Vocabulary and supervision manifests bind their own contract
+  stage `45f26ca5...`. Vocabulary and supervision manifests bind their own contract
   sections rather than unrelated evaluation settings. This is corrected input
   representation, not capability.
 - **Frozen comparison:** report equal-unique-position/total-parameter and

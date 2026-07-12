@@ -114,8 +114,12 @@ def test_hash_bounded_selection_and_split_are_order_invariant() -> None:
         assert reason == ""
         rows.append(row)
 
-    def select(values: list[dict]) -> tuple[list[str], list[str]]:
-        selectors = {"private_train": BoundedRows(7), "private_eval": BoundedRows(3)}
+    def select(values: list[dict]) -> tuple[list[str], list[str], list[str]]:
+        selectors = {
+            "private_train": BoundedRows(7),
+            "private_dev": BoundedRows(3),
+            "private_eval": BoundedRows(3),
+        }
         prompts: set[str] = set()
         targets: set[str] = set()
         from collections import Counter
@@ -125,6 +129,7 @@ def test_hash_bounded_selection_and_split_are_order_invariant() -> None:
             admit_row(dict(row), selectors, cfg, prompts, targets, rejected)
         return (
             [row["row_id"] for row in selectors["private_train"].rows()],
+            [row["row_id"] for row in selectors["private_dev"].rows()],
             [row["row_id"] for row in selectors["private_eval"].rows()],
         )
 
@@ -136,8 +141,10 @@ def test_split_overlap_audit_detects_prompt_or_target_reuse() -> None:
     targets = {}
     for arm in ("english", "python", "javascript_typescript", "html_css", "rust"):
         prompts[f"{arm}:private_train"] = {f"p-{arm}"}
+        prompts[f"{arm}:private_dev"] = set()
         prompts[f"{arm}:private_eval"] = set()
         targets[f"{arm}:private_train"] = {f"t-{arm}"}
+        targets[f"{arm}:private_dev"] = set()
         targets[f"{arm}:private_eval"] = set()
     prompts["rust:private_eval"] = {"p-rust"}
     audit = split_overlap(prompts, targets)
