@@ -216,7 +216,7 @@
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-          "sha256": "056d1d7ba4f3c963bc16879e2fd3713e89931472441e57a0bda6d0c861126d68"
+          "sha256": "cb4257a14467c87b6b72d5db8980c0268d86fdee47da8f1aa86fbab75b5bcaf9"
         },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
@@ -228,11 +228,11 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "53032a9e794ed4498c8834fd3d0c29046b9a59d26e63d3fa98074518a9741639"
+          "sha256": "9e4f9cb71fab3bba2bed66538d7d74a5a8b38a6908e6b596e2432c71bd6bf656"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
-          "sha256": "51f0d3bceeb6b71ba34ba0618ee6b04342832247d419531e46e269258766ff72"
+          "sha256": "d29056650f3aed4a786a6b978f9389d83a0bc138921443d193f0d03de7193e89"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -288,7 +288,7 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "984f9da486610fee5c7371cbfa1537156de9d3fb126b97f050601b044ae51e18"
+          "sha256": "c55d040e848e2fc4f984291f7b34b3f3084f66b26bb8d736858def1381734e5f"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
@@ -5120,18 +5120,20 @@
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_moecot_language_arm_training.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/moecot_language_arm_training.py",
+  "verification_command": "python3 -m pytest -q tests/test_moecot_language_arm_training.py tests/test_moecot_language_tokenizer.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "configs/moecot_language_arm_training.json",
         "configs/standard_causal_transformer_survival.json",
-        "scripts/moecot_language_arm_training.py",
+    "scripts/moecot_language_arm_training.py",
+    "scripts/moecot_language_tokenizer.py",
         "scripts/standard_causal_transformer_corpus.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_survival.py",
-        "tests/test_moecot_language_arm_training.py",
+    "tests/test_moecot_language_arm_training.py",
+    "tests/test_moecot_language_tokenizer.py",
         "runtime/standard_causal_transformer_survival_v1/stage_metadata_v1.json"
       ],
       "evidence_outputs": [
@@ -5159,7 +5161,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "All five language arms and both dense controls have distinct bounded MLX smoke checkpoints and optimizer state. Full pretraining, arm-specific supervised stages, direct family-disjoint evaluation, and matched architecture verdict remain pending."
+  "current_wall": "The canonical 132,464,640-position stage now uses exact reversible text tokenization for every language category, proves all six category/profile bindings, and admits zero unknown positions. All five language arms and both dense controls have distinct bounded MLX smoke checkpoints and optimizer state against the corrected stage. Frozen arm-specific supervised/evaluation contracts, full pretraining, direct family-disjoint behavior, and the matched architecture verdict remain pending."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

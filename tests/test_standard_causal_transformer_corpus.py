@@ -160,7 +160,7 @@ def fixture(tmp_path: Path) -> dict:
     }
 
 
-def encode(text: str) -> tuple[list[str], list[int], dict]:
+def encode(text: str, _category: str) -> tuple[list[str], list[int], dict]:
     tokens = text.split()
     return tokens, list(range(1, len(tokens) + 1)), {"unknown_token_count": 0}
 

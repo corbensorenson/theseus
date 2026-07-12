@@ -38,6 +38,7 @@ from code_lm_private_verifier import (  # noqa: E402
 import semantic_ir  # noqa: E402
 import theseus_artifact_admission  # noqa: E402
 from neural_seed_open_vocab import encode_tokens  # noqa: E402
+from moecot_language_tokenizer import encode_document as encode_language_document  # noqa: E402
 from neural_seed_token_decoder_support import (  # noqa: E402
     body_tokens,
     decode_candidate_body_tokens,
@@ -827,8 +828,8 @@ def _materialize_stage_unlocked(config: dict[str, Any], *, stage_dir: Path, forc
         stage_dir=stage_dir,
         target_vocab=target_vocab,
         target_offset=target_offset,
-        tokenize_and_encode=lambda text: encode_canonical_pretrain_document(
-            text, target_vocab
+        tokenize_and_encode=lambda text, category: encode_canonical_pretrain_document(
+            text, target_vocab, category=category
         ),
         eval_body_patterns={" ".join(sequence) for sequence in eval_body_token_sequences if sequence},
     )
@@ -1149,11 +1150,9 @@ def build_pretrain_windows(
 
 
 def encode_canonical_pretrain_document(
-    text: str, target_vocab: dict[str, int]
+    text: str, target_vocab: dict[str, int], *, category: str
 ) -> tuple[list[str], list[int], dict[str, Any]]:
-    logical_tokens = body_tokens(text)
-    encoded, receipt = encode_tokens(logical_tokens, target_vocab, stream="target")
-    return logical_tokens, encoded, receipt
+    return encode_language_document(text, target_vocab, category=category)
 
 
 def window_arrays(windows: list[list[int]], max_seq: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:

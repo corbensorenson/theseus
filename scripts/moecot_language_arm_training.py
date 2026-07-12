@@ -96,6 +96,8 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     arm_views = canonical.get("arm_views") if isinstance(canonical.get("arm_views"), dict) else {}
     range_audit = audit_arm_views(arm_views, int(canonical.get("window_count") or 0))
     gaps.extend(range_audit["hard_gaps"])
+    tokenizer_audit = audit_tokenizer_stage(base, canonical)
+    gaps.extend(tokenizer_audit["hard_gaps"])
     stage_arrays = canonical.get("array_artifacts") if isinstance(canonical.get("array_artifacts"), dict) else {}
     for key, row in stage_arrays.items():
         path = resolve(str(row.get("path") or ""))
@@ -136,6 +138,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
             "array_artifacts": stage_arrays,
             "arm_view_policy": arm_views.get("policy"),
             "range_audit": range_audit,
+            "tokenizer_audit": tokenizer_audit,
         },
         "models": models,
         "targets": targets,
@@ -335,6 +338,54 @@ def audit_arm_views(arm_views: dict[str, Any], window_count: int) -> dict[str, A
         "window_count": window_count,
         "covered_rows": cursor,
         "non_overlapping_complete_partition": not gaps,
+    }
+
+
+def audit_tokenizer_stage(base: dict[str, Any], canonical: dict[str, Any]) -> dict[str, Any]:
+    expected = (base.get("tokenization") or {}).get("canonical_language_profiles") or {}
+    observed = canonical.get("tokenizer_audit") if isinstance(canonical.get("tokenizer_audit"), dict) else {}
+    category_profiles = (
+        observed.get("category_profiles_by_selected_document")
+        if isinstance(observed.get("category_profiles_by_selected_document"), dict)
+        else {}
+    )
+    gaps: list[str] = []
+    if expected.get("policy") != "project_theseus_moecot_language_tokenizer_v1":
+        gaps.append("canonical_language_tokenizer_policy_missing")
+    for category in (
+        "english_conversation_instruction",
+        "english_broad",
+        "python",
+        "javascript_typescript",
+        "html_css",
+        "rust",
+    ):
+        profile = str(expected.get(category) or "")
+        if not profile:
+            gaps.append(f"canonical_language_tokenizer_profile_missing:{category}")
+        elif int(category_profiles.get(f"{category}:{profile}") or 0) <= 0:
+            gaps.append(f"canonical_stage_tokenizer_profile_unproven:{category}:{profile}")
+    if int(observed.get("roundtrip_failure_count") or 0):
+        gaps.append("canonical_stage_tokenizer_roundtrip_failure")
+    if int(observed.get("admitted_unknown_token_position_count") or 0):
+        gaps.append("canonical_stage_admitted_unknown_token_position")
+    return {
+        "state": "GREEN" if not gaps else "RED",
+        "policy": expected.get("policy"),
+        "expected_profiles": {
+            category: expected.get(category)
+            for category in (
+                "english_conversation_instruction",
+                "english_broad",
+                "python",
+                "javascript_typescript",
+                "html_css",
+                "rust",
+            )
+        },
+        "observed": observed,
+        "hard_gaps": gaps,
+        "failure_behavior": "deny_training_until_stage_is_rebuilt",
     }
 
 

@@ -29,9 +29,9 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | quality-filtered receipt, exact 132.46M-position stage, and seven-target MLX checkpoint smoke are `GREEN` | run bounded complete arm/control pretraining; licensed English + requested code families remain primary and teacher rows remain sparse residual pressure |
+| Data engine + curriculum | Track 0 / Phase 7 | quality-filtered receipt, exact 132.46M-position lossless language-profiled stage, and seven-target MLX checkpoint smoke are `GREEN` | freeze arm-specific SFT/eval splits before expensive training; licensed English + requested code families remain primary and teacher rows remain sparse residual pressure |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | five independent MLX arms plus total- and active-parameter dense controls pass checkpoint/optimizer/resume smoke; capability unevaluated | complete bounded pretraining, add arm-specific supervised/eval contracts, then run the frozen two-view architecture comparison before routing adoption |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | five independent MLX arms plus total- and active-parameter dense controls pass corrected-stage checkpoint/optimizer smoke; capability unevaluated | freeze arm-specific supervised/eval contracts, then complete bounded pretraining and run the two-view architecture comparison before routing adoption |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
@@ -822,6 +822,14 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   replays an exact content-bound resume. The five arms total 6,057,600 parameters,
   8.54% below the total-control. This is T2 training-substrate evidence only: every
   checkpoint is incomplete and carries `capability_claim=NOT_EVALUATED`.
+- **Tokenizer correction:** the earlier canonical pretraining stage used Python body
+  tokenization for every category and was therefore invalid for exact English,
+  JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact
+  reversible text profile for every pretraining category, proves all six
+  category/profile bindings over 18,004 selected documents, records zero round-trip
+  failures, and admits zero unknown positions. The old seven smoke checkpoints fail
+  plan/stage/range identity and were replaced by distinct one-step receipts bound to
+  stage `2fc4d283...`. This is corrected input representation, not capability.
 - **Frozen comparison:** report equal-unique-position/total-parameter and
   equal-active-parameter/active-compute views together. MoECOT cannot be adopted by
   choosing the favorable accounting view after results are known; it must show
@@ -850,9 +858,9 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   after ordinary licensed-data coverage is exhausted: <=10% of accepted rows and
   <=2% of optimizer sampling initially, with a downward schedule and matched utility
   ablation. The existing negative teacher tranche remains retained but quarantined.
-- Training sequence is fixed by prerequisites: arm-specific causal pretraining plus
-  a matched mixed dense control -> governed English instruction/conversation and
-  language-specific direct-body SFT ->
+- Training sequence is fixed by prerequisites: freeze disjoint SFT/eval contracts ->
+  arm-specific causal pretraining plus a matched mixed dense control -> governed
+  English instruction/conversation and language-specific direct-body SFT ->
   verifier-positive pair construction -> preference optimization -> verifier-reward
   RL -> search/fast-generation/sparse challengers. A later stage cannot be used to
   compensate for a missing earlier signal.

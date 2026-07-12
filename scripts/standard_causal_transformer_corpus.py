@@ -65,7 +65,7 @@ def materialize_pretrain_stage(
     stage_dir: Path,
     target_vocab: dict[str, int],
     target_offset: int,
-    tokenize_and_encode: Callable[[str], tuple[list[str], list[int], dict[str, Any]]],
+    tokenize_and_encode: Callable[[str, str], tuple[list[str], list[int], dict[str, Any]]],
     eval_body_patterns: set[str],
 ) -> tuple[np.memmap, np.memmap, np.memmap, dict[str, Any]]:
     contract = config["data_model_scaling_contract"]
@@ -79,6 +79,9 @@ def materialize_pretrain_stage(
     window_counts: Counter[str] = Counter()
     category_row_ranges: dict[str, dict[str, int]] = {}
     excluded: Counter[str] = Counter()
+    tokenizer_profiles: Counter[str] = Counter()
+    tokenizer_category_profiles: Counter[str] = Counter()
+    roundtrip_modes: Counter[str] = Counter()
     selected_digests: list[str] = []
     handles: dict[str, Any] = {}
     row_count = 0
@@ -102,10 +105,23 @@ def materialize_pretrain_stage(
                         raw = handle.read(int(byte_length))
                         row = json.loads(raw)
                         text = str(row.get("text") if category in CATEGORY_ORDER[2:] else row.get("causal_text") or "")
-                        logical_tokens, encoded, encoding_receipt = tokenize_and_encode(text)
+                        logical_tokens, encoded, encoding_receipt = tokenize_and_encode(text, category)
                         if int(encoding_receipt.get("unknown_token_count") or 0):
                             excluded["tokenizer_unrepresentable"] += 1
                             continue
+                        roundtrip = (
+                            encoding_receipt.get("roundtrip")
+                            if isinstance(encoding_receipt.get("roundtrip"), dict)
+                            else {}
+                        )
+                        if roundtrip and roundtrip.get("state") != "GREEN":
+                            excluded["tokenizer_roundtrip_failure"] += 1
+                            continue
+                        tokenizer_profiles[str(encoding_receipt.get("profile") or "unspecified")] += 1
+                        tokenizer_category_profiles[
+                            f"{category}:{encoding_receipt.get('profile') or 'unspecified'}"
+                        ] += 1
+                        roundtrip_modes[str(roundtrip.get("mode") or "not_reported")] += 1
                         normalized = " ".join(logical_tokens)
                         if any(pattern and pattern in normalized for pattern in eval_body_patterns):
                             excluded["eval_body_overlap"] += 1
@@ -171,6 +187,18 @@ def materialize_pretrain_stage(
         "selected_document_count": len(selected_digests),
         "selected_document_digest": sha256_text("\n".join(selected_digests)),
         "excluded_counts": dict(excluded),
+        "tokenizer_audit": {
+            "policy": "project_theseus_moecot_language_tokenizer_stage_audit_v1",
+            "profiles_by_selected_document": dict(tokenizer_profiles),
+            "category_profiles_by_selected_document": dict(tokenizer_category_profiles),
+            "roundtrip_modes_by_selected_document": dict(roundtrip_modes),
+            "roundtrip_failure_count": int(excluded.get("tokenizer_roundtrip_failure") or 0),
+            "rejected_unknown_token_document_count": int(
+                excluded.get("tokenizer_unrepresentable") or 0
+            ),
+            "admitted_unknown_token_position_count": 0,
+            "failure_behavior": "reject_document_before_training",
+        },
         "array_artifacts": {
             key: {"path": str(path), "sha256": file_sha256(path), "bytes": path.stat().st_size}
             for key, path in outputs.items()

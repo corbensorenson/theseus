@@ -34,9 +34,9 @@ share toward zero. Public benchmarks are calibration only.
   13,257,091 HTML/CSS, 57,626,478 Rust, and 3,881,800 other code. Generated,
   vendored, minified, decode-damaged, low-diversity, and invalid sources receive no
   credit. Every total/domain/language/evidence minimum still passes.
-- **Immediate dependency:** complete bounded pretraining for the now independently
-  checkpointed five MLX arms and two dense controls, then add language-appropriate
-  direct family-disjoint evaluation before any amplifier or public calibration.
+- **Immediate dependency:** freeze language-appropriate supervised and direct
+  family-disjoint evaluation contracts before spending the full training budget;
+  then complete bounded pretraining for the five MLX arms and two dense controls.
 
 ## Evidence Boundaries
 
@@ -83,6 +83,12 @@ share toward zero. Public benchmarks are calibration only.
   model/optimizer receipts; Python resume is content-bound and replayed. All remain
   incomplete and `NOT_EVALUATED`. Route success cannot count as answer success and
   hidden generalist fallback is forbidden.
+- **Tokenizer correction:** the canonical pretraining stage no longer routes every
+  language through Python body tokenization. All six corpus categories use exact
+  reversible text streams; 18,004 selected documents prove their category/profile
+  binding, zero round-trip failures occurred, and no unknown token position entered
+  training. The prior seven smokes were rejected by changed plan/stage/range identity
+  and replaced against stage `2fc4d283...`. This is data-path correctness only.
 - **Deterministic tools:** exact tools are evidence-producing instruments, not learned
   generation. `UNKNOWN`, `UNSOLVED`, and typed faults are preferred to fabricated
   answers.
@@ -165,9 +171,10 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete bounded English, Python, JS/TS, HTML/CSS, Rust, total-control, and
-active-control pretraining under the frozen plan. Then add arm-specific supervised
-and direct family-disjoint evaluation contracts. Success requires durable
+Freeze arm-specific supervised and direct family-disjoint evaluation contracts,
+including generator-visible field boundaries and independent language validators.
+Then complete bounded English, Python, JS/TS, HTML/CSS, Rust, total-control, and
+active-control pretraining under the frozen plan. Success requires durable
 provenance, heldout lineage, nonzero independently verified arm behavior, and an
 honest two-view modular-versus-dense verdict. If those conditions fail, retain the
 falsification; do not hide it with routing accuracy, loss, another auxiliary head,

@@ -17,6 +17,7 @@ if str(SCRIPTS) not in sys.path:
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
     audit_arm_views,
+    audit_tokenizer_stage,
     range_view,
     train_target,
     validate_config,
@@ -93,6 +94,41 @@ def test_arm_views_are_an_exact_non_overlapping_partition() -> None:
     rejected = audit_arm_views(tampered, 10)
     assert rejected["state"] == "RED"
     assert any(gap.startswith("arm_range_gap_or_overlap:python") for gap in rejected["hard_gaps"])
+
+
+def test_training_denies_legacy_stage_without_each_language_tokenizer_receipt() -> None:
+    profiles = {
+        "policy": "project_theseus_moecot_language_tokenizer_v1",
+        "english_conversation_instruction": "exact_text_v1",
+        "english_broad": "exact_text_v1",
+        "python": "exact_text_v1",
+        "javascript_typescript": "exact_text_v1",
+        "html_css": "exact_text_v1",
+        "rust": "exact_text_v1",
+    }
+    category_profiles = {
+        f"{category}:{profile}": 1
+        for category, profile in profiles.items()
+        if category != "policy"
+    }
+    accepted = audit_tokenizer_stage(
+        {"tokenization": {"canonical_language_profiles": profiles}},
+        {
+            "tokenizer_audit": {
+                "category_profiles_by_selected_document": category_profiles,
+                "roundtrip_failure_count": 0,
+                "rejected_unknown_token_document_count": 1,
+                "admitted_unknown_token_position_count": 0,
+            }
+        },
+    )
+    assert accepted["state"] == "GREEN"
+
+    rejected = audit_tokenizer_stage(
+        {"tokenization": {"canonical_language_profiles": profiles}}, {}
+    )
+    assert rejected["state"] == "RED"
+    assert len(rejected["hard_gaps"]) == 6
 
 
 def test_config_rejects_capability_credit_and_hidden_fallback(tmp_path: Path) -> None:
