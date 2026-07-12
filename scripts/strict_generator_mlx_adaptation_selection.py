@@ -329,7 +329,6 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
         "overrides": {
             "train_tier": "any",
             "tier_balanced_sampling": True,
-            "private_residual_repair_split": True,
             "source_condition_operation_coverage_min_rows": 2,
             "semantic_plan_loss_weight": 0.08,
             "semantic_slot_loss_weight": 0.06,
@@ -394,7 +393,6 @@ SEMANTIC_CONSTRUCTION_REPAIR_PROFILES: dict[str, dict[str, Any]] = {
         "overrides": {
             "train_tier": "any",
             "tier_balanced_sampling": True,
-            "private_residual_repair_split": True,
             "source_condition_operation_coverage_min_rows": 2,
             "source_contrastive_loss_weight": 0.05,
             "source_contrastive_prefix_tokens": 48,

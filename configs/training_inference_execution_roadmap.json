@@ -218,6 +218,22 @@
         "candidate integrity remains GREEN",
         "checkpoint size, load time, throughput, and memory are reported"
       ],
+      "latest_diagnostic_disposition": {
+        "state": "falsified_current_tiny_semantic_adaptation",
+        "adopted_architecture_repairs": [
+          "family-disjoint claims now require independently verified transitive checkpoint-training lineage",
+          "configured heldout families are excluded before private rows can seed source or target vocabulary",
+          "semantic adaptation profiles no longer silently enable a holdout-family residual split",
+          "semantic profile/checkpoint ABI compatibility fails before optimizer work",
+          "specialist replay routing now forwards the complete decode ABI"
+        ],
+        "rejected_model_interventions": [
+          "the clean semantic adaptation emitted 14 integrity-clean candidates across the 24-row family-disjoint diagnostic but passed 0/24 behaviors",
+          "starvation DPO improved its preference objective but regressed emitted candidates from 14 to 0 and is not adopted"
+        ],
+        "current_wall": "Learn prompt/signature-conditioned state transitions, update operands, and final-return semantics with adequate source data/capacity. Do not substitute templates, renderers, deterministic tools, route labels, syntax rates, LM loss, or preference-gap improvement for model-only heldout behavior.",
+        "next_allowed_step": "Return to architecture-roadmap work; when Phase 10 training resumes, use a larger/fresher transformer-hybrid semantic constructor and require positive family-disjoint verifier behavior before preference/RL or scale."
+      },
       "rollback_or_stop": "Do not promote if improvement is only syntax, nontrivial-return rate, lower LM loss, or wider fanout without behavior.",
       "no_claims": [
         "does not claim production routing",

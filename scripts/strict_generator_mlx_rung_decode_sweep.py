@@ -255,6 +255,7 @@ def run_sweep(
             config,
             config_path=config_path,
             checkpoint_report_path=str(training_report_path),
+            checkpoint_report=training_report,
             checkpoint_path=resolve(str(record.get("checkpoint") or "")),
             vocab_path=resolve(str(record.get("vocab") or "")),
             specialist_checkpoint_specs={},

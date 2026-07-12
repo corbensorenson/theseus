@@ -18,6 +18,7 @@ from typing import Any
 
 from candidate_integrity import recompute_candidate_integrity
 from neural_seed_code_proposer_comparator import dict_or_empty, get_path, resolve
+from theseus_archive_resolver import resolve_archived_path
 
 
 STRICT_GENERATOR_SOURCE_TEXT_POLICY = "prompt_signature_only_v1"
@@ -83,6 +84,121 @@ def selection_summary(selection: dict[str, Any]) -> dict[str, Any]:
     return summary
 
 
+def checkpoint_evaluation_lineage(
+    checkpoint_report: dict[str, Any] | None,
+    *,
+    report_path: str = "",
+) -> dict[str, Any]:
+    """Recompute which evaluation claims the checkpoint lineage can support."""
+
+    report = dict_or_empty(checkpoint_report)
+    summary = dict_or_empty(report.get("summary"))
+    budget = dict_or_empty(report.get("budget"))
+    holdout = dict_or_empty(
+        summary.get("family_disjoint_holdout_exclusion")
+        or budget.get("family_disjoint_holdout_exclusion")
+    )
+    training_lineage = dict_or_empty(
+        summary.get("checkpoint_training_lineage")
+        or budget.get("checkpoint_training_lineage")
+    )
+    explicit = summary.get("family_disjoint_evidence")
+    if explicit is None:
+        explicit = budget.get("family_disjoint_evidence")
+    contradiction_labels: list[str] = []
+    if explicit is False:
+        contradiction_labels.append("checkpoint_explicitly_disallows_family_disjoint_evidence")
+    if holdout.get("family_disjoint_evidence") is False:
+        contradiction_labels.append("holdout_receipt_disallows_family_disjoint_evidence")
+    if holdout and holdout.get("clean") is not True:
+        contradiction_labels.append("holdout_receipt_not_clean")
+    if holdout and holdout.get("enabled") is not True:
+        contradiction_labels.append("holdout_exclusion_not_enabled")
+    if "private_residual_repair" in str(holdout.get("policy") or ""):
+        contradiction_labels.append("private_residual_repair_included_holdout_families")
+    if explicit is True and not training_lineage:
+        contradiction_labels.append("transitive_checkpoint_training_lineage_missing")
+    if training_lineage and training_lineage.get("family_disjoint_evidence") is not True:
+        contradiction_labels.append("transitive_checkpoint_training_lineage_not_verified")
+
+    verified = explicit is True and not contradiction_labels
+    state = "VERIFIED" if verified else ("DISALLOWED" if contradiction_labels else "UNVERIFIED")
+    return {
+        "policy": "strict_generator_checkpoint_evaluation_lineage_v1",
+        "report_path": str(report_path or ""),
+        "report_policy": str(report.get("policy") or ""),
+        "report_trigger_state": str(report.get("trigger_state") or ""),
+        "family_disjoint_claim_state": state,
+        "family_disjoint_evidence": verified,
+        "explicit_family_disjoint_evidence": explicit,
+        "holdout_exclusion": holdout,
+        "checkpoint_training_lineage": training_lineage,
+        "contradiction_labels": sorted(set(contradiction_labels)),
+        "public_calibration_eligible": bool(summary.get("public_calibration_eligible")) and verified,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+        "score_semantics": (
+            "Checkpoint-training lineage eligibility only. A family-disjoint selection can support a "
+            "family-disjoint behavior claim only when the checkpoint receipt explicitly proves clean "
+            "holdout-family exclusion. Missing or contradictory lineage remains diagnostic-only."
+        ),
+    }
+
+
+def family_disjoint_checkpoint_lineage_gate(
+    splits: dict[str, Any],
+    checkpoint_lineage: dict[str, Any],
+) -> dict[str, Any]:
+    requested = "family_disjoint" in splits
+    return gate(
+        "family_disjoint_checkpoint_training_lineage_verified",
+        not requested or bool(checkpoint_lineage.get("family_disjoint_evidence")),
+        "hard",
+        {
+            "family_disjoint_requested": requested,
+            "claim_state": checkpoint_lineage.get("family_disjoint_claim_state"),
+            "contradiction_labels": list(checkpoint_lineage.get("contradiction_labels") or []),
+            "checkpoint_report": checkpoint_lineage.get("report_path"),
+        },
+    )
+
+
+def compose_transitive_checkpoint_training_lineage(
+    source_checkpoint_lineage: dict[str, Any],
+    local_holdout_exclusion: dict[str, Any],
+    *,
+    private_residual_repair_split: bool,
+    injected_teacher_row_count: int,
+) -> dict[str, Any]:
+    local_clean = bool(
+        not private_residual_repair_split
+        and local_holdout_exclusion.get("enabled")
+        and local_holdout_exclusion.get("clean")
+        and int(local_holdout_exclusion.get("excluded_row_count") or 0) > 0
+        and int(injected_teacher_row_count or 0) == 0
+    )
+    verified = bool(local_clean and source_checkpoint_lineage.get("family_disjoint_evidence"))
+    return {
+        "policy": "strict_generator_transitive_checkpoint_training_lineage_v1",
+        "family_disjoint_evidence": verified,
+        "family_disjoint_claim_state": "VERIFIED" if verified else "UNVERIFIED",
+        "source_checkpoint_lineage": source_checkpoint_lineage,
+        "local_holdout_exclusion": local_holdout_exclusion,
+        "local_family_disjoint_clean": local_clean,
+        "injected_teacher_row_count": int(injected_teacher_row_count or 0),
+        "private_residual_repair_split": bool(private_residual_repair_split),
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+        "score_semantics": (
+            "Transitive checkpoint lineage. Family-disjoint eligibility requires both the source "
+            "checkpoint and this adaptation to prove clean configured holdout-family exclusion; a later "
+            "checkpoint cannot reset missing or contaminated ancestry."
+        ),
+    }
+
+
 def candidate_integrity_summary(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     generated = [
         row
@@ -130,6 +246,7 @@ def build_gates(
     candidates: list[dict[str, Any]],
     *,
     integrity_summary: dict[str, Any] | None = None,
+    checkpoint_lineage: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     split_reports = [dict_or_empty(row) for row in splits.values()]
     hard_split_active = bool(split_reports) and all(bool(row.get("active")) for row in split_reports)
@@ -145,8 +262,10 @@ def build_gates(
         name: get_path(report, ["summary", "private_verifier", "candidate_label_summary"], {})
         for name, report in splits.items()
     }
+    lineage = dict_or_empty(checkpoint_lineage)
     return [
         gate("requested_splits_active", hard_split_active, "hard", list(splits)),
+        family_disjoint_checkpoint_lineage_gate(splits, lineage),
         gate("candidate_rows_emitted", len(generated) > 0, "hard", len(generated)),
         gate("external_inference_zero", all(int(row.get("external_inference_calls") or 0) == 0 for row in candidates), "hard", 0),
         gate("public_training_rows_zero", True, "hard", 0),
@@ -267,7 +386,33 @@ def resolve_checkpoint_paths_from_report(
         raise SystemExit("missing MLX checkpoint path; pass --checkpoint or --checkpoint-report")
     if not vocab_raw:
         raise SystemExit("missing MLX vocab path; pass --vocab or --checkpoint-report")
-    return resolve(checkpoint_raw), resolve(vocab_raw)
+    checkpoint = resolve_archived_path(resolve(checkpoint_raw))
+    vocab = resolve_archived_path(resolve(vocab_raw))
+    verify_report_artifact_hash(
+        checkpoint,
+        expected=str(budget.get("checkpoint_sha256") or summary.get("checkpoint_sha256") or ""),
+        artifact="checkpoint",
+    )
+    verify_report_artifact_hash(
+        vocab,
+        expected=str(budget.get("vocab_sha256") or summary.get("vocab_sha256") or ""),
+        artifact="vocabulary",
+    )
+    return checkpoint, vocab
+
+
+def verify_report_artifact_hash(path: Path, *, expected: str, artifact: str) -> None:
+    if not path.exists() or not path.is_file():
+        raise ValueError(f"{artifact} artifact missing after archive resolution: {path}")
+    if not expected:
+        return
+    if len(expected) != 64 or any(char not in "0123456789abcdef" for char in expected.lower()):
+        raise ValueError(f"{artifact} receipt SHA-256 is malformed")
+    actual = stable_hash_file(path)
+    if actual != expected.lower():
+        raise ValueError(
+            f"{artifact} receipt SHA-256 mismatch: expected={expected.lower()} actual={actual}"
+        )
 
 
 def stable_hash_file(path: Path) -> str:

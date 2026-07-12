@@ -49,6 +49,11 @@ from strict_generator_mlx_decode_eval import (  # noqa: E402
     strict_generator_source_text_audit,
 )
 from strict_generator_mlx_replay_selection import select_family_disjoint_rows  # noqa: E402
+from strict_generator_mlx_decode_reporting import (  # noqa: E402
+    checkpoint_evaluation_lineage,
+    compose_transitive_checkpoint_training_lineage,
+    resolve_checkpoint_paths_from_report,
+)
 from strict_generator_mlx_pretraining_probe import (  # noqa: E402
     BODY_ACTION_ROLES,
     BODY_EXECUTABLE_SPAN_ROLES,
@@ -518,10 +523,15 @@ def main() -> int:
     )
     checkpoint_report = read_json(resolve(args.checkpoint_report)) if str(args.checkpoint_report or "").strip() else {}
     checkpoint, vocab = resolve_checkpoint_paths(args, checkpoint_report)
+    source_checkpoint_lineage = checkpoint_evaluation_lineage(
+        checkpoint_report,
+        report_path=str(args.checkpoint_report),
+    )
     report = run_adaptation(
         config,
         config_path=str(args.config),
         checkpoint_report_path=str(args.checkpoint_report),
+        source_checkpoint_lineage=source_checkpoint_lineage,
         checkpoint_path=checkpoint,
         vocab_path=vocab,
         checkpoint_dir=resolve(args.checkpoint_dir),
@@ -793,6 +803,7 @@ def run_adaptation(
     *,
     config_path: str,
     checkpoint_report_path: str,
+    source_checkpoint_lineage: dict[str, Any],
     checkpoint_path: Path,
     vocab_path: Path,
     checkpoint_dir: Path,
@@ -1053,6 +1064,7 @@ def run_adaptation(
                     "semantic_plan_visible_operation_loss_boost": float(semantic_plan_visible_operation_loss_boost or 0.0),
                 },
                 "semantic_construction_repair_profile": semantic_construction_repair_profile,
+                "source_checkpoint_lineage": source_checkpoint_lineage,
                 "public_training_rows": 0,
                 "external_inference_calls": 0,
             },
@@ -1138,6 +1150,29 @@ def run_adaptation(
     max_source = int(vocab_payload.get("max_source") or 96)
     max_target = int(vocab_payload.get("max_target") or 160)
     target_mode = str(vocab_payload.get("target_mode") or get_path(config, ["body_structure_decoder", "target_mode"], "body_tokens"))
+    profile_checkpoint_compatibility = semantic_profile_checkpoint_compatibility(
+        semantic_construction_repair_profile,
+        vocab_payload,
+    )
+    if not bool(profile_checkpoint_compatibility.get("compatible")):
+        return {
+            "policy": "project_theseus_strict_generator_mlx_private_adaptation_v1",
+            "created_utc": now(),
+            "execute": True,
+            "trigger_state": "RED",
+            "summary": {
+                "reason": "semantic_profile_checkpoint_incompatible",
+                "checkpoint": rel(checkpoint_path),
+                "vocab": rel(vocab_path),
+                "semantic_construction_repair_profile": semantic_construction_repair_profile,
+                "profile_checkpoint_compatibility": profile_checkpoint_compatibility,
+                "source_checkpoint_lineage": source_checkpoint_lineage,
+                "optimizer_step_count": 0,
+                "public_training_rows": 0,
+                "external_inference_calls": 0,
+            },
+            "runtime_ms": int((time.perf_counter() - started) * 1000),
+        }
     source_text_style = checkpoint_source_text_style(config, vocab_payload)
     matched_budget = dict_or_empty(config.get("matched_budget"))
     text_views = dict_or_empty(config.get("text_views"))
@@ -1162,6 +1197,13 @@ def run_adaptation(
         all_rows,
         private_residual_repair_split=private_residual_repair_split,
     )
+    checkpoint_training_lineage = compose_transitive_checkpoint_training_lineage(
+        source_checkpoint_lineage,
+        holdout_exclusion,
+        private_residual_repair_split=private_residual_repair_split,
+        injected_teacher_row_count=len(injected_teacher_rows),
+    )
+    family_disjoint_evidence = bool(checkpoint_training_lineage.get("family_disjoint_evidence"))
     tier_selection = select_private_train_tier_rows(all_rows, tier=train_tier)
     all_rows = list(tier_selection.get("rows") or [])
     if tier_balanced_sampling and str(train_tier or "any") == "any":
@@ -3177,6 +3219,7 @@ def run_adaptation(
             "semantic_construction_repair_profile": semantic_construction_repair_profile,
             "semantic_ir_obligation_weighting_plan": semantic_ir_obligation_weighting_plan,
             "family_disjoint_holdout_exclusion": holdout_exclusion,
+            "checkpoint_training_lineage": checkpoint_training_lineage,
             "supplemental_private_train_audit": supplemental_train_audit,
             "private_train_tier_selection": private_train_tier_vocab_summary(tier_selection),
             "return_expression_weighting": return_expression_weighting,
@@ -3341,9 +3384,10 @@ def run_adaptation(
             if private_residual_repair_split
             else "configured_family_disjoint_holdout_exclusion_v1"
         ),
-        "family_disjoint_evidence": not private_residual_repair_split,
+        "family_disjoint_evidence": family_disjoint_evidence,
         "public_calibration_eligible": False,
         "family_disjoint_holdout_exclusion": holdout_exclusion,
+        "checkpoint_training_lineage": checkpoint_training_lineage,
         "supplemental_private_train_audit": supplemental_train_audit,
         "private_train_tier_selection": private_train_tier_summary(tier_selection),
         "batch_size": batch_size,
@@ -3909,6 +3953,7 @@ def run_adaptation(
             "source_text_audit": payload["source_text_audit"],
             "train_split_policy": payload["train_split_policy"],
             "family_disjoint_evidence": payload["family_disjoint_evidence"],
+            "checkpoint_training_lineage": payload["checkpoint_training_lineage"],
             "public_calibration_eligible": payload["public_calibration_eligible"],
             "rehearsal": payload["rehearsal"],
             "source_contrastive_loss": payload["source_contrastive_loss"],
@@ -4342,6 +4387,44 @@ def semantic_construction_profile_missing_components(payload: dict[str, Any]) ->
     return sorted(set(missing))
 
 
+def semantic_profile_checkpoint_compatibility(
+    profile: dict[str, Any],
+    vocab_payload: dict[str, Any],
+) -> dict[str, Any]:
+    required = {str(item) for item in list(profile.get("required_components") or []) if str(item)}
+    target_vocab = dict_or_empty(vocab_payload.get("target_vocab"))
+    plan_tokens = [str(token) for token in target_vocab if str(token).startswith("SLOT:PLAN_")]
+    slot_tokens = [
+        str(token)
+        for token in target_vocab
+        if str(token).startswith("SLOT:")
+        and not str(token).startswith("SLOT:PLAN_")
+        and str(token) != PLAN_BODY_START_TOKEN
+    ]
+    missing: list[str] = []
+    if "semantic_plan_auxiliary" in required and not plan_tokens:
+        missing.append("semantic_plan_label_space")
+    if "semantic_slot_auxiliary" in required:
+        if not bool(vocab_payload.get("semantic_slot_head_materialized")):
+            missing.append("semantic_slot_head")
+        if not slot_tokens:
+            missing.append("semantic_slot_label_space")
+    return {
+        "policy": "semantic_repair_profile_checkpoint_compatibility_v1",
+        "compatible": not missing,
+        "profile_id": str(profile.get("profile_id") or "none"),
+        "target_mode": str(vocab_payload.get("target_mode") or ""),
+        "plan_token_count": len(plan_tokens),
+        "semantic_slot_token_count": len(slot_tokens),
+        "semantic_slot_head_materialized": bool(vocab_payload.get("semantic_slot_head_materialized")),
+        "missing_components": sorted(set(missing)),
+        "optimizer_steps_before_rejection": 0,
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+    }
+
+
 def semantic_slot_prefix_unavailable_for_target_mode(payload: dict[str, Any]) -> bool:
     item = dict_or_empty(payload.get("semantic_slot_prefix_weighting"))
     skipped = dict_or_empty(item.get("skipped_counts"))
@@ -4399,6 +4482,15 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 "family_disjoint_evidence": payload.get("family_disjoint_evidence"),
                 "public_calibration_eligible": payload.get("public_calibration_eligible"),
             },
+        ),
+        gate(
+            "family_disjoint_checkpoint_lineage_transitive_when_claimed",
+            (
+                str(payload.get("train_split_policy") or "") == "private_residual_repair_row_holdout_v1"
+                or bool(payload.get("family_disjoint_evidence"))
+            ),
+            "hard",
+            payload.get("checkpoint_training_lineage"),
         ),
         gate("public_training_rows_zero", int(payload.get("public_training_rows") or 0) == 0, "hard", payload.get("public_training_rows")),
         gate("external_inference_zero", int(payload.get("external_inference_calls") or 0) == 0, "hard", payload.get("external_inference_calls")),
@@ -4759,10 +4851,7 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             "semantic_construction_profile_public_calibration_ineligible",
             (
                 not semantic_construction_profile_enabled
-                or (
-                    not bool(payload.get("public_calibration_eligible"))
-                    and bool(payload.get("train_split_policy") == "private_residual_repair_row_holdout_v1")
-                )
+                or not bool(payload.get("public_calibration_eligible"))
             ),
             "hard",
             {
@@ -6826,15 +6915,11 @@ def gate(name: str, passed: bool, severity: str, evidence: Any) -> dict[str, Any
 
 
 def resolve_checkpoint_paths(args: argparse.Namespace, checkpoint_report: dict[str, Any]) -> tuple[Path, Path]:
-    budget = dict_or_empty(checkpoint_report.get("budget"))
-    summary = dict_or_empty(checkpoint_report.get("summary"))
-    checkpoint_raw = str(args.checkpoint or budget.get("checkpoint") or summary.get("checkpoint") or "").strip()
-    vocab_raw = str(args.vocab or budget.get("vocab") or summary.get("vocab") or "").strip()
-    if not checkpoint_raw:
-        raise SystemExit("missing MLX checkpoint path; pass --checkpoint or --checkpoint-report")
-    if not vocab_raw:
-        raise SystemExit("missing MLX vocab path; pass --vocab or --checkpoint-report")
-    return resolve(checkpoint_raw), resolve(vocab_raw)
+    return resolve_checkpoint_paths_from_report(
+        checkpoint_report,
+        checkpoint_override=str(args.checkpoint or ""),
+        vocab_override=str(args.vocab or ""),
+    )
 
 
 def safe_slug(value: str) -> str:

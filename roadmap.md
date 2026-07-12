@@ -34,7 +34,7 @@ module must meet.
 | Verifier-guided search | Track 2 / Phases 6, 10 | not started | propose->verify->repair search; beat one-shot on held-out |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
-| Generator capability (held-out pass) | Phase 10 | RED - direct, plan-conditioned, and zero-unknown rungs all score 0/24 | retain body-only as the practical baseline; improve prompt-conditioned semantic behavior before preference/RL or scale |
+| Generator capability (held-out pass) | Phase 10 | RED - clean-lineage semantic adaptation emits 14 integrity-clean candidates but scores 0/24; starvation DPO regresses emission to zero | retain the transformer/hybrid survival architecture, reject the tiny adaptation/DPO variants, and improve prompt-conditioned state-transition/update/finalizer learning before preference/RL or scale |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |

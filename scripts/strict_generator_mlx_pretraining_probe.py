@@ -63,6 +63,9 @@ from strict_generator_mlx_model import (  # noqa: E402
     normalize_specialist_core_config,
     specialist_core_parameter_estimate,
 )
+from strict_generator_mlx_replay_selection import (  # noqa: E402
+    exclude_configured_holdout_rows_for_replay,
+)
 
 
 DEFAULT_CONFIG = ROOT / "configs" / "neural_seed_token_decoder_comparator.json"
@@ -451,6 +454,9 @@ def run_probe(
             "parameter_update_fraction": payload.get("parameter_update_fraction"),
             "parameter_tensor_update_fraction": payload.get("parameter_tensor_update_fraction"),
             "row_summary": payload.get("row_summary"),
+            "family_disjoint_evidence": payload.get("family_disjoint_evidence"),
+            "family_disjoint_holdout_exclusion": payload.get("family_disjoint_holdout_exclusion"),
+            "checkpoint_training_lineage": payload.get("checkpoint_training_lineage"),
             "teacher_training": payload.get("teacher_training"),
             "data_exposure": payload.get("data_exposure"),
             "checkpoint": payload.get("checkpoint"),
@@ -585,11 +591,44 @@ def train_budget_mlx(
     full_state_cfg = full_state_pretraining_config(working_config)
     target_mode = str(get_path(working_config, ["body_structure_decoder", "target_mode"], "body_tokens"))
     train_rows_all = load_private_rows(resolve(str(data_cfg.get("train_jsonl") or "")), data_cfg)
+    train_rows_pool, family_holdout_exclusion = exclude_configured_holdout_rows_for_replay(
+        working_config,
+        train_rows_all,
+    )
     teacher_training = load_governed_teacher_code_lm_training_rows(working_config)
     teacher_rows = list(teacher_training.get("rows") or [])
+    family_disjoint_claim_required = bool(
+        dict_or_empty(data_cfg.get("family_disjoint_eval")).get("enabled")
+    )
+    family_disjoint_evidence = bool(
+        family_holdout_exclusion.get("enabled")
+        and family_holdout_exclusion.get("clean")
+        and int(family_holdout_exclusion.get("excluded_row_count") or 0) > 0
+        and not teacher_rows
+    )
+    family_disjoint_lineage = {
+        "policy": "strict_generator_from_scratch_family_disjoint_lineage_v1",
+        "family_disjoint_claim_required": family_disjoint_claim_required,
+        "family_disjoint_evidence": family_disjoint_evidence,
+        "family_disjoint_claim_state": "VERIFIED" if family_disjoint_evidence else "UNVERIFIED",
+        "holdout_exclusion": family_holdout_exclusion,
+        "private_vocab_seed_rows_before_exclusion": len(train_rows_all),
+        "private_vocab_seed_rows_after_exclusion": len(train_rows_pool),
+        "teacher_training_row_count": len(teacher_rows),
+        "model_initialized_from_scratch": True,
+        "staged_training_data_role": "admitted_private_or_licensed_source_corpus",
+        "uses_eval_tests_or_solutions": False,
+        "uses_public_data": False,
+        "candidate_generation_credit": 0,
+        "score_semantics": (
+            "Base-checkpoint lineage for configured private family-disjoint evaluation. Heldout task "
+            "families are removed before private prompt/body rows can seed source or target vocabulary. "
+            "Teacher rows make this claim unverified until separately audited."
+        ),
+    }
     max_train_rows = int(data_cfg.get("max_train_rows") or 512)
     train_rows = [
-        *deterministic_sample(train_rows_all, max(0, max_train_rows - len(teacher_rows)), seed),
+        *deterministic_sample(train_rows_pool, max(0, max_train_rows - len(teacher_rows)), seed),
         *teacher_rows,
     ]
     staged = stage_full_state_examples(
@@ -624,14 +663,23 @@ def train_budget_mlx(
     )
     semantic_plan_cfg = semantic_plan_auxiliary_config(budget, matched_budget)
     semantic_slot_cfg = semantic_slot_auxiliary_config(budget, matched_budget)
+    private_vocab_seed_bodies = [
+        str(row.get("solution_body") or "")
+        for row in train_rows
+        if str(row.get("solution_body") or "").strip()
+    ]
     semantic_plan_vocab_summary = extend_target_vocab_with_semantic_plan_tokens(
         target_vocab,
-        [str(row.get("body") or "") for row in list(staged.get("examples") or [])] + target_vocab_extension_bodies,
+        [str(row.get("body") or "") for row in list(staged.get("examples") or [])]
+        + target_vocab_extension_bodies
+        + private_vocab_seed_bodies,
         enabled=bool(semantic_plan_cfg.get("enabled")),
     )
     semantic_slot_vocab_summary = extend_target_vocab_with_semantic_slot_tokens(
         target_vocab,
-        [str(row.get("body") or "") for row in list(staged.get("examples") or [])] + target_vocab_extension_bodies,
+        [str(row.get("body") or "") for row in list(staged.get("examples") or [])]
+        + target_vocab_extension_bodies
+        + private_vocab_seed_bodies,
         target_mode=target_mode,
         enabled=bool(semantic_slot_cfg.get("enabled")),
     )
@@ -1302,6 +1350,9 @@ def train_budget_mlx(
         "source_vocab_sha256": stable_hash(json.dumps(source_vocab, sort_keys=True)),
         "target_vocab_sha256": stable_hash(json.dumps(target_vocab, sort_keys=True)),
         "target_mode": target_mode,
+        "family_disjoint_evidence": family_disjoint_evidence,
+        "family_disjoint_holdout_exclusion": family_holdout_exclusion,
+        "checkpoint_training_lineage": family_disjoint_lineage,
         "source_vocab_extension": full_state_source_vocab_extension_summary(source_vocab_extension_texts),
         "target_vocab_extension": full_state_target_vocab_extension_summary(target_vocab_extension_bodies),
         "row_summary": dict_or_empty(rows.get("summary")),
@@ -6081,6 +6132,17 @@ def build_gates(payload: dict[str, Any]) -> list[dict[str, Any]]:
     device_text = str(payload.get("device") or "").lower()
     return [
         gate("active_training_rows_present", bool(payload.get("active")), "hard", payload.get("row_summary", {})),
+        gate(
+            "family_disjoint_vocab_and_base_lineage_verified",
+            not bool(
+                dict_or_empty(payload.get("checkpoint_training_lineage")).get(
+                    "family_disjoint_claim_required"
+                )
+            )
+            or bool(payload.get("family_disjoint_evidence")),
+            "hard",
+            payload.get("checkpoint_training_lineage"),
+        ),
         gate("mlx_high_level_backend", str(payload.get("backend") or "") == "mlx_high_level_transformer", "hard", payload.get("backend")),
         gate("mlx_gpu_device_used", "gpu" in device_text, "hard", payload.get("device")),
         gate("parameter_count_recorded", int(payload.get("parameter_count") or 0) > 0, "hard", payload.get("parameter_count")),

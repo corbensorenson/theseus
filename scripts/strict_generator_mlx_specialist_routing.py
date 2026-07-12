@@ -131,6 +131,7 @@ def specialist_route_decode_options(
     enable_expression_value_guard: bool,
     enable_semantic_operation_value_construction: bool,
     require_binding_prefix_groups: bool,
+    decode_cache_mode: str,
 ) -> dict[str, Any]:
     options: dict[str, Any] = {
         "decode_profile": str(route.get("decode_profile") or "global_cli_profile"),
@@ -160,6 +161,7 @@ def specialist_route_decode_options(
         "enable_expression_value_guard": bool(enable_expression_value_guard),
         "enable_semantic_operation_value_construction": bool(enable_semantic_operation_value_construction),
         "require_binding_prefix_groups": bool(require_binding_prefix_groups),
+        "decode_cache_mode": str(decode_cache_mode or "incremental"),
         "candidate_generation_credit": 0,
         "uses_eval_tests_or_solutions_for_generation": False,
         "uses_public_data": False,

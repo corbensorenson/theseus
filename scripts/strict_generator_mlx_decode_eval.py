@@ -83,6 +83,7 @@ from strict_generator_mlx_decode_reporting import (  # noqa: E402
     bind_decode_progress_split,
     build_gates,
     candidate_integrity_summary,
+    checkpoint_evaluation_lineage,
     commit_decode_progress_batch,
     initialize_decode_progress,
     now,
@@ -414,6 +415,7 @@ def main() -> int:
         config,
         config_path=str(args.config),
         checkpoint_report_path=str(args.checkpoint_report),
+        checkpoint_report=checkpoint_report,
         checkpoint_path=checkpoint,
         vocab_path=vocab,
         specialist_checkpoint_specs=specialist_specs,
@@ -501,6 +503,7 @@ def run_decode_eval(
     *,
     config_path: str,
     checkpoint_report_path: str,
+    checkpoint_report: dict[str, Any] | None,
     checkpoint_path: Path,
     vocab_path: Path,
     specialist_checkpoint_specs: dict[str, dict[str, Any]],
@@ -546,6 +549,10 @@ def run_decode_eval(
     checkpoint_loader_cache: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     started = time.perf_counter()
+    checkpoint_lineage = checkpoint_evaluation_lineage(
+        checkpoint_report,
+        report_path=checkpoint_report_path,
+    )
     if not execute:
         return (
             {
@@ -555,6 +562,7 @@ def run_decode_eval(
                 "execute": False,
                 "summary": {
                     "checkpoint": rel(checkpoint_path),
+                    "checkpoint_evaluation_lineage": checkpoint_lineage,
                     "vocab": rel(vocab_path),
                     "specialist_head_routing": specialist_head_routing_summary(
                         specialist_checkpoint_specs,
@@ -624,6 +632,13 @@ def run_decode_eval(
             "config_path": str(config_path),
             "config_sha256": stable_hash_file(resolve(config_path)),
             "checkpoint_report_path": str(checkpoint_report_path),
+            "checkpoint_report_sha256": (
+                stable_hash_file(resolve(checkpoint_report_path))
+                if str(checkpoint_report_path or "").strip()
+                and resolve(checkpoint_report_path).exists()
+                else ""
+            ),
+            "checkpoint_evaluation_lineage": checkpoint_lineage,
             "checkpoint_sha256": stable_hash_file(checkpoint_path),
             "vocab_sha256": stable_hash_file(vocab_path),
             "specialist_checkpoints": {
@@ -922,7 +937,12 @@ def run_decode_eval(
 
     integrity_summary = candidate_integrity_summary(all_candidates)
     body_action_trace_summary = body_action_trace_candidate_summary(all_candidates)
-    gates = build_gates(selected, all_candidates, integrity_summary=integrity_summary)
+    gates = build_gates(
+        selected,
+        all_candidates,
+        integrity_summary=integrity_summary,
+        checkpoint_lineage=checkpoint_lineage,
+    )
     hard_pass = all(row["passed"] for row in gates if row["severity"] == "hard")
     trigger_state = "GREEN" if hard_pass else "RED"
     if trigger_state == "GREEN" and any(not row["passed"] for row in gates):
@@ -963,6 +983,7 @@ def run_decode_eval(
         "checkpoint": rel(checkpoint_path),
         "checkpoint_sha256": stable_hash_file(checkpoint_path),
         "checkpoint_report": checkpoint_report_path,
+        "checkpoint_evaluation_lineage": checkpoint_lineage,
         "vocab": rel(vocab_path),
         "vocab_sha256": stable_hash_file(vocab_path),
         "backend": "mlx_high_level_transformer_direct_decode",

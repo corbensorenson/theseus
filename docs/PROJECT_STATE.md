@@ -55,6 +55,20 @@ actionable architecture prerequisites are now wired or implemented. The gate
 reports `pre_training_architecture_ready=true`, zero architecture blockers, and
 zero architecture warnings; this authorizes governed training but is not model
 quality evidence.
+The latest bounded Phase 10 diagnostic corrected a previously hidden evidence
+defect before drawing another capability conclusion. Family-disjoint evaluation
+now requires transitive checkpoint-training lineage; configured holdout families
+are removed before private rows can seed vocabulary; semantic profiles cannot
+silently weaken the data split; incompatible semantic heads fail before an
+optimizer step; and replay routing is signature-checked against the decode ABI.
+A fresh clean-lineage semantic checkpoint then emitted `14` integrity-clean
+candidates on the `24`-row family-disjoint diagnostic but passed `0/24`
+behaviors. A starvation-DPO follow-up improved its preference objective while
+regressing candidate emission from `14` to `0`. Both model interventions are
+`NOT_ADOPTED`; the contract and lineage repairs are retained. The current model
+wall is learned prompt/signature-conditioned state transitions, update operands,
+and final-return semantics with adequate data/capacity. Syntax, LM loss,
+preference gap, templates, renderers, routes, and tools cannot satisfy that wall.
 The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
 book reconciliation. Phases `15` and `19` are `implemented`; phases `0`, `1`,
 `2`, `3`, `4`, `6`, `8`, `11`, `12`, `14`, `17`, and `18` are `wired`; phases

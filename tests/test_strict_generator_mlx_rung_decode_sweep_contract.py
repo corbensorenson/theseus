@@ -15,6 +15,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from strict_generator_mlx_decode_eval import run_decode_eval  # noqa: E402
+from strict_generator_mlx_specialist_routing import specialist_route_decode_options  # noqa: E402
 
 
 def test_rung_sweep_forwards_every_required_decode_option() -> None:
@@ -45,3 +46,25 @@ def test_rung_sweep_forwards_every_required_decode_option() -> None:
     assert len(max_target_keywords) == 1
     assert isinstance(max_target_keywords[0].value, ast.Name)
     assert max_target_keywords[0].value.id == "max_target_tokens_override"
+
+
+def test_private_replay_route_forwards_every_required_decode_option() -> None:
+    source_path = SCRIPTS / "strict_generator_mlx_decode_eval.py"
+    tree = ast.parse(source_path.read_text(encoding="utf-8"))
+    calls = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "specialist_route_decode_options"
+    ]
+    assert len(calls) == 1
+    forwarded = {keyword.arg for keyword in calls[0].keywords if keyword.arg}
+    required = {
+        name
+        for name, parameter in inspect.signature(specialist_route_decode_options).parameters.items()
+        if name != "route"
+        and parameter.kind == inspect.Parameter.KEYWORD_ONLY
+        and parameter.default is inspect.Parameter.empty
+    }
+    assert required <= forwarded, f"private replay route is missing decode options: {sorted(required - forwarded)}"
