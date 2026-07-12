@@ -1295,7 +1295,9 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("assisted generation is forbidden in model-only evaluation")
     training = config.get("training") or {}
     repetitions = int(training.get("supervision_optimizer_repetitions") or 0)
-    if not 1 <= repetitions <= int(training.get("maximum_optimizer_repetitions") or 0):
+    if not 1 <= repetitions <= int(
+        training.get("maximum_supervision_optimizer_repetitions") or 0
+    ):
         raise ValueError("supervision repetition must remain within the frozen maximum")
     if not 1.0 <= float(training.get("termination_loss_weight") or 0.0) <= 8.0:
         raise ValueError("termination loss weight must remain bounded")

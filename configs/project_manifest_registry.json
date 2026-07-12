@@ -5168,7 +5168,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The lossless stage and licensed 20,000-train/544-development/1,032-confirmation split are GREEN. The retained Rust causal baseline is 0/64 confirmation. Four-pass weighted SFT plus beam decoding repairs EOS/serialization to 60/60 development, but both causal and matched prefix-LM runs remain 0/60 exact; prefix-LM yields 21 distinct outputs. Test a bounded 32-pass SFT depth ablation next, with repetition separate from unique-data credit. Routing, templates, tools, forced closure, and assisted output receive no capability credit."
+      "current_wall": "The lossless stage and licensed three-way split are GREEN. The Rust causal baseline is 0/64 confirmation. Termination is repaired, but causal, prefix-LM, and 32-pass SFT variants remain 0/60 development exact. The 32-pass run lowers final SFT loss to 1.30 and yields 57 distinct outputs while sampled edits remain semantically unrelated. Stop increasing repetition; build a parameter/compute-accounted encoder-decoder cross-attention arm next. Routing, templates, tools, forced closure, and assisted output receive no capability credit."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

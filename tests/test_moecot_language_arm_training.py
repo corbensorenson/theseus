@@ -76,6 +76,7 @@ def tiny_config(tmp_path: Path) -> dict:
             "gradient_clip_norm": 1.0,
             "checkpoint_every_steps": 1,
             "maximum_optimizer_repetitions": 4,
+            "maximum_supervision_optimizer_repetitions": 32,
             "supervision_optimizer_repetitions": 4,
             "termination_loss_weight": 4.0,
             "byte_boundary_loss_weight": 2.0,

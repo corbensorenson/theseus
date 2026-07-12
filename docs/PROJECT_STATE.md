@@ -39,7 +39,9 @@ share toward zero. Public benchmarks are calibration only.
   overlap or public payloads. The Rust causal baseline scored 0/64 confirmation.
   Four-pass weighted SFT plus beam decoding now emits valid EOS-terminated text on
   60/60 development rows but remains 0/60 exact. A matched prefix-LM rerun also
-  scores 0/60, so optimization depth is the next isolated variable.
+  scores 0/60. A 32-pass SFT run lowers final loss to 1.30 and produces 57 distinct
+  outputs but remains 0/60 and semantically unrelated. Explicit source encoding is
+  the next isolated architectural variable; further repetition is stopped.
 
 ## Evidence Boundaries
 
@@ -94,6 +96,12 @@ share toward zero. Public benchmarks are calibration only.
   0/60, although it produces 21 distinct development outputs. This negative is
   retained. The next run keeps prefix-LM and changes only supervised optimizer
   depth from four to 32 passes; repeated exposure never increases unique-data credit.
+- **Optimization-depth falsification:** 32 SFT passes consume 3,686,048 optimizer
+  positions while retaining only 115,189 unique-position credit. Final loss falls
+  to 1.30 and diversity reaches 57/60 hashes, but exact recovery remains 0/60 and
+  sampled outputs do not implement the requested edits. Further repetition is not
+  authorized as a semantic repair; the next candidate is an encoder-decoder with
+  explicit source cross-attention and matched parameter/compute reporting.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
