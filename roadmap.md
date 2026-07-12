@@ -46,7 +46,7 @@ module must meet.
 | Report hygiene | Phases 0, 8, 14 | policy GREEN; generated/build state remains about 30.8 GiB | keep current-reference compaction and exact replay mandatory; cleanup is maintenance, not the capability flagship |
 | Book crosswalk / parity | Phase 19 | 54 chapters mapped in manifest order; no beyond-SOTA completion implied | keep book-owned fields, tests, and source identity checksum-bound |
 | Book test obligations | Phase 19 + routed owners | 504 authored Codex tests; 102 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
-| Book futures intake | Phase 19 + routed owners | 9 chapter candidates + 2 section routes remain outside the 54-chapter manifest | activate only at source/ownership and operational entry gates |
+| Book futures intake | Phase 19 + routed owners | 10 chapter candidates + 2 section routes remain outside the 54-chapter manifest; QCSA source is available and manifest pending | activate only at source/ownership and operational entry gates |
 
 Pre-training readiness uses the matrix-owned phase partition rather than every
 unfinished roadmap item. Phases `0, 1, 2, 3, 4, 6, 8, 11, 14, 15, 18, 19` are
@@ -550,6 +550,87 @@ run and it meets the Quality Bars below.
   capability/calibration result.
 - Do not: keep proving VCM on tiny saturated benchmarks; store raw private user
   text in training rows by default.
+
+#### Question-Compiled Semantic Addressing extension
+
+The QCSA whitepaper (`qcsa_whitepaper`, v1.0, 2026-07-12) is available in the
+AI_book source tree but is not yet an active `book_structure.json` chapter. Treat it
+as a source-available, manifest-pending chapter candidate. It extends existing VCM,
+SCF, PlanForge, VIEA, Semantic IR, tool, and Octopus contracts; it does not create a
+new memory abstraction or bypass the active C1 capability flagship.
+
+Implement it through the existing fields in this order:
+
+1. **Identity/address/route type separation (Phases 0, 2, 3, 14).** Make an opaque
+   stable Semantic Object ID independent of page revision, semantic address, label,
+   embedding, atlas epoch, and physical location. Distinguish occurrence, type,
+   instance, proposition, expression, memory, tool, policy, capability, and artifact
+   obligation. Creation is provisional; merge, split, deprecation, alias, and
+   revocation preserve lineage. Similarity, translation, or neighborhood never
+   establishes identity by itself.
+2. **Plural semantic address atlas and certificates (Phases 3, 13, 14).** Extend
+   the existing VCM representation certificate into a `SemanticAddressCertificate`
+   bound to SOID, occurrence/expression, context, task, consumer, atlas epoch,
+   facet/version, weighted top-k variable-length paths, confidence/entropy/boundary,
+   adequacy termination, cross-facet consistency, provenance, groundings,
+   residuals, permitted/prohibited uses, authority ceiling, expiry/revalidation,
+   migration refs, and digest/signature. Facets declare consumer, objective,
+   source relations, arity/depth policy, stability budget, and prohibited uses.
+3. **Question compiler (Phases 1, 3, 6, 8, 14).** Compile unresolved posteriors
+   into internal discriminators, retrievals, verifier/tool calls, or human
+   clarifications selected by decision-relevant information value minus compute,
+   latency, privacy, interaction, and risk cost. Support soft candidates, batched
+   questions, noisy answers, backtracking, `UNKNOWN`, and abstention. Persist the
+   posterior change and evidence refs as a replayable question trace; never invent
+   an intensional explanation for an operational-only latent split.
+4. **Semantic-to-physical translation (Phases 1, 2, 3, 6, 8, 16, 18).** Compile
+   SOID plus certificate into temporary VIEA/PlanForge route plans for VCM shards,
+   retrieval indexes, specialists, tools, verifiers, compute tiers, decoders,
+   approvals, fallback, and abstention. Physical remapping may not alter identity or
+   atlas meaning. Semantic classification never grants authority; the translator
+   must independently consume SCF, resource, privacy, and effect constraints.
+5. **Atlas release and migration (Phases 0, 2, 3, 14, 18).** Publish atlas epochs
+   with codebooks/topology, facet purposes, data/objective summaries, branch
+   utilization/calibration, boundary examples, collisions, prohibited uses,
+   migration maps, signatures, and rollback. Distinguish readdress from object
+   merge/split. Shadow new epochs, dual-resolve supported old addresses, preserve
+   SOID identity, reject silent misrouting, and retain explicit orphan/conflict
+   faults and residual burden.
+6. **Compositional/open-world semantics (Phases 3, 13, 14).** Represent novel
+   compositions as typed expression DAGs/programs with roles, quantity, negation,
+   modality, time, and causal operators before creating permanent leaves. Require
+   semantic-to-surface-to-semantic round-trip checks for generation claims while
+   keeping direct model-only behavior separate from certificate/tool assistance.
+
+Testing must reuse existing VCM, planner, routing, evidence, and private capability
+fixtures rather than create another benchmark lane. Preregister matched baselines:
+flat IDs, random/frequency trees, one semantic tree, residual-quantized IDs,
+multi-view IDs without stable identity, and full QCSA with active-question,
+physical-translation, soft-routing, and migration-governance ablations. Cover:
+
+- identity consistency, false merge/split, novel-object detection, correction
+  persistence, and provenance completeness;
+- atlas prefix utility, branch balance, entropy/path cost, boundary calibration,
+  collision/ambiguity, perturbation robustness, and migration stability;
+- question cost, decision error after each question, noisy-answer recovery,
+  privacy/user burden, unnecessary clarification, and downstream utility;
+- retrieval recall/ranking/latency/tail behavior, deletion, stale-address recovery,
+  authority filtering, and stable-reference preservation after reindexing;
+- expert/tool route quality at matched compute, paraphrase stability, permission
+  violations, fallback, throughput, and replacement blast radius;
+- semantic round-trip role/quantity/negation/time/citation accuracy, repair locality,
+  latency, and direct-generation fallback frequency;
+- old-address resolution, silent-misroute rate, migration coverage, rollback,
+  unauthorized activation, residual preservation, and epoch operating cost.
+
+Adopt only on a meaningful Pareto gain in task quality, matched-quality cost,
+calibrated disambiguation, tail/generalization, migration blast radius, or governed
+policy compliance. Falsify or narrow the mechanism if learned addresses do not beat
+random/frequency controls, plural facets add only cost, questions do not beat direct
+inference/simple clarification, identity indirection does not reduce migration
+errors, certificates prevent no failures, or semantic-first generation loses
+quality/latency without a compensating gain. Architecture coherence alone earns no
+support-state promotion.
 
 ### Phase 4: Candidate Integrity and Learned-Generation Accounting
 - Independently recompute candidate family, provenance, blind read-set, loadability,
@@ -1089,6 +1170,7 @@ gaps route into the phases above:
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
 | Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
 | Durable semantic memory inside VCM | wired: stable objects, typed/temporal relations, additive ontology migration, transactional merge/supersession/retraction/compaction, sparse-vector/graph retrieval, bounded snapshots, and fresh-process replay; dense embedding and parametric unlearning remain explicit non-claims | 3, 14, 15 |
+| Question-Compiled Semantic Addressing | source available, chapter manifest pending; current VCM derives semantic object identity from address roots and lacks explicit SOID/address/physical-route indirection, plural atlas epochs, SACs, information-value question compilation, and matched migration/routing falsification | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 |
 | Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |
 | Claim ledgers + belief revision | claim/transition records + contradiction links not first-class per run | 14 |
 | Proof-carrying + tribunal/adversarial review | broader independent-review records not standard for architecture changes | 14, 18 |
@@ -1123,7 +1205,7 @@ gaps route into the phases above:
 
 The ASI Stack now has 54 active chapters. Ten items from the earlier completeness
 intake have been admitted and are owned by the chapter crosswalk rather than this
-future queue. The 11 remaining candidates/section routes below are **not new active
+future queue. The 12 remaining candidates/section routes below are **not new active
 lanes**: each is owned by existing phases, remains planning-only until its source,
 ownership, and operational entry gates pass, and blocks only the higher-authority
 operation it governs.
@@ -1131,6 +1213,7 @@ operation it governs.
 | Book candidate or section | Theseus owner phases | Entry condition / disposition |
 |---|---|---|
 | Reasoning-Trace Faithfulness (section route) | 1, 4, 14 | now as an evidence boundary; distinguish traces from receipts and test trace/action consistency without treating hidden reasoning as authoritative |
+| Question-Compiled Semantic Addressing | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 | source available and chapter manifest pending; extend VCM/SCF/VIEA with stable SOID-address-route indirection, plural address atlases, active question traces, SACs, physical translation, migration receipts, and matched falsification without creating a parallel memory lane |
 | World Models and Model-Based Cognition | 10, 13, 17 | after the core proposer floor; prediction/error ledgers, model-predictive control, imagination/search, causal limits, sim-to-real |
 | Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |
 | Persuasion, Epistemic Security, and Human Agency | 5, 14, 18 | source-contingent; require stronger empirical anchors before activation or claims |
@@ -1146,6 +1229,10 @@ Cross-cutting Tier-2 obligations are folded into those owners rather than becomi
 more systems: calibrated uncertainty/selective prediction/abstention and
 trace-faithfulness (Phases 4/14); prompt-injection limits, autonomous-insider and
 collusion probes, randomized monitoring, and operator-load residuals (Phase 18);
+stable semantic identity/address/physical-route separation, consumer-relative
+address adequacy, active-question value/cost/privacy/risk traces, atlas epoch
+migration, and semantic-route authority non-inheritance (Phases 0/1/2/3/6/8/13/
+14/16/18);
 OOD/active perception plus causal/counterfactual/identifiability boundaries
 (Phases 13/17); temporal-logic monitors, interlocks, degraded operation, and
 sim-to-real residuals (Phases 17/18); AIBOM/reproducible-build/derivative-revocation
