@@ -782,6 +782,24 @@
             "field": "trigger_state",
             "allowed": ["GREEN"]
           }
+        },
+        {
+          "id": "verifier_guided_search_runtime",
+          "path": "reports/strict_generator_semantic_ir_repair_apply_v9.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "configs/theseus_plan_compiler.json",
+            "scripts/verifier_guided_search.py",
+            "scripts/theseus_plan_compiler.py",
+            "scripts/strict_generator_semantic_ir_repair_apply.py",
+            "scripts/semantic_ir.py",
+            "scripts/code_lm_private_verifier.py",
+            "tests/test_verifier_guided_search.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
+          }
         }
       ]
     },
@@ -5527,12 +5545,15 @@
       "canonical_entrypoint": "scripts/theseus_deterministic_tool_substrate.py",
       "swappable_under_contract": true,
       "replacement_policy": "Tool replacements must preserve schemas, replay checksums, trust tiers, and structured failure modes.",
-      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation && python3 -m py_compile scripts/theseus_deterministic_tool_substrate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation && python3 -m pytest -q tests/test_verifier_guided_search.py && python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute && python3 -m py_compile scripts/theseus_deterministic_tool_substrate.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/verifier_guided_search.py scripts/theseus_plan_compiler.py scripts/strict_generator_semantic_ir_repair_apply.py",
       "role": "deterministic_tool",
       "trust_tier": "deterministic_local",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "scripts/theseus_deterministic_tool_substrate.py",
+        "scripts/verifier_guided_search.py",
+        "scripts/strict_generator_semantic_ir_repair_apply.py",
+        "tests/test_verifier_guided_search.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
         "scripts/neural_seed_full_state_pretraining.py",
@@ -5548,7 +5569,8 @@
         "reports/deterministic_tool_dogfood_events.jsonl",
         "reports/deterministic_tool_loop_closure_candidates.json",
         "reports/deterministic_tool_artifact_graph.json",
-        "reports/deterministic_tool_substrate.md"
+        "reports/deterministic_tool_substrate.md",
+        "reports/strict_generator_semantic_ir_repair_apply_v9.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -7346,6 +7368,9 @@
       "status": "live",
       "patterns": [
         "scripts/theseus_deterministic_tool_substrate.py",
+        "scripts/verifier_guided_search.py",
+        "scripts/strict_generator_semantic_ir_repair_apply.py",
+        "tests/test_verifier_guided_search.py",
         "scripts/proof_carrying_contract_gate.py",
         "scripts/circle_ai_contract_consumer.py",
         "scripts/circle_ai_private_workload_smoke.py",
@@ -7365,12 +7390,13 @@
         "reports/deterministic_tool_loop_closure_candidates.json",
         "reports/deterministic_tool_artifact_graph.json",
         "reports/deterministic_tool_substrate.md",
+        "reports/strict_generator_semantic_ir_repair_apply_v9.json",
         "reports/proof_carrying_contract_gate.json",
         "reports/proof_carrying_contract_gate.md",
         "reports/proof_carrying_contract_records.jsonl",
         "reports/substrate_adoption_records.jsonl"
       ],
-      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation && python3 scripts/proof_carrying_contract_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation && python3 -m pytest -q tests/test_verifier_guided_search.py && python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute && python3 scripts/proof_carrying_contract_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/verifier_guided_search.py scripts/theseus_plan_compiler.py scripts/strict_generator_semantic_ir_repair_apply.py",
       "cleanup_policy": "exact local solver/search/checker/proof tools are registered instruments; unsupported tools emit structured non-solved states and Circle-derived fixtures remain proof-boundary/config evidence unless separate Theseus task evidence proves utility",
       "abstraction_id": "deterministic_tool_contract",
       "major_surface": true,

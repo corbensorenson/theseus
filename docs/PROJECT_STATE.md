@@ -69,6 +69,18 @@ regressing candidate emission from `14` to `0`. Both model interventions are
 wall is learned prompt/signature-conditioned state transitions, update operands,
 and final-return semantics with adequate data/capacity. Syntax, LM loss,
 preference gap, templates, renderers, routes, and tools cannot satisfy that wall.
+Verifier-guided search is now an ordinary registered architecture path rather
+than a roadmap-only phrase. `scripts/verifier_guided_search.py` implements a
+bounded propose/verify/repair state machine with proposal, verifier-call, depth,
+branch, and wall-time budgets; sanitized feedback; independent integrity;
+duplicate suppression; typed faults; deterministic replay; and separate
+one-shot, learned-search, deterministic-repair, and tool-assisted claim channels.
+The plan compiler emits `37/37` search contracts and marks `20` representative
+nodes bounded-eligible by operation/risk. The existing Semantic-IR repair runtime
+consumes the kernel and produced `2/2` replay-valid receipts with zero replay
+mismatches and a two-fault type-handling reduction. It still scores zero behavior
+passes, so Track 2 is architecture-wired but not behavior-qualified and no search
+capability gain is claimed.
 The current roadmap gate is `YELLOW` with `0` hard gaps after the 2026-07-11
 book reconciliation. Phases `15` and `19` are `implemented`; phases `0`, `1`,
 `2`, `3`, `4`, `6`, `8`, `11`, `12`, `14`, `17`, and `18` are `wired`; phases

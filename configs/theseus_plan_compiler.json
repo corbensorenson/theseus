@@ -77,6 +77,52 @@
     "T3": "governed teacher proposal mode for architecture/curriculum diagnosis",
     "T4": "run-registry check for public calibration, plus explicit review for risky updates or policy changes"
   },
+  "verifier_guided_search": {
+    "policy": "project_theseus_plan_verifier_guided_search_v1",
+    "eligible_ops": [
+      "PROPOSE",
+      "EXECUTE",
+      "VERIFY",
+      "BENCHMARK_ADAPTER"
+    ],
+    "budgets_by_risk": {
+      "low": {
+        "max_proposals": 8,
+        "max_verifier_calls": 4,
+        "max_depth": 1,
+        "max_repair_branches": 2,
+        "max_wall_ms": 1000
+      },
+      "medium": {
+        "max_proposals": 32,
+        "max_verifier_calls": 16,
+        "max_depth": 2,
+        "max_repair_branches": 4,
+        "max_wall_ms": 5000
+      },
+      "high": {
+        "max_proposals": 96,
+        "max_verifier_calls": 48,
+        "max_depth": 3,
+        "max_repair_branches": 6,
+        "max_wall_ms": 20000
+      }
+    },
+    "feedback_allowlist": [
+      "passed",
+      "verification_stage",
+      "verification_reward",
+      "fault_codes",
+      "repair_scope",
+      "message_code",
+      "evidence_hash",
+      "verifier_id"
+    ],
+    "public_hidden_verifier_feedback_allowed": false,
+    "fallback_returns_allowed": false,
+    "candidate_integrity_independent": true,
+    "score_model_only_search_and_assisted_separately": true
+  },
   "vcm_family_defaults": {
     "planning": "autonomy_governance",
     "code_transfer": "code_generation",

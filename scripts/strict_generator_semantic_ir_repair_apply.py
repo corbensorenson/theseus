@@ -24,6 +24,8 @@ from pathlib import Path
 from typing import Any
 
 import semantic_ir
+import verifier_guided_search
+from candidate_integrity import recompute_candidate_integrity
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -118,6 +120,13 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         }
         source_verifier_report = dict(verifier_report)
     verifier_comparison = compare_verifier_reports(source_verifier_report, verifier_report)
+    search_receipts = verifier_guided_search_receipts(
+        source_selected,
+        repaired,
+        source_verifier_report,
+        verifier_report,
+        execute=bool(args.execute),
+    )
     semantic_ir_ready = bool(repaired) and all(
         dict_or_empty(row.get("semantic_ir")).get("state") == "READY"
         and dict_or_empty(row.get("semantic_ir")).get("roundtrip_ast_equal") is True
@@ -132,6 +141,18 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         [
             gate("typed_semantic_ir_roundtrip_ready", semantic_ir_ready, "hard", len(repaired)),
             gate("localized_atom_scope_present", localized_patch_count == len(repaired) if repaired else False, "hard", localized_patch_count),
+            gate(
+                "verifier_guided_search_replay_valid",
+                all(row.get("replay", {}).get("passed") is True for row in search_receipts)
+                if args.execute and search_receipts
+                else not args.execute,
+                "hard",
+                {
+                    "execute": bool(args.execute),
+                    "receipt_count": len(search_receipts),
+                    "invalid_count": sum(1 for row in search_receipts if row.get("replay", {}).get("passed") is not True),
+                },
+            ),
         ]
     )
     if args.execute:
@@ -196,6 +217,16 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
             "repaired_type_handling_failures": verifier_comparison.get("repaired_type_handling_failures", 0),
             "type_handling_failure_delta": verifier_comparison.get("type_handling_failure_delta", 0),
             "behavior_pass_delta": verifier_comparison.get("behavior_pass_delta", 0),
+            "verifier_guided_search_receipt_count": len(search_receipts),
+            "verifier_guided_search_exact_count": sum(
+                int(row.get("summary", {}).get("verified_exact_count") or 0) for row in search_receipts
+            ),
+            "verifier_guided_search_assisted_pass_count": sum(
+                int(bool(row.get("summary", {}).get("assisted_repair_pass"))) for row in search_receipts
+            ),
+            "verifier_guided_search_replay_invalid_count": sum(
+                int(row.get("replay", {}).get("passed") is not True) for row in search_receipts
+            ),
             "hard_gap_count": len(hard_failed),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
             **NO_CHEAT,
@@ -206,6 +237,7 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         "private_source_verifier": source_verifier_report,
         "private_verifier": verifier_report,
         "verifier_comparison": verifier_comparison,
+        "verifier_guided_search": search_receipts,
         "rules": {
             "input_boundary": "generated private candidates plus model-emitted prefix and semantic-IR repair obligations only",
             "verifier_boundary": "private tests are loaded only after repairs are produced and only for verification",
@@ -221,6 +253,137 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         ],
     }
     return report, repaired
+
+
+def verifier_guided_search_receipts(
+    source_candidates: list[dict[str, Any]],
+    repaired_candidates: list[dict[str, Any]],
+    source_verifier: dict[str, Any],
+    repaired_verifier: dict[str, Any],
+    *,
+    execute: bool,
+) -> list[dict[str, Any]]:
+    if not execute:
+        return []
+    source_traces = verifier_trace_by_candidate(source_verifier)
+    repaired_traces = verifier_trace_by_candidate(repaired_verifier)
+    repaired_by_source = {
+        str(dict_or_empty(row.get("semantic_ir_repair_apply")).get("source_candidate_sha256") or ""): row
+        for row in repaired_candidates
+        if str(dict_or_empty(row.get("semantic_ir_repair_apply")).get("source_candidate_sha256") or "")
+    }
+    row_by_code_hash = {
+        sha256_text(str(row.get("code") or "")): row
+        for row in [*source_candidates, *repaired_candidates]
+        if str(row.get("code") or "")
+    }
+
+    def integrity(proposal: verifier_guided_search.Proposal) -> dict[str, Any]:
+        receipt = semantic_ir.candidate_receipt(proposal.code)
+        row = row_by_code_hash.get(sha256_text(proposal.code), {})
+        candidate_audit = recompute_candidate_integrity(row)
+        if proposal.origin == "model_one_shot":
+            origin_verified = bool(candidate_audit.get("integrity_verified"))
+        else:
+            repair_meta = dict_or_empty(row.get("semantic_ir_repair_apply"))
+            origin_verified = bool(
+                proposal.origin == "deterministic_repair"
+                and repair_meta.get("policy") == "project_theseus_strict_generator_semantic_ir_repair_apply_v1"
+                and int(repair_meta.get("candidate_generation_credit") or 0) == 0
+                and repair_meta.get("learned_generation_claim_allowed") is False
+            )
+        return {
+            "independently_recomputed": True,
+            "valid": bool(
+                origin_verified
+                and receipt.get("state") == "READY"
+                and receipt.get("roundtrip_ast_equal") is True
+            ),
+            "candidate_sha256": sha256_text(proposal.code),
+            "family": candidate_audit.get("recomputed_candidate_family"),
+            "fallback_or_template": candidate_audit.get("recomputed_candidate_family") == "fallback_or_template",
+            "origin_independently_recomputed": True,
+            "verified_origin": proposal.origin if origin_verified else "unverified",
+        }
+
+    def verify(proposal: verifier_guided_search.Proposal) -> dict[str, Any]:
+        candidate_sha = sha256_text(proposal.code)
+        trace = source_traces.get(candidate_sha) or repaired_traces.get(candidate_sha)
+        if not trace:
+            raise verifier_guided_search.SearchContractFault("VERIFIER_TRACE_MISSING", candidate_sha)
+        failure = str(trace.get("failure_class") or "")
+        row = row_by_code_hash.get(candidate_sha, {})
+        repair_meta = dict_or_empty(row.get("semantic_ir_repair_apply"))
+        return {
+            "passed": bool(trace.get("intended_behavior_passed") or trace.get("passed")),
+            "verification_stage": str(trace.get("verification_stage") or "unknown"),
+            "verification_reward": float(trace.get("verification_reward") or 0.0),
+            "fault_codes": [failure] if failure else [],
+            "repair_scope": [str(item) for item in list(repair_meta.get("changed_atom_ids") or [])],
+            "message_code": failure or str(trace.get("verification_stage") or "unknown"),
+            "evidence_hash": verifier_guided_search.stable_hash(
+                {
+                    "candidate_sha256": candidate_sha,
+                    "stage": trace.get("verification_stage"),
+                    "reward": trace.get("verification_reward"),
+                    "passed": bool(trace.get("intended_behavior_passed") or trace.get("passed")),
+                }
+            ),
+            "verifier_id": "private_code_lm_candidate_verifier",
+        }
+
+    def repair(
+        proposal: verifier_guided_search.Proposal,
+        _feedback: dict[str, Any],
+    ) -> list[verifier_guided_search.Proposal]:
+        source_sha = sha256_text(proposal.code)
+        row = repaired_by_source.get(source_sha)
+        if not row:
+            return []
+        return [
+            verifier_guided_search.Proposal(
+                code=str(row.get("code") or ""),
+                origin="deterministic_repair",
+            )
+        ]
+
+    receipts: list[dict[str, Any]] = []
+    for row in source_candidates:
+        source_sha = sha256_text(str(row.get("code") or ""))
+        receipt = verifier_guided_search.run_search(
+            [
+                verifier_guided_search.Proposal(
+                    code=str(row.get("code") or ""),
+                    origin="model_one_shot",
+                    model_receipt_hash=str(row.get("candidate_sha256") or source_sha),
+                )
+            ],
+            verify=verify,
+            repair=repair,
+            integrity=integrity,
+            budget=verifier_guided_search.SearchBudget(
+                max_proposals=2,
+                max_verifier_calls=2,
+                max_depth=1,
+                max_repair_branches=1,
+                max_wall_ms=5_000,
+            ),
+            task_ref_hash=verifier_guided_search.stable_hash(str(row.get("task_id") or source_sha)),
+        )
+        receipt["replay"] = verifier_guided_search.validate_replay(receipt)
+        receipts.append(receipt)
+    return receipts
+
+
+def verifier_trace_by_candidate(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    traces: dict[str, dict[str, Any]] = {}
+    for row in list(report.get("verification_attempt_labels") or []):
+        if not isinstance(row, dict):
+            continue
+        candidate_sha = str(row.get("code_sha256") or row.get("candidate_sha256") or "")
+        if candidate_sha and candidate_sha not in traces:
+            traces[candidate_sha] = row
+    return traces
 
 
 def candidate_rows_for_repair(rows: list[dict[str, Any]], *, limit: int) -> list[dict[str, Any]]:

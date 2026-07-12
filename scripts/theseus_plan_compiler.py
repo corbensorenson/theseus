@@ -351,6 +351,13 @@ def compile_atom(
         deterministic_tool_registry=deterministic_tool_registry,
         deterministic_tool_report=deterministic_tool_report,
     )
+    verifier_search = verifier_guided_search_contract_for(
+        node_id=node_id,
+        atom=atom,
+        goal=goal,
+        config=config,
+        route=route,
+    )
     semantic_payload = {
         "op": str(atom.get("op") or ""),
         "title": str(atom.get("title") or ""),
@@ -368,6 +375,7 @@ def compile_atom(
         tool_requirements=tool_requirements,
         tool_eligibility=tool_eligibility,
         tool_receipts=tool_receipts,
+        verifier_search=verifier_search,
         outputs=outputs,
         acceptance_refs=acceptance_refs,
     )
@@ -392,6 +400,7 @@ def compile_atom(
         "tool_requirements": tool_requirements,
         "tool_eligibility": tool_eligibility,
         "tool_receipts": tool_receipts,
+        "verifier_guided_search": verifier_search,
         "execution_packet": execution_packet,
         "route": route,
         "semantic_hash": semantic_hash,
@@ -782,6 +791,7 @@ def execution_packet_for(
     tool_requirements: list[dict[str, Any]],
     tool_eligibility: dict[str, Any],
     tool_receipts: list[dict[str, Any]],
+    verifier_search: dict[str, Any],
     outputs: list[str],
     acceptance_refs: list[str],
 ) -> dict[str, Any]:
@@ -806,6 +816,7 @@ def execution_packet_for(
             for ref in list_value(row.get("evidence_refs"))
             if ref
         ],
+        "verifier_guided_search_contract": verifier_search,
         "vcm_context_hash": vcm_slice.get("context_hash"),
         "vcm_governed_context_hash": vcm_slice.get("governed_context_hash"),
         "vcm_context_governor_receipt_id": get_path(vcm_slice, ["governor_receipt", "receipt_id"], ""),
@@ -820,6 +831,71 @@ def execution_packet_for(
         "structured_non_solved_states": ["UNKNOWN", "UNSOLVED", "TOOL_UNAVAILABLE", "TOOL_FAULT"],
         "dogfood_trace_shape": ["accepted", "missed", "ignored", "corrected", "completed", "failure"],
     }
+
+
+def verifier_guided_search_contract_for(
+    *,
+    node_id: str,
+    atom: dict[str, Any],
+    goal: dict[str, Any],
+    config: dict[str, Any],
+    route: dict[str, Any],
+) -> dict[str, Any]:
+    policy = config.get("verifier_guided_search") if isinstance(config.get("verifier_guided_search"), dict) else {}
+    op = str(atom.get("op") or "UNKNOWN")
+    capabilities = {str(item) for item in list_value(atom.get("required_capabilities"))}
+    eligible_ops = {str(item) for item in list_value(policy.get("eligible_ops"))}
+    applicable = op in eligible_ops or bool(
+        capabilities & {"candidate_generation", "verifier_guided_search", "private_curriculum", "planning_benchmark_adapter"}
+    )
+    risk = str(atom.get("risk_tier") or goal.get("risk_tier") or "medium")
+    budget_table = policy.get("budgets_by_risk") if isinstance(policy.get("budgets_by_risk"), dict) else {}
+    budget = budget_table.get(risk) if isinstance(budget_table.get(risk), dict) else budget_table.get("medium", {})
+    if not isinstance(budget, dict):
+        budget = {}
+    decision = "not_applicable"
+    reason = "node operation does not request proposal, execution, verification, or benchmark search"
+    if applicable and route.get("blocked"):
+        decision = "blocked_by_route"
+        reason = str(route.get("block_reason") or "route blocked")
+    elif applicable:
+        decision = "eligible_bounded"
+        reason = "node may lease bounded propose-verify-repair search under this contract"
+    contract = {
+        "policy": str(policy.get("policy") or "project_theseus_plan_verifier_guided_search_v1"),
+        "contract_id": stable_id("verifier_guided_search", node_id, op, risk, budget),
+        "node_id": node_id,
+        "decision": decision,
+        "reason": reason,
+        "risk_tier": risk,
+        "budget": {
+            "max_proposals": max(1, int(budget.get("max_proposals") or 1)),
+            "max_verifier_calls": max(1, int(budget.get("max_verifier_calls") or 1)),
+            "max_depth": max(0, int(budget.get("max_depth") or 0)),
+            "max_repair_branches": max(0, int(budget.get("max_repair_branches") or 0)),
+            "max_wall_ms": max(1, int(budget.get("max_wall_ms") or 1)),
+        },
+        "feedback_allowlist": sorted(str(item) for item in list_value(policy.get("feedback_allowlist"))),
+        "candidate_integrity_independent": policy.get("candidate_integrity_independent") is True,
+        "public_hidden_verifier_feedback_allowed": policy.get("public_hidden_verifier_feedback_allowed") is True,
+        "fallback_returns_allowed": policy.get("fallback_returns_allowed") is True,
+        "separate_claim_channels": {
+            "model_one_shot": True,
+            "model_search_guided": True,
+            "deterministic_repair_assisted": True,
+            "tool_assisted": True,
+        },
+        "claim_boundary": (
+            "Hidden public/evaluation tests cannot steer model-only claims. Deterministic repair and tool "
+            "results remain assisted-only; candidate-emitted family or learned flags are never trusted."
+        ),
+        "runtime_kernel": "scripts/verifier_guided_search.py",
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    contract["contract_hash"] = stable_hash(contract)
+    return contract
 
 
 def is_deterministic_tool_id(tool: str) -> bool:
@@ -1044,6 +1120,8 @@ def build_ablation(compiled_goals: list[dict[str, Any]], state: dict[str, Any]) 
         "deterministic_tool_requirement_count": sum(len(node.get("tool_requirements", [])) for goal in compiled_goals for node in goal.get("nodes", [])),
         "tool_eligibility_declared_node_count": sum(1 for goal in compiled_goals for node in goal.get("nodes", []) if isinstance(node.get("tool_eligibility"), dict) and node.get("tool_eligibility", {}).get("eligibility_id")),
         "tool_receipt_node_count": sum(1 for goal in compiled_goals for node in goal.get("nodes", []) if node.get("tool_receipts")),
+        "verifier_guided_search_contract_node_count": sum(1 for goal in compiled_goals for node in goal.get("nodes", []) if node.get("verifier_guided_search", {}).get("contract_id")),
+        "verifier_guided_search_eligible_node_count": sum(1 for goal in compiled_goals for node in goal.get("nodes", []) if node.get("verifier_guided_search", {}).get("decision") == "eligible_bounded"),
         "lint_hard_failure_count": sum(goal.get("lint", {}).get("hard_failure_count", 0) for goal in compiled_goals),
         "lint_warning_count": sum(goal.get("lint", {}).get("warning_count", 0) for goal in compiled_goals),
         "decision_shape": "contract -> typed DAG -> VCM slice -> route -> verification target",
@@ -1064,6 +1142,7 @@ def build_ablation(compiled_goals: list[dict[str, Any]], state: dict[str, Any]) 
             "trace_bundle_replayable": node_count > 0,
             "tool_eligibility_declared_per_node": all(isinstance(node.get("tool_eligibility"), dict) and node.get("tool_eligibility", {}).get("eligibility_id") for goal in compiled_goals for node in goal.get("nodes", [])),
             "tool_receipts_present_per_node": all(bool(node.get("tool_receipts")) for goal in compiled_goals for node in goal.get("nodes", [])),
+            "verifier_guided_search_contract_per_node": all(bool(node.get("verifier_guided_search", {}).get("contract_id")) for goal in compiled_goals for node in goal.get("nodes", [])),
             "asi_stack_records_per_node": all(node_has_required_asi_records(node) for goal in compiled_goals for node in goal.get("nodes", [])),
             "goal_governance_records_present": all(goal_has_required_records(goal) for goal in compiled_goals),
         },
@@ -1184,6 +1263,35 @@ def build_gates(
                 ]
                 for node in all_nodes
             },
+            "hard",
+        ),
+        gate(
+            "all_nodes_declare_verifier_guided_search_contract",
+            all(bool(node.get("verifier_guided_search", {}).get("contract_id")) for node in all_nodes),
+            [node.get("node_id") for node in all_nodes if not node.get("verifier_guided_search", {}).get("contract_id")],
+            "hard",
+        ),
+        gate(
+            "verifier_guided_search_claim_boundaries_fail_closed",
+            all(
+                node.get("verifier_guided_search", {}).get("candidate_integrity_independent") is True
+                and node.get("verifier_guided_search", {}).get("public_hidden_verifier_feedback_allowed") is False
+                and node.get("verifier_guided_search", {}).get("fallback_returns_allowed") is False
+                for node in all_nodes
+            ),
+            {
+                node.get("node_id"): node.get("verifier_guided_search", {})
+                for node in all_nodes
+                if node.get("verifier_guided_search", {}).get("candidate_integrity_independent") is not True
+                or node.get("verifier_guided_search", {}).get("public_hidden_verifier_feedback_allowed") is not False
+                or node.get("verifier_guided_search", {}).get("fallback_returns_allowed") is not False
+            },
+            "hard",
+        ),
+        gate(
+            "verifier_guided_search_has_eligible_nodes",
+            any(node.get("verifier_guided_search", {}).get("decision") == "eligible_bounded" for node in all_nodes),
+            [node.get("node_id") for node in all_nodes if node.get("verifier_guided_search", {}).get("decision") == "eligible_bounded"],
             "hard",
         ),
         gate("trace_bundle_rows_match_nodes", len(trace_rows) == len(all_nodes), {"trace_rows": len(trace_rows), "nodes": len(all_nodes)}, "hard"),
@@ -1336,6 +1444,8 @@ def summarize(
         "tool_eligible_optional_node_count": sum(1 for node in all_nodes if get_path(node, ["tool_eligibility", "decision"], "") == "eligible_optional"),
         "tool_not_applicable_node_count": sum(1 for node in all_nodes if get_path(node, ["tool_eligibility", "decision"], "") == "not_applicable"),
         "tool_receipt_count": sum(len(list_value(node.get("tool_receipts"))) for node in all_nodes),
+        "verifier_guided_search_contract_node_count": sum(1 for node in all_nodes if node.get("verifier_guided_search", {}).get("contract_id")),
+        "verifier_guided_search_eligible_node_count": sum(1 for node in all_nodes if node.get("verifier_guided_search", {}).get("decision") == "eligible_bounded"),
         "average_context_pages_per_node": ablation.get("compiled_planning_path", {}).get("average_context_pages_per_node", 0),
         "vcm_context_governor_ready": bool(governor_summary.get("ready")),
         "vcm_context_governor_state": governor_summary.get("trigger_state"),

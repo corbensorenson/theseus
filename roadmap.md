@@ -31,7 +31,7 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | governed scalable intake implemented; still below mature scale | 35,297 deduplicated code functions provide 5.58M encoded one-pass positions; 13,918 human-contributed conversations add 4.29M redacted/decontaminated positions |
 | Sparse specialist core (100M) | Track 1 / Phases 10, 16 | implemented comparator; not adopted | dense wins matched 100K diagnostics and admissibility; revisit sparse only after a behavior win |
-| Verifier-guided search | Track 2 / Phases 6, 10 | not started | propose->verify->repair search; beat one-shot on held-out |
+| Verifier-guided search | Track 2 / Phases 6, 10 | wired, not behavior-qualified | bounded search kernel, planner contracts, Semantic-IR repair runtime, replay, and claim separation pass; current private repair replay remains 0 behavior, so next evidence must beat one-shot after the proposer floor moves |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
 | Generator capability (held-out pass) | Phase 10 | RED - clean-lineage semantic adaptation emits 14 integrity-clean candidates but scores 0/24; starvation DPO regresses emission to zero | retain the transformer/hybrid survival architecture, reject the tiny adaptation/DPO variants, and improve prompt-conditioned state-transition/update/finalizer learning before preference/RL or scale |
@@ -529,6 +529,15 @@ run and it meets the Quality Bars below.
 - Build verifier-guided beam/tree search with semantic-IR-localized repair. The
   planner selects search/verification budget by task risk and reports model-only,
   search-guided, and tool-assisted behavior separately.
+- Architecture status: the canonical bounded search kernel now enforces proposal,
+  verifier-call, depth, branch, and wall-time budgets; independently recomputes
+  candidate integrity; rejects hidden-test/solution/expected-answer feedback;
+  records typed faults and deterministic replay hashes; and separates one-shot
+  model, learned-repair search, deterministic repair, and tool-assisted claims.
+  Plan compilation binds risk-tier budgets to every node (`37/37` contracts,
+  `20` eligible in the representative compile), and the existing Semantic-IR
+  repair runtime emits `2/2` replay-valid search receipts. Its private workload
+  remains `0` behavior passes, so Track 2 is wired but not capability-qualified.
 - Acceptance: one real private workflow improves with replayable tool evidence;
   search materially beats one-shot generation on frozen heldout work; failed tools
   produce `UNKNOWN`/`UNSOLVED`/`TOOL_FAULT`, never invented results.
