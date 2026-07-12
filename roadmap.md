@@ -31,11 +31,11 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | source-conditioned v4 is also 0/60 and cannot reconstruct sampled training rows; a training-only pointer alignment and copy/generate gate auxiliary is now integrated with no generation-time target access | run the frozen Rust v5 development comparison; spend confirmation only after nonzero development recovery |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | explicit alignment v5 is also 0/60 and cannot reconstruct sampled training rows; five standalone full-model arms are now falsified because each arm is data-starved despite aggregate system scaling | replace standalone arms with one all-data shared trunk plus language-specialist experts/adapters; keep the dense control matched and confirmation unspent |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - source-conditioned v4 remains 0/60; optimization improves but sampled train reconstruction similarity is only 0.01-0.07 | test explicit training-only copy alignment once; require nonzero development recovery and fresh confirmation before promotion |
+| Generator capability (held-out pass) | Phase 10 | RED - explicit pointer alignment v5 remains 0/60; sampled edit similarity reaches only 0.10-0.33 and seen reconstruction 0.02-0.12 | train a shared all-data trunk before specialist adaptation; require nonzero development recovery and fresh confirmation before promotion |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -902,6 +902,17 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   target label and trains the copy/generate gate; noncopyable labels train normal
   generation. Targets remain unavailable to inference. This is a final objective
   attribution test before treating the 1.43M arm as capacity-limited.
+- **Independent-arm falsification:** v5 remains 0/60 exact with 60/60 valid
+  serialization after 731 seconds. Bounded edit similarity is only 0.10-0.33 and
+  sampled seen-reconstruction similarity 0.02-0.12. No further local objective or
+  repetition patch is authorized for the standalone 1.43M arm. The architecture
+  violates the intent of the aggregate scaling contract: the five-arm system has
+  132.46M unique positions for 7.14M parameters, but each complete Rust LM sees only
+  8.08M causal positions for 1.43M parameters. The next MoECOT implementation must
+  train a shared transformer trunk on the complete corpus and attach independently
+  checkpointed language experts/adapters, with active/total parameter and compute
+  accounting. This preserves one arm per language without starving each arm of the
+  shared syntax, reasoning, and conversation substrate.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact

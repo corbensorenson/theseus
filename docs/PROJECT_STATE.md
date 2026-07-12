@@ -119,8 +119,12 @@ share toward zero. Public benchmarks are calibration only.
   exact after 704,136 unique denoising positions and cannot reconstruct sampled
   training rows (similarity 0.01-0.07). V5 adds a 0.25-weight training-only pointer
   alignment and copy/generate gate auxiliary; inference remains prompt-only. Its
-  plan, gradients, and 131 focused tests are GREEN, behavior remains unmeasured,
-  and confirmation remains unspent.
+  v5 run remains 0/60 exact with 60/60 serialization after 731 seconds; sampled
+  edit similarity is 0.10-0.33 and seen-reconstruction similarity 0.02-0.12.
+  Standalone full-model arms are now falsified: aggregate data/model scaling is
+  reasonable, but each independent arm is data-starved. The next topology is an
+  all-data shared transformer trunk plus independently checkpointed language
+  experts/adapters. Confirmation remains unspent.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
