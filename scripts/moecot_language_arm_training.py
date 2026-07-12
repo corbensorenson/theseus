@@ -330,6 +330,7 @@ def matched_decoder_only_config(
     candidate["attention_policy"] = "prefix_lm"
     candidate.pop("source_encoder_layers", None)
     candidate.pop("source_copy_mode", None)
+    candidate.pop("source_copy_auxiliary_loss_weight", None)
     candidate["ff_dim"] = 1
     low_count = int(count(candidate))
     candidate["ff_dim"] = 2

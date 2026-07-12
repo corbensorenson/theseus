@@ -282,6 +282,7 @@ def test_target_only_loss_trains_source_encoder_and_cross_attention() -> None:
             attention_policy="encoder_decoder",
             source_encoder_layers=1,
             source_copy_mode="pointer_generator",
+            source_copy_auxiliary_loss_weight=0.25,
         ),
         mx=mx,
         nn=nn,
@@ -295,6 +296,7 @@ def test_target_only_loss_trains_source_encoder_and_cross_attention() -> None:
         model, inputs, labels, target_only_mask, mx, nn
     )
     mx.eval(loss, gradients)
+    assert np.isfinite(float(loss.item()))
     gradient_mass = {
         name: float(mx.sum(mx.abs(value)).item())
         for name, value in mlx_utils.tree_flatten(gradients)

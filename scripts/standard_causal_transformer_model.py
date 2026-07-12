@@ -22,6 +22,7 @@ class CausalTransformerConfig:
     source_target_separator_token_id: int = 2
     source_encoder_layers: int = 0
     source_copy_mode: str = "none"
+    source_copy_auxiliary_loss_weight: float = 0.0
     state_memory_slots: int = 0
     state_memory_chunk_size: int = 32
     state_memory_local_window: int = 96
@@ -57,6 +58,10 @@ class CausalTransformerConfig:
             raise ValueError("source copy mode must be none or pointer_generator")
         if self.source_copy_mode != "none" and self.attention_policy != "encoder_decoder":
             raise ValueError("source copying requires encoder-decoder attention")
+        if not 0.0 <= self.source_copy_auxiliary_loss_weight <= 2.0:
+            raise ValueError("source copy auxiliary loss weight must be between zero and two")
+        if self.source_copy_auxiliary_loss_weight and self.source_copy_mode == "none":
+            raise ValueError("source copy auxiliary loss requires source copying")
         if not 0 <= self.source_target_separator_token_id < self.vocab_size:
             raise ValueError("source-target separator token must be in vocabulary")
         if self.state_memory_mode not in {"none", "semantic_roles", "hash_control"}:
@@ -488,6 +493,9 @@ def build_model(
             self.layers = [DecoderBlock() for _ in range(config.num_layers)]
             self.final_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.scale = math.sqrt(config.d_model)
+            self.copy_auxiliary_loss_weight = float(
+                config.source_copy_auxiliary_loss_weight
+            )
             if source_encoder_enabled:
                 self.source_layers = [
                     SourceEncoderBlock() for _ in range(config.source_encoder_layers)
@@ -602,7 +610,7 @@ def build_model(
             source_memory: Any | None,
             source_mask: Any | None,
             source_copy_ids: Any | None,
-        ) -> Any:
+        ) -> tuple[Any, dict[str, Any] | None]:
             generator_logits = self.token_embedding.as_linear(hidden)
             if (
                 not pointer_generator_enabled
@@ -610,7 +618,7 @@ def build_model(
                 or source_mask is None
                 or source_copy_ids is None
             ):
-                return generator_logits
+                return generator_logits, None
             query = self.copy_query(hidden)
             key = self.copy_key(source_memory)
             pointer_scores = mx.matmul(query, key.transpose(0, 2, 1)) / math.sqrt(
@@ -644,10 +652,16 @@ def build_model(
                 pointer_logits, axis=-1, keepdims=True
             )
             gate = mx.sigmoid(self.copy_gate(hidden))
-            return mx.logaddexp(
+            logits = mx.logaddexp(
                 generator_log_probs + mx.log(mx.maximum(gate, 1e-6)),
                 pointer_log_probs + mx.log(mx.maximum(1.0 - gate, 1e-6)),
             )
+            return logits, {
+                "pointer_scores": pointer_scores,
+                "source_copy_ids": source_copy_ids,
+                "source_copy_valid": unique_valid,
+                "generator_gate": gate[:, :, 0],
+            }
 
         def conditioned_embeddings(
             self,
@@ -758,6 +772,7 @@ def build_model(
             cache: list[tuple[Any, ...]] | None = None,
             *,
             return_plan_logits: bool = False,
+            return_copy_aux: bool = False,
         ) -> Any:
             cached_plan_context = None
             cached_source_memory = None
@@ -822,13 +837,19 @@ def build_model(
                     next_cache.append((source_memory, source_mask, source_copy_ids))
                 if plan_enabled:
                     next_cache.append((plan_context,))
-                logits = self.output_logits(
+                logits, copy_aux = self.output_logits(
                     self.final_norm(hidden),
                     source_memory,
                     source_mask,
                     source_copy_ids,
                 )
-                return (logits, next_cache, plan_logits) if return_plan_logits else (logits, next_cache)
+                if return_plan_logits and return_copy_aux:
+                    return logits, next_cache, plan_logits, copy_aux
+                if return_plan_logits:
+                    return logits, next_cache, plan_logits
+                if return_copy_aux:
+                    return logits, next_cache, copy_aux
+                return logits, next_cache
 
             role_weights = self.role_weights(tokens)
             current_cache = layer_cache_input

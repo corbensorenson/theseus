@@ -115,8 +115,12 @@ share toward zero. Public benchmarks are calibration only.
   is now implemented as source-conditioned denoising pretraining from the existing
   licensed code corpus: 4,000 rows per code arm, exact provenance and corruption
   identity, one supervision overlap rejected, 97.5% Rust copy coverage, and a
-  separately accounted phase before edit SFT. The plan and 113 focused tests are
-  GREEN; Rust behavior remains unmeasured and confirmation remains unspent.
+  separately accounted phase before edit SFT. The resulting v4 run is still 0/60
+  exact after 704,136 unique denoising positions and cannot reconstruct sampled
+  training rows (similarity 0.01-0.07). V5 adds a 0.25-weight training-only pointer
+  alignment and copy/generate gate auxiliary; inference remains prompt-only. Its
+  plan, gradients, and 131 focused tests are GREEN, behavior remains unmeasured,
+  and confirmation remains unspent.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile

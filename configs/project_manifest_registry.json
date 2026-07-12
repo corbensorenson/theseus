@@ -228,7 +228,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "9e4f9cb71fab3bba2bed66538d7d74a5a8b38a6908e6b596e2432c71bd6bf656"
+          "sha256": "c3bfe4fa50d24d6f2b145b6e9ce1488cc43e7a4e52b1b052e0afe7e37b4d9baa"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -256,7 +256,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "7532ae5837bae805df2f679657f0c8634f3515ef3a3ee933a11acddbe8973e9f"
+          "sha256": "3280b897a0d01c634c69a887027a7a1e12b7428f93bc1ecd98f3eb4d14c10a09"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -288,7 +288,7 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "c55d040e848e2fc4f984291f7b34b3f3084f66b26bb8d736858def1381734e5f"
+          "sha256": "16faf4fcdbbdd8b1c9adfa3c4b34d588231d4a1952d1ce6cd085e185860574f9"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
@@ -5157,6 +5157,7 @@
           "matched_control_contract_changed",
           "source_target_isolation_or_cache_parity_changed",
           "copy_gate_or_exact_token_identity_mapping_changed",
+          "copy_alignment_auxiliary_or_training_only_target_flow_changed",
           "direct_behavior_remains_zero"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
@@ -5173,7 +5174,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The lossless stage and licensed three-way split are GREEN. Causal, prefix-LM, 32-pass SFT, plain encoder-decoder, and post-pretraining pointer-generator Rust variants remain 0/60 development exact. The measured objective gap is now implemented: 4,000 deterministic licensed span-deletion reconstruction rows per code arm, with exact provenance, one supervision overlap rejected, 97.5% Rust copy coverage, plan/resume binding, and a distinct source-conditioned optimizer phase before edit SFT. The architecture/objective path has 113 focused tests and a GREEN plan; direct Rust behavior is pending. Confirmation remains unspent. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no capability credit."
+      "current_wall": "The lossless stage and licensed three-way split are GREEN. Source-conditioned v4 also remains 0/60 development exact after 704,136 unique denoising positions; it restores 60/60 serialization but cannot reconstruct sampled training rows (similarity 0.01-0.07), so the pointer is undertrained rather than merely failing transfer. The next bounded candidate adds a training-only pointer alignment and copy/generate gate auxiliary over visible labels, weighted 0.25, while generation remains prompt-only. Plan, gradients, isolation, and 131 focused tests are GREEN; v5 behavior is pending. Confirmation remains unspent. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no capability credit."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

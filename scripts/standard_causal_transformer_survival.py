@@ -2546,16 +2546,30 @@ def causal_loss(
     plan_slot_count: int = 0,
     plan_factor_group_sizes: tuple[int, ...] = (),
 ) -> Any:
+    copy_aux = None
+    copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
     if plan_labels is not None and plan_weight > 0.0:
-        logits, _cache, plan_logits = model(inputs, return_plan_logits=True)
+        if copy_weight > 0.0:
+            logits, _cache, plan_logits, copy_aux = model(
+                inputs, return_plan_logits=True, return_copy_aux=True
+            )
+        else:
+            logits, _cache, plan_logits = model(inputs, return_plan_logits=True)
         if plan_logits is None:
             raise ValueError("semantic plan labels require an enabled learned plan head")
     else:
-        logits, _cache = model(inputs)
+        if copy_weight > 0.0:
+            logits, _cache, copy_aux = model(inputs, return_copy_aux=True)
+        else:
+            logits, _cache = model(inputs)
         plan_logits = None
     token_loss = nn.losses.cross_entropy(logits, labels)
     denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
     body_loss = mx.sum(token_loss * mask) / denominator
+    if copy_aux is not None and copy_weight > 0.0:
+        body_loss = body_loss + copy_weight * pointer_generator_auxiliary_loss(
+            copy_aux, labels, mask, mx
+        )
     if plan_logits is None:
         return body_loss
     plan_targets = plan_labels.astype(mx.float32)
@@ -2627,6 +2641,50 @@ def causal_loss(
         + plan_targets * positive_weights[None, :] * softplus_positive
     )
     return body_loss + float(plan_weight) * plan_loss
+
+
+def pointer_generator_auxiliary_loss(
+    copy_aux: dict[str, Any], labels: Any, mask: Any, mx: Any
+) -> Any:
+    """Train pointer alignment and generation/copy gating on visible train labels."""
+
+    pointer_scores = copy_aux["pointer_scores"]
+    source_ids = copy_aux["source_copy_ids"]
+    source_valid = copy_aux["source_copy_valid"]
+    generator_gate = copy_aux["generator_gate"]
+    matches = (
+        source_ids[:, None, :] == labels[:, :, None]
+    ) & source_valid[:, None, :]
+    copyable = mx.any(matches, axis=-1)
+    valid_scores = mx.where(
+        source_valid[:, None, :],
+        pointer_scores,
+        mx.array(-1e9, dtype=mx.float32),
+    )
+    matching_scores = mx.where(
+        matches,
+        pointer_scores,
+        mx.array(-1e9, dtype=mx.float32),
+    )
+    alignment_loss = -(
+        mx.logsumexp(matching_scores, axis=-1)
+        - mx.logsumexp(valid_scores, axis=-1)
+    )
+    supervised = mask.astype(mx.float32)
+    copy_mask = supervised * copyable.astype(mx.float32)
+    alignment = mx.sum(alignment_loss * copy_mask) / mx.maximum(
+        mx.sum(copy_mask), 1.0
+    )
+    gate = mx.minimum(mx.maximum(generator_gate, 1e-6), 1.0 - 1e-6)
+    generate_target = (~copyable).astype(mx.float32)
+    gate_loss = -(
+        generate_target * mx.log(gate)
+        + (1.0 - generate_target) * mx.log(1.0 - gate)
+    )
+    gate_loss = mx.sum(gate_loss * supervised) / mx.maximum(
+        mx.sum(supervised), 1.0
+    )
+    return alignment + gate_loss
 
 
 def train_phase(
