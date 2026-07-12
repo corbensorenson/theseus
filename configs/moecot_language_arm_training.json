@@ -87,7 +87,7 @@
     "decoder": "beam_exact_text_with_byte_span_grammar_v1",
     "beam_width": 4,
     "branching_factor": 4,
-    "length_penalty": 0.6,
+    "length_penalty": 1.0,
     "primary_metric": "exact_target_match_rate",
     "target_visible_to_generator": false,
     "templates_renderers_routers_tools_allowed": false

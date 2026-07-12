@@ -17,14 +17,14 @@ share toward zero. Public benchmarks are calibration only.
 
 - **Architecture readiness:** locally actionable pre-training architecture is wired.
   This authorizes governed training; it does not prove model quality.
-- **Practical model lane:** the intended seed is five independently trained
-  Octopus/MoECOT arms: English, Python, JS/TS, HTML/CSS, and Rust. The existing dense
-  6.6M-parameter MLX transformer is the matched mixed-control arm, not the default
-  product architecture. Search, preference/RL, and fast generation remain amplifiers.
-- **Capability wall:** the current clean family-disjoint model-only diagnostic is
-  `0/24`. The model can emit integrity-clean candidates but does not yet reliably
-  learn prompt/signature-conditioned state transitions, operands, algorithms, and
-  final-return semantics.
+- **Practical model lane:** the seed is a shared transformer trunk plus separately
+  checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
+  models remain matched falsification controls. Search, preference/RL, and fast
+  generation remain amplifiers, not substitutes for a working proposer.
+- **Capability wall:** the completed 3.716M shared trunk plus 52k Rust expert is
+  `0/60` exact on private development. It emits valid, nonempty Rust-like text, but
+  mean target similarity is 0.309 and source retention is weak. Confirmation is
+  untouched and no checkpoint is routeable.
 - **Data gate:** the frozen contract selects 6,623,232 active parameters and a
   132,464,640 unique-position floor (20:1). The canonical mixed-corpus receipt is
   `GREEN` after file-level quality filtering at 247,908,698 unique positions, or
@@ -34,14 +34,11 @@ share toward zero. Public benchmarks are calibration only.
   13,257,091 HTML/CSS, 57,626,478 Rust, and 3,881,800 other code. Generated,
   vendored, minified, decode-damaged, low-diversity, and invalid sources receive no
   credit. Every total/domain/language/evidence minimum still passes.
-- **Immediate dependency:** the licensed language-arm supervision contract is now
-  frozen at 20,000 train, 544 development, and 1,032 heldout rows with zero split
-  overlap or public payloads. The Rust causal baseline scored 0/64 confirmation.
-  Four-pass weighted SFT plus beam decoding now emits valid EOS-terminated text on
-  60/60 development rows but remains 0/60 exact. A matched prefix-LM rerun also
-  scores 0/60. A 32-pass SFT run lowers final loss to 1.30 and produces 57 distinct
-  outputs but remains 0/60 and semantically unrelated. Explicit source encoding is
-  the next isolated architectural variable; further repetition is stopped.
+- **Immediate dependency:** expand language-owned source-conditioning capacity while
+  keeping the completed trunk immutable. The 52k residual adapter is insufficient;
+  the next expert owns source encoder, decoder cross-attention, pointer/copy modules,
+  and adapter deltas. Require improvement on consumed development pressure before
+  spending confirmation or training every language arm.
 
 ## Evidence Boundaries
 
@@ -81,53 +78,18 @@ share toward zero. Public benchmarks are calibration only.
   budgets, independent integrity, sanitized feedback, replay, and separate learned,
   deterministic, and tool-assisted channels. It has not yet produced a behavior win
   on the clean model-only wall.
-- **Octopus/MoECOT:** the seed contract now defines separate English, Python, JS/TS,
-  HTML/CSS, and Rust weights/data/checkpoint lifecycles and typed single, sequential,
-  parallel, verification, and adjudicated routes. All five 1.211M-parameter arms,
-  the 6.623M total-control, and the 1.211M active-control have distinct bounded MLX
-  model/optimizer receipts. Rust is the first complete arm: its pretrain and SFT
-  receipts are content-bound and resumable, but direct prompt-only evaluation is
-  honestly negative at 0/64 exact recovery. A train/dev repartition plus weighted
-  termination loss and beam decoding repaired byte serialization and EOS to 60/60
-  on development, but exact recovery remains 0/60 with source-independent mode
-  collapse. Route success cannot count as answer success and hidden generalist
-  fallback is forbidden.
-- **Prefix-LM ablation:** bidirectional source attention leaves exact recovery at
-  0/60, although it produces 21 distinct development outputs. This negative is
-  retained. The next run keeps prefix-LM and changes only supervised optimizer
-  depth from four to 32 passes; repeated exposure never increases unique-data credit.
-- **Optimization-depth falsification:** 32 SFT passes consume 3,686,048 optimizer
-  positions while retaining only 115,189 unique-position credit. Final loss falls
-  to 1.30 and diversity reaches 57/60 hashes, but exact recovery remains 0/60 and
-  sampled outputs do not implement the requested edits. Further repetition is not
-  authorized as a semantic repair. The encoder-decoder successor is now implemented
-  with target-isolated source memory, decoder cross-attention, and mechanically
-  matched decoder-only controls. Isolation, cache parity, separator-free pretraining,
-  and target-only gradient flow are unit-proven. Its Rust run completed in 458
-  seconds with 60/60 valid model-emitted sequences but 0/60 exact; sampled outputs
-  remain unrelated boilerplate. The next bounded repair is a learned
-  pointer-generator over exact source/target token identities, because this
-  copy-and-edit corpus uses disjoint source and target token IDs. The pointer run is
-  also negative: 0/60 exact, 58/60 valid serialization, 521 seconds of training,
-  and slower beam replay. Samples use isolated prompt tokens but do not retain
-  spans. Frozen distribution analysis shows 75.9% target-token copyability and
-  0.907 median current/target character similarity on development. The next repair
-  is now implemented as source-conditioned denoising pretraining from the existing
-  licensed code corpus: 4,000 rows per code arm, exact provenance and corruption
-  identity, one supervision overlap rejected, 97.5% Rust copy coverage, and a
-  separately accounted phase before edit SFT. The resulting v4 run is still 0/60
-  exact after 704,136 unique denoising positions and cannot reconstruct sampled
-  training rows (similarity 0.01-0.07). V5 adds a 0.25-weight training-only pointer
-  alignment and copy/generate gate auxiliary; inference remains prompt-only. Its
-  v5 run remains 0/60 exact with 60/60 serialization after 731 seconds; sampled
-  edit similarity is 0.10-0.33 and seen-reconstruction similarity 0.02-0.12.
-  Standalone full-model arms are now falsified: aggregate data/model scaling is
-  reasonable, but each independent arm is data-starved. The next topology is an
-  all-data shared transformer trunk plus independently checkpointed language
-  experts/adapters. That successor is now implemented: 3,716,001 shared parameters,
-  52,000 per expert, exact frozen-trunk gradient ownership, adapter-only checkpoints,
-  trunk-digest replay binding, and matched active/total controls. The plan is GREEN;
-  shared-trunk training and behavior remain pending. Confirmation remains unspent.
+- **Octopus/MoECOT:** standalone full-model arms, extra SFT repetition, prefix-LM,
+  plain cross-attention, pointer-only repair, and source-conditioned v5 all remained
+  0/60 and are retained as negatives. Their successor shares general syntax and
+  reasoning in one 3,716,001-parameter encoder/decoder trunk while each language owns
+  an independently checkpointed expert. The trunk completed 144,101,816 optimizer
+  positions on MLX with exact resume lineage. The first 52,000-parameter Rust expert
+  completed 1,164,892 positions against frozen trunk `f727ae56...`. Direct dev is
+  still 0/60 exact, 59/60 serialization-valid, 0.309 mean target similarity, 0.341
+  source similarity, and 0.840 target-length ratio. A private-dev beam ablation fixed
+  short-output bias but not semantics. Route success, syntax, similarity, and loss do
+  not count as answer success. The next expert rung owns source/cross-attention/copy
+  modules as well as residual adapters; another 52k-adapter repetition is stopped.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
@@ -217,12 +179,14 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Preserve the completed Rust `0/64` result, then repair direct model-only decoding
-and instruction following on train-derived development pressure without consulting
-the frozen answers during generation. The concrete defects are failure to emit EOS
-and unfinished reversible-byte spans, followed by semantic mismatch. Use
-model-probability beam search with serialization validity only, add a development
-split distinct from the frozen confirmation split, and require nonzero exact recovery
-before spending the other six full training budgets. Then complete the matched
-MoECOT-versus-dense comparison. Do not count routing, loss, syntax, templates,
-renderers, deterministic tools, or forced fallback completion as capability.
+Preserve the shared-trunk/Rust result as `0/60`. Build one richer Rust expert whose
+delta owns source encoder, decoder cross-attention, pointer query/key/gate, and
+residual adapters while the completed trunk stays immutable and digest-bound. Add
+exact delta ownership, migration, resume, negative leakage, and matched-parameter
+tests. Train only that expert on the existing licensed denoising/SFT rows, then rerun
+the consumed development diagnostic. Require a real improvement in exact behavior
+or source/target similarity before confirmation, all-language fanout, or dense-control
+training. If it remains at zero without material diagnostic improvement, retain the
+result and move to the preregistered model/data scale ladder rather than another
+local objective patch. Never count routing, loss, syntax, similarity, templates,
+renderers, tools, or forced completion as capability.

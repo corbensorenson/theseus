@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import difflib
 import hashlib
 import json
 import os
@@ -953,6 +954,11 @@ def evaluate_target(
                 )
                 expected = str(row.get("target") or "")
                 arm_id = str(row.get("arm_id") or "")
+                diagnostics = behavior_diagnostics(
+                    generated=generated,
+                    expected=expected,
+                    prompt=str(row.get("prompt") or ""),
+                )
                 rows.append(
                     {
                         "row_id": row.get("row_id"),
@@ -966,6 +972,7 @@ def evaluate_target(
                             and generation.get("stop_reason") == "eos"
                         ),
                         "nonempty": bool(generated),
+                        "behavior_diagnostics": diagnostics,
                         "syntax": syntax_diagnostic(generated, arm_id),
                         "generation": generation,
                     }
@@ -1174,6 +1181,41 @@ def syntax_diagnostic(text: str, arm_id: str) -> dict[str, Any]:
     }
 
 
+def behavior_diagnostics(*, generated: str, expected: str, prompt: str) -> dict[str, Any]:
+    """Evaluator-only failure telemetry; none of these values enter generation."""
+
+    source_excerpt = ""
+    marker = "\nCurrent excerpt:\n"
+    terminator = "\n\n\nReturn only the complete revised excerpt."
+    if marker in prompt:
+        source_excerpt = prompt.split(marker, 1)[1]
+        if terminator in source_excerpt:
+            source_excerpt = source_excerpt.split(terminator, 1)[0]
+    generated_lines = [line for line in generated.splitlines() if line.strip()]
+    return {
+        "generated_character_count": len(generated),
+        "expected_character_count": len(expected),
+        "target_length_ratio": round(len(generated) / max(1, len(expected)), 8),
+        "target_sequence_similarity": round(
+            difflib.SequenceMatcher(None, generated, expected, autojunk=False).ratio(), 8
+        ),
+        "source_excerpt_available": bool(source_excerpt),
+        "source_sequence_similarity": round(
+            difflib.SequenceMatcher(
+                None, generated, source_excerpt, autojunk=False
+            ).ratio(),
+            8,
+        )
+        if source_excerpt
+        else None,
+        "nonempty_line_count": len(generated_lines),
+        "unique_nonempty_line_ratio": round(
+            len(set(generated_lines)) / max(1, len(generated_lines)), 8
+        ),
+        "raw_generated_text_retained": False,
+    }
+
+
 def evaluation_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     total = len(rows)
     exact = sum(bool(row.get("exact_match")) for row in rows)
@@ -1185,6 +1227,24 @@ def evaluation_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     syntax_checked = sum(
         (row.get("syntax") or {}).get("state") in {"VALID", "INVALID"} for row in rows
     )
+    similarities = [
+        float((row.get("behavior_diagnostics") or {}).get("target_sequence_similarity") or 0.0)
+        for row in rows
+    ]
+    source_similarities = [
+        float(value)
+        for row in rows
+        if (
+            value := (row.get("behavior_diagnostics") or {}).get(
+                "source_sequence_similarity"
+            )
+        )
+        is not None
+    ]
+    length_ratios = [
+        float((row.get("behavior_diagnostics") or {}).get("target_length_ratio") or 0.0)
+        for row in rows
+    ]
     return {
         "row_count": total,
         "exact_match_count": exact,
@@ -1196,6 +1256,12 @@ def evaluation_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "syntax_checked_count": syntax_checked,
         "syntax_valid_count": syntax_valid,
         "syntax_valid_rate_when_checked": round(syntax_valid / max(1, syntax_checked), 8),
+        "mean_target_sequence_similarity": round(sum(similarities) / max(1, total), 8),
+        "mean_source_sequence_similarity": round(
+            sum(source_similarities) / max(1, len(source_similarities)), 8
+        ),
+        "mean_target_length_ratio": round(sum(length_ratios) / max(1, total), 8),
+        "raw_generated_text_retained": False,
     }
 
 

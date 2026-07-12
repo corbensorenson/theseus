@@ -30,12 +30,12 @@ module must meet.
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
-| Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | standalone arms are falsified; the successor is implemented as a 3.716M all-data shared trunk plus five independently checkpointed 52k language experts, with exact frozen-trunk ownership and matched controls | run a full-shape shared-trunk canary, then train the trunk before any expert; keep confirmation unspent |
+| Dense transformer control | Phase 10 | canonical matched falsification controls are 3.768M active-parameter and 3.978M total-parameter decoder-only models; behavior is unmeasured | train only after the specialist rung clears a nonzero floor or a direct architecture comparison is otherwise informative; never select an accounting view after results |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | the 3.716M shared trunk completed 144.10M optimizer positions; the 52k Rust adapter completed, but direct dev remains 0/60 exact with 0.309 mean target similarity | retain the rung as negative; expand language-owned source/cross-attention/copy capacity before scaling the whole trunk or spending confirmation |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - standalone v5 remains 0/60; shared-trunk/expert architecture is ownership-, gradient-, cache-, and plan-ready but behavior-unmeasured | train shared trunk on all 132.46M positions, then adapt Rust and require nonzero development recovery before confirmation |
+| Generator capability (held-out pass) | Phase 10 | RED - shared trunk plus Rust adapter emits 59/60 valid outputs but remains 0/60 exact; mean target/source similarity is 0.309/0.341 and confirmation is untouched | implement a source-specialist expert that owns adapters plus source encoder, decoder cross-attention, and pointer modules; require a frozen-trunk improvement before any wider training |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -284,10 +284,12 @@ to Track 1).
 - The head/router is a governed hybrid: deterministic capability/extension/signature
   evidence first, learned ambiguity ranking only after trace support, VCM for context,
   and route leases for authority/readiness/budget. It may abstain or compose arms.
-- Each arm has separate weights, optimizer/checkpoint lineage, data receipt, context
-  contract, verifier suite, capability scorecard, and lifecycle. A shared ABI is not
-  shared weights. Arm updates are independent and cannot cause silent cross-arm drift.
-- Train a mixed dense 6.6M control from the same canonical rows. Compare at matched
+- Each arm owns separate expert weights, optimizer/checkpoint lineage, data receipt,
+  context contract, verifier suite, capability scorecard, and lifecycle. A versioned
+  shared trunk is a common immutable dependency, counted once; changing it invalidates
+  every dependent arm for coordinated requalification. Expert-only updates remain
+  independent and cannot cause silent cross-arm drift.
+- Train matched dense controls from the same canonical rows. Compare at matched
   total parameters, active parameters, data, optimizer positions, MLX wall/energy,
   and verifier/search budget. Report routing accuracy, answer utility, interference,
   transfer, and composition failure separately.
@@ -921,8 +923,27 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   trunk logits exactly. MLX freezes every trunk tensor, adapter checkpoints contain
   only expert keys, and replay binds the exact complete trunk digest. The decoder-
   only active control differs by 159 parameters and the total control by 2,239.
-  The eight-target plan is GREEN. These are topology/ownership proofs only; trunk
-  training and direct behavior remain pending.
+  The eight-target plan is GREEN.
+- **Shared-trunk result:** the trunk completed 132.45M causal, 2.73M
+  source-conditioned, and 8.90M supervised optimizer positions (144.10M total) on
+  MLX, with an exact resumable checkpoint and no public rows, external inference, or
+  fallback credit. The frozen 52,000-parameter Rust expert then completed 704,136
+  denoising and 460,756 supervised positions while binding the exact trunk digest.
+  Direct development remains negative at 0/60 exact. A development-only beam ablation
+  selected length penalty 1.0 over 0.6 because it raised mean similarity on 12
+  consumed rows while restoring output length; the full rerun remains 0/60, 59/60
+  serialization-valid, 0.309 mean target similarity, 0.341 mean source similarity,
+  and 0.840 mean target-length ratio. Confirmation remains unspent. Sampled training
+  and development generations under-retain source spans and repeat generic Rust,
+  so another 52k-adapter repetition is not authorized.
+- **Next specialization rung:** keep the proven trunk immutable and make each language
+  expert own the modules that govern source-conditioned editing: residual adapters,
+  source encoder, decoder cross-attention, pointer query/key/gate, optimizer, and
+  delta checkpoint. Match active and total parameters against dense controls, bind
+  migration to trunk `f727ae56...`, and require a source-copy/reconstruction and
+  direct-edit improvement on consumed development pressure before confirmation or
+  all-language fanout. If this richer expert still remains at zero, move to the
+  preregistered scale ladder rather than another local objective patch.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact

@@ -20,6 +20,7 @@ from moecot_language_arm_training import (  # noqa: E402
     audit_arm_views,
     audit_tokenizer_stage,
     build_source_to_target_lookup,
+    behavior_diagnostics,
     generate_model_text,
     matched_decoder_only_config,
     materialize_target_supervision,
@@ -185,6 +186,24 @@ def test_only_executable_compositions_receive_direct_evaluation() -> None:
     assert should_evaluate_target({"role": "dense_control"}) is True
     assert should_evaluate_target({"role": "shared_trunk"}) is False
     assert should_evaluate_target({"role": ""}) is False
+
+
+def test_behavior_diagnostics_are_evaluator_only_and_do_not_retain_text() -> None:
+    prompt = (
+        "Apply the requested change to this rust excerpt.\n\nRequest:\nRename it."
+        "\n\nCurrent excerpt:\nlet old = 1;\n\n\n"
+        "Return only the complete revised excerpt."
+    )
+    diagnostics = behavior_diagnostics(
+        generated="let new = 1;\n",
+        expected="let new = 1;\n",
+        prompt=prompt,
+    )
+    assert diagnostics["target_sequence_similarity"] == 1.0
+    assert diagnostics["source_excerpt_available"] is True
+    assert diagnostics["source_sequence_similarity"] < 1.0
+    assert diagnostics["raw_generated_text_retained"] is False
+    assert "generated" not in diagnostics and "expected" not in diagnostics
 
 
 def test_range_view_coalesces_adjacent_ranges_without_copy() -> None:
