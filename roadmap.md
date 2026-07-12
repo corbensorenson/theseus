@@ -31,11 +31,11 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
 | Dense transformer control | Phase 10 | canonical matched falsification controls are 3.768M active-parameter and 3.978M total-parameter decoder-only models; behavior is unmeasured | train only after the specialist rung clears a nonzero floor or a direct architecture comparison is otherwise informative; never select an accounting view after results |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | the 3.716M shared trunk completed 144.10M optimizer positions; the 52k Rust adapter completed, but direct dev remains 0/60 exact with 0.309 mean target similarity | retain the rung as negative; expand language-owned source/cross-attention/copy capacity before scaling the whole trunk or spending confirmation |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | the 3.716M trunk is complete; a 995,841-parameter Rust source-specialist delta improves target similarity from 0.309 to 0.358 but remains 0/60 exact | retain both small rungs; stop local patches and preregister the next model/data capacity rung before training |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - shared trunk plus Rust adapter emits 59/60 valid outputs but remains 0/60 exact; mean target/source similarity is 0.309/0.341 and confirmation is untouched | implement a source-specialist expert that owns adapters plus source encoder, decoder cross-attention, and pointer modules; require a frozen-trunk improvement before any wider training |
+| Generator capability (held-out pass) | Phase 10 | RED - richer Rust expert emits 60/60 valid outputs but remains 0/60 exact; target/source similarity is 0.358/0.382 and confirmation is untouched | build a content-bound scale ladder from the remaining admitted licensed corpus; no more same-scale objective or expert-scope patches |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -944,6 +944,23 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   direct-edit improvement on consumed development pressure before confirmation or
   all-language fanout. If this richer expert still remains at zero, move to the
   preregistered scale ladder rather than another local objective patch.
+- **Source-specialist result:** the exact v6 trunk migrated into v7 without changing
+  bytes or adding training positions. The Rust delta contains exactly 995,841
+  trainable parameters: residual adapters, source encoder, decoder cross-attention,
+  and pointer query/key/gate only. It completed 1,165,320 optimizer positions in 495
+  seconds and improved the consumed development diagnostics over the 52k adapter:
+  target similarity 0.309 -> 0.358, source similarity 0.341 -> 0.382, target-length
+  ratio 0.840 -> 0.884, and serialization 59/60 -> 60/60. Exact recovery remains
+  0/60, so this is not capability and confirmation remains untouched. The richer
+  ownership hypothesis is directionally supported but the 3.77M active model is
+  capacity-limited. Same-scale repair stops here.
+- **Next scale rung:** derive the largest honest active model supported by the full
+  admitted licensed corpus after exact packing, targeting at least 16-20 unique
+  optimizer positions per active parameter without epoch inflation. Preregister
+  model shape, MoECOT expert ownership, dense active/total controls, MLX memory/time,
+  stop rules, and consumed-development diagnostics before training. Expand the
+  canonical packed stage only from already admitted source identities; do not add
+  synthetic benchmark analogues or use confirmation/public rows to size the model.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact

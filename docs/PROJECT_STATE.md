@@ -21,10 +21,10 @@ share toward zero. Public benchmarks are calibration only.
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
   generation remain amplifiers, not substitutes for a working proposer.
-- **Capability wall:** the completed 3.716M shared trunk plus 52k Rust expert is
-  `0/60` exact on private development. It emits valid, nonempty Rust-like text, but
-  mean target similarity is 0.309 and source retention is weak. Confirmation is
-  untouched and no checkpoint is routeable.
+- **Capability wall:** the completed 3.716M shared trunk plus 995,841-parameter Rust
+  source-specialist delta remains `0/60` exact on private development. It improves
+  target/source similarity to 0.358/0.382 and emits 60/60 valid outputs, but this is
+  diagnostic only. Confirmation is untouched and no checkpoint is routeable.
 - **Data gate:** the frozen contract selects 6,623,232 active parameters and a
   132,464,640 unique-position floor (20:1). The canonical mixed-corpus receipt is
   `GREEN` after file-level quality filtering at 247,908,698 unique positions, or
@@ -34,11 +34,11 @@ share toward zero. Public benchmarks are calibration only.
   13,257,091 HTML/CSS, 57,626,478 Rust, and 3,881,800 other code. Generated,
   vendored, minified, decode-damaged, low-diversity, and invalid sources receive no
   credit. Every total/domain/language/evidence minimum still passes.
-- **Immediate dependency:** expand language-owned source-conditioning capacity while
-  keeping the completed trunk immutable. The 52k residual adapter is insufficient;
-  the next expert owns source encoder, decoder cross-attention, pointer/copy modules,
-  and adapter deltas. Require improvement on consumed development pressure before
-  spending confirmation or training every language arm.
+- **Immediate dependency:** preregister a larger active model from the full admitted
+  licensed-data budget. The source-specialist rung improved similarity but stayed at
+  zero exact, so same-scale objective and expert-scope patches are stopped. Expand
+  canonical packing only from admitted source identities and keep confirmation/public
+  surfaces out of architecture sizing.
 
 ## Evidence Boundaries
 
@@ -87,9 +87,12 @@ share toward zero. Public benchmarks are calibration only.
   completed 1,164,892 positions against frozen trunk `f727ae56...`. Direct dev is
   still 0/60 exact, 59/60 serialization-valid, 0.309 mean target similarity, 0.341
   source similarity, and 0.840 target-length ratio. A private-dev beam ablation fixed
-  short-output bias but not semantics. Route success, syntax, similarity, and loss do
-  not count as answer success. The next expert rung owns source/cross-attention/copy
-  modules as well as residual adapters; another 52k-adapter repetition is stopped.
+  short-output bias but not semantics. The v7 successor stores a 995,841-parameter
+  source-specialist delta while keeping the trunk byte-identical. It improves target
+  similarity to 0.358, source similarity to 0.382, length ratio to 0.884, and
+  serialization to 60/60, but remains 0/60 exact. These are diagnostics, not answer
+  success. Same-scale repair is stopped; the next action is a licensed-data-bound
+  capacity rung.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
@@ -179,14 +182,13 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Preserve the shared-trunk/Rust result as `0/60`. Build one richer Rust expert whose
-delta owns source encoder, decoder cross-attention, pointer query/key/gate, and
-residual adapters while the completed trunk stays immutable and digest-bound. Add
-exact delta ownership, migration, resume, negative leakage, and matched-parameter
-tests. Train only that expert on the existing licensed denoising/SFT rows, then rerun
-the consumed development diagnostic. Require a real improvement in exact behavior
-or source/target similarity before confirmation, all-language fanout, or dense-control
-training. If it remains at zero without material diagnostic improvement, retain the
-result and move to the preregistered model/data scale ladder rather than another
-local objective patch. Never count routing, loss, syntax, similarity, templates,
-renderers, tools, or forced completion as capability.
+Retain both shared-trunk Rust rungs as `0/60`. Measure how many unique optimizer
+positions can be packed from the already admitted licensed corpus without changing
+source admission, then preregister one larger shared-trunk/source-specialist rung and
+its dense active/total controls at a minimum 16-20 unique positions per active
+parameter. Bind model shape, MLX peak-memory/time canaries, checkpoint migration or
+fresh-init policy, exact data identities, stop rules, and consumed-development
+diagnostics before training. Do not spend confirmation, add synthetic benchmark
+analogues, or tune from public results. If the larger rung still has zero direct
+behavior, retain the result and reconsider from-scratch bootstrap economics rather
+than producing another nearby architecture patch.
