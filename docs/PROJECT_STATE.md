@@ -104,7 +104,11 @@ share toward zero. Public benchmarks are calibration only.
   positions, and zero public rows/external inference/fallback credit. One-step MLX
   canaries are resumable and measure 3,982 positions/s for the trunk, 4,583 for the
   active control, and 2,933 for the total control. None is complete; these figures
-  authorize the long frozen comparison but provide no capability evidence.
+  authorize the long frozen comparison but provide no capability evidence. A
+  controlled step-500 interruption then verified atomic generation-based resume:
+  exact step-specific model/optimizer hashes committed through one receipt, restart
+  advanced to step 501 with 3,799,137 positions retained, and superseded generation
+  files were removed. Dry-run plans no longer publish candidate artifacts.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile

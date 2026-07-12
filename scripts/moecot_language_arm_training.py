@@ -267,8 +267,10 @@ def inspect_checkpoint_inventory(
             rows.append({"target_id": target_id, "state": "NOT_RUN"})
             continue
         receipt = read_json(receipt_path)
-        checkpoint = resolve(str(target["checkpoint"]))
-        optimizer = resolve(str(target["optimizer_state"]))
+        checkpoint = resolve(str(receipt.get("checkpoint") or target["checkpoint"]))
+        optimizer = resolve(
+            str(receipt.get("optimizer_state") or target["optimizer_state"])
+        )
         faults = []
         try:
             validate_resume(
@@ -848,9 +850,19 @@ def ensure_shared_trunk_migration(
     checkpoint = resolve(str(target["checkpoint"]))
     optimizer = resolve(str(target["optimizer_state"]))
     receipt_path = resolve(str(target["receipt"]))
-    if checkpoint.is_file() and optimizer.is_file() and receipt_path.is_file():
+    if receipt_path.is_file():
         receipt = read_json(receipt_path)
-        validate_resume(receipt, plan, target, checkpoint, optimizer)
+        committed_checkpoint = resolve(str(receipt.get("checkpoint") or checkpoint))
+        committed_optimizer = resolve(
+            str(receipt.get("optimizer_state") or optimizer)
+        )
+        validate_resume(
+            receipt,
+            plan,
+            target,
+            committed_checkpoint,
+            committed_optimizer,
+        )
         return receipt
     if any(path.exists() for path in (checkpoint, optimizer, receipt_path)):
         raise ValueError("partial shared trunk migration state requires operator cleanup")
@@ -1511,6 +1523,7 @@ def train_target(
         source_to_target_lookup=copy_lookup,
     )
     expert_mode = target.get("role") == "language_expert"
+    expert_scope = ""
     shared_trunk_checkpoint = resolve(str(target.get("shared_trunk_checkpoint") or ""))
     shared_trunk_checkpoint_sha256 = ""
     if expert_mode:
@@ -1590,9 +1603,21 @@ def train_target(
     prior_checkpoint_hash = ""
     if resume:
         prior = read_json(receipt_path)
-        validate_resume(prior, plan, target, checkpoint, optimizer_path)
-        model.load_weights(str(checkpoint), strict=not expert_mode)
-        optimizer.state = mlx_utils.tree_unflatten(list(mx.load(str(optimizer_path)).items()))
+        resume_checkpoint = resolve(str(prior.get("checkpoint") or checkpoint))
+        resume_optimizer = resolve(
+            str(prior.get("optimizer_state") or optimizer_path)
+        )
+        validate_resume(
+            prior,
+            plan,
+            target,
+            resume_checkpoint,
+            resume_optimizer,
+        )
+        model.load_weights(str(resume_checkpoint), strict=not expert_mode)
+        optimizer.state = mlx_utils.tree_unflatten(
+            list(mx.load(str(resume_optimizer)).items())
+        )
         mx.eval(model.parameters(), optimizer.state)
         prior_steps = int(prior.get("optimizer_steps") or 0)
         prior_pretrain_positions = int(prior.get("pretrain_optimizer_positions") or 0)
@@ -1600,7 +1625,7 @@ def train_target(
             prior.get("source_conditioned_optimizer_positions") or 0
         )
         prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
-        prior_checkpoint_hash = sha256_file(checkpoint)
+        prior_checkpoint_hash = sha256_file(resume_checkpoint)
     remaining_positions = max(
         0, int(target["unique_target_positions"]) - prior_pretrain_positions
     )
@@ -1616,6 +1641,86 @@ def train_target(
     )
     heartbeat = checkpoint.parent / "training_heartbeat.json"
     started = time.perf_counter()
+    completed_positions = {
+        "pretrain": prior_pretrain_positions,
+        "source": prior_source_positions,
+        "supervision": prior_sft_positions,
+    }
+
+    def commit_progress_checkpoint(progress: dict[str, Any]) -> None:
+        phase = str(progress["phase"])
+        positions = dict(completed_positions)
+        if "source_conditioned_pretraining" in phase:
+            positions["source"] = prior_source_positions + int(
+                progress["target_positions_consumed"]
+            )
+        elif "supervision" in phase:
+            positions["supervision"] = prior_sft_positions + int(
+                progress["target_positions_consumed"]
+            )
+        else:
+            positions["pretrain"] = prior_pretrain_positions + int(
+                progress["target_positions_consumed"]
+            )
+        global_step = int(progress["global_step"])
+        generation_checkpoint, generation_optimizer = checkpoint_generation_paths(
+            checkpoint,
+            optimizer_path,
+            global_step,
+        )
+        previous = read_json(receipt_path) if receipt_path.is_file() else {}
+        publish_model(
+            model,
+            generation_checkpoint,
+            generation_checkpoint.with_name(
+                generation_checkpoint.stem + ".partial" + generation_checkpoint.suffix
+            ),
+            mx=mx,
+            mlx_utils=mlx_utils,
+            trainable_only=expert_mode,
+        )
+        publish_optimizer(mx, mlx_utils, optimizer, generation_optimizer)
+        progress_receipt = {
+            "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
+            "created_utc": now(),
+            "trigger_state": "GREEN",
+            "target_id": target_id,
+            "role": target["role"],
+            "plan_sha256": plan["plan_sha256"],
+            "stage_signature": plan["stage"]["stage_signature"],
+            "stage_metadata_sha256": plan["stage"]["metadata_sha256"],
+            "row_ranges": target["row_ranges"],
+            "parameter_count": observed_parameters,
+            "trainable_parameter_count": trainable_parameters,
+            "expert_trainable_scope": expert_scope if expert_mode else "",
+            "shared_trunk_checkpoint": (
+                relative(shared_trunk_checkpoint) if expert_mode else ""
+            ),
+            "shared_trunk_checkpoint_sha256": shared_trunk_checkpoint_sha256,
+            "optimizer_steps": global_step,
+            "optimizer_positions": sum(positions.values()),
+            "pretrain_optimizer_positions": positions["pretrain"],
+            "source_conditioned_optimizer_positions": positions["source"],
+            "supervision_optimizer_positions": positions["supervision"],
+            "unique_target_positions": int(target["unique_target_positions"]),
+            "checkpoint": relative(generation_checkpoint),
+            "checkpoint_sha256": sha256_file(generation_checkpoint),
+            "optimizer_state": relative(generation_optimizer),
+            "optimizer_state_sha256": sha256_file(generation_optimizer),
+            "complete": False,
+            "transactional_progress": progress,
+            "capability_claim": "NOT_EVALUATED",
+            "hard_gaps": [],
+            **no_cheat(config),
+        }
+        write_json_atomic(receipt_path, progress_receipt)
+        cleanup_progress_generation(
+            previous,
+            canonical_checkpoint=checkpoint,
+            canonical_optimizer=optimizer_path,
+            keep={generation_checkpoint, generation_optimizer},
+        )
+
     random.seed(int(config["seed"]) + stable_int(target_id) + prior_steps)
     mx.random.seed(int(config["seed"]) + stable_int(target_id) + prior_steps)
     loss_and_grad = nn.value_and_grad(model, causal_loss)
@@ -1648,6 +1753,10 @@ def train_target(
         global_step_offset=prior_steps,
         mx=mx,
         optim=optim,
+        checkpoint_callback=commit_progress_checkpoint,
+    )
+    completed_positions["pretrain"] = prior_pretrain_positions + int(
+        pretrain_phase["target_positions_consumed"]
     )
     used_steps = int(pretrain_phase["optimizer_steps"])
     source_conditioned_phase = {
@@ -1692,8 +1801,12 @@ def train_target(
             global_step_offset=prior_steps + used_steps,
             mx=mx,
             optim=optim,
+            checkpoint_callback=commit_progress_checkpoint,
         )
         used_steps += int(source_conditioned_phase["optimizer_steps"])
+        completed_positions["source"] = prior_source_positions + int(
+            source_conditioned_phase["target_positions_consumed"]
+        )
     supervision_phase = {
         "phase": f"moecot_supervision:{target_id}",
         "optimizer_steps": 0,
@@ -1732,6 +1845,7 @@ def train_target(
             global_step_offset=prior_steps + used_steps,
             mx=mx,
             optim=optim,
+            checkpoint_callback=commit_progress_checkpoint,
         )
     publish_model(
         model,
@@ -1815,7 +1929,14 @@ def train_target(
         "hard_gaps": [],
         **no_cheat(config),
     }
+    previous_receipt = read_json(receipt_path) if receipt_path.is_file() else {}
     write_json_atomic(receipt_path, receipt)
+    cleanup_progress_generation(
+        previous_receipt,
+        canonical_checkpoint=checkpoint,
+        canonical_optimizer=optimizer_path,
+        keep={checkpoint, optimizer_path},
+    )
     return receipt
 
 
@@ -1861,6 +1982,46 @@ def publish_optimizer(mx: Any, mlx_utils: Any, optimizer: Any, path: Path) -> No
     flat = {name: value for name, value in mlx_utils.tree_flatten(optimizer.state)}
     mx.save_safetensors(str(temporary), flat, metadata={"policy": "moecot_optimizer_state_v1"})
     os.replace(temporary, path)
+
+
+def checkpoint_generation_paths(
+    checkpoint: Path, optimizer: Path, global_step: int
+) -> tuple[Path, Path]:
+    if global_step <= 0:
+        raise ValueError("checkpoint generation step must be positive")
+    suffix = f".step-{global_step:08d}"
+    return (
+        checkpoint.with_name(checkpoint.stem + suffix + checkpoint.suffix),
+        optimizer.with_name(optimizer.stem + suffix + optimizer.suffix),
+    )
+
+
+def cleanup_progress_generation(
+    receipt: dict[str, Any],
+    *,
+    canonical_checkpoint: Path,
+    canonical_optimizer: Path,
+    keep: set[Path] | None = None,
+) -> None:
+    """Delete only superseded step generations after a newer receipt commits."""
+
+    retained = {path.resolve() for path in (keep or set())}
+    for key, canonical in (
+        ("checkpoint", canonical_checkpoint),
+        ("optimizer_state", canonical_optimizer),
+    ):
+        value = str(receipt.get(key) or "")
+        if not value:
+            continue
+        candidate = resolve(value)
+        prefix = canonical.stem + ".step-"
+        if (
+            candidate.resolve() not in retained
+            and candidate.parent.resolve() == canonical.parent.resolve()
+            and candidate.name.startswith(prefix)
+            and candidate.suffix == canonical.suffix
+        ):
+            candidate.unlink(missing_ok=True)
 
 
 def validate_resume(

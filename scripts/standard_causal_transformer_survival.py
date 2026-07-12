@@ -2842,6 +2842,7 @@ def train_phase(
     global_step_offset: int,
     mx: Any,
     optim: Any,
+    checkpoint_callback: Any = None,
 ) -> dict[str, Any]:
     if not len(inputs) or max_steps <= 0:
         return {"phase": phase_name, "optimizer_steps": 0, "target_positions_consumed": 0, "losses": []}
@@ -2971,7 +2972,19 @@ def train_phase(
                     flush=True,
                 )
             if global_step % checkpoint_every == 0:
-                model.save_weights(str(checkpoint))
+                progress = {
+                    "phase": phase_name,
+                    "phase_step": steps,
+                    "global_step": global_step,
+                    "target_positions_consumed": consumed,
+                    "all_target_positions_consumed": all_target_consumed,
+                    "latest_loss": round(loss_value, 6),
+                    "elapsed_seconds": round(time.perf_counter() - started, 3),
+                }
+                if checkpoint_callback is None:
+                    model.save_weights(str(checkpoint))
+                else:
+                    checkpoint_callback(progress)
         epoch += 1
     return {
         "phase": phase_name,

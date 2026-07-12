@@ -22,6 +22,8 @@ from moecot_language_arm_training import (  # noqa: E402
     audit_tokenizer_stage,
     build_source_to_target_lookup,
     behavior_diagnostics,
+    checkpoint_generation_paths,
+    cleanup_progress_generation,
     ensure_shared_trunk_migration,
     generate_model_text,
     matched_decoder_only_config,
@@ -174,6 +176,44 @@ def test_specialist_data_scaling_binds_each_parameter_owner() -> None:
     assert rejected["hard_gaps"] == [
         "specialist_unique_position_floor_not_met:html_css"
     ]
+
+
+def test_progress_generation_paths_and_cleanup_are_step_scoped(tmp_path: Path) -> None:
+    checkpoint = tmp_path / "weights.npz"
+    optimizer = tmp_path / "optimizer.safetensors"
+    old_checkpoint, old_optimizer = checkpoint_generation_paths(
+        checkpoint, optimizer, 500
+    )
+    new_checkpoint, new_optimizer = checkpoint_generation_paths(
+        checkpoint, optimizer, 1000
+    )
+    for path in (
+        checkpoint,
+        optimizer,
+        old_checkpoint,
+        old_optimizer,
+        new_checkpoint,
+        new_optimizer,
+    ):
+        path.write_bytes(path.name.encode())
+
+    cleanup_progress_generation(
+        {
+            "checkpoint": str(old_checkpoint),
+            "optimizer_state": str(old_optimizer),
+        },
+        canonical_checkpoint=checkpoint,
+        canonical_optimizer=optimizer,
+        keep={new_checkpoint, new_optimizer},
+    )
+
+    assert not old_checkpoint.exists()
+    assert not old_optimizer.exists()
+    assert checkpoint.exists() and optimizer.exists()
+    assert new_checkpoint.exists() and new_optimizer.exists()
+
+    with pytest.raises(ValueError, match="step must be positive"):
+        checkpoint_generation_paths(checkpoint, optimizer, 0)
 
 
 def test_training_denies_legacy_stage_without_each_language_tokenizer_receipt() -> None:

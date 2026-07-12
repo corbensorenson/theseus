@@ -965,7 +965,12 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   non-overlapping windows, zero unknown admitted positions, and zero public training
   rows. One-step MLX canaries measure 3,982 positions/s for the trunk, 4,583 for the
   active control, and 2,933 for the total control. These are readiness/throughput
-  facts only; no v8 target is complete and no capability is claimed.
+  facts only; no v8 target is complete and no capability is claimed. A controlled
+  interruption at optimizer step 500 proved transactional resume: an atomic receipt
+  bound immutable step-specific weights and optimizer hashes, the next process
+  resumed at step 501 with 3,799,137 positions retained, and final publication
+  removed the superseded generation. Dry-run planning is also non-mutating and can
+  no longer erase candidate evidence.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact
