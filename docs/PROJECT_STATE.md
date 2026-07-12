@@ -93,6 +93,18 @@ share toward zero. Public benchmarks are calibration only.
   serialization to 60/60, but remains 0/60 exact. These are diagnostics, not answer
   success. Same-scale repair is stopped; the next action is a licensed-data-bound
   capacity rung.
+- **Data-bounded v8 rung:** a fresh content-bound audit measures 683,254,465 unique
+  governed positions. The frozen view selects 215,552,020 positions for a
+  10,777,601-active-parameter shared encoder/decoder plus one independently
+  checkpointed 430,849-parameter low-rank source specialist per language
+  (12,501,254 total parameters). All specialists clear the 20:1 owned-data floor;
+  HTML/CSS is tightest at 20.536. Matched decoder-only controls differ by +2,047
+  active and -1,286 total parameters. Stage `1b3b9c9e...` is GREEN with 452,782
+  non-overlapping windows, exact reversible tokenization, no admitted unknown
+  positions, and zero public rows/external inference/fallback credit. One-step MLX
+  canaries are resumable and measure 3,982 positions/s for the trunk, 4,583 for the
+  active control, and 2,933 for the total control. None is complete; these figures
+  authorize the long frozen comparison but provide no capability evidence.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile

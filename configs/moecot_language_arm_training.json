@@ -1,8 +1,8 @@
 {
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
-  "stage_dir": "runtime/standard_causal_transformer_survival_v1",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v7",
+  "stage_dir": "runtime/standard_causal_transformer_scale_v2",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v8",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
   "vocabulary": {
@@ -18,28 +18,25 @@
     "code_to_source_count_divisor": 50
   },
   "topology": {
-    "policy": "project_theseus_moecot_shared_trunk_source_specialists_v2",
+    "policy": "project_theseus_moecot_scaled_low_rank_specialists_v3",
     "mode": "shared_trunk_language_experts",
     "shared_parameter_ownership": "one_checkpoint_loaded_once",
-    "expert_parameter_ownership": "one_independent_source_conditioned_delta_per_language",
-    "expert_trainable_scope": "source_conditioned_delta",
-    "expert_adapter_dim": 32,
-    "shared_trunk_bootstrap": {
-      "policy": "project_theseus_exact_shared_trunk_migration_v1",
-      "checkpoint": "checkpoints/moecot_language_seed_v6/shared_trunk/weights.npz",
-      "checkpoint_sha256": "f727ae56f827f94200a27dd6444a73abb29b03a491b88206131a471a07706179",
-      "optimizer_state": "checkpoints/moecot_language_seed_v6/shared_trunk/optimizer.safetensors",
-      "optimizer_state_sha256": "2b80e23f06cdd231a36f373636f234a0057862ed58f131bd10f332b00a5dd29b",
-      "receipt": "checkpoints/moecot_language_seed_v6/shared_trunk/training_receipt.json",
-      "receipt_sha256": "fbe12eb14d7819b4a2ec06bb69de434105750fb584e2dc5a2225121408fa4a49"
+    "expert_parameter_ownership": "one_independent_low_rank_source_delta_per_language",
+    "expert_trainable_scope": "low_rank_source_adapters",
+    "expert_adapter_dim": 64,
+    "source_expert_adapter_dim": 32,
+    "shared_trunk_initialization": {
+      "policy": "project_theseus_seeded_fresh_trunk_initialization_v1",
+      "seed": 20260712,
+      "reason": "The retained 3.716M shared trunk and the data-bounded 10.78M rung have incompatible tensor shapes; initialize the preregistered larger trunk from its frozen seed rather than pretending weight migration is valid."
     }
   },
   "shared_trunk_model": {
-    "d_model": 160,
-    "num_layers": 5,
-    "num_heads": 5,
-    "num_kv_heads": 1,
-    "ff_dim": 480,
+    "d_model": 256,
+    "num_layers": 8,
+    "num_heads": 8,
+    "num_kv_heads": 2,
+    "ff_dim": 672,
     "rope_base": 10000.0,
     "rms_norm_eps": 0.00001,
     "attention_policy": "encoder_decoder",
@@ -49,11 +46,11 @@
     "source_copy_auxiliary_loss_weight": 0.25
   },
   "arm_model": {
-    "d_model": 160,
-    "num_layers": 5,
-    "num_heads": 5,
-    "num_kv_heads": 1,
-    "ff_dim": 480,
+    "d_model": 256,
+    "num_layers": 8,
+    "num_heads": 8,
+    "num_kv_heads": 2,
+    "ff_dim": 672,
     "rope_base": 10000.0,
     "rms_norm_eps": 0.00001,
     "attention_policy": "encoder_decoder",
@@ -61,7 +58,8 @@
     "source_encoder_layers": 2,
     "source_copy_mode": "pointer_generator",
     "source_copy_auxiliary_loss_weight": 0.25,
-    "expert_adapter_dim": 32
+    "expert_adapter_dim": 64,
+    "source_expert_adapter_dim": 32
   },
   "controls": {
     "dense_total_parameter": {

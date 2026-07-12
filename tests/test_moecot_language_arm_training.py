@@ -18,6 +18,7 @@ if str(SCRIPTS) not in sys.path:
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
     audit_arm_views,
+    audit_specialist_data_scaling,
     audit_tokenizer_stage,
     build_source_to_target_lookup,
     behavior_diagnostics,
@@ -143,6 +144,36 @@ def test_arm_views_are_an_exact_non_overlapping_partition() -> None:
     rejected = audit_arm_views(tampered, 10)
     assert rejected["state"] == "RED"
     assert any(gap.startswith("arm_range_gap_or_overlap:python") for gap in rejected["hard_gaps"])
+
+
+def test_specialist_data_scaling_binds_each_parameter_owner() -> None:
+    base = {
+        "data_model_scaling_contract": {
+            "planning_basis": {
+                "minimum_unique_positions_per_active_parameter": 20.0
+            }
+        }
+    }
+    targets = {
+        "shared_trunk": {"unique_target_positions": 2000},
+        **{arm: {"unique_target_positions": 200} for arm in ARM_IDS},
+    }
+    models = {
+        "moecot_system": {
+            "shared_trunk_parameter_count": 100,
+            "expert_parameter_count_per_arm": 10,
+        }
+    }
+    accepted = audit_specialist_data_scaling(base, targets, models)
+    assert accepted["state"] == "GREEN"
+    assert all(row["meets_floor"] for row in accepted["rows"])
+
+    targets["html_css"]["unique_target_positions"] = 199
+    rejected = audit_specialist_data_scaling(base, targets, models)
+    assert rejected["state"] == "RED"
+    assert rejected["hard_gaps"] == [
+        "specialist_unique_position_floor_not_met:html_css"
+    ]
 
 
 def test_training_denies_legacy_stage_without_each_language_tokenizer_receipt() -> None:
@@ -286,6 +317,67 @@ def test_shared_trunk_migration_is_exact_and_rejects_source_tampering(
             base={"tokenization": {"shared_source_target_vocabulary": True}},
             mx=mx,
             nn=nn,
+        )
+
+
+def test_fresh_shared_trunk_initialization_is_seed_bound_and_expert_denied(
+    tmp_path: Path,
+) -> None:
+    config = tiny_config(tmp_path)
+    config["topology"].pop("shared_trunk_bootstrap")
+    config["topology"]["policy"] = (
+        "project_theseus_moecot_scaled_low_rank_specialists_v3"
+    )
+    config["topology"]["shared_trunk_initialization"] = {
+        "policy": "project_theseus_seeded_fresh_trunk_initialization_v1",
+        "seed": config["seed"],
+        "reason": "isolated larger-shape test",
+    }
+    target_dir = tmp_path / "fresh" / "shared_trunk"
+    plan = {
+        "stage": {"stage_signature": "fresh-stage"},
+        "targets": {
+            "shared_trunk": {
+                "checkpoint": str(target_dir / "weights.npz"),
+                "optimizer_state": str(target_dir / "optimizer.safetensors"),
+                "receipt": str(target_dir / "training_receipt.json"),
+            }
+        },
+    }
+    authorized = ensure_shared_trunk_migration(
+        config,
+        plan,
+        metadata={},
+        base={},
+        mx=None,
+        nn=None,
+        require_existing=False,
+    )
+    assert authorized["state"] == "FRESH_INITIALIZATION_AUTHORIZED"
+    assert authorized["training_positions_added"] == 0
+    assert authorized["capability_credit"] == "NONE"
+
+    with pytest.raises(ValueError, match="requires a completed fresh shared trunk"):
+        ensure_shared_trunk_migration(
+            config,
+            plan,
+            metadata={},
+            base={},
+            mx=None,
+            nn=None,
+            require_existing=True,
+        )
+
+    config["topology"]["shared_trunk_initialization"]["seed"] += 1
+    with pytest.raises(ValueError, match="seed mismatch"):
+        ensure_shared_trunk_migration(
+            config,
+            plan,
+            metadata={},
+            base={},
+            mx=None,
+            nn=None,
+            require_existing=False,
         )
 
 

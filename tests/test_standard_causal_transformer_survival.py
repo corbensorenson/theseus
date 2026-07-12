@@ -5,6 +5,7 @@ import hashlib
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -16,6 +17,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import semantic_ir
+import standard_causal_transformer_survival as survival
 from standard_causal_transformer_model import (
     CausalTransformerConfig,
     build_model,
@@ -40,10 +42,12 @@ from standard_causal_transformer_survival import (
     generation_prefix_complete,
     hierarchical_beam_rank_score,
     materialize_canonical_mixed_corpus_receipt,
+    materialize_stage_only_receipt,
     assign_body_balanced_sampling_weights,
     normalized_sampling_probabilities,
     prepare_semantic_plan_labels,
     prepare_ordered_plan_sequences,
+    publish_candidate_artifact,
     phase_target_positions,
     prune_active_beams,
     prune_complete_beams,
@@ -103,6 +107,90 @@ from generation_mode_gate import audit_comparison, read_report_ref
 from policy_optimization_gate import extract_behavior_metrics, summarize_behavior_evidence
 from code_lm_decoder_contracts import visible_arg_count_hint_for_task
 from broad_private_generalization_ladder_v1 import row_from_template, template_bank
+
+
+def test_stage_only_receipt_materializes_without_model_training(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config_path = tmp_path / "config.json"
+    config = {
+        "training": {"pretrain_target_token_positions": 8},
+    }
+    config_path.write_text(json.dumps(config))
+    stage_dir = tmp_path / "stage"
+    stage_dir.mkdir()
+    metadata = stage_dir / "stage_metadata_v1.json"
+    metadata.write_text('{"content_bound":true}')
+    canonical = {
+        "policy": "project_theseus_canonical_balanced_pretrain_stage_v1",
+        "target_positions": 8,
+        "window_count": 2,
+        "max_sequence_tokens": 4,
+        "non_overlapping_windows": True,
+        "category_positions": {"english_broad": 8},
+        "arm_views": {"hidden_generalist_fallback": "forbidden"},
+        "array_artifacts": {"inputs": {"sha256": "a" * 64}},
+        "index": {"sha256": "b" * 64},
+        "tokenizer_audit": {"roundtrip_failure_count": 0},
+    }
+    fake_stage = SimpleNamespace(
+        summary={
+            "stage_signature": "stage-v2",
+            "cache_status": "miss",
+            "canonical_pretrain_stage": canonical,
+            "public_training_rows": 0,
+            "external_inference_calls": 0,
+        }
+    )
+    monkeypatch.setattr(survival, "validate_config", lambda _config: None)
+    monkeypatch.setattr(
+        survival,
+        "build_data_model_scaling_contract",
+        lambda _config: {
+            "training_authorized": True,
+            "hard_gaps": [],
+            "selected_rung": {"id": "isolated"},
+            "required_unique_positions": 8,
+        },
+    )
+    monkeypatch.setattr(survival, "materialize_stage", lambda *_args, **_kwargs: fake_stage)
+
+    receipt = materialize_stage_only_receipt(
+        config,
+        config_path=str(config_path),
+        stage_dir=stage_dir,
+        force=False,
+    )
+
+    assert receipt["trigger_state"] == "GREEN"
+    assert receipt["model_training_performed"] is False
+    assert receipt["capability_credit"] == "NONE"
+    assert receipt["canonical_pretrain_stage"]["target_positions"] == 8
+
+    canonical["target_positions"] = 7
+    rejected = materialize_stage_only_receipt(
+        config,
+        config_path=str(config_path),
+        stage_dir=stage_dir,
+        force=False,
+    )
+    assert rejected["trigger_state"] == "RED"
+    assert rejected["hard_gaps"] == ["materialized_position_count_mismatch"]
+
+
+def test_dry_run_cannot_overwrite_candidate_evidence(tmp_path: Path) -> None:
+    path = tmp_path / "candidates.jsonl"
+    sentinel = '{"candidate_id":"retained"}\n'
+    path.write_text(sentinel)
+
+    assert publish_candidate_artifact(execute=False, path=path, candidates=[]) is False
+    assert path.read_text() == sentinel
+
+    replacement = [{"candidate_id": "executed"}]
+    assert publish_candidate_artifact(
+        execute=True, path=path, candidates=replacement
+    ) is True
+    assert [json.loads(line) for line in path.read_text().splitlines()] == replacement
 
 
 def test_frozen_scaling_contract_reports_noncanonical_shortfall_without_authorizing_training(tmp_path: Path) -> None:

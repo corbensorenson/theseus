@@ -116,9 +116,9 @@
     "policy": "project_theseus_dense_mlx_data_model_scaling_contract_v1",
     "state": "frozen_before_training",
     "selected_rung": {
-      "id": "dense_mlx_6_6m_v1",
-      "active_parameter_count": 6623232,
-      "architecture_family": "standard_decoder_only_causal_transformer",
+      "id": "moecot_mlx_10_78m_v1",
+      "active_parameter_count": 10777601,
+      "architecture_family": "shared_transformer_low_rank_language_specialists",
       "tokenizer_abi": "standard_causal_split_source_target_open_vocab_v1"
     },
     "planning_basis": {
@@ -130,21 +130,21 @@
       "repetition_reference_url": "https://arxiv.org/abs/2305.16264",
       "interpretation": "The 20:1 ratio is a conservative planning floor for unique admitted model-visible positions. Repeated optimizer exposure is measured separately and never increases unique-data credit."
     },
-    "required_unique_positions": 132464640,
+    "required_unique_positions": 215552020,
     "domain_minimum_positions": {
-      "english_natural_language_total": 60000000,
-      "code_total": 60000000,
-      "flexible_tail_reserve": 12464640
+      "english_natural_language_total": 87397060,
+      "code_total": 128154960,
+      "flexible_tail_reserve": 0
     },
     "subset_minimum_positions": {
-      "english_conversation_instruction": 15000000
+      "english_conversation_instruction": 41684669
     },
     "maximum_recursive_synthetic_position_share": 0.25,
     "code_language_minimum_positions": {
-      "python": 36000000,
-      "javascript_typescript": 12000000,
-      "html_css": 6000000,
-      "rust": 6000000
+      "python": 62624233,
+      "javascript_typescript": 32401815,
+      "html_css": 8847956,
+      "rust": 24280956
     },
     "required_evidence_dimensions": [
       "authority_and_license",
@@ -172,7 +172,7 @@
         "id": "english_conversation_diagnostic",
         "domain": "english_conversation_instruction",
         "path": "reports/open_conversation_training_pantry.json",
-        "one_pass_positions": 4285750,
+        "one_pass_positions": 15001434,
         "accounting_abi": "conversation_pantry_lexical_position_estimate_v1",
         "canonical_accounting": false
       }
@@ -186,7 +186,7 @@
       }
     ],
     "canonical_corpus_receipt": {
-      "path": "runtime/standard_causal_transformer_survival_v1/canonical_mixed_corpus_receipt.json"
+      "path": "runtime/standard_causal_transformer_scale_v2/canonical_mixed_corpus_receipt.json"
     },
     "training_authorization": "deny_until_canonical_mixed_corpus_receipt_meets_all_requirements",
     "public_training_rows_written": 0,
@@ -256,13 +256,13 @@
   },
   "model": {
     "d_model": 256,
-    "num_layers": 6,
+    "num_layers": 8,
     "num_heads": 8,
     "num_kv_heads": 2,
-    "ff_dim": 768,
+    "ff_dim": 1199,
     "rope_base": 10000.0,
     "rms_norm_eps": 1e-05,
-    "attention_policy": "causal",
+    "attention_policy": "prefix_lm",
     "source_target_separator_token_id": 2
   },
   "tokenization": {
@@ -288,7 +288,7 @@
   },
   "training": {
     "batch_size": 16,
-    "pretrain_target_token_positions": 132464640,
+    "pretrain_target_token_positions": 215552020,
     "sft_target_token_positions": 8000000,
     "private_body_sampling_weight": 16.0,
     "learning_rate": 0.0003,

@@ -29,9 +29,9 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
-| Dense transformer control | Phase 10 | canonical matched falsification controls are 3.768M active-parameter and 3.978M total-parameter decoder-only models; behavior is unmeasured | train only after the specialist rung clears a nonzero floor or a direct architecture comparison is otherwise informative; never select an accounting view after results |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | the 3.716M trunk is complete; a 995,841-parameter Rust source-specialist delta improves target similarity from 0.309 to 0.358 but remains 0/60 exact | retain both small rungs; stop local patches and preregister the next model/data capacity rung before training |
+| Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions; the frozen v8 view is 215.55M positions plus licensed three-way splits with zero overlap/public payloads | keep the v8 view immutable through the comparison; expand only from measured residuals afterward |
+| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; one-step MLX canaries are GREEN but behavior is unmeasured | complete both controls against the same frozen data/evaluation contract; never select an accounting view after results |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | small rungs remain 0/60 exact; v8 is frozen at 10.778M active / 12.501M total with five 430,849-parameter low-rank specialists and a 215.552M-position stage | complete the long trunk, specialists, and matched controls; accept the direct-behavior verdict rather than patching after results |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
@@ -230,13 +230,13 @@ to Track 1).
 - Establish a data/model scaling contract before the next capability run. Count
   unique admitted model-visible positions separately from repeated optimizer
   exposure and choose a published compute-optimal planning band before training.
-  For the current 6.6M-parameter dense model, the canonical audit now measures
-  247.91M unique positions after file-level quality filtering under the actual
-  tokenizer ABI: 77.35M English and 170.56M code across Python, JS/TS, HTML/CSS,
-  Rust, and a small uncredited other-code tail. This clears the frozen 20:1 floor;
-  the earlier 62.98M diagnostic accounting
-  is superseded. The exact 132.46M-position training view remains selected and frozen
-  before results rather than reverse-engineered afterward.
+  For the current 10.78M-active-parameter rung, the canonical audit measures
+  683.25M unique positions after file-level quality filtering under the actual
+  tokenizer ABI: 307.25M English and 376.01M code across Python, JS/TS, HTML/CSS,
+  Rust, and a small uncredited other-code tail. This clears the frozen 20:1 floor.
+  The exact 215.55M-position balanced training view remains selected and frozen
+  before results rather than reverse-engineered afterward; unused capacity is not
+  counted as optimizer exposure.
 - Expand the corpus in the product's actual domains: English conversation and
   instruction following; Python first; then JS/TS/HTML/CSS and Rust. Measure
   executable completeness, dependency context, algorithm/contract coverage,
@@ -954,13 +954,18 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   0/60, so this is not capability and confirmation remains untouched. The richer
   ownership hypothesis is directionally supported but the 3.77M active model is
   capacity-limited. Same-scale repair stops here.
-- **Next scale rung:** derive the largest honest active model supported by the full
-  admitted licensed corpus after exact packing, targeting at least 16-20 unique
-  optimizer positions per active parameter without epoch inflation. Preregister
-  model shape, MoECOT expert ownership, dense active/total controls, MLX memory/time,
-  stop rules, and consumed-development diagnostics before training. Expand the
-  canonical packed stage only from already admitted source identities; do not add
-  synthetic benchmark analogues or use confirmation/public rows to size the model.
+- **Data-bounded scale rung:** the content-bound audit measures 683,254,465 unique
+  governed positions, while the frozen v8 stage selects 215,552,020 positions for a
+  10,777,601-active-parameter encoder/decoder model (exactly 20:1 by contract). The
+  10,347,009-parameter trunk is shared; each language owns a separately checkpointed
+  430,849-parameter residual/source/cross-attention specialist, for 12,501,254 total
+  parameters. The weakest HTML/CSS specialist still has 20.536 unique positions per
+  owned parameter. Decoder-only controls are mechanically matched at 10,779,648
+  active and 12,499,968 total parameters. Stage `1b3b9c9e...` contains 452,782
+  non-overlapping windows, zero unknown admitted positions, and zero public training
+  rows. One-step MLX canaries measure 3,982 positions/s for the trunk, 4,583 for the
+  active control, and 2,933 for the total control. These are readiness/throughput
+  facts only; no v8 target is complete and no capability is claimed.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact
@@ -976,9 +981,9 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   choosing the favorable accounting view after results are known; it must show
   nonzero direct behavior, avoid arm-floor regressions, and beat or Pareto-dominate
   both controls. A dense win is retained as falsification, not routed around.
-- **Frozen scaling decision:** the selected rung is exactly 6,623,232 active
-  parameters with a 132,464,640 unique-position floor and maximum 4x optimizer
-  repetition. The canonical materializer credits 247,908,698 quality-filtered unique positions under
+- **Frozen scaling decision:** the selected rung is exactly 10,777,601 active
+  parameters with a 215,552,020 unique-position floor and maximum 4x optimizer
+  repetition. The canonical materializer credits 683,254,465 quality-filtered unique positions under
   the standard-transformer tokenizer/stage ABI and excludes stale source identities,
   tokenizer-unrepresentable documents, and exact/near duplicates from that credit.
   This measurement is corpus evidence, not training authority or capability.

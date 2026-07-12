@@ -159,6 +159,12 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         supervision_audit=supervision_audit,
         source_conditioned_audit=source_conditioned_audit,
     )
+    specialist_scaling = audit_specialist_data_scaling(
+        base,
+        targets,
+        models,
+    )
+    gaps.extend(specialist_scaling["hard_gaps"])
     checkpoint_inventory = inspect_checkpoint_inventory(targets, plan_identity, summary.get("stage_signature"))
     gaps.extend(checkpoint_inventory["hard_gaps"])
     return {
@@ -184,6 +190,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         "supervision": supervision_audit,
         "source_conditioned_pretraining": source_conditioned_audit,
         "targets": targets,
+        "specialist_data_scaling": specialist_scaling,
         "checkpoint_inventory": checkpoint_inventory,
         "comparison_contract": config["comparison_contract"],
         "plan_sha256": plan_identity,
@@ -195,6 +202,55 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
             "neither accounting view may be selected after results are known",
         ],
         **no_cheat(config),
+    }
+
+
+def audit_specialist_data_scaling(
+    base: dict[str, Any],
+    targets: dict[str, Any],
+    models: dict[str, Any],
+) -> dict[str, Any]:
+    """Bind every trained parameter owner to enough unique model-visible data."""
+
+    ratio = float(
+        ((base.get("data_model_scaling_contract") or {}).get("planning_basis") or {}).get(
+            "minimum_unique_positions_per_active_parameter"
+        )
+        or 0.0
+    )
+    expert_parameters = int(
+        ((models.get("moecot_system") or {}).get("expert_parameter_count_per_arm"))
+        or 0
+    )
+    trunk_parameters = int(
+        ((models.get("moecot_system") or {}).get("shared_trunk_parameter_count"))
+        or 0
+    )
+    rows: list[dict[str, Any]] = []
+    gaps: list[str] = []
+    for target_id in (SHARED_TRUNK_ID, *ARM_IDS):
+        parameters = trunk_parameters if target_id == SHARED_TRUNK_ID else expert_parameters
+        positions = int((targets.get(target_id) or {}).get("unique_target_positions") or 0)
+        required = int(np.ceil(parameters * ratio)) if parameters and ratio else 0
+        row = {
+            "target_id": target_id,
+            "owned_parameter_count": parameters,
+            "unique_model_visible_positions": positions,
+            "minimum_required_positions": required,
+            "positions_per_owned_parameter": round(positions / max(1, parameters), 6),
+            "meets_floor": bool(parameters > 0 and positions >= required),
+        }
+        if not row["meets_floor"]:
+            gaps.append(f"specialist_unique_position_floor_not_met:{target_id}")
+        rows.append(row)
+    return {
+        "policy": "project_theseus_moecot_specialist_data_scaling_v1",
+        "minimum_unique_positions_per_owned_parameter": ratio,
+        "state": "GREEN" if not gaps else "RED",
+        "rows": rows,
+        "hard_gaps": gaps,
+        "optimizer_repetition_counted_as_unique_data": False,
+        "capability_credit": "NONE",
     }
 
 
@@ -438,13 +494,11 @@ def target_contracts(
             ),
             "row_ranges": list(view.get("row_ranges") or []),
             "row_count": sum(int(row["stop"]) - int(row["start"]) for row in view.get("row_ranges") or []),
-            "unique_target_positions": (
-                0 if target in ARM_IDS else int(view.get("target_positions") or 0)
-            ),
+            "unique_target_positions": int(view.get("target_positions") or 0),
             "model": model,
             "parameter_count": parameter_count_value,
             "estimated_parameter_token_product": parameter_count_value
-            * (0 if target in ARM_IDS else int(view.get("target_positions") or 0)),
+            * int(view.get("target_positions") or 0),
             "checkpoint": relative(
                 directory
                 / ("expert_delta.safetensors" if target in ARM_IDS else "weights.npz")
@@ -691,6 +745,7 @@ def execute_targets(
             base=base,
             mx=mx,
             nn=nn,
+            require_existing=any(target_id in ARM_IDS for target_id in targets),
         )
     canonical = metadata["summary"]["canonical_pretrain_stage"]
     shape = (int(canonical["window_count"]), int(canonical["max_sequence_tokens"]))
@@ -785,8 +840,9 @@ def ensure_shared_trunk_migration(
     base: dict[str, Any],
     mx: Any,
     nn: Any,
+    require_existing: bool = True,
 ) -> dict[str, Any]:
-    """Migrate an unchanged completed trunk into a successor ownership plan."""
+    """Validate, migrate, or authorize fresh initialization for the shared trunk."""
 
     target = plan["targets"][SHARED_TRUNK_ID]
     checkpoint = resolve(str(target["checkpoint"]))
@@ -799,7 +855,24 @@ def ensure_shared_trunk_migration(
     if any(path.exists() for path in (checkpoint, optimizer, receipt_path)):
         raise ValueError("partial shared trunk migration state requires operator cleanup")
 
-    bootstrap = config["topology"]["shared_trunk_bootstrap"]
+    topology = config["topology"]
+    initialization = topology.get("shared_trunk_initialization") or {}
+    if initialization.get("policy") == "project_theseus_seeded_fresh_trunk_initialization_v1":
+        if int(initialization.get("seed") or -1) != int(config["seed"]):
+            raise ValueError("fresh shared trunk seed mismatch")
+        if require_existing:
+            raise ValueError("language expert requires a completed fresh shared trunk")
+        return {
+            "policy": initialization["policy"],
+            "state": "FRESH_INITIALIZATION_AUTHORIZED",
+            "seed": int(config["seed"]),
+            "training_positions_added": 0,
+            "capability_credit": "NONE",
+        }
+
+    bootstrap = topology.get("shared_trunk_bootstrap") or initialization
+    if bootstrap.get("policy") != "project_theseus_exact_shared_trunk_migration_v1":
+        raise ValueError("unsupported shared trunk initialization policy")
     source_checkpoint = resolve(str(bootstrap["checkpoint"]))
     source_optimizer = resolve(str(bootstrap["optimizer_state"]))
     source_receipt_path = resolve(str(bootstrap["receipt"]))
@@ -1862,11 +1935,10 @@ def validate_config(config: dict[str, Any]) -> None:
     if config.get("comparison_contract", {}).get("preregistered_before_training") is not True:
         raise ValueError("comparison contract must be preregistered")
     topology = config.get("topology") or {}
-    if (
-        topology.get("policy")
-        != "project_theseus_moecot_shared_trunk_source_specialists_v2"
-        or topology.get("mode") != "shared_trunk_language_experts"
-    ):
+    if topology.get("policy") not in {
+        "project_theseus_moecot_shared_trunk_source_specialists_v2",
+        "project_theseus_moecot_scaled_low_rank_specialists_v3",
+    } or topology.get("mode") != "shared_trunk_language_experts":
         raise ValueError("unexpected MoECOT shared-trunk topology")
     arm_model = dict(config.get("arm_model") or {})
     expert_dim = int(arm_model.pop("expert_adapter_dim", 0))
@@ -1883,19 +1955,26 @@ def validate_config(config: dict[str, Any]) -> None:
         "low_rank_source_adapters",
     }:
         raise ValueError("unsupported language expert trainable scope")
-    bootstrap = topology.get("shared_trunk_bootstrap") or {}
-    if bootstrap.get("policy") != "project_theseus_exact_shared_trunk_migration_v1":
-        raise ValueError("shared trunk migration contract is required")
-    for key in (
-        "checkpoint",
-        "checkpoint_sha256",
-        "optimizer_state",
-        "optimizer_state_sha256",
-        "receipt",
-        "receipt_sha256",
-    ):
-        if not bootstrap.get(key):
-            raise ValueError(f"shared trunk migration missing {key}")
+    initialization = topology.get("shared_trunk_initialization") or {}
+    bootstrap = topology.get("shared_trunk_bootstrap") or initialization
+    if bootstrap.get("policy") == "project_theseus_exact_shared_trunk_migration_v1":
+        for key in (
+            "checkpoint",
+            "checkpoint_sha256",
+            "optimizer_state",
+            "optimizer_state_sha256",
+            "receipt",
+            "receipt_sha256",
+        ):
+            if not bootstrap.get(key):
+                raise ValueError(f"shared trunk migration missing {key}")
+    elif initialization.get("policy") == "project_theseus_seeded_fresh_trunk_initialization_v1":
+        if int(initialization.get("seed") or -1) != int(config.get("seed") or -2):
+            raise ValueError("fresh shared trunk initialization seed mismatch")
+        if not str(initialization.get("reason") or "").strip():
+            raise ValueError("fresh shared trunk initialization requires a reason")
+    else:
+        raise ValueError("shared trunk initialization contract is required")
     boundaries = config.get("boundaries") or {}
     if any(int(boundaries.get(key) or 0) for key in (
         "public_training_rows_written", "external_inference_calls", "fallback_return_count",

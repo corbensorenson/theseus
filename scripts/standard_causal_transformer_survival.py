@@ -142,6 +142,11 @@ def main() -> int:
     parser.add_argument("--generation-mode-canary", action="store_true")
     parser.add_argument("--audit-corpus", action="store_true")
     parser.add_argument("--measure-corpus-capacity", action="store_true")
+    parser.add_argument(
+        "--materialize-stage-only",
+        action="store_true",
+        help="Build and audit the canonical stage without instantiating or training a model.",
+    )
     parser.add_argument("--canonical-corpus-receipt", default=rel(DEFAULT_CANONICAL_CORPUS_RECEIPT))
     parser.add_argument("--max-steps", type=int, default=0)
     args = parser.parse_args()
@@ -184,6 +189,16 @@ def main() -> int:
         write_json(resolve(args.out), receipt)
         print(json.dumps(receipt, indent=2, sort_keys=True))
         return 0
+    if args.materialize_stage_only:
+        receipt = materialize_stage_only_receipt(
+            config,
+            config_path=args.config,
+            stage_dir=resolve(args.stage_dir),
+            force=args.force_restage,
+        )
+        write_json(resolve(args.out), receipt)
+        print(json.dumps(receipt, indent=2, sort_keys=True))
+        return 0 if receipt["trigger_state"] == "GREEN" else 2
     report, candidates = run(
         config,
         config_path=args.config,
@@ -201,9 +216,92 @@ def main() -> int:
         started=started,
     )
     write_json(resolve(args.out), report)
-    write_jsonl(resolve(args.candidates_out), candidates)
+    publish_candidate_artifact(
+        execute=args.execute,
+        path=resolve(args.candidates_out),
+        candidates=candidates,
+    )
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report.get("trigger_state") in {"GREEN", "YELLOW", "PLANNED"} else 2
+
+
+def publish_candidate_artifact(
+    *, execute: bool, path: Path, candidates: list[dict[str, Any]]
+) -> bool:
+    """Never let a dry-run plan erase the last content-bearing candidate evidence."""
+
+    if not execute:
+        return False
+    write_jsonl(path, candidates)
+    return True
+
+
+def materialize_stage_only_receipt(
+    config: dict[str, Any],
+    *,
+    config_path: str,
+    stage_dir: Path,
+    force: bool,
+) -> dict[str, Any]:
+    """Materialize one content-bound stage without spending model-training compute."""
+
+    validate_config(config)
+    scaling = build_data_model_scaling_contract(config)
+    if scaling["training_authorized"] is not True:
+        raise ValueError(
+            "stage materialization denied by frozen data/model scaling contract: "
+            + ", ".join(scaling["hard_gaps"])
+        )
+    started = time.perf_counter()
+    stage = materialize_stage(config, stage_dir=stage_dir, force=force)
+    canonical = stage.summary["canonical_pretrain_stage"]
+    expected = int(config["training"]["pretrain_target_token_positions"])
+    observed = int(canonical["target_positions"])
+    gaps: list[str] = []
+    if observed != expected:
+        gaps.append("materialized_position_count_mismatch")
+    if canonical.get("non_overlapping_windows") is not True:
+        gaps.append("materialized_windows_overlap")
+    if int(stage.summary.get("public_training_rows") or 0):
+        gaps.append("public_training_rows_nonzero")
+    if int(stage.summary.get("external_inference_calls") or 0):
+        gaps.append("external_inference_calls_nonzero")
+    metadata = stage_dir / "stage_metadata_v1.json"
+    return {
+        "policy": "project_theseus_standard_causal_stage_materialization_receipt_v1",
+        "trigger_state": "GREEN" if not gaps else "RED",
+        "created_utc": now(),
+        "config": rel(resolve(config_path)),
+        "config_sha256": file_content_sha256(resolve(config_path)),
+        "stage_dir": rel(stage_dir),
+        "stage_metadata": rel(metadata),
+        "stage_metadata_sha256": file_content_sha256(metadata),
+        "stage_signature": stage.summary["stage_signature"],
+        "cache_status": stage.summary.get("cache_status"),
+        "canonical_pretrain_stage": {
+            "policy": canonical["policy"],
+            "target_positions": observed,
+            "window_count": int(canonical["window_count"]),
+            "max_sequence_tokens": int(canonical["max_sequence_tokens"]),
+            "category_positions": canonical["category_positions"],
+            "arm_views": canonical["arm_views"],
+            "array_artifacts": canonical["array_artifacts"],
+            "index": canonical["index"],
+            "tokenizer_audit": canonical["tokenizer_audit"],
+        },
+        "scaling_contract": {
+            "selected_rung": scaling["selected_rung"],
+            "required_unique_positions": scaling["required_unique_positions"],
+            "training_authorized": scaling["training_authorized"],
+        },
+        "hard_gaps": gaps,
+        "runtime_ms": int((time.perf_counter() - started) * 1000),
+        "capability_credit": "NONE",
+        "model_training_performed": False,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
 
 
 def run(

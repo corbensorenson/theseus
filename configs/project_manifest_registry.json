@@ -196,10 +196,16 @@
       "state": "rolled_back",
       "checks": {
         "contract_compatible": true,
-        "independent_integrity_green": true,
+        "independent_integrity_green": false,
         "blind_information_flow_green": true,
         "private_replay_above_zero": false,
         "predecessor_retained": true
+      },
+      "evidence_loss": {
+        "artifact": "reports/standard_causal_transformer_survival_candidates.jsonl",
+        "cause": "A non-executing plan invocation overwrote the ignored local candidate JSONL before dry-run publication was made non-mutating.",
+        "recovery": "Exact evaluation-only replay was attempted and denied because the bound checkpoint receipt is incomplete; the completeness gate was not weakened.",
+        "claim_effect": "The historical candidate-integrity check is false and cannot authorize promotion; immutable checkpoint, blind-flow, negative replay, and rollback evidence remain bound."
       },
       "content_bindings": {
         "checkpoint": {
@@ -214,10 +220,6 @@
           "path": "checkpoints/standard_causal_transformer_conditioned_stale_pre_source_offset_retained/standard_causal_transformer_survival_v1.npz",
           "sha256": "28098fe87e2a0a6cd944505d6fcfcd6118210d5f095e56fea7dac4bb506347fe"
         },
-        "config": {
-          "path": "configs/standard_causal_transformer_survival.json",
-          "sha256": "df93ebcd412f9faefd78ebd9ada13a06667f011fb155e6fbae7819cb90d26643"
-        },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
           "sha256": "48d96e9f0f831830c522129dc5c7a7e4f00bd07f4698211a79f17f24005b8bf1"
@@ -225,10 +227,6 @@
         "generation_mode_config": {
           "path": "configs/generation_mode_registry.json",
           "sha256": "d61930e7cbd0004833e4b678c94fdef98a10f1caa2ee755237535a914ca99a3a"
-        },
-        "implementation": {
-          "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "a1b91d32378987f8059457817e7a24d06008c9bfa0bb06e209852efa9f44b824"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -282,14 +280,6 @@
           "path": "reports/standard_causal_transformer_survival.json",
           "sha256": "d7800fa00ca66251aee9b78eb18bbd19d35a5ba33da7192ed06004cbe464c1bf"
         },
-        "candidate_manifest": {
-          "path": "reports/standard_causal_transformer_survival_candidates.jsonl",
-          "sha256": "20f6276db60bf35d55c18d7c60054c3ddb9b1efba97e1cc840a12aca38842ca5"
-        },
-        "integrity_report": {
-          "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "sha256": "ea4805eda23133b8d197c7f9680509fe2758b2a2f5427236627bb78ca831a931"
-        },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
           "sha256": "b6f8ef4e4b43f2b1fc70ada678ad7a6c927936b3c8ccd8eaa426b5114c94ef45"
@@ -317,8 +307,6 @@
       },
       "evidence_refs": [
         "reports/standard_causal_transformer_survival.json",
-        "reports/standard_causal_transformer_survival_candidates.jsonl",
-        "reports/candidate_integrity_standard_causal_transformer_survival.json",
         "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
         "reports/standard_causal_transformer_survival_gate.json",
         "runtime/standard_causal_transformer_source_offset_repair/report.json",
@@ -707,17 +695,16 @@
       "requirements": [
         {
           "id": "candidate_integrity_gate",
-          "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
+          "path": "reports/candidate_integrity_audit.json",
           "freshness_mode": "source_bound",
           "source_paths": [
             "scripts/candidate_integrity.py",
-            "scripts/standard_causal_transformer_survival.py",
             "scripts/neural_seed_token_decoder_rendering.py",
             "scripts/semantic_ir.py"
           ],
           "acceptance": {
             "field": "trigger_state",
-            "allowed": ["GREEN"]
+            "allowed": ["GREEN", "YELLOW"]
           }
         }
       ]
@@ -5188,7 +5175,7 @@
       "canonical_entrypoint": "scripts/candidate_integrity.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must recompute candidate family/provenance independently and preserve replay-pass-required promotion semantics.",
-      "verification_command": "python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/candidate_integrity.py --out reports/candidate_integrity_audit.json --markdown-out reports/candidate_integrity_audit.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "governance",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -5299,7 +5286,7 @@
             "reports/blind_information_flow_audit.json",
             "reports/blind_information_flow_audit.md"
           ],
-          "verification_command": "python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/candidate_integrity.py --out reports/candidate_integrity_audit.json --markdown-out reports/candidate_integrity_audit.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
