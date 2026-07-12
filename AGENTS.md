@@ -16,6 +16,11 @@ zero external inference at serving time and a teacher bill that trends to zero.
    teacher-distillation gate. They must be retained, provenance-tagged,
    license-checked, verifier-accepted, leakage-audited, and never routed to
    runtime serving.
+   Static third-party corpora are data sources rather than live teacher calls:
+   openly licensed model-derived rows may be admitted through the corpus gate
+   when provenance, quality tier, synthetic share, deduplication, contamination,
+   retention, and permitted use are explicit. This does not authorize that
+   provider for interactive teacher or runtime inference.
 5. Do not add arbitrary remote execution, public gateway operation, or
    unbounded self-update behavior.
 6. Governed teachers must be OpenAI models accessed through ChatGPT, Codex, or

@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -13,9 +14,14 @@ if str(SCRIPTS) not in sys.path:
 
 from governed_conversation_stream import (  # noqa: E402
     AtomicConversationShardWriter,
+    AtomicDocumentShardWriter,
     ConversationDeduper,
     admit_conversation,
+    admit_document,
+    chunk_document,
+    document_source_plan,
     reconstruct_oasst_conversations,
+    run_document_intake,
     redact_sensitive_text,
     source_plan,
 )
@@ -141,6 +147,132 @@ class GovernedConversationStreamTests(unittest.TestCase):
             teacher_allowed=False,
         )
         self.assertEqual("teacher_distillation_gate_not_admitted_for_conversation", plan["decision"])
+
+    def test_high_quality_static_model_corpus_is_data_not_live_teacher_inference(self) -> None:
+        plan = source_plan(
+            {
+                "id": "licensed-static",
+                "dataset": "fixture/static",
+                "license_spdx": "apache-2.0",
+                "provenance_class": "external_teacher_generated",
+                "static_open_corpus": True,
+                "quality_tier": "curated_high",
+            },
+            allowed_licenses={"apache-2.0"},
+            teacher_allowed=False,
+            licensed_static_policy={
+                "enabled": True,
+                "required_quality_tiers": ["curated_high"],
+                "static_open_corpus_required": True,
+                "live_provider_calls_allowed": False,
+            },
+        )
+        self.assertEqual("eligible_for_intake", plan["decision"])
+        self.assertTrue(plan["static_model_corpus_allowed"])
+
+    def test_public_domain_document_admission_is_pretraining_only_and_deduplicated(self) -> None:
+        source = {
+            "id": "gutenberg_fixture",
+            "dataset": "fixture/gutenberg",
+            "license_spdx": "public-domain",
+            "provenance_class": "human_public_domain",
+        }
+        provenance = {
+            "source_url": "https://www.gutenberg.org/ebooks/1",
+            "title": "Fixture",
+            "author": "Public Domain Author",
+            "row_license": "Public Domain",
+        }
+        text = ("This is a human-authored public-domain paragraph with sufficient lexical content. " * 15).strip()
+        deduper = ConversationDeduper()
+        admitted = admit_document(
+            text,
+            source=source,
+            provenance=provenance,
+            public_index=EMPTY_PUBLIC_INDEX,
+            deduper=deduper,
+            min_chars=200,
+            max_chars=4000,
+        )
+        duplicate = admit_document(
+            text,
+            source=source,
+            provenance=provenance,
+            public_index=EMPTY_PUBLIC_INDEX,
+            deduper=deduper,
+            min_chars=200,
+            max_chars=4000,
+        )
+        self.assertEqual("admit", admitted["receipt"]["decision"])
+        self.assertEqual("natural_language_document", admitted["train_row"]["modality"])
+        self.assertEqual("broad_english_self_supervised_pretraining_only", admitted["train_row"]["training_use"])
+        self.assertEqual("quarantine", duplicate["receipt"]["decision"])
+        self.assertIn("exact_duplicate", duplicate["receipt"]["decision_reasons"])
+
+    def test_document_chunking_and_source_policy_fail_closed(self) -> None:
+        chunks = chunk_document(("Paragraph text. " * 200) + "\n\n" + ("Second paragraph. " * 200), max_chars=1000, min_chars=200)
+        self.assertTrue(chunks)
+        self.assertTrue(all(200 <= len(chunk) <= 1000 for chunk in chunks))
+        blocked = document_source_plan(
+            {
+                "id": "synthetic",
+                "license_spdx": "public-domain",
+                "provenance_class": "external_teacher_generated",
+                "format": "document_text",
+                "require_row_public_domain_license": True,
+            },
+            allowed_licenses={"public-domain"},
+        )
+        self.assertEqual("provenance_class_not_admitted", blocked["decision"])
+
+    def test_atomic_document_shards_resume_without_entering_sft_or_sts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            writer = AtomicDocumentShardWriter(root, shard_rows=1, max_disk_bytes=1_000_000)
+            row = {"task_id": "d1", "causal_text": "A sufficiently long public-domain document chunk."}
+            receipt = {"receipt_id": "r1", "metrics": {"token_positions": 8}}
+            writer.add(row, receipt)
+            writer.mark_source_complete("source-a", complete=True)
+            writer.close()
+            resumed = AtomicDocumentShardWriter(root, shard_rows=1, max_disk_bytes=1_000_000)
+            self.assertEqual(1, resumed.total_rows)
+            self.assertEqual(8, resumed.total_token_positions)
+            self.assertFalse((root / "sts_streams").exists())
+            manifest = json.loads((root / "scalable_manifest.json").read_text())
+            self.assertEqual("project_theseus_governed_document_stream_state_v1", manifest["policy"])
+
+    def test_document_intake_satisfied_target_resume_is_read_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            writer = AtomicDocumentShardWriter(root, shard_rows=1, max_disk_bytes=1_000_000)
+            writer.add(
+                {"task_id": "d1", "causal_text": "A sufficiently long public-domain document chunk."},
+                {"receipt_id": "r1", "metrics": {"token_positions": 8}},
+            )
+            writer.close()
+            config = {
+                "allowed_licenses": [],
+                "broad_text_intake": {"target_one_pass_token_positions": 8},
+                "broad_text_sources": [
+                    {
+                        "id": "fixture",
+                        "dataset": "network/must-not-be-read",
+                        "license_spdx": "public-domain",
+                        "provenance_class": "human_public_domain",
+                        "format": "document_text",
+                        "require_row_public_domain_license": True,
+                        "enabled": True,
+                        "scalable": True,
+                    }
+                ],
+            }
+            with patch(
+                "governed_conversation_stream.build_public_index",
+                return_value={"text_count": 1, "digest": "fixture"},
+            ):
+                report = run_document_intake(config, root=root, execute=True)
+            self.assertEqual(1, report["summary"]["total_rows"])
+            self.assertEqual("resume_target_already_met", report["sources"][0]["decision"])
 
 
 if __name__ == "__main__":

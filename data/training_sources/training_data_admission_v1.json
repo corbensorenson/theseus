@@ -2,6 +2,7 @@
   "candidate_lineage": {
     "candidate_receipt_ledger": {
       "bytes": 12444020,
+      "cache_reused": true,
       "compression": "gzip_jsonl",
       "decision_counts": {
         "admit": 91725,
@@ -39,12 +40,12 @@
       "fallback_return_count": 0,
       "family_count": 361,
       "hard_gap_count": 0,
-      "ledger_incremental_rebuild_used": true,
-      "ledger_incremental_rescanned_receipt_count": 15,
-      "ledger_incremental_rescanned_source_count": 1,
-      "ledger_incremental_reused_receipt_count": 92029,
-      "ledger_incremental_reused_source_count": 74,
-      "ledger_replay_reused": false,
+      "ledger_incremental_rebuild_used": false,
+      "ledger_incremental_rescanned_receipt_count": 0,
+      "ledger_incremental_rescanned_source_count": 0,
+      "ledger_incremental_reused_receipt_count": 0,
+      "ledger_incremental_reused_source_count": 0,
+      "ledger_replay_reused": true,
       "ledger_schema_migrated_teacher_receipt_count": 0,
       "lineage_edge_count": 102369,
       "public_flag_candidate_count": 0,
@@ -52,9 +53,9 @@
       "quarantined_candidate_count": 0,
       "raw_user_text_candidate_count": 0,
       "rejected_candidate_count": 319,
-      "report_cache_reused": false,
+      "report_cache_reused": true,
       "runtime_external_inference_calls": 0,
-      "runtime_ms": 18489,
+      "runtime_ms": 9341,
       "semantic_public_overlap_candidate_count": 0,
       "source_count": 74,
       "teacher_candidate_count": 15,
@@ -62,7 +63,7 @@
     },
     "trigger_state": "GREEN"
   },
-  "created_utc": "2026-07-12T03:16:22.943744+00:00",
+  "created_utc": "2026-07-12T05:12:45.291951+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -676,6 +677,822 @@
       "source_kind": "public_code_corpus_candidate",
       "training_use": "eligible_after_local_import_hash_license_and_decontamination",
       "why": "interactive app code, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "microsoft/TypeScript",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "6291967c4af9f1a3",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "canonical TypeScript compiler and language services, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "microsoft/vscode",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "824688f950670b44",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large production TypeScript application, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "facebook/react",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "1586482f8ee81905",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production JavaScript UI runtime, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "vercel/next.js",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "e2ddd70b8dd3bd35",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production TypeScript web framework, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "vitejs/vite",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "a10f2b9e07e662c4",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "modern TypeScript build tooling, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "sveltejs/svelte",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "25f3ed166d406598",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "compiler and UI framework TypeScript, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "vuejs/core",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "b29b1cb5dce19146",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production TypeScript reactive UI core, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "angular/angular",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "c7a088a7934f4106",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large production TypeScript framework, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "twbs/bootstrap",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "794f9874bc50eb0e",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "high-quality HTML CSS JavaScript component system, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "tailwindlabs/tailwindcss",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "7b5b98440d219f97",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production CSS and TypeScript tooling, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "h5bp/html5-boilerplate",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "52f759f52f3bcc54",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "maintained HTML CSS baseline, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "rust-lang/rust",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "911ac11671c6eb3a",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "canonical Rust compiler and libraries, Apache-2.0 or MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "tokio-rs/tokio",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "61b98b8df2362cd4",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production asynchronous Rust runtime, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "serde-rs/serde",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "1abfcdb4f496e62e",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "canonical Rust serialization library, MIT or Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "rust-lang/cargo",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "f0998ccea2aab492",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production Rust package manager, Apache-2.0 or MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "rust-lang/rustlings",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "724340cc9981e069",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "curated instructional Rust examples, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "BurntSushi/ripgrep",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "d1da68168b6f3f92",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "high-quality systems Rust code, MIT or Unlicense"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "clap-rs/clap",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "f9cbac256f005d15",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production Rust CLI parser, MIT or Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "rayon-rs/rayon",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "af89f28696dcbd14",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "parallel Rust iterator implementation, MIT or Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "hyperium/hyper",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "2fb5bb4738bd45af",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production Rust HTTP implementation, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "django/django",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "c631b50f3b32b73b",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large production Python web framework, BSD-3-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "psf/black",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "6b7f66905b430fd0",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "Python parser and formatter implementation, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "boto/boto3",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "be25c60d16eef712",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large typed Python service client, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "encode/uvicorn",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "5dac239cda20ace1",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production asynchronous Python server, BSD-3-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "python-trio/trio",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "86b47c9833cbea86",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "structured-concurrency Python runtime, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "sqlfluff/sqlfluff",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "890f2cee109bb59c",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "Python parser and transformation system, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "cookiecutter/cookiecutter",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "7e347f7fb36893ab",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "Python project generation workflows, BSD-3-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "psf/cachecontrol",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "dba8cd9deb57275b",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "Python caching and HTTP policy code, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "pallets/itsdangerous",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "0ad83e5797f38b8f",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "compact Python signing implementation, BSD-3-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "pallets/markupsafe",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "b445a8ada57c3c46",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "Python text safety implementation, BSD-3-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "pyinvoke/invoke",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "d0a96264c15f55a8",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "Python task execution and CLI system, BSD-2-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "getsentry/sentry-python",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "e073ba8c13884fb5",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large production Python instrumentation library, BSD-2-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "agronholm/anyio",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "196266a5e55818ed",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "typed asynchronous Python compatibility layer, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "tabler/tabler",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "39609c9d2a0901dd",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production HTML CSS dashboard components, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "themesberg/flowbite",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "4570b0564e82ba8f",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "HTML CSS component templates, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "picocss/pico",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "c1175ad432fe7602",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "semantic HTML and class-light CSS framework, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "jgthms/bulma",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "ac02e7f399ed2e88",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large modular CSS framework, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "animate-css/animate.css",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "80f8df3db54c8a2c",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "curated CSS animation library, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "pure-css/pure",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "9ed47b7a322566ff",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "small production CSS module suite, BSD-3-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "necolas/normalize.css",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "a1747126bc9a8783",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "cross-browser CSS normalization, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "csstools/postcss-plugins",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "ac5a3f55c2b1ea4c",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "modern CSS transformation corpus, CC0-1.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "primer/css",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "24c59df63700e33d",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production GitHub CSS design system, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "foundation/foundation-sites",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "f687605ec53e7c72",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large authored Sass and HTML component system, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "semantic-org/semantic-ui",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "c28850cca585b032",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "large Less and HTML UI framework, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "uikit/uikit",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "352a35764dfcfb66",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production Less CSS component framework, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "patternfly/patternfly",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "1b4ca515b107b3d1",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "enterprise Sass and HTML design system, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "carbon-design-system/carbon",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "f7c4c7bb9c12c653",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production Sass design system, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "shoelace-style/shoelace",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "c10a32b405d5a4ce",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "web components with authored CSS, MIT"
     }
   ],
   "policy": "project_theseus_training_data_admission_manifest_v1",
@@ -1308,7 +2125,7 @@
     "external_inference_calls": 0,
     "heldout_eval_only_source_count": 13,
     "local_source_count": 376,
-    "open_code_candidate_count": 36,
+    "open_code_candidate_count": 84,
     "public_benchmark_payload_admitted": false,
     "public_benchmark_quarantine_source_count": 100,
     "public_benchmark_training_allowed": false,
@@ -10713,7 +11530,7 @@
       "full_packet_evidence_required": true,
       "governor_content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
       "governor_receipt_id": "ac9238c24b5c801b9bc12dec",
-      "lease_expires_utc": "2026-07-12T03:31:11.134409Z",
+      "lease_expires_utc": "2026-07-12T05:27:34.090356Z",
       "lease_id": "edda95cab7bfc11ddabd5eb9",
       "lease_state": "active",
       "omissions": [

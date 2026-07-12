@@ -4281,6 +4281,7 @@ def build_data_model_scaling_contract(config: dict[str, Any]) -> dict[str, Any]:
         "planning_basis": planning,
         "required_unique_positions": required_positions,
         "domain_minimum_positions": contract.get("domain_minimum_positions") or {},
+        "subset_minimum_positions": contract.get("subset_minimum_positions") or {},
         "code_language_minimum_positions": contract.get("code_language_minimum_positions") or {},
         "required_evidence_dimensions": contract.get("required_evidence_dimensions") or [],
         "planning_receipts": receipt_audits,
@@ -4322,30 +4323,42 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
     near_duplicate_counts: Counter[str] = Counter()
     excluded_counts: Counter[str] = Counter()
     length_distributions: dict[str, list[int]] = {"code": [], "conversation": []}
+    unique_position_total = 0
+    recursive_synthetic_positions = 0
     code_deduper = ConversationDeduper(max_hamming_distance=int(corpus.get("near_duplicate_hamming_distance") or 3))
     conversation_deduper = ConversationDeduper(max_hamming_distance=int(corpus.get("near_duplicate_hamming_distance") or 3))
 
-    def count_document(text: str, *, domain: str, language: str, deduper: Any) -> None:
+    def count_document(
+        text: str, *, domain: str, language: str, deduper: Any,
+        additional_domains: tuple[str, ...] = (), length_kind: str = "code",
+    ) -> None:
+        nonlocal unique_position_total
         normalized_digest = hashlib.sha256(" ".join(text.lower().split()).encode("utf-8")).hexdigest()
         duplicate = deduper.classify(text, normalized_digest)
         if duplicate == "exact_duplicate":
             exact_duplicate_counts[domain] += 1
-            return
+            return 0
         if duplicate == "near_duplicate":
             near_duplicate_counts[domain] += 1
-            return
+            return 0
         tokens = body_tokens(text)
         encoded, encoding_receipt = encode_tokens(tokens, target_vocab, stream="target")
         if int(encoding_receipt.get("unknown_token_count") or 0) != 0:
             excluded_counts[f"{domain}_tokenizer_unrepresentable"] += 1
-            return
+            return 0
         deduper.add(text, normalized_digest)
         positions = len(encoded)
+        unique_position_total += positions
         domain_positions[domain] += positions
+        for additional_domain in additional_domains:
+            domain_positions[additional_domain] += positions
         if language:
             language_positions[language] += positions
         document_counts[domain] += 1
-        length_distributions["conversation" if domain == "english_conversation_instruction" else "code"].append(positions)
+        for additional_domain in additional_domains:
+            document_counts[additional_domain] += 1
+        length_distributions[length_kind].append(positions)
+        return positions
 
     for manifest_ref in corpus.get("code_manifests") or []:
         manifest_path = resolve(str(manifest_ref))
@@ -4467,19 +4480,70 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
                 ):
                     excluded_counts["conversation_governance_or_completeness"] += 1
                     continue
-                count_document(
+                positions = count_document(
                     str(row.get("causal_text") or ""),
-                    domain="english_conversation_instruction",
+                    domain="english_natural_language_total",
                     language="",
                     deduper=conversation_deduper,
+                    additional_domains=("english_conversation_instruction",),
+                    length_kind="conversation",
+                )
+                if row.get("provenance_class") == "external_teacher_generated":
+                    recursive_synthetic_positions += positions
+
+    broad_root = resolve(str(corpus.get("broad_text_root") or ""))
+    broad_manifest_path = resolve(str(corpus.get("broad_text_manifest") or ""))
+    broad_manifest = read_json(broad_manifest_path) if broad_manifest_path.is_file() else {}
+    source_identities.append({
+        "path": rel(broad_manifest_path),
+        "sha256": file_content_sha256(broad_manifest_path) if broad_manifest_path.exists() else "",
+    })
+    if broad_manifest.get("policy") != "project_theseus_governed_document_stream_state_v1":
+        hard_gaps.append("broad_text_manifest_policy_invalid")
+    for shard in broad_manifest.get("shards") or []:
+        if not isinstance(shard, dict):
+            continue
+        shard_path = broad_root / str(shard.get("train_path") or "")
+        actual_sha = file_content_sha256(shard_path) if shard_path.exists() else ""
+        source_identities.append({"path": rel(shard_path), "sha256": actual_sha})
+        if not actual_sha or actual_sha != str(shard.get("train_sha256") or ""):
+            hard_gaps.append(f"broad_text_shard_identity_mismatch:{rel(shard_path)}")
+            continue
+        with shard_path.open("r", encoding="utf-8") as handle:
+            for line_number, line in enumerate(handle, start=1):
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    hard_gaps.append(f"broad_text_row_invalid_json:{rel(shard_path)}:{line_number}")
+                    continue
+                text = str(row.get("causal_text") or "")
+                if (
+                    row.get("modality") != "natural_language_document"
+                    or row.get("license_spdx") != "public-domain"
+                    or row.get("public_benchmark") is not False
+                    or int(row.get("external_inference_calls") or 0) != 0
+                    or not row.get("source_url")
+                    or not row.get("data_admission_receipt_id")
+                ):
+                    excluded_counts["broad_text_governance_or_completeness"] += 1
+                    continue
+                if sha(" ".join(text.lower().split())) != str(row.get("content_sha256") or ""):
+                    hard_gaps.append(f"broad_text_row_content_identity_mismatch:{rel(shard_path)}:{line_number}")
+                    continue
+                count_document(
+                    text,
+                    domain="english_natural_language_total",
+                    language="",
+                    deduper=conversation_deduper,
+                    length_kind="conversation",
                 )
 
-    total_positions = sum(domain_positions.values())
+    total_positions = unique_position_total
     domain_positions["flexible_tail_reserve"] = max(
         0,
         total_positions
         - int((contract.get("domain_minimum_positions") or {}).get("code_total") or 0)
-        - int((contract.get("domain_minimum_positions") or {}).get("english_conversation_instruction") or 0),
+        - int((contract.get("domain_minimum_positions") or {}).get("english_natural_language_total") or 0),
     )
     governance_contract = build_data_model_scaling_contract_without_canonical(config)
     all_source_identities_present = bool(source_identities) and all(len(str(row.get("sha256") or "")) == 64 for row in source_identities)
@@ -4488,6 +4552,7 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
             excluded_counts["code_governance"] == 0
             and excluded_counts["code_shard_governance_or_completeness"] == 0
             and excluded_counts["conversation_governance_or_completeness"] == 0
+            and excluded_counts["broad_text_governance_or_completeness"] == 0
         ),
         "content_bound_provenance": all_source_identities_present,
         "exact_deduplication": True,
@@ -4495,13 +4560,17 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
         "public_contamination_exclusion": (
             excluded_counts["code_governance"] == 0
             and excluded_counts["code_shard_governance_or_completeness"] == 0
+            and excluded_counts["broad_text_governance_or_completeness"] == 0
         ),
         # Completeness is a property of credited documents. Malformed source files
         # and incomplete dialogue rows are measured above but receive zero credit.
         "executable_or_dialogue_completeness": True,
         "capability_and_domain_coverage": True,
         "long_tail_coverage": True,
-        "recursive_synthetic_share": True,
+        "recursive_synthetic_share": (
+            recursive_synthetic_positions / max(1, total_positions)
+            <= float(contract.get("maximum_recursive_synthetic_position_share") or 0.0)
+        ),
         "retention_deletion_and_revocation_lifecycle": not any(
             gap in governance_contract["hard_gaps"]
             for gap in ("governance_receipt_invalid_or_stale", "governance_ledger_identity_disagreement")
@@ -4528,7 +4597,9 @@ def materialize_canonical_mixed_corpus_receipt(config: dict[str, Any]) -> dict[s
         "source_content_identity_verified": all_source_identities_present,
         "source_manifest_digest": sha(json.dumps(source_identities, sort_keys=True)),
         "contract_sha256": scaling_contract_sha256(contract),
-        "recursive_synthetic_position_share": 0.0,
+        "recursive_synthetic_position_share": round(
+            recursive_synthetic_positions / max(1, total_positions), 8
+        ),
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -4585,7 +4656,7 @@ def canonical_code_language(content_type: str, path: Path) -> str:
         return "javascript_typescript"
     if "javascript" in raw or path.suffix in {".js", ".jsx", ".mjs", ".cjs"}:
         return "javascript_typescript"
-    if "html" in raw or "css" in raw or path.suffix in {".html", ".htm", ".css"}:
+    if "html" in raw or "css" in raw or path.suffix in {".html", ".htm", ".css", ".scss", ".sass", ".less"}:
         return "html_css"
     if "rust" in raw or path.suffix == ".rs":
         return "rust"
@@ -4615,6 +4686,8 @@ def scaling_contract_sha256(contract: dict[str, Any]) -> str:
             "planning_basis",
             "required_unique_positions",
             "domain_minimum_positions",
+            "subset_minimum_positions",
+            "maximum_recursive_synthetic_position_share",
             "code_language_minimum_positions",
             "required_evidence_dimensions",
         )
@@ -4630,6 +4703,9 @@ def canonical_corpus_requirement_gaps(contract: dict[str, Any], summary: dict[st
     for key, minimum in (contract.get("domain_minimum_positions") or {}).items():
         if int(domain_positions.get(key) or 0) < int(minimum or 0):
             gaps.append(f"domain_minimum_not_met:{key}")
+    for key, minimum in (contract.get("subset_minimum_positions") or {}).items():
+        if int(domain_positions.get(key) or 0) < int(minimum or 0):
+            gaps.append(f"subset_minimum_not_met:{key}")
     language_positions = summary.get("code_language_unique_positions") or {}
     for key, minimum in (contract.get("code_language_minimum_positions") or {}).items():
         if int(language_positions.get(key) or 0) < int(minimum or 0):
@@ -4788,6 +4864,11 @@ def validate_config(config: dict[str, Any]) -> None:
             raise ValueError("scaling unique-position floor must equal active parameters times planning ratio")
         if sum(int(value or 0) for value in (scaling.get("domain_minimum_positions") or {}).values()) != expected:
             raise ValueError("scaling domain minima must partition the unique-position floor")
+        subsets = scaling.get("subset_minimum_positions") or {}
+        conversation_minimum = int(subsets.get("english_conversation_instruction") or 0)
+        english_minimum = int((scaling.get("domain_minimum_positions") or {}).get("english_natural_language_total") or 0)
+        if conversation_minimum <= 0 or conversation_minimum > english_minimum:
+            raise ValueError("conversation subset minimum must be positive and contained by English total")
     contract_policy = (
         config.get("sft_contract_admission")
         if isinstance(config.get("sft_contract_admission"), dict)

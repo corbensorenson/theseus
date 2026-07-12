@@ -21,6 +21,7 @@ SCALING_READINESS_GAP_PREFIXES = (
     "canonical_corpus_receipt_not_green",
     "canonical_unique_position_floor_not_met",
     "domain_minimum_not_met:",
+    "subset_minimum_not_met:",
     "code_language_minimum_not_met:",
     "required_evidence_dimensions_missing:",
 )

@@ -56,7 +56,14 @@ def run_streaming_intake(
     scalable_sources = [row for row in sources if row.get("enabled") and row.get("scalable")]
     public_index = build_public_index(max_texts=int(scale.get("max_public_contamination_texts") or 20_000))
     teacher_allowed = governed_teacher_conversation_allowed()
-    planned_sources = [source_plan(row, allowed_licenses=allowed_licenses, teacher_allowed=teacher_allowed) for row in scalable_sources]
+    licensed_static_policy = config.get("licensed_model_generated_corpora") or {}
+    planned_sources = [
+        source_plan(
+            row, allowed_licenses=allowed_licenses, teacher_allowed=teacher_allowed,
+            licensed_static_policy=licensed_static_policy,
+        )
+        for row in scalable_sources
+    ]
     hard_preflight = bool(allowed_licenses and public_index.get("text_count", 0) > 0)
     if not execute:
         return report_payload(
@@ -93,7 +100,10 @@ def run_streaming_intake(
     source_reports: list[dict[str, Any]] = []
     stop = False
     for source in scalable_sources:
-        plan = source_plan(source, allowed_licenses=allowed_licenses, teacher_allowed=teacher_allowed)
+        plan = source_plan(
+            source, allowed_licenses=allowed_licenses, teacher_allowed=teacher_allowed,
+            licensed_static_policy=licensed_static_policy,
+        )
         source_id = str(source.get("id") or source.get("dataset") or "source")
         if plan["decision"] != "eligible_for_intake":
             source_reports.append(plan)
@@ -191,13 +201,261 @@ def run_streaming_intake(
     )
 
 
-def source_plan(source: dict[str, Any], *, allowed_licenses: set[str], teacher_allowed: bool) -> dict[str, Any]:
-    provenance_class = str(source.get("provenance_class") or "unknown")
+def run_document_intake(
+    config: dict[str, Any],
+    *,
+    root: Path,
+    execute: bool,
+    target_token_positions: int = 0,
+    max_total_rows: int = 0,
+    shard_rows: int = 0,
+    max_disk_bytes: int = 0,
+) -> dict[str, Any]:
+    """Materialize human-authored broad-English pretraining without SFT/STS pollution."""
+    started = time.perf_counter()
+    scale = dict(config.get("broad_text_intake") or {})
+    target_token_positions = int(target_token_positions or scale.get("target_one_pass_token_positions") or 12_000_000)
+    max_total_rows = int(max_total_rows or scale.get("max_total_rows") or 12_000)
+    shard_rows = int(shard_rows or scale.get("shard_rows") or 500)
+    max_disk_bytes = int(max_disk_bytes or scale.get("max_disk_bytes") or 1_500_000_000)
+    allowed_licenses = {normalize_license(value) for value in config.get("allowed_licenses", [])} | {"public-domain"}
+    sources = [dict(row) for row in config.get("broad_text_sources", []) if isinstance(row, dict)]
+    sources = [row for row in sources if row.get("enabled") and row.get("scalable")]
+    public_index = build_public_index(max_texts=int(scale.get("max_public_contamination_texts") or 20_000))
+    plans = [document_source_plan(row, allowed_licenses=allowed_licenses) for row in sources]
+    if not execute:
+        return document_report_payload(
+            started=started, root=root, execute=False, target_token_positions=target_token_positions,
+            max_total_rows=max_total_rows, max_disk_bytes=max_disk_bytes, public_index=public_index,
+            sources=plans, writer=None, counters=Counter(), errors=[],
+        )
+
+    writer = AtomicDocumentShardWriter(root, shard_rows=max(1, shard_rows), max_disk_bytes=max_disk_bytes)
+    counters: Counter[str] = Counter()
+    errors: list[dict[str, Any]] = []
+    source_reports: list[dict[str, Any]] = []
+    if writer.total_token_positions >= target_token_positions:
+        for source in sources:
+            plan = document_source_plan(source, allowed_licenses=allowed_licenses)
+            plan.update({"status": "complete", "decision": "resume_target_already_met"})
+            source_reports.append(plan)
+        return document_report_payload(
+            started=started, root=root, execute=True, target_token_positions=target_token_positions,
+            max_total_rows=max_total_rows, max_disk_bytes=max_disk_bytes, public_index=public_index,
+            sources=source_reports, writer=writer, counters=counters, errors=errors,
+        )
+    stop = False
+    for source in sources:
+        plan = document_source_plan(source, allowed_licenses=allowed_licenses)
+        source_id = str(source.get("id") or source.get("dataset") or "source")
+        if plan["decision"] != "eligible_for_intake":
+            source_reports.append(plan)
+            continue
+        if source_id in writer.completed_sources:
+            plan.update({"status": "complete", "decision": "resume_source_already_complete"})
+            source_reports.append(plan)
+            continue
+        source_counter: Counter[str] = Counter()
+        try:
+            metadata = fetch_dataset_metadata(str(source.get("dataset") or ""))
+            actual_license = normalize_license(extract_dataset_license(metadata))
+            if actual_license and actual_license != normalize_license(source.get("license_spdx")):
+                plan.update({"status": "blocked", "decision": "live_license_mismatch", "actual_license": actual_license})
+                source_reports.append(plan)
+                continue
+            for text, provenance in source_documents(source, scale):
+                source_counter["candidate_rows"] += 1
+                result = admit_document(
+                    text,
+                    source=source,
+                    provenance=provenance,
+                    public_index=public_index,
+                    deduper=writer.deduper,
+                    min_chars=int(scale.get("min_chars_per_chunk") or 800),
+                    max_chars=int(scale.get("max_chars_per_chunk") or 12_000),
+                )
+                decision = str(result["receipt"]["decision"])
+                source_counter[f"decision:{decision}"] += 1
+                counters[f"decision:{decision}"] += 1
+                for reason in result["receipt"].get("decision_reasons", []):
+                    counters[f"reason:{reason}"] += 1
+                if decision != "admit":
+                    continue
+                writer.add(result["train_row"], result["receipt"])
+                source_counter["admitted_rows"] += 1
+                source_counter["one_pass_token_positions"] += int(result["receipt"]["metrics"]["token_positions"])
+                if writer.total_rows >= max_total_rows or writer.total_token_positions >= target_token_positions:
+                    stop = True
+                    break
+            writer.mark_source_complete(source_id, complete=not stop or writer.total_token_positions >= target_token_positions)
+            plan.update({
+                "status": "complete" if not stop else "bounded_stop",
+                "decision": "stream_materialized",
+                "candidate_rows": source_counter["candidate_rows"],
+                "admitted_rows": source_counter["admitted_rows"],
+                "one_pass_token_positions": source_counter["one_pass_token_positions"],
+            })
+        except BaseException as exc:
+            errors.append({"source_id": source_id, "stage": "document_stream_intake", "error_type": type(exc).__name__, "error": str(exc)[:800]})
+            plan.update({"status": "blocked", "decision": "stream_fault"})
+        source_reports.append(plan)
+        if stop:
+            break
+    writer.close()
+    return document_report_payload(
+        started=started, root=root, execute=True, target_token_positions=target_token_positions,
+        max_total_rows=max_total_rows, max_disk_bytes=max_disk_bytes, public_index=public_index,
+        sources=source_reports, writer=writer, counters=counters, errors=errors,
+    )
+
+
+def document_source_plan(source: dict[str, Any], *, allowed_licenses: set[str]) -> dict[str, Any]:
     expected_license = normalize_license(source.get("license_spdx"))
     decision = "eligible_for_intake"
     if expected_license not in allowed_licenses:
         decision = "license_not_allowlisted"
-    elif provenance_class == "external_teacher_generated" and not teacher_allowed:
+    elif source.get("provenance_class") != "human_public_domain":
+        decision = "provenance_class_not_admitted"
+    elif source.get("format") != "document_text" or source.get("require_row_public_domain_license") is not True:
+        decision = "row_public_domain_evidence_not_required"
+    return {
+        "source_id": source.get("id"), "dataset": source.get("dataset"), "format": source.get("format"),
+        "expected_license": expected_license, "provenance_class": source.get("provenance_class"),
+        "status": "planned" if decision == "eligible_for_intake" else "blocked", "decision": decision,
+    }
+
+
+def source_documents(source: dict[str, Any], scale: dict[str, Any]) -> Iterator[tuple[str, dict[str, Any]]]:
+    try:
+        from datasets import load_dataset
+    except ImportError as exc:
+        raise RuntimeError("datasets is required for governed document intake") from exc
+    stream = load_dataset(
+        str(source.get("dataset") or ""), str(source.get("config") or "default"),
+        split=str(source.get("split") or "train"), streaming=True,
+    )
+    max_scan = max(1, int(source.get("max_scan_rows") or 5_000))
+    max_chars = int(scale.get("max_chars_per_chunk") or 12_000)
+    min_chars = int(scale.get("min_chars_per_chunk") or 800)
+    for row_index, raw in enumerate(stream):
+        if row_index >= max_scan:
+            break
+        metadata = raw.get("metadata") if isinstance(raw.get("metadata"), dict) else {}
+        if str(metadata.get("license") or "").strip().lower() != "public domain":
+            continue
+        if str(metadata.get("language") or "").lower() != str(source.get("required_language") or "en").lower():
+            continue
+        text = str(raw.get("text") or "").strip()
+        for chunk_index, chunk in enumerate(chunk_document(text, max_chars=max_chars, min_chars=min_chars)):
+            yield chunk, {
+                "adapter": "public_domain_document_chunks_v1", "row_index": row_index,
+                "chunk_index": chunk_index, "source_document_id": str(raw.get("id") or ""),
+                "source_url": str(metadata.get("url") or ""), "title": str(metadata.get("title") or ""),
+                "author": str(metadata.get("author") or ""), "row_license": "Public Domain",
+            }
+
+
+def chunk_document(text: str, *, max_chars: int, min_chars: int) -> list[str]:
+    paragraphs = [part.strip() for part in re.split(r"\n\s*\n", text) if part.strip()]
+    chunks: list[str] = []
+    current: list[str] = []
+    size = 0
+    for paragraph in paragraphs:
+        pieces = [paragraph[index:index + max_chars] for index in range(0, len(paragraph), max_chars)]
+        for piece in pieces:
+            if current and size + len(piece) + 2 > max_chars:
+                rendered = "\n\n".join(current)
+                if len(rendered) >= min_chars:
+                    chunks.append(rendered)
+                current, size = [], 0
+            current.append(piece)
+            size += len(piece) + (2 if size else 0)
+    if current:
+        rendered = "\n\n".join(current)
+        if len(rendered) >= min_chars:
+            chunks.append(rendered)
+    return chunks
+
+
+def admit_document(
+    text: str, *, source: dict[str, Any], provenance: dict[str, Any], public_index: dict[str, Any],
+    deduper: "ConversationDeduper", min_chars: int, max_chars: int,
+) -> dict[str, Any]:
+    redacted, redaction_counts = redact_sensitive_text(text)
+    reasons: list[str] = []
+    if len(redacted) < min_chars or len(redacted) > max_chars:
+        reasons.append("document_chunk_length_out_of_bounds")
+    if not provenance.get("source_url") or provenance.get("row_license") != "Public Domain":
+        reasons.append("public_domain_provenance_incomplete")
+    exact_public = False
+    semantic_public_count = 0
+    semantic_public_max = 0.0
+    digest = stable_hash(normalize_text(redacted))
+    if not reasons:
+        exact_public = digest in public_index.get("exact_hashes", set())
+        semantic_public_count, semantic_public_max = semantic_public_overlap([redacted], public_index)
+        if exact_public:
+            reasons.append("exact_public_calibration_overlap")
+        if semantic_public_count:
+            reasons.append("semantic_public_calibration_overlap")
+    if not reasons:
+        duplicate = deduper.classify(redacted, digest)
+        if duplicate:
+            reasons.append(duplicate)
+    decision = "admit" if not reasons else "quarantine"
+    receipt_seed = f"{source.get('id')}:{digest}:{decision}"
+    receipt_id = f"data-admission-{stable_hash(receipt_seed)[:20]}"
+    receipt = {
+        "policy": "project_theseus_data_admission_receipt_v2", "receipt_id": receipt_id,
+        "source_id": source.get("id"), "dataset": source.get("dataset"),
+        "license_spdx": "public-domain", "provenance_class": "human_public_domain",
+        "permitted_use": "broad_english_self_supervised_pretraining_only", "decision": decision,
+        "decision_reasons": reasons, "content_sha256": digest,
+        "metrics": {"character_count": len(redacted), "token_positions": len(TOKEN_RE.findall(redacted)),
+                    "redaction_counts": redaction_counts, "exact_public_overlap": exact_public,
+                    "semantic_public_overlap_count": semantic_public_count,
+                    "semantic_public_overlap_max": round(float(semantic_public_max), 6)},
+        "provenance": provenance, "retention_class": "training_corpus_shard",
+        "deletion_scope": ["document_shard", "training_manifest", "derived_checkpoint", "vcm_index"],
+        "public_benchmark_training_rows": 0, "external_inference_calls_during_intake": 0,
+        "raw_unredacted_text_persisted": False,
+    }
+    if decision != "admit":
+        return {"receipt": receipt, "train_row": {}}
+    deduper.add(redacted, digest)
+    return {
+        "receipt": receipt,
+        "train_row": {
+            "task_id": f"governed-document-{digest[:20]}", "split": "private_train",
+            "modality": "natural_language_document", "causal_text": redacted,
+            "license_spdx": "public-domain", "source_id": source.get("id"),
+            "source_url": provenance.get("source_url"), "title": provenance.get("title"),
+            "author": provenance.get("author"), "content_sha256": digest,
+            "data_admission_receipt_id": receipt_id,
+            "training_use": "broad_english_self_supervised_pretraining_only",
+            "public_benchmark": False, "external_inference_calls": 0,
+        },
+    }
+
+
+def source_plan(
+    source: dict[str, Any], *, allowed_licenses: set[str], teacher_allowed: bool,
+    licensed_static_policy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    provenance_class = str(source.get("provenance_class") or "unknown")
+    expected_license = normalize_license(source.get("license_spdx"))
+    static_policy = licensed_static_policy or {}
+    static_model_corpus_allowed = bool(
+        static_policy.get("enabled") is True
+        and static_policy.get("static_open_corpus_required") is True
+        and source.get("static_open_corpus") is True
+        and str(source.get("quality_tier") or "") in set(static_policy.get("required_quality_tiers") or [])
+        and static_policy.get("live_provider_calls_allowed") is False
+    )
+    decision = "eligible_for_intake"
+    if expected_license not in allowed_licenses:
+        decision = "license_not_allowlisted"
+    elif provenance_class == "external_teacher_generated" and not (teacher_allowed or static_model_corpus_allowed):
         decision = "teacher_distillation_gate_not_admitted_for_conversation"
     elif provenance_class not in {"human_contributed", "external_teacher_generated"}:
         decision = "provenance_class_not_admitted"
@@ -207,6 +465,8 @@ def source_plan(source: dict[str, Any], *, allowed_licenses: set[str], teacher_a
         "format": source.get("format"),
         "expected_license": expected_license,
         "provenance_class": provenance_class,
+        "static_model_corpus_allowed": static_model_corpus_allowed,
+        "quality_tier": source.get("quality_tier"),
         "status": "planned" if decision == "eligible_for_intake" else "blocked",
         "decision": decision,
         "max_admitted_rows": int(source.get("max_admitted_rows") or 0),
@@ -347,6 +607,7 @@ def admit_conversation(
         "dataset": source.get("dataset"),
         "license_spdx": source.get("license_spdx"),
         "provenance_class": source.get("provenance_class"),
+        "quality_tier": source.get("quality_tier"),
         "permitted_use": "private_conversation_pretraining_and_sft_only",
         "decision": decision,
         "decision_reasons": reasons,
@@ -384,6 +645,8 @@ def admit_conversation(
         "causal_text": rendered,
         "license_spdx": source.get("license_spdx"),
         "source_id": source.get("id"),
+        "provenance_class": source.get("provenance_class"),
+        "quality_tier": source.get("quality_tier"),
         "data_admission_receipt_id": receipt_id,
         "training_use": "private_conversation_training",
         "public_benchmark": False,
@@ -508,6 +771,86 @@ class AtomicConversationShardWriter:
     def _persist_state(self) -> None:
         payload = {
             "policy": "project_theseus_governed_conversation_stream_state_v1",
+            "updated_utc": now(),
+            "completed_sources": sorted(self.completed_sources),
+            "total_rows": self.total_rows,
+            "total_token_positions": self.total_token_positions,
+            "disk_bytes": self.disk_bytes,
+            "shards": self.shards,
+        }
+        atomic_write_json(self.state_path, payload)
+        atomic_write_json(self.manifest_path, {**payload, "state_path": relative_to_root(self.state_path, self.root)})
+
+
+class AtomicDocumentShardWriter:
+    """Atomic, resumable pretraining-only shards kept separate from SFT/STS data."""
+
+    def __init__(self, root: Path, *, shard_rows: int, max_disk_bytes: int) -> None:
+        self.root = root
+        self.shard_rows = shard_rows
+        self.max_disk_bytes = max_disk_bytes
+        self.state_path = root / "stream_state.json"
+        self.manifest_path = root / "scalable_manifest.json"
+        self.state = read_json(self.state_path)
+        self.completed_sources = set(self.state.get("completed_sources") or [])
+        self.shards = list(self.state.get("shards") or [])
+        self.total_rows = int(self.state.get("total_rows") or 0)
+        self.total_token_positions = int(self.state.get("total_token_positions") or 0)
+        self.disk_bytes = int(self.state.get("disk_bytes") or 0)
+        self.buffers: dict[str, list[dict[str, Any]]] = {"train": [], "receipts": []}
+        self.deduper = ConversationDeduper()
+        for shard in self.shards:
+            for row in iter_jsonl(resolve_path(root, str(shard.get("train_path") or ""))):
+                text = str(row.get("causal_text") or "")
+                if text:
+                    self.deduper.add(text, stable_hash(normalize_text(text)))
+
+    def add(self, train_row: dict[str, Any], receipt: dict[str, Any]) -> None:
+        encoded_size = sum(
+            len(json.dumps(row, ensure_ascii=True, separators=(",", ":"))) + 1
+            for row in (train_row, receipt)
+        )
+        if self.disk_bytes + encoded_size > self.max_disk_bytes:
+            raise RuntimeError("document intake disk budget exhausted")
+        self.buffers["train"].append(train_row)
+        self.buffers["receipts"].append(receipt)
+        self.total_rows += 1
+        self.total_token_positions += int((receipt.get("metrics") or {}).get("token_positions") or 0)
+        self.disk_bytes += encoded_size
+        if len(self.buffers["train"]) >= self.shard_rows:
+            self.flush()
+
+    def flush(self) -> None:
+        if not self.buffers["train"]:
+            return
+        index = len(self.shards)
+        paths = {
+            "train": self.root / "private_train" / "shards" / f"document-{index:05d}.jsonl",
+            "receipts": self.root / "receipts" / f"data-admission-{index:05d}.jsonl",
+        }
+        shard: dict[str, Any] = {"index": index, "rows": len(self.buffers["train"])}
+        for kind, path in paths.items():
+            atomic_write_jsonl(path, self.buffers[kind])
+            shard[f"{kind}_path"] = relative_to_root(path, self.root)
+            shard[f"{kind}_sha256"] = file_sha256(path)
+            shard[f"{kind}_bytes"] = path.stat().st_size
+            self.buffers[kind].clear()
+        self.shards.append(shard)
+        self._persist_state()
+
+    def mark_source_complete(self, source_id: str, *, complete: bool) -> None:
+        self.flush()
+        if complete:
+            self.completed_sources.add(source_id)
+        self._persist_state()
+
+    def close(self) -> None:
+        self.flush()
+        self._persist_state()
+
+    def _persist_state(self) -> None:
+        payload = {
+            "policy": "project_theseus_governed_document_stream_state_v1",
             "updated_utc": now(),
             "completed_sources": sorted(self.completed_sources),
             "total_rows": self.total_rows,
@@ -724,6 +1067,64 @@ def report_payload(
         "score_semantics": (
             "Rows are redacted, decontaminated, exact/near-deduplicated private training pressure. "
             "One-pass token positions count each admitted row once; optimizer epochs never increase data-scale credit."
+        ),
+        "runtime_ms": int((time.perf_counter() - started) * 1000),
+    }
+
+
+def document_report_payload(
+    *, started: float, root: Path, execute: bool, target_token_positions: int,
+    max_total_rows: int, max_disk_bytes: int, public_index: dict[str, Any],
+    sources: list[dict[str, Any]], writer: AtomicDocumentShardWriter | None,
+    counters: Counter[str], errors: list[dict[str, Any]],
+) -> dict[str, Any]:
+    total_rows = writer.total_rows if writer else 0
+    total_tokens = writer.total_token_positions if writer else 0
+    hard_clean = bool(public_index.get("text_count")) and not errors
+    trigger_state = "PLANNED" if not execute else ("GREEN" if hard_clean and total_rows else "RED")
+    return {
+        "policy": "project_theseus_governed_document_stream_v1",
+        "created_utc": now(),
+        "execute": execute,
+        "trigger_state": trigger_state,
+        "root": str(root),
+        "summary": {
+            "source_count": len(sources),
+            "total_rows": total_rows,
+            "one_pass_token_positions": total_tokens,
+            "target_one_pass_token_positions": target_token_positions,
+            "target_fraction": round(total_tokens / max(1, target_token_positions), 6),
+            "max_total_rows": max_total_rows,
+            "disk_bytes": writer.disk_bytes if writer else 0,
+            "max_disk_bytes": max_disk_bytes,
+            "shard_count": len(writer.shards) if writer else 0,
+            "public_contamination_text_count": int(public_index.get("text_count") or 0),
+            "public_contamination_index_digest": public_index.get("digest"),
+            "public_training_rows": 0,
+            "external_inference_calls": 0,
+            "raw_unredacted_text_persisted": False,
+            "optimizer_repetition_counted_as_unique_data": False,
+            "decision_counts": {
+                key.removeprefix("decision:"): value
+                for key, value in sorted(counters.items()) if key.startswith("decision:")
+            },
+            "quarantine_reason_counts": {
+                key.removeprefix("reason:"): value
+                for key, value in sorted(counters.items()) if key.startswith("reason:")
+            },
+        },
+        "manifest": relative_to_root(writer.manifest_path, root) if writer else "scalable_manifest.json",
+        "sources": sources,
+        "checks": [
+            {"gate": "row_public_domain_evidence_required", "passed": True},
+            {"gate": "no_public_eval_overlap_in_accepted_rows", "passed": True},
+            {"gate": "pretraining_shards_separate_from_sft_and_sts", "passed": True},
+            {"gate": "optimizer_repetition_not_counted_as_unique_data", "passed": True},
+        ],
+        "errors": errors,
+        "score_semantics": (
+            "Human-authored public-domain document chunks are pretraining data only. "
+            "They do not count as conversation SFT, STS evidence, public calibration, or capability."
         ),
         "runtime_ms": int((time.perf_counter() - started) * 1000),
     }

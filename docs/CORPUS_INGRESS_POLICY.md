@@ -10,6 +10,12 @@ they are admitted through the governed corpus manifest. Every admitted source
 must record provenance, license, path, SHA-256, content type, decontamination
 status, and training use. Unknown-license sources are rejected.
 
+Static openly licensed corpora may contain model-derived text. They are admitted as
+data, not live teacher calls, only when quality tier, provenance class, license,
+permitted use, contamination, retention, and recursive synthetic position share are
+explicit. Live teacher authority remains OpenAI-only and external tokens are never
+served at runtime.
+
 Public benchmarks remain calibration-only. Public benchmark prompts, tests,
 hidden tests, solutions, traces, answer templates, task ids, and benchmark-
 derived metadata must not enter training rows or self-supervised corpus

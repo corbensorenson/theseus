@@ -216,7 +216,7 @@
         },
         "config": {
           "path": "configs/standard_causal_transformer_survival.json",
-      "sha256": "2e5a963551e23fb4f86b33efc65d24a9fc708d782acec67e75137e86ffb88860"
+      "sha256": "db2f1aa281c6505a833b7812fd3c2f21105262a30d33f1312a612117cc519ee8"
         },
         "policy_config": {
           "path": "configs/policy_optimization_program.json",
@@ -228,7 +228,7 @@
         },
         "implementation": {
           "path": "scripts/standard_causal_transformer_survival.py",
-      "sha256": "cb2fb6bfaf3866b2389cc13a46d1cddcb5d262cc4f46325274ab3956d233a020"
+      "sha256": "60e12e9c413c8cc2bc42729713592a6f69a05db72268ded9c0ecee57a160036c"
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
@@ -264,7 +264,7 @@
         },
         "qualification_gate": {
           "path": "scripts/standard_causal_transformer_survival_gate.py",
-      "sha256": "d5024a9c0fb92a08606a482bfeaf9f10916a282b666d8a24ff97135662b2aba3"
+      "sha256": "30eb0c8f3252b0fa1503cb846028161e46c9c1fe7675e96dbc6d90b51f7f6a79"
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
@@ -284,15 +284,15 @@
         },
         "integrity_report": {
           "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
-      "sha256": "319619da881e51929077881c3906fddfa3f4b0fc09ae469bf23b7e4f4f3fcac5"
+      "sha256": "5bfd28b90454fa8803d1ba9e4dec661011b70897830d62364985621c4b0da3da"
         },
         "blind_audit": {
           "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-      "sha256": "7d0cf845107ece2259c53c775a3b2bb8385e73e440cd1c3d2ccab6aac0a09e92"
+      "sha256": "2905b715f1defd6d1811d556be7adbd605a2d417e700fc7d6ce2da23069147e6"
         },
         "qualification_report": {
           "path": "reports/standard_causal_transformer_survival_gate.json",
-      "sha256": "4e856dc89b8157a7b7b63e44381ee5433c3298af2556d92dbde10dac306779f6"
+      "sha256": "08bc9f4629963d11d13083cfb72f6396ea999427bebe5919ec8209e5c9cc023b"
         },
         "incomplete_prior_training_receipt": {
           "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",

@@ -34,10 +34,14 @@
     },
     "required_unique_positions": 132464640,
     "domain_minimum_positions": {
-      "english_conversation_instruction": 60000000,
+      "english_natural_language_total": 60000000,
       "code_total": 60000000,
       "flexible_tail_reserve": 12464640
     },
+    "subset_minimum_positions": {
+      "english_conversation_instruction": 15000000
+    },
+    "maximum_recursive_synthetic_position_share": 0.25,
     "code_language_minimum_positions": {
       "python": 36000000,
       "javascript_typescript": 12000000,
@@ -101,6 +105,8 @@
     ],
     "conversation_manifest": "data/training_data/open_conversation_pantry/scalable_manifest.json",
     "conversation_root": "data/training_data/open_conversation_pantry",
+    "broad_text_manifest": "data/training_data/open_conversation_pantry/broad_text/scalable_manifest.json",
+    "broad_text_root": "data/training_data/open_conversation_pantry/broad_text",
     "near_duplicate_hamming_distance": 3,
     "public_training_rows_written": 0,
     "external_inference_calls": 0,

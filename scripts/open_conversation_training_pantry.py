@@ -55,6 +55,11 @@ def main() -> int:
         action="store_true",
         help="Use the resumable receipt-bound streaming intake instead of legacy bounded row samples.",
     )
+    parser.add_argument(
+        "--scalable-documents",
+        action="store_true",
+        help="Materialize governed human-authored broad-English pretraining shards.",
+    )
     parser.add_argument("--target-one-pass-token-positions", type=int, default=0)
     parser.add_argument("--max-total-rows", type=int, default=0)
     parser.add_argument("--shard-rows", type=int, default=0)
@@ -64,15 +69,17 @@ def main() -> int:
     args = parser.parse_args()
 
     config = read_json(resolve(args.config))
-    if args.scalable:
-        from governed_conversation_stream import run_streaming_intake
+    if args.scalable or args.scalable_documents:
+        from governed_conversation_stream import run_document_intake, run_streaming_intake
 
         root = Path(args.root or config.get("root") or "data/training_data/open_conversation_pantry")
         if not root.is_absolute():
             root = ROOT / root
-        report = run_streaming_intake(
+        intake = run_document_intake if args.scalable_documents else run_streaming_intake
+        intake_root = root / "broad_text" if args.scalable_documents else root
+        report = intake(
             config,
-            root=root,
+            root=intake_root,
             execute=bool(args.allow_network_fetch),
             target_token_positions=max(0, int(args.target_one_pass_token_positions or 0)),
             max_total_rows=max(0, int(args.max_total_rows or 0)),

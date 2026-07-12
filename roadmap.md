@@ -29,7 +29,7 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | governed scaling contract frozen; canonical mixed-corpus audit `YELLOW` with zero integrity hard gaps | 62.98M unique canonical positions (9.509123/active parameter) leave a 69.48M-position shortfall; expand the same governed corpus to every total/domain/language minimum before training |
+| Data engine + curriculum | Track 0 / Phase 7 | canonical mixed-corpus receipt `GREEN`; every total/domain/language/evidence floor passes | replace the legacy Python-only 12M-position stage with a balanced lineage-bound view of the 260.01M-position corpus before training |
 | Dense transformer survival baseline | Phase 10 | canonical practical lane; architecture clean, behavior flat | freeze one MLX causal-transformer contract and train a data-supported scale ladder; no more plan heads, state variants, or preference tuning until model-only family-disjoint behavior moves above zero |
 | Sparse specialist core (100M) | Track 1 / Phases 10, 16 | challenger deferred | do not fund a 100M sparse rung until the corpus supports it and a matched dense baseline has positive behavior; adopt sparse/Octopus only on repeated active-compute wins |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
@@ -700,11 +700,12 @@ than an informal token estimate. It selects the existing 6,623,232-active-parame
 MLX rung and requires 132,464,640 unique admitted model-visible positions (20:1),
 with 60M English conversation/instruction, 60M code, a 12.46M tail reserve, and
 explicit Python, JS/TS, HTML/CSS, and Rust minima. The canonical materializer now
-measures 62,981,127 unique positions under the frozen tokenizer ABI: 18,947,648
-English conversation/instruction and 44,033,479 code. Its receipt is `YELLOW` with
-zero integrity hard gaps because the total and all domain/language minima remain
-incomplete. The standard trainer fails closed
-until the canonical mixed-corpus receipt proves all license/provenance, exact and
+measures 260,011,267 unique positions under the frozen tokenizer ABI: 77,351,958
+English positions, including 18,947,648 conversation/instruction, and 182,659,309
+code positions. Its receipt is `GREEN` with zero integrity hard gaps and every
+total/domain/language/evidence minimum satisfied. The trainer now authorizes the
+data contract, but its stage remains noncanonical until it consumes the exact bound
+shards rather than the old Python-only 12M-position input. The receipt proves all license/provenance, exact and
 semantic deduplication, contamination, completeness, coverage/tail, synthetic-share,
 lifecycle, tokenizer, domain, language, and repetition requirements.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
@@ -771,7 +772,7 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   adopt the checkpoint.
 - **Frozen scaling decision:** the selected rung is exactly 6,623,232 active
   parameters with a 132,464,640 unique-position floor and maximum 4x optimizer
-  repetition. The canonical materializer credits 62,981,127 unique positions under
+  repetition. The canonical materializer credits 260,011,267 unique positions under
   the standard-transformer tokenizer/stage ABI and excludes stale source identities,
   tokenizer-unrepresentable documents, and exact/near duplicates from that credit.
   This measurement is corpus evidence, not training authority or capability.
@@ -779,6 +780,10 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   training/adoption until the content-bound
   canonical mixed-corpus receipt is GREEN. This prevents both epoch inflation and
   accidental training on an architecture whose data contract is still incomplete.
+- Static openly licensed model-derived corpora are eligible data sources when their
+  quality tier, provenance, permitted use, contamination, retention, and recursive
+  synthetic position share are explicit. They do not authorize a live teacher
+  provider and cannot enter runtime serving as external tokens.
 - Training sequence is fixed by prerequisites: broad causal English+code
   pretraining -> governed instruction/conversation and direct-body SFT ->
   verifier-positive pair construction -> preference optimization -> verifier-reward

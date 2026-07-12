@@ -12,6 +12,12 @@
   ],
   "default_max_rows_per_source": 100,
   "default_max_chars_per_conversation": 16000,
+  "licensed_model_generated_corpora": {
+    "enabled": true,
+    "required_quality_tiers": ["curated_high"],
+    "static_open_corpus_required": true,
+    "live_provider_calls_allowed": false
+  },
   "scalable_intake": {
     "target_one_pass_token_positions": 15000000,
     "max_total_rows": 30000,
@@ -22,6 +28,38 @@
     "receipt_policy": "project_theseus_data_admission_receipt_v2",
     "score_semantics": "Scale is credited only from redacted, exact/near-deduplicated, decontaminated rows counted once. Repeated optimizer positions never increase data-scale credit."
   },
+  "broad_text_intake": {
+    "target_one_pass_token_positions": 12000000,
+    "max_total_rows": 12000,
+    "shard_rows": 500,
+    "max_disk_bytes": 1500000000,
+    "max_public_contamination_texts": 20000,
+    "max_chars_per_chunk": 12000,
+    "min_chars_per_chunk": 800,
+    "optimizer_epochs_count_as_unique_data": false,
+    "receipt_policy": "project_theseus_data_admission_receipt_v2"
+  },
+  "broad_text_sources": [
+    {
+      "id": "common_pile_project_gutenberg",
+      "dataset": "common-pile/project_gutenberg",
+      "url": "https://huggingface.co/datasets/common-pile/project_gutenberg",
+      "license_spdx": "public-domain",
+      "source_kind": "huggingface_dataset",
+      "format": "document_text",
+      "config": "default",
+      "split": "train",
+      "enabled": true,
+      "scalable": true,
+      "provenance_class": "human_public_domain",
+      "required_language": "en",
+      "require_row_public_domain_license": true,
+      "max_scan_rows": 5000,
+      "max_admitted_rows": 12000,
+      "why": "Human-authored English books whose row metadata identifies Project Gutenberg public-domain source text.",
+      "use": "broad_english_self_supervised_pretraining_only"
+    }
+  ],
   "public_eval_exclusion_tokens": [
     "apps",
     "bigcodebench",
@@ -56,8 +94,11 @@
       "offsets": [0, 100, 200, 300, 400, 500, 600, 700, 800, 900],
       "length": 100,
       "enabled": false,
-      "scalable": false,
+      "scalable": true,
       "provenance_class": "external_teacher_generated",
+      "static_open_corpus": true,
+      "quality_tier": "curated_high",
+      "max_admitted_rows": 8000,
       "why": "Apache-2.0 small-model SFT conversation subset with concise instruction-following samples.",
       "use": "private_conversation_sft_and_sts_pressure"
     },
@@ -74,8 +115,11 @@
       "offsets": [0, 100, 200, 300, 400, 500, 600, 700, 800, 900],
       "length": 100,
       "enabled": false,
-      "scalable": false,
+      "scalable": true,
       "provenance_class": "external_teacher_generated",
+      "static_open_corpus": true,
+      "quality_tier": "curated_high",
+      "max_admitted_rows": 8000,
       "why": "MIT licensed multi-turn instruction data for conversational pressure and assistant-response modeling.",
       "use": "private_conversation_sft_and_sts_pressure"
     },

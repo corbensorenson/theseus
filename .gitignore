@@ -73,6 +73,7 @@
 /data/training_data/open_conversation_pantry/receipts/
 /data/training_data/open_conversation_pantry/scalable_manifest.json
 /data/training_data/open_conversation_pantry/stream_state.json
+/data/training_data/open_conversation_pantry/broad_text/
 /data/training_data/residual_code_curriculum/private_train/
 /data/training_sources/*materialized*.jsonl
 /data/training_sources/*training_rows*.jsonl

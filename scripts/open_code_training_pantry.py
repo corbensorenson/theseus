@@ -49,7 +49,8 @@ BENCHMARK_EXCLUSION_TOKENS = {
 }
 SOURCE_EXTENSIONS = {
     ".py", ".rs", ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx",
-    ".html", ".htm", ".css", ".go", ".java", ".c", ".cpp", ".h", ".hpp",
+    ".html", ".htm", ".css", ".scss", ".sass", ".less",
+    ".go", ".java", ".c", ".cpp", ".h", ".hpp",
 }
 BANNED_EXPR_FRAGMENTS = {
     "__",
@@ -135,6 +136,12 @@ def main() -> int:
     train_path.parent.mkdir(parents=True, exist_ok=True)
 
     started = time.perf_counter()
+    previous_manifest = read_json_file(samples_manifest_path)
+    cached_sources = {
+        str(row.get("repo") or ""): row
+        for row in previous_manifest.get("admitted_sources") or []
+        if isinstance(row, dict) and row.get("repo")
+    }
     config_repos = repos_from_config(config)
     repos = config_repos or [repo.strip() for repo in str(args.repos).split(",") if repo.strip()]
     repos = [repo for repo in repos if not excluded_by_benchmark_name(repo)][: max(0, args.max_repos)]
@@ -144,17 +151,30 @@ def main() -> int:
     train_rows: list[dict[str, Any]] = []
 
     for repo in repos:
-        try:
-            meta = github_json(f"https://api.github.com/repos/{repo}")
-        except Exception as exc:  # noqa: BLE001
-            skipped.append({"repo": repo, "reason": "metadata_fetch_failed", "error": str(exc)[:400]})
-            continue
-        license_spdx = str((meta.get("license") or {}).get("spdx_id") or "NOASSERTION")
+        cached = cached_sources.get(repo) if not args.refresh else None
+        cached_tarball = resolve(str((cached or {}).get("tarball") or ""))
+        cache_valid = bool(
+            cached
+            and cached_tarball.is_file()
+            and stable_hash_hex(cached_tarball.read_bytes()) == str(cached.get("tarball_sha256") or "")
+        )
+        if cache_valid:
+            license_spdx = str(cached.get("license_spdx") or "NOASSERTION")
+            default_branch = str(cached.get("default_branch") or "main")
+            tarball_path = cached_tarball
+            meta = {"html_url": f"https://github.com/{repo}"}
+        else:
+            try:
+                meta = github_json(f"https://api.github.com/repos/{repo}")
+            except Exception as exc:  # noqa: BLE001
+                skipped.append({"repo": repo, "reason": "metadata_fetch_failed", "error": str(exc)[:400]})
+                continue
+            license_spdx = str((meta.get("license") or {}).get("spdx_id") or "NOASSERTION")
+            default_branch = str(meta.get("default_branch") or "main")
+            tarball_path = tarball_dir / f"{repo.replace('/', '__')}__{default_branch}.tar.gz"
         if license_spdx not in ALLOWED_LICENSES:
             skipped.append({"repo": repo, "reason": "license_not_allowlisted", "license_spdx": license_spdx})
             continue
-        default_branch = str(meta.get("default_branch") or "main")
-        tarball_path = tarball_dir / f"{repo.replace('/', '__')}__{default_branch}.tar.gz"
         if args.refresh or not tarball_path.exists():
             try:
                 download_bytes(
@@ -297,11 +317,22 @@ def read_repo_config(value: str) -> dict[str, Any]:
     return raw
 
 
+def read_json_file(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
 def repos_from_config(config: dict[str, Any]) -> list[str]:
     raw_repos = config.get("repos", [])
     if not isinstance(raw_repos, list):
         return []
     repos: list[str] = []
+    seen: set[str] = set()
     for row in raw_repos:
         if isinstance(row, str):
             repo = row
@@ -312,7 +343,8 @@ def repos_from_config(config: dict[str, Any]) -> list[str]:
         else:
             continue
         repo = repo.strip()
-        if enabled and repo:
+        if enabled and repo and repo not in seen:
+            seen.add(repo)
             repos.append(repo)
     return repos
 
@@ -700,6 +732,9 @@ def language_for_extension(ext: str) -> str:
         ".html": "html",
         ".htm": "html",
         ".css": "css",
+        ".scss": "css",
+        ".sass": "css",
+        ".less": "css",
         ".go": "go",
         ".java": "java",
         ".c": "c",

@@ -25,17 +25,16 @@ share toward zero. Public benchmarks are calibration only.
   `0/24`. The model can emit integrity-clean candidates but does not yet reliably
   learn prompt/signature-conditioned state transitions, operands, algorithms, and
   final-return semantics.
-- **Data wall:** the frozen contract selects 6,623,232 active parameters and a
-  132,464,640 unique-position floor (20:1). The canonical mixed-corpus materializer
-  measures 62,981,127 unique positions under the frozen transformer tokenizer ABI,
-  or 9.509123 per active parameter: 18,947,648 English conversation/instruction and
-  44,033,479 code. The code mix contains 30,642,731 Python, 8,740,555 JS/TS,
-  570,505 HTML/CSS, 1,530,737 Rust, and 2,548,951 other-code positions. That leaves
-  69,483,513 total positions; every domain/language minimum remains incomplete. The
-  receipt is `YELLOW`, has zero integrity hard gaps, and does not authorize training.
-- **Immediate dependency:** expand this same content-bound corpus through governed
-  licensed sources until its frozen total, domain, language, and evidence requirements
-  are all met, then complete one durable dense MLX training rung.
+- **Data gate:** the frozen contract selects 6,623,232 active parameters and a
+  132,464,640 unique-position floor (20:1). The canonical mixed-corpus receipt is
+  `GREEN` at 260,011,267 unique positions, or 39.257460 per active parameter, with
+  zero integrity hard gaps. It contains 77,351,958 English positions, including an
+  18,947,648 conversation/instruction subset, and 182,659,309 code positions:
+  44,191,145 Python, 59,347,703 JS/TS, 16,503,427 HTML/CSS, 58,311,735 Rust, and
+  4,305,299 other code. Every total/domain/language/evidence minimum passes.
+- **Immediate dependency:** replace the legacy Python-only 12M-position stage input
+  with a lineage-bound, balanced, streaming view of these exact canonical shards.
+  Only then complete one durable dense MLX training rung.
 
 ## Evidence Boundaries
 
@@ -47,9 +46,12 @@ share toward zero. Public benchmarks are calibration only.
 - Public prompts, tests, solutions, traces, and answer templates never become
   training rows. Fresh frozen public surfaces may be used for calibration after a
   material model change; consumed surfaces are not rerun.
-- External models are training teachers only through the governed distillation
-  path. Runtime external tokens are forbidden. OpenAI is the only authorized teacher
-  provider; Claude/Anthropic are forbidden for teacher use and project review.
+- Live external models are training teachers only through the governed distillation
+  path. Runtime external tokens are forbidden. OpenAI is the only authorized live
+  teacher provider; Claude/Anthropic are forbidden for teacher use and project review.
+- Static openly licensed corpora may include model-derived rows when quality tier,
+  provenance, permitted use, contamination, retention, and recursive synthetic share
+  are measured. This is data admission, not live teacher authority.
 - Teacher rows require provenance, license, contamination, verifier, and retention
   receipts. Teacher usefulness must beat a matched teacher-off control.
 
@@ -145,11 +147,9 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Close the measured 69,483,513-position canonical-corpus shortfall without weakening
-evidence or domain minima. Exact remaining minima include 41,052,352 English,
-15,966,521 code total, 5,357,269 Python, 3,259,445 JS/TS, 5,429,495 HTML/CSS,
-4,469,263 Rust, and the 12,464,640 tail reserve. Then train one complete
-dense MLX rung. Success requires durable
+Replace the legacy Python-only 12M-position pretraining stage with a deterministic,
+lineage-bound balanced view of the GREEN 260,011,267-position corpus, then train one
+complete dense MLX rung. Success requires durable
 provenance, heldout lineage, nonzero independently verified family-disjoint behavior,
 and better results than the frozen current baseline. If those conditions fail, mine
 the observed semantic residuals; do not add another architecture lane or nearby

@@ -155,7 +155,10 @@ def test_canonical_scaling_receipt_requires_all_dimensions_and_rejects_repetitio
             "unique_model_visible_positions": required,
             "optimizer_token_positions": required * 4,
             "optimizer_repetition_counted_as_unique_data": False,
-            "domain_unique_positions": scaling["domain_minimum_positions"],
+            "domain_unique_positions": {
+                **scaling["domain_minimum_positions"],
+                **scaling["subset_minimum_positions"],
+            },
             "code_language_unique_positions": scaling["code_language_minimum_positions"],
             "evidence_dimensions": {key: True for key in scaling["required_evidence_dimensions"]},
             "public_training_rows_written": 0,
@@ -262,11 +265,26 @@ def canonical_corpus_fixture(tmp_path: Path) -> tuple[dict, Path, Path]:
         ),
         encoding="utf-8",
     )
+    broad_text_root = tmp_path / "broad-text"
+    broad_text_root.mkdir()
+    broad_text_manifest = broad_text_root / "manifest.json"
+    broad_text_manifest.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_governed_document_stream_state_v1",
+                "shards": [],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
     config["canonical_corpus"] = {
         "policy": "project_theseus_canonical_mixed_corpus_materialization_v1",
         "code_manifests": [str(code_manifest)],
         "conversation_manifest": str(conversation_manifest),
         "conversation_root": str(conversation_root),
+        "broad_text_manifest": str(broad_text_manifest),
+        "broad_text_root": str(broad_text_root),
         "near_duplicate_hamming_distance": 3,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -283,10 +301,11 @@ def test_canonical_corpus_materializer_counts_only_content_bound_unique_governed
     assert receipt["hard_gaps"] == []
     assert receipt["summary"]["document_counts"] == {
         "code_total": 1,
+        "english_natural_language_total": 1,
         "english_conversation_instruction": 1,
     }
     assert receipt["summary"]["exact_duplicate_counts"] == {
-        "english_conversation_instruction": 1,
+        "english_natural_language_total": 1,
     }
     assert receipt["summary"]["excluded_counts"] == {
         "conversation_governance_or_completeness": 1,
