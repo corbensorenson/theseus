@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 import random
+import shutil
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -278,19 +279,29 @@ def model_accounting(
     )
     copy_lookup = build_source_to_target_lookup(base, metadata)
 
-    def count(model_config: dict[str, Any]) -> int:
-        model = build_model(
+    def instantiate(model_config: dict[str, Any]) -> Any:
+        return build_model(
             CausalTransformerConfig(vocab_size=vocab_size, **model_config),
             mx=mx,
             nn=nn,
             state_role_lookup=None,
             source_to_target_lookup=copy_lookup,
         )
-        return int(parameter_count(model, mlx_utils))
+
+    def count(model_config: dict[str, Any]) -> int:
+        return int(parameter_count(instantiate(model_config), mlx_utils))
 
     trunk_count = count(config["shared_trunk_model"])
-    arm_count = count(config["arm_model"])
-    expert_count = arm_count - trunk_count
+    arm = instantiate(config["arm_model"])
+    arm_count = int(parameter_count(arm, mlx_utils))
+    expert_scope = str(config["topology"]["expert_trainable_scope"])
+    arm.freeze_to_language_expert(expert_scope)
+    expert_count = int(
+        sum(
+            value.size
+            for _name, value in mlx_utils.tree_flatten(arm.trainable_parameters())
+        )
+    )
     if expert_count <= 0:
         raise ValueError("language expert must add parameters to the shared trunk")
     system_total = trunk_count + expert_count * len(ARM_IDS)
@@ -308,6 +319,7 @@ def model_accounting(
             "arm_model": config["arm_model"],
             "arm_parameter_count": arm_count,
             "expert_parameter_count_per_arm": expert_count,
+            "expert_trainable_scope": expert_scope,
             "arm_count": len(ARM_IDS),
             "total_parameter_count": system_total,
             "active_parameter_count_per_request": arm_count,
@@ -418,6 +430,11 @@ def target_contracts(
         targets[target] = {
             "target_id": target,
             "role": role,
+            "expert_trainable_scope": (
+                str(config["topology"]["expert_trainable_scope"])
+                if target in ARM_IDS
+                else ""
+            ),
             "row_ranges": list(view.get("row_ranges") or []),
             "row_count": sum(int(row["stop"]) - int(row["start"]) for row in view.get("row_ranges") or []),
             "unique_target_positions": (
@@ -429,7 +446,7 @@ def target_contracts(
             * (0 if target in ARM_IDS else int(view.get("target_positions") or 0)),
             "checkpoint": relative(
                 directory
-                / ("expert_adapter.safetensors" if target in ARM_IDS else "weights.npz")
+                / ("expert_delta.safetensors" if target in ARM_IDS else "weights.npz")
             ),
             "shared_trunk_checkpoint": (
                 relative(root / SHARED_TRUNK_ID / "weights.npz")
@@ -665,6 +682,15 @@ def execute_targets(
     stage_dir = resolve(str(config["stage_dir"]))
     metadata = read_json(stage_dir / "stage_metadata_v1.json")
     base = read_json(resolve(str(config["base_config"])))
+    if any(target_id == SHARED_TRUNK_ID or target_id in ARM_IDS for target_id in targets):
+        ensure_shared_trunk_migration(
+            config,
+            plan,
+            metadata=metadata,
+            base=base,
+            mx=mx,
+            nn=nn,
+        )
     canonical = metadata["summary"]["canonical_pretrain_stage"]
     shape = (int(canonical["window_count"]), int(canonical["max_sequence_tokens"]))
     arrays = load_pretrain_memmaps(
@@ -703,19 +729,19 @@ def execute_targets(
     for target_id in targets:
         target = plan["targets"][target_id]
         result = train_target(
-                config,
-                plan,
-                target,
-                stage=stage,
-                source_conditioned_stage=source_conditioned_stages[target_id],
-                supervision_stage=supervision_stages[target_id],
-                max_steps=max_steps,
-                resume=resume,
-                mx=mx,
-                nn=nn,
-                optim=optim,
-                mlx_utils=mlx_utils,
-            )
+            config,
+            plan,
+            target,
+            stage=stage,
+            source_conditioned_stage=source_conditioned_stages[target_id],
+            supervision_stage=supervision_stages[target_id],
+            max_steps=max_steps,
+            resume=resume,
+            mx=mx,
+            nn=nn,
+            optim=optim,
+            mlx_utils=mlx_utils,
+        )
         if result.get("complete") and should_evaluate_target(target):
             result["evaluation"] = evaluate_target(
                 config,
@@ -727,18 +753,131 @@ def execute_targets(
                 nn=nn,
             )
         results.append(result)
-    gaps = [f"{row['target_id']}:{gap}" for row in results for gap in row.get("hard_gaps") or []]
+    gaps = [
+        f"{row['target_id']}:{gap}"
+        for row in results
+        for gap in row.get("hard_gaps") or []
+    ]
+    refreshed_inventory = inspect_checkpoint_inventory(
+        plan["targets"], plan["plan_sha256"], plan["stage"]["stage_signature"]
+    )
     return {
         **plan,
+        "checkpoint_inventory": refreshed_inventory,
         "created_utc": now(),
         "trigger_state": "RED" if gaps else "GREEN",
         "mode": "training_execution",
         "executed_targets": targets,
         "results": results,
         "hard_gaps": gaps,
-        "all_requested_targets_complete": bool(results) and all(row.get("complete") for row in results),
+        "all_requested_targets_complete": bool(results)
+        and all(row.get("complete") for row in results),
         **no_cheat(config),
     }
+
+
+def ensure_shared_trunk_migration(
+    config: dict[str, Any],
+    plan: dict[str, Any],
+    *,
+    metadata: dict[str, Any],
+    base: dict[str, Any],
+    mx: Any,
+    nn: Any,
+) -> dict[str, Any]:
+    """Migrate an unchanged completed trunk into a successor ownership plan."""
+
+    target = plan["targets"][SHARED_TRUNK_ID]
+    checkpoint = resolve(str(target["checkpoint"]))
+    optimizer = resolve(str(target["optimizer_state"]))
+    receipt_path = resolve(str(target["receipt"]))
+    if checkpoint.is_file() and optimizer.is_file() and receipt_path.is_file():
+        receipt = read_json(receipt_path)
+        validate_resume(receipt, plan, target, checkpoint, optimizer)
+        return receipt
+    if any(path.exists() for path in (checkpoint, optimizer, receipt_path)):
+        raise ValueError("partial shared trunk migration state requires operator cleanup")
+
+    bootstrap = config["topology"]["shared_trunk_bootstrap"]
+    source_checkpoint = resolve(str(bootstrap["checkpoint"]))
+    source_optimizer = resolve(str(bootstrap["optimizer_state"]))
+    source_receipt_path = resolve(str(bootstrap["receipt"]))
+    for path, expected, label in (
+        (source_checkpoint, bootstrap["checkpoint_sha256"], "checkpoint"),
+        (source_optimizer, bootstrap["optimizer_state_sha256"], "optimizer"),
+        (source_receipt_path, bootstrap["receipt_sha256"], "receipt"),
+    ):
+        if not path.is_file() or sha256_file(path) != expected:
+            raise ValueError(f"shared trunk migration source {label} identity mismatch")
+    source_receipt = read_json(source_receipt_path)
+    if not bool(source_receipt.get("complete")):
+        raise ValueError("shared trunk migration source is incomplete")
+    if source_receipt.get("checkpoint_sha256") != bootstrap["checkpoint_sha256"]:
+        raise ValueError("shared trunk source receipt checkpoint mismatch")
+    if source_receipt.get("optimizer_state_sha256") != bootstrap["optimizer_state_sha256"]:
+        raise ValueError("shared trunk source receipt optimizer mismatch")
+    if source_receipt.get("stage_signature") != plan["stage"]["stage_signature"]:
+        raise ValueError("shared trunk migration stage identity mismatch")
+
+    copy_lookup = build_source_to_target_lookup(base, metadata)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=int(plan["models"]["vocab_size"]), **target["model"]
+        ),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=None,
+        source_to_target_lookup=copy_lookup,
+    )
+    model.load_weights(str(source_checkpoint), strict=True)
+    mx.eval(model.parameters())
+
+    checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    atomic_copy(source_checkpoint, checkpoint)
+    atomic_copy(source_optimizer, optimizer)
+    receipt = {
+        **source_receipt,
+        "created_utc": now(),
+        "target_id": SHARED_TRUNK_ID,
+        "role": "shared_trunk",
+        "plan_sha256": plan["plan_sha256"],
+        "row_ranges": target["row_ranges"],
+        "checkpoint": relative(checkpoint),
+        "checkpoint_sha256": sha256_file(checkpoint),
+        "optimizer_state": relative(optimizer),
+        "optimizer_state_sha256": sha256_file(optimizer),
+        "resume": False,
+        "resume_base_checkpoint_sha256": "",
+        "migration": {
+            "policy": bootstrap["policy"],
+            "source_checkpoint": relative(source_checkpoint),
+            "source_checkpoint_sha256": bootstrap["checkpoint_sha256"],
+            "source_optimizer_state": relative(source_optimizer),
+            "source_optimizer_state_sha256": bootstrap["optimizer_state_sha256"],
+            "source_receipt": relative(source_receipt_path),
+            "source_receipt_sha256": bootstrap["receipt_sha256"],
+            "strict_model_load_proved": True,
+            "model_config_sha256": hashlib.sha256(
+                json.dumps(
+                    target["model"], sort_keys=True, separators=(",", ":")
+                ).encode()
+            ).hexdigest(),
+            "training_positions_added": 0,
+            "capability_credit": "NONE",
+        },
+        "capability_claim": "NOT_EVALUATED",
+        "hard_gaps": [],
+    }
+    write_json_atomic(receipt_path, receipt)
+    validate_resume(receipt, plan, target, checkpoint, optimizer)
+    return receipt
+
+
+def atomic_copy(source: Path, destination: Path) -> None:
+    temporary = destination.with_suffix(destination.suffix + ".partial")
+    temporary.unlink(missing_ok=True)
+    shutil.copy2(source, temporary)
+    os.replace(temporary, destination)
 
 
 def should_evaluate_target(target: dict[str, Any]) -> bool:
@@ -1311,7 +1450,11 @@ def train_target(
         if shared_trunk_checkpoint_sha256 != shared_receipt.get("checkpoint_sha256"):
             raise ValueError("shared trunk checkpoint identity mismatch")
         model.load_weights(str(shared_trunk_checkpoint), strict=False)
-        model.freeze_to_expert_adapter()
+        expert_scope = str(
+            target.get("expert_trainable_scope")
+            or config["topology"]["expert_trainable_scope"]
+        )
+        model.freeze_to_language_expert(expert_scope)
     observed_parameters = int(parameter_count(model, mlx_utils))
     if observed_parameters != int(target["parameter_count"]):
         raise ValueError("target model parameter identity changed after preregistration")
@@ -1548,6 +1691,9 @@ def train_target(
         "row_ranges": target["row_ranges"],
         "parameter_count": observed_parameters,
         "trainable_parameter_count": trainable_parameters,
+        "expert_trainable_scope": (
+            expert_scope if expert_mode else ""
+        ),
         "shared_trunk_checkpoint": (
             relative(shared_trunk_checkpoint) if expert_mode else ""
         ),
@@ -1626,7 +1772,7 @@ def publish_model(
         mx.save_safetensors(
             str(temporary),
             weights,
-            metadata={"policy": "moecot_language_expert_adapter_v1"},
+            metadata={"policy": "moecot_language_expert_delta_v2"},
         )
     else:
         model.save_weights(str(temporary))
@@ -1691,6 +1837,8 @@ def plan_sha256(
             for key in (
                 "policy",
                 "seed",
+                "topology",
+                "shared_trunk_model",
                 "arm_model",
                 "controls",
                 "training",
@@ -1715,7 +1863,7 @@ def validate_config(config: dict[str, Any]) -> None:
     topology = config.get("topology") or {}
     if (
         topology.get("policy")
-        != "project_theseus_moecot_shared_trunk_language_experts_v1"
+        != "project_theseus_moecot_shared_trunk_source_specialists_v2"
         or topology.get("mode") != "shared_trunk_language_experts"
     ):
         raise ValueError("unexpected MoECOT shared-trunk topology")
@@ -1725,6 +1873,24 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("language expert model must exactly extend the shared trunk")
     if expert_dim != int(topology.get("expert_adapter_dim") or 0) or expert_dim <= 0:
         raise ValueError("language expert dimension must match the topology contract")
+    if topology.get("expert_trainable_scope") not in {
+        "adapter_only",
+        "source_conditioned_delta",
+    }:
+        raise ValueError("unsupported language expert trainable scope")
+    bootstrap = topology.get("shared_trunk_bootstrap") or {}
+    if bootstrap.get("policy") != "project_theseus_exact_shared_trunk_migration_v1":
+        raise ValueError("shared trunk migration contract is required")
+    for key in (
+        "checkpoint",
+        "checkpoint_sha256",
+        "optimizer_state",
+        "optimizer_state_sha256",
+        "receipt",
+        "receipt_sha256",
+    ):
+        if not bootstrap.get(key):
+            raise ValueError(f"shared trunk migration missing {key}")
     boundaries = config.get("boundaries") or {}
     if any(int(boundaries.get(key) or 0) for key in (
         "public_training_rows_written", "external_inference_calls", "fallback_return_count",

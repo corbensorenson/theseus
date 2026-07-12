@@ -882,6 +882,50 @@ def test_zero_initialized_expert_adapter_preserves_trunk_and_freezes_exactly() -
     assert parameter_count(expert, mlx_utils) > parameter_count(trunk, mlx_utils)
 
 
+def test_source_conditioned_expert_scope_owns_only_specialist_modules() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=64,
+            d_model=32,
+            num_layers=2,
+            num_heads=4,
+            num_kv_heads=2,
+            ff_dim=64,
+            attention_policy="encoder_decoder",
+            source_encoder_layers=1,
+            source_copy_mode="pointer_generator",
+            source_copy_auxiliary_loss_weight=0.25,
+            expert_adapter_dim=8,
+        ),
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=mx.arange(64, dtype=mx.int32),
+    )
+    model.freeze_to_language_expert("source_conditioned_delta")
+    trainable = {
+        name for name, _value in mlx_utils.tree_flatten(model.trainable_parameters())
+    }
+    assert trainable
+    assert any(".expert_adapter." in name for name in trainable)
+    assert any(".source_attention." in name for name in trainable)
+    assert any(name.startswith("source_layers.") for name in trainable)
+    assert {"copy_query.weight", "copy_key.weight", "copy_gate.weight", "copy_gate.bias"}.issubset(
+        trainable
+    )
+    assert "token_embedding.weight" not in trainable
+    assert not any(
+        ".attention.q_proj." in name
+        and ".source_attention." not in name
+        and not name.startswith("source_layers.")
+        for name in trainable
+    )
+    assert not any(".feed_forward." in name and not name.startswith("source_layers.") for name in trainable)
+
+
 def test_expert_adapter_configuration_fails_closed() -> None:
     with pytest.raises(ValueError, match="cannot be negative"):
         CausalTransformerConfig(vocab_size=64, expert_adapter_dim=-1).validate()

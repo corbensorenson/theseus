@@ -2,7 +2,7 @@
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
   "stage_dir": "runtime/standard_causal_transformer_survival_v1",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v6",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v7",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
   "vocabulary": {
@@ -18,11 +18,21 @@
     "code_to_source_count_divisor": 50
   },
   "topology": {
-    "policy": "project_theseus_moecot_shared_trunk_language_experts_v1",
+    "policy": "project_theseus_moecot_shared_trunk_source_specialists_v2",
     "mode": "shared_trunk_language_experts",
     "shared_parameter_ownership": "one_checkpoint_loaded_once",
-    "expert_parameter_ownership": "one_independent_adapter_checkpoint_per_language",
-    "expert_adapter_dim": 32
+    "expert_parameter_ownership": "one_independent_source_conditioned_delta_per_language",
+    "expert_trainable_scope": "source_conditioned_delta",
+    "expert_adapter_dim": 32,
+    "shared_trunk_bootstrap": {
+      "policy": "project_theseus_exact_shared_trunk_migration_v1",
+      "checkpoint": "checkpoints/moecot_language_seed_v6/shared_trunk/weights.npz",
+      "checkpoint_sha256": "f727ae56f827f94200a27dd6444a73abb29b03a491b88206131a471a07706179",
+      "optimizer_state": "checkpoints/moecot_language_seed_v6/shared_trunk/optimizer.safetensors",
+      "optimizer_state_sha256": "2b80e23f06cdd231a36f373636f234a0057862ed58f131bd10f332b00a5dd29b",
+      "receipt": "checkpoints/moecot_language_seed_v6/shared_trunk/training_receipt.json",
+      "receipt_sha256": "fbe12eb14d7819b4a2ec06bb69de434105750fb584e2dc5a2225121408fa4a49"
+    }
   },
   "shared_trunk_model": {
     "d_model": 160,

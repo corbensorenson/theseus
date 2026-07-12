@@ -572,11 +572,30 @@ def build_model(
             return weights
 
         def freeze_to_expert_adapter(self) -> None:
+            self.freeze_to_language_expert("adapter_only")
+
+        def freeze_to_language_expert(self, scope: str) -> None:
             if not expert_adapter_enabled:
                 raise ValueError("model has no expert adapter to train")
+            if scope not in {"adapter_only", "source_conditioned_delta"}:
+                raise ValueError(f"unsupported language expert scope: {scope}")
             self.freeze()
             for layer in self.layers:
                 layer.expert_adapter.unfreeze()
+            if scope == "source_conditioned_delta":
+                if not source_encoder_enabled or not pointer_generator_enabled:
+                    raise ValueError(
+                        "source-conditioned expert scope requires encoder-decoder pointer mode"
+                    )
+                for layer in self.layers:
+                    layer.source_attention_norm.unfreeze()
+                    layer.source_attention.unfreeze()
+                for layer in self.source_layers:
+                    layer.unfreeze()
+                self.source_final_norm.unfreeze()
+                self.copy_query.unfreeze()
+                self.copy_key.unfreeze()
+                self.copy_gate.unfreeze()
 
         def sequence_attention_mask(self, tokens: Any, cache: Any | None) -> Any | None:
             if config.attention_policy != "prefix_lm" or cache is not None:

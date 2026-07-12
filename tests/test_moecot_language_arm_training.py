@@ -21,6 +21,7 @@ from moecot_language_arm_training import (  # noqa: E402
     audit_tokenizer_stage,
     build_source_to_target_lookup,
     behavior_diagnostics,
+    ensure_shared_trunk_migration,
     generate_model_text,
     matched_decoder_only_config,
     materialize_target_supervision,
@@ -62,9 +63,19 @@ def tiny_config(tmp_path: Path) -> dict:
         "seed": 7,
         "checkpoint_root": str(tmp_path / "checkpoints"),
         "topology": {
-            "policy": "project_theseus_moecot_shared_trunk_language_experts_v1",
+            "policy": "project_theseus_moecot_shared_trunk_source_specialists_v2",
             "mode": "shared_trunk_language_experts",
             "expert_adapter_dim": 4,
+            "expert_trainable_scope": "adapter_only",
+            "shared_trunk_bootstrap": {
+                "policy": "project_theseus_exact_shared_trunk_migration_v1",
+                "checkpoint": "fixture",
+                "checkpoint_sha256": "a" * 64,
+                "optimizer_state": "fixture",
+                "optimizer_state_sha256": "b" * 64,
+                "receipt": "fixture",
+                "receipt_sha256": "c" * 64,
+            },
         },
         "shared_trunk_model": {
             "d_model": 16,
@@ -186,6 +197,96 @@ def test_only_executable_compositions_receive_direct_evaluation() -> None:
     assert should_evaluate_target({"role": "dense_control"}) is True
     assert should_evaluate_target({"role": "shared_trunk"}) is False
     assert should_evaluate_target({"role": ""}) is False
+
+
+def test_shared_trunk_migration_is_exact_and_rejects_source_tampering(
+    tmp_path: Path,
+) -> None:
+    import hashlib
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    model_config = tiny_config(tmp_path)["shared_trunk_model"]
+    source_dir = tmp_path / "v6" / "shared_trunk"
+    source_dir.mkdir(parents=True)
+    source_checkpoint = source_dir / "weights.npz"
+    source_optimizer = source_dir / "optimizer.safetensors"
+    source_receipt_path = source_dir / "training_receipt.json"
+    model = build_model(
+        CausalTransformerConfig(vocab_size=64, **model_config), mx=mx, nn=nn
+    )
+    model.save_weights(str(source_checkpoint))
+    source_optimizer.write_bytes(b"optimizer-state")
+
+    def digest(path: Path) -> str:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    source_receipt = {
+        "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
+        "target_id": "shared_trunk",
+        "role": "shared_trunk",
+        "plan_sha256": "old-plan",
+        "stage_signature": "stage-migrate",
+        "row_ranges": [{"start": 0, "stop": 2}],
+        "complete": True,
+        "optimizer_steps": 4,
+        "optimizer_positions": 32,
+        "checkpoint_sha256": digest(source_checkpoint),
+        "optimizer_state_sha256": digest(source_optimizer),
+        "capability_claim": "NOT_EVALUATED",
+    }
+    source_receipt_path.write_text(json.dumps(source_receipt))
+    destination = tmp_path / "v7" / "shared_trunk"
+    target = {
+        "target_id": "shared_trunk",
+        "role": "shared_trunk",
+        "row_ranges": [{"start": 0, "stop": 2}],
+        "model": model_config,
+        "checkpoint": str(destination / "weights.npz"),
+        "optimizer_state": str(destination / "optimizer.safetensors"),
+        "receipt": str(destination / "training_receipt.json"),
+    }
+    config = tiny_config(tmp_path)
+    config["topology"]["shared_trunk_bootstrap"] = {
+        "policy": "project_theseus_exact_shared_trunk_migration_v1",
+        "checkpoint": str(source_checkpoint),
+        "checkpoint_sha256": digest(source_checkpoint),
+        "optimizer_state": str(source_optimizer),
+        "optimizer_state_sha256": digest(source_optimizer),
+        "receipt": str(source_receipt_path),
+        "receipt_sha256": digest(source_receipt_path),
+    }
+    plan = {
+        "plan_sha256": "new-plan",
+        "stage": {"stage_signature": "stage-migrate"},
+        "models": {"vocab_size": 64},
+        "targets": {"shared_trunk": target},
+    }
+    migrated = ensure_shared_trunk_migration(
+        config,
+        plan,
+        metadata={"source_vocab": {"<pad>": 0}, "target_vocab": {"<pad>": 0}},
+        base={"tokenization": {"shared_source_target_vocabulary": True}},
+        mx=mx,
+        nn=nn,
+    )
+    assert migrated["plan_sha256"] == "new-plan"
+    assert migrated["migration"]["training_positions_added"] == 0
+    assert digest(destination / "weights.npz") == digest(source_checkpoint)
+    assert digest(destination / "optimizer.safetensors") == digest(source_optimizer)
+
+    for path in destination.iterdir():
+        path.unlink()
+    source_checkpoint.write_bytes(source_checkpoint.read_bytes() + b"tampered")
+    with pytest.raises(ValueError, match="source checkpoint identity mismatch"):
+        ensure_shared_trunk_migration(
+            config,
+            plan,
+            metadata={"source_vocab": {"<pad>": 0}, "target_vocab": {"<pad>": 0}},
+            base={"tokenization": {"shared_source_target_vocabulary": True}},
+            mx=mx,
+            nn=nn,
+        )
 
 
 def test_behavior_diagnostics_are_evaluator_only_and_do_not_retain_text() -> None:
