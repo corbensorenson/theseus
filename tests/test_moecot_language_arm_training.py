@@ -20,6 +20,7 @@ from moecot_language_arm_training import (  # noqa: E402
     audit_arm_views,
     audit_tokenizer_stage,
     generate_model_text,
+    matched_decoder_only_config,
     materialize_target_supervision,
     range_view,
     serialization_valid_local_ids,
@@ -32,6 +33,7 @@ from standard_causal_transformer_model import (  # noqa: E402
     build_model,
     parameter_count,
 )
+from standard_causal_transformer_survival import causal_loss  # noqa: E402
 from neural_seed_open_vocab import reserve_byte_fallback_tokens  # noqa: E402
 
 
@@ -227,6 +229,76 @@ def test_generation_api_cannot_receive_hidden_target() -> None:
     assert "prompt" in parameters
     assert "target" not in parameters
     assert "expected" not in parameters
+
+
+def test_decoder_only_control_is_mechanically_parameter_matched() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    encoder_config = {
+        "d_model": 32,
+        "num_layers": 2,
+        "num_heads": 4,
+        "num_kv_heads": 2,
+        "ff_dim": 64,
+        "attention_policy": "encoder_decoder",
+        "source_target_separator_token_id": 2,
+        "source_encoder_layers": 1,
+    }
+
+    def count(model_config: dict) -> int:
+        model = build_model(
+            CausalTransformerConfig(vocab_size=64, **model_config), mx=mx, nn=nn
+        )
+        return int(parameter_count(model, mlx_utils))
+
+    reference = count(encoder_config)
+    control, observed = matched_decoder_only_config(
+        reference, encoder_config, count=count
+    )
+    assert control["attention_policy"] == "prefix_lm"
+    assert "source_encoder_layers" not in control
+    assert abs(observed - reference) / reference <= 0.01
+
+
+def test_target_only_loss_trains_source_encoder_and_cross_attention() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=64,
+            d_model=16,
+            num_layers=1,
+            num_heads=4,
+            num_kv_heads=1,
+            ff_dim=32,
+            attention_policy="encoder_decoder",
+            source_encoder_layers=1,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    inputs = mx.array([[1, 10, 11, 2, 20, 21]], dtype=mx.int32)
+    labels = mx.array([[10, 11, 2, 20, 21, 3]], dtype=mx.int32)
+    target_only_mask = mx.array([[0, 0, 0, 0, 1, 1]], dtype=mx.float32)
+    loss_and_grad = nn.value_and_grad(model, causal_loss)
+    loss, gradients = loss_and_grad(
+        model, inputs, labels, target_only_mask, mx, nn
+    )
+    mx.eval(loss, gradients)
+    gradient_mass = {
+        name: float(mx.sum(mx.abs(value)).item())
+        for name, value in mlx_utils.tree_flatten(gradients)
+    }
+    assert sum(
+        value for name, value in gradient_mass.items() if name.startswith("source_layers.")
+    ) > 0.0
+    assert sum(
+        value for name, value in gradient_mass.items() if ".source_attention." in name
+    ) > 0.0
 
 
 def test_byte_span_grammar_never_forces_completion_or_allows_invalid_tokens() -> None:

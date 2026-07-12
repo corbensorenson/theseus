@@ -20,6 +20,7 @@ class CausalTransformerConfig:
     rms_norm_eps: float = 1e-5
     attention_policy: str = "causal"
     source_target_separator_token_id: int = 2
+    source_encoder_layers: int = 0
     state_memory_slots: int = 0
     state_memory_chunk_size: int = 32
     state_memory_local_window: int = 96
@@ -41,8 +42,16 @@ class CausalTransformerConfig:
             raise ValueError("query heads must divide evenly across KV heads")
         if self.num_layers <= 0 or self.vocab_size <= 0 or self.ff_dim <= 0:
             raise ValueError("model dimensions must be positive")
-        if self.attention_policy not in {"causal", "prefix_lm"}:
-            raise ValueError("attention policy must be causal or prefix_lm")
+        if self.attention_policy not in {"causal", "prefix_lm", "encoder_decoder"}:
+            raise ValueError(
+                "attention policy must be causal, prefix_lm, or encoder_decoder"
+            )
+        if self.source_encoder_layers < 0:
+            raise ValueError("source encoder layers cannot be negative")
+        if self.attention_policy == "encoder_decoder" and self.source_encoder_layers <= 0:
+            raise ValueError("encoder-decoder attention requires source encoder layers")
+        if self.attention_policy != "encoder_decoder" and self.source_encoder_layers:
+            raise ValueError("source encoder layers require encoder-decoder attention")
         if not 0 <= self.source_target_separator_token_id < self.vocab_size:
             raise ValueError("source-target separator token must be in vocabulary")
         if self.state_memory_mode not in {"none", "semantic_roles", "hash_control"}:
@@ -56,6 +65,10 @@ class CausalTransformerConfig:
         if self.attention_policy == "prefix_lm" and self.state_memory_mode != "none":
             raise ValueError(
                 "prefix-LM attention is not yet compatible with chunked executable state memory"
+            )
+        if self.attention_policy == "encoder_decoder" and self.state_memory_mode != "none":
+            raise ValueError(
+                "encoder-decoder attention is not yet compatible with executable state memory"
             )
         if self.state_memory_mode != "none" and self.state_memory_slots <= 1:
             raise ValueError("enabled state memory requires at least two slots")
@@ -121,6 +134,7 @@ def build_model(
         dtype=mx.float32,
     )
     state_enabled = config.state_memory_mode != "none"
+    source_encoder_enabled = config.attention_policy == "encoder_decoder"
     plan_enabled = config.semantic_plan_feature_count > 0
     plan_slot_attention_enabled = (
         plan_enabled and config.semantic_plan_conditioning_mode == "slot_attention"
@@ -262,25 +276,31 @@ def build_model(
             attended = attended.transpose(0, 2, 1, 3).reshape(batch, length, config.num_heads * head_dim)
             return self.out_proj(attended), (key, value)
 
-    class PlanCrossAttention(nn.Module):
-        def __init__(self) -> None:
+    class CrossAttention(nn.Module):
+        def __init__(self, *, zero_output: bool = False) -> None:
             super().__init__()
             self.q_proj = nn.Linear(config.d_model, config.num_heads * head_dim, bias=False)
             self.k_proj = nn.Linear(config.d_model, config.num_kv_heads * head_dim, bias=False)
             self.v_proj = nn.Linear(config.d_model, config.num_kv_heads * head_dim, bias=False)
             self.out_proj = nn.Linear(config.num_heads * head_dim, config.d_model, bias=False)
-            self.out_proj.weight = mx.zeros_like(self.out_proj.weight)
+            if zero_output:
+                self.out_proj.weight = mx.zeros_like(self.out_proj.weight)
 
-        def __call__(self, hidden: Any, plan_memory: Any) -> Any:
+        def __call__(
+            self,
+            hidden: Any,
+            memory: Any,
+            key_mask: Any | None = None,
+        ) -> Any:
             batch, length, _dims = hidden.shape
-            slots = int(plan_memory.shape[1])
+            slots = int(memory.shape[1])
             query = self.q_proj(hidden).reshape(
                 batch, length, config.num_heads, head_dim
             ).transpose(0, 2, 1, 3)
-            key = self.k_proj(plan_memory).reshape(
+            key = self.k_proj(memory).reshape(
                 batch, slots, config.num_kv_heads, head_dim
             ).transpose(0, 2, 1, 3)
-            value = self.v_proj(plan_memory).reshape(
+            value = self.v_proj(memory).reshape(
                 batch, slots, config.num_kv_heads, head_dim
             ).transpose(0, 2, 1, 3)
             if config.num_kv_heads != config.num_heads:
@@ -292,12 +312,40 @@ def build_model(
                 key,
                 value,
                 scale=head_dim ** -0.5,
-                mask=None,
+                mask=(
+                    mx.where(
+                        key_mask[:, None, None, :] > 0,
+                        mx.array(0.0, dtype=mx.float32),
+                        mx.array(-1e9, dtype=mx.float32),
+                    )
+                    if key_mask is not None
+                    else None
+                ),
             )
             attended = attended.transpose(0, 2, 1, 3).reshape(
                 batch, length, config.num_heads * head_dim
             )
             return self.out_proj(attended)
+
+    class SourceEncoderBlock(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.attention_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
+            self.attention = CausalAttention()
+            self.ffn_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
+            self.feed_forward = SwiGLU()
+
+        def __call__(self, hidden: Any, source_mask: Any) -> Any:
+            key_mask = mx.where(
+                source_mask[:, None, None, :] > 0,
+                mx.array(0.0, dtype=mx.float32),
+                mx.array(-1e9, dtype=mx.float32),
+            )
+            attended, _cache = self.attention(
+                self.attention_norm(hidden), attention_mask=key_mask
+            )
+            hidden = hidden + attended
+            return hidden + self.feed_forward(self.ffn_norm(hidden))
 
     class SwiGLU(nn.Module):
         def __init__(self) -> None:
@@ -357,6 +405,9 @@ def build_model(
             commit_state: bool = False,
             plan_memory: Any | None = None,
             plan_access: Any | None = None,
+            source_memory: Any | None = None,
+            source_mask: Any | None = None,
+            source_access: Any | None = None,
             attention_mask: Any | None = None,
         ) -> tuple[Any, tuple[Any, ...]]:
             token_cache = (cache[0], cache[1]) if cache is not None else None
@@ -376,6 +427,16 @@ def build_model(
                 attention_mask,
             )
             hidden = hidden + attended
+            if source_encoder_enabled and source_memory is not None:
+                source_attended = self.source_attention(
+                    self.source_attention_norm(hidden), source_memory, source_mask
+                )
+                access = (
+                    source_access
+                    if source_access is not None
+                    else mx.ones(hidden.shape[:2], dtype=mx.float32)
+                )
+                hidden = hidden + source_attended * access[:, :, None]
             if plan_slot_attention_enabled and plan_memory is not None:
                 plan_attended = self.plan_attention(
                     self.plan_attention_norm(hidden), plan_memory
@@ -414,12 +475,24 @@ def build_model(
             self.layers = [DecoderBlock() for _ in range(config.num_layers)]
             self.final_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.scale = math.sqrt(config.d_model)
+            if source_encoder_enabled:
+                self.source_layers = [
+                    SourceEncoderBlock() for _ in range(config.source_encoder_layers)
+                ]
+                self.source_final_norm = nn.RMSNorm(
+                    config.d_model, eps=config.rms_norm_eps
+                )
+                for layer in self.layers:
+                    layer.source_attention_norm = nn.RMSNorm(
+                        config.d_model, eps=config.rms_norm_eps
+                    )
+                    layer.source_attention = CrossAttention()
             if plan_slot_attention_enabled:
                 for layer in self.layers:
                     layer.plan_attention_norm = nn.RMSNorm(
                         config.d_model, eps=config.rms_norm_eps
                     )
-                    layer.plan_attention = PlanCrossAttention()
+                    layer.plan_attention = CrossAttention(zero_output=True)
             if plan_enabled:
                 plan_dim = config.semantic_plan_bottleneck_dim or config.d_model
                 self.semantic_plan_encoder = (
@@ -475,12 +548,46 @@ def build_model(
             )
             return additive[:, None, :, :].reshape(batch, 1, length, length)
 
+        def source_partition(self, tokens: Any) -> tuple[Any, Any, Any]:
+            """Return source keys, target access, and separator presence per row."""
+
+            separator = tokens == config.source_target_separator_token_id
+            seen_separator = mx.cumsum(separator.astype(mx.int32), axis=1)
+            has_separator = (mx.sum(separator.astype(mx.int32), axis=1) > 0).astype(
+                mx.float32
+            )
+            source_mask = (seen_separator == 0).astype(mx.float32) * has_separator[:, None]
+            target_access = ((seen_separator > 0) & ~separator).astype(mx.float32)
+            return source_mask, target_access, has_separator
+
+        def encode_source(self, tokens: Any) -> tuple[Any | None, Any | None, Any | None]:
+            """Encode only the prompt partition; target values cannot affect this memory."""
+
+            if not source_encoder_enabled:
+                return None, None, None
+            source_mask, target_access, has_separator = self.source_partition(tokens)
+            if not bool(mx.any(has_separator > 0)):
+                return None, None, None
+            hidden = self.token_embedding(tokens) * self.scale
+            hidden = hidden * source_mask[:, :, None]
+            for layer in self.source_layers:
+                hidden = layer(hidden, source_mask)
+                hidden = hidden * source_mask[:, :, None]
+            memory = self.source_final_norm(hidden) * source_mask[:, :, None]
+            return memory, source_mask, target_access
+
         def conditioned_embeddings(
             self,
             tokens: Any,
             cached_plan_context: Any | None,
+            source_mask: Any | None = None,
         ) -> tuple[Any, Any | None, Any | None, Any | None]:
             hidden = self.token_embedding(tokens) * self.scale
+            if source_encoder_enabled and source_mask is not None:
+                neutral = self.token_embedding(
+                    mx.zeros(tokens.shape, dtype=mx.int32)
+                ) * self.scale
+                hidden = mx.where(source_mask[:, :, None] > 0, neutral, hidden)
             if not plan_enabled:
                 return hidden, None, None, None
             if cached_plan_context is not None:
@@ -580,12 +687,39 @@ def build_model(
             return_plan_logits: bool = False,
         ) -> Any:
             cached_plan_context = None
+            cached_source_memory = None
+            cached_source_mask = None
             layer_cache_input = cache
-            if plan_enabled and cache is not None and len(cache) == config.num_layers + 1:
+            trailing = 0
+            if (
+                plan_enabled
+                and cache is not None
+                and len(cache) > config.num_layers
+            ):
                 cached_plan_context = cache[-1][0]
-                layer_cache_input = cache[:-1]
+                trailing += 1
+            if (
+                source_encoder_enabled
+                and cache is not None
+                and len(cache) > config.num_layers + trailing
+            ):
+                source_entry = cache[-(trailing + 1)]
+                cached_source_memory, cached_source_mask = source_entry
+                trailing += 1
+            if trailing:
+                layer_cache_input = cache[:-trailing]
+            source_memory = cached_source_memory
+            source_mask = cached_source_mask
+            source_access = None
+            if source_encoder_enabled:
+                if source_memory is None:
+                    source_memory, source_mask, source_access = self.encode_source(tokens)
+                elif cache is not None:
+                    source_access = mx.ones(tokens.shape, dtype=mx.float32)
             conditioned_hidden, plan_context, plan_logits, plan_access = self.conditioned_embeddings(
-                tokens, cached_plan_context
+                tokens,
+                cached_plan_context,
+                source_mask if cached_source_memory is None else None,
             )
             attention_mask = self.sequence_attention_mask(tokens, cache)
             if not state_enabled:
@@ -598,9 +732,14 @@ def build_model(
                         layer_cache,
                         plan_memory=plan_context if plan_slot_attention_enabled else None,
                         plan_access=plan_access,
+                        source_memory=source_memory,
+                        source_mask=source_mask,
+                        source_access=source_access,
                         attention_mask=attention_mask,
                     )
                     next_cache.append(layer_next)
+                if source_encoder_enabled and source_memory is not None:
+                    next_cache.append((source_memory, source_mask))
                 if plan_enabled:
                     next_cache.append((plan_context,))
                 logits = self.token_embedding.as_linear(self.final_norm(hidden))

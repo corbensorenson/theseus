@@ -129,9 +129,15 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         models["moecot_system"]["total_parameter_delta_vs_dense_total"] = round(delta, 8)
         if delta > 0.10:
             gaps.append("moecot_total_parameters_outside_preregistered_tolerance")
-        if int(models["dense_active_parameter"]["parameter_count"]) != int(
-            models["moecot_system"]["active_parameter_count_per_request"]
-        ):
+        active_reference = int(models["moecot_system"]["active_parameter_count_per_request"])
+        active_delta = abs(
+            int(models["dense_active_parameter"]["parameter_count"])
+            - active_reference
+        ) / max(1, active_reference)
+        models["dense_active_parameter"]["parameter_delta_fraction"] = round(
+            active_delta, 8
+        )
+        if active_delta > 0.01:
             gaps.append("active_parameter_control_mismatch")
     plan_identity = plan_sha256(config, metadata, models, supervision_audit)
     targets = target_contracts(
@@ -265,7 +271,12 @@ def model_accounting(
         return int(parameter_count(model, mlx_utils))
 
     arm_count = count(config["arm_model"])
-    dense_total_count = count(base["model"])
+    dense_active_model, dense_active_count = matched_decoder_only_config(
+        arm_count, config["arm_model"], count=count
+    )
+    dense_total_model, dense_total_count = matched_decoder_only_config(
+        arm_count * len(ARM_IDS), base["model"], count=count
+    )
     return {
         "moecot_system": {
             "arm_model": config["arm_model"],
@@ -277,17 +288,49 @@ def model_accounting(
             "router_accounting_state": "EXCLUDED_UNTIL_LANGUAGE_ROUTER_IS_TRAINED",
         },
         "dense_total_parameter": {
-            "model": base["model"],
+            "model": dense_total_model,
             "parameter_count": dense_total_count,
             "active_parameter_count_per_request": dense_total_count,
+            "parameter_delta_vs_moecot_total": dense_total_count
+            - arm_count * len(ARM_IDS),
+            "architecture": "decoder_only_prefix_lm_control",
         },
         "dense_active_parameter": {
-            "model": config["arm_model"],
-            "parameter_count": arm_count,
-            "active_parameter_count_per_request": arm_count,
+            "model": dense_active_model,
+            "parameter_count": dense_active_count,
+            "active_parameter_count_per_request": dense_active_count,
+            "parameter_delta_vs_active_arm": dense_active_count - arm_count,
+            "architecture": "decoder_only_prefix_lm_control",
         },
         "vocab_size": vocab_size,
     }
+
+
+def matched_decoder_only_config(
+    reference_parameters: int,
+    seed: dict[str, Any],
+    *,
+    count: Any,
+) -> tuple[dict[str, Any], int]:
+    """Mechanically width-match a prefix-LM control without copying the encoder."""
+
+    candidate = dict(seed)
+    candidate["attention_policy"] = "prefix_lm"
+    candidate.pop("source_encoder_layers", None)
+    candidate["ff_dim"] = 1
+    low_count = int(count(candidate))
+    candidate["ff_dim"] = 2
+    slope = int(count(candidate)) - low_count
+    if slope <= 0:
+        raise ValueError("decoder-only parameter matching requires positive FF slope")
+    estimated = max(1, round(1 + (reference_parameters - low_count) / slope))
+    choices: list[tuple[int, int, dict[str, Any]]] = []
+    for width in range(max(1, estimated - 3), estimated + 4):
+        model = {**candidate, "ff_dim": width}
+        observed = int(count(model))
+        choices.append((abs(observed - reference_parameters), observed, model))
+    _delta, observed, selected = min(choices, key=lambda row: (row[0], row[1]))
+    return selected, observed
 
 
 def target_contracts(

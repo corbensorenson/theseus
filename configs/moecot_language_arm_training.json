@@ -2,7 +2,7 @@
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
   "stage_dir": "runtime/standard_causal_transformer_survival_v1",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v1",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v2",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
   "vocabulary": {
@@ -25,19 +25,20 @@
     "ff_dim": 288,
     "rope_base": 10000.0,
     "rms_norm_eps": 0.00001,
-    "attention_policy": "prefix_lm",
-    "source_target_separator_token_id": 2
+    "attention_policy": "encoder_decoder",
+    "source_target_separator_token_id": 2,
+    "source_encoder_layers": 1
   },
   "controls": {
     "dense_total_parameter": {
       "model_source": "base_config",
       "data_view": "mixed_dense_control",
-      "purpose": "approximately match total MoECOT arm parameters while exposing the total-parameter control to the same unique system positions"
+      "purpose": "mechanically match total MoECOT encoder-decoder arm parameters with a decoder-only prefix-LM control exposed to the same unique system positions"
     },
     "dense_active_parameter": {
       "model_source": "arm_model",
       "data_view": "mixed_dense_control",
-      "purpose": "match one active arm parameter count while exposing one dense model to the same unique system positions"
+      "purpose": "mechanically match one active encoder-decoder arm with a decoder-only prefix-LM control exposed to the same unique system positions"
     }
   },
   "training": {
@@ -50,7 +51,7 @@
     "checkpoint_every_steps": 500,
     "maximum_optimizer_repetitions": 4,
     "maximum_supervision_optimizer_repetitions": 32,
-    "supervision_optimizer_repetitions": 32,
+    "supervision_optimizer_repetitions": 4,
     "termination_loss_weight": 4.0,
     "byte_boundary_loss_weight": 2.0
   },

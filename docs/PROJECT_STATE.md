@@ -100,8 +100,11 @@ share toward zero. Public benchmarks are calibration only.
   positions while retaining only 115,189 unique-position credit. Final loss falls
   to 1.30 and diversity reaches 57/60 hashes, but exact recovery remains 0/60 and
   sampled outputs do not implement the requested edits. Further repetition is not
-  authorized as a semantic repair; the next candidate is an encoder-decoder with
-  explicit source cross-attention and matched parameter/compute reporting.
+  authorized as a semantic repair. The encoder-decoder successor is now implemented
+  with target-isolated source memory, decoder cross-attention, and mechanically
+  matched decoder-only controls. Isolation, cache parity, separator-free pretraining,
+  and target-only gradient flow are unit-proven; semantic capability remains
+  unmeasured until the frozen Rust development run.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile

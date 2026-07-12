@@ -691,6 +691,122 @@ def test_prefix_lm_is_parameter_neutral_and_loads_causal_checkpoint(
     assert bool(mx.allclose(causal_logits, prefix_logits, atol=1e-6))
 
 
+def test_encoder_decoder_configuration_fails_closed() -> None:
+    common = {
+        "vocab_size": 64,
+        "d_model": 32,
+        "num_layers": 2,
+        "num_heads": 4,
+        "num_kv_heads": 2,
+        "ff_dim": 64,
+    }
+    with pytest.raises(ValueError, match="requires source encoder"):
+        CausalTransformerConfig(
+            **common, attention_policy="encoder_decoder"
+        ).validate()
+    with pytest.raises(ValueError, match="require encoder-decoder"):
+        CausalTransformerConfig(**common, source_encoder_layers=1).validate()
+    with pytest.raises(ValueError, match="not yet compatible"):
+        CausalTransformerConfig(
+            **common,
+            attention_policy="encoder_decoder",
+            source_encoder_layers=1,
+            state_memory_mode="semantic_roles",
+            state_memory_slots=8,
+        ).validate()
+
+
+def test_encoder_decoder_source_memory_excludes_target_values() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(41)
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=2,
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    base = mx.array([[1, 10, 11, 2, 20, 21]], dtype=mx.int32)
+    changed_target = mx.array([[1, 10, 11, 2, 33, 34]], dtype=mx.int32)
+    changed_source = mx.array([[1, 10, 19, 2, 20, 21]], dtype=mx.int32)
+    base_memory, base_mask, _ = model.encode_source(base)
+    target_memory, target_mask, _ = model.encode_source(changed_target)
+    source_memory, _source_mask, _ = model.encode_source(changed_source)
+    mx.eval(base_memory, target_memory, source_memory, base_mask, target_mask)
+    assert bool(mx.allclose(base_memory, target_memory, atol=1e-7))
+    assert bool(mx.all(base_mask == target_mask))
+    assert not bool(mx.allclose(base_memory, source_memory, atol=1e-7))
+
+
+def test_encoder_decoder_is_causal_and_cached_generation_matches_full() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(43)
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=2,
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    sequence = mx.array([[1, 10, 11, 2, 20, 21, 22]], dtype=mx.int32)
+    future_changed = mx.array([[1, 10, 11, 2, 20, 21, 31]], dtype=mx.int32)
+    source_changed = mx.array([[1, 10, 19, 2, 20, 21, 22]], dtype=mx.int32)
+    full, full_cache = model(sequence)
+    future, _ = model(future_changed)
+    source, _ = model(source_changed)
+    _prefill, prefill_cache = model(sequence[:, :5])
+    cached, cached_state = model(sequence[:, 5:], prefill_cache)
+    mx.eval(
+        full,
+        future,
+        source,
+        cached,
+        *cache_arrays(full_cache),
+        *cache_arrays(cached_state),
+    )
+    assert bool(mx.allclose(full[:, :6], future[:, :6], atol=1e-6))
+    assert not bool(mx.allclose(full[:, 4:], source[:, 4:], atol=1e-6))
+    assert bool(mx.allclose(cached, full[:, 5:], atol=1e-4))
+
+
+def test_encoder_decoder_preserves_separator_free_causal_pretraining_cache() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(47)
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+    )
+    model = build_model(config, mx=mx, nn=nn)
+    sequence = mx.array([[1, 10, 11, 12]], dtype=mx.int32)
+    full, _ = model(sequence)
+    _prefill, cache = model(sequence[:, :3])
+    cached, next_cache = model(sequence[:, 3:], cache)
+    mx.eval(full, cached, *cache_arrays(next_cache))
+    assert len(cache) == config.num_layers
+    assert len(next_cache) == config.num_layers
+    assert bool(mx.allclose(cached[:, -1], full[:, -1], atol=1e-4))
+
+
 def test_sequence_partition_audit_rejects_boundary_corruption() -> None:
     valid_inputs = np.array([[1, 10, 11, 2, 20, 21, 0]], dtype=np.int32)
     valid_mask = np.array([[0, 0, 0, 0, 1, 1, 0]], dtype=np.float32)

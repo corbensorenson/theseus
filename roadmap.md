@@ -31,11 +31,11 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | exact 132.46M-position stage and licensed three-way splits are `GREEN`: 20,000 train, 544 development, and 1,032 confirmation rows with zero overlap/public payloads | retain content-bound revisions and contract-scoped identities; expand only from measured arm residuals |
 | Dense transformer control | Phase 10 | canonical matched falsification control; architecture clean, behavior flat | train from the same 132.46M-position view as the five-arm system and keep it non-default unless it wins the governed comparison |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | causal, prefix-LM, and 32-pass SFT Rust runs all score 0/60 development exact; 32 passes lower SFT loss to 1.30 and yield 57 distinct outputs but remain semantically unrelated | build a parameter/compute-accounted encoder-decoder cross-attention arm; stop increasing repetition |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | causal, prefix-LM, and 32-pass SFT Rust runs all score 0/60 development exact; the canonical successor now has a target-isolated source encoder, decoder cross-attention, cache parity, target-only gradient proof, and mechanically matched decoder-only controls | run the frozen Rust development comparison; stop increasing repetition and spend confirmation only after nonzero development recovery |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - termination is repaired, but 32-pass prefix-LM remains 0/60 exact and bounded samples are unrelated to requested edits | replace implicit prefix conditioning with explicit encoder-decoder cross-attention; require nonzero development recovery and fresh confirmation before promotion |
+| Generator capability (held-out pass) | Phase 10 | RED - termination is repaired and explicit encoder-decoder cross-attention is implemented, but no semantic result exists for it yet; the retained prefix-LM floor is 0/60 | run the preregistered Rust development comparison; require nonzero development recovery and fresh confirmation before promotion |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -845,6 +845,17 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   falsified as the repair. The next candidate must encode the source explicitly and
   expose it through decoder cross-attention under matched accounting; confirmation
   rows remain unspent.
+- **Explicit source-memory candidate:** the canonical arm now encodes only tokens
+  before the source/target separator with a bidirectional MLX encoder, neutralizes
+  that partition in the decoder stream, and exposes the masked memory through
+  cross-attention at each decoder layer. Adversarial tests prove target mutations
+  cannot change source memory, source mutations affect target logits, future target
+  tokens cannot affect earlier logits, cached generation matches full decoding,
+  separator-free pretraining stays causal, and target-only loss reaches both the
+  encoder and cross-attention weights. The 1,410,336-parameter active arm is matched
+  by a 1,410,816-parameter decoder-only prefix-LM control (0.034% delta); the
+  five-arm 7,051,680 total is matched within 96 parameters. These are architecture
+  and fairness proofs only; semantic capability remains RED pending the Rust run.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact
