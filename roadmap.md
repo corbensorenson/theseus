@@ -29,20 +29,21 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | governed scalable intake implemented; still below mature scale | 35,297 deduplicated code functions provide 5.58M encoded one-pass positions; 13,918 human-contributed conversations add 4.29M redacted/decontaminated positions |
-| Sparse specialist core (100M) | Track 1 / Phases 10, 16 | implemented comparator; not adopted | dense wins matched 100K diagnostics and admissibility; revisit sparse only after a behavior win |
-| Verifier-guided search | Track 2 / Phases 6, 10 | wired, not behavior-qualified | bounded search kernel, planner contracts, Semantic-IR repair runtime, replay, and claim separation pass; current private repair replay remains 0 behavior, so next evidence must beat one-shot after the proposer floor moves |
-| Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | DPO shadow ran; behavior flat | rerun after proposer/search floor; then verifier-reward curriculum |
-| Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | not started | MTP first; ablate vs AR baseline on accepted output |
-| Generator capability (held-out pass) | Phase 10 | RED - clean-lineage semantic adaptation emits 14 integrity-clean candidates but scores 0/24; starvation DPO regresses emission to zero | retain the transformer/hybrid survival architecture, reject the tiny adaptation/DPO variants, and improve prompt-conditioned state-transition/update/finalizer learning before preference/RL or scale |
-| Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | not started | generate->verify->admit->retrain->ratchet after a proposer floor |
+| Data engine + curriculum | Track 0 / Phase 7 | governed, but materially under-scaled for the current from-scratch model | current code plus conversation exposure is at most 9.87M one-pass positions for a 6.6M-parameter dense model; establish a unique-token/active-parameter contract, then expand licensed, deduplicated English and code data before another capability training run |
+| Dense transformer survival baseline | Phase 10 | canonical practical lane; architecture clean, behavior flat | freeze one MLX causal-transformer contract and train a data-supported scale ladder; no more plan heads, state variants, or preference tuning until model-only family-disjoint behavior moves above zero |
+| Sparse specialist core (100M) | Track 1 / Phases 10, 16 | challenger deferred | do not fund a 100M sparse rung until the corpus supports it and a matched dense baseline has positive behavior; adopt sparse/Octopus only on repeated active-compute wins |
+| Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
+| Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
+| Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
+| Generator capability (held-out pass) | Phase 10 | RED - current clean MLX route remains 0/24; semantic adaptation emits 14 integrity-clean candidates and starvation DPO regresses emission to zero | fix data adequacy first, then train the frozen dense baseline; the next accepted intervention must improve direct model-only behavior, not loss, syntax, candidate count, or assisted output alone |
+| Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
-| Replacement transactions | Phase 2 | synthetic-test-backed | one real default swap with rollback |
+| Replacement transactions | Phase 2 | one real local effect-complete swap exists; support-state integration is stale | independently bind the assistant effect receipt into the A2 gate, then freeze this architecture lane |
 | Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
-| Authority kernel / SCIF | Phase 18 | synthetic-test-backed | one real side-effecting run |
-| Assistant product | Phase 5 | synthetic-test-backed | earn empirical support from real multi-day use |
-| Report hygiene | Phases 0, 8, 14 | budget GREEN: hot reports 1.02 GB, active index 211 MB, checkpoints 6.32 GB physical | keep current-reference compaction and exact replay mandatory as artifacts grow |
+| Authority kernel / SCIF | Phase 18 | one real local effect-complete run exists; support-state integration is stale | independently bind the same effect/rollback evidence into E1 without generalizing beyond that effect class |
+| Assistant product | Phase 5 | assisted runtime wired; model-only general chat unavailable | dogfood deterministic/verified assistance now, but earn model usefulness only from real multi-day use after the local model clears its behavior floor |
+| Report hygiene | Phases 0, 8, 14 | policy GREEN; generated/build state remains about 30.8 GiB | keep current-reference compaction and exact replay mandatory; cleanup is maintenance, not the capability flagship |
 | Book crosswalk / parity | Phase 19 | 54 chapters mapped in manifest order; no beyond-SOTA completion implied | keep book-owned fields, tests, and source identity checksum-bound |
 | Book test obligations | Phase 19 + routed owners | 504 authored Codex tests; 102 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
 | Book futures intake | Phase 19 + routed owners | 9 chapter candidates + 2 section routes remain outside the 54-chapter manifest | activate only at source/ownership and operational entry gates |
@@ -52,8 +53,20 @@ unfinished roadmap item. Phases `0, 1, 2, 3, 4, 6, 8, 11, 14, 15, 18, 19` are
 architecture prerequisites; phases `5, 7, 10, 12, 13, 16, 17` require training,
 real-use time, public calibration, or behavior-positive candidates and therefore
 cannot circularly block architecture readiness; Phase `9` remains an external
-environment proof. The current local architecture blockers are Phases `1, 2,
-14, 18`.
+environment proof. The canonical gate now reports
+`pre_training_architecture_ready=true` with zero blockers and warnings. The
+architecture-first wave is closed. Architecture maintenance may fix a concrete
+defect, but it is no longer allowed to displace data adequacy and direct learned
+behavior as the flagship work.
+
+Public-result interpretation is deliberately split by route. The historical
+single-card `45/64` diagnostic is mostly a private n-gram body route (`44` of the
+`45` passes) plus one full-body token pass, so it is not learned-model evidence.
+The old five-card full-body route scored `7/320`, then a later surface scored
+`1/320`; neither is the current MLX checkpoint. The current clean model-only wall
+is `0/24` family-disjoint private behavior. These numbers are retained, but they
+must never be plotted as one model's capability trend or used to hide the current
+zero-pass floor.
 
 ## Non-Negotiable Rules
 
@@ -116,11 +129,12 @@ is the sequencing.
 
 ### North Star (honest, ambitious, falsifiable)
 
-Theseus demonstrates the **Efficient ASI Hypothesis**: a from-scratch,
-sparsely-activated, verifier-and-search-governed cognitive architecture that
-reaches **frontier-competitive capability on verifiable domains (English + code)
-at 1-2 orders of magnitude fewer active parameters** than a dense model, running
-fully local, with every claim falsifiable and no cheating.
+Theseus tests the **Efficient ASI Hypothesis**: a from-scratch,
+verifier-and-search-governed cognitive architecture that reaches
+**frontier-competitive capability on verifiable domains (English + code) at 1-2
+orders of magnitude fewer active parameters** than published dense baselines,
+running fully local, with every claim falsifiable and no cheating. Sparse
+activation is a challenger mechanism, not a conclusion embedded in the hypothesis.
 
 "Over the edge" is defined concretely as **capability-per-active-parameter**
 crossing published dense-model curves on a frozen held-out verifiable benchmark.
@@ -134,13 +148,20 @@ local system can actually reach the frontier.
 
 The fuzzy weights do only the irreducible reasoning. Everything else is
 deterministic architecture: verification, execution, retrieval, memory, syntax,
-and search.
+and search. The current practical default is the simplest architecture that can
+establish a trustworthy learning curve: a dense causal transformer/hybrid trained
+from scratch on MLX. Sparse specialists and SymLiquid remain challengers and may
+replace it only after matched-data, matched-active-compute behavior wins.
 
-- **100M total parameters, sparsely activated** (target ~10-20M active/token) via
-  MoE / Octopus routing / MoECOT. Each expert is a stable capability field
-  accountable for an action family (control flow, data structures, arithmetic,
-  string/IO, contract shaping), with readiness, authority ceiling, and residual
-  accounting.
+- **Data-supported scaling before architectural complexity.** Freeze a dense
+  baseline at each rung, predeclare unique admitted tokens per active parameter,
+  optimizer exposure, heldouts, and compute, then earn the next rung on a measured
+  scaling curve. A 100M sparse model is not authorized by ambition alone; its data
+  and matched dense control must be affordable first.
+- **Sparse specialists as an earned replacement.** If a data-supported dense model
+  has positive behavior, test MoE / Octopus / MoECOT at matched active compute.
+  Each expert is a stable capability field accountable for an action family, with
+  readiness, authority ceiling, attribution, interference, and residual accounting.
 - **Verifier-guided search in the generation loop** - the missing multiplier. The
   deterministic verifier guides proposal, not just grades it.
 - **Correctness trained into the weights** via the Chapter 38 RL/preference
@@ -154,6 +175,27 @@ and search.
   compute grows, with no rung-one shortcut that blocks rung two.
 
 ### Critical Path (ordered - this is what moves capability)
+
+**Current execution order (binding for the next capability cycle):**
+1. Freeze the dense MLX causal-transformer architecture, tokenizer ABI, visible
+   input contract, heldout split, verifier, and replay contract. Architecture
+   changes require a demonstrated defect, not a hoped-for score gain.
+2. Produce a corpus-adequacy receipt for English and code: unique admitted tokens,
+   active parameters, token/parameter ratio, language/task balance, source and
+   semantic deduplication, authority/license, contamination, tail coverage, and
+   heldout exclusions. The present corpus is a diagnostic corpus, not a sufficient
+   from-scratch capability corpus.
+3. Expand governed unique data and train the smallest data-supported dense rung to
+   completion on MLX. Report model-only family-disjoint behavior, loss, syntax,
+   coverage, prompt-conditioning gap, throughput, energy/memory, and exact lineage.
+4. If direct behavior is positive, qualify search, STS/VCM conditioning, preference
+   learning, verifier-reward RL, and fast generation in that order with matched
+   ablations. If it remains zero after the predeclared data-supported run, diagnose
+   the representation/objective or increase the data-supported dense rung; do not
+   add another auxiliary head.
+5. Only after a dense positive baseline exists, test sparse/Octopus and SymLiquid
+   challengers. Only after a materially changed current model clears private
+   integrity and behavior gates, spend a fresh public calibration surface.
 
 **Track 0 - Data and Curriculum Program** (foundational; runs ahead of and parallel
 to Track 1).
@@ -170,6 +212,20 @@ to Track 1).
   the private verifier admits only correct, non-leaking, provenance-clean rows, and
   admitted rows expand the curriculum. Preserve generator/version lineage and track
   recursive synthetic share, diversity, tail support, and model-collapse signals.
+- Establish a data/model scaling contract before the next capability run. Count
+  unique admitted model-visible positions separately from repeated optimizer
+  exposure and choose a published compute-optimal planning band before training.
+  For the current 6.6M-parameter dense model, the existing 5.58M code positions
+  alone are less than one unique code position per parameter; even adding the
+  separate 4.29M conversation positions leaves the combined inventory far below a
+  conventional from-scratch scaling band. The exact target is selected and frozen
+  by the scaling contract, not reverse-engineered after results.
+- Expand the corpus in the product's actual domains: English conversation and
+  instruction following; Python first; then JS/TS/HTML/CSS and Rust. Measure
+  executable completeness, dependency context, algorithm/contract coverage,
+  natural-language quality, dialogue continuity, corrections/tool traces, and
+  long-tail representation. Avoid bulk intake that merely increases tokens while
+  leaving the current semantic residuals untouched.
 - Design a difficulty curriculum with tiers the current model can reach, growing
   toward harder algorithm families, so RL and search always have a non-zero reward
   signal to climb.
@@ -190,17 +246,22 @@ to Track 1).
   unlearning, training success, or capability. Beyond-SOTA endpoint: a stack-wide,
   descendant-aware, self-refreshing data governance plane, not a static dump.
 
-**Track 1 - The Sparse Specialist Core** (owned by Phases 10 and 16).
-- Scale to a 100M sparse MoE proposer: top-k expert routing, small active count;
-  establish the held-out loss/perplexity curve vs active params.
+**Track 1 - Dense Baseline Then Sparse Specialist Challenger** (owned by Phases 10
+and 16).
+- First establish a data-supported dense causal-transformer behavior and scaling
+  curve. The dense model is the practical survival lane until displaced by evidence.
+- Then scale a sparse MoE proposer toward 100M total parameters only when the
+  admitted corpus supports that rung: top-k expert routing, small active count, and
+  a held-out behavior/loss curve versus a matched dense active-parameter control.
 - Octopus route head + live MoECOT: a learned router selects experts per
   token/task and emits real `RoutingDecisionRecord` and `MoECOTOrchestrationRecord`
   (why this expert, why not others, readiness, authority, residual).
 - Expert accountability: experts specialize to action families, verified by
   activation attribution.
-- Acceptance (hard-to-fake): held-out family-disjoint verifier pass moves off 0;
-  active params much less than total; per-expert activation attributable;
-  sparse-specialist beats a dense model with matched active-param count.
+- Acceptance (hard-to-fake): dense held-out family-disjoint verifier pass first
+  moves off 0; the sparse challenger then preserves or improves it with active
+  parameters much less than total, attributable expert activation, controlled
+  interference, and a repeated matched-active-compute win.
 
 **Track 2 - Verifier-Guided Search** (owned by Phases 6 and 10).
 - Propose -> verify -> repair loop with a real search budget: beam/tree over
@@ -322,46 +383,35 @@ held-out verifiable benchmark plotted against published dense-model curves
 teacher-share; self-generated-verified-row count; and every falsification condition
 with its current status.
 
-### Current Book-Derived Closure Wave (2026-07-11)
+### Architecture Closure Outcome and Capability Pivot (2026-07-11)
 
-The current ASI Stack is not asking Theseus for more architecture names. Its
-post-v2.1 evidence identifies four concrete integration failures. Close them in
-this dependency order while preserving the Phase-10 direct-generator floor as
-the capability critical path:
+The architecture-first wave has reached its stopping condition. The canonical
+pre-training gate reports zero architecture blockers and warnings. Registry/SCF,
+VIEA, VCM, candidate integrity, deterministic tools, bounded search, resource
+routing, SymLiquid isolation, evidence/claim records, procedural memory,
+authority/failure contracts, and book synchronization are all wired or implemented.
+One local assistant canary also performed an actual route-authority file effect,
+observed exact candidate bytes, and restored the prior identity with zero residuals;
+A2/E1 still need independent support-state consumption of that receipt, but that is
+evidence maintenance rather than a reason to postpone training.
 
-1. **Book/source truth and durable memory ownership (Phases 0, 3, 14, 19).** Bind
-   every chapter row to exact manifest order and book-owned fields. Add durable
-   semantic objects inside VCM: stable identity, typed/temporal relations,
-   ontology version/migration, provenance-preserving merge/supersession/
-   retraction, graph/vector retrieval, contradiction retention, consolidation,
-   forgetting/compaction, and restart-consistent persistence. VCM still owns
-   bounded context materialization; claim ledgers, artifact graphs, context
-   transactions, and procedural memory keep their existing authorities.
-2. **Useful governed execution and effect-complete rollback (Phases 1, 2, 5,
-   14, 18).** A real assistant task must inventory every allowed observable
-   effect, separate proposer/observer/evaluator/promotion roles, preserve
-   first-effect and final-effect identity, and prove exact rollback or name the
-   residual. Measure useful release, unsafe release, false accept/reject,
-   refusal/quarantine, latency, operator burden, and governance tax together.
-3. **Discriminative routing and adaptive deliberation (Phases 4, 6, 8, 10, 14,
-   16, 18).** Build naturally ambiguous requests that exercise specialist,
-   generalist, clarification, fallback, and abstention routes without label
-   leakage. Compare no-deliberation, fixed, adaptive, and overcompute routes on
-   real model candidates; retain first-hit, last-correct, stop reason, verifier
-   disagreement, branch credit, and cases where more compute destroys a correct
-   answer. Route selection quality and answer generation quality remain separate.
-4. **Full-state update, unlearning, and open-ended campaign causality (Phases 0,
-   2, 7, 10, 12, 14, 15, 18).** Inventory model, optimizer, scheduler, RNG,
-   caches, checkpoints, backups, indexes, descendants, and external effects;
-   predeclare best-versus-final checkpoint authority; measure target gain,
-   forgetting, retained utility, deletion influence, storage erasure, rollback,
-   and invalidation separately. Improvement campaigns require independent
-   generator/evaluator roles, single-axis champion/challenger changes, matched
-   budgets, a negative-knowledge archive, debt ceilings, and stop authority.
+The roadmap now pivots from architecture breadth to one capability flagship:
+`C1_correctness_rl_and_generator_survival_lane`, beginning with Track-0 corpus
+adequacy and the frozen dense transformer baseline. The following rules apply:
 
-The closure wave does not suspend model work. It prevents the book-derived stack
-from being represented by schemas that are never consumed by a useful task or a
-real state change.
+1. **No more architecture-by-analogy.** New book ideas map to existing fields and
+   wait unless they expose a concrete missing contract or failure in the active run.
+2. **Do not confuse route success with model success.** VCM, STS, tools, search,
+   renderers, n-grams, and procedural routes can improve assisted usefulness, but
+   direct learned behavior remains its own scoreboard.
+3. **Do not optimize a zero numerator.** DPO/RL, search width, sparse routing, and
+   fast generation wait until direct verifier-positive candidates exist.
+4. **Treat data scale as a first-class experimental variable.** The next run freezes
+   architecture and changes governed unique data/exposure, with a predeclared
+   scaling contract and negative controls.
+5. **Calibrate publicly after a material model change, not by calendar.** Fresh
+   frozen surfaces remain available without arbitrary budgets, but an unchanged
+   zero-pass model does not justify spending another public surface.
 
 ## Governed-Surface Work (Phases)
 
@@ -373,6 +423,10 @@ run and it meets the Quality Bars below.
 - Keep the abstraction/implementation registry, SCF bindings, module cards,
   deprecation routes, ownership, evidence refs, and `docs/PROJECT_STATE.md` aligned
   with the current honest generator wall.
+- Restore `docs/PROJECT_STATE.md` to a bounded current-wall document (target <=200
+  lines). Move dated experiment narratives to the existing docs archive and keep
+  only current architecture readiness, active flagship, current model/data metrics,
+  latest comparable calibration, and next falsifiable action in the live page.
 - ATT-D rejects unregistered major modules, duplicate default implementations,
   unowned report families, stale route evidence, and capability changes that omit
   rollback or substrate-adoption records.
@@ -612,6 +666,20 @@ deletion closure is graph evidence, not physical unlearning.
 
 ### Phase 10: Practical Neural Seed Survival Lane
 (Owns Tracks 1, 2's learned proposer/repair loop, 3, and 4's model path.)
+- **Current decision:** freeze the clean 6.6M MLX causal-transformer contract as
+  the dense survival baseline. Its architecture/replay/integrity path is adequate
+  for a real scaling experiment, but its current data exposure is not adequate for
+  a strong from-scratch capability conclusion. The next intervention is a
+  Track-0-governed unique-data expansion plus a completed dense training rung, not
+  another plan/state head, tiny adaptation, DPO run, beam-width change, sparse
+  router, or public calibration. Success is direct model-only family-disjoint
+  verifier behavior above zero with complete lineage; loss or syntax alone cannot
+  adopt the checkpoint.
+- Training sequence is fixed by prerequisites: broad causal English+code
+  pretraining -> governed instruction/conversation and direct-body SFT ->
+  verifier-positive pair construction -> preference optimization -> verifier-reward
+  RL -> search/fast-generation/sparse challengers. A later stage cannot be used to
+  compensate for a missing earlier signal.
 - Build the practical transformer/hybrid from-scratch generator first. The current
   wall is semantic transfer after correcting a severe data/capacity mismatch. The
   old 43.6M dense-active model saw only 0.73M target positions from 16,000 licensed
@@ -777,6 +845,13 @@ deletion closure is graph evidence, not physical unlearning.
   metadata enters training, retrieval-for-generation, teacher rows, or curriculum.
 - Mine one calibration into private residual categories and a private-only repair
   manifest. Data-admission receipts record the public exclusion/taint boundary.
+- Keep incompatible historical routes separate. The single-card `45/64` result is
+  assisted mainly by private n-gram candidates (`44/45` passes) and is not a learned
+  generator headline. The five-card `7/320` full-body result and later `1/320`
+  result belong to older candidate generators, not the current clean MLX checkpoint.
+  The next public report must name the exact current checkpoint, independent
+  candidate family, model-only/search/tool channels, and private pre-calibration
+  behavior; no cross-route trend line is permitted.
 - Acceptance: per-card results, integrity receipts, contamination checks, consumed
   registry entry, negatives, and private residual plan replay; no public payload is
   admitted to training.

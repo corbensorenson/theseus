@@ -257,43 +257,39 @@
     "objective fingerprints, periodic recontracting, time-horizon and automated-R&D measures, dual-use profiles, provider concentration, portability, and shutdown handoff under Phases 2, 8, 9, and 18"
   ],
   "weekly_focus_decision": {
-    "date": "2026-07-06",
-    "recommendation": "Spend the remaining weekly token budget primarily on Project Theseus while keeping AI_book as the specification, evidence ledger, and publication surface.",
-    "token_split": {
-      "project_theseus": "80%",
-      "asi_book": "20%"
-    },
+    "date": "2026-07-11",
+    "recommendation": "Close the architecture-first wave and make the capability survival lane the sole flagship: establish governed data adequacy, then train the frozen dense MLX transformer baseline until direct family-disjoint behavior is measured honestly.",
     "project_theseus_focus": [
-      "public_safe_reference_trace_export",
-      "product_facing_assistant_trace",
-      "book_importable_evidence_packs",
-      "receipt_faithfulness_and_residual_conservation",
-      "verifier_capacity_and_governance_tax_accounting",
-      "capability_claim_disposition_ledger",
-      "book_schema_conformance",
-      "bounded_correctness_in_the_loop_generator_experiment",
-      "phase_10_direct_semantic_action_body_construction"
+      "freeze_dense_mlx_causal_transformer_contract",
+      "measure_unique_admitted_tokens_per_active_parameter",
+      "expand_licensed_deduplicated_english_and_code_corpus",
+      "complete_data_supported_dense_training_rung",
+      "measure_direct_model_only_family_disjoint_behavior",
+      "retain_negative_interventions_without_new_head_families",
+      "promote_search_preference_rl_or_sparse_routes_only_after_positive_behavior"
     ],
     "implementation_outputs": [
-      "reports/theseus_weekly_focus_20260706.json",
-      "reports/theseus_public_safe_reference_trace_20260706.json",
-      "reports/theseus_book_importable_evidence_packs_20260706.json",
-      "configs/correctness_in_loop_generator_experiments.json"
+      "configs/training_inference_execution_roadmap.json",
+      "reports/training_inference_execution_plan_gate.json",
+      "reports/neural_seed_survival_readiness_gate.json",
+      "reports/standard_causal_transformer_survival_gate.json"
     ],
-    "implementation_gate": "python3 scripts/theseus_weekly_focus_20260706.py --gate",
+    "implementation_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
     "asi_book_focus": [
       "import_public_safe_theseus_evidence",
       "update_claim_and_evidence_states",
       "record_non_claims",
-      "tighten_chapter_claims_only_when_implementation_results_change_them"
+      "tighten_chapter_claims_only_when_implementation_results_change_them",
+      "do_not_create_new_project_work_without_a_concrete_contract_gap"
     ],
     "do_not_spend_week_on": [
       "broad_chapter_rewrites_without_new_evidence",
       "outline_churn",
       "new_report_families_without_registered_implementation",
       "strict_generator_marker_slot_guard_churn",
-      "public_benchmark_runs_before_private_correctness_improves",
-      "DPO_GRPO_MTP_diffusion_before_direct_learned_body_emission_moves"
+      "fresh_public_calibration_before_the_current_model_changes_materially",
+      "DPO_GRPO_search_width_MTP_diffusion_before_direct_verifier_positive_behavior",
+      "100M_sparse_or_symliquid_scaling_before_a_data_supported_dense_behavior_floor"
     ]
   },
   "implementation_rules": [
@@ -307,7 +303,7 @@
     "Every authored AI_book chapter must map to a Theseus implementation slice with a minimum slice, beyond-SOTA endpoint, support-state target, no-claim boundary, and gate or fixture.",
     "AI_book chapter-level Planned Codex tests are treated as missing technique obligations until a registered Theseus implementation has matched controls, negative controls, no-cheat audit, retained residuals, and explicit non-claims.",
     "Negative, inconclusive, and regression evidence must remain attached to the claim or phase it constrains; do not replace a negative report with a nearby positive family.",
-    "Before training becomes the primary roadmap focus again, the book-reference core must be represented as runnable claim-ledger, replacement-transaction, authority/SCIF, assistant-product, and evidence-hygiene slices.",
+    "The book-reference architecture core is now represented and pre-training readiness is GREEN; freeze architecture breadth and make governed data adequacy plus direct learned behavior the primary roadmap focus.",
     "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it."
   ],
   "planned_codex_test_backlog": [
@@ -3028,28 +3024,30 @@
   ],
   "flagship_lane_governance": {
     "policy": "one_active_flagship_lane_v1",
-    "active_flagship_lane_id": "A1_claim_ledger_trace_kernel",
-    "active_track_id": "A_reference_evidence_spine",
-    "rule": "Only one flagship lane may drive new architecture work at once. Other tracks may repair prerequisites, add evidence, or update existing registered surfaces, but cannot spawn competing lane families.",
-    "why": "Theseus has repeatedly lost time by creating adjacent report families around hard blockers. The book implementation pass must improve the canonical spine instead.",
+    "active_flagship_lane_id": "C1_correctness_rl_and_generator_survival_lane",
+    "active_track_id": "C_capability_research_survival_lane",
+    "rule": "Only the capability survival lane may drive new primary work. Other tracks may repair a demonstrated contract defect, maintain evidence, or support the lane's governed data and MLX dependencies, but cannot spawn competing architecture families.",
+    "why": "The architecture prerequisites are ready while direct learned behavior remains zero. Progress now means adequate governed data and a behavior-positive current model, not another adjacent architecture or report family.",
     "allowed_parallel_work": [
       "security or no-cheat regression fix",
       "registry/steward cleanup on existing surfaces",
       "AI_book evidence synchronization for already-produced public-safe traces",
-      "small dependency fix needed by the active flagship lane"
+      "independent A2 or E1 support-state consumption of an already-executed effect receipt",
+      "governed corpus admission and MLX performance work required by the active flagship lane"
     ],
     "disallowed_parallel_work": [
       "new product surface unrelated to the active lane",
       "new benchmark family to avoid a failed one",
       "new strict-generator target-label family without preregistration",
-      "new report family when an existing registry-owned report should be updated"
+      "new report family when an existing registry-owned report should be updated",
+      "preference_RL_search_fast_generation_or_sparse_scaling before direct verifier-positive behavior"
     ]
   },
   "book_implementation_tracks": [
     {
       "track_id": "A_reference_evidence_spine",
       "name": "Book Reference Evidence Spine",
-      "status": "active_flagship",
+      "status": "canonical_stack_layer",
       "job": "Make one end-to-end Theseus task replayable through command contract, VCM packet, typed job, runtime receipt, artifact graph, claim ledger, evidence transition, residual, and policy/update boundary.",
       "primary_phases": [
         1,
@@ -3062,7 +3060,7 @@
     {
       "track_id": "B_product_assistant_usefulness",
       "name": "Assisted Verified Daily-Use Product Lane",
-      "status": "queued_after_reference_spine",
+      "status": "wired_waiting_for_empirical_use_and_model_floor",
       "job": "Make Theseus useful for conversation and code on its own repo while honestly labeling assisted, tool, template, and learned output.",
       "primary_phases": [
         5,
@@ -3074,8 +3072,8 @@
     {
       "track_id": "C_capability_research_survival_lane",
       "name": "Capability Research Survival Lane",
-      "status": "bounded_on_direct_generator_wall",
-      "job": "Push the practical transformer/hybrid generator with a receipt-bound data engine and concrete Part III techniques from the ASI Stack. Start with direct prompt/signature semantic/action body-token construction because the first DPO shadow update failed behaviorally; in parallel, replace file-level admission with per-candidate provenance/lineage/lifecycle receipts and a controlled continual-learning policy workload. After non-fallback learned candidates exist beyond narrow simple-return replay, retry offline DPO/IPO preference updates, bounded GRPO/RLVR verifier-reward loops, MTP, generate-verify-repair, lookahead/diffusion generation modes, process/verifier rewards, and dense-vs-sparse-MoE/scale ablations, while keeping SymLiquid protected as a matched-compute discovery comparator and preventing routers/templates/tools from counting as learned generation.",
+      "status": "active_flagship",
+      "job": "Freeze the practical dense MLX causal-transformer contract, establish a governed unique-data-to-active-parameter scaling contract, expand licensed and deduplicated English plus code data, and complete the smallest data-supported training rung. Measure direct prompt/signature-conditioned family-disjoint behavior before activating search, preference/RL, fast generation, sparse/Octopus, or SymLiquid challengers. Prevent routers, templates, private n-grams, tools, semantic renderers, and fallback bodies from counting as learned generation.",
       "primary_phases": [
         7,
         10,
@@ -3083,7 +3081,7 @@
         12
       ],
       "support_state_target": "synthetic-test-backed",
-      "success_test": "Receipt-bound data and a substrate-adoption or policy-update record show one technique moves private heldout verifier behavior or accepted-output quality under matched controls, while contamination, lineage, recursive-synthetic coverage, and deletion residuals remain explicit; otherwise record falsification and stop that technique without spawning another marker/slot/guard family."
+      "success_test": "A complete lineage-bound dense checkpoint trained on a predeclared data-supported rung moves direct model-only family-disjoint verifier behavior above zero with clean integrity and blind-flow audits. Only then may an amplifier or challenger advance under matched controls; otherwise record the scaling result and diagnose data, objective, representation, or capacity without spawning another marker/slot/guard family."
     },
     {
       "track_id": "D_repo_stewardship_and_evidence_hygiene",
@@ -3131,14 +3129,14 @@
   ],
   "book_reference_core_before_training": {
     "policy": "book_reference_core_before_training_focus_v1",
-    "scope": "Roadmap focus policy, not an artificial ban on small training fixes needed by a registered slice.",
-    "rule": "Until these slices are prototype-backed or better, long-running training or score-chasing goals should not be the primary roadmap goal.",
+    "scope": "Architecture readiness record and active capability-slice selector; it is not a ban on governed training or fresh useful measurement.",
+    "rule": "The reference slices have reached prototype-backed or better and the architecture readiness gate is clear. Keep their contracts live, but direct primary work to the active C1 capability slice until the current model establishes positive direct behavior.",
     "architecture_readiness_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
     "architecture_readiness_rule": "Training, public calibration, and score-chasing are not the primary path while this strict readiness mode is RED. Normal roadmap YELLOW can still be acceptable for implementation work if hard_gap_count=0.",
     "required_slices": [
       {
         "slice_id": "A1_claim_ledger_trace_kernel",
-        "active": true,
+        "active": false,
         "track_id": "A_reference_evidence_spine",
         "phases": [
           1,
@@ -3258,7 +3256,7 @@
       },
       {
         "slice_id": "C1_correctness_rl_and_generator_survival_lane",
-        "active": false,
+        "active": true,
         "track_id": "C_capability_research_survival_lane",
         "phases": [
           10,
@@ -3269,24 +3267,24 @@
         "current_support_state": "synthetic-test-backed",
         "current_state": "GREEN",
         "current_evidence_refs": [
-          "reports/correctness_generator_survival_lane_gate.json",
-          "reports/assistant_code_private_replay_probe.json",
-          "reports/private_candidate_replay_contract_audit_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
-          "reports/candidate_integrity_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
-          "reports/blind_information_flow_audit_strict_generator_mlx_decode_eval_15m_capacity_b64_param_nontrivial_top_level_smoke_v1.json",
-          "reports/neural_seed_strict_generator_fanout_receipt.json",
-          "configs/correctness_in_loop_generator_experiments.json"
+          "reports/neural_seed_survival_readiness_gate.json",
+          "reports/standard_causal_transformer_survival_gate.json",
+          "reports/standard_causal_transformer_survival.json",
+          "reports/training_inference_execution_plan_gate.json",
+          "reports/candidate_integrity_standard_causal_transformer_survival.json",
+          "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+          "configs/training_inference_execution_roadmap.json"
         ],
         "current_validation_commands": [
-          "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
-          "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
-          "python3 scripts/policy_optimization_gate.py",
-          "python3 scripts/generation_mode_gate.py",
+          "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+          "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
+          "python3 scripts/training_inference_execution_plan_gate.py --gate",
           "python3 scripts/roadmap_implementation_gate.py --gate"
         ],
         "current_non_claims": [
-          "synthetic-test-backed C1 proves one clean bounded private verifier-driven learned body-token experiment with replay, integrity, blind-flow, generation-mode, policy, and expected-invalid controls; it is not promotion-grade code generation",
-          "the current transformer/hybrid replay is a falsifying semantic wall: selected/pass-if-any behavior remains zero on the strict private probe",
+          "synthetic-test-backed C1 proves architecture, lineage, replay, integrity, and negative interventions only; it is not promotion-grade code generation",
+          "the current clean MLX transformer replay is a falsifying semantic wall: direct model-only family-disjoint behavior remains zero",
+          "the existing governed corpus is diagnostic scale and does not support a strong from-scratch model-capability conclusion",
           "routers, templates, private ngrams, semantic renderers, deterministic tools, and fallback returns remain non-credit for learned generation",
           "public benchmarks remain calibration-only and no public benchmark artifacts enter training rows"
         ]

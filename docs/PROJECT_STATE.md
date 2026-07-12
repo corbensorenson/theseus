@@ -55,6 +55,24 @@ actionable architecture prerequisites are now wired or implemented. The gate
 reports `pre_training_architecture_ready=true`, zero architecture blockers, and
 zero architecture warnings; this authorizes governed training but is not model
 quality evidence.
+The roadmap has therefore pivoted its sole flagship from the reference-evidence
+spine to `C1_correctness_rl_and_generator_survival_lane`. The practical default is
+the dense 6.6M-parameter MLX causal transformer. The next dependency is not another
+head or architecture surface: it is a predeclared data/model scaling contract,
+licensed and deduplicated English-plus-code expansion, and a complete dense
+training rung. The current admitted inventory exposes 5.58M code positions and
+4.29M conversation positions, at most 9.87M combined one-pass positions for a
+6.6M-parameter model; that is diagnostic exposure, not enough evidence for a
+strong from-scratch capability verdict. Sparse/Octopus, SymLiquid, search,
+preference/RL, and fast-generation routes remain challengers or amplifiers until
+the dense model produces direct verifier-positive family-disjoint behavior.
+Historical public results are no longer treated as one curve. The `45/64`
+single-card diagnostic derived `44` passes from a private n-gram body route and one
+from the full-body token route; it is not a learned-model headline. Older broad
+routes scored `7/320` and `1/320`, but neither is the current clean MLX checkpoint.
+The current comparable model-only wall remains `0/24` private family-disjoint
+behavior. Fresh public surfaces are not calendar- or budget-locked, but another
+public run is not informative until the current model changes materially.
 The latest bounded Phase 10 diagnostic corrected a previously hidden evidence
 defect before drawing another capability conclusion. Family-disjoint evaluation
 now requires transitive checkpoint-training lineage; configured holdout families

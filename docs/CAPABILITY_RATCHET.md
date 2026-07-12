@@ -1,343 +1,162 @@
-# The Capability Ratchet in SymLiquid
+# Project Theseus Capability Ratchet
 
-The Capability Ratchet is the top-level SymLiquid development loop. It combines
-three mechanisms already present in the repo:
+This is the concise capability scoreboard for Project Theseus. It reports the
+current comparable system, preserves negative results, and separates direct learned
+generation from search, tools, renderers, private n-grams, and other assisted routes.
+Implementation coverage belongs in `roadmap.md` and
+`configs/roadmap_implementation_matrix.json`; historical scores remain in git and
+retained reports rather than this live page.
 
-1. Benchmark pressure from the Benchmaxxing treadmill.
-2. Loop closure through verified procedural tools.
-3. Compact verified capability through CGS-style ledgers and regression guards.
-
-The operational rule is:
-
-```text
-frontier gain required
-regression loss forbidden
-external inference forbidden
-initial mastery threshold = 0.90
-ordinary floor threshold = 0.70
-threshold decay = 0.01 per attempt after patience
-graduated residuals enter escrow
-```
-
-## Run
-
-Generate the full ratchet state from local artifacts:
-
-```powershell
-python scripts\run_capability_ratchet.py --out reports\capability_ratchet_run.json
-```
-
-## Artifacts
-
-| Artifact | Role |
-| --- | --- |
-| `reports/benchmark_treadmill_status.json` | Benchmark ratchet state: frontier, regressions, anti-Goodhart warnings. |
-| `reports/benchmark_ledger.json` | Benchmark lifecycle ledger with capability, wall type, contamination risk, and retirement criteria. |
-| `reports/model_ledger.json` | Model ledger with scores, residual map, regression status, and next wall. |
-| `reports/public_comparator_ledger.json` | Public apples-to-apples comparator ledger. |
-| `reports/babylm_residual_analysis.json` | BabyLM/BLIMP residual clusters by field, term, and rule. |
-| `data/babylm_mutated_holdout_seed49.jsonl` | Latest local mutated BabyLM/BLIMP holdout generated from residual pressure families. |
-| `reports/babylm_mutated_residual_analysis.json` | Residual clusters on the mutated holdout. |
-| `reports/residual_escrow.json` | Active backlog of graduated benchmark tails, recurrence-promoted diagnostics, and reattempt schedules. |
-| `reports/capability_ratchet_run.json` | Compiled workflow run log proving the ledgers and registries were refreshed together. |
-| `reports/tool_registry.json` | Procedural tool cards for repeated local workflows. |
-| `reports/capability_ratchet_report.json` | Combined benchmark/procedural/structural ratchet report. |
-| `reports/ratcheting_generative_system_report.json` | Top-level audit showing how completely SymLiquid implements the Ratcheting Generative Systems framework. |
-| `reports/ratcheting_modular_intelligence_report.json` | Unified RMI audit for compact structure, active compression, loop closure, benchmark ratcheting, octopus routing, routing memory, and arm lifecycle governance. |
-| `reports/octopus_router_report.json` | System-level modular routing report with arm registry, router eval, dynamic loading, safety, and bridge metrics. |
-| `reports/arm_registry.json` | ORA arm cards with scope, schemas, permissions, local benchmarks, residuals, lifecycle, and dynamic loading policy. |
-| `reports/octopus_router_eval.json` | Local routing benchmark for the resident head/router. |
-| `reports/routing_memory.json` | Task-to-arm routing memory and per-arm route outcome memory. |
-| `reports/arm_lifecycle_ledger.json` | Specialist add/split/merge/retire lifecycle ledger. |
-| `reports/octopus_router_head_report.json` | Local sparse router-head training report and promotion gate. |
-| `reports/octopus_router_head_eval.json` | Learned router holdout metrics. |
-| `reports/safety_benchmark_ledger.json` | Safety and quarantine checks for high-risk routing, approvals, runtime tiers, and least privilege. |
-| `reports/bridge_benchmark_ledger.json` | Bridge benchmark ledger generated from recurring residual escrow. |
-| `reports/architecture_gate_report.json` | Pre-training gate that blocks heavy training unless ratchet, ORA, safety, public calibration, residual escrow, and learned routing are green. |
-
-## Current State
-
-Latest local report:
+## Governing Rule
 
 ```text
-framework=capability_ratchet
-active_family=coding_local_sandbox
-best_public_calibration_card=source_human_eval_wide_32_tasks_pass_rate_0.78125
-active_public_calibration_card=source_evalplus_source_bigcodebench_source_livecodebench_below_floor
-latest_mbpp_evalplus_cards=MBPP_32_tasks_0.71875_above_floor_EvalPlus_32_tasks_0.59375_below_floor
-next_code_rotation_card=source_agnostic_type_edge_interface_algorithmic_pressure
-transfer_interleave=same_family_code_first_then_broader_transfer_if_wall_persists
-broad_transfer_matrix=YELLOW_160_public_calibration_tasks_aggregate_pass_rate_0.5125_sts_delta_0.28125
-public_code_pass_rate=0.5125
-required_public_code_floor=0.70
-candidate_promote=false
-token_level_student_generation_valid=true
-stale_ranker_lane=superseded_by_token_level_code_lm
-tool_registry_entries=24
-rgs_implementation_score=1.0
-rmi_implementation_score=1.0
-rgs_implemented_components=12
-rgs_partial_components=0
-rgs_missing_components=0
-ora_implementation_score=1.0
-ora_implemented_components=12
-ora_arm_count=12
-ora_router_selection_accuracy=1.0
-routing_memory_entries=10
-arm_lifecycle_arms=12
-learned_router_exact_set_accuracy=1.0
-architecture_gate_ready=true
-architecture_gate_passed=14/14
-residual_escrow_clusters=50
-residual_escrow_cases=50
-external_inference_violations=0
+architecture readiness != model capability
+loss/syntax/candidate count != verifier behavior
+assisted success != learned generation
+fresh public calibration != training data
+negative interventions remain recorded
 ```
 
-The ratchet starts ordinary benchmarks at a 90% mastery expectation, but it no
-longer treats that number as a permanent hostage condition. After 3 attempts on
-the same benchmark family, the graduation threshold decays by 1 percentage
-point per attempt toward a 70% floor. Critical failures do not decay. Any
-unsolved tail after graduation enters residual escrow, where recurring clusters
-are promoted back into active diagnostics.
+A checkpoint advances only when an independent integrity audit binds its exact
+lineage and direct model-only behavior improves on a frozen family-disjoint private
+surface. Search, tools, VCM, STS, deterministic repair, and fast-generation modes
+have separate score channels. Public benchmarks measure transfer but never provide
+training rows, targets, traces, or answer-derived metadata.
 
-Code-family rotation now has a transfer-interleave escape hatch. Same-family
-public/source code cards are tried first. If public transfer remains below the
-floor long enough, the autonomy policy can temporarily interleave broader local
-learning pressure, currently local RL memory/control, then return to the queued
-code card with transfer artifacts loaded. This does not weaken promotion gates:
-public code promotion still requires token-level learned student generation,
-clean anti-cheat evidence, no regressions, and honest public/held-out score
-semantics.
+## Current Scoreboard
 
-The seed49 mutated BabyLM/BLIMP anti-Goodhart holdout passed the mastery gate
-and is locked as regression. Seed127 is also regression after clearing the
-decayed ordinary threshold. The public BLIMP split remains an apples-to-apples
-comparator/regression surface with raw scores reported.
+| Measure | Current state | Evidence meaning |
+|---|---|---|
+| Architecture readiness | GREEN: zero blockers and warnings | governed training is authorized; no capability implied |
+| Active flagship | `C1_correctness_rl_and_generator_survival_lane` | data adequacy plus frozen dense MLX baseline |
+| Practical model | 6.6M-parameter dense causal transformer on MLX | survival baseline, not promoted serving model |
+| Current direct private behavior | `0/24` family-disjoint | main capability wall |
+| Clean semantic adaptation | 14 integrity-clean candidates, `0/24` | not adopted |
+| Starvation DPO | candidate emission `14 -> 0`, behavior `0/24` | not adopted; preference objective was misleading |
+| Standard causal replay | 87 candidates over 22 tasks, 57 independently accepted, `0/24` | syntax/loadability improved; semantics did not |
+| Search | architecture wired, current repair replay `0` behavior | wait for a non-zero one-shot proposer |
+| Model-only general chat | unavailable | assisted local runtime is not a chat-model claim |
+| Production MLX model route | blocked by zero behavior | fail-closed quality decision, not an architecture gap |
+| Public transfer for current checkpoint | not yet measured | no cross-route substitution allowed |
 
-## Ratcheting Generative Systems Audit
+## Data Adequacy
 
-The RGS auditor now checks whether the paper is represented by executable
-SymLiquid artifacts rather than just prose:
+Current governed one-pass inventory:
 
-```text
-report=reports/ratcheting_generative_system_report.json
-score=1.0
-implemented=benchmark_ledger, model_ledger, time_decayed_mastery_thresholds,
-            residual_escrow, public_calibration_track,
-            procedural_tool_registry, execution_modes,
-            active_compression_substrate, high_bandwidth_embodied_logging,
-            safety_and_reflex_layer, bridge_benchmark_protocol,
-            octopus_router_architecture
-partial=none
-missing=none
+- 35,297 deduplicated code functions;
+- 5.58M encoded code positions;
+- 13,918 redacted/decontaminated human-contributed conversations;
+- 4.29M conversation positions;
+- at most 9.87M combined positions before accounting for task/model-path
+  differences.
+
+For a 6.6M-parameter from-scratch model, this is at most about 1.5 unique combined
+positions per parameter and less than one code position per parameter. It is a
+diagnostic corpus, not enough evidence for a strong capability verdict. Repeated
+optimizer exposure is reported separately and never relabeled as unique data.
+
+The next training run requires a frozen scaling receipt containing:
+
+- exact active and total parameters;
+- unique admitted tokens by source/domain/language;
+- optimizer token exposure and epoch/repetition count;
+- source and semantic deduplication;
+- license/authority and descendant lifecycle;
+- private/public/holdout contamination checks;
+- Python-first code balance, then JS/TS/HTML/CSS and Rust;
+- English conversation, correction, instruction, and tool-use coverage;
+- frozen tokenizer, visible-input contract, heldouts, verifier, seed, and compute;
+- predeclared stop/adoption/falsification conditions.
+
+Do not scale to a 100M sparse model until available unique data supports that rung
+under the same predeclared scaling rule.
+
+## Public Evidence
+
+Historical public results are retained but are not one comparable trajectory:
+
+- `45/64` on one BigCodeBench card: 44 passing tasks came from the private n-gram
+  body route and one from the full-body token route. This is not a learned-model
+  headline.
+- `7/320` on five cards: older full-body candidate route; not the current MLX
+  checkpoint.
+- `1/320` on a later five-card surface: older candidate route; not the current MLX
+  checkpoint.
+- old `34/160` and other earlier scores belong to still older assisted/selector
+  contracts and cannot establish current model capability.
+
+Fresh frozen public surfaces are available when a materially changed model makes
+measurement useful. Exact consumed surfaces, contamination, and result-driven seed
+fishing remain prohibited. There is no calendar or monthly-spend lock.
+
+## Architecture And Runtime
+
+The following are architecture/runtime evidence, not model capability:
+
+- registry and stable capability fields are GREEN with zero route blockers;
+- VIEA materializes the claim/evidence/execution spine;
+- VCM is the context ABI across canonical consumers;
+- deterministic tools and bounded verifier-guided search are wired;
+- a local assistant canary executed and exactly rolled back one route-authority
+  file effect with zero residuals;
+- incremental MLX decoding is cache-equivalent and restart-safe;
+- the real checkpoint decode canary improved `832 ms -> 500 ms` (`1.664x`);
+- a focused generated-prefix hot-loop defect improved `27.96x` with identical
+  probabilities;
+- the registry reports about 30.8 GiB of generated/build state, which remains a
+  retention concern but not the capability flagship.
+
+## Teacher Boundary
+
+The canonical governed teacher is `codex_cli/gpt-5.6-sol`; `high` is the default
+reasoning effort and only `medium` or `high` are allowed. Teacher output is
+training-time input only through provenance, license, verifier, leakage, holdout,
+and teacher-share gates. It is never served at runtime.
+
+The latest matched teacher curriculum was negative: teacher-on and teacher-off both
+scored `0/48`, while teacher-on worsened heldout loss, candidate count, starvation,
+and verifier reward. Those rows remain retained and governed but are not adopted by
+default. More teacher rows are not a substitute for adequate base data or a model
+that can use the signal.
+
+## Dependency Order
+
+1. Freeze the current dense MLX architecture and all evaluation contracts.
+2. Build the governed data/model scaling receipt and expand unique licensed data.
+3. Complete the smallest data-supported dense training rung.
+4. Require direct model-only family-disjoint behavior above zero.
+5. Qualify VCM/STS conditioning, search, preference learning, RLVR, and fast
+   generation with matched ablations, in that order.
+6. Test sparse/Octopus and SymLiquid only as challengers against the positive dense
+   baseline.
+7. Run a fresh public calibration for the materially changed current checkpoint.
+8. Promote only on replayable behavior, regression, cost, and no-cheat evidence.
+
+## Canonical Checks
+
+```bash
+python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready
+python3 scripts/theseus_project_registry.py --gate
+python3 scripts/standard_causal_transformer_survival_gate.py --gate
+python3 scripts/neural_seed_survival_readiness_gate.py --gate
+python3 scripts/training_inference_execution_plan_gate.py --gate
 ```
 
-Puffer/Ocean now writes a bounded eventized rollout log with raw windows, event
-logs, semantic traces, skill traces, and residual logs:
+Canonical evidence:
 
-```text
-event_log=reports/puffer_ocean_slot_tmaze_eventized_rollout_log.json
-sampled_raw_windows=256
-event_count=384
-semantic_events=256
-skill_events=256
-residual_events=0
-external_inference_calls=0
-```
+- `reports/roadmap_pre_training_architecture_readiness_gate.json`
+- `reports/theseus_project_registry.json`
+- `reports/standard_causal_transformer_survival_gate.json`
+- `reports/neural_seed_survival_readiness_gate.json`
+- `reports/training_inference_execution_plan_gate.json`
+- `reports/teacher_distillation_gate.json`
+- `reports/theseus_assistant_effect_complete_canary.json`
 
-## Octopus Router Architecture
+## Next Falsifiable Action
 
-The local ORA layer is now active:
-
-```text
-report=reports/octopus_router_report.json
-arm_registry=reports/arm_registry.json
-router_eval=reports/octopus_router_eval.json
-routing_memory=reports/routing_memory.json
-arm_lifecycle_ledger=reports/arm_lifecycle_ledger.json
-safety_ledger=reports/safety_benchmark_ledger.json
-bridge_ledger=reports/bridge_benchmark_ledger.json
-bridge_benchmark=benchmarks/bridges/babylm_wh_gap_bridge.jsonl
-status=active_system_level_router_v0
-implementation_score=1.0
-implemented=12
-arms=12
-resident_head=1
-router_cases=10
-router_selection_accuracy=1.0
-risk_routing_accuracy=1.0
-routing_memory_entries=10
-arm_lifecycle_arms=12
-estimated_memory_savings=0.6187
-learned_router_training=implemented
-```
-
-The head/router now uses a deterministic rule router as bootloader/fallback and
-a local sparse centroid router head trained from ORA traces:
-
-```text
-router_head_report=reports/octopus_router_head_report.json
-source_cases=10
-augmented_examples=50
-holdout_examples=10
-exact_set_accuracy=1.0
-arm_micro_f1=1.0
-risk_routing_accuracy=1.0
-promotion_gate_passed=true
-```
-
-The pre-training architecture gate is also green:
-
-```text
-report=reports/architecture_gate_report.json
-ready_for_heavy_training=true
-passed=14/14
-```
-
-## Three Ratchets
-
-### Benchmark Ratchet
-
-Current frontier expansion:
-
-```text
-active_family=coding_local_sandbox
-best_public_calibration_card=source_human_eval_wide_32_tasks_pass_rate_0.78125
-active_public_calibration_card=source_evalplus_source_bigcodebench_source_livecodebench_below_floor
-latest_mbpp_evalplus_cards=MBPP_32_tasks_0.71875_above_floor_EvalPlus_32_tasks_0.59375_below_floor
-next_code_rotation_card=source_agnostic_type_edge_interface_algorithmic_pressure
-transfer_interleave=same_family_code_first_then_broader_transfer_if_wall_persists
-reason=programming/code pressure is the active growth lane; transfer interleave prevents single-wall lock-in
-broad_transfer_matrix=YELLOW_160_public_calibration_tasks_aggregate_pass_rate_0.5125_sts_delta_0.28125
-public_code_pass_rate=0.5125
-next_action=continue source-agnostic semantic residual pressure; BigCodeBench and LiveCodeBench both have 32+ clean tasks and are now below-floor receiver cards
-```
-
-Current regression suite:
-
-```text
-ocean-noisy-tmaze
-ocean-cartpole
-ocean-slot-tmaze
-ocean-noisy-memory
-cgs_hard_governance
-ocean-chain
-ocean-memory
-ocean-tmaze
-cgs_frontier_governance
-unseen_adversarial_rag
-babylm_local_probe
-babylm_mutated_holdout
-```
-
-Public comparator ledger:
-
-```text
-babylm_local_probe
-score=0.9243361
-residual=0.0756639
-status=curriculum_passed_promote_to_regression
-rule=report public scores regularly, but promote only when public gains transfer to private/mutated holdouts
-```
-
-Residual escrow:
-
-```text
-attention_budget=frontier 60%, regression 20%, escrow 10%, public_calibration 10%
-active_targets=wh_vs_that_with_gap, high-residual public BLIMP morphology/agreement clusters
-rule=recurring escrow clusters or max residual >= 0.10 become active diagnostics
-ledger=reports/residual_escrow.json
-```
-
-### Procedural Ratchet
-
-The generated tool registry currently includes:
-
-```text
-active (22 total, selected examples):
-  benchmark_treadmill_runner
-  capability_ratchet_orchestrator
-  babylm_residual_analyzer
-  babylm_mutated_holdout_factory
-  unseen_adversarial_rag_mutator
-  rust_ffi_puffer_rollout_trainer
-  puffer_ocean_eventized_rollout_logger
-  babylm_mutated_residual_analyzer
-  residual_escrow_builder
-  ratcheting_generative_system_auditor
-  octopus_router_architecture_builder
-  octopus_router_head_trainer
-  architecture_gate_runner
-  ratcheting_modular_intelligence_auditor
-  real_training_preflight_gate
-  candidate_promotion_gate
-  rtx2060super_ablation_matrix_runner
-  one_command_training_ratchet_profile_runner
-
-proposed:
-  babylm_frontier_trainer
-  regression_guard_runner
-```
-
-These are not model-provider tools. They are local workflow tools for preserving
-and accelerating SymLiquid development.
-
-### Structural Ratchet
-
-Current architecture hypothesis:
-
-```text
-The BabyLM wall remains because sequence-state formation is too shallow for
-agreement, binding, ellipsis, and argument-structure residuals.
-```
-
-Missing mechanism:
-
-```text
-learned liquid/reservoir/VSA grammar state with role, number, animacy,
-and dependency slots
-```
-
-Public BLIMP residual targets:
-
-```text
-determiner_noun_agreement_with_adj_irregular_2
-irregular_plural_subject_verb_agreement_1
-irregular_plural_subject_verb_agreement_2
-determiner_noun_agreement_with_adj_irregular_1
-principle_A_reconstruction
-wh_vs_that_with_gap_long_distance
-```
-
-Mutated holdout residual targets:
-
-```text
-irregular_plural_subject_verb_agreement_1
-principle_A_domain_1
-distractor_agreement_relative_clause
-transitive
-wh_vs_that_with_gap
-animate_subject_trans
-```
-
-## Promotion Gate
-
-A new candidate may advance only if it:
-
-1. improves the active frontier;
-2. preserves the saturated regression suite;
-3. reports residual changes by capability family;
-4. validates public benchmark gains on mutated or private holdouts;
-5. has `external_inference_calls=0`.
-
-## Next Action
-
-The ratchet currently recommends:
-
-```text
-Treat the active mutated holdout as the current anti-Goodhart frontier.
-Train grammar-state candidates against public BLIMP plus the active mutated
-frontier, but promote only if the frontier clears policy gates and residual
-deltas stay bounded.
-After promotion, regenerate a new mutated holdout seed before further tuning.
-```
+Produce the data/model scaling contract from the current admitted corpus, select the
+smallest supportable dense MLX rung, expand only the missing governed data domains,
+and train it to the predeclared stop. The result must answer one question: does a
+properly data-supported current transformer produce direct verifier-positive
+family-disjoint behavior? If yes, amplify it. If no, retain the result and diagnose
+data, objective, representation, or capacity before changing architecture.
