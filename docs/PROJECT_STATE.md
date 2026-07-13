@@ -108,7 +108,13 @@ share toward zero. Public benchmarks are calibration only.
   controlled step-500 interruption then verified atomic generation-based resume:
   exact step-specific model/optimizer hashes committed through one receipt, restart
   advanced to step 501 with 3,799,137 positions retained, and superseded generation
-  files were removed. Dry-run plans no longer publish candidate artifacts.
+  files were removed. Dry-run plans no longer publish candidate artifacts. The full
+  trunk then completed 215,558,499 causal, 2,732,624 source-conditioned, and
+  8,898,816 supervised positions (227,189,939 total; 34,303 steps) in 44,573
+  seconds. Final losses were 1.282, 1.453, and 1.506. Canonical checkpoint
+  `3819f966...` and optimizer `1d45dadd...` verify with no progress generations
+  retained. This is completed training provenance, not capability; direct evaluation
+  waits for the independently trained language experts.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
