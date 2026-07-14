@@ -63,6 +63,21 @@ def test_deno_known_good_and_bad_candidates() -> None:
     assert verify_candidate(row, bad, CONFIG)["passed"] is False
 
 
+def test_deno_candidate_cannot_replace_host_comparison_or_protocol() -> None:
+    row = case("javascript_typescript", "stable_unique")
+    name = row["verifier"]["function_name"]
+    adversarial = f"""console.log = () => {{}};
+export function {name}(_values: number[]) {{
+  (JSON as any).stringify = () => 'same';
+  return [];
+}}
+"""
+
+    result = verify_candidate(row, adversarial, CONFIG)
+    assert result["passed"] is False
+    assert result["hidden_expected_visible_to_candidate"] is False
+
+
 def test_rust_known_good_and_bad_candidates() -> None:
     row = case("rust", "stable_unique")
     name = row["verifier"]["function_name"]

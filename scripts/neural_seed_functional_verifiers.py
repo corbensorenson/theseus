@@ -307,38 +307,146 @@ def _verify_deno(case: dict[str, Any], source: str, config: dict[str, Any], star
     with tempfile.TemporaryDirectory(prefix="theseus-fu-") as raw:
         workdir = Path(os.path.realpath(raw))
         (workdir / filename).write_text(source, encoding="utf-8")
-        import_name = "./" + filename
+        runner = """const safeParse=JSON.parse.bind(JSON);
+const safeStringify=JSON.stringify.bind(JSON);
+const safeLog=console.log.bind(console);
+const p=safeParse(Deno.args[0]);
+const m=await import(p.module);
+let row;
+try {
+  if (p.mode === 'call') {
+    const args=p.args;
+    const before=safeParse(safeStringify(args));
+    const value=await m[p.function](...args);
+    row={state:'returned',value,args_after:args,input_unchanged:safeStringify(args)===safeStringify(before)};
+  } else {
+    row={state:'returned',retry_limit:m.RETRY_LIMIT,timeout_ms:m.DEFAULT_TIMEOUT_MS,lower:await m.shouldRetry(p.lower),boundary:await m.shouldRetry(p.boundary)};
+  }
+} catch (error) {
+  row={state:'raised',exception_type:error?.constructor?.name || 'Error'};
+}
+try {
+  safeLog('__THESEUS_RESULT__'+safeStringify(row));
+} catch (_) {
+  safeLog('__THESEUS_RESULT__'+safeStringify({state:'serialization_fault'}));
+}
+"""
+        (workdir / "runner.ts").write_text(runner, encoding="utf-8")
+        deno = shutil.which("deno") or "deno"
+        timeout = int(config["sandbox"]["timeout_seconds"])
+        checks = [
+            _run_sandboxed(
+                [deno, "check", "--no-config", "--deny-import", filename],
+                workdir,
+                timeout,
+            )
+        ]
+        if not checks[0]["ok"]:
+            return _result(
+                case,
+                passed=False,
+                stage="typecheck_and_input_only_subprocess_tests",
+                started=started,
+                execution=checks,
+                hidden_expected_visible_to_candidate=False,
+                fault=checks[0].get("fault", "typecheck_failure"),
+            )
+        executions: list[dict[str, Any]] = []
+        passed = True
         if spec["family"] == "repository_edit":
             payload = spec["cases"]
-            imports = f"import {{ RETRY_LIMIT, DEFAULT_TIMEOUT_MS, shouldRetry }} from {json.dumps(import_name)};"
-            body = f"""
-if (RETRY_LIMIT !== {int(payload['new_limit'])}) throw new Error('limit');
-if (DEFAULT_TIMEOUT_MS !== {int(payload['timeout_ms'])}) throw new Error('timeout');
-if (!shouldRetry({int(payload['new_limit']) - 1}) || shouldRetry({int(payload['new_limit'])})) throw new Error('boundary');
-"""
+            probe = {
+                "mode": "repository",
+                "module": "./" + filename,
+                "lower": int(payload["new_limit"]) - 1,
+                "boundary": int(payload["new_limit"]),
+            }
+            run, observed = _run_deno_probe(deno, workdir, probe, timeout)
+            executions.append(run)
+            passed = bool(run["ok"]) and observed == {
+                "state": "returned",
+                "retry_limit": int(payload["new_limit"]),
+                "timeout_ms": int(payload["timeout_ms"]),
+                "lower": True,
+                "boundary": False,
+            }
         else:
             name = spec["function_name"]
-            imports = f"import {{ {name} }} from {json.dumps(import_name)};"
-            lines = []
-            for row in spec["cases"]:
-                lines.append(
-                    f"if (JSON.stringify({name}(...{json.dumps(row['args'])})) !== JSON.stringify({json.dumps(row['expected'])})) throw new Error('case');"
-                )
-            if spec["family"] in {"clamp_values", "chunk_values", "parse_duration"}:
-                invalid_args = {
-                    "clamp_values": [[1], 2, 1],
-                    "chunk_values": [[1], 0],
-                    "parse_duration": ["not a duration"],
-                }[spec["family"]]
-                lines.append(
-                    f"let rejected=false; try {{ {name}(...{json.dumps(invalid_args)}); }} catch (_) {{ rejected=true; }} if (!rejected) throw new Error('must reject invalid input');"
-                )
-            body = "\n".join(lines)
-        test_source = f"{imports}\nDeno.test('functional', () => {{\n{body}\n}});\n"
-        (workdir / "candidate_test.ts").write_text(test_source, encoding="utf-8")
-        deno = shutil.which("deno") or "deno"
-        run = _run_sandboxed([deno, "test", "--cached-only", "--no-config", "--no-lock", "candidate_test.ts"], workdir, int(config["sandbox"]["timeout_seconds"]))
-        return _result(case, passed=bool(run["ok"]), stage="compile_and_test", started=started, execution=run, fault=None if run["ok"] else run.get("fault", "test_failure"))
+            for hidden in spec["cases"]:
+                probe = {
+                    "mode": "call",
+                    "module": "./" + filename,
+                    "function": name,
+                    "args": hidden["args"],
+                }
+                run, observed = _run_deno_probe(deno, workdir, probe, timeout)
+                executions.append(run)
+                expected = {
+                    "state": "returned",
+                    "value": hidden["expected"],
+                    "args_after": hidden["args"],
+                    "input_unchanged": True,
+                }
+                if not run["ok"] or observed != expected:
+                    passed = False
+            invalid_args = {
+                "clamp_values": [[1], 2, 1],
+                "chunk_values": [[1], 0],
+                "parse_duration": ["not a duration"],
+            }.get(spec["family"])
+            if invalid_args is not None:
+                probe = {
+                    "mode": "call",
+                    "module": "./" + filename,
+                    "function": name,
+                    "args": invalid_args,
+                }
+                run, observed = _run_deno_probe(deno, workdir, probe, timeout)
+                executions.append(run)
+                if not run["ok"] or observed.get("state") != "raised" or observed.get("exception_type") not in {"Error", "RangeError", "TypeError"}:
+                    passed = False
+        checks.extend(executions)
+        fault = None if passed else next((run.get("fault") for run in checks if run.get("fault")), "test_failure")
+        return _result(
+            case,
+            passed=passed,
+            stage="typecheck_and_input_only_subprocess_tests",
+            started=started,
+            execution=checks,
+            hidden_expected_visible_to_candidate=False,
+            fault=fault,
+        )
+
+
+def _run_deno_probe(
+    deno: str, workdir: Path, payload: dict[str, Any], timeout: int
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    run = _run_sandboxed(
+        [
+            deno,
+            "run",
+            "--cached-only",
+            "--no-config",
+            "--no-lock",
+            f"--allow-read={workdir}",
+            "runner.ts",
+            json.dumps(payload, separators=(",", ":")),
+        ],
+        workdir,
+        timeout,
+    )
+    observed: dict[str, Any] = {}
+    marker = "__THESEUS_RESULT__"
+    if run["ok"]:
+        lines = [line for line in run.get("stdout", "").splitlines() if line.startswith(marker)]
+        if len(lines) != 1:
+            run = {**run, "ok": False, "fault": "candidate_protocol_violation"}
+        else:
+            try:
+                observed = json.loads(lines[0][len(marker) :])
+            except json.JSONDecodeError:
+                run = {**run, "ok": False, "fault": "candidate_protocol_invalid_json"}
+    return run, observed
 
 
 def _rust_string(value: str) -> str:
