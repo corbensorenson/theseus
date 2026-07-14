@@ -17,13 +17,13 @@
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-14T08:27:30.587824Z",
+  "frozen_utc": "2026-07-14T08:32:05.684524Z",
   "generation_wrapper_sha256": "6a9b0e9e3fc2228d39a1f6065678755a8ec4b3d974c91990c7bc962f511dc896",
   "immutable": true,
   "policy": "project_theseus_private_functional_utility_freeze_v1",
   "public_training_rows_written": 0,
-  "supersede_reason": "Require exact checkpoint-set membership, complete plan/stage-bound receipts, per-arm target bindings, output hashes, candidate-packet identity, and zero no-cheat counters before frozen functional scoring.",
-  "supersedes_freeze_sha256": "b3343b40b0f34261823a35ab96e427c65714e7c7d92b4343f91bc5ea4adeca66",
+  "supersede_reason": "Keep Python hidden expectations outside the candidate process through an input-only subprocess protocol, and block Rust compile-time inclusion of verifier files before any functional candidates exist.",
+  "supersedes_freeze_sha256": "c90c777e5d076bf80fd4d65cb28e74281e2ee08bb341bb628fcaa411377907a1",
   "templates_renderers_routers_tools_credit": 0,
   "toolchain_identity_sha256": "4cb3e92632490e57011d1dc6fe87bd94e9395a5c41d70c5a7683407cfa7abd2a",
   "training_generator_sha256": "93c03c688e1aa761fe59249e9874934f093030c8375c7f8a0e28179cd4d02aa4",
@@ -32,7 +32,7 @@
       "dense_active_parameter": {
         "complete": false,
         "heartbeat": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_heartbeat.json",
-        "heartbeat_sha256": "eab0e8909109cbb1d456e16ccefc890c7c0597fd8310429393a54a2f7530fc13",
+        "heartbeat_sha256": "f78d291e53cf6faf83ecc0a2002da7482c884f085a59c227f7def6742f78eca5",
         "optimizer_steps": 10500,
         "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
         "receipt": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_receipt.json",
@@ -53,5 +53,5 @@
   },
   "v8_plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
   "v8_stage_signature": "1b3b9c9e8dacf47569b8e97b9173ce64736d01a102c2f2905bae604acf9fc921",
-  "verifier_sha256": "96a2bfc67ec42f0a860dc69705681cdb0d8bfebd24de95f65261a0b298f79b0a"
+  "verifier_sha256": "da3c333f170e91c48817602e08561cb1f28bc8d5fbd33167eacbf54280be7f3a"
 }

@@ -36,6 +36,23 @@ def test_python_known_good_bad_and_side_effect_candidates() -> None:
     assert rejected["fault"] == "prohibited_side_effect"
 
 
+def test_python_candidate_cannot_inspect_hidden_assertion_source() -> None:
+    row = case("python", "stable_unique")
+    name = row["verifier"]["function_name"]
+    introspective = f"""import inspect
+def {name}(values):
+    needle=''.join(chr(x) for x in [97,115,115,101,114,116,32,109,46])
+    contexts=' '.join(''.join(frame.code_context or []) for frame in inspect.stack())
+    if needle in contexts:
+        return list(dict.fromkeys(values))
+    return []
+"""
+
+    result = verify_candidate(row, introspective, CONFIG)
+    assert result["passed"] is False
+    assert result["hidden_expected_visible_to_candidate"] is False
+
+
 def test_deno_known_good_and_bad_candidates() -> None:
     row = case("javascript_typescript", "stable_unique")
     name = row["verifier"]["function_name"]
@@ -54,6 +71,11 @@ def test_rust_known_good_and_bad_candidates() -> None:
 
     assert verify_candidate(row, good, CONFIG)["passed"] is True
     assert verify_candidate(row, bad, CONFIG)["passed"] is False
+
+    include_probe = f'pub fn {name}(_values: &[i32]) -> Vec<i32> {{ let _ = include_str!("../tests/functional.rs"); vec![] }}\n'
+    rejected = verify_candidate(row, include_probe, CONFIG)
+    assert rejected["passed"] is False
+    assert rejected["fault"] == "prohibited_side_effect"
 
 
 def test_html_requires_dom_contract_and_real_render() -> None:

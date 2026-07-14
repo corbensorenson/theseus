@@ -181,7 +181,12 @@ def _prohibited_side_effect(arm_id: str, source: str) -> str:
     patterns = {
         "python": [r"\b(?:open|exec|eval|compile)\s*\(", r"\bimport\s+(?:os|socket|subprocess|pathlib|http|urllib|requests)\b", r"\bfrom\s+(?:os|socket|subprocess|pathlib|http|urllib|requests)\b"],
         "javascript_typescript": [r"\b(?:fetch|XMLHttpRequest|WebSocket|eval)\s*\(?", r"\bDeno\s*\.", r"\b(?:require|import)\s*\(?[\"'](?:node:|fs|net|http|https|child_process)"],
-        "rust": [r"std::(?:net|fs|process)::", r"\b(?:File|TcpStream|UdpSocket|Command)::"],
+        "rust": [
+            r"std::(?:net|fs|process)::",
+            r"\b(?:File|TcpStream|UdpSocket|Command)::",
+            r"\b(?:include|include_str|include_bytes|env|option_env)!\s*\(",
+            r"#\s*\[\s*path\s*=",
+        ],
     }
     for pattern in patterns.get(arm_id, []):
         if re.search(pattern, source):
@@ -198,42 +203,92 @@ def _verify_python(case: dict[str, Any], source: str, config: dict[str, Any], st
     with tempfile.TemporaryDirectory(prefix="theseus-fu-") as raw:
         workdir = Path(os.path.realpath(raw))
         (workdir / "candidate.py").write_text(source, encoding="utf-8")
+        runner = """import importlib.util,json,sys
+s=importlib.util.spec_from_file_location('candidate','candidate.py')
+m=importlib.util.module_from_spec(s)
+s.loader.exec_module(m)
+p=json.loads(sys.argv[1])
+try:
+    if p['mode']=='call':
+        args=p['args']
+        before=json.loads(json.dumps(args,sort_keys=True))
+        value=getattr(m,p['function'])(*args)
+        row={'state':'returned','value':value,'args_after':args,'input_unchanged':args==before}
+    else:
+        row={'state':'returned','retry_limit':m.RETRY_LIMIT,'timeout_ms':m.DEFAULT_TIMEOUT_MS,'lower':m.should_retry(p['lower']),'boundary':m.should_retry(p['boundary'])}
+except BaseException as exc:
+    row={'state':'raised','exception_type':type(exc).__name__}
+print('__THESEUS_RESULT__'+json.dumps(row,sort_keys=True,separators=(',',':')))
+"""
+        (workdir / "runner.py").write_text(runner, encoding="utf-8")
+        timeout = int(config["sandbox"]["timeout_seconds"])
+        python = shutil.which("python3") or "/usr/bin/python3"
+        executions = []
         if spec["family"] == "repository_edit":
             payload = spec["cases"]
-            assertions = [
-                f"assert m.RETRY_LIMIT == {int(payload['new_limit'])}",
-                f"assert m.DEFAULT_TIMEOUT_MS == {int(payload['timeout_ms'])}",
-                f"assert m.should_retry({int(payload['new_limit']) - 1}) is True",
-                f"assert m.should_retry({int(payload['new_limit'])}) is False",
-            ]
+            probe = {
+                "mode": "repository",
+                "lower": int(payload["new_limit"]) - 1,
+                "boundary": int(payload["new_limit"]),
+            }
+            run, observed = _run_python_probe(python, workdir, probe, timeout)
+            executions.append(run)
+            passed = bool(run["ok"]) and observed == {
+                "state": "returned",
+                "retry_limit": int(payload["new_limit"]),
+                "timeout_ms": int(payload["timeout_ms"]),
+                "lower": True,
+                "boundary": False,
+            }
         else:
-            assertions = [
-                f"assert m.{spec['function_name']}(*{repr(row['args'])}) == {repr(row['expected'])}"
-                for row in spec["cases"]
-            ]
-            assertions.extend(_python_negative_assertions(spec))
-        harness = (
-            "import importlib.util\n"
-            "s=importlib.util.spec_from_file_location('candidate','candidate.py')\n"
-            "m=importlib.util.module_from_spec(s)\n"
-            "s.loader.exec_module(m)\n"
-            + "\n".join(assertions)
-            + "\nprint('FUNCTIONAL_PASS')\n"
-        )
-        (workdir / "verify.py").write_text(harness, encoding="utf-8")
-        run = _run_sandboxed([shutil.which("python3") or "/usr/bin/python3", "-I", "verify.py"], workdir, int(config["sandbox"]["timeout_seconds"]))
-        return _result(case, passed=bool(run["ok"]), stage="execute", started=started, execution=run, fault=None if run["ok"] else run.get("fault", "test_failure"))
+            passed = True
+            for hidden in spec["cases"]:
+                probe = {"mode": "call", "function": spec["function_name"], "args": hidden["args"]}
+                run, observed = _run_python_probe(python, workdir, probe, timeout)
+                executions.append(run)
+                expected = {
+                    "state": "returned",
+                    "value": hidden["expected"],
+                    "args_after": hidden["args"],
+                    "input_unchanged": True,
+                }
+                if not run["ok"] or observed != expected:
+                    passed = False
+            invalid_args = {
+                "clamp_values": [[1], 2, 1],
+                "chunk_values": [[1], 0],
+                "parse_duration": ["not a duration"],
+            }.get(spec["family"])
+            if invalid_args is not None:
+                probe = {"mode": "call", "function": spec["function_name"], "args": invalid_args}
+                run, observed = _run_python_probe(python, workdir, probe, timeout)
+                executions.append(run)
+                if not run["ok"] or observed.get("state") != "raised" or observed.get("exception_type") not in {"ValueError", "TypeError"}:
+                    passed = False
+        fault = None if passed else next((run.get("fault") for run in executions if run.get("fault")), "test_failure")
+        return _result(case, passed=passed, stage="input_only_subprocess_tests", started=started, execution=executions, hidden_expected_visible_to_candidate=False, fault=fault)
 
 
-def _python_negative_assertions(spec: dict[str, Any]) -> list[str]:
-    name = spec["function_name"]
-    if spec["family"] == "clamp_values":
-        return [f"\ntry:\n m.{name}([1], 2, 1)\n raise AssertionError('must reject')\nexcept (ValueError, TypeError): pass"]
-    if spec["family"] == "chunk_values":
-        return [f"\ntry:\n m.{name}([1], 0)\n raise AssertionError('must reject')\nexcept (ValueError, TypeError): pass"]
-    if spec["family"] == "parse_duration":
-        return [f"\ntry:\n m.{name}('not a duration')\n raise AssertionError('must reject')\nexcept (ValueError, TypeError): pass"]
-    return []
+def _run_python_probe(
+    python: str, workdir: Path, payload: dict[str, Any], timeout: int
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    run = _run_sandboxed(
+        [python, "-I", "runner.py", json.dumps(payload, separators=(",", ":"))],
+        workdir,
+        timeout,
+    )
+    observed: dict[str, Any] = {}
+    marker = "__THESEUS_RESULT__"
+    if run["ok"]:
+        lines = [line for line in run.get("stdout", "").splitlines() if line.startswith(marker)]
+        if len(lines) != 1:
+            run = {**run, "ok": False, "fault": "candidate_protocol_violation"}
+        else:
+            try:
+                observed = json.loads(lines[0][len(marker) :])
+            except json.JSONDecodeError:
+                run = {**run, "ok": False, "fault": "candidate_protocol_invalid_json"}
+    return run, observed
 
 
 def _verify_deno(case: dict[str, Any], source: str, config: dict[str, Any], started: float) -> dict[str, Any]:
