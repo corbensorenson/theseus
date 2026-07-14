@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import ast
+import base64
 import hashlib
 import html.parser
 import json
@@ -42,12 +43,13 @@ def _sandbox_profile(workdir: Path, *, browser: bool = False) -> str:
     # the case directory are denied by the OS sandbox.
     write_deny = f'(deny file-write* (require-not (subpath "{canonical}")))'
     if browser:
-        # Chromium creates a trusted process-singleton socket in Darwin's user
-        # temp root even when its profile and screenshot are case-local.
         darwin_temp = Path(os.path.realpath(tempfile.gettempdir()))
+        crashpad = Path.home() / "Library/Application Support/Google/Chrome/Crashpad"
         write_deny = (
-            f'(deny file-write* (require-not (subpath "{canonical}")) '
-            f'(require-not (subpath "{darwin_temp}")))'
+            "(deny file-write* (require-all "
+            f'(require-not (subpath "{canonical}")) '
+            f'(require-not (subpath "{darwin_temp}")) '
+            f'(require-not (subpath "{crashpad}"))))'
         )
     network_deny = "(deny network*)"
     if browser:
@@ -59,8 +61,8 @@ def _sandbox_profile(workdir: Path, *, browser: bool = False) -> str:
         "(allow default)",
         network_deny,
     ]
-    if not browser:
-        common.extend([write_deny, '(allow file-write* (literal "/dev/null"))'])
+    common.append(write_deny)
+    common.append('(allow file-write* (literal "/dev/null"))')
     return "\n".join(common)
 
 
@@ -73,6 +75,7 @@ def _run_sandboxed(
         shutil.which("deno") or "",
         shutil.which("cargo") or "",
         shutil.which("rustc") or "",
+        shutil.which("tidy") or "/usr/bin/tidy",
         str(CHROME),
     }
     executable = command[0]
@@ -81,6 +84,8 @@ def _run_sandboxed(
         return {"ok": False, "fault": "command_not_allowlisted", "command": executable}
     env = {key: value for key, value in os.environ.items() if key in ALLOWED_ENV}
     env["TMPDIR"] = str(workdir)
+    if browser:
+        env["HOME"] = str(workdir)
     wrapped = ["/usr/bin/sandbox-exec", "-p", _sandbox_profile(workdir, browser=browser), *command]
     started = time.monotonic()
     try:
@@ -126,14 +131,15 @@ def _render_chrome(command: list[str], workdir: Path, screenshot: Path, timeout:
         start_new_session=True,
     )
     deadline = started + timeout
+    while time.monotonic() < deadline and process.poll() is None:
+        if screenshot.exists() and screenshot.stat().st_size >= 512:
+            break
+        time.sleep(0.05)
+    terminated_after_render = False
     try:
-        while time.monotonic() < deadline:
-            if screenshot.exists() and screenshot.stat().st_size >= 512:
-                break
-            if process.poll() is not None:
-                break
-            time.sleep(0.05)
-    finally:
+        stdout, stderr = process.communicate(timeout=min(2.0, max(0.1, deadline - time.monotonic())))
+    except subprocess.TimeoutExpired:
+        terminated_after_render = screenshot.exists() and screenshot.stat().st_size >= 512
         if process.poll() is None:
             os.killpg(process.pid, signal.SIGTERM)
             try:
@@ -142,14 +148,18 @@ def _render_chrome(command: list[str], workdir: Path, screenshot: Path, timeout:
                 os.killpg(process.pid, signal.SIGKILL)
         stdout, stderr = process.communicate(timeout=2)
     rendered = screenshot.exists() and screenshot.stat().st_size >= 512
+    completed_cleanly = process.returncode == 0 or terminated_after_render
     return {
-        "ok": rendered,
+        "ok": rendered and completed_cleanly,
         "returncode": process.returncode,
+        "terminated_after_render": terminated_after_render,
         "stdout": stdout[-12000:],
         "stderr": stderr[-12000:],
         "duration_ms": round((time.monotonic() - started) * 1000, 3),
-        "fault": None if rendered else "blank_or_missing_screenshot",
+        "fault": None if rendered and completed_cleanly else "browser_render_failure",
     }
+
+
 def verify_candidate(case: dict[str, Any], source: str, config: dict[str, Any]) -> dict[str, Any]:
     started = time.monotonic()
     maximum = int(config["sandbox"]["maximum_candidate_bytes"])
@@ -434,6 +444,8 @@ def _verify_html(case: dict[str, Any], source: str, config: dict[str, Any], star
         failures.append("javascript_forbidden")
     if re.search(r"(?:src|href)\s*=\s*['\"](?:https?:)?//", lower):
         failures.append("external_resource_forbidden")
+    if re.search(r"(?:src|href)\s*=\s*['\"]file:", lower) or re.search(r"@import\b", lower):
+        failures.append("local_resource_forbidden")
     for tag in spec["required_tags"]:
         if tag not in audit.tags:
             failures.append(f"missing_tag:{tag}")
@@ -448,29 +460,136 @@ def _verify_html(case: dict[str, Any], source: str, config: dict[str, Any], star
     for required in spec["required_css"]:
         if required.lower() not in normalized_css:
             failures.append(f"missing_css:{required}")
-    render: dict[str, Any] = {"ok": False, "fault": "not_run"}
+    tidy: dict[str, Any] = {"ok": False, "fault": "not_run"}
+    renders: list[dict[str, Any]] = []
     if not failures and CHROME.exists():
         with tempfile.TemporaryDirectory(prefix="theseus-fu-") as raw:
             workdir = Path(os.path.realpath(raw))
             (workdir / "index.html").write_text(source, encoding="utf-8")
-            screenshot = workdir / "render.png"
-            viewport = spec["viewport"]
-            render = _render_chrome(
-                [str(CHROME), "--headless=new", "--no-sandbox", "--disable-gpu", "--disable-crash-reporter", "--disable-breakpad", "--disable-background-networking", "--no-first-run", "--no-default-browser-check", "--run-all-compositor-stages-before-draw", "--virtual-time-budget=1000", f"--user-data-dir={workdir / 'chrome'}", f"--window-size={viewport['width']},{viewport['height']}", f"--screenshot={screenshot}", (workdir / "index.html").as_uri()],
+            (workdir / "tidy.conf").write_text(
+                "new-blocklevel-tags: article, aside, dialog, figcaption, figure, footer, header, main, nav, section\n",
+                encoding="utf-8",
+            )
+            tidy_run = _run_sandboxed(
+                [shutil.which("tidy") or "/usr/bin/tidy", "-config", "tidy.conf", "-errors", "-quiet", "index.html"],
                 workdir,
-                screenshot,
                 int(config["sandbox"]["timeout_seconds"]),
             )
-            if render["ok"]:
-                if not screenshot.exists() or screenshot.stat().st_size < 512:
-                    render = {**render, "ok": False, "fault": "blank_or_missing_screenshot"}
-                else:
+            tidy = {**tidy_run, "ok": tidy_run.get("returncode") in {0, 1}}
+            if not tidy["ok"]:
+                failures.append("tidy_parse_error")
+            audited = _inject_browser_audit(source)
+            (workdir / "audit.html").write_text(audited, encoding="utf-8")
+            for width, height, label in ((800, 600, "wide"), (375, 667, "narrow")):
+                screenshot = workdir / f"render-{label}.png"
+                render = _render_chrome(
+                    [str(CHROME), "--headless=new", "--no-sandbox", "--disable-gpu", "--disable-crash-reporter", "--disable-crashpad", "--disable-breakpad", "--disable-background-networking", "--no-first-run", "--no-default-browser-check", "--run-all-compositor-stages-before-draw", "--virtual-time-budget=1000", "--dump-dom", f"--user-data-dir={workdir / f'chrome-{label}'}", f"--window-size={width},{height}", f"--screenshot={screenshot}", (workdir / "audit.html").as_uri()],
+                    workdir,
+                    screenshot,
+                    int(config["sandbox"]["timeout_seconds"]),
+                )
+                audit = _extract_browser_audit(render.get("stdout", ""))
+                render["viewport"] = {"width": width, "height": height, "label": label}
+                render["browser_audit"] = audit
+                render["browser_assertions"] = _browser_assertions(case["task_family"], audit, label)
+                if render["ok"]:
                     render["screenshot_sha256"] = hashlib.sha256(screenshot.read_bytes()).hexdigest()
                     render["screenshot_bytes"] = screenshot.stat().st_size
+                if not render["ok"] or not all(render["browser_assertions"].values()):
+                    failures.append(f"browser_behavior_failure:{label}")
+                renders.append(render)
     elif not CHROME.exists():
-        render = {"ok": False, "fault": "chrome_unavailable"}
-    passed = not failures and bool(render["ok"])
-    return _result(case, passed=passed, stage="dom_a11y_render", started=started, failures=failures, render=render, fault=None if passed else (failures[0] if failures else render.get("fault", "render_failure")))
+        failures.append("chrome_unavailable")
+    passed = not failures and len(renders) == 2 and all(render["ok"] for render in renders)
+    return _result(case, passed=passed, stage="parse_dom_a11y_responsive_render", started=started, failures=failures, tidy=tidy, renders=renders, fault=None if passed else (failures[0] if failures else "render_failure"))
+
+
+def _inject_browser_audit(source: str) -> str:
+    script = r"""<script>
+(() => {
+  const visible = (node) => { const r=node.getBoundingClientRect(); const s=getComputedStyle(node); return r.width>0 && r.height>0 && s.display!=='none' && s.visibility!=='hidden'; };
+  const controls=[...document.querySelectorAll('button,input,select,textarea,a[href]')];
+  const inputs=[...document.querySelectorAll('input,select,textarea')];
+  const labeled=inputs.filter((node) => node.getAttribute('aria-label') || node.getAttribute('aria-labelledby') || (node.id && document.querySelector(`label[for="${CSS.escape(node.id)}"]`)) || node.closest('label'));
+  const buttons=[...document.querySelectorAll('button')];
+  const articles=[...document.querySelectorAll('article')].filter(visible);
+  const lefts=[...new Set(articles.map((node) => Math.round(node.getBoundingClientRect().left)))];
+  const images=[...document.querySelectorAll('img')];
+  const root=getComputedStyle(document.documentElement);
+  const result={
+    visibleTextChars:(document.body.innerText||'').trim().length,
+    horizontalOverflow:document.documentElement.scrollWidth>window.innerWidth+2,
+    controlCount:controls.filter(visible).length,
+    inputCount:inputs.length,
+    labeledInputCount:labeled.length,
+    namedButtonCount:buttons.filter((node) => (node.innerText||node.getAttribute('aria-label')||'').trim()).length,
+    articleCount:articles.length,
+    articleColumnCount:lefts.length,
+    tableRowCount:document.querySelectorAll('table tr').length,
+    tableHeaderCount:document.querySelectorAll('table th').length,
+    alertVisible:[...document.querySelectorAll('[role="alert"]')].some(visible),
+    dialogVisible:[...document.querySelectorAll('dialog[open],[role="dialog"]')].some(visible),
+    imageCount:images.length,
+    loadedImageCount:images.filter((node) => node.complete && node.naturalWidth>0).length,
+    landmarkCount:document.querySelectorAll('main,nav,header,footer,aside').length,
+    themeVariableCount:['--surface','--text','--accent'].filter((name) => root.getPropertyValue(name).trim()).length
+  };
+  document.documentElement.setAttribute('data-theseus-browser-audit', btoa(JSON.stringify(result)));
+})();
+</script>"""
+    match = list(re.finditer(r"</body\s*>", source, flags=re.IGNORECASE))
+    if match:
+        index = match[-1].start()
+        return source[:index] + script + source[index:]
+    return source + script
+
+
+def _extract_browser_audit(dump: str) -> dict[str, Any]:
+    match = re.search(r'data-theseus-browser-audit="([A-Za-z0-9+/=]+)"', dump)
+    if not match:
+        return {}
+    try:
+        return json.loads(base64.b64decode(match.group(1)).decode("utf-8"))
+    except (ValueError, json.JSONDecodeError):
+        return {}
+
+
+def _browser_assertions(family: str, audit: dict[str, Any], viewport: str) -> dict[str, bool]:
+    assertions = {
+        "audit_present": bool(audit),
+        "visible_content": int(audit.get("visibleTextChars") or 0) > 0,
+        "no_horizontal_overflow": audit.get("horizontalOverflow") is False,
+    }
+    if family == "accessible_form":
+        assertions.update(
+            inputs_present=int(audit.get("inputCount") or 0) >= 2,
+            inputs_labeled=int(audit.get("labeledInputCount") or 0) == int(audit.get("inputCount") or 0),
+            named_submit=int(audit.get("namedButtonCount") or 0) >= 1,
+        )
+    elif family == "landmark_navigation":
+        assertions["landmarks_present"] = int(audit.get("landmarkCount") or 0) >= 4
+    elif family == "data_table":
+        assertions["table_rows_present"] = int(audit.get("tableRowCount") or 0) >= 3
+        assertions["table_headers_present"] = int(audit.get("tableHeaderCount") or 0) >= 3
+    elif family == "status_alert":
+        assertions["visible_alert"] = audit.get("alertVisible") is True
+        assertions["named_retry"] = int(audit.get("namedButtonCount") or 0) >= 1
+    elif family == "responsive_cards":
+        assertions["three_cards_present"] = int(audit.get("articleCount") or 0) >= 3
+        assertions["responsive_columns"] = (
+            int(audit.get("articleColumnCount") or 0) >= 3
+            if viewport == "wide"
+            else int(audit.get("articleColumnCount") or 0) == 1
+        )
+    elif family == "theme_variables":
+        assertions["theme_variables_resolve"] = int(audit.get("themeVariableCount") or 0) == 3
+    elif family == "modal_dialog":
+        assertions["dialog_visible"] = audit.get("dialogVisible") is True
+        assertions["dialog_actions_named"] = int(audit.get("namedButtonCount") or 0) >= 2
+    elif family == "media_figure":
+        assertions["image_present"] = int(audit.get("imageCount") or 0) >= 1
+        assertions["image_loaded"] = int(audit.get("loadedImageCount") or 0) >= 1
+    return assertions
 
 
 def score_english_judgments(

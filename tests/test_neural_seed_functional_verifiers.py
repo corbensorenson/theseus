@@ -80,15 +80,43 @@ def test_rust_known_good_and_bad_candidates() -> None:
 
 def test_html_requires_dom_contract_and_real_render() -> None:
     row = case("html_css", "status_alert")
-    good = '<!doctype html><html><head><style>section{border:1px solid red}button:focus-visible{outline:2px solid blue}</style></head><body><section role="alert"><h1>Sync 1 failed</h1><button type="button">Retry</button></section></body></html>'
+    good = '<!doctype html><html><head><title>Status</title><style>section{border:1px solid red}button:focus-visible{outline:2px solid blue}</style></head><body><section role="alert"><h1>Sync 1 failed</h1><button type="button">Retry</button></section></body></html>'
     external = good.replace("</body>", '<script src="https://example.com/x.js"></script></body>')
 
     passed = verify_candidate(row, good, CONFIG)
     assert passed["passed"] is True
-    assert passed["render"]["screenshot_bytes"] >= 512
+    assert len(passed["renders"]) == 2
+    assert all(render["screenshot_bytes"] >= 512 for render in passed["renders"])
+    assert all(render["browser_assertions"]["visible_alert"] for render in passed["renders"])
     rejected = verify_candidate(row, external, CONFIG)
     assert rejected["passed"] is False
     assert "javascript_forbidden" in rejected["failures"]
+
+
+def test_html_responsive_behavior_is_computed_at_both_viewports() -> None:
+    row = case("html_css", "responsive_cards")
+    body = '<main><h1>Projects 1</h1><section class="cards" aria-label="Projects"><article><h2>A</h2></article><article><h2>B</h2></article><article><h2>C</h2></article></section></main>'
+    good_css = '.cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:1fr}}'
+    bad_css = '.cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:repeat(3,1fr)}}'
+    page = lambda css: f'<!doctype html><html><head><title>Projects</title><style>{css}</style></head><body>{body}</body></html>'
+
+    passed = verify_candidate(row, page(good_css), CONFIG)
+    assert passed["passed"] is True
+    assert passed["renders"][0]["browser_audit"]["articleColumnCount"] == 3
+    assert passed["renders"][1]["browser_audit"]["articleColumnCount"] == 1
+
+    rejected = verify_candidate(row, page(bad_css), CONFIG)
+    assert rejected["passed"] is False
+    assert "browser_behavior_failure:narrow" in rejected["failures"]
+
+
+def test_html_rejects_local_resource_reads() -> None:
+    row = case("html_css", "status_alert")
+    candidate = '<!doctype html><html><head><title>Status</title><style>@import "file:///etc/passwd";section{border:1px solid red}button:focus-visible{outline:2px solid blue}</style></head><body><section role="alert"><h1>Sync 1 failed</h1><button type="button">Retry</button></section></body></html>'
+
+    rejected = verify_candidate(row, candidate, CONFIG)
+    assert rejected["passed"] is False
+    assert "local_resource_forbidden" in rejected["failures"]
 
 
 def test_english_requires_blind_independent_raters_and_adjudication() -> None:
