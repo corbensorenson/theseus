@@ -1000,6 +1000,24 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   choosing the favorable accounting view after results are known; it must show
   nonzero direct behavior, avoid arm-floor regressions, and beat or Pareto-dominate
   both controls. A dense win is retained as falsification, not routed around.
+- **Post-comparison decision protocol (binding):** publish every language arm and
+  both dense-control results separately before any aggregate. A strong English arm
+  cannot hide zero code behavior, and a weak Rust arm cannot erase a stronger
+  Python result. If either dense control Pareto-dominates the sparse system under a
+  frozen accounting view, make the winning dense/hybrid lane the practical
+  successor and retain MoECOT as negative/discovery evidence. If MoECOT wins without
+  an arm-floor regression, retain sparse routing. If all code paths remain zero,
+  classify the result as a data/scale/objective ceiling and do not manufacture
+  search, syntax, or routing credit. Search/preference/RL may begin only for a
+  behavior-positive arm and must include matched mechanism-removed controls.
+- **Confirmation and retirement protocol:** development results select no checkpoint
+  or accounting view. After the frozen architecture verdict, spend each language's
+  confirmation split once on the selected unchanged implementation. Then execute one
+  registry replacement transaction: retire the old strict-generator/token-decoder
+  route from active authority if the successor qualifies, while retaining its 0/24
+  and rollback evidence as history. Until a successor qualifies, the old route may
+  remain contained/canonical for continuity but receives no new repair churn and
+  cannot contaminate MoECOT/dense claims.
 - **Frozen scaling decision:** the selected rung is exactly 10,777,601 active
   parameters with a 215,552,020 unique-position floor and maximum 4x optimizer
   repetition. The canonical materializer credits 683,254,465 quality-filtered unique positions under
