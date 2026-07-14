@@ -291,7 +291,7 @@ def evaluate_bundle(
         gaps.append("duplicate_candidate_case")
     if set(ids) != set(cases):
         gaps.append("candidate_case_set_mismatch")
-    provenance = audit_candidate_provenance(bundle, freeze)
+    provenance = audit_candidate_provenance(bundle, freeze, cases)
     gaps.extend(provenance["hard_gaps"])
     outputs = {str(row.get("case_id") or ""): str(row.get("output") or "") for row in rows}
     verifier_rows = []
@@ -348,28 +348,93 @@ def evaluate_bundle(
     }
 
 
-def audit_candidate_provenance(bundle: dict[str, Any], freeze: dict[str, Any]) -> dict[str, Any]:
+def audit_candidate_provenance(
+    bundle: dict[str, Any],
+    freeze: dict[str, Any],
+    cases: dict[str, dict[str, Any]],
+    *,
+    root: Path = ROOT,
+) -> dict[str, Any]:
     gaps = []
     if bundle.get("policy") != "project_theseus_direct_model_candidate_bundle_v1":
         gaps.append("candidate_bundle_policy_mismatch")
     if bundle.get("case_contract_sha256") != freeze["case_contract_sha256"]:
         gaps.append("candidate_bundle_contract_mismatch")
+    if bundle.get("candidate_packet_sha256") != freeze["candidate_packet_sha256"]:
+        gaps.append("candidate_packet_identity_mismatch")
     if bundle.get("generation_function") != "moecot_language_arm_training.generate_model_text":
         gaps.append("candidate_generation_function_mismatch")
     if bundle.get("generation_wrapper_sha256") != freeze.get("generation_wrapper_sha256"):
         gaps.append("candidate_generation_wrapper_mismatch")
     if bundle.get("training_generator_sha256") != freeze.get("training_generator_sha256"):
         gaps.append("candidate_training_generator_mismatch")
-    if int(bundle.get("templates_renderers_routers_tools_credit", -1)) != 0:
-        gaps.append("nonzero_nonlearned_generation_credit")
+    for key in (
+        "templates_renderers_routers_tools_credit",
+        "public_training_rows_written",
+        "external_inference_calls",
+        "fallback_return_count",
+    ):
+        if int(bundle.get(key, -1)) != 0:
+            gaps.append(f"candidate_bundle_nonzero_or_missing_boundary:{key}")
+    target_id = str(bundle.get("target_id") or "")
+    if target_id == "moecot_system":
+        expected_targets = {"shared_trunk", "english", "python", "javascript_typescript", "html_css", "rust"}
+    elif target_id in {"dense_active_parameter", "dense_total_parameter"}:
+        expected_targets = {target_id}
+    else:
+        expected_targets = set()
+        gaps.append("candidate_bundle_target_invalid")
     artifacts = bundle.get("checkpoint_artifacts") if isinstance(bundle.get("checkpoint_artifacts"), list) else []
     if not artifacts:
         gaps.append("checkpoint_artifacts_missing")
+    artifact_ids = [str(row.get("target_id") or "") for row in artifacts]
+    if len(artifact_ids) != len(set(artifact_ids)):
+        gaps.append("duplicate_checkpoint_artifact_target")
+    if set(artifact_ids) != expected_targets:
+        gaps.append("checkpoint_artifact_set_mismatch")
     for row in artifacts:
-        path = resolve(str(row.get("path") or ""))
+        artifact_target = str(row.get("target_id") or "")
+        path = resolve_from(root, str(row.get("path") or ""))
         if not path.is_file() or sha256_file(path) != str(row.get("sha256") or ""):
-            gaps.append(f"checkpoint_identity_mismatch:{row.get('target_id')}")
-    return {"state": "GREEN" if not gaps else "RED", "checkpoint_artifacts": artifacts, "hard_gaps": gaps}
+            gaps.append(f"checkpoint_identity_mismatch:{artifact_target}")
+            continue
+        receipt_path = root / "checkpoints/moecot_language_seed_v8" / artifact_target / "training_receipt.json"
+        receipt = read_json(receipt_path) if receipt_path.is_file() else {}
+        if not receipt.get("complete"):
+            gaps.append(f"checkpoint_receipt_incomplete:{artifact_target}")
+        if receipt.get("plan_sha256") != freeze.get("v8_plan_sha256"):
+            gaps.append(f"checkpoint_receipt_plan_mismatch:{artifact_target}")
+        if receipt.get("stage_signature") != freeze.get("v8_stage_signature"):
+            gaps.append(f"checkpoint_receipt_stage_mismatch:{artifact_target}")
+        receipt_checkpoint = resolve_from(root, str(receipt.get("checkpoint") or ""))
+        if receipt_checkpoint.resolve() != path.resolve() or receipt.get("checkpoint_sha256") != row.get("sha256"):
+            gaps.append(f"checkpoint_receipt_artifact_mismatch:{artifact_target}")
+    if target_id == "moecot_system":
+        artifact_map = {str(row.get("target_id") or ""): row for row in artifacts}
+        shared_row = artifact_map.get("shared_trunk") or {}
+        shared_path = resolve_from(root, str(shared_row.get("path") or ""))
+        for arm in ("english", "python", "javascript_typescript", "html_css", "rust"):
+            receipt_path = root / "checkpoints/moecot_language_seed_v8" / arm / "training_receipt.json"
+            receipt = read_json(receipt_path) if receipt_path.is_file() else {}
+            declared_path = resolve_from(root, str(receipt.get("shared_trunk_checkpoint") or ""))
+            if declared_path.resolve() != shared_path.resolve() or receipt.get("shared_trunk_checkpoint_sha256") != shared_row.get("sha256"):
+                gaps.append(f"expert_shared_trunk_binding_mismatch:{arm}")
+    candidates = bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    for row in candidates:
+        case_id = str(row.get("case_id") or "")
+        output = str(row.get("output") or "")
+        if row.get("output_sha256") != hashlib.sha256(output.encode()).hexdigest():
+            gaps.append(f"candidate_output_identity_mismatch:{case_id}")
+        case = cases.get(case_id) or {}
+        expected_target = case.get("arm_id") if target_id == "moecot_system" else target_id
+        if row.get("target_id") != expected_target:
+            gaps.append(f"candidate_target_binding_mismatch:{case_id}")
+    return {
+        "state": "GREEN" if not gaps else "RED",
+        "bundle_target_id": target_id,
+        "checkpoint_artifacts": artifacts,
+        "hard_gaps": sorted(set(gaps)),
+    }
 
 
 def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[str]:
@@ -460,6 +525,11 @@ def sha256_file(path: Path) -> str:
 def resolve(value: str | Path) -> Path:
     path = Path(value)
     return path if path.is_absolute() else ROOT / path
+
+
+def resolve_from(root: Path, value: str | Path) -> Path:
+    path = Path(value)
+    return path if path.is_absolute() else root / path
 
 
 def relative(path: Path) -> str:

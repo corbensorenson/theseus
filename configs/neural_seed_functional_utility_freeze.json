@@ -11,19 +11,19 @@
     "python": 32,
     "rust": 32
   },
-  "compiler_sha256": "5972a51dcc96597025cda3a4a66c0b7039d6f35546d7af46143c0bbcb8730e13",
+  "compiler_sha256": "c1ef6154da1c52907c8e745281bae4929d2df1ee2ca3d5bc1747189f9c4dd225",
   "config": "configs/neural_seed_functional_utility.json",
   "config_sha256": "7655831f70df661d745d75276b9bcb111795c85f8290cce49e3cc9dd657f826f",
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-14T08:08:43.307976Z",
+  "frozen_utc": "2026-07-14T08:27:30.587824Z",
   "generation_wrapper_sha256": "6a9b0e9e3fc2228d39a1f6065678755a8ec4b3d974c91990c7bc962f511dc896",
   "immutable": true,
   "policy": "project_theseus_private_functional_utility_freeze_v1",
   "public_training_rows_written": 0,
-  "supersede_reason": "Bind the canonical direct-generation wrapper and underlying autoregressive generator source before either dense control completes or functional outputs are inspected.",
-  "supersedes_freeze_sha256": "ab54bb11c5fa2f2b0995580e668486921fec94519f871a4f3dd149e2eaa1257b",
+  "supersede_reason": "Require exact checkpoint-set membership, complete plan/stage-bound receipts, per-arm target bindings, output hashes, candidate-packet identity, and zero no-cheat counters before frozen functional scoring.",
+  "supersedes_freeze_sha256": "b3343b40b0f34261823a35ab96e427c65714e7c7d92b4343f91bc5ea4adeca66",
   "templates_renderers_routers_tools_credit": 0,
   "toolchain_identity_sha256": "4cb3e92632490e57011d1dc6fe87bd94e9395a5c41d70c5a7683407cfa7abd2a",
   "training_generator_sha256": "93c03c688e1aa761fe59249e9874934f093030c8375c7f8a0e28179cd4d02aa4",
@@ -32,11 +32,11 @@
       "dense_active_parameter": {
         "complete": false,
         "heartbeat": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_heartbeat.json",
-        "heartbeat_sha256": "d3ccbfcaec07078bd95b7301272e12e234feb2f8e9768f6762d833d3dd636e41",
-        "optimizer_steps": 10000,
+        "heartbeat_sha256": "eab0e8909109cbb1d456e16ccefc890c7c0597fd8310429393a54a2f7530fc13",
+        "optimizer_steps": 10500,
         "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
         "receipt": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_receipt.json",
-        "receipt_sha256": "95b2e7320dd0040fd881c7d30a994bd61f26e2385e291949719397eb37463204"
+        "receipt_sha256": "4c9669efe4201ebe8e1b0c2689d23e44ed53c63c9166c23de3387ad23df59fde"
       },
       "dense_total_parameter": {
         "complete": false,
