@@ -53,13 +53,13 @@
     "no_claim_boundary": "AI_book technique recommendations are planning coverage, not evidence. Routers, tools, templates, semantic renderers, fallback bodies, public benchmark artifacts, and external runtime inference remain noncredit for learned generation."
   },
   "latest_ai_book_reconciliation": {
-    "date": "2026-07-12",
-    "book_commit": "e0abdddbfdd39f8d6e32bae5d9f956907127ff92",
-    "book_worktree_state": "reviewed_committed_qcsa_manifest_with_unrelated_worktree_edits_outside_book_structure",
-    "manifest_sha256": "ab709cdb6a2102a6ffe9ff64bc9bbf9883f35acd96734e373fa854ce29bdec16",
+    "date": "2026-07-14",
+    "book_commit": "32635eb94ded42a5f54e528302685cab343993b7",
+    "book_worktree_state": "reviewed_uncommitted_post_v2_3_source_integration_manifest_without_commit_claim",
+    "manifest_sha256": "6871079f7f9442c7068432bb012d0b8a728bd269afc5bd628cd84bdde80638e2",
     "book_manifest_chapter_count": 54,
-    "source_state": "The reviewed AI_book working tree still has 54 active chapters and 504 authored Codex tests. It adds the Corben-authored qcsa_whitepaper source and source-note mappings across existing semantic-IR, VCM, claim-ledger, runtime-authority, inter-stack, routing, compact-generation, data-lifecycle, and integrated-architecture chapters; a standalone QCSA chapter is not yet present in book_structure.json.",
-    "decision": "Keep the Phase-10 data-supported dense-generator floor as the capability flagship. Route QCSA into existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus ownership as a source-available manifest-pending chapter candidate, with deterministic contract/migration fixtures allowed as maintenance and learned atlas/question-policy claims deferred until the dense proposer has positive behavior.",
+    "source_state": "The reviewed AI_book worktree has 54 active chapters and 511 authored Codex tests. Eight committed chapter-contract changes are synchronized below. A later uncommitted post-v2.3 source-integration pass adds Embedded Agency, MonitorBench, V-JEPA 2, and faithfulness/information-flow source mappings without changing chapter order or book-owned implementation fields; the exact dirty-manifest digest is bound, but no book commit or publication state is claimed.",
+    "decision": "Keep the frozen Phase-10 v8 MoECOT-versus-dense comparison as the sole capability flagship. Route Embedded Agency into existing authority/self-improvement boundaries, MonitorBench and faithfulness into evaluation-integrity/oversight controls, and V-JEPA 2 into the already-deferred world-model contract. These source additions do not authorize a new capability lane or mutate the in-flight training/evaluation contract.",
     "current_theseus_evidence": "Theseus has mature registry, VCM ABI, evidence, routing, update, and assistant record surfaces, but the book lessons are not yet demonstrated together by useful model behavior or complete real-state transitions.",
     "new_required_work": [
       "exact manifest order and book-owned source-field synchronization with digest binding",
@@ -81,10 +81,11 @@
       "phase_refs": [
         1,
         4,
-        14
+        14,
+        18
       ],
       "entry_condition": "active now as a claim/evidence boundary",
-      "theseus_scope": "distinguish reasoning traces from receipts, compare trace/action consistency, and preserve monitorability limits",
+      "theseus_scope": "distinguish reasoning traces from receipts, compare trace/action consistency, measure monitorability under adversarial pressure, and preserve information-flow limits",
       "acceptance_boundary": "trace perturbation and action-replay controls quantify when traces predict or fail to predict executed behavior",
       "non_claim_boundary": "a fluent or internally consistent trace is not an authoritative account of hidden computation"
     },
@@ -99,7 +100,7 @@
         17
       ],
       "entry_condition": "after the core proposer has nonzero verified behavior",
-      "theseus_scope": "learned prediction, error/version ledgers, model-predictive control, imagination/search, causal limits, and sim-to-real boundaries",
+      "theseus_scope": "use V-JEPA 2 as a source comparator for learned prediction, error/version ledgers, model-predictive control, imagination/search, causal limits, and sim-to-real boundaries",
       "acceptance_boundary": "a learned world model improves a frozen planning/control task against model-free and deterministic-simulator controls while prediction error remains calibrated",
       "non_claim_boundary": "prediction accuracy, simulation fidelity, or latent structure alone is not planning capability or real-world safety"
     },
@@ -140,6 +141,8 @@
       "book_disposition": "prior_art_and_foundations_first",
       "phase_refs": [
         1,
+        2,
+        14,
         18,
         19
       ],
@@ -1833,6 +1836,16 @@
       ],
       "current_evidence": [
         "scripts/strict_generator_mlx_model.py",
+        "reports/moecot_language_arm_training_scale_v2_plan.json",
+        "reports/moecot_language_arm_training_scale_v2_transactional_resume_proof.json",
+        "reports/moecot_language_arm_training_scale_v2_trunk_full.json",
+        "reports/moecot_language_arm_training_scale_v2_experts_full.json",
+        "checkpoints/moecot_language_seed_v8/shared_trunk/training_receipt.json",
+        "checkpoints/moecot_language_seed_v8/english/training_receipt.json",
+        "checkpoints/moecot_language_seed_v8/python/training_receipt.json",
+        "checkpoints/moecot_language_seed_v8/javascript_typescript/training_receipt.json",
+        "checkpoints/moecot_language_seed_v8/html_css/training_receipt.json",
+        "checkpoints/moecot_language_seed_v8/rust/training_receipt.json",
         "reports/strict_generator_mlx_sparse_100m_100k.json",
         "reports/strict_generator_mlx_dense_active_control_100m_100k.json",
         "reports/strict_generator_mlx_dense_active_control_100m_5m.json",
@@ -1956,7 +1969,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Keep the negative Sol 5.6 and prefix-LM tranches quarantined. The corrected lossless stage, five-arm/two-control MLX checkpoint and optimizer smoke, and two-view comparison preregistration are GREEN; next freeze language-specific SFT/evaluation contracts, then complete bounded pretraining and direct family-disjoint evaluation before any amplifier or public calibration.",
+      "smallest_next_patch": "Keep the negative Sol 5.6 and prefix-LM tranches quarantined. The frozen v8 trunk and five language specialists are complete and directly evaluated; finish the in-flight active-parameter dense control, then the total-parameter dense control, publish per-language and two-view architecture verdicts, and spend confirmation once on the selected unchanged implementation before any route replacement, amplifier, or public calibration.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -2710,6 +2723,9 @@
       ],
       "current_evidence": [
         "reports/octopus_router_report.json",
+        "reports/moecot_language_arm_training_scale_v2_plan.json",
+        "reports/moecot_language_arm_training_scale_v2_trunk_full.json",
+        "reports/moecot_language_arm_training_scale_v2_experts_full.json",
         "reports/strict_generator_mlx_sparse_100m_100k.json",
         "reports/strict_generator_mlx_dense_active_control_100m_100k.json",
         "reports/theseus_substrate_verdict.json",
@@ -2731,7 +2747,7 @@
         "live English/Python/JS-TS/HTML-CSS/Rust arm registry with independent model/data/checkpoint lineage and typed single/sequential/parallel/adjudicated composition",
         "natural ambiguous-routing workload with clarification, abstention, calibration, interference counterfactuals, and generated-answer utility separated from route correctness"
       ],
-      "smallest_next_patch": "Bind the five language-arm cards to Phase-10 model/data/checkpoint artifacts and make the existing Octopus route lease emit typed single/composed routes. Then run the learned/rule/generalist/specialist/abstention matrix on frozen naturally ambiguous requests and retain route-versus-answer outcomes separately.",
+      "smallest_next_patch": "After the v8 architecture verdict and one-shot confirmation select a routeable successor, bind the five language-arm or winning dense cards to exact model/data/checkpoint artifacts and make the existing Octopus lease emit typed single/composed routes. Then run the learned/rule/generalist/specialist/abstention matrix on frozen naturally ambiguous requests and retain route-versus-answer outcomes separately.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -3014,7 +3030,7 @@
       "completion_rule": "The roadmap, registry, PROJECT_STATE, AI_book crosswalk, project steward decisions, Fourth-Pass parity backlog, and public-safe evidence-pack exports agree on what exists, what is missing, what evidence supports each claim, and which source-drift or book-parity rows were reviewed, implemented, deferred, or blocked.",
       "implemented_items": [
         "exact 54-chapter manifest-order and book-owned-field synchronization with manifest digest binding",
-        "504-test inventory with 102 planned/partial obligations surfaced",
+        "511-test inventory with 109 planned/partial obligations surfaced",
         "admitted chapter candidates removed from the future queue"
       ]
     }
@@ -3724,7 +3740,7 @@
       "book_file": "chapters/scalable-oversight-and-adversarial-ai-control.qmd",
       "book_claim_label": "Design rationale",
       "book_evidence_level": "argument",
-      "book_minimal_implementation": "A versioned oversight-protocol record with task/risk/authority scope, supervisor and system envelopes, information-access declaration, role and incentive configuration, direct-review baseline, independent outcome-audit status, correlation and persuasion residuals, stop condition, escalation owner, and bounded downstream handoff. A finite Lean route blocks a high-risk admission that lacks an independent outcome audit.",
+      "book_minimal_implementation": "A versioned oversight-protocol record with task/risk/authority scope, supervisor and system envelopes, information-access declaration, role and incentive configuration, direct-review baseline, independent outcome-audit status, correlation and persuasion residuals, stop condition, escalation owner, and bounded downstream handoff. Eight finite Lean theorems and a seven-case deterministic fixture bridge route missing evidence views, dependency disclosure, baseline, high-risk audit, abstention evidence, and authority separation without claiming oversight efficacy.",
       "book_beyond_state_of_art": "A mature oversight control plane selects direct review, assisted consultation, structured adversarial review, or abstention based on task risk, access asymmetry, supervisor capability, calibrated outcome evidence, correlation risk, and available accountable escalation. It continuously tests protocol performance against held-out outcomes and stronger baselines while preserving dissent, auditability, operator-load residuals, and the separation between supervision, training, and execution authority. This is a target architecture, not a claim that the repository has solved weak-to-strong oversight, debate, alignment, safety, or autonomous control.",
       "book_interfaces": [
         "Evidence States and Claim Discipline owns how an outcome may affect a claim; this chapter owns the supervision protocol and its audit record.",
@@ -3749,7 +3765,7 @@
         "Fleet-scale pressure shortens review windows, exhausts human operators, or turns escalation into rubber-stamping.",
         "A protocol verdict is laundered into a training reward, claim transition, deployment clearance, or tool permission without the owning gate."
       ],
-      "codex_test_count": 4,
+      "codex_test_count": 7,
       "representative_codex_tests": [
         "High-risk outcome-audit admission fixture",
         "Baseline and task-envelope completeness fixture",
@@ -4223,11 +4239,11 @@
         "Open-release laundering frames an irreversible distribution as a reversible deployment or a generic safety measure.",
         "Autonomous-insider capture uses legitimate model access, keys, or tools to bypass the declared custody boundary."
       ],
-      "codex_test_count": 4,
+      "codex_test_count": 5,
       "representative_codex_tests": [
         "Required invalid-attestation load block",
         "Stale-attestation and key-policy negative control",
-        "Open-weight irreversibility record fixture"
+        "Verifier-dependency and independent-observation controls"
       ],
       "primary_track_id": "E_authority_security_rights_kernel",
       "phase_refs": [
@@ -4411,7 +4427,7 @@
       "book_file": "chapters/open-ended-improvement-engines.qmd",
       "book_claim_label": "Design rationale",
       "book_evidence_level": "argument",
-      "book_minimal_implementation": "A versioned improvement-campaign record containing objective, generator and task-policy bounds, candidate identifier, evaluator/version, independent-review flag, resource bill, failure or residual record, archive disposition, and a route that blocks admission when independent evaluation or a stop boundary is absent.",
+      "book_minimal_implementation": "Implemented as seven digest-bound improvement-campaign records and ten rejecting mutations covering complete review handoff, independent qualification, budget, stop authority, failure-history retention, residual ownership, and authority laundering. It is a finite routing bridge, not a campaign engine.",
       "book_beyond_state_of_art": "The mature system runs multiple constrained discovery campaigns across simulations, program spaces, data curation, and tools while preserving evaluator separation, challenge provenance, counterexamples, resource economics, sandbox limits, dual-use review, reproducibility, and campaign stop authority. It uses generated discoveries only through qualified capability fields and governed replacement, rather than granting a search process the power to promote itself. This is a target architecture, not a claim of autonomous scientific discovery, safe recursive self-improvement, or open-ended general intelligence.",
       "book_interfaces": [
         "Data Engines owns the provenance and admissibility of examples, traces, and training inputs used by a campaign.",
@@ -4433,7 +4449,7 @@
         "Generated artifacts entering a procedure library, model update, or capability field without authority, regression, rollback, or monitor checks.",
         "Open-ended search consuming unbounded budget or generating dual-use artifacts without stop authority or residual ownership."
       ],
-      "codex_test_count": 3,
+      "codex_test_count": 4,
       "representative_codex_tests": [
         "Improvement-campaign admission fixture",
         "Generator-evaluator separation probe",
@@ -5346,7 +5362,7 @@
       "book_file": "chapters/inter-stack-protocols-identity-and-economic-exchange.qmd",
       "book_claim_label": "Design rationale",
       "book_evidence_level": "argument",
-      "book_minimal_implementation": "A public-safe exchange record with protocol/schema revision, endpoint/capability declaration, sender/receiver/principal identities, task or artifact reference, delegated-authority scope, credential requirement/result, audience, expiry, budget reservation, expected receipt, dispute/revocation path, residual owner, and requested dispatch. Finite Lean routes deny a requested dispatch with a required invalid credential and route a value-bearing requested dispatch without a reserved budget to budget repair.",
+      "book_minimal_implementation": "Nine digest-bound synthetic exchange records and eleven rejecting mutations bridge owned Lean routes for complete local handoff, missing sender, audience mismatch, expiry, invalid or revoked credentials, missing reserved budget, disputed receipt, and missing residual ownership. No peer, protocol, credential, payment, account, or remote effect ran.",
       "book_beyond_state_of_art": "A mature stack exposes a protocol-neutral exchange control plane that maps tool requests, agent tasks, federated service calls, identity presentations, and value-bearing requests into bounded local contracts. It tracks discovery separately from trust, credentials separately from authorization, reservations separately from settlement, and declared results separately from independently reviewed evidence; it propagates expiry, revocation, endpoint change, budget release, dispute, and residual ownership to affected requests before existing local owners permit the next effect. This is a target architecture, not a claim of a local protocol, identity system, credential framework, payment network, peer-trust model, authorization service, task verifier, settlement system, privacy program, safe distributed deployment, or ASI.",
       "book_interfaces": [
         "Runtime Adapters, Tool Permissions, and Human Approval owns local effects; this chapter supplies a bounded remote request, not an effect lease.",
@@ -5372,7 +5388,7 @@
         "Economic commitment laundering turns a budget reservation or routed value packet into settlement, consent, fair price, or legal authorization.",
         "Revocation races or residual loss leave a changed credential, endpoint, policy, budget, timeout, partial delivery, dispute, refund, or remote failure without accountable local handling."
       ],
-      "codex_test_count": 3,
+      "codex_test_count": 4,
       "representative_codex_tests": [
         "Required-invalid-credential dispatch denial route",
         "Missing-reserved-budget value-bearing dispatch repair route",
@@ -5916,7 +5932,7 @@
       "book_file": "chapters/governed-deliberation-and-test-time-scaling.qmd",
       "book_claim_label": "Design rationale",
       "book_evidence_level": "argument",
-      "book_minimal_implementation": "A versioned deliberation record with request/risk tier, selected mode, time/token/branch/cost budget, verifier identity/version/scope/independence, candidate and rejection references, stop reason, unresolved constraints, residual owner, and downstream handoff. A finite fixture routes a high-risk execution request without independent verification to review and an exhausted budget to residual escrow.",
+      "book_minimal_implementation": "Ten digest-bound synthetic deliberation records and eleven rejecting mutations bridge ten owned Lean routes for complete planning handoff, budget/mode/verifier/history/stop/residual completeness, trace-authority separation, exhaustion, and high-risk independent verification. Fifteen known extra-compute harms remain regression-only knowledge.",
       "book_beyond_state_of_art": "A mature deliberation control plane chooses direct generation, bounded revision, candidate search, or abstention by risk, expected verification value, budget, and independent-check availability. It measures quality, verifier cost, branch count, latency, residuals, and counterexamples without turning a trace or benchmark score into authority. This is a target architecture, not a claim of local reasoning quality, reliable test-time scaling, safe self-reflection, or autonomous general intelligence.",
       "book_interfaces": [
         "Fast Generation owns low-latency generation modes; this chapter owns extra inference, search, revision, selection, and stopping discipline.",
@@ -6561,7 +6577,7 @@
       "book_file": "chapters/capability-thresholds-and-deployment-commitments.qmd",
       "book_claim_label": "Design rationale",
       "book_evidence_level": "argument",
-      "book_minimal_implementation": "A versioned threshold-commitment record with capability domain and threat model, evaluation envelope and coverage date, threshold rule and uncertainty, baseline/elicitation/access references, required safeguards and verification criteria, deadline, exception authority, re-evaluation triggers, residual owner, and affected release path. A finite Lean route blocks a requested release when a crossed threshold lacks verified safeguards.",
+      "book_minimal_implementation": "Eight digest-bound synthetic threshold-commitment records and five rejecting mutations bridge eight owned Lean routes for crossed and non-crossed readiness handoffs, missing evaluation scope, baseline, uncertainty, residual custody, safeguard record, and safeguard verification. No capability evaluation or release ran.",
       "book_beyond_state_of_art": "A mature capability-commitment control plane maintains a versioned portfolio of domain-specific thresholds with public or reviewable evaluation envelopes, uncertainty and coverage records, precommitted safeguards, independent verification, residual-risk review, prospective exception governance, and automatic re-evaluation when models, scaffolds, elicitation, or threat models change. It coordinates release, security, monitoring, access, rollback, and disclosure obligations without reducing diverse dangerous-capability profiles to one autonomy scalar. This is a target architecture, not a claim that this repository has measured capability, set an adequate threshold, verified safeguards, or achieved safe deployment.",
       "book_interfaces": [
         "Benchmark Ratchets and Anti-Goodhart Evidence owns measurement integrity, baselines, holdouts, saturation, and regression; this chapter owns what a scoped result commits the organization to do before a named release path may continue.",
@@ -6634,7 +6650,7 @@
       "book_file": "chapters/adversarial-evaluation-sandbagging-and-training-time-deception.qmd",
       "book_claim_label": "Design rationale",
       "book_evidence_level": "argument",
-      "book_minimal_implementation": "A versioned evaluation-integrity record with elicitation, selection, reward, monitor, held-out/cross-context probe, discrepancy, residual, and no-promotion fields, plus finite routing for missing controls and interference findings.",
+      "book_minimal_implementation": "Eight digest-bound synthetic evaluation-integrity records and five rejecting mutations bridge eight owned Lean routes for complete review handoff, selection/reward/monitor provenance, independent evaluation, cross-context probes, discrepancy quarantine, and intent-laundering rejection. No model or detector ran.",
       "book_beyond_state_of_art": "The mature system continuously tests how its own evidence depends on observation through diversified evaluators, context perturbations, trusted and untrusted monitor separation, blinded holdouts where feasible, independent replay, countercases, and assurance-state handoff into training leases and deployment gates. This is a target architecture, not a claim of complete deception detection, universal evaluator trust, or safety.",
       "book_interfaces": [
         "Benchmark Ratchets owns frozen tasks and anti-Goodhart controls; this chapter owns context-conditioned observations.",
@@ -6731,11 +6747,11 @@
         "Authority laundering treats case acceptance or graph completeness as release permission.",
         "Maintenance rot leaves a structurally complete case connected to superseded policies, evaluations, safeguards, or residuals."
       ],
-      "codex_test_count": 4,
+      "codex_test_count": 5,
       "representative_codex_tests": [
-        "Unresolved-defeater safety-case route",
-        "Missing acceptance-criterion negative control",
-        "Stale case-dependency and re-review fixture"
+        "Complete bounded record to readiness-review route",
+        "Missing context and hazard-model negative controls",
+        "Stale evidence, countercase, independent-review, and unresolved-defeater routes"
       ],
       "primary_track_id": "A_reference_evidence_spine",
       "phase_refs": [

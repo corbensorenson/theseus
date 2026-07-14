@@ -176,8 +176,9 @@
         "deterministic tool outputs as learned-generation targets"
       ],
       "evidence_outputs": [
-        "reports/moecot_language_arm_training.json",
-        "checkpoints/moecot_language_seed_v1/*/training_receipt.json",
+        "reports/moecot_language_arm_training_scale_v2_expert_canaries.json",
+        "reports/moecot_language_arm_training_scale_v2_transactional_resume_proof.json",
+        "checkpoints/moecot_language_seed_v8/*/training_receipt.json",
         "reports/strict_generator_mlx_pretraining_probe_*.json",
         "reports/resource_mlx_route_readiness_gate.json",
         "reports/neural_seed_survival_readiness_gate.json"
@@ -193,23 +194,24 @@
       "no_claims": [
         "loss improvement alone is not capability progress",
         "smoke does not authorize public calibration",
-        "all seven checkpoints are incomplete and capability_claim is NOT_EVALUATED"
+        "completed substrate smokes and transactional resume do not establish model capability"
       ]
     },
     {
       "id": "T3_bounded_private_training_rung",
       "title": "Bounded Private Training Rung",
-      "status": "planned",
-      "goal": "Train the English, Python, JS/TS, HTML/CSS, and Rust arms independently and train the 6.6M mixed dense transformer as a matched falsification control, using verifier-positive and verifier-negative private evidence only after direct behavior exists.",
+      "status": "in_progress",
+      "goal": "Complete the frozen v8 five-arm MoECOT and matched 10.780M-active/12.500M-total dense falsification controls, then issue a per-language architecture verdict before any amplifier, route promotion, or public calibration.",
       "entry_criteria": [
         "T2 smoke passes",
         "baseline replay is frozen",
         "data manifest and heldout split are frozen"
       ],
       "required_gates": [
-        "python3 scripts/strict_generator_mlx_pretraining_probe.py",
-        "python3 scripts/code_lm_train_once_fanout.py",
-        "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate"
+        "python3 scripts/moecot_language_arm_training.py",
+        "python3 -m pytest -q tests/test_moecot_language_arm_training.py",
+        "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
+        "python3 scripts/correctness_generator_survival_lane_gate.py --gate"
       ],
       "allowed_inputs": [
         "private residual categories: missing_semantic_update_value, type_handling, wrong_answer, missing_finalizer",
@@ -224,9 +226,11 @@
         "structural adapters counted as learned generation"
       ],
       "evidence_outputs": [
-        "reports/strict_generator_mlx_private_adaptation_*.json",
-        "reports/code_lm_train_once_fanout.json",
-        "reports/neural_seed_strict_generator_fanout_receipt.json"
+        "reports/moecot_language_arm_training_scale_v2_trunk_full.json",
+        "reports/moecot_language_arm_training_scale_v2_experts_full.json",
+        "reports/moecot_language_arm_training_scale_v2_dense_active_full.json",
+        "reports/moecot_language_arm_training_scale_v2_dense_total_full.json",
+        "checkpoints/moecot_language_seed_v8/*/training_receipt.json"
       ],
       "exit_criteria": [
         "arm-specific and mixed-control heldouts are evaluated before and after",
@@ -236,7 +240,7 @@
         "checkpoint size, load time, throughput, and memory are reported"
       ],
       "latest_diagnostic_disposition": {
-        "state": "falsified_current_tiny_semantic_adaptation",
+        "state": "v8_sparse_complete_dense_controls_in_progress",
         "adopted_architecture_repairs": [
           "family-disjoint claims now require independently verified transitive checkpoint-training lineage",
           "configured heldout families are excluded before private rows can seed source or target vocabulary",
@@ -248,8 +252,8 @@
           "the clean semantic adaptation emitted 14 integrity-clean candidates across the 24-row family-disjoint diagnostic but passed 0/24 behaviors",
           "starvation DPO improved its preference objective but regressed emitted candidates from 14 to 0 and is not adopted"
         ],
-        "current_wall": "Learn prompt/signature-conditioned state transitions, update operands, and final-return semantics with adequate source data/capacity. Do not substitute templates, renderers, deterministic tools, route labels, syntax rates, LM loss, or preference-gap improvement for model-only heldout behavior.",
-        "next_allowed_step": "Complete the five-arm MoECOT trainer/checkpoint topology and matched dense-control contract, then require positive arm-level family-disjoint verifier behavior before preference/RL, search, or scale."
+        "current_wall": "English has one narrow exact development success while every code arm remains zero exact. The missing evidence is the frozen dense-control comparison and one-shot confirmation, not another same-scale sparse patch. Do not substitute templates, renderers, deterministic tools, route labels, syntax rates, LM loss, similarity, or preference-gap improvement for model-only heldout behavior.",
+        "next_allowed_step": "Finish both dense controls unchanged, evaluate every language separately, issue the two-view Pareto verdict, and spend confirmation once on the selected unchanged implementation before preference/RL, search, scale, or public calibration."
       },
       "rollback_or_stop": "Do not promote if improvement is only syntax, nontrivial-return rate, lower LM loss, or wider fanout without behavior.",
       "no_claims": [
@@ -491,12 +495,12 @@
     "public_calibration_state": "fresh frozen measurement only, exact consumed reruns refused"
   },
   "next_concrete_sequence": [
-    "Run T0 gate bundle.",
-    "Refresh T1 data/context manifest.",
-    "Run T2 private MLX training smoke.",
-    "If T2 is clean, run T3 bounded private stateful-update training rung.",
-    "Run T4 private replay and integrity ablations.",
-    "Run T5 assisted local inference canary for real daily-use tasks.",
-    "Only propose T7 public calibration if T4 shows genuine private semantic behavior improvement."
+    "Preserve the immutable v8 data, tokenizer, seed, supervision, development, confirmation, and verifier contract.",
+    "Finish the in-flight T3 active-parameter dense control, then the total-parameter dense control through transactional checkpoints.",
+    "Run T4 direct per-language evaluation for both controls and publish MoECOT-versus-dense results under both preregistered accounting views.",
+    "Select the practical architecture from the frozen Pareto verdict; do not tune from interim or aggregate-only results.",
+    "Spend each confirmation split once on the selected unchanged implementation and execute a registry replacement transaction only if it qualifies.",
+    "Qualify VCM, STS, search, preference/RL, and fast generation only after behavior-positive direct generation, each with equal-budget mechanism-removed controls.",
+    "Run T5/T6 real-use feedback on the qualified local route; propose T7 only after a material private model improvement."
   ]
 }

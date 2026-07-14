@@ -154,3 +154,60 @@ def test_five_arm_smoke_and_completed_lane_are_operational() -> None:
         "no_claims": ["not capability"],
     }
     assert check_lane_shapes({"lanes": [lane]})["passed"]
+
+
+def test_shared_trunk_smoke_and_in_progress_lane_are_operational() -> None:
+    targets = (
+        "shared_trunk",
+        "english",
+        "python",
+        "javascript_typescript",
+        "html_css",
+        "rust",
+        "dense_total_parameter",
+        "dense_active_parameter",
+    )
+    report = {
+        "policy": "project_theseus_moecot_language_arm_training_plan_v1",
+        "trigger_state": "GREEN",
+        "checkpoint_inventory": {
+            "state": "GREEN",
+            "all_targets_smoke_ready": True,
+            "valid_smoke_count": len(targets),
+            "distinct_checkpoint_digest_count": len(targets),
+            "distinct_optimizer_digest_count": len(targets),
+            "capability_claim": "NOT_EVALUATED",
+            "rows": [
+                {
+                    "target_id": target,
+                    "state": "GREEN",
+                    "optimizer_steps": 1,
+                    "capability_claim": "NOT_EVALUATED",
+                }
+                for target in targets
+            ],
+        },
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "templates_renderers_routers_tools_credit": 0,
+    }
+    result = check_current_t2_training_smoke_if_present(
+        {"t2_private_training_smoke": report}
+    )
+    assert result["passed"]
+    lane = {
+        "id": "T3_bounded_private_training_rung",
+        "title": "Bounded Private Training Rung",
+        "status": "in_progress",
+        "goal": "complete frozen controls",
+        "entry_criteria": ["smoke complete"],
+        "required_gates": ["gate"],
+        "allowed_inputs": ["private"],
+        "forbidden_inputs": ["public benchmark payloads"],
+        "evidence_outputs": ["report"],
+        "exit_criteria": ["verdict"],
+        "rollback_or_stop": "resume from receipt",
+        "no_claims": ["not capability until evaluated"],
+    }
+    assert check_lane_shapes({"lanes": [lane]})["passed"]

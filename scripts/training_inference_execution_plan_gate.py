@@ -38,7 +38,7 @@ DEFAULT_CURRENT_REPORTS = {
     "training_data_admission": REPORTS / "training_data_admission_v1.json",
     "neural_seed_survival": REPORTS / "neural_seed_survival_readiness_gate.json",
     "resource_mlx_route": REPORTS / "resource_mlx_route_readiness_gate.json",
-    "t2_private_training_smoke": REPORTS / "moecot_language_arm_training.json",
+    "t2_private_training_smoke": REPORTS / "moecot_language_arm_training_scale_v2_expert_canaries.json",
     "assistant_product_lane": REPORTS / "theseus_assistant_product_lane_gate.json",
     "public_calibration_proposal": REPORTS / "public_calibration_proposal_gate.json",
 }
@@ -75,6 +75,7 @@ REQUIRED_LANES = [
 ALLOWED_LANE_STATES = {
     "ready",
     "completed",
+    "in_progress",
     "planned",
     "blocked_until_private_quality_positive",
     "blocked_external_peers_unreachable",
@@ -174,6 +175,9 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
         "required_lane_count": len(REQUIRED_LANES),
         "ready_lane_count": sum(1 for lane in list_dicts(plan.get("lanes")) if lane.get("status") == "ready"),
         "planned_lane_count": sum(1 for lane in list_dicts(plan.get("lanes")) if lane.get("status") == "planned"),
+        "in_progress_lane_count": sum(
+            1 for lane in list_dicts(plan.get("lanes")) if lane.get("status") == "in_progress"
+        ),
         "blocked_lane_count": sum(1 for lane in list_dicts(plan.get("lanes")) if str(lane.get("status", "")).startswith("blocked")),
         "ready_for_governed_private_training_focus": ready_for_private_training(current, failed_checks, failed_expected_invalid),
         "ready_for_private_training_smoke": ready_for_private_training_smoke(plan, current, failed_checks, failed_expected_invalid),
@@ -431,6 +435,22 @@ def check_current_t2_training_smoke_if_present(current: dict[str, dict[str, Any]
     if smoke.get("policy") == "project_theseus_moecot_language_arm_training_plan_v1":
         inventory = dict_value(smoke.get("checkpoint_inventory"))
         rows = list_dicts(inventory.get("rows"))
+        target_ids = {str(row.get("target_id") or "") for row in rows}
+        legacy_targets = {
+            "english",
+            "python",
+            "javascript_typescript",
+            "html_css",
+            "rust",
+            "dense_total_parameter",
+            "dense_active_parameter",
+        }
+        shared_trunk_targets = legacy_targets | {"shared_trunk"}
+        expected_target_count = (
+            len(target_ids)
+            if target_ids == legacy_targets or target_ids == shared_trunk_targets
+            else 0
+        )
         counters = {
             "public_training_rows_written": int_value(smoke.get("public_training_rows_written")),
             "external_inference_calls": int_value(smoke.get("external_inference_calls")),
@@ -444,11 +464,20 @@ def check_current_t2_training_smoke_if_present(current: dict[str, dict[str, Any]
             faults["trigger_state"] = smoke.get("trigger_state")
         if inventory.get("state") != "GREEN" or inventory.get("all_targets_smoke_ready") is not True:
             faults["checkpoint_inventory"] = inventory.get("state")
-        if int_value(inventory.get("valid_smoke_count")) != 7 or len(rows) != 7:
-            faults["target_count"] = {"valid": inventory.get("valid_smoke_count"), "rows": len(rows)}
-        if int_value(inventory.get("distinct_checkpoint_digest_count")) != 7:
+        if not expected_target_count:
+            faults["target_ids"] = sorted(target_ids)
+        if (
+            int_value(inventory.get("valid_smoke_count")) != expected_target_count
+            or len(rows) != expected_target_count
+        ):
+            faults["target_count"] = {
+                "expected": expected_target_count,
+                "valid": inventory.get("valid_smoke_count"),
+                "rows": len(rows),
+            }
+        if int_value(inventory.get("distinct_checkpoint_digest_count")) != expected_target_count:
             faults["checkpoint_digests_not_distinct"] = inventory.get("distinct_checkpoint_digest_count")
-        if int_value(inventory.get("distinct_optimizer_digest_count")) != 7:
+        if int_value(inventory.get("distinct_optimizer_digest_count")) != expected_target_count:
             faults["optimizer_digests_not_distinct"] = inventory.get("distinct_optimizer_digest_count")
         if any(int_value(row.get("optimizer_steps")) <= 0 for row in rows):
             faults["missing_optimizer_steps"] = [row.get("target_id") for row in rows if int_value(row.get("optimizer_steps")) <= 0]
@@ -738,7 +767,8 @@ def ready_for_bounded_private_training_rung(
     return (
         ready_for_private_training(current, failed_checks, failed_expected_invalid)
         and t2_smoke_passed
-        and lane_by_id(plan, "T3_bounded_private_training_rung").get("status") in {"ready", "planned"}
+        and lane_by_id(plan, "T3_bounded_private_training_rung").get("status")
+        in {"ready", "planned", "in_progress"}
     )
 
 

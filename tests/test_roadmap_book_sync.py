@@ -37,8 +37,8 @@ class RoadmapBookSyncTests(unittest.TestCase):
         self.assertTrue(summary["book_manifest_digest_match"])
         self.assertEqual(0, summary["book_manifest_source_field_drift_count"])
         self.assertEqual(54, summary["book_manifest_chapter_count"])
-        self.assertEqual(504, summary["book_codex_test_count"])
-        self.assertEqual(102, summary["book_pending_or_partial_codex_test_count"])
+        self.assertEqual(511, summary["book_codex_test_count"])
+        self.assertEqual(109, summary["book_pending_or_partial_codex_test_count"])
 
     def test_reordered_rows_fail_closed(self) -> None:
         matrix = copy.deepcopy(self.matrix)

@@ -30,12 +30,12 @@ module must meet.
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions; the frozen v8 view is 215.55M positions plus licensed three-way splits with zero overlap/public payloads | keep the v8 view immutable through the comparison; expand only from measured residuals afterward |
-| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; one-step MLX canaries are GREEN but behavior is unmeasured | complete both controls against the same frozen data/evaluation contract; never select an accounting view after results |
+| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; the full active-parameter control is running with transactional checkpoints and the total-parameter control remains queued | finish both unchanged controls, publish per-language behavior and cost, and never select an accounting view after results |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk and all five specialists are complete; English is 1/128 exact, while all four code arms remain 0 exact (Python 41/128 syntax-valid) | complete both matched dense controls before any architecture verdict; do not spend confirmation or patch the arms from development results |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED - richer Rust expert emits 60/60 valid outputs but remains 0/60 exact; target/source similarity is 0.358/0.382 and confirmation is untouched | build a content-bound scale ladder from the remaining admitted licensed corpus; no more same-scale objective or expert-scope patches |
+| Generator capability (held-out pass) | Phase 10 | RED but no longer uniformly zero - v8 English is 1/128 exact; Python, JS/TS, HTML/CSS, and Rust remain 0 exact; confirmation is untouched and no route is promoted | finish the dense controls, issue the frozen architecture verdict, then spend confirmation once on the selected unchanged implementation |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -44,8 +44,8 @@ module must meet.
 | Authority kernel / SCIF | Phase 18 | replayable-reference-backed for the same bounded local effect; SCIF and wider authority controls remain synthetic | preserve exact effect/rollback auditing and expand support only when another real effect class earns it |
 | Assistant product | Phase 5 | assisted runtime wired; model-only general chat unavailable | dogfood deterministic/verified assistance now, but earn model usefulness only from real multi-day use after the local model clears its behavior floor |
 | Report hygiene | Phases 0, 8, 14 | budget gate GREEN but hot reports are near the 1 GiB ceiling and total local generated/archive state remains large | compact to <=80% hot-budget headroom after the active stage build; run retention before long training and preserve exact replay pointers |
-| Book crosswalk / parity | Phase 19 | 54 chapters mapped in manifest order; no beyond-SOTA completion implied | keep book-owned fields, tests, and source identity checksum-bound |
-| Book test obligations | Phase 19 + routed owners | 504 authored Codex tests; 102 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
+| Book crosswalk / parity | Phase 19 | 54 chapters mapped in manifest order; the exact post-v2.3 source-integration worktree manifest is digest-bound without claiming it is committed or published | keep book-owned fields, tests, and source identity checksum-bound; rebind after the book worktree is committed |
+| Book test obligations | Phase 19 + routed owners | 511 authored Codex tests; 109 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
 | Book futures intake | Phase 19 + routed owners | requirements retained but capability-frozen; QCSA source is available and manifest pending | preserve the crosswalk without implementation expansion until a language arm or matched dense control clears non-zero heldout behavior, except concrete correctness/security defects |
 
 Pre-training readiness uses the matrix-owned phase partition rather than every
@@ -165,8 +165,10 @@ and search. The target seed is a governed Octopus/MoECOT system with one English
 and separate Python, JS/TS, HTML/CSS, and Rust arms. The head compiles visible user
 intent, VCM context, authority, and resource constraints into a task-local route;
 specialists exchange typed Semantic IR/artifacts rather than duplicating all domain
-knowledge inside one monolith. A 6.6M mixed dense transformer is trained as the
-matched control, not silently promoted as the intended product architecture.
+knowledge inside one monolith. The current frozen controls are a 10.780M-active
+dense transformer and a 12.500M-total dense transformer, matched to the v8 sparse
+system under two preregistered accounting views. Neither control is silently
+promoted; their purpose is to falsify or select the practical architecture.
 
 - **Data-supported arms and matched control.** Predeclare unique admitted positions,
   optimizer exposure, heldouts, parameter count, and compute for each arm and for the
@@ -211,6 +213,32 @@ matched control, not silently promoted as the intended product architecture.
    preference/RL, and fast generation in that order. Only after a materially changed
    current system clears private integrity/behavior gates, spend a fresh public
    calibration surface. SymLiquid remains a later protected comparator.
+
+**Current completion ledger and binding next sequence (2026-07-14):**
+- Steps 1-3 are complete for v8: the ABI and five arm contracts are frozen; the
+  215.55M-position training view is immutable; the 10.347M shared trunk and all five
+  430,849-parameter specialists completed with distinct checkpoint/optimizer lineage.
+- Arm-level development evaluation is complete. English produced the first narrow
+  direct exact success (`1/128`); all code arms remain `0` exact. Syntax validity,
+  similarity, loss, and routing remain diagnostics and cannot replace exact behavior.
+- Finish the already-running active-parameter dense control, then the total-parameter
+  dense control, without changing data, seed, tokenizer, supervision, decoding,
+  heldouts, or verifier. Publish every language result before either aggregate view.
+- Issue one architecture verdict under both frozen views. A dense Pareto win selects
+  dense/hybrid as the practical lane; a sparse win must avoid every arm-floor
+  regression; an unresolved tie remains unresolved rather than being narrated as a
+  MoECOT win.
+- Spend each confirmation split exactly once on the selected unchanged implementation.
+  Only a confirmation-qualified successor may receive default route authority and
+  retire the old strict-generator route through a registry replacement transaction.
+- If at least one code arm is behavior-positive, qualify STS/VCM conditioning and
+  verifier-guided search with equal-budget mechanism-removed controls, followed by
+  preference/RL only when accepted/rejected pair density is real. If every code arm
+  remains zero, do not optimize search or routing around a zero numerator: use the
+  frozen failures to choose the next data/capacity/objective rung before retraining.
+- Public calibration follows a material, confirmation-qualified model change. It is
+  measurement only and never a source of prompts, tests, solutions, traces, labels,
+  templates, or residual training rows.
 
 **Track 0 - Data and Curriculum Program** (foundational; runs ahead of and parallel
 to Track 1).
@@ -814,16 +842,17 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   not one dense model containing all English and programming-language knowledge.
   Freeze English, Python, JS/TS, HTML/CSS, and Rust arm contracts with independent
   weights, optimizer/checkpoint lineage, data views, verifiers, and rollback. The
-  existing clean 6.6M MLX causal transformer remains the mixed dense falsification
-  control. No arm or control receives promotion without direct family-disjoint
-  behavior; route correctness, loss, or syntax alone cannot adopt a checkpoint.
-- **Trainer/checkpoint status:** `moecot_language_arm_training` now binds the five
-  immutable arm ranges to independent 1,211,520-parameter MLX models and binds both
-  a 6,623,232-parameter total-control and a 1,211,520-parameter active-control.
-  All seven bounded smokes write distinct model and optimizer digests; Python also
-  replays an exact content-bound resume. The five arms total 6,057,600 parameters,
-  8.54% below the total-control. Six targets remain one-step substrate smokes; Rust
-  is complete but remains non-routeable because its direct evaluation is negative.
+  frozen v8 dense controls remain mandatory falsification controls. No arm or control
+  receives promotion without direct family-disjoint behavior; route correctness,
+  loss, syntax, similarity, or aggregate-only improvement cannot adopt a checkpoint.
+- **Trainer/checkpoint status:** `moecot_language_arm_training` binds one immutable
+  10,347,009-parameter shared trunk to five independent 430,849-parameter specialist
+  deltas. One request activates 10,777,601 parameters; total sparse ownership is
+  12,501,254. The dense controls are mechanically matched at 10,779,648 active and
+  12,499,968 total parameters. The trunk and all specialists are complete with
+  transactional model/optimizer lineage. The active-parameter dense control is in
+  full execution; the total-parameter control follows. No v8 implementation is
+  routeable and confirmation remains untouched.
 - **Frozen supervision and first complete rung:** exact-revision Dolly and
   CommitPackFT intake now yields 20,000 licensed train, 544 development, and 1,032
   heldout rows
@@ -1170,10 +1199,12 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   ms). The comparison is `GREEN` but prefix-LM is `NOT_ADOPTED`; causal remains the
   canonical attention policy. This falsifies source-prefix masking as the next
   capability lever at the bounded diagnostic rung.
-- Scale toward a 100M sparse specialist proposer with matched dense active-compute
-  control, expert attribution, prompt/signature-only visibility, strict direct-body
-  replay, and family-disjoint heldouts. Keep the old body-template inventory disabled
-  for promotion claims.
+- Do not fund a 100M sparse rung from architecture preference. First complete the v8
+  10.78M-active/12.50M-total verdict and one-shot confirmation. A later scale rung
+  must be selected from measured scaling residuals, supported by additional unique
+  admitted positions, and repeat both matched dense views with expert attribution,
+  prompt/signature-only visibility, strict direct-body replay, and family-disjoint
+  heldouts. Keep the old body-template inventory disabled for promotion claims.
 - Once a proposer sometimes succeeds, run verifier-stage-aware DPO/IPO/ORPO/KTO/
   SimPO, then bounded GRPO/RLOO/ReMax/RLVR. Every update has a policy lease,
   evaluator independence, drift/authority bounds, rollback, reward-hacking probes,
@@ -1471,7 +1502,7 @@ gaps route into the phases above:
 | Proof-carrying + tribunal/adversarial review | broader independent-review records not standard for architecture changes | 14, 18 |
 | Labor OS typed jobs / artifact graphs | typed job + unified artifact graph not the universal unit | 1, 14 |
 | Procedural memory | adoption discipline applied to only one trace so far | 15 |
-| Routing heads + MoECOT + specialist cores | one canonical live MoECOT orchestration record missing; sparse specialist model unbuilt | 16 |
+| Routing heads + MoECOT + specialist cores | v8 shared trunk and five specialist deltas are trained and arm-evaluated; matched dense verdict, confirmation, live arm-card binding, typed composition, and route-versus-answer qualification remain | 10, 16 |
 | Ambiguous routing + adaptive deliberation | naturally ambiguous route corpus, fallback/abstention calibration, first-hit/last-correct, overthinking harm, branch credit, and verifier-disagreement accounting are missing on useful model outputs | 4, 6, 8, 10, 14, 16, 18 |
 | Readiness gates + residual escrow | stale outputs/duplicate families reduce trust | 0, 2 |
 | Generate-verify-repair | correctness still eval-only, not a training/search signal | 6, 10, 13 |
@@ -1510,12 +1541,12 @@ training-readiness defect requires it.
 
 | Book candidate or section | Theseus owner phases | Entry condition / disposition |
 |---|---|---|
-| Reasoning-Trace Faithfulness (section route) | 1, 4, 14 | now as an evidence boundary; distinguish traces from receipts and test trace/action consistency without treating hidden reasoning as authoritative |
+| Reasoning-Trace Faithfulness (section route) | 1, 4, 14, 18 | source queue now includes information-flow faithfulness and MonitorBench comparators; distinguish traces from receipts, test trace/action and monitorability under pressure, and never treat hidden reasoning as authoritative |
 | Question-Compiled Semantic Addressing | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 | source available and chapter manifest pending; extend VCM/SCF/VIEA with stable SOID-address-route indirection, plural address atlases, active question traces, SACs, physical translation, migration receipts, and matched falsification without creating a parallel memory lane |
-| World Models and Model-Based Cognition | 10, 13, 17 | after the core proposer floor; prediction/error ledgers, model-predictive control, imagination/search, causal limits, sim-to-real |
+| World Models and Model-Based Cognition | 10, 13, 17 | V-JEPA 2 is now a source comparator; activation still waits for the core proposer floor and requires prediction/error ledgers, model-predictive control, imagination/search, causal limits, and sim-to-real controls |
 | Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |
 | Persuasion, Epistemic Security, and Human Agency | 5, 14, 18 | source-contingent; require stronger empirical anchors before activation or claims |
-| CAIS, Embedded Agency, and Corrigibility Foundations (section route) | 1, 18, 19 | prior-art/foundations work only unless a distinct mechanism and proof program earns a chapter boundary |
+| CAIS, Embedded Agency, and Corrigibility Foundations (section route) | 1, 2, 14, 18, 19 | Embedded Agency source is now mapped; use it to constrain self-model, delegation, subsystem-alignment, and authority claims, but keep it foundations-only unless a distinct mechanism and proof program earns a chapter boundary |
 | Perception, Grounding, and Observation Trust | 3, 8, 17, 18 | when a vision/audio/sensor modality starts; observation contracts, provenance/taint, fusion disagreement, uncertainty, refresh, spoofing/occlusion |
 | Embodied Execution and Physical-World Safety | 1, 8, 17, 18 | before physical actuation; control periods, hazard envelopes, interlocks, fallback controllers, stop authority, degraded modes |
 | Operational Resilience, Incident Response, and Decommissioning | 0, 8, 9, 14, 18 | before production/fleet dependence; criticality, impact tolerance, monitoring, containment, failover, recovery, disclosure, secure retirement |
