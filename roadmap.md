@@ -31,7 +31,7 @@ module must meet.
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions; the frozen v8 view is 215.55M positions plus licensed three-way splits with zero overlap/public payloads | keep the v8 view immutable through the comparison; expand only from measured residuals afterward |
 | Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; one-step MLX canaries are GREEN but behavior is unmeasured | complete both controls against the same frozen data/evaluation contract; never select an accounting view after results |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 shared trunk is complete at 227.19M optimizer positions; five independently owned 430,849-parameter language specialists remain to train/evaluate | train all five specialists against immutable trunk `3819f966...`, then complete both controls and accept the frozen direct-behavior verdict |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk and all five specialists are complete; English is 1/128 exact, while all four code arms remain 0 exact (Python 41/128 syntax-valid) | complete both matched dense controls before any architecture verdict; do not spend confirmation or patch the arms from development results |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
@@ -976,6 +976,15 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   are 1.282, 1.453, and 1.506. Canonical checkpoint `3819f966...` and optimizer
   `1d45dadd...` verify, all progress generations are cleaned, and the result remains
   `NOT_EVALUATED` until executable language-expert compositions exist.
+- **v8 specialist result:** all five 430,849-parameter deltas completed against
+  immutable trunk `3819f966...`, with distinct checkpoint/optimizer lineage and no
+  cross-arm mutation. English is the first behavior-positive v8 arm at 1/128 exact
+  (0.0078125), 128/128 serialization-valid, and 0.191 mean target similarity.
+  Python, JS/TS, HTML/CSS, and Rust remain 0 exact. Python is 41/128 syntax-valid;
+  code-arm serialization is 0.961-1.0 and target similarity is 0.266-0.337. These
+  development results establish one narrow direct success, not broad capability.
+  Confirmation remains untouched and no arm is routeable. The frozen active- and
+  total-parameter dense controls must complete before interpreting MoECOT.
 - **Tokenizer correction:** the earlier canonical pretraining stage used Python body
   tokenization for every category and was therefore invalid for exact English,
   JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact

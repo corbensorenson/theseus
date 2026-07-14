@@ -115,6 +115,13 @@ share toward zero. Public benchmarks are calibration only.
   `3819f966...` and optimizer `1d45dadd...` verify with no progress generations
   retained. This is completed training provenance, not capability; direct evaluation
   waits for the independently trained language experts.
+- **v8 specialist result:** all five 430,849-parameter specialists completed with
+  independent checkpoints bound to trunk `3819f966...`. English reaches 1/128 exact
+  (0.0078125) with 128/128 valid serialization. Python, JS/TS, HTML/CSS, and Rust
+  remain 0 exact; Python is 41/128 syntax-valid, and code-arm target similarities
+  range from 0.266 to 0.337. This is the first narrow direct v8 success but not broad
+  utility, promotion, or an architecture win. Confirmation is untouched, no arm is
+  routeable, and matched dense active/total controls remain required.
 - **Tokenizer correction:** the canonical pretraining stage no longer routes every
   language through Python body tokenization. All six corpus categories use exact
   reversible text streams; 38,443 selected documents prove their category/profile
