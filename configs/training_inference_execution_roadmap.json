@@ -265,7 +265,7 @@
     {
       "id": "T4_private_eval_and_candidate_integrity",
       "title": "Private Functional Utility And Candidate Integrity",
-      "status": "planned",
+      "status": "in_progress",
       "goal": "Freeze and execute a source-disjoint, architecture-neutral functional utility qualification for English and every code language while preserving exact recovery as a separate diagnostic and independently auditing candidate integrity.",
       "entry_criteria": [
         "the functional manifest is frozen before completed dense-control outputs are inspected",
@@ -273,6 +273,8 @@
         "candidate files, toolchain identities, rubrics, tests, and reports are replayable"
       ],
       "required_gates": [
+        "python3 scripts/neural_seed_functional_utility.py",
+        "python3 -m pytest -q tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py",
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
         "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate"
@@ -293,7 +295,9 @@
       ],
       "evidence_outputs": [
         "reports/private_functional_utility_manifest.json",
+        "reports/private_functional_utility_candidate_packet.json",
         "reports/private_functional_utility_qualification.json",
+        "configs/neural_seed_functional_utility_freeze.json",
         "reports/candidate_integrity_*.json",
         "reports/blind_information_flow_audit_*.json",
         "reports/neural_seed_strict_generator_fanout_receipt.json",

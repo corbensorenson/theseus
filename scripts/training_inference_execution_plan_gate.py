@@ -238,7 +238,7 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
                 "Hive fleet training while peers are unreachable",
             ],
             "why": (
-                "The private MLX smoke is clean and the frozen v8 comparison is in progress. Finish both dense controls unchanged, publish exact-recovery diagnostics, and freeze the separate functional utility manifest before inspecting completed control outputs."
+                "The private MLX smoke is clean, the v8 comparison is in progress, and the separate functional utility contract was frozen before dense-control completion. Finish both controls unchanged, publish exact-recovery diagnostics, then run the unchanged checkpoints through the frozen functional qualification."
                 if bounded_rung_ready
                 else (
                     "Pre-training architecture readiness is RED because the roadmap now has partial book-derived implementation phases. Resolve or falsify those partial phases before making training or public calibration the primary focus."

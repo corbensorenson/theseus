@@ -1,0 +1,53 @@
+{
+  "candidate_packet_sha256": "d2ea7317a62a818e9ffed33c463c0bb5c0700e5f02ce419eaf893ef2998a5954",
+  "capability_claim": "NOT_EVALUATED",
+  "case_compiler_sha256": "1f1ffacb7795f3ab42eb9ee95754b927c1e076d82bbd12528d3a3e0ff5267aa0",
+  "case_contract_sha256": "d724363eca913129cb1701105b06c8f51ebc644d1a7485994bc1a50b54bdc792",
+  "case_count": 160,
+  "cases_by_arm": {
+    "english": 32,
+    "html_css": 32,
+    "javascript_typescript": 32,
+    "python": 32,
+    "rust": 32
+  },
+  "compiler_sha256": "8833eac04931830137a28a5dbf94f194cbad1393ad51d9bdfcb92d1bb9107afc",
+  "config": "configs/neural_seed_functional_utility.json",
+  "config_sha256": "7655831f70df661d745d75276b9bcb111795c85f8290cce49e3cc9dd657f826f",
+  "dense_controls_complete_at_freeze": false,
+  "evaluation_state": "NOT_EVALUATED",
+  "external_inference_calls": 0,
+  "frozen_utc": "2026-07-14T08:00:58.961082Z",
+  "immutable": true,
+  "policy": "project_theseus_private_functional_utility_freeze_v1",
+  "public_training_rows_written": 0,
+  "templates_renderers_routers_tools_credit": 0,
+  "toolchain_identity_sha256": "4cb3e92632490e57011d1dc6fe87bd94e9395a5c41d70c5a7683407cfa7abd2a",
+  "training_state_at_freeze": {
+    "controls": {
+      "dense_active_parameter": {
+        "complete": false,
+        "heartbeat": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_heartbeat.json",
+        "heartbeat_sha256": "127198d0d7c24b642c5bad603bb2da41b139a5775b5929760de06ce6eb2b7180",
+        "optimizer_steps": 9500,
+        "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
+        "receipt": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_receipt.json",
+        "receipt_sha256": "1207db2a6f4d85322b336bd3bab7af77319ee39047e4da1dde9fb477a7edc816"
+      },
+      "dense_total_parameter": {
+        "complete": false,
+        "heartbeat": "checkpoints/moecot_language_seed_v8/dense_total_parameter/training_heartbeat.json",
+        "heartbeat_sha256": "",
+        "optimizer_steps": 1,
+        "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
+        "receipt": "checkpoints/moecot_language_seed_v8/dense_total_parameter/training_receipt.json",
+        "receipt_sha256": "abfe75ee3e9409770dc617d4b7d3da5985996c2b93e0fc52a48153606e98701f"
+      }
+    },
+    "dense_controls_complete": false,
+    "functional_contract_frozen_before_control_completion": true
+  },
+  "v8_plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
+  "v8_stage_signature": "1b3b9c9e8dacf47569b8e97b9173ce64736d01a102c2f2905bae604acf9fc921",
+  "verifier_sha256": "96a2bfc67ec42f0a860dc69705681cdb0d8bfebd24de95f65261a0b298f79b0a"
+}

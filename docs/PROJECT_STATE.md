@@ -32,11 +32,12 @@ share toward zero. Public benchmarks are calibration only.
   controls. The data, tokenizer, seed, supervision, development, confirmation, and
   verifier contracts are immutable through the verdict.
 - **Immediate dependency:** finish both dense controls unchanged and publish the v8
-  exact-recovery diagnostic. Before completed control outputs are inspected, freeze a
-  source-disjoint functional utility manifest: blind rubric/pairwise English and
-  pinned compile/test/render checks for all code arms. Use that result, not exact
-  target reproduction alone, for practical route selection. Do not patch from interim
-  results.
+  exact-recovery diagnostic. The separate 160-case functional utility contract is now
+  immutably frozen before control completion: 32 source-disjoint cases per arm, blind
+  English scoring, and pinned Python/Deno/Chrome/Cargo checks. It is `NOT_EVALUATED`,
+  not a capability claim. Run unchanged checkpoints against it after both controls
+  finish; use that result, not exact reproduction alone, for practical route selection.
+  Do not patch from interim results.
 
 ## Evidence Boundaries
 

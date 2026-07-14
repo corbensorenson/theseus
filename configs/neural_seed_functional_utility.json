@@ -1,0 +1,163 @@
+{
+  "policy": "project_theseus_private_functional_utility_contract_v1",
+  "surface_id": "neural_seed_and_decoder",
+  "abstraction_id": "candidate_generation_contract",
+  "seed": 20260714,
+  "v8_plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
+  "v8_stage_signature": "1b3b9c9e8dacf47569b8e97b9173ce64736d01a102c2f2905bae604acf9fc921",
+  "variants_per_family": 4,
+  "expected_cases_per_arm": 32,
+  "arms": {
+    "english": {
+      "families": [
+        "correction_following",
+        "constraint_tracking",
+        "grounded_synthesis",
+        "ambiguity_clarification",
+        "calibrated_abstention",
+        "conversation_continuity",
+        "structured_transformation",
+        "repository_planning"
+      ],
+      "verifier": "blind_rubric_v1"
+    },
+    "python": {
+      "families": [
+        "stable_unique",
+        "clamp_values",
+        "merge_counts",
+        "chunk_values",
+        "parse_duration",
+        "normalize_slug",
+        "select_active",
+        "repository_edit"
+      ],
+      "verifier": "python_isolated_tests_v1"
+    },
+    "javascript_typescript": {
+      "families": [
+        "stable_unique",
+        "clamp_values",
+        "merge_counts",
+        "chunk_values",
+        "parse_duration",
+        "normalize_slug",
+        "select_active",
+        "repository_edit"
+      ],
+      "verifier": "deno_typescript_tests_v1"
+    },
+    "html_css": {
+      "families": [
+        "accessible_form",
+        "landmark_navigation",
+        "data_table",
+        "status_alert",
+        "responsive_cards",
+        "theme_variables",
+        "modal_dialog",
+        "media_figure"
+      ],
+      "verifier": "html_dom_a11y_render_v1"
+    },
+    "rust": {
+      "families": [
+        "stable_unique",
+        "clamp_values",
+        "merge_counts",
+        "chunk_values",
+        "parse_duration",
+        "normalize_slug",
+        "select_active",
+        "repository_edit"
+      ],
+      "verifier": "rust_cargo_tests_v1"
+    }
+  },
+  "source_disjoint": {
+    "supervision_root": "data/training_data/moecot_language_supervision_v1",
+    "scan_splits": [
+      "private_train",
+      "private_dev",
+      "private_eval"
+    ],
+    "forbid_exact_prompt_overlap": true,
+    "forbid_normalized_prompt_overlap": true,
+    "forbid_target_hash_as_prompt": true
+  },
+  "generator_view": [
+    "case_id",
+    "arm_id",
+    "prompt"
+  ],
+  "evaluator_only_fields": [
+    "verifier",
+    "rubric",
+    "hidden_tests",
+    "expected",
+    "assertions",
+    "reference_behavior"
+  ],
+  "sandbox": {
+    "policy": "macos_sandbox_exec_network_denied_v1",
+    "timeout_seconds": 12,
+    "maximum_candidate_bytes": 65536,
+    "network_allowed": false,
+    "write_scope": "candidate_executors_per_case_temporary_directory_only",
+    "trusted_renderer_exception": "Chrome may write process metadata; candidate JavaScript and external resources are forbidden and IP transport is OS-denied",
+    "environment_allowlist": [
+      "HOME",
+      "PATH",
+      "TMPDIR",
+      "NO_COLOR"
+    ],
+    "toolchains": {
+      "python": "python3 -I",
+      "javascript_typescript": "deno test --cached-only --no-config --no-lock",
+      "rust": "cargo check/clippy/test --offline",
+      "html_css": "tidy plus headless Chrome local-file render"
+    }
+  },
+  "english_scoring": {
+    "minimum_raters": 2,
+    "score_scale": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "dimensions": [
+      "instruction_fulfillment",
+      "correctness_and_grounding",
+      "conversation_state",
+      "calibration",
+      "clarity"
+    ],
+    "adjudication_required_score_delta": 2,
+    "minimum_agreement_metric": "quadratic_weighted_kappa",
+    "model_identity_hidden_from_raters": true,
+    "reference_answer_hidden_from_raters": true
+  },
+  "reporting": {
+    "exact_recovery_separate": true,
+    "model_only_and_assisted_separate": true,
+    "required_metrics": [
+      "functional_pass_rate",
+      "tail_floor",
+      "invalid_rate",
+      "timeout_rate",
+      "no_output_rate",
+      "accepted_verified_output_per_second",
+      "english_inter_rater_agreement"
+    ]
+  },
+  "boundaries": {
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "templates_renderers_routers_tools_credit": 0,
+    "capability_claim_before_execution": "NOT_EVALUATED",
+    "exact_recovery_is_functional_utility": false
+  }
+}

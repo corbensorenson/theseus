@@ -35,7 +35,7 @@ module must meet.
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out utility) | Phase 10 | RED; v8 provides exact-recovery and Python-syntax diagnostics but has no complete functional utility surface | freeze architecture-neutral English rubric and per-language compile/test/execute evaluators before inspecting the completed control results; compare unchanged checkpoints there |
+| Generator capability (held-out utility) | Phase 10 | the 160-case source-disjoint functional contract is frozen before dense-control completion; capability remains NOT_EVALUATED | finish both controls unchanged, generate directly from each frozen checkpoint, then score blind English and pinned Python/Deno/Chrome/Cargo behavior without adapter or tool credit |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -886,8 +886,11 @@ evidence earns a different route.)
   preregistered accounting views. Do not tune from sparse or interim dense outputs.
   Preserve this comparison as a systems-canary result even if every score is zero.
 
-- **Fresh functional utility qualification:** before completed control outputs are
-  inspected, freeze one architecture-neutral, source-disjoint manifest and run every
+- **Frozen functional utility qualification:** the 160-case contract was frozen on
+  2026-07-14 before dense-control completion, with 32 source-disjoint cases per arm,
+  a model packet containing only case ID, arm route, and prompt, and hashes for the
+  case compiler, independent verifier, toolchains, v8 plan, and stage. After both
+  controls finish unchanged, run every
   unchanged sparse/dense checkpoint once. It must bind task IDs, model-visible input,
   toolchain/container identity, timeout, scoring, failure taxonomy, candidate
   integrity, adjudication, and consumed status. No model may influence task inclusion,
@@ -907,6 +910,10 @@ evidence earns a different route.)
   - Report exact recovery and functional utility separately; report every language,
     task family, tail floor, no-output/timeout/invalid rates, accepted output per
     second, and model-only versus assisted channels. English cannot hide code failure.
+  - Current state is `NOT_EVALUATED`: a GREEN contract and passing harness tests are
+    not model capability. Any config/compiler/verifier/toolchain identity drift
+    invalidates execution against this freeze and requires an explicit new contract,
+    never an in-place edit after outputs are known.
 
 - **Architecture verdict:** issue the practical verdict only after both frozen
   diagnostics and the functional qualification exist.
