@@ -5118,7 +5118,7 @@
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_moecot_language_arm_training.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 -m pytest -q tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
@@ -5126,6 +5126,7 @@
         "configs/moecot_language_arm_training.json",
         "configs/standard_causal_transformer_survival.json",
         "scripts/moecot_language_arm_training.py",
+        "scripts/moecot_dense_exact_recovery_diagnostic.py",
         "scripts/moecot_language_supervision.py",
         "scripts/moecot_source_conditioned_pretraining.py",
         "scripts/moecot_language_tokenizer.py",
@@ -5134,6 +5135,7 @@
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_survival.py",
         "tests/test_moecot_language_arm_training.py",
+        "tests/test_moecot_dense_exact_recovery_diagnostic.py",
         "tests/test_moecot_language_supervision.py",
         "tests/test_moecot_source_conditioned_pretraining.py",
         "tests/test_moecot_language_tokenizer.py",
@@ -5142,6 +5144,8 @@
       ],
       "evidence_outputs": [
         "reports/moecot_language_arm_training.json",
+        "reports/moecot_dense_exact_recovery_diagnostic_v8.json",
+        "reports/moecot_dense_exact_recovery_diagnostic_v8.md",
         "reports/moecot_language_arm_training_rust_complete.json",
         "reports/moecot_language_supervision.json",
         "reports/moecot_source_conditioned_pretraining.json",

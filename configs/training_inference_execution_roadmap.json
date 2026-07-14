@@ -209,6 +209,7 @@
       ],
       "required_gates": [
         "python3 scripts/moecot_language_arm_training.py",
+        "python3 scripts/moecot_dense_exact_recovery_diagnostic.py --gate",
         "python3 -m pytest -q tests/test_moecot_language_arm_training.py",
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
         "python3 scripts/correctness_generator_survival_lane_gate.py --gate"
@@ -230,6 +231,8 @@
         "reports/moecot_language_arm_training_scale_v2_experts_full.json",
         "reports/moecot_language_arm_training_scale_v2_dense_active_full.json",
         "reports/moecot_language_arm_training_scale_v2_dense_total_full.json",
+        "reports/moecot_dense_exact_recovery_diagnostic_v8.json",
+        "reports/moecot_dense_exact_recovery_diagnostic_v8.md",
         "checkpoints/moecot_language_seed_v8/*/training_receipt.json"
       ],
       "exit_criteria": [
@@ -253,7 +256,7 @@
           "starvation DPO improved its preference objective but regressed emitted candidates from 14 to 0 and is not adopted"
         ],
         "current_wall": "The v8 development rows expose prompt and target but no executable tests or complete functional verifier. English 1/128 exact and zero exact code are exact-recovery diagnostics, not a practical architecture verdict. Do not substitute templates, renderers, deterministic tools, route labels, syntax rates, LM loss, similarity, or preference-gap improvement for model-only functional behavior.",
-        "next_allowed_step": "Finish both dense controls unchanged and publish the frozen diagnostic. Before inspecting completed control outputs, freeze T4's architecture-neutral functional utility manifest; run unchanged checkpoints there before any practical route selection, confirmation spend, amplifier, scale decision, or public calibration."
+        "next_allowed_step": "Finish both dense controls unchanged, publish the exact-recovery diagnostic, then run all unchanged checkpoints through T4's already frozen architecture-neutral functional utility contract before any practical route selection, confirmation spend, amplifier, scale decision, or public calibration."
       },
       "rollback_or_stop": "Do not promote if improvement is only syntax, nontrivial-return rate, lower LM loss, or wider fanout without behavior.",
       "no_claims": [
