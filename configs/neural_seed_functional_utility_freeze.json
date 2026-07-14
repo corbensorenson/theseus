@@ -11,19 +11,19 @@
     "python": 32,
     "rust": 32
   },
-  "compiler_sha256": "c1ef6154da1c52907c8e745281bae4929d2df1ee2ca3d5bc1747189f9c4dd225",
+  "compiler_sha256": "f8bf9c5bd5b47352a2995b95bded01103142ddc57c8c3cff8e641c511a78ed0b",
   "config": "configs/neural_seed_functional_utility.json",
-  "config_sha256": "7655831f70df661d745d75276b9bcb111795c85f8290cce49e3cc9dd657f826f",
+  "config_sha256": "8c16e28e6899c054b9ad0d5ca2b196089b4d95483df0497b3bb0eae191e6fcc7",
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-14T08:50:00.837116Z",
+  "frozen_utc": "2026-07-14T08:56:53.511430Z",
   "generation_wrapper_sha256": "6a9b0e9e3fc2228d39a1f6065678755a8ec4b3d974c91990c7bc962f511dc896",
   "immutable": true,
   "policy": "project_theseus_private_functional_utility_freeze_v1",
   "public_training_rows_written": 0,
-  "supersede_reason": "Keep JavaScript and TypeScript hidden expectations outside the candidate realm through an input-only Deno subprocess protocol, preventing test registration and JSON comparison monkeypatches before any functional candidates exist.",
-  "supersedes_freeze_sha256": "b161d5f7109087ddbe748aed4b4311709b3ef0521ed5f33eaf090233ef55237a",
+  "supersede_reason": "Cryptographically bind blind English judgments to exact candidate text, require two distinct primary raters, and permit adjudication only after preregistered disagreement before any functional candidates exist.",
+  "supersedes_freeze_sha256": "36fe5a62519f5b39d11f09e04b3dcd4b47dcf4e380eff1a977f6d33c8f403ced",
   "templates_renderers_routers_tools_credit": 0,
   "toolchain_identity_sha256": "4cb3e92632490e57011d1dc6fe87bd94e9395a5c41d70c5a7683407cfa7abd2a",
   "training_generator_sha256": "93c03c688e1aa761fe59249e9874934f093030c8375c7f8a0e28179cd4d02aa4",
@@ -32,7 +32,7 @@
       "dense_active_parameter": {
         "complete": false,
         "heartbeat": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_heartbeat.json",
-        "heartbeat_sha256": "c3a94d9a7d617ec59cf0dd0ca55c8cb3d601a20f1f576f4cf0e55a0a4f12aba3",
+        "heartbeat_sha256": "d593e0941cf36c607b2ab456b41cdbc48bc2398537d63694b62ca257797973be",
         "optimizer_steps": 11500,
         "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
         "receipt": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_receipt.json",
@@ -53,5 +53,5 @@
   },
   "v8_plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
   "v8_stage_signature": "1b3b9c9e8dacf47569b8e97b9173ce64736d01a102c2f2905bae604acf9fc921",
-  "verifier_sha256": "59434215825fc5fd715385078898f311d815b98058be1167e1b4265e76eccbdd"
+  "verifier_sha256": "235b1e9b162c14c306bed0b9d75040eb4fe26506dc5a243be05415b64c557944"
 }
