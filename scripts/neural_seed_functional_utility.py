@@ -27,12 +27,15 @@ DEFAULT_PACKET = ROOT / "reports/private_functional_utility_candidate_packet.jso
 DEFAULT_RESULT = ROOT / "reports/private_functional_utility_qualification.json"
 TRAINING_SCRIPT = ROOT / "scripts/moecot_language_arm_training.py"
 TRAINING_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
+GENERATION_WRAPPER = ROOT / "scripts/neural_seed_functional_generate.py"
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
     parser.add_argument("--freeze", action="store_true")
+    parser.add_argument("--supersede-freeze-before-results", action="store_true")
+    parser.add_argument("--supersede-reason", default="")
     parser.add_argument("--freeze-out", default=str(DEFAULT_FREEZE))
     parser.add_argument("--manifest-out", default=str(DEFAULT_MANIFEST))
     parser.add_argument("--packet-out", default=str(DEFAULT_PACKET))
@@ -47,15 +50,27 @@ def main() -> int:
     write_json(resolve(args.manifest_out), manifest)
     write_json(resolve(args.packet_out), manifest["candidate_packet"])
     if args.freeze:
-        freeze = build_freeze(manifest, config_path)
         freeze_path = resolve(args.freeze_out)
         if freeze_path.exists():
             immutable = read_json(freeze_path)
             identity_gaps = validate_freeze(manifest, immutable)
-            if identity_gaps:
+            if identity_gaps and not args.supersede_freeze_before_results:
                 print(json.dumps({"trigger_state": "RED", "hard_gaps": identity_gaps}, indent=2))
                 return 2
+            if identity_gaps:
+                if not args.supersede_reason.strip():
+                    raise ValueError("superseding a freeze requires --supersede-reason")
+                if manifest["training_state_at_materialization"]["dense_controls_complete"]:
+                    raise ValueError("cannot supersede functional contract after dense-control completion")
+                freeze = build_freeze(
+                    manifest,
+                    config_path,
+                    predecessor_sha256=stable_hash(immutable),
+                    supersede_reason=args.supersede_reason.strip(),
+                )
+                write_json(freeze_path, freeze)
         else:
+            freeze = build_freeze(manifest, config_path)
             write_json(freeze_path, freeze)
     if args.evaluate_candidates:
         freeze_path = resolve(args.freeze_out)
@@ -126,6 +141,8 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "compiler_sha256": sha256_file(Path(__file__).resolve()),
         "case_compiler_sha256": sha256_file(ROOT / "scripts/neural_seed_functional_cases.py"),
         "verifier_sha256": sha256_file(ROOT / "scripts/neural_seed_functional_verifiers.py"),
+        "generation_wrapper_sha256": sha256_file(GENERATION_WRAPPER),
+        "training_generator_sha256": sha256_file(TRAINING_SCRIPT),
         "toolchain_identity": toolchains,
         "toolchain_identity_sha256": stable_hash(toolchains),
         "v8_plan_sha256": config["v8_plan_sha256"],
@@ -149,7 +166,13 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
     }
 
 
-def build_freeze(manifest: dict[str, Any], config_path: Path) -> dict[str, Any]:
+def build_freeze(
+    manifest: dict[str, Any],
+    config_path: Path,
+    *,
+    predecessor_sha256: str = "",
+    supersede_reason: str = "",
+) -> dict[str, Any]:
     if manifest["trigger_state"] != "GREEN":
         raise ValueError("cannot freeze an invalid functional contract")
     training = manifest["training_state_at_materialization"]
@@ -162,6 +185,8 @@ def build_freeze(manifest: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "compiler_sha256": manifest["compiler_sha256"],
         "case_compiler_sha256": manifest["case_compiler_sha256"],
         "verifier_sha256": manifest["verifier_sha256"],
+        "generation_wrapper_sha256": manifest["generation_wrapper_sha256"],
+        "training_generator_sha256": manifest["training_generator_sha256"],
         "toolchain_identity_sha256": manifest["toolchain_identity_sha256"],
         "case_contract_sha256": manifest["case_contract_sha256"],
         "candidate_packet_sha256": manifest["candidate_packet_sha256"],
@@ -176,6 +201,8 @@ def build_freeze(manifest: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "templates_renderers_routers_tools_credit": 0,
+        "supersedes_freeze_sha256": predecessor_sha256,
+        "supersede_reason": supersede_reason,
     }
 
 
@@ -329,6 +356,10 @@ def audit_candidate_provenance(bundle: dict[str, Any], freeze: dict[str, Any]) -
         gaps.append("candidate_bundle_contract_mismatch")
     if bundle.get("generation_function") != "moecot_language_arm_training.generate_model_text":
         gaps.append("candidate_generation_function_mismatch")
+    if bundle.get("generation_wrapper_sha256") != freeze.get("generation_wrapper_sha256"):
+        gaps.append("candidate_generation_wrapper_mismatch")
+    if bundle.get("training_generator_sha256") != freeze.get("training_generator_sha256"):
+        gaps.append("candidate_training_generator_mismatch")
     if int(bundle.get("templates_renderers_routers_tools_credit", -1)) != 0:
         gaps.append("nonzero_nonlearned_generation_credit")
     artifacts = bundle.get("checkpoint_artifacts") if isinstance(bundle.get("checkpoint_artifacts"), list) else []
@@ -343,7 +374,7 @@ def audit_candidate_provenance(bundle: dict[str, Any], freeze: dict[str, Any]) -
 
 def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[str]:
     gaps = []
-    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "v8_plan_sha256", "v8_stage_signature"):
+    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "v8_plan_sha256", "v8_stage_signature"):
         if manifest.get(key) != freeze.get(key):
             gaps.append(f"freeze_identity_mismatch:{key}")
     return gaps

@@ -38,6 +38,8 @@ def test_freeze_detects_compiler_or_contract_mutation() -> None:
     manifest = build_manifest(CONFIG, CONFIG_PATH)
     freeze = build_freeze(manifest, CONFIG_PATH)
     assert validate_freeze(manifest, freeze) == []
+    assert len(freeze["generation_wrapper_sha256"]) == 64
+    assert len(freeze["training_generator_sha256"]) == 64
 
     mutated = copy.deepcopy(freeze)
     mutated["verifier_sha256"] = "0" * 64
