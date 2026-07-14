@@ -156,6 +156,21 @@ def collect_target(
         checkpoint_bytes = checkpoint.stat().st_size
         if checkpoint_hash != receipt.get("checkpoint_sha256"):
             faults.append("checkpoint_identity_mismatch")
+    shared_checkpoint = None
+    shared_checkpoint_hash = ""
+    if target_id in ARMS:
+        shared_checkpoint = resolve_from(root, str(receipt.get("shared_trunk_checkpoint") or ""))
+        expected_shared_hash = str(receipt.get("shared_trunk_checkpoint_sha256") or "")
+        shared_receipt_path = root / "checkpoints/moecot_language_seed_v8/shared_trunk/training_receipt.json"
+        shared_receipt = read_json(shared_receipt_path) if shared_receipt_path.is_file() else {}
+        if not shared_checkpoint.is_file():
+            faults.append("shared_checkpoint_missing")
+        else:
+            shared_checkpoint_hash = sha256_file(shared_checkpoint)
+            if shared_checkpoint_hash != expected_shared_hash:
+                faults.append("shared_checkpoint_identity_mismatch")
+            if shared_checkpoint_hash != str(shared_receipt.get("checkpoint_sha256") or ""):
+                faults.append("shared_checkpoint_receipt_mismatch")
     evaluation = read_json(evaluation_path) if evaluation_path.is_file() else {}
     needs_evaluation = target_id != "shared_trunk"
     if needs_evaluation:
@@ -206,6 +221,12 @@ def collect_target(
             "evaluation_receipt_sha256": sha256_file(evaluation_path) if evaluation_path.is_file() else "",
             "checkpoint": relative_to(root, checkpoint) if checkpoint.is_file() else "",
             "checkpoint_sha256": checkpoint_hash,
+            "shared_checkpoint": (
+                relative_to(root, shared_checkpoint)
+                if shared_checkpoint is not None and shared_checkpoint.is_file()
+                else ""
+            ),
+            "shared_checkpoint_sha256": shared_checkpoint_hash,
             "evaluation_summary": evaluation.get("summary"),
             "evaluation_by_arm": evaluation.get("by_arm") or {},
             "resource": resource,

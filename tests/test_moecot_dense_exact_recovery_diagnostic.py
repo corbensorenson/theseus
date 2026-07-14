@@ -45,6 +45,10 @@ def seed_target(root: Path, target: str, *, complete: bool = True) -> None:
         "fallback_return_count": 0,
         "templates_renderers_routers_tools_credit": 0,
     }
+    if target in ARMS:
+        shared = root / "checkpoints/moecot_language_seed_v8/shared_trunk/weights.bin"
+        receipt["shared_trunk_checkpoint"] = str(shared.relative_to(root))
+        receipt["shared_trunk_checkpoint_sha256"] = hashlib.sha256(shared.read_bytes()).hexdigest()
     write_json(directory / "training_receipt.json", receipt)
     if target == "shared_trunk":
         return
@@ -99,3 +103,19 @@ def test_incomplete_control_fails_publication_closed(tmp_path: Path) -> None:
     assert report["publication_ready"] is False
     assert report["trigger_state"] == "YELLOW"
     assert "dense_total_parameter:training_incomplete" in report["hard_gaps"]
+
+
+def test_shared_trunk_mutation_invalidates_every_expert(tmp_path: Path) -> None:
+    for target in ("shared_trunk", *ARMS, "dense_active_parameter", "dense_total_parameter"):
+        seed_target(tmp_path, target)
+    shared = tmp_path / "checkpoints/moecot_language_seed_v8/shared_trunk/weights.bin"
+    shared.write_bytes(b"mutated")
+
+    report = build_diagnostic(tmp_path, {"v8_plan_sha256": PLAN, "v8_stage_signature": STAGE})
+
+    assert report["publication_ready"] is False
+    assert "shared_trunk:checkpoint_identity_mismatch" in report["hard_gaps"]
+    assert all(
+        f"{arm}:shared_checkpoint_identity_mismatch" in report["hard_gaps"]
+        for arm in ARMS
+    )
