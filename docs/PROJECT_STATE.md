@@ -21,19 +21,22 @@ share toward zero. Public benchmarks are calibration only.
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
   generation remain amplifiers, not substitutes for a working proposer.
-- **Capability wall:** v8 English produces the first narrow direct exact result at
-  `1/128`. Python, JS/TS, HTML/CSS, and Rust remain `0` exact; Python is `41/128`
-  syntax-valid. This is not broad utility or an architecture win. Confirmation is
-  untouched and no checkpoint is routeable.
+- **Capability wall:** v8 English reproduces one target exactly (`1/128`). Python,
+  JS/TS, HTML/CSS, and Rust remain `0` exact; Python is `41/128` syntax-valid. The
+  v8 development rows contain prompt and target but no complete executable verifier,
+  so this is an exact-recovery diagnostic, not functional utility or an architecture
+  win. Confirmation is untouched and no checkpoint is routeable.
 - **Data gate:** the content-bound audit credits 683,254,465 unique governed
   positions. The frozen comparison uses 215,552,020 positions for a 10,777,601-active
   sparse model and mechanically matched 10,779,648-active/12,499,968-total dense
   controls. The data, tokenizer, seed, supervision, development, confirmation, and
   verifier contracts are immutable through the verdict.
-- **Immediate dependency:** finish the in-flight active-parameter dense control and
-  then the total-parameter dense control. Evaluate every language separately, issue
-  the preregistered two-view Pareto verdict, and spend confirmation once on the
-  selected unchanged implementation. Do not patch from interim results.
+- **Immediate dependency:** finish both dense controls unchanged and publish the v8
+  exact-recovery diagnostic. Before completed control outputs are inspected, freeze a
+  source-disjoint functional utility manifest: blind rubric/pairwise English and
+  pinned compile/test/render checks for all code arms. Use that result, not exact
+  target reproduction alone, for practical route selection. Do not patch from interim
+  results.
 
 ## Evidence Boundaries
 
@@ -82,7 +85,9 @@ share toward zero. Public benchmarks are calibration only.
 - **Dense falsification controls:** the active and total controls are fixed at
   10,779,648 and 12,499,968 parameters. The active control is currently training with
   atomic step-specific model/optimizer receipts; the total control follows. Both use
-  the same frozen stage and direct per-language evaluation contract as MoECOT.
+  the same frozen stage and direct per-language exact-recovery contract as MoECOT.
+  Their v8 result remains diagnostic until unchanged checkpoints run through the
+  separately frozen functional utility qualification.
 - **Tokenizer/data correctness:** all corpus categories use exact reversible text
   streams. The frozen stage contains 452,782 non-overlapping windows, zero admitted
   unknown positions, zero public training rows, zero external inference calls, and
@@ -136,16 +141,20 @@ share toward zero. Public benchmarks are calibration only.
 
 1. Keep repository/registry/effect evidence coherent and compact.
 2. Keep the frozen data/model scaling contract and heldout/stop criteria fail-closed.
-3. Finish both dense controls under the unchanged v8 evidence contract, then publish
-   per-language and aggregate results under both preregistered accounting views.
-4. Select and confirm the winning unchanged architecture once; only then execute a
-   registry replacement transaction for the practical model route.
-5. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
+3. Finish both dense controls under the unchanged v8 evidence contract and publish
+   per-language exact-recovery diagnostics under both accounting views.
+4. Freeze and run source-disjoint functional qualification on every unchanged
+   checkpoint. Select and confirm an architecture only from task-appropriate utility;
+   exact recovery remains separate.
+5. If sparse and both dense controls are functionally zero across code, falsify the
+   10.8M rung and require task-complete data plus a preregistered 50M-100M active MLX
+   rung. Do not spend another cycle on a same-scale architecture patch.
+6. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
-6. Integrate Question-Compiled Semantic Addressing only through the registered VCM
+7. Integrate Question-Compiled Semantic Addressing only through the registered VCM
    and planning abstractions, with leakage and route-authority controls.
-7. Calibrate once on fresh frozen public surfaces after material model improvement.
-8. Route the winning model into assistant dogfood; use accepted, missed, ignored,
+8. Calibrate once on fresh frozen public surfaces after material model improvement.
+9. Route the winning model into assistant dogfood; use accepted, missed, ignored,
    corrected, and completed outcomes to drive the governed improvement flywheel.
 
 ## External and Deferred Work
@@ -169,11 +178,10 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Finish the in-flight active-parameter dense control, then run the total-parameter
-control without changing the frozen v8 contract. Evaluate each language separately,
-publish both preregistered accounting views, and issue the architecture verdict. Do
-not tune from interim results or let English hide zero code behavior. Spend each
-confirmation split once on the selected unchanged implementation. If every code arm
-and both dense controls remain zero exact, retain the result and choose the next
-data/capacity/objective rung from failure evidence rather than adding search, routing,
-or another same-scale architecture patch.
+Finish both dense controls without changing v8 and publish their exact-recovery
+diagnostics. Freeze the architecture-neutral functional manifest before completed
+control outputs are inspected, then run unchanged sparse/dense checkpoints through
+blind English utility and per-language code execution/toolchain checks. Select a
+practical route only from that evidence. If every code path is functionally zero,
+close the 10.8M rung and prepare a task-complete, data-supported 50M-100M active MLX
+rung with matched controls rather than adding search, routing, or another tiny patch.

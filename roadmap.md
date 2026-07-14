@@ -1,7 +1,7 @@
 # Project Theseus Roadmap
 
-Consolidated 2026-07-07; reconciled with the 2026-07-11 AI Stack manifest and
-post-v2.1 evidence cycle. This
+Consolidated 2026-07-14; bound to AI Stack commit
+`32635eb94ded42a5f54e528302685cab343993b7`. This
 roadmap lists only work that still needs doing. It is the forward plan; it is not
 an audit trail. Historical execution logs, dated
 book-mining/review passes, and per-experiment records were removed from this file
@@ -29,13 +29,13 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions; the frozen v8 view is 215.55M positions plus licensed three-way splits with zero overlap/public payloads | keep the v8 view immutable through the comparison; expand only from measured residuals afterward |
-| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; the full active-parameter control is running with transactional checkpoints and the total-parameter control remains queued | finish both unchanged controls, publish per-language behavior and cost, and never select an accounting view after results |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk and all five specialists are complete; English is 1/128 exact, while all four code arms remain 0 exact (Python 41/128 syntax-valid) | complete both matched dense controls before any architecture verdict; do not spend confirmation or patch the arms from development results |
+| Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions, but the frozen v8 rows are mostly prompt/target pairs without task-complete functional verification | keep v8 immutable; qualify the next rung on licensed product-shaped units with tests, toolchain receipts, multi-turn state, and source-disjoint splits |
+| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; the full active-parameter control is running with transactional checkpoints and the total-parameter control remains queued | finish both unchanged and publish the result as an exact-recovery diagnostic, not a complete utility verdict |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk and all five specialists are complete; English is 1/128 exact, while all four code arms remain 0 exact (Python 41/128 syntax-valid) | complete both controls unchanged, then use a separately frozen functional qualification before any practical architecture promotion |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out pass) | Phase 10 | RED but no longer uniformly zero - v8 English is 1/128 exact; Python, JS/TS, HTML/CSS, and Rust remain 0 exact; confirmation is untouched and no route is promoted | finish the dense controls, issue the frozen architecture verdict, then spend confirmation once on the selected unchanged implementation |
+| Generator capability (held-out utility) | Phase 10 | RED; v8 provides exact-recovery and Python-syntax diagnostics but has no complete functional utility surface | freeze architecture-neutral English rubric and per-language compile/test/execute evaluators before inspecting the completed control results; compare unchanged checkpoints there |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -43,8 +43,8 @@ module must meet.
 | Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
 | Authority kernel / SCIF | Phase 18 | replayable-reference-backed for the same bounded local effect; SCIF and wider authority controls remain synthetic | preserve exact effect/rollback auditing and expand support only when another real effect class earns it |
 | Assistant product | Phase 5 | assisted runtime wired; model-only general chat unavailable | dogfood deterministic/verified assistance now, but earn model usefulness only from real multi-day use after the local model clears its behavior floor |
-| Report hygiene | Phases 0, 8, 14 | budget gate GREEN but hot reports are near the 1 GiB ceiling and total local generated/archive state remains large | compact to <=80% hot-budget headroom after the active stage build; run retention before long training and preserve exact replay pointers |
-| Book crosswalk / parity | Phase 19 | 54 chapters mapped in manifest order; the exact post-v2.3 source-integration worktree manifest is digest-bound without claiming it is committed or published | keep book-owned fields, tests, and source identity checksum-bound; rebind after the book worktree is committed |
+| Report hygiene | Phases 0, 8, 14 | budget gate GREEN, but archive/runtime/data/checkpoints/reports remain artifact-heavy and roadmap history had regrown | preserve active-run state, then compact superseded payloads behind content-bound replay pointers and enforce per-family retention |
+| Book crosswalk / parity | Phase 19 | 54 chapters are bound to immutable AI_book commit `32635eb...`; live worktree changes are intake drift, not an architecture regression | reconcile and advance the pin only in a reviewed change after book edits are committed |
 | Book test obligations | Phase 19 + routed owners | 511 authored Codex tests; 109 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
 | Book futures intake | Phase 19 + routed owners | requirements retained but capability-frozen; QCSA source is available and manifest pending | preserve the crosswalk without implementation expansion until a language arm or matched dense control clears non-zero heldout behavior, except concrete correctness/security defects |
 
@@ -71,9 +71,11 @@ zero-pass floor.
 ## Non-Negotiable Rules
 
 - No open/base/pretrained model weights, ever, for the from-scratch student lanes.
-- Family-disjoint held-out verifier pass is the only capability scoreboard.
-  Syntax, nontrivial-return, LM loss, and preference-gap are diagnostics, never
-  wins.
+- Capability scoreboards are task-appropriate and source-disjoint. English uses
+  frozen blind rubric/pairwise judgments; Python, JS/TS, HTML/CSS, and Rust use
+  compile/test/execute or structural/render checks. Exact recovery, syntax,
+  nontrivial-return, LM loss, and preference-gap remain diagnostics unless the task
+  explicitly requires byte-exact output.
 - Public benchmarks are calibration only. Never train on public benchmark
   prompts, tests, hidden tests, solutions, traces, score labels, or templates.
 - External inference is only governed teacher-side training support; it is never
@@ -104,6 +106,9 @@ zero-pass floor.
 - No new report family without a registry owner, retention class, and a reason it
   cannot update an existing flagship claim record.
 - Negative results are kept. A refuted lever is progress.
+- Freeze control-plane and architecture expansion for at least three capability
+  cycles. A change during the freeze requires a concrete failure receipt showing
+  that an existing contract cannot represent or execute the required behavior.
 
 ## Implementation Standard (Beyond State of the Art)
 
@@ -186,7 +191,7 @@ promoted; their purpose is to falsify or select the practical architecture.
 - **Data quality is co-equal with architecture.** The efficient-intelligence bet
   fails on a weak corpus; the training-data program (Track 0) is a first-class
   capability lever, not a preprocessing step.
-- **100M is the first rung of a scaling ladder, not the ceiling.** The architecture,
+- **50M-100M is the next candidate band, not an automatic entitlement or ceiling.** The architecture,
   data pipeline, training loop, and search must be designed so active parameters,
   expert count, corpus size, search budget, and reasoning depth scale together as
   compute grows, with no rung-one shortcut that blocks rung two.
@@ -205,10 +210,11 @@ promoted; their purpose is to falsify or select the practical architecture.
    dense control. Predeclare total parameters, active parameters per route, FLOPs,
    wall/energy budget, and heldouts. Train arms independently; do not allow one arm's
    optimizer state or residuals to mutate another except through an explicit update.
-4. Evaluate arm behavior, router behavior, and composed behavior separately. Compare
-   MoECOT versus dense at matched total parameters, matched active compute, matched
-   data, and matched verifier/search budget. Route success never counts as answer
-   success; dense wins remain valid evidence against the thesis.
+4. Evaluate arm behavior, router behavior, and composed behavior separately. Preserve
+   the v8 exact-recovery result as a diagnostic, then compare unchanged checkpoints on
+   a separately frozen functional surface: blind rubric/pairwise English and
+   compile/test/execute or structural/render checks for every code arm. Route success
+   never counts as answer success; dense wins remain valid evidence against the thesis.
 5. After any direct arm behavior is positive, qualify STS/VCM conditioning, search,
    preference/RL, and fast generation in that order. Only after a materially changed
    current system clears private integrity/behavior gates, spend a fresh public
@@ -218,24 +224,36 @@ promoted; their purpose is to falsify or select the practical architecture.
 - Steps 1-3 are complete for v8: the ABI and five arm contracts are frozen; the
   215.55M-position training view is immutable; the 10.347M shared trunk and all five
   430,849-parameter specialists completed with distinct checkpoint/optimizer lineage.
-- Arm-level development evaluation is complete. English produced the first narrow
-  direct exact success (`1/128`); all code arms remain `0` exact. Syntax validity,
-  similarity, loss, and routing remain diagnostics and cannot replace exact behavior.
+- Arm-level v8 development evaluation is complete. English produced one exact target
+  recovery (`1/128`); all code arms remain `0` exact and Python is `41/128`
+  syntax-valid. Because these rows contain prompt and target but no executable test or
+  functional verifier, this is an **exact-recovery diagnostic**, not a utility verdict.
 - Finish the already-running active-parameter dense control, then the total-parameter
   dense control, without changing data, seed, tokenizer, supervision, decoding,
   heldouts, or verifier. Publish every language result before either aggregate view.
-- Issue one architecture verdict under both frozen views. A dense Pareto win selects
-  dense/hybrid as the practical lane; a sparse win must avoid every arm-floor
-  regression; an unresolved tie remains unresolved rather than being narrated as a
-  MoECOT win.
-- Spend each confirmation split exactly once on the selected unchanged implementation.
+- Before completed control outputs are inspected, freeze an architecture-neutral,
+  source-disjoint functional qualification manifest with task IDs, scoring rules,
+  toolchain versions, sandboxes, adjudication, failure taxonomy, and no post-hoc task
+  selection. Run every unchanged v8 checkpoint on it once.
+- Issue the practical architecture verdict from both matched accounting views and the
+  functional surface. A dense Pareto win selects dense/hybrid; a sparse win must avoid
+  every arm-floor regression; an unresolved tie stays unresolved. Exact recovery is
+  reported beside utility and cannot independently authorize routing.
+- Spend confirmation once only after functional qualification identifies a candidate.
   Only a confirmation-qualified successor may receive default route authority and
   retire the old strict-generator route through a registry replacement transaction.
-- If at least one code arm is behavior-positive, qualify STS/VCM conditioning and
-  verifier-guided search with equal-budget mechanism-removed controls, followed by
+- If at least one code arm is functionally behavior-positive, qualify STS/VCM
+  conditioning and verifier-guided search with equal-budget mechanism-removed controls, followed by
   preference/RL only when accepted/rejected pair density is real. If every code arm
   remains zero, do not optimize search or routing around a zero numerator: use the
   frozen failures to choose the next data/capacity/objective rung before retraining.
+- Treat 10.8M active parameters as a systems-canary/falsification rung, not a plausible
+  ChatGPT-like product scale. If sparse and both dense controls remain functionally
+  zero across code, close the rung as falsified. Do not apply another tiny architecture
+  patch. Admit a product-complete corpus and pre-register the smallest data-supported
+  larger rung, expected in the 50M-100M active range, with scaling-law estimate,
+  unique-position floor, MLX memory/throughput canaries, stop criteria, and both
+  matched controls.
 - Public calibration follows a material, confirmation-qualified model change. It is
   measurement only and never a source of prompts, tests, solutions, traces, labels,
   templates, or residual training rows.
@@ -380,12 +398,13 @@ shot: generate -> verify -> admit -> retrain -> measure -> ratchet.
 
 ### Scaling Trajectory
 
-The first five-arm seed is rung one; 100M total sparse capacity is a later rung.
-Define an explicit ladder (per-arm and total parameters, active params, expert count,
-corpus size, search budget, reasoning depth) with a governed step function: each
-rung requires a matched-baseline ablation, a capability-per-active-parameter
-datapoint, and a falsification condition before the next rung is funded. This is
-how "reach the frontier" becomes a measured trajectory instead of a single bet.
+The 10.8M-active five-arm seed is a systems-canary rung. If it is functionally zero,
+the next candidate band is 50M-100M active only after task-complete data and MLX
+canaries support it. Define an explicit ladder (per-arm and total parameters, active
+params, expert count, unique/task-complete data, search budget, reasoning depth) with
+a governed step function: each rung requires a matched-baseline ablation, functional
+capability-per-active-parameter datapoint, and falsification condition before the next
+rung is funded. Scale is earned by data and evidence, not architecture preference.
 
 ### Long-Horizon Autonomy (later capability stage)
 
@@ -433,10 +452,11 @@ tranche with a baseline, a verifier, and a falsification condition.
 
 ### Falsification and Anti-Treadmill Gates
 
-- Capability gate: if held-out family-disjoint pass is still 0 after Track 1 (100M
-  sparse), Track 2 (search), and Track 3 (RL), with the Track-0 data program in
-  place, the Efficient ASI Hypothesis is refuted at this scale. Record it, keep the
-  negative, decide scale-more or narrow-the-domain. No more heads.
+- Capability gate: if model-only functional utility is zero at 10.8M across sparse
+  and both dense controls, that rung is refuted before search or RL. If a later
+  task-complete, data-supported 50M-100M rung also fails against matched dense
+  controls, record the result and reconsider data/objective/domain assumptions before
+  funding more architecture. Search and RL never rescue a zero candidate numerator.
 - No-head rule: no new value-guard/adequacy/slot/marker/token-bias/contrast variant
   without a preceding Track-1/2/3 result that motivates it, inside a registered
   substrate-adoption sequence with a falsification stop.
@@ -763,22 +783,26 @@ require admitted row hashes. The lifecycle surface remains `YELLOW`, not
 `GREEN`, because recursive synthetic share is `0.824771`; that is a data-risk
 warning, not proof of model collapse. The policy comparison is simulation, and
 deletion closure is graph evidence, not physical unlearning.
-The matched mixed dense control now owns a frozen pre-training scaling contract rather
-than an informal token estimate. It selects the existing 6,623,232-active-parameter
-MLX rung and requires 132,464,640 unique admitted model-visible positions (20:1),
-with 60M English conversation/instruction, 60M code, a 12.46M tail reserve, and
-explicit Python, JS/TS, HTML/CSS, and Rust minima. The canonical materializer now
-measures 247,908,698 unique positions after file-level quality filtering under the
-frozen tokenizer ABI: 77,351,958 English positions, including 18,947,648
-conversation/instruction, and 170,556,740 code positions. Its receipt is `GREEN`
-with zero integrity hard gaps and every total/domain/language/evidence minimum
-satisfied. The stage now consumes the exact bound shards as 273,951 disk-backed
-windows and exposes immutable arm views: 64.15M English, 38.08M Python, 14.08M
-JS/TS, 8.08M HTML/CSS, and 8.08M Rust positions, plus the identical mixed
-dense-control view. Independent arm trainer/checkpoint consumers remain pending.
-The receipt proves all license/provenance, exact and
-semantic deduplication, contamination, completeness, coverage/tail, synthetic-share,
-lifecycle, tokenizer, domain, language, and repetition requirements.
+The v8 materializer measures 683.25M content-bound positions and freezes 215.55M
+for the current matched comparison. That proves quantity, lineage, and tokenizer
+integrity, not product suitability. Most v8 development rows carry prompt and target
+without executable tests or task-level utility contracts; no later score may relabel
+them as functionally verified examples.
+- Add a registered `task_complete_training_unit` to the existing data contract, not a
+  new lane. Every supervised unit binds visible context, complete target, task family,
+  language/toolchain, verifier or rubric artifact, expected observable behavior,
+  source-disjoint split, license/provenance, contamination result, difficulty, and
+  outcome class. Units missing their claimed verifier remain language-model data and
+  cannot count toward product-task coverage.
+- Build the next corpus around the intended product: natural English multi-turn
+  conversations, corrections, clarification, and instruction following; complete
+  Python tasks and repository edits with tests; JS/TS parse/typecheck/build/runtime
+  tasks; HTML/CSS DOM, accessibility, layout, and deterministic render assertions;
+  Rust `cargo check`, test, and clippy tasks. Record per-family counts and verified
+  position coverage so bulk code or single-turn prose cannot hide a weak product arm.
+- Data support for a larger rung requires both unique admitted positions and minimum
+  task-complete verifier coverage. More repeated tokens, teacher paraphrases, or
+  target-only snippets cannot satisfy the scale gate.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
   provenance/authority, lineage, permitted use, split exclusions, exact + semantic
   contamination, retention, deletion scope, evaluation refs, residuals, bounded
@@ -837,389 +861,115 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   surfaces bypass task-kind and authority policy.
 
 ### Phase 10: Practical Neural Seed Survival Lane
-(Owns Tracks 1, 2's learned proposer/repair loop, 3, and 4's model path.)
-- **Current decision:** the practical seed is a five-arm MoECOT/Octopus topology,
-  not one dense model containing all English and programming-language knowledge.
-  Freeze English, Python, JS/TS, HTML/CSS, and Rust arm contracts with independent
-  weights, optimizer/checkpoint lineage, data views, verifiers, and rollback. The
-  frozen v8 dense controls remain mandatory falsification controls. No arm or control
-  receives promotion without direct family-disjoint behavior; route correctness,
-  loss, syntax, similarity, or aggregate-only improvement cannot adopt a checkpoint.
-- **Trainer/checkpoint status:** `moecot_language_arm_training` binds one immutable
-  10,347,009-parameter shared trunk to five independent 430,849-parameter specialist
-  deltas. One request activates 10,777,601 parameters; total sparse ownership is
-  12,501,254. The dense controls are mechanically matched at 10,779,648 active and
-  12,499,968 total parameters. The trunk and all specialists are complete with
-  transactional model/optimizer lineage. The active-parameter dense control is in
-  full execution; the total-parameter control follows. No v8 implementation is
-  routeable and confirmation remains untouched.
-- **Frozen supervision and first complete rung:** exact-revision Dolly and
-  CommitPackFT intake now yields 20,000 licensed train, 544 development, and 1,032
-  heldout rows
-  across English, Python, JS/TS, HTML/CSS, and Rust, with prompt-only generation,
-  target-only evaluator access, zero cross-split prompt/target overlap, no target
-  truncation, and zero public payloads. Rust completed 8,077,440 causal positions
-  plus 114,790 supervised target positions in 338 seconds on MLX. Its first direct
-  greedy evaluation is a retained negative: 0/64 exact recovery, 13/64 valid
-  serialized outputs, and no EOS completions. This blocks spending the other six
-  complete training budgets until termination and semantic generation improve on a
-  distinct development surface.
-- **Termination repair:** four bounded SFT passes with weighted EOS/byte-boundary
-  loss plus probability beam search improved Rust development serialization and
-  model-emitted EOS to 60/60, without forced closure or fallback. Exact recovery
-  remains 0/60 and bounded samples show source-independent crate-attribute mode
-  collapse. The next matched ablation changes only source attention from causal to
-  prefix-LM; it also remains 0/60, though output diversity rises to 21 hashes. The
-  next ablation keeps prefix-LM and changes only supervised optimizer depth from 4
-  to 32 passes. That run lowers final SFT loss to 1.30 and raises diversity to 57/60
-  hashes, but remains 0/60 with semantically unrelated edits. Repetition is now
-  falsified as the repair. The next candidate must encode the source explicitly and
-  expose it through decoder cross-attention under matched accounting; confirmation
-  rows remain unspent.
-- **Explicit source-memory candidate:** the canonical arm now encodes only tokens
-  before the source/target separator with a bidirectional MLX encoder, neutralizes
-  that partition in the decoder stream, and exposes the masked memory through
-  cross-attention at each decoder layer. Adversarial tests prove target mutations
-  cannot change source memory, source mutations affect target logits, future target
-  tokens cannot affect earlier logits, cached generation matches full decoding,
-  separator-free pretraining stays causal, and target-only loss reaches both the
-  encoder and cross-attention weights. The 1,410,336-parameter active arm is matched
-  by a 1,410,816-parameter decoder-only prefix-LM control (0.034% delta); the
-  five-arm 7,051,680 total is matched within 96 parameters. These are architecture
-  and fairness proofs only. The resulting run completed 8,077,440 pretraining and
-  460,756 optimizer SFT positions in 458 seconds, emitted 60/60 valid sequences,
-  and remained 0/60 exact. Bounded samples still ignored simple requested edits and
-  emitted unrelated Rust boilerplate. Plain cross-attention is therefore retained
-  as a negative; confirmation remains unspent.
-- **Learned copy/edit repair:** the source and target vocabularies intentionally own
-  disjoint IDs, while localized CommitPack supervision mostly requires retaining a
-  source span and changing a few tokens. The next candidate adds a pointer-generator:
-  learned source-position scores are mapped only through exact tokenizer identity
-  and mixed with learned vocabulary probabilities by a trainable gate. It does not
-  render an answer, force a return, or receive tool/template credit. Adversarial
-  tests bind target isolation, pointer availability, gradients, cached generation,
-  and exact vocabulary mapping. Its 1,428,865 active parameters are matched by a
-  1,429,248-parameter decoder-only control (0.027% delta); the five-arm total is
-  matched within 389 parameters. A production-shape MLX gradient canary passes;
-  direct Rust development behavior is negative: 0/60 exact, 58/60 valid
-  serialization, 521 seconds for training, and substantially slower beam replay.
-  Samples contain isolated prompt-related tokens but do not retain source spans.
-  The pointer-after-pretraining design is retained as a negative.
-- **Measured objective gap:** source encoder, cross-attention, and pointer weights see
-  no signal during the 8.08M-position causal phase and only four passes over 1,000
-  edit rows afterward. This is incompatible with the task distribution: on frozen
-  Rust development, 75.9% of target tokens are directly copyable from the prompt
-  and median current/target character similarity is 0.907 (training: 74.2% and
-  0.847). The next objective must pretrain the source-conditioned path itself on
-  deterministic corruption/reconstruction pairs derived from the existing
-  permissively licensed Rust corpus. Corpus identity, corruption seed, unique vs
-  optimizer positions, overlap exclusions, copy coverage, and no-cheat counters
-  must be bound. This is training-objective repair, not another decoder patch.
-- **Source-conditioned objective implementation:** the governed stage materializes
-  4,000 deterministic reconstruction rows each for Python, JS/TS, HTML/CSS, and
-  Rust from the existing row-level permissive-license pantry. It rejects public
-  payloads and exact supervision-target overlap (one observed rejection), binds
-  source hash/license/window/corruption identity, and reports 97.5% mean Rust target
-  copyability. Plan identity, controls, optimizer ordering, resume lineage, unique
-  positions, and no-cheat counters consume the stage. The source-conditioned phase
-  runs after causal pretraining and before unchanged edit SFT. This is objective
-  readiness only; Rust behavior remains unmeasured.
-- **Source-conditioned result and alignment repair:** v4 consumes 704,136 unique
-  reconstruction positions plus the unchanged edit SFT, restores 60/60 valid
-  serialization, and remains 0/60 exact after 742 seconds. It cannot reconstruct
-  sampled training rows (similarity 0.01-0.07), proving the pointer itself is
-  undertrained. The v5 loss now adds a 0.25-weight training-only auxiliary that
-  maximizes summed pointer probability over source positions matching each visible
-  target label and trains the copy/generate gate; noncopyable labels train normal
-  generation. Targets remain unavailable to inference. This is a final objective
-  attribution test before treating the 1.43M arm as capacity-limited.
-- **Independent-arm falsification:** v5 remains 0/60 exact with 60/60 valid
-  serialization after 731 seconds. Bounded edit similarity is only 0.10-0.33 and
-  sampled seen-reconstruction similarity 0.02-0.12. No further local objective or
-  repetition patch is authorized for the standalone 1.43M arm. The architecture
-  violates the intent of the aggregate scaling contract: the five-arm system has
-  132.46M unique positions for 7.14M parameters, but each complete Rust LM sees only
-  8.08M causal positions for 1.43M parameters. The next MoECOT implementation must
-  train a shared transformer trunk on the complete corpus and attach independently
-  checkpointed language experts/adapters, with active/total parameter and compute
-  accounting. This preserves one arm per language without starving each arm of the
-  shared syntax, reasoning, and conversation substrate.
-- **Shared-trunk expert implementation:** the canonical plan now has one 3,716,001-
-  parameter encoder/decoder trunk trained from the full corpus, plus one 52,000-
-  parameter residual bottleneck expert per language. One request activates the trunk
-  and one expert (3,768,001 parameters); total system ownership is 3,976,001, not
-  five duplicated trunks. Expert insertion is zero-initialized and preserves loaded
-  trunk logits exactly. MLX freezes every trunk tensor, adapter checkpoints contain
-  only expert keys, and replay binds the exact complete trunk digest. The decoder-
-  only active control differs by 159 parameters and the total control by 2,239.
-  The eight-target plan is GREEN.
-- **Shared-trunk result:** the trunk completed 132.45M causal, 2.73M
-  source-conditioned, and 8.90M supervised optimizer positions (144.10M total) on
-  MLX, with an exact resumable checkpoint and no public rows, external inference, or
-  fallback credit. The frozen 52,000-parameter Rust expert then completed 704,136
-  denoising and 460,756 supervised positions while binding the exact trunk digest.
-  Direct development remains negative at 0/60 exact. A development-only beam ablation
-  selected length penalty 1.0 over 0.6 because it raised mean similarity on 12
-  consumed rows while restoring output length; the full rerun remains 0/60, 59/60
-  serialization-valid, 0.309 mean target similarity, 0.341 mean source similarity,
-  and 0.840 mean target-length ratio. Confirmation remains unspent. Sampled training
-  and development generations under-retain source spans and repeat generic Rust,
-  so another 52k-adapter repetition is not authorized.
-- **Next specialization rung:** keep the proven trunk immutable and make each language
-  expert own the modules that govern source-conditioned editing: residual adapters,
-  source encoder, decoder cross-attention, pointer query/key/gate, optimizer, and
-  delta checkpoint. Match active and total parameters against dense controls, bind
-  migration to trunk `f727ae56...`, and require a source-copy/reconstruction and
-  direct-edit improvement on consumed development pressure before confirmation or
-  all-language fanout. If this richer expert still remains at zero, move to the
-  preregistered scale ladder rather than another local objective patch.
-- **Source-specialist result:** the exact v6 trunk migrated into v7 without changing
-  bytes or adding training positions. The Rust delta contains exactly 995,841
-  trainable parameters: residual adapters, source encoder, decoder cross-attention,
-  and pointer query/key/gate only. It completed 1,165,320 optimizer positions in 495
-  seconds and improved the consumed development diagnostics over the 52k adapter:
-  target similarity 0.309 -> 0.358, source similarity 0.341 -> 0.382, target-length
-  ratio 0.840 -> 0.884, and serialization 59/60 -> 60/60. Exact recovery remains
-  0/60, so this is not capability and confirmation remains untouched. The richer
-  ownership hypothesis is directionally supported but the 3.77M active model is
-  capacity-limited. Same-scale repair stops here.
-- **Data-bounded scale rung:** the content-bound audit measures 683,254,465 unique
-  governed positions, while the frozen v8 stage selects 215,552,020 positions for a
-  10,777,601-active-parameter encoder/decoder model (exactly 20:1 by contract). The
-  10,347,009-parameter trunk is shared; each language owns a separately checkpointed
-  430,849-parameter residual/source/cross-attention specialist, for 12,501,254 total
-  parameters. The weakest HTML/CSS specialist still has 20.536 unique positions per
-  owned parameter. Decoder-only controls are mechanically matched at 10,779,648
-  active and 12,499,968 total parameters. Stage `1b3b9c9e...` contains 452,782
-  non-overlapping windows, zero unknown admitted positions, and zero public training
-  rows. One-step MLX canaries measure 3,982 positions/s for the trunk, 4,583 for the
-  active control, and 2,933 for the total control. These are readiness/throughput
-  facts only; no v8 target is complete and no capability is claimed. A controlled
-  interruption at optimizer step 500 proved transactional resume: an atomic receipt
-  bound immutable step-specific weights and optimizer hashes, the next process
-  resumed at step 501 with 3,799,137 positions retained, and final publication
-  removed the superseded generation. Dry-run planning is also non-mutating and can
-  no longer erase candidate evidence. The full trunk subsequently completed
-  215,558,499 causal, 2,732,624 source-conditioned, and 8,898,816 supervised
-  positions (227,189,939 total; 34,303 steps) in 44,573 seconds. Final phase losses
-  are 1.282, 1.453, and 1.506. Canonical checkpoint `3819f966...` and optimizer
-  `1d45dadd...` verify, all progress generations are cleaned, and the result remains
-  `NOT_EVALUATED` until executable language-expert compositions exist.
-- **v8 specialist result:** all five 430,849-parameter deltas completed against
-  immutable trunk `3819f966...`, with distinct checkpoint/optimizer lineage and no
-  cross-arm mutation. English is the first behavior-positive v8 arm at 1/128 exact
-  (0.0078125), 128/128 serialization-valid, and 0.191 mean target similarity.
-  Python, JS/TS, HTML/CSS, and Rust remain 0 exact. Python is 41/128 syntax-valid;
-  code-arm serialization is 0.961-1.0 and target similarity is 0.266-0.337. These
-  development results establish one narrow direct success, not broad capability.
-  Confirmation remains untouched and no arm is routeable. The frozen active- and
-  total-parameter dense controls must complete before interpreting MoECOT.
-- **Tokenizer correction:** the earlier canonical pretraining stage used Python body
-  tokenization for every category and was therefore invalid for exact English,
-  JS/TS, HTML/CSS, and Rust source modeling. The replacement stage uses an exact
-  reversible text profile for every pretraining category, proves all six
-  category/profile bindings over 38,443 selected documents, records zero round-trip
-  failures, and admits zero unknown positions. The old seven smoke checkpoints fail
-  plan/stage/range identity and were replaced by distinct one-step receipts bound to
-  stage `45f26ca5...`. Vocabulary and supervision manifests bind their own contract
-  sections rather than unrelated evaluation settings. This is corrected input
-  representation, not capability.
-- **Frozen comparison:** report equal-unique-position/total-parameter and
-  equal-active-parameter/active-compute views together. MoECOT cannot be adopted by
-  choosing the favorable accounting view after results are known; it must show
-  nonzero direct behavior, avoid arm-floor regressions, and beat or Pareto-dominate
-  both controls. A dense win is retained as falsification, not routed around.
-- **Post-comparison decision protocol (binding):** publish every language arm and
-  both dense-control results separately before any aggregate. A strong English arm
-  cannot hide zero code behavior, and a weak Rust arm cannot erase a stronger
-  Python result. If either dense control Pareto-dominates the sparse system under a
-  frozen accounting view, make the winning dense/hybrid lane the practical
-  successor and retain MoECOT as negative/discovery evidence. If MoECOT wins without
-  an arm-floor regression, retain sparse routing. If all code paths remain zero,
-  classify the result as a data/scale/objective ceiling and do not manufacture
-  search, syntax, or routing credit. Search/preference/RL may begin only for a
-  behavior-positive arm and must include matched mechanism-removed controls.
-- **Confirmation and retirement protocol:** development results select no checkpoint
-  or accounting view. After the frozen architecture verdict, spend each language's
-  confirmation split once on the selected unchanged implementation. Then execute one
-  registry replacement transaction: retire the old strict-generator/token-decoder
-  route from active authority if the successor qualifies, while retaining its 0/24
-  and rollback evidence as history. Until a successor qualifies, the old route may
-  remain contained/canonical for continuity but receives no new repair churn and
-  cannot contaminate MoECOT/dense claims.
-- **Frozen scaling decision:** the selected rung is exactly 10,777,601 active
-  parameters with a 215,552,020 unique-position floor and maximum 4x optimizer
-  repetition. The canonical materializer credits 683,254,465 quality-filtered unique positions under
-  the standard-transformer tokenizer/stage ABI and excludes stale source identities,
-  tokenizer-unrepresentable documents, and exact/near duplicates from that credit.
-  This measurement is corpus evidence, not training authority or capability.
-  `standard_causal_transformer_survival` and its independent gate deny
-  training/adoption until the content-bound
-  canonical mixed-corpus receipt is GREEN. This prevents both epoch inflation and
-  accidental training on an architecture whose data contract is still incomplete.
-- The corpus is English natural language plus Python, JS/TS, HTML/CSS, and Rust.
-  The earlier "multilingual" label refers to programming-language coverage, not a
-  human-language expansion. High-quality appropriately licensed static datasets are
-  admissible even when model-derived; origin is retained and synthetic share is
-  measured rather than treated as an automatic ban.
-- Static openly licensed model-derived corpora are eligible data sources when their
-  quality tier, provenance, permitted use, contamination, retention, and recursive
-  synthetic position share are explicit. They do not authorize a live teacher
-  provider and cannot enter runtime serving as external tokens.
-- Live teacher rows are not the bootstrap corpus. They are capped residual examples
-  after ordinary licensed-data coverage is exhausted: <=10% of accepted rows and
-  <=2% of optimizer sampling initially, with a downward schedule and matched utility
-  ablation. The existing negative teacher tranche remains retained but quarantined.
-- Training sequence is fixed by prerequisites: freeze disjoint SFT/eval contracts ->
-  arm-specific causal pretraining plus a matched mixed dense control -> governed
-  English instruction/conversation and language-specific direct-body SFT ->
-  verifier-positive pair construction -> preference optimization -> verifier-reward
-  RL -> search/fast-generation/sparse challengers. A later stage cannot be used to
-  compensate for a missing earlier signal.
-- Build the practical transformer/hybrid from-scratch generator first. The current
-  wall is semantic transfer after correcting a severe data/capacity mismatch. The
-  old 43.6M dense-active model saw only 0.73M target positions from 16,000 licensed
-  functions before repeated training and remained 0/8 after adaptation. The
-  replacement path now selects across the full admitted corpus (35,297 functions),
-  removes exact source/body duplicates, exposes 5.58M encoded one-pass positions to
-  a 3.70M-active-parameter tied-output model, and reports optimizer repetition
-  separately. The governed conversation path adds 13,918 human-contributed,
-  redacted, decontaminated rows (4.29M one-pass positions). Neither data scale nor
-  LM loss clears the wall without direct verifier behavior. The completed one-pass
-  contrastive run improved heldout LM loss `8.410877 -> 2.273732` and the matched
-  versus mismatched source-loss gap `0.006521 -> 0.238046`. Frozen 1M/3M/5.5M
-  replay emitted `57` integrity-verified, syntax-valid candidates over `24` private
-  task-checkpoints but scored `0/24`; outputs collapsed onto shallow `return data`,
-  `len(data)`, and repeated type-check patterns. This falsifies more scalar tuning
-  or epochs on the same body-token target. A reversible byte-piece codec now makes
-  source and target encoding open-vocabulary with zero `<unk>` positions and rejects
-  incomplete targets before splitting. The matched semantic-plan-plus-direct-body
-  arm improves heldout loss to `2.524909` but emits only one integrity-clean candidate
-  and remains `0/24`; the zero-unknown direct-body arm reaches `2.809789`, emits 17
-  integrity-clean candidates at its final rung, and also remains `0/24`. Its first
-  replay exceeds the five-minute child budget. These results retain open-vocabulary
-  encoding as correctness infrastructure but falsify both representations as the
-  current survival model.
-- The standard 6.6M-parameter MLX decoder follow-up exposed and removed a
-  hidden-information leak: its earlier `1/24` result inferred callable arity
-  from private tests. The corrected split-vocabulary route binds all admitted
-  source content, uses a target-independent interface when no explicit
-  signature exists, and encodes all `24/24` heldout targets with zero overflow.
-  A bounded `2,001,802`-position continuation improves corrected heldout loss
-  `2.212320 -> 1.667694`, emits `88` syntax-valid transformer-family candidates
-  over `23` tasks with zero integrity mismatches, and still scores `0/24`.
-  Independent integrity verifies `38` and rejects `50` as inert stubs. Wider beam emits `376`
-  syntax-valid candidates at `0/24`; a shared-vocabulary arm also remains
-  `0/24` while weakening prompt conditioning. The route is contained as an
-  experimental successor. Search width, truncation, signature recovery,
-  tokenizer sharing, and more same-distribution SFT are now falsified as the
-  immediate repair; prompt-conditioned semantic learning and inert-body collapse
-  are the active wall.
-- A target-independent curriculum canary retains all `13,474` licensed rows but
-  weights self-contained bodies `3.0x` and context-dependent bodies `0.5x` while
-  freezing private sampling probability at `0.269068`. It improves heldout loss
-  `1.808397 -> 1.706521` and emits `84` syntax-valid candidates over `23/24`
-  tasks, but still passes `0/24`; mean verifier reward changes only
-  `0.440152 -> 0.442105`. Integrity and blind-flow audits are GREEN with zero
-  fallback/tool/template/router credit. This rejects standalone-body weighting as
-  a capability fix while retaining the general sampling mechanism for future
-  data-quality studies.
-- A subsequent ID-space audit found that split source-vocabulary IDs were
-  incorrectly shifted into the target embedding segment. The repaired mapping
-  raises independently integrity-verified candidates from `38/88` to `57/87`
-  and reduces inert stubs from `50` to `30`, but covers only `22/24` tasks and
-  remains `0/24` on exact behavior. The completed training receipt was then
-  overwritten by the old evaluation-only CLI behavior; the checkpoint and final
-  heartbeat are retained, but the canonical gate records incomplete training
-  provenance and no adoption. Evaluation-only now requires execute mode plus an
-  explicit prior receipt, and candidate artifact paths are request-bound. This
-  keeps the encoding correction while rejecting the checkpoint as capability.
-- Exact-bound source-conditioning measurement across all `24` heldouts records
-  matched loss `1.662704` versus deterministic wrong-source loss `1.766282`, a
-  positive gap of `0.103578`. The checkpoint therefore uses source information,
-  but still cannot turn it into correct behavior. The existing conditioning route
-  now separates `preflight`, `measure`, and `train`; binds the exact base config,
-  checkpoint hash, stage signature, arrays, metadata, and base report; preserves
-  target-mask cardinality under source derangement; publishes checkpoints
-  atomically; emits typed faults; and cannot overwrite canonical survival evidence.
-  It correctly refuses training while the base completion receipt is incomplete.
-  The pre-repair conditioned checkpoint is retained under an explicitly stale
-  lineage path and is absent from the configured output location.
-- The registered Semantic IR now has a closed, target-independent learned-plan
-  protocol that the same causal model can emit before direct body tokens. The
-  independent integrity path replays the raw token trace, validates every plan
-  transition, reversibly decodes the body subsequence, normalizes only implicit
-  terminal dedents, and demotes corrupt traces without trusting candidate flags.
-  Under matched MLX data, model, seed, target-position, evaluation, and fanout
-  budgets, plan-plus-body is a clean negative: `42` syntax-valid candidates over
-  `15/24` tasks versus body-only `70` over `20/24`; mean verifier reward is
-  `0.296970` versus `0.401639`; decode is `11.252` seconds slower; both score
-  `0/24`. The plan mode is therefore `NOT_ADOPTED`, body-only remains canonical,
-  and lower plan-arm LM loss receives no capability credit.
-- The first architecture-qualified Sol 5.6 teacher curriculum ablation is also a
-  clean negative. Matched MLX arms resumed the same frozen checkpoint with the
-  same `1,024` train rows, `192` heldouts, seed, optimizer, four epochs, and
-  direct-body auxiliary profile; the teacher-on arm reserved `14` governed rows
-  to train only. Teacher-off reached heldout LM loss `0.352542`; teacher-on was
-  worse at `0.371843`. On the same `24` family-disjoint plus `24` broad-private
-  tasks, both arms scored `0/48`. Teacher-on emitted fewer independently verified
-  learned candidates (`110` versus `135`), increased decode-starved tasks (`11`
-  versus `2`), and lowered mean verifier reward on both splits. Candidate-integrity
-  and blind-information-flow audits are GREEN with zero learned credit for the
-  `48` baseline/fallback rows in each manifest. These rows remain admitted and
-  provenance-bound, but this curriculum is `NOT_ADOPTED`; verifier acceptance is
-  not a substitute for causal heldout utility.
-- The same ablation exposed and removed a canonical decoder hot-loop defect.
-  Operand and state-event bias recomputed generated-prefix context once per
-  vocabulary token. Prefix context is now computed once per probability row and
-  reused, preserving bit-identical probabilities; the focused benchmark improved
-  `27.96x`. The ordinary MLX decoder now also uses checkpoint-compatible
-  incremental source/cross/self-attention state with an explicit full-prefix
-  control. Every materialized output head is numerically equivalent within
-  `1e-5`, candidate/token identity is exact, and a real 48-token checkpoint
-  canary improves pre-verifier decode from `832 ms` to `500 ms` (`1.664x`) while
-  reducing source encodes from `47` to `1`. Decode progress is committed with
-  fsync plus atomic replacement and bound to config, checkpoint, vocabulary,
-  options, task order, and opaque model-visible-input hashes. A forced stop after
-  two tasks resumed the third and reproduced all six candidate identities from
-  a clean control. Corrupt, stale, symlinked, reordered, or hash-mismatched state
-  fails closed. This is runtime/replay evidence only, not semantic capability or
-  CUDA/MLX parity.
-- A parameter-neutral prefix-LM control now tests whether full bidirectional source
-  encoding helps the same direct body decoder. The canonical sequence contract has
-  exactly one source/target separator on all `12,111` SFT rows and `24` eval rows,
-  no separator on `17,643` raw-code windows, and no supervised position at or before
-  the separator. Unit and MLX causal tests prove later-source influence, zero
-  target-to-source leakage, cached/full-prefix equivalence, unchanged checkpoint
-  schema, and fail-closed malformed partitions. Under matched seed `20260711`,
-  parameters, `47` optimizer steps, `100,260` supervised positions, and `24`
-  family-disjoint tasks, causal and prefix-LM both emit zero syntax-valid candidates
-  and pass `0/24`; prefix-LM slightly worsens loss (`4.700036 -> 4.704584`), SFT
-  throughput (`13,113.833 -> 12,843.229` tokens/s), and decode (`10,000 -> 10,065`
-  ms). The comparison is `GREEN` but prefix-LM is `NOT_ADOPTED`; causal remains the
-  canonical attention policy. This falsifies source-prefix masking as the next
-  capability lever at the bounded diagnostic rung.
-- Do not fund a 100M sparse rung from architecture preference. First complete the v8
-  10.78M-active/12.50M-total verdict and one-shot confirmation. A later scale rung
-  must be selected from measured scaling residuals, supported by additional unique
-  admitted positions, and repeat both matched dense views with expert attribution,
-  prompt/signature-only visibility, strict direct-body replay, and family-disjoint
-  heldouts. Keep the old body-template inventory disabled for promotion claims.
-- Once a proposer sometimes succeeds, run verifier-stage-aware DPO/IPO/ORPO/KTO/
-  SimPO, then bounded GRPO/RLOO/ReMax/RLVR. Every update has a policy lease,
-  evaluator independence, drift/authority bounds, rollback, reward-hacking probes,
-  and pre/post behavior replay.
-- Compare one-shot versus verifier-guided semantic-IR repair, then AR versus MTP,
-  self-draft/speculative, and sketch/diffusion modes using accepted verified output
-  per second. VCM/STS on/off ablations use equal candidate/context budgets.
-- Acceptance: direct model-only verifier pass moves above zero and beats its matched
-  baseline; preference/RL/search/fast-gen techniques advance only on heldout
-  behavior or record falsification; active-parameter efficiency is reported.
-- Do not: add another marker/head/slot variant without a preregistered falsification
-  sequence; train on public benchmarks; credit renderer/tool/search/fallback output
-  as learned generation; scale or repeatedly adapt a behavior-flat checkpoint; call
-  repeated token positions unique data exposure.
+(Owns Tracks 1, 3, and 4. The practical lane is transformer/hybrid unless matched
+evidence earns a different route.)
 
+- **Current frozen rung:** v8 uses a 10,347,009-parameter shared transformer trunk
+  plus five independently checkpointed 430,849-parameter English, Python, JS/TS,
+  HTML/CSS, and Rust specialists. Active sparse parameters are 10,777,601 and total
+  sparse parameters are 12,501,254. The dense controls are mechanically matched at
+  10,779,648 active and 12,499,968 total parameters. The sparse trunk and specialists
+  are complete; the active-parameter dense control is running transactionally and the
+  total-parameter control follows. No implementation, data view, seed, tokenizer,
+  decoding policy, split, or accounting view may change before both controls finish.
+
+- **Correct interpretation of v8:** the 128-row development records per arm contain
+  prompt and target but no executable tests or complete functional verifier. English
+  recovered one target exactly; every code arm recovered zero, with Python 41/128
+  syntax-valid. These are exact-recovery and syntax diagnostics only. They are not a
+  complete utility verdict, cannot prove a practical architecture win, and cannot be
+  blended with older assisted/public routes.
+
+- **Frozen diagnostic publication:** finish both dense controls unchanged and publish
+  per-language exact recovery, syntax/serialization, loss, similarity, throughput,
+  memory, active/total parameters, optimizer positions, and cost under both
+  preregistered accounting views. Do not tune from sparse or interim dense outputs.
+  Preserve this comparison as a systems-canary result even if every score is zero.
+
+- **Fresh functional utility qualification:** before completed control outputs are
+  inspected, freeze one architecture-neutral, source-disjoint manifest and run every
+  unchanged sparse/dense checkpoint once. It must bind task IDs, model-visible input,
+  toolchain/container identity, timeout, scoring, failure taxonomy, candidate
+  integrity, adjudication, and consumed status. No model may influence task inclusion,
+  weighting, rubric, or verifier after its output is observed.
+  - English: multi-turn instruction following, correction, clarification, factual
+    grounding from supplied context, calibrated abstention, and conversation
+    continuity scored through blinded pairwise/rubric judgments with inter-rater
+    agreement. Exact match remains a separate diagnostic.
+  - Python: parse/compile plus isolated unit/property tests, return/type and exception
+    contracts, repository-edit patch application, and regression tests.
+  - JS/TS: parser, typecheck, build, bounded runtime tests, and package/repository edit
+    checks under pinned toolchains.
+  - HTML/CSS: parse/DOM assertions, accessibility checks, responsive/layout invariants,
+    and deterministic screenshot or render-tree comparison where stable.
+  - Rust: parse/format diagnostics, `cargo check`, clippy, isolated unit/integration
+    tests, and repository-edit regression checks under a pinned toolchain.
+  - Report exact recovery and functional utility separately; report every language,
+    task family, tail floor, no-output/timeout/invalid rates, accepted output per
+    second, and model-only versus assisted channels. English cannot hide code failure.
+
+- **Architecture verdict:** issue the practical verdict only after both frozen
+  diagnostics and the functional qualification exist.
+  - If a dense control Pareto-dominates MoECOT under either preregistered view without
+    a hidden cost regression, route the dense/hybrid successor and retain MoECOT as
+    negative/discovery evidence.
+  - Retain MoECOT only if it has a repeatable Pareto advantage and no weak-arm floor
+    regression; route accuracy cannot substitute for answer utility.
+  - If results trade off without a preregistered winner, record unresolved and use one
+    untouched confirmation surface, not narrative preference.
+  - Confirmation is spent once on the selected unchanged implementation. Route
+    replacement then uses one SCF/registry transaction with exact rollback.
+
+- **Scale-floor exit:** 10.8M active parameters are a systems canary, not a credible
+  ChatGPT-like assistant target. If sparse and both dense controls remain functionally
+  zero across code, mark the rung falsified and stop same-scale architecture repair.
+  The next rung must be the smallest data-supported model expected to expose scaling,
+  ordinarily 50M-100M active parameters, and must predeclare:
+  - scaling-law estimate and falsification condition;
+  - unique admitted positions and task-complete verified-unit coverage per arm;
+  - matched active/total dense controls and sparse attribution;
+  - MLX memory, throughput, checkpoint, resume, and wall/energy canaries;
+  - fixed optimizer exposure, development/confirmation splits, and stop criteria.
+  Repeated positions, teacher paraphrases, target-only snippets, or optimizer epochs
+  do not fund scale. A larger rung is denied if task-complete data support is absent.
+
+- **Product-aligned supervision:** consume Phase 7 `task_complete_training_unit`
+  records. English emphasizes natural multi-turn dialogue, corrections, and useful
+  instruction following. Code emphasizes complete tasks and repository edits with the
+  same pinned compile/test/render contracts used for private qualification. Licensed
+  open data is primary; local dogfood outcomes and verified self-generation follow;
+  governed OpenAI teacher rows remain capped residual pressure. Public benchmark
+  artifacts remain calibration-only.
+
+- **Amplifier order:** do not optimize a zero numerator.
+  1. Establish nonzero model-only functional behavior.
+  2. Qualify STS and VCM independently under equal visible context and candidate
+     budgets, then jointly only if each causal contribution survives.
+  3. Qualify verifier-guided search against one-shot generation, reporting displaced
+     verification/repair cost and never crediting deterministic repairs as learned.
+  4. Build real accepted/rejected density before DPO/IPO/ORPO/KTO/SimPO.
+  5. Run GRPO/RLOO/ReMax/RLVR only with independent verifiers, reward-hacking probes,
+     policy leases, drift bounds, and rollback.
+  6. Optimize AR, MTP, speculative/self-draft, sketch/diffusion, or other fast modes
+     by accepted verified output per second, never proposed-token throughput alone.
+
+- **Architecture freeze:** for the next three capability cycles, do not add a model
+  head, marker, router, lane, dashboard, report family, or governance layer unless a
+  concrete training/inference failure receipt proves the current registered contract
+  cannot express the required behavior. Correctness, replay, security, and measured
+  hot-loop fixes are allowed. Every proposed architecture change names the defect,
+  matched control, expected utility delta, rollback, and retirement target.
+
+- **Acceptance:** a practical checkpoint is independently loadable, model-only,
+  candidate-integrity clean, functionally positive on source-disjoint English and
+  relevant code tasks, confirmation-qualified, and better than its matched baseline
+  without hiding weak arms or human/verifier cleanup cost.
+
+- **Do not:** train on public benchmarks; credit templates, n-grams, renderers, tools,
+  routers, fallbacks, hidden target metadata, or private-test-derived interfaces as
+  learned generation; select an accounting view after results; repeatedly patch a
+  falsified scale rung; or call loss, syntax, exact recovery, route selection, or
+  infrastructure readiness a utility win.
 ### Phase 11: SymLiquid Discovery-Lane Verdict
 - Keep SymLiquid/CGS/VSA protected as a discovery comparator, but make the practical
   transformer/hybrid lane the default unless SymLiquid wins repeated matched-data,
@@ -1334,6 +1084,13 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
 - Compression receipts declare reconstruction, residual coding, determinism,
   supported use, authority/taint preservation, and exact-replay boundary. Proof and
   Lean artifacts support only their finite stated claims.
+- Keep generated state out of the source tree by default. After the active v8 run
+  closes, migrate heavyweight runtime/checkpoint/report payloads to the configured
+  external state root; retain only content-bound manifests, current route pointers,
+  active/confirmation checkpoints, compact negative-result summaries, and exact
+  replay locators in the repository. Per-family quotas apply to superseded canaries,
+  candidates, optimizer snapshots, and duplicate reports; retention always runs
+  dry-run plus reference-closure verification before moving bytes.
 - Compile structured assurance graphs from existing claims, evidence, assumptions,
   hazards, contexts, acceptance criteria, defeaters, mitigations, dependencies,
   owners, and review/expiry state. Changes invalidate affected nodes; a complete
@@ -1352,8 +1109,10 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   hard-linked ten exact duplicate payloads, restored 36 missing historical pointers
   after archive-hash verification, archived 115 superseded hot-report views, replayed
   1,361/1,361 cumulative entries, and leaves
-  the artifact budget GREEN with zero hard gaps and zero warnings. These are evidence-system results, not model-
-  capability or checkpoint-quality claims.
+  the artifact budget GREEN with zero hard gaps and zero warnings. Local
+  `archive/`, `runtime/`, `data/`, `checkpoints/`, and `reports/` are still large, so
+  this is replay correctness rather than completion of physical source-tree cleanup.
+  These are evidence-system results, not model-capability or checkpoint-quality claims.
 
 ### Phase 15: Procedural Memory and Toolification
 - Cluster repeated verified trajectories into procedural candidates only when they
@@ -1463,15 +1222,17 @@ lifecycle, tokenizer, domain, language, and repetition requirements.
   implementation state: access state, source-note state, claim-mapping state,
   proof/test backlog, insertion decision, residuals, next action.
 - Keep `configs/roadmap_implementation_matrix.json` the source of truth for chapter
-  coverage; reconcile it first when this file and the matrix disagree; refresh the
-  crosswalk against the current book tree; register new book concepts as backlog
-  rows routed to an existing phase (see Book-Parity Backlog).
+  coverage; reconcile it first when this file and the matrix disagree. Bind the
+  crosswalk to an immutable committed AI_book revision. Report later live-worktree
+  edits as intake drift, but do not let an external dirty checkout invalidate model
+  training readiness. Advance the pin only through a reviewed reconciliation and
+  route new concepts to existing phases (see Book-Parity Backlog).
 - Check exact chapter identity/order and every book-owned title, part, file, claim
   label, evidence level, minimal implementation, mature endpoint, interface,
   invariant, failure mode, and Codex-test inventory. Count equality alone is not
   synchronization. Preserve the book commit and manifest digest used for review.
-- Acceptance: `roadmap_implementation_gate.py --gate` reports full chapter coverage
-  with 0 stale phases; every book mechanism represented in Theseus meets the
+- Acceptance: `roadmap_implementation_gate.py --gate` reports full pinned chapter
+  coverage and separately identifies live drift; every represented book mechanism meets the
   Book-Parity Invariants below; public-safe Theseus evidence can flow back into the
   book without importing private payloads or inflating support state.
 - Do not: hide matrix drift in narrative; create a capability claim from a backlog

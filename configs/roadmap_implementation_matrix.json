@@ -55,10 +55,10 @@
   "latest_ai_book_reconciliation": {
     "date": "2026-07-14",
     "book_commit": "32635eb94ded42a5f54e528302685cab343993b7",
-    "book_worktree_state": "reviewed_uncommitted_post_v2_3_source_integration_manifest_without_commit_claim",
-    "manifest_sha256": "6871079f7f9442c7068432bb012d0b8a728bd269afc5bd628cd84bdde80638e2",
+    "book_worktree_state": "immutable_committed_snapshot_with_live_worktree_drift_reported_as_intake_only",
+    "manifest_sha256": "8ed8864d7a14673d75d81620f81a4f3740bf826fbb3862ee41e0e20ad56c485e",
     "book_manifest_chapter_count": 54,
-    "source_state": "The reviewed AI_book worktree has 54 active chapters and 511 authored Codex tests. Eight committed chapter-contract changes are synchronized below. A later uncommitted post-v2.3 source-integration pass adds Embedded Agency, MonitorBench, V-JEPA 2, and faithfulness/information-flow source mappings without changing chapter order or book-owned implementation fields; the exact dirty-manifest digest is bound, but no book commit or publication state is claimed.",
+    "source_state": "The implementation crosswalk is bound to committed AI_book revision 32635eb94ded42a5f54e528302685cab343993b7 and its exact 54-chapter manifest. Later uncommitted book edits are reported as intake drift but cannot make Theseus architecture readiness RED; advancing the pin requires an explicit reviewed reconciliation.",
     "decision": "Keep the frozen Phase-10 v8 MoECOT-versus-dense comparison as the sole capability flagship. Route Embedded Agency into existing authority/self-improvement boundaries, MonitorBench and faithfulness into evaluation-integrity/oversight controls, and V-JEPA 2 into the already-deferred world-model contract. These source additions do not authorize a new capability lane or mutate the in-flight training/evaluation contract.",
     "current_theseus_evidence": "Theseus has mature registry, VCM ABI, evidence, routing, update, and assistant record surfaces, but the book lessons are not yet demonstrated together by useful model behavior or complete real-state transitions.",
     "new_required_work": [
@@ -321,7 +321,7 @@
       "strict_generator_marker_slot_guard_churn",
       "fresh_public_calibration_before_the_current_model_changes_materially",
       "DPO_GRPO_search_width_MTP_diffusion_before_direct_verifier_positive_behavior",
-      "100M_scaling_or_symliquid_before_a_data_supported_five_arm_vs_dense_verdict"
+      "larger_scaling_or_symliquid_before_a_data_supported_five_arm_vs_dense_functional_verdict"
     ]
   },
   "implementation_rules": [
@@ -336,9 +336,44 @@
     "AI_book chapter-level Planned Codex tests are treated as missing technique obligations until a registered Theseus implementation has matched controls, negative controls, no-cheat audit, retained residuals, and explicit non-claims.",
     "Negative, inconclusive, and regression evidence must remain attached to the claim or phase it constrains; do not replace a negative report with a nearby positive family.",
     "The book-reference architecture core is now represented and pre-training readiness is GREEN; freeze architecture breadth and make governed data adequacy plus direct learned behavior the primary roadmap focus.",
-    "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it."
+    "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it.",
+    "The v8 prompt/target comparison is an exact-recovery diagnostic because its rows do not carry complete functional verifiers; practical architecture selection requires a separately frozen source-disjoint functional utility surface.",
+    "Freeze architecture and control-plane breadth for three capability cycles; only a concrete correctness, security, replay, or measured training/inference defect may authorize an architecture change during the freeze.",
+    "Treat 10.8M active parameters as a systems-canary rung. If sparse and both dense controls remain functionally zero across code, close the rung and require task-complete data plus a preregistered 50M-100M scale proposal instead of another same-scale patch."
   ],
   "planned_codex_test_backlog": [
+    {
+      "backlog_id": "planned.private_functional_utility_qualification_v1",
+      "source_basis": "Product-utility correction to the v8 exact-recovery diagnostic and AI_book benchmark-ratchet/evaluation-integrity requirements",
+      "technique_family": "functional_model_qualification",
+      "owned_phase_refs": [
+        7,
+        10,
+        12,
+        16
+      ],
+      "track_id": "C_capability_research_survival_lane",
+      "status": "next_after_frozen_dense_controls",
+      "dependency": "freeze the manifest before completed dense-control outputs are inspected; all v8 checkpoints remain unchanged",
+      "acceptance_gate": "A source-disjoint architecture-neutral surface reports blind English rubric/pairwise utility and pinned Python, JS/TS, HTML/CSS, and Rust compile/test/render utility per language, with exact recovery separate, independent candidate integrity, consumed-task identity, tail floors, and no post-hoc task selection.",
+      "support_state_target": "empirical-test-backed",
+      "no_claim_boundary": "The existing v8 prompt/target exact score is diagnostic only. Syntax, similarity, routing, tools, templates, and exact reference reproduction on open-ended tasks cannot independently authorize a practical architecture route."
+    },
+    {
+      "backlog_id": "planned.task_complete_product_corpus_and_scale_floor_v1",
+      "source_basis": "AI_book data-engine, product usefulness, scaling, and falsification requirements",
+      "technique_family": "data_supported_scale_decision",
+      "owned_phase_refs": [
+        7,
+        10
+      ],
+      "track_id": "C_capability_research_survival_lane",
+      "status": "inventory_now_train_only_after_v8_verdict",
+      "dependency": "complete the frozen v8 diagnostics and private functional qualification before authorizing another training rung",
+      "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by unique positions, per-language verified-unit floors, MLX canaries, matched controls, and stop criteria.",
+      "support_state_target": "empirical-test-backed",
+      "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, or metadata-complete receipts do not prove product-task quality or justify scale."
+    },
     {
       "backlog_id": "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
       "source_basis": "AI_book Chapter 38 planned tests plus locally reproduced Theseus evidence",
@@ -1461,6 +1496,9 @@
         "governance_right",
         "failure_boundary",
         "data_admission_receipt",
+        "task_complete_training_unit",
+        "task_complete_verifier_receipt",
+        "product_task_coverage_ledger",
         "data_lineage_edge",
         "data_lifecycle_policy_decision",
         "continual_learning_comparison",
@@ -1514,9 +1552,11 @@
         "reports/theseus_assistant_teacher_share_smoke.json"
       ],
       "missing_items": [
+        "task-complete product corpus contract covering English multi-turn/correction/instruction tasks plus Python, JS/TS, HTML/CSS, and Rust compile/test/render/repository-edit verification with source-disjoint splits and pinned toolchains",
+        "data-supported 50M-100M scale proposal requiring both unique admitted positions and per-language task-complete verifier coverage if the 10.8M rung is functionally falsified",
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
-      "smallest_next_patch": "Freeze language-appropriate supervised and family-disjoint direct-evaluation contracts before full-budget training, then complete bounded pretraining for the five independently checkpointed MLX arms and both frozen dense controls before any routing, search, preference/RL, or public calibration claim.",
+      "smallest_next_patch": "Do not mutate the frozen v8 corpus while its controls run. In parallel, extend the existing admission receipt with task-complete verifier bindings and inventory licensed product-shaped English and code units; this is the data prerequisite for any post-v8 scale rung, not authority to retrain yet.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/training_data_admission_v1.py",
@@ -1816,7 +1856,10 @@
         "fanout_result",
         "strict_generator_replay_receipt",
         "candidate_integrity_receipt",
-        "private_runtime_load_receipt"
+        "private_runtime_load_receipt",
+        "functional_utility_manifest",
+        "functional_utility_result",
+        "scale_rung_falsification_record"
       ],
       "required_gates": [
         "python3 scripts/neural_seed_token_decoder_comparator.py",
@@ -1942,6 +1985,9 @@
         "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json"
       ],
       "missing_items": [
+        "fresh architecture-neutral functional utility manifest frozen before completed dense-control outputs are inspected, with blind English rubric/pairwise evaluation and pinned compile/test/render evaluators for Python, JS/TS, HTML/CSS, and Rust",
+        "practical architecture verdict that reports v8 exact recovery separately from functional utility and marks the 10.8M rung falsified if all code paths remain functionally zero",
+        "data-supported 50M-100M active scale-rung plan with scaling estimate, MLX canaries, task-complete corpus floor, matched controls, stop criteria, and no same-scale architecture patch escape",
         "offline preference comparison across DPO/IPO/ORPO/KTO/SimPO on the same private accepted/rejected pair split, same reference checkpoint, same optimizer budget, same heldout verifier, and same no-cheat/candidate-integrity audit",
         "bounded GRPO/RLOO/ReMax/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference, reward-present/reward-removed ablation, verifier-cost ledger, reward-hacking probes, and no authority expansion by training side effect",
         "multi-target policy-update leases for planner, router, VCM selector, verifier policy, execution policy, and generation-mode selector; each update names target policy, admissible feedback, reward boundary, authority effect, drift bound, rollback, monitor window, and task-specific heldouts",
@@ -1969,7 +2015,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Keep the negative Sol 5.6 and prefix-LM tranches quarantined. The frozen v8 trunk and five language specialists are complete and directly evaluated; finish the in-flight active-parameter dense control, then the total-parameter dense control, publish per-language and two-view architecture verdicts, and spend confirmation once on the selected unchanged implementation before any route replacement, amplifier, or public calibration.",
+      "smallest_next_patch": "Keep every negative tranche quarantined and finish both v8 dense controls unchanged. Publish v8 as exact-recovery diagnostics only. Freeze the source-disjoint functional utility manifest before completed control outputs are inspected, then compare unchanged checkpoints per language; use that result to select dense/MoECOT or falsify the 10.8M rung before confirmation, route replacement, amplifiers, scale, or public calibration.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -2244,7 +2290,7 @@
         "reports/training_inference_execution_plan_gate.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Freeze the next genuinely fresh public surface only after direct learned candidate quality improves, then pass the proposal gate before execution and mine failures into private residual rows.",
+      "smallest_next_patch": "Freeze the next genuinely fresh public surface only after a confirmation-qualified model improves source-disjoint private functional utility, then pass the proposal gate before execution and mine failures into private residual categories without retaining public payloads as training data.",
       "integration_smoke": [
         "python3 scripts/public_calibration_proposal_gate.py",
         "python3 scripts/training_inference_execution_plan_gate.py --gate",
@@ -3126,7 +3172,7 @@
       "new benchmark family to avoid a failed one",
       "new strict-generator target-label family without preregistration",
       "new report family when an existing registry-owned report should be updated",
-      "preference_RL_search_fast_generation_or_100M_scaling before direct verifier-positive behavior"
+      "preference_RL_search_fast_generation_or_larger_scaling before direct verifier-positive behavior and task-complete data support"
     ]
   },
   "book_implementation_tracks": [

@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -161,7 +162,15 @@ def main() -> int:
     matrix = read_json(matrix_path)
     registry = read_json(registry_path)
     project_steward = read_json(resolve(args.project_steward))
-    report = build_report(matrix_path, registry_path, matrix, registry, started)
+    ai_book_root = resolve_external(args.ai_book_root)
+    report = build_report(
+        matrix_path,
+        registry_path,
+        matrix,
+        registry,
+        started,
+        ai_book_root=ai_book_root,
+    )
     crosswalk_path = resolve(args.crosswalk_out)
     crosswalk = build_book_to_theseus_crosswalk(
         matrix_path,
@@ -169,7 +178,7 @@ def main() -> int:
         matrix,
         report,
         crosswalk_path,
-        ai_book_root=resolve_external(args.ai_book_root),
+        ai_book_root=ai_book_root,
         project_steward=project_steward,
     )
     report["outputs"] = {"book_to_theseus_crosswalk": rel(crosswalk_path)}
@@ -206,14 +215,21 @@ def main() -> int:
     return 2 if report["trigger_state"] == "RED" else 0
 
 
-def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any], registry: dict[str, Any], started: float) -> dict[str, Any]:
+def build_report(
+    matrix_path: Path,
+    registry_path: Path,
+    matrix: dict[str, Any],
+    registry: dict[str, Any],
+    started: float,
+    ai_book_root: Path = DEFAULT_AI_BOOK_ROOT,
+) -> dict[str, Any]:
     surfaces = {str(row.get("id") or ""): row for row in list_dicts(registry.get("surfaces"))}
     abstractions = {str(row.get("id") or ""): row for row in list_dicts(registry.get("abstractions"))}
     implementations = {str(row.get("id") or ""): row for row in list_dicts(registry.get("implementations"))}
     phases = list_dicts(matrix.get("phases"))
     phase_reports = [audit_phase(row, surfaces, abstractions, implementations) for row in phases]
     artifact_citation_report = audit_hive_artifact_citations()
-    book_contract_report = audit_book_implementation_contract(matrix)
+    book_contract_report = audit_book_implementation_contract(matrix, ai_book_root)
     hard_gaps: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
     hard_gaps.extend(audit_matrix_shape(matrix, phases))
@@ -264,6 +280,12 @@ def build_report(matrix_path: Path, registry_path: Path, matrix: dict[str, Any],
             "book_manifest_order_match": book_contract_report["summary"]["book_manifest_order_match"],
             "book_manifest_digest_match": book_contract_report["summary"]["book_manifest_digest_match"],
             "book_manifest_sha256": book_contract_report["summary"]["book_manifest_sha256"],
+            "book_manifest_source": book_contract_report["summary"]["book_manifest_source"],
+            "book_manifest_commit": book_contract_report["summary"]["book_manifest_commit"],
+            "live_book_manifest_sha256": book_contract_report["summary"]["live_book_manifest_sha256"],
+            "live_book_manifest_differs_from_pin": book_contract_report["summary"][
+                "live_book_manifest_differs_from_pin"
+            ],
             "book_manifest_source_field_drift_chapter_count": book_contract_report["summary"][
                 "book_manifest_source_field_drift_chapter_count"
             ],
@@ -496,10 +518,28 @@ def audit_book_implementation_contract(
     core = dict_value(matrix.get("book_reference_core_before_training"))
     core_slices = list_dicts(core.get("required_slices"))
     phases = {int_or(row.get("phase"), -1) for row in list_dicts(matrix.get("phases"))}
-    book_manifest_chapters = load_ai_book_manifest_chapters(ai_book_root)
+    reconciliation = dict_value(matrix.get("latest_ai_book_reconciliation"))
+    pinned_book_commit = str(reconciliation.get("book_commit") or "").strip()
+    pinned_manifest_payload, pinned_manifest_bytes, pinned_manifest_error = load_ai_book_manifest_at_commit(
+        ai_book_root,
+        pinned_book_commit,
+    )
+    book_manifest_chapters = load_ai_book_manifest_chapters_from_payload(pinned_manifest_payload)
     book_manifest_count = len(book_manifest_chapters)
     hard_gaps: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
+
+    if pinned_manifest_error:
+        hard_gaps.append(
+            gap(
+                "book_chapter_implementation_crosswalk",
+                "pinned_book_manifest_unavailable",
+                {
+                    "book_commit": pinned_book_commit,
+                    "error": pinned_manifest_error,
+                },
+            )
+        )
 
     if not tracks:
         hard_gaps.append(gap("book_implementation_contract", "missing_book_implementation_tracks", {}))
@@ -626,8 +666,10 @@ def audit_book_implementation_contract(
         )
 
     manifest_path = ai_book_root / "book_structure.json"
-    actual_manifest_sha256 = hash_file(manifest_path) if manifest_path.exists() else ""
-    reconciliation = dict_value(matrix.get("latest_ai_book_reconciliation"))
+    live_manifest_sha256 = hash_file(manifest_path) if manifest_path.exists() else ""
+    actual_manifest_sha256 = (
+        hashlib.sha256(pinned_manifest_bytes).hexdigest() if pinned_manifest_bytes else ""
+    )
     expected_manifest_sha256 = str(reconciliation.get("manifest_sha256") or "")
     manifest_digest_match = bool(expected_manifest_sha256) and expected_manifest_sha256 == actual_manifest_sha256
     if book_manifest_count and not manifest_digest_match:
@@ -647,6 +689,25 @@ def audit_book_implementation_contract(
                 "book_chapter_implementation_crosswalk",
                 "book_manifest_unavailable",
                 {"ai_book_root": str(DEFAULT_AI_BOOK_ROOT)},
+                severity="warning",
+            )
+        )
+    live_manifest_differs_from_pin = bool(
+        live_manifest_sha256
+        and actual_manifest_sha256
+        and live_manifest_sha256 != actual_manifest_sha256
+    )
+    if live_manifest_differs_from_pin:
+        warnings.append(
+            gap(
+                "book_chapter_implementation_crosswalk",
+                "live_book_worktree_differs_from_pinned_snapshot",
+                {
+                    "book_commit": pinned_book_commit,
+                    "pinned_manifest_sha256": actual_manifest_sha256,
+                    "live_manifest_sha256": live_manifest_sha256,
+                    "rule": "Live book edits are intake work, not an architecture-readiness regression. Reconcile and advance the pin in a separate reviewed change.",
+                },
                 severity="warning",
             )
         )
@@ -832,6 +893,10 @@ def audit_book_implementation_contract(
             "book_manifest_order_match": manifest_order_match,
             "book_manifest_digest_match": manifest_digest_match,
             "book_manifest_sha256": actual_manifest_sha256,
+            "book_manifest_source": "pinned_git_commit",
+            "book_manifest_commit": pinned_book_commit,
+            "live_book_manifest_sha256": live_manifest_sha256,
+            "live_book_manifest_differs_from_pin": live_manifest_differs_from_pin,
             "book_manifest_source_field_drift_chapter_count": len(source_field_drifts),
             "book_manifest_source_field_drift_count": sum(
                 len(row["drift_fields"]) for row in source_field_drifts
@@ -1147,7 +1212,41 @@ def load_ai_book_manifest_chapters(ai_book_root: Path) -> list[dict[str, Any]]:
     manifest = ai_book_root / "book_structure.json"
     if not manifest.exists():
         return []
-    payload = read_json(manifest)
+    return load_ai_book_manifest_chapters_from_payload(read_json(manifest))
+
+
+def load_ai_book_manifest_at_commit(
+    ai_book_root: Path,
+    book_commit: str,
+) -> tuple[dict[str, Any], bytes, str]:
+    if not book_commit:
+        return {}, b"", "latest_ai_book_reconciliation.book_commit is empty"
+    if len(book_commit) != 40 or any(char not in "0123456789abcdef" for char in book_commit.lower()):
+        return {}, b"", "book_commit must be a full 40-character hexadecimal Git object id"
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(ai_book_root), "show", f"{book_commit}:book_structure.json"],
+            capture_output=True,
+            check=False,
+            timeout=10,
+        )
+    except FileNotFoundError:
+        return {}, b"", "git executable is unavailable"
+    except subprocess.TimeoutExpired:
+        return {}, b"", "git show timed out after 10 seconds"
+    if completed.returncode != 0:
+        error = completed.stderr.decode("utf-8", errors="replace").strip()
+        return {}, b"", error or f"git show failed with exit {completed.returncode}"
+    try:
+        payload = json.loads(completed.stdout.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        return {}, completed.stdout, f"pinned manifest is not valid UTF-8 JSON: {exc}"
+    if not isinstance(payload, dict):
+        return {}, completed.stdout, "pinned manifest root is not an object"
+    return payload, completed.stdout, ""
+
+
+def load_ai_book_manifest_chapters_from_payload(payload: dict[str, Any]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for part in list_dicts(payload.get("parts")):
         for chapter in list_dicts(part.get("chapters")):
@@ -1884,6 +1983,11 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "book_manifest_chapter_count": summary.get("book_manifest_chapter_count", 0),
         "book_manifest_order_match": summary.get("book_manifest_order_match", False),
         "book_manifest_digest_match": summary.get("book_manifest_digest_match", False),
+        "book_manifest_source": summary.get("book_manifest_source", ""),
+        "book_manifest_commit": summary.get("book_manifest_commit", ""),
+        "live_book_manifest_differs_from_pin": summary.get(
+            "live_book_manifest_differs_from_pin", False
+        ),
         "book_manifest_source_field_drift_chapter_count": summary.get(
             "book_manifest_source_field_drift_chapter_count", 0
         ),

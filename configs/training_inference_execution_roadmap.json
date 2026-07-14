@@ -201,7 +201,7 @@
       "id": "T3_bounded_private_training_rung",
       "title": "Bounded Private Training Rung",
       "status": "in_progress",
-      "goal": "Complete the frozen v8 five-arm MoECOT and matched 10.780M-active/12.500M-total dense falsification controls, then issue a per-language architecture verdict before any amplifier, route promotion, or public calibration.",
+      "goal": "Complete the frozen v8 five-arm MoECOT and matched 10.780M-active/12.500M-total dense controls unchanged, then publish their per-language exact-recovery diagnostic without treating target-string reproduction as a complete utility verdict.",
       "entry_criteria": [
         "T2 smoke passes",
         "baseline replay is frozen",
@@ -233,9 +233,9 @@
         "checkpoints/moecot_language_seed_v8/*/training_receipt.json"
       ],
       "exit_criteria": [
-        "arm-specific and mixed-control heldouts are evaluated before and after",
-        "routing accuracy, direct answer utility, and composed answer utility are reported separately",
-        "semantic verifier pass improves over baseline or a falsifying wall is recorded",
+        "arm-specific and mixed-control v8 exact-recovery diagnostics are published per language under both preregistered accounting views",
+        "exact recovery, syntax, serialization, loss, similarity, throughput, memory, optimizer positions, and cost are reported without utility overclaim",
+        "the unchanged rung is retained as a systems-canary result even if every functional numerator remains zero",
         "candidate integrity remains GREEN",
         "checkpoint size, load time, throughput, and memory are reported"
       ],
@@ -252,8 +252,8 @@
           "the clean semantic adaptation emitted 14 integrity-clean candidates across the 24-row family-disjoint diagnostic but passed 0/24 behaviors",
           "starvation DPO improved its preference objective but regressed emitted candidates from 14 to 0 and is not adopted"
         ],
-        "current_wall": "English has one narrow exact development success while every code arm remains zero exact. The missing evidence is the frozen dense-control comparison and one-shot confirmation, not another same-scale sparse patch. Do not substitute templates, renderers, deterministic tools, route labels, syntax rates, LM loss, similarity, or preference-gap improvement for model-only heldout behavior.",
-        "next_allowed_step": "Finish both dense controls unchanged, evaluate every language separately, issue the two-view Pareto verdict, and spend confirmation once on the selected unchanged implementation before preference/RL, search, scale, or public calibration."
+        "current_wall": "The v8 development rows expose prompt and target but no executable tests or complete functional verifier. English 1/128 exact and zero exact code are exact-recovery diagnostics, not a practical architecture verdict. Do not substitute templates, renderers, deterministic tools, route labels, syntax rates, LM loss, similarity, or preference-gap improvement for model-only functional behavior.",
+        "next_allowed_step": "Finish both dense controls unchanged and publish the frozen diagnostic. Before inspecting completed control outputs, freeze T4's architecture-neutral functional utility manifest; run unchanged checkpoints there before any practical route selection, confirmation spend, amplifier, scale decision, or public calibration."
       },
       "rollback_or_stop": "Do not promote if improvement is only syntax, nontrivial-return rate, lower LM loss, or wider fanout without behavior.",
       "no_claims": [
@@ -264,12 +264,13 @@
     },
     {
       "id": "T4_private_eval_and_candidate_integrity",
-      "title": "Private Eval And Candidate Integrity",
+      "title": "Private Functional Utility And Candidate Integrity",
       "status": "planned",
-      "goal": "Replay the trained checkpoint through independent candidate integrity, blind information-flow, private verifier, selector, and VCM-on/off ablations.",
+      "goal": "Freeze and execute a source-disjoint, architecture-neutral functional utility qualification for English and every code language while preserving exact recovery as a separate diagnostic and independently auditing candidate integrity.",
       "entry_criteria": [
-        "T3 produced a checkpoint with clean provenance",
-        "candidate files and reports are replayable"
+        "the functional manifest is frozen before completed dense-control outputs are inspected",
+        "T3 produced unchanged checkpoints with clean provenance",
+        "candidate files, toolchain identities, rubrics, tests, and reports are replayable"
       ],
       "required_gates": [
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
@@ -278,10 +279,11 @@
       ],
       "allowed_inputs": [
         "generated candidate files",
-        "private verifier results",
+        "source-disjoint private task-complete verifier results",
         "candidate source code",
         "allowed prompt/signature context",
-        "VCM packet metadata"
+        "blind English rubric and pairwise judgments",
+        "pinned Python, JS/TS, HTML/CSS, and Rust toolchain receipts"
       ],
       "forbidden_inputs": [
         "candidate self-declared learned flags",
@@ -290,21 +292,26 @@
         "public benchmark payloads"
       ],
       "evidence_outputs": [
+        "reports/private_functional_utility_manifest.json",
+        "reports/private_functional_utility_qualification.json",
         "reports/candidate_integrity_*.json",
         "reports/blind_information_flow_audit_*.json",
         "reports/neural_seed_strict_generator_fanout_receipt.json",
         "reports/correctness_generator_survival_lane_gate.json"
       ],
       "exit_criteria": [
+        "English multi-turn utility is scored blind with rubric version and inter-rater agreement",
+        "Python and Rust compile/test results, JS/TS parse/typecheck/build/runtime results, and HTML/CSS DOM/accessibility/render results are reported per family",
+        "exact recovery and functional utility are separate channels and every language tail floor is visible",
         "integrity mismatch count is zero or treated as negative evidence",
-        "pass-if-any and selected-pass rates are reported",
-        "VCM-on/off and STS-on/off effects are separated under equal candidate budgets",
+        "pass-if-any, selected-pass, invalid, timeout, no-output, and accepted-output-per-second rates are reported",
         "no deterministic tool or adapter result is counted as learned generation"
       ],
-      "rollback_or_stop": "Block promotion and public calibration if integrity, blind-flow, or semantic behavior evidence is weak.",
+      "rollback_or_stop": "Block practical route promotion if integrity or blind-flow fails. If sparse and both dense controls are functionally zero across code, mark the 10.8M rung falsified and move to a data-supported 50M-100M scale proposal instead of another same-scale patch.",
       "no_claims": [
         "does not turn tool-assisted success into model-only success",
-        "does not accept self-declared candidate provenance"
+        "does not accept self-declared candidate provenance",
+        "does not treat exact target-string recovery as complete functional utility"
       ]
     },
     {
@@ -397,9 +404,9 @@
       "id": "T7_fresh_public_calibration_proposal",
       "title": "Fresh Public Calibration Proposal",
       "status": "blocked_until_private_quality_positive",
-      "goal": "Run a fresh frozen public calibration only after private learned candidate quality improves, then mine failures into private residual categories without training on public artifacts.",
+      "goal": "Run a fresh frozen public calibration after a confirmation-qualified functional model change, then mine failures into private residual categories without training on public artifacts.",
       "entry_criteria": [
-        "T4 shows positive private semantic behavior improvement",
+        "T4 shows positive model-only functional utility and candidate integrity",
         "surface slug is fresh and not consumed",
         "proposal gate authorizes execution",
         "training firewall is GREEN"

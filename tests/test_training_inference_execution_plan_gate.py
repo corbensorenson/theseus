@@ -22,6 +22,25 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def test_canonical_plan_separates_exact_recovery_from_functional_utility() -> None:
+    plan = json.loads(
+        (ROOT / "configs" / "training_inference_execution_roadmap.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    lanes = {row["id"]: row for row in plan["lanes"]}
+    t3 = lanes["T3_bounded_private_training_rung"]
+    t4 = lanes["T4_private_eval_and_candidate_integrity"]
+    assert "exact-recovery diagnostic" in t3["goal"]
+    assert "functional utility" in t4["goal"]
+    assert any("English multi-turn" in item for item in t4["exit_criteria"])
+    assert any("Python and Rust compile/test" in item for item in t4["exit_criteria"])
+    assert "50M-100M" in t4["rollback_or_stop"]
+    assert any(
+        "exact target-string recovery" in item for item in t4["no_claims"]
+    )
+
+
 def smoke(checkpoint: Path, vocab: Path) -> dict:
     return {
         "trigger_state": "GREEN",

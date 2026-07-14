@@ -35,6 +35,11 @@ class RoadmapBookSyncTests(unittest.TestCase):
         summary = report["summary"]
         self.assertTrue(summary["book_manifest_order_match"])
         self.assertTrue(summary["book_manifest_digest_match"])
+        self.assertEqual("pinned_git_commit", summary["book_manifest_source"])
+        self.assertEqual(
+            self.matrix["latest_ai_book_reconciliation"]["book_commit"],
+            summary["book_manifest_commit"],
+        )
         self.assertEqual(0, summary["book_manifest_source_field_drift_count"])
         self.assertEqual(54, summary["book_manifest_chapter_count"])
         self.assertEqual(511, summary["book_codex_test_count"])
@@ -59,6 +64,21 @@ class RoadmapBookSyncTests(unittest.TestCase):
         matrix["latest_ai_book_reconciliation"]["manifest_sha256"] = "0" * 64
         report = self.audit(matrix)
         self.assertIn("book_manifest_digest_mismatch", self.gap_kinds(report))
+
+    def test_live_book_worktree_drift_does_not_replace_pinned_manifest(self) -> None:
+        report = self.audit(self.matrix)
+        summary = report["summary"]
+        self.assertTrue(summary["book_manifest_digest_match"])
+        if summary["live_book_manifest_differs_from_pin"]:
+            warning_kinds = {str(row.get("kind") or "") for row in report["warnings"]}
+            self.assertIn("live_book_worktree_differs_from_pinned_snapshot", warning_kinds)
+        self.assertNotIn("book_manifest_digest_mismatch", self.gap_kinds(report))
+
+    def test_missing_pinned_commit_fails_closed(self) -> None:
+        matrix = copy.deepcopy(self.matrix)
+        matrix["latest_ai_book_reconciliation"]["book_commit"] = "0" * 40
+        report = self.audit(matrix)
+        self.assertIn("pinned_book_manifest_unavailable", self.gap_kinds(report))
 
 
 if __name__ == "__main__":

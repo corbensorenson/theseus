@@ -195,7 +195,7 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
         "ready_for_local_assisted_inference_canary": ready_for_local_assisted_inference(current, failed_checks, failed_expected_invalid),
         "ready_for_model_only_general_chat_runtime": False,
         "ready_for_public_calibration": False,
-        "public_calibration_block_reason": "requires fresh non-consumed surface and positive private semantic behavior evidence first",
+        "public_calibration_block_reason": "requires a confirmation-qualified model change with positive source-disjoint private functional utility, plus a fresh non-consumed public surface",
         "ready_for_production_mlx_route": False,
         "production_mlx_route_block_reason": current["resource_mlx_route"].get("production_route_block_reason"),
         "ready_for_hive_fleet_training": False,
@@ -238,7 +238,7 @@ def build_report(plan_path: Path, plan: dict[str, Any], current_reports: dict[st
                 "Hive fleet training while peers are unreachable",
             ],
             "why": (
-                "The private MLX smoke checkpoint is clean, so the next training step may advance to a bounded private semantic-quality rung."
+                "The private MLX smoke is clean and the frozen v8 comparison is in progress. Finish both dense controls unchanged, publish exact-recovery diagnostics, and freeze the separate functional utility manifest before inspecting completed control outputs."
                 if bounded_rung_ready
                 else (
                     "Pre-training architecture readiness is RED because the roadmap now has partial book-derived implementation phases. Resolve or falsify those partial phases before making training or public calibration the primary focus."
