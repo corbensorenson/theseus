@@ -17,13 +17,13 @@
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-14T08:42:17.067746Z",
+  "frozen_utc": "2026-07-14T08:50:00.837116Z",
   "generation_wrapper_sha256": "6a9b0e9e3fc2228d39a1f6065678755a8ec4b3d974c91990c7bc962f511dc896",
   "immutable": true,
   "policy": "project_theseus_private_functional_utility_freeze_v1",
   "public_training_rows_written": 0,
-  "supersede_reason": "Add pinned HTML Tidy parse diagnostics plus network-denied computed DOM, accessibility, and wide/narrow responsive assertions before any functional candidate bundle exists.",
-  "supersedes_freeze_sha256": "0810e78e5afeb8f91314a18ac774d11b1fa5a9a1eaf7a418ab226d12e40b746e",
+  "supersede_reason": "Keep JavaScript and TypeScript hidden expectations outside the candidate realm through an input-only Deno subprocess protocol, preventing test registration and JSON comparison monkeypatches before any functional candidates exist.",
+  "supersedes_freeze_sha256": "b161d5f7109087ddbe748aed4b4311709b3ef0521ed5f33eaf090233ef55237a",
   "templates_renderers_routers_tools_credit": 0,
   "toolchain_identity_sha256": "4cb3e92632490e57011d1dc6fe87bd94e9395a5c41d70c5a7683407cfa7abd2a",
   "training_generator_sha256": "93c03c688e1aa761fe59249e9874934f093030c8375c7f8a0e28179cd4d02aa4",
@@ -32,11 +32,11 @@
       "dense_active_parameter": {
         "complete": false,
         "heartbeat": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_heartbeat.json",
-        "heartbeat_sha256": "7bf84fe930c002e8e4e1ce959e3e743718286b3786318cfce351cf513d953d6b",
-        "optimizer_steps": 11000,
+        "heartbeat_sha256": "c3a94d9a7d617ec59cf0dd0ca55c8cb3d601a20f1f576f4cf0e55a0a4f12aba3",
+        "optimizer_steps": 11500,
         "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
         "receipt": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_receipt.json",
-        "receipt_sha256": "2a635716491dd5152306bca2703ecd362348fdcb677424664ce5f7e7c51b6fd1"
+        "receipt_sha256": "eb347c8027933e942c9742e25347c327a3766f2369eb9303496772b1c51f306b"
       },
       "dense_total_parameter": {
         "complete": false,
@@ -53,5 +53,5 @@
   },
   "v8_plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
   "v8_stage_signature": "1b3b9c9e8dacf47569b8e97b9173ce64736d01a102c2f2905bae604acf9fc921",
-  "verifier_sha256": "23d58328998707dd3a27b894f2b81ff7e9e07367e98161f741f7e121093fc603"
+  "verifier_sha256": "59434215825fc5fd715385078898f311d815b98058be1167e1b4265e76eccbdd"
 }
