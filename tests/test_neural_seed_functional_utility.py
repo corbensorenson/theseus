@@ -14,6 +14,7 @@ if str(SCRIPTS) not in sys.path:
 
 from neural_seed_functional_utility import (
     audit_candidate_provenance,
+    build_blind_english_packet,
     build_freeze,
     build_manifest,
     evaluate_bundle,
@@ -34,6 +35,46 @@ def test_manifest_is_green_disjoint_and_candidate_packet_is_blind() -> None:
     assert manifest["candidate_packet"]["row_count"] == 160
     assert manifest["candidate_packet"]["evaluator_metadata_present"] is False
     assert all(set(row) == {"case_id", "arm_id", "prompt"} for row in manifest["candidate_packet"]["rows"])
+
+
+def test_blind_english_packet_binds_content_without_model_identity(monkeypatch) -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    bundle = {
+        "candidates": [
+            {
+                "case_id": case["case_id"],
+                "output": f"candidate for {case['case_id']}",
+            }
+            for case in manifest["evaluator_cases"]
+        ]
+    }
+    monkeypatch.setattr(
+        "neural_seed_functional_utility.audit_candidate_provenance",
+        lambda *_args, **_kwargs: {"state": "GREEN", "hard_gaps": []},
+    )
+
+    packet = build_blind_english_packet(CONFIG, manifest, bundle, freeze)
+
+    assert packet["trigger_state"] == "GREEN"
+    assert packet["item_count"] == 32
+    assert packet["model_identity_present"] is False
+    assert packet["checkpoint_identity_present"] is False
+    assert packet["reference_answer_present"] is False
+    assert "target_id" not in packet
+    assert all(
+        set(item)
+        == {
+            "blind_item_id",
+            "case_id",
+            "prompt",
+            "candidate_output",
+            "candidate_sha256",
+            "dimensions",
+            "score_scale",
+        }
+        for item in packet["items"]
+    )
 
 
 def test_freeze_detects_compiler_or_contract_mutation() -> None:

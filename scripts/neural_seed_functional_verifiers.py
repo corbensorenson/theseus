@@ -709,6 +709,7 @@ def score_english_judgments(
     delta = int(config["english_scoring"]["adjudication_required_score_delta"])
     by_case: dict[str, list[dict[str, Any]]] = {case_id: [] for case_id in english}
     faults: list[str] = []
+    seen_judgments: set[tuple[str, str, bool]] = set()
     for row in judgments:
         case_id = str(row.get("case_id", ""))
         if case_id not in english:
@@ -716,26 +717,51 @@ def score_english_judgments(
             continue
         if any(key in row for key in ("model_id", "checkpoint_id", "architecture", "reference_answer")):
             faults.append(f"identity_or_reference_exposed:{case_id}")
+        binding = english_candidate_binding(case_id, candidates.get(case_id, ""))
+        if row.get("candidate_sha256") != binding["candidate_sha256"]:
+            faults.append(f"candidate_binding_mismatch:{case_id}")
+            continue
+        if row.get("blind_item_id") != binding["blind_item_id"]:
+            faults.append(f"blind_item_binding_mismatch:{case_id}")
+            continue
+        rater_id = str(row.get("rater_id") or "").strip()
+        if not rater_id:
+            faults.append(f"missing_rater_id:{case_id}")
+            continue
+        judgment_key = (case_id, rater_id, row.get("adjudicator") is True)
+        if judgment_key in seen_judgments:
+            faults.append(f"duplicate_judgment:{case_id}:{rater_id}")
+            continue
+        seen_judgments.add(judgment_key)
         scores = row.get("scores", {})
         if set(scores) != set(dimensions) or any(not isinstance(scores[d], int) or not 0 <= scores[d] <= 4 for d in dimensions):
             faults.append(f"invalid_scores:{case_id}")
             continue
-        by_case[case_id].append(row)
+        by_case[case_id].append({**row, "rater_id": rater_id})
     results = []
     pair_values: list[tuple[int, int]] = []
     for case_id, case in english.items():
         rows = by_case[case_id]
-        raters = {str(row.get("rater_id", "")) for row in rows}
-        if len(raters) < minimum:
+        primary_by_rater = {
+            str(row["rater_id"]): row for row in rows if row.get("adjudicator") is not True
+        }
+        if len(primary_by_rater) != minimum:
             faults.append(f"insufficient_raters:{case_id}")
             continue
-        first, second = rows[0], rows[1]
+        first, second = [primary_by_rater[key] for key in sorted(primary_by_rater)]
         requires_adjudication = any(abs(first["scores"][d] - second["scores"][d]) >= delta for d in dimensions)
-        adjudicated = next((row for row in rows if row.get("adjudicator") is True), None)
-        if requires_adjudication and adjudicated is None:
+        adjudicators = [row for row in rows if row.get("adjudicator") is True]
+        if requires_adjudication and len(adjudicators) != 1:
             faults.append(f"missing_adjudication:{case_id}")
             continue
-        final_scores = adjudicated["scores"] if adjudicated else {d: round((first["scores"][d] + second["scores"][d]) / 2) for d in dimensions}
+        if not requires_adjudication and adjudicators:
+            faults.append(f"unexpected_adjudication:{case_id}")
+            continue
+        if adjudicators and str(adjudicators[0]["rater_id"]) in primary_by_rater:
+            faults.append(f"adjudicator_not_independent:{case_id}")
+            continue
+        adjudicated = adjudicators[0] if adjudicators else None
+        final_scores = adjudicated["scores"] if adjudicated else {d: (first["scores"][d] + second["scores"][d]) / 2 for d in dimensions}
         pair_values.extend((first["scores"][d], second["scores"][d]) for d in dimensions)
         required = case["verifier"]["required_concepts"]
         forbidden = case["verifier"]["forbidden_claims"]
@@ -746,6 +772,22 @@ def score_english_judgments(
         results.append({"case_id": case_id, "passed": mean >= 3.0 and not forbidden_hits, "mean_score": mean, "scores": final_scores, "required_concept_recall_diagnostic": concept_diagnostic, "forbidden_hits": forbidden_hits})
     kappa = _quadratic_weighted_kappa(pair_values)
     return {"valid": not faults and len(results) == len(english), "faults": faults, "results": results, "quadratic_weighted_kappa": kappa, "passed": sum(bool(row["passed"]) for row in results), "total": len(english)}
+
+
+def english_candidate_binding(case_id: str, candidate: str) -> dict[str, str]:
+    candidate_sha256 = hashlib.sha256(candidate.encode("utf-8")).hexdigest()
+    blind_item_id = hashlib.sha256(
+        json.dumps(
+            {
+                "policy": "project_theseus_blind_english_item_v1",
+                "case_id": case_id,
+                "candidate_sha256": candidate_sha256,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    return {"candidate_sha256": candidate_sha256, "blind_item_id": blind_item_id}
 
 
 def _quadratic_weighted_kappa(pairs: list[tuple[int, int]], categories: int = 5) -> float | None:

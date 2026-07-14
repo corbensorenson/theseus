@@ -16,7 +16,11 @@ from pathlib import Path
 from typing import Any
 
 from neural_seed_functional_cases import ARMS, materialize_cases, public_case, stable_hash
-from neural_seed_functional_verifiers import score_english_judgments, verify_candidate
+from neural_seed_functional_verifiers import (
+    english_candidate_binding,
+    score_english_judgments,
+    verify_candidate,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,6 +44,7 @@ def main() -> int:
     parser.add_argument("--manifest-out", default=str(DEFAULT_MANIFEST))
     parser.add_argument("--packet-out", default=str(DEFAULT_PACKET))
     parser.add_argument("--evaluate-candidates", default="")
+    parser.add_argument("--blind-english-packet-out", default="")
     parser.add_argument("--judgments", default="")
     parser.add_argument("--out", default=str(DEFAULT_RESULT))
     args = parser.parse_args()
@@ -76,11 +81,18 @@ def main() -> int:
         freeze_path = resolve(args.freeze_out)
         if not freeze_path.is_file():
             raise ValueError("functional utility must be frozen before candidate evaluation")
+        bundle = read_json(resolve(args.evaluate_candidates))
+        if args.blind_english_packet_out:
+            blind_packet = build_blind_english_packet(config, manifest, bundle, read_json(freeze_path))
+            write_json(resolve(args.blind_english_packet_out), blind_packet)
+            if blind_packet["trigger_state"] != "GREEN":
+                print(json.dumps(summary_view(blind_packet), indent=2, sort_keys=True))
+                return 2
         judgments = read_jsonl(resolve(args.judgments)) if args.judgments else []
         result = evaluate_bundle(
             config,
             manifest,
-            read_json(resolve(args.evaluate_candidates)),
+            bundle,
             read_json(freeze_path),
             judgments,
         )
@@ -163,6 +175,76 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
             "public_benchmark_payload_count": 0,
             "capability_claim": "NOT_EVALUATED",
         },
+    }
+
+
+def build_blind_english_packet(
+    config: dict[str, Any],
+    manifest: dict[str, Any],
+    bundle: dict[str, Any],
+    freeze: dict[str, Any],
+) -> dict[str, Any]:
+    gaps = validate_freeze(manifest, freeze)
+    cases = {case["case_id"]: case for case in manifest["evaluator_cases"]}
+    rows = bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    candidate_rows = {str(row.get("case_id") or ""): row for row in rows}
+    if len(candidate_rows) != len(rows) or set(candidate_rows) != set(cases):
+        gaps.append("candidate_case_set_invalid_for_blind_packet")
+    provenance = audit_candidate_provenance(bundle, freeze, cases)
+    gaps.extend(provenance["hard_gaps"])
+    items = []
+    if not gaps:
+        for case in cases.values():
+            if case["arm_id"] != "english":
+                continue
+            candidate = str(candidate_rows[case["case_id"]].get("output") or "")
+            binding = english_candidate_binding(case["case_id"], candidate)
+            items.append(
+                {
+                    "blind_item_id": binding["blind_item_id"],
+                    "case_id": case["case_id"],
+                    "prompt": case["prompt"],
+                    "candidate_output": candidate,
+                    "candidate_sha256": binding["candidate_sha256"],
+                    "dimensions": list(config["english_scoring"]["dimensions"]),
+                    "score_scale": list(config["english_scoring"]["score_scale"]),
+                }
+            )
+        order_key = stable_hash(
+            {
+                "policy": "project_theseus_blind_english_packet_order_v1",
+                "freeze_sha256": stable_hash(freeze),
+                "candidate_hashes": sorted(item["candidate_sha256"] for item in items),
+            }
+        )
+        items.sort(
+            key=lambda item: hashlib.sha256(
+                f"{order_key}:{item['blind_item_id']}".encode("utf-8")
+            ).hexdigest()
+        )
+    packet_core = {
+        "policy": "project_theseus_blind_english_judgment_packet_v1",
+        "freeze_sha256": stable_hash(freeze),
+        "item_count": len(items),
+        "items": items,
+        "judgment_required_fields": [
+            "case_id",
+            "blind_item_id",
+            "candidate_sha256",
+            "rater_id",
+            "scores",
+        ],
+        "model_identity_present": False,
+        "checkpoint_identity_present": False,
+        "reference_answer_present": False,
+    }
+    return {
+        **packet_core,
+        "created_utc": now(),
+        "trigger_state": "GREEN" if not gaps and len(items) == 32 else "RED",
+        "packet_sha256": stable_hash(packet_core),
+        "candidate_provenance_state": provenance["state"],
+        "hard_gaps": sorted(set(gaps)),
     }
 
 
@@ -453,6 +535,20 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         gaps.append("arm_contract_mismatch")
     if "task_family" in config.get("generator_view", []):
         gaps.append("task_family_visible_to_generator")
+    english = config.get("english_scoring") or {}
+    if int(english.get("minimum_raters") or 0) != 2:
+        gaps.append("english_primary_rater_count_must_equal_two")
+    for key in (
+        "model_identity_hidden_from_raters",
+        "reference_answer_hidden_from_raters",
+        "candidate_content_binding_required",
+        "distinct_primary_raters_required",
+        "adjudication_only_after_threshold_disagreement",
+    ):
+        if english.get(key) is not True:
+            gaps.append(f"english_scoring_boundary_missing:{key}")
+    if english.get("blind_packet_policy") != "project_theseus_blind_english_judgment_packet_v1":
+        gaps.append("english_blind_packet_policy_mismatch")
     for key, value in config.get("boundaries", {}).items():
         if key.endswith("count") or key in {"public_training_rows_written", "external_inference_calls", "templates_renderers_routers_tools_credit"}:
             if isinstance(value, int) and value != 0:

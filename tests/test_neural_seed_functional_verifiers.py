@@ -11,7 +11,11 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from neural_seed_functional_cases import materialize_cases
-from neural_seed_functional_verifiers import score_english_judgments, verify_candidate
+from neural_seed_functional_verifiers import (
+    english_candidate_binding,
+    score_english_judgments,
+    verify_candidate,
+)
 
 
 CONFIG = json.loads((ROOT / "configs/neural_seed_functional_utility.json").read_text())
@@ -138,8 +142,18 @@ def test_english_requires_blind_independent_raters_and_adjudication() -> None:
     english_cases = [row for row in CASES if row["arm_id"] == "english"]
     outputs = {row["case_id"]: "A concise grounded answer." for row in english_cases}
     dimensions = CONFIG["english_scoring"]["dimensions"]
+    def judgment(row: dict, rater_id: str, score: int, **extra: object) -> dict:
+        binding = english_candidate_binding(row["case_id"], outputs[row["case_id"]])
+        return {
+            "case_id": row["case_id"],
+            "rater_id": rater_id,
+            "candidate_sha256": binding["candidate_sha256"],
+            "blind_item_id": binding["blind_item_id"],
+            "scores": {dimension: score for dimension in dimensions},
+            **extra,
+        }
     one_rater = [
-        {"case_id": row["case_id"], "rater_id": "r1", "scores": {dimension: 3 for dimension in dimensions}}
+        judgment(row, "r1", 3)
         for row in english_cases
     ]
     result = score_english_judgments(CASES, outputs, one_rater, CONFIG)
@@ -147,9 +161,19 @@ def test_english_requires_blind_independent_raters_and_adjudication() -> None:
     assert any(fault.startswith("insufficient_raters") for fault in result["faults"])
 
     exposed = one_rater + [
-        {"case_id": row["case_id"], "rater_id": "r2", "model_id": "revealed", "scores": {dimension: 3 for dimension in dimensions}}
+        judgment(row, "r2", 3, model_id="revealed")
         for row in english_cases
     ]
     result = score_english_judgments(CASES, outputs, exposed, CONFIG)
     assert result["valid"] is False
     assert any(fault.startswith("identity_or_reference_exposed") for fault in result["faults"])
+
+    valid = one_rater + [judgment(row, "r2", 3) for row in english_cases]
+    result = score_english_judgments(CASES, outputs, valid, CONFIG)
+    assert result["valid"] is True
+
+    changed = dict(outputs)
+    changed[english_cases[0]["case_id"]] = "A different model output."
+    replayed = score_english_judgments(CASES, changed, valid, CONFIG)
+    assert replayed["valid"] is False
+    assert any(fault.startswith("candidate_binding_mismatch") for fault in replayed["faults"])

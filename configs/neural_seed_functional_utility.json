@@ -113,7 +113,7 @@
     ],
     "toolchains": {
       "python": "python3 -I",
-      "javascript_typescript": "deno test --cached-only --no-config --no-lock",
+      "javascript_typescript": "deno check --deny-import plus input-only deno run subprocesses",
       "rust": "cargo check/clippy/test --offline",
       "html_css": "tidy plus headless Chrome local-file render"
     }
@@ -137,7 +137,11 @@
     "adjudication_required_score_delta": 2,
     "minimum_agreement_metric": "quadratic_weighted_kappa",
     "model_identity_hidden_from_raters": true,
-    "reference_answer_hidden_from_raters": true
+    "reference_answer_hidden_from_raters": true,
+    "candidate_content_binding_required": true,
+    "distinct_primary_raters_required": true,
+    "adjudication_only_after_threshold_disagreement": true,
+    "blind_packet_policy": "project_theseus_blind_english_judgment_packet_v1"
   },
   "reporting": {
     "exact_recovery_separate": true,
