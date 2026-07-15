@@ -31,8 +31,9 @@ share toward zero. Public benchmarks are calibration only.
   sparse model and mechanically matched 10,779,648-active/12,499,968-total dense
   controls. The data, tokenizer, seed, supervision, development, confirmation, and
   verifier contracts are immutable through the verdict.
-- **Immediate dependency:** finish both dense controls unchanged and publish the v8
-  exact-recovery diagnostic. The separate 160-case functional utility contract is now
+- **Immediate dependency:** finish the remaining total-parameter dense control
+  unchanged and publish both v8 exact-recovery diagnostics. The separate 160-case
+  functional utility contract is now
   immutably frozen before control completion: 32 source-disjoint cases per arm, blind
   English scoring, and pinned Python/Deno/Chrome/Cargo checks. It is `NOT_EVALUATED`,
   not a capability claim. Run unchanged checkpoints against it after both controls
@@ -84,9 +85,10 @@ share toward zero. Public benchmarks are calibration only.
   mutation. English is `1/128` exact; all code arms are `0` exact. Earlier standalone,
   v6, and v7 rungs remain negative evidence in Git/reports rather than active plans.
 - **Dense falsification controls:** the active and total controls are fixed at
-  10,779,648 and 12,499,968 parameters. The active control is currently training with
-  atomic step-specific model/optimizer receipts; the total control follows. Both use
-  the same frozen stage and direct per-language exact-recovery contract as MoECOT.
+  10,779,648 and 12,499,968 parameters. The active control completed unchanged with
+  checkpoint `71d3e099...`, 227.184M optimizer positions, `0/544` exact recovery, and
+  Python syntax `46/128`; the total control is running transactionally. Both use the
+  same frozen stage and direct per-language exact-recovery contract as MoECOT.
   Their v8 result remains diagnostic until unchanged checkpoints run through the
   separately frozen functional utility qualification.
 - **Tokenizer/data correctness:** all corpus categories use exact reversible text
@@ -109,9 +111,9 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Training State
 
-- The active-parameter dense control is in full training and remains developmental,
+- The active-parameter dense control completed unchanged and remains developmental,
   non-routeable, and usable only as frozen falsification evidence. The total-parameter
-  control has not started its full run.
+  control is in its supervised training phase and remains equally non-routeable.
 - The frozen comparison reports equal-unique-position/total-parameter and
   equal-active-parameter/active-compute views together. Neither accounting view may
   be selected after results are known.

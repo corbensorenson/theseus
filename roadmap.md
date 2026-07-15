@@ -30,8 +30,8 @@ module must meet.
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions, but the frozen v8 rows are mostly prompt/target pairs without task-complete functional verification | keep v8 immutable; qualify the next rung on licensed product-shaped units with tests, toolchain receipts, multi-turn state, and source-disjoint splits |
-| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; the full active-parameter control is running with transactional checkpoints and the total-parameter control remains queued | finish both unchanged and publish the result as an exact-recovery diagnostic, not a complete utility verdict |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk and all five specialists are complete; English is 1/128 exact, while all four code arms remain 0 exact (Python 41/128 syntax-valid) | complete both controls unchanged, then use a separately frozen functional qualification before any practical architecture promotion |
+| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; the active-parameter control completed unchanged and the total-parameter control is running transactionally | finish the total-parameter control unchanged and publish both results as exact-recovery diagnostics, not complete utility verdicts |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk and all five specialists are complete; English is 1/128 exact, while all four code arms remain 0 exact (Python 41/128 syntax-valid) | finish the remaining total-parameter control unchanged, then use the separately frozen functional qualification before any practical architecture promotion |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
@@ -228,9 +228,12 @@ promoted; their purpose is to falsify or select the practical architecture.
   recovery (`1/128`); all code arms remain `0` exact and Python is `41/128`
   syntax-valid. Because these rows contain prompt and target but no executable test or
   functional verifier, this is an **exact-recovery diagnostic**, not a utility verdict.
-- Finish the already-running active-parameter dense control, then the total-parameter
-  dense control, without changing data, seed, tokenizer, supervision, decoding,
-  heldouts, or verifier. Publish every language result before either aggregate view.
+- The active-parameter dense control completed unchanged: checkpoint
+  `71d3e099...` consumed 227.184M optimizer positions and scored `0/544` exact on
+  the frozen development diagnostic (Python syntax `46/128`). Finish the running
+  total-parameter dense control without changing data, seed, tokenizer, supervision,
+  decoding, heldouts, or verifier. Publish every language result before either
+  aggregate view.
 - Before completed control outputs are inspected, freeze an architecture-neutral,
   source-disjoint functional qualification manifest with task IDs, scoring rules,
   toolchain versions, sandboxes, adjudication, failure taxonomy, and no post-hoc task
@@ -869,8 +872,8 @@ evidence earns a different route.)
   HTML/CSS, and Rust specialists. Active sparse parameters are 10,777,601 and total
   sparse parameters are 12,501,254. The dense controls are mechanically matched at
   10,779,648 active and 12,499,968 total parameters. The sparse trunk and specialists
-  are complete; the active-parameter dense control is running transactionally and the
-  total-parameter control follows. No implementation, data view, seed, tokenizer,
+  are complete; the active-parameter dense control completed transactionally and the
+  total-parameter control is running. No implementation, data view, seed, tokenizer,
   decoding policy, split, or accounting view may change before both controls finish.
 
 - **Correct interpretation of v8:** the 128-row development records per arm contain
