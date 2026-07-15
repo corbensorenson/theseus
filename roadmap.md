@@ -898,6 +898,10 @@ evidence earns a different route.)
   toolchain/container identity, timeout, scoring, failure taxonomy, candidate
   integrity, adjudication, and consumed status. No model may influence task inclusion,
   weighting, rubric, or verifier after its output is observed.
+  Generation, code verification, blind local scoring, final qualification, and the
+  aggregate verdict reserve append-only content identities before execution. Failed
+  reservations remain consumed; final qualification reuses the hash-bound preliminary
+  code evidence rather than executing code twice.
   - English: multi-turn instruction following, correction, clarification, factual
     grounding from supplied context, calibrated abstention, and conversation
     continuity scored through blinded pairwise/rubric judgments with inter-rater

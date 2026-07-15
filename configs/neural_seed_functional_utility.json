@@ -159,6 +159,13 @@
       "english_inter_rater_agreement"
     ]
   },
+  "consumption": {
+    "registry": "reports/private_functional_consumption_registry.jsonl",
+    "append_only": true,
+    "reserve_before_execution": true,
+    "failed_reservation_remains_consumed": true,
+    "duplicate_identity_refused": true
+  },
   "architecture_verdict": {
     "required_targets": [
       "moecot_system",

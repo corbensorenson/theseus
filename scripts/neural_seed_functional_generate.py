@@ -15,6 +15,11 @@ from typing import Any
 
 import moecot_language_arm_training as training
 from neural_seed_functional_utility import read_json, resolve, sha256_file, stable_hash
+from neural_seed_functional_consumption import (
+    complete_reservation,
+    fail_reservation,
+    reserve_once,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,8 +51,43 @@ def main() -> int:
     if contract["trigger_state"] != "GREEN":
         print(json.dumps(contract, indent=2, sort_keys=True))
         return 2
-    bundle = generate(contract)
-    write_json(resolve(args.out), bundle)
+    output_path = resolve(args.out)
+    if output_path.exists():
+        raise ValueError(f"candidate output already exists: {relative(output_path)}")
+    registry_path = resolve(str(contract["consumption_registry"]))
+    reservation = reserve_once(
+        registry_path,
+        stage="candidate_generation",
+        identity={
+            "freeze_sha256": contract["freeze_sha256"],
+            "target_id": contract["target_id"],
+            "case_contract_sha256": contract["case_contract_sha256"],
+            "candidate_packet_sha256": contract["candidate_packet_sha256"],
+            "checkpoint_artifacts": contract["checkpoint_artifacts"],
+        },
+    )
+    try:
+        bundle = generate(contract)
+        write_json(output_path, bundle)
+        complete_reservation(
+            registry_path,
+            reservation,
+            artifact={
+                "path": relative(output_path),
+                "sha256": sha256_file(output_path),
+                "candidate_count": bundle["candidate_count"],
+            },
+        )
+    except BaseException as exc:
+        try:
+            fail_reservation(
+                registry_path,
+                reservation,
+                fault=f"{type(exc).__name__}:{exc}",
+            )
+        except Exception:
+            pass
+        raise
     print(json.dumps({key: bundle[key] for key in ("policy", "created_utc", "target_id", "candidate_count", "case_contract_sha256", "hard_gaps")}, indent=2, sort_keys=True))
     return 0
 
@@ -68,6 +108,9 @@ def build_generation_contract(
         gaps.append("generation_wrapper_freeze_mismatch")
     if freeze.get("training_generator_sha256") != sha256_file(ROOT / "scripts/moecot_language_arm_training.py"):
         gaps.append("training_generator_freeze_mismatch")
+    consumption_registry = str(freeze.get("consumption_registry") or "")
+    if consumption_registry != "reports/private_functional_consumption_registry.jsonl":
+        gaps.append("functional_consumption_registry_missing_or_invalid")
     if packet.get("generator_visible_fields") != ["case_id", "arm_id", "prompt"]:
         gaps.append("candidate_packet_visible_fields_mismatch")
     rows = packet.get("rows") if isinstance(packet.get("rows"), list) else []
@@ -115,6 +158,8 @@ def build_generation_contract(
         "freeze": relative(freeze_path),
         "packet": relative(packet_path),
         "case_contract_sha256": freeze.get("case_contract_sha256"),
+        "freeze_sha256": stable_hash(freeze),
+        "consumption_registry": consumption_registry,
         "candidate_packet_sha256": stable_hash(packet) if packet else "",
         "rows": rows,
         "plan": plan,

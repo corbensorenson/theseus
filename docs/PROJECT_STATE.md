@@ -37,7 +37,9 @@ share toward zero. Public benchmarks are calibration only.
   immutably frozen before control completion: 32 source-disjoint cases per arm, blind
   English scoring, and pinned Python/Deno/Chrome/Cargo checks. It is `NOT_EVALUATED`,
   not a capability claim. Run unchanged checkpoints against it after both controls
-  finish; use that result, not exact reproduction alone, for practical route selection.
+  finish; append-only consumed identities enforce one generation, one code execution,
+  one blind-scoring pass, and one verdict per frozen content identity. Use that result,
+  not exact reproduction alone, for practical route selection.
   Do not patch from interim results.
 
 ## Evidence Boundaries

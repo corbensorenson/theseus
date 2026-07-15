@@ -20,6 +20,7 @@ from neural_seed_functional_utility import (
     build_manifest,
     compare_qualifications,
     evaluate_bundle,
+    validate_precomputed_code_evaluation,
     validate_freeze,
 )
 from neural_seed_functional_cases import stable_hash
@@ -90,6 +91,12 @@ def test_freeze_detects_compiler_or_contract_mutation() -> None:
     mutated = copy.deepcopy(freeze)
     mutated["verifier_sha256"] = "0" * 64
     assert "freeze_identity_mismatch:verifier_sha256" in validate_freeze(manifest, mutated)
+
+    mutated = copy.deepcopy(freeze)
+    mutated["consumption_registry"] = "reports/alternate.jsonl"
+    assert "freeze_identity_mismatch:consumption_registry" in validate_freeze(
+        manifest, mutated
+    )
 
 
 def test_candidate_bundle_fails_closed_on_missing_duplicate_and_fake_flags() -> None:
@@ -239,11 +246,99 @@ def test_accepted_output_rate_includes_generation_verification_and_cold_load(mon
     assert result["summary"]["accepted_verified_output_per_second_warm"] == 128 / 3.84
 
 
+def test_final_qualification_reuses_bound_code_rows_without_reexecution(monkeypatch) -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    candidates = [
+        {
+            "case_id": case["case_id"],
+            "target_id": "dense_active_parameter",
+            "output": f"candidate:{case['case_id']}",
+            "generation_duration_ms": 10.0,
+        }
+        for case in manifest["evaluator_cases"]
+    ]
+    bundle = {
+        "target_id": "dense_active_parameter",
+        "candidates": candidates,
+        "timing": {
+            "checkpoint_load_duration_ms_by_target": {
+                "dense_active_parameter": 50.0,
+            }
+        },
+    }
+    monkeypatch.setattr(
+        "neural_seed_functional_utility.audit_candidate_provenance",
+        lambda *_args, **_kwargs: {
+            "state": "GREEN",
+            "bundle_target_id": "dense_active_parameter",
+            "hard_gaps": [],
+        },
+    )
+    monkeypatch.setattr(
+        "neural_seed_functional_utility.verify_candidate",
+        lambda case, _output, _config: {
+            "case_id": case["case_id"],
+            "arm_id": case["arm_id"],
+            "passed": False,
+            "duration_ms": 5.0,
+            "fault": "test_failure",
+        },
+    )
+    bundle_identity = {"path": "reports/candidates.json", "sha256": "c" * 64}
+    preliminary = evaluate_bundle(
+        CONFIG,
+        manifest,
+        bundle,
+        freeze,
+        [],
+        candidate_bundle_identity=bundle_identity,
+    )
+
+    assert preliminary["evaluation_stage"] == "code_verification_and_blind_packet"
+    assert preliminary["code_evaluation_reused"] is False
+    assert len(preliminary["rows"]) == 128
+    cases = {case["case_id"]: case for case in manifest["evaluator_cases"]}
+    outputs = {row["case_id"]: row["output"] for row in candidates}
+    timings = {row["case_id"]: row["generation_duration_ms"] for row in candidates}
+    prior_identity = {"path": "reports/code.json", "sha256": "d" * 64}
+    rows, gaps = validate_precomputed_code_evaluation(
+        preliminary,
+        prior_identity,
+        bundle_identity,
+        freeze,
+        cases,
+        outputs,
+        timings,
+    )
+    assert gaps == []
+    assert len(rows) == 128
+
+    mutated = copy.deepcopy(preliminary)
+    mutated["rows"][0]["candidate_sha256"] = "0" * 64
+    _rows, gaps = validate_precomputed_code_evaluation(
+        mutated,
+        prior_identity,
+        bundle_identity,
+        freeze,
+        cases,
+        outputs,
+        timings,
+    )
+    assert any(gap.startswith("precomputed_code_candidate_mismatch:") for gap in gaps)
+
+
 def qualification(target: str, rates: dict[str, float], throughput: float) -> dict:
     return {
         "policy": "project_theseus_private_functional_utility_qualification_v1",
         "trigger_state": "GREEN",
         "evaluation_complete": True,
+        "evaluation_stage": "final_functional_qualification",
+        "code_evaluation_reused": True,
+        "code_evaluation_source": {
+            "path": f"reports/{target}-code.json",
+            "sha256": "e" * 64,
+        },
         "candidate_provenance": {
             "state": "GREEN",
             "bundle_target_id": target,

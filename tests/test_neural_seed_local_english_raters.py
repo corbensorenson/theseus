@@ -28,6 +28,7 @@ def test_config_pins_three_distinct_local_raters() -> None:
     assert len({row["rater_id"] for row in cards}) == 3
     assert len({row["revision"] for row in cards}) == 3
     assert CONFIG["boundaries"]["external_inference_calls"] == 0
+    assert CONFIG["consumption_registry"] == "reports/private_functional_consumption_registry.jsonl"
 
 
 def test_rating_prompt_contains_no_model_or_reference_identity() -> None:

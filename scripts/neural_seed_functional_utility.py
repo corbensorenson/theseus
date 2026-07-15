@@ -16,13 +16,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from neural_seed_functional_cases import ARMS, materialize_cases, public_case, stable_hash
+from neural_seed_functional_cases import ARMS, materialize_cases, stable_hash
 from neural_seed_functional_verifiers import (
     english_candidate_binding,
     score_english_judgments,
     verify_candidate,
 )
 from neural_seed_local_english_raters import validate_config as validate_local_rater_config
+from neural_seed_functional_consumption import (
+    complete_reservation,
+    fail_reservation,
+    require_completed_artifact,
+    reserve_once,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -89,36 +95,117 @@ def main() -> int:
         freeze_path = resolve(args.freeze_out)
         if not freeze_path.is_file():
             raise ValueError("functional utility must be frozen before candidate evaluation")
-        bundle = read_json(resolve(args.evaluate_candidates))
-        if args.blind_english_packet_out:
-            blind_packet = build_blind_english_packet(config, manifest, bundle, read_json(freeze_path))
-            write_json(resolve(args.blind_english_packet_out), blind_packet)
-            if blind_packet["trigger_state"] != "GREEN":
-                print(json.dumps(summary_view(blind_packet), indent=2, sort_keys=True))
-                return 2
-        judgments_path = resolve(args.judgments) if args.judgments else None
-        judgments = read_jsonl(judgments_path) if judgments_path else []
-        judgment_receipt = read_json(resolve(args.judgment_receipt)) if args.judgment_receipt else {}
-        judgments_identity = (
-            {
-                "path": relative(judgments_path),
-                "sha256": sha256_file(judgments_path),
-                "row_count": len(judgments),
+        bundle_path = resolve(args.evaluate_candidates)
+        bundle = read_json(bundle_path)
+        active_freeze = read_json(freeze_path)
+        stage = "final_functional_qualification" if args.judgments else "code_verification_and_blind_packet"
+        registry_path = consumption_registry_path(config, active_freeze)
+        bundle_identity = {
+            "path": relative(bundle_path),
+            "sha256": sha256_file(bundle_path),
+        }
+        require_completed_artifact(
+            registry_path,
+            stage="candidate_generation",
+            artifact_sha256=bundle_identity["sha256"],
+        )
+        output_path = resolve(args.out)
+        prior_code_evaluation: dict[str, Any] | None = None
+        prior_code_identity: dict[str, Any] = {}
+        judgment_receipt_path = resolve(args.judgment_receipt) if args.judgment_receipt else None
+        judgment_receipt_identity: dict[str, Any] = {}
+        if args.judgments:
+            if not output_path.is_file():
+                raise ValueError("final qualification requires the consumed code evaluation")
+            prior_code_identity = {
+                "path": relative(output_path),
+                "sha256": sha256_file(output_path),
             }
-            if judgments_path
-            else {}
+            require_completed_artifact(
+                registry_path,
+                stage="code_verification_and_blind_packet",
+                artifact_sha256=prior_code_identity["sha256"],
+            )
+            prior_code_evaluation = read_json(output_path)
+            if not judgment_receipt_path or not judgment_receipt_path.is_file():
+                raise ValueError("final qualification requires a consumed judgment receipt")
+            judgment_receipt_identity = {
+                "path": relative(judgment_receipt_path),
+                "sha256": sha256_file(judgment_receipt_path),
+            }
+            require_completed_artifact(
+                registry_path,
+                stage="blind_english_local_scoring",
+                artifact_sha256=judgment_receipt_identity["sha256"],
+            )
+        elif output_path.exists():
+            raise ValueError("preliminary functional evaluation output already exists")
+        reservation = reserve_once(
+            registry_path,
+            stage=stage,
+            identity={
+                "freeze_sha256": stable_hash(active_freeze),
+                "candidate_bundle_sha256": bundle_identity["sha256"],
+                "target_id": bundle.get("target_id"),
+                "case_contract_sha256": active_freeze.get("case_contract_sha256"),
+                "prior_code_evaluation_sha256": prior_code_identity.get("sha256", ""),
+                "judgment_receipt_sha256": judgment_receipt_identity.get("sha256", ""),
+            },
         )
-        result = evaluate_bundle(
-            config,
-            manifest,
-            bundle,
-            read_json(freeze_path),
-            judgments,
-            judgment_receipt=judgment_receipt,
-            judgments_identity=judgments_identity,
-            judgment_label=args.judgment_label,
-        )
-        write_json(resolve(args.out), result)
+        try:
+            blind_packet_path = resolve(args.blind_english_packet_out) if args.blind_english_packet_out else None
+            if blind_packet_path:
+                blind_packet = build_blind_english_packet(config, manifest, bundle, active_freeze)
+                write_json(blind_packet_path, blind_packet)
+                if blind_packet["trigger_state"] != "GREEN":
+                    raise ValueError("blind English packet failed its frozen contract")
+            judgments_path = resolve(args.judgments) if args.judgments else None
+            judgments = read_jsonl(judgments_path) if judgments_path else []
+            judgment_receipt = read_json(judgment_receipt_path) if judgment_receipt_path else {}
+            judgments_identity = (
+                {
+                    "path": relative(judgments_path),
+                    "sha256": sha256_file(judgments_path),
+                    "row_count": len(judgments),
+                }
+                if judgments_path
+                else {}
+            )
+            result = evaluate_bundle(
+                config,
+                manifest,
+                bundle,
+                active_freeze,
+                judgments,
+                judgment_receipt=judgment_receipt,
+                judgments_identity=judgments_identity,
+                judgment_label=args.judgment_label,
+                candidate_bundle_identity=bundle_identity,
+                precomputed_code_evaluation=prior_code_evaluation,
+                precomputed_code_identity=prior_code_identity,
+            )
+            write_json(output_path, result)
+            complete_reservation(
+                registry_path,
+                reservation,
+                artifact={
+                    "path": relative(output_path),
+                    "sha256": sha256_file(output_path),
+                    "trigger_state": result["trigger_state"],
+                    "evaluation_complete": result["evaluation_complete"],
+                    "blind_packet": (
+                        {
+                            "path": relative(blind_packet_path),
+                            "sha256": sha256_file(blind_packet_path),
+                        }
+                        if blind_packet_path
+                        else {}
+                    ),
+                },
+            )
+        except BaseException as exc:
+            close_failed_reservation(registry_path, reservation, exc)
+            raise
         print(json.dumps(summary_view(result), indent=2, sort_keys=True))
         return 0 if result["trigger_state"] != "RED" else 2
     if args.compare_results:
@@ -130,16 +217,49 @@ def main() -> int:
         result_paths = [resolve(value) for value in args.compare_results]
         exact_path = resolve(args.exact_diagnostic)
         active_freeze = read_json(freeze_path)
-        result = compare_qualifications(
-            config,
-            [read_json(path) for path in result_paths],
-            read_json(exact_path),
-            active_freeze,
-            result_sources=[{"path": relative(path), "sha256": sha256_file(path)} for path in result_paths],
-            exact_source={"path": relative(exact_path), "sha256": sha256_file(exact_path)},
-            contract_gaps=validate_freeze(manifest, active_freeze),
+        registry_path = consumption_registry_path(config, active_freeze)
+        result_sources = [{"path": relative(path), "sha256": sha256_file(path)} for path in result_paths]
+        exact_source = {"path": relative(exact_path), "sha256": sha256_file(exact_path)}
+        for source in result_sources:
+            require_completed_artifact(
+                registry_path,
+                stage="final_functional_qualification",
+                artifact_sha256=source["sha256"],
+            )
+        reservation = reserve_once(
+            registry_path,
+            stage="architecture_verdict",
+            identity={
+                "freeze_sha256": stable_hash(active_freeze),
+                "result_sha256s": [row["sha256"] for row in result_sources],
+                "exact_diagnostic_sha256": exact_source["sha256"],
+            },
         )
-        write_json(resolve(args.out), result)
+        output_path = resolve(args.out)
+        try:
+            result = compare_qualifications(
+                config,
+                [read_json(path) for path in result_paths],
+                read_json(exact_path),
+                active_freeze,
+                result_sources=result_sources,
+                exact_source=exact_source,
+                contract_gaps=validate_freeze(manifest, active_freeze),
+            )
+            write_json(output_path, result)
+            complete_reservation(
+                registry_path,
+                reservation,
+                artifact={
+                    "path": relative(output_path),
+                    "sha256": sha256_file(output_path),
+                    "trigger_state": result["trigger_state"],
+                    "decision": result.get("decision"),
+                },
+            )
+        except BaseException as exc:
+            close_failed_reservation(registry_path, reservation, exc)
+            raise
         print(json.dumps(summary_view(result), indent=2, sort_keys=True))
         return 0 if result["trigger_state"] != "RED" else 2
     print(json.dumps(summary_view(manifest), indent=2, sort_keys=True))
@@ -209,6 +329,7 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "cases_by_arm": {arm: sum(case["arm_id"] == arm for case in cases) for arm in ARMS},
         "candidate_packet": candidate_packet,
         "candidate_packet_sha256": stable_hash(candidate_packet),
+        "consumption": dict(config.get("consumption") or {}),
         "source_disjoint_audit": overlap,
         "training_state_at_materialization": training,
         "evaluator_cases": cases,
@@ -330,6 +451,8 @@ def build_freeze(
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "templates_renderers_routers_tools_credit": 0,
+        "consumption_registry": (manifest.get("consumption") or {}).get("registry"),
+        "consumption_policy_sha256": stable_hash(manifest.get("consumption") or {}),
         "supersedes_freeze_sha256": predecessor_sha256,
         "supersede_reason": supersede_reason,
     }
@@ -419,6 +542,9 @@ def evaluate_bundle(
     judgment_receipt: dict[str, Any] | None = None,
     judgments_identity: dict[str, Any] | None = None,
     judgment_label: str = "",
+    candidate_bundle_identity: dict[str, Any] | None = None,
+    precomputed_code_evaluation: dict[str, Any] | None = None,
+    precomputed_code_identity: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     gaps = validate_freeze(manifest, freeze)
     cases = {case["case_id"]: case for case in manifest["evaluator_cases"]}
@@ -435,12 +561,33 @@ def evaluate_bundle(
         str(row.get("case_id") or ""): float(row.get("generation_duration_ms") or 0.0)
         for row in rows
     }
-    verifier_rows = []
-    if not gaps:
-        verifier_rows = [verify_candidate(cases[case_id], outputs[case_id], config) for case_id in sorted(cases)]
+    candidate_bundle_identity = dict(candidate_bundle_identity or {})
+    verifier_rows: list[dict[str, Any]] = []
+    code_reused = precomputed_code_evaluation is not None
+    if code_reused:
+        verifier_rows, reuse_gaps = validate_precomputed_code_evaluation(
+            precomputed_code_evaluation or {},
+            precomputed_code_identity or {},
+            candidate_bundle_identity,
+            freeze,
+            cases,
+            outputs,
+            generation_ms_by_case,
+        )
+        gaps.extend(reuse_gaps)
+    elif not gaps:
+        verifier_rows = [
+            verify_candidate(cases[case_id], outputs[case_id], config)
+            for case_id in sorted(cases)
+            if cases[case_id]["arm_id"] != "english"
+        ]
         for verifier_row in verifier_rows:
+            case_id = str(verifier_row["case_id"])
+            verifier_row["candidate_sha256"] = hashlib.sha256(
+                outputs[case_id].encode("utf-8")
+            ).hexdigest()
             verifier_row["generation_duration_ms"] = generation_ms_by_case[
-                str(verifier_row["case_id"])
+                case_id
             ]
             verifier_row["end_to_end_duration_ms"] = round(
                 float(verifier_row["generation_duration_ms"])
@@ -461,7 +608,7 @@ def evaluate_bundle(
     english = score_english_judgments(list(cases.values()), outputs, judgments, config) if judgments else {
         "valid": False, "faults": ["blind_english_judgments_pending"], "results": [], "quadratic_weighted_kappa": None, "passed": 0, "total": 32
     }
-    code_rows = [row for row in verifier_rows if row["arm_id"] != "english"]
+    code_rows = verifier_rows
     by_arm = {}
     for arm in ARMS:
         arm_rows = english["results"] if arm == "english" else [row for row in code_rows if row["arm_id"] == arm]
@@ -480,6 +627,14 @@ def evaluate_bundle(
         "created_utc": now(),
         "trigger_state": "GREEN" if all_complete else ("RED" if gaps else "YELLOW"),
         "evaluation_complete": all_complete,
+        "evaluation_stage": (
+            "final_functional_qualification"
+            if judgments
+            else "code_verification_and_blind_packet"
+        ),
+        "candidate_bundle_identity": candidate_bundle_identity,
+        "code_evaluation_reused": code_reused,
+        "code_evaluation_source": dict(precomputed_code_identity or {}),
         "freeze_sha256": stable_hash(freeze),
         "candidate_provenance": provenance,
         "english_judgment_provenance": judgment_audit,
@@ -779,6 +934,15 @@ def compare_qualifications(
             gaps.append(f"qualification_policy_mismatch:{target}")
         if row.get("trigger_state") != "GREEN" or row.get("evaluation_complete") is not True:
             gaps.append(f"qualification_incomplete:{target}")
+        if row.get("evaluation_stage") != "final_functional_qualification":
+            gaps.append(f"qualification_stage_mismatch:{target}")
+        if row.get("code_evaluation_reused") is not True:
+            gaps.append(f"qualification_code_reuse_missing:{target}")
+        code_source = row.get("code_evaluation_source") or {}
+        if not code_source.get("path") or not re.fullmatch(
+            r"[0-9a-f]{64}", str(code_source.get("sha256") or "")
+        ):
+            gaps.append(f"qualification_code_source_invalid:{target}")
         if row.get("freeze_sha256") != expected_freeze:
             gaps.append(f"qualification_freeze_mismatch:{target}")
         if (row.get("candidate_provenance") or {}).get("state") != "GREEN":
@@ -884,6 +1048,70 @@ def compare_qualifications(
     }
 
 
+def validate_precomputed_code_evaluation(
+    prior: dict[str, Any],
+    prior_identity: dict[str, Any],
+    candidate_bundle_identity: dict[str, Any],
+    freeze: dict[str, Any],
+    cases: dict[str, dict[str, Any]],
+    outputs: dict[str, str],
+    generation_ms_by_case: dict[str, float],
+) -> tuple[list[dict[str, Any]], list[str]]:
+    gaps = []
+    if prior.get("policy") != "project_theseus_private_functional_utility_qualification_v1":
+        gaps.append("precomputed_code_policy_mismatch")
+    if prior.get("evaluation_stage") != "code_verification_and_blind_packet":
+        gaps.append("precomputed_code_stage_mismatch")
+    if prior.get("evaluation_complete") is not False or prior.get("trigger_state") != "YELLOW":
+        gaps.append("precomputed_code_state_mismatch")
+    if prior.get("code_evaluation_reused") is not False:
+        gaps.append("precomputed_code_must_be_original_execution")
+    if prior.get("freeze_sha256") != stable_hash(freeze):
+        gaps.append("precomputed_code_freeze_mismatch")
+    if prior.get("candidate_bundle_identity") != candidate_bundle_identity:
+        gaps.append("precomputed_code_candidate_bundle_mismatch")
+    if (prior.get("candidate_provenance") or {}).get("state") != "GREEN":
+        gaps.append("precomputed_code_candidate_provenance_invalid")
+    if prior.get("hard_gaps"):
+        gaps.append("precomputed_code_has_hard_gaps")
+    if not prior_identity.get("path") or not re.fullmatch(
+        r"[0-9a-f]{64}", str(prior_identity.get("sha256") or "")
+    ):
+        gaps.append("precomputed_code_source_identity_invalid")
+    for key in (
+        "public_training_rows_written",
+        "external_inference_calls",
+        "templates_renderers_routers_tools_credit",
+    ):
+        if int((prior.get("boundaries") or {}).get(key, -1)) != 0:
+            gaps.append(f"precomputed_code_boundary_nonzero:{key}")
+    expected = {
+        case_id: row
+        for case_id, row in cases.items()
+        if row["arm_id"] != "english"
+    }
+    rows = prior.get("rows") if isinstance(prior.get("rows"), list) else []
+    by_id = {str(row.get("case_id") or ""): row for row in rows}
+    if len(rows) != 128 or len(by_id) != len(rows) or set(by_id) != set(expected):
+        gaps.append("precomputed_code_case_set_mismatch")
+    for case_id, case in expected.items():
+        row = by_id.get(case_id) or {}
+        candidate_sha256 = hashlib.sha256(outputs.get(case_id, "").encode("utf-8")).hexdigest()
+        if row.get("arm_id") != case["arm_id"]:
+            gaps.append(f"precomputed_code_arm_mismatch:{case_id}")
+        if row.get("candidate_sha256") != candidate_sha256:
+            gaps.append(f"precomputed_code_candidate_mismatch:{case_id}")
+        if row.get("passed") not in (True, False):
+            gaps.append(f"precomputed_code_pass_state_invalid:{case_id}")
+        if not nonnegative_finite(row.get("duration_ms")):
+            gaps.append(f"precomputed_code_duration_invalid:{case_id}")
+        if not close_timing_total(
+            row.get("generation_duration_ms"), generation_ms_by_case.get(case_id, -1.0)
+        ):
+            gaps.append(f"precomputed_code_generation_timing_mismatch:{case_id}")
+    return ([] if gaps else rows), sorted(set(gaps))
+
+
 def pareto_dominates(
     candidate: dict[str, Any], baseline: dict[str, Any], policy: dict[str, Any]
 ) -> bool:
@@ -910,6 +1138,9 @@ def compact_qualification(row: dict[str, Any]) -> dict[str, Any]:
         "target_id": provenance.get("bundle_target_id"),
         "trigger_state": row.get("trigger_state"),
         "evaluation_complete": row.get("evaluation_complete"),
+        "evaluation_stage": row.get("evaluation_stage"),
+        "code_evaluation_reused": row.get("code_evaluation_reused"),
+        "code_evaluation_source": row.get("code_evaluation_source") or {},
         "freeze_sha256": row.get("freeze_sha256"),
         "summary": row.get("summary") or {},
         "by_arm": row.get("by_arm") or {},
@@ -950,6 +1181,10 @@ def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[st
     for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "local_english_rater_config_sha256", "local_english_rater_implementation_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "v8_plan_sha256", "v8_stage_signature"):
         if manifest.get(key) != freeze.get(key):
             gaps.append(f"freeze_identity_mismatch:{key}")
+    if freeze.get("consumption_registry") != (manifest.get("consumption") or {}).get("registry"):
+        gaps.append("freeze_identity_mismatch:consumption_registry")
+    if freeze.get("consumption_policy_sha256") != stable_hash(manifest.get("consumption") or {}):
+        gaps.append("freeze_identity_mismatch:consumption_policy_sha256")
     return gaps
 
 
@@ -1003,6 +1238,17 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         gaps.append("architecture_verdict_code_arm_contract_mismatch")
     if verdict.get("route_replacement_before_confirmation_allowed") is not False:
         gaps.append("architecture_verdict_confirmation_boundary_missing")
+    consumption = config.get("consumption") or {}
+    if consumption.get("registry") != "reports/private_functional_consumption_registry.jsonl":
+        gaps.append("functional_consumption_registry_mismatch")
+    for key in (
+        "append_only",
+        "reserve_before_execution",
+        "failed_reservation_remains_consumed",
+        "duplicate_identity_refused",
+    ):
+        if consumption.get(key) is not True:
+            gaps.append(f"functional_consumption_boundary_missing:{key}")
     for key, value in config.get("boundaries", {}).items():
         if key.endswith("count") or key in {"public_training_rows_written", "external_inference_calls", "templates_renderers_routers_tools_credit"}:
             if isinstance(value, int) and value != 0:
@@ -1021,6 +1267,29 @@ def metric_summary(rows: list[dict[str, Any]], *, expected: int) -> dict[str, An
 
 def normalize_text(value: str) -> str:
     return re.sub(r"\s+", " ", value.strip().lower())
+
+
+def consumption_registry_path(config: dict[str, Any], freeze: dict[str, Any]) -> Path:
+    configured = str((config.get("consumption") or {}).get("registry") or "")
+    frozen = str(freeze.get("consumption_registry") or "")
+    if not configured or configured != frozen:
+        raise ValueError("functional consumption registry is not freeze-bound")
+    return resolve(configured)
+
+
+def close_failed_reservation(
+    registry_path: Path,
+    reservation: dict[str, Any],
+    exc: BaseException,
+) -> None:
+    try:
+        fail_reservation(
+            registry_path,
+            reservation,
+            fault=f"{type(exc).__name__}:{exc}",
+        )
+    except Exception:
+        pass
 
 
 def toolchain_identity() -> dict[str, Any]:

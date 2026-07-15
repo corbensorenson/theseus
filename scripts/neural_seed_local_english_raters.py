@@ -16,6 +16,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from neural_seed_functional_consumption import (
+    complete_reservation,
+    fail_reservation,
+    reserve_once,
+)
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs/neural_seed_local_english_raters.json"
@@ -44,13 +50,46 @@ def main() -> int:
     if args.gate or contract["trigger_state"] != "GREEN":
         print(json.dumps(contract, indent=2, sort_keys=True))
         return 0 if contract["trigger_state"] == "GREEN" else 2
-    receipt = execute(
-        config,
-        config_path,
-        packet_specs,
-        judgment_dir=resolve(args.judgment_dir),
+    registry_path = resolve(str(config["consumption_registry"]))
+    reservation = reserve_once(
+        registry_path,
+        stage="blind_english_local_scoring",
+        identity={
+            "config_sha256": contract["config_sha256"],
+            "implementation_sha256": contract["implementation_sha256"],
+            "packets": contract["packets"],
+            "models": contract["models"],
+        },
     )
-    write_json(resolve(args.receipt_out), receipt)
+    receipt_path = resolve(args.receipt_out)
+    try:
+        receipt = execute(
+            config,
+            config_path,
+            packet_specs,
+            judgment_dir=resolve(args.judgment_dir),
+        )
+        write_json(receipt_path, receipt)
+        complete_reservation(
+            registry_path,
+            reservation,
+            artifact={
+                "path": relative(receipt_path),
+                "sha256": sha256_file(receipt_path),
+                "trigger_state": receipt["trigger_state"],
+                "judgment_files": receipt.get("judgment_files") or [],
+            },
+        )
+    except BaseException as exc:
+        try:
+            fail_reservation(
+                registry_path,
+                reservation,
+                fault=f"{type(exc).__name__}:{exc}",
+            )
+        except Exception:
+            pass
+        raise
     print(json.dumps({key: receipt[key] for key in ("policy", "created_utc", "trigger_state", "packet_count", "judgment_count", "adjudicated_case_count", "hard_gaps")}, indent=2, sort_keys=True))
     return 0 if receipt["trigger_state"] == "GREEN" else 2
 
@@ -425,6 +464,8 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         gaps.append("local_only_boundary_missing")
     if boundaries.get("raw_model_responses_retained") is not False:
         gaps.append("raw_response_retention_must_be_false")
+    if config.get("consumption_registry") != "reports/private_functional_consumption_registry.jsonl":
+        gaps.append("functional_consumption_registry_mismatch")
     return gaps
 
 
