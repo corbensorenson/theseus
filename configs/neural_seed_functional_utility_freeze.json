@@ -11,19 +11,19 @@
     "python": 32,
     "rust": 32
   },
-  "compiler_sha256": "a81677b4d1caea0ee443e613c9a445b0aa766932f9cf6b15fb5b31792a31bf2f",
+  "compiler_sha256": "a736e8e811c11f3841b59ce48157037667be8d6e8d3f48019364f47200f6bb1f",
   "config": "configs/neural_seed_functional_utility.json",
   "config_sha256": "de00372f913bb5d3139e25c13d4bab6545963f2d62073ec2cef77b7fad51118a",
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-15T06:17:36.499883Z",
+  "frozen_utc": "2026-07-15T06:22:23.751920Z",
   "generation_wrapper_sha256": "41ec74428c37a3f68297067e1463068cfd9b3ed4b6d5c888e21e5bb0b4e06585",
   "immutable": true,
   "policy": "project_theseus_private_functional_utility_freeze_v1",
   "public_training_rows_written": 0,
-  "supersede_reason": "Pre-result decision audit found the frozen harness scored checkpoints individually but did not bind the three-way architecture/scale verdict. Add strict per-arm and cold/warm Pareto rules, all-code-zero scale falsification, evidence validation, and confirmation-only route policy before any functional candidate exists.",
-  "supersedes_freeze_sha256": "597d675dbe41f8c5ebcb5a46528f4285137986b00b61bcfb92b00d313772b00c",
+  "supersede_reason": "Pre-result report-retention audit: hash-link full qualification evidence but embed only compact summaries, provenance, agreement, and boundaries in the architecture verdict; add explicit MoECOT-repeatability and tradeoff tests before any functional candidate exists.",
+  "supersedes_freeze_sha256": "53c55dc0d46c5780170d6d0bdf608b450e1f61fecabd3747ebed0b75a7820b14",
   "templates_renderers_routers_tools_credit": 0,
   "toolchain_identity_sha256": "59d62cf42c53273c4a1740f492938b3dfd5a98122c448b842f970e7125d4d300",
   "training_generator_sha256": "93c03c688e1aa761fe59249e9874934f093030c8375c7f8a0e28179cd4d02aa4",
@@ -41,11 +41,11 @@
       "dense_total_parameter": {
         "complete": false,
         "heartbeat": "checkpoints/moecot_language_seed_v8/dense_total_parameter/training_heartbeat.json",
-        "heartbeat_sha256": "755c67de5b59be709fcd816217923dcca975225e8c3e8e251e3436a4d8799e6d",
-        "optimizer_steps": 28500,
+        "heartbeat_sha256": "b69ace07414a2f8fd217491cd1619ef61a4dbd325078854dddae7f2d5141289a",
+        "optimizer_steps": 29000,
         "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
         "receipt": "checkpoints/moecot_language_seed_v8/dense_total_parameter/training_receipt.json",
-        "receipt_sha256": "4b8013d9684f2f65e9c8db2bafbc01786597deafb5ee35083dd1c270c9b691b8"
+        "receipt_sha256": "b8cf149bb4cce2bd063555e78204db0baef94ab62459856be94f311178664018"
       }
     },
     "dense_controls_complete": false,

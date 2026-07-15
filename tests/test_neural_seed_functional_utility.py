@@ -333,6 +333,7 @@ def test_architecture_verdict_requires_dense_confirmation_on_strict_pareto_gain(
     assert result["decision"] == "DENSE_HYBRID_CONFIRMATION_REQUIRED"
     assert result["pareto"]["dense_active_over_moecot"] is True
     assert result["route_replacement_authorized"] is False
+    assert "rows" not in result["functional_results"]["dense_active_parameter"]
 
 
 def test_architecture_verdict_rejects_incomplete_or_mismatched_evidence() -> None:
@@ -356,3 +357,46 @@ def test_architecture_verdict_rejects_incomplete_or_mismatched_evidence() -> Non
     assert result["decision"] == "INVALID_EVIDENCE"
     assert "qualification_incomplete:dense_active_parameter" in result["hard_gaps"]
     assert "qualification_freeze_mismatch:dense_total_parameter" in result["hard_gaps"]
+
+
+def test_architecture_verdict_requires_repeatable_moecot_pareto_gain() -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    sparse_rates = {arm: 0.5 for arm in CONFIG["arms"]}
+    dense_rates = {arm: 0.25 for arm in CONFIG["arms"]}
+    rows = bind_freeze(
+        [
+            qualification("moecot_system", sparse_rates, 4.0),
+            qualification("dense_active_parameter", dense_rates, 3.0),
+            qualification("dense_total_parameter", dense_rates, 2.0),
+        ],
+        freeze,
+    )
+
+    result = compare_qualifications(CONFIG, rows, exact_diagnostic(freeze), freeze)
+
+    assert result["trigger_state"] == "GREEN"
+    assert result["decision"] == "MOECOT_CONFIRMATION_REQUIRED"
+    assert result["pareto"]["moecot_over_dense_active"] is True
+    assert result["pareto"]["moecot_over_dense_total"] is True
+
+
+def test_architecture_verdict_preserves_quality_cost_tradeoff_as_unresolved() -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    sparse_rates = {arm: 0.5 for arm in CONFIG["arms"]}
+    dense_rates = {arm: 0.25 for arm in CONFIG["arms"]}
+    rows = bind_freeze(
+        [
+            qualification("moecot_system", sparse_rates, 1.0),
+            qualification("dense_active_parameter", dense_rates, 4.0),
+            qualification("dense_total_parameter", dense_rates, 3.0),
+        ],
+        freeze,
+    )
+
+    result = compare_qualifications(CONFIG, rows, exact_diagnostic(freeze), freeze)
+
+    assert result["trigger_state"] == "GREEN"
+    assert result["decision"] == "UNRESOLVED_CONFIRMATION_REQUIRED"
+    assert not any(result["pareto"].values())

@@ -726,7 +726,9 @@ def compare_qualifications(
         "architecture_selected": False,
         "route_replacement_authorized": False,
         "confirmation_surface_spent": False,
-        "functional_results": by_target,
+        "functional_results": {
+            target: compact_qualification(row) for target, row in by_target.items()
+        },
         "pareto": pareto,
         "result_sources": result_sources or [],
         "exact_diagnostic_source": exact_source or {},
@@ -760,6 +762,32 @@ def pareto_dominates(
     return all(a >= b for a, b in zip(candidate_values, baseline_values)) and any(
         a > b for a, b in zip(candidate_values, baseline_values)
     )
+
+
+def compact_qualification(row: dict[str, Any]) -> dict[str, Any]:
+    provenance = row.get("candidate_provenance") or {}
+    english = row.get("english") or {}
+    return {
+        "target_id": provenance.get("bundle_target_id"),
+        "trigger_state": row.get("trigger_state"),
+        "evaluation_complete": row.get("evaluation_complete"),
+        "freeze_sha256": row.get("freeze_sha256"),
+        "summary": row.get("summary") or {},
+        "by_arm": row.get("by_arm") or {},
+        "candidate_provenance": {
+            "state": provenance.get("state"),
+            "checkpoint_artifacts": provenance.get("checkpoint_artifacts") or [],
+            "hard_gaps": provenance.get("hard_gaps") or [],
+        },
+        "english": {
+            "valid": english.get("valid"),
+            "faults": english.get("faults") or [],
+            "quadratic_weighted_kappa": english.get("quadratic_weighted_kappa"),
+            "passed": english.get("passed"),
+            "total": english.get("total"),
+        },
+        "boundaries": row.get("boundaries") or {},
+    }
 
 
 def unit_interval(value: Any) -> bool:
@@ -861,7 +889,23 @@ def toolchain_identity() -> dict[str, Any]:
 
 
 def summary_view(report: dict[str, Any]) -> dict[str, Any]:
-    return {key: report.get(key) for key in ("policy", "created_utc", "trigger_state", "mode", "case_count", "cases_by_arm", "summary", "hard_gaps", "boundaries") if key in report}
+    return {
+        key: report.get(key)
+        for key in (
+            "policy",
+            "created_utc",
+            "trigger_state",
+            "mode",
+            "case_count",
+            "cases_by_arm",
+            "decision",
+            "recommendation",
+            "summary",
+            "hard_gaps",
+            "boundaries",
+        )
+        if key in report
+    }
 
 
 def read_json(path: Path) -> dict[str, Any]:
