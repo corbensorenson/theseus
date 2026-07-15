@@ -1095,6 +1095,30 @@ disposable and non-authoritative. Core/skill/concept updates occur only during
 quiescent consolidation from a frozen evidence snapshot through replay, regression,
 shadowing, SCF promotion, and rollback.
 
+**Memory and verification hierarchy.** Preserve four separately accounted stores:
+the tiny differentiable workspace, exact content-addressed artifact memory,
+disposable adaptive neural memory, and the qualified skill/model library. Only the
+exact artifact layer and scoped execution/proof receipts may establish durable facts;
+adaptive memory and learned critics may propose or prioritize but never silently
+authorize, verify, or overwrite provenance. Verification remains tiered from hard
+schema/type/permission/resource vetoes, through exact execution/proof, empirical
+simulation/property/differential tests, advisory learned critics, and finally
+consequence-appropriate human/domain authority. Unknown or unverifiable outcomes
+remain typed results rather than fallback answers.
+
+**Training and curriculum contract.** Do not begin with open-domain language or use
+the practical assistant corpus as an opaque shortcut. First prove exact substrate
+behavior with no neural cell, then oracle-supervised operation/pointer/workspace
+updates, train-small/test-large depth and size generalization, costly active
+acquisition, recurrence-plus-search, qualified skill use, a frozen-core ratchet, and
+world-model planning; English and code adapters come last. The preregistered loss
+family must separately account for operation, pointer, workspace patch, value,
+uncertainty calibration, transition prediction, halting, recurrence consistency, and
+resource prediction. Invalid-action negatives and shorter/longer trajectory
+consistency are required. Longer reasoning receives no intrinsic credit, and exact
+runtime computation, retrieved answers, adapter capacity, or verifier work cannot be
+laundered into neural-core loss or capability.
+
 **Dependency-ordered milestones.** These are one experiment series, not independent
 lanes or permission to start open-domain training early:
 
@@ -1131,6 +1155,16 @@ lanes or permission to start open-domain training early:
    Octopus routing, and SCF replacement only after matched qualification. Possible
    dispositions are primary, narrow-domain, research-only, selected-mechanism merge,
    or rejection; failure is an acceptable and durable result.
+
+**Execution-order boundary.** OneCell milestone 0 and the reusable exact-substrate
+parts of milestone 1 may proceed after the recorded v8 disposition, but they are
+dependency work, not the flagship capability lane. They may not delay licensed
+task-complete corpus growth, the preregistered 57.315M-active transformer/hybrid rung,
+or delivery of a useful local assistant. Neural OneCell training begins only after
+its exact substrate and matched experiment contract pass; language/code adaptation
+begins only after structured generalization, search, frozen-core abstraction, and
+world-model evidence exist. Any reusable ABI/runtime improvement remains owned by
+its existing SCF abstraction even if the OneCell candidate is later rejected.
 
 **RATCHET-100 contract.** Build generated hidden sequential task families with exact
 verifiers, increasing size, related but non-identical reusable structure, and a fixed

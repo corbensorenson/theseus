@@ -166,7 +166,11 @@ share toward zero. Public benchmarks are calibration only.
   v8 disposition now permits its ABI and exact-substrate contract work, but it cannot
   become a same-scale rescue patch, delay the practical data-and-scale lane, or
   duplicate VIEA, VCM, Octopus, SCF, Loop Closure, SparkStream, registry, or evidence
-  machinery. Route authority requires a preregistered matched total-cost verdict.
+  machinery. Exact-substrate and ABI work remain dependency work while the licensed
+  task-complete corpus and preregistered 57.315M-active practical lane stay flagship.
+  Neural OneCell training waits for exact-substrate and matched-contract gates;
+  language/code adapters wait for structured, search, frozen-core, and world-model
+  evidence. Route authority requires a preregistered matched total-cost verdict.
 - Real multi-node Hive proof remains Phase 9 external-environment evidence and waits
   for another trusted reachable node. It does not block local model work.
 - Mobile, Watch, spatial, voice-following, NAS, and broader product surfaces remain
