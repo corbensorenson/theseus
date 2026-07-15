@@ -156,6 +156,31 @@
       "english_inter_rater_agreement"
     ]
   },
+  "architecture_verdict": {
+    "required_targets": [
+      "moecot_system",
+      "dense_active_parameter",
+      "dense_total_parameter"
+    ],
+    "required_code_arms": [
+      "python",
+      "javascript_typescript",
+      "html_css",
+      "rust"
+    ],
+    "quality_dimensions": [
+      "per_arm_functional_pass_rate"
+    ],
+    "cost_dimensions": [
+      "accepted_verified_output_per_second",
+      "accepted_verified_output_per_second_warm"
+    ],
+    "dense_advance_rule": "at_least_one_matched_dense_control_strictly_pareto_dominates_moecot_without_any_quality_or_cost_regression",
+    "moecot_advance_rule": "moecot_strictly_pareto_dominates_both_matched_dense_controls_without_any_weak_arm_or_cost_regression",
+    "all_code_zero_action": "FALSIFY_10_8M_ACTIVE_SCALE_RUNG",
+    "tradeoff_action": "UNRESOLVED_USE_ONE_UNTOUCHED_CONFIRMATION_SURFACE",
+    "route_replacement_before_confirmation_allowed": false
+  },
   "boundaries": {
     "public_training_rows_written": 0,
     "external_inference_calls": 0,

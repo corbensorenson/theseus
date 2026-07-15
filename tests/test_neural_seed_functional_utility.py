@@ -17,9 +17,11 @@ from neural_seed_functional_utility import (
     build_blind_english_packet,
     build_freeze,
     build_manifest,
+    compare_qualifications,
     evaluate_bundle,
     validate_freeze,
 )
+from neural_seed_functional_cases import stable_hash
 
 
 CONFIG_PATH = ROOT / "configs/neural_seed_functional_utility.json"
@@ -234,3 +236,123 @@ def test_accepted_output_rate_includes_generation_verification_and_cold_load(mon
     assert result["summary"]["code_verification_duration_ms"] == 2560.0
     assert result["summary"]["accepted_verified_output_per_second"] == 128 / 4.84
     assert result["summary"]["accepted_verified_output_per_second_warm"] == 128 / 3.84
+
+
+def qualification(target: str, rates: dict[str, float], throughput: float) -> dict:
+    return {
+        "policy": "project_theseus_private_functional_utility_qualification_v1",
+        "trigger_state": "GREEN",
+        "evaluation_complete": True,
+        "candidate_provenance": {
+            "state": "GREEN",
+            "bundle_target_id": target,
+        },
+        "by_arm": {
+            arm: {
+                "passed": int(round(rates[arm] * 32)),
+                "scored": 32,
+                "expected": 32,
+                "functional_pass_rate": rates[arm],
+            }
+            for arm in CONFIG["arms"]
+        },
+        "summary": {
+            "accepted_verified_output_per_second": throughput,
+            "accepted_verified_output_per_second_warm": throughput,
+        },
+        "boundaries": {
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "templates_renderers_routers_tools_credit": 0,
+        },
+    }
+
+
+def exact_diagnostic(freeze: dict) -> dict:
+    return {
+        "policy": "project_theseus_moecot_dense_exact_recovery_diagnostic_v8",
+        "trigger_state": "GREEN",
+        "publication_ready": True,
+        "freeze_identity": {
+            "functional_case_contract_sha256": freeze["case_contract_sha256"],
+        },
+        "boundaries": {
+            "public_benchmark_payload_count": 0,
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+            "templates_renderers_routers_tools_credit": 0,
+        },
+    }
+
+
+def bind_freeze(rows: list[dict], freeze: dict) -> list[dict]:
+    for row in rows:
+        row["freeze_sha256"] = stable_hash(freeze)
+    return rows
+
+
+def test_architecture_verdict_falsifies_all_code_zero_before_pareto() -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    rates = {arm: (0.25 if arm == "english" else 0.0) for arm in CONFIG["arms"]}
+    rows = bind_freeze(
+        [
+            qualification("moecot_system", rates, 2.0),
+            qualification("dense_active_parameter", rates, 3.0),
+            qualification("dense_total_parameter", rates, 4.0),
+        ],
+        freeze,
+    )
+
+    result = compare_qualifications(CONFIG, rows, exact_diagnostic(freeze), freeze)
+
+    assert result["trigger_state"] == "GREEN"
+    assert result["decision"] == "FALSIFY_10_8M_ACTIVE_SCALE_RUNG"
+    assert result["architecture_selected"] is False
+    assert result["route_replacement_authorized"] is False
+
+
+def test_architecture_verdict_requires_dense_confirmation_on_strict_pareto_gain() -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    sparse_rates = {arm: 0.25 for arm in CONFIG["arms"]}
+    dense_rates = {arm: 0.5 for arm in CONFIG["arms"]}
+    rows = bind_freeze(
+        [
+            qualification("moecot_system", sparse_rates, 2.0),
+            qualification("dense_active_parameter", dense_rates, 3.0),
+            qualification("dense_total_parameter", sparse_rates, 1.0),
+        ],
+        freeze,
+    )
+
+    result = compare_qualifications(CONFIG, rows, exact_diagnostic(freeze), freeze)
+
+    assert result["trigger_state"] == "GREEN"
+    assert result["decision"] == "DENSE_HYBRID_CONFIRMATION_REQUIRED"
+    assert result["pareto"]["dense_active_over_moecot"] is True
+    assert result["route_replacement_authorized"] is False
+
+
+def test_architecture_verdict_rejects_incomplete_or_mismatched_evidence() -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    rates = {arm: 0.25 for arm in CONFIG["arms"]}
+    rows = bind_freeze(
+        [
+            qualification("moecot_system", rates, 2.0),
+            qualification("dense_active_parameter", rates, 2.0),
+            qualification("dense_total_parameter", rates, 2.0),
+        ],
+        freeze,
+    )
+    rows[1]["evaluation_complete"] = False
+    rows[2]["freeze_sha256"] = "0" * 64
+
+    result = compare_qualifications(CONFIG, rows, exact_diagnostic(freeze), freeze)
+
+    assert result["trigger_state"] == "RED"
+    assert result["decision"] == "INVALID_EVIDENCE"
+    assert "qualification_incomplete:dense_active_parameter" in result["hard_gaps"]
+    assert "qualification_freeze_mismatch:dense_total_parameter" in result["hard_gaps"]

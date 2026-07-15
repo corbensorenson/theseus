@@ -47,6 +47,8 @@ def main() -> int:
     parser.add_argument("--evaluate-candidates", default="")
     parser.add_argument("--blind-english-packet-out", default="")
     parser.add_argument("--judgments", default="")
+    parser.add_argument("--compare-results", nargs=3, default=[])
+    parser.add_argument("--exact-diagnostic", default="")
     parser.add_argument("--out", default=str(DEFAULT_RESULT))
     args = parser.parse_args()
 
@@ -96,6 +98,27 @@ def main() -> int:
             bundle,
             read_json(freeze_path),
             judgments,
+        )
+        write_json(resolve(args.out), result)
+        print(json.dumps(summary_view(result), indent=2, sort_keys=True))
+        return 0 if result["trigger_state"] != "RED" else 2
+    if args.compare_results:
+        if not args.exact_diagnostic:
+            raise ValueError("--compare-results requires --exact-diagnostic")
+        freeze_path = resolve(args.freeze_out)
+        if not freeze_path.is_file():
+            raise ValueError("functional utility must be frozen before architecture comparison")
+        result_paths = [resolve(value) for value in args.compare_results]
+        exact_path = resolve(args.exact_diagnostic)
+        active_freeze = read_json(freeze_path)
+        result = compare_qualifications(
+            config,
+            [read_json(path) for path in result_paths],
+            read_json(exact_path),
+            active_freeze,
+            result_sources=[{"path": relative(path), "sha256": sha256_file(path)} for path in result_paths],
+            exact_source={"path": relative(exact_path), "sha256": sha256_file(exact_path)},
+            contract_gaps=validate_freeze(manifest, active_freeze),
         )
         write_json(resolve(args.out), result)
         print(json.dumps(summary_view(result), indent=2, sort_keys=True))
@@ -591,6 +614,158 @@ def code_checkpoint_load_duration_ms(bundle: dict[str, Any]) -> float:
     return sum(float(value) for value in by_target.values())
 
 
+def compare_qualifications(
+    config: dict[str, Any],
+    qualifications: list[dict[str, Any]],
+    exact_diagnostic: dict[str, Any],
+    freeze: dict[str, Any],
+    *,
+    result_sources: list[dict[str, str]] | None = None,
+    exact_source: dict[str, str] | None = None,
+    contract_gaps: list[str] | None = None,
+) -> dict[str, Any]:
+    policy = config.get("architecture_verdict") or {}
+    expected_targets = tuple(policy.get("required_targets") or ())
+    code_arms = tuple(policy.get("required_code_arms") or ())
+    expected_freeze = stable_hash(freeze)
+    gaps: list[str] = list(contract_gaps or [])
+    by_target: dict[str, dict[str, Any]] = {}
+    for row in qualifications:
+        target = str((row.get("candidate_provenance") or {}).get("bundle_target_id") or "")
+        if not target or target in by_target:
+            gaps.append("qualification_target_missing_or_duplicate")
+            continue
+        by_target[target] = row
+        if row.get("policy") != "project_theseus_private_functional_utility_qualification_v1":
+            gaps.append(f"qualification_policy_mismatch:{target}")
+        if row.get("trigger_state") != "GREEN" or row.get("evaluation_complete") is not True:
+            gaps.append(f"qualification_incomplete:{target}")
+        if row.get("freeze_sha256") != expected_freeze:
+            gaps.append(f"qualification_freeze_mismatch:{target}")
+        if (row.get("candidate_provenance") or {}).get("state") != "GREEN":
+            gaps.append(f"qualification_provenance_not_green:{target}")
+        boundaries = row.get("boundaries") or {}
+        for key in (
+            "public_training_rows_written",
+            "external_inference_calls",
+            "templates_renderers_routers_tools_credit",
+        ):
+            if int(boundaries.get(key, -1)) != 0:
+                gaps.append(f"qualification_nonzero_boundary:{target}:{key}")
+        for arm in ARMS:
+            arm_row = (row.get("by_arm") or {}).get(arm) or {}
+            if int(arm_row.get("scored") or 0) != int(config["expected_cases_per_arm"]):
+                gaps.append(f"qualification_arm_incomplete:{target}:{arm}")
+            if not unit_interval(arm_row.get("functional_pass_rate")):
+                gaps.append(f"qualification_arm_rate_invalid:{target}:{arm}")
+        summary = row.get("summary") or {}
+        for metric in policy.get("cost_dimensions") or []:
+            if not nonnegative_finite(summary.get(metric)):
+                gaps.append(f"qualification_cost_invalid:{target}:{metric}")
+    if set(by_target) != set(expected_targets):
+        gaps.append("qualification_target_set_mismatch")
+    if exact_diagnostic.get("policy") != "project_theseus_moecot_dense_exact_recovery_diagnostic_v8":
+        gaps.append("exact_diagnostic_policy_mismatch")
+    if exact_diagnostic.get("trigger_state") != "GREEN" or exact_diagnostic.get("publication_ready") is not True:
+        gaps.append("exact_diagnostic_incomplete")
+    exact_freeze = exact_diagnostic.get("freeze_identity") or {}
+    if exact_freeze.get("functional_case_contract_sha256") != freeze.get("case_contract_sha256"):
+        gaps.append("exact_diagnostic_functional_contract_mismatch")
+    exact_boundaries = exact_diagnostic.get("boundaries") or {}
+    for key in (
+        "public_benchmark_payload_count",
+        "public_training_rows_written",
+        "external_inference_calls",
+        "fallback_return_count",
+        "templates_renderers_routers_tools_credit",
+    ):
+        if int(exact_boundaries.get(key, -1)) != 0:
+            gaps.append(f"exact_diagnostic_nonzero_boundary:{key}")
+    if gaps:
+        decision = "INVALID_EVIDENCE"
+        recommendation = "REPAIR_EVIDENCE_WITHOUT_REGENERATING_CANDIDATES"
+        pareto = {}
+    else:
+        pareto = {
+            "dense_active_over_moecot": pareto_dominates(
+                by_target["dense_active_parameter"], by_target["moecot_system"], policy
+            ),
+            "dense_total_over_moecot": pareto_dominates(
+                by_target["dense_total_parameter"], by_target["moecot_system"], policy
+            ),
+            "moecot_over_dense_active": pareto_dominates(
+                by_target["moecot_system"], by_target["dense_active_parameter"], policy
+            ),
+            "moecot_over_dense_total": pareto_dominates(
+                by_target["moecot_system"], by_target["dense_total_parameter"], policy
+            ),
+        }
+        all_code_zero = all(
+            int((row.get("by_arm") or {}).get(arm, {}).get("passed") or 0) == 0
+            for row in by_target.values()
+            for arm in code_arms
+        )
+        if all_code_zero:
+            decision = "FALSIFY_10_8M_ACTIVE_SCALE_RUNG"
+            recommendation = "BUILD_DATA_SUPPORTED_50M_TO_100M_ACTIVE_RUNG"
+        elif pareto["moecot_over_dense_active"] and pareto["moecot_over_dense_total"]:
+            decision = "MOECOT_CONFIRMATION_REQUIRED"
+            recommendation = "SPEND_ONE_UNTOUCHED_CONFIRMATION_ON_MOECOT"
+        elif pareto["dense_active_over_moecot"] or pareto["dense_total_over_moecot"]:
+            decision = "DENSE_HYBRID_CONFIRMATION_REQUIRED"
+            recommendation = "SPEND_ONE_UNTOUCHED_CONFIRMATION_ON_DENSE_HYBRID"
+        else:
+            decision = "UNRESOLVED_CONFIRMATION_REQUIRED"
+            recommendation = "USE_ONE_UNTOUCHED_CONFIRMATION_WITHOUT_POST_HOC_WEIGHTING"
+    return {
+        "policy": "project_theseus_private_functional_architecture_verdict_v1",
+        "created_utc": now(),
+        "trigger_state": "RED" if gaps else "GREEN",
+        "decision": decision,
+        "recommendation": recommendation,
+        "architecture_selected": False,
+        "route_replacement_authorized": False,
+        "confirmation_surface_spent": False,
+        "functional_results": by_target,
+        "pareto": pareto,
+        "result_sources": result_sources or [],
+        "exact_diagnostic_source": exact_source or {},
+        "exact_recovery_semantics": "diagnostic_only_not_functional_utility",
+        "hard_gaps": sorted(set(gaps)),
+        "boundaries": {
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+            "templates_renderers_routers_tools_credit": 0,
+            "post_hoc_metric_weighting": False,
+            "model_only_and_assisted_channels_separate": True,
+        },
+    }
+
+
+def pareto_dominates(
+    candidate: dict[str, Any], baseline: dict[str, Any], policy: dict[str, Any]
+) -> bool:
+    candidate_values = [
+        float((candidate.get("by_arm") or {})[arm]["functional_pass_rate"])
+        for arm in ARMS
+    ]
+    baseline_values = [
+        float((baseline.get("by_arm") or {})[arm]["functional_pass_rate"])
+        for arm in ARMS
+    ]
+    for metric in policy.get("cost_dimensions") or []:
+        candidate_values.append(float((candidate.get("summary") or {})[metric]))
+        baseline_values.append(float((baseline.get("summary") or {})[metric]))
+    return all(a >= b for a, b in zip(candidate_values, baseline_values)) and any(
+        a > b for a, b in zip(candidate_values, baseline_values)
+    )
+
+
+def unit_interval(value: Any) -> bool:
+    return nonnegative_finite(value) and float(value) <= 1.0
+
+
 def nonnegative_finite(value: Any) -> bool:
     try:
         number = float(value)
@@ -633,6 +808,17 @@ def validate_config(config: dict[str, Any]) -> list[str]:
             gaps.append(f"english_scoring_boundary_missing:{key}")
     if english.get("blind_packet_policy") != "project_theseus_blind_english_judgment_packet_v1":
         gaps.append("english_blind_packet_policy_mismatch")
+    verdict = config.get("architecture_verdict") or {}
+    if tuple(verdict.get("required_targets") or ()) != (
+        "moecot_system",
+        "dense_active_parameter",
+        "dense_total_parameter",
+    ):
+        gaps.append("architecture_verdict_target_contract_mismatch")
+    if tuple(verdict.get("required_code_arms") or ()) != tuple(ARMS[1:]):
+        gaps.append("architecture_verdict_code_arm_contract_mismatch")
+    if verdict.get("route_replacement_before_confirmation_allowed") is not False:
+        gaps.append("architecture_verdict_confirmation_boundary_missing")
     for key, value in config.get("boundaries", {}).items():
         if key.endswith("count") or key in {"public_training_rows_written", "external_inference_calls", "templates_renderers_routers_tools_credit"}:
             if isinstance(value, int) and value != 0:
