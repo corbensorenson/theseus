@@ -27,16 +27,18 @@ share toward zero. Public benchmarks are calibration only.
   `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
   canary rung; it does not select an architecture or authorize a route.
 - **Data gate:** the content-bound audit credits 683,254,465 unique governed
-  positions. The task-complete ledger admits `27,827/28,060` units with zero public
+  positions. The task-complete ledger admits `28,872/30,994` units with zero public
   overlap, teacher calls, external inference, or fallback returns. Verified coverage
-  is English `25,566`, Python `2,022`, JS/TS `135`, HTML/CSS `7`, and Rust `97`.
+  is English `25,566`, Python `2,022`, JS/TS `1,180`, HTML/CSS `7`, and Rust `97`.
   Python is GREEN at `1,129,825` target positions after five pinned repository
-  test-kill campaigns; JS/TS, HTML/CSS, and Rust remain below their frozen floors.
+  test-kill campaigns. JS/TS is GREEN at `1,612,835` after Vite plus a content-bound,
+  outcome-blind 600-candidate Tailwind campaign; HTML/CSS and Rust remain below their
+  frozen floors.
 - **Immediate dependency:** keep the consumed rung and the new 57.315M-active proposal
   immutable. Its candidate and both matched dense controls pass real MLX update,
   exact checkpoint reload, optimizer-resume, and cleanup canaries, but training is
   denied: the proposal needs 1,146,306,580 unique positions, leaving a 463,052,115
-  shortfall plus three code-arm coverage gaps. Add pinned high-quality licensed
+  shortfall plus two code-arm coverage gaps. Add pinned high-quality licensed
   product data through the existing task-complete admission contract; do not spend
   confirmation, public calibration, or another same-scale architecture patch.
 

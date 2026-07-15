@@ -6,6 +6,8 @@ import sys
 import tarfile
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -148,6 +150,251 @@ def test_starter_pass_is_not_task_complete_evidence(tmp_path: Path, monkeypatch)
     assert result["starter_failed"] is False
 
 
+def test_javascript_ast_rows_are_bound_to_source_spans(tmp_path: Path, monkeypatch) -> None:
+    source_root = tmp_path / "repo"
+    source_path = source_root / "src" / "value.ts"
+    source_path.parent.mkdir(parents=True)
+    text = "export function value() {\n  return 42\n}\n"
+    source_path.write_text(text)
+    start = text.index("{") + 1
+    end = text.rindex("}")
+
+    def fake_run(command, workdir, timeout, **kwargs):
+        Path(command[-1]).write_text(json.dumps({
+            "typescriptVersion": "5.9.3",
+            "records": [{
+                "path": str(source_path),
+                "qualified_name": "value",
+                "start_byte": start,
+                "end_byte": end,
+                "target_body": text[start:end],
+                "starter_body": '\n  throw new Error("hole")\n',
+            }],
+        }))
+        return {"ok": True, "returncode": 0, "stdout": "", "stderr": ""}
+
+    monkeypatch.setattr(units, "run_sandboxed", fake_run)
+    rows = units.discover_javascript_function_holes(
+        source_root,
+        {
+            "source_globs": ["src/**/*.ts"],
+            "minimum_body_bytes": 1,
+            "maximum_body_bytes": 1000,
+            "context_lines": 5,
+            "test_suite_paths": ["src/value.spec.ts"],
+        },
+        parser_toolchain={
+            "runtime_root": str(tmp_path / "toolchain"),
+            "node_executable": sys.executable,
+            "parser_script": str(tmp_path / "parser.mjs"),
+            "typescript_version": "5.9.3",
+        },
+    )
+    assert len(rows) == 1
+    assert rows[0]["target_body"] == "\n  return 42\n"
+    assert rows[0]["path"] == "src/value.ts"
+    assert rows[0]["visible_source"].count("<THESEUS_IMPLEMENTATION_HOLE>") == 1
+
+
+def test_javascript_mutation_fault_is_not_a_kill_and_source_is_restored(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source_path = tmp_path / "value.ts"
+    text = "export function value() {\n  return 42\n}\n"
+    source_path.write_text(text)
+    start = text.index("{") + 1
+    end = text.rindex("}")
+    monkeypatch.setattr(
+        units,
+        "run_javascript_project_tests",
+        lambda *args, **kwargs: {"ok": False, "fault": "timeout", "duration_ms": 10},
+    )
+    result = units.verify_javascript_function_hole(
+        tmp_path,
+        {
+            "path": "value.ts",
+            "start_byte": start,
+            "end_byte": end,
+            "target_body": text[start:end],
+            "starter_body": '\n  throw new Error("hole")\n',
+        },
+        {"command": ["false"], "environment": {}, "timeout_seconds": 1},
+        baseline_run={"ok": True, "returncode": 0},
+        baseline_receipt={"ok": True},
+    )
+    assert result["state"] == "failed"
+    assert result["starter_failed"] is False
+    assert source_path.read_text() == text
+
+
+def test_javascript_mutation_requires_normal_nonzero_test_exit(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source_path = tmp_path / "value.ts"
+    text = "export function value() {\n  return 42\n}\n"
+    source_path.write_text(text)
+    start = text.index("{") + 1
+    end = text.rindex("}")
+    monkeypatch.setattr(
+        units,
+        "run_javascript_project_tests",
+        lambda *args, **kwargs: {
+            "ok": False,
+            "returncode": 1,
+            "stdout": "",
+            "stderr": "assertion failed",
+            "duration_ms": 10,
+        },
+    )
+    result = units.verify_javascript_function_hole(
+        tmp_path,
+        {
+            "path": "value.ts",
+            "start_byte": start,
+            "end_byte": end,
+            "target_body": text[start:end],
+            "starter_body": '\n  throw new Error("hole")\n',
+        },
+        {"command": ["false"], "environment": {}, "timeout_seconds": 1},
+        baseline_run={"ok": True, "returncode": 0},
+        baseline_receipt={"ok": True},
+    )
+    assert result["state"] == "passed"
+    assert result["starter_failed"] is True
+    assert source_path.read_text() == text
+
+
+def test_javascript_test_selection_uses_bounded_relative_import_graph(tmp_path: Path) -> None:
+    source_root = tmp_path / "repo"
+    util = source_root / "src" / "util.ts"
+    api = source_root / "src" / "api.ts"
+    test = source_root / "src" / "__tests__" / "api.spec.ts"
+    test.parent.mkdir(parents=True)
+    util.write_text("export const value = 42\n")
+    api.write_text("export { value } from './util'\n")
+    test.write_text("import { value } from '../api'\n")
+    observed = units.javascript_import_graph_test_map(
+        source_root,
+        {
+            "test_selection": {
+                "kind": "bounded_import_graph_v1",
+                "maximum_import_depth": 3,
+                "maximum_tests_per_source_file": 1,
+                "basename_fallback": True,
+            }
+        },
+        source_paths={util.resolve(), api.resolve()},
+        test_paths={test.resolve()},
+        imports={
+            str(util.resolve()): [],
+            str(api.resolve()): ["./util"],
+            str(test.resolve()): ["../api"],
+        },
+    )
+    expected = ["src/__tests__/api.spec.ts"]
+    assert observed["src/api.ts"] == expected
+    assert observed["src/util.ts"] == expected
+
+
+def test_javascript_baseline_resolution_keeps_only_clean_tests(
+    tmp_path: Path, monkeypatch
+) -> None:
+    def fake_run(_workdir, _toolchain, *, test_paths=None):
+        paths = tuple(test_paths or [])
+        return {
+            "ok": paths == ("clean.spec.ts",),
+            "returncode": 0 if paths == ("clean.spec.ts",) else 1,
+            "stdout": "",
+            "stderr": "baseline failure" if paths != ("clean.spec.ts",) else "",
+            "duration_ms": 1,
+        }
+
+    monkeypatch.setattr(units, "run_javascript_project_tests", fake_run)
+    effective, run, receipt = units.resolve_javascript_test_baseline(
+        tmp_path,
+        {"command": [], "environment": {}, "timeout_seconds": 1},
+        requested_paths=["clean.spec.ts", "faulty.spec.ts"],
+    )
+    assert effective == ["clean.spec.ts"]
+    assert run["ok"] is True
+    assert receipt["effective_test_paths"] == ["clean.spec.ts"]
+    assert len(receipt["attempts"]) == 3
+
+
+def test_javascript_verification_selection_is_content_bound_and_outcome_blind() -> None:
+    holes = [
+        {
+            "path": f"src/value-{index}.ts",
+            "qualified_name": f"value{index}",
+            "start_byte": index * 10,
+            "end_byte": index * 10 + 5,
+            "target_body": f"return {index}",
+        }
+        for index in range(4)
+    ]
+    observed = units.javascript_verification_candidate_selection(
+        {
+            "id": "fixture",
+            "verification_candidate_selection": {
+                "kind": "canonical_ast_order_prefix_v1",
+                "maximum_candidates": 2,
+                "selection_uses_verifier_outcomes": False,
+                "rationale": "bounded fixture",
+            },
+        },
+        holes,
+    )
+    assert observed["selected_indexes"] == [0, 1]
+    receipt = observed["public_receipt"]
+    assert receipt["selected_candidate_count"] == 2
+    assert receipt["unselected_candidate_count"] == 2
+    assert receipt["selection_uses_verifier_outcomes"] is False
+    assert len(receipt["ordered_inventory_sha256"]) == 64
+    assert len(receipt["selected_inventory_sha256"]) == 64
+
+
+def test_javascript_verification_selection_rejects_outcome_conditioning() -> None:
+    with pytest.raises(ValueError, match="may not use verifier outcomes"):
+        units.javascript_verification_candidate_selection(
+            {
+                "id": "fixture",
+                "verification_candidate_selection": {
+                    "kind": "canonical_ast_order_prefix_v1",
+                    "maximum_candidates": 1,
+                    "selection_uses_verifier_outcomes": True,
+                },
+            },
+            [{
+                "path": "src/value.ts",
+                "qualified_name": "value",
+                "start_byte": 0,
+                "end_byte": 5,
+                "target_body": "value",
+            }],
+        )
+
+
+def test_tailwind_campaign_cap_does_not_bound_vite_or_python_sources() -> None:
+    sources = {row["id"]: row for row in config()["sources"]}
+    tailwind = sources["open_repo_tailwind_35a3e9c_test_killed_function_holes"]
+    vite = sources["open_repo_vite_c961cae_test_killed_function_holes"]
+    python_sources = [
+        row for row in sources.values()
+        if row.get("adapter") == "python_test_killed_function_holes"
+    ]
+    assert tailwind["verification_candidate_selection"] == {
+        "kind": "canonical_ast_order_prefix_v1",
+        "maximum_candidates": 600,
+        "selection_uses_verifier_outcomes": False,
+        "rationale": (
+            "Bound correlated same-repository verification after cross-package "
+            "coverage and the frozen JS/TS unit and position floors are satisfied."
+        ),
+    }
+    assert "verification_candidate_selection" not in vite
+    assert all("verification_candidate_selection" not in row for row in python_sources)
+
+
 def test_rust_example_maps_code_and_manifest_without_dropping_starter(tmp_path: Path) -> None:
     (tmp_path / "src").mkdir()
     (tmp_path / ".meta").mkdir()
@@ -190,9 +437,24 @@ def test_archive_traversal_and_links_fail_closed(tmp_path: Path) -> None:
         try:
             units.safe_extract_source_archive(archive, tmp_path / "linked")
         except ValueError as exc:
-            assert "unsupported archive member type" in str(exc)
+            assert "unsafe archive link" in str(exc)
         else:
             raise AssertionError("archive link was extracted")
+
+    internal = io.BytesIO()
+    with tarfile.open(fileobj=internal, mode="w") as archive:
+        payload = b"internal"
+        target = tarfile.TarInfo("root/src/value.js")
+        target.size = len(payload)
+        archive.addfile(target, io.BytesIO(payload))
+        member = tarfile.TarInfo("root/link.js")
+        member.type = tarfile.SYMTYPE
+        member.linkname = "./src/value.js"
+        archive.addfile(member)
+    internal.seek(0)
+    with tarfile.open(fileobj=internal, mode="r") as archive:
+        units.safe_extract_source_archive(archive, tmp_path / "internal")
+    assert (tmp_path / "internal" / "link.js").read_bytes() == b"internal"
 
 
 def test_missing_platform_sandbox_never_runs_unsandboxed(tmp_path: Path, monkeypatch) -> None:

@@ -79,6 +79,16 @@
       "timeout_seconds": 60
     }
   },
+  "javascript_ast_toolchain": {
+    "manifest_root": "configs/toolchains/task_complete_javascript_ast",
+    "runtime_root": "runtime/task_complete_toolchains/javascript-ast-v1",
+    "parser_script": "scripts/task_complete_javascript_ast.mjs",
+    "package_lock_sha256": "7210e9fb3fad10fdb8a4e07e445d2402b3086a18938f8a82bb9c4ba6a1191d7b",
+    "typescript_version": "5.9.3",
+    "pnpm_version": "10.34.4",
+    "prepare_timeout_seconds": 300,
+    "offline_replay_timeout_seconds": 180
+  },
   "sources": [
     {
       "id": "governed_open_conversations_v1",
@@ -232,6 +242,156 @@
       "minimum_body_bytes": 8,
       "maximum_body_bytes": 16384,
       "context_lines": 40,
+      "enabled": true
+    },
+    {
+      "id": "open_repo_vite_c961cae_test_killed_function_holes",
+      "adapter": "javascript_test_killed_function_holes",
+      "verifier_abi": "project_theseus_javascript_repository_test_killed_v2",
+      "repo": "vitejs/vite",
+      "revision": "c961cae",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/vitejs__vite__main.tar.gz",
+      "archive_sha256": "a87c8e498bc41d8436658c7844ba3bc17c03e50825da38fa1e8e99f8da25018a",
+      "language": "javascript_typescript",
+      "source_globs": [
+        "packages/vite/src/**/*.ts",
+        "packages/vite/src/**/*.js"
+      ],
+      "exclude_source_globs": [
+        "packages/vite/src/**/__tests__/**",
+        "packages/vite/src/**/*.spec.ts",
+        "packages/vite/src/**/*.test.ts",
+        "packages/vite/src/**/*.spec.js",
+        "packages/vite/src/**/*.test.js",
+        "packages/vite/src/**/*_dts__/**"
+      ],
+      "test_selection": {
+        "kind": "bounded_import_graph_v1",
+        "test_globs": [
+          "packages/vite/src/**/*.spec.ts",
+          "packages/vite/src/**/*.test.ts",
+          "packages/vite/src/**/*.spec.js",
+          "packages/vite/src/**/*.test.js"
+        ],
+        "graph_globs": [
+          "packages/vite/src/**/*.ts",
+          "packages/vite/src/**/*.js"
+        ],
+        "maximum_tests_per_source_file": 3,
+        "maximum_import_depth": 6,
+        "basename_fallback": true
+      },
+      "locked_javascript_environment": {
+        "manager": "pnpm",
+        "pnpm_version": "10.34.4",
+        "lock_file": "pnpm-lock.yaml",
+        "lock_sha256": "e478a9a87cb9e26e12f3f5432384a41c32c099fa7213e3e6f24407ca374facec",
+        "store_dir": ".pnpm-store",
+        "build_steps": [
+          {
+            "cwd": "packages/vite",
+            "command": ["node_modules/.bin/premove", "dist"]
+          },
+          {
+            "cwd": "packages/vite",
+            "command": ["node_modules/.bin/rolldown", "--config", "rolldown.config.ts"]
+          },
+          {
+            "cwd": "packages/vite",
+            "command": ["node_modules/.bin/rolldown", "--config", "rolldown.dts.config.ts"]
+          },
+          {
+            "cwd": "packages/vite",
+            "command": ["../../node_modules/.bin/tsc", "--project", "tsconfig.check.json"]
+          }
+        ],
+        "build_output_globs": ["packages/vite/dist/**/*"],
+        "build_timeout_seconds": 600,
+        "prepare_timeout_seconds": 1200,
+        "offline_replay_timeout_seconds": 600
+      },
+      "test_command": [
+        "node_modules/.bin/vitest", "run",
+        "{test_paths}",
+        "--no-file-parallelism", "--maxWorkers=1", "--configLoader", "runner"
+      ],
+      "environment": {
+        "VITEST_SEGFAULT_RETRY": "0"
+      },
+      "timeout_seconds": 180,
+      "parser_timeout_seconds": 120,
+      "verification_checkpoint_interval": 10,
+      "minimum_body_bytes": 8,
+      "maximum_body_bytes": 32768,
+      "context_lines": 50,
+      "enabled": true
+    },
+    {
+      "id": "open_repo_tailwind_35a3e9c_test_killed_function_holes",
+      "adapter": "javascript_test_killed_function_holes",
+      "verifier_abi": "project_theseus_javascript_repository_test_killed_v2",
+      "repo": "tailwindlabs/tailwindcss",
+      "revision": "35a3e9c",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/tailwindlabs__tailwindcss__main.tar.gz",
+      "archive_sha256": "451733525789aa9a072054f02fcb791945af466efb57f142fee5ca04f7bf91bf",
+      "language": "javascript_typescript",
+      "source_globs": ["packages/**/*.ts", "packages/**/*.js"],
+      "exclude_source_globs": [
+        "packages/**/__tests__/**",
+        "packages/**/*.test.ts",
+        "packages/**/*.spec.ts",
+        "packages/**/*.test.js",
+        "packages/**/*.spec.js",
+        "packages/**/fixtures/**"
+      ],
+      "test_selection": {
+        "kind": "bounded_import_graph_v1",
+        "test_globs": [
+          "packages/**/*.test.ts",
+          "packages/**/*.spec.ts",
+          "packages/**/*.test.js",
+          "packages/**/*.spec.js"
+        ],
+        "graph_globs": ["packages/**/*.ts", "packages/**/*.js"],
+        "maximum_tests_per_source_file": 3,
+        "maximum_import_depth": 6,
+        "basename_fallback": true
+      },
+      "locked_javascript_environment": {
+        "manager": "pnpm",
+        "pnpm_version": "11.9.0",
+        "lock_file": "pnpm-lock.yaml",
+        "lock_sha256": "abd369f52ac17042dd4ce256dd1fe53485f6373214af32ece480c09da573e712",
+        "store_dir": ".pnpm-store",
+        "package_manager_toolchain": {
+          "manifest_root": "configs/toolchains/pnpm_11_9_0",
+          "runtime_root": "runtime/task_complete_toolchains/pnpm-11.9.0",
+          "package_lock_sha256": "a7caed00ddc054713d627aad95bd41ee764238d8fa0e76befd120974246bef93",
+          "prepare_timeout_seconds": 300,
+          "offline_replay_timeout_seconds": 180
+        },
+        "prepare_timeout_seconds": 1200,
+        "offline_replay_timeout_seconds": 600
+      },
+      "test_command": [
+        "node_modules/.bin/vitest", "run", "{test_paths}",
+        "--no-file-parallelism", "--maxWorkers=1", "--configLoader", "runner"
+      ],
+      "environment": {"VITEST_SEGFAULT_RETRY": "0"},
+      "timeout_seconds": 180,
+      "parser_timeout_seconds": 120,
+      "verification_checkpoint_interval": 10,
+      "verification_candidate_selection": {
+        "kind": "canonical_ast_order_prefix_v1",
+        "maximum_candidates": 600,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Bound correlated same-repository verification after cross-package coverage and the frozen JS/TS unit and position floors are satisfied."
+      },
+      "minimum_body_bytes": 8,
+      "maximum_body_bytes": 32768,
+      "context_lines": 50,
       "enabled": true
     },
     {

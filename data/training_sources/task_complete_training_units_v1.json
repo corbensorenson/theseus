@@ -38,15 +38,15 @@
     },
     "javascript_typescript": {
       "checks": {
-        "position_floor": false,
-        "unit_floor": false
+        "position_floor": true,
+        "unit_floor": true
       },
       "minimum_target_positions": 1000000,
       "minimum_verified_units": 1000,
-      "ready": false,
+      "ready": true,
       "required_verification_strength": "executable_target_pass_starter_fail",
-      "target_positions": 160165,
-      "verified_units": 135
+      "target_positions": 1612835,
+      "verified_units": 1180
     },
     "python": {
       "checks": {
@@ -73,11 +73,11 @@
       "verified_units": 97
     }
   },
-  "created_utc": "2026-07-15T15:45:53.239745+00:00",
+  "created_utc": "2026-07-15T19:44:41.778509+00:00",
   "policy": "project_theseus_task_complete_training_unit_manifest_v1",
   "raw_unit_payloads_in_manifest": false,
   "source_config": "configs/task_complete_training_units.json",
-  "source_config_sha256": "134687de00dfb9e9256b091b7ebc55c444982b1dd8cf01e8cfabf4f44a33d191",
+  "source_config_sha256": "1208fc3b73393b67fbd4ac5a04ba9bea0a547e59cbeaf35a05990940a44ba510",
   "source_summaries": [
     {
       "adapter": "governed_conversation_assistant_turns",
@@ -317,12 +317,12 @@
         "manager": "uv",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 115.733,
+          "duration_ms": 97.676,
           "fault": null,
           "ok": true,
           "returncode": 0,
-          "stderr_sha256": "8391cec1d565cdc47a59b8e85042ec8494d61efcca8edb7e88d3fa360e275186",
-          "stderr_tail": "Resolved 72 packages in 22ms\nChecked 13 packages in 4ms\n",
+          "stderr_sha256": "bceefe46a58f28277cfba09405f089edca99467339d331e0c6feae346d165a6f",
+          "stderr_tail": "Resolved 72 packages in 13ms\nChecked 13 packages in 4ms\n",
           "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stdout_tail": ""
         },
@@ -379,6 +379,308 @@
       "verification_state_counts": {
         "failed": 51,
         "passed": 638
+      }
+    },
+    {
+      "adapter": "javascript_test_killed_function_holes",
+      "baseline_resolved_test_file_count": 52,
+      "baseline_target_evidence": "content_bound_verification_cache",
+      "baseline_target_passed": true,
+      "baseline_test_group_count": 74,
+      "decision_counts": {
+        "admit": 682,
+        "reject": 1074
+      },
+      "function_hole_candidate_count": 1756,
+      "license_spdx": "MIT",
+      "locked_environment": {
+        "build_basis_sha256": "75332c36c082f53bd97804e2baa9bf7e137a2e045658f4647dc5ecda66840e08",
+        "build_outputs": {
+          "file_count": 15,
+          "total_bytes": 2104199,
+          "tree_sha256": "67fdea452d18a908d6f92bf9aee507a91284bc2b0631a934f29a5723db5f6f5d"
+        },
+        "build_replayed_this_run": false,
+        "identity_sha256": "5b199c22c01c529c32dfcef37df94eae53dd7f77486c99043ad2df33b92465ad",
+        "installed_packages_sha256": "d8350e7870f46ebcaa7e2f4b1219a8c8d830b5dc46ca7157418105fb5ba48686",
+        "lock_file": "pnpm-lock.yaml",
+        "lock_sha256": "e478a9a87cb9e26e12f3f5432384a41c32c099fa7213e3e6f24407ca374facec",
+        "manager": "pnpm",
+        "network_during_verification": "denied",
+        "offline_replay": {
+          "duration_ms": 911.981,
+          "fault": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "6f0506d622061832029c8bef1531adec9eecf2d9eb3d00d0d50c60a04af2c3f2",
+          "stdout_tail": "Scope: all 269 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +107\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 107, reused 107, downloaded 0, added 107, done\n\nDone in 865ms using pnpm v10.34.4\n"
+        },
+        "offline_replay_valid": true,
+        "pnpm_version": "10.34.4",
+        "prepared_with_network_this_run": false
+      },
+      "new_verification_attempt_count": 0,
+      "parser_toolchain": {
+        "identity_sha256": "3ed574a6a18d2cf0a720fbf78ef20a538a875bc4fbdd510c3beefb6e110f9dee",
+        "network_during_parsing": "denied",
+        "node_executable": "/opt/homebrew/opt/node@22/bin/node",
+        "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+        "node_version": "v22.15.0",
+        "offline_replay": {
+          "duration_ms": 738.951,
+          "fault": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "7ba7e1f7a34af219ea132c7f772337217ebce5b43dddc9e9f4410b1f341b32c8",
+          "stdout_tail": "\nadded 2 packages in 633ms\n"
+        },
+        "offline_replay_valid": true,
+        "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
+        "package_lock_sha256": "7210e9fb3fad10fdb8a4e07e445d2402b3086a18938f8a82bb9c4ba6a1191d7b",
+        "parser_script": "/Users/corbensorenson/Documents/Theseus-Hive/scripts/task_complete_javascript_ast.mjs",
+        "parser_script_sha256": "48875591608efa790e598fe51831413c557e32eee9f484e1fb50b582b251bfca",
+        "pnpm_executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1/node_modules/.bin/pnpm",
+        "pnpm_executable_sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9",
+        "pnpm_version": "10.34.4",
+        "prepared_with_network_this_run": false,
+        "runtime_root": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1",
+        "typescript_version": "5.9.3"
+      },
+      "repo": "vitejs/vite",
+      "revision": "c961cae",
+      "selected_mutation_killed_count": 682,
+      "selected_target_failed_count": 0,
+      "selected_target_passed_count": 1756,
+      "source_id": "open_repo_vite_c961cae_test_killed_function_holes",
+      "source_root": "runtime/task_complete_sources/extracted/vitejs__vite__main",
+      "target_positions": 895754,
+      "toolchain": {
+        "command": [
+          "node_modules/.bin/vitest",
+          "run",
+          "{test_paths}",
+          "--no-file-parallelism",
+          "--maxWorkers=1",
+          "--configLoader",
+          "runner"
+        ],
+        "environment": {
+          "VITEST_SEGFAULT_RETRY": "0"
+        },
+        "locked_environment_identity": {
+          "build_basis_sha256": "75332c36c082f53bd97804e2baa9bf7e137a2e045658f4647dc5ecda66840e08",
+          "build_outputs": {
+            "file_count": 15,
+            "total_bytes": 2104199,
+            "tree_sha256": "67fdea452d18a908d6f92bf9aee507a91284bc2b0631a934f29a5723db5f6f5d"
+          },
+          "identity_sha256": "5b199c22c01c529c32dfcef37df94eae53dd7f77486c99043ad2df33b92465ad",
+          "installed_packages_sha256": "d8350e7870f46ebcaa7e2f4b1219a8c8d830b5dc46ca7157418105fb5ba48686",
+          "lock_file": "pnpm-lock.yaml",
+          "lock_sha256": "e478a9a87cb9e26e12f3f5432384a41c32c099fa7213e3e6f24407ca374facec",
+          "manager": "pnpm",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true,
+          "pnpm_version": "10.34.4"
+        },
+        "network_during_verification": "denied",
+        "parser_toolchain_identity": {
+          "identity_sha256": "3ed574a6a18d2cf0a720fbf78ef20a538a875bc4fbdd510c3beefb6e110f9dee",
+          "network_during_parsing": "denied",
+          "node_executable": "/opt/homebrew/opt/node@22/bin/node",
+          "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+          "node_version": "v22.15.0",
+          "offline_replay_valid": true,
+          "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
+          "package_lock_sha256": "7210e9fb3fad10fdb8a4e07e445d2402b3086a18938f8a82bb9c4ba6a1191d7b",
+          "parser_script_sha256": "48875591608efa790e598fe51831413c557e32eee9f484e1fb50b582b251bfca",
+          "pnpm_executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1/node_modules/.bin/pnpm",
+          "pnpm_executable_sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9",
+          "pnpm_version": "10.34.4",
+          "typescript_version": "5.9.3"
+        },
+        "timeout_seconds": 180,
+        "verifier_abi": "project_theseus_javascript_repository_test_killed_v2"
+      },
+      "unit_count": 1756,
+      "verification_candidate_selection": {
+        "candidate_count": 1756,
+        "kind": "complete_inventory_v1",
+        "selected_candidate_count": 1756,
+        "selection_uses_verifier_outcomes": false
+      },
+      "verification_checkpoint_interval": 10,
+      "verification_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 1074,
+        "passed": 682
+      }
+    },
+    {
+      "adapter": "javascript_test_killed_function_holes",
+      "baseline_resolved_test_file_count": 40,
+      "baseline_target_evidence": "content_bound_verification_cache",
+      "baseline_target_passed": false,
+      "baseline_test_group_count": 50,
+      "decision_counts": {
+        "admit": 363,
+        "reject": 815
+      },
+      "function_hole_candidate_count": 1178,
+      "license_spdx": "MIT",
+      "locked_environment": {
+        "build_basis_sha256": "911fcd63eebc0ecf665a9bfac1ff2532f1fa9d0c6553ab18ccbac065aebb3d20",
+        "build_outputs": {
+          "file_count": 0,
+          "total_bytes": 0,
+          "tree_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "build_replayed_this_run": false,
+        "identity_sha256": "1ec6c965387b748514824e59bdf466fd5d59b54894d6ed1de18eb64e2e67f6ae",
+        "installed_packages_sha256": "5abebb7713f531f75e6c9c303d7e022544fc13f404a020d58b09f77155c74a3f",
+        "lock_file": "pnpm-lock.yaml",
+        "lock_sha256": "abd369f52ac17042dd4ce256dd1fe53485f6373214af32ece480c09da573e712",
+        "manager": "pnpm",
+        "network_during_verification": "denied",
+        "offline_replay": {
+          "duration_ms": 322.088,
+          "fault": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "f220ac2aeb683cfb8214b8ae3de4f6a1d1db3b7a22a1022daadf410051ef7d6c",
+          "stdout_tail": "s\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-arm64-msvc         | [WARN] Unsupported platform: wanted: {\"cpu\":[\"arm64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-x64-msvc           | [WARN] Unsupported platform: wanted: {\"cpu\":[\"x64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\nScope: all 29 workspace projects\nAlready up to date\nDone in 273ms using pnpm v11.9.0\n"
+        },
+        "offline_replay_valid": true,
+        "package_manager_toolchain": {
+          "identity_sha256": "4ed9ed8fceb2764ea9455e33e6717e56917e7f21bc541bcade063c13098e1108",
+          "offline_replay_valid": true,
+          "package_json_sha256": "4d077dea9030084fafe3c1fbef5fad04dcc4e6308836bc8df084791486835579",
+          "package_lock_sha256": "a7caed00ddc054713d627aad95bd41ee764238d8fa0e76befd120974246bef93",
+          "pnpm_executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/pnpm-11.9.0/node_modules/.bin/pnpm",
+          "pnpm_executable_sha256": "ff3224d46b47fbb24a7e9fe15fededef7e00892d07d4e376b6762d4899906bfd",
+          "pnpm_version": "11.9.0"
+        },
+        "pnpm_version": "11.9.0",
+        "prepared_with_network_this_run": false
+      },
+      "new_verification_attempt_count": 0,
+      "parser_toolchain": {
+        "identity_sha256": "3ed574a6a18d2cf0a720fbf78ef20a538a875bc4fbdd510c3beefb6e110f9dee",
+        "network_during_parsing": "denied",
+        "node_executable": "/opt/homebrew/opt/node@22/bin/node",
+        "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+        "node_version": "v22.15.0",
+        "offline_replay": {
+          "duration_ms": 696.689,
+          "fault": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "4ce67c1ce050b31eb8472f55ea7ae1cee948d827da7bf705c5e9b77f11ec0654",
+          "stdout_tail": "\nadded 2 packages in 599ms\n"
+        },
+        "offline_replay_valid": true,
+        "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
+        "package_lock_sha256": "7210e9fb3fad10fdb8a4e07e445d2402b3086a18938f8a82bb9c4ba6a1191d7b",
+        "parser_script": "/Users/corbensorenson/Documents/Theseus-Hive/scripts/task_complete_javascript_ast.mjs",
+        "parser_script_sha256": "48875591608efa790e598fe51831413c557e32eee9f484e1fb50b582b251bfca",
+        "pnpm_executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1/node_modules/.bin/pnpm",
+        "pnpm_executable_sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9",
+        "pnpm_version": "10.34.4",
+        "prepared_with_network_this_run": false,
+        "runtime_root": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1",
+        "typescript_version": "5.9.3"
+      },
+      "repo": "tailwindlabs/tailwindcss",
+      "revision": "35a3e9c",
+      "selected_mutation_killed_count": 363,
+      "selected_target_failed_count": 89,
+      "selected_target_passed_count": 511,
+      "source_id": "open_repo_tailwind_35a3e9c_test_killed_function_holes",
+      "source_root": "runtime/task_complete_sources/extracted/tailwindlabs__tailwindcss__main",
+      "target_positions": 556916,
+      "toolchain": {
+        "command": [
+          "node_modules/.bin/vitest",
+          "run",
+          "{test_paths}",
+          "--no-file-parallelism",
+          "--maxWorkers=1",
+          "--configLoader",
+          "runner"
+        ],
+        "environment": {
+          "VITEST_SEGFAULT_RETRY": "0"
+        },
+        "locked_environment_identity": {
+          "build_basis_sha256": "911fcd63eebc0ecf665a9bfac1ff2532f1fa9d0c6553ab18ccbac065aebb3d20",
+          "build_outputs": {
+            "file_count": 0,
+            "total_bytes": 0,
+            "tree_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "identity_sha256": "1ec6c965387b748514824e59bdf466fd5d59b54894d6ed1de18eb64e2e67f6ae",
+          "installed_packages_sha256": "5abebb7713f531f75e6c9c303d7e022544fc13f404a020d58b09f77155c74a3f",
+          "lock_file": "pnpm-lock.yaml",
+          "lock_sha256": "abd369f52ac17042dd4ce256dd1fe53485f6373214af32ece480c09da573e712",
+          "manager": "pnpm",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true,
+          "package_manager_toolchain": {
+            "identity_sha256": "4ed9ed8fceb2764ea9455e33e6717e56917e7f21bc541bcade063c13098e1108",
+            "offline_replay_valid": true,
+            "package_json_sha256": "4d077dea9030084fafe3c1fbef5fad04dcc4e6308836bc8df084791486835579",
+            "package_lock_sha256": "a7caed00ddc054713d627aad95bd41ee764238d8fa0e76befd120974246bef93",
+            "pnpm_executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/pnpm-11.9.0/node_modules/.bin/pnpm",
+            "pnpm_executable_sha256": "ff3224d46b47fbb24a7e9fe15fededef7e00892d07d4e376b6762d4899906bfd",
+            "pnpm_version": "11.9.0"
+          },
+          "pnpm_version": "11.9.0"
+        },
+        "network_during_verification": "denied",
+        "parser_toolchain_identity": {
+          "identity_sha256": "3ed574a6a18d2cf0a720fbf78ef20a538a875bc4fbdd510c3beefb6e110f9dee",
+          "network_during_parsing": "denied",
+          "node_executable": "/opt/homebrew/opt/node@22/bin/node",
+          "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+          "node_version": "v22.15.0",
+          "offline_replay_valid": true,
+          "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
+          "package_lock_sha256": "7210e9fb3fad10fdb8a4e07e445d2402b3086a18938f8a82bb9c4ba6a1191d7b",
+          "parser_script_sha256": "48875591608efa790e598fe51831413c557e32eee9f484e1fb50b582b251bfca",
+          "pnpm_executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1/node_modules/.bin/pnpm",
+          "pnpm_executable_sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9",
+          "pnpm_version": "10.34.4",
+          "typescript_version": "5.9.3"
+        },
+        "timeout_seconds": 180,
+        "verifier_abi": "project_theseus_javascript_repository_test_killed_v2"
+      },
+      "unit_count": 1178,
+      "verification_candidate_selection": {
+        "candidate_count": 1178,
+        "kind": "canonical_ast_order_prefix_v1",
+        "maximum_candidates": 600,
+        "ordered_inventory_sha256": "aa0ddf2a844a6e391576e0064d0142669b79db06abf861cedf147fc5d7033d34",
+        "rationale": "Bound correlated same-repository verification after cross-package coverage and the frozen JS/TS unit and position floors are satisfied.",
+        "selected_candidate_count": 600,
+        "selected_inventory_sha256": "097041a3c7b8be32811ce001ce5e09ed97222a20517a22af767cb77dafd7fd1b",
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 578
+      },
+      "verification_checkpoint_interval": 10,
+      "verification_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 237,
+        "not_run": 578,
+        "passed": 363
       }
     },
     {
@@ -443,19 +745,19 @@
     }
   ],
   "summary": {
-    "admitted_unit_count": 27827,
+    "admitted_unit_count": 28872,
     "arm_counts": {
       "english": 25566,
       "html_css": 7,
-      "javascript_typescript": 135,
+      "javascript_typescript": 1180,
       "python": 2022,
       "rust": 97
     },
     "contract_hard_gap_count": 0,
-    "coverage_gap_count": 3,
+    "coverage_gap_count": 2,
     "decision_counts": {
-      "admit": 27827,
-      "reject": 233
+      "admit": 28872,
+      "reject": 2122
     },
     "external_inference_calls": 0,
     "fallback_return_count": 0,
@@ -464,31 +766,32 @@
     "public_semantic_overlap_unit_count": 0,
     "public_training_rows_written": 0,
     "raw_user_text_admitted": false,
-    "runtime_ms": 59119,
-    "source_count": 10,
+    "runtime_ms": 122130,
+    "source_count": 12,
     "split_counts": {
-      "confirmation": 1483,
-      "development": 1466,
-      "train": 24878
+      "confirmation": 1582,
+      "development": 1488,
+      "train": 25802
     },
-    "task_complete_unique_target_positions": 32374525,
+    "task_complete_unique_target_positions": 33827195,
     "teacher_calls": 0,
-    "unit_count": 28060,
-    "verification_cache_entry_count": 2490,
+    "unit_count": 30994,
+    "verification_cache_entry_count": 4846,
     "verification_cache_new_or_replaced_count": 0,
     "verification_state_counts": {
-      "failed": 229,
-      "passed": 27831
+      "failed": 1540,
+      "not_run": 578,
+      "passed": 28876
     },
     "verification_strength_counts": {
       "dom_a11y_layout_render_delta": 7,
-      "executable_target_pass_starter_fail": 2254,
+      "executable_target_pass_starter_fail": 3299,
       "governed_conversation_target_bound": 25566
     }
   },
   "unit_ledger": "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
-  "unit_ledger_count": 28060,
-  "unit_ledger_sha256": "2e318d3626a8af75835f60983daf7b1c686fe396b69eb1f863e0d952456c9d66",
+  "unit_ledger_count": 30994,
+  "unit_ledger_sha256": "bec299ba3ba356c7f746422344efedc295dc2c69189f269164be33dfc12abbef",
   "verification_cache": "runtime/data_governance/task_complete_verification_cache_v1.jsonl",
-  "verification_cache_sha256": "8a13bd3a483b509b7d42c60194605cb0f4dc21c44f7ec2373fc65bbadd8b4ae7"
+  "verification_cache_sha256": "a2796484ca53f7fe431ae76e4316245834fd70c95d8d6ec26a67edf3ea2e91fe"
 }

@@ -1,0 +1,11 @@
+{
+  "name": "theseus-task-complete-javascript-ast",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pinned TypeScript parser used by the task-complete JS/TS admission adapter.",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "pnpm": "10.34.4",
+    "typescript": "5.9.3"
+  }
+}

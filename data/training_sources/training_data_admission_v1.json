@@ -54,7 +54,7 @@
       "rejected_candidate_count": 304,
       "report_cache_reused": true,
       "runtime_external_inference_calls": 0,
-      "runtime_ms": 9145,
+      "runtime_ms": 8732,
       "semantic_public_overlap_candidate_count": 0,
       "source_count": 98,
       "teacher_candidate_count": 0,
@@ -62,7 +62,7 @@
     },
     "trigger_state": "YELLOW"
   },
-  "created_utc": "2026-07-15T15:46:12.576898+00:00",
+  "created_utc": "2026-07-15T19:45:12.632330+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -2286,11 +2286,11 @@
     "public_open_training_allowed": true,
     "quarantined_source_count": 190,
     "rejected_source_count": 100,
-    "task_complete_admitted_units": 27827,
+    "task_complete_admitted_units": 28872,
     "task_complete_contract_ready": true,
     "task_complete_coverage_ready": false,
     "task_complete_ledger_replay_valid": true,
-    "task_complete_target_positions": 32374525,
+    "task_complete_target_positions": 33827195,
     "teacher_distillation_admission_safety_clean": true,
     "teacher_distillation_gate_allowed": true,
     "teacher_distillation_ledger_rows": 46,
@@ -2311,7 +2311,7 @@
     "vcm_context_resolver_status": "ready"
   },
   "task_complete_training_units": {
-    "admitted_unit_count": 27827,
+    "admitted_unit_count": 28872,
     "boundary_clean": true,
     "contract_ready": true,
     "contract_state": "GREEN",
@@ -2346,15 +2346,15 @@
       },
       "javascript_typescript": {
         "checks": {
-          "position_floor": false,
-          "unit_floor": false
+          "position_floor": true,
+          "unit_floor": true
         },
         "minimum_target_positions": 1000000,
         "minimum_verified_units": 1000,
-        "ready": false,
+        "ready": true,
         "required_verification_strength": "executable_target_pass_starter_fail",
-        "target_positions": 160165,
-        "verified_units": 135
+        "target_positions": 1612835,
+        "verified_units": 1180
       },
       "python": {
         "checks": {
@@ -2389,7 +2389,7 @@
     "path": "reports/task_complete_training_units_v1.json",
     "policy": "project_theseus_task_complete_training_units_v1",
     "report_present": true,
-    "target_positions": 32374525
+    "target_positions": 33827195
   },
   "train_admitted_sources": [
     {
@@ -12821,7 +12821,7 @@
       "full_packet_evidence_required": true,
       "governor_content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
       "governor_receipt_id": "ac9238c24b5c801b9bc12dec",
-      "lease_expires_utc": "2026-07-15T16:00:58.993762Z",
+      "lease_expires_utc": "2026-07-15T19:59:55.861267Z",
       "lease_id": "edda95cab7bfc11ddabd5eb9",
       "lease_state": "active",
       "omissions": [

@@ -18,6 +18,7 @@ import html.parser
 import json
 import os
 import platform
+import posixpath
 import re
 import shutil
 import subprocess
@@ -54,6 +55,11 @@ def main() -> int:
     parser.add_argument("--config", default=rel(DEFAULT_CONFIG))
     parser.add_argument("--inventory-only", action="store_true")
     parser.add_argument("--prepare-javascript", action="store_true")
+    parser.add_argument(
+        "--prepare-javascript-projects",
+        action="store_true",
+        help="Materialize lockfile-bound JS/TS verifier environments before offline replay.",
+    )
     parser.add_argument(
         "--prepare-python-projects",
         action="store_true",
@@ -145,6 +151,18 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
                     cache_updates=cache_updates,
                     cache_path=cache_path,
                     prepare_python_projects=bool(args.prepare_python_projects),
+                    inventory_only=bool(args.inventory_only),
+                    max_verify=max(0, int(args.max_executable_units_per_source)),
+                )
+            elif adapter == "javascript_test_killed_function_holes":
+                source_units, source_summary = javascript_function_hole_units(
+                    config,
+                    source,
+                    contamination,
+                    cache=cache,
+                    cache_updates=cache_updates,
+                    cache_path=cache_path,
+                    prepare_javascript_projects=bool(args.prepare_javascript_projects),
                     inventory_only=bool(args.inventory_only),
                     max_verify=max(0, int(args.max_executable_units_per_source)),
                 )
@@ -1065,6 +1083,1069 @@ def verify_python_function_hole(
     }
 
 
+def javascript_function_hole_units(
+    config: dict[str, Any],
+    source: dict[str, Any],
+    contamination: dict[str, Any],
+    *,
+    cache: dict[str, dict[str, Any]],
+    cache_updates: dict[str, dict[str, Any]],
+    cache_path: Path,
+    prepare_javascript_projects: bool,
+    inventory_only: bool,
+    max_verify: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Build AST-bounded JS/TS implementation holes killed by a pinned project suite."""
+
+    parser_toolchain = ensure_javascript_ast_toolchain(
+        config, prepare=prepare_javascript_projects
+    )
+    source_root = ensure_source_root(source)
+    locked_environment = ensure_locked_javascript_environment(
+        source_root,
+        source,
+        parser_toolchain=parser_toolchain,
+        prepare=prepare_javascript_projects,
+    )
+    toolchain = resolve_javascript_project_toolchain(
+        source,
+        source_root=source_root,
+        parser_toolchain=parser_toolchain,
+        locked_environment=locked_environment,
+    )
+    holes = discover_javascript_function_holes(
+        source_root, source, parser_toolchain=parser_toolchain
+    )
+    selection = javascript_verification_candidate_selection(source, holes)
+    selected_indexes = set(selection["selected_indexes"])
+    rows: list[
+        tuple[dict[str, Any], dict[str, Any], str, dict[str, Any] | None, bool]
+    ] = []
+    for index, hole in enumerate(holes):
+        visible = canonical_json({
+            "instruction": (
+                "Implement the missing JavaScript/TypeScript function body without "
+                "changing its public contract."
+            ),
+            "repository": source["repo"],
+            "path": hole["path"],
+            "qualified_name": hole["qualified_name"],
+            "source_with_hole": hole["visible_source"],
+        })
+        target = canonical_json({
+            "path": hole["path"],
+            "start_byte": hole["start_byte"],
+            "end_byte": hole["end_byte"],
+            "replacement": hole["target_body"],
+        })
+        unit = base_unit(
+            config,
+            source=source,
+            source_task_id=f"{source['repo']}:{hole['path']}",
+            arm_id="javascript_typescript",
+            task_family="repository_function_implementation_hole",
+            visible_context=visible,
+            target=target,
+            license_spdx=str(source["license_spdx"]),
+            provenance={
+                "repo": source["repo"],
+                "revision": source.get("revision"),
+                "archive_sha256": source["archive_sha256"],
+                "path": hole["path"],
+                "qualified_name": hole["qualified_name"],
+                "target_file_sha256": hole["file_sha256"],
+                "test_suite_paths": list(hole["test_paths"]),
+                "static_open_corpus": True,
+                "live_teacher_call": False,
+            },
+            contamination=contamination,
+        )
+        verification_digest = stable_hash({
+            "unit_id": unit["unit_id"],
+            "archive_sha256": source["archive_sha256"],
+            "target_body": hole["target_body"],
+            "starter_body": hole["starter_body"],
+            "test_paths": hole["test_paths"],
+            "toolchain": toolchain,
+        })
+        rows.append((
+            unit,
+            hole,
+            verification_digest,
+            cache.get(unit["unit_id"]),
+            index in selected_indexes,
+        ))
+
+    verified_attempts = 0
+    baseline_runs: dict[tuple[str, ...], dict[str, Any]] = {}
+    baseline_receipts: dict[tuple[str, ...], dict[str, Any]] = {}
+    baseline_effective_paths: dict[tuple[str, ...], list[str]] = {}
+    baseline_resolutions: dict[tuple[str, ...], dict[str, Any]] = {}
+    work_context: tempfile.TemporaryDirectory[str] | None = None
+    workdir: Path | None = None
+    checkpoint_interval = max(1, int(source.get("verification_checkpoint_interval") or 25))
+    checkpoint_write_count = 0
+    try:
+        for unit, hole, verification_digest, cached, selected in rows:
+            if not selected:
+                verifier = {
+                    "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
+                    "strength": "executable_target_pass_starter_fail",
+                    "state": "not_run",
+                    "reason": "outside_content_bound_verification_campaign",
+                    "selection": selection["public_receipt"],
+                }
+            elif cached and cached.get("verification_digest") == verification_digest:
+                verifier = cached["verification"]
+            elif inventory_only or (max_verify and verified_attempts >= max_verify):
+                verifier = {
+                    "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
+                    "strength": "executable_target_pass_starter_fail",
+                    "state": "not_run",
+                    "reason": "inventory_only_or_bounded_verification",
+                }
+            else:
+                if workdir is None:
+                    work_context = tempfile.TemporaryDirectory(
+                        prefix="th-js-unit-", dir="/tmp" if platform.system() == "Darwin" else None
+                    )
+                    workdir = (Path(work_context.name) / "project").resolve()
+                    copy_javascript_project(source_root, workdir)
+                test_key = tuple(str(value) for value in hole["test_paths"])
+                if test_key not in baseline_runs:
+                    (
+                        baseline_effective_paths[test_key],
+                        baseline_runs[test_key],
+                        baseline_resolutions[test_key],
+                    ) = resolve_javascript_test_baseline(
+                        workdir, toolchain, requested_paths=list(test_key)
+                    )
+                    baseline_receipts[test_key] = public_run_receipt(baseline_runs[test_key])
+                verified_attempts += 1
+                if baseline_runs[test_key].get("ok"):
+                    verifier = verify_javascript_function_hole(
+                        workdir,
+                        hole,
+                        toolchain,
+                        baseline_run=baseline_runs[test_key],
+                        baseline_receipt=baseline_receipts[test_key],
+                        test_paths=baseline_effective_paths[test_key],
+                        baseline_resolution=baseline_resolutions[test_key],
+                    )
+                else:
+                    verifier = {
+                        "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
+                        "strength": "executable_target_pass_starter_fail",
+                        "state": "failed",
+                        "reason": "baseline_target_suite_failed",
+                        "target_passed": False,
+                        "starter_failed": False,
+                        "target_run": baseline_receipts[test_key],
+                        "effective_test_paths": baseline_effective_paths[test_key],
+                        "baseline_resolution": baseline_resolutions[test_key],
+                        "toolchain": toolchain,
+                    }
+                cache_row = {
+                    "unit_id": unit["unit_id"],
+                    "verification_digest": verification_digest,
+                    "verification": verifier,
+                }
+                cache[unit["unit_id"]] = cache_row
+                cache_updates[unit["unit_id"]] = cache_row
+                if verified_attempts % checkpoint_interval == 0:
+                    write_cache(cache_path, cache)
+                    checkpoint_write_count += 1
+            finish_unit(unit, verifier, config)
+        if verified_attempts and verified_attempts % checkpoint_interval:
+            write_cache(cache_path, cache)
+            checkpoint_write_count += 1
+    finally:
+        if work_context is not None:
+            work_context.cleanup()
+
+    cached_selected_verifiers = [
+        cached["verification"]
+        for _unit, _hole, verification_digest, cached, selected in rows
+        if selected
+        and cached
+        and cached.get("verification_digest") == verification_digest
+        and isinstance(cached.get("verification"), dict)
+    ]
+    cached_target_results = [
+        bool(verifier.get("target_passed"))
+        for verifier in cached_selected_verifiers
+        if verifier.get("target_passed") is not None
+    ]
+    if baseline_runs:
+        baseline_target_passed: bool | None = all(
+            bool(value.get("ok")) for value in baseline_runs.values()
+        )
+        baseline_target_evidence = "executed"
+    elif cached_target_results:
+        baseline_target_passed = all(cached_target_results)
+        baseline_target_evidence = "content_bound_verification_cache"
+    else:
+        baseline_target_passed = None
+        baseline_target_evidence = "not_run"
+
+    selected_verifiers = [
+        unit["verification"] for unit, _hole, _digest, _cached, selected in rows if selected
+    ]
+    cached_effective_test_paths = {
+        str(path)
+        for verifier in selected_verifiers
+        for path in verifier.get("effective_test_paths") or []
+    }
+    cached_requested_test_groups = {
+        tuple(str(path) for path in (
+            (verifier.get("baseline_resolution") or {}).get("requested_test_paths") or []
+        ))
+        for verifier in selected_verifiers
+        if (verifier.get("baseline_resolution") or {}).get("requested_test_paths")
+    }
+    selected_target_passed_count = sum(
+        verifier.get("target_passed") is True for verifier in selected_verifiers
+    )
+    selected_target_failed_count = sum(
+        verifier.get("target_passed") is False for verifier in selected_verifiers
+    )
+    selected_mutation_killed_count = sum(
+        verifier.get("starter_failed") is True for verifier in selected_verifiers
+    )
+    units = [row[0] for row in rows]
+    return units, summarize_source(source, units, extra={
+        "source_root": rel(source_root),
+        "function_hole_candidate_count": len(holes),
+        "new_verification_attempt_count": verified_attempts,
+        "verification_checkpoint_interval": checkpoint_interval,
+        "verification_checkpoint_write_count": checkpoint_write_count,
+        "verification_candidate_selection": selection["public_receipt"],
+        "baseline_target_passed": baseline_target_passed,
+        "baseline_target_evidence": baseline_target_evidence,
+        "baseline_test_group_count": len(baseline_runs) or len(cached_requested_test_groups),
+        "baseline_resolved_test_file_count": len({
+            path for paths in baseline_effective_paths.values() for path in paths
+        }) or len(cached_effective_test_paths),
+        "selected_target_passed_count": selected_target_passed_count,
+        "selected_target_failed_count": selected_target_failed_count,
+        "selected_mutation_killed_count": selected_mutation_killed_count,
+        "locked_environment": locked_environment,
+        "parser_toolchain": parser_toolchain,
+        "toolchain": toolchain,
+    })
+
+
+def javascript_verification_candidate_selection(
+    source: dict[str, Any], holes: list[dict[str, Any]]
+) -> dict[str, Any]:
+    policy = source.get("verification_candidate_selection")
+    if policy is None:
+        selected_indexes = list(range(len(holes)))
+        receipt = {
+            "kind": "complete_inventory_v1",
+            "candidate_count": len(holes),
+            "selected_candidate_count": len(holes),
+            "selection_uses_verifier_outcomes": False,
+        }
+        return {"selected_indexes": selected_indexes, "public_receipt": receipt}
+    if not isinstance(policy, dict) or policy.get("kind") != "canonical_ast_order_prefix_v1":
+        raise ValueError(
+            f"unsupported JavaScript verification candidate selection: {source.get('id')}"
+        )
+    maximum = int(policy.get("maximum_candidates") or 0)
+    if maximum <= 0:
+        raise ValueError("JavaScript verification candidate maximum must be positive")
+    if bool(policy.get("selection_uses_verifier_outcomes")):
+        raise ValueError("JavaScript candidate selection may not use verifier outcomes")
+    selected_count = min(maximum, len(holes))
+    identity_rows = [
+        {
+            "path": str(hole["path"]),
+            "qualified_name": str(hole["qualified_name"]),
+            "start_byte": int(hole["start_byte"]),
+            "end_byte": int(hole["end_byte"]),
+            "target_body_sha256": sha256_text(str(hole["target_body"])),
+        }
+        for hole in holes
+    ]
+    receipt = {
+        "kind": "canonical_ast_order_prefix_v1",
+        "candidate_count": len(holes),
+        "selected_candidate_count": selected_count,
+        "unselected_candidate_count": len(holes) - selected_count,
+        "maximum_candidates": maximum,
+        "ordered_inventory_sha256": stable_hash(identity_rows),
+        "selected_inventory_sha256": stable_hash(identity_rows[:selected_count]),
+        "selection_uses_verifier_outcomes": False,
+        "rationale": str(policy.get("rationale") or ""),
+    }
+    return {
+        "selected_indexes": list(range(selected_count)),
+        "public_receipt": receipt,
+    }
+
+
+def ensure_javascript_ast_toolchain(
+    config: dict[str, Any], *, prepare: bool
+) -> dict[str, Any]:
+    policy = config["javascript_ast_toolchain"]
+    manifest_root = resolve(str(policy["manifest_root"]))
+    runtime_root = resolve(str(policy["runtime_root"]))
+    package_json = manifest_root / "package.json"
+    package_lock = manifest_root / "package-lock.json"
+    parser_script = resolve(str(policy["parser_script"]))
+    if not package_json.is_file() or not package_lock.is_file() or not parser_script.is_file():
+        raise FileNotFoundError("pinned JavaScript AST toolchain manifest is incomplete")
+    lock_sha256 = file_sha256(package_lock)
+    if lock_sha256 != str(policy["package_lock_sha256"]):
+        raise ValueError("JavaScript AST toolchain lock identity mismatch")
+    manifest_identity = {
+        "package_json_sha256": file_sha256(package_json),
+        "package_lock_sha256": lock_sha256,
+        "parser_script_sha256": file_sha256(parser_script),
+        "typescript_version": str(policy["typescript_version"]),
+        "pnpm_version": str(policy["pnpm_version"]),
+    }
+    runtime_marker = runtime_root / ".theseus-toolchain.json"
+    observed = read_json(runtime_marker) if runtime_marker.is_file() else {}
+    if observed != manifest_identity:
+        if runtime_root.exists():
+            shutil.rmtree(runtime_root)
+        runtime_root.mkdir(parents=True)
+        shutil.copy2(package_json, runtime_root / "package.json")
+        shutil.copy2(package_lock, runtime_root / "package-lock.json")
+        runtime_marker.write_text(canonical_json(manifest_identity), encoding="utf-8")
+
+    npm_cache = runtime_root / ".npm-cache"
+    install_command = [
+        shutil.which("npm") or "npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"
+    ]
+    prepared_with_network = False
+    if prepare:
+        completed = subprocess.run(
+            install_command,
+            cwd=runtime_root,
+            env={**os.environ, "npm_config_cache": str(npm_cache)},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=int(policy.get("prepare_timeout_seconds") or 300),
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError(f"JavaScript AST toolchain preparation failed: {completed.stderr[-1000:]}")
+        prepared_with_network = True
+    offline_replay = run_sandboxed(
+        [*install_command, "--offline"],
+        runtime_root,
+        int(policy.get("offline_replay_timeout_seconds") or 180),
+        extra_env={"npm_config_cache": str(npm_cache)},
+    )
+    if not offline_replay.get("ok"):
+        raise RuntimeError(
+            "JavaScript AST toolchain is not offline-replayable; rerun with "
+            f"--prepare-javascript-projects: {offline_replay.get('stderr') or offline_replay.get('fault')}"
+        )
+    node = Path(shutil.which("node") or "node").absolute()
+    typescript_package = runtime_root / "node_modules" / "typescript" / "package.json"
+    pnpm_executable = runtime_root / "node_modules" / ".bin" / "pnpm"
+    if not typescript_package.is_file() or not pnpm_executable.is_file():
+        raise FileNotFoundError("JavaScript AST toolchain packages are missing after replay")
+    typescript_version = str(read_json(typescript_package)["version"])
+    if typescript_version != str(policy["typescript_version"]):
+        raise RuntimeError("pinned TypeScript parser version mismatch")
+    pnpm_probe = subprocess.run(
+        [str(pnpm_executable), "--version"],
+        cwd=runtime_root,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if pnpm_probe.returncode or pnpm_probe.stdout.strip() != str(policy["pnpm_version"]):
+        raise RuntimeError("pinned pnpm version mismatch")
+    identity = {
+        **manifest_identity,
+        "node_version": subprocess.check_output([str(node), "--version"], text=True).strip(),
+        "node_executable_sha256": file_sha256(node),
+        "pnpm_executable_sha256": file_sha256(pnpm_executable),
+        "offline_replay_valid": True,
+        "network_during_parsing": "denied",
+    }
+    return {
+        **identity,
+        "identity_sha256": stable_hash(identity),
+        "runtime_root": str(runtime_root),
+        "node_executable": str(node),
+        "pnpm_executable": str(pnpm_executable),
+        "parser_script": str(parser_script),
+        "prepared_with_network_this_run": prepared_with_network,
+        "offline_replay": public_run_receipt(offline_replay),
+    }
+
+
+def ensure_locked_javascript_environment(
+    source_root: Path,
+    source: dict[str, Any],
+    *,
+    parser_toolchain: dict[str, Any],
+    prepare: bool,
+) -> dict[str, Any]:
+    policy = source["locked_javascript_environment"]
+    if policy.get("manager") != "pnpm":
+        raise ValueError(f"unsupported JavaScript environment manager for {source['id']}")
+    lock_path = source_root / str(policy["lock_file"])
+    if not lock_path.is_file() or file_sha256(lock_path) != str(policy["lock_sha256"]):
+        raise ValueError(f"JavaScript dependency lock identity mismatch: {source['id']}")
+    package_manager_toolchain: dict[str, Any] | None = None
+    if str(parser_toolchain["pnpm_version"]) == str(policy["pnpm_version"]):
+        pnpm = str(parser_toolchain["pnpm_executable"])
+    else:
+        package_manager_toolchain = ensure_pnpm_toolchain(policy, prepare=prepare)
+        pnpm = str(package_manager_toolchain["pnpm_executable"])
+    store_dir = source_root / str(policy.get("store_dir") or ".pnpm-store")
+    install_command = [
+        pnpm,
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--store-dir",
+        str(store_dir),
+    ]
+    prepared_with_network = False
+    if prepare:
+        completed = subprocess.run(
+            install_command,
+            cwd=source_root,
+            env={**os.environ, "CI": "1", "COREPACK_ENABLE_PROJECT_SPEC": "0"},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=int(policy.get("prepare_timeout_seconds") or 1200),
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError(f"locked JavaScript environment preparation failed: {completed.stderr[-1000:]}")
+        prepared_with_network = True
+    offline_replay = run_sandboxed(
+        [*install_command, "--offline"],
+        source_root,
+        int(policy.get("offline_replay_timeout_seconds") or 600),
+        extra_env={"CI": "1", "COREPACK_ENABLE_PROJECT_SPEC": "0"},
+    )
+    if not offline_replay.get("ok"):
+        raise RuntimeError(
+            "locked JavaScript environment is not offline-replayable; rerun with "
+            f"--prepare-javascript-projects: {offline_replay.get('stderr') or offline_replay.get('fault')}"
+        )
+    inventory = run_sandboxed(
+        [pnpm, "list", "--depth", "Infinity", "--json"],
+        source_root,
+        120,
+        extra_env={"CI": "1", "COREPACK_ENABLE_PROJECT_SPEC": "0"},
+    )
+    if not inventory.get("ok"):
+        raise RuntimeError(f"JavaScript package inventory failed: {inventory.get('stderr')}")
+    normalized_inventory = str(inventory.get("stdout") or "").replace(str(source_root), "{SOURCE_ROOT}")
+    build_steps = list(policy.get("build_steps") or [])
+    build_basis = {
+        "archive_sha256": source["archive_sha256"],
+        "lock_sha256": str(policy["lock_sha256"]),
+        "pnpm_version": str(policy["pnpm_version"]),
+        "build_steps": build_steps,
+        "build_output_globs": list(policy.get("build_output_globs") or []),
+    }
+    build_marker = source_root / ".theseus-javascript-build.json"
+    build_outputs = javascript_build_output_identity(source_root, policy)
+    observed_build = read_json(build_marker) if build_marker.is_file() else {}
+    build_replayed = False
+    if build_steps and (
+        observed_build.get("basis_sha256") != stable_hash(build_basis)
+        or observed_build.get("outputs") != build_outputs
+        or not build_outputs.get("file_count")
+    ):
+        build_receipts = []
+        for step in build_steps:
+            step_root = (source_root / str(step.get("cwd") or ".")).resolve()
+            if step_root != source_root and source_root not in step_root.parents:
+                raise ValueError(f"JavaScript build step escapes source root: {source['id']}")
+            run = run_sandboxed(
+                [str(value) for value in step["command"]],
+                step_root,
+                int(policy.get("build_timeout_seconds") or 600),
+                extra_env={"CI": "1", "NO_COLOR": "1"},
+                writable_root=source_root,
+            )
+            build_receipts.append(public_run_receipt(run))
+            if not run.get("ok"):
+                raise RuntimeError(
+                    f"JavaScript verifier build failed for {source['id']}: "
+                    f"{run.get('stderr') or run.get('fault')}"
+                )
+        build_outputs = javascript_build_output_identity(source_root, policy)
+        if not build_outputs.get("file_count"):
+            raise RuntimeError(f"JavaScript verifier build emitted no bound outputs: {source['id']}")
+        build_marker.write_text(canonical_json({
+            "basis_sha256": stable_hash(build_basis),
+            "outputs": build_outputs,
+            "receipts": build_receipts,
+        }), encoding="utf-8")
+        build_replayed = True
+    identity = {
+        "manager": "pnpm",
+        "pnpm_version": str(policy["pnpm_version"]),
+        "lock_file": str(policy["lock_file"]),
+        "lock_sha256": str(policy["lock_sha256"]),
+        "installed_packages_sha256": sha256_text(normalized_inventory),
+        "build_basis_sha256": stable_hash(build_basis),
+        "build_outputs": build_outputs,
+        "offline_replay_valid": True,
+        "network_during_verification": "denied",
+    }
+    if package_manager_toolchain is not None:
+        identity["package_manager_toolchain"] = {
+            key: value for key, value in package_manager_toolchain.items()
+            if key not in {"prepared_with_network_this_run", "offline_replay", "runtime_root"}
+        }
+    return {
+        **identity,
+        "identity_sha256": stable_hash(identity),
+        "prepared_with_network_this_run": prepared_with_network,
+        "build_replayed_this_run": build_replayed,
+        "offline_replay": public_run_receipt(offline_replay),
+    }
+
+
+def ensure_pnpm_toolchain(
+    project_policy: dict[str, Any], *, prepare: bool
+) -> dict[str, Any]:
+    policy = project_policy.get("package_manager_toolchain")
+    if not isinstance(policy, dict):
+        raise ValueError(
+            f"pnpm {project_policy.get('pnpm_version')} requires a pinned package-manager toolchain"
+        )
+    manifest_root = resolve(str(policy["manifest_root"]))
+    runtime_root = resolve(str(policy["runtime_root"]))
+    package_json = manifest_root / "package.json"
+    package_lock = manifest_root / "package-lock.json"
+    if not package_json.is_file() or not package_lock.is_file():
+        raise FileNotFoundError("pinned pnpm toolchain manifest is incomplete")
+    lock_sha256 = file_sha256(package_lock)
+    if lock_sha256 != str(policy["package_lock_sha256"]):
+        raise ValueError("pinned pnpm toolchain lock identity mismatch")
+    manifest_identity = {
+        "package_json_sha256": file_sha256(package_json),
+        "package_lock_sha256": lock_sha256,
+        "pnpm_version": str(project_policy["pnpm_version"]),
+    }
+    marker = runtime_root / ".theseus-toolchain.json"
+    observed = read_json(marker) if marker.is_file() else {}
+    if observed != manifest_identity:
+        if runtime_root.exists():
+            shutil.rmtree(runtime_root)
+        runtime_root.mkdir(parents=True)
+        shutil.copy2(package_json, runtime_root / "package.json")
+        shutil.copy2(package_lock, runtime_root / "package-lock.json")
+        marker.write_text(canonical_json(manifest_identity), encoding="utf-8")
+    npm_cache = runtime_root / ".npm-cache"
+    command = [
+        shutil.which("npm") or "npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"
+    ]
+    prepared_with_network = False
+    if prepare:
+        run = subprocess.run(
+            command,
+            cwd=runtime_root,
+            env={**os.environ, "npm_config_cache": str(npm_cache)},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=int(policy.get("prepare_timeout_seconds") or 300),
+            check=False,
+        )
+        if run.returncode:
+            raise RuntimeError(f"pinned pnpm preparation failed: {run.stderr[-1000:]}")
+        prepared_with_network = True
+    offline = run_sandboxed(
+        [*command, "--offline"],
+        runtime_root,
+        int(policy.get("offline_replay_timeout_seconds") or 180),
+        extra_env={"npm_config_cache": str(npm_cache)},
+    )
+    if not offline.get("ok"):
+        raise RuntimeError(
+            "pinned pnpm toolchain is not offline-replayable; rerun with "
+            f"--prepare-javascript-projects: {offline.get('stderr') or offline.get('fault')}"
+        )
+    executable = runtime_root / "node_modules" / ".bin" / "pnpm"
+    if not executable.is_file():
+        raise FileNotFoundError(f"pinned pnpm executable missing: {executable}")
+    probe = subprocess.run(
+        [str(executable), "--version"],
+        cwd=runtime_root,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if probe.returncode or probe.stdout.strip() != str(project_policy["pnpm_version"]):
+        raise RuntimeError("pinned pnpm runtime version mismatch")
+    identity = {
+        **manifest_identity,
+        "pnpm_executable_sha256": file_sha256(executable),
+        "offline_replay_valid": True,
+    }
+    return {
+        **identity,
+        "identity_sha256": stable_hash(identity),
+        "runtime_root": str(runtime_root),
+        "pnpm_executable": str(executable),
+        "prepared_with_network_this_run": prepared_with_network,
+        "offline_replay": public_run_receipt(offline),
+    }
+
+
+def javascript_build_output_identity(
+    source_root: Path, policy: dict[str, Any]
+) -> dict[str, Any]:
+    paths: set[Path] = set()
+    for pattern in policy.get("build_output_globs") or []:
+        paths.update(path for path in source_root.glob(str(pattern)) if path.is_file())
+    rows = [
+        {
+            "path": path.relative_to(source_root).as_posix(),
+            "size": path.stat().st_size,
+            "sha256": file_sha256(path),
+        }
+        for path in sorted(paths)
+    ]
+    return {
+        "file_count": len(rows),
+        "total_bytes": sum(int(row["size"]) for row in rows),
+        "tree_sha256": stable_hash(rows),
+    }
+
+
+def resolve_javascript_project_toolchain(
+    source: dict[str, Any],
+    *,
+    source_root: Path,
+    parser_toolchain: dict[str, Any],
+    locked_environment: dict[str, Any],
+) -> dict[str, Any]:
+    command = [str(value).replace("{source_root}", str(source_root)) for value in source["test_command"]]
+    parser_identity = {
+        key: value for key, value in parser_toolchain.items()
+        if key not in {
+            "prepared_with_network_this_run", "offline_replay", "runtime_root", "parser_script"
+        }
+    }
+    environment_identity = {
+        key: value for key, value in locked_environment.items()
+        if key not in {"prepared_with_network_this_run", "build_replayed_this_run", "offline_replay"}
+    }
+    return {
+        "verifier_abi": str(source["verifier_abi"]),
+        "command": command,
+        "environment": dict(source.get("environment") or {}),
+        "network_during_verification": "denied",
+        "timeout_seconds": int(source["timeout_seconds"]),
+        "parser_toolchain_identity": parser_identity,
+        "locked_environment_identity": environment_identity,
+    }
+
+
+def discover_javascript_function_holes(
+    source_root: Path,
+    source: dict[str, Any],
+    *,
+    parser_toolchain: dict[str, Any],
+) -> list[dict[str, Any]]:
+    source_paths: set[Path] = set()
+    for pattern in source["source_globs"]:
+        source_paths.update(path.resolve() for path in source_root.glob(str(pattern)) if path.is_file())
+    excluded: set[Path] = set()
+    for pattern in source.get("exclude_source_globs") or []:
+        excluded.update(path.resolve() for path in source_root.glob(str(pattern)) if path.is_file())
+    source_paths.difference_update(excluded)
+    selection = source.get("test_selection")
+    test_paths: set[Path] = set()
+    graph_paths = set(source_paths)
+    if isinstance(selection, dict):
+        for pattern in selection.get("test_globs") or []:
+            test_paths.update(path.resolve() for path in source_root.glob(str(pattern)) if path.is_file())
+        for pattern in selection.get("graph_globs") or []:
+            graph_paths.update(path.resolve() for path in source_root.glob(str(pattern)) if path.is_file())
+        graph_paths.update(test_paths)
+    helper = Path(str(parser_toolchain["parser_script"]))
+    with tempfile.TemporaryDirectory(
+        prefix="th-js-ast-", dir="/tmp" if platform.system() == "Darwin" else None
+    ) as raw:
+        workdir = Path(raw).resolve()
+        input_path = workdir / "input.json"
+        output_path = workdir / "output.json"
+        input_path.write_text(canonical_json({
+            "toolchainRoot": parser_toolchain["runtime_root"],
+            "paths": [str(path) for path in sorted(graph_paths)],
+        }), encoding="utf-8")
+        run = run_sandboxed(
+            [
+                str(parser_toolchain["node_executable"]),
+                str(helper),
+                str(input_path),
+                str(output_path),
+            ],
+            workdir,
+            int(source.get("parser_timeout_seconds") or 120),
+        )
+        if not run.get("ok") or not output_path.is_file():
+            raise RuntimeError(f"JavaScript AST discovery failed: {run.get('stderr') or run.get('fault')}")
+        parsed = read_json(output_path)
+    if str(parsed.get("typescriptVersion")) != str(parser_toolchain["typescript_version"]):
+        raise RuntimeError("JavaScript AST helper reported an unexpected TypeScript version")
+    test_map = javascript_import_graph_test_map(
+        source_root,
+        source,
+        source_paths=source_paths,
+        test_paths=test_paths,
+        imports=parsed.get("imports") or {},
+    )
+    minimum_body = int(source.get("minimum_body_bytes") or 8)
+    maximum_body = int(source.get("maximum_body_bytes") or 16384)
+    context_lines = int(source.get("context_lines") or 40)
+    holes: list[dict[str, Any]] = []
+    for row in parsed.get("records") or []:
+        path = Path(str(row["path"])).resolve()
+        try:
+            relative = path.relative_to(source_root).as_posix()
+        except ValueError:
+            raise ValueError(f"AST helper returned path outside source root: {path}") from None
+        if path not in source_paths:
+            continue
+        raw = path.read_bytes()
+        text = raw.decode("utf-8")
+        start = int(row["start_byte"])
+        end = int(row["end_byte"])
+        target_body = str(row["target_body"])
+        target_bytes = target_body.encode("utf-8")
+        if start < 0 or end < start or raw[start:end] != target_bytes:
+            raise ValueError(f"AST helper span identity mismatch: {relative}")
+        body_bytes = len(target_bytes)
+        if not minimum_body <= body_bytes <= maximum_body:
+            continue
+        prefix = raw[:start].decode("utf-8")
+        start_character = len(prefix)
+        end_character = start_character + len(target_body)
+        line_starts = [0] + [match.end() for match in re.finditer(r"\n", text)]
+        start_line_index = max(0, len([value for value in line_starts if value <= start_character]) - 1)
+        end_line_index = max(0, len([value for value in line_starts if value < end_character]) - 1)
+        context_start = line_starts[max(0, start_line_index - context_lines)]
+        context_end_line = min(len(line_starts) - 1, end_line_index + context_lines + 1)
+        context_end = line_starts[context_end_line] if context_end_line < len(line_starts) else len(text)
+        if context_end <= end_character:
+            context_end = len(text)
+        selected_tests = test_map.get(relative, [])
+        if not selected_tests:
+            continue
+        holes.append({
+            "path": relative,
+            "qualified_name": str(row["qualified_name"]),
+            "start_byte": start,
+            "end_byte": end,
+            "target_body": target_body,
+            "starter_body": str(row["starter_body"]),
+            "visible_source": (
+                text[context_start:start_character]
+                + "<THESEUS_IMPLEMENTATION_HOLE>"
+                + text[end_character:context_end]
+            ),
+            "file_sha256": sha256_text(text),
+            "test_paths": selected_tests,
+        })
+    return holes
+
+
+def javascript_import_graph_test_map(
+    source_root: Path,
+    source: dict[str, Any],
+    *,
+    source_paths: set[Path],
+    test_paths: set[Path],
+    imports: dict[str, Any],
+) -> dict[str, list[str]]:
+    selection = source.get("test_selection")
+    if not isinstance(selection, dict):
+        fixed = [str(value) for value in source.get("test_suite_paths") or []]
+        return {path.relative_to(source_root).as_posix(): fixed for path in source_paths}
+    if selection.get("kind") != "bounded_import_graph_v1":
+        raise ValueError(f"unsupported JavaScript test selection: {selection.get('kind')}")
+    known = {Path(value).resolve() for value in imports}
+    graph: dict[Path, set[Path]] = defaultdict(set)
+    extensions = (".ts", ".tsx", ".js", ".jsx", ".mts", ".cts", ".mjs", ".cjs")
+
+    def resolve_import(importer: Path, specifier: str) -> Path | None:
+        if not specifier.startswith("."):
+            return None
+        base = (importer.parent / specifier).resolve()
+        candidates = [base]
+        if base.suffix in extensions:
+            stem = base.with_suffix("")
+            candidates.extend(stem.with_suffix(extension) for extension in extensions)
+        else:
+            candidates.extend(Path(f"{base}{extension}") for extension in extensions)
+        candidates.extend(base / f"index{extension}" for extension in extensions)
+        return next((candidate for candidate in candidates if candidate in known), None)
+
+    for importer_text, specifiers in imports.items():
+        importer = Path(importer_text).resolve()
+        for specifier in specifiers if isinstance(specifiers, list) else []:
+            resolved = resolve_import(importer, str(specifier))
+            if resolved is not None:
+                graph[importer].add(resolved)
+
+    maximum_depth = max(1, int(selection.get("maximum_import_depth") or 6))
+    reached: dict[Path, dict[Path, int]] = defaultdict(dict)
+    for test in sorted(test_paths):
+        frontier = [(test, 0)]
+        visited = {test}
+        while frontier:
+            current, distance = frontier.pop(0)
+            if distance >= maximum_depth:
+                continue
+            for dependency in graph.get(current, set()):
+                if dependency in visited:
+                    continue
+                visited.add(dependency)
+                next_distance = distance + 1
+                if dependency in source_paths:
+                    prior = reached[dependency].get(test)
+                    if prior is None or next_distance < prior:
+                        reached[dependency][test] = next_distance
+                frontier.append((dependency, next_distance))
+
+    def test_stem(path: Path) -> str:
+        name = path.name
+        for suffix in (".spec.ts", ".test.ts", ".spec.tsx", ".test.tsx", ".spec.js", ".test.js"):
+            if name.endswith(suffix):
+                return name[:-len(suffix)]
+        return path.stem
+
+    maximum = max(1, int(selection.get("maximum_tests_per_source_file") or 3))
+    output: dict[str, list[str]] = {}
+    for source_path in sorted(source_paths):
+        source_relative = source_path.relative_to(source_root)
+        source_parts = [
+            value for value in source_relative.parent.parts if value not in {"src", "node"}
+        ]
+
+        def locality(item: tuple[Path, int]) -> tuple[int, int, int, str]:
+            path, distance = item
+            relative = path.relative_to(source_root)
+            test_parts = [
+                value for value in relative.parent.parts
+                if value not in {"src", "node", "__tests__"}
+            ]
+            common = len(set(source_parts) & set(test_parts))
+            suffix = 0
+            for left, right in zip(reversed(source_parts), reversed(test_parts)):
+                if left != right:
+                    break
+                suffix += 1
+            return (distance, -suffix, -common, relative.as_posix())
+
+        candidates = dict(reached.get(source_path) or {})
+        if not candidates and selection.get("basename_fallback", True):
+            candidates = {
+                test: maximum_depth + 1
+                for test in test_paths
+                if test_stem(test) == source_path.stem
+            }
+        selected = sorted(candidates.items(), key=locality)[:maximum]
+        output[source_relative.as_posix()] = [
+            path.relative_to(source_root).as_posix() for path, _distance in selected
+        ]
+    return output
+
+
+def copy_javascript_project(source_root: Path, workdir: Path) -> None:
+    workdir.parent.mkdir(parents=True, exist_ok=True)
+    if platform.system() == "Darwin" and Path("/bin/cp").is_file():
+        completed = subprocess.run(
+            ["/bin/cp", "-cR", f"{source_root}/.", str(workdir)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=300,
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError(f"APFS JavaScript verifier clone failed: {completed.stderr[-1000:]}")
+        return
+    if platform.system() == "Linux" and shutil.which("cp"):
+        completed = subprocess.run(
+            [shutil.which("cp") or "cp", "--archive", "--reflink=auto", f"{source_root}/.", str(workdir)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=300,
+            check=False,
+        )
+        if completed.returncode == 0:
+            return
+    shutil.copytree(
+        source_root,
+        workdir,
+        dirs_exist_ok=True,
+        symlinks=True,
+    )
+
+
+def run_javascript_project_tests(
+    workdir: Path,
+    toolchain: dict[str, Any],
+    *,
+    test_paths: list[str] | None = None,
+) -> dict[str, Any]:
+    scratch = workdir.parent / "scratch"
+    if scratch.exists():
+        shutil.rmtree(scratch)
+    scratch.mkdir(parents=True)
+    environment = {
+        "CI": "1",
+        "NO_COLOR": "1",
+        "TMPDIR": str(scratch),
+        **{str(key): str(value) for key, value in toolchain["environment"].items()},
+    }
+    command: list[str] = []
+    for value in toolchain["command"]:
+        if value == "{test_paths}":
+            command.extend(test_paths or [])
+        else:
+            command.append(str(value))
+    if "{test_paths}" in toolchain["command"] and not test_paths:
+        return {"ok": False, "fault": "javascript_test_selection_empty"}
+    return run_sandboxed(
+        command,
+        workdir,
+        int(toolchain["timeout_seconds"]),
+        extra_env=environment,
+        writable_root=workdir.parent,
+    )
+
+
+def resolve_javascript_test_baseline(
+    workdir: Path,
+    toolchain: dict[str, Any],
+    *,
+    requested_paths: list[str],
+) -> tuple[list[str], dict[str, Any], dict[str, Any]]:
+    combined = run_javascript_project_tests(
+        workdir, toolchain, test_paths=requested_paths
+    )
+    attempts = [{
+        "test_paths": requested_paths,
+        "run": public_run_receipt(combined),
+    }]
+    if combined.get("ok"):
+        return requested_paths, combined, {
+            "policy": "clean_baseline_subset_v1",
+            "requested_test_paths": requested_paths,
+            "effective_test_paths": requested_paths,
+            "attempts": attempts,
+        }
+    passing: list[tuple[str, dict[str, Any]]] = []
+    for path in requested_paths:
+        run = run_javascript_project_tests(workdir, toolchain, test_paths=[path])
+        attempts.append({"test_paths": [path], "run": public_run_receipt(run)})
+        if run.get("ok"):
+            passing.append((path, run))
+    if not passing:
+        return [], combined, {
+            "policy": "clean_baseline_subset_v1",
+            "requested_test_paths": requested_paths,
+            "effective_test_paths": [],
+            "attempts": attempts,
+            "reason": "no_requested_test_has_clean_baseline",
+        }
+    effective = [path for path, _run in passing]
+    if len(passing) == 1:
+        resolved_run = passing[0][1]
+    else:
+        resolved_run = run_javascript_project_tests(
+            workdir, toolchain, test_paths=effective
+        )
+        attempts.append({"test_paths": effective, "run": public_run_receipt(resolved_run)})
+        if not resolved_run.get("ok"):
+            effective = [passing[0][0]]
+            resolved_run = passing[0][1]
+    return effective, resolved_run, {
+        "policy": "clean_baseline_subset_v1",
+        "requested_test_paths": requested_paths,
+        "effective_test_paths": effective,
+        "attempts": attempts,
+    }
+
+
+def verify_javascript_function_hole(
+    workdir: Path,
+    hole: dict[str, Any],
+    toolchain: dict[str, Any],
+    *,
+    baseline_run: dict[str, Any],
+    baseline_receipt: dict[str, Any],
+    test_paths: list[str] | None = None,
+    baseline_resolution: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    path = workdir / hole["path"]
+    target_bytes = path.read_bytes()
+    start = int(hole["start_byte"])
+    end = int(hole["end_byte"])
+    body_bytes = str(hole["target_body"]).encode("utf-8")
+    if target_bytes[start:end] != body_bytes:
+        return {
+            "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
+            "strength": "executable_target_pass_starter_fail",
+            "state": "failed",
+            "reason": "target_span_identity_changed",
+            "target_passed": bool(baseline_run.get("ok")),
+            "starter_failed": False,
+            "target_run": baseline_receipt,
+            "effective_test_paths": list(test_paths or []),
+            "baseline_resolution": baseline_resolution,
+            "toolchain": toolchain,
+        }
+    starter_bytes = (
+        target_bytes[:start]
+        + str(hole["starter_body"]).encode("utf-8")
+        + target_bytes[end:]
+    )
+    try:
+        path.write_bytes(starter_bytes)
+        starter_run = run_javascript_project_tests(
+            workdir, toolchain, test_paths=test_paths
+        )
+    finally:
+        path.write_bytes(target_bytes)
+    starter_failed = bool(
+        not starter_run.get("ok")
+        and starter_run.get("returncode") is not None
+        and not starter_run.get("fault")
+    )
+    passed = bool(baseline_run.get("ok") and starter_failed)
+    return {
+        "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
+        "strength": "executable_target_pass_starter_fail",
+        "state": "passed" if passed else "failed",
+        "target_passed": bool(baseline_run.get("ok")),
+        "starter_failed": starter_failed,
+        "target_run": baseline_receipt,
+        "starter_run": public_run_receipt(starter_run),
+        "effective_test_paths": list(test_paths or []),
+        "baseline_resolution": baseline_resolution,
+        "toolchain": toolchain,
+    }
+
+
 def base_unit(
     config: dict[str, Any],
     *,
@@ -1358,14 +2439,22 @@ def render_web_bundle(files: dict[str, str], timeout: int) -> dict[str, Any]:
 
 
 def run_sandboxed(
-    command: list[str], workdir: Path, timeout: int, *, extra_env: dict[str, str] | None = None
+    command: list[str],
+    workdir: Path,
+    timeout: int,
+    *,
+    extra_env: dict[str, str] | None = None,
+    writable_root: Path | None = None,
 ) -> dict[str, Any]:
     workdir = workdir.resolve()
+    write_root = (writable_root or workdir).resolve()
+    if workdir != write_root and write_root not in workdir.parents:
+        raise ValueError("sandbox writable root must contain the working directory")
     profile = "\n".join([
         "(version 1)",
         "(allow default)",
         "(deny network*)",
-        f'(deny file-write* (require-not (subpath "{workdir}")))',
+        f'(deny file-write* (require-not (subpath "{write_root}")))',
         '(allow file-write* (literal "/dev/null"))',
     ])
     env = {
@@ -1488,21 +2577,69 @@ def safe_extract_source_archive(handle: tarfile.TarFile, target: Path) -> str:
         raise ValueError("source archive must have one top-level directory")
     root_name = next(iter(roots))
     target_root = target.resolve()
+    member_by_name = {member.name: member for member in members}
     selected: list[tarfile.TarInfo] = []
+    links: list[tarfile.TarInfo] = []
     for member in members:
         parts = member.name.split("/", 1)
         if len(parts) != 2 or not parts[1]:
             continue
-        if member.issym() or member.islnk() or member.isdev() or member.isfifo():
+        if member.isdev() or member.isfifo():
             raise ValueError(f"unsupported archive member type: {member.name}")
         destination = (target / parts[1]).resolve()
         if destination != target_root and target_root not in destination.parents:
             raise ValueError(f"unsafe archive member: {member.name}")
+        if member.issym() or member.islnk():
+            links.append(member)
+            continue
         copied = copy.copy(member)
         copied.name = parts[1]
         selected.append(copied)
     handle.extractall(target, members=selected, filter="data")
+    for member in links:
+        resolved = resolve_archive_file_link(member, member_by_name, root_name)
+        source = handle.extractfile(resolved)
+        if source is None:
+            raise ValueError(f"archive link target is not a regular file: {member.name}")
+        destination = target / member.name.split("/", 1)[1]
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(source.read())
+        destination.chmod(resolved.mode & 0o777)
     return root_name
+
+
+def resolve_archive_file_link(
+    member: tarfile.TarInfo,
+    member_by_name: dict[str, tarfile.TarInfo],
+    root_name: str,
+) -> tarfile.TarInfo:
+    current = member
+    seen = {member.name}
+    for _ in range(32):
+        if current.issym():
+            candidate = posixpath.normpath(
+                posixpath.join(posixpath.dirname(current.name), current.linkname)
+            )
+        elif current.islnk():
+            candidate = posixpath.normpath(current.linkname)
+        else:
+            if not current.isfile():
+                raise ValueError(f"archive link target is not a regular file: {member.name}")
+            return current
+        if (
+            current.linkname.startswith("/")
+            or candidate == root_name
+            or not candidate.startswith(f"{root_name}/")
+        ):
+            raise ValueError(f"unsafe archive link: {member.name} -> {current.linkname}")
+        if candidate in seen:
+            raise ValueError(f"cyclic archive link: {member.name}")
+        seen.add(candidate)
+        next_member = member_by_name.get(candidate)
+        if next_member is None:
+            raise ValueError(f"archive link target missing: {member.name} -> {candidate}")
+        current = next_member
+    raise ValueError(f"archive link chain too deep: {member.name}")
 
 
 def map_example_to_solution(

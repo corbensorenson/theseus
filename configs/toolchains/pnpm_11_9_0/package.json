@@ -1,0 +1,10 @@
+{
+  "name": "theseus-pnpm-11-9-0",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pinned pnpm runtime for task-complete JavaScript project replay.",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "pnpm": "11.9.0"
+  }
+}

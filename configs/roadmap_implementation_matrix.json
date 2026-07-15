@@ -369,8 +369,8 @@
         10
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "in_progress_python_floor_green_three_arms_and_global_positions_pending",
-      "dependency": "v8 diagnostics and exact-once private functional qualification are complete; English and Python task-complete floors are green, while JS/TS, HTML/CSS, Rust, and the global unique-position floor still precede the preregistered 50M-100M training run",
+      "status": "in_progress_english_python_javascript_floors_green_html_rust_and_global_positions_pending",
+      "dependency": "v8 diagnostics and exact-once private functional qualification are complete; English, Python, and JS/TS task-complete floors are green, while HTML/CSS, Rust, and the global unique-position floor still precede the preregistered 50M-100M training run",
       "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by unique positions, per-language verified-unit floors, MLX canaries, matched controls, and stop criteria.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, or metadata-complete receipts do not prove product-task quality or justify scale."
@@ -1587,11 +1587,11 @@
         "reports/theseus_assistant_teacher_share_smoke.json"
       ],
       "missing_items": [
-        "task-complete coverage expansion beyond the current verified inventory: English 25566, Python 138, JS/TS 135, HTML/CSS 7, and Rust 97; every added unit must retain complete target behavior, pinned verification, source-disjoint lineage, license, and contamination receipts",
-        "data support for the preregistered 57.315M-active MLX rung: close the 463052115 unique-position shortfall and the Python/JS-TS/HTML-CSS/Rust verified-unit and position floors without repetition or public calibration payloads",
+        "task-complete coverage expansion beyond the current verified inventory: English 25566, Python 2022, JS/TS 1180, HTML/CSS 7, and Rust 97; every added unit must retain complete target behavior, pinned verification, source-disjoint lineage, license, and contamination receipts",
+        "data support for the preregistered 57.315M-active MLX rung: close the 463052115 unique-position shortfall and the HTML-CSS/Rust verified-unit and position floors without repetition or public calibration payloads",
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
-      "smallest_next_patch": "Expand the existing task-complete inventory with pinned high-quality licensed sources that close the measured Python, JS/TS, HTML/CSS, Rust, and unique-position shortfalls. Reuse the canonical admission and verifier contracts; do not count repetition, target-only snippets, public calibration payloads, or unverified rows toward the rung.",
+      "smallest_next_patch": "Expand the existing task-complete inventory with pinned high-quality licensed sources that close the measured HTML/CSS, Rust, and unique-position shortfalls. Reuse the canonical admission and verifier contracts; do not count repetition, target-only snippets, public calibration payloads, or unverified rows toward the rung.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/task_complete_training_units.py --prepare-javascript",
@@ -2045,7 +2045,7 @@
       ],
       "current_non_claims": [
         "The exact-once v8 functional qualification is complete negative evidence: MoECOT, dense-active, and dense-total each scored 0/160 overall and 0/32 in every arm. The verdict falsifies the 10.8M active rung, selects no architecture, leaves confirmation unspent, and authorizes no route replacement. Low local English-rater agreement is a harness limitation but cannot rescue or hide exact zero code passes.",
-        "The post-v8 scale proposal is a preregistration and MLX mechanics proof, not capability evidence. The 57,315,329-active candidate and 57,323,520-active/67,332,096-total matched controls all pass finite-update, exact checkpoint reload, optimizer resume, and temporary-artifact cleanup canaries. Training remains unauthorized because only 683,254,465 unique positions exist against 1,146,306,580 required and four code arms miss task-complete coverage floors.",
+        "The post-v8 scale proposal is a preregistration and MLX mechanics proof, not capability evidence. The 57,315,329-active candidate and 57,323,520-active/67,332,096-total matched controls all pass finite-update, exact checkpoint reload, optimizer resume, and temporary-artifact cleanup canaries. Training remains unauthorized because only 683,254,465 unique positions exist against 1,146,306,580 required and the HTML/CSS and Rust arms miss task-complete coverage floors.",
         "Phase 10 has a clean experimental transformer successor, but no qualified private proposer floor, broad model-quality, runtime-serving, or public-transfer win.",
         "The prior 1/24 floor is invalid because private tests influenced inferred callable arity. A later ID-space audit found split source IDs shifted into the target embedding segment. The repaired mapping raises independently integrity-verified candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. The completed training receipt was overwritten by the old evaluation-only CLI path, so the canonical gate also records incomplete training provenance. Wider beam, shared vocabulary, two-million-position continuation, and corrected source offsets all remain non-promoted.",
         "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",
