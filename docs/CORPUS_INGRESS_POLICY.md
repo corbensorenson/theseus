@@ -13,8 +13,17 @@ status, and training use. Unknown-license sources are rejected.
 Static openly licensed corpora may contain model-derived text. They are admitted as
 data, not live teacher calls, only when quality tier, provenance class, license,
 permitted use, contamination, retention, and recursive synthetic position share are
-explicit. Live teacher authority remains OpenAI-only and external tokens are never
-served at runtime.
+explicit. This includes already-published Anthropic/Claude-derived corpora; it does
+not permit Theseus to call Anthropic, consume a Claude subscription/API, or use
+Claude for live project automation. Live teacher authority remains OpenAI-only and
+external tokens are never served at runtime.
+
+Published agent traces require additional row-level controls before they can become
+supervision: embedded-content rights, secret/PII removal, exact and semantic
+deduplication across mirrors, English and supported-code-language filtering,
+benchmark decontamination, task-outcome reconstruction, verifier replay, and a
+heldout causal pilot. Metadata-only workload traces may tune serving/runtime policy
+but cannot count as language/code training positions or capability evidence.
 
 Public benchmarks remain calibration-only. Public benchmark prompts, tests,
 hidden tests, solutions, traces, answer templates, task ids, and benchmark-

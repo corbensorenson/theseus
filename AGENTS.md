@@ -33,10 +33,14 @@ zero external inference at serving time and a teacher bill that trends to zero.
 8. Live teacher data is targeted residual pressure, not the bootstrap corpus.
    Enforce the configured accepted-row and optimizer-sampling caps and drive both
    toward zero; bulk teacher generation is forbidden.
-9. Governed teachers must be OpenAI models accessed through ChatGPT, Codex, or
-   an explicitly approved OpenAI API path. Do not invoke Anthropic or Claude,
-   and never admit their outputs into manifests, ledgers, training data, model
-   checkpoints, evaluations, or project-review workflows.
+9. Live governed teachers must be OpenAI models accessed through ChatGPT,
+   Codex, or an explicitly approved OpenAI API path. Do not invoke Anthropic or
+   Claude through a paid account, API, CLI, desktop app, or project automation.
+   Already-published static corpora may contain Anthropic/Claude-derived rows;
+   they are eligible only as third-party data under Rules 4, 6, 7, and 8, with
+   no provider credentials, subscription usage, or live generation. Provider
+   provenance must remain explicit and does not waive license, quality,
+   deduplication, contamination, synthetic-share, retention, or verifier gates.
 
 ## Anti-Cheating Guardrail
 

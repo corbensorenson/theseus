@@ -288,7 +288,10 @@ to Track 1).
   Rust, and a small uncredited other-code tail. This clears the frozen 20:1 floor.
   The exact 215.55M-position balanced training view remains selected and frozen
   before results rather than reverse-engineered afterward; unused capacity is not
-  counted as optimizer exposure.
+  counted as optimizer exposure. The preregistered 57.315M-active rung is a
+  separate contract: it currently has 683.25M eligible unique positions against a
+  1.146B-position floor, a measured 463.05M shortfall. Older 219M-position summaries
+  must not be used to describe current readiness.
 - Expand the corpus in the product's actual domains: English conversation and
   instruction following; Python first; then JS/TS/HTML/CSS and Rust. Measure
   executable completeness, dependency context, algorithm/contract coverage,
@@ -302,6 +305,44 @@ to Track 1).
   model-derived corpora over live teacher generation. Provider origin alone neither
   admits nor rejects a static dataset; license, provenance, quality, diversity,
   decontamination, and measured heldout utility decide.
+- Treat published agent traces as structured trajectory data, not automatically as
+  instruction targets. A trace source enters quarantine before any training credit:
+  freeze the upstream revision and byte hash; preserve model/provider provenance;
+  resolve dataset and embedded repository/content rights; remove secrets, personal
+  paths, credentials, and private payloads; enforce English plus Python, JS/TS,
+  HTML/CSS, and Rust scope; and deduplicate by source task, repository, patch,
+  message, tool sequence, and semantic near-match. Mirrors and repackagings receive
+  no new unique-data credit.
+- Admit only outcome-grounded trace views. Successful final answers, patches, and
+  tool calls require replayable compile/test/render or task-outcome evidence;
+  failed trajectories may supply explicitly rejected preference/search examples but
+  never positive SFT targets. Hidden chain-of-thought is not required by the product
+  and receives no privileged quality assumption. Preserve final-answer, action,
+  tool-call, result, and verifier boundaries so the model learns when and how to use
+  tools rather than imitating an unverified transcript.
+- The original [`Glint-Research/Fable-5-traces`](https://huggingface.co/datasets/Glint-Research/Fable-5-traces)
+  release is an eligible **quarantine candidate**, not an admitted corpus. Its
+  AGPL-3.0 dataset license, Claude/Fable provenance, 4,665-row scale, embedded
+  code/tool payloads, and many public mirrors
+  require a frozen-source rights audit, exact cross-mirror deduplication, PII/secret
+  scan, benchmark decontamination, outcome reconstruction, verifier replay, and a
+  small heldout causal pilot before any row or token counts toward the 57.315M rung.
+  The 2.01M-row repackaging must not be treated as 2.01M independent high-quality
+  traces: it is a normalized-row-deduplicated compilation of 17 source datasets whose
+  rows include events and intermediate completions. Preserve `row_hash`, `seen_count`,
+  and first-source provenance, then reconstruct and deduplicate source/session/task/
+  repository trajectories before counting quality units or model-visible positions.
+- Keep trace purposes separate. Content-bearing, rights-clean, verifier-positive
+  rows may compete for a capped synthetic SFT/preference tranche. Sanitized
+  metadata-only traces such as Codex-filtered TraceLab may calibrate context length,
+  prefix-cache, tool latency, scheduling, and runtime replay, but cannot count as
+  conversational/code supervision or model capability. Report source-specific
+  unique positions, optimizer exposure, acceptance yield, verifier yield, duplicate
+  collapse, contamination rejects, and heldout lift; static trace intake never counts
+  as live teacher usage and never authorizes that provider for serving or generation.
+  [TraceLab](https://github.com/uw-syfi/TraceLab) is the reference metadata-workload
+  source; pin its release and retain only the provider subset authorized by the
+  particular experiment.
 - Code volume is quality-filtered after repository/license curation: generated,
   vendored, bundled/minified, decode-damaged, extreme-line, low-diversity,
   tokenizer-unrepresentable, and invalid-Python files receive no scaling or training
@@ -461,8 +502,12 @@ tranche with a baseline, a verifier, and a falsification condition.
 - Capability gate: if model-only functional utility is zero at 10.8M across sparse
   and both dense controls, that rung is refuted before search or RL. If a later
   task-complete, data-supported 50M-100M rung also fails against matched dense
-  controls, record the result and reconsider data/objective/domain assumptions before
-  funding more architecture. Search and RL never rescue a zero candidate numerator.
+  controls, stop that rung and do not authorize a third size increase. First pivot
+  the objective, task-complete data mix, tokenizer, decode/search interface, and
+  verifier-grounded supervision under a new preregistered hypothesis. The current
+  57.315M contract already stops on two consecutive reviews with no model-only
+  functional gain; interim results cannot relax that rule. Search and RL never rescue
+  a zero candidate numerator or retroactively turn the failed rung into a success.
 - No-head rule: no new value-guard/adequacy/slot/marker/token-bias/contrast variant
   without a preceding Track-1/2/3 result that motivates it, inside a registered
   substrate-adoption sequence with a falsification stop.
