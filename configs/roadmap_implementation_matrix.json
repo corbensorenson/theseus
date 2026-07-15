@@ -339,7 +339,8 @@
     "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it.",
     "The v8 prompt/target comparison is an exact-recovery diagnostic because its rows do not carry complete functional verifiers; practical architecture selection requires a separately frozen source-disjoint functional utility surface.",
     "Freeze architecture and control-plane breadth for three capability cycles; only a concrete correctness, security, replay, or measured training/inference defect may authorize an architecture change during the freeze.",
-    "Treat 10.8M active parameters as a systems-canary rung. If sparse and both dense controls remain functionally zero across code, close the rung and require task-complete data plus a preregistered 50M-100M scale proposal instead of another same-scale patch."
+    "Treat 10.8M active parameters as a systems-canary rung. If sparse and both dense controls remain functionally zero across code, close the rung and require task-complete data plus a preregistered 50M-100M scale proposal instead of another same-scale patch.",
+    "Treat OneCell-RWM as a future cognitive-kernel discovery candidate only: it cannot alter or delay frozen v8, become a same-scale rescue patch, duplicate VIEA/VCM/Octopus/SCF/Loop-Closure/SparkStream/registry machinery, or receive route authority before a preregistered matched total-cost verdict."
   ],
   "planned_codex_test_backlog": [
     {
@@ -373,6 +374,34 @@
       "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by unique positions, per-language verified-unit floors, MLX canaries, matched controls, and stop criteria.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, or metadata-complete receipts do not prove product-task quality or justify scale."
+    },
+    {
+      "backlog_id": "planned.onecell_rwm_candidate_kernel_v1",
+      "source_basis": "Canonical Theseus-OneCell handoff from the KISS versus irreducible-intelligence design review; future cognitive-kernel falsification program",
+      "technique_family": "cognitive_kernel_discovery_and_verified_abstraction_scaling",
+      "owned_phase_refs": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6,
+        8,
+        10,
+        11,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "track_id": "C_capability_research_survival_lane",
+      "status": "future_candidate_frozen_until_v8_functional_disposition",
+      "dependency": "record the unchanged v8 exact-recovery and exact-once functional disposition first; OneCell may not alter v8, use interim v8 output for tuning, delay the practical transformer/hybrid scale decision, or create parallel Theseus subsystems",
+      "acceptance_gate": "Behind one substrate-neutral Cognitive Kernel ABI, implement exact/latent workspace separation, typed Query and Program IR, branch-local snapshots, transactions, receipts, replay/rollback, VCM and Octopus bridges, a shared typed gated sparse-message cell, explicit anytime search, world-model and uncertainty heads, and existing-Loop-Closure verified abstraction learning. Preregister train-small/test-large algorithmic controls and RATCHET-100 frozen-core ablations; compare MoECOT, matched dense Transformer, SymLiquid, recurrent-only, memory, search, skill, and full-system channels under matched data, active/total parameters, adapters, optimizer positions, compute, memory, tools, search, verifiers, and complete lifecycle cost. Promotion requires repeatable held-out Pareto value without weak-tail regression and an SCF rollback-capable replacement transaction.",
+      "support_state_target": "empirical-test-backed",
+      "no_claim_boundary": "An elegant ABI, deterministic substrate, exact tool result, retrieved answer, hand-authored skill, adapter capability, benchmark identity, larger hidden search budget, or lower central parameter count is not OneCell learned capability. CORE_ONLY, CORE_PLUS_MEMORY, CORE_PLUS_SEARCH, and FULL_SYSTEM must remain separate; failure or selected-mechanism merge is an acceptable verdict."
     },
     {
       "backlog_id": "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
@@ -779,7 +808,8 @@
     "new_report_family_instead_of_updating_registry_surface",
     "deleting_book_phase_as_scope_control",
     "capability_claim_from_assisted_or_tool_output",
-    "claiming_book_implementation_without_chapter_crosswalk"
+    "claiming_book_implementation_without_chapter_crosswalk",
+    "onecell_training_routing_or_parallel_subsystems_before_v8_disposition"
   ],
   "completion_status_semantics": {
     "implemented": "Runnable, registry-bound, SCF-bound, documented, and emitting evidence through the canonical path.",
@@ -2186,7 +2216,7 @@
     },
     {
       "phase": 11,
-      "title": "SymLiquid Discovery Lane Verdict",
+      "title": "Cognitive Kernel Discovery Lane Verdicts",
       "status": "wired",
       "priority": "high",
       "roadmap_section": "roadmap.md#phase-11",
@@ -2200,6 +2230,9 @@
       "scf_required": true,
       "implementation_ids": [
         "impl.neural_seed_strict_token_decoder.v1"
+      ],
+      "future_candidate_backlog_ids": [
+        "planned.onecell_rwm_candidate_kernel_v1"
       ],
       "execution_spine_hooks": [
         "matched_compute_experiment",
@@ -2235,13 +2268,13 @@
         "reports/candidate_floor_v2_survival_lane_seed101_comparator.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Refresh this verdict only after a new matched-compute comparator run; keep the practical transformer/hybrid route separate from protected SymLiquid discovery evidence.",
+      "smallest_next_patch": "Record the frozen v8 functional disposition first. Refresh SymLiquid only after a new matched-compute comparator run. OneCell may then begin at its architecture/exact-substrate contract without delaying the practical transformer/hybrid data-and-scale decision, and remains non-routeable until its complete matched total-cost verdict.",
       "integration_smoke": [
         "python3 scripts/theseus_substrate_verdict.py",
         "reports/theseus_substrate_verdict.json summary.superiority_claim=none",
         "reports/theseus_substrate_verdict.json summary.symliquid_discovery_state=protected_matched_comparator"
       ],
-      "completion_rule": "SymLiquid is promoted only where it repeatedly beats matched transformer/hybrid evidence; otherwise it remains a discovery lane."
+      "completion_rule": "A cognitive kernel is promoted only where it repeatedly beats or usefully complements matched transformer/hybrid evidence under preregistered learned-only and assisted channels plus complete lifecycle cost; otherwise it remains a discovery lane, is narrowed to a causal mechanism, or is rejected."
     },
     {
       "phase": 12,

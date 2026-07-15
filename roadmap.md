@@ -260,6 +260,14 @@ promoted; their purpose is to falsify or select the practical architecture.
 - Public calibration follows a material, confirmation-qualified model change. It is
   measurement only and never a source of prompts, tests, solutions, traces, labels,
   templates, or residual training rows.
+- OneCell-RWM is a future cognitive-kernel discovery candidate, not a v8 rescue
+  patch and not a replacement for Theseus. It may enter active implementation only
+  after the frozen v8 functional disposition is recorded. It may not alter v8, use
+  interim v8 outputs as tuning data, delay the data-supported scale decision, or
+  receive route authority before its own matched qualification. Architecture-contract
+  and exact deterministic-substrate work must extend existing VIEA, VCM, Octopus,
+  SCF, Loop Closure, SparkStream, artifact, residual, and evidence owners rather than
+  creating parallel registries, memory stores, runtimes, or dashboards.
 
 **Track 0 - Data and Curriculum Program** (foundational; runs ahead of and parallel
 to Track 1).
@@ -984,7 +992,7 @@ evidence earns a different route.)
   learned generation; select an accounting view after results; repeatedly patch a
   falsified scale rung; or call loss, syntax, exact recovery, route selection, or
   infrastructure readiness a utility win.
-### Phase 11: SymLiquid Discovery-Lane Verdict
+### Phase 11: Cognitive-Kernel Discovery-Lane Verdicts
 - Keep SymLiquid/CGS/VSA protected as a discovery comparator, but make the practical
   transformer/hybrid lane the default unless SymLiquid wins repeated matched-data,
   matched-active-compute, matched-search/verifier experiments.
@@ -997,6 +1005,136 @@ evidence earns a different route.)
   discovery lane.
 - Do not: bury the control result, move the goalposts, or treat architecture elegance
   as capability evidence.
+
+#### Future Candidate: OneCell-RWM
+
+Source: the canonical [Theseus-OneCell design handoff](https://chatgpt.com/share/6a57781e-17a4-83ea-aaae-fa263a9ac2fd),
+which supersedes the earlier standalone OneCell-RSM packet.
+
+OneCell is a candidate implementation of the learned cognitive-kernel slot, not a
+replacement for Theseus. Theseus continues to own intent and authority (VIEA),
+durable context and memory (VCM), capability-provider resolution (Octopus),
+procedure compilation (Cognitive Loop Closure), qualification/replacement/rollback
+(SCF), improvement scheduling (SparkStream), evidence/residual ledgers, and backend
+routing (Hive). OneCell remains planning-only until the current frozen v8 comparison
+and functional qualification have a recorded disposition. It must never block the
+practical transformer/hybrid assistant, consume interim v8 results as tuning evidence,
+or become a same-scale patch after a falsified rung.
+
+**Preregistered hypothesis.** A compact, weight-tied recurrent neural microkernel,
+coupled to exact external state, typed query/program execution, explicit
+branch-preserving search, predictive world modeling, and verified abstraction
+learning, can broaden held-out capability and reduce future verified search cost
+without proportional growth of the central neural core. The claim fails if gains
+come primarily from a hidden generator, large language adapter, privileged
+retrieval, hand-authored skill inventory, deterministic answer-producing tool,
+benchmark identity, or unreported search/verification cost.
+
+**Cognitive Kernel ABI.** Add one registered substrate-neutral abstraction only
+after the v8 disposition. Sparse Transformer/MoECOT, matched dense Transformer,
+SymLiquid, and OneCell must implement the same initialize/propose/accept-receipt/
+checkpoint/parameter-accounting contract. Kernel output is a typed proposal, never
+a fact or authorized effect. Exact identity, values, hashes, permissions, stack and
+program state, provenance, observations, and receipts remain outside latent state.
+Beliefs, predictions, relevance, uncertainty, and heuristic value remain explicitly
+non-authoritative. Observation, belief, prediction, world state, confidence, and
+authority must never collapse into one field.
+
+**Reuse rather than sidecars.** Extend the registered VCM/context ABI with stable
+workspace handles, copy-on-write branch overlays, neural-state checkpoint handles,
+belief-particle references, query-plan execution, typed memory-fault escalation, and
+deletion/supersession closure. Extend existing Semantic IR and deterministic runtime
+with typed Query IR (`LOOKUP/FILTER/EXPAND/JOIN/RANK/PROJECT/AGGREGATE/LIMIT`) and
+Program IR (typed values, control flow, recursion, exceptions, contracts, resource
+limits, capability requests, and effect receipts). Extend existing search,
+transaction, replay, rollback, artifact, verifier, and Octopus capability-request
+contracts; do not build a second VCM, graph database, tool registry, artifact store,
+SCF, benchmark ledger, or general execution spine.
+
+**Research machine.** The initial candidate uses a small fixed workspace with exact
+and latent channels; typed perception, working-cognition, planning, world-model,
+metacognition, and consolidation lanes; one shared gated sparse-message transition;
+low-rank relation/lane conditioning; and operation, pointer, workspace-patch,
+prediction, value, uncertainty, progress, value-of-compute, and halt/escalation
+heads. The control instruction set is `ACQUIRE/APPLY/EXPLORE/CHECK/COMMIT/STOP`.
+Impossible operations are masked by type, authority, resource, and effect policy.
+Inner recurrence performs bounded latent refinement; the outer runtime owns exact
+search nodes, branch snapshots, backtracking, counterfactuals, verifier-guided
+pruning, interruption, replay, and best-supported partial or typed-abstention returns.
+The first canary may preregister 32 slots, latent width 384, relation rank 32,
+4-64 recurrent training steps, and a 6M-15M core, but these are experimental starting
+values rather than theory or adoption constraints. Liquid cells, reservoirs, VSA,
+FEP features, and KAN-like transforms remain isolated SymLiquid-derived ablations,
+not a mandatory bundle hidden inside the default cell.
+
+**Receipts and learning timescales.** Every proposal resolves to an existing typed
+receipt state (`OK/FAILED/BLOCKED/UNKNOWN/TIMEOUT/PARTIAL/CONFLICTING/UNVERIFIABLE`)
+with authority, resources, cell steps, search nodes, memory reads, runtime operations,
+verifiers, evidence, state deltas, and residuals. Learned critics remain advisory;
+durable promotion requires exact, empirical, or appropriate human/domain authority.
+Immediate recurrence makes no durable weight changes. Fast adaptive memory is
+disposable and non-authoritative. Core/skill/concept updates occur only during
+quiescent consolidation from a frozen evidence snapshot through replay, regression,
+shadowing, SCF promotion, and rollback.
+
+**Dependency-ordered milestones.** These are one experiment series, not independent
+lanes or permission to start open-domain training early:
+
+0. Freeze architecture, ABI, matched-baseline, channel, budget, failure, and
+   non-claim contracts after v8 disposition; feature-flag and register the candidate.
+1. Implement the exact substrate: typed workspace, Query IR, Program IR, snapshots,
+   transactions, receipts, replay/rollback, VCM bridge, and abstract Octopus calls;
+   require property/mutation tests and exact artifact identity preservation.
+2. Implement the shared typed recurrent cell and serialization; prove operation and
+   pointer imitation, stable variable-depth recurrence, and zero exact-state
+   corruption before broader training.
+3. Preregister train-small/test-large algorithmic generalization on lookup/binding,
+   graph traversal, nested expressions, sorting, dynamic programming, symbolic
+   execution, stack/queue operations, and active acquisition, with recurrent and
+   Transformer controls and no benchmark-identity features.
+4. Add anytime evidence-guided search only after recurrence-only evidence exists;
+   report value-of-compute calibration, nodes, memory reads, verifier calls, latency,
+   energy where available, privacy/risk cost, and the retained recurrence-only arm.
+5. Extend existing Loop Closure with trace normalization, typed anti-unification,
+   behavioral equivalence, program synthesis/simplification, counterexample-guided
+   refinement, shadow routing, SCF qualification, monitoring, and retirement.
+6. Run a frozen-core cumulative-intelligence ratchet: allow verified external
+   artifacts, queries, skills, and concepts to accumulate while core weights remain
+   fixed; require held-out cross-family success or lower future total verified work,
+   not near-duplicate replay or renamed trace compression.
+7. Add observation/belief separation, action-conditioned prediction, calibrated
+   belief particles, hierarchical world-model errors, and model-predictive planning;
+   retain model-free search and deterministic-simulator controls.
+8. Add English/code adapters last. A Transformer adapter is allowed, but adapter
+   size, compute, accessible state, and ablations must prove it is not secretly the
+   cognitive kernel. Keep generated language/code model-only evidence separate from
+   rendered, retrieved, searched, skilled, or tool-produced output.
+9. Integrate checkpoint/candidate gates, SparkStream profile, residual escrow,
+   Octopus routing, and SCF replacement only after matched qualification. Possible
+   dispositions are primary, narrow-domain, research-only, selected-mechanism merge,
+   or rejection; failure is an acceptable and durable result.
+
+**RATCHET-100 contract.** Build generated hidden sequential task families with exact
+verifiers, increasing size, related but non-identical reusable structure, and a fixed
+core during the main sequence. Compare core-only, transcript memory, exact artifact
+memory, matched search, executable skills, abstraction compiler, and full Theseus
+channels. Measure success by sequence position, out-of-distribution size/depth,
+cell steps, search nodes, query/memory/program/verifier cost, permanent bytes, skill
+reuse and false activation, rollback, maintenance/migration burden, and net future
+verified work avoided. No answer replay, benchmark-name routing, or hand-authored
+task-family solution catalog is admissible.
+
+**Matched evidence and total-cost rule.** Report `CORE_ONLY`, `CORE_PLUS_MEMORY`,
+`CORE_PLUS_SEARCH`, and `FULL_SYSTEM` independently. Match governed data, tokenizer
+where applicable, active and total parameters, optimizer positions, adapter size,
+wall/FLOP budget, memory, tool/search/verifier access, and public-calibration policy.
+Publish both preregistered active- and total-parameter views. Total cost includes
+training, inference, search, memory, verification, skill compilation, routing,
+maintenance, migration, governance, and human cleanup. OneCell is retained or
+promoted only for repeatable Pareto value without weak-tail regression; it is revised
+or rejected when depth generalization, pointers, exact-state integrity, query recall,
+search economics, shared-weight interference, frozen-core gains, world-model planning
+utility, or matched total task cost fails.
 
 ### Phase 12: Public Calibration and Residual-Mining Discipline
 - Keep public surfaces registered, decontaminated, frozen by exact surface/seed, and

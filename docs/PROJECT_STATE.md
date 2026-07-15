@@ -164,6 +164,10 @@ share toward zero. Public benchmarks are calibration only.
 
 ## External and Deferred Work
 
+- OneCell-RWM is mapped as a post-v8, non-routeable cognitive-kernel discovery
+  candidate. It cannot alter or delay the frozen v8 disposition or duplicate VIEA,
+  VCM, Octopus, SCF, Loop Closure, SparkStream, registry, or evidence machinery;
+  active work begins with a matched ABI/exact-substrate contract only after v8.
 - Real multi-node Hive proof remains Phase 9 external-environment evidence and waits
   for another trusted reachable node. It does not block local model work.
 - Mobile, Watch, spatial, voice-following, NAS, and broader product surfaces remain
