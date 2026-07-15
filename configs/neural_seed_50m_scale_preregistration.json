@@ -1,0 +1,104 @@
+{
+  "policy": "project_theseus_neural_seed_50m_scale_preregistration_v1",
+  "surface_id": "neural_seed_training_and_generation",
+  "abstraction_id": "neural_seed_generation_contract",
+  "seed": 20260715,
+  "inputs": {
+    "falsification_verdict": "reports/private_functional_utility_qualification.json",
+    "task_complete_report": "reports/task_complete_training_units_v1.json",
+    "canonical_capacity_report": "reports/standard_causal_transformer_scale_v2_plan.json",
+    "vocabulary": "runtime/moecot_language_seed_v1/exact_language_vocab.json"
+  },
+  "candidate": {
+    "id": "moecot_mlx_57m_active_preregistered_v1",
+    "architecture_family": "shared_transformer_low_rank_language_specialists",
+    "shared_trunk_model": {
+      "d_model": 512,
+      "num_layers": 12,
+      "num_heads": 8,
+      "num_kv_heads": 2,
+      "ff_dim": 1536,
+      "rope_base": 10000.0,
+      "rms_norm_eps": 1e-05,
+      "attention_policy": "encoder_decoder",
+      "source_target_separator_token_id": 2,
+      "source_encoder_layers": 2,
+      "source_copy_mode": "pointer_generator",
+      "source_copy_auxiliary_loss_weight": 0.25
+    },
+    "arm_model": {
+      "d_model": 512,
+      "num_layers": 12,
+      "num_heads": 8,
+      "num_kv_heads": 2,
+      "ff_dim": 1536,
+      "rope_base": 10000.0,
+      "rms_norm_eps": 1e-05,
+      "attention_policy": "encoder_decoder",
+      "source_target_separator_token_id": 2,
+      "source_encoder_layers": 2,
+      "source_copy_mode": "pointer_generator",
+      "source_copy_auxiliary_loss_weight": 0.25,
+      "expert_adapter_dim": 128,
+      "source_expert_adapter_dim": 64
+    },
+    "expert_trainable_scope": "low_rank_source_adapters",
+    "arm_count": 5,
+    "arms": ["english", "python", "javascript_typescript", "html_css", "rust"]
+  },
+  "scaling_contract": {
+    "minimum_active_parameters": 50000000,
+    "maximum_active_parameters": 100000000,
+    "minimum_unique_positions_per_active_parameter": 20.0,
+    "maximum_optimizer_repetition_factor": 4.0,
+    "unique_positions_never_include_optimizer_repetition": true,
+    "task_complete_coverage_required_for_every_arm": true,
+    "matched_accounting_views": ["active_parameters", "total_parameters"],
+    "confirmation_surface_reserved": true
+  },
+  "resource_canary": {
+    "backend": "mlx",
+    "batch_size": 1,
+    "sequence_length": 128,
+    "optimizer": "AdamW",
+    "learning_rate": 1e-05,
+    "steps_before_checkpoint": 1,
+    "steps_after_resume": 1,
+    "models": ["moecot_active_arm", "dense_active_parameter", "dense_total_parameter"],
+    "require_finite_loss": true,
+    "require_parameter_update": true,
+    "require_checkpoint_reload_equivalence": true,
+    "require_optimizer_resume": true,
+    "temporary_artifacts_retained": false
+  },
+  "training_stop_contract": {
+    "pilot_optimizer_positions": 100000000,
+    "review_optimizer_positions": [250000000, 500000000, 1000000000],
+    "maximum_optimizer_positions": 2000000000,
+    "stop_on_nonfinite_loss": true,
+    "stop_on_repeated_checkpoint_or_resume_failure": true,
+    "stop_on_heldout_tail_regression": true,
+    "stop_on_no_model_only_functional_gain_at_two_consecutive_reviews": true,
+    "no_architecture_change_during_rung": true
+  },
+  "heldout_utility_contract": {
+    "source_disjoint": true,
+    "confirmation_untouched_until_candidate_selected": true,
+    "minimum_model_only_passes_per_arm": 1,
+    "report_every_arm_before_aggregate": true,
+    "model_only_and_assisted_channels_separate": true,
+    "accepted_verified_output_per_second_reported": true
+  },
+  "boundaries": {
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "fallback_return_count": 0,
+    "templates_renderers_routers_tools_generation_credit": 0,
+    "falsified_10_8m_rung_restart_allowed": false,
+    "training_authorized_by_preregistration_alone": false
+  },
+  "outputs": {
+    "report": "reports/neural_seed_50m_scale_preregistration.json"
+  }
+}

@@ -2,6 +2,7 @@
   "candidate_lineage": {
     "candidate_receipt_ledger": {
       "bytes": 14721184,
+      "cache_reused": true,
       "compression": "gzip_jsonl",
       "decision_counts": {
         "admit": 115029,
@@ -51,9 +52,9 @@
       "quarantined_candidate_count": 0,
       "raw_user_text_candidate_count": 0,
       "rejected_candidate_count": 304,
-      "report_cache_reused": false,
+      "report_cache_reused": true,
       "runtime_external_inference_calls": 0,
-      "runtime_ms": 10627,
+      "runtime_ms": 9798,
       "semantic_public_overlap_candidate_count": 0,
       "source_count": 98,
       "teacher_candidate_count": 0,
@@ -61,7 +62,7 @@
     },
     "trigger_state": "YELLOW"
   },
-  "created_utc": "2026-07-12T09:02:45.682286+00:00",
+  "created_utc": "2026-07-15T13:45:12.691731+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -2276,15 +2277,20 @@
     },
     "external_inference_calls": 0,
     "heldout_eval_only_source_count": 13,
-    "local_source_count": 400,
+    "local_source_count": 401,
     "open_code_candidate_count": 93,
     "public_benchmark_payload_admitted": false,
     "public_benchmark_quarantine_source_count": 100,
     "public_benchmark_training_allowed": false,
     "public_fingerprint_count": 5031,
     "public_open_training_allowed": true,
-    "quarantined_source_count": 189,
+    "quarantined_source_count": 190,
     "rejected_source_count": 100,
+    "task_complete_admitted_units": 25943,
+    "task_complete_contract_ready": true,
+    "task_complete_coverage_ready": false,
+    "task_complete_ledger_replay_valid": true,
+    "task_complete_target_positions": 31388497,
     "teacher_distillation_admission_safety_clean": true,
     "teacher_distillation_gate_allowed": true,
     "teacher_distillation_ledger_rows": 46,
@@ -2303,6 +2309,87 @@
     "vcm_context_resolver_passed_count": 7,
     "vcm_context_resolver_request_count": 7,
     "vcm_context_resolver_status": "ready"
+  },
+  "task_complete_training_units": {
+    "admitted_unit_count": 25943,
+    "boundary_clean": true,
+    "contract_ready": true,
+    "contract_state": "GREEN",
+    "coverage": {
+      "english": {
+        "checks": {
+          "human_share": true,
+          "multi_turn_share": true,
+          "position_floor": true,
+          "unit_floor": true
+        },
+        "human_contributed_share": 0.544317,
+        "minimum_target_positions": 10000000,
+        "minimum_verified_units": 20000,
+        "multi_turn_share": 0.486662,
+        "ready": true,
+        "required_verification_strength": null,
+        "target_positions": 30740755,
+        "verified_units": 25566
+      },
+      "html_css": {
+        "checks": {
+          "position_floor": false,
+          "unit_floor": false
+        },
+        "minimum_target_positions": 500000,
+        "minimum_verified_units": 500,
+        "ready": false,
+        "required_verification_strength": "dom_a11y_layout_render_delta",
+        "target_positions": 146006,
+        "verified_units": 7
+      },
+      "javascript_typescript": {
+        "checks": {
+          "position_floor": false,
+          "unit_floor": false
+        },
+        "minimum_target_positions": 1000000,
+        "minimum_verified_units": 1000,
+        "ready": false,
+        "required_verification_strength": "executable_target_pass_starter_fail",
+        "target_positions": 160165,
+        "verified_units": 135
+      },
+      "python": {
+        "checks": {
+          "position_floor": false,
+          "unit_floor": false
+        },
+        "minimum_target_positions": 1000000,
+        "minimum_verified_units": 1000,
+        "ready": false,
+        "required_verification_strength": "executable_target_pass_starter_fail",
+        "target_positions": 143797,
+        "verified_units": 138
+      },
+      "rust": {
+        "checks": {
+          "position_floor": false,
+          "unit_floor": false
+        },
+        "minimum_target_positions": 1000000,
+        "minimum_verified_units": 500,
+        "ready": false,
+        "required_verification_strength": "executable_target_pass_starter_fail",
+        "target_positions": 197774,
+        "verified_units": 97
+      }
+    },
+    "coverage_ready": false,
+    "coverage_state": "YELLOW",
+    "ledger_identity_valid": true,
+    "ledger_replay_valid": true,
+    "non_claim": "Task-complete unit admission is data-readiness evidence, not model utility or route authority.",
+    "path": "reports/task_complete_training_units_v1.json",
+    "policy": "project_theseus_task_complete_training_units_v1",
+    "report_present": true,
+    "target_positions": 31388497
   },
   "train_admitted_sources": [
     {
@@ -12734,7 +12821,7 @@
       "full_packet_evidence_required": true,
       "governor_content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
       "governor_receipt_id": "ac9238c24b5c801b9bc12dec",
-      "lease_expires_utc": "2026-07-12T09:17:32.778854Z",
+      "lease_expires_utc": "2026-07-15T13:59:55.320736Z",
       "lease_id": "edda95cab7bfc11ddabd5eb9",
       "lease_state": "active",
       "omissions": [

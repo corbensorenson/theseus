@@ -1,0 +1,231 @@
+{
+  "boundaries": {
+    "capability_claim": "NOT_EVALUATED",
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_training_rows_written": 0,
+    "runtime_serving_allowed": false,
+    "teacher_calls": 0
+  },
+  "coverage": {
+    "english": {
+      "checks": {
+        "human_share": true,
+        "multi_turn_share": true,
+        "position_floor": true,
+        "unit_floor": true
+      },
+      "human_contributed_share": 0.544317,
+      "minimum_target_positions": 10000000,
+      "minimum_verified_units": 20000,
+      "multi_turn_share": 0.486662,
+      "ready": true,
+      "required_verification_strength": null,
+      "target_positions": 30740755,
+      "verified_units": 25566
+    },
+    "html_css": {
+      "checks": {
+        "position_floor": false,
+        "unit_floor": false
+      },
+      "minimum_target_positions": 500000,
+      "minimum_verified_units": 500,
+      "ready": false,
+      "required_verification_strength": "dom_a11y_layout_render_delta",
+      "target_positions": 146006,
+      "verified_units": 7
+    },
+    "javascript_typescript": {
+      "checks": {
+        "position_floor": false,
+        "unit_floor": false
+      },
+      "minimum_target_positions": 1000000,
+      "minimum_verified_units": 1000,
+      "ready": false,
+      "required_verification_strength": "executable_target_pass_starter_fail",
+      "target_positions": 160165,
+      "verified_units": 135
+    },
+    "python": {
+      "checks": {
+        "position_floor": false,
+        "unit_floor": false
+      },
+      "minimum_target_positions": 1000000,
+      "minimum_verified_units": 1000,
+      "ready": false,
+      "required_verification_strength": "executable_target_pass_starter_fail",
+      "target_positions": 143797,
+      "verified_units": 138
+    },
+    "rust": {
+      "checks": {
+        "position_floor": false,
+        "unit_floor": false
+      },
+      "minimum_target_positions": 1000000,
+      "minimum_verified_units": 500,
+      "ready": false,
+      "required_verification_strength": "executable_target_pass_starter_fail",
+      "target_positions": 197774,
+      "verified_units": 97
+    }
+  },
+  "created_utc": "2026-07-15T13:44:30.250446+00:00",
+  "policy": "project_theseus_task_complete_training_unit_manifest_v1",
+  "raw_unit_payloads_in_manifest": false,
+  "source_config": "configs/task_complete_training_units.json",
+  "source_config_sha256": "87b2fbb249fe0abcfdfd467798d804b16ac8fcd88dff715b223ad3aebf722d50",
+  "source_summaries": [
+    {
+      "adapter": "governed_conversation_assistant_turns",
+      "decision_counts": {
+        "admit": 25566,
+        "reject": 4
+      },
+      "input_row_count": 25570,
+      "license_spdx": null,
+      "repo": null,
+      "reused_content_bound_contamination_count": 25570,
+      "revision": null,
+      "source_id": "governed_open_conversations_v1",
+      "source_receipt_count": 25570,
+      "target_positions": 30740755,
+      "unit_count": 25570,
+      "verification_state_counts": {
+        "passed": 25570
+      }
+    },
+    {
+      "adapter": "exercism_practice_exercises",
+      "decision_counts": {
+        "admit": 138,
+        "reject": 2
+      },
+      "incompatible_exercise_count": 0,
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 124,
+      "repo": "exercism/python",
+      "revision": "250bf19050543da09e122211fc7430fe6f44c564",
+      "source_id": "exercism_python_250bf190",
+      "source_root": "runtime/task_complete_sources/extracted/exercism__python__250bf19050543da09e122211fc7430fe6f44c564",
+      "target_positions": 143797,
+      "unit_count": 140,
+      "verification_state_counts": {
+        "failed": 2,
+        "passed": 138
+      }
+    },
+    {
+      "adapter": "exercism_practice_exercises",
+      "decision_counts": {
+        "admit": 135,
+        "reject": 4
+      },
+      "incompatible_exercise_count": 0,
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 123,
+      "repo": "exercism/javascript",
+      "revision": "295540983b6323edcfd457b3163ad6c63608f2da",
+      "source_id": "exercism_javascript_29554098",
+      "source_root": "runtime/task_complete_sources/extracted/exercism__javascript__295540983b6323edcfd457b3163ad6c63608f2da",
+      "target_positions": 160165,
+      "unit_count": 139,
+      "verification_state_counts": {
+        "failed": 4,
+        "passed": 135
+      }
+    },
+    {
+      "adapter": "exercism_practice_exercises",
+      "decision_counts": {
+        "admit": 97,
+        "reject": 9
+      },
+      "incompatible_exercise_count": 0,
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 91,
+      "repo": "exercism/rust",
+      "revision": "3dc1f82096828c7010718420a72c373c63fd71ea",
+      "source_id": "exercism_rust_3dc1f820",
+      "source_root": "runtime/task_complete_sources/extracted/exercism__rust__3dc1f82096828c7010718420a72c373c63fd71ea",
+      "target_positions": 197774,
+      "unit_count": 106,
+      "verification_state_counts": {
+        "failed": 9,
+        "passed": 97
+      }
+    },
+    {
+      "adapter": "mdn_start_finished_assessments",
+      "decision_counts": {
+        "admit": 7,
+        "reject": 1
+      },
+      "license_spdx": "CC0-1.0",
+      "matched_assessment_pair_count": 9,
+      "new_verification_attempt_count": 0,
+      "repo": "mdn/learning-area",
+      "revision": "180371ffc567f0f2ef359bf408b976667839e764",
+      "source_id": "mdn_learning_area_180371ff",
+      "source_root": "runtime/task_complete_sources/extracted/mdn__learning-area__180371ffc567f0f2ef359bf408b976667839e764",
+      "target_positions": 146006,
+      "unit_count": 8,
+      "verification_state_counts": {
+        "failed": 1,
+        "passed": 7
+      }
+    }
+  ],
+  "summary": {
+    "admitted_unit_count": 25943,
+    "arm_counts": {
+      "english": 25566,
+      "html_css": 7,
+      "javascript_typescript": 135,
+      "python": 138,
+      "rust": 97
+    },
+    "contract_hard_gap_count": 0,
+    "coverage_gap_count": 4,
+    "decision_counts": {
+      "admit": 25943,
+      "reject": 20
+    },
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "inventory_only": false,
+    "public_exact_overlap_unit_count": 0,
+    "public_semantic_overlap_unit_count": 0,
+    "public_training_rows_written": 0,
+    "raw_user_text_admitted": false,
+    "runtime_ms": 514937,
+    "source_count": 5,
+    "split_counts": {
+      "confirmation": 1264,
+      "development": 1321,
+      "train": 23358
+    },
+    "task_complete_unique_target_positions": 31388497,
+    "teacher_calls": 0,
+    "unit_count": 25963,
+    "verification_cache_entry_count": 393,
+    "verification_cache_new_or_replaced_count": 338,
+    "verification_state_counts": {
+      "failed": 16,
+      "passed": 25947
+    },
+    "verification_strength_counts": {
+      "dom_a11y_layout_render_delta": 7,
+      "executable_target_pass_starter_fail": 370,
+      "governed_conversation_target_bound": 25566
+    }
+  },
+  "unit_ledger": "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
+  "unit_ledger_count": 25963,
+  "unit_ledger_sha256": "87cad496ac8c653adf3cb880b2699470a86bcd040214824518406b2e7f1efc35",
+  "verification_cache": "runtime/data_governance/task_complete_verification_cache_v1.jsonl",
+  "verification_cache_sha256": "bf7f31c192b07b6e2682de4ab28b873abd9c70d4939c9e7082cbfcec2b332b01"
+}

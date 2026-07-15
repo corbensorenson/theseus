@@ -29,6 +29,7 @@ DEFAULT_MARKDOWN = ROOT / "reports" / "training_data_admission_v1.md"
 DEFAULT_MANIFEST = ROOT / "data" / "training_sources" / "training_data_admission_v1.json"
 DEFAULT_GROWTH_POLICY = ROOT / "configs" / "permissive_growth_policy.json"
 DEFAULT_VCM_CONTEXT_GOVERNOR = ROOT / "reports" / "vcm_context_governor.json"
+DEFAULT_TASK_COMPLETE_REPORT = ROOT / "reports" / "task_complete_training_units_v1.json"
 
 ALLOWED_LICENSES = {
     "apache-2.0",
@@ -106,6 +107,7 @@ def main() -> int:
     parser.add_argument("--max-public-contamination-texts", type=int, default=20000)
     parser.add_argument("--growth-policy", default=rel(DEFAULT_GROWTH_POLICY))
     parser.add_argument("--vcm-context-governor", default=rel(DEFAULT_VCM_CONTEXT_GOVERNOR))
+    parser.add_argument("--task-complete-report", default=rel(DEFAULT_TASK_COMPLETE_REPORT))
     parser.add_argument("--sample-rows-per-source", type=int, default=256)
     parser.add_argument("--max-public-fingerprints", type=int, default=20000)
     args = parser.parse_args()
@@ -195,6 +197,9 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
     ]
     open_code_candidates = audit_open_code_pantry(public_open_training_allowed=public_open_training_allowed)
     teacher_distillation = audit_teacher_distillation_gate()
+    task_complete = audit_task_complete_training_units(
+        resolve(getattr(args, "task_complete_report", rel(DEFAULT_TASK_COMPLETE_REPORT)))
+    )
     public_benchmark_sources = [row for row in source_rows if row["source_kind"] == "public_benchmark_quarantine"]
     train_allowed = [row for row in source_rows if row["allowed_for_training"]]
     rejected = [row for row in source_rows if not row["allowed_for_training"] and row["training_use"] == "rejected"]
@@ -271,6 +276,18 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
             "hard",
         ),
         gate(
+            "task_complete_training_unit_contract_ready",
+            bool(task_complete["contract_ready"]),
+            task_complete,
+            "hard",
+        ),
+        gate(
+            "task_complete_50m_coverage_ready",
+            bool(task_complete["coverage_ready"]),
+            task_complete.get("coverage"),
+            "warning",
+        ),
+        gate(
             "open_code_corpora_manifested_pending_import",
             len(open_code_candidates) > 0,
             len(open_code_candidates),
@@ -325,6 +342,11 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
             "vcm_context_resolver_status": vcm_receipt.get("context_resolver_status"),
             "vcm_context_resolver_passed_count": vcm_receipt.get("context_resolver_passed_count"),
             "vcm_context_resolver_request_count": vcm_receipt.get("context_resolver_request_count"),
+            "task_complete_contract_ready": task_complete["contract_ready"],
+            "task_complete_coverage_ready": task_complete["coverage_ready"],
+            "task_complete_admitted_units": task_complete["admitted_unit_count"],
+            "task_complete_target_positions": task_complete["target_positions"],
+            "task_complete_ledger_replay_valid": task_complete["ledger_replay_valid"],
         },
         "hard_invariants": [
             "Public benchmark prompts, tests, hidden tests, solutions, traces, and answer templates are calibration-only.",
@@ -338,6 +360,7 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
         "vcm_context_governor_receipt": vcm_receipt,
         "viea_training_data_context_records": training_data_vcm_records(vcm_receipt),
         "teacher_distillation_admission": teacher_distillation,
+        "task_complete_training_units": task_complete,
         "open_code_public_corpus_candidates": open_code_candidates,
         "growth_policy": rel(resolve(args.growth_policy)),
         "gates": gates,
@@ -347,6 +370,53 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
         ),
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "external_inference_calls": 0,
+    }
+
+
+def audit_task_complete_training_units(path: Path) -> dict[str, Any]:
+    report = read_json_follow_pointer(path)
+    report = report if isinstance(report, dict) else {}
+    summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
+    ledger = report.get("ledger_receipt") if isinstance(report.get("ledger_receipt"), dict) else {}
+    boundaries = report.get("boundaries") if isinstance(report.get("boundaries"), dict) else {}
+    ledger_path = resolve(str(ledger.get("path") or "")) if ledger.get("path") else None
+    ledger_identity_valid = bool(
+        ledger_path
+        and ledger_path.is_file()
+        and str(ledger.get("sha256") or "") == sha256_file(ledger_path)
+    )
+    boundary_keys = (
+        "public_training_rows_written",
+        "external_inference_calls",
+        "teacher_calls",
+        "fallback_return_count",
+    )
+    boundary_clean = all(int(boundaries.get(key) or 0) == 0 for key in boundary_keys)
+    summary_clean = all(int(summary.get(key) or 0) == 0 for key in boundary_keys)
+    ledger_replay_valid = bool(ledger.get("replay_valid") and ledger_identity_valid)
+    contract_ready = bool(
+        report.get("policy") == "project_theseus_task_complete_training_units_v1"
+        and report.get("contract_state") == "GREEN"
+        and ledger_replay_valid
+        and boundary_clean
+        and summary_clean
+        and int(summary.get("contract_hard_gap_count") or 0) == 0
+    )
+    return {
+        "path": rel(path),
+        "report_present": bool(report),
+        "policy": report.get("policy"),
+        "contract_state": report.get("contract_state"),
+        "coverage_state": report.get("coverage_state"),
+        "contract_ready": contract_ready,
+        "coverage_ready": contract_ready and report.get("coverage_state") == "GREEN",
+        "admitted_unit_count": int(summary.get("admitted_unit_count") or 0),
+        "target_positions": int(summary.get("task_complete_unique_target_positions") or 0),
+        "ledger_replay_valid": ledger_replay_valid,
+        "ledger_identity_valid": ledger_identity_valid,
+        "boundary_clean": boundary_clean and summary_clean,
+        "coverage": report.get("coverage") if isinstance(report.get("coverage"), dict) else {},
+        "non_claim": "Task-complete unit admission is data-readiness evidence, not model utility or route authority.",
     }
 
 
@@ -1155,6 +1225,7 @@ def manifest_payload(report: dict[str, Any]) -> dict[str, Any]:
         "public_benchmark_training_allowed": False,
         "vcm_context_governor_receipt": receipt,
         "candidate_lineage": compact_lineage,
+        "task_complete_training_units": report.get("task_complete_training_units"),
         "external_inference_calls": 0,
     }
 
@@ -1176,6 +1247,9 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- public benchmark payload admitted: `{summary.get('public_benchmark_payload_admitted')}`",
         f"- public fingerprints loaded: `{summary.get('public_fingerprint_count')}`",
         f"- VCM governor ready: `{summary.get('vcm_context_governor_ready')}` resolver `{summary.get('vcm_context_resolver_status')}` `{summary.get('vcm_context_resolver_passed_count')}/{summary.get('vcm_context_resolver_request_count')}`",
+        f"- task-complete contract ready: `{summary.get('task_complete_contract_ready')}`",
+        f"- task-complete 50M coverage ready: `{summary.get('task_complete_coverage_ready')}`",
+        f"- task-complete admitted units: `{summary.get('task_complete_admitted_units')}`",
         f"- external inference calls: `{summary.get('external_inference_calls')}`",
         "",
         "## Capability Tags",

@@ -27,16 +27,17 @@ share toward zero. Public benchmarks are calibration only.
   `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
   canary rung; it does not select an architecture or authorize a route.
 - **Data gate:** the content-bound audit credits 683,254,465 unique governed
-  positions. The frozen comparison uses 215,552,020 positions for a 10,777,601-active
-  sparse model and mechanically matched 10,779,648-active/12,499,968-total dense
-  controls. The data, tokenizer, seed, supervision, development, confirmation, and
-  verifier contracts are immutable through the verdict.
-- **Immediate dependency:** keep the consumed rung immutable. Inventory and admit
-  task-complete licensed English/Python/JS-TS/HTML-CSS/Rust units, then preregister
-  the smallest supported 50M-100M active MLX rung with scaling estimates, unique-
-  position and verified-unit floors, matched controls, memory/throughput/resume
-  canaries, fixed stop criteria, and heldout tail floors. Do not spend confirmation,
-  public calibration, or another same-scale architecture patch on v8.
+  positions. The task-complete ledger admits `25,943/25,963` units with zero public
+  overlap, teacher calls, external inference, or fallback returns. Verified coverage
+  is English `25,566`, Python `138`, JS/TS `135`, HTML/CSS `7`, and Rust `97`; every
+  code arm remains below its frozen unit and position floors.
+- **Immediate dependency:** keep the consumed rung and the new 57.315M-active proposal
+  immutable. Its candidate and both matched dense controls pass real MLX update,
+  exact checkpoint reload, optimizer-resume, and cleanup canaries, but training is
+  denied: the proposal needs 1,146,306,580 unique positions, leaving a 463,052,115
+  shortfall plus four code-arm coverage gaps. Add pinned high-quality licensed
+  product data through the existing task-complete admission contract; do not spend
+  confirmation, public calibration, or another same-scale architecture patch.
 
 ## Evidence Boundaries
 
@@ -91,6 +92,10 @@ share toward zero. Public benchmarks are calibration only.
   streams. The frozen stage contains 452,782 non-overlapping windows, zero admitted
   unknown positions, zero public training rows, zero external inference calls, and
   zero fallback/template/router/tool generation credit.
+- **Post-v8 MLX preregistration:** the frozen candidate has `57,315,329` active and
+  `67,332,614` total parameters; matched controls have `57,323,520` active and
+  `67,332,096` total parameters. The resource canary is GREEN for all three models.
+  This proves mechanics only and authorizes no training or capability claim.
 - **Deterministic tools:** exact tools are evidence-producing instruments, not learned
   generation. `UNKNOWN`, `UNSOLVED`, and typed faults are preferred to fabricated
   answers.
@@ -144,8 +149,9 @@ share toward zero. Public benchmarks are calibration only.
    immutable negative evidence; all three candidates scored `0/160`.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
-5. Build task-complete licensed data and preregister the smallest supported 50M-100M
-   active MLX rung. Do not spend another cycle on a same-scale architecture patch.
+5. Expand task-complete licensed data until the frozen 57.315M-active proposal clears
+   its unique-position and every-arm coverage floors. Its architecture, matched
+   controls, stop contract, and resource canaries are already preregistered.
 6. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
 7. Integrate Question-Compiled Semantic Addressing only through the registered VCM
@@ -180,9 +186,8 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Inventory and admit task-complete licensed English and code units with executable or
-blind-rubric verification, source-disjoint lineage, provenance, license, contamination,
-and toolchain receipts. Use the admitted corpus to preregister the smallest supported
-50M-100M active MLX rung with matched sparse/dense controls and fixed scaling, memory,
-throughput, resume, stop, and heldout-tail criteria. Do not train until that proposal
-is evidence-complete; do not rerun v8 or spend a public surface first.
+Add pinned high-quality licensed product sources to the existing task-complete ledger.
+Close the measured Python, JS/TS, HTML/CSS, Rust, and 463,052,115-position shortfalls
+without counting repetition, target-only snippets, unverified rows, or public
+calibration payloads. Rerun canonical admission and the frozen 57.315M proposal only
+to refresh content-bound evidence; train only after every data floor is satisfied.

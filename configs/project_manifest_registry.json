@@ -254,7 +254,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "4dee760d716fd61d8e79dd0ba180d4cfdc77f8f328836a457b6c5a456028b249"
+          "sha256": "4920c45a11bde2e755f64b45c7cd1cf66da0d453e985d14a16231627fe76301a"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -2709,6 +2709,7 @@
       "required_evidence": [
         "teacher distillation gate",
         "training data admission report",
+        "task-complete unit report and content-bound replay ledger",
         "content-bound per-candidate admission receipt ledger",
         "semantic contamination adversary controls",
         "continual data-policy comparison",
@@ -4886,7 +4887,7 @@
       "canonical_entrypoint": "scripts/standard_causal_transformer_survival.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve prompt/signature-only visibility, reversible tokenization, direct learned full-body generation, independent integrity and blind-flow audits, private verifier replay, exact checkpoint binding, and zero fallback/template/router/tool credit.",
-      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_theseus_artifact_admission.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
+      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_neural_seed_50m_scale_preregistration.py tests/test_theseus_artifact_admission.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/neural_seed_50m_scale_preregistration.py --execute-canaries && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
       "role": "matched_control",
       "trust_tier": "governed_training_candidate",
       "dependencies": [
@@ -4903,6 +4904,9 @@
         "scripts/standard_causal_transformer_conditioning.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_preference.py",
+        "configs/neural_seed_50m_scale_preregistration.json",
+        "scripts/neural_seed_50m_scale_preregistration.py",
+        "tests/test_neural_seed_50m_scale_preregistration.py",
         "configs/neural_seed_functional_utility.json",
         "configs/neural_seed_functional_utility_freeze.json",
         "configs/neural_seed_local_english_raters.json",
@@ -4956,7 +4960,8 @@
         "reports/private_functional_utility_dense_active.json",
         "reports/private_functional_utility_dense_total.json",
         "reports/private_functional_utility_qualification.json",
-        "reports/private_functional_consumption_registry.jsonl"
+        "reports/private_functional_consumption_registry.jsonl",
+        "reports/neural_seed_50m_scale_preregistration.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -5840,7 +5845,7 @@
       "canonical_entrypoint": "scripts/teacher_distillation_gate.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve provenance, license, verifier, leakage, and runtime-serving boundaries.",
-      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 tests/test_training_data_lineage_audit.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_data_admission_v1.py scripts/training_data_lineage_audit.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/task_complete_training_units.py --prepare-javascript && python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 -m pytest -q tests/test_training_data_lineage_audit.py tests/test_task_complete_training_units.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_data_admission_v1.py scripts/training_data_lineage_audit.py scripts/task_complete_training_units.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "teacher",
       "trust_tier": "governed_external_training_only",
       "dependencies": [
@@ -5848,6 +5853,9 @@
         "scripts/teacher_distillation_gate.py",
         "scripts/training_data_admission_v1.py",
         "scripts/training_data_lineage_audit.py",
+        "configs/task_complete_training_units.json",
+        "scripts/task_complete_training_units.py",
+        "tests/test_task_complete_training_units.py",
         "scripts/broad_capability_curriculum_v1.py",
         "scripts/broad_capability_survival_lane_run_v1.py",
         "tests/test_training_data_lineage_audit.py",
@@ -5868,6 +5876,9 @@
         "reports/training_data_lineage_audit.json",
         "reports/training_data_lineage_audit.md",
         "runtime/data_governance/data_admission_receipts_v1.jsonl.gz",
+        "reports/task_complete_training_units_v1.json",
+        "data/training_sources/task_complete_training_units_v1.json",
+        "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
         "reports/broad_capability_curriculum_v1.json",
         "reports/broad_capability_survival_lane_run_v1.json",
         "reports/public_calibration_proposal_gate.json"
@@ -5920,12 +5931,16 @@
         "state_compatibility": {
           "reads": [
             "configs/project_manifest_registry.json",
-            "scripts/teacher_distillation_gate.py"
+            "scripts/teacher_distillation_gate.py",
+            "configs/task_complete_training_units.json",
+            "scripts/task_complete_training_units.py"
           ],
           "writes": [
             "reports/teacher_distillation_gate.json",
             "reports/teacher_share_ledger_summary.json",
             "reports/training_data_admission_v1.json",
+            "reports/task_complete_training_units_v1.json",
+            "data/training_sources/task_complete_training_units_v1.json",
             "reports/public_calibration_proposal_gate.json"
           ],
           "migration_required": false,
@@ -5940,13 +5955,16 @@
             "reports/teacher_distillation_gate.json",
             "reports/teacher_share_ledger_summary.json",
             "reports/training_data_admission_v1.json",
+            "reports/task_complete_training_units_v1.json",
             "reports/public_calibration_proposal_gate.json"
           ],
-          "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/training_data_admission_v1.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_data_admission_v1.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/task_complete_training_units.py --prepare-javascript && python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json && python3 scripts/public_calibration_proposal_gate.py && python3 -m pytest -q tests/test_task_complete_training_units.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/task_complete_training_units.py scripts/training_data_admission_v1.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
             "scripts/teacher_distillation_gate.py",
+            "configs/task_complete_training_units.json",
+            "scripts/task_complete_training_units.py",
             "scripts/public_calibration_proposal_gate.py"
           ]
         },
@@ -8289,6 +8307,9 @@
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
         "reports/training_data_admission_v1.json",
+        "reports/task_complete_training_units_v1.json",
+        "data/training_sources/task_complete_training_units_v1.json",
+        "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
         "reports/training_data_lineage_audit.json",
         "reports/training_data_lineage_audit.md",
         "reports/open_conversation_training_pantry.json",
@@ -8297,7 +8318,7 @@
         "reports/broad_capability_curriculum_v1.json",
         "reports/broad_capability_survival_lane_run_v1.json"
       ],
-      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/open_conversation_training_pantry.py --scalable && python3 scripts/training_data_admission_v1.py && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 tests/test_training_data_lineage_audit.py && python3 tests/test_governed_conversation_stream.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/governed_conversation_stream.py scripts/open_conversation_training_pantry.py",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/open_conversation_training_pantry.py --scalable && python3 scripts/task_complete_training_units.py --prepare-javascript && python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 -m pytest -q tests/test_training_data_lineage_audit.py tests/test_task_complete_training_units.py tests/test_governed_conversation_stream.py && python3 -m py_compile scripts/task_complete_training_units.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/governed_conversation_stream.py scripts/open_conversation_training_pantry.py",
       "cleanup_policy": "teacher rows require provenance, license, verifier, and leakage audit; external tokens are never runtime-serving output",
       "abstraction_id": "teacher_data_governance_contract",
       "major_surface": true,

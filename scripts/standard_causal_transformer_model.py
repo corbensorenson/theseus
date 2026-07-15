@@ -701,7 +701,12 @@ def build_model(
             pointer_scores = mx.matmul(query, key.transpose(0, 2, 1)) / math.sqrt(
                 config.d_model
             )
-            valid = (source_mask > 0) & (source_copy_ids >= 0)
+            vocabulary_size = int(generator_logits.shape[-1])
+            valid = (
+                (source_mask > 0)
+                & (source_copy_ids >= 0)
+                & (source_copy_ids < vocabulary_size)
+            )
             source_length = int(source_copy_ids.shape[1])
             positions = mx.arange(source_length, dtype=mx.int32)
             same_id = source_copy_ids[:, :, None] == source_copy_ids[:, None, :]
@@ -715,13 +720,32 @@ def build_model(
                 pointer_scores,
                 mx.array(-1e9, dtype=mx.float32),
             )
-            indices = mx.broadcast_to(
-                mx.maximum(source_copy_ids, 0)[:, None, :], pointer_scores.shape
+            copy_indices = mx.broadcast_to(
+                source_copy_ids[:, None, :], pointer_scores.shape
             )
-            pointer_logits = mx.full(generator_logits.shape, -1e9, dtype=mx.float32)
-            pointer_logits = mx.put_along_axis(
-                pointer_logits, indices, pointer_scores, axis=2
+            # Every non-copy source position gets a distinct scratch column. Reusing
+            # vocabulary slot zero (or one shared sentinel) creates duplicate scatter
+            # indices whose Metal write order is undefined and made identical forwards
+            # disagree. Valid copy IDs are already unique per row above.
+            scratch_indices = mx.broadcast_to(
+                (
+                    vocabulary_size
+                    + mx.arange(source_length, dtype=mx.int32)
+                )[None, None, :],
+                pointer_scores.shape,
             )
+            indices = mx.where(
+                unique_valid[:, None, :], copy_indices, scratch_indices
+            )
+            pointer_logits_with_scratch = mx.full(
+                (*generator_logits.shape[:-1], vocabulary_size + source_length),
+                -1e9,
+                dtype=mx.float32,
+            )
+            pointer_logits_with_scratch = mx.put_along_axis(
+                pointer_logits_with_scratch, indices, pointer_scores, axis=2
+            )
+            pointer_logits = pointer_logits_with_scratch[:, :, :vocabulary_size]
             generator_log_probs = generator_logits - mx.logsumexp(
                 generator_logits, axis=-1, keepdims=True
             )

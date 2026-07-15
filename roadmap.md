@@ -29,13 +29,13 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions, but the frozen v8 rows are mostly prompt/target pairs without task-complete functional verification | keep v8 immutable; qualify the next rung on licensed product-shaped units with tests, toolchain receipts, multi-turn state, and source-disjoint splits |
+| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable: 25,943/25,963 units admitted; English has 25,566 verified units, but Python 138, JS/TS 135, HTML/CSS 7, and Rust 97 remain below coverage floors | add pinned high-quality licensed product sources through the existing verifier/admission path; close the measured arm and 463.05M-position shortfalls without repetition or public payloads |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out utility) | Phase 10 | exact-once qualification completed: MoECOT, dense-active, and dense-total each scored 0/160 and 0/32 in every arm | close the 10.8M rung; build task-complete licensed English/code data and preregister the smallest supported 50M-100M active MLX rung |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active MLX candidate and matched controls pass update/checkpoint/resume canaries, but training is denied for insufficient unique positions and four weak task-complete arms | preserve the frozen proposal and fund it with admissible data before training; no same-scale patch or premature amplifier |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -793,6 +793,13 @@ for the current matched comparison. That proves quantity, lineage, and tokenizer
 integrity, not product suitability. Most v8 development rows carry prompt and target
 without executable tests or task-level utility contracts; no later score may relabel
 them as functionally verified examples.
+- The task-complete contract is now implemented inside canonical admission. Its full
+  pinned-source pass admits `25,943/25,963` units: English `25,566`, Python `138`,
+  JS/TS `135`, HTML/CSS `7`, and Rust `97`. It binds target behavior, verifier,
+  source-disjoint split, license/provenance, contamination, and toolchain/sandbox
+  identity; zero public overlap, teacher calls, external inference, and fallback
+  returns were observed. Coverage remains `YELLOW` because every code arm is below
+  its preregistered unit and position floors.
 - Add a registered `task_complete_training_unit` to the existing data contract, not a
   new lane. Every supervised unit binds visible context, complete target, task family,
   language/toolchain, verifier or rubric artifact, expected observable behavior,
@@ -952,6 +959,18 @@ evidence earns a different route.)
   - fixed optimizer exposure, development/confirmation splits, and stop criteria.
   Repeated positions, teacher paraphrases, target-only snippets, or optimizer epochs
   do not fund scale. A larger rung is denied if task-complete data support is absent.
+
+- **Frozen post-v8 proposal:** the smallest mechanically matched candidate is now
+  preregistered at `57,315,329` active parameters with a `54,811,649`-parameter
+  shared trunk and five `2,504,193`-parameter specialist deltas. Dense controls are
+  `57,323,520` active and `67,332,096` total, each within one indivisible FF-width
+  increment of its sparse accounting view. All three MLX canaries produce finite
+  updates, exact checkpoint replay, optimizer resume, and temporary-artifact cleanup;
+  the pointer-generator scatter was made deterministic after the canary exposed an
+  invalid-index collision. This is mechanics evidence only. Training remains
+  `DENIED_INSUFFICIENT_DATA_SUPPORT`: `683,254,465` unique positions provide `11.920973`
+  positions per active parameter against a frozen `20.0` floor, a `463,052,115`
+  position shortfall, and four code-arm coverage gaps.
 
 - **Product-aligned supervision:** consume Phase 7 `task_complete_training_unit`
   records. English emphasizes natural multi-turn dialogue, corrections, and useful

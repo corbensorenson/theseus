@@ -1,0 +1,152 @@
+{
+  "policy": "project_theseus_task_complete_training_units_v1",
+  "surface_id": "teacher_and_data_governance",
+  "abstraction_id": "teacher_data_governance_contract",
+  "unit_abi": "project_theseus_task_complete_training_unit_v1",
+  "seed": 20260715,
+  "split_policy": {
+    "policy": "content_hash_source_disjoint_v1",
+    "train_basis_points": 9000,
+    "development_basis_points": 500,
+    "confirmation_basis_points": 500,
+    "same_source_task_across_splits": "forbidden"
+  },
+  "quality_policy": {
+    "minimum_visible_context_bytes": 8,
+    "minimum_target_bytes": 4,
+    "maximum_unit_bytes": 262144,
+    "executable_code_requires_target_pass_and_starter_fail": true,
+    "english_requires_governed_source_receipt_and_complete_target_binding": true,
+    "parser_only_code_counts_toward_product_coverage": false,
+    "raw_file_text_without_task_contract_counts_toward_product_coverage": false,
+    "optimizer_repetition_counts_as_unique_data": false
+  },
+  "coverage_floors_for_50m_scale_proposal": {
+    "english": {
+      "minimum_verified_units": 20000,
+      "minimum_target_positions": 10000000,
+      "minimum_human_contributed_share": 0.25,
+      "minimum_multi_turn_share": 0.20
+    },
+    "python": {
+      "minimum_verified_units": 1000,
+      "minimum_target_positions": 1000000,
+      "required_verification_strength": "executable_target_pass_starter_fail"
+    },
+    "javascript_typescript": {
+      "minimum_verified_units": 1000,
+      "minimum_target_positions": 1000000,
+      "required_verification_strength": "executable_target_pass_starter_fail"
+    },
+    "html_css": {
+      "minimum_verified_units": 500,
+      "minimum_target_positions": 500000,
+      "required_verification_strength": "dom_a11y_layout_render_delta"
+    },
+    "rust": {
+      "minimum_verified_units": 500,
+      "minimum_target_positions": 1000000,
+      "required_verification_strength": "executable_target_pass_starter_fail"
+    }
+  },
+  "contamination": {
+    "maximum_public_texts": 20000,
+    "semantic_jaccard_threshold": 0.70,
+    "semantic_match_count_for_quarantine": 2,
+    "single_semantic_match_max_for_quarantine": 0.92,
+    "public_benchmark_training_allowed": false
+  },
+  "toolchains": {
+    "python": {
+      "command": "python3 -I -m unittest discover",
+      "network": "denied",
+      "timeout_seconds": 30
+    },
+    "javascript_typescript": {
+      "command": "pnpm exec jest --runInBand --no-cache",
+      "dependency_lock": "pnpm-lock.yaml",
+      "network_during_verification": "denied",
+      "timeout_seconds": 45
+    },
+    "html_css": {
+      "command": "headless Chrome local-file render at 800x600 and 375x667",
+      "network": "denied",
+      "timeout_seconds": 20
+    },
+    "rust": {
+      "command": "cargo test --offline --quiet",
+      "network": "denied",
+      "timeout_seconds": 60
+    }
+  },
+  "sources": [
+    {
+      "id": "governed_open_conversations_v1",
+      "adapter": "governed_conversation_assistant_turns",
+      "root": "data/training_data/open_conversation_pantry",
+      "manifest": "data/training_data/open_conversation_pantry/scalable_manifest.json",
+      "receipt_glob": "data/training_data/open_conversation_pantry/receipts/data-admission-*.jsonl",
+      "row_glob": "data/training_data/open_conversation_pantry/private_train/shards/conversation-*.jsonl",
+      "permitted_use": "private_conversation_training",
+      "enabled": true
+    },
+    {
+      "id": "exercism_python_250bf190",
+      "adapter": "exercism_practice_exercises",
+      "repo": "exercism/python",
+      "revision": "250bf19050543da09e122211fc7430fe6f44c564",
+      "license_spdx": "MIT",
+      "archive": "runtime/task_complete_sources/exercism__python__250bf19050543da09e122211fc7430fe6f44c564.tar.gz",
+      "archive_sha256": "7e5f60a6df9f0c83c19b3e464edabb752a4809dacb36c95510089ea04590c887",
+      "language": "python",
+      "enabled": true
+    },
+    {
+      "id": "exercism_javascript_29554098",
+      "adapter": "exercism_practice_exercises",
+      "repo": "exercism/javascript",
+      "revision": "295540983b6323edcfd457b3163ad6c63608f2da",
+      "license_spdx": "MIT",
+      "archive": "runtime/task_complete_sources/exercism__javascript__295540983b6323edcfd457b3163ad6c63608f2da.tar.gz",
+      "archive_sha256": "ce821ae719cd78f1a04201ed2d63f320a741c5ab090ae8bdf3d43fb0f001055c",
+      "language": "javascript_typescript",
+      "enabled": true
+    },
+    {
+      "id": "exercism_rust_3dc1f820",
+      "adapter": "exercism_practice_exercises",
+      "repo": "exercism/rust",
+      "revision": "3dc1f82096828c7010718420a72c373c63fd71ea",
+      "license_spdx": "MIT",
+      "archive": "runtime/task_complete_sources/exercism__rust__3dc1f82096828c7010718420a72c373c63fd71ea.tar.gz",
+      "archive_sha256": "121f377e8a253f0123cf0c06132160bd3d3854a2e752688bb81566fe47c4ff5e",
+      "language": "rust",
+      "enabled": true
+    },
+    {
+      "id": "mdn_learning_area_180371ff",
+      "adapter": "mdn_start_finished_assessments",
+      "repo": "mdn/learning-area",
+      "revision": "180371ffc567f0f2ef359bf408b976667839e764",
+      "license_spdx": "CC0-1.0",
+      "archive": "runtime/task_complete_sources/mdn__learning-area__180371ffc567f0f2ef359bf408b976667839e764.tar.gz",
+      "archive_sha256": "43b8f1c44fcf9c9d3d58115bdb4054bc1f855c8175185e89dd99a74f7a568d8f",
+      "language": "html_css",
+      "enabled": true
+    }
+  ],
+  "outputs": {
+    "unit_ledger": "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
+    "verification_cache": "runtime/data_governance/task_complete_verification_cache_v1.jsonl",
+    "report": "reports/task_complete_training_units_v1.json",
+    "manifest": "data/training_sources/task_complete_training_units_v1.json"
+  },
+  "boundaries": {
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "teacher_calls": 0,
+    "runtime_serving_allowed": false,
+    "capability_claim": "NOT_EVALUATED"
+  }
+}
