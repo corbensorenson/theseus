@@ -10,6 +10,7 @@ and either a governed blind-English rubric or an independently replayed verifier
 from __future__ import annotations
 
 import argparse
+import ast
 import copy
 import gzip
 import hashlib
@@ -53,6 +54,11 @@ def main() -> int:
     parser.add_argument("--config", default=rel(DEFAULT_CONFIG))
     parser.add_argument("--inventory-only", action="store_true")
     parser.add_argument("--prepare-javascript", action="store_true")
+    parser.add_argument(
+        "--prepare-python-projects",
+        action="store_true",
+        help="Materialize lockfile-bound Python verifier environments before offline replay.",
+    )
     parser.add_argument(
         "--max-executable-units-per-source",
         type=int,
@@ -127,6 +133,18 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
                     contamination,
                     cache=cache,
                     cache_updates=cache_updates,
+                    inventory_only=bool(args.inventory_only),
+                    max_verify=max(0, int(args.max_executable_units_per_source)),
+                )
+            elif adapter == "python_test_killed_function_holes":
+                source_units, source_summary = python_function_hole_units(
+                    config,
+                    source,
+                    contamination,
+                    cache=cache,
+                    cache_updates=cache_updates,
+                    cache_path=cache_path,
+                    prepare_python_projects=bool(args.prepare_python_projects),
                     inventory_only=bool(args.inventory_only),
                     max_verify=max(0, int(args.max_executable_units_per_source)),
                 )
@@ -533,6 +551,518 @@ def mdn_units(
         "matched_assessment_pair_count": len(pairs),
         "new_verification_attempt_count": verified_attempts,
     })
+
+
+def python_function_hole_units(
+    config: dict[str, Any],
+    source: dict[str, Any],
+    contamination: dict[str, Any],
+    *,
+    cache: dict[str, dict[str, Any]],
+    cache_updates: dict[str, dict[str, Any]],
+    cache_path: Path,
+    prepare_python_projects: bool,
+    inventory_only: bool,
+    max_verify: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Build independently test-killed implementation-hole units from a pinned repo."""
+
+    source_root = ensure_source_root(source)
+    locked_environment = ensure_locked_python_environment(
+        source_root, source, prepare=prepare_python_projects
+    )
+    toolchain = resolve_python_project_toolchain(
+        source, source_root=source_root, locked_environment=locked_environment
+    )
+    holes = discover_python_function_holes(source_root, source)
+    rows: list[tuple[dict[str, Any], dict[str, Any], str, dict[str, Any] | None]] = []
+    for hole in holes:
+        visible = canonical_json({
+            "instruction": "Implement the missing Python function body without changing its public contract.",
+            "repository": source["repo"],
+            "path": hole["path"],
+            "qualified_name": hole["qualified_name"],
+            "source_with_hole": hole["visible_source"],
+        })
+        target = canonical_json({
+            "path": hole["path"],
+            "start_line": hole["start_line"],
+            "end_line": hole["end_line"],
+            "replacement": hole["target_body"],
+        })
+        unit = base_unit(
+            config,
+            source=source,
+            # Every hole in one file stays in one split; adjacent implementations
+            # cannot leak across train/development/confirmation.
+            source_task_id=f"{source['repo']}:{hole['path']}",
+            arm_id="python",
+            task_family="repository_function_implementation_hole",
+            visible_context=visible,
+            target=target,
+            license_spdx=str(source["license_spdx"]),
+            provenance={
+                "repo": source["repo"],
+                "revision": source.get("revision"),
+                "archive_sha256": source["archive_sha256"],
+                "path": hole["path"],
+                "qualified_name": hole["qualified_name"],
+                "target_file_sha256": hole["file_sha256"],
+                "test_suite_paths": list(source["test_paths"]),
+                "static_open_corpus": True,
+                "live_teacher_call": False,
+            },
+            contamination=contamination,
+        )
+        verification_digest = stable_hash({
+            "unit_id": unit["unit_id"],
+            "archive_sha256": source["archive_sha256"],
+            "target_body": hole["target_body"],
+            "starter_body": hole["starter_body"],
+            "toolchain": toolchain,
+        })
+        cached = cache.get(unit["unit_id"])
+        rows.append((unit, hole, verification_digest, cached))
+
+    verified_attempts = 0
+    baseline_run: dict[str, Any] | None = None
+    baseline_receipt: dict[str, Any] | None = None
+    work_context: tempfile.TemporaryDirectory[str] | None = None
+    workdir: Path | None = None
+    checkpoint_interval = max(1, int(source.get("verification_checkpoint_interval") or 25))
+    checkpoint_write_count = 0
+    try:
+        for unit, hole, verification_digest, cached in rows:
+            if cached and cached.get("verification_digest") == verification_digest:
+                verifier = cached["verification"]
+            elif inventory_only or (max_verify and verified_attempts >= max_verify):
+                verifier = {
+                    "kind": "python_repository_test_killed_function_hole_v1",
+                    "strength": "executable_target_pass_starter_fail",
+                    "state": "not_run",
+                    "reason": "inventory_only_or_bounded_verification",
+                }
+            else:
+                if workdir is None:
+                    work_context = tempfile.TemporaryDirectory(
+                        prefix="th-py-unit-", dir="/tmp" if platform.system() == "Darwin" else None
+                    )
+                    workdir = Path(work_context.name).resolve()
+                    shutil.copytree(
+                        source_root,
+                        workdir,
+                        dirs_exist_ok=True,
+                        ignore=shutil.ignore_patterns(
+                            ".git", ".pytest_cache", ".venv", ".uv-cache", "__pycache__",
+                            "node_modules", "target"
+                        ),
+                    )
+                    baseline_run = run_python_project_tests(workdir, toolchain)
+                    baseline_receipt = public_run_receipt(baseline_run)
+                verified_attempts += 1
+                verifier = verify_python_function_hole(
+                    workdir,
+                    hole,
+                    toolchain,
+                    baseline_run=baseline_run or {},
+                    baseline_receipt=baseline_receipt or {},
+                )
+                cache_row = {
+                    "unit_id": unit["unit_id"],
+                    "verification_digest": verification_digest,
+                    "verification": verifier,
+                }
+                cache[unit["unit_id"]] = cache_row
+                cache_updates[unit["unit_id"]] = cache_row
+                if verified_attempts % checkpoint_interval == 0:
+                    write_cache(cache_path, cache)
+                    checkpoint_write_count += 1
+            finish_unit(unit, verifier, config)
+        if verified_attempts and verified_attempts % checkpoint_interval:
+            write_cache(cache_path, cache)
+            checkpoint_write_count += 1
+    finally:
+        if work_context is not None:
+            work_context.cleanup()
+
+    cached_target_results = [
+        bool(cached["verification"].get("target_passed"))
+        for _unit, _hole, verification_digest, cached in rows
+        if cached
+        and cached.get("verification_digest") == verification_digest
+        and isinstance(cached.get("verification"), dict)
+        and cached["verification"].get("target_passed") is not None
+    ]
+    if baseline_run is not None:
+        baseline_target_passed: bool | None = bool(baseline_run.get("ok"))
+        baseline_target_evidence = "executed"
+    elif cached_target_results:
+        baseline_target_passed = all(cached_target_results)
+        baseline_target_evidence = "content_bound_verification_cache"
+    else:
+        baseline_target_passed = None
+        baseline_target_evidence = "not_run"
+
+    units = [row[0] for row in rows]
+    return units, summarize_source(source, units, extra={
+        "source_root": rel(source_root),
+        "function_hole_candidate_count": len(holes),
+        "new_verification_attempt_count": verified_attempts,
+        "verification_checkpoint_interval": checkpoint_interval,
+        "verification_checkpoint_write_count": checkpoint_write_count,
+        "baseline_target_passed": baseline_target_passed,
+        "baseline_target_evidence": baseline_target_evidence,
+        "locked_environment": locked_environment,
+        "toolchain": toolchain,
+    })
+
+
+def discover_python_function_holes(
+    source_root: Path, source: dict[str, Any]
+) -> list[dict[str, Any]]:
+    minimum_body = int(source.get("minimum_body_bytes") or 8)
+    maximum_body = int(source.get("maximum_body_bytes") or 16384)
+    context_lines = int(source.get("context_lines") or 40)
+    paths: set[Path] = set()
+    for pattern in source["source_globs"]:
+        paths.update(path for path in source_root.glob(str(pattern)) if path.is_file())
+    holes: list[dict[str, Any]] = []
+    for path in sorted(paths):
+        text = path.read_text(encoding="utf-8")
+        try:
+            tree = ast.parse(text, filename=str(path))
+        except SyntaxError:
+            continue
+        lines = text.splitlines(keepends=True)
+        relative = path.relative_to(source_root).as_posix()
+        for qualified_name, node in top_level_python_functions(tree):
+            body = list(node.body)
+            if body and isinstance(body[0], ast.Expr):
+                value = body[0].value
+                if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                    body = body[1:]
+            if not body or body[0].lineno <= node.lineno:
+                continue
+            first, last = body[0], body[-1]
+            if last.end_lineno is None:
+                continue
+            start_index = int(first.lineno) - 1
+            end_index = int(last.end_lineno)
+            target_body = "".join(lines[start_index:end_index])
+            body_bytes = len(target_body.encode("utf-8"))
+            if not minimum_body <= body_bytes <= maximum_body:
+                continue
+            indentation_match = re.match(r"[ \t]*", lines[start_index])
+            indentation = indentation_match.group(0) if indentation_match else "    "
+            newline = "\r\n" if lines[start_index].endswith("\r\n") else "\n"
+            starter_body = (
+                f'{indentation}raise NotImplementedError("Theseus task-complete implementation hole")'
+                f"{newline}"
+            )
+            starter_file = "".join(lines[:start_index]) + starter_body + "".join(lines[end_index:])
+            try:
+                compile(starter_file, relative, "exec")
+            except SyntaxError:
+                continue
+            before = "".join(lines[max(0, start_index - context_lines):start_index])
+            after = "".join(lines[end_index:min(len(lines), end_index + context_lines)])
+            holes.append({
+                "path": relative,
+                "qualified_name": qualified_name,
+                "start_line": start_index + 1,
+                "end_line": end_index,
+                "target_body": target_body,
+                "starter_body": starter_body,
+                "visible_source": f"{before}<THESEUS_IMPLEMENTATION_HOLE>\n{after}",
+                "file_sha256": sha256_text(text),
+            })
+    return holes
+
+
+def top_level_python_functions(tree: ast.Module) -> list[tuple[str, ast.FunctionDef | ast.AsyncFunctionDef]]:
+    rows: list[tuple[str, ast.FunctionDef | ast.AsyncFunctionDef]] = []
+
+    def visit(statements: list[ast.stmt], prefix: str = "") -> None:
+        for node in statements:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                rows.append((f"{prefix}{node.name}", node))
+            elif isinstance(node, ast.ClassDef):
+                visit(node.body, f"{prefix}{node.name}.")
+
+    visit(tree.body)
+    return rows
+
+
+def ensure_locked_python_environment(
+    source_root: Path, source: dict[str, Any], *, prepare: bool
+) -> dict[str, Any] | None:
+    policy = source.get("locked_python_environment")
+    if not isinstance(policy, dict):
+        return None
+    if policy.get("manager") != "uv":
+        raise ValueError(f"unsupported Python environment manager for {source['id']}")
+    lock_path = (source_root / str(policy["lock_file"])).resolve()
+    if not lock_path.is_file():
+        raise FileNotFoundError(f"Python dependency lock missing: {lock_path}")
+    lock_sha256 = file_sha256(lock_path)
+    if lock_sha256 != str(policy["lock_sha256"]):
+        raise ValueError(f"Python dependency lock identity mismatch: {source['id']}")
+
+    base_python, base_version = select_python_executable(
+        source.get("base_python_executable_candidates")
+        or source.get("python_executable_candidates")
+        or [],
+        minimum_version=str(source.get("minimum_python_version") or "3.10"),
+        source_root=source_root,
+    )
+    uv_path = resolve(str(policy["uv_executable"]))
+    uv_bootstrapped_with_network = False
+    if not uv_path.is_file() and prepare:
+        bootstrap_root = uv_path.parents[1]
+        expected_path = bootstrap_root / "bin" / "uv"
+        if expected_path != uv_path:
+            raise ValueError("configured uv executable must use a local venv bin/uv layout")
+        bootstrap_root.parent.mkdir(parents=True, exist_ok=True)
+        venv_run = subprocess.run(
+            [str(base_python), "-m", "venv", str(bootstrap_root)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=180,
+            check=False,
+        )
+        if venv_run.returncode:
+            raise RuntimeError(f"uv bootstrap venv failed: {venv_run.stderr[-1000:]}")
+        install_run = subprocess.run(
+            [
+                str(bootstrap_root / "bin" / "python"), "-m", "pip", "install",
+                "--disable-pip-version-check", f"uv=={policy['uv_version']}",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=300,
+            check=False,
+        )
+        if install_run.returncode:
+            raise RuntimeError(f"uv bootstrap install failed: {install_run.stderr[-1000:]}")
+        uv_bootstrapped_with_network = True
+    if not uv_path.is_file():
+        raise FileNotFoundError(
+            f"uv verifier manager missing: {uv_path}; rerun with --prepare-python-projects"
+        )
+    version_probe = subprocess.run(
+        [str(uv_path), "--version"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    uv_version_output = version_probe.stdout.strip()
+    uv_release = uv_version_output.split()[1] if len(uv_version_output.split()) >= 2 else ""
+    uv_version = f"uv {uv_release}" if uv_release else uv_version_output
+    if version_probe.returncode or uv_release != str(policy["uv_version"]):
+        raise RuntimeError(
+            f"uv version mismatch for {source['id']}: expected uv {policy['uv_version']}, "
+            f"observed {uv_version_output or version_probe.stderr.strip()}"
+        )
+
+    environment_dir = (source_root / str(policy.get("environment_dir") or ".venv")).resolve()
+    uv_cache = (source_root / str(policy.get("cache_dir") or ".uv-cache")).resolve()
+    groups = [str(value) for value in policy.get("groups") or []]
+    sync_command = [
+        str(uv_path), "sync", "--locked", "--no-default-groups",
+        *[item for group in groups for item in ("--group", group)],
+        "--python", str(base_python), "--no-python-downloads",
+    ]
+    sync_environment = {
+        "UV_PROJECT_ENVIRONMENT": str(environment_dir),
+        "UV_CACHE_DIR": str(uv_cache),
+    }
+    prepared_with_network = False
+    if prepare:
+        completed = subprocess.run(
+            sync_command,
+            cwd=source_root,
+            env={**os.environ, **sync_environment},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=int(policy.get("prepare_timeout_seconds") or 600),
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError(f"locked Python environment preparation failed: {completed.stderr[-1000:]}")
+        prepared_with_network = True
+
+    offline_replay = run_sandboxed(
+        [*sync_command, "--offline"],
+        source_root,
+        int(policy.get("offline_replay_timeout_seconds") or 300),
+        extra_env=sync_environment,
+    )
+    if not offline_replay.get("ok"):
+        raise RuntimeError(
+            "locked Python environment is not offline-replayable; run with "
+            f"--prepare-python-projects: {offline_replay.get('stderr') or offline_replay.get('fault')}"
+        )
+    environment_python = environment_dir / "bin" / "python"
+    if not environment_python.is_file():
+        raise FileNotFoundError(f"locked Python interpreter missing: {environment_python}")
+    freeze = run_sandboxed(
+        [str(uv_path), "pip", "freeze", "--python", str(environment_python)],
+        source_root,
+        60,
+        extra_env=sync_environment,
+    )
+    if not freeze.get("ok"):
+        raise RuntimeError(f"locked Python environment inventory failed: {freeze.get('stderr')}")
+    normalized_freeze = "\n".join(
+        line.replace(str(source_root), "{SOURCE_ROOT}")
+        for line in str(freeze.get("stdout") or "").splitlines()
+        if line.strip()
+    )
+    identity = {
+        "manager": "uv",
+        "uv_version": uv_version,
+        "uv_executable_sha256": file_sha256(uv_path),
+        "lock_file": str(policy["lock_file"]),
+        "lock_sha256": lock_sha256,
+        "groups": groups,
+        "base_python_version": base_version,
+        "installed_package_count": len(normalized_freeze.splitlines()),
+        "installed_packages_sha256": sha256_text(normalized_freeze),
+        "offline_replay_valid": True,
+        "network_during_verification": "denied",
+    }
+    return {
+        **identity,
+        "identity_sha256": stable_hash(identity),
+        "prepared_with_network_this_run": prepared_with_network,
+        "uv_bootstrapped_with_network_this_run": uv_bootstrapped_with_network,
+        "offline_replay": public_run_receipt(offline_replay),
+    }
+
+
+def select_python_executable(
+    candidates: Iterable[Any], *, minimum_version: str, source_root: Path
+) -> tuple[Path, str]:
+    minimum = tuple(int(value) for value in minimum_version.split("."))
+    for name in candidates:
+        expanded = str(name).replace("{source_root}", str(source_root))
+        candidate = shutil.which(expanded)
+        if not candidate:
+            continue
+        probe = subprocess.run(
+            [candidate, "-c", "import platform; print(platform.python_version())"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        if probe.returncode != 0:
+            continue
+        observed = tuple(int(value) for value in probe.stdout.strip().split(".")[:2])
+        if observed >= minimum:
+            # Preserve a virtual-environment launcher path. Resolving its symlink
+            # would execute the base interpreter without the venv's sys.prefix.
+            return Path(candidate).absolute(), probe.stdout.strip()
+    raise RuntimeError(f"no Python interpreter satisfies {minimum_version}")
+
+
+def resolve_python_project_toolchain(
+    source: dict[str, Any], *, source_root: Path, locked_environment: dict[str, Any] | None
+) -> dict[str, Any]:
+    selected, version = select_python_executable(
+        source["python_executable_candidates"],
+        minimum_version=str(source.get("minimum_python_version") or "3.10"),
+        source_root=source_root,
+    )
+    command = [
+        str(selected) if value == "{python}" else str(value)
+        for value in source["test_command"]
+    ]
+    toolchain = {
+        "python_executable": str(selected),
+        "python_executable_sha256": file_sha256(selected),
+        "python_version": version,
+        "command": command,
+        "environment": dict(source.get("environment") or {}),
+        "network_during_verification": "denied",
+        "timeout_seconds": int(source["timeout_seconds"]),
+    }
+    if locked_environment:
+        toolchain["locked_environment_identity"] = {
+            key: value for key, value in locked_environment.items()
+            if key not in {
+                "prepared_with_network_this_run",
+                "uv_bootstrapped_with_network_this_run",
+                "offline_replay",
+            }
+        }
+    return toolchain
+
+
+def run_python_project_tests(workdir: Path, toolchain: dict[str, Any]) -> dict[str, Any]:
+    environment = {
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        **{str(key): str(value) for key, value in toolchain["environment"].items()},
+    }
+    return run_sandboxed(
+        list(toolchain["command"]),
+        workdir,
+        int(toolchain["timeout_seconds"]),
+        extra_env=environment,
+    )
+
+
+def verify_python_function_hole(
+    workdir: Path,
+    hole: dict[str, Any],
+    toolchain: dict[str, Any],
+    *,
+    baseline_run: dict[str, Any],
+    baseline_receipt: dict[str, Any],
+) -> dict[str, Any]:
+    path = workdir / hole["path"]
+    target_text = path.read_text(encoding="utf-8")
+    lines = target_text.splitlines(keepends=True)
+    start_index = int(hole["start_line"]) - 1
+    end_index = int(hole["end_line"])
+    observed_body = "".join(lines[start_index:end_index])
+    if observed_body != hole["target_body"]:
+        return {
+            "kind": "python_repository_test_killed_function_hole_v1",
+            "strength": "executable_target_pass_starter_fail",
+            "state": "failed",
+            "reason": "target_span_identity_changed",
+            "target_passed": bool(baseline_run.get("ok")),
+            "starter_failed": False,
+            "target_run": baseline_receipt,
+            "toolchain": toolchain,
+        }
+    starter_text = "".join(lines[:start_index]) + hole["starter_body"] + "".join(lines[end_index:])
+    try:
+        path.write_text(starter_text, encoding="utf-8")
+        starter_run = run_python_project_tests(workdir, toolchain)
+    finally:
+        path.write_text(target_text, encoding="utf-8")
+    starter_failed = bool(
+        not starter_run.get("ok")
+        and starter_run.get("returncode") is not None
+        and not starter_run.get("fault")
+    )
+    passed = bool(baseline_run.get("ok") and starter_failed)
+    return {
+        "kind": "python_repository_test_killed_function_hole_v1",
+        "strength": "executable_target_pass_starter_fail",
+        "state": "passed" if passed else "failed",
+        "target_passed": bool(baseline_run.get("ok")),
+        "starter_failed": starter_failed,
+        "target_run": baseline_receipt,
+        "starter_run": public_run_receipt(starter_run),
+        "toolchain": toolchain,
+    }
 
 
 def base_unit(

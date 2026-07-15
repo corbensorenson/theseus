@@ -50,15 +50,15 @@
     },
     "python": {
       "checks": {
-        "position_floor": false,
-        "unit_floor": false
+        "position_floor": true,
+        "unit_floor": true
       },
       "minimum_target_positions": 1000000,
       "minimum_verified_units": 1000,
-      "ready": false,
+      "ready": true,
       "required_verification_strength": "executable_target_pass_starter_fail",
-      "target_positions": 143797,
-      "verified_units": 138
+      "target_positions": 1129825,
+      "verified_units": 2022
     },
     "rust": {
       "checks": {
@@ -73,11 +73,11 @@
       "verified_units": 97
     }
   },
-  "created_utc": "2026-07-15T13:44:30.250446+00:00",
+  "created_utc": "2026-07-15T15:45:53.239745+00:00",
   "policy": "project_theseus_task_complete_training_unit_manifest_v1",
   "raw_unit_payloads_in_manifest": false,
   "source_config": "configs/task_complete_training_units.json",
-  "source_config_sha256": "87b2fbb249fe0abcfdfd467798d804b16ac8fcd88dff715b223ad3aebf722d50",
+  "source_config_sha256": "134687de00dfb9e9256b091b7ebc55c444982b1dd8cf01e8cfabf4f44a33d191",
   "source_summaries": [
     {
       "adapter": "governed_conversation_assistant_turns",
@@ -106,7 +106,7 @@
       },
       "incompatible_exercise_count": 0,
       "license_spdx": "MIT",
-      "new_verification_attempt_count": 124,
+      "new_verification_attempt_count": 0,
       "repo": "exercism/python",
       "revision": "250bf19050543da09e122211fc7430fe6f44c564",
       "source_id": "exercism_python_250bf190",
@@ -119,6 +119,269 @@
       }
     },
     {
+      "adapter": "python_test_killed_function_holes",
+      "baseline_target_evidence": "content_bound_verification_cache",
+      "baseline_target_passed": true,
+      "decision_counts": {
+        "admit": 380,
+        "reject": 64
+      },
+      "function_hole_candidate_count": 444,
+      "license_spdx": "BSD-3-Clause",
+      "locked_environment": null,
+      "new_verification_attempt_count": 0,
+      "repo": "pallets/click",
+      "revision": "b67832c",
+      "source_id": "open_repo_click_b67832c_function_holes",
+      "source_root": "runtime/task_complete_sources/extracted/pallets__click__main",
+      "target_positions": 220354,
+      "toolchain": {
+        "command": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+          "-m",
+          "pytest",
+          "-q",
+          "tests",
+          "--disable-warnings",
+          "--maxfail=1"
+        ],
+        "environment": {
+          "PYTHONPATH": "src"
+        },
+        "network_during_verification": "denied",
+        "python_executable": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "python_executable_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+        "python_version": "3.12.5",
+        "timeout_seconds": 30
+      },
+      "unit_count": 444,
+      "verification_checkpoint_interval": 25,
+      "verification_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 64,
+        "passed": 380
+      }
+    },
+    {
+      "adapter": "python_test_killed_function_holes",
+      "baseline_target_evidence": "content_bound_verification_cache",
+      "baseline_target_passed": true,
+      "decision_counts": {
+        "admit": 26,
+        "reject": 25
+      },
+      "function_hole_candidate_count": 51,
+      "license_spdx": "BSD-3-Clause",
+      "locked_environment": null,
+      "new_verification_attempt_count": 0,
+      "repo": "pallets/markupsafe",
+      "revision": "b2e4d9c",
+      "source_id": "open_repo_markupsafe_b2e4d9c_function_holes",
+      "source_root": "runtime/task_complete_sources/extracted/pallets__markupsafe__main",
+      "target_positions": 6683,
+      "toolchain": {
+        "command": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+          "-m",
+          "pytest",
+          "-q",
+          "tests",
+          "--disable-warnings",
+          "--maxfail=1"
+        ],
+        "environment": {
+          "PYTHONPATH": "src"
+        },
+        "network_during_verification": "denied",
+        "python_executable": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "python_executable_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+        "python_version": "3.12.5",
+        "timeout_seconds": 30
+      },
+      "unit_count": 51,
+      "verification_checkpoint_interval": 25,
+      "verification_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 25,
+        "passed": 26
+      }
+    },
+    {
+      "adapter": "python_test_killed_function_holes",
+      "baseline_target_evidence": "content_bound_verification_cache",
+      "baseline_target_passed": true,
+      "decision_counts": {
+        "admit": 77,
+        "reject": 3
+      },
+      "function_hole_candidate_count": 80,
+      "license_spdx": "MIT",
+      "locked_environment": null,
+      "new_verification_attempt_count": 0,
+      "repo": "pytest-dev/pluggy",
+      "revision": "7113740",
+      "source_id": "open_repo_pluggy_7113740_function_holes",
+      "source_root": "runtime/task_complete_sources/extracted/pytest-dev__pluggy__main",
+      "target_positions": 37003,
+      "toolchain": {
+        "command": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+          "-m",
+          "pytest",
+          "-q",
+          "testing",
+          "--disable-warnings",
+          "--maxfail=1"
+        ],
+        "environment": {
+          "PYTHONPATH": "src"
+        },
+        "network_during_verification": "denied",
+        "python_executable": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "python_executable_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+        "python_version": "3.12.5",
+        "timeout_seconds": 30
+      },
+      "unit_count": 80,
+      "verification_checkpoint_interval": 25,
+      "verification_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 3,
+        "passed": 77
+      }
+    },
+    {
+      "adapter": "python_test_killed_function_holes",
+      "baseline_target_evidence": "content_bound_verification_cache",
+      "baseline_target_passed": true,
+      "decision_counts": {
+        "admit": 763,
+        "reject": 70
+      },
+      "function_hole_candidate_count": 833,
+      "license_spdx": "MIT",
+      "locked_environment": null,
+      "new_verification_attempt_count": 0,
+      "repo": "Textualize/rich",
+      "revision": "9d8f9a3",
+      "source_id": "open_repo_rich_9d8f9a3_function_holes",
+      "source_root": "runtime/task_complete_sources/extracted/Textualize__rich__main",
+      "target_positions": 426505,
+      "toolchain": {
+        "command": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+          "-m",
+          "pytest",
+          "-q",
+          "tests",
+          "--disable-warnings",
+          "--maxfail=1"
+        ],
+        "environment": {
+          "PYTHONPATH": "."
+        },
+        "network_during_verification": "denied",
+        "python_executable": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "python_executable_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+        "python_version": "3.12.5",
+        "timeout_seconds": 45
+      },
+      "unit_count": 833,
+      "verification_checkpoint_interval": 25,
+      "verification_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 70,
+        "passed": 763
+      }
+    },
+    {
+      "adapter": "python_test_killed_function_holes",
+      "baseline_target_evidence": "content_bound_verification_cache",
+      "baseline_target_passed": true,
+      "decision_counts": {
+        "admit": 638,
+        "reject": 51
+      },
+      "function_hole_candidate_count": 689,
+      "license_spdx": "BSD-3-Clause",
+      "locked_environment": {
+        "base_python_version": "3.12.5",
+        "groups": [
+          "tests"
+        ],
+        "identity_sha256": "5f12b1a67fff3e5d86861ed86bb80a672d1c50667251f12aebfe9e22628faf95",
+        "installed_package_count": 13,
+        "installed_packages_sha256": "662330cccedc01cc1a1bf0b4147a2743c1d63ec07d0daaca3275776547bc0017",
+        "lock_file": "uv.lock",
+        "lock_sha256": "c66afeff636b2126c909bf62a8673e5c428d99408073800e8e6a5d969d2641de",
+        "manager": "uv",
+        "network_during_verification": "denied",
+        "offline_replay": {
+          "duration_ms": 115.733,
+          "fault": null,
+          "ok": true,
+          "returncode": 0,
+          "stderr_sha256": "8391cec1d565cdc47a59b8e85042ec8494d61efcca8edb7e88d3fa360e275186",
+          "stderr_tail": "Resolved 72 packages in 22ms\nChecked 13 packages in 4ms\n",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": ""
+        },
+        "offline_replay_valid": true,
+        "prepared_with_network_this_run": false,
+        "uv_bootstrapped_with_network_this_run": false,
+        "uv_executable_sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf",
+        "uv_version": "uv 0.11.28"
+      },
+      "new_verification_attempt_count": 0,
+      "repo": "pallets/jinja",
+      "revision": "5ef7011",
+      "source_id": "open_repo_jinja_5ef7011_function_holes",
+      "source_root": "runtime/task_complete_sources/extracted/pallets__jinja__main",
+      "target_positions": 295483,
+      "toolchain": {
+        "command": [
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/pallets__jinja__main/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests",
+          "--disable-warnings",
+          "--maxfail=1"
+        ],
+        "environment": {
+          "PYTHONPATH": "src"
+        },
+        "locked_environment_identity": {
+          "base_python_version": "3.12.5",
+          "groups": [
+            "tests"
+          ],
+          "identity_sha256": "5f12b1a67fff3e5d86861ed86bb80a672d1c50667251f12aebfe9e22628faf95",
+          "installed_package_count": 13,
+          "installed_packages_sha256": "662330cccedc01cc1a1bf0b4147a2743c1d63ec07d0daaca3275776547bc0017",
+          "lock_file": "uv.lock",
+          "lock_sha256": "c66afeff636b2126c909bf62a8673e5c428d99408073800e8e6a5d969d2641de",
+          "manager": "uv",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true,
+          "uv_executable_sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf",
+          "uv_version": "uv 0.11.28"
+        },
+        "network_during_verification": "denied",
+        "python_executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/pallets__jinja__main/.venv/bin/python",
+        "python_executable_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+        "python_version": "3.12.5",
+        "timeout_seconds": 30
+      },
+      "unit_count": 689,
+      "verification_checkpoint_interval": 25,
+      "verification_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 51,
+        "passed": 638
+      }
+    },
+    {
       "adapter": "exercism_practice_exercises",
       "decision_counts": {
         "admit": 135,
@@ -126,7 +389,7 @@
       },
       "incompatible_exercise_count": 0,
       "license_spdx": "MIT",
-      "new_verification_attempt_count": 123,
+      "new_verification_attempt_count": 0,
       "repo": "exercism/javascript",
       "revision": "295540983b6323edcfd457b3163ad6c63608f2da",
       "source_id": "exercism_javascript_29554098",
@@ -146,7 +409,7 @@
       },
       "incompatible_exercise_count": 0,
       "license_spdx": "MIT",
-      "new_verification_attempt_count": 91,
+      "new_verification_attempt_count": 0,
       "repo": "exercism/rust",
       "revision": "3dc1f82096828c7010718420a72c373c63fd71ea",
       "source_id": "exercism_rust_3dc1f820",
@@ -180,19 +443,19 @@
     }
   ],
   "summary": {
-    "admitted_unit_count": 25943,
+    "admitted_unit_count": 27827,
     "arm_counts": {
       "english": 25566,
       "html_css": 7,
       "javascript_typescript": 135,
-      "python": 138,
+      "python": 2022,
       "rust": 97
     },
     "contract_hard_gap_count": 0,
-    "coverage_gap_count": 4,
+    "coverage_gap_count": 3,
     "decision_counts": {
-      "admit": 25943,
-      "reject": 20
+      "admit": 27827,
+      "reject": 233
     },
     "external_inference_calls": 0,
     "fallback_return_count": 0,
@@ -201,31 +464,31 @@
     "public_semantic_overlap_unit_count": 0,
     "public_training_rows_written": 0,
     "raw_user_text_admitted": false,
-    "runtime_ms": 514937,
-    "source_count": 5,
+    "runtime_ms": 59119,
+    "source_count": 10,
     "split_counts": {
-      "confirmation": 1264,
-      "development": 1321,
-      "train": 23358
+      "confirmation": 1483,
+      "development": 1466,
+      "train": 24878
     },
-    "task_complete_unique_target_positions": 31388497,
+    "task_complete_unique_target_positions": 32374525,
     "teacher_calls": 0,
-    "unit_count": 25963,
-    "verification_cache_entry_count": 393,
-    "verification_cache_new_or_replaced_count": 338,
+    "unit_count": 28060,
+    "verification_cache_entry_count": 2490,
+    "verification_cache_new_or_replaced_count": 0,
     "verification_state_counts": {
-      "failed": 16,
-      "passed": 25947
+      "failed": 229,
+      "passed": 27831
     },
     "verification_strength_counts": {
       "dom_a11y_layout_render_delta": 7,
-      "executable_target_pass_starter_fail": 370,
+      "executable_target_pass_starter_fail": 2254,
       "governed_conversation_target_bound": 25566
     }
   },
   "unit_ledger": "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
-  "unit_ledger_count": 25963,
-  "unit_ledger_sha256": "87cad496ac8c653adf3cb880b2699470a86bcd040214824518406b2e7f1efc35",
+  "unit_ledger_count": 28060,
+  "unit_ledger_sha256": "2e318d3626a8af75835f60983daf7b1c686fe396b69eb1f863e0d952456c9d66",
   "verification_cache": "runtime/data_governance/task_complete_verification_cache_v1.jsonl",
-  "verification_cache_sha256": "bf7f31c192b07b6e2682de4ab28b873abd9c70d4939c9e7082cbfcec2b332b01"
+  "verification_cache_sha256": "8a13bd3a483b509b7d42c60194605cb0f4dc21c44f7ec2373fc65bbadd8b4ae7"
 }

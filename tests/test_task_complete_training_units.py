@@ -256,3 +256,158 @@ def test_prior_contamination_cache_requires_ledger_hash_and_public_index(tmp_pat
     with ledger.open("ab") as handle:
         handle.write(b"tamper")
     assert units.load_prior_unit_cache(ledger, report, contamination_digest="index-a") == {}
+
+
+def test_python_function_holes_are_file_grouped_and_exclude_nested_functions(
+    tmp_path: Path,
+) -> None:
+    package = tmp_path / "src" / "fixture"
+    package.mkdir(parents=True)
+    source = package / "module.py"
+    source.write_text(
+        "def outer(value):\n"
+        "    \"\"\"Return a transformed value.\"\"\"\n"
+        "    def nested():\n"
+        "        return value + 99\n"
+        "    return value + 1\n\n"
+        "class Worker:\n"
+        "    def run(self, value):\n"
+        "        return value * 2\n",
+        encoding="utf-8",
+    )
+    holes = units.discover_python_function_holes(
+        tmp_path,
+        {
+            "source_globs": ["src/**/*.py"],
+            "minimum_body_bytes": 4,
+            "maximum_body_bytes": 4096,
+            "context_lines": 8,
+        },
+    )
+    assert [row["qualified_name"] for row in holes] == ["outer", "Worker.run"]
+    assert {row["path"] for row in holes} == {"src/fixture/module.py"}
+    assert all(row["target_body"] not in row["visible_source"] for row in holes)
+    for row in holes:
+        text = source.read_text(encoding="utf-8").splitlines(keepends=True)
+        starter = (
+            "".join(text[: row["start_line"] - 1])
+            + row["starter_body"]
+            + "".join(text[row["end_line"] :])
+        )
+        compile(starter, row["path"], "exec")
+
+
+def test_python_function_hole_requires_nonfaulting_mutation_kill(
+    tmp_path: Path, monkeypatch
+) -> None:
+    path = tmp_path / "module.py"
+    target = "def answer():\n    return 42\n"
+    path.write_text(target, encoding="utf-8")
+    hole = {
+        "path": "module.py",
+        "start_line": 2,
+        "end_line": 2,
+        "target_body": "    return 42\n",
+        "starter_body": "    raise NotImplementedError('hole')\n",
+    }
+    toolchain = {"command": ["python", "-m", "pytest"], "environment": {}, "timeout_seconds": 5}
+    monkeypatch.setattr(
+        units,
+        "run_python_project_tests",
+        lambda *args, **kwargs: {
+            "ok": False,
+            "returncode": 1,
+            "stdout": "test failed",
+            "stderr": "",
+            "duration_ms": 1,
+        },
+    )
+    observed = units.verify_python_function_hole(
+        tmp_path,
+        hole,
+        toolchain,
+        baseline_run={"ok": True},
+        baseline_receipt={"ok": True},
+    )
+    assert observed["state"] == "passed"
+    assert path.read_text(encoding="utf-8") == target
+
+    monkeypatch.setattr(
+        units,
+        "run_python_project_tests",
+        lambda *args, **kwargs: {
+            "ok": False,
+            "returncode": None,
+            "fault": "timeout",
+            "stdout": "",
+            "stderr": "",
+            "duration_ms": 5000,
+        },
+    )
+    faulted = units.verify_python_function_hole(
+        tmp_path,
+        hole,
+        toolchain,
+        baseline_run={"ok": True},
+        baseline_receipt={"ok": True},
+    )
+    assert faulted["state"] == "failed"
+    assert faulted["starter_failed"] is False
+
+
+def test_write_cache_is_atomic_and_replayable(tmp_path: Path) -> None:
+    path = tmp_path / "verification.jsonl"
+    first = {
+        "unit-a": {
+            "unit_id": "unit-a",
+            "verification_digest": "digest-a",
+            "verification": {"state": "passed"},
+        }
+    }
+    units.write_cache(path, first)
+    assert units.load_cache(path) == first
+    assert not path.with_suffix(path.suffix + ".tmp").exists()
+
+    replacement = {
+        **first,
+        "unit-b": {
+            "unit_id": "unit-b",
+            "verification_digest": "digest-b",
+            "verification": {"state": "failed"},
+        },
+    }
+    units.write_cache(path, replacement)
+    assert units.load_cache(path) == replacement
+    assert path.read_text(encoding="utf-8").splitlines()[0].startswith('{"unit_id":"unit-a"')
+
+
+def test_python_toolchain_expands_source_environment_and_binds_lock(
+    tmp_path: Path,
+) -> None:
+    environment_python = tmp_path / ".venv" / "bin" / "python"
+    environment_python.parent.mkdir(parents=True)
+    environment_python.symlink_to(Path(units.sys.executable).resolve())
+    locked = {
+        "manager": "uv",
+        "lock_sha256": "lock-digest",
+        "identity_sha256": "environment-digest",
+        "prepared_with_network_this_run": True,
+        "uv_bootstrapped_with_network_this_run": True,
+        "offline_replay": {"ok": True},
+    }
+    observed = units.resolve_python_project_toolchain(
+        {
+            "python_executable_candidates": ["{source_root}/.venv/bin/python"],
+            "minimum_python_version": "3.9",
+            "test_command": ["{python}", "-m", "pytest"],
+            "environment": {"PYTHONPATH": "src"},
+            "timeout_seconds": 30,
+        },
+        source_root=tmp_path,
+        locked_environment=locked,
+    )
+    assert observed["command"][0] == str(environment_python.absolute())
+    assert observed["locked_environment_identity"]["identity_sha256"] == "environment-digest"
+    assert "prepared_with_network_this_run" not in observed["locked_environment_identity"]
+    assert "uv_bootstrapped_with_network_this_run" not in observed["locked_environment_identity"]
+    assert "offline_replay" not in observed["locked_environment_identity"]

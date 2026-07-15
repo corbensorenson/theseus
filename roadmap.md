@@ -29,7 +29,7 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable: 25,943/25,963 units admitted; English has 25,566 verified units, but Python 138, JS/TS 135, HTML/CSS 7, and Rust 97 remain below coverage floors | add pinned high-quality licensed product sources through the existing verifier/admission path; close the measured arm and 463.05M-position shortfalls without repetition or public payloads |
+| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable: 27,827/28,060 units admitted; English has 25,566 verified units and Python is GREEN at 2,022 units / 1,129,825 target positions; JS/TS 135, HTML/CSS 7, and Rust 97 remain below coverage floors | extend the same pinned test-killed/render-delta admission pattern to JS/TS, HTML/CSS, and Rust; close those arms and the 463.05M-position shortfall without repetition or public payloads |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
@@ -779,13 +779,13 @@ support-state promotion.
 Admission-substrate status (2026-07-10): `implemented`; Phase 7 remains `partial`
 under the 2026-07-11 book reconciliation until full-state update/unlearning
 causality runs. The canonical admission path
-now writes and replays `92,032` content-bound candidate receipts, admits
-`91,725`, rejects `307` rows, and exposes zero detected exact/semantic
+now writes and replays `115,333` content-bound candidate receipts, admits
+`115,029`, rejects `304` rows, and exposes zero detected exact/semantic
 public overlap, fallback markers, or raw-user rows. All nine adversarial cases,
 five frozen continual-policy simulations, and the 11-kind positive/negative
 descendant-deletion fixture pass. Curriculum and survival-lane materialization
 require admitted row hashes. The lifecycle surface remains `YELLOW`, not
-`GREEN`, because recursive synthetic share is `0.824771`; that is a data-risk
+`GREEN`, because recursive synthetic share is `0.459053`; that is a data-risk
 warning, not proof of model collapse. The policy comparison is simulation, and
 deletion closure is graph evidence, not physical unlearning.
 The v8 materializer measures 683.25M content-bound positions and freezes 215.55M
@@ -794,12 +794,15 @@ integrity, not product suitability. Most v8 development rows carry prompt and ta
 without executable tests or task-level utility contracts; no later score may relabel
 them as functionally verified examples.
 - The task-complete contract is now implemented inside canonical admission. Its full
-  pinned-source pass admits `25,943/25,963` units: English `25,566`, Python `138`,
-  JS/TS `135`, HTML/CSS `7`, and Rust `97`. It binds target behavior, verifier,
+  pinned-source pass admits `27,827/28,060` units: English `25,566`, Python `2,022`,
+  JS/TS `135`, HTML/CSS `7`, and Rust `97`. Python is GREEN at `1,129,825`
+  verified target positions after pinned Click, MarkupSafe, Pluggy, Rich, and Jinja
+  function-hole campaigns; Jinja's committed `uv.lock` and package-set digest replay
+  offline before its suite runs. The contract binds target behavior, verifier,
   source-disjoint split, license/provenance, contamination, and toolchain/sandbox
   identity; zero public overlap, teacher calls, external inference, and fallback
-  returns were observed. Coverage remains `YELLOW` because every code arm is below
-  its preregistered unit and position floors.
+  returns were observed. Coverage remains `YELLOW` because JS/TS, HTML/CSS, and Rust
+  remain below their preregistered unit and position floors.
 - Add a registered `task_complete_training_unit` to the existing data contract, not a
   new lane. Every supervised unit binds visible context, complete target, task family,
   language/toolchain, verifier or rubric artifact, expected observable behavior,
