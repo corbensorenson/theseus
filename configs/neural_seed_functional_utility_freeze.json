@@ -17,35 +17,35 @@
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-14T08:56:53.511430Z",
+  "frozen_utc": "2026-07-15T06:07:45.512442Z",
   "generation_wrapper_sha256": "6a9b0e9e3fc2228d39a1f6065678755a8ec4b3d974c91990c7bc962f511dc896",
   "immutable": true,
   "policy": "project_theseus_private_functional_utility_freeze_v1",
   "public_training_rows_written": 0,
-  "supersede_reason": "Cryptographically bind blind English judgments to exact candidate text, require two distinct primary raters, and permit adjudication only after preregistered disagreement before any functional candidates exist.",
-  "supersedes_freeze_sha256": "36fe5a62519f5b39d11f09e04b3dcd4b47dcf4e380eff1a977f6d33c8f403ced",
+  "supersede_reason": "Pinned Chrome auto-updated from 150.0.7871.115 to 150.0.7871.116 before any functional candidate generation; preserve the identical case contract and candidate packet while binding the actual execution toolchain.",
+  "supersedes_freeze_sha256": "f5f28f5a24af4afd0b7807f18163de9ac97b24d9ec3b80075dfe2437f50dc4c2",
   "templates_renderers_routers_tools_credit": 0,
-  "toolchain_identity_sha256": "4cb3e92632490e57011d1dc6fe87bd94e9395a5c41d70c5a7683407cfa7abd2a",
+  "toolchain_identity_sha256": "59d62cf42c53273c4a1740f492938b3dfd5a98122c448b842f970e7125d4d300",
   "training_generator_sha256": "93c03c688e1aa761fe59249e9874934f093030c8375c7f8a0e28179cd4d02aa4",
   "training_state_at_freeze": {
     "controls": {
       "dense_active_parameter": {
-        "complete": false,
+        "complete": true,
         "heartbeat": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_heartbeat.json",
-        "heartbeat_sha256": "d593e0941cf36c607b2ab456b41cdbc48bc2398537d63694b62ca257797973be",
-        "optimizer_steps": 11500,
+        "heartbeat_sha256": "26906acac4456fdeb53e38dc3044807e4a5ef1e0ef65b1c52dcbaee6ebe5587b",
+        "optimizer_steps": 34299,
         "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
         "receipt": "checkpoints/moecot_language_seed_v8/dense_active_parameter/training_receipt.json",
-        "receipt_sha256": "eb347c8027933e942c9742e25347c327a3766f2369eb9303496772b1c51f306b"
+        "receipt_sha256": "383b07aefce13b134893a47a20f3bb1ae90a763eed70cc169b60426e4c83e814"
       },
       "dense_total_parameter": {
         "complete": false,
         "heartbeat": "checkpoints/moecot_language_seed_v8/dense_total_parameter/training_heartbeat.json",
-        "heartbeat_sha256": "",
-        "optimizer_steps": 1,
+        "heartbeat_sha256": "6e237349769963e2ad44f49f57506601428b40442f4b5828a5742742921649c6",
+        "optimizer_steps": 28000,
         "plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
         "receipt": "checkpoints/moecot_language_seed_v8/dense_total_parameter/training_receipt.json",
-        "receipt_sha256": "abfe75ee3e9409770dc617d4b7d3da5985996c2b93e0fc52a48153606e98701f"
+        "receipt_sha256": "308839392a4cb4ba7855f2c2a30aac4f046c8cf8b767326fed0efee7f1a882c5"
       }
     },
     "dense_controls_complete": false,
