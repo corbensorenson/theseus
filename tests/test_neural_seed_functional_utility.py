@@ -152,11 +152,24 @@ def test_candidate_provenance_binds_receipt_output_and_target(tmp_path: Path) ->
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
+        "timing": {
+            "clock": "time.perf_counter",
+            "checkpoint_load_duration_ms_by_target": {target: 5.0},
+            "checkpoint_load_duration_ms_total": 5.0,
+            "generation_duration_ms_total": 10.0,
+            "wall_duration_ms": 15.0,
+        },
         "checkpoint_artifacts": [
             {"target_id": target, "path": str(checkpoint.relative_to(tmp_path)), "sha256": checkpoint_hash}
         ],
         "candidates": [
-            {"case_id": "case-1", "target_id": target, "output": output, "output_sha256": hashlib.sha256(output.encode()).hexdigest()}
+            {
+                "case_id": "case-1",
+                "target_id": target,
+                "output": output,
+                "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
+                "generation_duration_ms": 10.0,
+            }
         ],
     }
     cases = {"case-1": {"case_id": "case-1", "arm_id": "python"}}
@@ -168,3 +181,56 @@ def test_candidate_provenance_binds_receipt_output_and_target(tmp_path: Path) ->
     result = audit_candidate_provenance(mutated, freeze, cases, root=tmp_path)
     assert result["state"] == "RED"
     assert "candidate_output_identity_mismatch:case-1" in result["hard_gaps"]
+
+    mutated_timing = copy.deepcopy(bundle)
+    mutated_timing["candidates"][0]["generation_duration_ms"] = -1
+    result = audit_candidate_provenance(mutated_timing, freeze, cases, root=tmp_path)
+    assert result["state"] == "RED"
+    assert "candidate_generation_timing_invalid:case-1" in result["hard_gaps"]
+    assert "candidate_generation_timing_total_mismatch" in result["hard_gaps"]
+
+
+def test_accepted_output_rate_includes_generation_verification_and_cold_load(monkeypatch) -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    candidates = [
+        {
+            "case_id": case["case_id"],
+            "target_id": "dense_active_parameter",
+            "output": "candidate",
+            "generation_duration_ms": 10.0,
+        }
+        for case in manifest["evaluator_cases"]
+    ]
+    bundle = {
+        "target_id": "dense_active_parameter",
+        "candidates": candidates,
+        "timing": {
+            "checkpoint_load_duration_ms_by_target": {
+                "dense_active_parameter": 1000.0,
+            }
+        },
+    }
+    monkeypatch.setattr(
+        "neural_seed_functional_utility.audit_candidate_provenance",
+        lambda *_args, **_kwargs: {"state": "GREEN", "hard_gaps": []},
+    )
+    monkeypatch.setattr(
+        "neural_seed_functional_utility.verify_candidate",
+        lambda case, _output, _config: {
+            "case_id": case["case_id"],
+            "arm_id": case["arm_id"],
+            "passed": case["arm_id"] != "english",
+            "duration_ms": 20.0,
+            "fault": "" if case["arm_id"] != "english" else "not_scored_here",
+        },
+    )
+
+    result = evaluate_bundle(CONFIG, manifest, bundle, freeze, [])
+
+    assert result["trigger_state"] == "YELLOW"
+    assert result["summary"]["code_checkpoint_load_duration_ms"] == 1000.0
+    assert result["summary"]["code_generation_duration_ms"] == 1280.0
+    assert result["summary"]["code_verification_duration_ms"] == 2560.0
+    assert result["summary"]["accepted_verified_output_per_second"] == 128 / 4.84
+    assert result["summary"]["accepted_verified_output_per_second_warm"] == 128 / 3.84

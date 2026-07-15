@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -376,9 +377,22 @@ def evaluate_bundle(
     provenance = audit_candidate_provenance(bundle, freeze, cases)
     gaps.extend(provenance["hard_gaps"])
     outputs = {str(row.get("case_id") or ""): str(row.get("output") or "") for row in rows}
+    generation_ms_by_case = {
+        str(row.get("case_id") or ""): float(row.get("generation_duration_ms") or 0.0)
+        for row in rows
+    }
     verifier_rows = []
     if not gaps:
         verifier_rows = [verify_candidate(cases[case_id], outputs[case_id], config) for case_id in sorted(cases)]
+        for verifier_row in verifier_rows:
+            verifier_row["generation_duration_ms"] = generation_ms_by_case[
+                str(verifier_row["case_id"])
+            ]
+            verifier_row["end_to_end_duration_ms"] = round(
+                float(verifier_row["generation_duration_ms"])
+                + float(verifier_row.get("duration_ms") or 0.0),
+                6,
+            )
     english = score_english_judgments(list(cases.values()), outputs, judgments, config) if judgments else {
         "valid": False, "faults": ["blind_english_judgments_pending"], "results": [], "quadratic_weighted_kappa": None, "passed": 0, "total": 32
     }
@@ -390,6 +404,12 @@ def evaluate_bundle(
     all_complete = not gaps and english["valid"] and len(code_rows) == 128
     passed = sum(row["passed"] for row in code_rows) + int(english["passed"])
     total = len(code_rows) + (int(english["total"]) if english["valid"] else 0)
+    code_generation_ms = sum(float(row.get("generation_duration_ms") or 0.0) for row in code_rows)
+    code_verification_ms = sum(float(row.get("duration_ms") or 0.0) for row in code_rows)
+    code_load_ms = code_checkpoint_load_duration_ms(bundle)
+    code_passed = sum(bool(row.get("passed")) for row in code_rows)
+    warm_duration_seconds = (code_generation_ms + code_verification_ms) / 1000.0
+    cold_duration_seconds = (code_load_ms + code_generation_ms + code_verification_ms) / 1000.0
     return {
         "policy": "project_theseus_private_functional_utility_qualification_v1",
         "created_utc": now(),
@@ -410,10 +430,20 @@ def evaluate_bundle(
             "pass_if_any_rate": passed / total if total else None,
             "selected_pass_rate": passed / total if total else None,
             "accepted_verified_output_per_second": (
-                sum(bool(row.get("passed")) for row in code_rows)
-                / (sum(float(row.get("duration_ms") or 0) for row in code_rows) / 1000.0)
-                if code_rows and sum(float(row.get("duration_ms") or 0) for row in code_rows) > 0
+                code_passed / cold_duration_seconds
+                if code_rows and cold_duration_seconds > 0
                 else None
+            ),
+            "accepted_verified_output_per_second_warm": (
+                code_passed / warm_duration_seconds
+                if code_rows and warm_duration_seconds > 0
+                else None
+            ),
+            "code_checkpoint_load_duration_ms": round(code_load_ms, 6),
+            "code_generation_duration_ms": round(code_generation_ms, 6),
+            "code_verification_duration_ms": round(code_verification_ms, 6),
+            "code_end_to_end_duration_ms_cold": round(
+                code_load_ms + code_generation_ms + code_verification_ms, 6
             ),
         },
         "by_arm": by_arm,
@@ -422,6 +452,8 @@ def evaluate_bundle(
         "hard_gaps": gaps,
         "boundaries": {
             "candidate_self_declared_flags_trusted": False,
+            "candidate_self_declared_timing_trusted": False,
+            "timing_source": "freeze_bound_generation_wrapper_monotonic_clock",
             "public_training_rows_written": 0,
             "external_inference_calls": 0,
             "templates_renderers_routers_tools_credit": 0,
@@ -502,6 +534,18 @@ def audit_candidate_provenance(
             if declared_path.resolve() != shared_path.resolve() or receipt.get("shared_trunk_checkpoint_sha256") != shared_row.get("sha256"):
                 gaps.append(f"expert_shared_trunk_binding_mismatch:{arm}")
     candidates = bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    timing = bundle.get("timing") if isinstance(bundle.get("timing"), dict) else {}
+    if timing.get("clock") != "time.perf_counter":
+        gaps.append("candidate_timing_clock_invalid")
+    load_by_target = (
+        timing.get("checkpoint_load_duration_ms_by_target")
+        if isinstance(timing.get("checkpoint_load_duration_ms_by_target"), dict)
+        else {}
+    )
+    if set(load_by_target) != expected_targets - ({"shared_trunk"} if target_id == "moecot_system" else set()):
+        gaps.append("checkpoint_load_timing_target_set_mismatch")
+    if not all(nonnegative_finite(value) for value in load_by_target.values()):
+        gaps.append("checkpoint_load_timing_invalid")
     for row in candidates:
         case_id = str(row.get("case_id") or "")
         output = str(row.get("output") or "")
@@ -511,12 +555,52 @@ def audit_candidate_provenance(
         expected_target = case.get("arm_id") if target_id == "moecot_system" else target_id
         if row.get("target_id") != expected_target:
             gaps.append(f"candidate_target_binding_mismatch:{case_id}")
+        if not nonnegative_finite(row.get("generation_duration_ms")):
+            gaps.append(f"candidate_generation_timing_invalid:{case_id}")
+    candidate_duration_total = sum(
+        float(row.get("generation_duration_ms") or 0.0) for row in candidates
+    )
+    load_duration_total = sum(float(value) for value in load_by_target.values())
+    if not close_timing_total(timing.get("generation_duration_ms_total"), candidate_duration_total):
+        gaps.append("candidate_generation_timing_total_mismatch")
+    if not close_timing_total(timing.get("checkpoint_load_duration_ms_total"), load_duration_total):
+        gaps.append("checkpoint_load_timing_total_mismatch")
+    if not nonnegative_finite(timing.get("wall_duration_ms")) or float(
+        timing.get("wall_duration_ms") or 0.0
+    ) + 1.0 < candidate_duration_total + load_duration_total:
+        gaps.append("candidate_wall_timing_invalid")
     return {
         "state": "GREEN" if not gaps else "RED",
         "bundle_target_id": target_id,
         "checkpoint_artifacts": artifacts,
         "hard_gaps": sorted(set(gaps)),
     }
+
+
+def code_checkpoint_load_duration_ms(bundle: dict[str, Any]) -> float:
+    timing = bundle.get("timing") if isinstance(bundle.get("timing"), dict) else {}
+    by_target = timing.get("checkpoint_load_duration_ms_by_target")
+    if not isinstance(by_target, dict):
+        return 0.0
+    if str(bundle.get("target_id") or "") == "moecot_system":
+        return sum(
+            float(value)
+            for target, value in by_target.items()
+            if target != "english"
+        )
+    return sum(float(value) for value in by_target.values())
+
+
+def nonnegative_finite(value: Any) -> bool:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return False
+    return math.isfinite(number) and number >= 0.0
+
+
+def close_timing_total(value: Any, expected: float) -> bool:
+    return nonnegative_finite(value) and abs(float(value) - expected) <= 1e-3
 
 
 def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[str]:

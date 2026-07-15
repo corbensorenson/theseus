@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -144,12 +145,15 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
     target_vocab = dict(metadata.get("target_vocab") or {})
     plan = contract["plan"]
     models: dict[str, Any] = {}
+    checkpoint_load_duration_ms_by_target: dict[str, float] = {}
     candidates = []
+    bundle_started = time.perf_counter()
     try:
         for row in contract["rows"]:
             arm_id = str(row["arm_id"])
             target_id = arm_id if contract["target_id"] == "moecot_system" else contract["target_id"]
             if target_id not in models:
+                load_started = time.perf_counter()
                 target = (plan["targets"] or {})[target_id]
                 model = training.build_model(
                     training.CausalTransformerConfig(
@@ -171,6 +175,10 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
                 mx.eval(model.parameters())
                 model.eval()
                 models[target_id] = model
+                checkpoint_load_duration_ms_by_target[target_id] = round(
+                    (time.perf_counter() - load_started) * 1000.0, 6
+                )
+            generation_started = time.perf_counter()
             output, generation = training.generate_model_text(
                 models[target_id],
                 str(row["prompt"]),
@@ -184,17 +192,27 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
                 length_penalty=float(config["evaluation"]["length_penalty"]),
                 mx=mx,
             )
+            generation_duration_ms = round(
+                (time.perf_counter() - generation_started) * 1000.0, 6
+            )
             candidates.append(
                 {
                     "case_id": row["case_id"],
                     "output": output,
                     "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
                     "generation": generation,
+                    "generation_duration_ms": generation_duration_ms,
                     "target_id": target_id,
                 }
             )
     finally:
         models.clear()
+    generation_duration_ms_total = round(
+        sum(float(row["generation_duration_ms"]) for row in candidates), 6
+    )
+    checkpoint_load_duration_ms_total = round(
+        sum(checkpoint_load_duration_ms_by_target.values()), 6
+    )
     return {
         "policy": "project_theseus_direct_model_candidate_bundle_v1",
         "created_utc": now(),
@@ -208,6 +226,15 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
         "checkpoint_artifacts": contract["checkpoint_artifacts"],
         "candidate_count": len(candidates),
         "candidates": candidates,
+        "timing": {
+            "clock": "time.perf_counter",
+            "checkpoint_load_duration_ms_by_target": checkpoint_load_duration_ms_by_target,
+            "checkpoint_load_duration_ms_total": checkpoint_load_duration_ms_total,
+            "generation_duration_ms_total": generation_duration_ms_total,
+            "wall_duration_ms": round(
+                (time.perf_counter() - bundle_started) * 1000.0, 6
+            ),
+        },
         "hard_gaps": [],
         "templates_renderers_routers_tools_credit": 0,
         "public_training_rows_written": 0,
