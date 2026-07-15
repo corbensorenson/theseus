@@ -354,8 +354,8 @@
         16
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "next_after_frozen_dense_controls",
-      "dependency": "freeze the manifest before completed dense-control outputs are inspected; all v8 checkpoints remain unchanged",
+      "status": "implemented_negative_result_rung_falsified",
+      "dependency": "completed exactly once against unchanged v8 checkpoints; preserve the consumed identities and negative result",
       "acceptance_gate": "A source-disjoint architecture-neutral surface reports blind English rubric/pairwise utility and pinned Python, JS/TS, HTML/CSS, and Rust compile/test/render utility per language, with exact recovery separate, independent candidate integrity, consumed-task identity, tail floors, and no post-hoc task selection.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "The existing v8 prompt/target exact score is diagnostic only. Syntax, similarity, routing, tools, templates, and exact reference reproduction on open-ended tasks cannot independently authorize a practical architecture route."
@@ -369,8 +369,8 @@
         10
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "inventory_now_train_only_after_v8_verdict",
-      "dependency": "complete the frozen v8 diagnostics and private functional qualification before authorizing another training rung",
+      "status": "next_after_v8_scale_falsification",
+      "dependency": "v8 diagnostics and exact-once private functional qualification are complete; inventory and admission now precede the preregistered 50M-100M rung",
       "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by unique positions, per-language verified-unit floors, MLX canaries, matched controls, and stop criteria.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, or metadata-complete receipts do not prove product-task quality or justify scale."
@@ -397,8 +397,8 @@
         18
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "future_candidate_frozen_until_v8_functional_disposition",
-      "dependency": "record the unchanged v8 exact-recovery and exact-once functional disposition first; OneCell may not alter v8, use interim v8 output for tuning, delay the practical transformer/hybrid scale decision, or create parallel Theseus subsystems",
+      "status": "architecture_contract_eligible_after_v8_scale_falsification",
+      "dependency": "the v8 scale-falsification disposition is recorded; OneCell may begin ABI and exact-substrate work but may not become a same-scale rescue patch, delay the practical transformer/hybrid data-and-scale decision, or create parallel Theseus subsystems",
       "acceptance_gate": "Behind one substrate-neutral Cognitive Kernel ABI, implement exact/latent workspace separation, typed Query and Program IR, branch-local snapshots, transactions, receipts, replay/rollback, VCM and Octopus bridges, a shared typed gated sparse-message cell, explicit anytime search, world-model and uncertainty heads, and existing-Loop-Closure verified abstraction learning. Preregister train-small/test-large algorithmic controls and RATCHET-100 frozen-core ablations; compare MoECOT, matched dense Transformer, SymLiquid, recurrent-only, memory, search, skill, and full-system channels under matched data, active/total parameters, adapters, optimizer positions, compute, memory, tools, search, verifiers, and complete lifecycle cost. Promotion requires repeatable held-out Pareto value without weak-tail regression and an SCF rollback-capable replacement transaction.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "An elegant ABI, deterministic substrate, exact tool result, retrieved answer, hand-authored skill, adapter capability, benchmark identity, larger hidden search budget, or lower central parameter count is not OneCell learned capability. CORE_ONLY, CORE_PLUS_MEMORY, CORE_PLUS_SEARCH, and FULL_SYSTEM must remain separate; failure or selected-mechanism merge is an acceptable verdict."
@@ -809,7 +809,7 @@
     "deleting_book_phase_as_scope_control",
     "capability_claim_from_assisted_or_tool_output",
     "claiming_book_implementation_without_chapter_crosswalk",
-    "onecell_training_routing_or_parallel_subsystems_before_v8_disposition"
+    "onecell_training_routing_or_parallel_subsystems_before_exact_substrate_and_matched_verdict"
   ],
   "completion_status_semantics": {
     "implemented": "Runnable, registry-bound, SCF-bound, documented, and emitting evidence through the canonical path.",
@@ -1586,7 +1586,7 @@
         "data-supported 50M-100M scale proposal requiring both unique admitted positions and per-language task-complete verifier coverage if the 10.8M rung is functionally falsified",
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
-      "smallest_next_patch": "Do not mutate the frozen v8 corpus while its controls run. In parallel, extend the existing admission receipt with task-complete verifier bindings and inventory licensed product-shaped English and code units; this is the data prerequisite for any post-v8 scale rung, not authority to retrain yet.",
+      "smallest_next_patch": "Preserve the consumed v8 corpus and extend the existing admission receipt with task-complete verifier bindings. Inventory and admit licensed product-shaped English and code units as the data prerequisite for the preregistered 50M-100M rung; do not train until the proposal clears its evidence contract.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/training_data_admission_v1.py",
@@ -2012,11 +2012,20 @@
         "reports/strict_generator_mlx_decode_eval_cache_full_prefix_control_20260711.json",
         "reports/strict_generator_mlx_decode_eval_restart_canary_20260711.json",
         "reports/strict_generator_mlx_decode_eval_restart_clean_control_20260711.json",
-        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json"
+        "runtime/standard_causal_transformer_attention_policy_canary_v1/comparison.json",
+        "reports/moecot_language_arm_training_scale_v2_dense_total_full.json",
+        "checkpoints/moecot_language_seed_v8/dense_total_parameter/training_receipt.json",
+        "checkpoints/moecot_language_seed_v8/dense_total_parameter/evaluation_private_dev_receipt.json",
+        "reports/moecot_dense_exact_recovery_diagnostic_v8.json",
+        "configs/neural_seed_functional_utility_freeze.json",
+        "reports/private_functional_consumption_registry.jsonl",
+        "reports/private_functional_english_judgment_receipt.json",
+        "reports/private_functional_utility_moecot.json",
+        "reports/private_functional_utility_dense_active.json",
+        "reports/private_functional_utility_dense_total.json",
+        "reports/private_functional_utility_qualification.json"
       ],
       "missing_items": [
-        "fresh architecture-neutral functional utility manifest frozen before completed dense-control outputs are inspected, with blind English rubric/pairwise evaluation and pinned compile/test/render evaluators for Python, JS/TS, HTML/CSS, and Rust",
-        "practical architecture verdict that reports v8 exact recovery separately from functional utility and marks the 10.8M rung falsified if all code paths remain functionally zero",
         "data-supported 50M-100M active scale-rung plan with scaling estimate, MLX canaries, task-complete corpus floor, matched controls, stop criteria, and no same-scale architecture patch escape",
         "offline preference comparison across DPO/IPO/ORPO/KTO/SimPO on the same private accepted/rejected pair split, same reference checkpoint, same optimizer budget, same heldout verifier, and same no-cheat/candidate-integrity audit",
         "bounded GRPO/RLOO/ReMax/RLVR verifier-reward toy lane for exact private tasks, with process/verifier reward separated from style preference, reward-present/reward-removed ablation, verifier-cost ledger, reward-hacking probes, and no authority expansion by training side effect",
@@ -2027,6 +2036,7 @@
         "substrate-adoption record for every capability technique: baseline, negative control, matched data/compute, falsification condition, residuals, reward-hacking probes, and non-claims"
       ],
       "current_non_claims": [
+        "The exact-once v8 functional qualification is complete negative evidence: MoECOT, dense-active, and dense-total each scored 0/160 overall and 0/32 in every arm. The verdict falsifies the 10.8M active rung, selects no architecture, leaves confirmation unspent, and authorizes no route replacement. Low local English-rater agreement is a harness limitation but cannot rescue or hide exact zero code passes.",
         "Phase 10 has a clean experimental transformer successor, but no qualified private proposer floor, broad model-quality, runtime-serving, or public-transfer win.",
         "The prior 1/24 floor is invalid because private tests influenced inferred callable arity. A later ID-space audit found split source IDs shifted into the target embedding segment. The repaired mapping raises independently integrity-verified candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. The completed training receipt was overwritten by the old evaluation-only CLI path, so the canonical gate also records incomplete training provenance. Wider beam, shared vocabulary, two-million-position continuation, and corrected source offsets all remain non-promoted.",
         "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",
@@ -2045,7 +2055,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Keep every negative tranche quarantined and finish both v8 dense controls unchanged. Publish v8 as exact-recovery diagnostics only. Freeze the source-disjoint functional utility manifest before completed control outputs are inspected, then compare unchanged checkpoints per language; use that result to select dense/MoECOT or falsify the 10.8M rung before confirmation, route replacement, amplifiers, scale, or public calibration.",
+      "smallest_next_patch": "Preserve the consumed v8 rung unchanged. Inventory and admit task-complete licensed English/Python/JS-TS/HTML-CSS/Rust units, then preregister the smallest supported 50M-100M active MLX rung with scaling estimates, unique-position and per-arm verified-unit floors, matched controls, memory/throughput/resume canaries, stop criteria, and heldout tails. Do not rerun v8, spend confirmation/public calibration, or add a same-scale patch.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -2268,7 +2278,7 @@
         "reports/candidate_floor_v2_survival_lane_seed101_comparator.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Record the frozen v8 functional disposition first. Refresh SymLiquid only after a new matched-compute comparator run. OneCell may then begin at its architecture/exact-substrate contract without delaying the practical transformer/hybrid data-and-scale decision, and remains non-routeable until its complete matched total-cost verdict.",
+      "smallest_next_patch": "The v8 disposition is recorded. OneCell may begin at its architecture/exact-substrate contract without delaying the practical transformer/hybrid data-and-scale decision, and remains non-routeable until its complete matched total-cost verdict. Refresh SymLiquid only through a new preregistered matched-compute comparator.",
       "integration_smoke": [
         "python3 scripts/theseus_substrate_verdict.py",
         "reports/theseus_substrate_verdict.json summary.superiority_claim=none",

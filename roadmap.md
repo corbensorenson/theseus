@@ -30,12 +30,12 @@ module must meet.
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
 | Data engine + curriculum | Track 0 / Phase 7 | content-bound capacity is 683.25M positions, but the frozen v8 rows are mostly prompt/target pairs without task-complete functional verification | keep v8 immutable; qualify the next rung on licensed product-shaped units with tests, toolchain receipts, multi-turn state, and source-disjoint splits |
-| Dense transformer control | Phase 10 | v8 controls are mechanically matched at 10.780M active and 12.500M total parameters; the active-parameter control completed unchanged and the total-parameter control is running transactionally | finish the total-parameter control unchanged and publish both results as exact-recovery diagnostics, not complete utility verdicts |
-| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk and all five specialists are complete; English is 1/128 exact, while all four code arms remain 0 exact (Python 41/128 syntax-valid) | finish the remaining total-parameter control unchanged, then use the separately frozen functional qualification before any practical architecture promotion |
+| Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
+| MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out utility) | Phase 10 | the 160-case source-disjoint functional contract is frozen before dense-control completion; capability remains NOT_EVALUATED | finish both controls unchanged, generate directly from each frozen checkpoint, then score blind English and pinned Python/Deno/Chrome/Cargo behavior without adapter or tool credit |
+| Generator capability (held-out utility) | Phase 10 | exact-once qualification completed: MoECOT, dense-active, and dense-total each scored 0/160 and 0/32 in every arm | close the 10.8M rung; build task-complete licensed English/code data and preregister the smallest supported 50M-100M active MLX rung |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -220,7 +220,7 @@ promoted; their purpose is to falsify or select the practical architecture.
    current system clears private integrity/behavior gates, spend a fresh public
    calibration surface. SymLiquid remains a later protected comparator.
 
-**Current completion ledger and binding next sequence (2026-07-14):**
+**Current completion ledger and binding next sequence (2026-07-15):**
 - Steps 1-3 are complete for v8: the ABI and five arm contracts are frozen; the
   215.55M-position training view is immutable; the 10.347M shared trunk and all five
   430,849-parameter specialists completed with distinct checkpoint/optimizer lineage.
@@ -228,46 +228,40 @@ promoted; their purpose is to falsify or select the practical architecture.
   recovery (`1/128`); all code arms remain `0` exact and Python is `41/128`
   syntax-valid. Because these rows contain prompt and target but no executable test or
   functional verifier, this is an **exact-recovery diagnostic**, not a utility verdict.
-- The active-parameter dense control completed unchanged: checkpoint
-  `71d3e099...` consumed 227.184M optimizer positions and scored `0/544` exact on
-  the frozen development diagnostic (Python syntax `46/128`). Finish the running
-  total-parameter dense control without changing data, seed, tokenizer, supervision,
-  decoding, heldouts, or verifier. Publish every language result before either
-  aggregate view.
-- Before completed control outputs are inspected, freeze an architecture-neutral,
-  source-disjoint functional qualification manifest with task IDs, scoring rules,
-  toolchain versions, sandboxes, adjudication, failure taxonomy, and no post-hoc task
-  selection. Run every unchanged v8 checkpoint on it once.
-- Issue the practical architecture verdict from both matched accounting views and the
-  functional surface. A dense Pareto win selects dense/hybrid; a sparse win must avoid
-  every arm-floor regression; an unresolved tie stays unresolved. Exact recovery is
-  reported beside utility and cannot independently authorize routing.
-- Spend confirmation once only after functional qualification identifies a candidate.
-  Only a confirmation-qualified successor may receive default route authority and
-  retire the old strict-generator route through a registry replacement transaction.
-- If at least one code arm is functionally behavior-positive, qualify STS/VCM
-  conditioning and verifier-guided search with equal-budget mechanism-removed controls, followed by
-  preference/RL only when accepted/rejected pair density is real. If every code arm
-  remains zero, do not optimize search or routing around a zero numerator: use the
-  frozen failures to choose the next data/capacity/objective rung before retraining.
-- Treat 10.8M active parameters as a systems-canary/falsification rung, not a plausible
-  ChatGPT-like product scale. If sparse and both dense controls remain functionally
-  zero across code, close the rung as falsified. Do not apply another tiny architecture
-  patch. Admit a product-complete corpus and pre-register the smallest data-supported
-  larger rung, expected in the 50M-100M active range, with scaling-law estimate,
-  unique-position floor, MLX memory/throughput canaries, stop criteria, and both
-  matched controls.
+- Both dense controls completed unchanged. The active checkpoint `71d3e099...` and
+  total checkpoint `e56aaa9b...` each consumed about 227.184M optimizer positions and
+  scored `0/544` exact; Python syntax was `46/128` and `48/128`, respectively. These
+  remain exact-recovery/syntax diagnostics, not utility.
+- The architecture-neutral 160-case functional contract was frozen before total-
+  control completion and consumed exactly once. Eleven append-only identities each
+  have one reservation and one completion, with no failed lifecycle. MoECOT,
+  dense-active, and dense-total each scored `0/160`, including `0/32` in English,
+  Python, JS/TS, HTML/CSS, and Rust. Model-only and assisted channels stayed separate;
+  public rows, runtime external inference, fallbacks, templates, tools, and routers
+  received zero generation credit.
+- Local English scoring used two pinned 4-bit MLX primaries plus a conditional local
+  adjudicator, retained no raw responses, and admitted no judgments to training.
+  Quadratic weighted agreement was low (`0.0862`, `0.0355`, and `0.1489` by model),
+  so English rubric precision remains a harness limitation; it cannot rescue or hide
+  the independently exact code result of zero passes in every arm.
+- The preregistered verdict is `FALSIFY_10_8M_ACTIVE_SCALE_RUNG`. No architecture was
+  selected, no Pareto relation was claimed, confirmation remains untouched, and route
+  replacement is unauthorized. Do not rerun, reweight, or patch this consumed rung.
+- The practical next lane is task-complete licensed product data followed by the
+  smallest supported 50M-100M active MLX proposal with a scaling estimate, unique-
+  position and verified-unit floors per arm, matched controls, memory/throughput/
+  resume canaries, fixed stop criteria, and heldout tail floors. STS, VCM, search,
+  preference/RL, and fast generation still wait for a nonzero model-only numerator.
 - Public calibration follows a material, confirmation-qualified model change. It is
   measurement only and never a source of prompts, tests, solutions, traces, labels,
   templates, or residual training rows.
 - OneCell-RWM is a future cognitive-kernel discovery candidate, not a v8 rescue
-  patch and not a replacement for Theseus. It may enter active implementation only
-  after the frozen v8 functional disposition is recorded. It may not alter v8, use
-  interim v8 outputs as tuning data, delay the data-supported scale decision, or
-  receive route authority before its own matched qualification. Architecture-contract
-  and exact deterministic-substrate work must extend existing VIEA, VCM, Octopus,
-  SCF, Loop Closure, SparkStream, artifact, residual, and evidence owners rather than
-  creating parallel registries, memory stores, runtimes, or dashboards.
+  patch and not a replacement for Theseus. The v8 disposition is now recorded, so
+  architecture-contract and exact deterministic-substrate work may begin. It may not
+  use v8 outputs as tuning data, delay the data-supported scale decision, or receive
+  route authority before its own matched qualification. It must extend existing VIEA,
+  VCM, Octopus, SCF, Loop Closure, SparkStream, artifact, residual, and evidence owners
+  rather than creating parallel registries, memory stores, runtimes, or dashboards.
 
 **Track 0 - Data and Curriculum Program** (foundational; runs ahead of and parallel
 to Track 1).
@@ -880,9 +874,9 @@ evidence earns a different route.)
   HTML/CSS, and Rust specialists. Active sparse parameters are 10,777,601 and total
   sparse parameters are 12,501,254. The dense controls are mechanically matched at
   10,779,648 active and 12,499,968 total parameters. The sparse trunk and specialists
-  are complete; the active-parameter dense control completed transactionally and the
-  total-parameter control is running. No implementation, data view, seed, tokenizer,
-  decoding policy, split, or accounting view may change before both controls finish.
+  and both dense controls completed transactionally under the unchanged data, seed,
+  tokenizer, decoding, split, and two-view accounting contract. The rung is now
+  immutable negative evidence and may not be restarted or patched.
 
 - **Correct interpretation of v8:** the 128-row development records per arm contain
   prompt and target but no executable tests or complete functional verifier. English
@@ -891,11 +885,12 @@ evidence earns a different route.)
   complete utility verdict, cannot prove a practical architecture win, and cannot be
   blended with older assisted/public routes.
 
-- **Frozen diagnostic publication:** finish both dense controls unchanged and publish
-  per-language exact recovery, syntax/serialization, loss, similarity, throughput,
-  memory, active/total parameters, optimizer positions, and cost under both
-  preregistered accounting views. Do not tune from sparse or interim dense outputs.
-  Preserve this comparison as a systems-canary result even if every score is zero.
+- **Frozen diagnostic publication:** complete. Both dense controls are `0/544` exact;
+  total-control Python syntax is `48/128` versus active-control `46/128`, while MoECOT
+  English alone has one exact recovery. Per-language serialization/syntax, similarity,
+  throughput, active/total parameters, optimizer positions, checkpoint identity, and
+  cost are published under both preregistered views. This is a systems-canary result,
+  not functional capability.
 
 - **Frozen functional utility qualification:** the 160-case contract was frozen on
   2026-07-14 before dense-control completion, with 32 source-disjoint cases per arm,
@@ -925,10 +920,10 @@ evidence earns a different route.)
   - Report exact recovery and functional utility separately; report every language,
     task family, tail floor, no-output/timeout/invalid rates, accepted output per
     second, and model-only versus assisted channels. English cannot hide code failure.
-  - Current state is `NOT_EVALUATED`: a GREEN contract and passing harness tests are
-    not model capability. Any config/compiler/verifier/toolchain identity drift
-    invalidates execution against this freeze and requires an explicit new contract,
-    never an in-place edit after outputs are known.
+  - Current state is consumed and complete. Every model scored `0/160` overall and
+    `0/32` in each arm. The append-only ledger contains 11 clean reserved/completed
+    identity pairs and no failure. Any rerun, reweighting, task replacement, or
+    in-place contract edit after these outputs is forbidden.
 
 - **Architecture verdict:** issue the practical verdict only after both frozen
   diagnostics and the functional qualification exist.
@@ -941,10 +936,13 @@ evidence earns a different route.)
     untouched confirmation surface, not narrative preference.
   - Confirmation is spent once on the selected unchanged implementation. Route
     replacement then uses one SCF/registry transaction with exact rollback.
+  - **Recorded outcome:** `FALSIFY_10_8M_ACTIVE_SCALE_RUNG`; no architecture selected,
+    no Pareto winner, confirmation unspent, and route replacement unauthorized.
 
 - **Scale-floor exit:** 10.8M active parameters are a systems canary, not a credible
   ChatGPT-like assistant target. If sparse and both dense controls remain functionally
   zero across code, mark the rung falsified and stop same-scale architecture repair.
+  That condition is now met and the rung is closed.
   The next rung must be the smallest data-supported model expected to expose scaling,
   ordinarily 50M-100M active parameters, and must predeclare:
   - scaling-law estimate and falsification condition;
@@ -1016,10 +1014,11 @@ replacement for Theseus. Theseus continues to own intent and authority (VIEA),
 durable context and memory (VCM), capability-provider resolution (Octopus),
 procedure compilation (Cognitive Loop Closure), qualification/replacement/rollback
 (SCF), improvement scheduling (SparkStream), evidence/residual ledgers, and backend
-routing (Hive). OneCell remains planning-only until the current frozen v8 comparison
-and functional qualification have a recorded disposition. It must never block the
-practical transformer/hybrid assistant, consume interim v8 results as tuning evidence,
-or become a same-scale patch after a falsified rung.
+routing (Hive). The frozen v8 comparison now has a recorded scale-falsification
+disposition, so OneCell architecture-contract and exact-substrate work is eligible.
+It remains non-routeable and may not block the practical transformer/hybrid assistant,
+consume v8 outputs as tuning evidence, or become a same-scale patch after the
+falsified rung.
 
 **Preregistered hypothesis.** A compact, weight-tied recurrent neural microkernel,
 coupled to exact external state, typed query/program execution, explicit

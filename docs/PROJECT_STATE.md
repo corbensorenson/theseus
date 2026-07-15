@@ -1,6 +1,6 @@
 # Project State
 
-Last consolidated: 2026-07-14 UTC.
+Last consolidated: 2026-07-15 UTC.
 
 This file is the bounded current-wall page for Project Theseus. The machine-readable
 implementation contract is `configs/roadmap_implementation_matrix.json`; the
@@ -21,26 +21,22 @@ share toward zero. Public benchmarks are calibration only.
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
   generation remain amplifiers, not substitutes for a working proposer.
-- **Capability wall:** v8 English reproduces one target exactly (`1/128`). Python,
-  JS/TS, HTML/CSS, and Rust remain `0` exact; Python is `41/128` syntax-valid. The
-  v8 development rows contain prompt and target but no complete executable verifier,
-  so this is an exact-recovery diagnostic, not functional utility or an architecture
-  win. Confirmation is untouched and no checkpoint is routeable.
+- **Capability wall:** v8 exact recovery remains English `1/128` and all code arms
+  `0`; both dense controls are `0/544`. The separately frozen exact-once functional
+  qualification then scored MoECOT, dense-active, and dense-total at `0/160`, with
+  `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
+  canary rung; it does not select an architecture or authorize a route.
 - **Data gate:** the content-bound audit credits 683,254,465 unique governed
   positions. The frozen comparison uses 215,552,020 positions for a 10,777,601-active
   sparse model and mechanically matched 10,779,648-active/12,499,968-total dense
   controls. The data, tokenizer, seed, supervision, development, confirmation, and
   verifier contracts are immutable through the verdict.
-- **Immediate dependency:** finish the remaining total-parameter dense control
-  unchanged and publish both v8 exact-recovery diagnostics. The separate 160-case
-  functional utility contract is now
-  immutably frozen before control completion: 32 source-disjoint cases per arm, blind
-  English scoring, and pinned Python/Deno/Chrome/Cargo checks. It is `NOT_EVALUATED`,
-  not a capability claim. Run unchanged checkpoints against it after both controls
-  finish; append-only consumed identities enforce one generation, one code execution,
-  one blind-scoring pass, and one verdict per frozen content identity. Use that result,
-  not exact reproduction alone, for practical route selection.
-  Do not patch from interim results.
+- **Immediate dependency:** keep the consumed rung immutable. Inventory and admit
+  task-complete licensed English/Python/JS-TS/HTML-CSS/Rust units, then preregister
+  the smallest supported 50M-100M active MLX rung with scaling estimates, unique-
+  position and verified-unit floors, matched controls, memory/throughput/resume
+  canaries, fixed stop criteria, and heldout tail floors. Do not spend confirmation,
+  public calibration, or another same-scale architecture patch on v8.
 
 ## Evidence Boundaries
 
@@ -86,13 +82,11 @@ share toward zero. Public benchmarks are calibration only.
   that immutable trunk with independent checkpoint/optimizer lineage and no cross-arm
   mutation. English is `1/128` exact; all code arms are `0` exact. Earlier standalone,
   v6, and v7 rungs remain negative evidence in Git/reports rather than active plans.
-- **Dense falsification controls:** the active and total controls are fixed at
-  10,779,648 and 12,499,968 parameters. The active control completed unchanged with
-  checkpoint `71d3e099...`, 227.184M optimizer positions, `0/544` exact recovery, and
-  Python syntax `46/128`; the total control is running transactionally. Both use the
-  same frozen stage and direct per-language exact-recovery contract as MoECOT.
-  Their v8 result remains diagnostic until unchanged checkpoints run through the
-  separately frozen functional utility qualification.
+- **Dense falsification controls:** the active and total controls completed unchanged
+  at 10,779,648 and 12,499,968 parameters. Checkpoints `71d3e099...` and
+  `e56aaa9b...` each consumed about 227.184M optimizer positions and scored `0/544`
+  exact; Python syntax was `46/128` and `48/128`. The separately frozen functional
+  qualification scored both `0/160`, so these remain immutable negative evidence.
 - **Tokenizer/data correctness:** all corpus categories use exact reversible text
   streams. The frozen stage contains 452,782 non-overlapping windows, zero admitted
   unknown positions, zero public training rows, zero external inference calls, and
@@ -113,9 +107,9 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Training State
 
-- The active-parameter dense control completed unchanged and remains developmental,
-  non-routeable, and usable only as frozen falsification evidence. The total-parameter
-  control is in its supervised training phase and remains equally non-routeable.
+- Both dense controls completed unchanged and remain non-routeable frozen
+  falsification evidence. The exact-once functional consumption ledger contains 11
+  clean reserved/completed identity pairs and no failed lifecycle.
 - The frozen comparison reports equal-unique-position/total-parameter and
   equal-active-parameter/active-compute views together. Neither accounting view may
   be selected after results are known.
@@ -146,14 +140,12 @@ share toward zero. Public benchmarks are calibration only.
 
 1. Keep repository/registry/effect evidence coherent and compact.
 2. Keep the frozen data/model scaling contract and heldout/stop criteria fail-closed.
-3. Finish both dense controls under the unchanged v8 evidence contract and publish
-   per-language exact-recovery diagnostics under both accounting views.
-4. Freeze and run source-disjoint functional qualification on every unchanged
-   checkpoint. Select and confirm an architecture only from task-appropriate utility;
-   exact recovery remains separate.
-5. If sparse and both dense controls are functionally zero across code, falsify the
-   10.8M rung and require task-complete data plus a preregistered 50M-100M active MLX
-   rung. Do not spend another cycle on a same-scale architecture patch.
+3. Preserve the completed v8 diagnostics and exact-once functional qualification as
+   immutable negative evidence; all three candidates scored `0/160`.
+4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
+   selected, confirmation is untouched, and route replacement is unauthorized.
+5. Build task-complete licensed data and preregister the smallest supported 50M-100M
+   active MLX rung. Do not spend another cycle on a same-scale architecture patch.
 6. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
 7. Integrate Question-Compiled Semantic Addressing only through the registered VCM
@@ -164,10 +156,11 @@ share toward zero. Public benchmarks are calibration only.
 
 ## External and Deferred Work
 
-- OneCell-RWM is mapped as a post-v8, non-routeable cognitive-kernel discovery
-  candidate. It cannot alter or delay the frozen v8 disposition or duplicate VIEA,
-  VCM, Octopus, SCF, Loop Closure, SparkStream, registry, or evidence machinery;
-  active work begins with a matched ABI/exact-substrate contract only after v8.
+- OneCell-RWM is mapped as a non-routeable cognitive-kernel discovery candidate. The
+  v8 disposition now permits its ABI and exact-substrate contract work, but it cannot
+  become a same-scale rescue patch, delay the practical data-and-scale lane, or
+  duplicate VIEA, VCM, Octopus, SCF, Loop Closure, SparkStream, registry, or evidence
+  machinery. Route authority requires a preregistered matched total-cost verdict.
 - Real multi-node Hive proof remains Phase 9 external-environment evidence and waits
   for another trusted reachable node. It does not block local model work.
 - Mobile, Watch, spatial, voice-following, NAS, and broader product surfaces remain
@@ -187,10 +180,9 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Finish both dense controls without changing v8 and publish their exact-recovery
-diagnostics. Freeze the architecture-neutral functional manifest before completed
-control outputs are inspected, then run unchanged sparse/dense checkpoints through
-blind English utility and per-language code execution/toolchain checks. Select a
-practical route only from that evidence. If every code path is functionally zero,
-close the 10.8M rung and prepare a task-complete, data-supported 50M-100M active MLX
-rung with matched controls rather than adding search, routing, or another tiny patch.
+Inventory and admit task-complete licensed English and code units with executable or
+blind-rubric verification, source-disjoint lineage, provenance, license, contamination,
+and toolchain receipts. Use the admitted corpus to preregister the smallest supported
+50M-100M active MLX rung with matched sparse/dense controls and fixed scaling, memory,
+throughput, resume, stop, and heldout-tail criteria. Do not train until that proposal
+is evidence-complete; do not rerun v8 or spend a public surface first.
