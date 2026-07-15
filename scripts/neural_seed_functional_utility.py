@@ -22,6 +22,7 @@ from neural_seed_functional_verifiers import (
     score_english_judgments,
     verify_candidate,
 )
+from neural_seed_local_english_raters import validate_config as validate_local_rater_config
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +34,8 @@ DEFAULT_RESULT = ROOT / "reports/private_functional_utility_qualification.json"
 TRAINING_SCRIPT = ROOT / "scripts/moecot_language_arm_training.py"
 TRAINING_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
 GENERATION_WRAPPER = ROOT / "scripts/neural_seed_functional_generate.py"
+LOCAL_RATER_CONFIG = ROOT / "configs/neural_seed_local_english_raters.json"
+LOCAL_RATER_IMPLEMENTATION = ROOT / "scripts/neural_seed_local_english_raters.py"
 
 
 def main() -> int:
@@ -47,6 +50,8 @@ def main() -> int:
     parser.add_argument("--evaluate-candidates", default="")
     parser.add_argument("--blind-english-packet-out", default="")
     parser.add_argument("--judgments", default="")
+    parser.add_argument("--judgment-receipt", default="")
+    parser.add_argument("--judgment-label", default="")
     parser.add_argument("--compare-results", nargs=3, default=[])
     parser.add_argument("--exact-diagnostic", default="")
     parser.add_argument("--out", default=str(DEFAULT_RESULT))
@@ -91,13 +96,27 @@ def main() -> int:
             if blind_packet["trigger_state"] != "GREEN":
                 print(json.dumps(summary_view(blind_packet), indent=2, sort_keys=True))
                 return 2
-        judgments = read_jsonl(resolve(args.judgments)) if args.judgments else []
+        judgments_path = resolve(args.judgments) if args.judgments else None
+        judgments = read_jsonl(judgments_path) if judgments_path else []
+        judgment_receipt = read_json(resolve(args.judgment_receipt)) if args.judgment_receipt else {}
+        judgments_identity = (
+            {
+                "path": relative(judgments_path),
+                "sha256": sha256_file(judgments_path),
+                "row_count": len(judgments),
+            }
+            if judgments_path
+            else {}
+        )
         result = evaluate_bundle(
             config,
             manifest,
             bundle,
             read_json(freeze_path),
             judgments,
+            judgment_receipt=judgment_receipt,
+            judgments_identity=judgments_identity,
+            judgment_label=args.judgment_label,
         )
         write_json(resolve(args.out), result)
         print(json.dumps(summary_view(result), indent=2, sort_keys=True))
@@ -179,6 +198,8 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "verifier_sha256": sha256_file(ROOT / "scripts/neural_seed_functional_verifiers.py"),
         "generation_wrapper_sha256": sha256_file(GENERATION_WRAPPER),
         "training_generator_sha256": sha256_file(TRAINING_SCRIPT),
+        "local_english_rater_config_sha256": sha256_file(LOCAL_RATER_CONFIG),
+        "local_english_rater_implementation_sha256": sha256_file(LOCAL_RATER_IMPLEMENTATION),
         "toolchain_identity": toolchains,
         "toolchain_identity_sha256": stable_hash(toolchains),
         "v8_plan_sha256": config["v8_plan_sha256"],
@@ -293,6 +314,8 @@ def build_freeze(
         "verifier_sha256": manifest["verifier_sha256"],
         "generation_wrapper_sha256": manifest["generation_wrapper_sha256"],
         "training_generator_sha256": manifest["training_generator_sha256"],
+        "local_english_rater_config_sha256": manifest["local_english_rater_config_sha256"],
+        "local_english_rater_implementation_sha256": manifest["local_english_rater_implementation_sha256"],
         "toolchain_identity_sha256": manifest["toolchain_identity_sha256"],
         "case_contract_sha256": manifest["case_contract_sha256"],
         "candidate_packet_sha256": manifest["candidate_packet_sha256"],
@@ -387,7 +410,15 @@ def current_training_state(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def evaluate_bundle(
-    config: dict[str, Any], manifest: dict[str, Any], bundle: dict[str, Any], freeze: dict[str, Any], judgments: list[dict[str, Any]]
+    config: dict[str, Any],
+    manifest: dict[str, Any],
+    bundle: dict[str, Any],
+    freeze: dict[str, Any],
+    judgments: list[dict[str, Any]],
+    *,
+    judgment_receipt: dict[str, Any] | None = None,
+    judgments_identity: dict[str, Any] | None = None,
+    judgment_label: str = "",
 ) -> dict[str, Any]:
     gaps = validate_freeze(manifest, freeze)
     cases = {case["case_id"]: case for case in manifest["evaluator_cases"]}
@@ -416,6 +447,17 @@ def evaluate_bundle(
                 + float(verifier_row.get("duration_ms") or 0.0),
                 6,
             )
+    judgment_audit = audit_local_english_judgments(
+        config,
+        manifest,
+        bundle,
+        freeze,
+        judgments,
+        judgment_receipt or {},
+        judgments_identity or {},
+        judgment_label,
+    )
+    gaps.extend(judgment_audit["hard_gaps"])
     english = score_english_judgments(list(cases.values()), outputs, judgments, config) if judgments else {
         "valid": False, "faults": ["blind_english_judgments_pending"], "results": [], "quadratic_weighted_kappa": None, "passed": 0, "total": 32
     }
@@ -440,6 +482,7 @@ def evaluate_bundle(
         "evaluation_complete": all_complete,
         "freeze_sha256": stable_hash(freeze),
         "candidate_provenance": provenance,
+        "english_judgment_provenance": judgment_audit,
         "summary": {
             "functional_pass_rate": passed / total if total else None,
             "passed": passed,
@@ -477,6 +520,10 @@ def evaluate_bundle(
             "candidate_self_declared_flags_trusted": False,
             "candidate_self_declared_timing_trusted": False,
             "timing_source": "freeze_bound_generation_wrapper_monotonic_clock",
+            "local_evaluator_inference_calls": int(
+                judgment_audit.get("local_evaluator_inference_calls") or 0
+            ),
+            "local_evaluator_output_admitted_to_training": False,
             "public_training_rows_written": 0,
             "external_inference_calls": 0,
             "templates_renderers_routers_tools_credit": 0,
@@ -596,6 +643,98 @@ def audit_candidate_provenance(
         "state": "GREEN" if not gaps else "RED",
         "bundle_target_id": target_id,
         "checkpoint_artifacts": artifacts,
+        "hard_gaps": sorted(set(gaps)),
+    }
+
+
+def audit_local_english_judgments(
+    config: dict[str, Any],
+    manifest: dict[str, Any],
+    bundle: dict[str, Any],
+    freeze: dict[str, Any],
+    judgments: list[dict[str, Any]],
+    receipt: dict[str, Any],
+    judgments_identity: dict[str, Any],
+    label: str,
+) -> dict[str, Any]:
+    if not judgments:
+        return {
+            "state": "NOT_EVALUATED",
+            "local_evaluator_inference_calls": 0,
+            "hard_gaps": [],
+        }
+    gaps = []
+    if receipt.get("policy") != "project_theseus_local_blind_english_judgment_receipt_v1":
+        gaps.append("local_judgment_receipt_policy_mismatch")
+    if receipt.get("trigger_state") != "GREEN":
+        gaps.append("local_judgment_receipt_not_green")
+    if receipt.get("config_sha256") != freeze.get("local_english_rater_config_sha256"):
+        gaps.append("local_judgment_config_mismatch")
+    if receipt.get("implementation_sha256") != freeze.get("local_english_rater_implementation_sha256"):
+        gaps.append("local_judgment_implementation_mismatch")
+    for key in ("external_inference_calls", "public_training_rows_written"):
+        if int(receipt.get(key, -1)) != 0:
+            gaps.append(f"local_judgment_nonzero_boundary:{key}")
+    if receipt.get("judgments_admitted_to_training") is not False:
+        gaps.append("local_judgments_training_boundary_missing")
+    if receipt.get("raw_model_responses_retained") is not False:
+        gaps.append("local_judgment_raw_response_retained")
+    local_calls = int(receipt.get("local_evaluator_inference_calls") or 0)
+    if local_calls <= 0:
+        gaps.append("local_judgment_inference_calls_missing")
+    configured = read_json(LOCAL_RATER_CONFIG)
+    primary_ids = {str(row["rater_id"]) for row in configured["primary_raters"]}
+    observed_primary = {
+        str(row.get("rater_id") or "")
+        for row in judgments
+        if row.get("adjudicator") is not True
+    }
+    if observed_primary != primary_ids:
+        gaps.append("local_judgment_primary_rater_set_mismatch")
+    observed_adjudicators = {
+        str(row.get("rater_id") or "")
+        for row in judgments
+        if row.get("adjudicator") is True
+    }
+    allowed_adjudicator = str(configured["adjudicator"]["rater_id"])
+    if observed_adjudicators - {allowed_adjudicator}:
+        gaps.append("local_judgment_adjudicator_mismatch")
+    model_receipts = receipt.get("model_receipts") if isinstance(receipt.get("model_receipts"), list) else []
+    model_by_id = {str(row.get("rater_id") or ""): row for row in model_receipts}
+    for card in [*configured["primary_raters"], configured["adjudicator"]]:
+        rater_id = str(card["rater_id"])
+        if rater_id == allowed_adjudicator and not observed_adjudicators:
+            continue
+        model_row = model_by_id.get(rater_id) or {}
+        if model_row.get("repo_id") != card["repo_id"] or model_row.get("revision") != card["revision"]:
+            gaps.append(f"local_judgment_model_identity_mismatch:{rater_id}")
+        if (model_row.get("snapshot_identity") or {}).get("manifest_sha256") in (None, ""):
+            gaps.append(f"local_judgment_snapshot_identity_missing:{rater_id}")
+    if not label:
+        gaps.append("local_judgment_label_missing")
+    file_rows = receipt.get("judgment_files") if isinstance(receipt.get("judgment_files"), list) else []
+    matches = [row for row in file_rows if row.get("label") == label]
+    if len(matches) != 1:
+        gaps.append("local_judgment_file_binding_missing")
+    else:
+        file_row = matches[0]
+        for key in ("path", "sha256", "row_count"):
+            if file_row.get(key) != judgments_identity.get(key):
+                gaps.append(f"local_judgment_file_identity_mismatch:{key}")
+        blind_packet = build_blind_english_packet(config, manifest, bundle, freeze)
+        if blind_packet.get("trigger_state") != "GREEN":
+            gaps.append("local_judgment_blind_packet_invalid")
+        if file_row.get("blind_packet_contract_sha256") != blind_packet.get("packet_sha256"):
+            gaps.append("local_judgment_blind_packet_mismatch")
+    return {
+        "state": "GREEN" if not gaps else "RED",
+        "receipt_policy": receipt.get("policy"),
+        "judgment_label": label,
+        "judgment_file": judgments_identity,
+        "primary_rater_ids": sorted(observed_primary),
+        "adjudicator_ids": sorted(observed_adjudicators),
+        "local_evaluator_inference_calls": local_calls,
+        "external_inference_calls": 0,
         "hard_gaps": sorted(set(gaps)),
     }
 
@@ -808,7 +947,7 @@ def close_timing_total(value: Any, expected: float) -> bool:
 
 def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[str]:
     gaps = []
-    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "v8_plan_sha256", "v8_stage_signature"):
+    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "local_english_rater_config_sha256", "local_english_rater_implementation_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "v8_plan_sha256", "v8_stage_signature"):
         if manifest.get(key) != freeze.get(key):
             gaps.append(f"freeze_identity_mismatch:{key}")
     return gaps
@@ -836,6 +975,23 @@ def validate_config(config: dict[str, Any]) -> list[str]:
             gaps.append(f"english_scoring_boundary_missing:{key}")
     if english.get("blind_packet_policy") != "project_theseus_blind_english_judgment_packet_v1":
         gaps.append("english_blind_packet_policy_mismatch")
+    if english.get("local_rater_config") != relative(LOCAL_RATER_CONFIG):
+        gaps.append("english_local_rater_config_mismatch")
+    if english.get("local_rater_implementation") != relative(LOCAL_RATER_IMPLEMENTATION):
+        gaps.append("english_local_rater_implementation_mismatch")
+    if english.get("local_judgment_receipt_required") is not True:
+        gaps.append("english_local_judgment_receipt_boundary_missing")
+    local_rater = read_json(LOCAL_RATER_CONFIG)
+    gaps.extend(
+        f"english_local_rater:{gap}" for gap in validate_local_rater_config(local_rater)
+    )
+    local_scoring = local_rater.get("scoring") or {}
+    if local_scoring.get("dimensions") != english.get("dimensions"):
+        gaps.append("english_local_rater_dimension_mismatch")
+    if int(local_scoring.get("adjudication_required_score_delta") or -1) != int(
+        english.get("adjudication_required_score_delta") or -2
+    ):
+        gaps.append("english_local_rater_adjudication_delta_mismatch")
     verdict = config.get("architecture_verdict") or {}
     if tuple(verdict.get("required_targets") or ()) != (
         "moecot_system",

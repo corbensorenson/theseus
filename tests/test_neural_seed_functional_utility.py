@@ -14,6 +14,7 @@ if str(SCRIPTS) not in sys.path:
 
 from neural_seed_functional_utility import (
     audit_candidate_provenance,
+    audit_local_english_judgments,
     build_blind_english_packet,
     build_freeze,
     build_manifest,
@@ -400,3 +401,75 @@ def test_architecture_verdict_preserves_quality_cost_tradeoff_as_unresolved() ->
     assert result["trigger_state"] == "GREEN"
     assert result["decision"] == "UNRESOLVED_CONFIRMATION_REQUIRED"
     assert not any(result["pareto"].values())
+
+
+def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeypatch) -> None:
+    manifest = build_manifest(CONFIG, CONFIG_PATH)
+    freeze = build_freeze(manifest, CONFIG_PATH)
+    bundle = {
+        "candidates": [
+            {"case_id": case["case_id"], "output": "candidate"}
+            for case in manifest["evaluator_cases"]
+        ]
+    }
+    monkeypatch.setattr(
+        "neural_seed_functional_utility.audit_candidate_provenance",
+        lambda *_args, **_kwargs: {"state": "GREEN", "hard_gaps": []},
+    )
+    blind = build_blind_english_packet(CONFIG, manifest, bundle, freeze)
+    rater_config = json.loads(
+        (ROOT / "configs/neural_seed_local_english_raters.json").read_text()
+    )
+    scores = {dimension: 3 for dimension in CONFIG["english_scoring"]["dimensions"]}
+    judgments = [
+        {
+            "case_id": item["case_id"],
+            "blind_item_id": item["blind_item_id"],
+            "candidate_sha256": item["candidate_sha256"],
+            "rater_id": card["rater_id"],
+            "scores": scores,
+        }
+        for item in blind["items"]
+        for card in rater_config["primary_raters"]
+    ]
+    identity = {"path": "reports/judgments.jsonl", "sha256": "j" * 64, "row_count": 64}
+    receipt = {
+        "policy": "project_theseus_local_blind_english_judgment_receipt_v1",
+        "trigger_state": "GREEN",
+        "config_sha256": freeze["local_english_rater_config_sha256"],
+        "implementation_sha256": freeze["local_english_rater_implementation_sha256"],
+        "external_inference_calls": 0,
+        "public_training_rows_written": 0,
+        "judgments_admitted_to_training": False,
+        "raw_model_responses_retained": False,
+        "local_evaluator_inference_calls": 64,
+        "model_receipts": [
+            {
+                "rater_id": card["rater_id"],
+                "repo_id": card["repo_id"],
+                "revision": card["revision"],
+                "snapshot_identity": {"manifest_sha256": card["revision"]},
+            }
+            for card in rater_config["primary_raters"]
+        ],
+        "judgment_files": [
+            {
+                "label": "opaque_a",
+                **identity,
+                "blind_packet_contract_sha256": blind["packet_sha256"],
+            }
+        ],
+    }
+
+    audit = audit_local_english_judgments(
+        CONFIG, manifest, bundle, freeze, judgments, receipt, identity, "opaque_a"
+    )
+    assert audit["state"] == "GREEN"
+
+    tampered = copy.deepcopy(receipt)
+    tampered["judgment_files"][0]["sha256"] = "0" * 64
+    audit = audit_local_english_judgments(
+        CONFIG, manifest, bundle, freeze, judgments, tampered, identity, "opaque_a"
+    )
+    assert audit["state"] == "RED"
+    assert "local_judgment_file_identity_mismatch:sha256" in audit["hard_gaps"]
