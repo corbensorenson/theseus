@@ -14,7 +14,8 @@ share toward zero. Public benchmarks are calibration only.
 ## Current Verdict
 
 - **Architecture readiness:** not ready for long training. The finite pre-training
-  docket contains 13 known checkpoint-shaping contracts that must be wired,
+  docket contains 13 known checkpoint-shaping contracts; KERC has a bounded retirement
+  verdict and the remaining 12 must be wired,
   falsified, or retired before the architecture-freeze manifest can authorize a run.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
@@ -31,12 +32,16 @@ share toward zero. Public benchmarks are calibration only.
   fallback returns. Every specialist clears its 20:1 owned-parameter floor; HTML/CSS
   is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
-- **Immediate dependency:** KERC's exact packet/VCM substrate and canonical four-
-  objective MoECOT training/checkpoint path are wired without learned or deterministic
-  renderer credit. Materialize the governed 1024/128/128 source-group-disjoint KERC
-  record stage, freeze its matched surface-English campaign, and pass end-to-end learned
-  compiler/core/renderer plus lifecycle canaries; then close the remaining finite
-  architecture docket through existing registry owners. Publish a
+- **KERC disposition:** full KERC compiler/core/renderer training is retired from the
+  first long run by the independently replayed, content-bound
+  `p4-m8-kerc-runtime-001` verdict. Kernel-native, surface, and simple-handle controls
+  tied at `0.5`; complete packets averaged `714` bytes versus `73.25` for the best
+  simple control; and one attack false-allowed. The canonical trainer now enforces
+  zero KERC optimizer repetitions and a new plan identity. Protected exact objects and
+  scoped interaction glossary residuals remain under VCM/SCF with zero learned credit.
+- **Immediate dependency:** close the remaining 12 finite architecture contracts
+  through existing registry owners, beginning with QCSA identity/address/physical-
+  route separation and migration. Publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
   Preserve the now-GREEN content-bound data receipts while architecture closes.
@@ -152,12 +157,14 @@ share toward zero. Public benchmarks are calibration only.
    immutable negative evidence; all three candidates scored `0/160`.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
-5. Close all 13 finite pre-training architecture contracts through full wiring,
-   falsification, or explicit retirement. This includes KERC, QCSA, Reflexive Router,
+5. Preserve the completed KERC retirement and close the remaining 12 finite pre-training
+   architecture contracts through full wiring, falsification, or explicit retirement.
+   This includes QCSA, Reflexive Router,
    OneCell disposition, update/data causality, policy/GVR/campaign control, and
    generation-objective interfaces.
-6. Preserve the GREEN data floors, freeze the joint surface/KERC/code/control
-   campaign, publish the architecture manifest, and replay every canary.
+6. Preserve the GREEN data floors, freeze the surface/code/control campaign with the
+   hash-bound KERC retirement in its identity, publish the architecture manifest, and
+   replay every canary.
 7. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
 8. Calibrate once on fresh frozen public surfaces after material model improvement.
@@ -191,9 +198,9 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete and register the KERC immutable-source/protected-object packet, VCM-owned
-hierarchical residual lifecycle, learned compiler/renderer interfaces, round-trip
-verifier, checkpoint migration, cost accounting, and adversarial lifecycle tests.
-Then close the remaining finite architecture docket and publish the independently
+Complete and register QCSA's stable-object/address/physical-route separation, plural
+atlas epochs, task-bound Semantic Address Certificates, authority-safe translation,
+and migration/rollback replay through the existing VCM/SCF/VIEA owners. Preserve the
+KERC retirement. Then close the remaining finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.

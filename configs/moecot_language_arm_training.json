@@ -105,7 +105,7 @@
     "maximum_source_conditioned_optimizer_repetitions": 2,
     "source_conditioned_optimizer_repetitions": 1,
     "maximum_kernel_english_optimizer_repetitions": 2,
-    "kernel_english_optimizer_repetitions": 1,
+    "kernel_english_optimizer_repetitions": 0,
     "termination_loss_weight": 4.0,
     "byte_boundary_loss_weight": 2.0
   },
@@ -261,7 +261,64 @@
   },
   "kernel_english_training": {
     "policy": "project_theseus_moecot_kernel_english_stage_v1",
-    "required": true,
+    "required": false,
+    "disposition": {
+      "policy": "project_theseus_kerc_pretraining_disposition_v1",
+      "state": "RETIRED_FROM_FIRST_LONG_RUN",
+      "retirement_scope": "full_compiler_core_renderer_training_path_only",
+      "evidence_scope": "bounded_authored_synthetic_campaign",
+      "broad_efficiency_gate_passed": false,
+      "full_kerc_training_enabled": false,
+      "general_kerc_falsification_claimed": false,
+      "learned_capability_claimed": false,
+      "retained_mechanisms": [
+        "protected_exact_object_path",
+        "scoped_interaction_glossary_residual"
+      ],
+      "evidence": {
+        "campaign_id": "p4-m8-kerc-runtime-001",
+        "source_project": "AI_book",
+        "source_state": "content_addressed_local_campaign",
+        "artifact_sha256": {
+          "preregistration": "bc5adc41184033eaedbe7b4bdf80a9b98a00d140381a03289eca78a25db3090e",
+          "design": "fa7d539cae86214d49d3cf1613031179b02c46535e7be03259c377aa7a73e170",
+          "corpus": "0a626a38c3772cc9c70ae56fe2c99f94b03e7bbe19eb725c60ab13be4417a67a",
+          "raw_run": "df31ceca782c510c47a4e1a8f5af5a07737612340f0d81ab47a692d816ed9a83",
+          "confirmatory_result": "027507a0360c8b3749db4c081aa68d9d7a5f2d149dbd66a20a8815a2b28c259b",
+          "design_validator": "f09b98863e9a13e15a3a9880560a80d3449433acb561d3d94edf093776603eb2",
+          "result_validator": "45e3c804729e7b362a4fa8df75f0c2f164567a76a8880e4b1493fb0f886a85ea"
+        },
+        "denominators": {
+          "corpus": 192,
+          "train": 128,
+          "heldout": 64,
+          "seeds": 5,
+          "ablations": 13,
+          "attacks": 20
+        },
+        "measurements": {
+          "kernel_native_mean_accuracy": 0.5,
+          "best_surface_mean_accuracy": 0.5,
+          "simple_handle_mean_accuracy": 0.5,
+          "packet_mean_bytes": 714.0,
+          "best_simple_total_description_bytes": 73.25,
+          "attack_false_allow_count": 1,
+          "protected_object_recall": 1.0,
+          "shared_glossary_observed_break_even_turn": 2
+        },
+        "terminal_disposition": "broad_efficiency_refuted_narrow_exact_handle_and_shared_glossary_results_retained",
+        "independent_replay": {
+          "design_validator_passed": true,
+          "result_validator_passed": true,
+          "validated_utc": "2026-07-16"
+        }
+      },
+      "non_claims": [
+        "This bounded authored synthetic campaign does not prove that KERC can never work.",
+        "It does not establish general semantic preservation, independent verifier validity, security, transfer, production efficiency, SOTA, AGI, or ASI.",
+        "The retained exact-object and scoped-glossary mechanisms are deterministic infrastructure and receive no learned capability credit."
+      ]
+    },
     "stage_root": "data/training_data/moecot_kernel_english_v1",
     "report": "reports/moecot_kernel_english_stage.json",
     "records_jsonl": "data/training_data/kernel_english_governed_v1/records.jsonl",
@@ -273,9 +330,9 @@
       "answer_packet_to_surface_v1"
     ],
     "records_by_split": {
-      "private_train": 1024,
-      "private_dev": 128,
-      "private_eval": 128
+      "private_train": 0,
+      "private_dev": 0,
+      "private_eval": 0
     },
     "maximum_sequence_tokens": 4096,
     "batch_size": 2,

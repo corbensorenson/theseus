@@ -353,6 +353,41 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     assert any("artifact_identity" in gap for gap in replay["hard_gaps"])
 
 
+def test_retired_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(
+    tmp_path: Path,
+) -> None:
+    canonical = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )["kernel_english_training"]
+    canonical["stage_root"] = str(tmp_path / "retired-kernel-stage")
+    canonical["report"] = str(tmp_path / "retired-kernel-report.json")
+    canonical["records_jsonl"] = str(tmp_path / "must-not-exist-records.jsonl")
+    canonical["verification_ledger_jsonl"] = str(
+        tmp_path / "must-not-exist-ledger.jsonl"
+    )
+    cfg = {"stage_dir": str(tmp_path / "stage"), "kernel_english_training": canonical}
+
+    validate_kernel_english_config(cfg)
+    inspected = inspect_kernel_english(cfg, tmp_path / "config.json")
+    assert inspected["trigger_state"] == "GREEN"
+    assert inspected["full_kerc_training_enabled"] is False
+    assert inspected["artifacts"] == {}
+    assert inspected["verification_ledger_required"] is False
+
+    materialized = materialize_kernel_english(cfg, tmp_path / "config.json")
+    assert materialized["mode"] == "retired_from_first_long_run"
+    assert materialized["selected_record_count_by_split"] == {
+        "private_train": 0,
+        "private_dev": 0,
+        "private_eval": 0,
+    }
+    assert not Path(canonical["records_jsonl"]).exists()
+    assert not Path(canonical["verification_ledger_jsonl"]).exists()
+    assert (
+        Path(canonical["stage_root"]) / "manifest.json"
+    ).is_file()
+
+
 def test_kernel_split_overlap_rejects_group_and_content_reuse() -> None:
     train = kernel.validate_training_record(kernel_record("private_train", 10))
     dev = kernel.validate_training_record(kernel_record("private_dev", 11))

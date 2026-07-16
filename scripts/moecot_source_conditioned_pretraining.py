@@ -35,6 +35,7 @@ from kernel_english_protocol import (
     TRAINING_VERIFICATION_POLICY,
     compile_training_views,
     kernel_training_contract,
+    validate_training_disposition,
     validate_training_record,
 )
 
@@ -95,19 +96,22 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
     cfg = cfg if isinstance(cfg, dict) else {}
     if cfg.get("policy") != "project_theseus_moecot_kernel_english_stage_v1":
         raise ValueError("unexpected KERC training-stage policy")
-    if cfg.get("required") is not True:
-        raise ValueError("KERC training stage must remain required for the joint campaign")
+    disposition = validate_training_disposition(cfg)
+    full_kerc_enabled = disposition.get("full_kerc_training_enabled") is True
     if tuple(cfg.get("objective_order") or ()) != TRAINING_OBJECTIVES:
         raise ValueError("KERC objective order/identity mismatch")
     rows = cfg.get("records_by_split") or {}
     if tuple(rows) != ("private_train", "private_dev", "private_eval"):
         raise ValueError("KERC record split set/order mismatch")
-    if any(int(value or 0) <= 0 for value in rows.values()):
-        raise ValueError("KERC record floors must be positive for every split")
-    if not cfg.get("allowed_licenses"):
-        raise ValueError("KERC stage requires an explicit license allowlist")
-    if not str(cfg.get("verification_ledger_jsonl") or "").strip():
-        raise ValueError("KERC stage requires a separate verification ledger")
+    if full_kerc_enabled:
+        if any(int(value or 0) <= 0 for value in rows.values()):
+            raise ValueError("KERC record floors must be positive for every split")
+        if not cfg.get("allowed_licenses"):
+            raise ValueError("KERC stage requires an explicit license allowlist")
+        if not str(cfg.get("verification_ledger_jsonl") or "").strip():
+            raise ValueError("KERC stage requires a separate verification ledger")
+    elif any(int(value or 0) != 0 for value in rows.values()):
+        raise ValueError("retired KERC stage must request zero records")
     if int(cfg.get("maximum_sequence_tokens") or 0) <= 0:
         raise ValueError("KERC maximum sequence tokens must be positive")
     if not 1 <= int(cfg.get("batch_size") or 0) <= 16:
@@ -128,6 +132,9 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
 
 def inspect_kernel_english(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
     cfg = validate_kernel_english_config(config)
+    disposition = validate_training_disposition(cfg)
+    if disposition.get("full_kerc_training_enabled") is not True:
+        return kernel_english_base_report(config_path, cfg, "GREEN", [])
     manifest_path = resolve(cfg["stage_root"]) / "manifest.json"
     if not manifest_path.is_file():
         return kernel_english_base_report(
@@ -148,6 +155,13 @@ def materialize_kernel_english(
     config: dict[str, Any], config_path: Path
 ) -> dict[str, Any]:
     cfg = validate_kernel_english_config(config)
+    disposition = validate_training_disposition(cfg)
+    if disposition.get("full_kerc_training_enabled") is not True:
+        report = kernel_english_base_report(config_path, cfg, "GREEN", [])
+        stage_root = resolve(cfg["stage_root"])
+        stage_root.mkdir(parents=True, exist_ok=True)
+        write_json_atomic(stage_root / "manifest.json", report)
+        return report
     started = time.perf_counter()
     stage_root = resolve(cfg["stage_root"])
     stage_root.mkdir(parents=True, exist_ok=True)
@@ -434,18 +448,40 @@ def kernel_english_base_report(
     state: str,
     gaps: list[str],
 ) -> dict[str, Any]:
+    disposition = validate_training_disposition(cfg)
+    enabled = disposition.get("full_kerc_training_enabled") is True
     return {
         "policy": cfg["policy"],
         "created_utc": now(),
-        "mode": "inspection",
+        "mode": "inspection" if enabled else "retired_from_first_long_run",
         "trigger_state": state,
         "config": relative(config_path),
         "contract_sha256": kernel_english_stage_contract_sha256(cfg),
-        "learned_pipeline_contract": kernel_training_contract(),
+        "learned_pipeline_contract": kernel_training_contract() if enabled else {},
+        "architecture_disposition": disposition,
+        "full_kerc_training_enabled": enabled,
+        "retained_mechanisms": list(disposition.get("retained_mechanisms") or []),
         "required_records_by_split": dict(cfg["records_by_split"]),
-        "verification_ledger_required": True,
+        "verification_ledger_required": enabled,
+        "artifacts": {},
+        "selected_record_count_by_split": {
+            split: 0 for split in cfg["records_by_split"]
+        },
+        "compiled_view_count_by_objective": {},
+        "unique_raw_source_count": 0,
+        "derived_view_unique_data_credit": 0,
+        "split_overlap_audit": {
+            "source_group_overlap_count": 0,
+            "raw_source_overlap_count": 0,
+            "content_bound_disjoint": True,
+            "hard_gaps": [],
+        },
         "hard_gaps": gaps,
-        "score_semantics": "KERC learned-objective data readiness; not learned capability",
+        "score_semantics": (
+            "KERC learned-objective data readiness; not learned capability"
+            if enabled
+            else "bounded pre-training architecture disposition; full KERC receives zero optimizer exposure"
+        ),
         "public_training_rows_written": 0,
         "public_benchmark_payload_count": 0,
         "external_inference_calls": 0,

@@ -148,6 +148,50 @@ def training_record(*, split: str = "private_train") -> dict:
     return record
 
 
+def retired_training_config() -> dict:
+    payload = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    return payload["kernel_english_training"]
+
+
+def test_bounded_kerc_retirement_is_content_bound_and_narrow() -> None:
+    cfg = retired_training_config()
+    disposition = kernel.validate_training_disposition(cfg)
+
+    assert disposition["state"] == "RETIRED_FROM_FIRST_LONG_RUN"
+    assert disposition["full_kerc_training_enabled"] is False
+    assert disposition["general_kerc_falsification_claimed"] is False
+    assert disposition["retained_mechanisms"] == [
+        "protected_exact_object_path",
+        "scoped_interaction_glossary_residual",
+    ]
+
+    tampered = copy.deepcopy(cfg)
+    tampered["disposition"]["evidence"]["measurements"][
+        "packet_mean_bytes"
+    ] = 70.0
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_TRAINING_DISPOSITION_COST_INVALID"
+    ):
+        kernel.validate_training_disposition(tampered)
+
+    tampered = copy.deepcopy(cfg)
+    tampered["disposition"]["general_kerc_falsification_claimed"] = True
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_TRAINING_DISPOSITION_INVALID"
+    ):
+        kernel.validate_training_disposition(tampered)
+
+    tampered = copy.deepcopy(cfg)
+    tampered["disposition"]["evidence"]["denominators"]["heldout"] = 65
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_TRAINING_DISPOSITION_DENOMINATOR_INVALID",
+    ):
+        kernel.validate_training_disposition(tampered)
+
+
 def test_source_protection_precedes_correction_and_preserves_exact_bytes() -> None:
     result = protected()
 

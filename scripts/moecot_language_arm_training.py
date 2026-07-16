@@ -25,6 +25,7 @@ from typing import Any
 
 import numpy as np
 
+from kernel_english_protocol import validate_training_disposition
 from standard_causal_transformer_model import CausalTransformerConfig, build_model, parameter_count
 from standard_causal_transformer_corpus import load_pretrain_memmaps, pretrain_array_paths
 from standard_causal_transformer_survival import (
@@ -831,12 +832,41 @@ def audit_source_conditioned_stage(config: dict[str, Any]) -> dict[str, Any]:
 def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
     cfg = config.get("kernel_english_training")
     cfg = cfg if isinstance(cfg, dict) else {}
+    disposition = validate_training_disposition(cfg)
+    if disposition.get("full_kerc_training_enabled") is not True:
+        return {
+            "state": "RETIRED_FROM_FIRST_LONG_RUN",
+            "manifest": "",
+            "manifest_sha256": "",
+            "artifacts": {},
+            "learned_pipeline_contract": {},
+            "architecture_disposition": disposition,
+            "full_kerc_training_enabled": False,
+            "retained_mechanisms": list(
+                disposition.get("retained_mechanisms") or []
+            ),
+            "selected_record_count_by_split": {
+                split: 0 for split in (cfg.get("records_by_split") or {})
+            },
+            "compiled_view_count_by_objective": {},
+            "unique_raw_source_count": 0,
+            "derived_view_unique_data_credit": 0,
+            "split_overlap_audit": {
+                "source_group_overlap_count": 0,
+                "raw_source_overlap_count": 0,
+                "content_bound_disjoint": True,
+                "hard_gaps": [],
+            },
+            "hard_gaps": [],
+            "score_semantics": (
+                "bounded pre-training architecture disposition; full KERC receives "
+                "zero optimizer exposure"
+            ),
+        }
     root = resolve(str(cfg.get("stage_root") or ""))
     manifest_path = root / "manifest.json"
     manifest = read_json(manifest_path) if manifest_path.is_file() else {}
     gaps: list[str] = []
-    if cfg.get("required") is not True:
-        gaps.append("kernel_english_stage_not_required")
     if not manifest:
         return {
             "state": "RED",
@@ -2524,8 +2554,8 @@ def validate_config(config: dict[str, Any]) -> None:
     kernel_cfg = config.get("kernel_english_training") or {}
     if kernel_cfg.get("policy") != "project_theseus_moecot_kernel_english_stage_v1":
         raise ValueError("KERC training contract is required")
-    if kernel_cfg.get("required") is not True:
-        raise ValueError("KERC joint-campaign training contract must remain required")
+    kernel_disposition = validate_training_disposition(kernel_cfg)
+    kernel_enabled = kernel_disposition.get("full_kerc_training_enabled") is True
     if tuple(kernel_cfg.get("objective_order") or ()) != (
         "surface_direct_control_v1",
         "surface_to_kernel_program_v1",
@@ -2534,10 +2564,14 @@ def validate_config(config: dict[str, Any]) -> None:
     ):
         raise ValueError("KERC objective identity/order mismatch")
     kernel_repetitions = int(training.get("kernel_english_optimizer_repetitions") or 0)
-    if not 1 <= kernel_repetitions <= int(
+    maximum_kernel_repetitions = int(
         training.get("maximum_kernel_english_optimizer_repetitions") or 0
-    ):
-        raise ValueError("KERC repetition must remain within the frozen maximum")
+    )
+    if kernel_enabled:
+        if not 1 <= kernel_repetitions <= maximum_kernel_repetitions:
+            raise ValueError("KERC repetition must remain within the frozen maximum")
+    elif kernel_repetitions != 0:
+        raise ValueError("retired KERC path must receive zero optimizer repetitions")
     if not 1 <= int(kernel_cfg.get("batch_size") or 0) <= int(training["batch_size"]):
         raise ValueError("KERC batch size must be positive and no larger than the base batch")
     if int(kernel_cfg.get("maximum_sequence_tokens") or 0) <= 0:

@@ -191,6 +191,31 @@ def test_training_authority_allows_bounded_canaries_but_gates_long_runs(
     ]
 
 
+def test_retired_kerc_path_has_zero_optimizer_exposure(tmp_path: Path) -> None:
+    cfg = tiny_config(tmp_path)
+    canonical = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    cfg["kernel_english_training"] = canonical["kernel_english_training"]
+    cfg["training"]["kernel_english_optimizer_repetitions"] = 0
+
+    validate_config(cfg)
+
+    tampered = json.loads(json.dumps(cfg))
+    tampered["training"]["kernel_english_optimizer_repetitions"] = 1
+    with pytest.raises(
+        ValueError, match="retired KERC path must receive zero optimizer repetitions"
+    ):
+        validate_config(tampered)
+
+    tampered = json.loads(json.dumps(cfg))
+    tampered["kernel_english_training"]["disposition"][
+        "general_kerc_falsification_claimed"
+    ] = True
+    with pytest.raises(ValueError, match="KERC_TRAINING_DISPOSITION_INVALID"):
+        validate_config(tampered)
+
+
 def test_arm_views_are_an_exact_non_overlapping_partition() -> None:
     accepted = audit_arm_views(arm_views(), 10)
     assert accepted["state"] == "GREEN"

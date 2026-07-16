@@ -30,7 +30,8 @@ module must meet.
 The current priority is **finite architecture closure**, not corpus-scale optimizer
 work. Theseus will not spend a long training run on an architecture that is already
 known to be missing accepted representation, objective, context, routing, generation,
-update, checkpoint, or self-improvement contracts. The 13-item matrix-owned docket is
+update, checkpoint, or self-improvement contracts. The 13-item matrix-owned docket has
+one bounded retirement verdict and 12 remaining contracts; it is
 the complete pre-training decision set known at this revision. Each item must be
 implemented through its pre-training boundary, falsified by a relevant canary, or
 explicitly retired with reasons before the first 50M-100M campaign begins.
@@ -58,9 +59,9 @@ idea now, not postpone training forever in pursuit of unspecified perfection.
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | learned optimization remains premature at the zero-pass floor, but objective/reference/reward/lease/checkpoint interfaces are pre-training requirements | wire and canary the complete objective family now; run and select it only after a behavior-positive proposer creates honest verifier signal |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | efficacy is deferred, but every topology- or objective-changing mode now requires a pre-training include/retire decision and checkpoint-compatible modes require loader/migration proof | freeze MTP, LayerSkip, speculative/draft, and sketch-first contracts with matched AR controls before training; adopt only from accepted verified output per second afterward |
-| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active contract now has sufficient governed data and GREEN finite-loss/update/checkpoint/reload/optimizer-resume/cleanup MLX canaries for MoECOT plus both dense controls, but no long optimizer run has started and training authority remains held by the 13-item finite architecture docket | close or retire every docket item, publish the final architecture-freeze manifest and joint campaign, then replay the same canaries against the final package before training |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active contract now has sufficient governed data and GREEN finite-loss/update/checkpoint/reload/optimizer-resume/cleanup MLX canaries for MoECOT plus both dense controls, but no long optimizer run has started and training authority remains held by the 12 unresolved contracts in the finite architecture docket | close or retire every remaining docket item, publish the final architecture-freeze manifest and joint campaign, then replay the same canaries against the final package before training |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is a non-routeable candidate behind the shared Cognitive Kernel ABI and now requires a pre-training architecture/campaign disposition; no neural or language claim exists | finish its exact substrate, objective/checkpoint interfaces, and matched campaign decision; include it in the frozen run or retire it without delaying the practical transformer/hybrid lane indefinitely |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | exact packet/protected-object/three-space/VCM-residual/answer-verifier substrate and the canonical four-objective MoECOT training/checkpoint path are wired; deterministic fixtures earn no learned credit and the real record stage is not materialized | admit 1024/128/128 governed source-group-disjoint KERC records, freeze the conventional surface-English versus KERC campaign under equal raw bytes/compute/end-to-end cost, then pass learned compiler/core/renderer plus reload/resume/migration/resource/integrity canaries |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | full KERC is `retired_by_pretraining_verdict` from the first long run: on the bounded hash-bound campaign it tied surface/simple controls at `0.5`, cost `714` mean packet bytes versus `73.25` for the best simple control, and false-allowed one attack; the canonical trainer now enforces zero KERC optimizer exposure and a new plan identity | retain protected exact objects and scoped interaction glossary residuals through existing VCM/SCF owners with zero learned credit; reconsider full KERC only through a stronger prospectively frozen source-disjoint campaign |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | behavior loop cannot start at zero pass, but the campaign controller, full-state causality, stop authority, rollback, and negative-knowledge contracts are pre-training requirements | wire and trap-test the autonomous loop while disabled; enable generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -249,28 +250,26 @@ promoted; their purpose is to falsify or select the practical architecture.
    strictly checkpoint-compatible. Implement selected checkpoint-shaping mechanisms
    through existing owners; explicitly falsify or retire rejected ones. No item may
    remain merely `planned` if adopting it later would invalidate the long run.
-2. Complete the KERC pre-training architecture tranche through existing owners:
-   versioned Kernel Packet, protected objects, ambiguity-preserving compiler, three
-   code spaces, VCM-backed residual lifecycle, structured answer packet, learned
-   renderer/copy path, round-trip verifier, registry/migration contract, training
-   transforms/objectives, cost instrumentation, and adversarial lifecycle tests.
-   Preserve the shared visible-input, arm, route, verifier, checkpoint, replay,
-   composition, and no-credit ABIs; KERC may extend them only through registered
-   versioned adapters.
-3. Close the other known pre-training contracts: QCSA identity/address/physical-route
+2. Preserve the completed KERC disposition: full compiler/core/renderer KERC training
+   remains outside the first long run with zero optimizer exposure. Keep only protected
+   exact objects and scoped interaction glossary residuals through existing VCM/SCF
+   owners. Any re-entry requires a stronger prospectively frozen source-disjoint,
+   independently labeled matched-total-cost campaign; do not manufacture a KERC corpus.
+3. Close the remaining pre-training contracts: QCSA identity/address/physical-route
    separation and migration; Reflexive Router command/reflex/Chronicle lifecycle;
    OneCell exact-substrate and campaign disposition; full-state data/update rollback;
    policy-update leases; GVR state transitions; open-ended-campaign stop authority;
    and objective/generation-mode interfaces for preference/RL, MTP, speculative/
    LayerSkip, and sketch-first alternatives. Learned promotion remains post-training,
    but interfaces, no-credit accounting, checkpoints, and matched controls do not.
-4. Preserve the content-bound corpus and materialize source-disjoint conventional
-   surface-English, KERC-English, unchanged Python/JS-TS/HTML-CSS/Rust arm, and mixed
-   dense-control views. Record unique raw bytes and model-visible positions, shared-row
-   reuse, compiler/tokenizer efficiency, contamination, license/provenance, and exact
-   row ranges. Compiled variants of one source are not new unique data.
-5. Re-preregister one joint MLX campaign before training: conventional surface-English
-   baseline, KERC-English candidate, unchanged code arms, and matched dense controls.
+4. Preserve the content-bound corpus and source-disjoint conventional surface-English,
+   unchanged Python/JS-TS/HTML-CSS/Rust arm, and mixed dense-control views. Record
+   unique raw bytes and model-visible positions, shared-row reuse, tokenizer efficiency,
+   contamination, license/provenance, and exact row ranges. Derived views of one source
+   are not new unique data.
+5. Re-preregister one joint MLX campaign before training: conventional surface-English,
+   unchanged code arms, and matched dense controls, with the hash-bound KERC retirement
+   disposition included in the architecture identity.
    Predeclare total/active parameters, raw bytes, total train FLOPs, complete
    end-to-end inference cost, wall/energy budget, heldouts, weak-tail floors, and
    falsification. Replay finite-update, checkpoint/reload, optimizer-resume,
@@ -660,9 +659,9 @@ post-training evidence and cannot circularly block the run. The following rules 
    contracts must exist before training when they affect objectives, state, or
    checkpoints. Their learned qualification still waits for a non-zero numerator.
 4. **Treat architecture and data as jointly frozen experimental variables.** The next
-   run compares conventional surface-English and KERC alternatives while preserving
-   the governed corpus, code arms, matched controls, and source-disjoint heldouts.
-   Compiled views receive no unique-data credit, and all compiler/runtime cost counts.
+   run preserves conventional surface-English, the governed corpus, code arms, matched
+   controls, source-disjoint heldouts, and the bounded KERC retirement disposition.
+   Derived views receive no unique-data credit, and all runtime cost counts.
 5. **Calibrate publicly after a material model change, not by calendar.** Fresh
    frozen surfaces remain available without arbitrary budgets, but an unchanged
    zero-pass model does not justify spending another public surface.
@@ -674,11 +673,12 @@ content-addressed freeze package must bind all of the following before long trai
 
 1. **Model topology and ownership:** trunk, each Octopus/MoECOT arm, dense controls,
    parameter accounting, route boundaries, OneCell disposition, and the exact
-   conventional-English versus KERC alternatives.
-2. **Representation and context:** tokenizers, Kernel Packet/compiler/renderer,
-   protected-object rules, Semantic IR, VCM/QCSA schemas and atlas epochs, context
+   conventional-English path plus retired KERC objective identity.
+2. **Representation and context:** tokenizers, retained protected-object and scoped-
+   glossary Kernel mechanisms, retired compiler/core/renderer objective identity,
+   Semantic IR, VCM/QCSA schemas and atlas epochs, context
    budgets, residual lifecycle, and migration compatibility.
-3. **Objectives and update causality:** causal LM, KERC objectives, preference/RLVR
+3. **Objectives and update causality:** causal LM, explicit zero KERC objective exposure, preference/RLVR
    interfaces, policy leases, GVR transitions, optimizer ownership, best/final
    checkpoint authority, rollback, deletion, unlearning, and invalidation semantics.
 4. **Generation and deliberation:** autoregressive baseline plus explicit include,
@@ -1535,10 +1535,18 @@ and source note are committed, this is an argument-backed intake contract rather
 than evidence that the architecture works. KERC extends the existing English arm,
 Semantic IR, VCM, SCF/registry, evidence/compression, and Octopus owners. It must
 not become a second memory system, tokenizer lane, renderer shortcut, or hidden
-deterministic answer path. Because no 57.315M long optimizer run has started, its
-exact substrate and experiment contract are a bounded pre-training requirement; the
-original surface-model canary remains a mechanical baseline rather than training
-authority.
+deterministic answer path.
+
+**Binding pre-training disposition (2026-07-16):** the content-bound
+`p4-m8-kerc-runtime-001` campaign replayed cleanly but refuted broad total-system
+efficiency on its bounded authored synthetic scope. Kernel-native, surface, and
+simple-handle controls all scored `0.5`; the complete packet averaged `714` bytes
+against `73.25` for the best simple control; and one of twenty attacks false-allowed.
+Full KERC compiler/core/renderer training is therefore retired from the first long
+run with zero optimizer exposure. Protected exact-object handling and scoped shared-
+glossary residuals remain under VCM/SCF because those narrow mechanisms survived.
+This is not a claim that KERC can never work. The design below is retained as the
+strict re-entry contract, not as unfinished work that blocks the current campaign.
 
 - Define one versioned `KernelPacket` protocol spanning immutable/content-addressed
   source identity, protected objects, correction lattice, expanded semantic Kernel,
@@ -1578,7 +1586,7 @@ authority.
   planner nodes, Reflexive Router events, and Octopus composition may exchange Kernel
   packets only through registered adapters with loss/use/authority certificates; the
   representation itself grants no truth, evidence, execution authority, or capability.
-- Train one coordinated architecture, not disconnected prototypes: protected-span
+- If KERC is re-entered, train one coordinated architecture, not disconnected prototypes: protected-span
   detection and calibrated lexical abstention; surface-to-Kernel parallel, paraphrase-
   convergence, hard-negative, cycle, entailment/question-preservation, structured-
   validity, and uncertainty objectives; Kernel language modeling and answer-packet
@@ -1588,7 +1596,7 @@ authority.
   benchmark payloads remain calibration-only, and live teacher use remains governed
   OpenAI-only residual pressure. Version migration is deterministic or the row stays
   explicitly versioned; no compiled row silently changes meaning across revisions.
-- Sequence this as a pre-training English-arm architecture alternative. Implement the
+- Re-entry requires a pre-training English-arm architecture alternative. Implement the
   exact substrate, dataset transforms, objectives, checkpoint/migration path,
   instrumentation, lifecycle, and security contracts before optimizer spend, then
   preregister conventional surface-English and a 25M-75M-active KERC candidate in one
@@ -1948,7 +1956,7 @@ gaps route into the phases above:
 | Intent-to-execution contracts | runtime path does not yet require contracts for every meaningful task | 1 |
 | PlanForge DAGs + adequacy + arbitrage | not the default execution spine; adequacy contracts + arbitrage ledger missing | 1 |
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
-| Kernel English + Hierarchical Residual Ledger | bounded pre-training tranche is required before the first long run; no canonical Kernel Packet, dual-vocabulary compiler/core/renderer path, protected-object boundary, four-level VCM residual lifecycle, round-trip semantic verifier, frozen joint surface/KERC campaign, or falsification verdict exists | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 |
+| Kernel English + Hierarchical Residual Ledger | bounded pre-training disposition complete: exact packet/residual interfaces are implemented, full KERC is retired from the first long run by a hash-bound negative total-system verdict, and only protected exact objects plus scoped glossary residuals remain under existing owners; any future re-entry must satisfy the preserved stronger campaign contract | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 |
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
 | Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
 | Durable semantic memory inside VCM | wired: stable objects, typed/temporal relations, additive ontology migration, transactional merge/supersession/retraction/compaction, sparse-vector/graph retrieval, bounded snapshots, and fresh-process replay; dense embedding and parametric unlearning remain explicit non-claims | 3, 14, 15 |
@@ -2001,7 +2009,7 @@ explicit retirement decision.
 |---|---|---|
 | Reasoning-Trace Faithfulness (section route) | 1, 4, 14, 18 | source queue now includes information-flow faithfulness and MonitorBench comparators; distinguish traces from receipts, test trace/action and monitorability under pressure, and never treat hidden reasoning as authoritative |
 | Question-Compiled Semantic Addressing | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 | pre-training exact-substrate requirement: extend VCM/SCF/VIEA with stable SOID-address-route indirection, plural address atlases, active question traces, SACs, authority-safe physical translation, migration/rollback receipts, and frozen matched controls without creating a parallel memory lane; learned semantic-routing efficacy remains post-training |
-| Kernel English with Hierarchical Residuals | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 | source available and chapter/source-note commit pending; before long training, extend the English arm, Semantic IR, VCM, compression, and registry owners with a versioned dual-vocabulary Kernel Packet, protected objects, uncertainty-preserving compiler, four-level residual lifecycle, learned renderer, round-trip verification, total-cost accounting, and a frozen joint surface/KERC falsification campaign, without creating another language/memory lane |
+| Kernel English with Hierarchical Residuals | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 | pre-training disposition complete for the first long run: retain protected exact objects and scoped interaction glossary residuals through VCM/SCF, keep full KERC objective exposure at zero, and preserve its source/design as a re-entry candidate only if a stronger source-disjoint independently labeled matched-total-cost campaign overturns the bounded negative result |
 | World Models and Model-Based Cognition | 10, 13, 17 | V-JEPA 2 is now a source comparator; activation still waits for the core proposer floor and requires prediction/error ledgers, model-predictive control, imagination/search, causal limits, and sim-to-real controls |
 | Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |
 | Persuasion, Epistemic Security, and Human Agency | 5, 14, 18 | source-contingent; require stronger empirical anchors before activation or claims |

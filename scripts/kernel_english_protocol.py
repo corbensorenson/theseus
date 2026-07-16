@@ -86,6 +86,7 @@ TRAINING_RECORD_POLICY = "project_theseus_kernel_english_training_record_v1"
 TRAINING_VIEW_POLICY = "project_theseus_kernel_english_training_view_v1"
 TRAINING_CONTRACT_POLICY = "project_theseus_kernel_english_learned_pipeline_v1"
 TRAINING_VERIFICATION_POLICY = "project_theseus_kernel_english_verification_receipt_v1"
+TRAINING_DISPOSITION_POLICY = "project_theseus_kerc_pretraining_disposition_v1"
 TRAINING_SPLITS = {"private_train", "private_dev", "private_eval"}
 TRAINING_OBJECTIVES = (
     "surface_direct_control_v1",
@@ -177,6 +178,139 @@ def kernel_training_contract() -> dict[str, Any]:
     }
     contract["contract_sha256"] = stable_hash(contract)
     return contract
+
+
+def validate_training_disposition(cfg: dict[str, Any]) -> dict[str, Any]:
+    """Validate whether full KERC joins or is retired from the first campaign.
+
+    A bounded negative result may remove the checkpoint-shaping KERC objective
+    without erasing the exact-object and scoped-residual mechanisms that survived
+    independently. The disposition is architecture selection, not a broad claim
+    that KERC can never work.
+    """
+
+    required = cfg.get("required") is True
+    if required:
+        return {
+            "state": "CANDIDATE_REQUIRED",
+            "full_kerc_training_enabled": True,
+            "retained_mechanisms": [],
+        }
+
+    disposition = cfg.get("disposition")
+    if not isinstance(disposition, dict) or disposition.get("policy") != (
+        TRAINING_DISPOSITION_POLICY
+    ):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_MISSING",
+            str(disposition),
+            path="kernel_english_training.disposition",
+        )
+    expected_scalars = {
+        "state": "RETIRED_FROM_FIRST_LONG_RUN",
+        "retirement_scope": "full_compiler_core_renderer_training_path_only",
+        "evidence_scope": "bounded_authored_synthetic_campaign",
+        "broad_efficiency_gate_passed": False,
+        "full_kerc_training_enabled": False,
+        "general_kerc_falsification_claimed": False,
+        "learned_capability_claimed": False,
+    }
+    for key, expected in expected_scalars.items():
+        if disposition.get(key) != expected:
+            raise KernelProtocolFault(
+                "KERC_TRAINING_DISPOSITION_INVALID",
+                f"{key}={disposition.get(key)!r}",
+                path=f"kernel_english_training.disposition.{key}",
+            )
+    retained = tuple(disposition.get("retained_mechanisms") or ())
+    if retained != (
+        "protected_exact_object_path",
+        "scoped_interaction_glossary_residual",
+    ):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_RETAINED_MECHANISMS_INVALID",
+            canonical_json(retained),
+            path="kernel_english_training.disposition.retained_mechanisms",
+        )
+    evidence = disposition.get("evidence")
+    if not isinstance(evidence, dict):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_EVIDENCE_MISSING",
+            str(evidence),
+            path="kernel_english_training.disposition.evidence",
+        )
+    hashes = evidence.get("artifact_sha256")
+    required_hashes = {
+        "preregistration",
+        "design",
+        "corpus",
+        "raw_run",
+        "confirmatory_result",
+        "design_validator",
+        "result_validator",
+    }
+    if not isinstance(hashes, dict) or set(hashes) != required_hashes:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_HASH_SET_INVALID",
+            canonical_json(hashes),
+            path="kernel_english_training.disposition.evidence.artifact_sha256",
+        )
+    for key, value in hashes.items():
+        if not re.fullmatch(r"[0-9a-f]{64}", str(value)):
+            raise KernelProtocolFault(
+                "KERC_TRAINING_DISPOSITION_HASH_INVALID",
+                f"{key}={value}",
+                path=f"kernel_english_training.disposition.evidence.artifact_sha256.{key}",
+            )
+    denominators = evidence.get("denominators")
+    if denominators != {
+        "corpus": 192,
+        "train": 128,
+        "heldout": 64,
+        "seeds": 5,
+        "ablations": 13,
+        "attacks": 20,
+    }:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_DENOMINATOR_INVALID",
+            canonical_json(denominators),
+            path="kernel_english_training.disposition.evidence.denominators",
+        )
+    measurements = evidence.get("measurements")
+    if not isinstance(measurements, dict):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_MEASUREMENTS_MISSING",
+            str(measurements),
+            path="kernel_english_training.disposition.evidence.measurements",
+        )
+    if not (
+        float(measurements.get("kernel_native_mean_accuracy", -1.0))
+        == float(measurements.get("best_surface_mean_accuracy", -2.0))
+        == float(measurements.get("simple_handle_mean_accuracy", -3.0))
+        == 0.5
+    ):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_MATCHED_UTILITY_INVALID",
+            canonical_json(measurements),
+            path="kernel_english_training.disposition.evidence.measurements",
+        )
+    if not (
+        float(measurements.get("packet_mean_bytes", 0.0))
+        > float(measurements.get("best_simple_total_description_bytes", math.inf))
+        > 0.0
+    ):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_COST_INVALID",
+            canonical_json(measurements),
+            path="kernel_english_training.disposition.evidence.measurements",
+        )
+    if int(measurements.get("attack_false_allow_count", -1)) != 1:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_DISPOSITION_ATTACK_RESULT_INVALID",
+            canonical_json(measurements),
+            path="kernel_english_training.disposition.evidence.measurements.attack_false_allow_count",
+        )
+    return copy.deepcopy(disposition)
 
 
 def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
