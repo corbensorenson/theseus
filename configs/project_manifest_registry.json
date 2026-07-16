@@ -8491,6 +8491,17 @@
         "NOTICE"
       ],
       "canonical": "docs/PROJECT_STATE.md",
+      "canonical_source_bindings": [
+        {
+          "id": "onecell_rwm_canonical_handoff",
+          "path": "docs/research/ONECELL_RWM_CANONICAL_HANDOFF.md",
+          "sha256": "9a011adb8cd408014d12194d4e553992ded3760220b438b871787800f42a6f1a",
+          "bytes": 53956,
+          "provenance": "user_supplied_canonical_handoff_vendored_from_chatgpt_share",
+          "authority": "future_candidate_design_source_only_non_routeable",
+          "external_source": "https://chatgpt.com/share/6a57781e-17a4-83ea-aaae-fa263a9ac2fd"
+        }
+      ],
       "report_outputs": [
         "reports/theseus_doc_link_audit.json",
         "reports/book_to_theseus_crosswalk.json"

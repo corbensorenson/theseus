@@ -1,11 +1,9 @@
 # Project State
+Last consolidated: 2026-07-16 UTC.
 
-Last consolidated: 2026-07-15 UTC.
-
-This file is the bounded current-wall page for Project Theseus. The machine-readable
-implementation contract is `configs/roadmap_implementation_matrix.json`; the
-forward narrative is `roadmap.md`; historical detail remains in Git and
-`docs/archive/`.
+This is the bounded current-wall page. The machine contract is
+`configs/roadmap_implementation_matrix.json`, the forward plan is `roadmap.md`, and
+historical detail remains in Git and `docs/archive/`.
 
 ## North Star
 
@@ -53,12 +51,13 @@ share toward zero. Public benchmarks are calibration only.
 - Public prompts, tests, solutions, traces, and answer templates never become
   training rows. Fresh frozen public surfaces may be used for calibration after a
   material model change; consumed surfaces are not rerun.
-- Live external models are training teachers only through the governed distillation
-  path. Runtime external tokens are forbidden. OpenAI is the only authorized live
-  teacher provider; Claude/Anthropic are forbidden for teacher use and project review.
-- Static openly licensed corpora may include model-derived rows when quality tier,
-  provenance, permitted use, contamination, retention, and recursive synthetic share
-  are measured. This is data admission, not live teacher authority.
+- Live external models are governed training teachers only; runtime external tokens
+  are forbidden. OpenAI is the only authorized live teacher. Automation must not use
+  Claude/Anthropic or Corben's subscription/credentials/apps; user-supplied static
+  review text is external criticism, not teacher or training data.
+- Static licensed corpora may include model-derived rows when quality, provenance,
+  use, contamination, retention, and recursive synthetic share are measured. Corben
+  ratified this boundary on 2026-07-16; it grants no live teacher authority.
 - Teacher rows require provenance, license, contamination, verifier, and retention
   receipts. Live teacher use is residual-only: accepted rows are capped at 10% and
   optimizer sampling at 2%, both trend down, and usefulness must beat a matched

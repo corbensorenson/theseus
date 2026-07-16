@@ -292,6 +292,15 @@ to Track 1).
   separate contract: it currently has 683.25M eligible unique positions against a
   1.146B-position floor, a measured 463.05M shortfall. Older 219M-position summaries
   must not be used to describe current readiness.
+- Keep the three data budgets mechanically separate in every scale decision:
+  `broad_pretraining_unique_positions`, `task_complete_unique_target_positions`, and
+  `optimizer_exposure_positions`. Task-complete targets measure product supervision;
+  they do not close the broad pretraining floor unless their complete model-visible
+  source rows also pass canonical corpus admission and cross-source deduplication.
+  Repetition can increase optimizer exposure only. The 57.315M rung is authorized
+  only when its 1.146B broad unique-position floor and every per-arm task-complete
+  unit/position floor pass simultaneously; no subtotal may be relabeled or counted
+  twice to clear either gate.
 - Expand the corpus in the product's actual domains: English conversation and
   instruction following; Python first; then JS/TS/HTML/CSS and Rust. Measure
   executable completeness, dependency context, algorithm/contract coverage,
@@ -301,10 +310,19 @@ to Track 1).
 - Natural-language scope is English. "Multilingual code" means Python, JS/TS,
   HTML/CSS, and Rust, not broad human-language intake. Every natural-language source
   carries an English filter/receipt; non-English rows quarantine.
+- Rust is part of the frozen five-arm seed and cannot be removed after observing its
+  coverage or model result merely to clear a data or architecture gate. If a future
+  seed changes language scope, that change requires a new prospective contract,
+  remapped heldouts and matched controls, and an explicit product tradeoff; it cannot
+  retroactively authorize the current 57.315M rung.
 - Prefer high-quality licensed human/open corpora and static openly licensed
   model-derived corpora over live teacher generation. Provider origin alone neither
   admits nor rejects a static dataset; license, provenance, quality, diversity,
   decontamination, and measured heldout utility decide.
+- Operator policy ratification (2026-07-16): already-published static corpora may
+  contain Claude/Anthropic-derived rows and remain eligible under the ordinary
+  third-party corpus gates. This does not authorize live Anthropic generation or use
+  of Corben's Claude subscription, credentials, CLI, API, or desktop app.
 - Treat published agent traces as structured trajectory data, not automatically as
   instruction targets. A trace source enters quarantine before any training credit:
   freeze the upstream revision and byte hash; preserve model/provider provenance;
@@ -576,6 +594,19 @@ run and it meets the Quality Bars below.
 - Enforce live report/checkpoint retention, current-reference-aware compaction, and
   one flagship claim record per metric family; generated bulk is runtime state, not
   source or capability evidence.
+- Formally retire superseded capability lanes instead of leaving them adjacent to
+  the active route. The first audit covers the strict-generator family and
+  `crates/symliquid-cli/src/code_lm_closure`: trace active imports, registry edges,
+  verification commands, report consumers, and reusable mechanisms; extract live
+  dependencies into canonical owners; mark retained comparators non-routeable;
+  archive superseded reports through verified retention pointers; and delete or move
+  reference-only source under `deprecated/`. No active gate may depend on a retired
+  implementation; git history remains the recovery path.
+- Keep this roadmap forward-only and bounded. Phase prose contains requirements,
+  dependencies, acceptance, and prohibitions; dated run narratives, report catalogs,
+  and implementation inventories belong in the matrix, registry, bounded state page,
+  or git history. Add a roadmap-entropy check and consolidate the live roadmap below
+  1,100 lines without dropping unresolved book obligations from the matrix.
 - Artifact consumers resolve both inline and retention-sidecar archive pointers,
   prefer live originals over stale sidecars, and verify reconstructed bytes against
   the owning receipt before a checkpoint can satisfy readiness. Missing or corrupt
@@ -587,7 +618,9 @@ run and it meets the Quality Bars below.
   tests are required before release claims.
 - Acceptance: registry/hygiene/module-definition gates have no hard gaps, every
   active route resolves through one current implementation, and the repo can answer
-  what Theseus is without scanning historical reports.
+  what Theseus is without scanning historical reports. No active route or gate
+  imports a retired strict-generator implementation, and roadmap-entropy checks
+  reject implementation-history accretion.
 - Do not: turn a gate green with another `_vN` family; hide negatives; treat cleanup
   as capability progress.
 - Current implementation evidence: the registry materializes a content-bound
@@ -871,6 +904,14 @@ them as functionally verified examples.
 - Data support for a larger rung requires both unique admitted positions and minimum
   task-complete verifier coverage. More repeated tokens, teacher paraphrases, or
   target-only snippets cannot satisfy the scale gate.
+- Before 57.315M training authorization, qualify the admission path as a risk-ranked
+  epistemic trusted-computing-base component. Bind source hashes and independent
+  golden-invalid oracles for target-pass/starter-fail, contamination, split
+  isolation, source-only selection, cache identity, timeout/process cleanup, source
+  restoration, final baseline, ledger serialization, and scale-budget separation.
+  Run mutation/fault-injection testing over decision branches and report surviving
+  mutants and correlated dependencies; raw script-to-test-file ratio is not a valid
+  coverage metric.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
   provenance/authority, lineage, permitted use, split exclusions, exact + semantic
   contamination, retention, deletion scope, evaluation refs, residuals, bounded
@@ -1081,8 +1122,12 @@ evidence earns a different route.)
 
 #### Future Candidate: OneCell-RWM
 
-Source: the canonical [Theseus-OneCell design handoff](https://chatgpt.com/share/6a57781e-17a4-83ea-aaae-fa263a9ac2fd),
-which supersedes the earlier standalone OneCell-RSM packet.
+Canonical source: the vendored
+[`docs/research/ONECELL_RWM_CANONICAL_HANDOFF.md`](docs/research/ONECELL_RWM_CANONICAL_HANDOFF.md),
+content-bound in the project registry. The original
+[shared conversation](https://chatgpt.com/share/6a57781e-17a4-83ea-aaae-fa263a9ac2fd)
+is provenance only, not durable implementation authority. This handoff supersedes
+the earlier standalone OneCell-RSM packet.
 
 OneCell is a candidate implementation of the learned cognitive-kernel slot, not a
 replacement for Theseus. Theseus continues to own intent and authority (VIEA),
@@ -1341,6 +1386,13 @@ utility, or matched total task cost fails.
   bounded trust propagation, trap fixtures, randomized deep replay, and
   receipt-faithfulness checks so a report or receipt is not trusted because it
   exists.
+- Materialize an `EpistemicTCBManifest` for every component that can admit training
+  data, authorize execution, score promotion, load weights, mutate routes, or publish
+  a claim. Each entry binds implementation identity, authority, assumptions,
+  independent checker, shared/correlated dependencies, golden traps, mutation or
+  fault-injection coverage, replay sampling, blind spots, expiry, and rollback.
+  Training admission requires the Phase 7 subset to qualify; later route/release
+  claims require their own subsets rather than inheriting trust from a green report.
 - Compression receipts declare reconstruction, residual coding, determinism,
   supported use, authority/taint preservation, and exact-replay boundary. Proof and
   Lean artifacts support only their finite stated claims.

@@ -371,9 +371,9 @@
       "track_id": "C_capability_research_survival_lane",
       "status": "in_progress_english_python_javascript_html_css_floors_green_rust_and_global_positions_pending",
       "dependency": "v8 diagnostics and exact-once private functional qualification are complete; English, Python, JS/TS, and independently measured HTML plus CSS task-complete floors are green, while Rust and the global unique-position floor still precede the preregistered 50M-100M training run",
-      "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by unique positions, per-language verified-unit floors, MLX canaries, matched controls, and stop criteria.",
+      "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. Scale authorization reports broad_pretraining_unique_positions, task_complete_unique_target_positions, and optimizer_exposure_positions as non-interchangeable budgets; requires the 1.146B broad unique-position floor and every frozen per-arm task-complete unit/position floor simultaneously; and independently prevents cross-source or cross-budget double credit. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by those budgets, MLX canaries, matched controls, and stop criteria.",
       "support_state_target": "empirical-test-backed",
-      "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, or metadata-complete receipts do not prove product-task quality or justify scale."
+      "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, task-complete target positions without admitted full model-visible rows, or metadata-complete receipts do not prove product-task quality or justify scale. Rust remains in the frozen five-arm contract and cannot be dropped post-outcome to clear the gate."
     },
     {
       "backlog_id": "planned.onecell_rwm_candidate_kernel_v1",
@@ -888,7 +888,11 @@
         "shared archive resolution follows inline or retention-sidecar pointers, prefers live originals, and makes the T2 readiness gate recompute archived checkpoint and live vocabulary hashes; corrupted archived bytes fail closed"
       ],
       "missing_items": [],
-      "smallest_next_patch": "When the first routeable trained artifact exists, enroll an external public verification key, issue real signed build/training/advisory/custody records, and prove release admission on encrypted storage; no release or custody claim exists before that evidence.",
+      "maintenance_items": [
+        "formal strict-generator/code_lm_closure retirement proof: active imports and gate dependencies removed or extracted into canonical owners, retained comparators non-routeable, superseded reports archived with verified replay pointers, and reference-only source deleted or moved under deprecated with git history as recovery",
+        "roadmap entropy enforcement: keep forward requirements in roadmap.md, move run narratives and inventories to matrix/registry/state/history, and hold the live roadmap below 1100 lines without dropping unresolved obligations"
+      ],
+      "smallest_next_patch": "After the active task-complete run closes, audit and retire the superseded strict-generator/code_lm_closure family, extract live mechanisms into canonical owners, remove retired imports from active gates, archive reports through verified retention pointers, and compact roadmap evidence prose. Real signed release/custody evidence remains a separate post-checkpoint task.",
       "integration_smoke": [
         "python3 scripts/theseus_project_registry.py --gate",
         "reports/theseus_project_registry.json trigger_state=GREEN",
@@ -1589,10 +1593,12 @@
       "missing_items": [
         "task-complete coverage expansion beyond the current verified inventory: English 25566, Python 2022, JS/TS 1180, HTML/CSS 690, and Rust 97; HTML and CSS are independently GREEN, so every added Rust unit must retain complete target behavior, pinned verification, source-disjoint lineage, license, and contamination receipts",
         "data support for the preregistered 57.315M-active MLX rung: close the 463052115 unique-position shortfall and the Rust verified-unit and position floors without repetition or public calibration payloads",
+        "scale-budget separation: report broad pretraining unique positions, task-complete unique target positions, and optimizer exposure independently; prove task-complete rows receive broad-position credit only when their full model-visible source rows pass canonical admission and cross-source deduplication; require both the 1.146B broad floor and all five frozen arm floors without double counting",
+        "epistemic-TCB qualification for training admission: independent golden-invalid oracles and mutation/fault injection cover target-pass/starter-fail, contamination, split isolation, source-only selection, cache identity, timeout/process cleanup, restoration, final baseline, ledger serialization, and scale-budget separation; report surviving mutants and correlated dependencies",
         "governed published-agent-trace admission: evaluate the frozen original Glint-Research/Fable-5-traces release as a quarantined static Claude-derived corpus, resolve dataset plus embedded-content rights, collapse mirrors/repackagings and near-duplicates, enforce English/Python/JS-TS/HTML-CSS/Rust scope, scan secrets/PII and benchmark overlap, reconstruct outcome evidence, replay verifiers, and require a heldout causal pilot before granting SFT/preference or unique-position credit; metadata-only Codex TraceLab rows may support runtime workload calibration but not language/code supervision",
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
-      "smallest_next_patch": "Expand Rust through the same source-frozen, outcome-blind, test-killed task-complete owner, then close unique governed positions. In parallel, add one source-frozen agent-trace quarantine/admission audit that distinguishes content-bearing supervision from metadata-only runtime calibration. Start with the original 4,665-row Fable release rather than its mirrors or 2.01M-row repackaging; admit no trace until rights, privacy, language scope, deduplication, decontamination, outcome, verifier, and heldout causal-lift gates pass. Reuse the canonical receipt and lineage owners; do not count repetition, target-only snippets, public calibration payloads, metadata-only traces, or unverified rows toward the rung.",
+      "smallest_next_patch": "Expand Rust through the same source-frozen, outcome-blind, test-killed task-complete owner, then close broad unique governed positions while reporting broad unique, task-complete target, and optimizer-exposure budgets separately. In parallel, add one source-frozen agent-trace quarantine/admission audit that distinguishes content-bearing supervision from metadata-only runtime calibration. Start with the original 4,665-row Fable release rather than its mirrors or 2.01M-row repackaging; admit no trace until rights, privacy, language scope, deduplication, decontamination, outcome, verifier, and heldout causal-lift gates pass. Reuse canonical receipt and lineage owners; do not count repetition, target-only snippets, task-complete targets lacking admitted full rows, public calibration payloads, metadata-only traces, or unverified rows toward the broad floor.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/task_complete_training_units.py --prepare-javascript",
@@ -2290,7 +2296,7 @@
         "reports/candidate_floor_v2_survival_lane_seed101_comparator.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "The v8 disposition is recorded. OneCell may begin at its architecture/exact-substrate contract without delaying the practical transformer/hybrid data-and-scale decision, and remains non-routeable until its complete matched total-cost verdict. Refresh SymLiquid only through a new preregistered matched-compute comparator.",
+      "smallest_next_patch": "The vendored OneCell handoff is content-bound in the active-docs registry, so architecture/exact-substrate work may proceed without relying on the external share or delaying the practical data-and-scale decision. OneCell remains non-routeable until its matched total-cost verdict. Refresh SymLiquid only through a new preregistered matched-compute comparator.",
       "integration_smoke": [
         "python3 scripts/theseus_substrate_verdict.py",
         "reports/theseus_substrate_verdict.json summary.superiority_claim=none",
@@ -2614,6 +2620,10 @@
         "reports/theseus_artifact_budget_gate.md"
       ],
       "missing_items": [],
+      "maintenance_items": [
+        "risk-ranked EpistemicTCBManifest for data admission, execution authorization, promotion scoring, weight loading, route mutation, and claim publication, binding implementation identity, authority, assumptions, independent checker, correlated dependencies, traps, mutation/fault evidence, replay policy, blind spots, expiry, and rollback",
+        "receipt-faithfulness mutation campaign proving critical reports, gates, and ledgers fail closed when observed effects disagree with emitted receipts"
+      ],
       "implemented_items": [
         "The canonical report evidence store now emits a named eight-root epistemic TCB and five primary-plus-shadow audit assignments rotated by ISO week; producer/self-audit, missing-root, and insufficient-independent-auditor states fail closed.",
         "The registry/roadmap-derived evidence-pack emitter covers every currently citeable GREEN report without copying private payloads. The live run validates 91/91 packs with source digest, commands, baseline/control shape, residual shape, non-claims, support state, and source-activity counters.",
@@ -2623,7 +2633,7 @@
         "Current-reference-aware compaction protects operational configs, route-required reports, roadmap citations, active promoted manifests, mutable ledgers, and explicit pins. It archived 13+ GiB of unreferenced weights, hard-linked ten byte-identical weight files, and archived 115 superseded hot-report views while reclaiming about 299 MiB. A manifest audit repaired 36 missing historical pointers only after archive-hash verification and then replayed 1,361/1,361 cumulative archived entries. The final artifact budget is GREEN with zero hard gaps and zero warnings.",
         "The canonical evidence-store integrity kernel compiles a live supported claim into a digest-bound evaluation-integrity record and versioned assurance case. It keeps trusted/untrusted monitors separate, compares direct and compact contexts, preserves scoped non-claims, and rejects 9/9 stale, discrepancy, interference, selection-adaptation, missing-control, unresolved-defeater, stale-dependency, and countercase faults."
       ],
-      "smallest_next_patch": "Maintain assurance and evaluation-integrity compilation inside the canonical evidence store; new route/release claims must supply current dependencies, countercase review, scoped acceptance criteria, and clean context/monitor controls.",
+      "smallest_next_patch": "Qualify the Phase 7 admission subset of the EpistemicTCBManifest before 57.315M training authorization. Then complete strict-lane retirement and roadmap compaction after the data campaign while maintaining assurance compilation in the canonical evidence store; no green report self-authorizes trust.",
       "integration_smoke": [
         "python3 scripts/theseus_artifact_retention.py --execute --include-report-snapshots --min-bytes 7000000 --max-files 1",
         "python3 scripts/theseus_artifact_retention_replay_gate.py",
