@@ -1,0 +1,151 @@
+{
+  "policy": "project_theseus_onecell_rwm_pretraining_disposition_v1",
+  "schema_version": "1.0.0",
+  "owner": "cognitive_kernel_discovery_track",
+  "source": {
+    "path": "docs/research/ONECELL_RWM_CANONICAL_HANDOFF.md",
+    "sha256": "9a011adb8cd408014d12194d4e553992ded3760220b438b871787800f42a6f1a"
+  },
+  "first_campaign": {
+    "config": "configs/neural_seed_50m_scale_preregistration.json",
+    "sha256": "b2cc394c38592e2bb33cdacf328a5b53a28afd3439a3a4d80675a7a211573dbd",
+    "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+    "disposition": "retired_from_first_language_campaign",
+    "routeable": false,
+    "optimizer_exposure_steps": 0,
+    "checkpoint_member": false,
+    "reason": "OneCell-RWM is a separate recurrent cognitive-kernel hypothesis with structured exact-substrate curriculum, 4-64 recurrent steps, branch-search accounting, and a 6M-15M core. Adding it to the frozen language-seed campaign would invalidate topology, objective, data, compute, and matched-control identities rather than improve the selected transformer checkpoint."
+  },
+  "cognitive_kernel_abi": {
+    "methods": [
+      "initialize",
+      "propose",
+      "accept_receipt",
+      "checkpoint",
+      "restore",
+      "parameter_accounting",
+      "resource_accounting"
+    ],
+    "proposal_fields": [
+      "proposal_id",
+      "operation",
+      "typed_arguments",
+      "pointer_targets",
+      "workspace_patch",
+      "predictions",
+      "uncertainty",
+      "value",
+      "value_of_compute",
+      "halt_or_escalate",
+      "provenance_refs"
+    ],
+    "receipt_states": [
+      "OK",
+      "FAILED",
+      "BLOCKED",
+      "UNKNOWN",
+      "TIMEOUT",
+      "PARTIAL",
+      "CONFLICTING",
+      "UNVERIFIABLE"
+    ],
+    "authority_rule": "A kernel proposal is advisory and never a fact, verifier result, or authorized effect."
+  },
+  "exact_latent_boundary": {
+    "exact_channels": [
+      "artifact_identity",
+      "typed_values",
+      "hashes",
+      "permissions",
+      "program_counter_and_stack",
+      "branch_snapshot",
+      "resource_lease",
+      "provenance",
+      "observation",
+      "verifier_receipt"
+    ],
+    "latent_channels": [
+      "belief",
+      "prediction",
+      "relevance",
+      "heuristic_value",
+      "uncertainty",
+      "adaptive_neural_memory"
+    ],
+    "collapse_forbidden": [
+      "observation_into_belief",
+      "belief_into_world_state",
+      "prediction_into_fact",
+      "confidence_into_authority",
+      "adaptive_memory_into_durable_evidence"
+    ]
+  },
+  "existing_owner_reuse": {
+    "intent_and_authority": "VIEA",
+    "durable_context_and_memory": "VCM",
+    "capability_resolution": "Octopus",
+    "procedure_compilation": "Cognitive Loop Closure",
+    "qualification_replacement_rollback": "SCF",
+    "improvement_scheduling": "SparkStream",
+    "effects_and_execution": "deterministic tool substrate and registered executors",
+    "evidence_and_residuals": "claim ledger and evidence store"
+  },
+  "objective_contract": {
+    "required_terms": [
+      "operation",
+      "pointer",
+      "workspace_patch",
+      "value",
+      "uncertainty_calibration",
+      "transition_prediction",
+      "halting",
+      "recurrence_consistency",
+      "resource_prediction"
+    ],
+    "invalid_action_negatives_required": true,
+    "shorter_longer_trajectory_consistency_required": true,
+    "longer_reasoning_intrinsic_reward": 0.0,
+    "tool_retrieval_verifier_credit_to_core": 0
+  },
+  "checkpoint_contract": {
+    "required_groups": [
+      "shared_recurrent_cell",
+      "typed_head_group",
+      "optimizer_state",
+      "objective_schedule",
+      "exact_schema_version",
+      "latent_schema_version",
+      "owner_bindings",
+      "campaign_identity"
+    ],
+    "exact_state_embedded_in_latent_checkpoint": false,
+    "migration_rehearsal_required": true,
+    "rollback_required": true
+  },
+  "successor_campaign_reentry": {
+    "campaign_type": "separate_preregistered_cognitive_kernel_discovery_campaign",
+    "required_before_optimizer": [
+      "exact typed workspace and branch-overlay implementation",
+      "typed Query IR and Program IR execution",
+      "transaction receipt replay and exact rollback",
+      "VCM and Octopus bridges using existing owners",
+      "shared recurrent cell serialization and bounded MLX canary",
+      "train-small/test-large structured curriculum freeze",
+      "RATCHET-100 frozen-core protocol",
+      "matched recurrent and transformer controls",
+      "core-only memory search skill and full-system channel separation",
+      "total lifecycle compute memory verifier and maintenance accounting"
+    ],
+    "maximum_architecture_canary_steps": 8,
+    "language_or_code_adapters_before_structured_verdict": false,
+    "may_delay_first_language_campaign": false
+  },
+  "boundaries": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_or_template_credit": 0,
+    "onecell_learned_capability_claimed": false,
+    "onecell_speed_claimed": false,
+    "first_campaign_modified_from_onecell": false
+  }
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -146,6 +147,57 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         self.assertFalse(report["ready"])
         blocker = next(row for row in report["blockers"] if row["kind"] == "missing_required_pre_training_backlog_contracts")
         self.assertEqual(blocker["backlog_ids"], ["planned.missing_v1"])
+
+    def test_declared_backlog_evidence_must_be_green_and_source_bound(self) -> None:
+        import tempfile
+
+        payload = matrix()
+        payload["pre_training_architecture_contract"].update(
+            {
+                "required_backlog_ids": ["planned.kernel_v1"],
+                "ready_backlog_statuses": ["retired_by_pretraining_verdict"],
+            }
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source.txt"
+            source.write_text("bound", encoding="utf-8")
+            import hashlib
+
+            report_path = root / "receipt.json"
+            report_path.write_text(json.dumps({
+                "policy": "fixture_disposition_v1",
+                "trigger_state": "GREEN",
+                "disposition": "retired",
+                "source_artifacts": {
+                    "source": {
+                        "path": str(source),
+                        "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                    }
+                },
+            }), encoding="utf-8")
+            payload["planned_codex_test_backlog"] = [{
+                "backlog_id": "planned.kernel_v1",
+                "status": "retired_by_pretraining_verdict",
+                "pre_training_acceptance_boundary": "Retired by a source-bound verdict.",
+                "pre_training_evidence": {
+                    "path": str(report_path),
+                    "policy": "fixture_disposition_v1",
+                    "required_trigger_state": "GREEN",
+                    "required_disposition": "retired",
+                },
+            }]
+            ready = gate.audit_pre_training_architecture_readiness(
+                matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+            )
+            self.assertTrue(ready["ready"])
+            source.write_text("tampered", encoding="utf-8")
+            stale = gate.audit_pre_training_architecture_readiness(
+                matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+            )
+            self.assertFalse(stale["ready"])
+            contract = stale["required_backlog_contracts"][0]
+            self.assertIn("source_artifacts_stale:source", contract["evidence"]["faults"])
 
     def test_strict_architecture_first_contract_is_machine_enforced(self) -> None:
         payload = matrix()

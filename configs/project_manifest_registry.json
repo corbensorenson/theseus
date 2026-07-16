@@ -339,14 +339,6 @@
         "last_training_heartbeat": {
           "path": "runtime/standard_causal_transformer_stage_v1/training_heartbeat.json",
           "sha256": "7ef84f20635666813c6187c6d42eae863ca8aed050fee718ace61c93db83ad19"
-        },
-        "policy_report": {
-          "path": "reports/policy_optimization_program.json",
-          "sha256": "e209e05a30f8546d356afb6bb22133d7c2c2ee827ecb8e65cd959930c8def876"
-        },
-        "generation_mode_report": {
-          "path": "reports/generation_mode_registry.json",
-          "sha256": "c609555105933430936ba1a381f698ecfc254037521152e7b32336c48d718b5e"
         }
       },
       "evidence_refs": [
@@ -3824,7 +3816,7 @@
       "canonical_entrypoint": "scripts/theseus_project_registry.py",
       "swappable_under_contract": true,
       "replacement_policy": "A replacement must materialize the same abstraction and implementation bindings before this implementation is deprecated.",
-      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_theseus_artifact_admission.py tests/test_roadmap_pretraining_gate.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
+      "verification_command": "python3 -m pytest -q tests/test_theseus_supply_chain.py tests/test_theseus_artifact_admission.py tests/test_roadmap_pretraining_gate.py tests/test_pretraining_architecture_freeze.py tests/test_onecell_rwm_pretraining_disposition.py && python3 scripts/theseus_project_registry.py && python3 scripts/roadmap_implementation_gate.py --gate && python3 scripts/scf_reference_kernel_v1.py --gate && python3 scripts/report_evidence_store.py --integrity-sample-size 64 && python3 scripts/theseus_artifact_retention.py --budget-gate",
       "role": "governance",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -3838,6 +3830,12 @@
         "tests/test_theseus_artifact_admission.py",
         "tests/test_roadmap_pretraining_gate.py",
         "scripts/roadmap_implementation_gate.py",
+        "configs/pretraining_architecture_freeze.json",
+        "scripts/pretraining_architecture_freeze.py",
+        "tests/test_pretraining_architecture_freeze.py",
+        "configs/onecell_rwm_pretraining_disposition.json",
+        "scripts/onecell_rwm_pretraining_disposition.py",
+        "tests/test_onecell_rwm_pretraining_disposition.py",
         "scripts/scf_reference_kernel_v1.py",
         "scripts/report_evidence_store.py",
         "scripts/report_evidence_integrity.py",
@@ -3857,6 +3855,8 @@
         "reports/theseus_project_registry.md",
         "reports/roadmap_implementation_gate.json",
         "reports/roadmap_implementation_gate.md",
+        "reports/pretraining_architecture_freeze_package.json",
+        "reports/onecell_rwm_pretraining_disposition.json",
         "reports/book_to_theseus_crosswalk.json",
         "reports/scf_reference_kernel_v1.json",
         "reports/scf_reference_kernel_v1.md",
@@ -7501,6 +7501,12 @@
         "tests/test_theseus_artifact_admission.py",
         "tests/test_roadmap_pretraining_gate.py",
         "scripts/roadmap_implementation_gate.py",
+        "configs/pretraining_architecture_freeze.json",
+        "scripts/pretraining_architecture_freeze.py",
+        "tests/test_pretraining_architecture_freeze.py",
+        "configs/onecell_rwm_pretraining_disposition.json",
+        "scripts/onecell_rwm_pretraining_disposition.py",
+        "tests/test_onecell_rwm_pretraining_disposition.py",
         "scripts/module_definition_of_done_gate.py",
         "scripts/scf_reference_kernel_v1.py"
       ],
@@ -7510,6 +7516,8 @@
         "reports/theseus_project_registry.md",
         "reports/roadmap_implementation_gate.json",
         "reports/roadmap_implementation_gate.md",
+        "reports/pretraining_architecture_freeze_package.json",
+        "reports/onecell_rwm_pretraining_disposition.json",
         "reports/book_to_theseus_crosswalk.json",
         "reports/module_definition_of_done.json",
         "reports/module_definition_of_done.md",

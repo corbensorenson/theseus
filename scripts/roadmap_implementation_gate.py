@@ -1053,12 +1053,19 @@ def audit_pre_training_architecture_readiness(
         row = backlog_by_id[backlog_id]
         status = str(row.get("status") or "")
         boundary = str(row.get("pre_training_acceptance_boundary") or "")
+        evidence_contract = dict_value(row.get("pre_training_evidence"))
+        evidence_receipt = audit_pre_training_backlog_evidence(evidence_contract)
         required_backlog_rows.append(
             {
                 "backlog_id": backlog_id,
                 "status": status,
-                "ready": status in ready_backlog_statuses and bool(boundary),
+                "ready": (
+                    status in ready_backlog_statuses
+                    and bool(boundary)
+                    and evidence_receipt["ready"]
+                ),
                 "pre_training_acceptance_boundary_present": bool(boundary),
+                "evidence": evidence_receipt,
             }
         )
     unfinished_required_backlog = [row for row in required_backlog_rows if not row["ready"]]
@@ -1104,6 +1111,10 @@ def audit_pre_training_architecture_readiness(
             {row["backlog_id"] for row in unfinished_required_backlog} - set(dependency_backlog_ids)
         )
         contract_errors = []
+        freeze_evidence_contract = dict_value(
+            architecture_contract.get("freeze_package_evidence")
+        )
+        freeze_evidence = audit_pre_training_backlog_evidence(freeze_evidence_contract)
         if execution_priority != "architecture_before_long_training":
             contract_errors.append("execution_priority")
         if training_authority_state != "denied_until_finite_docket_and_freeze_package_are_green":
@@ -1124,6 +1135,11 @@ def audit_pre_training_architecture_readiness(
             contract_errors.append("architecture_change_intake_rule")
         if not sequence_rule:
             contract_errors.append("sequence_rule")
+        if (
+            matrix.get("policy") == "project_theseus_roadmap_implementation_matrix_v1"
+            and not freeze_evidence_contract
+        ):
+            contract_errors.append("freeze_package_evidence")
         if contract_errors:
             blockers.append(
                 {
@@ -1134,6 +1150,16 @@ def audit_pre_training_architecture_readiness(
                     "required_action": "Repair the finite disposition vocabulary, dependency order, training-authority state, and architecture completion rules before long training can be authorized.",
                 }
             )
+        if freeze_evidence_contract and not freeze_evidence["ready"]:
+            blockers.append(
+                {
+                    "kind": "architecture_freeze_package_not_ready",
+                    "evidence": freeze_evidence,
+                    "required_action": "Build and independently replay the exact content-addressed architecture package before authorizing long training.",
+                }
+            )
+    else:
+        freeze_evidence = {"declared": False, "ready": True, "faults": []}
 
     if current_hard_gap_count:
         blockers.append(
@@ -1304,6 +1330,7 @@ def audit_pre_training_architecture_readiness(
         "strict_architecture_first_enforcement": strict_architecture_first,
         "architecture_dependency_order": list_values(architecture_contract.get("dependency_order")),
         "training_authority_state": str(architecture_contract.get("training_authority_state") or ""),
+        "architecture_freeze_package": freeze_evidence,
         "deferred_unfinished_phases": deferred_unfinished,
         "core_slice_count": len(core_slices),
         "support_rank": support_rank,
@@ -1315,6 +1342,46 @@ def audit_pre_training_architecture_readiness(
         },
         "blockers": blockers,
         "warnings": warnings,
+    }
+
+
+def audit_pre_training_backlog_evidence(contract: dict[str, Any]) -> dict[str, Any]:
+    if not contract:
+        return {"declared": False, "ready": True, "faults": []}
+    path = resolve(str(contract.get("path") or ""))
+    faults: list[str] = []
+    report = read_json(path)
+    if not report:
+        faults.append("report_missing_or_invalid")
+    if report.get("policy") != contract.get("policy"):
+        faults.append("policy_mismatch")
+    if report.get("trigger_state") != contract.get("required_trigger_state", "GREEN"):
+        faults.append("trigger_state_mismatch")
+    required_disposition = contract.get("required_disposition")
+    if required_disposition and report.get("disposition") != required_disposition:
+        faults.append("disposition_mismatch")
+    refs = dict_value(report.get("source_artifacts"))
+    if not refs:
+        faults.append("source_artifacts_missing")
+    stale_refs = []
+    for ref_id, ref in refs.items():
+        ref = dict_value(ref)
+        source_path = resolve(str(ref.get("path") or ""))
+        expected = str(ref.get("sha256") or "")
+        actual = hashlib.sha256(source_path.read_bytes()).hexdigest() if source_path.is_file() else ""
+        if not expected or actual != expected:
+            stale_refs.append(str(ref_id))
+    if stale_refs:
+        faults.append("source_artifacts_stale:" + ",".join(sorted(stale_refs)))
+    return {
+        "declared": True,
+        "ready": not faults,
+        "path": rel(path),
+        "policy": report.get("policy"),
+        "trigger_state": report.get("trigger_state"),
+        "disposition": report.get("disposition"),
+        "source_artifact_count": len(refs),
+        "faults": faults,
     }
 
 
