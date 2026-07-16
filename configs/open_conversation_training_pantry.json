@@ -29,8 +29,8 @@
     "score_semantics": "Scale is credited only from redacted, exact/near-deduplicated, decontaminated rows counted once. Repeated optimizer positions never increase data-scale credit."
   },
   "broad_text_intake": {
-    "target_one_pass_token_positions": 18000000,
-    "max_total_rows": 18000,
+    "target_one_pass_token_positions": 43000000,
+    "max_total_rows": 20000,
     "shard_rows": 500,
     "max_disk_bytes": 1500000000,
     "max_public_contamination_texts": 20000,
@@ -43,6 +43,7 @@
     {
       "id": "common_pile_project_gutenberg",
       "dataset": "common-pile/project_gutenberg",
+      "revision": "01dc90a5002f8977c7fb03a372c14bca29c65cf1",
       "url": "https://huggingface.co/datasets/common-pile/project_gutenberg",
       "license_spdx": "public-domain",
       "source_kind": "huggingface_dataset",
@@ -57,6 +58,27 @@
       "max_scan_rows": 8000,
       "max_admitted_rows": 18000,
       "why": "Human-authored English books whose row metadata identifies Project Gutenberg public-domain source text.",
+      "use": "broad_english_self_supervised_pretraining_only"
+    },
+    {
+      "id": "common_pile_project_gutenberg_rows_8000_22999",
+      "dataset": "common-pile/project_gutenberg",
+      "revision": "01dc90a5002f8977c7fb03a372c14bca29c65cf1",
+      "url": "https://huggingface.co/datasets/common-pile/project_gutenberg",
+      "license_spdx": "public-domain",
+      "source_kind": "huggingface_dataset",
+      "format": "document_text",
+      "config": "default",
+      "split": "train",
+      "enabled": true,
+      "scalable": true,
+      "provenance_class": "human_public_domain",
+      "required_language": "en",
+      "require_row_public_domain_license": true,
+      "start_row": 8000,
+      "max_scan_rows": 15000,
+      "max_admitted_rows": 15000,
+      "why": "Content-disjoint continuation of the pinned public-domain English stream after the original rows 0-7999 segment.",
       "use": "broad_english_self_supervised_pretraining_only"
     }
   ],

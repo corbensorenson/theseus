@@ -18,6 +18,7 @@ import tarfile
 import time
 import urllib.error
 import urllib.request
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -373,10 +374,25 @@ def iter_tar_source_files(
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     with tarfile.open(tarball_path, mode="r:gz") as archive:
-        for member in archive.getmembers():
+        members = [member for member in archive.getmembers() if member.isfile()]
+        normalized_paths = [canonical_archive_path(member.name) for member in members]
+        path_counts = Counter(normalized_paths)
+        members.sort(
+            key=lambda member: (
+                canonical_archive_path(member.name),
+                strip_tar_root(member.name.replace("\\", "/")),
+                member.size,
+            )
+        )
+        for member in members:
             if len(rows) >= max_files:
                 break
-            if not member.isfile() or member.size <= 0 or member.size > max_bytes:
+            canonical_path = canonical_archive_path(member.name)
+            if path_counts[canonical_path] != 1:
+                # Ambiguous duplicate/case-colliding archive members are rejected;
+                # archive insertion order must never choose the training subset.
+                continue
+            if member.size <= 0 or member.size > max_bytes:
                 continue
             path = member.name.replace("\\", "/")
             if excluded_by_benchmark_name(path):
@@ -421,6 +437,10 @@ def iter_tar_source_files(
                 }
             )
     return rows
+
+
+def canonical_archive_path(value: str) -> str:
+    return strip_tar_root(str(value).replace("\\", "/")).casefold()
 
 
 def extract_python_training_rows(

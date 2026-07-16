@@ -321,6 +321,8 @@ def document_source_plan(source: dict[str, Any], *, allowed_licenses: set[str]) 
     return {
         "source_id": source.get("id"), "dataset": source.get("dataset"), "format": source.get("format"),
         "expected_license": expected_license, "provenance_class": source.get("provenance_class"),
+        "revision": source.get("revision"), "start_row": max(0, int(source.get("start_row") or 0)),
+        "max_scan_rows": max(1, int(source.get("max_scan_rows") or 5_000)),
         "status": "planned" if decision == "eligible_for_intake" else "blocked", "decision": decision,
     }
 
@@ -336,11 +338,15 @@ def source_documents(source: dict[str, Any], scale: dict[str, Any]) -> Iterator[
     stream = load_dataset(
         str(source.get("dataset") or ""), str(source.get("config") or "default"), **kwargs,
     )
+    start_row = max(0, int(source.get("start_row") or 0))
     max_scan = max(1, int(source.get("max_scan_rows") or 5_000))
+    stop_row = start_row + max_scan
     max_chars = int(scale.get("max_chars_per_chunk") or 12_000)
     min_chars = int(scale.get("min_chars_per_chunk") or 800)
     for row_index, raw in enumerate(stream):
-        if row_index >= max_scan:
+        if row_index < start_row:
+            continue
+        if row_index >= stop_row:
             break
         metadata = raw.get("metadata") if isinstance(raw.get("metadata"), dict) else {}
         if str(metadata.get("license") or "").strip().lower() != "public domain":
@@ -354,6 +360,8 @@ def source_documents(source: dict[str, Any], scale: dict[str, Any]) -> Iterator[
                 "chunk_index": chunk_index, "source_document_id": str(raw.get("id") or ""),
                 "source_url": str(metadata.get("url") or ""), "title": str(metadata.get("title") or ""),
                 "author": str(metadata.get("author") or ""), "row_license": "Public Domain",
+                "source_revision": str(source.get("revision") or ""),
+                "source_range_start": start_row, "source_range_stop": stop_row,
             }
 
 

@@ -23,6 +23,7 @@ from governed_conversation_stream import (  # noqa: E402
     reconstruct_oasst_conversations,
     run_document_intake,
     redact_sensitive_text,
+    source_documents,
     source_plan,
 )
 
@@ -224,6 +225,44 @@ class GovernedConversationStreamTests(unittest.TestCase):
             allowed_licenses={"public-domain"},
         )
         self.assertEqual("provenance_class_not_admitted", blocked["decision"])
+
+    def test_document_source_range_is_disjoint_revision_bound_and_replayable(self) -> None:
+        rows = [
+            {
+                "id": str(index),
+                "text": (f"English public domain document {index}. " * 30),
+                "metadata": {
+                    "license": "Public Domain",
+                    "language": "en",
+                    "url": f"https://example.test/{index}",
+                    "title": f"Document {index}",
+                },
+            }
+            for index in range(4)
+        ]
+
+        class FakeDatasets:
+            @staticmethod
+            def load_dataset(*_args, **_kwargs):
+                return iter(rows)
+
+        source = {
+            "id": "fixture_segment",
+            "dataset": "fixture/documents",
+            "revision": "a" * 40,
+            "split": "train",
+            "start_row": 1,
+            "max_scan_rows": 2,
+            "required_language": "en",
+        }
+        with patch.dict(sys.modules, {"datasets": FakeDatasets}):
+            first = list(source_documents(source, {"min_chars_per_chunk": 100, "max_chars_per_chunk": 2000}))
+            replay = list(source_documents(source, {"min_chars_per_chunk": 100, "max_chars_per_chunk": 2000}))
+        self.assertEqual(first, replay)
+        self.assertEqual({1, 2}, {provenance["row_index"] for _, provenance in first})
+        self.assertTrue(all(provenance["source_revision"] == "a" * 40 for _, provenance in first))
+        self.assertTrue(all(provenance["source_range_start"] == 1 for _, provenance in first))
+        self.assertTrue(all(provenance["source_range_stop"] == 3 for _, provenance in first))
 
     def test_atomic_document_shards_resume_without_entering_sft_or_sts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

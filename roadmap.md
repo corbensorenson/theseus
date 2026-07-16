@@ -29,13 +29,13 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable: 30,962/35,887 units admitted; English has 25,566 verified units, Python is GREEN at 2,022 / 1,129,825 target positions, JS/TS is GREEN at 1,180 / 1,612,835, HTML/CSS is GREEN at 690 / 1,906,926, and Rust is GREEN at 1,504 / 1,162,003 | close the remaining 463.05M broad unique-position shortfall without repetition, double counting, or public calibration payloads |
+| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable and every arm floor is GREEN; canonical broad data is GREEN at 1,179,268,641 unique model-visible positions, 32,962,061 above the frozen 57.315M requirement | preserve the content-bound corpus and run the preregistered MLX resource/checkpoint/resume canaries without changing data or architecture |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active MLX candidate and matched controls pass update/checkpoint/resume canaries, and all five task-complete arm floors are GREEN, but training is denied for insufficient broad unique positions | preserve the frozen proposal and fund it with admissible data before training; no same-scale patch or premature amplifier |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the frozen 57.315M-active candidate and matched controls have sufficient governed data and all five task floors, while the current preregistration awaits its explicit MLX canary replay | run the unchanged canaries, then authorize training only if finite update, checkpoint reload, optimizer resume, cleanup, memory, and resource checks pass |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is preregistered as a non-routeable candidate behind the shared Cognitive Kernel ABI; architecture/exact-substrate work is eligible after the recorded v8 disposition, but no neural or language claim exists | complete only reusable ABI/exact-substrate dependencies without delaying the task-complete corpus and practical 57.315M transformer/hybrid rung; retain, merge mechanisms, narrow, or reject OneCell by matched total-cost evidence |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
@@ -282,15 +282,15 @@ to Track 1).
 - Establish a data/model scaling contract before the next capability run. Count
   unique admitted model-visible positions separately from repeated optimizer
   exposure and choose a published compute-optimal planning band before training.
-  For the current 10.78M-active-parameter rung, the canonical audit measures
-  683.25M unique positions after file-level quality filtering under the actual
-  tokenizer ABI: 307.25M English and 376.01M code across Python, JS/TS, HTML/CSS,
-  Rust, and a small uncredited other-code tail. This clears the frozen 20:1 floor.
+  The canonical audit now measures `1,179,268,641` unique positions after file-level
+  quality filtering and cross-source deduplication under the actual tokenizer ABI:
+  `547,303,042` English and `631,965,599` code across Python, JS/TS, HTML/CSS, Rust,
+  and a small uncredited other-code tail. This clears both the old 10.78M floor and
+  the frozen 57.315M `1,146,306,580`-position floor by `32,962,061` positions.
   The exact 215.55M-position balanced training view remains selected and frozen
   before results rather than reverse-engineered afterward; unused capacity is not
-  counted as optimizer exposure. The preregistered 57.315M-active rung is a
-  separate contract: it currently has 683.25M eligible unique positions against a
-  1.146B-position floor, a measured 463.05M shortfall. Older 219M-position summaries
+  counted as optimizer exposure. The 57.315M data floor is now GREEN at `20.5751`
+  unique positions per active parameter. Older 219M- and 683M-position summaries
   must not be used to describe current readiness.
 - Keep the three data budgets mechanically separate in every scale decision:
   `broad_pretraining_unique_positions`, `task_complete_unique_target_positions`, and
@@ -867,9 +867,10 @@ require admitted row hashes. The lifecycle surface remains `YELLOW`, not
 `GREEN`, because recursive synthetic share is `0.459053`; that is a data-risk
 warning, not proof of model collapse. The policy comparison is simulation, and
 deletion closure is graph evidence, not physical unlearning.
-The v8 materializer measures 683.25M content-bound positions and freezes 215.55M
-for the current matched comparison. That proves quantity, lineage, and tokenizer
-integrity, not product suitability. Most v8 development rows carry prompt and target
+The historical v8 materializer measured 683.25M content-bound positions and froze
+215.55M for that completed matched comparison. The current canonical broad receipt
+is 1.179B positions for the preregistered 57.315M rung. These receipts prove quantity,
+lineage, and tokenizer integrity, not product suitability. Most v8 development rows carry prompt and target
 without executable tests or task-level utility contracts; no later score may relabel
 them as functionally verified examples.
 - The task-complete contract is now implemented inside canonical admission. Its full
@@ -889,7 +890,8 @@ them as functionally verified examples.
   identity; zero public overlap, teacher calls, external inference, and fallback
   returns were observed. Rust is GREEN at `1,162,003` verified target positions, all
   five arm floors pass, and the complete task corpus contains `36,552,344` target
-  positions. This does not erase the separate broad unique-position shortfall.
+  positions. The separately governed broad corpus is now GREEN at `1,179,268,641`
+  unique positions; task targets and optimizer exposure remain separate budgets.
 - Add a registered `task_complete_training_unit` to the existing data contract, not a
   new lane. Every supervised unit binds visible context, complete target, task family,
   language/toolchain, verifier or rubric artifact, expected observable behavior,
@@ -1069,13 +1071,13 @@ evidence earns a different route.)
   preregistered at `57,315,329` active parameters with a `54,811,649`-parameter
   shared trunk and five `2,504,193`-parameter specialist deltas. Dense controls are
   `57,323,520` active and `67,332,096` total, each within one indivisible FF-width
-  increment of its sparse accounting view. All three MLX canaries produce finite
+  increment of its sparse accounting view. Earlier mechanics canaries produced finite
   updates, exact checkpoint replay, optimizer resume, and temporary-artifact cleanup;
-  the pointer-generator scatter was made deterministic after the canary exposed an
-  invalid-index collision. This is mechanics evidence only. Training remains
-  `DENIED_INSUFFICIENT_DATA_SUPPORT`: `683,254,465` unique positions provide `11.920973`
-  positions per active parameter against a frozen `20.0` floor, a `463,052,115`
-  position shortfall, and four code-arm coverage gaps.
+  the pointer-generator scatter was made deterministic after a canary exposed an
+  invalid-index collision. The current hash-bound preregistration is data-GREEN at
+  `1,179,268,641` unique positions (`20.5751` per active parameter), every task arm is
+  GREEN, and training remains `DENIED_RESOURCE_CANARY_NOT_GREEN` until those unchanged
+  canaries are replayed against the current contract. This is mechanics evidence only.
 
 - **Product-aligned supervision:** consume Phase 7 `task_complete_training_unit`
   records. English emphasizes natural multi-turn dialogue, corrections, and useful
@@ -1512,29 +1514,93 @@ effect, and Loop-Closure owners; it must not create another router or ledger lan
   requested-versus-realized deliberation profiles. A forced route fails with a
   typed unqualified outcome unless the user explicitly permits fallback. The user
   may bypass inference, never authentication, authority, verification, or rollback.
+- Extend the implementation registry in two explicit, linked roles rather than
+  inventing a parallel catalog: a declarative reflex registry for bounded automatic
+  fast paths and a scoped User Command Registry for authenticated route directives,
+  typed capability bindings, parameterized commands, and workflow DAGs. Contracts
+  carry owner, version, precedence, schemas, preconditions, capability dependencies,
+  effect class, resource budget, verifier, operating envelope, fallback, telemetry,
+  expiry, and rollback. Command bindings are capabilities, never trusted shell,
+  SQL, URL, or prompt-text macros.
+- Make command ingestion structurally origin-aware. Slash-like text from retrieved
+  pages, emails, documents, code blocks, tools, or model output remains untrusted
+  data and cannot activate the command plane. Registration and mutation require
+  namespace/alias conflict checks, workflow-cycle checks, capability-diff and
+  authority-expansion review, typed dynamic-default validation, preview, provenance,
+  signature/trust-tier checks for imported packages, and immediate disable/rollback.
 - Make the learned router a calibrated, abstaining proposal mechanism with atomicity,
   composite-task, OOD, selective-risk, and deadline-aware cascade outputs. Route
   selection minimizes total qualified cost, including verification, repair, human
   cleanup, privacy, energy, and route-regret burden; ranking never grants authority.
+- Keep proposal, qualification, authorization, execution, verification, rendering,
+  and promotion as separately owned decisions. Qualification must check schema,
+  entity resolution, context adequacy, freshness, implementation health and tested
+  distribution, risk-conditioned quality, verifier availability, effect bounds, and
+  explicit fallback before cost optimization. Preserve a finite terminal outcome
+  vocabulary including resolved, prepared, partial, ambiguous, insufficient-context,
+  insufficient-evidence, conflicting, stale, unauthorized, unsupported, OOD,
+  resource-exceeded, execution-failed, verification-failed, escalate, and rejected;
+  model prose may explain but never rewrite one outcome into success.
+- Compile deterministic reflex contracts into an indexed decision structure rather
+  than a linear ad-hoc rule chain. Precedence is explicit over authority, effect risk,
+  specificity, verified confidence, freshness, owner priority, and a stable tie-break;
+  registration rejects unresolved overlap, shadowed/unreachable rules, recursion or
+  workflow cycles, missing failure edges, hidden effects, and privilege amplification.
 - Extend VCM with a small rebuildable Reflex Context Frame and bitemporal Chronicle
   records that keep entity/event/state/claim/plan/prediction/counterfactual types,
   valid time, transaction time, epistemic status, provenance, and corrections
-  separate. Every executor returns one typed result packet; rendering is a consumer.
+  separate. Every executor returns one typed result packet with input identity,
+  dependencies, dispatch provenance, evidence, verification, effects, warnings, and
+  context handles; rendering is a tested consumer. The frame is a projection that can
+  be invalidated and rebuilt from authoritative ledgers, never a second source of truth.
+- Treat semantic caches and Chronicle writes as governed reflexes. Cache identity must
+  close over task semantics, principal/tenant, authority, entity/time scope, privacy,
+  source/schema/capability/model/policy versions, and freshness; dependency changes
+  invalidate descendants. Chronicle writes require record-class authority, immutable
+  source identity, claim/state separation, contradiction/correction handling, and
+  poisoning controls. Typed structure remains traceability, not evidence of truth.
 - Make the existing effect transaction the sole external-write kernel: prepare,
   authorize, commit, observe, verify, record, and compensate or roll back. Retries
   require idempotency identity, and verification failure remains a typed failure.
+- Require structured concurrency for composite routes: inherited authority and
+  deadlines, bounded node/depth/fanout/retry/aggregate-cost limits, cancellation of
+  dependent branches, immutable partial results, late-result suppression, explicit
+  all-or-nothing/best-effort/compensate/stop policies, and plan provenance. Dispatch
+  overhead and executor latency are measured separately at every stage.
 - Extend Phase 15 from exact procedural lookup to governed reflex compilation:
   diverse verified traces, negative-space guard synthesis, static overlap/cycle and
   privilege analysis, historical replay, differential tests, live shadowing, canary
   activation, signed SCF replacement, monitoring, narrowing, quarantine, revocation,
   and decompilation back to deliberation.
+- Admit compilation only when expected verified reuse clears its complete lifecycle
+  cost: deliberative executions avoided must outweigh compilation, replay, shadow,
+  verification, monitoring, correction, rollback, and human-review cost without
+  weakening quality or risk. Parameterized shared reflexes and expiry prevent rule
+  explosion; holdouts, source diversity, correction channels, and descendant
+  invalidation prevent self-reinforcing trace feedback.
 - Evaluate through one frozen private ReflexBench profile over existing assistant,
   router, tool, temporal, composite-DAG, effect, and procedural fixtures rather than
-  a new benchmark family. Compare current heuristic routing, deterministic registry,
-  calibrated learned routing, and deliberative-only baselines. Report qualified
-  coverage, wrong-fast-path rate, selective risk, OOD abstention, route regret,
-  P50/P95/P99 dispatch latency, end-to-end quality/cost/energy, unauthorized effects,
-  verification escapes, context continuity, reflex transfer, and drift-to-quarantine.
+  a new benchmark family. Under matched event information, model access, authority,
+  retries, verification, and total resources, compare monolithic model-only,
+  LLM-first tool agent, hard-rule-only, learned model router, semantic cache plus model,
+  modular LLM-routed tools, full route without Chronicle, full route without compiler,
+  complete Reflexive Router, and oracle selection. Ablate qualification, typed results,
+  hot context, Chronicle, command plane, effect kernel, and shadow-governed compilation.
+- Report complete denominators and joint metrics: useful task outcome, qualified and
+  fast-path coverage, wrong-fast-path rate, selective-risk curves, OOD abstention,
+  route regret, P50/P95/P99 dispatch and end-to-end latency, quality/cost/energy/human
+  cleanup, override and effort-profile fidelity, silent fallback, parameter binding,
+  stale binding, literal isolation, registry-mutation safety, DAG validity, temporal
+  accuracy, provenance/context continuity, unauthorized effects, verification escape,
+  postcondition/rollback completeness, reflex transfer, drift detection/quarantine,
+  and Useful Reflex Efficiency. No summary efficiency score may hide errors or effects.
+- Trap-test the full lifecycle with untrusted command text, ambiguous expressions,
+  stale bindings/context, OOD/adversarial paraphrases, rule and namespace collisions,
+  cache collisions, Chronicle poisoning, decomposition/cost bombs, verifier monoculture,
+  retry duplication, partial effects, explanation mismatch, premature compilation,
+  dependency-version breakage, drift, quarantine, rollback, and decompilation. Breaking
+  capability/schema/policy changes automatically disqualify dependent reflexes until
+  replayed and requalified.
 - Sequence: exact command/qualification/result/effect contracts may mature as
   maintenance, but learned-router and reflex-promotion claims wait for the selected
   behavior-positive local model. Default adoption requires a preregistered Pareto
@@ -1631,6 +1697,7 @@ gaps route into the phases above:
 | Labor OS typed jobs / artifact graphs | typed job + unified artifact graph not the universal unit | 1, 14 |
 | Procedural memory | adoption discipline applied to only one trace so far | 15 |
 | Routing heads + MoECOT + specialist cores | v8 shared trunk and five specialist deltas are trained and arm-evaluated; matched dense verdict, confirmation, live arm-card binding, typed composition, and route-versus-answer qualification remain | 10, 16 |
+| Reflexive Router / compiled reflexes | source is argument-backed and the high-level cross-phase contract is mapped, but the canonical pre-deliberative runtime, typed command/reflex registries, finite outcome protocol, indexed precedence engine, dependency-complete cache/Chronicle invalidation, structured-concurrency semantics, full matched ReflexBench profile, and governed compilation/decompilation campaign are not yet implemented | 0, 1, 2, 3, 5, 6, 8, 14, 15, 16, 18, 19 |
 | Ambiguous routing + adaptive deliberation | naturally ambiguous route corpus, fallback/abstention calibration, first-hit/last-correct, overthinking harm, branch credit, and verifier-disagreement accounting are missing on useful model outputs | 4, 6, 8, 10, 14, 16, 18 |
 | Readiness gates + residual escrow | stale outputs/duplicate families reduce trust | 0, 2 |
 | Generate-verify-repair | correctness still eval-only, not a training/search signal | 6, 10, 13 |

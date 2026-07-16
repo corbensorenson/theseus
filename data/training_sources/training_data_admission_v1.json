@@ -54,7 +54,7 @@
       "rejected_candidate_count": 304,
       "report_cache_reused": true,
       "runtime_external_inference_calls": 0,
-      "runtime_ms": 9948,
+      "runtime_ms": 8166,
       "semantic_public_overlap_candidate_count": 0,
       "source_count": 98,
       "teacher_candidate_count": 0,
@@ -62,7 +62,7 @@
     },
     "trigger_state": "YELLOW"
   },
-  "created_utc": "2026-07-16T13:27:19.436645+00:00",
+  "created_utc": "2026-07-16T15:10:02.290753+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -12843,7 +12843,7 @@
     "policy": "project_theseus_training_admission_epistemic_tcb_v1",
     "position_budgets_reported_separately": true,
     "qualified": true,
-    "sha256": "33a0bfcf11bb5de99f58296b02fcd188f9480dd22f0b0581f36f3a0a93db82b3",
+    "sha256": "cfbc1002c990624e55a461b57c78ee24f5a6887d75281f450945613dee17b693",
     "surviving_mutant_count": 0,
     "task_report_identity_matches": true,
     "trigger_state": "GREEN",
@@ -12869,7 +12869,7 @@
       "full_packet_evidence_required": true,
       "governor_content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
       "governor_receipt_id": "ac9238c24b5c801b9bc12dec",
-      "lease_expires_utc": "2026-07-16T13:42:00.806062Z",
+      "lease_expires_utc": "2026-07-16T15:24:49.301660Z",
       "lease_id": "edda95cab7bfc11ddabd5eb9",
       "lease_state": "active",
       "omissions": [
