@@ -1817,6 +1817,21 @@ argument-backed intake contract until it is rebound to a committed book revision
 It extends the existing assistant, SCF, Octopus, VIEA, VCM, deterministic-tool,
 effect, and Loop-Closure owners; it must not create another router or ledger lane.
 
+Current pre-training state: the canonical assistant now imports one qualification-first
+dispatch contract before checkpoint inference and before code, tool, planning, dogfood,
+or effect execution. Authenticated direct commands, literal isolation, authority/profile/
+freshness qualification, finite terminal outcomes, bounded DAGs, trace integrity,
+bitemporal Chronicle records, dependency-complete cache identities, and governed
+compile/decompile helpers pass 16 focused tests. The existing assistant E2E passes all
+hard gates across chat, code, tool, and planning; each route is `prepared`, independently
+verified, and bound to the expected existing capability. A forced unknown route produces
+`unsupported`, skips downstream inference, and grants no effect authority. This is
+canonical mechanics evidence only. Reflexive Router remains
+`pre_training_architecture_required` until the frozen eight-track, ten-policy matched
+ReflexBench profile, requested-versus-realized effort accounting, and broader effect/
+lifecycle qualification are complete. No learned routing, route-regret, or capability
+gain is claimed.
+
 - Put one canonical pre-deliberative path before ordinary assistant inference:
   canonical event and authenticated command plane -> deterministic and learned
   route proposals -> SCF qualification -> minimum-sufficient-compute DAG -> VIEA

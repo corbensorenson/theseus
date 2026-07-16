@@ -1,0 +1,149 @@
+{
+  "policy": "project_theseus_reflexive_router_contract_v1",
+  "architecture_scope": "existing_assistant_scf_octopus_viea_vcm_procedural_owners_only",
+  "source_evidence": {
+    "ai_book_commit_observed": "cd98c0c4bfe69604b2df9b96a7d299ce7346f4cd",
+    "paper_sha256": "003a693741c40ca96ec3aece5b76ee90ec95a1d6c27ec81a970cff175f509068",
+    "schema_sha256": "952b5a9c12514ef65c046c3e1103ad59954e2924472194e455e59e4953d6cf73",
+    "fixture_sha256": "70642c2c80b10dbba977d02923cefb3c4d5d128b17badb36bcd299be9dddd3eb",
+    "validator_sha256": "3dc6af4e49155ce893c4b269d3bcb5c082ee636410d8b80eaa416d7723eae533"
+  },
+  "ingress": {
+    "trusted_command_origins": ["local_user_control", "signed_local_ui"],
+    "literal_only_origins": ["retrieved_document", "email", "code_block", "tool_output", "model_output", "memory_record"],
+    "fallback_policies": ["no_fallback", "explicit_only"],
+    "command_prefix": "/"
+  },
+  "terminal_outcomes": [
+    "resolved", "prepared", "partial", "ambiguous", "insufficient_context",
+    "insufficient_evidence", "conflicting", "stale", "unauthorized", "unsupported",
+    "ood", "resource_exceeded", "execution_failed", "verification_failed",
+    "escalate", "rejected"
+  ],
+  "resource_limits": {
+    "max_nodes": 16,
+    "max_depth": 5,
+    "max_fanout": 4,
+    "max_retries_per_node": 2,
+    "max_aggregate_cost_units": 100,
+    "default_deadline_ms": 30000
+  },
+  "precedence_order": [
+    "authority", "effect_risk", "specificity", "verified_confidence",
+    "freshness", "owner_priority", "stable_tie_break"
+  ],
+  "capabilities": [
+    {
+      "capability_id": "assistant.chat_checkpoint",
+      "intent": "chat",
+      "effect_class": "none",
+      "verifier_ref": "assistant.checkpoint_response_contract",
+      "required_authority": "local_assistant_read",
+      "cost_units": 30,
+      "qualified_profiles": ["local_private_assistant"]
+    },
+    {
+      "capability_id": "assistant.code_candidate",
+      "intent": "code",
+      "effect_class": "none",
+      "verifier_ref": "private_code_verifier",
+      "required_authority": "local_assistant_read",
+      "cost_units": 60,
+      "qualified_profiles": ["local_private_assistant"]
+    },
+    {
+      "capability_id": "assistant.deterministic_tool",
+      "intent": "tool",
+      "effect_class": "read_only",
+      "verifier_ref": "deterministic_tool_receipt",
+      "required_authority": "local_tool_read",
+      "cost_units": 10,
+      "qualified_profiles": ["local_private_assistant"]
+    },
+    {
+      "capability_id": "assistant.plan_dag",
+      "intent": "planning",
+      "effect_class": "none",
+      "verifier_ref": "viea_plan_contract",
+      "required_authority": "local_assistant_read",
+      "cost_units": 20,
+      "qualified_profiles": ["local_private_assistant"]
+    }
+  ],
+  "user_commands": [
+    {"command_id": "command.chat", "alias": "/chat", "capability_id": "assistant.chat_checkpoint", "parameter_schema": {}, "owner_priority": 100},
+    {"command_id": "command.code", "alias": "/code", "capability_id": "assistant.code_candidate", "parameter_schema": {}, "owner_priority": 100},
+    {"command_id": "command.tool", "alias": "/tool", "capability_id": "assistant.deterministic_tool", "parameter_schema": {}, "owner_priority": 100},
+    {"command_id": "command.plan", "alias": "/plan", "capability_id": "assistant.plan_dag", "parameter_schema": {}, "owner_priority": 100}
+  ],
+  "reflexes": [
+    {
+      "reflex_id": "reflex.explicit_intent.chat",
+      "match": {"intent": "chat"},
+      "capability_id": "assistant.chat_checkpoint",
+      "effect_class": "none",
+      "specificity": 1,
+      "verified_confidence": 1.0,
+      "owner_priority": 50,
+      "fallback": "none",
+      "expiry": null
+    },
+    {
+      "reflex_id": "reflex.explicit_intent.code",
+      "match": {"intent": "code"},
+      "capability_id": "assistant.code_candidate",
+      "effect_class": "none",
+      "specificity": 1,
+      "verified_confidence": 1.0,
+      "owner_priority": 50,
+      "fallback": "none",
+      "expiry": null
+    },
+    {
+      "reflex_id": "reflex.explicit_intent.tool",
+      "match": {"intent": "tool"},
+      "capability_id": "assistant.deterministic_tool",
+      "effect_class": "read_only",
+      "specificity": 1,
+      "verified_confidence": 1.0,
+      "owner_priority": 50,
+      "fallback": "none",
+      "expiry": null
+    },
+    {
+      "reflex_id": "reflex.explicit_intent.planning",
+      "match": {"intent": "planning"},
+      "capability_id": "assistant.plan_dag",
+      "effect_class": "none",
+      "specificity": 1,
+      "verified_confidence": 1.0,
+      "owner_priority": 50,
+      "fallback": "none",
+      "expiry": null
+    }
+  ],
+  "chronicle": {
+    "record_types": ["entity", "event", "state", "claim", "plan", "prediction", "counterfactual"],
+    "epistemic_states": ["observed", "measured", "inferred", "hypothesized", "unknown"],
+    "append_only": true,
+    "claim_state_separation_required": true,
+    "correction_link_required": true
+  },
+  "compilation": {
+    "states": ["ineligible", "candidate", "shadow", "qualified", "quarantined", "decompiled"],
+    "minimum_verified_traces": 3,
+    "minimum_source_diversity": 2,
+    "negative_cases_required": 2,
+    "differential_replay_required": true,
+    "shadow_required": true,
+    "canary_required": true,
+    "decompilation_route": "assistant.full_deliberative_parent",
+    "expiry_hours": 168
+  },
+  "non_claims": [
+    "Deterministic dispatch, commands, tools, caches, and compiled reflexes receive no learned-generation credit.",
+    "The pre-training contract does not establish useful routing, route regret, natural-language understanding, public transfer, AGI, or ASI.",
+    "A route proposal never grants effect authority; the registered VIEA/SCF effect kernel remains the only commit path.",
+    "Learned-router and reflex-promotion efficacy remain disabled until a behavior-positive selected model and real governed traces exist."
+  ]
+}

@@ -46,8 +46,11 @@ share toward zero. Public benchmarks are calibration only.
   QCSA objective and adaptive-question policy are retired from the first long run.
   This is architecture evidence, not learned memory or generation capability.
 - **Immediate dependency:** close the remaining 11 finite architecture contracts
-  through existing registry owners, beginning with the Reflexive Router command,
-  qualification, Chronicle, effect, and reflex lifecycle. Publish a
+  through existing registry owners. Reflexive Router canonical predispatch now works
+  across the real assistant's chat/code/tool/planning E2E and fails closed before
+  downstream execution, but its frozen eight-track/ten-policy profile, effort fidelity,
+  and broader effect/lifecycle qualification remain. Complete those rather than
+  treating four-route mechanics as the final verdict, then publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
   Preserve the now-GREEN content-bound data receipts while architecture closes.
@@ -206,10 +209,12 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete and register the Reflexive Router's typed command/reflex registries,
-qualification and precedence engine, finite terminal outcomes, dependency-complete
-Chronicle/cache invalidation, sole effect-commit route, and replayable lifecycle through
-the existing assistant/SCF/VIEA/VCM owners. Preserve the KERC and QCSA dispositions.
+Complete the Reflexive Router's frozen eight-track/ten-policy matched profile,
+requested-versus-realized effort accounting, and broader effect/lifecycle qualification.
+Its typed command/reflex registries, qualification/precedence, finite outcomes,
+Chronicle/cache lifecycle, and fail-closed canonical assistant predispatch are now wired;
+do not mistake that mechanics result for learned routing or capability evidence. Preserve
+the KERC and QCSA dispositions.
 Then close the remaining finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.

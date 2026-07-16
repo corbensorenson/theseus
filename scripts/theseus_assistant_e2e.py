@@ -530,6 +530,26 @@ def build_gates(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     by_id = {str(row.get("case_id")): row for row in rows}
     return [
         gate("all_cases_passed", all(row.get("passed") for row in rows), {"failed": [row.get("case_id") for row in rows if not row.get("passed")]}, "hard"),
+        gate(
+            "all_cases_use_verified_reflexive_predispatch",
+            all(
+                get_path(row, ["report", "summary", "reflexive_dispatch_verified"], False) is True
+                and get_path(row, ["report", "summary", "reflexive_dispatch_prepared"], False) is True
+                and get_path(row, ["report", "summary", "reflexive_dispatch_downstream_skipped"], True) is False
+                and get_path(row, ["report", "summary", "reflexive_dispatch_selected_capabilities"], [])
+                for row in rows
+            ),
+            {
+                row.get("case_id"): {
+                    "terminal": get_path(row, ["report", "summary", "reflexive_dispatch_terminal_outcome"], ""),
+                    "verified": get_path(row, ["report", "summary", "reflexive_dispatch_verified"], False),
+                    "selected": get_path(row, ["report", "summary", "reflexive_dispatch_selected_capabilities"], []),
+                    "skipped": get_path(row, ["report", "summary", "reflexive_dispatch_downstream_skipped"], None),
+                }
+                for row in rows
+            },
+            "hard",
+        ),
         gate("chat_case_has_vcm", bool(get_path(by_id, ["chat_status", "report", "vcm_context_packet", "ready"], False)), get_path(by_id, ["chat_status", "report", "vcm_context_packet"], {}), "hard"),
         gate("code_case_routes_to_code_lane", bool(get_path(by_id, ["code_route", "report", "code_route", "active"], False)), get_path(by_id, ["code_route", "report", "code_route"], {}), "hard"),
         gate(

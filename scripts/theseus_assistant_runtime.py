@@ -23,6 +23,7 @@ from typing import Any
 
 import viea_spine_records
 import vcm_consumer_abi
+import reflexive_dispatch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,6 +66,11 @@ def main() -> int:
     parser.add_argument("--prompt", required=True)
     parser.add_argument("--surface", default="local_assistant")
     parser.add_argument("--intent", default="auto", choices=["auto", "chat", "code", "tool", "planning"])
+    parser.add_argument("--principal", default="local-user")
+    parser.add_argument("--origin", default="local_user_control")
+    parser.add_argument("--unauthenticated", action="store_true")
+    parser.add_argument("--requested-route", default="")
+    parser.add_argument("--fallback-policy", default="no_fallback", choices=["no_fallback", "explicit_only"])
     parser.add_argument("--feedback", default="completed")
     parser.add_argument("--error-family", default="")
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
@@ -104,12 +110,24 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     prompt = str(args.prompt or "")
     session_id = safe_slug(args.session_id or config.get("default_session_id") or "local_assistant")
     checkpoint_id = str(args.checkpoint_id or config.get("checkpoint_id") or "live")
-    intent = classify_intent(prompt, args.intent)
-    route = route_for(config, intent)
+    requested_intent = classify_intent(prompt, args.intent)
     context_refresh = [] if args.skip_context_refresh else refresh_context(config)
     materialized_view_receipt = assistant_materialized_view_receipt()
     route_validator_receipt = assistant_route_validator_receipt()
     private_verifier_receipt = private_verifier_receipt_packet()
+    reflexive_trace = build_reflexive_dispatch_trace(
+        prompt=prompt,
+        requested_intent=requested_intent,
+        args=args,
+        config=config,
+        materialized_view_receipt=materialized_view_receipt,
+        route_validator_receipt=route_validator_receipt,
+        private_verifier_receipt=private_verifier_receipt,
+    )
+    reflexive_verification = verify_reflexive_dispatch_trace(reflexive_trace, config)
+    intent = effective_intent_from_dispatch(reflexive_trace, requested_intent)
+    route = route_for(config, intent)
+    dispatch_prepared = reflexive_dispatch_prepared(reflexive_trace, reflexive_verification)
     vcm_governor = vcm_context_governor_packet()
     contexts = read_json(REPORTS / "vcm_task_contexts.json", {})
     selected_context = select_vcm_context(contexts, str(route.get("vcm_task_family") or "operator_chat"))
@@ -149,23 +167,36 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     vcm_governor["consumer_abi"] = vcm_consumer_packet
     vcm_governor["ready"] = bool(vcm_governor.get("ready")) and bool(vcm_consumer_packet.get("ready"))
     checkpoint_out = REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}.json"
-    chat_result = run_checkpoint_chat(
-        prompt=prompt,
-        session_id=session_id,
-        checkpoint_id=checkpoint_id,
-        out=checkpoint_out,
+    chat_result = (
+        run_checkpoint_chat(
+            prompt=prompt,
+            session_id=session_id,
+            checkpoint_id=checkpoint_id,
+            out=checkpoint_out,
+        )
+        if dispatch_prepared
+        else {
+            "returncode": None,
+            "skipped": True,
+            "skip_reason": f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}",
+            "stderr_tail": "",
+        }
     )
-    checkpoint_payload = read_json(checkpoint_out, {})
+    checkpoint_payload = read_json(checkpoint_out, {}) if dispatch_prepared else {}
     response = checkpoint_payload.get("response") if isinstance(checkpoint_payload.get("response"), dict) else {}
     checkpoint_session = checkpoint_payload.get("session") if isinstance(checkpoint_payload.get("session"), dict) else {}
-    code_route = code_route_packet(intent, route)
-    code_private_probe = run_code_private_probe(intent, route)
-    tool_context = tool_context_packet(intent)
-    tool_evidence = run_tool_evidence(intent, route)
-    plan_context = plan_context_packet(intent)
-    procedural_default_route = procedural_default_route_packet(intent, route, config, surface=str(args.surface or "local_assistant"))
+    code_route = code_route_packet(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
+    code_private_probe = run_code_private_probe(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
+    tool_context = tool_context_packet(intent) if dispatch_prepared else {"active": False, "skipped": True}
+    tool_evidence = run_tool_evidence(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
+    plan_context = plan_context_packet(intent) if dispatch_prepared else {"active": False, "skipped": True}
+    procedural_default_route = (
+        procedural_default_route_packet(intent, route, config, surface=str(args.surface or "local_assistant"))
+        if dispatch_prepared
+        else {"active": False, "ready": False, "skipped": True}
+    )
     effect_canary = run_local_effect_canary(
-        enabled=bool(args.effect_canary),
+        enabled=bool(args.effect_canary) and dispatch_prepared,
         target=resolve(args.effect_target),
         allowed_root=DEFAULT_EFFECT_ROOT,
         session_id=session_id,
@@ -189,10 +220,10 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         vcm_governor=vcm_governor,
         selected_context=selected_context,
         checkpoint_session=checkpoint_session,
-    )
+    ) if dispatch_prepared else reflexive_terminal_text(reflexive_trace)
     feedback = normalize_feedback(args.feedback, allowed_feedback)
     dogfood = {}
-    if not args.skip_dogfood and feedback:
+    if dispatch_prepared and not args.skip_dogfood and feedback:
         dogfood = run_dogfood_feedback(
             feedback=feedback,
             surface=str(args.surface or "local_assistant"),
@@ -209,6 +240,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         args=args,
         config=config,
         intent=intent,
+        reflexive_dispatch_trace=reflexive_trace,
         route=route,
         session_id=session_id,
         checkpoint_id=checkpoint_id,
@@ -240,6 +272,9 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     gates = build_gates(
         chat_result=chat_result,
         response=response,
+        assistant_text=assistant_text,
+        reflexive_dispatch_trace=reflexive_trace,
+        reflexive_dispatch_verification=reflexive_verification,
         feedback=feedback,
         dogfood=dogfood,
         selected_context=selected_context,
@@ -278,10 +313,18 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     if trigger_state == "GREEN" and warning_failures:
         trigger_state = "YELLOW"
     summary = {
+        "requested_intent": requested_intent,
         "intent": intent,
         "session_id": session_id,
         "checkpoint_id": checkpoint_id,
         "assistant_lane": route.get("assistant_lane"),
+        "reflexive_dispatch_trace_id": reflexive_trace.get("trace_id"),
+        "reflexive_dispatch_decision_digest": reflexive_trace.get("decision_digest"),
+        "reflexive_dispatch_terminal_outcome": reflexive_terminal_outcome(reflexive_trace),
+        "reflexive_dispatch_prepared": dispatch_prepared,
+        "reflexive_dispatch_verified": reflexive_verification.get("state") == "VERIFIED",
+        "reflexive_dispatch_selected_capabilities": selected_reflexive_capabilities(reflexive_trace),
+        "reflexive_dispatch_downstream_skipped": not dispatch_prepared,
         "vcm_task_family": route.get("vcm_task_family"),
         "vcm_context_ready": selected_context.get("ready"),
         "vcm_selected_page_count": len(selected_context.get("selected_pages") or []),
@@ -386,6 +429,8 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "config": rel(resolve(args.config)),
             "prompt_sha256": sha256_text(prompt),
             "surface": str(args.surface or "local_assistant"),
+            "principal": str(getattr(args, "principal", "local-user") or "local-user"),
+            "origin": str(getattr(args, "origin", "local_user_control") or "local_user_control"),
         },
         "outputs": {
             "report": rel(resolve(args.out)),
@@ -395,6 +440,8 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         },
         "response": response,
         "assistant_text": assistant_text,
+        "reflexive_dispatch": reflexive_trace,
+        "reflexive_dispatch_verification": reflexive_verification,
         "checkpoint_chat": {
             "returncode": chat_result.get("returncode"),
             "out": rel(checkpoint_out),
@@ -603,6 +650,155 @@ def classify_intent(prompt: str, requested: str) -> str:
     if has_any(text, ["solve", "equation", "calculate", "search", "retrieve", "tool", "sympy", "z3", "lean"]):
         return "tool"
     return "chat"
+
+
+def build_reflexive_dispatch_trace(
+    *,
+    prompt: str,
+    requested_intent: str,
+    args: argparse.Namespace,
+    config: dict[str, Any],
+    materialized_view_receipt: dict[str, Any],
+    route_validator_receipt: dict[str, Any],
+    private_verifier_receipt: dict[str, Any],
+) -> dict[str, Any]:
+    contract_path = resolve(str(config.get("reflexive_router_contract") or "configs/reflexive_router_contract.json"))
+    try:
+        contract = reflexive_dispatch.load_contract(contract_path)
+        capabilities = contract.get("capabilities") if isinstance(contract.get("capabilities"), list) else []
+        tool_registry = read_json(REPORTS / "deterministic_tool_registry.json", {})
+        plan_report = read_json(REPORTS / "theseus_plan_compiler.json", {})
+        tool_ready = (
+            tool_registry.get("trigger_state") in {"GREEN", "YELLOW"}
+            and isinstance(tool_registry.get("tools"), list)
+            and bool(tool_registry.get("tools"))
+        )
+        plan_ready = (
+            plan_report.get("trigger_state") in {"GREEN", "YELLOW"}
+            and int_or_zero(get_path(plan_report, ["summary", "compiled_goal_count"], 0)) > 0
+        )
+        common_route_ready = bool(route_validator_receipt.get("ready")) and bool(materialized_view_receipt.get("ready"))
+        route_health = {
+            str(row.get("capability_id") or ""): common_route_ready
+            and (
+                str(row.get("capability_id") or "") != "assistant.code_candidate"
+                or bool(private_verifier_receipt.get("ready"))
+            )
+            and (
+                str(row.get("capability_id") or "") != "assistant.deterministic_tool"
+                or tool_ready
+            )
+            and (
+                str(row.get("capability_id") or "") != "assistant.plan_dag"
+                or plan_ready
+            )
+            for row in capabilities
+            if isinstance(row, dict) and row.get("capability_id")
+        }
+        event = reflexive_dispatch.canonical_event(
+            payload=prompt,
+            principal=str(getattr(args, "principal", "local-user") or "local-user"),
+            authenticated=not bool(getattr(args, "unauthenticated", False)),
+            origin=str(getattr(args, "origin", "local_user_control") or "local_user_control"),
+            authority_refs=[str(value) for value in list_value(config.get("reflexive_router_authority_refs")) if value],
+            context_handles=unique_strings(
+                [
+                    str(materialized_view_receipt.get("receipt_id") or ""),
+                    str(route_validator_receipt.get("receipt_id") or ""),
+                    str(private_verifier_receipt.get("receipt_id") or ""),
+                ]
+            ),
+            deadline_ms=int(get_path(contract, ["resource_limits", "default_deadline_ms"], 30000) or 30000),
+        )
+        return reflexive_dispatch.dispatch(
+            event,
+            intent=requested_intent,
+            profile=str(config.get("reflexive_router_profile") or "local_private_assistant"),
+            requested_route=str(getattr(args, "requested_route", "") or ""),
+            fallback_policy=str(getattr(args, "fallback_policy", "no_fallback") or "no_fallback"),
+            route_health=route_health,
+            contract=contract,
+        )
+    except reflexive_dispatch.ReflexiveDispatchFault as exc:
+        return {
+            "policy": "project_theseus_reflexive_dispatch_trace_v1",
+            "source_contract": "project_theseus_reflexive_router_contract_v1",
+            "trace_id": "",
+            "decision_digest": "",
+            "selection": {"selected_proposal_ids": [], "terminal_outcome": "rejected", "fallback_used": False},
+            "result": {"terminal_outcome": "rejected", "effect_authority_granted": False},
+            "effect": {"state": "blocked", "effect_authority_granted": False},
+            "fault": exc.record(),
+            "no_cheat": {
+                "learned_generation_credit": 0,
+                "fallback_return_count": 0,
+                "external_inference_calls": 0,
+                "public_training_rows_written": 0,
+            },
+        }
+
+
+def verify_reflexive_dispatch_trace(trace: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+    if trace.get("fault"):
+        return {"state": "REJECTED", "fault": trace.get("fault"), "effect_authority_granted": False}
+    try:
+        contract_path = resolve(str(config.get("reflexive_router_contract") or "configs/reflexive_router_contract.json"))
+        return reflexive_dispatch.verify_trace(trace, reflexive_dispatch.load_contract(contract_path))
+    except reflexive_dispatch.ReflexiveDispatchFault as exc:
+        return {"state": "REJECTED", "fault": exc.record(), "effect_authority_granted": False}
+
+
+def selected_reflexive_capabilities(trace: dict[str, Any]) -> list[str]:
+    selection = trace.get("selection") if isinstance(trace.get("selection"), dict) else {}
+    selected = set(str(value) for value in list_value(selection.get("selected_proposal_ids")))
+    return sorted(
+        {
+            str(row.get("capability_id") or "")
+            for row in list_value(trace.get("proposals"))
+            if isinstance(row, dict) and str(row.get("proposal_id") or "") in selected and row.get("capability_id")
+        }
+    )
+
+
+def effective_intent_from_dispatch(trace: dict[str, Any], requested_intent: str) -> str:
+    capability_to_intent = {
+        "assistant.chat_checkpoint": "chat",
+        "assistant.code_candidate": "code",
+        "assistant.deterministic_tool": "tool",
+        "assistant.plan_dag": "planning",
+    }
+    selected = selected_reflexive_capabilities(trace)
+    return capability_to_intent.get(selected[0], requested_intent) if len(selected) == 1 else requested_intent
+
+
+def reflexive_terminal_outcome(trace: dict[str, Any]) -> str:
+    return str(get_path(trace, ["selection", "terminal_outcome"], "rejected") or "rejected")
+
+
+def reflexive_dispatch_prepared(trace: dict[str, Any], verification: dict[str, Any]) -> bool:
+    return (
+        verification.get("state") == "VERIFIED"
+        and reflexive_terminal_outcome(trace) == "prepared"
+        and len(selected_reflexive_capabilities(trace)) == 1
+        and get_path(trace, ["effect", "effect_authority_granted"], False) is False
+    )
+
+
+def reflexive_terminal_text(trace: dict[str, Any]) -> str:
+    outcome = reflexive_terminal_outcome(trace).upper()
+    qualification_failures = sorted(
+        {
+            str(failure)
+            for row in list_value(trace.get("qualification"))
+            if isinstance(row, dict)
+            for failure in list_value(row.get("failures"))
+            if failure
+        }
+    )
+    fault = get_path(trace, ["fault", "fault_type"], "")
+    reasons = qualification_failures or ([str(fault)] if fault else [])
+    suffix = f" Reasons: {', '.join(reasons)}." if reasons else ""
+    return f"{outcome}: no qualified assistant route was executed.{suffix}"
 
 
 def route_for(config: dict[str, Any], intent: str) -> dict[str, Any]:
@@ -1068,6 +1264,7 @@ def build_assistant_viea_trace(
     args: argparse.Namespace,
     config: dict[str, Any],
     intent: str,
+    reflexive_dispatch_trace: dict[str, Any],
     route: dict[str, Any],
     session_id: str,
     checkpoint_id: str,
@@ -1185,6 +1382,14 @@ def build_assistant_viea_trace(
             "output_report": rel(resolve(args.out)),
             "assistant_lane": route.get("assistant_lane"),
             "vcm_task_family": route.get("vcm_task_family"),
+            "reflexive_dispatch": {
+                "trace_id": reflexive_dispatch_trace.get("trace_id"),
+                "decision_digest": reflexive_dispatch_trace.get("decision_digest"),
+                "terminal_outcome": reflexive_terminal_outcome(reflexive_dispatch_trace),
+                "selected_capabilities": selected_reflexive_capabilities(reflexive_dispatch_trace),
+                "effect_authority_granted": get_path(reflexive_dispatch_trace, ["effect", "effect_authority_granted"], False),
+                "no_cheat": reflexive_dispatch_trace.get("no_cheat"),
+            },
             "procedural_default_route": {
                 "active": procedural_default_route.get("active"),
                 "ready": procedural_default_route.get("ready"),
@@ -2181,6 +2386,9 @@ def build_gates(
     *,
     chat_result: dict[str, Any],
     response: dict[str, Any],
+    assistant_text: str,
+    reflexive_dispatch_trace: dict[str, Any],
+    reflexive_dispatch_verification: dict[str, Any],
     feedback: str,
     dogfood: dict[str, Any],
     selected_context: dict[str, Any],
@@ -2205,15 +2413,43 @@ def build_gates(
     bridge_state = get_path(dogfood, ["training_bridge", "trigger_state"], "") if dogfood else "skipped"
     code_probe_summary = code_private_probe.get("summary") if isinstance(code_private_probe.get("summary"), dict) else {}
     tool_summary = tool_evidence.get("summary") if isinstance(tool_evidence.get("summary"), dict) else {}
+    dispatch_prepared = reflexive_dispatch_prepared(reflexive_dispatch_trace, reflexive_dispatch_verification)
+    dispatch_terminal = reflexive_terminal_outcome(reflexive_dispatch_trace)
+    dispatch_safely_stopped = (
+        reflexive_dispatch_verification.get("state") == "VERIFIED"
+        and dispatch_terminal in {"ambiguous", "insufficient_context", "insufficient_evidence", "conflicting", "stale", "unauthorized", "unsupported", "ood", "resource_exceeded", "escalate", "rejected"}
+        and chat_result.get("skipped") is True
+    )
     return [
-        gate("checkpoint_chat_completed", chat_result.get("returncode") == 0, chat_result, "hard"),
+        gate(
+            "reflexive_dispatch_integrity_verified",
+            reflexive_dispatch_verification.get("state") == "VERIFIED",
+            reflexive_dispatch_verification,
+            "hard",
+        ),
+        gate(
+            "reflexive_dispatch_precedes_downstream_execution",
+            (dispatch_prepared and chat_result.get("skipped") is not True) or dispatch_safely_stopped,
+            {
+                "terminal_outcome": dispatch_terminal,
+                "selected_capabilities": selected_reflexive_capabilities(reflexive_dispatch_trace),
+                "checkpoint_skipped": chat_result.get("skipped") is True,
+            },
+            "hard",
+        ),
+        gate("checkpoint_chat_completed", dispatch_safely_stopped or chat_result.get("returncode") == 0, chat_result, "hard"),
         gate(
             "checkpoint_session_memory_available",
-            bool(checkpoint_session.get("session_id")) and checkpoint_session.get("session_path") is not None,
+            dispatch_safely_stopped or (bool(checkpoint_session.get("session_id")) and checkpoint_session.get("session_path") is not None),
             checkpoint_session,
             "hard",
         ),
-        gate("assistant_answer_present", bool(str(response.get("answer") or "").strip()), {"mode": response.get("mode")}, "hard"),
+        gate(
+            "assistant_answer_present",
+            bool(str(assistant_text or "").strip()) and (dispatch_safely_stopped or bool(str(response.get("answer") or "").strip())),
+            {"mode": response.get("mode"), "dispatch_terminal": dispatch_terminal},
+            "hard",
+        ),
         gate(
             "code_private_probe_executed_and_safe",
             intent != "code" or code_private_probe_safe(code_private_probe),

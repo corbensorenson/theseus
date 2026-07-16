@@ -4,6 +4,12 @@
   "default_session_id": "local_assistant",
   "checkpoint_id": "live",
   "assistant_trace_schema": "configs/assistant_trace_schema.json",
+  "reflexive_router_contract": "configs/reflexive_router_contract.json",
+  "reflexive_router_profile": "local_private_assistant",
+  "reflexive_router_authority_refs": [
+    "local_assistant_read",
+    "local_tool_read"
+  ],
   "metadata_only_dogfood_feedback": true,
   "raw_text_training_allowed": false,
   "public_benchmark_training_allowed": false,
