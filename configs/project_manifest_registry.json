@@ -7089,12 +7089,16 @@
       "canonical_entrypoint": "scripts/governance_rights_receipt_suite.py",
       "swappable_under_contract": true,
       "replacement_policy": "Successors must preserve audit, redaction, exit, fork-denial, appeal, and no-cheat receipt semantics before replacing this suite.",
-      "verification_command": "python3 scripts/governance_rights_receipt_suite.py && python3 scripts/viea_spine_record_gate.py --gate",
+      "verification_command": "python3 scripts/governance_rights_receipt_suite.py && python3 -m pytest -q tests/test_policy_update_lease.py tests/test_governance_architecture_kernel.py && python3 scripts/viea_spine_record_gate.py --gate",
       "role": "governance",
       "trust_tier": "governed_local_fixture",
       "dependencies": [
         "configs/governance_rights_receipt_suite.json",
         "scripts/governance_rights_receipt_suite.py",
+        "configs/policy_update_lease.json",
+        "scripts/policy_update_lease.py",
+        "tests/test_policy_update_lease.py",
+        "tests/test_governance_architecture_kernel.py",
         "configs/viea_spine_record_contracts.json"
       ],
       "evidence_outputs": [
@@ -7149,6 +7153,7 @@
         "state_compatibility": {
           "reads": [
             "configs/governance_rights_receipt_suite.json",
+            "configs/policy_update_lease.json",
             "configs/viea_spine_record_contracts.json"
           ],
           "writes": [
@@ -7169,11 +7174,15 @@
             "reports/viea_spine_record_gate.json",
             "reports/viea_spine_materialized_view.json"
           ],
-          "verification_command": "python3 scripts/governance_rights_receipt_suite.py && python3 scripts/viea_spine_record_gate.py --gate",
+          "verification_command": "python3 scripts/governance_rights_receipt_suite.py && python3 -m pytest -q tests/test_policy_update_lease.py tests/test_governance_architecture_kernel.py && python3 scripts/viea_spine_record_gate.py --gate",
           "freshness_required": true,
           "dependency_closure": [
             "configs/governance_rights_receipt_suite.json",
             "scripts/governance_rights_receipt_suite.py",
+            "configs/policy_update_lease.json",
+            "scripts/policy_update_lease.py",
+            "tests/test_policy_update_lease.py",
+            "tests/test_governance_architecture_kernel.py",
             "configs/viea_spine_record_contracts.json"
           ]
         },

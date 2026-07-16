@@ -1,0 +1,29 @@
+{
+  "policy": "project_theseus_multi_target_policy_update_lease_v1",
+  "schema_version": "1.0.0",
+  "owner": "control_plane_decision_owner",
+  "issuer": "governance_rights_receipt_suite",
+  "lease_ttl_seconds": 900,
+  "minimum_monitor_observations": 2,
+  "forbidden_feedback_classes": ["public_benchmark", "self_score_only", "unverified_model_judge", "raw_unconsented_user_text"],
+  "required_cost_fields": ["verification", "repair", "human_cleanup", "compute", "energy"],
+  "targets": {
+    "planner": {"state_path": "planner.policy", "owner": "planning_execution_spine", "allowed_feedback": ["verified_plan_outcome", "operator_correction"], "heldout_contract": "private_plan_dag_holdout_v1", "drift_limit": 0.05},
+    "router": {"state_path": "router.policy", "owner": "planning_execution_spine", "allowed_feedback": ["verified_route_outcome", "operator_override"], "heldout_contract": "private_route_selective_risk_holdout_v1", "drift_limit": 0.03},
+    "vcm_selector": {"state_path": "vcm.selection_policy", "owner": "context_memory_contract", "allowed_feedback": ["verified_recall_outcome", "stale_context_fault"], "heldout_contract": "private_vcm_recall_holdout_v1", "drift_limit": 0.03},
+    "verifier": {"state_path": "verifier.admission_policy", "owner": "candidate_integrity_contract", "allowed_feedback": ["independent_verifier_disagreement", "verified_escape"], "heldout_contract": "private_verifier_mutation_holdout_v1", "drift_limit": 0.01},
+    "executor": {"state_path": "executor.execution_policy", "owner": "planning_execution_spine", "allowed_feedback": ["effect_postcondition", "execution_fault"], "heldout_contract": "private_effect_transaction_holdout_v1", "drift_limit": 0.01},
+    "generator": {"state_path": "generator.model_parameters", "owner": "candidate_generation_contract", "allowed_feedback": ["governed_training_receipt", "private_verifier_outcome"], "heldout_contract": "private_functional_utility_holdout_v1", "drift_limit": 0.02},
+    "generation_mode": {"state_path": "generator.decode_policy", "owner": "candidate_generation_contract", "allowed_feedback": ["verified_output_per_second", "decode_integrity_fault"], "heldout_contract": "private_generation_mode_holdout_v1", "drift_limit": 0.02}
+  },
+  "invariants": {
+    "authority_delta_must_be_empty": true,
+    "one_target_per_lease": true,
+    "baseline_and_rollback_identity_required": true,
+    "feedback_receipt_required": true,
+    "heldout_contract_required": true,
+    "cost_displacement_forbidden": true,
+    "journal_hash_chain_required": true,
+    "breach_seals_epoch_and_rolls_back": true
+  }
+}

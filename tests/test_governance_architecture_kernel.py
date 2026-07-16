@@ -12,6 +12,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import governance_rights_receipt_suite as governance  # noqa: E402
+import policy_update_lease  # noqa: E402
 
 
 def fixture_inputs() -> tuple[dict, dict, dict]:
@@ -73,3 +74,12 @@ def test_oversight_commitment_and_exchange_validators_fail_closed() -> None:
     assert not governance.validate_oversight_protocol(oversight)["valid"]
     assert not governance.validate_capability_commitment(commitment)["valid"]
     assert not governance.validate_inter_stack_exchange(exchange)["valid"]
+
+
+def test_governance_owner_consumes_multi_target_policy_update_leases() -> None:
+    report = policy_update_lease.run_reference_matrix()
+    assert report["trigger_state"] == "GREEN"
+    assert report["summary"]["target_count"] == 7
+    assert report["summary"]["committed_target_count"] == 7
+    assert report["summary"]["rollback_canary_exact"] is True
+    assert report["summary"]["mutation_case_count"] == report["summary"]["mutation_passed_count"]

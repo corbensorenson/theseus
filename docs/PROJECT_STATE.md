@@ -15,8 +15,8 @@ share toward zero. Public benchmarks are calibration only.
 
 - **Architecture readiness:** not ready for long training. The finite pre-training
   docket contains 13 known checkpoint-shaping contracts; KERC and QCSA have bounded
-  dispositions, Reflexive Router and full-state update causality have complete
-  pre-training mechanics dispositions, and the remaining 9 must be wired,
+  dispositions, while Reflexive Router, full-state update causality, and multi-target
+  policy leases have complete pre-training mechanics dispositions. The remaining 8 must be wired,
   falsified, or retired before the architecture-freeze manifest can authorize a run.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
@@ -53,7 +53,14 @@ share toward zero. Public benchmarks are calibration only.
   deletion includes backups and external-effect receipts, 8/8 mutations fail as expected,
   and rollback restores the exact pre-state digest. This proves mechanics, not behavioral
   unlearning, forgetting, privacy erasure outside the bounded package, or model quality.
-- **Immediate dependency:** close the remaining 9 finite architecture contracts
+- **Policy-update lease disposition:** one governance-owned lease now covers planner,
+  router, VCM selector, verifier, executor, generator, and generation-mode updates.
+  Every target binds admitted feedback, exact baseline, state path, heldout contract,
+  updater/data provenance, full verification/repair/human-cleanup/compute/energy cost,
+  a hash-chained journal, monitor window, sealed epoch, and exact rollback. Seven target
+  canaries commit, 7/7 mutations fail closed, and a sentinel breach restores baseline.
+  This is update-authority mechanics, not learned improvement evidence.
+- **Immediate dependency:** close the remaining 8 finite architecture contracts
   through existing registry owners. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
   DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces
@@ -61,7 +68,7 @@ share toward zero. Public benchmarks are calibration only.
   ablations at 28/32. Typed parameters, bounded defaults, registry mutation and rollback,
   structured cancellation/partial results, dependency invalidation, compilation surfaces,
   literal isolation, and authority/effect traps are covered. This is not a learned-routing
-  or answer-quality verdict. Multi-target policy-update leases are now the next dependency;
+  or answer-quality verdict. GVR state transitions and localized repair are now the next dependency;
   after the docket closes, publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
@@ -180,8 +187,8 @@ share toward zero. Public benchmarks are calibration only.
    immutable negative evidence; all three candidates scored `0/160`.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
-5. Preserve the completed KERC, QCSA, Reflexive Router, and full-state causality pre-training
-   dispositions and close the remaining 9 finite
+5. Preserve the completed KERC, QCSA, Reflexive Router, full-state causality, and
+   multi-target policy-lease pre-training dispositions and close the remaining 8 finite
    pre-training architecture contracts through full wiring, falsification, or explicit retirement.
    This includes OneCell disposition, update/data causality, policy/GVR/campaign control, and
    generation-objective interfaces.
@@ -221,10 +228,11 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete multi-target policy-update leases across planner, router, VCM, verifier, executor,
-generator, and generation modes. Preserve the KERC, QCSA, Reflexive Router, and full-state
-causality pre-training dispositions; do not mistake mechanics profiles for learned routing,
-unlearning, or capability evidence. Then close the remaining
+Complete the GVR state machine and localized-repair contract with typed candidate identity,
+verification states, repair receipts, bounded transitions, assisted-versus-learned accounting,
+and exact rollback. Preserve all five completed pre-training dispositions; do not mistake
+mechanics profiles for learned routing, unlearning, policy improvement, or capability evidence.
+Then close the remaining
 finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.

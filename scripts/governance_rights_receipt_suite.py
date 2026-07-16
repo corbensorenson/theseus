@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import policy_update_lease
 from viea_spine_records import audit_effect_complete_transaction
 
 
@@ -110,6 +111,10 @@ def build_report(
     if architecture_governance["state"] != "GREEN":
         hard_gaps.append({"id": "architecture_governance_kernel_not_green", "kernel": architecture_governance})
 
+    policy_updates = policy_update_lease.run_reference_matrix(policy_update_lease.load_contract())
+    if policy_updates["trigger_state"] != "GREEN":
+        hard_gaps.append({"id": "multi_target_policy_update_lease_not_green", "kernel": policy_updates})
+
     records = build_records(fixtures, constitutional_fixtures)
     trigger_state = "RED" if hard_gaps else ("YELLOW" if warnings else "GREEN")
     return {
@@ -141,6 +146,11 @@ def build_report(
             "architecture_governance_invalid_rejected_count": sum(
                 1 for row in architecture_governance["expected_invalid_controls"] if row.get("rejected")
             ),
+            "policy_update_target_count": policy_updates["summary"]["target_count"],
+            "policy_update_committed_target_count": policy_updates["summary"]["committed_target_count"],
+            "policy_update_mutation_case_count": policy_updates["summary"]["mutation_case_count"],
+            "policy_update_mutation_passed_count": policy_updates["summary"]["mutation_passed_count"],
+            "policy_update_rollback_canary_exact": policy_updates["summary"]["rollback_canary_exact"],
             "failure_boundary_record_count": len(records["failure_boundary_records"]),
             "artifact_graph_record_count": len(records["artifact_graph_records"]),
             "claim_record_count": len(records["claim_records"]),
@@ -155,6 +165,8 @@ def build_report(
         "constitutional_fixtures": constitutional_fixtures,
         "authority_scif_runtime_adapter_kernel": authority_kernel,
         "architecture_governance_kernel": architecture_governance,
+        "multi_target_policy_update_lease": policy_updates,
+        "policy_update_lease_records": policy_updates["target_receipts"],
         **records,
         "oversight_protocol_records": architecture_governance["oversight_protocol_records"],
         "capability_commitment_records": architecture_governance["capability_commitment_records"],
@@ -167,6 +179,7 @@ def build_report(
             "This is not institutional governance, legal compliance, moral correctness, public benchmark transfer, or learned-generation evidence.",
             "Local inter-stack fixtures prove contract shape and rejection behavior, not remote trust or network interoperability.",
             "Threshold commitments and assurance consumption do not prove capability, safety, or deployment readiness.",
+            "Policy-update lease mechanics do not prove that a learned update improves behavior.",
         ],
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "public_training_rows_written": 0,
