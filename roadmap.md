@@ -29,14 +29,15 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable and every arm floor is GREEN; canonical broad data is GREEN at 1,179,268,641 unique model-visible positions, 32,962,061 above the frozen 57.315M requirement | preserve the content-bound corpus and run the preregistered MLX resource/checkpoint/resume canaries without changing data or architecture |
+| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable and every arm floor is GREEN; canonical broad data is GREEN at 1,179,268,641 unique model-visible positions, 32,962,061 above the original 57.315M requirement | preserve the content-bound corpus while the bounded KERC pre-training architecture tranche closes; regenerate views only through a content-bound transform owned by the revised campaign |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the frozen 57.315M-active candidate and matched controls have sufficient governed data and all five task floors, while the current preregistration awaits its explicit MLX canary replay | run the unchanged canaries, then authorize training only if finite update, checkpoint reload, optimizer resume, cleanup, memory, and resource checks pass |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the original 57.315M-active contract has sufficient governed data and useful mechanical canary evidence, but no long optimizer run has started and training authority is held for the bounded KERC pre-training tranche | finish the exact KERC substrate and revised joint campaign, then replay finite-update, checkpoint-reload, optimizer-resume, cleanup, memory, resource, and migration canaries before training |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is preregistered as a non-routeable candidate behind the shared Cognitive Kernel ABI; architecture/exact-substrate work is eligible after the recorded v8 disposition, but no neural or language claim exists | complete only reusable ABI/exact-substrate dependencies without delaying the task-complete corpus and practical 57.315M transformer/hybrid rung; retain, merge mechanisms, narrow, or reject OneCell by matched total-cost evidence |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | author paper is ingested as an argument-backed cross-phase candidate; its exact substrate, training transforms, lifecycle, and revised matched campaign are now a bounded pre-training requirement because the 57.315M long run has not started | implement the canonical packet/compiler/core/renderer/verifier and VCM residual lifecycle, freeze conventional surface-English and KERC alternatives under equal raw bytes, training compute, end-to-end inference budget, and fidelity, then replay all architecture canaries before either trains |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -54,11 +55,13 @@ unfinished roadmap item. Phases `0, 1, 2, 3, 4, 6, 8, 11, 14, 15, 18, 19` are
 architecture prerequisites; phases `5, 7, 10, 12, 13, 16, 17` require training,
 real-use time, public calibration, or behavior-positive candidates and therefore
 cannot circularly block architecture readiness; Phase `9` remains an external
-environment proof. The canonical gate now reports
-`pre_training_architecture_ready=true` with zero blockers and warnings. The
-architecture-first wave is closed. Architecture maintenance may fix a concrete
-defect, but it is no longer allowed to displace data adequacy and direct learned
-behavior as the flagship work.
+environment proof. A matrix-owned required-backlog list additionally captures
+bounded pre-training contracts that cross those phase boundaries without pretending
+that their empirical outcome can be known before training. KERC is the sole current
+entry. The gate must remain not-ready until its exact substrate, training/evaluation
+interfaces, lifecycle/security tests, and revised matched campaign are wired. This
+reopens architecture once because the paper arrived before any 57.315M optimizer
+run; it does not authorize unrelated lanes or an endless architecture freeze.
 
 Public-result interpretation is deliberately split by route. The historical
 single-card `45/64` diagnostic is mostly a private n-gram body route (`44` of the
@@ -200,23 +203,36 @@ promoted; their purpose is to falsify or select the practical architecture.
 ### Critical Path (ordered - this is what moves capability)
 
 **Current execution order (binding for the next capability cycle):**
-1. Freeze the shared ABI: visible-input boundary, byte-safe tokenizer base, VCM and
-   Semantic-IR packet, arm registry/card schema, route lease, verifier, checkpoint,
-   replay, composition, and no-credit contracts. Freeze five arms: English, Python,
-   JS/TS, HTML/CSS, and Rust. Architecture changes then require a demonstrated defect.
-2. Materialize one content-bound corpus into non-overlapping per-arm views plus the
-   mixed dense-control view. Record arm-specific unique positions, shared-row reuse,
-   tokenizer efficiency, contamination, license/provenance, and exact row ranges.
-3. Select the smallest data-supported MLX model for each arm and a matched mixed
-   dense control. Predeclare total parameters, active parameters per route, FLOPs,
-   wall/energy budget, and heldouts. Train arms independently; do not allow one arm's
-   optimizer state or residuals to mutate another except through an explicit update.
-4. Evaluate arm behavior, router behavior, and composed behavior separately. Preserve
+1. Close the bounded KERC pre-training architecture tranche through existing owners:
+   versioned Kernel Packet, protected objects, ambiguity-preserving compiler, three
+   code spaces, VCM-backed residual lifecycle, structured answer packet, learned
+   renderer/copy path, round-trip verifier, registry/migration contract, training
+   transforms/objectives, cost instrumentation, and adversarial lifecycle tests.
+   Preserve the shared visible-input, arm, route, verifier, checkpoint, replay,
+   composition, and no-credit ABIs; KERC may extend them only through registered
+   versioned adapters.
+2. Preserve the content-bound corpus and materialize source-disjoint conventional
+   surface-English, KERC-English, unchanged Python/JS-TS/HTML-CSS/Rust arm, and mixed
+   dense-control views. Record unique raw bytes and model-visible positions, shared-row
+   reuse, compiler/tokenizer efficiency, contamination, license/provenance, and exact
+   row ranges. Compiled variants of one source are not new unique data.
+3. Re-preregister one joint MLX campaign before training: conventional surface-English
+   baseline, KERC-English candidate, unchanged code arms, and matched dense controls.
+   Predeclare total/active parameters, raw bytes, total train FLOPs, complete
+   end-to-end inference cost, wall/energy budget, heldouts, weak-tail floors, and
+   falsification. Replay finite-update, checkpoint/reload, optimizer-resume,
+   migration, cleanup, memory, and resource canaries. The original 57.315M canary is
+   retained as mechanical evidence for the surface baseline but cannot authorize the
+   revised campaign by itself.
+4. Train each frozen alternative once. Do not let one arm's optimizer state or
+   residuals mutate another except through an explicit governed update. Do not tune
+   architecture, representation, renderer, or thresholds from heldout outcomes.
+5. Evaluate arm behavior, router behavior, and composed behavior separately. Preserve
    the v8 exact-recovery result as a diagnostic, then compare unchanged checkpoints on
    a separately frozen functional surface: blind rubric/pairwise English and
    compile/test/execute or structural/render checks for every code arm. Route success
    never counts as answer success; dense wins remain valid evidence against the thesis.
-5. After any direct arm behavior is positive, qualify STS/VCM conditioning, search,
+6. After any direct arm behavior is positive, qualify STS/VCM conditioning, search,
    preference/RL, and fast generation in that order. Only after a materially changed
    current system clears private integrity/behavior gates, spend a fresh public
    calibration surface. SymLiquid remains a later protected comparator.
@@ -541,32 +557,38 @@ held-out verifiable benchmark plotted against published dense-model curves
 teacher-share; self-generated-verified-row count; and every falsification condition
 with its current status.
 
-### Architecture Closure Outcome and Capability Pivot (2026-07-11)
+### Architecture Closure Reopened Before First Long Run (2026-07-16)
 
-The architecture-first wave has reached its stopping condition. The canonical
-pre-training gate reports zero architecture blockers and warnings. Registry/SCF,
-VIEA, VCM, candidate integrity, deterministic tools, bounded search, resource
+The July 11 architecture closure was valid for the source set known then: Registry/
+SCF, VIEA, VCM, candidate integrity, deterministic tools, bounded search, resource
 routing, SymLiquid isolation, evidence/claim records, procedural memory,
-authority/failure contracts, and book synchronization are all wired or implemented.
-One local assistant canary also performed an actual route-authority file effect,
-observed exact candidate bytes, and restored the prior identity with zero residuals;
-A2/E1 still need independent support-state consumption of that receipt, but that is
-evidence maintenance rather than a reason to postpone training.
+authority/failure contracts, and book synchronization were wired or implemented.
+The subsequent KERC paper identifies a concrete missing representation, lifecycle,
+training, and evaluation contract, and no 57.315M long optimizer run has started.
+It is therefore cheaper and more honest to close this known gap before training than
+to train once and retrofit it afterward. Existing corpus receipts and original MLX
+canaries remain valid evidence; they are not discarded or narrated as capability.
 
-The roadmap now pivots from architecture breadth to one capability flagship:
-`C1_correctness_rl_and_generator_survival_lane`, beginning with Track-0 corpus
-adequacy and the frozen dense transformer baseline. The following rules apply:
+The roadmap temporarily pivots to one bounded pre-training flagship:
+`planned.kernel_english_hierarchical_residual_compiler_v1`. It ends when the exact
+substrate and revised joint campaign are wired and pass mechanical, lifecycle,
+security, and no-cheat canaries. Learned utility and the KERC-versus-surface verdict
+remain post-training evidence and cannot circularly block the run. The following
+rules apply:
 
-1. **No more architecture-by-analogy.** New book ideas map to existing fields and
-   wait unless they expose a concrete missing contract or failure in the active run.
+1. **No open-ended architecture-by-analogy.** KERC is admitted because it arrived
+   before the long run and defines a concrete cross-owner contract. Other ideas map
+   to existing fields and wait unless they expose a correctness, security, replay,
+   migration, or training-invalidating defect.
 2. **Do not confuse route success with model success.** VCM, STS, tools, search,
    renderers, n-grams, and procedural routes can improve assisted usefulness, but
    direct learned behavior remains its own scoreboard.
 3. **Do not optimize a zero numerator.** DPO/RL, search width, sparse routing, and
    fast generation wait until direct verifier-positive candidates exist.
-4. **Treat data scale as a first-class experimental variable.** The next run freezes
-   architecture and changes governed unique data/exposure, with a predeclared
-   scaling contract and negative controls.
+4. **Treat architecture and data as jointly frozen experimental variables.** The next
+   run compares conventional surface-English and KERC alternatives while preserving
+   the governed corpus, code arms, matched controls, and source-disjoint heldouts.
+   Compiled views receive no unique-data credit, and all compiler/runtime cost counts.
 5. **Calibrate publicly after a material model change, not by calendar.** Fresh
    frozen surfaces remain available without arbitrary budgets, but an unchanged
    zero-pass model does not justify spending another public surface.
@@ -1388,6 +1410,131 @@ utility, or matched total task cost fails.
   deterministic repair, generic capacity increase, attention variant, or
   behavior-flat scale run cannot substitute.
 
+#### Kernel English and hierarchical residual compiler extension
+
+Author-source intake: *Kernel English with Hierarchical, Interaction-Amortized
+Residuals* (KERC, July 2026), content SHA-256
+`f560c61196cb2a114475ebd455f8643536e78c82dbbf6ec8dd712d993f2b6519`.
+The canonical source is currently under
+`AI_book/sources/raw/kernel_english_residual_compiler/`; until the book chapter
+and source note are committed, this is an argument-backed intake contract rather
+than evidence that the architecture works. KERC extends the existing English arm,
+Semantic IR, VCM, SCF/registry, evidence/compression, and Octopus owners. It must
+not become a second memory system, tokenizer lane, renderer shortcut, or hidden
+deterministic answer path. Because no 57.315M long optimizer run has started, its
+exact substrate and experiment contract are a bounded pre-training requirement; the
+original surface-model canary remains a mechanical baseline rather than training
+authority.
+
+- Define one versioned `KernelPacket` protocol spanning immutable/content-addressed
+  source identity, protected objects, correction lattice, expanded semantic Kernel,
+  compact serialization, grammar-aware macro tokens, entity/concept handles,
+  source alignment, uncertainty, provenance, authority, and residual references.
+  Protection precedes correction; canonicalization targets contextual senses rather
+  than strings; unresolved sense, coreference, scope, and correction ambiguity stay
+  explicit rather than being compressed into false certainty.
+- Separate stable concept identity from runtime spelling and maintain three typed
+  code spaces: surface English, Kernel concepts/operators, and pointer/object/control
+  symbols. Grammar-aware Kernel macros must have deterministic typed expansion and
+  may not cross entity, exact-object, clause/scope, negation, quantifier, quotation,
+  code, value/unit, provenance, or authority boundaries. Byte fallback is complete;
+  open-world concepts use provenance-bound local capsules or opaque handles, and
+  promotion into the shared concept registry requires an SCF replacement transaction.
+- Extend VCM rather than adding a residual side store. The Hierarchical Residual
+  Ledger has interaction-global, segment, token-local, and exact-object levels;
+  distinguishes source reconstruction from output render policy; and assigns
+  semantic, faithful, lexical, or exact fidelity by calibrated rate-distortion plus
+  hard policy. Every entry carries scope, origin, authority, confidence, privacy,
+  expiry, version, dependency, and deletion state. State hashes, append-only deltas,
+  checkpoints, deterministic replay, migration, bounded eviction, and descendant
+  invalidation are mandatory. Missing or mismatched state produces a typed recovery
+  or rejection outcome, never approximate interpretation or silent cross-user reuse.
+- Make the English reasoner consume Kernel/VCM packets and emit a structured answer
+  packet with claims, modality, confidence, entities, values, qualifiers, provenance,
+  required terms, and rendering constraints. A separately accounted surface renderer
+  may realize prose and copy authorized exact objects, but generation credit belongs
+  only to the learned model channel. Recompile output and verify entity identity,
+  numbers/units/precision, negation/quantifier scope, modality, time, causal direction,
+  attribution, quotations, terminology locks, caveats, and uncertainty. Failed
+  verification remains failure or bounded repair; a literal/template renderer can be
+  reported only as an assisted noncredit baseline and never rescue model-only utility.
+- Bind Kernel versions, concept-registry hashes, codebook hashes, macro vocabulary,
+  residual schema, object types, compiler/core/renderer/verifier compatibility, and
+  migrations into checkpoint and AIBOM lineage. VCM memory, Semantic IR, tool calls,
+  planner nodes, Reflexive Router events, and Octopus composition may exchange Kernel
+  packets only through registered adapters with loss/use/authority certificates; the
+  representation itself grants no truth, evidence, execution authority, or capability.
+- Train one coordinated architecture, not disconnected prototypes: protected-span
+  detection and calibrated lexical abstention; surface-to-Kernel parallel, paraphrase-
+  convergence, hard-negative, cycle, entailment/question-preservation, structured-
+  validity, and uncertainty objectives; Kernel language modeling and answer-packet
+  generation; residual allocation and interaction promotion; copy-aware rendering;
+  and symbolic plus neural round-trip verification. Data remains licensed, English-
+  scoped, provenance-bound, source-disjoint, and contamination-audited. Public
+  benchmark payloads remain calibration-only, and live teacher use remains governed
+  OpenAI-only residual pressure. Version migration is deterministic or the row stays
+  explicitly versioned; no compiled row silently changes meaning across revisions.
+- Sequence this as a pre-training English-arm architecture alternative. Implement the
+  exact substrate, dataset transforms, objectives, checkpoint/migration path,
+  instrumentation, lifecycle, and security contracts before optimizer spend, then
+  preregister conventional surface-English and a 25M-75M-active KERC candidate in one
+  joint campaign. The code arms remain unchanged. Scale KERC only if it wins. Compare standard BPE,
+  SentencePiece/unigram, spelling-normalized BPE, controlled-English BPE, multiword or
+  over-tokenized input, byte-level, faithful BLT/H-Net-style dynamic chunking,
+  reproducible neural text compression, compact-reasoning without a compiler,
+  semantic-graph/renderer, KERC without residuals, and full KERC. Label conceptual
+  approximations separately from faithful reproductions.
+- Match three budgets independently: underlying raw bytes, total training FLOPs, and
+  end-to-end inference latency/energy. Charge compiler, core, renderer, verifier,
+  residual codec, object/concept tables, registries, exact-source access, cache/KV,
+  retries, failure recovery, storage, and human review. Report original bytes, surface
+  and Kernel tokens, expanded/compact lengths, residual bits by level, object bytes,
+  parameters by module, per-stage P50/P95/P99 latency, FLOPs, energy, peak memory,
+  accepted verified output per second, and total lifecycle cost. Token reduction or
+  core-only speed is never an efficiency win by itself.
+- Freeze representation, core-model, end-to-end, fidelity, interaction, robustness,
+  and security tracks before results. Measure loss per original byte, task utility,
+  sample efficiency, domain transfer, exact reconstruction, bidirectional entailment,
+  QA preservation, semantic-atom recall, entity/name/value/scope/modality/attribution/
+  quote fidelity, terminology consistency, calibration, and conversations of
+  1/2/4/8/16/32/64 turns. English dialect/noise, Unicode/confusable names, technical
+  terminology, exact-form tasks, long documents, and held-out domains are required;
+  non-English natural-language training remains quarantined for this seed.
+- Run causal ablations over all four residual levels; protection-before-correction;
+  correction lattice versus forced correction; handles; concept capsules; regular
+  morphology; compact orthography; Kernel BPE versus bytes; grammar constraints;
+  separate versus tied vocabularies; verifier strength; fidelity policy; byte
+  fallback; local macros; exact-source access; and interaction-state sharing. Use
+  multiple seeds, paired items, confidence intervals, frozen thresholds, published
+  failures, and independent integrity/replay audits.
+- Trap-test overcorrection, ambiguity collapse, semantic drift, dropped negation or
+  modality, swapped identities, unit/precision changes, quote corruption, Unicode
+  confusables, residual injection, untrusted-content state mutation, object-store
+  exfiltration, prompt injection across representation layers, stale/desynchronized
+  state, cache poisoning, macro/concept poisoning, unauthorized registry promotion,
+  incompatible migration, cross-user leakage, and deletion failure. Source access is
+  least-privilege and auditable; users can inspect/reset/delete residual state.
+- Falsify the full architecture if no realistic long-context regime improves total
+  quality/compute/memory, residual overhead erases savings, compiler error cannot be
+  contained, shared state adds no value or unacceptable risk, exact identity/value
+  fidelity regresses, or a simpler byte/dynamic-chunking/latent system Pareto-dominates
+  it. Preserve useful components such as protected handles or terminology state if
+  their own ablations win; do not preserve KERC as a protected architecture label.
+
+Pre-training acceptance: the canonical packet/compiler/core/renderer/verifier and
+VCM residual lifecycle exist behind registered versioned interfaces; corpus transforms,
+objectives, checkpoints, migrations, cost accounting, adversarial tests, matched
+controls, and the joint campaign are content-bound and frozen; finite-update,
+reload/resume, migration, cleanup, memory, resource, replay, integrity, and no-cheat
+canaries are GREEN. This authorizes training, not a capability claim.
+
+Post-training acceptance: one content-bound, source-disjoint, multi-seed campaign
+either shows a preregistered Pareto improvement in learned English utility and
+total-system cost without fidelity/weak-tail regression or records a falsifying result
+and retires or narrows the candidate. A schema, compressed sequence, readable trace,
+exact copy, green round trip, assisted renderer, or reduced core token count is not
+learned reasoning, broad transfer, runtime authority, AGI, or ASI evidence.
+
 ### Phase 14: Compression, Proof, and Claim-Evidence Records
 - First-class claim/evidence transitions preserve contradiction, downgrade, split,
   merge, retirement, and replacement history. `docs/PROJECT_STATE.md` becomes a
@@ -1687,6 +1834,7 @@ gaps route into the phases above:
 | Intent-to-execution contracts | runtime path does not yet require contracts for every meaningful task | 1 |
 | PlanForge DAGs + adequacy + arbitrage | not the default execution spine; adequacy contracts + arbitrage ledger missing | 1 |
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
+| Kernel English + Hierarchical Residual Ledger | bounded pre-training tranche is required before the first long run; no canonical Kernel Packet, dual-vocabulary compiler/core/renderer path, protected-object boundary, four-level VCM residual lifecycle, round-trip semantic verifier, frozen joint surface/KERC campaign, or falsification verdict exists | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 |
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
 | Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
 | Durable semantic memory inside VCM | wired: stable objects, typed/temporal relations, additive ontology migration, transactional merge/supersession/retraction/compaction, sparse-vector/graph retrieval, bounded snapshots, and fresh-process replay; dense embedding and parametric unlearning remain explicit non-claims | 3, 14, 15 |
@@ -1726,7 +1874,7 @@ gaps route into the phases above:
 
 The ASI Stack now has 54 active chapters. Ten items from the earlier completeness
 intake have been admitted and are owned by the chapter crosswalk rather than this
-future queue. The 12 remaining candidates/section routes below are **not new active
+future queue. The 13 remaining candidates/section routes below are **not new active
 lanes**: each is owned by existing phases, remains planning-only until its source,
 ownership, and operational entry gates pass, and blocks only the higher-authority
 operation it governs. This queue is frozen while current model-only heldout behavior
@@ -1738,6 +1886,7 @@ training-readiness defect requires it.
 |---|---|---|
 | Reasoning-Trace Faithfulness (section route) | 1, 4, 14, 18 | source queue now includes information-flow faithfulness and MonitorBench comparators; distinguish traces from receipts, test trace/action and monitorability under pressure, and never treat hidden reasoning as authoritative |
 | Question-Compiled Semantic Addressing | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 | source available and chapter manifest pending; extend VCM/SCF/VIEA with stable SOID-address-route indirection, plural address atlases, active question traces, SACs, physical translation, migration receipts, and matched falsification without creating a parallel memory lane |
+| Kernel English with Hierarchical Residuals | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 | source available and chapter/source-note commit pending; before long training, extend the English arm, Semantic IR, VCM, compression, and registry owners with a versioned dual-vocabulary Kernel Packet, protected objects, uncertainty-preserving compiler, four-level residual lifecycle, learned renderer, round-trip verification, total-cost accounting, and a frozen joint surface/KERC falsification campaign, without creating another language/memory lane |
 | World Models and Model-Based Cognition | 10, 13, 17 | V-JEPA 2 is now a source comparator; activation still waits for the core proposer floor and requires prediction/error ledgers, model-predictive control, imagination/search, causal limits, and sim-to-real controls |
 | Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |
 | Persuasion, Epistemic Security, and Human Agency | 5, 14, 18 | source-contingent; require stronger empirical anchors before activation or claims |
@@ -1756,6 +1905,10 @@ collusion probes, randomized monitoring, and operator-load residuals (Phase 18);
 stable semantic identity/address/physical-route separation, consumer-relative
 address adequacy, active-question value/cost/privacy/risk traces, atlas epoch
 migration, and semantic-route authority non-inheritance (Phases 0/1/2/3/6/8/13/
+14/16/18); immutable-source/protected-object capture, uncertainty-preserving
+surface-to-Kernel compilation, separate semantic identity/runtime code, hierarchical
+interaction residuals, dual vocabularies, grammar-safe macros, round-trip fidelity,
+and total-system rate/compute/fidelity accounting (Phases 0/2/3/4/5/7/8/10/11/13/
 14/16/18);
 OOD/active perception plus causal/counterfactual/identifiability boundaries
 (Phases 13/17); temporal-logic monitors, interlocks, degraded operation, and

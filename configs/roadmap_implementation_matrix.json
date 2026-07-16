@@ -31,8 +31,18 @@
     "external_environment_phase_ids": [
       9
     ],
-    "rule": "Architecture readiness requires every architecture prerequisite to be implemented or wired, while training, empirical product qualification, public calibration, behavior-dependent routing, and sim-to-real evidence remain follow-through rather than circular prerequisites.",
-    "no_shortcut": "A phase may be deferred only because its remaining acceptance evidence intrinsically requires learned behavior, training, public calibration, real-use time, or unavailable external peers; missing contracts, authority, memory, evidence, deterministic tooling, runtime, or governance remain architecture blockers."
+    "required_backlog_ids": [
+      "planned.kernel_english_hierarchical_residual_compiler_v1"
+    ],
+    "ready_backlog_statuses": [
+      "pretraining_wired_behavior_qualification_pending",
+      "implemented",
+      "qualified",
+      "falsified_pretraining",
+      "retired_by_pretraining_verdict"
+    ],
+    "rule": "Architecture readiness requires every architecture prerequisite and every declared cross-phase pre-training backlog contract to be implemented or wired, while training, empirical product qualification, public calibration, behavior-dependent routing, and sim-to-real evidence remain follow-through rather than circular prerequisites.",
+    "no_shortcut": "A phase or backlog item may be deferred only because its remaining acceptance evidence intrinsically requires learned behavior, training, public calibration, real-use time, or unavailable external peers; missing contracts, authority, memory, evidence, deterministic tooling, runtime, migration, security, campaign preregistration, or governance remain architecture blockers."
   },
   "latest_ai_book_technique_reconciliation": {
     "date": "2026-07-06",
@@ -303,6 +313,35 @@
       "theseus_scope": "compose the existing assistant, SCF, Octopus, VIEA, VCM, deterministic-tool, effect-transaction, evidence, and Loop-Closure owners into one canonical pre-deliberative path with origin-authenticated typed command and reflex registries, indexed deterministic precedence, minimum-sufficient-compute qualification, calibrated abstaining learned proposals, finite terminal outcomes, bounded structured-concurrency DAG dispatch, typed result continuity, dependency-complete cache and bitemporal Temporal Chronicle semantics, sole-kernel effects, and economically governed trace-to-reflex compilation plus descendant invalidation and decompilation",
       "acceptance_boundary": "one frozen private evaluation profile over existing assistant/router/tool/temporal/effect/procedural fixtures compares model-only, LLM-first tool, hard-rule, learned-router, semantic-cache, modular-tool, no-Chronicle, no-compiler, full reflexive, and oracle policies under matched event information, model access, authority, retries, verification, and total resources; it reports complete denominators for task utility, qualified and fast-path coverage, wrong-fast-path, selective risk, OOD abstention, route regret, override/effort/fallback/binding/literal-isolation fidelity, DAG and temporal correctness, dispatch/end-to-end latency, lifecycle cost/energy/human work, provenance/context continuity, effects and rollback, verification escape, reflex transfer, drift/quarantine/decompilation, while forced routes fail closed unless fallback is explicit",
       "non_claim_boundary": "route accuracy, fast-path coverage, exact tool success, typed records, procedural reuse, or reduced deliberation does not establish learned answer capability, factual truth, safe open-world autonomy, public transfer, AGI, or ASI; explicit user dispatch may bypass inference but never enforcement"
+    },
+    {
+      "candidate_id": "future.kernel_english_hierarchical_residual_compiler",
+      "title": "Kernel English With Hierarchical Interaction-Amortized Residuals",
+      "item_kind": "cross_cutting_section",
+      "book_disposition": "source_available_manifest_pending",
+      "source_id": "kernel_english_hierarchical_residuals",
+      "source_sha256": "f560c61196cb2a114475ebd455f8643536e78c82dbbf6ec8dd712d993f2b6519",
+      "source_state": "author_supplied_ai_book_intake_argument_only_until_committed",
+      "phase_refs": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        13,
+        14,
+        16,
+        18,
+        19
+      ],
+      "entry_condition": "no 57.315M long optimizer run has started, so implement the exact packet, residual, security, training, migration, evaluation, and falsification contracts through existing owners before training; preserve the original surface canary as mechanical evidence and freeze conventional surface-English and KERC as matched alternatives in one revised joint campaign",
+      "theseus_scope": "extend existing English-arm, Semantic-IR, VCM, SCF, evidence/compression, and Octopus owners with immutable source and protected-object capture, calibrated uncertainty-preserving Surface-to-Kernel compilation, stable concept identities separate from runtime codes, surface/Kernel/pointer vocabularies, grammar-aware deterministically expandable macros, concept capsules, a four-level VCM-backed residual ledger, structured answer packets, copy-aware learned rendering, round-trip semantic and exact-constraint verification, versioned migration, and least-privilege object access",
+      "acceptance_boundary": "one content-bound source-disjoint multi-seed campaign compares strong surface BPE, unigram, normalized and controlled English, multiword/over-tokenized input, byte, faithful dynamic-chunking, reproducible neural compression, compact-reasoning, semantic-graph, no-residual KERC, and full KERC controls under equal raw bytes, total training FLOPs, and end-to-end latency or energy. It charges every module, state, object, registry, retry, verification, migration, and human-review cost; reports representation, utility, fidelity, interaction-amortization, robustness, privacy, security, and lifecycle metrics; performs component ablations and adversarial state/macro/object tests; and either proves a preregistered Pareto gain without weak-tail regression or records falsification and narrows or retires the architecture",
+      "non_claim_boundary": "shorter Kernel sequences, readable semantic packets, exact copy, deterministic macro expansion, residual replay, round-trip agreement, renderer success, or lower core-only cost is not learned answer capability, factual correctness, broad public transfer, runtime authority, AGI, or ASI; assisted/template/literal rendering never rescues model-only utility"
     }
   ],
   "book_future_cross_cutting_obligations": [
@@ -313,7 +352,8 @@
     "AIBOM/reproducible builds/derivative revocation plus privacy budgets, cross-user leakage, and deletion propagation under Phases 0, 3, 7, 14, and 18",
     "objective fingerprints, periodic recontracting, time-horizon and automated-R&D measures, dual-use profiles, provider concentration, portability, and shutdown handoff under Phases 2, 8, 9, and 18",
     "QCSA stable identity/address/physical-route indirection, consumer-relative adequacy, plural atlas epochs, active-question value/cost/privacy/risk traces, authority-nonwidening translation, and migration-safe old-address resolution under Phases 0, 1, 2, 3, 6, 8, 13, 14, 16, and 18",
-    "Reflexive Router canonical event and origin-authenticated user command/reflex registries, indexed precedence, qualification-first minimum-sufficient-compute dispatch, finite typed outcomes, dependency-complete cache/result/bitemporal Chronicle continuity, bounded structured concurrency, sole-kernel effect enforcement, calibrated abstaining learned proposals, lifecycle economics, and governed reflex compilation/invalidation/decompilation under Phases 0, 1, 2, 3, 5, 6, 8, 14, 15, 16, and 18"
+    "Reflexive Router canonical event and origin-authenticated user command/reflex registries, indexed precedence, qualification-first minimum-sufficient-compute dispatch, finite typed outcomes, dependency-complete cache/result/bitemporal Chronicle continuity, bounded structured concurrency, sole-kernel effect enforcement, calibrated abstaining learned proposals, lifecycle economics, and governed reflex compilation/invalidation/decompilation under Phases 0, 1, 2, 3, 5, 6, 8, 14, 15, 16, and 18",
+    "Kernel English immutable source and protected-object capture, uncertainty-preserving semantic compilation, stable concept identity/runtime-code separation, surface/Kernel/pointer vocabularies, grammar-safe expandable macros, four-level VCM residual state, structured answer packets, copy-aware rendering, round-trip fidelity checks, versioned migration, total-system accounting, adversarial lifecycle tests, and matched falsification under Phases 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, and 18"
   ],
   "weekly_focus_decision": {
     "date": "2026-07-11",
@@ -363,10 +403,10 @@
     "Every authored AI_book chapter must map to a Theseus implementation slice with a minimum slice, beyond-SOTA endpoint, support-state target, no-claim boundary, and gate or fixture.",
     "AI_book chapter-level Planned Codex tests are treated as missing technique obligations until a registered Theseus implementation has matched controls, negative controls, no-cheat audit, retained residuals, and explicit non-claims.",
     "Negative, inconclusive, and regression evidence must remain attached to the claim or phase it constrains; do not replace a negative report with a nearby positive family.",
-    "The book-reference architecture core is now represented and pre-training readiness is GREEN; freeze architecture breadth and make governed data adequacy plus direct learned behavior the primary roadmap focus.",
+    "The previously closed architecture core is reopened once for the bounded KERC pre-training contract because the source arrived before any 57.315M long optimizer run; finish that registered tranche, then freeze architecture breadth and return governed data plus direct learned behavior to primary focus.",
     "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it.",
     "The v8 prompt/target comparison is an exact-recovery diagnostic because its rows do not carry complete functional verifiers; practical architecture selection requires a separately frozen source-disjoint functional utility surface.",
-    "Freeze architecture and control-plane breadth for three capability cycles; only a concrete correctness, security, replay, or measured training/inference defect may authorize an architecture change during the freeze.",
+    "After the bounded KERC pre-training tranche and revised joint campaign are wired, freeze architecture and control-plane breadth for three capability cycles; only a concrete correctness, security, replay, migration, or measured training/inference defect may authorize another architecture change.",
     "Treat 10.8M active parameters as a systems-canary rung. If sparse and both dense controls remain functionally zero across code, close the rung and require task-complete data plus a preregistered 50M-100M scale proposal instead of another same-scale patch.",
     "Treat OneCell-RWM as a future cognitive-kernel discovery candidate only: it cannot alter or delay frozen v8, become a same-scale rescue patch, duplicate VIEA/VCM/Octopus/SCF/Loop-Closure/SparkStream/registry machinery, or receive route authority before a preregistered matched total-cost verdict."
   ],
@@ -395,6 +435,34 @@
       "acceptance_gate": "A single canonical dispatch path supports origin-authenticated typed route directives, direct capabilities, workflows, explicit fallback, requested-versus-realized effort, linked declarative command/reflex registries, indexed deterministic precedence, deterministic and calibrated abstaining learned proposals, SCF qualification, finite typed terminal outcomes, minimum-sufficient-compute atomic/composite DAGs with bounded structured concurrency, dependency-complete cache invalidation, typed results, bitemporal Chronicle updates, sole-kernel effect commits, semantic-version dependency invalidation, and economically governed trace-to-reflex replay/differential/shadow/canary/quarantine/decompilation. One frozen private profile reuses existing fixtures and compares model-only, LLM-first tool, hard-rule, learned-router, semantic-cache, modular-tool, no-Chronicle, no-compiler, full reflexive, and oracle policies under matched information, model, authority, retry, verification, and total-resource opportunities, with complete utility, routing, command, temporal, effect, lifecycle, and anti-Goodhart metrics.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "The paper and roadmap contract are argument only. Fast-path coverage, route correctness, exact tools, typed ledgers, or compiled reflexes remain separately accounted from learned answer quality and cannot authorize public-transfer, autonomy, AGI, or ASI claims."
+    },
+    {
+      "backlog_id": "planned.kernel_english_hierarchical_residual_compiler_v1",
+      "source_basis": "Author-supplied Kernel English with Hierarchical, Interaction-Amortized Residuals content SHA-256 f560c61196cb2a114475ebd455f8643536e78c82dbbf6ec8dd712d993f2b6519; argument-backed until rebound to a committed AI_book chapter and source note",
+      "technique_family": "dual_vocabulary_cognitive_compiler_and_hierarchical_residual_state",
+      "owned_phase_refs": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        13,
+        14,
+        16,
+        18,
+        19
+      ],
+      "track_id": "C_capability_research_survival_lane",
+      "status": "pre_training_architecture_required",
+      "dependency": "hold the not-yet-started long optimizer run; reuse existing English-arm, Semantic-IR, VCM, SCF, evidence, compression, and Octopus owners; preserve the original 57.315M surface canary as mechanical baseline evidence; implement the exact substrate and freeze conventional surface-English plus KERC alternatives before either trains; keep every assisted or deterministic renderer result separate",
+      "pre_training_acceptance_boundary": "Before long training, implement and register the versioned Kernel Packet, protected-object path, ambiguity-preserving compiler, three code spaces, VCM-backed four-level residual lifecycle, structured answer packet, learned renderer/copy interface, round-trip verifier, checkpoint and deterministic migration schema, training transforms/objectives, complete cost instrumentation, lifecycle/security tests, and a content-bound joint MLX campaign with conventional surface-English, KERC-English, unchanged code arms, and matched dense controls. Finite-update, reload, optimizer-resume, migration, cleanup, memory, resource, replay, integrity, and no-cheat canaries must be GREEN. Empirical learned utility and the KERC verdict remain post-training and cannot circularly block readiness.",
+      "acceptance_gate": "Implement a versioned immutable-source Kernel Packet; protect-before-correct extraction; calibrated ambiguity-preserving Surface-to-Kernel compilation; stable concept identities separate from compact codes; surface, Kernel, and pointer vocabularies; typed handles, capsules, expandable grammar-safe macros, and byte fallback; a VCM-backed interaction/segment/token/exact residual lifecycle with authority, privacy, synchronization, migration, revocation, and deletion; structured answer packets; copy-aware learned rendering; and round-trip exact plus semantic verification. Run a frozen source-disjoint multi-seed comparison against strong surface-token, byte, dynamic-chunking, compression, compact-reasoning, semantic-graph, and KERC ablation controls under equal raw bytes, total train FLOPs, and end-to-end inference cost. Charge all parameters, bits, state, objects, registries, KV/cache, retries, verification, migration, security, and human work; report learned utility, fidelity, amortization, robustness, and complete lifecycle cost; retain only a preregistered Pareto gain without weak-tail regression.",
+      "support_state_target": "empirical-test-backed",
+      "no_claim_boundary": "The paper, packet schema, semantic readability, exact copy, residual replay, macro expansion, round-trip agreement, token reduction, and lower core-only cost are not learned reasoning or broad transfer. Template/literal rendering is assisted noncredit, and representation structure never grants truth, evidence, execution authority, AGI, or ASI."
     },
     {
       "backlog_id": "planned.private_functional_utility_qualification_v1",
@@ -2425,7 +2493,8 @@
       "ai_book_source_basis": [
         "semantic IR",
         "substrate-neutral reasoning",
-        "capability atoms"
+        "capability atoms",
+        "Kernel English with Hierarchical, Interaction-Amortized Residuals (source available; chapter/source-note commit pending)"
       ],
       "registry_surface_id": "theseus_plan_compiler",
       "abstraction_id": "planning_execution_spine",
@@ -2451,7 +2520,12 @@
         "hierarchical_plan_then_body_beam",
         "low_rank_latent_ordered_plan_field",
         "per_layer_slot_addressable_plan_attention",
-        "factorized_complete_statement_plan_field"
+        "factorized_complete_statement_plan_field",
+        "versioned_kernel_packet",
+        "surface_to_kernel_compiler",
+        "hierarchical_residual_ledger",
+        "structured_kernel_answer_packet",
+        "roundtrip_kernel_verifier"
       ],
       "required_records": [
         "semantic_ir_atom",
@@ -2466,7 +2540,11 @@
         "ordered_plan_four_arm_ablation_receipt",
         "content_bound_evaluation_replay_receipt",
         "latent_ordered_plan_four_arm_ablation_receipt",
-        "slot_ordered_plan_four_arm_ablation_receipt"
+        "slot_ordered_plan_four_arm_ablation_receipt",
+        "kernel_packet_and_migration_receipt",
+        "kernel_residual_state_replay_receipt",
+        "kernel_rate_compute_fidelity_ablation_receipt",
+        "kernel_security_and_falsification_receipt"
       ],
       "required_gates": [
         "python3 scripts/semantic_ir_obligation_gate.py",
@@ -2523,9 +2601,10 @@
         "runtime/standard_causal_transformer_slot_factorized_plan_dropout/report.json"
       ],
       "missing_items": [
-        "The factorized full-step field removes the old 17/24 representation collision and independently proves 24/24 distinct group-closed plans, but emitted, latent, categorical-slot, and factorized-slot routes all remain 0/24 exact; Phase 13 behavioral acceptance depends on first raising the Phase 10 direct proposer floor above zero"
+        "The factorized full-step field removes the old 17/24 representation collision and independently proves 24/24 distinct group-closed plans, but emitted, latent, categorical-slot, and factorized-slot routes all remain 0/24 exact; Phase 13 behavioral acceptance depends on first raising the Phase 10 direct proposer floor above zero",
+        "KERC is the sole bounded pre-training cross-phase architecture tranche: no canonical Kernel Packet, protected-object compiler, four-level VCM residual lifecycle, dual-vocabulary learned core/renderer, round-trip verifier, checkpoint migration contract, frozen joint surface/KERC total-cost campaign, or falsification verdict exists. Exact substrate and campaign readiness must close before the not-yet-started long run; empirical learned utility and falsification remain post-training evidence."
       ],
-      "smallest_next_patch": "Raise the Phase 10 prompt/signature-only direct full-body proposer above zero exact family-disjoint verifier passes with the body-only transformer route and durable training provenance. Then reuse the collision-free factorized field in a body-likelihood-driven semantic ablation. Do not add another plan objective, attention variant, renderer, deterministic repair, fallback, generic capacity increase, or behavior-flat scale run.",
+      "smallest_next_patch": "Implement the registered KERC pre-training substrate through the existing Semantic-IR/VCM/English-arm owners and freeze the revised joint MLX campaign without spending the long-run optimizer budget. Then train the frozen alternatives once. Do not add another unrelated plan objective, attention variant, deterministic repair, fallback, or architecture lane.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",

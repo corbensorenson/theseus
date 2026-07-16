@@ -77,7 +77,75 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         partition = next(row for row in report["blockers"] if row["kind"].endswith("partition_invalid"))
         self.assertEqual(partition["missing_phase_ids"], [10])
 
+    def test_required_cross_phase_backlog_blocks_until_pretraining_boundary_is_wired(self) -> None:
+        payload = matrix()
+        payload["pre_training_architecture_contract"].update(
+            {
+                "required_backlog_ids": ["planned.kernel_v1"],
+                "ready_backlog_statuses": ["pretraining_wired_behavior_qualification_pending"],
+            }
+        )
+        payload["planned_codex_test_backlog"] = [
+            {
+                "backlog_id": "planned.kernel_v1",
+                "status": "pre_training_architecture_required",
+                "pre_training_acceptance_boundary": "Implement exact substrate and freeze the campaign.",
+            }
+        ]
+
+        report = gate.audit_pre_training_architecture_readiness(
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
+        )
+
+        self.assertFalse(report["ready"])
+        blocker = next(row for row in report["blockers"] if row["kind"] == "unfinished_pre_training_backlog_contracts")
+        self.assertEqual(blocker["contracts"][0]["backlog_id"], "planned.kernel_v1")
+
+        payload["planned_codex_test_backlog"][0]["status"] = "pretraining_wired_behavior_qualification_pending"
+        report = gate.audit_pre_training_architecture_readiness(
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
+        )
+
+        self.assertTrue(report["ready"])
+        self.assertTrue(report["required_backlog_contracts"][0]["ready"])
+
+        payload["planned_codex_test_backlog"][0]["pre_training_acceptance_boundary"] = ""
+        report = gate.audit_pre_training_architecture_readiness(
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
+        )
+
+        self.assertFalse(report["ready"])
+        self.assertFalse(report["required_backlog_contracts"][0]["pre_training_acceptance_boundary_present"])
+
+    def test_required_cross_phase_backlog_must_exist(self) -> None:
+        payload = matrix()
+        payload["pre_training_architecture_contract"].update(
+            {
+                "required_backlog_ids": ["planned.missing_v1"],
+                "ready_backlog_statuses": ["implemented"],
+            }
+        )
+
+        report = gate.audit_pre_training_architecture_readiness(
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
+        )
+
+        self.assertFalse(report["ready"])
+        blocker = next(row for row in report["blockers"] if row["kind"] == "missing_required_pre_training_backlog_contracts")
+        self.assertEqual(blocker["backlog_ids"], ["planned.missing_v1"])
+
 
 if __name__ == "__main__":
     unittest.main()
-

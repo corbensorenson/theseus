@@ -990,6 +990,22 @@ def audit_pre_training_architecture_readiness(
         int_or(value, -1)
         for value in list_values(architecture_contract.get("external_environment_phase_ids"))
     }
+    required_backlog_ids = {
+        str(value)
+        for value in list_values(architecture_contract.get("required_backlog_ids"))
+        if str(value)
+    }
+    ready_backlog_statuses = {
+        str(value)
+        for value in list_values(architecture_contract.get("ready_backlog_statuses"))
+        if str(value)
+    }
+    planned_backlog = list_dicts(matrix.get("planned_codex_test_backlog"))
+    backlog_by_id = {
+        str(row.get("backlog_id") or ""): row
+        for row in planned_backlog
+        if str(row.get("backlog_id") or "")
+    }
     declared_phase_ids = set(phase_by_id)
     contract_phase_ids = required_architecture_phase_ids | deferred_phase_ids | external_environment_phase_ids
     overlap_phase_ids = (
@@ -1012,6 +1028,47 @@ def audit_pre_training_architecture_readiness(
                 "unknown_phase_ids": sorted(contract_phase_ids - declared_phase_ids),
                 "overlap_phase_ids": sorted(overlap_phase_ids),
                 "required_action": "Partition every roadmap phase into exactly one readiness class.",
+            }
+        )
+
+    required_backlog_rows = []
+    missing_required_backlog_ids = sorted(required_backlog_ids - set(backlog_by_id))
+    if required_backlog_ids and not ready_backlog_statuses:
+        blockers.append(
+            {
+                "kind": "pre_training_architecture_contract_missing_ready_backlog_statuses",
+                "required_action": "Declare the finite statuses that mean a required cross-phase pre-training contract is wired without requiring post-training behavior evidence.",
+            }
+        )
+    if missing_required_backlog_ids:
+        blockers.append(
+            {
+                "kind": "missing_required_pre_training_backlog_contracts",
+                "backlog_ids": missing_required_backlog_ids,
+                "required_action": "Add every declared pre-training backlog contract to the canonical planned backlog.",
+            }
+        )
+    for backlog_id in sorted(required_backlog_ids & set(backlog_by_id)):
+        row = backlog_by_id[backlog_id]
+        status = str(row.get("status") or "")
+        boundary = str(row.get("pre_training_acceptance_boundary") or "")
+        required_backlog_rows.append(
+            {
+                "backlog_id": backlog_id,
+                "status": status,
+                "ready": status in ready_backlog_statuses and bool(boundary),
+                "pre_training_acceptance_boundary_present": bool(boundary),
+            }
+        )
+    unfinished_required_backlog = [row for row in required_backlog_rows if not row["ready"]]
+    if unfinished_required_backlog:
+        blockers.append(
+            {
+                "kind": "unfinished_pre_training_backlog_contracts",
+                "count": len(unfinished_required_backlog),
+                "contracts": unfinished_required_backlog,
+                "ready_statuses": sorted(ready_backlog_statuses),
+                "required_action": "Implement each bounded cross-phase architecture contract through its pre-training acceptance boundary before authorizing a long optimizer run; do not require its post-training capability verdict.",
             }
         )
 
@@ -1178,12 +1235,15 @@ def audit_pre_training_architecture_readiness(
         "required_architecture_phase_ids": sorted(required_architecture_phase_ids),
         "training_or_behavior_qualification_phase_ids": sorted(deferred_phase_ids),
         "external_environment_phase_ids": sorted(external_environment_phase_ids),
+        "required_backlog_ids": sorted(required_backlog_ids),
+        "ready_backlog_statuses": sorted(ready_backlog_statuses),
+        "required_backlog_contracts": required_backlog_rows,
         "deferred_unfinished_phases": deferred_unfinished,
         "core_slice_count": len(core_slices),
         "support_rank": support_rank,
         "rules": {
             "scope": "This gate decides whether architecture is ready for training/public calibration focus; it does not run training.",
-            "training_boundary": "No long training, public calibration, or score chasing should be primary while required architecture remains unfinished; training and behavior qualification phases cannot circularly block architecture readiness.",
+            "training_boundary": "No long training, public calibration, or score chasing should be primary while required architecture phases or declared cross-phase pre-training contracts remain unfinished; training and behavior qualification phases cannot circularly block architecture readiness.",
             "external_frozen_exception": "A frozen item can remain only when it names a concrete external-environment blocker such as unreachable trusted peers.",
             "claim_boundary": "Tools, routers, templates, deterministic solvers, and assisted product traces stay separate from learned-generation claims.",
         },
