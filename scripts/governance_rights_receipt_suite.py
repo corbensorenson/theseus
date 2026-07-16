@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import open_ended_improvement_campaign
 import policy_update_lease
 from viea_spine_records import audit_effect_complete_transaction
 
@@ -115,6 +116,12 @@ def build_report(
     if policy_updates["trigger_state"] != "GREEN":
         hard_gaps.append({"id": "multi_target_policy_update_lease_not_green", "kernel": policy_updates})
 
+    improvement_campaign = open_ended_improvement_campaign.run_reference_campaign(
+        open_ended_improvement_campaign.load_contract()
+    )
+    if improvement_campaign["trigger_state"] != "GREEN":
+        hard_gaps.append({"id": "open_ended_improvement_campaign_not_green", "kernel": improvement_campaign})
+
     records = build_records(fixtures, constitutional_fixtures)
     trigger_state = "RED" if hard_gaps else ("YELLOW" if warnings else "GREEN")
     return {
@@ -151,6 +158,16 @@ def build_report(
             "policy_update_mutation_case_count": policy_updates["summary"]["mutation_case_count"],
             "policy_update_mutation_passed_count": policy_updates["summary"]["mutation_passed_count"],
             "policy_update_rollback_canary_exact": policy_updates["summary"]["rollback_canary_exact"],
+            "improvement_campaign_generation_count": improvement_campaign["summary"]["generation_count"],
+            "improvement_campaign_promoted_count": improvement_campaign["summary"]["promoted_count"],
+            "improvement_campaign_rejected_count": improvement_campaign["summary"]["rejected_count"],
+            "improvement_campaign_negative_knowledge_count": improvement_campaign["summary"]["negative_knowledge_count"],
+            "improvement_campaign_mutation_case_count": improvement_campaign["summary"]["mutation_case_count"],
+            "improvement_campaign_mutation_passed_count": improvement_campaign["summary"]["mutation_passed_count"],
+            "improvement_campaign_runtime_authorized": improvement_campaign["summary"]["runtime_authorized"],
+            "improvement_campaign_rollback_exact": improvement_campaign["summary"]["rollback_exact"],
+            "improvement_campaign_optimizer_exposure_steps": improvement_campaign["summary"]["optimizer_exposure_steps"],
+            "improvement_campaign_runtime_effect_count": improvement_campaign["summary"]["runtime_effect_count"],
             "failure_boundary_record_count": len(records["failure_boundary_records"]),
             "artifact_graph_record_count": len(records["artifact_graph_records"]),
             "claim_record_count": len(records["claim_records"]),
@@ -167,6 +184,7 @@ def build_report(
         "architecture_governance_kernel": architecture_governance,
         "multi_target_policy_update_lease": policy_updates,
         "policy_update_lease_records": policy_updates["target_receipts"],
+        "open_ended_improvement_campaign": improvement_campaign,
         **records,
         "oversight_protocol_records": architecture_governance["oversight_protocol_records"],
         "capability_commitment_records": architecture_governance["capability_commitment_records"],
@@ -180,6 +198,7 @@ def build_report(
             "Local inter-stack fixtures prove contract shape and rejection behavior, not remote trust or network interoperability.",
             "Threshold commitments and assurance consumption do not prove capability, safety, or deployment readiness.",
             "Policy-update lease mechanics do not prove that a learned update improves behavior.",
+            "Campaign-controller fixtures prove bounded mechanics only; runtime autonomy remains disabled pending independently verified behavior-positive evidence.",
         ],
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "public_training_rows_written": 0,

@@ -951,9 +951,9 @@
         18
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "pre_training_architecture_required",
-      "dependency": "implement the governed campaign controller, state inventory, stop authority, debt limits, and rollback before training; defer autonomous improvement efficacy until a verifier-positive proposer exists",
-      "pre_training_acceptance_boundary": "Before long training, a registered campaign controller enforces generator/evaluator separation, single-axis mutations, fixed holdouts, matched budgets, champion/challenger authority, negative-knowledge retention, full-state best/final rollback, debt ceilings, shutdown handoff, and explicit stop transactions in replay and mutation tests. Autonomous improvement remains disabled until behavior-positive evidence exists.",
+      "status": "pretraining_wired_behavior_qualification_pending",
+      "dependency": "pre-training mechanics are registered and canonical; runtime activation, autonomous efficacy, and durable multi-generation behavior remain disabled until a verifier-positive proposer receipt exists",
+      "pre_training_acceptance_boundary": "Satisfied: the registered controller enforces distinct generator/evaluator/promoter/stop/rollback authorities, single-axis mutations, immutable holdouts, matched budgets, champion/challenger and best/final identities, negative-knowledge retention, six-field debt ceilings, full-state rollback, shutdown handoff, and explicit stop transactions through the governance owner and the existing overnight entrypoint. Fourteen mutation controls pass, and the bounded fixture records zero optimizer exposure and zero runtime effects. Autonomous improvement remains disabled until behavior-positive evidence exists.",
       "acceptance_gate": "A bounded campaign preserves generator/evaluator separation, single-axis champion/challenger mutations, matched budgets, fixed holdouts, novelty/coverage and tail metrics, best/final authority, failed families, negative knowledge, debt ceilings, rollback, shutdown handoff, and explicit stop decisions across generations.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "More generated tasks, artifacts, configurations, novelty, or self-play volume is not capability improvement, recursive self-improvement, AGI, or ASI."
@@ -4790,8 +4790,8 @@
       "minimum_theseus_slice": "Implement the chapter's bounded campaign record and fail-closed admission route across phases [7, 10, 12, 14, 15, 18], preserving evaluator independence, resource/stop bounds, complete candidate archives, residual custody, and SCF replacement authority.",
       "beyond_sota_theseus_endpoint": "Run constrained discovery campaigns across private simulations, program spaces, governed data curation, and tools with independent evaluators, challenge provenance, counterexample retention, resource economics, sandbox/dual-use boundaries, reproducibility, stop authority, and promotion only through qualified capability fields and replacement transactions.",
       "support_state_target": "synthetic-test-backed",
-      "current_theseus_state": "partial_reference_slice",
-      "required_gate_or_fixture": "Improvement-campaign admission fixture",
+      "current_theseus_state": "pretraining_wired_behavior_qualification_pending",
+      "required_gate_or_fixture": "Governance-rights receipt suite plus open-ended campaign controller replay and mutation controls",
       "required_records_or_receipts": [
         "improvement_campaign_record",
         "candidate_archive_record",

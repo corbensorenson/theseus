@@ -6,6 +6,14 @@
   "max_cycles_per_daemon_run": 0,
   "allow_network_fetch_by_default": true,
   "allow_teacher_by_default": true,
+  "improvement_campaign_controller": {
+    "contract": "configs/open_ended_improvement_campaign.json",
+    "implementation": "scripts/open_ended_improvement_campaign.py",
+    "canonical_overnight_entrypoint": "scripts/overnight_self_improvement_loop_v1.py",
+    "runtime_enabled": false,
+    "activation_evidence": "independently_verified_behavior_positive_proposer_receipt",
+    "rule": "No autonomous improvement campaign may execute, evaluate itself, change its holdout, exceed matched budgets, promote itself, or bypass debt/stop/rollback authority."
+  },
   "frontier_policy": {
     "no_active_frontier_action": "rotate_or_import_frontier",
     "candidate_evidence_profile": "candidate",

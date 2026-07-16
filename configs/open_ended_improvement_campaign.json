@@ -1,0 +1,91 @@
+{
+  "policy": "project_theseus_open_ended_improvement_campaign_v1",
+  "schema_version": "1.0.0",
+  "owner": "control_plane_decision_owner",
+  "runtime_enabled": false,
+  "activation": {
+    "required_evidence_kind": "behavior_positive_proposer_receipt",
+    "minimum_verified_pass_count": 1,
+    "minimum_independent_verifier_count": 1,
+    "forbidden_evidence_kinds": [
+      "public_benchmark_solution",
+      "self_declared_score",
+      "template_or_fallback_credit"
+    ]
+  },
+  "authorities": {
+    "generator": "campaign_candidate_generator",
+    "evaluator": "independent_campaign_evaluator",
+    "promoter": "control_plane_decision_owner",
+    "rollback": "replacement_transaction_kernel",
+    "stop": "campaign_stop_authority"
+  },
+  "allowed_axes": [
+    "data_selection",
+    "objective",
+    "optimizer",
+    "router_policy",
+    "context_policy",
+    "generator_policy",
+    "verifier_policy"
+  ],
+  "required_metrics": [
+    "primary_utility",
+    "novelty",
+    "coverage",
+    "weak_tail",
+    "verification_escape_count",
+    "authority_violation_count"
+  ],
+  "fixed_holdout": {
+    "contract_id": "private_functional_utility_campaign_holdout_v1",
+    "content_digest": "sha256:87fcddfd81bad9f23e0d9aac23198484694109fa5f3de5c92487b7f20501a47c"
+  },
+  "matched_budget": {
+    "optimizer_steps": 8,
+    "candidate_count": 4,
+    "verification_cases": 32,
+    "compute_units": 100.0,
+    "energy_units": 100.0
+  },
+  "debt_ceilings": {
+    "verification": 4.0,
+    "repair": 4.0,
+    "human_cleanup": 2.0,
+    "unresolved_residual": 4.0,
+    "compute": 200.0,
+    "energy": 200.0
+  },
+  "promotion": {
+    "minimum_primary_delta": 0.01,
+    "minimum_novelty": 0.0,
+    "minimum_coverage_delta": 0.0,
+    "minimum_weak_tail_delta": 0.0,
+    "maximum_verification_escape_count": 0,
+    "maximum_authority_violation_count": 0
+  },
+  "maximum_generations": 4,
+  "required_cost_fields": [
+    "verification",
+    "repair",
+    "human_cleanup",
+    "unresolved_residual",
+    "compute",
+    "energy"
+  ],
+  "stop_reasons": [
+    "operator_stop",
+    "debt_ceiling_exceeded",
+    "generation_limit_reached",
+    "evaluator_integrity_fault",
+    "rollback_required",
+    "no_admissible_challenger",
+    "shutdown_handoff"
+  ],
+  "claim_boundaries": [
+    "Controller replay proves campaign mechanics, not learned improvement or autonomous scientific discovery.",
+    "Generated tasks, candidates, novelty, self-play volume, and self-scores are not capability evidence.",
+    "Runtime campaigns remain disabled until an independently verified behavior-positive proposer receipt is admitted.",
+    "No campaign may widen its own authority, change its holdout, evaluate itself, or promote itself."
+  ]
+}

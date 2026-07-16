@@ -21,6 +21,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import open_ended_improvement_campaign
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -55,6 +57,11 @@ def main() -> int:
     parser.add_argument("--allow-battery", action="store_true")
     parser.add_argument("--min-battery-percent", type=float, default=35.0)
     parser.add_argument("--keep-awake", action="store_true")
+    parser.add_argument(
+        "--campaign-activation-evidence",
+        default="",
+        help="Governed behavior-positive proposer receipt required before autonomous execute mode.",
+    )
     parser.add_argument("--skip-mlx", action="store_true")
     parser.add_argument("--skip-vcm", action="store_true")
     parser.add_argument("--skip-architecture-sweep", action="store_true")
@@ -68,6 +75,15 @@ def main() -> int:
         write_text(resolve(args.markdown_out), render_markdown(report))
         print(json.dumps(report, indent=2))
         return 0
+
+    activation_evidence = read_json(resolve(args.campaign_activation_evidence), {}) if args.campaign_activation_evidence else {}
+    activation = open_ended_improvement_campaign.activation_receipt(activation_evidence)
+    if not activation["authorized"]:
+        report = blocked_activation_report(args, activation)
+        write_json(resolve(args.out), report)
+        write_text(resolve(args.markdown_out), render_markdown(report))
+        print(json.dumps(compact_report(report), indent=2))
+        return 2
 
     report = run_loop(args)
     write_json(resolve(args.out), report)
@@ -93,6 +109,24 @@ def planned_report(args: argparse.Namespace) -> dict[str, Any]:
             "morning_report": str(args.out),
             "morning_markdown": str(args.markdown_out),
         },
+    }
+
+
+def blocked_activation_report(args: argparse.Namespace, activation: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "policy": "project_theseus_overnight_self_improvement_loop_v1",
+        "created_utc": now(),
+        "ok": False,
+        "execute": True,
+        "trigger_state": "RED",
+        "terminal_reason": "open_ended_campaign_activation_not_authorized",
+        "campaign_activation": activation,
+        "contract": contract(),
+        "cycles": [],
+        "non_claims": [
+            "No optimizer steps or autonomous campaign effects ran.",
+            "A file stop flag is not a substitute for campaign admission, independent evaluation, and transactional stop authority.",
+        ],
     }
 
 

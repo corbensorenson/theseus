@@ -67,7 +67,7 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** close the remaining 7 finite architecture contracts
+- **Immediate dependency:** close the remaining 6 finite architecture contracts
   through existing registry owners. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
   DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces
@@ -75,7 +75,13 @@ share toward zero. Public benchmarks are calibration only.
   ablations at 28/32. Typed parameters, bounded defaults, registry mutation and rollback,
   structured cancellation/partial results, dependency invalidation, compilation surfaces,
   literal isolation, and authority/effect traps are covered. This is not a learned-routing
-  or answer-quality verdict. The disabled open-ended improvement campaign controller is now the next dependency;
+  or answer-quality verdict. The disabled open-ended improvement controller is now canonical:
+  it separates generator/evaluator/promotion/stop/rollback authority, freezes holdouts and
+  matched budgets, admits only single-axis challengers, retains negative knowledge, accounts
+  verification/repair/cleanup/residual/compute/energy debt, preserves best/final identity,
+  stops with an explicit handoff, and restores exact state. Fourteen mutation controls pass;
+  optimizer exposure and runtime effects are both zero. Runtime activation and efficacy remain
+  disabled pending independently verified behavior-positive evidence;
   after the docket closes, publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
@@ -235,12 +241,11 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete the disabled open-ended improvement campaign controller with generator/evaluator
-separation, single-axis mutations, fixed holdouts, negative knowledge, debt ceilings,
-champion/challenger authority, explicit stop transactions, and exact rollback. Preserve all
-six completed pre-training dispositions; do not mistake mechanics profiles for learned routing,
-unlearning, policy improvement, repair efficacy, or capability evidence.
-Then close the remaining
+Preserve the completed disabled open-ended improvement controller and all seven completed
+pre-training dispositions; do not mistake mechanics profiles for learned routing, unlearning,
+policy improvement, repair efficacy, autonomous self-improvement, or capability evidence.
+Next, close the preference-objective and verifier-reward objective contracts through the shared
+policy-update lease, then close the remaining
 finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.
