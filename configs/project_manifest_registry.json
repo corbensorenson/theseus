@@ -801,6 +801,8 @@
             "scripts/verifier_guided_search.py",
             "scripts/theseus_plan_compiler.py",
             "scripts/strict_generator_semantic_ir_repair_apply.py",
+            "scripts/gvr_state_machine.py",
+            "tests/test_gvr_state_machine.py",
             "scripts/semantic_ir.py",
             "scripts/code_lm_private_verifier.py",
             "tests/test_verifier_guided_search.py"
@@ -4169,6 +4171,8 @@
         "scripts/kernel_english_protocol.py",
         "scripts/strict_generator_semantic_ir_repair_bridge.py",
         "scripts/strict_generator_semantic_ir_repair_apply.py",
+        "scripts/gvr_state_machine.py",
+        "tests/test_gvr_state_machine.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
         "scripts/neural_seed_full_state_pretraining.py",

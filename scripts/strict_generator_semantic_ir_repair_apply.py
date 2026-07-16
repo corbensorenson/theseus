@@ -25,6 +25,7 @@ from typing import Any
 
 import semantic_ir
 import verifier_guided_search
+import gvr_state_machine
 from candidate_integrity import recompute_candidate_integrity
 
 
@@ -78,6 +79,7 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
     source_selected: list[dict[str, Any]] = []
     repaired: list[dict[str, Any]] = []
     skipped: list[dict[str, Any]] = []
+    gvr_contract = gvr_state_machine.run_reference_fixture()
     for row in selected:
         source_row = copy.deepcopy(row)
         source_row["semantic_ir"] = semantic_ir.candidate_receipt(
@@ -106,6 +108,7 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         gate("source_candidates_present", bool(source_candidates), "hard", rel(candidates_path)),
         gate("no_public_or_external_credit", no_cheat_clean(source_candidates + repaired), "hard", no_cheat_counts(source_candidates + repaired)),
         gate("repaired_candidates_are_noncredit", repaired_candidates_noncredit(repaired), "hard", len(repaired)),
+        gate("gvr_state_machine_contract_ready", gvr_contract.get("trigger_state") == "GREEN", "hard", gvr_contract.get("summary")),
     ]
     source_verifier_report: dict[str, Any] = {}
     verifier_report: dict[str, Any] = {}
@@ -228,6 +231,10 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
                 int(row.get("replay", {}).get("passed") is not True) for row in search_receipts
             ),
             "hard_gap_count": len(hard_failed),
+            "gvr_state_machine_state": gvr_contract.get("trigger_state"),
+            "gvr_state_count": (gvr_contract.get("summary") or {}).get("state_count", 0),
+            "gvr_mutation_passed_count": (gvr_contract.get("summary") or {}).get("mutation_passed_count", 0),
+            "gvr_mutation_case_count": (gvr_contract.get("summary") or {}).get("mutation_case_count", 0),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
             **NO_CHEAT,
         },
@@ -238,6 +245,7 @@ def build_report(args: argparse.Namespace, started: float) -> tuple[dict[str, An
         "private_verifier": verifier_report,
         "verifier_comparison": verifier_comparison,
         "verifier_guided_search": search_receipts,
+        "gvr_state_machine": gvr_contract,
         "rules": {
             "input_boundary": "generated private candidates plus model-emitted prefix and semantic-IR repair obligations only",
             "verifier_boundary": "private tests are loaded only after repairs are produced and only for verification",

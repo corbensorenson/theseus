@@ -16,7 +16,7 @@ share toward zero. Public benchmarks are calibration only.
 - **Architecture readiness:** not ready for long training. The finite pre-training
   docket contains 13 known checkpoint-shaping contracts; KERC and QCSA have bounded
   dispositions, while Reflexive Router, full-state update causality, and multi-target
-  policy leases have complete pre-training mechanics dispositions. The remaining 8 must be wired,
+  policy leases and GVR have complete pre-training mechanics dispositions. The remaining 7 must be wired,
   falsified, or retired before the architecture-freeze manifest can authorize a run.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
@@ -60,7 +60,14 @@ share toward zero. Public benchmarks are calibration only.
   a hash-chained journal, monitor window, sealed epoch, and exact rollback. Seven target
   canaries commit, 7/7 mutations fail closed, and a sentinel breach restores baseline.
   This is update-authority mechanics, not learned improvement evidence.
-- **Immediate dependency:** close the remaining 8 finite architecture contracts
+- **GVR disposition:** the existing semantic-IR repair route now consumes one six-state
+  transition kernel. Source candidate identity is immutable; exact/lossy verification is
+  independently receipt-bound; repairs are semantic-atom scoped and budgeted; transition
+  history is tamper evident; rollback restores the source artifact; and assisted/fallback
+  paths receive zero learned-generation credit. Forty-four focused integration tests pass.
+  The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
+  so no repair-efficacy or model-capability gain is claimed.
+- **Immediate dependency:** close the remaining 7 finite architecture contracts
   through existing registry owners. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
   DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces
@@ -68,7 +75,7 @@ share toward zero. Public benchmarks are calibration only.
   ablations at 28/32. Typed parameters, bounded defaults, registry mutation and rollback,
   structured cancellation/partial results, dependency invalidation, compilation surfaces,
   literal isolation, and authority/effect traps are covered. This is not a learned-routing
-  or answer-quality verdict. GVR state transitions and localized repair are now the next dependency;
+  or answer-quality verdict. The disabled open-ended improvement campaign controller is now the next dependency;
   after the docket closes, publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
@@ -188,7 +195,7 @@ share toward zero. Public benchmarks are calibration only.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
 5. Preserve the completed KERC, QCSA, Reflexive Router, full-state causality, and
-   multi-target policy-lease pre-training dispositions and close the remaining 8 finite
+   multi-target policy-lease and GVR pre-training dispositions and close the remaining 7 finite
    pre-training architecture contracts through full wiring, falsification, or explicit retirement.
    This includes OneCell disposition, update/data causality, policy/GVR/campaign control, and
    generation-objective interfaces.
@@ -228,10 +235,11 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete the GVR state machine and localized-repair contract with typed candidate identity,
-verification states, repair receipts, bounded transitions, assisted-versus-learned accounting,
-and exact rollback. Preserve all five completed pre-training dispositions; do not mistake
-mechanics profiles for learned routing, unlearning, policy improvement, or capability evidence.
+Complete the disabled open-ended improvement campaign controller with generator/evaluator
+separation, single-axis mutations, fixed holdouts, negative knowledge, debt ceilings,
+champion/challenger authority, explicit stop transactions, and exact rollback. Preserve all
+six completed pre-training dispositions; do not mistake mechanics profiles for learned routing,
+unlearning, policy improvement, repair efficacy, or capability evidence.
 Then close the remaining
 finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
