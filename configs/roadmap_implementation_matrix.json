@@ -422,8 +422,8 @@
         10
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "in_progress_english_python_javascript_html_css_floors_green_rust_and_global_positions_pending",
-      "dependency": "v8 diagnostics and exact-once private functional qualification are complete; English, Python, JS/TS, and independently measured HTML plus CSS task-complete floors are green, while Rust and the global unique-position floor still precede the preregistered 50M-100M training run",
+      "status": "in_progress_all_task_complete_arm_floors_green_global_positions_pending",
+      "dependency": "v8 diagnostics and exact-once private functional qualification are complete; English, Python, JS/TS, independently measured HTML plus CSS, and Rust task-complete floors are green, while the global unique-position floor still precedes the preregistered 50M-100M training run",
       "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. Scale authorization reports broad_pretraining_unique_positions, task_complete_unique_target_positions, and optimizer_exposure_positions as non-interchangeable budgets; requires the 1.146B broad unique-position floor and every frozen per-arm task-complete unit/position floor simultaneously; and independently prevents cross-source or cross-budget double credit. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by those budgets, MLX canaries, matched controls, and stop criteria.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, task-complete target positions without admitted full model-visible rows, or metadata-complete receipts do not prove product-task quality or justify scale. Rust remains in the frozen five-arm contract and cannot be dropped post-outcome to clear the gate."
@@ -1597,7 +1597,8 @@
       "required_gates": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/task_complete_training_units.py --prepare-javascript",
-        "python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json",
+        "python3 scripts/training_admission_epistemic_tcb.py",
+        "python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json --admission-epistemic-tcb reports/training_admission_epistemic_tcb.json",
         "python3 scripts/training_data_lineage_audit.py",
         "python3 scripts/standard_causal_transformer_survival.py --out /tmp/standard_causal_transformer_scaling_plan.json --candidates-out /tmp/standard_causal_transformer_scaling_candidates.jsonl",
         "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
@@ -1623,6 +1624,7 @@
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
         "reports/training_data_admission_v1.json",
+        "reports/training_admission_epistemic_tcb.json",
         "configs/task_complete_training_units.json",
         "reports/task_complete_training_units_v1.json",
         "data/training_sources/task_complete_training_units_v1.json",
@@ -1644,14 +1646,17 @@
         "reports/theseus_assistant_teacher_share_smoke.json"
       ],
       "missing_items": [
-        "task-complete coverage expansion beyond the current verified inventory: English 25566, Python 2022, JS/TS 1180, HTML/CSS 690, and Rust 97; HTML and CSS are independently GREEN, so every added Rust unit must retain complete target behavior, pinned verification, source-disjoint lineage, license, and contamination receipts",
-        "data support for the preregistered 57.315M-active MLX rung: close the 463052115 unique-position shortfall and the Rust verified-unit and position floors without repetition or public calibration payloads",
-        "scale-budget separation: report broad pretraining unique positions, task-complete unique target positions, and optimizer exposure independently; prove task-complete rows receive broad-position credit only when their full model-visible source rows pass canonical admission and cross-source deduplication; require both the 1.146B broad floor and all five frozen arm floors without double counting",
-        "epistemic-TCB qualification for training admission: independent golden-invalid oracles and mutation/fault injection cover target-pass/starter-fail, contamination, split isolation, source-only selection, cache identity, timeout/process cleanup, restoration, final baseline, ledger serialization, and scale-budget separation; report surviving mutants and correlated dependencies",
+        "data support for the preregistered 57.315M-active MLX rung: close the 463052115 unique-position shortfall without repetition or public calibration payloads; all five task-complete arm floors are now independently GREEN",
+        "broad-corpus admission and scale-budget closure: keep 683254465 broad unique positions, 36552344 task-complete target positions, and optimizer exposure separate; task-complete rows receive broad-position credit only when their full model-visible rows pass canonical candidate admission and cross-source deduplication; require the 1146306580-position broad floor without double counting",
         "governed published-agent-trace admission: evaluate the frozen original Glint-Research/Fable-5-traces release as a quarantined static Claude-derived corpus, resolve dataset plus embedded-content rights, collapse mirrors/repackagings and near-duplicates, enforce English/Python/JS-TS/HTML-CSS/Rust scope, scan secrets/PII and benchmark overlap, reconstruct outcome evidence, replay verifiers, and require a heldout causal pilot before granting SFT/preference or unique-position credit; metadata-only Codex TraceLab rows may support runtime workload calibration but not language/code supervision",
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
-      "smallest_next_patch": "Expand Rust through the same source-frozen, outcome-blind, test-killed task-complete owner, then close broad unique governed positions while reporting broad unique, task-complete target, and optimizer-exposure budgets separately. In parallel, add one source-frozen agent-trace quarantine/admission audit that distinguishes content-bearing supervision from metadata-only runtime calibration. Start with the original 4,665-row Fable release rather than its mirrors or 2.01M-row repackaging; admit no trace until rights, privacy, language scope, deduplication, decontamination, outcome, verifier, and heldout causal-lift gates pass. Reuse canonical receipt and lineage owners; do not count repetition, target-only snippets, task-complete targets lacking admitted full rows, public calibration payloads, metadata-only traces, or unverified rows toward the broad floor.",
+      "implemented_items": [
+        "The task-complete owner is GREEN across all five arms: English 25566, Python 2022, JS/TS 1180, HTML/CSS 690, and Rust 1504 admitted verified units; Rust contributes 1162003 target positions and the complete corpus contributes 36552344 target positions.",
+        "The Phase-7 EpistemicTCBManifest independently replays 35887 ledger rows and 9739 verifier-cache receipts, reconciles source/split/count/position identities, checks 1407 admitted Rust final baselines and cleanup, kills 17/17 golden-invalid mutations, reports three correlated dependencies, and is a digest-bound hard prerequisite of canonical admission and the 57.315M preregistration.",
+        "Canonical admission remains YELLOW only for its declared recursive-synthetic distribution warning; it has no failed hard gate, admits no public benchmark payload, and binds the current task corpus plus TCB by hash."
+      ],
+      "smallest_next_patch": "Close the 463052115 broad unique-position shortfall through the existing source-admission and canonical-capacity owners. Materialize only full model-visible English/Python/JS-TS/HTML-CSS/Rust rows that pass license, provenance, exact/semantic deduplication, public-contamination, retention, and split gates; keep task-complete targets and optimizer exposure separate. The source-frozen agent-trace audit remains optional evidence pressure: begin with the original 4,665-row Fable release, but grant no supervision or unique-position credit until rights, privacy, scope, deduplication, outcome, verifier, and heldout causal-lift gates pass.",
       "integration_smoke": [
         "python3 scripts/teacher_distillation_gate.py",
         "python3 scripts/task_complete_training_units.py --prepare-javascript",
@@ -2105,7 +2110,7 @@
       ],
       "current_non_claims": [
         "The exact-once v8 functional qualification is complete negative evidence: MoECOT, dense-active, and dense-total each scored 0/160 overall and 0/32 in every arm. The verdict falsifies the 10.8M active rung, selects no architecture, leaves confirmation unspent, and authorizes no route replacement. Low local English-rater agreement is a harness limitation but cannot rescue or hide exact zero code passes.",
-        "The post-v8 scale proposal is a preregistration and MLX mechanics proof, not capability evidence. The 57,315,329-active candidate and 57,323,520-active/67,332,096-total matched controls all pass finite-update, exact checkpoint reload, optimizer resume, and temporary-artifact cleanup canaries. Training remains unauthorized because only 683,254,465 unique positions exist against 1,146,306,580 required and the Rust arm misses task-complete coverage floors; HTML and CSS are independently GREEN.",
+        "The post-v8 scale proposal is a preregistration and MLX mechanics proof, not capability evidence. The 57,315,329-active candidate and 57,323,520-active/67,332,096-total matched controls pass finite-update, exact checkpoint reload, optimizer resume, and temporary-artifact cleanup canaries. All five task-complete arm floors are now GREEN. Training remains unauthorized because only 683,254,465 broad unique positions exist against 1,146,306,580 required; the independent admission TCB is GREEN and does not convert task targets or optimizer repetition into broad-position credit.",
         "Phase 10 has a clean experimental transformer successor, but no qualified private proposer floor, broad model-quality, runtime-serving, or public-transfer win.",
         "The prior 1/24 floor is invalid because private tests influenced inferred callable arity. A later ID-space audit found split source IDs shifted into the target embedding segment. The repaired mapping raises independently integrity-verified candidates from 38/88 to 57/87 and reduces inert stubs from 50 to 30, but covers only 22 tasks and remains 0/24. The completed training receipt was overwritten by the old evaluation-only CLI path, so the canonical gate also records incomplete training provenance. Wider beam, shared vocabulary, two-million-position continuation, and corrected source offsets all remain non-promoted.",
         "The old Rust/template-like fanout inventory, action routers, semantic renderers, private ngrams, deterministic tools, and fallback returns remain diagnostic/tool baselines only and do not support learned-generation promotion claims.",

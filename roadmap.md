@@ -29,13 +29,13 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable: 29,555/33,212 units admitted; English has 25,566 verified units, Python is GREEN at 2,022 / 1,129,825 target positions, JS/TS is GREEN at 1,180 / 1,612,835, and HTML/CSS is GREEN at 690 / 1,906,926 with separate HTML and CSS floors; Rust 97 remains below coverage | extend the same pinned test-killed admission pattern to Rust; close that arm and the 463.05M-position shortfall without repetition or public payloads |
+| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable: 30,962/35,887 units admitted; English has 25,566 verified units, Python is GREEN at 2,022 / 1,129,825 target positions, JS/TS is GREEN at 1,180 / 1,612,835, HTML/CSS is GREEN at 690 / 1,906,926, and Rust is GREEN at 1,504 / 1,162,003 | close the remaining 463.05M broad unique-position shortfall without repetition, double counting, or public calibration payloads |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | premature at the current zero-pass floor | build verifier-positive pair density from a behavior-positive proposer, then run matched reward-present/reward-removed ablations |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | deferred | optimize accepted verified output per second only after accepted output is non-zero |
-| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active MLX candidate and matched controls pass update/checkpoint/resume canaries, but training is denied for insufficient unique positions and the Rust task-complete arm | preserve the frozen proposal and fund it with admissible data before training; no same-scale patch or premature amplifier |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active MLX candidate and matched controls pass update/checkpoint/resume canaries, and all five task-complete arm floors are GREEN, but training is denied for insufficient broad unique positions | preserve the frozen proposal and fund it with admissible data before training; no same-scale patch or premature amplifier |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is preregistered as a non-routeable candidate behind the shared Cognitive Kernel ABI; architecture/exact-substrate work is eligible after the recorded v8 disposition, but no neural or language claim exists | complete only reusable ABI/exact-substrate dependencies without delaying the task-complete corpus and practical 57.315M transformer/hybrid rung; retain, merge mechanisms, narrow, or reject OneCell by matched total-cost evidence |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | architecture available, capability loop not started | start generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
@@ -873,8 +873,8 @@ integrity, not product suitability. Most v8 development rows carry prompt and ta
 without executable tests or task-level utility contracts; no later score may relabel
 them as functionally verified examples.
 - The task-complete contract is now implemented inside canonical admission. Its full
-  pinned-source pass admits `29,555/33,212` units: English `25,566`, Python `2,022`,
-  JS/TS `1,180`, HTML/CSS `690`, and Rust `97`. Python is GREEN at `1,129,825`
+  pinned-source pass admits `30,962/35,887` units: English `25,566`, Python `2,022`,
+  JS/TS `1,180`, HTML/CSS `690`, and Rust `1,504`. Python is GREEN at `1,129,825`
   verified target positions after pinned Click, MarkupSafe, Pluggy, Rich, and Jinja
   function-hole campaigns. JS/TS is GREEN at `1,612,835` after complete Vite and
   content-bound 600-candidate Tailwind test-kill campaigns; the Tailwind selection
@@ -887,8 +887,9 @@ them as functionally verified examples.
   positions. The contract binds target behavior, verifier,
   source-disjoint split, license/provenance, contamination, and toolchain/sandbox
   identity; zero public overlap, teacher calls, external inference, and fallback
-  returns were observed. Coverage remains `YELLOW` only because Rust remains below
-  its preregistered unit and position floors.
+  returns were observed. Rust is GREEN at `1,162,003` verified target positions, all
+  five arm floors pass, and the complete task corpus contains `36,552,344` target
+  positions. This does not erase the separate broad unique-position shortfall.
 - Add a registered `task_complete_training_unit` to the existing data contract, not a
   new lane. Every supervised unit binds visible context, complete target, task family,
   language/toolchain, verifier or rubric artifact, expected observable behavior,
@@ -912,6 +913,13 @@ them as functionally verified examples.
   Run mutation/fault-injection testing over decision branches and report surviving
   mutants and correlated dependencies; raw script-to-test-file ratio is not a valid
   coverage metric.
+- The Phase-7 admission TCB is now qualified. It independently replays all `35,887`
+  task ledger rows and `9,739` verifier-cache receipts, checks `17` source-only
+  selection receipts and `1,407` admitted Rust final baselines, verifies zero cleanup
+  residue, and kills `17/17` golden-invalid mutations. It declares three correlated
+  dependencies rather than claiming full independence. Canonical admission and the
+  57.315M preregistration bind its current task/report/ledger digests; a stale or
+  self-declared green report cannot authorize training.
 - Replace file-level metadata admission with receipt-bound candidate lifecycle:
   provenance/authority, lineage, permitted use, split exclusions, exact + semantic
   contamination, retention, deletion scope, evaluation refs, residuals, bounded

@@ -55,6 +55,43 @@ def test_task_contract_requires_replayable_content_identity(tmp_path: Path) -> N
     assert scale.task_complete_contract(report)["contract_ready"] is False
 
 
+def test_scale_preregistration_rejects_stale_admission_tcb(tmp_path: Path) -> None:
+    task_report = tmp_path / "task.json"
+    tcb_path = tmp_path / "tcb.json"
+    task_report.write_text('{"policy":"task"}')
+    tcb = {
+        "policy": "project_theseus_training_admission_epistemic_tcb_v1",
+        "trigger_state": "GREEN",
+        "hard_gaps": [],
+        "summary": {"mutation_count": 17, "surviving_mutant_count": 0},
+        "input_artifacts": {
+            "task_report": {
+                "path": scale.relative(task_report),
+                "sha256": scale.file_sha256(task_report),
+            }
+        },
+    }
+    tcb_path.write_text(json.dumps(tcb))
+    admission = {
+        "policy": "project_theseus_training_data_admission_v1",
+        "trigger_state": "YELLOW",
+        "gates": [],
+        "summary": {"training_admission_epistemic_tcb_qualified": True},
+        "training_admission_epistemic_tcb": {
+            "path": scale.relative(tcb_path),
+            "sha256": scale.file_sha256(tcb_path),
+            "qualified": True,
+        },
+    }
+    assert scale.training_admission_contract(
+        admission, tcb, task_report_path=task_report, tcb_path=tcb_path
+    )["contract_ready"] is True
+    task_report.write_text('{"policy":"tampered"}')
+    assert scale.training_admission_contract(
+        admission, tcb, task_report_path=task_report, tcb_path=tcb_path
+    )["contract_ready"] is False
+
+
 def test_canary_encoding_has_target_only_loss_mask() -> None:
     vocab = scale.read_json(ROOT / "runtime" / "moecot_language_seed_v1" / "exact_language_vocab.json")
     unit = {

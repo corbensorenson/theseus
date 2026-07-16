@@ -18,6 +18,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import task_complete_training_units as units  # noqa: E402
+import training_admission_epistemic_tcb as admission_tcb  # noqa: E402
 import task_complete_css_holes as css_holes  # noqa: E402
 import task_complete_rust_holes as rust_holes  # noqa: E402
 import task_complete_web_holes as web_holes  # noqa: E402
@@ -1171,6 +1172,93 @@ def test_canonical_admission_replays_task_unit_ledger_identity(tmp_path: Path) -
     assert admission.audit_task_complete_training_units(report)["contract_ready"] is False
 
 
+def test_independent_admission_oracle_rejects_forged_executable_credit() -> None:
+    visible = '{"prompt":"Implement answer"}'
+    target = '{"replacement":"42"}'
+    row = {
+        "policy": admission_tcb.UNIT_POLICY,
+        "unit_id": "unit-1",
+        "source_id": "fixture",
+        "source_task_id": "fixture:one",
+        "arm_id": "rust",
+        "task_family": "repository_rust_function_body_hole",
+        "visible_context": visible,
+        "visible_context_sha256": admission_tcb.sha256_text(visible),
+        "target": target,
+        "target_sha256": admission_tcb.sha256_text(target),
+        "split": "train",
+        "license_spdx": "MIT",
+        "provenance": {"live_teacher_call": False},
+        "contamination": {
+            "exact_overlap": False,
+            "semantic_overlap": False,
+            "quarantine": False,
+        },
+        "verification": {
+            "kind": "project_theseus_rust_test_killed_function_body_v3",
+            "state": "passed",
+            "strength": admission_tcb.EXECUTABLE_STRENGTH,
+            "target_passed": True,
+            "starter_test_failed": True,
+            "source_restored": True,
+            "baseline_run": {"ok": True},
+            "checkpoint_baseline_run": {"ok": True},
+        },
+        "task_complete_verified": True,
+        "decision": "admit",
+        "decision_reasons": [],
+        "public_benchmark_training_rows": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    assert admission_tcb.independent_unit_faults(row) == []
+    forged = json.loads(json.dumps(row))
+    forged["verification"]["starter_test_failed"] = False
+    assert "executable_starter_not_failed" in admission_tcb.independent_unit_faults(forged)
+
+
+def test_canonical_admission_requires_current_epistemic_tcb_identity(tmp_path: Path) -> None:
+    task_report = tmp_path / "task-report.json"
+    ledger = tmp_path / "units.jsonl.gz"
+    tcb = tmp_path / "tcb.json"
+    task_report.write_text('{"policy":"task"}')
+    ledger.write_bytes(b"ledger")
+    tcb_payload = {
+        "policy": admission_tcb.POLICY,
+        "trigger_state": "GREEN",
+        "hard_gaps": [],
+        "summary": {
+            "mutation_count": 17,
+            "surviving_mutant_count": 0,
+            "correlated_dependency_count": 3,
+            "position_budgets_reported_separately": True,
+        },
+        "input_artifacts": {
+            "task_report": {
+                "path": admission.rel(task_report),
+                "sha256": admission.sha256_file(task_report),
+            },
+            "unit_ledger": {
+                "path": str(ledger),
+                "sha256": admission.sha256_file(ledger),
+            },
+        },
+    }
+    tcb.write_text(json.dumps(tcb_payload))
+    observed = admission.audit_training_admission_epistemic_tcb(
+        tcb,
+        task_complete_path=task_report,
+        task_complete={"ledger_identity_valid": True},
+    )
+    assert observed["qualified"] is True
+    task_report.write_text('{"policy":"tampered"}')
+    assert admission.audit_training_admission_epistemic_tcb(
+        tcb,
+        task_complete_path=task_report,
+        task_complete={"ledger_identity_valid": True},
+    )["qualified"] is False
+
+
 def test_prior_contamination_cache_requires_ledger_hash_and_public_index(tmp_path: Path) -> None:
     ledger = tmp_path / "units.jsonl.gz"
     report = tmp_path / "report.json"
@@ -1585,3 +1673,23 @@ def test_rust_worktree_cleanup_retries_transient_directory_race(
 
     assert attempts == 2
     assert not worktree.exists()
+
+
+def test_verification_cache_compaction_only_prunes_after_complete_campaign() -> None:
+    cache = {
+        "live": {"unit_id": "live"},
+        "stale": {"unit_id": "stale"},
+    }
+    unit_rows = [{"unit_id": "live"}]
+
+    compacted, pruned = units.compact_cache_to_units(
+        cache, unit_rows, allow_prune=True
+    )
+    preserved, preserved_pruned = units.compact_cache_to_units(
+        cache, unit_rows, allow_prune=False
+    )
+
+    assert compacted == {"live": {"unit_id": "live"}}
+    assert pruned == 1
+    assert preserved == cache
+    assert preserved_pruned == 0

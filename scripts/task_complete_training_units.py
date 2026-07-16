@@ -253,9 +253,12 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
     if any(row["public_benchmark_training_rows"] or row["external_inference_calls"] or row["fallback_return_count"] for row in units):
         hard_gaps.append({"kind": "hard_boundary_counter_nonzero"})
 
+    cache.update(cache_updates)
+    cache, pruned_cache_entry_count = compact_cache_to_units(
+        cache, units, allow_prune=not hard_gaps
+    )
     ledger_receipt = write_unit_ledger(ledger_path, units)
-    if cache_updates:
-        cache.update(cache_updates)
+    if cache_updates or pruned_cache_entry_count:
         write_cache(cache_path, cache)
     elif not cache_path.exists():
         write_cache(cache_path, cache)
@@ -290,6 +293,7 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
         "coverage_gap_count": len(coverage_gaps),
         "verification_cache_entry_count": len(cache),
         "verification_cache_new_or_replaced_count": len(cache_updates),
+        "verification_cache_pruned_stale_entry_count": pruned_cache_entry_count,
         "prior_contamination_audit_reuse_count": sum(
             bool(row["contamination"].get("reused_prior_audit")) for row in units
         ),
@@ -3818,6 +3822,25 @@ def write_cache(path: Path, rows: dict[str, dict[str, Any]]) -> None:
         for key in sorted(rows):
             handle.write(canonical_json(rows[key]) + "\n")
     os.replace(temporary, path)
+
+
+def compact_cache_to_units(
+    cache: dict[str, dict[str, Any]],
+    units: list[dict[str, Any]],
+    *,
+    allow_prune: bool,
+) -> tuple[dict[str, dict[str, Any]], int]:
+    """Retain only identities represented by a complete successful campaign."""
+
+    if not allow_prune:
+        return cache, 0
+    live_ids = {str(row.get("unit_id") or "") for row in units}
+    stale_ids = set(cache) - live_ids
+    if not stale_ids:
+        return cache, 0
+    return {
+        unit_id: row for unit_id, row in cache.items() if unit_id in live_ids
+    }, len(stale_ids)
 
 
 def read_relative_files(base: Path, paths: Iterable[str], *, allow_missing: bool = False) -> dict[str, str]:

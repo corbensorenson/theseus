@@ -30,6 +30,7 @@ DEFAULT_MANIFEST = ROOT / "data" / "training_sources" / "training_data_admission
 DEFAULT_GROWTH_POLICY = ROOT / "configs" / "permissive_growth_policy.json"
 DEFAULT_VCM_CONTEXT_GOVERNOR = ROOT / "reports" / "vcm_context_governor.json"
 DEFAULT_TASK_COMPLETE_REPORT = ROOT / "reports" / "task_complete_training_units_v1.json"
+DEFAULT_ADMISSION_EPISTEMIC_TCB = ROOT / "reports" / "training_admission_epistemic_tcb.json"
 
 ALLOWED_LICENSES = {
     "apache-2.0",
@@ -108,6 +109,7 @@ def main() -> int:
     parser.add_argument("--growth-policy", default=rel(DEFAULT_GROWTH_POLICY))
     parser.add_argument("--vcm-context-governor", default=rel(DEFAULT_VCM_CONTEXT_GOVERNOR))
     parser.add_argument("--task-complete-report", default=rel(DEFAULT_TASK_COMPLETE_REPORT))
+    parser.add_argument("--admission-epistemic-tcb", default=rel(DEFAULT_ADMISSION_EPISTEMIC_TCB))
     parser.add_argument("--sample-rows-per-source", type=int, default=256)
     parser.add_argument("--max-public-fingerprints", type=int, default=20000)
     args = parser.parse_args()
@@ -197,8 +199,14 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
     ]
     open_code_candidates = audit_open_code_pantry(public_open_training_allowed=public_open_training_allowed)
     teacher_distillation = audit_teacher_distillation_gate()
-    task_complete = audit_task_complete_training_units(
-        resolve(getattr(args, "task_complete_report", rel(DEFAULT_TASK_COMPLETE_REPORT)))
+    task_complete_path = resolve(
+        getattr(args, "task_complete_report", rel(DEFAULT_TASK_COMPLETE_REPORT))
+    )
+    task_complete = audit_task_complete_training_units(task_complete_path)
+    admission_tcb = audit_training_admission_epistemic_tcb(
+        resolve(getattr(args, "admission_epistemic_tcb", rel(DEFAULT_ADMISSION_EPISTEMIC_TCB))),
+        task_complete_path=task_complete_path,
+        task_complete=task_complete,
     )
     public_benchmark_sources = [row for row in source_rows if row["source_kind"] == "public_benchmark_quarantine"]
     train_allowed = [row for row in source_rows if row["allowed_for_training"]]
@@ -282,6 +290,12 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
             "hard",
         ),
         gate(
+            "training_admission_epistemic_tcb_qualified",
+            bool(admission_tcb["qualified"]),
+            admission_tcb,
+            "hard",
+        ),
+        gate(
             "task_complete_50m_coverage_ready",
             bool(task_complete["coverage_ready"]),
             task_complete.get("coverage"),
@@ -347,6 +361,10 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
             "task_complete_admitted_units": task_complete["admitted_unit_count"],
             "task_complete_target_positions": task_complete["target_positions"],
             "task_complete_ledger_replay_valid": task_complete["ledger_replay_valid"],
+            "training_admission_epistemic_tcb_qualified": admission_tcb["qualified"],
+            "training_admission_epistemic_tcb_state": admission_tcb["trigger_state"],
+            "training_admission_epistemic_tcb_surviving_mutants": admission_tcb["surviving_mutant_count"],
+            "training_admission_epistemic_tcb_correlated_dependencies": admission_tcb["correlated_dependency_count"],
         },
         "hard_invariants": [
             "Public benchmark prompts, tests, hidden tests, solutions, traces, and answer templates are calibration-only.",
@@ -361,6 +379,7 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
         "viea_training_data_context_records": training_data_vcm_records(vcm_receipt),
         "teacher_distillation_admission": teacher_distillation,
         "task_complete_training_units": task_complete,
+        "training_admission_epistemic_tcb": admission_tcb,
         "open_code_public_corpus_candidates": open_code_candidates,
         "growth_policy": rel(resolve(args.growth_policy)),
         "gates": gates,
@@ -417,6 +436,55 @@ def audit_task_complete_training_units(path: Path) -> dict[str, Any]:
         "boundary_clean": boundary_clean and summary_clean,
         "coverage": report.get("coverage") if isinstance(report.get("coverage"), dict) else {},
         "non_claim": "Task-complete unit admission is data-readiness evidence, not model utility or route authority.",
+    }
+
+
+def audit_training_admission_epistemic_tcb(
+    path: Path,
+    *,
+    task_complete_path: Path,
+    task_complete: dict[str, Any],
+) -> dict[str, Any]:
+    report = read_json(path)
+    summary = report.get("summary") if isinstance(report.get("summary"), dict) else {}
+    artifacts = report.get("input_artifacts") if isinstance(report.get("input_artifacts"), dict) else {}
+    task_ref = artifacts.get("task_report") if isinstance(artifacts.get("task_report"), dict) else {}
+    ledger_ref = artifacts.get("unit_ledger") if isinstance(artifacts.get("unit_ledger"), dict) else {}
+    current_task_hash = sha256_file(task_complete_path) if task_complete_path.is_file() else ""
+    ledger_path = resolve(str(ledger_ref.get("path") or "")) if ledger_ref.get("path") else None
+    current_ledger_hash = sha256_file(ledger_path) if ledger_path and ledger_path.is_file() else ""
+    task_identity_matches = bool(
+        current_task_hash
+        and task_ref.get("sha256") == current_task_hash
+        and task_ref.get("path") == rel(task_complete_path)
+    )
+    ledger_identity_matches = bool(
+        current_ledger_hash
+        and ledger_ref.get("sha256") == current_ledger_hash
+        and task_complete.get("ledger_identity_valid") is True
+    )
+    qualified = bool(
+        report.get("policy") == "project_theseus_training_admission_epistemic_tcb_v1"
+        and report.get("trigger_state") == "GREEN"
+        and not report.get("hard_gaps")
+        and int(summary.get("surviving_mutant_count") or 0) == 0
+        and int(summary.get("mutation_count") or 0) > 0
+        and task_identity_matches
+        and ledger_identity_matches
+    )
+    return {
+        "path": rel(path),
+        "sha256": sha256_file(path) if path.is_file() else "",
+        "policy": report.get("policy"),
+        "trigger_state": report.get("trigger_state"),
+        "qualified": qualified,
+        "task_report_identity_matches": task_identity_matches,
+        "unit_ledger_identity_matches": ledger_identity_matches,
+        "mutation_count": int(summary.get("mutation_count") or 0),
+        "surviving_mutant_count": int(summary.get("surviving_mutant_count") or 0),
+        "correlated_dependency_count": int(summary.get("correlated_dependency_count") or 0),
+        "position_budgets_reported_separately": summary.get("position_budgets_reported_separately") is True,
+        "non_claim": "TCB qualification is bounded admission evidence, not data quality or model capability.",
     }
 
 
@@ -1226,6 +1294,7 @@ def manifest_payload(report: dict[str, Any]) -> dict[str, Any]:
         "vcm_context_governor_receipt": receipt,
         "candidate_lineage": compact_lineage,
         "task_complete_training_units": report.get("task_complete_training_units"),
+        "training_admission_epistemic_tcb": report.get("training_admission_epistemic_tcb"),
         "external_inference_calls": 0,
     }
 
@@ -1250,6 +1319,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- task-complete contract ready: `{summary.get('task_complete_contract_ready')}`",
         f"- task-complete 50M coverage ready: `{summary.get('task_complete_coverage_ready')}`",
         f"- task-complete admitted units: `{summary.get('task_complete_admitted_units')}`",
+        f"- admission epistemic TCB: `{summary.get('training_admission_epistemic_tcb_state')}` qualified=`{summary.get('training_admission_epistemic_tcb_qualified')}` surviving_mutants=`{summary.get('training_admission_epistemic_tcb_surviving_mutants')}`",
         f"- external inference calls: `{summary.get('external_inference_calls')}`",
         "",
         "## Capability Tags",

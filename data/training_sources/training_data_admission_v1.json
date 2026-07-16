@@ -54,7 +54,7 @@
       "rejected_candidate_count": 304,
       "report_cache_reused": true,
       "runtime_external_inference_calls": 0,
-      "runtime_ms": 9628,
+      "runtime_ms": 9948,
       "semantic_public_overlap_candidate_count": 0,
       "source_count": 98,
       "teacher_candidate_count": 0,
@@ -62,7 +62,7 @@
     },
     "trigger_state": "YELLOW"
   },
-  "created_utc": "2026-07-16T01:17:32.128617+00:00",
+  "created_utc": "2026-07-16T13:27:19.436645+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -2286,11 +2286,11 @@
     "public_open_training_allowed": true,
     "quarantined_source_count": 190,
     "rejected_source_count": 100,
-    "task_complete_admitted_units": 29555,
+    "task_complete_admitted_units": 30962,
     "task_complete_contract_ready": true,
-    "task_complete_coverage_ready": false,
+    "task_complete_coverage_ready": true,
     "task_complete_ledger_replay_valid": true,
-    "task_complete_target_positions": 35588115,
+    "task_complete_target_positions": 36552344,
     "teacher_distillation_admission_safety_clean": true,
     "teacher_distillation_gate_allowed": true,
     "teacher_distillation_ledger_rows": 46,
@@ -2303,6 +2303,10 @@
     "teacher_row_count_in_admitted_sources": 0,
     "teacher_rows_admitted_outside_distillation_gate": false,
     "teacher_used": false,
+    "training_admission_epistemic_tcb_correlated_dependencies": 3,
+    "training_admission_epistemic_tcb_qualified": true,
+    "training_admission_epistemic_tcb_state": "GREEN",
+    "training_admission_epistemic_tcb_surviving_mutants": 0,
     "vcm_context_governor_ready": true,
     "vcm_context_governor_receipt_id": "ac9238c24b5c801b9bc12dec",
     "vcm_context_governor_state": "GREEN",
@@ -2311,7 +2315,7 @@
     "vcm_context_resolver_status": "ready"
   },
   "task_complete_training_units": {
-    "admitted_unit_count": 29555,
+    "admitted_unit_count": 30962,
     "boundary_clean": true,
     "contract_ready": true,
     "contract_state": "GREEN",
@@ -2400,26 +2404,26 @@
       },
       "rust": {
         "checks": {
-          "position_floor": false,
-          "unit_floor": false
+          "position_floor": true,
+          "unit_floor": true
         },
         "minimum_target_positions": 1000000,
         "minimum_verified_units": 500,
-        "ready": false,
+        "ready": true,
         "required_verification_strength": "executable_target_pass_starter_fail",
-        "target_positions": 197774,
-        "verified_units": 97
+        "target_positions": 1162003,
+        "verified_units": 1504
       }
     },
-    "coverage_ready": false,
-    "coverage_state": "YELLOW",
+    "coverage_ready": true,
+    "coverage_state": "GREEN",
     "ledger_identity_valid": true,
     "ledger_replay_valid": true,
     "non_claim": "Task-complete unit admission is data-readiness evidence, not model utility or route authority.",
     "path": "reports/task_complete_training_units_v1.json",
     "policy": "project_theseus_task_complete_training_units_v1",
     "report_present": true,
-    "target_positions": 35588115
+    "target_positions": 36552344
   },
   "train_admitted_sources": [
     {
@@ -12831,6 +12835,20 @@
       "training_use": "allowed"
     }
   ],
+  "training_admission_epistemic_tcb": {
+    "correlated_dependency_count": 3,
+    "mutation_count": 17,
+    "non_claim": "TCB qualification is bounded admission evidence, not data quality or model capability.",
+    "path": "reports/training_admission_epistemic_tcb.json",
+    "policy": "project_theseus_training_admission_epistemic_tcb_v1",
+    "position_budgets_reported_separately": true,
+    "qualified": true,
+    "sha256": "33a0bfcf11bb5de99f58296b02fcd188f9480dd22f0b0581f36f3a0a93db82b3",
+    "surviving_mutant_count": 0,
+    "task_report_identity_matches": true,
+    "trigger_state": "GREEN",
+    "unit_ledger_identity_matches": true
+  },
   "vcm_context_governor_receipt": {
     "consumer_abi": {
       "adequacy_state": "governed_sufficient_for_training_admission",
@@ -12851,7 +12869,7 @@
       "full_packet_evidence_required": true,
       "governor_content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
       "governor_receipt_id": "ac9238c24b5c801b9bc12dec",
-      "lease_expires_utc": "2026-07-16T01:32:17.051624Z",
+      "lease_expires_utc": "2026-07-16T13:42:00.806062Z",
       "lease_id": "edda95cab7bfc11ddabd5eb9",
       "lease_state": "active",
       "omissions": [

@@ -81,6 +81,8 @@ def build_report(
 
     verdict = read_json(paths["falsification_verdict"])
     task_report = read_json(paths["task_complete_report"])
+    training_admission = read_json(paths["training_admission_report"])
+    admission_tcb = read_json(paths["training_admission_epistemic_tcb"])
     capacity_report = read_json(paths["canonical_capacity_report"])
     vocabulary = read_json(paths["vocabulary"])
     if verdict.get("decision") != "FALSIFY_10_8M_ACTIVE_SCALE_RUNG":
@@ -104,6 +106,17 @@ def build_report(
     task_contract = task_complete_contract(task_report)
     if not task_contract["contract_ready"]:
         hard_gaps.append({"kind": "task_complete_contract_not_replayable", "evidence": task_contract})
+    admission_contract = training_admission_contract(
+        training_admission,
+        admission_tcb,
+        task_report_path=paths["task_complete_report"],
+        tcb_path=paths["training_admission_epistemic_tcb"],
+    )
+    if not admission_contract["contract_ready"]:
+        hard_gaps.append({
+            "kind": "training_admission_epistemic_tcb_not_qualified",
+            "evidence": admission_contract,
+        })
     capacity = canonical_capacity(capacity_report)
     if not capacity["receipt_valid"]:
         hard_gaps.append({"kind": "canonical_capacity_receipt_invalid", "evidence": capacity})
@@ -137,6 +150,9 @@ def build_report(
         "task_complete_contract_ready": task_contract["contract_ready"],
         "task_complete_coverage_ready": coverage_ready,
         "task_complete_coverage": task_contract["coverage"],
+        "training_admission_contract_ready": admission_contract["contract_ready"],
+        "training_admission_epistemic_tcb_qualified": admission_contract["tcb_qualified"],
+        "training_admission_epistemic_tcb_surviving_mutants": admission_contract["surviving_mutant_count"],
         "training_data_supported": unique_position_ready and coverage_ready,
         "optimizer_repetition_counted_as_unique_data": False,
     }
@@ -548,6 +564,64 @@ def task_complete_contract(report: dict[str, Any]) -> dict[str, Any]:
         "coverage_ready": report.get("coverage_state") == "GREEN",
         "coverage": coverage,
         "ledger_replay_valid": replay,
+    }
+
+
+def training_admission_contract(
+    admission: dict[str, Any],
+    tcb: dict[str, Any],
+    *,
+    task_report_path: Path,
+    tcb_path: Path,
+) -> dict[str, Any]:
+    summary = admission.get("summary") if isinstance(admission.get("summary"), dict) else {}
+    embedded = (
+        admission.get("training_admission_epistemic_tcb")
+        if isinstance(admission.get("training_admission_epistemic_tcb"), dict)
+        else {}
+    )
+    tcb_summary = tcb.get("summary") if isinstance(tcb.get("summary"), dict) else {}
+    artifacts = tcb.get("input_artifacts") if isinstance(tcb.get("input_artifacts"), dict) else {}
+    task_ref = artifacts.get("task_report") if isinstance(artifacts.get("task_report"), dict) else {}
+    task_hash_matches = bool(
+        task_report_path.is_file()
+        and task_ref.get("sha256") == file_sha256(task_report_path)
+        and task_ref.get("path") == relative(task_report_path)
+    )
+    tcb_hash_matches = bool(
+        tcb_path.is_file()
+        and embedded.get("sha256") == file_sha256(tcb_path)
+        and embedded.get("path") == relative(tcb_path)
+    )
+    tcb_qualified = bool(
+        tcb.get("policy") == "project_theseus_training_admission_epistemic_tcb_v1"
+        and tcb.get("trigger_state") == "GREEN"
+        and not tcb.get("hard_gaps")
+        and int(tcb_summary.get("mutation_count") or 0) > 0
+        and int(tcb_summary.get("surviving_mutant_count") or 0) == 0
+        and embedded.get("qualified") is True
+        and summary.get("training_admission_epistemic_tcb_qualified") is True
+        and task_hash_matches
+        and tcb_hash_matches
+    )
+    return {
+        "contract_ready": bool(
+            admission.get("policy") == "project_theseus_training_data_admission_v1"
+            and admission.get("trigger_state") in {"GREEN", "YELLOW"}
+            and not [
+                row for row in admission.get("gates", [])
+                if isinstance(row, dict)
+                and row.get("severity") == "hard"
+                and row.get("passed") is not True
+            ]
+            and tcb_qualified
+        ),
+        "tcb_qualified": tcb_qualified,
+        "task_report_hash_matches": task_hash_matches,
+        "tcb_report_hash_matches": tcb_hash_matches,
+        "mutation_count": int(tcb_summary.get("mutation_count") or 0),
+        "surviving_mutant_count": int(tcb_summary.get("surviving_mutant_count") or 0),
+        "non_claim": "Training admission trust qualification is not data sufficiency or learned capability.",
     }
 
 

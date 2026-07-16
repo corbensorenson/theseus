@@ -103,7 +103,7 @@
       "verified_units": 1504
     }
   },
-  "created_utc": "2026-07-16T13:01:48.639692+00:00",
+  "created_utc": "2026-07-16T13:15:32.902510+00:00",
   "policy": "project_theseus_task_complete_training_unit_manifest_v1",
   "raw_unit_payloads_in_manifest": false,
   "source_config": "configs/task_complete_training_units.json",
@@ -353,12 +353,12 @@
         "manager": "uv",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 142.262,
+          "duration_ms": 147.523,
           "fault": null,
           "ok": true,
           "returncode": 0,
-          "stderr_sha256": "e5a3f299ad15fa5c6bf30438f7310beb74b9c6363f486298a7f99fa78eaffb51",
-          "stderr_tail": "Resolved 72 packages in 27ms\nChecked 13 packages in 6ms\n",
+          "stderr_sha256": "b751a1635ca41125a60043e68afb7ece25b825f68b134d946ac5f5156f1e1cea",
+          "stderr_tail": "Resolved 72 packages in 46ms\nChecked 13 packages in 4ms\n",
           "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stdout_tail": ""
         },
@@ -446,14 +446,14 @@
         "manager": "pnpm",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 907.617,
+          "duration_ms": 1422.277,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "6f0506d622061832029c8bef1531adec9eecf2d9eb3d00d0d50c60a04af2c3f2",
-          "stdout_tail": "Scope: all 269 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +107\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 107, reused 107, downloaded 0, added 107, done\n\nDone in 865ms using pnpm v10.34.4\n"
+          "stdout_sha256": "21270e6e9740a44878aca43b79a2534f45a4bc48439621cfd207219382da244f",
+          "stdout_tail": "Scope: all 269 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +107\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 107, reused 107, downloaded 0, added 107, done\n\nDone in 1.3s using pnpm v10.34.4\n"
         },
         "offline_replay_valid": true,
         "pnpm_version": "10.34.4",
@@ -467,14 +467,14 @@
         "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
         "node_version": "v22.15.0",
         "offline_replay": {
-          "duration_ms": 1061.417,
+          "duration_ms": 998.957,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "4ded432fe6092caefb7ddfa7fa846fe2df86050280003083318ca324fe336c6a",
-          "stdout_tail": "\nadded 2 packages in 853ms\n"
+          "stdout_sha256": "8b2fd7b02f97319c5486f9597b0e1b81fc93fc7e408d51e2e1cd8f5d6124fdf8",
+          "stdout_tail": "\nadded 2 packages in 795ms\n"
         },
         "offline_replay_valid": true,
         "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
@@ -588,14 +588,14 @@
         "manager": "pnpm",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 328.405,
+          "duration_ms": 821.864,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "93da641913ae273d682c94d235505bf3b337ec5ee8cc6b6914bf3b3858539466",
-          "stdout_tail": "s\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-arm64-msvc         | [WARN] Unsupported platform: wanted: {\"cpu\":[\"arm64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-x64-msvc           | [WARN] Unsupported platform: wanted: {\"cpu\":[\"x64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\nScope: all 29 workspace projects\nAlready up to date\nDone in 272ms using pnpm v11.9.0\n"
+          "stdout_sha256": "41fe26dbf020566c649cfbe58648834714dc17ef3eb32ceeaa67dbd8529977fc",
+          "stdout_tail": "s\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-arm64-msvc         | [WARN] Unsupported platform: wanted: {\"cpu\":[\"arm64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-x64-msvc           | [WARN] Unsupported platform: wanted: {\"cpu\":[\"x64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\nScope: all 29 workspace projects\nAlready up to date\nDone in 731ms using pnpm v11.9.0\n"
         },
         "offline_replay_valid": true,
         "package_manager_toolchain": {
@@ -618,14 +618,14 @@
         "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
         "node_version": "v22.15.0",
         "offline_replay": {
-          "duration_ms": 720.233,
+          "duration_ms": 1989.689,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "548ad79e92c64d5753552b5b38b0c1314d05b2d57bcb58aedd53ff4a4295416c",
-          "stdout_tail": "\nadded 2 packages in 607ms\n"
+          "stdout_sha256": "65c731cd02e19c79f6f5a3e84a4dd64a49acd6c47d2ee551d7cc9da191e8c96c",
+          "stdout_tail": "\nadded 2 packages in 2s\n"
         },
         "offline_replay_valid": true,
         "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
@@ -1189,7 +1189,7 @@
         "offline_replay_valid": true
       },
       "new_verification_attempt_count": 0,
-      "prior_contamination_audit_reuse_count": 0,
+      "prior_contamination_audit_reuse_count": 628,
       "repo": "rayon-rs/rayon",
       "revision": "6d9e94bf6cf72fe73012524e1461a93dc58ff265",
       "selection": {
@@ -2376,12 +2376,12 @@
     "external_inference_calls": 0,
     "fallback_return_count": 0,
     "inventory_only": false,
-    "prior_contamination_audit_reuse_count": 9689,
+    "prior_contamination_audit_reuse_count": 10317,
     "public_exact_overlap_unit_count": 0,
     "public_semantic_overlap_unit_count": 0,
     "public_training_rows_written": 0,
     "raw_user_text_admitted": false,
-    "runtime_ms": 133640,
+    "runtime_ms": 214997,
     "source_count": 29,
     "split_counts": {
       "confirmation": 1800,
@@ -2391,8 +2391,9 @@
     "task_complete_unique_target_positions": 36552344,
     "teacher_calls": 0,
     "unit_count": 35887,
-    "verification_cache_entry_count": 9812,
+    "verification_cache_entry_count": 9739,
     "verification_cache_new_or_replaced_count": 0,
+    "verification_cache_pruned_stale_entry_count": 73,
     "verification_state_counts": {
       "failed": 4343,
       "not_run": 578,
@@ -2407,7 +2408,7 @@
   },
   "unit_ledger": "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
   "unit_ledger_count": 35887,
-  "unit_ledger_sha256": "a165d767acc2a832775deb08f771248a4b04a9c39b6577a5bcf8a4ca4c43d0a6",
+  "unit_ledger_sha256": "23cdcaee4b63c42fd90f9ef66b7ce0cc6278b3d82591a240501e784585ddfc4b",
   "verification_cache": "runtime/data_governance/task_complete_verification_cache_v1.jsonl",
-  "verification_cache_sha256": "afb5f01bb0c99b8f555e69f02378940cdfd35e156a8c47fb6c1274577517e32b"
+  "verification_cache_sha256": "327e0b311ae1ac5f47b2a34ad0b88cbf8c0b2fd063992c85559b0e4d036020bc"
 }
