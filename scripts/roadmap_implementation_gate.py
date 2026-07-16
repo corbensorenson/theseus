@@ -1000,6 +1000,7 @@ def audit_pre_training_architecture_readiness(
         for value in list_values(architecture_contract.get("ready_backlog_statuses"))
         if str(value)
     }
+    strict_architecture_first = architecture_contract.get("strict_architecture_first_enforcement") is True
     planned_backlog = list_dicts(matrix.get("planned_codex_test_backlog"))
     backlog_by_id = {
         str(row.get("backlog_id") or ""): row
@@ -1071,6 +1072,68 @@ def audit_pre_training_architecture_readiness(
                 "required_action": "Implement each bounded cross-phase architecture contract through its pre-training acceptance boundary before authorizing a long optimizer run; do not require its post-training capability verdict.",
             }
         )
+
+    if strict_architecture_first:
+        expected_dispositions = {
+            "include_in_frozen_campaign",
+            "exclude_by_falsification_or_retirement",
+            "wire_complete_contract_and_defer_only_learned_efficacy",
+        }
+        declared_dispositions = {
+            str(value)
+            for value in list_values(architecture_contract.get("binding_disposition_kinds"))
+            if str(value)
+        }
+        execution_priority = str(architecture_contract.get("execution_priority") or "")
+        training_authority_state = str(architecture_contract.get("training_authority_state") or "")
+        completion_evidence_rule = str(architecture_contract.get("completion_evidence_rule") or "")
+        architecture_change_intake_rule = str(architecture_contract.get("architecture_change_intake_rule") or "")
+        sequence_rule = str(architecture_contract.get("sequence_rule") or "")
+        dependency_order = [
+            str(value)
+            for value in list_values(architecture_contract.get("dependency_order"))
+            if str(value)
+        ]
+        final_sequence = [
+            "final_cross_owner_replay_and_architecture_freeze_package",
+            "unchanged_final_mlx_mechanics_canaries_and_joint_campaign_preregistration",
+        ]
+        dependency_backlog_ids = [value for value in dependency_order if value.startswith("planned.")]
+        unknown_dependency_ids = sorted(set(dependency_backlog_ids) - required_backlog_ids)
+        missing_unfinished_dependency_ids = sorted(
+            {row["backlog_id"] for row in unfinished_required_backlog} - set(dependency_backlog_ids)
+        )
+        contract_errors = []
+        if execution_priority != "architecture_before_long_training":
+            contract_errors.append("execution_priority")
+        if training_authority_state != "denied_until_finite_docket_and_freeze_package_are_green":
+            contract_errors.append("training_authority_state")
+        if declared_dispositions != expected_dispositions:
+            contract_errors.append("binding_disposition_kinds")
+        if dependency_order[-2:] != final_sequence:
+            contract_errors.append("dependency_order_final_sequence")
+        if len(dependency_order) != len(set(dependency_order)):
+            contract_errors.append("dependency_order_duplicates")
+        if unknown_dependency_ids:
+            contract_errors.append("dependency_order_unknown_backlog_ids")
+        if missing_unfinished_dependency_ids:
+            contract_errors.append("dependency_order_missing_unfinished_backlog_ids")
+        if not completion_evidence_rule:
+            contract_errors.append("completion_evidence_rule")
+        if not architecture_change_intake_rule:
+            contract_errors.append("architecture_change_intake_rule")
+        if not sequence_rule:
+            contract_errors.append("sequence_rule")
+        if contract_errors:
+            blockers.append(
+                {
+                    "kind": "architecture_first_enforcement_contract_invalid",
+                    "errors": contract_errors,
+                    "unknown_dependency_ids": unknown_dependency_ids,
+                    "missing_unfinished_dependency_ids": missing_unfinished_dependency_ids,
+                    "required_action": "Repair the finite disposition vocabulary, dependency order, training-authority state, and architecture completion rules before long training can be authorized.",
+                }
+            )
 
     if current_hard_gap_count:
         blockers.append(
@@ -1238,6 +1301,9 @@ def audit_pre_training_architecture_readiness(
         "required_backlog_ids": sorted(required_backlog_ids),
         "ready_backlog_statuses": sorted(ready_backlog_statuses),
         "required_backlog_contracts": required_backlog_rows,
+        "strict_architecture_first_enforcement": strict_architecture_first,
+        "architecture_dependency_order": list_values(architecture_contract.get("dependency_order")),
+        "training_authority_state": str(architecture_contract.get("training_authority_state") or ""),
         "deferred_unfinished_phases": deferred_unfinished,
         "core_slice_count": len(core_slices),
         "support_rank": support_rank,

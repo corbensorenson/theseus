@@ -49,6 +49,82 @@ checkpoint, migration, or replay defect that invalidates the frozen system. "Mak
 architecture excellent" therefore means close every accepted training-invalidating
 idea now, not postpone training forever in pursuit of unspecified perfection.
 
+### Binding architecture-completion contract
+
+Long training is the **last** step of the architecture program, not a convenient way
+to discover contracts we already know are missing. An accepted idea cannot sit behind
+the first long run when adopting it later would change any model weights, topology,
+tokenizer or representation, optimizer objective, routing semantics, memory identity,
+generation mode, verifier state, update causality, checkpoint format, or autonomous
+campaign behavior. It must instead receive one of three binding outcomes now:
+
+1. **Include:** implement it through the canonical owner and freeze its exact campaign
+   role, state schema, objective exposure, resource accounting, migration, rollback,
+   replay, and negative controls.
+2. **Exclude:** falsify or retire it with a content-bound reason and enforce zero
+   topology/objective/optimizer exposure in the first campaign.
+3. **Wire but defer efficacy:** complete every interface needed to train and preserve
+   it without retrofit, while leaving only evidence that intrinsically requires learned
+   behavior for after training. `wired` is not a capability claim.
+
+An architecture item is not complete because a schema exists, a fixture passes, or a
+sidecar can be called. Its pre-training boundary requires canonical execution-path
+integration, registry ownership, source/configuration identity, checkpoint round trip,
+fresh-process replay, migration and rollback, resource bounds, positive/negative/
+adversarial/mutation tests, independent integrity checks, cleanup, and an explicit
+campaign disposition. When a mechanism is intentionally disabled, the trainer must
+prove it receives zero optimizer exposure and cannot silently activate.
+
+The only optimizer work allowed before architecture freeze is a mechanics canary of at
+most eight steps whose purpose is to test tensor flow, state capture, checkpoint/reload,
+resume equivalence, cleanup, or a falsification condition. Canary metrics cannot select
+hyperparameters, tune architecture from held-out outcomes, support a capability claim,
+or expand into corpus training. Data inspection and data-contract replay may continue,
+but corpus identities stay frozen unless an architecture decision genuinely changes
+tokenization, ownership, supervision, or position accounting; in that case the affected
+receipts must be recomputed before authority can become GREEN.
+
+Training authority is therefore sequential and machine checked:
+
+`accepted idea intake -> finite docket disposition -> canonical integration -> final`
+`architecture freeze package -> unchanged mechanics canaries -> joint campaign`
+`preregistration -> long training -> frozen utility evaluation -> causal amplifiers`.
+
+No calendar deadline, sunk training cost, available compute, or desire for a score may
+skip a step. Conversely, architecture closure cannot be extended by vague novelty: a
+new pre-freeze item needs a concrete campaign-invalidating effect and an existing owner.
+Everything else is recorded for a successor campaign.
+
+### Finite pre-training disposition ledger
+
+This table is a readable projection of
+`pre_training_architecture_contract.required_backlog_ids`; the matrix remains
+authoritative. A row may leave `required` only with integrated evidence or a binding
+retirement/falsification receipt.
+
+| Order | Contract | Current disposition | Required before long training |
+|---:|---|---|---|
+| 1 | Kernel English + hierarchical residual compiler | `retired_by_pretraining_verdict` | preserve exact protected objects, enforce zero full-KERC optimizer exposure |
+| 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
+| 3 | Reflexive Router | `pre_training_architecture_required` | canonical pre-deliberative dispatch, typed outcomes, Chronicle/cache lifecycle, compilation/decompilation, route isolation |
+| 4 | Full-state data/update causality | `pre_training_architecture_required` | lineage-complete model/optimizer/RNG/cache/checkpoint inventory, best/final authority, deletion/invalidation and exact rollback |
+| 5 | Multi-target policy-update leases | `pre_training_architecture_required` | one authority-safe update contract for planner/router/VCM/verifier/executor/generator and generation modes |
+| 6 | GVR state machine and localized repair | `pre_training_architecture_required` | typed transitions, candidate identity, verifier/repair receipts, rollback, and learned-versus-assisted accounting |
+| 7 | Open-ended improvement campaign | `pre_training_architecture_required` | disabled but complete controller, stop authority, debt bounds, negative knowledge, champion/challenger and rollback |
+| 8 | Preference objectives (DPO/IPO/ORPO/KTO/SimPO) | `pre_training_architecture_required` | objective/reference/checkpoint interfaces and frozen include/exclude decision; efficacy waits for honest preference signal |
+| 9 | Verifier-reward objectives (GRPO/RLOO/ReMax/RLVR) | `pre_training_architecture_required` | reward integrity, lease, replay, rollback and frozen include/exclude decision; efficacy waits for verifier-positive behavior |
+| 10 | MTP generation mode | `pre_training_architecture_required` | shape-safe optional heads/objective, cache/checkpoint accounting, MLX canary and matched AR campaign disposition |
+| 11 | Medusa/EAGLE/speculative/LayerSkip modes | `pre_training_architecture_required` | classify checkpoint-shaping versus post-hoc modes; include or retire training-time pieces and prove post-hoc compatibility |
+| 12 | Diffusion/LLaDA/sketch-first repair | `pre_training_architecture_required` | implement a complete registered alternative or retire it by matched complexity/resource verdict |
+| 13 | OneCell-RWM candidate kernel | `pre_training_architecture_required` | complete exact substrate and objective/checkpoint contract, then include in the frozen matched campaign or retire |
+
+The implementation order after Reflexive Router is dependency-driven: full-state
+causality and policy leases first; GVR and the disabled autonomous campaign second;
+training objectives and generation modes third; OneCell disposition fourth; final
+cross-owner replay, architecture-freeze package, and unchanged MLX mechanics canaries
+last. This order does not imply adoption: an honest retirement is preferable to
+training an incoherent or unjustified mechanism.
+
 ## Status at a Glance
 
 | Area | Owner | State | Next concrete action |

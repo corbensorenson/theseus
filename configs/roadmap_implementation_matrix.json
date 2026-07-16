@@ -31,6 +31,14 @@
     "external_environment_phase_ids": [
       9
     ],
+    "execution_priority": "architecture_before_long_training",
+    "strict_architecture_first_enforcement": true,
+    "training_authority_state": "denied_until_finite_docket_and_freeze_package_are_green",
+    "binding_disposition_kinds": [
+      "include_in_frozen_campaign",
+      "exclude_by_falsification_or_retirement",
+      "wire_complete_contract_and_defer_only_learned_efficacy"
+    ],
     "required_backlog_ids": [
       "planned.reflexive_router_integration_v1",
       "planned.kernel_english_hierarchical_residual_compiler_v1",
@@ -60,6 +68,24 @@
       "bounded_architecture_canary_max_steps": 8,
       "rule": "Finite-update canaries may execute before readiness so architecture contracts can be proven. Any unbounded or greater-than-eight-step canonical optimizer run fails closed until the architecture readiness gate is GREEN."
     },
+    "dependency_order": [
+      "planned.reflexive_router_integration_v1",
+      "planned.data_engine_continual_learning_unlearning_v1",
+      "planned.multi_target_policy_updates_v1",
+      "planned.gvr_state_machine_and_localized_repair_v1",
+      "planned.open_ended_improvement_campaign_v1",
+      "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
+      "planned.grpo_rloo_remax_rlvr_private_verifier_reward_v1",
+      "planned.mtp_generation_mode_matched_control_v1",
+      "planned.medusa_eagle_speculative_layerskip_registry_v1",
+      "planned.diffusion_llada_sketch_first_repair_v1",
+      "planned.onecell_rwm_candidate_kernel_v1",
+      "final_cross_owner_replay_and_architecture_freeze_package",
+      "unchanged_final_mlx_mechanics_canaries_and_joint_campaign_preregistration"
+    ],
+    "completion_evidence_rule": "A backlog item cannot become pre-training ready from prose, a schema, a happy-path fixture, or a callable sidecar. It requires canonical-path integration, registry ownership, content-bound source/config identity, checkpoint round trip when stateful, fresh-process replay, migration and rollback, resource bounds, positive/negative/adversarial/mutation tests, independent integrity, cleanup, and an explicit frozen-campaign disposition. Disabled mechanisms must prove zero optimizer exposure and fail closed against silent activation.",
+    "architecture_change_intake_rule": "Before freeze, admit a new item only when adopting it after the campaign would invalidate weights, topology, representation/tokenization, objectives, routing or memory semantics, generation behavior, verifier state, update causality, checkpoint lineage, or autonomous campaign control. After freeze, new ideas target a successor campaign unless they expose a concrete correctness, security, information-flow, checkpoint, migration, or replay defect in the frozen package.",
+    "sequence_rule": "Accepted idea intake -> finite docket disposition -> canonical integration -> content-addressed architecture freeze -> unchanged mechanics canaries -> joint campaign preregistration -> long training -> frozen utility evaluation -> causal amplifier qualification.",
     "rule": "Architecture readiness requires every architecture prerequisite and every finite cross-phase pre-training backlog contract to be fully wired, implemented, falsified, or retired before long optimizer spend. Training, empirical product qualification, public calibration, real-use evidence, and behavior-dependent efficacy remain follow-through rather than circular prerequisites, but their model, objective, state, checkpoint, routing, memory, verifier, resource, migration, rollback, and evaluation interfaces must already exist when later adoption would invalidate the campaign.",
     "freeze_package_rule": "Before long training, publish one independently replayed content-addressed architecture-freeze package binding topology and ownership, representation and context, objectives and update causality, generation and deliberation dispositions, execution and autonomy, evaluation contracts, state portability, registry identities, source/configuration digests, rollback routes, evidence refs, and non-claims. A matrix status or self-declared GREEN report alone cannot grant training authority.",
     "allowed_before_freeze": "Implementation, integration, deterministic replay, negative testing, migration testing, checkpoint round trips, and architecture canaries of at most eight optimizer steps are allowed. Full-corpus optimizer work, architecture tuning from interim losses, public calibration, and capability claims are not.",
