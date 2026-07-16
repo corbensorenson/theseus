@@ -22,6 +22,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+import full_state_update_causality
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ADMISSION = ROOT / "reports" / "training_data_admission_v1.json"
@@ -29,8 +31,9 @@ DEFAULT_TEACHER_MANIFEST = ROOT / "reports" / "teacher_distillation_manifest.jso
 DEFAULT_LEDGER = ROOT / "runtime" / "data_governance" / "data_admission_receipts_v1.jsonl.gz"
 DEFAULT_OUT = ROOT / "reports" / "training_data_lineage_audit.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "training_data_lineage_audit.md"
+DEFAULT_FULL_STATE_CONTRACT = ROOT / "configs" / "full_state_update_causality.json"
 
-POLICY = "project_theseus_candidate_data_lineage_governance_v1"
+POLICY = "project_theseus_candidate_data_lineage_governance_v2"
 TEXT_KEYS = {
     "prompt", "instruction", "question", "solution", "solution_body", "canonical_solution",
     "code", "answer", "tests", "input", "output", "completion", "response",
@@ -121,6 +124,8 @@ def build_lineage_bundle(
         ],
         file_sha256(teacher_manifest_path),
         contamination_index["digest"],
+        file_sha256(Path(full_state_update_causality.__file__)),
+        file_sha256(DEFAULT_FULL_STATE_CONTRACT),
         max_rows,
         max_public_texts,
         rel(ledger_path),
@@ -224,6 +229,9 @@ def build_lineage_bundle(
     adversary = run_adversary_controls()
     continual = continual_learning_comparison(workload)
     deletion = descendant_deletion_closure_fixture()
+    full_state = full_state_update_causality.run_reference_fixture(
+        full_state_update_causality.load_contract(DEFAULT_FULL_STATE_CONTRACT)
+    )
     recursive = recursive_synthetic_diagnostics(
         metrics=metrics,
         class_counts=class_counts,
@@ -241,6 +249,8 @@ def build_lineage_bundle(
         hard_gaps.append({"kind": "continual_policy_comparison_incomplete", "comparison": continual})
     if not deletion["positive_fixture_closed"] or not deletion["expected_invalid_fixture_rejected"]:
         hard_gaps.append({"kind": "descendant_deletion_closure_fixture_failed", "closure": deletion})
+    if full_state.get("trigger_state") != "GREEN":
+        hard_gaps.append({"kind": "full_state_update_causality_failed", "fixture": full_state})
     if int(metrics.get("admitted_exact_public_overlap") or 0) or int(metrics.get("admitted_semantic_public_overlap") or 0):
         hard_gaps.append({
             "kind": "contaminated_candidate_admitted",
@@ -285,6 +295,11 @@ def build_lineage_bundle(
         "adversary_passed_count": adversary["passed_count"],
         "continual_policy_count": continual["policy_count"],
         "deletion_artifact_kind_count": deletion["artifact_kind_count"],
+        "full_state_causality_state": full_state.get("trigger_state"),
+        "full_state_artifact_kind_count": (full_state.get("summary") or {}).get("artifact_kind_count", 0),
+        "full_state_mutation_passed_count": (full_state.get("summary") or {}).get("mutation_passed_count", 0),
+        "full_state_mutation_case_count": (full_state.get("summary") or {}).get("mutation_case_count", 0),
+        "full_state_exact_rollback": bool((full_state.get("rollback") or {}).get("exact_pre_state_restored")),
         "hard_gap_count": len(hard_gaps),
         "warning_count": len(warnings),
         "public_training_rows_written": 0,
@@ -300,7 +315,7 @@ def build_lineage_bundle(
         "ledger_incremental_rescanned_receipt_count": int(incremental.get("rescanned_receipt_count") or 0),
         "ledger_schema_migrated_teacher_receipt_count": migrated_teacher_receipts,
     }
-    records = build_viea_records(summary, ledger_receipt, continual, deletion, adversary)
+    records = build_viea_records(summary, ledger_receipt, continual, deletion, adversary, full_state)
     return {
         "policy": POLICY,
         "created_utc": now(),
@@ -314,17 +329,19 @@ def build_lineage_bundle(
         "semantic_and_provenance_adversary_controls": adversary,
         "continual_learning_policy_comparison": continual,
         "descendant_deletion_closure": deletion,
+        "full_state_update_causality": full_state,
         "viea_data_governance_records": records,
         "hard_gaps": hard_gaps,
         "warnings": warnings,
         "score_semantics": (
-            "Candidate-level admission, contamination, lineage, continual-policy simulation, and deletion-closure evidence only. "
+            "Candidate-level admission, contamination, lineage, continual-policy simulation, full-state update/rollback, and deletion-closure evidence only. "
             "It does not train a model, prove unlearning, prove model quality, or spend public calibration."
         ),
         "non_claims": [
             "Receipt completeness is not data quality or model capability.",
             "The continual-learning workload is a frozen policy simulation, not a training result.",
             "Deletion fixtures prove propagation logic, not erasure from every deployed external system.",
+            "Full-state package replay proves bounded mechanics, not behavioral unlearning or model improvement.",
             "Semantic overlap heuristics can quarantine candidates but cannot prove absence of all contamination.",
             "Teacher proposals are not served directly and do not become training rows without the teacher gate.",
         ],
@@ -803,7 +820,14 @@ def recursive_synthetic_diagnostics(*, metrics: Counter[str], class_counts: Coun
     }
 
 
-def build_viea_records(summary: dict[str, Any], ledger: dict[str, Any], continual: dict[str, Any], deletion: dict[str, Any], adversary: dict[str, Any]) -> list[dict[str, Any]]:
+def build_viea_records(
+    summary: dict[str, Any],
+    ledger: dict[str, Any],
+    continual: dict[str, Any],
+    deletion: dict[str, Any],
+    adversary: dict[str, Any],
+    full_state: dict[str, Any],
+) -> list[dict[str, Any]]:
     common = {
         "source_surface": "teacher_and_data_governance",
         "evidence_ref": "reports/training_data_lineage_audit.json",
@@ -821,6 +845,14 @@ def build_viea_records(summary: dict[str, Any], ledger: dict[str, Any], continua
         ("data_lifecycle_policy_decision", {"recommended_policy": continual.get("recommended_policy"), "workload_hash": continual.get("workload_hash")}),
         ("continual_learning_comparison", {"policy_count": continual.get("policy_count"), "comparison_ready": continual.get("comparison_ready")}),
         ("descendant_deletion_closure_receipt", {"artifact_kind_count": deletion["artifact_kind_count"], "positive_closed": deletion["positive_fixture_closed"], "invalid_rejected": deletion["expected_invalid_fixture_rejected"]}),
+        ("full_state_update_transaction", {
+            "state": full_state.get("trigger_state"),
+            "artifact_kind_count": (full_state.get("summary") or {}).get("artifact_kind_count"),
+            "best_checkpoint_id": (full_state.get("summary") or {}).get("best_checkpoint_id"),
+            "final_checkpoint_id": (full_state.get("summary") or {}).get("final_checkpoint_id"),
+            "exact_rollback": bool((full_state.get("rollback") or {}).get("exact_pre_state_restored")),
+            "behavioral_unlearning_claim_allowed": False,
+        }),
         ("failure_boundary", {"terminal": summary["hard_gap_count"] > 0, "structured_non_solved": summary["hard_gap_count"] > 0}),
     ]
     return [
@@ -1474,6 +1506,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- adversary controls: `{summary.get('adversary_passed_count', 0)}/{summary.get('adversary_case_count', 0)}`",
         f"- continual policies: `{continual.get('policy_count', 0)}`; recommended `{continual.get('recommended_policy', 'none')}`",
         f"- deletion artifact kinds: `{summary.get('deletion_artifact_kind_count', 0)}`",
+        f"- full-state causality: `{summary.get('full_state_causality_state', 'missing')}`; artifact kinds `{summary.get('full_state_artifact_kind_count', 0)}`; exact rollback `{summary.get('full_state_exact_rollback', False)}`",
         f"- ledger: `{as_dict(report.get('candidate_receipt_ledger')).get('path', '')}`",
         "",
         "This is data-governance evidence, not model training or capability evidence.",

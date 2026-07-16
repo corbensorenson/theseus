@@ -835,6 +835,8 @@
             "scripts/task_complete_training_units.py",
             "scripts/training_data_admission_v1.py",
             "scripts/training_data_lineage_audit.py",
+            "scripts/full_state_update_causality.py",
+            "configs/full_state_update_causality.json",
             "scripts/open_conversation_training_pantry.py",
             "scripts/governed_conversation_stream.py"
           ],
@@ -865,7 +867,10 @@
           "path": "reports/training_data_lineage_audit.json",
           "freshness_mode": "source_bound",
           "source_paths": [
-            "scripts/training_data_lineage_audit.py"
+            "scripts/training_data_lineage_audit.py",
+            "scripts/full_state_update_causality.py",
+            "configs/full_state_update_causality.json",
+            "tests/test_full_state_update_causality.py"
           ],
           "acceptance": {
             "field": "trigger_state",
@@ -5901,7 +5906,7 @@
       "canonical_entrypoint": "scripts/teacher_distillation_gate.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve provenance, license, verifier, leakage, and runtime-serving boundaries.",
-      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/task_complete_training_units.py --prepare-javascript --prepare-css-toolchain && python3 scripts/training_admission_epistemic_tcb.py && python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json --admission-epistemic-tcb reports/training_admission_epistemic_tcb.json && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 -m pytest -q tests/test_training_data_lineage_audit.py tests/test_task_complete_training_units.py tests/test_governed_conversation_stream.py tests/test_open_code_training_pantry.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_admission_epistemic_tcb.py scripts/training_data_admission_v1.py scripts/training_data_lineage_audit.py scripts/task_complete_training_units.py scripts/task_complete_web_holes.py scripts/task_complete_css_holes.py scripts/neural_seed_functional_verifiers.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/governed_conversation_stream.py scripts/open_conversation_training_pantry.py scripts/open_code_training_pantry.py && node --check scripts/task_complete_css_ast.mjs",
+      "verification_command": "python3 scripts/teacher_distillation_gate.py && python3 scripts/task_complete_training_units.py --prepare-javascript --prepare-css-toolchain && python3 scripts/training_admission_epistemic_tcb.py && python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json --admission-epistemic-tcb reports/training_admission_epistemic_tcb.json && python3 scripts/training_data_lineage_audit.py && python3 scripts/broad_capability_curriculum_v1.py && python3 scripts/broad_capability_survival_lane_run_v1.py && python3 -m pytest -q tests/test_full_state_update_causality.py tests/test_training_data_lineage_audit.py tests/test_task_complete_training_units.py tests/test_governed_conversation_stream.py tests/test_open_code_training_pantry.py && python3 scripts/public_calibration_proposal_gate.py && python3 -m py_compile scripts/teacher_distillation_gate.py scripts/training_admission_epistemic_tcb.py scripts/training_data_admission_v1.py scripts/training_data_lineage_audit.py scripts/full_state_update_causality.py scripts/task_complete_training_units.py scripts/task_complete_web_holes.py scripts/task_complete_css_holes.py scripts/neural_seed_functional_verifiers.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/governed_conversation_stream.py scripts/open_conversation_training_pantry.py scripts/open_code_training_pantry.py && node --check scripts/task_complete_css_ast.mjs",
       "role": "teacher",
       "trust_tier": "governed_external_training_only",
       "dependencies": [
@@ -5910,6 +5915,8 @@
         "scripts/training_admission_epistemic_tcb.py",
         "scripts/training_data_admission_v1.py",
         "scripts/training_data_lineage_audit.py",
+        "scripts/full_state_update_causality.py",
+        "configs/full_state_update_causality.json",
         "configs/open_code_training_pantry_expanded.json",
         "scripts/open_code_training_pantry.py",
         "tests/test_open_code_training_pantry.py",
@@ -5929,6 +5936,7 @@
         "scripts/broad_capability_curriculum_v1.py",
         "scripts/broad_capability_survival_lane_run_v1.py",
         "tests/test_training_data_lineage_audit.py",
+        "tests/test_full_state_update_causality.py",
         "scripts/public_calibration_proposal_gate.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",

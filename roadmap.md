@@ -107,7 +107,7 @@ retirement/falsification receipt.
 | 1 | Kernel English + hierarchical residual compiler | `retired_by_pretraining_verdict` | preserve exact protected objects, enforce zero full-KERC optimizer exposure |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
 | 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
-| 4 | Full-state data/update causality | `pre_training_architecture_required` | lineage-complete model/optimizer/RNG/cache/checkpoint inventory, best/final authority, deletion/invalidation and exact rollback |
+| 4 | Full-state data/update causality | `pretraining_wired_behavior_qualification_pending` | canonical admission owns a 13-kind content-addressed state inventory, distinct best/final authority, package replay, bounded update, deletion receipts, and exact rollback; learned forgetting/unlearning efficacy waits for training |
 | 5 | Multi-target policy-update leases | `pre_training_architecture_required` | one authority-safe update contract for planner/router/VCM/verifier/executor/generator and generation modes |
 | 6 | GVR state machine and localized repair | `pre_training_architecture_required` | typed transitions, candidate identity, verifier/repair receipts, rollback, and learned-versus-assisted accounting |
 | 7 | Open-ended improvement campaign | `pre_training_architecture_required` | disabled but complete controller, stop authority, debt bounds, negative knowledge, champion/challenger and rollback |
@@ -135,7 +135,7 @@ training an incoherent or unjustified mechanism.
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | learned optimization remains premature at the zero-pass floor, but objective/reference/reward/lease/checkpoint interfaces are pre-training requirements | wire and canary the complete objective family now; run and select it only after a behavior-positive proposer creates honest verifier signal |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | efficacy is deferred, but every topology- or objective-changing mode now requires a pre-training include/retire decision and checkpoint-compatible modes require loader/migration proof | freeze MTP, LayerSkip, speculative/draft, and sketch-first contracts with matched AR controls before training; adopt only from accepted verified output per second afterward |
-| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active contract now has sufficient governed data and GREEN finite-loss/update/checkpoint/reload/optimizer-resume/cleanup MLX canaries for MoECOT plus both dense controls, but no long optimizer run has started and training authority remains held by the 11 unresolved contracts in the finite architecture docket | close or retire every remaining docket item, publish the final architecture-freeze manifest and joint campaign, then replay the same canaries against the final package before training |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active contract now has sufficient governed data and GREEN finite-loss/update/checkpoint/reload/optimizer-resume/cleanup MLX canaries for MoECOT plus both dense controls, but no long optimizer run has started and training authority remains held by the 9 unresolved contracts in the finite architecture docket | close or retire every remaining docket item, publish the final architecture-freeze manifest and joint campaign, then replay the same canaries against the final package before training |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is a non-routeable candidate behind the shared Cognitive Kernel ABI and now requires a pre-training architecture/campaign disposition; no neural or language claim exists | finish its exact substrate, objective/checkpoint interfaces, and matched campaign decision; include it in the frozen run or retire it without delaying the practical transformer/hybrid lane indefinitely |
 | Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | full KERC is `retired_by_pretraining_verdict` from the first long run: on the bounded hash-bound campaign it tied surface/simple controls at `0.5`, cost `714` mean packet bytes versus `73.25` for the best simple control, and false-allowed one attack; the canonical trainer now enforces zero KERC optimizer exposure and a new plan identity | retain protected exact objects and scoped interaction glossary residuals through existing VCM/SCF owners with zero learned credit; reconsider full KERC only through a stronger prospectively frozen source-disjoint campaign |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | behavior loop cannot start at zero pass, but the campaign controller, full-state causality, stop authority, rollback, and negative-knowledge contracts are pre-training requirements | wire and trap-test the autonomous loop while disabled; enable generate->verify->admit->retrain only after the proposer produces independently verified successes |
@@ -334,9 +334,9 @@ promoted; their purpose is to falsify or select the practical architecture.
 3. Preserve the completed QCSA disposition: VCM owns stable SOID/address/route
    indirection, plural facets, Semantic Address Certificates, authority separation,
    and exact migration/rollback; the full QCSA objective and adaptive-question policy
-   remain outside the first long run. Close the remaining pre-training contracts:
-   Reflexive Router command/reflex/Chronicle lifecycle;
-   OneCell exact-substrate and campaign disposition; full-state data/update rollback;
+   remain outside the first long run. Preserve the completed Reflexive Router mechanics
+   and full-state update/rollback dispositions. Close the remaining pre-training contracts:
+   OneCell exact-substrate and campaign disposition;
    policy-update leases; GVR state transitions; open-ended-campaign stop authority;
    and objective/generation-mode interfaces for preference/RL, MTP, speculative/
    LayerSkip, and sketch-first alternatives. Learned promotion remains post-training,
@@ -1033,11 +1033,11 @@ and disposition unchanged; the vertical validator was not rerun after that fault
 ### Phase 7: Teacher and Data Governance
 (Owns Track 0 and teacher-side learning authority.)
 
-Admission-substrate status (2026-07-10): `implemented`; Phase 7 remains `partial`
-under the 2026-07-11 book reconciliation until full-state update/unlearning
-causality runs. The canonical admission path
-now writes and replays `115,333` content-bound candidate receipts, admits
-`115,029`, rejects `304` rows, and exposes zero detected exact/semantic
+Admission-substrate status (2026-07-16): `implemented`; full-state update causality
+mechanics are now `pretraining_wired_behavior_qualification_pending`. Learned forgetting,
+influence, and unlearning efficacy remain post-training measurements. The canonical admission path
+now writes and replays `115,407` content-bound candidate receipts, admits
+`115,103`, rejects `304` rows, and exposes zero detected exact/semantic
 public overlap, fallback markers, or raw-user rows. All nine adversarial cases,
 five frozen continual-policy simulations, and the 11-kind positive/negative
 descendant-deletion fixture pass. Curriculum and survival-lane materialization
@@ -2035,8 +2035,8 @@ gaps route into the phases above:
 | PlanForge DAGs + adequacy + arbitrage | not the default execution spine; adequacy contracts + arbitrage ledger missing | 1 |
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
 | Kernel English + Hierarchical Residual Ledger | bounded pre-training disposition complete: exact packet/residual interfaces are implemented, full KERC is retired from the first long run by a hash-bound negative total-system verdict, and only protected exact objects plus scoped glossary residuals remain under existing owners; any future re-entry must satisfy the preserved stronger campaign contract | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 |
-| Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
-| Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
+| Data engines + continual learning + unlearning | canonical admission now carries 115,407 candidate receipts, five frozen policy simulations, contamination controls, 125,702 lineage edges, a 13-kind full-state inventory, descendant deletion, and bounded storage-erasure receipts. Real forgetting, influence, privacy, and unlearning efficacy remain post-training measurements | 3, 7, 12, 14 |
+| Full-state update causality | pre-training mechanics are unified: model/optimizer/scheduler/RNG/cache/index/checkpoint/backup/effect state is content-addressed, best and final authority are distinct, packages replay exactly, update exposure is lineage-bound and bounded, deletion reaches descendants, and rollback restores the exact pre-state digest. Behavioral unlearning and undeclared external erasure are explicit non-claims | 0, 2, 7, 10, 14 |
 | Durable semantic memory inside VCM | wired: stable objects, typed/temporal relations, additive ontology migration, transactional merge/supersession/retraction/compaction, sparse-vector/graph retrieval, bounded snapshots, and fresh-process replay; dense embedding and parametric unlearning remain explicit non-claims | 3, 14, 15 |
 | Question-Compiled Semantic Addressing | bounded pre-training disposition complete: VCM now owns stable SOID/address/route indirection, three authoritative facets, Semantic Address Certificates, authority-safe translation, and exact migration/rollback; the matched source campaign retired the full objective and adaptive-question policy from the first long run because they added cost without task advantage | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 |
 | Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |

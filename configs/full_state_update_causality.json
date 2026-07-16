@@ -1,0 +1,73 @@
+{
+  "policy": "project_theseus_full_state_update_causality_v1",
+  "schema_version": "1.0.0",
+  "owner": "teacher_and_data_governance_contract",
+  "canonical_consumer": "scripts/training_data_lineage_audit.py",
+  "bounded_canary_max_optimizer_steps": 8,
+  "required_artifact_kinds": [
+    "source_candidate",
+    "dataset_snapshot",
+    "model_parameters",
+    "optimizer_state",
+    "scheduler_state",
+    "rng_state",
+    "runtime_cache",
+    "retrieval_index",
+    "checkpoint_final",
+    "checkpoint_best",
+    "checkpoint_backup",
+    "derived_report",
+    "external_effect_receipt"
+  ],
+  "authority": {
+    "update_owner": "canonical_training_controller",
+    "best_checkpoint_selector": "frozen_independent_verifier",
+    "final_checkpoint_writer": "canonical_training_controller",
+    "rollback_owner": "replacement_transaction_kernel",
+    "deletion_owner": "data_governance_controller",
+    "best_and_final_must_be_distinct_roles": true,
+    "selection_metric_must_be_frozen_before_update": true
+  },
+  "required_state_fields": [
+    "artifact_id",
+    "kind",
+    "content_sha256",
+    "parent_ids",
+    "storage_replicas",
+    "authority",
+    "lifecycle_state",
+    "deletion_action"
+  ],
+  "deletion_actions": {
+    "source_candidate": "physical_erase_and_tombstone",
+    "dataset_snapshot": "revoke_and_rebuild",
+    "model_parameters": "retrain_or_verified_unlearning_required",
+    "optimizer_state": "invalidate_and_purge",
+    "scheduler_state": "invalidate_and_purge",
+    "rng_state": "invalidate_and_purge",
+    "runtime_cache": "purge",
+    "retrieval_index": "rebuild_without_root",
+    "checkpoint_final": "revoke_and_purge_all_replicas",
+    "checkpoint_best": "revoke_and_purge_all_replicas",
+    "checkpoint_backup": "revoke_and_purge_all_replicas",
+    "derived_report": "retain_with_retraction",
+    "external_effect_receipt": "retain_with_compensation_or_retraction"
+  },
+  "terminal_states": [
+    "prepared",
+    "committed",
+    "rolled_back",
+    "quarantined",
+    "revoked",
+    "deletion_pending",
+    "deletion_closed",
+    "rejected"
+  ],
+  "claim_boundaries": {
+    "behavioral_unlearning_requires_measurement": true,
+    "privacy_erasure_requires_storage_receipts": true,
+    "logical_revocation_is_not_physical_erasure": true,
+    "best_checkpoint_is_not_implicitly_final": true,
+    "metadata_fixture_is_not_training_success": true
+  }
+}

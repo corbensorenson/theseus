@@ -159,6 +159,34 @@ class TrainingDataLineageAuditTests(unittest.TestCase):
         self.assertTrue(deletion["expected_invalid_fixture"]["unverified_descendants"])
         self.assertFalse(deletion["real_deletion_executed"])
 
+    def test_canonical_lineage_owner_consumes_full_state_causality(self) -> None:
+        report = audit.full_state_update_causality.run_reference_fixture()
+        self.assertEqual("GREEN", report["trigger_state"])
+        self.assertTrue(report["rollback"]["exact_pre_state_restored"])
+        self.assertNotEqual(
+            report["summary"]["best_checkpoint_id"],
+            report["summary"]["final_checkpoint_id"],
+        )
+        records = audit.build_viea_records(
+            {
+                "hard_gap_count": 0,
+                "candidate_receipt_count": 1,
+                "admitted_candidate_count": 1,
+                "lineage_edge_count": 1,
+                "exact_public_overlap_candidate_count": 0,
+                "semantic_public_overlap_candidate_count": 0,
+                "teacher_candidate_count": 0,
+            },
+            {"sha256": "a" * 64},
+            {"recommended_policy": "targeted_replay", "workload_hash": "workload", "policy_count": 5, "comparison_ready": True},
+            {"artifact_kind_count": 11, "positive_fixture_closed": True, "expected_invalid_fixture_rejected": True},
+            {"passed_count": 9, "case_count": 9},
+            report,
+        )
+        full_state_record = next(row for row in records if row["record_type"] == "full_state_update_transaction")
+        self.assertTrue(full_state_record["exact_rollback"])
+        self.assertFalse(full_state_record["behavioral_unlearning_claim_allowed"])
+
     def test_ledger_recovery_is_content_bound_and_rejects_duplicate_identity(self) -> None:
         row = {
             "prompt": "Return a private queue watermark.",
