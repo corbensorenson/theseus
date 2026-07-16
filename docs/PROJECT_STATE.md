@@ -13,8 +13,9 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Current Verdict
 
-- **Architecture readiness:** locally actionable pre-training architecture is wired.
-  This authorizes governed training; it does not prove model quality.
+- **Architecture readiness:** not ready for long training. The finite pre-training
+  docket contains 13 known checkpoint-shaping contracts that must be wired,
+  falsified, or retired before the architecture-freeze manifest can authorize a run.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -24,22 +25,17 @@ share toward zero. Public benchmarks are calibration only.
   qualification then scored MoECOT, dense-active, and dense-total at `0/160`, with
   `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
   canary rung; it does not select an architecture or authorize a route.
-- **Data gate:** the content-bound audit credits 683,254,465 unique governed
-  positions. The task-complete ledger admits `29,555/33,212` units with zero public
-  overlap, teacher calls, external inference, or fallback returns. Verified coverage
-  is English `25,566`, Python `2,022`, JS/TS `1,180`, HTML/CSS `690`, and Rust `97`.
-  Python is GREEN at `1,129,825` target positions after five pinned repository
-  test-kill campaigns. JS/TS is GREEN at `1,612,835` after Vite plus a content-bound,
-  outcome-blind 600-candidate Tailwind campaign. HTML/CSS is GREEN at `1,906,926`:
-  `517` semantic HTML components contribute `1,848,748`, and `173` independently
-  render-killed CSS rules contribute `58,178`. Rust remains below its frozen floor.
-- **Immediate dependency:** keep the consumed rung and the new 57.315M-active proposal
-  immutable. Its candidate and both matched dense controls pass real MLX update,
-  exact checkpoint reload, optimizer-resume, and cleanup canaries, but training is
-  denied: the proposal needs 1,146,306,580 unique positions, leaving a 463,052,115
-  shortfall plus the Rust coverage gap. Add pinned high-quality licensed
-  product data through the existing task-complete admission contract; do not spend
-  confirmation, public calibration, or another same-scale architecture patch.
+- **Data gate:** the content-bound audit credits `1,263,425,574` unique governed
+  model-visible positions with no repetition credit, public training rows, external
+  inference, or fallback returns. English, Python, JS/TS, Rust, and the aggregate
+  57.315M floor are GREEN. The 2.504M-parameter HTML/CSS specialist is RED at
+  `41,248,944 / 50,083,860`, an `8,834,916`-position owner-specific shortfall.
+- **Immediate dependency:** finish the active KERC exact substrate, then close the
+  remaining finite architecture docket through existing registry owners. Publish a
+  content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
+  resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
+  Close the HTML/CSS data gap with genuinely unique licensed source data or reduce
+  that arm's owned parameters in a revised preregistration; never use repetition.
 
 ## Evidence Boundaries
 
@@ -73,7 +69,7 @@ share toward zero. Public benchmarks are calibration only.
 - **VIEA execution spine:** intent, command, context, job, plan, authority, artifact,
   claim, evidence transition, residual, and failure-boundary records are materialized
   and validated.
-- **VCM:** stable semantic objects, typed temporal relations, hybrid sparse/graph
+- **Virtual Context Memory (VCM):** stable semantic objects, typed temporal relations, hybrid sparse/graph
   retrieval, lifecycle transactions, compaction, deletion closure, and deterministic
   migration/replay are wired. Native KV/prefix-cache parity is not claimed.
 - **Verifier/search:** bounded propose/verify/repair search is registered with typed
@@ -152,28 +148,26 @@ share toward zero. Public benchmarks are calibration only.
    immutable negative evidence; all three candidates scored `0/160`.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
-5. Expand task-complete licensed data until the frozen 57.315M-active proposal clears
-   its unique-position and every-arm coverage floors. Its architecture, matched
-   controls, stop contract, and resource canaries are already preregistered.
-6. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
+5. Close all 13 finite pre-training architecture contracts through full wiring,
+   falsification, or explicit retirement. This includes KERC, QCSA, Reflexive Router,
+   OneCell disposition, update/data causality, policy/GVR/campaign control, and
+   generation-objective interfaces.
+6. Close the HTML/CSS arm's unique-position floor, freeze the joint surface/KERC/
+   code/control campaign, publish the architecture manifest, and replay every canary.
+7. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
-7. Integrate Question-Compiled Semantic Addressing only through the registered VCM
-   and planning abstractions, with leakage and route-authority controls.
 8. Calibrate once on fresh frozen public surfaces after material model improvement.
 9. Route the winning model into assistant dogfood; use accepted, missed, ignored,
    corrected, and completed outcomes to drive the governed improvement flywheel.
 
 ## External and Deferred Work
 
-- OneCell-RWM is mapped as a non-routeable cognitive-kernel discovery candidate. The
-  v8 disposition now permits its ABI and exact-substrate contract work, but it cannot
-  become a same-scale rescue patch, delay the practical data-and-scale lane, or
-  duplicate VIEA, VCM, Octopus, SCF, Loop Closure, SparkStream, registry, or evidence
-  machinery. Exact-substrate and ABI work remain dependency work while the licensed
-  task-complete corpus and preregistered 57.315M-active practical lane stay flagship.
-  Neural OneCell training waits for exact-substrate and matched-contract gates;
-  language/code adapters wait for structured, search, frozen-core, and world-model
-  evidence. Route authority requires a preregistered matched total-cost verdict.
+- OneCell-RWM remains non-routeable, but its exact substrate, shared Cognitive Kernel
+  ABI, objective/checkpoint interfaces, and matched campaign disposition are now a
+  pre-training requirement. It must join the frozen comparison or be explicitly
+  retired; it may not duplicate VIEA, VCM, Octopus, SCF, Loop Closure, SparkStream,
+  registry, or evidence machinery. Route authority still requires a matched
+  total-cost learned verdict.
 - Real multi-node Hive proof remains Phase 9 external-environment evidence and waits
   for another trusted reachable node. It does not block local model work.
 - Mobile, Watch, spatial, voice-following, NAS, and broader product surfaces remain
@@ -193,8 +187,8 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Add pinned high-quality licensed product sources to the existing task-complete ledger.
-Close the measured Rust and 463,052,115-position shortfalls
-without counting repetition, target-only snippets, unverified rows, or public
-calibration payloads. Rerun canonical admission and the frozen 57.315M proposal only
-to refresh content-bound evidence; train only after every data floor is satisfied.
+Complete and register the KERC immutable-source/protected-object packet, VCM-owned
+hierarchical residual lifecycle, learned compiler/renderer interfaces, round-trip
+verifier, checkpoint migration, cost accounting, and adversarial lifecycle tests.
+Then close the remaining finite architecture docket and the HTML/CSS owner floor.
+Do not start long training until the strict pre-training readiness gate is GREEN.

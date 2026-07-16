@@ -1,0 +1,936 @@
+#!/usr/bin/env python3
+"""Versioned Kernel English packet protocol under the Semantic-IR/VCM owners.
+
+This module is exact substrate, not a learned language model. It captures source
+identity, protects form-sensitive objects before correction, validates a typed
+Kernel program, serializes the V_K/V_P code spaces, binds VCM-owned residual
+state, and verifies structured answer constraints. Surface-to-Kernel inference,
+surface rendering, and semantic equivalence remain learned/evaluated components.
+
+No deterministic path in this module receives generation credit. Unknown state,
+invalid handles, malformed scope, and round-trip mismatches fail closed without
+templates, literal renderers, or best-effort interpretation.
+"""
+
+from __future__ import annotations
+
+import base64
+import copy
+import hashlib
+import json
+import math
+import re
+import unicodedata
+from dataclasses import dataclass
+from typing import Any, Iterable, Sequence
+
+
+POLICY = "project_theseus_kernel_packet_protocol_v1"
+KERNEL_VERSION = "KE-1.0"
+PACKET_VERSION = "KPP-1.0"
+HRL_VERSION = "HRL-1.0"
+CODEBOOK_VERSION = "KE-CODEBOOK-1.0"
+CODE_SPACES = ("V_S", "V_K", "V_P")
+RESIDUAL_MODES = {"SOURCE_RECONSTRUCTION", "OUTPUT_REALIZATION"}
+FIDELITY_MODES = {"semantic", "faithful", "lexical", "exact"}
+DERIVATIONS = {
+    "preserved",
+    "high_confidence_correction",
+    "low_confidence_hypothesis",
+    "compiler_inference",
+    "learned_reasoner",
+    "tool_evidence",
+}
+MODALITIES = {
+    "ASSERTED",
+    "POSSIBLE",
+    "PROBABLE",
+    "HYPOTHESIS",
+    "REQUIRED",
+    "PERMITTED",
+    "FORBIDDEN",
+    "UNKNOWN",
+}
+POLARITIES = {"AFFIRMED", "NEGATED", "UNKNOWN"}
+QUANTIFIERS = {"NONE", "EXISTS", "FORALL", "EXACT", "AT_LEAST", "AT_MOST", "UNKNOWN"}
+VALUE_TYPES = {"handle", "concept", "number", "node_ref", "list", "ambiguity", "byte_literal", "boolean", "null"}
+HANDLE_PREFIX_BY_TYPE = {
+    "ENTITY": "E",
+    "PERSON": "E",
+    "ORGANIZATION": "E",
+    "PLACE": "E",
+    "PRODUCT": "E",
+    "QUOTE": "Q",
+    "NUMBER": "N",
+    "MONEY": "N",
+    "DATE_TIME": "N",
+    "URL": "D",
+    "EMAIL": "D",
+    "FILE_PATH": "D",
+    "HASH": "D",
+    "CODE": "K",
+    "FORMULA": "X",
+    "MARKUP": "X",
+    "EXACT_TEXT": "X",
+}
+COPY_POLICIES = {"EXACT", "VALUE_AND_STYLE", "NORMALIZED_VALUE", "REFERENCE_ONLY"}
+NO_CHEAT = {
+    "candidate_generation_credit": 0,
+    "deterministic_compiler_credit": 0,
+    "renderer_credit": 0,
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+}
+
+
+class KernelProtocolFault(ValueError):
+    """Typed protocol fault with fail-closed behavior."""
+
+    def __init__(self, code: str, detail: str, *, path: str = "") -> None:
+        super().__init__(f"{code}: {detail}")
+        self.code = code
+        self.detail = detail
+        self.path = path
+
+    def record(self) -> dict[str, Any]:
+        return {
+            "fault_type": self.code,
+            "detail": self.detail,
+            "path": self.path,
+            "failure_behavior": "reject_without_fallback",
+        }
+
+
+@dataclass(frozen=True)
+class SpanCandidate:
+    start: int
+    end: int
+    object_type: str
+    copy_policy: str
+    priority: int
+    source: str
+
+
+def canonical_json(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+
+
+def stable_hash(value: Any) -> str:
+    payload = value if isinstance(value, (bytes, bytearray)) else canonical_json(value).encode("utf-8")
+    if isinstance(payload, bytearray):
+        payload = bytes(payload)
+    return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
+def capture_source(
+    source: str | bytes,
+    *,
+    retain_inline: bool = False,
+    retention: str = "transient",
+    language: str = "en",
+) -> dict[str, Any]:
+    raw = source.encode("utf-8") if isinstance(source, str) else bytes(source)
+    try:
+        text = raw.decode("utf-8")
+        encoding = "UTF-8"
+    except UnicodeDecodeError as exc:
+        raise KernelProtocolFault("KERC_SOURCE_ENCODING_UNSUPPORTED", str(exc), path="source") from exc
+    record = {
+        "record_type": "immutable_kernel_source_record",
+        "source_sha256": stable_hash(raw),
+        "byte_length": len(raw),
+        "character_length": len(text),
+        "encoding": encoding,
+        "unicode_normalization": _normalization_form(text),
+        "language_hint": language,
+        "retention": retention,
+        "inline_bytes_b64": base64.b64encode(raw).decode("ascii") if retain_inline else None,
+        "content_address": stable_hash(raw),
+    }
+    record["record_sha256"] = stable_hash(record)
+    return record
+
+
+def extract_protected_objects(
+    source: str,
+    *,
+    explicit_spans: Sequence[dict[str, Any]] = (),
+    retain_inline: bool = True,
+) -> dict[str, Any]:
+    """Protect exact/form-sensitive spans before any correction or compilation."""
+
+    candidates = _explicit_span_candidates(source, explicit_spans)
+    patterns = (
+        (r"```[\s\S]*?```", "CODE", "EXACT", 90, "fenced_code"),
+        (r"`[^`\n]+`", "CODE", "EXACT", 85, "inline_code"),
+        (r"https?://[^\s<>\]\[(){}]+", "URL", "EXACT", 80, "url"),
+        (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "EMAIL", "EXACT", 80, "email"),
+        (r"\b(?:sha(?:1|224|256|384|512):)?[0-9a-fA-F]{32,128}\b", "HASH", "EXACT", 78, "hash"),
+        (r"(?<!\w)(?:~?/|\./|\.\./)[A-Za-z0-9._~+@%/\-]+", "FILE_PATH", "EXACT", 75, "file_path"),
+        (r"\"[^\"\n]+\"|“[^”\n]+”|‘[^’\n]+’", "QUOTE", "EXACT", 70, "quotation"),
+        (
+            r"(?<!\w)(?:[$€£¥]\s*)?-?\d+(?:[,.]\d+)*(?:\s*(?:%|ms|s|min|h|days?|bytes?|KB|MB|GB|TB|kg|g|km|m|cm|mm|°[CF]|USD|EUR|GBP))?(?!\w)",
+            "NUMBER",
+            "VALUE_AND_STYLE",
+            60,
+            "number_or_unit",
+        ),
+    )
+    for pattern, object_type, copy_policy, priority, label in patterns:
+        for match in re.finditer(pattern, source, flags=re.IGNORECASE):
+            candidates.append(
+                SpanCandidate(match.start(), match.end(), object_type, copy_policy, priority, label)
+            )
+    selected = _select_non_overlapping(candidates)
+    counters: dict[str, int] = {}
+    objects: dict[str, dict[str, Any]] = {}
+    alignments: list[dict[str, Any]] = []
+    pieces: list[str] = []
+    cursor = 0
+    for span in selected:
+        pieces.append(source[cursor : span.start])
+        prefix = HANDLE_PREFIX_BY_TYPE[span.object_type]
+        counters[prefix] = counters.get(prefix, 0) + 1
+        handle = f"@{prefix}{counters[prefix]}"
+        exact = source[span.start : span.end]
+        raw = exact.encode("utf-8")
+        char_to_byte_start = len(source[: span.start].encode("utf-8"))
+        char_to_byte_end = char_to_byte_start + len(raw)
+        record = {
+            "record_type": "kernel_protected_object",
+            "handle": handle,
+            "object_type": span.object_type,
+            "copy_policy": span.copy_policy,
+            "content_ref": stable_hash(raw),
+            "inline_bytes_b64": base64.b64encode(raw).decode("ascii") if retain_inline else None,
+            "encoding": "UTF-8",
+            "source_span": {
+                "character_start": span.start,
+                "character_end": span.end,
+                "byte_start": char_to_byte_start,
+                "byte_end": char_to_byte_end,
+            },
+            "protection_source": span.source,
+            "access_policy": "task_scoped_least_privilege",
+        }
+        record["object_sha256"] = stable_hash(record)
+        objects[handle] = record
+        alignments.append(
+            {
+                "handle": handle,
+                "source_span": record["source_span"],
+                "derivation": "preserved",
+                "confidence": 1.0,
+            }
+        )
+        pieces.append(handle)
+        cursor = span.end
+    pieces.append(source[cursor:])
+    return {
+        "policy": "project_theseus_kernel_protected_object_extraction_v1",
+        "masked_surface": "".join(pieces),
+        "protected_objects": objects,
+        "source_alignment": alignments,
+        "protected_character_count": sum(span.end - span.start for span in selected),
+        "unprotected_character_count": len(source) - sum(span.end - span.start for span in selected),
+        **NO_CHEAT,
+    }
+
+
+def build_correction_lattice(
+    source: str,
+    protected_objects: dict[str, dict[str, Any]],
+    proposals: Sequence[dict[str, Any]],
+) -> dict[str, Any]:
+    """Validate correction hypotheses while preserving uncertainty and source form."""
+
+    protected_ranges = [
+        (
+            int(row["source_span"]["character_start"]),
+            int(row["source_span"]["character_end"]),
+        )
+        for row in protected_objects.values()
+    ]
+    rows: list[dict[str, Any]] = []
+    for index, proposal in enumerate(proposals):
+        path = f"corrections[{index}]"
+        start = _required_int(proposal, "start", path)
+        end = _required_int(proposal, "end", path)
+        if not 0 <= start < end <= len(source):
+            raise KernelProtocolFault("KERC_CORRECTION_SPAN_INVALID", f"{start}:{end}", path=path)
+        if any(start < other_end and end > other_start for other_start, other_end in protected_ranges):
+            raise KernelProtocolFault("KERC_CORRECTION_TOUCHES_PROTECTED_OBJECT", f"{start}:{end}", path=path)
+        alternatives = proposal.get("alternatives")
+        if not isinstance(alternatives, list) or len(alternatives) < 2:
+            raise KernelProtocolFault("KERC_CORRECTION_ALTERNATIVES_INSUFFICIENT", "need at least two", path=path)
+        normalized = []
+        seen = set()
+        probability_sum = 0.0
+        for alt_index, alternative in enumerate(alternatives):
+            if not isinstance(alternative, dict):
+                raise KernelProtocolFault("KERC_CORRECTION_ALTERNATIVE_INVALID", str(alternative), path=f"{path}.alternatives[{alt_index}]")
+            form = str(alternative.get("form") or "")
+            probability = float(alternative.get("probability") or 0.0)
+            if not form or form in seen or not math.isfinite(probability) or not 0.0 <= probability <= 1.0:
+                raise KernelProtocolFault("KERC_CORRECTION_ALTERNATIVE_INVALID", canonical_json(alternative), path=f"{path}.alternatives[{alt_index}]")
+            seen.add(form)
+            probability_sum += probability
+            normalized.append({"form": form, "probability": probability, "evidence": alternative.get("evidence")})
+        if not math.isclose(probability_sum, 1.0, abs_tol=1e-6):
+            raise KernelProtocolFault("KERC_CORRECTION_PROBABILITY_MASS_INVALID", str(probability_sum), path=path)
+        original = source[start:end]
+        if original not in seen:
+            raise KernelProtocolFault("KERC_CORRECTION_ORIGINAL_NOT_RETAINED", original, path=path)
+        rows.append(
+            {
+                "source_span": [start, end],
+                "source_form": original,
+                "alternatives": sorted(normalized, key=lambda row: (-row["probability"], row["form"])),
+                "decision": "UNRESOLVED_REQUIRES_CALIBRATED_COMPILER",
+                "form_sensitive": False,
+            }
+        )
+    return {
+        "policy": "project_theseus_kernel_correction_lattice_v1",
+        "corrections": rows,
+        "uncertainty_preserved": True,
+        "automatic_corrections_applied": 0,
+        **NO_CHEAT,
+    }
+
+
+def validate_kernel_program(
+    program: dict[str, Any],
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+    concept_capsules: dict[str, dict[str, Any]],
+    source_character_length: int,
+) -> dict[str, Any]:
+    nodes = program.get("nodes")
+    roots = program.get("roots")
+    if not isinstance(nodes, list) or not nodes:
+        raise KernelProtocolFault("KERC_PROGRAM_NODES_MISSING", "nodes must be non-empty", path="program.nodes")
+    if not isinstance(roots, list) or not roots:
+        raise KernelProtocolFault("KERC_PROGRAM_ROOTS_MISSING", "roots must be non-empty", path="program.roots")
+    by_id: dict[str, dict[str, Any]] = {}
+    refs: dict[str, set[str]] = {}
+    handles_seen: set[str] = set()
+    for index, node in enumerate(nodes):
+        path = f"program.nodes[{index}]"
+        if not isinstance(node, dict):
+            raise KernelProtocolFault("KERC_NODE_INVALID", str(node), path=path)
+        node_id = str(node.get("node_id") or "")
+        if not re.fullmatch(r"k[0-9]+", node_id) or node_id in by_id:
+            raise KernelProtocolFault("KERC_NODE_ID_INVALID", node_id, path=f"{path}.node_id")
+        operator = str(node.get("operator") or "")
+        if not re.fullmatch(r"(?:[A-Z][A-Z0-9_]*|@M[0-9]+)", operator):
+            raise KernelProtocolFault("KERC_OPERATOR_INVALID", operator, path=f"{path}.operator")
+        modality = str(node.get("modality") or "ASSERTED")
+        polarity = str(node.get("polarity") or "AFFIRMED")
+        quantifier = str(node.get("quantifier") or "NONE")
+        confidence = float(node.get("confidence", 1.0))
+        derivation = str(node.get("derivation") or "")
+        if modality not in MODALITIES:
+            raise KernelProtocolFault("KERC_MODALITY_INVALID", modality, path=f"{path}.modality")
+        if polarity not in POLARITIES:
+            raise KernelProtocolFault("KERC_POLARITY_INVALID", polarity, path=f"{path}.polarity")
+        if quantifier not in QUANTIFIERS:
+            raise KernelProtocolFault("KERC_QUANTIFIER_INVALID", quantifier, path=f"{path}.quantifier")
+        if not math.isfinite(confidence) or not 0.0 <= confidence <= 1.0:
+            raise KernelProtocolFault("KERC_CONFIDENCE_INVALID", str(confidence), path=f"{path}.confidence")
+        if derivation not in DERIVATIONS:
+            raise KernelProtocolFault("KERC_DERIVATION_INVALID", derivation, path=f"{path}.derivation")
+        arguments = node.get("arguments")
+        if not isinstance(arguments, list):
+            raise KernelProtocolFault("KERC_ARGUMENTS_INVALID", "arguments must be a list", path=f"{path}.arguments")
+        node_refs: set[str] = set()
+        for arg_index, argument in enumerate(arguments):
+            arg_path = f"{path}.arguments[{arg_index}]"
+            if not isinstance(argument, dict) or not re.fullmatch(r"[A-Z][A-Z0-9_]*", str(argument.get("role") or "")):
+                raise KernelProtocolFault("KERC_ROLE_INVALID", canonical_json(argument), path=arg_path)
+            _validate_value(
+                argument.get("value"),
+                path=f"{arg_path}.value",
+                protected_objects=protected_objects,
+                concept_capsules=concept_capsules,
+                node_refs=node_refs,
+                handles_seen=handles_seen,
+            )
+        for span_index, span in enumerate(node.get("source_spans") or []):
+            if not isinstance(span, list) or len(span) != 2:
+                raise KernelProtocolFault("KERC_ALIGNMENT_SPAN_INVALID", canonical_json(span), path=f"{path}.source_spans[{span_index}]")
+            start, end = int(span[0]), int(span[1])
+            if not 0 <= start < end <= source_character_length:
+                raise KernelProtocolFault("KERC_ALIGNMENT_SPAN_INVALID", f"{start}:{end}", path=f"{path}.source_spans[{span_index}]")
+        by_id[node_id] = copy.deepcopy(node)
+        refs[node_id] = node_refs
+    unknown_roots = sorted(set(str(root) for root in roots) - set(by_id))
+    unknown_refs = sorted({ref for values in refs.values() for ref in values if ref not in by_id})
+    if unknown_roots:
+        raise KernelProtocolFault("KERC_ROOT_REFERENCE_UNKNOWN", ",".join(unknown_roots), path="program.roots")
+    if unknown_refs:
+        raise KernelProtocolFault("KERC_NODE_REFERENCE_UNKNOWN", ",".join(unknown_refs), path="program.nodes")
+    _reject_reference_cycles(refs)
+    canonical_program = {
+        "record_type": "kernel_program",
+        "kernel_version": KERNEL_VERSION,
+        "roots": [str(root) for root in roots],
+        "nodes": [by_id[node_id] for node_id in sorted(by_id, key=_node_sort_key)],
+    }
+    canonical_program["program_sha256"] = stable_hash(canonical_program)
+    return {
+        "state": "READY",
+        "canonical_program": canonical_program,
+        "node_count": len(by_id),
+        "referenced_handles": sorted(handles_seen),
+        "acyclic": True,
+        **NO_CHEAT,
+    }
+
+
+def serialize_kernel_program(
+    canonical_program: dict[str, Any],
+    *,
+    macros: Sequence[dict[str, Any]] = (),
+) -> dict[str, Any]:
+    tokens: list[dict[str, str]] = [token("V_P", f"VERSION:{KERNEL_VERSION}")]
+    for node in canonical_program["nodes"]:
+        tokens.extend(
+            [
+                token("V_P", "NODE_BEGIN"),
+                token("V_P", f"NODE_ID:{node['node_id']}"),
+                token("V_K", f"OP:{node['operator']}"),
+                token("V_K", f"MOD:{node.get('modality', 'ASSERTED')}"),
+                token("V_K", f"POL:{node.get('polarity', 'AFFIRMED')}"),
+                token("V_K", f"QUANT:{node.get('quantifier', 'NONE')}"),
+            ]
+        )
+        for argument in node.get("arguments") or []:
+            tokens.append(token("V_K", f"ROLE:{argument['role']}"))
+            tokens.extend(_serialize_value(argument["value"]))
+        tokens.append(token("V_P", "NODE_END"))
+    tokens.append(token("V_P", "PROGRAM_END"))
+    macro_registry = validate_macro_registry(macros)
+    compact = apply_macros(tokens, macro_registry)
+    expanded = expand_macros(compact, macro_registry)
+    if expanded != tokens:
+        raise KernelProtocolFault("KERC_MACRO_ROUNDTRIP_MISMATCH", "expanded tokens differ", path="serialization")
+    return {
+        "policy": "project_theseus_kernel_three_code_space_serialization_v1",
+        "expanded_tokens": tokens,
+        "compact_tokens": compact,
+        "macro_registry": macro_registry,
+        "expanded_sha256": stable_hash(tokens),
+        "compact_sha256": stable_hash(compact),
+        "macro_roundtrip_exact": True,
+        "code_space_counts": {
+            space: sum(1 for row in compact if row["space"] == space) for space in CODE_SPACES
+        },
+        **NO_CHEAT,
+    }
+
+
+def validate_macro_registry(macros: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    registry: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, raw in enumerate(macros):
+        path = f"macros[{index}]"
+        if not isinstance(raw, dict):
+            raise KernelProtocolFault("KERC_MACRO_INVALID", str(raw), path=path)
+        macro_id = str(raw.get("macro_id") or "")
+        if not re.fullmatch(r"M[0-9]+", macro_id) or macro_id in seen:
+            raise KernelProtocolFault("KERC_MACRO_ID_INVALID", macro_id, path=f"{path}.macro_id")
+        expansion = raw.get("expansion")
+        if not isinstance(expansion, list) or len(expansion) < 2:
+            raise KernelProtocolFault("KERC_MACRO_EXPANSION_INVALID", "need at least two tokens", path=f"{path}.expansion")
+        normalized = [_validate_token(row, path=f"{path}.expansion") for row in expansion]
+        if any(row["space"] != "V_K" for row in normalized):
+            raise KernelProtocolFault(
+                "KERC_MACRO_CROSSES_PROTECTED_OR_CONTROL_BOUNDARY",
+                "v1 macros may fuse only V_K tokens",
+                path=f"{path}.expansion",
+            )
+        record = {
+            "macro_id": macro_id,
+            "expansion": normalized,
+            "expansion_sha256": stable_hash(normalized),
+            "typed_expansion": True,
+            "may_cross_protected_boundary": False,
+            "may_cross_scope_boundary": False,
+        }
+        registry.append(record)
+        seen.add(macro_id)
+    return sorted(registry, key=lambda row: (-len(row["expansion"]), row["macro_id"]))
+
+
+def apply_macros(tokens: Sequence[dict[str, str]], registry: Sequence[dict[str, Any]]) -> list[dict[str, str]]:
+    output: list[dict[str, str]] = []
+    index = 0
+    while index < len(tokens):
+        matched = None
+        for macro in registry:
+            expansion = macro["expansion"]
+            if list(tokens[index : index + len(expansion)]) == expansion:
+                matched = macro
+                break
+        if matched is None:
+            output.append(dict(tokens[index]))
+            index += 1
+            continue
+        output.append(token("V_P", f"MACRO:{matched['macro_id']}:{matched['expansion_sha256']}"))
+        index += len(matched["expansion"])
+    return output
+
+
+def expand_macros(tokens: Sequence[dict[str, str]], registry: Sequence[dict[str, Any]]) -> list[dict[str, str]]:
+    by_id = {row["macro_id"]: row for row in registry}
+    output: list[dict[str, str]] = []
+    for index, raw in enumerate(tokens):
+        row = _validate_token(raw, path=f"tokens[{index}]")
+        if row["space"] != "V_P" or not row["token"].startswith("MACRO:"):
+            output.append(row)
+            continue
+        parts = row["token"].split(":", 2)
+        if len(parts) != 3 or parts[1] not in by_id:
+            raise KernelProtocolFault("KERC_MACRO_REFERENCE_UNKNOWN", row["token"], path=f"tokens[{index}]")
+        macro = by_id[parts[1]]
+        if parts[2] != macro["expansion_sha256"]:
+            raise KernelProtocolFault("KERC_MACRO_EXPANSION_HASH_MISMATCH", row["token"], path=f"tokens[{index}]")
+        output.extend(copy.deepcopy(macro["expansion"]))
+    return output
+
+
+def build_kernel_packet(
+    source: str,
+    program: dict[str, Any],
+    *,
+    hrl_state: dict[str, Any],
+    correction_lattice: dict[str, Any] | None = None,
+    concept_capsules: dict[str, dict[str, Any]] | None = None,
+    explicit_spans: Sequence[dict[str, Any]] = (),
+    macros: Sequence[dict[str, Any]] = (),
+    residual_mode: str = "SOURCE_RECONSTRUCTION",
+    fidelity: str = "faithful",
+    retain_source_inline: bool = False,
+    retain_objects_inline: bool = True,
+    provenance: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if residual_mode not in RESIDUAL_MODES:
+        raise KernelProtocolFault("KERC_RESIDUAL_MODE_INVALID", residual_mode, path="residual.mode")
+    if fidelity not in FIDELITY_MODES:
+        raise KernelProtocolFault("KERC_FIDELITY_INVALID", fidelity, path="residual.fidelity")
+    _validate_hrl_reference(hrl_state)
+    source_record = capture_source(source, retain_inline=retain_source_inline)
+    protected = extract_protected_objects(source, explicit_spans=explicit_spans, retain_inline=retain_objects_inline)
+    capsules = copy.deepcopy(concept_capsules or {})
+    _validate_concept_capsules(capsules)
+    lattice = correction_lattice or build_correction_lattice(source, protected["protected_objects"], [])
+    validated = validate_kernel_program(
+        program,
+        protected_objects=protected["protected_objects"],
+        concept_capsules=capsules,
+        source_character_length=len(source),
+    )
+    serialization = serialize_kernel_program(validated["canonical_program"], macros=macros)
+    residual = {
+        "mode": residual_mode,
+        "fidelity": fidelity,
+        "hrl_version": hrl_state["hrl_version"],
+        "global_state_hash": hrl_state["state_hash"],
+        "interaction_id": hrl_state["interaction_id"],
+        "segment_frame": {},
+        "token_tags": [],
+        "exact_object_handles": sorted(protected["protected_objects"]),
+        "missing_state_behavior": "reject_or_request_checkpoint_without_approximation",
+    }
+    packet_core = {
+        "policy": POLICY,
+        "packet_version": PACKET_VERSION,
+        "kernel_version": KERNEL_VERSION,
+        "codebook_version": CODEBOOK_VERSION,
+        "source": source_record,
+        "protected_objects": protected["protected_objects"],
+        "concept_capsules": capsules,
+        "correction_lattice": lattice,
+        "program": validated["canonical_program"],
+        "serialization": serialization,
+        "residual": residual,
+        "source_alignment": [
+            *protected["source_alignment"],
+            *[
+                {
+                    "kernel_node": node["node_id"],
+                    "source_spans": node.get("source_spans") or [],
+                    "derivation": node["derivation"],
+                    "confidence": node.get("confidence", 1.0),
+                }
+                for node in validated["canonical_program"]["nodes"]
+            ],
+        ],
+        "uncertainty": {
+            "unresolved_correction_count": len(lattice.get("corrections") or []),
+            "semantic_equivalence_claimed": False,
+        },
+        "provenance": copy.deepcopy(provenance or {}),
+        "compatibility": {
+            "kernel_version": KERNEL_VERSION,
+            "packet_version": PACKET_VERSION,
+            "hrl_version": hrl_state["hrl_version"],
+            "concept_registry_hash": stable_hash(capsules),
+            "macro_registry_hash": stable_hash(serialization["macro_registry"]),
+        },
+        **NO_CHEAT,
+    }
+    packet_core["packet_id"] = "kpacket:" + stable_hash(packet_core).split(":", 1)[1][:24]
+    packet_core["packet_sha256"] = stable_hash(packet_core)
+    validate_kernel_packet(packet_core, local_hrl_state=hrl_state)
+    return packet_core
+
+
+def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str, Any]) -> dict[str, Any]:
+    if packet.get("policy") != POLICY or packet.get("packet_version") != PACKET_VERSION:
+        raise KernelProtocolFault("KERC_PACKET_PROTOCOL_INCOMPATIBLE", str(packet.get("packet_version")), path="packet")
+    _validate_hrl_reference(local_hrl_state)
+    residual = packet.get("residual") if isinstance(packet.get("residual"), dict) else {}
+    if residual.get("global_state_hash") != local_hrl_state.get("state_hash"):
+        raise KernelProtocolFault(
+            "KERC_HRL_STATE_DESYNCHRONIZED",
+            f"packet={residual.get('global_state_hash')} local={local_hrl_state.get('state_hash')}",
+            path="packet.residual.global_state_hash",
+        )
+    source = packet.get("source") if isinstance(packet.get("source"), dict) else {}
+    objects = packet.get("protected_objects") if isinstance(packet.get("protected_objects"), dict) else {}
+    concepts = packet.get("concept_capsules") if isinstance(packet.get("concept_capsules"), dict) else {}
+    validated = validate_kernel_program(
+        packet.get("program") if isinstance(packet.get("program"), dict) else {},
+        protected_objects=objects,
+        concept_capsules=concepts,
+        source_character_length=int(source.get("character_length") or 0),
+    )
+    serialization = packet.get("serialization") if isinstance(packet.get("serialization"), dict) else {}
+    expanded = expand_macros(serialization.get("compact_tokens") or [], serialization.get("macro_registry") or [])
+    if stable_hash(expanded) != serialization.get("expanded_sha256"):
+        raise KernelProtocolFault("KERC_PACKET_SERIALIZATION_REPLAY_MISMATCH", "expanded token hash differs", path="packet.serialization")
+    missing_objects = sorted(set(validated["referenced_handles"]) - set(objects) - set(concepts))
+    if missing_objects:
+        raise KernelProtocolFault("KERC_PACKET_HANDLE_MISSING", ",".join(missing_objects), path="packet.program")
+    return {
+        "state": "READY",
+        "packet_id": packet.get("packet_id"),
+        "program_sha256": validated["canonical_program"]["program_sha256"],
+        "state_hash_match": True,
+        "serialization_replay_match": True,
+        "semantic_equivalence_claimed": False,
+        **NO_CHEAT,
+    }
+
+
+def validate_answer_packet(packet: dict[str, Any]) -> dict[str, Any]:
+    claims = packet.get("claims")
+    if not isinstance(claims, list) or not claims:
+        raise KernelProtocolFault("KERC_ANSWER_CLAIMS_MISSING", "claims must be non-empty", path="answer.claims")
+    claim_ids: set[str] = set()
+    for index, claim in enumerate(claims):
+        path = f"answer.claims[{index}]"
+        if not isinstance(claim, dict):
+            raise KernelProtocolFault("KERC_ANSWER_CLAIM_INVALID", str(claim), path=path)
+        claim_id = str(claim.get("claim_id") or "")
+        if not claim_id or claim_id in claim_ids:
+            raise KernelProtocolFault("KERC_ANSWER_CLAIM_ID_INVALID", claim_id, path=f"{path}.claim_id")
+        claim_ids.add(claim_id)
+        if not re.fullmatch(r"[A-Z][A-Z0-9_]*", str(claim.get("predicate") or "")):
+            raise KernelProtocolFault("KERC_ANSWER_PREDICATE_INVALID", str(claim.get("predicate")), path=f"{path}.predicate")
+        if str(claim.get("modality") or "") not in MODALITIES:
+            raise KernelProtocolFault("KERC_ANSWER_MODALITY_INVALID", str(claim.get("modality")), path=f"{path}.modality")
+        if str(claim.get("polarity") or "") not in POLARITIES:
+            raise KernelProtocolFault("KERC_ANSWER_POLARITY_INVALID", str(claim.get("polarity")), path=f"{path}.polarity")
+        confidence = float(claim.get("confidence", -1.0))
+        if not math.isfinite(confidence) or not 0.0 <= confidence <= 1.0:
+            raise KernelProtocolFault("KERC_ANSWER_CONFIDENCE_INVALID", str(confidence), path=f"{path}.confidence")
+        if not isinstance(claim.get("arguments"), list):
+            raise KernelProtocolFault("KERC_ANSWER_ARGUMENTS_INVALID", "arguments must be a list", path=f"{path}.arguments")
+    canonical = copy.deepcopy(packet)
+    canonical["answer_packet_sha256"] = stable_hash({key: value for key, value in canonical.items() if key != "answer_packet_sha256"})
+    return canonical
+
+
+def verify_answer_roundtrip(
+    intended: dict[str, Any],
+    reconstructed: dict[str, Any],
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Compare hard structured constraints after learned surface recompilation."""
+
+    intended = validate_answer_packet(intended)
+    reconstructed = validate_answer_packet(reconstructed)
+    intended_constraints = _answer_constraints(intended, protected_objects)
+    reconstructed_constraints = _answer_constraints(reconstructed, protected_objects)
+    failures = []
+    for field in (
+        "entity_handles",
+        "number_values",
+        "claim_polarities",
+        "claim_modalities",
+        "quantifiers",
+        "temporal_relations",
+        "causal_relations",
+        "attributions",
+        "quotation_handles",
+        "required_terms",
+        "required_caveats",
+    ):
+        if intended_constraints[field] != reconstructed_constraints[field]:
+            failures.append(
+                {
+                    "fault_type": f"KERC_ROUNDTRIP_{field.upper()}_MISMATCH",
+                    "intended": intended_constraints[field],
+                    "reconstructed": reconstructed_constraints[field],
+                }
+            )
+    return {
+        "policy": "project_theseus_kernel_answer_roundtrip_verifier_v1",
+        "passes": not failures,
+        "hard_failure_count": len(failures),
+        "hard_failures": failures,
+        "intended_constraints_sha256": stable_hash(intended_constraints),
+        "reconstructed_constraints_sha256": stable_hash(reconstructed_constraints),
+        "semantic_equivalence_claimed": False,
+        "truth_verified": False,
+        "failure_behavior": "reject_or_regenerate_learned_surface_without_literal_or_template_fallback",
+        **NO_CHEAT,
+    }
+
+
+def token(space: str, value: str) -> dict[str, str]:
+    if space not in CODE_SPACES or not value:
+        raise KernelProtocolFault("KERC_CODE_SPACE_TOKEN_INVALID", f"{space}:{value}")
+    return {"space": space, "token": value}
+
+
+def _validate_token(value: Any, *, path: str) -> dict[str, str]:
+    if not isinstance(value, dict):
+        raise KernelProtocolFault("KERC_TOKEN_INVALID", str(value), path=path)
+    return token(str(value.get("space") or ""), str(value.get("token") or ""))
+
+
+def _validate_value(
+    value: Any,
+    *,
+    path: str,
+    protected_objects: dict[str, dict[str, Any]],
+    concept_capsules: dict[str, dict[str, Any]],
+    node_refs: set[str],
+    handles_seen: set[str],
+) -> None:
+    if not isinstance(value, dict) or str(value.get("type") or "") not in VALUE_TYPES:
+        raise KernelProtocolFault("KERC_VALUE_INVALID", canonical_json(value), path=path)
+    value_type = str(value["type"])
+    payload = value.get("value")
+    if value_type == "handle":
+        handle = str(payload or "")
+        if handle not in protected_objects and handle not in concept_capsules:
+            raise KernelProtocolFault("KERC_HANDLE_REFERENCE_UNKNOWN", handle, path=path)
+        handles_seen.add(handle)
+    elif value_type == "concept":
+        if not re.fullmatch(r"[a-z][a-z0-9_.:-]*", str(payload or "")):
+            raise KernelProtocolFault("KERC_CONCEPT_ID_INVALID", str(payload), path=path)
+    elif value_type == "number":
+        if not isinstance(payload, dict) or not isinstance(payload.get("value"), (int, float)):
+            raise KernelProtocolFault("KERC_NUMBER_INVALID", canonical_json(payload), path=path)
+        if not math.isfinite(float(payload["value"])):
+            raise KernelProtocolFault("KERC_NUMBER_INVALID", canonical_json(payload), path=path)
+    elif value_type == "node_ref":
+        ref = str(payload or "")
+        if not re.fullmatch(r"k[0-9]+", ref):
+            raise KernelProtocolFault("KERC_NODE_REFERENCE_INVALID", ref, path=path)
+        node_refs.add(ref)
+    elif value_type == "list":
+        if not isinstance(payload, list):
+            raise KernelProtocolFault("KERC_LIST_INVALID", canonical_json(payload), path=path)
+        for index, item in enumerate(payload):
+            _validate_value(item, path=f"{path}[{index}]", protected_objects=protected_objects, concept_capsules=concept_capsules, node_refs=node_refs, handles_seen=handles_seen)
+    elif value_type == "ambiguity":
+        if not isinstance(payload, list) or len(payload) < 2:
+            raise KernelProtocolFault("KERC_AMBIGUITY_INVALID", canonical_json(payload), path=path)
+        mass = 0.0
+        for index, alternative in enumerate(payload):
+            if not isinstance(alternative, dict):
+                raise KernelProtocolFault("KERC_AMBIGUITY_INVALID", canonical_json(alternative), path=f"{path}[{index}]")
+            probability = float(alternative.get("probability") or 0.0)
+            mass += probability
+            _validate_value(alternative.get("value"), path=f"{path}[{index}].value", protected_objects=protected_objects, concept_capsules=concept_capsules, node_refs=node_refs, handles_seen=handles_seen)
+        if not math.isclose(mass, 1.0, abs_tol=1e-6):
+            raise KernelProtocolFault("KERC_AMBIGUITY_PROBABILITY_MASS_INVALID", str(mass), path=path)
+    elif value_type == "byte_literal":
+        try:
+            base64.b64decode(str(payload or ""), validate=True)
+        except Exception as exc:
+            raise KernelProtocolFault("KERC_BYTE_LITERAL_INVALID", str(payload), path=path) from exc
+    elif value_type == "boolean" and not isinstance(payload, bool):
+        raise KernelProtocolFault("KERC_BOOLEAN_INVALID", canonical_json(payload), path=path)
+    elif value_type == "null" and payload is not None:
+        raise KernelProtocolFault("KERC_NULL_INVALID", canonical_json(payload), path=path)
+
+
+def _serialize_value(value: dict[str, Any]) -> list[dict[str, str]]:
+    value_type = str(value["type"])
+    payload = value.get("value")
+    if value_type == "handle":
+        return [token("V_P", f"HANDLE:{payload}")]
+    if value_type == "concept":
+        return [token("V_K", f"CONCEPT:{payload}")]
+    if value_type == "number":
+        return [
+            token("V_P", f"NUMBER:{canonical_json(payload)}"),
+        ]
+    if value_type == "node_ref":
+        return [token("V_P", f"NODE_REF:{payload}")]
+    if value_type == "list":
+        rows = [token("V_P", "LIST_BEGIN")]
+        for item in payload:
+            rows.extend(_serialize_value(item))
+        rows.append(token("V_P", "LIST_END"))
+        return rows
+    if value_type == "ambiguity":
+        rows = [token("V_P", "AMBIG_BEGIN")]
+        for alternative in payload:
+            rows.append(token("V_P", f"PROB:{alternative['probability']:.12g}"))
+            rows.extend(_serialize_value(alternative["value"]))
+        rows.append(token("V_P", "AMBIG_END"))
+        return rows
+    if value_type == "byte_literal":
+        return [token("V_P", f"BYTE:{payload}")]
+    if value_type == "boolean":
+        return [token("V_K", "BOOL:TRUE" if payload else "BOOL:FALSE")]
+    return [token("V_K", "NULL")]
+
+
+def _answer_constraints(packet: dict[str, Any], objects: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    handles: set[str] = set()
+    numbers: set[str] = set()
+    polarities = []
+    modalities = []
+    quantifiers = []
+    temporal = []
+    causal = []
+    attributions = []
+    for claim in packet["claims"]:
+        polarities.append((claim["claim_id"], claim["polarity"]))
+        modalities.append((claim["claim_id"], claim["modality"]))
+        quantifiers.append((claim["claim_id"], claim.get("quantifier", "NONE")))
+        temporal.append((claim["claim_id"], canonical_json(claim.get("temporal") or {})))
+        attributions.append((claim["claim_id"], canonical_json(claim.get("attribution") or {})))
+        if claim["predicate"] in {"CAUSE", "PREVENT", "ENABLE", "RESULT_IN"}:
+            causal.append((claim["claim_id"], claim["predicate"], canonical_json(claim["arguments"])))
+        _collect_answer_values(claim["arguments"], handles, numbers)
+    quote_handles = sorted(handle for handle in handles if objects.get(handle, {}).get("object_type") == "QUOTE")
+    entity_handles = sorted(handle for handle in handles if objects.get(handle, {}).get("object_type") != "QUOTE")
+    return {
+        "entity_handles": entity_handles,
+        "number_values": sorted(numbers),
+        "claim_polarities": sorted(polarities),
+        "claim_modalities": sorted(modalities),
+        "quantifiers": sorted(quantifiers),
+        "temporal_relations": sorted(temporal),
+        "causal_relations": sorted(causal),
+        "attributions": sorted(attributions),
+        "quotation_handles": quote_handles,
+        "required_terms": sorted(canonical_json(row) for row in packet.get("required_terms") or []),
+        "required_caveats": sorted(str(row) for row in packet.get("required_caveats") or []),
+    }
+
+
+def _collect_answer_values(arguments: Any, handles: set[str], numbers: set[str]) -> None:
+    if isinstance(arguments, list):
+        for value in arguments:
+            _collect_answer_values(value, handles, numbers)
+    elif isinstance(arguments, dict):
+        if arguments.get("type") == "handle":
+            handles.add(str(arguments.get("value") or ""))
+        elif arguments.get("type") == "number":
+            numbers.add(canonical_json(arguments.get("value") or {}))
+        else:
+            for value in arguments.values():
+                _collect_answer_values(value, handles, numbers)
+
+
+def _validate_hrl_reference(state: dict[str, Any]) -> None:
+    if not isinstance(state, dict) or state.get("hrl_version") != HRL_VERSION:
+        raise KernelProtocolFault("KERC_HRL_VERSION_INCOMPATIBLE", str(state.get("hrl_version") if isinstance(state, dict) else None), path="hrl_state")
+    if not str(state.get("interaction_id") or "") or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(state.get("state_hash") or "")):
+        raise KernelProtocolFault("KERC_HRL_REFERENCE_INVALID", "interaction_id/state_hash missing", path="hrl_state")
+
+
+def _validate_concept_capsules(capsules: dict[str, dict[str, Any]]) -> None:
+    for handle, capsule in capsules.items():
+        if not re.fullmatch(r"@C[0-9]+", str(handle)) or not isinstance(capsule, dict):
+            raise KernelProtocolFault("KERC_CONCEPT_CAPSULE_INVALID", str(handle), path="concept_capsules")
+        identity = str(capsule.get("stable_identity") or "")
+        if not re.fullmatch(r"[a-z][a-z0-9_.:-]*", identity):
+            raise KernelProtocolFault("KERC_CONCEPT_ID_INVALID", identity, path=f"concept_capsules.{handle}")
+        if not capsule.get("provenance"):
+            raise KernelProtocolFault("KERC_CONCEPT_PROVENANCE_MISSING", handle, path=f"concept_capsules.{handle}")
+
+
+def _reject_reference_cycles(refs: dict[str, set[str]]) -> None:
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(node_id: str) -> None:
+        if node_id in visiting:
+            raise KernelProtocolFault("KERC_NODE_REFERENCE_CYCLE", node_id, path="program.nodes")
+        if node_id in visited:
+            return
+        visiting.add(node_id)
+        for target in refs.get(node_id, set()):
+            visit(target)
+        visiting.remove(node_id)
+        visited.add(node_id)
+
+    for node_id in refs:
+        visit(node_id)
+
+
+def _explicit_span_candidates(source: str, rows: Sequence[dict[str, Any]]) -> list[SpanCandidate]:
+    output = []
+    for index, row in enumerate(rows):
+        path = f"explicit_spans[{index}]"
+        if not isinstance(row, dict):
+            raise KernelProtocolFault("KERC_EXPLICIT_SPAN_INVALID", str(row), path=path)
+        start = _required_int(row, "start", path)
+        end = _required_int(row, "end", path)
+        object_type = str(row.get("object_type") or "EXACT_TEXT")
+        copy_policy = str(row.get("copy_policy") or "EXACT")
+        if not 0 <= start < end <= len(source) or object_type not in HANDLE_PREFIX_BY_TYPE or copy_policy not in COPY_POLICIES:
+            raise KernelProtocolFault("KERC_EXPLICIT_SPAN_INVALID", canonical_json(row), path=path)
+        output.append(SpanCandidate(start, end, object_type, copy_policy, 100, "explicit_user_or_caller_span"))
+    return output
+
+
+def _select_non_overlapping(candidates: Iterable[SpanCandidate]) -> list[SpanCandidate]:
+    selected: list[SpanCandidate] = []
+    for candidate in sorted(candidates, key=lambda row: (-row.priority, row.start, -(row.end - row.start), row.object_type)):
+        if any(candidate.start < existing.end and candidate.end > existing.start for existing in selected):
+            continue
+        selected.append(candidate)
+    return sorted(selected, key=lambda row: (row.start, row.end))
+
+
+def _required_int(row: dict[str, Any], key: str, path: str) -> int:
+    value = row.get(key)
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise KernelProtocolFault("KERC_INTEGER_FIELD_INVALID", f"{key}={value}", path=f"{path}.{key}")
+    return value
+
+
+def _normalization_form(text: str) -> str:
+    for form in ("NFC", "NFD", "NFKC", "NFKD"):
+        if unicodedata.is_normalized(form, text):
+            return form
+    return "NONE"
+
+
+def _node_sort_key(node_id: str) -> tuple[int, str]:
+    return (int(node_id[1:]), node_id)

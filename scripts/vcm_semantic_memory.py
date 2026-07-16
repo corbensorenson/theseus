@@ -9,6 +9,7 @@ in the existing VCM graph/report artifacts.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 import re
@@ -41,6 +42,432 @@ RELATION_TYPES = {
     "supersedes": {"temporal": True, "transitive": True},
 }
 PROTECTED_TYPES = {"architecture_spec", "policy", "procedure", "task_state"}
+HRL_VERSION = "HRL-1.0"
+HRL_LIFECYCLE_STATES = {"ACTIVE", "CHECKPOINTED", "CLOSED"}
+HRL_AUTHORITIES = {"compiler": 0, "document": 1, "tool": 2, "user": 3, "system": 4}
+HRL_GLOBAL_BUCKETS = {"terminology", "aliases", "style", "units", "formatting", "fidelity", "security_labels"}
+
+
+class HRLStateFault(ValueError):
+    """Typed, fail-closed Hierarchical Residual Ledger fault."""
+
+    def __init__(self, code: str, detail: str, *, path: str = "") -> None:
+        super().__init__(f"{code}: {detail}")
+        self.code = code
+        self.detail = detail
+        self.path = path
+
+    def record(self) -> dict[str, Any]:
+        return {
+            "fault_type": self.code,
+            "detail": self.detail,
+            "path": self.path,
+            "failure_behavior": "reject_without_approximation_or_cross_scope_reuse",
+        }
+
+
+def create_hierarchical_residual_state(
+    interaction_id: str,
+    *,
+    scope: dict[str, Any],
+    language: str = "en",
+) -> dict[str, Any]:
+    """Create VCM-owned interaction residual state with no implicit user sharing."""
+
+    if not interaction_id:
+        raise HRLStateFault("VCM_HRL_INTERACTION_ID_MISSING", "interaction_id is required")
+    normalized_scope = _validate_hrl_scope(scope)
+    state = {
+        "record_type": "vcm_hierarchical_residual_state",
+        "hrl_version": HRL_VERSION,
+        "interaction_id": interaction_id,
+        "sequence": 0,
+        "lifecycle_state": "ACTIVE",
+        "parent_state_hash": None,
+        "scope": normalized_scope,
+        "global": {
+            "language": language,
+            "terminology": {},
+            "aliases": {},
+            "style": {},
+            "units": {},
+            "formatting": {},
+            "fidelity": {},
+            "security_labels": {},
+        },
+        "segments": {},
+        "token_residuals": {},
+        "exact_object_refs": {},
+        "update_log": [],
+        "checkpoint_parent_hashes": [],
+        "tombstones": [],
+        "model_parameter_storage": False,
+        "cross_user_reuse_allowed": False,
+    }
+    state["state_hash"] = hierarchical_residual_state_hash(state)
+    return state
+
+
+def hierarchical_residual_state_hash(state: dict[str, Any]) -> str:
+    payload = copy.deepcopy(state)
+    payload.pop("state_hash", None)
+    return _digest(payload)
+
+
+def validate_hierarchical_residual_state(
+    state: dict[str, Any],
+    *,
+    expected_scope: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not isinstance(state, dict) or state.get("hrl_version") != HRL_VERSION:
+        raise HRLStateFault(
+            "VCM_HRL_VERSION_INCOMPATIBLE",
+            str(state.get("hrl_version") if isinstance(state, dict) else None),
+            path="state.hrl_version",
+        )
+    if state.get("lifecycle_state") not in HRL_LIFECYCLE_STATES:
+        raise HRLStateFault("VCM_HRL_LIFECYCLE_INVALID", str(state.get("lifecycle_state")), path="state.lifecycle_state")
+    scope = _validate_hrl_scope(state.get("scope") if isinstance(state.get("scope"), dict) else {})
+    if expected_scope is not None:
+        requested = _validate_hrl_scope(expected_scope)
+        for field in ("user", "project", "organization", "conversation"):
+            existing = scope.get(field)
+            incoming = requested.get(field)
+            if existing is not None and incoming != existing:
+                raise HRLStateFault(
+                    "VCM_HRL_SCOPE_MISMATCH",
+                    f"{field}: state={existing} request={incoming}",
+                    path=f"state.scope.{field}",
+                )
+    observed_hash = str(state.get("state_hash") or "")
+    expected_hash = hierarchical_residual_state_hash(state)
+    if observed_hash != expected_hash:
+        raise HRLStateFault(
+            "VCM_HRL_STATE_HASH_INVALID",
+            f"observed={observed_hash} expected={expected_hash}",
+            path="state.state_hash",
+        )
+    return {
+        "state": "READY",
+        "state_hash": observed_hash,
+        "scope_hash": _digest(scope),
+        "sequence": int(state.get("sequence") or 0),
+        "lifecycle_state": state["lifecycle_state"],
+        "cross_user_reuse_allowed": False,
+        "fallback_return_count": 0,
+    }
+
+
+def apply_hierarchical_residual_delta(
+    state: dict[str, Any],
+    operations: list[dict[str, Any]],
+    *,
+    expected_state_hash: str,
+    actor_authority: str,
+    actor_id: str,
+    provenance: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Apply an append-only, authority-aware HRL delta transactionally."""
+
+    validate_hierarchical_residual_state(state)
+    if state["state_hash"] != expected_state_hash:
+        raise HRLStateFault(
+            "VCM_HRL_STATE_DESYNCHRONIZED",
+            f"expected={expected_state_hash} local={state['state_hash']}",
+            path="expected_state_hash",
+        )
+    if actor_authority not in HRL_AUTHORITIES or not actor_id:
+        raise HRLStateFault("VCM_HRL_ACTOR_INVALID", f"{actor_authority}:{actor_id}", path="actor")
+    if not isinstance(provenance, dict) or not provenance:
+        raise HRLStateFault("VCM_HRL_PROVENANCE_MISSING", "delta provenance is required", path="provenance")
+    if not isinstance(operations, list) or not operations:
+        raise HRLStateFault("VCM_HRL_DELTA_EMPTY", "at least one operation is required", path="operations")
+    if state["lifecycle_state"] == "CLOSED":
+        raise HRLStateFault("VCM_HRL_STATE_CLOSED", "closed state is immutable", path="state.lifecycle_state")
+
+    working = copy.deepcopy(state)
+    parent_hash = working["state_hash"]
+    applied = []
+    for index, operation in enumerate(operations):
+        if not isinstance(operation, dict):
+            raise HRLStateFault("VCM_HRL_OPERATION_INVALID", str(operation), path=f"operations[{index}]")
+        applied.append(
+            _apply_hrl_operation(
+                working,
+                operation,
+                actor_authority=actor_authority,
+                actor_id=actor_id,
+                provenance=provenance,
+                path=f"operations[{index}]",
+            )
+        )
+    working["sequence"] = int(working.get("sequence") or 0) + 1
+    working["parent_state_hash"] = parent_hash
+    delta_core = {
+        "record_type": "vcm_hierarchical_residual_delta",
+        "hrl_version": HRL_VERSION,
+        "interaction_id": working["interaction_id"],
+        "sequence": working["sequence"],
+        "parent_state_hash": parent_hash,
+        "operations": copy.deepcopy(operations),
+        "applied": applied,
+        "actor_authority": actor_authority,
+        "actor_id": actor_id,
+        "provenance": copy.deepcopy(provenance),
+    }
+    delta_core["delta_id"] = _stable_id("hrldelta", _canonical(delta_core))
+    working["update_log"].append(
+        {
+            "delta_id": delta_core["delta_id"],
+            "sequence": working["sequence"],
+            "parent_state_hash": parent_hash,
+            "operation_count": len(applied),
+            "actor_authority": actor_authority,
+            "provenance_hash": _digest(provenance),
+        }
+    )
+    working.pop("state_hash", None)
+    working["state_hash"] = hierarchical_residual_state_hash(working)
+    delta_core["result_state_hash"] = working["state_hash"]
+    delta_core["delta_sha256"] = _digest(delta_core)
+    delta_core["failure_behavior"] = "transaction_rejected_without_partial_commit"
+    delta_core["fallback_return_count"] = 0
+    validate_hierarchical_residual_state(working)
+    return working, delta_core
+
+
+def replay_hierarchical_residual_deltas(
+    initial_state: dict[str, Any],
+    deltas: list[dict[str, Any]],
+) -> dict[str, Any]:
+    state = copy.deepcopy(initial_state)
+    validate_hierarchical_residual_state(state)
+    for index, delta in enumerate(deltas):
+        if not isinstance(delta, dict):
+            raise HRLStateFault("VCM_HRL_DELTA_INVALID", str(delta), path=f"deltas[{index}]")
+        if delta.get("parent_state_hash") != state.get("state_hash"):
+            raise HRLStateFault("VCM_HRL_REPLAY_PARENT_MISMATCH", str(delta.get("parent_state_hash")), path=f"deltas[{index}]")
+        state, replayed = apply_hierarchical_residual_delta(
+            state,
+            copy.deepcopy(delta.get("operations") or []),
+            expected_state_hash=str(delta["parent_state_hash"]),
+            actor_authority=str(delta.get("actor_authority") or ""),
+            actor_id=str(delta.get("actor_id") or ""),
+            provenance=copy.deepcopy(delta.get("provenance") or {}),
+        )
+        if replayed["delta_id"] != delta.get("delta_id") or state["state_hash"] != delta.get("result_state_hash"):
+            raise HRLStateFault("VCM_HRL_REPLAY_DIGEST_MISMATCH", str(delta.get("delta_id")), path=f"deltas[{index}]")
+    return {
+        "state": state,
+        "delta_count": len(deltas),
+        "state_digest_match": True,
+        "deterministic_replay": True,
+        "fallback_return_count": 0,
+    }
+
+
+def migrate_hierarchical_residual_state(
+    state: dict[str, Any],
+    *,
+    target_version: str = HRL_VERSION,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Deterministically migrate the only admitted legacy schema to HRL-1.0."""
+
+    source_version = str(state.get("hrl_version") or "") if isinstance(state, dict) else ""
+    if target_version != HRL_VERSION:
+        raise HRLStateFault("VCM_HRL_MIGRATION_TARGET_UNSUPPORTED", target_version, path="target_version")
+    if source_version == HRL_VERSION:
+        validate_hierarchical_residual_state(state)
+        migrated = copy.deepcopy(state)
+        return migrated, {
+            "mode": "identity",
+            "from_version": source_version,
+            "to_version": target_version,
+            "state_hash_preserved": True,
+            "semantic_fields_preserved": True,
+        }
+    if source_version != "HRL-0.9":
+        raise HRLStateFault("VCM_HRL_MIGRATION_SOURCE_UNSUPPORTED", source_version, path="state.hrl_version")
+    migrated = copy.deepcopy(state)
+    migrated["hrl_version"] = HRL_VERSION
+    migrated.setdefault("record_type", "vcm_hierarchical_residual_state")
+    migrated.setdefault("sequence", 0)
+    migrated.setdefault("lifecycle_state", "ACTIVE")
+    migrated.setdefault("parent_state_hash", None)
+    migrated["scope"] = _validate_hrl_scope(migrated.get("scope") if isinstance(migrated.get("scope"), dict) else {})
+    global_state = migrated.setdefault("global", {})
+    global_state.setdefault("language", "en")
+    for bucket in HRL_GLOBAL_BUCKETS:
+        global_state.setdefault(bucket, {})
+    migrated.setdefault("segments", {})
+    migrated.setdefault("token_residuals", {})
+    migrated.setdefault("exact_object_refs", {})
+    migrated.setdefault("update_log", [])
+    migrated.setdefault("checkpoint_parent_hashes", [])
+    migrated.setdefault("tombstones", [])
+    migrated["model_parameter_storage"] = False
+    migrated["cross_user_reuse_allowed"] = False
+    migrated.pop("state_hash", None)
+    migrated["state_hash"] = hierarchical_residual_state_hash(migrated)
+    validate_hierarchical_residual_state(migrated)
+    receipt = {
+        "mode": "deterministic_additive_projection",
+        "from_version": source_version,
+        "to_version": target_version,
+        "semantic_fields_preserved": True,
+        "cross_user_reuse_widened": False,
+        "result_state_hash": migrated["state_hash"],
+        "rollback": "retain content-bound HRL-0.9 checkpoint; no in-place overwrite",
+    }
+    receipt["migration_sha256"] = _digest(receipt)
+    return migrated, receipt
+
+
+def _apply_hrl_operation(
+    state: dict[str, Any],
+    operation: dict[str, Any],
+    *,
+    actor_authority: str,
+    actor_id: str,
+    provenance: dict[str, Any],
+    path: str,
+) -> dict[str, Any]:
+    op = str(operation.get("op") or "")
+    authority_rank = HRL_AUTHORITIES[actor_authority]
+    common = {
+        "authority": actor_authority,
+        "authority_rank": authority_rank,
+        "actor_id": actor_id,
+        "provenance_hash": _digest(provenance),
+        "privacy": str(operation.get("privacy") or "interaction_private"),
+        "expiry": operation.get("expiry"),
+    }
+    if op in {"DEFINE", "SET_STYLE", "BIND_ALIAS", "LOCK_TERM"}:
+        bucket_by_op = {
+            "DEFINE": "terminology",
+            "SET_STYLE": "style",
+            "BIND_ALIAS": "aliases",
+            "LOCK_TERM": "terminology",
+        }
+        bucket = bucket_by_op[op]
+        key = str(operation.get("key") or "")
+        if not key or "value" not in operation:
+            raise HRLStateFault("VCM_HRL_GLOBAL_OPERATION_INVALID", _canonical(operation), path=path)
+        if actor_authority == "document":
+            raise HRLStateFault("VCM_HRL_DOCUMENT_GLOBAL_MUTATION_FORBIDDEN", op, path=path)
+        if op == "LOCK_TERM" and actor_authority not in {"user", "system"}:
+            raise HRLStateFault("VCM_HRL_LOCK_AUTHORITY_INSUFFICIENT", actor_authority, path=path)
+        target = state["global"][bucket]
+        _require_hrl_precedence(target.get(key), authority_rank, path)
+        target[key] = {
+            "value": copy.deepcopy(operation["value"]),
+            "locked": op == "LOCK_TERM" or bool(operation.get("locked")),
+            **common,
+        }
+        return {"op": op, "path": f"global.{bucket}.{key}", "status": "applied"}
+    if op == "OVERRIDE":
+        segment_id = str(operation.get("segment_id") or "")
+        key = str(operation.get("key") or "")
+        if not segment_id or not key or "value" not in operation:
+            raise HRLStateFault("VCM_HRL_SEGMENT_OVERRIDE_INVALID", _canonical(operation), path=path)
+        segment = state["segments"].setdefault(segment_id, {"entries": {}})
+        _require_hrl_precedence(segment["entries"].get(key), authority_rank, path)
+        segment["entries"][key] = {"value": copy.deepcopy(operation["value"]), "locked": bool(operation.get("locked")), **common}
+        segment["local_state_hash"] = _digest(segment["entries"])
+        return {"op": op, "path": f"segments.{segment_id}.{key}", "status": "applied"}
+    if op == "SET_TOKEN_RESIDUAL":
+        node_id = str(operation.get("kernel_node") or "")
+        if not re.fullmatch(r"k[0-9]+", node_id) or str(operation.get("exactness") or "") not in {"semantic", "faithful", "lexical", "exact"}:
+            raise HRLStateFault("VCM_HRL_TOKEN_RESIDUAL_INVALID", _canonical(operation), path=path)
+        state["token_residuals"][node_id] = {
+            "realization_ref": operation.get("realization_ref"),
+            "morphology": copy.deepcopy(operation.get("morphology") or {}),
+            "exactness": operation["exactness"],
+            "source_alignment": copy.deepcopy(operation.get("source_alignment")),
+            "confidence": float(operation.get("confidence", 1.0)),
+            **common,
+        }
+        return {"op": op, "path": f"token_residuals.{node_id}", "status": "applied"}
+    if op == "REGISTER_EXACT_REF":
+        handle = str(operation.get("handle") or "")
+        content_ref = str(operation.get("content_ref") or "")
+        if not re.fullmatch(r"@[EQNDKX][0-9]+", handle) or not re.fullmatch(r"sha256:[0-9a-f]{64}", content_ref):
+            raise HRLStateFault("VCM_HRL_EXACT_REF_INVALID", _canonical(operation), path=path)
+        state["exact_object_refs"][handle] = {
+            "content_ref": content_ref,
+            "copy_policy": str(operation.get("copy_policy") or "EXACT"),
+            "access_policy": str(operation.get("access_policy") or "task_scoped_least_privilege"),
+            **common,
+        }
+        return {"op": op, "path": f"exact_object_refs.{handle}", "status": "applied"}
+    if op == "EVICT":
+        target_path = str(operation.get("path") or "")
+        removed = _evict_hrl_path(state, target_path, authority_rank, path)
+        state["tombstones"].append({"path": target_path, "prior_value_hash": _digest(removed), **common})
+        return {"op": op, "path": target_path, "status": "applied"}
+    if op == "RESET":
+        reset_scope = str(operation.get("scope") or "")
+        if actor_authority not in {"user", "system"}:
+            raise HRLStateFault("VCM_HRL_RESET_AUTHORITY_INSUFFICIENT", actor_authority, path=path)
+        if reset_scope == "interaction":
+            for bucket in HRL_GLOBAL_BUCKETS:
+                state["global"][bucket] = {}
+            state["segments"] = {}
+            state["token_residuals"] = {}
+            state["exact_object_refs"] = {}
+        elif reset_scope.startswith("segment:"):
+            state["segments"].pop(reset_scope.split(":", 1)[1], None)
+        else:
+            raise HRLStateFault("VCM_HRL_RESET_SCOPE_INVALID", reset_scope, path=path)
+        state["tombstones"].append({"path": reset_scope, "prior_value_hash": None, **common})
+        return {"op": op, "path": reset_scope, "status": "applied"}
+    if op == "CHECKPOINT":
+        state["checkpoint_parent_hashes"].append(state["state_hash"])
+        state["lifecycle_state"] = "CHECKPOINTED"
+        return {"op": op, "path": "checkpoint", "status": "applied"}
+    if op == "CLOSE":
+        if actor_authority not in {"user", "system"}:
+            raise HRLStateFault("VCM_HRL_CLOSE_AUTHORITY_INSUFFICIENT", actor_authority, path=path)
+        state["lifecycle_state"] = "CLOSED"
+        return {"op": op, "path": "lifecycle_state", "status": "applied"}
+    raise HRLStateFault("VCM_HRL_OPERATION_UNKNOWN", op, path=path)
+
+
+def _require_hrl_precedence(existing: Any, incoming_rank: int, path: str) -> None:
+    if not isinstance(existing, dict):
+        return
+    existing_rank = int(existing.get("authority_rank") or 0)
+    if existing.get("locked") and incoming_rank <= existing_rank:
+        raise HRLStateFault("VCM_HRL_LOCKED_ENTRY_OVERRIDE_FORBIDDEN", str(existing_rank), path=path)
+    if incoming_rank < existing_rank:
+        raise HRLStateFault("VCM_HRL_AUTHORITY_PRECEDENCE_VIOLATION", f"incoming={incoming_rank} existing={existing_rank}", path=path)
+
+
+def _evict_hrl_path(state: dict[str, Any], target_path: str, authority_rank: int, fault_path: str) -> Any:
+    parts = target_path.split(".")
+    if len(parts) != 3 or parts[0] != "global" or parts[1] not in HRL_GLOBAL_BUCKETS:
+        raise HRLStateFault("VCM_HRL_EVICT_PATH_INVALID", target_path, path=fault_path)
+    bucket = state["global"][parts[1]]
+    if parts[2] not in bucket:
+        raise HRLStateFault("VCM_HRL_EVICT_TARGET_MISSING", target_path, path=fault_path)
+    _require_hrl_precedence(bucket[parts[2]], authority_rank, fault_path)
+    return bucket.pop(parts[2])
+
+
+def _validate_hrl_scope(scope: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(scope, dict):
+        raise HRLStateFault("VCM_HRL_SCOPE_INVALID", str(scope), path="scope")
+    conversation = str(scope.get("conversation") or "")
+    if not conversation:
+        raise HRLStateFault("VCM_HRL_CONVERSATION_SCOPE_MISSING", "conversation is required", path="scope.conversation")
+    return {
+        "user": str(scope["user"]) if scope.get("user") is not None else None,
+        "project": str(scope["project"]) if scope.get("project") is not None else None,
+        "organization": str(scope["organization"]) if scope.get("organization") is not None else None,
+        "conversation": conversation,
+        "expiry": scope.get("expiry"),
+        "privacy": str(scope.get("privacy") or "private_local"),
+    }
 
 
 def _canonical(value: Any) -> str:

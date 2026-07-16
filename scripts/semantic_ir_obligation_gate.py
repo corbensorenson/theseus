@@ -25,7 +25,9 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import report_evidence_store  # noqa: E402
+import kernel_english_protocol  # noqa: E402
 import semantic_ir  # noqa: E402
+import vcm_semantic_memory  # noqa: E402
 
 
 DEFAULT_VIEW = ROOT / "reports" / "viea_spine_materialized_view.json"
@@ -85,6 +87,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     strict_generator_repair_apply = read_json(strict_generator_repair_apply_path)
     strict_generator_repair_candidates = read_jsonl(strict_generator_repair_candidates_path)
     typed_ir_audit = audit_typed_semantic_ir_candidates(strict_generator_repair_candidates)
+    kernel_protocol_audit = audit_kernel_packet_protocol()
 
     semantic_records = list_dicts(view.get("semantic_ir_records"))
     semantic_atoms = [row for row in semantic_records if row.get("canonical_record_type") == "semantic_atom"]
@@ -165,6 +168,22 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             int(typed_ir_audit.get("credit_violation_count") or 0) == 0,
             typed_ir_audit,
         ),
+        gate(
+            "kernel_packet_protocol_and_vcm_residual_lifecycle_ready",
+            kernel_protocol_audit.get("state") == "READY"
+            and kernel_protocol_audit.get("packet_replay_match") is True
+            and kernel_protocol_audit.get("hrl_delta_replay_match") is True
+            and kernel_protocol_audit.get("migration_ready") is True,
+            kernel_protocol_audit,
+        ),
+        gate(
+            "kernel_packet_negative_and_adversarial_cases_fail_closed",
+            kernel_protocol_audit.get("stale_state_rejected") is True
+            and kernel_protocol_audit.get("unsafe_macro_rejected") is True
+            and kernel_protocol_audit.get("roundtrip_mismatch_rejected") is True
+            and int(kernel_protocol_audit.get("fallback_return_count") or 0) == 0,
+            kernel_protocol_audit,
+        ),
     ]
     hard_failed = [row for row in hard_gates if not row["passed"]]
     records = build_records(
@@ -202,6 +221,11 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "typed_semantic_ir_ready_count": typed_ir_audit.get("ready_count", 0),
             "typed_semantic_ir_receipt_mismatch_count": typed_ir_audit.get("receipt_mismatch_count", 0),
             "typed_semantic_ir_credit_violation_count": typed_ir_audit.get("credit_violation_count", 0),
+            "kernel_packet_protocol_state": kernel_protocol_audit.get("state"),
+            "kernel_packet_replay_match": kernel_protocol_audit.get("packet_replay_match", False),
+            "kernel_hrl_delta_replay_match": kernel_protocol_audit.get("hrl_delta_replay_match", False),
+            "kernel_migration_ready": kernel_protocol_audit.get("migration_ready", False),
+            "kernel_negative_case_count": kernel_protocol_audit.get("negative_case_count", 0),
             "semantic_obligation_record_count": len(records["semantic_obligation_records"]),
             "dependency_edge_record_count": len(records["dependency_edge_records"]),
             "evidence_binding_record_count": len(records["evidence_binding_records"]),
@@ -224,6 +248,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         },
         "consumer_states": consumers,
         "typed_semantic_ir_audit": typed_ir_audit,
+        "kernel_packet_and_residual_lifecycle_audit": kernel_protocol_audit,
         **records,
         **NO_CHEAT,
         "non_claims": [
@@ -231,7 +256,157 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "Semantic IR binding is not a public benchmark result or learned-generation promotion.",
             "Router/tool/template behavior remains separate from learned generation.",
             "Deterministic semantic-IR compilation and repair remain zero-credit assisted behavior.",
+            "Kernel packet, residual replay, and structured round-trip checks are exact-substrate evidence, not learned compiler, renderer, reasoning, or efficiency evidence.",
         ],
+    }
+
+
+def audit_kernel_packet_protocol() -> dict[str, Any]:
+    source = "Dr. Alvarez may approve $2.75 million."
+    person_end = len("Dr. Alvarez")
+    initial = vcm_semantic_memory.create_hierarchical_residual_state(
+        "semantic-ir-kernel-gate",
+        scope={
+            "user": "private-gate-user",
+            "project": "theseus",
+            "conversation": "semantic-ir-kernel-gate",
+            "privacy": "private_local",
+        },
+    )
+    active, delta = vcm_semantic_memory.apply_hierarchical_residual_delta(
+        initial,
+        [{"op": "LOCK_TERM", "key": "KERNEL_LANGUAGE", "value": "Kernel English"}],
+        expected_state_hash=initial["state_hash"],
+        actor_authority="user",
+        actor_id="private-gate-user",
+        provenance={"kind": "private_gate_fixture"},
+    )
+    replay = vcm_semantic_memory.replay_hierarchical_residual_deltas(initial, [delta])
+    program = {
+        "roots": ["k0"],
+        "nodes": [
+            {
+                "node_id": "k0",
+                "operator": "APPROVE",
+                "modality": "POSSIBLE",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 0.75,
+                "derivation": "compiler_inference",
+                "source_spans": [[0, len(source)]],
+                "arguments": [
+                    {"role": "AG", "value": {"type": "handle", "value": "@E1"}},
+                    {"role": "VALUE", "value": {"type": "handle", "value": "@N1"}},
+                ],
+            }
+        ],
+    }
+    packet = kernel_english_protocol.build_kernel_packet(
+        source,
+        program,
+        hrl_state=active,
+        explicit_spans=[
+            {
+                "start": 0,
+                "end": person_end,
+                "object_type": "PERSON",
+                "copy_policy": "EXACT",
+            }
+        ],
+        macros=[
+            {
+                "macro_id": "M1",
+                "expansion": [
+                    kernel_english_protocol.token("V_K", "OP:APPROVE"),
+                    kernel_english_protocol.token("V_K", "MOD:POSSIBLE"),
+                ],
+            }
+        ],
+        provenance={"source": "private_gate_fixture", "authority": "local_test"},
+    )
+    packet_replay = kernel_english_protocol.validate_kernel_packet(packet, local_hrl_state=active)
+    legacy = json.loads(json.dumps(active))
+    legacy["hrl_version"] = "HRL-0.9"
+    legacy.pop("state_hash", None)
+    migrated, migration = vcm_semantic_memory.migrate_hierarchical_residual_state(legacy)
+
+    stale_state_rejected = False
+    newer, _newer_delta = vcm_semantic_memory.apply_hierarchical_residual_delta(
+        active,
+        [{"op": "SET_STYLE", "key": "register", "value": "technical_accessible"}],
+        expected_state_hash=active["state_hash"],
+        actor_authority="user",
+        actor_id="private-gate-user",
+        provenance={"kind": "private_gate_fixture"},
+    )
+    try:
+        kernel_english_protocol.validate_kernel_packet(packet, local_hrl_state=newer)
+    except kernel_english_protocol.KernelProtocolFault as exc:
+        stale_state_rejected = exc.code == "KERC_HRL_STATE_DESYNCHRONIZED"
+
+    unsafe_macro_rejected = False
+    try:
+        kernel_english_protocol.validate_macro_registry(
+            [
+                {
+                    "macro_id": "M9",
+                    "expansion": [
+                        kernel_english_protocol.token("V_K", "OP:APPROVE"),
+                        kernel_english_protocol.token("V_P", "HANDLE:@E1"),
+                    ],
+                }
+            ]
+        )
+    except kernel_english_protocol.KernelProtocolFault as exc:
+        unsafe_macro_rejected = exc.code == "KERC_MACRO_CROSSES_PROTECTED_OR_CONTROL_BOUNDARY"
+
+    intended = {
+        "claims": [
+            {
+                "claim_id": "claim-1",
+                "predicate": "APPROVE",
+                "modality": "POSSIBLE",
+                "polarity": "AFFIRMED",
+                "confidence": 0.75,
+                "arguments": [{"role": "AG", "value": {"type": "handle", "value": "@E1"}}],
+            }
+        ],
+        "required_terms": [],
+        "required_caveats": ["Approval is not certain."],
+    }
+    reconstructed = json.loads(json.dumps(intended))
+    reconstructed["claims"][0]["modality"] = "ASSERTED"
+    mismatch = kernel_english_protocol.verify_answer_roundtrip(
+        intended,
+        reconstructed,
+        protected_objects=packet["protected_objects"],
+    )
+    all_ready = bool(
+        packet_replay["state"] == "READY"
+        and replay["state"]["state_hash"] == active["state_hash"]
+        and vcm_semantic_memory.validate_hierarchical_residual_state(migrated)["state"] == "READY"
+        and migration["from_version"] == "HRL-0.9"
+        and stale_state_rejected
+        and unsafe_macro_rejected
+        and not mismatch["passes"]
+    )
+    return {
+        "policy": "project_theseus_kernel_packet_protocol_integration_audit_v1",
+        "state": "READY" if all_ready else "REJECTED",
+        "packet_id": packet["packet_id"],
+        "packet_sha256": packet["packet_sha256"],
+        "packet_replay_match": packet_replay["serialization_replay_match"],
+        "hrl_delta_replay_match": replay["state"]["state_hash"] == active["state_hash"],
+        "migration_ready": migration["from_version"] == "HRL-0.9" and migration["to_version"] == "HRL-1.0",
+        "stale_state_rejected": stale_state_rejected,
+        "unsafe_macro_rejected": unsafe_macro_rejected,
+        "roundtrip_mismatch_rejected": not mismatch["passes"],
+        "negative_case_count": 3,
+        "learned_surface_compiler_implemented": False,
+        "learned_surface_renderer_implemented": False,
+        "learned_reasoning_claimed": False,
+        "efficiency_claimed": False,
+        **NO_CHEAT,
     }
 
 

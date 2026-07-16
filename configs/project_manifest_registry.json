@@ -4143,7 +4143,7 @@
       "canonical_entrypoint": "scripts/theseus_plan_compiler.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve typed DAG, governed VCM packet, artifact graph, verifier, and residual trace outputs.",
-      "verification_command": "python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate",
+      "verification_command": "python3 -m py_compile scripts/kernel_english_protocol.py scripts/semantic_ir.py scripts/semantic_ir_obligation_gate.py scripts/vcm_semantic_memory.py && python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_semantic_ir.py tests/test_vcm_semantic_memory.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate",
       "role": "planning",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -4157,6 +4157,7 @@
         "scripts/viea_spine_record_gate.py",
         "scripts/semantic_ir.py",
         "scripts/semantic_ir_obligation_gate.py",
+        "scripts/kernel_english_protocol.py",
         "scripts/strict_generator_semantic_ir_repair_bridge.py",
         "scripts/strict_generator_semantic_ir_repair_apply.py",
         "scripts/strict_generator_mlx_decode_guards.py",
@@ -4165,7 +4166,8 @@
         "scripts/neural_seed_token_model_backend.py",
         "scripts/neural_seed_candidate_generation.py",
         "scripts/neural_seed_report_io.py",
-        "tests/test_semantic_ir.py"
+        "tests/test_semantic_ir.py",
+        "tests/test_kernel_english_protocol.py"
       ],
       "evidence_outputs": [
         "reports/theseus_plan_compiler.json",
@@ -5503,7 +5505,7 @@
       "canonical_entrypoint": "scripts/virtual_context_memory.py",
       "swappable_under_contract": true,
       "replacement_policy": "Runtime/KV/native cache successors must first preserve packet provenance and same-protocol VCM on/off evidence.",
-      "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_semantic_memory.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 -m pytest -q tests/test_vcm_semantic_memory.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
+      "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_semantic_memory.py scripts/kernel_english_protocol.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 -m pytest -q tests/test_vcm_semantic_memory.py tests/test_kernel_english_protocol.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py",
       "role": "vcm_context",
       "trust_tier": "governed_local_memory",
       "dependencies": [
@@ -5511,6 +5513,8 @@
         "scripts/virtual_context_memory.py",
         "scripts/vcm_semantic_memory.py",
         "tests/test_vcm_semantic_memory.py",
+        "scripts/kernel_english_protocol.py",
+        "tests/test_kernel_english_protocol.py",
         "scripts/vcm_consumer_abi.py",
         "scripts/vcm_consumer_integration_gate.py",
         "scripts/vcm_task_context_bridge.py",

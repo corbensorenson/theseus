@@ -32,7 +32,19 @@
       9
     ],
     "required_backlog_ids": [
-      "planned.kernel_english_hierarchical_residual_compiler_v1"
+      "planned.reflexive_router_integration_v1",
+      "planned.kernel_english_hierarchical_residual_compiler_v1",
+      "planned.onecell_rwm_candidate_kernel_v1",
+      "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
+      "planned.grpo_rloo_remax_rlvr_private_verifier_reward_v1",
+      "planned.multi_target_policy_updates_v1",
+      "planned.gvr_state_machine_and_localized_repair_v1",
+      "planned.mtp_generation_mode_matched_control_v1",
+      "planned.medusa_eagle_speculative_layerskip_registry_v1",
+      "planned.diffusion_llada_sketch_first_repair_v1",
+      "planned.data_engine_continual_learning_unlearning_v1",
+      "planned.open_ended_improvement_campaign_v1",
+      "planned.question_compiled_semantic_addressing_v1"
     ],
     "ready_backlog_statuses": [
       "pretraining_wired_behavior_qualification_pending",
@@ -41,8 +53,8 @@
       "falsified_pretraining",
       "retired_by_pretraining_verdict"
     ],
-    "rule": "Architecture readiness requires every architecture prerequisite and every declared cross-phase pre-training backlog contract to be implemented or wired, while training, empirical product qualification, public calibration, behavior-dependent routing, and sim-to-real evidence remain follow-through rather than circular prerequisites.",
-    "no_shortcut": "A phase or backlog item may be deferred only because its remaining acceptance evidence intrinsically requires learned behavior, training, public calibration, real-use time, or unavailable external peers; missing contracts, authority, memory, evidence, deterministic tooling, runtime, migration, security, campaign preregistration, or governance remain architecture blockers."
+    "rule": "Architecture readiness requires every architecture prerequisite and every finite cross-phase pre-training backlog contract to be fully wired, implemented, falsified, or retired before long optimizer spend. Training, empirical product qualification, public calibration, real-use evidence, and behavior-dependent efficacy remain follow-through rather than circular prerequisites, but their model, objective, state, checkpoint, routing, memory, verifier, resource, migration, rollback, and evaluation interfaces must already exist when later adoption would invalidate the campaign.",
+    "no_shortcut": "A phase or backlog item may defer only evidence that intrinsically requires learned behavior, training, public calibration, real-use time, unavailable external peers, or a future modality. Missing contracts, authority, memory, evidence, deterministic tooling, runtime, migration, security, checkpoint lineage, campaign preregistration, objective plumbing, or governance remain architecture blockers. A speculative item may be retired before training; it may not remain vaguely planned and then silently invalidate the frozen run."
   },
   "latest_ai_book_technique_reconciliation": {
     "date": "2026-07-06",
@@ -403,12 +415,12 @@
     "Every authored AI_book chapter must map to a Theseus implementation slice with a minimum slice, beyond-SOTA endpoint, support-state target, no-claim boundary, and gate or fixture.",
     "AI_book chapter-level Planned Codex tests are treated as missing technique obligations until a registered Theseus implementation has matched controls, negative controls, no-cheat audit, retained residuals, and explicit non-claims.",
     "Negative, inconclusive, and regression evidence must remain attached to the claim or phase it constrains; do not replace a negative report with a nearby positive family.",
-    "The previously closed architecture core is reopened once for the bounded KERC pre-training contract because the source arrived before any 57.315M long optimizer run; finish that registered tranche, then freeze architecture breadth and return governed data plus direct learned behavior to primary focus.",
+    "The architecture core is reopened once as a finite closure program because KERC, QCSA, Reflexive Router, OneCell, update-causality, and generation-objective requirements arrived before any 57.315M long optimizer run; every checkpoint-shaping item must be wired, falsified, or retired, then the content-bound architecture freezes.",
     "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it.",
     "The v8 prompt/target comparison is an exact-recovery diagnostic because its rows do not carry complete functional verifiers; practical architecture selection requires a separately frozen source-disjoint functional utility surface.",
-    "After the bounded KERC pre-training tranche and revised joint campaign are wired, freeze architecture and control-plane breadth for three capability cycles; only a concrete correctness, security, replay, migration, or measured training/inference defect may authorize another architecture change.",
+    "After the finite pre-training docket and revised joint campaign are wired, freeze architecture and control-plane breadth for three capability cycles; only a concrete correctness, security, replay, migration, checkpoint, or measured training/inference defect may authorize another architecture change.",
     "Treat 10.8M active parameters as a systems-canary rung. If sparse and both dense controls remain functionally zero across code, close the rung and require task-complete data plus a preregistered 50M-100M scale proposal instead of another same-scale patch.",
-    "Treat OneCell-RWM as a future cognitive-kernel discovery candidate only: it cannot alter or delay frozen v8, become a same-scale rescue patch, duplicate VIEA/VCM/Octopus/SCF/Loop-Closure/SparkStream/registry machinery, or receive route authority before a preregistered matched total-cost verdict."
+    "Treat OneCell-RWM as a pre-training architecture-disposition candidate: its shared ABI, exact substrate, checkpoint/objective interfaces, and matched campaign decision must close before the long run, but it cannot become a same-scale rescue patch, duplicate VIEA/VCM/Octopus/SCF/Loop-Closure/SparkStream/registry machinery, or receive route authority before a preregistered matched total-cost verdict."
   ],
   "planned_codex_test_backlog": [
     {
@@ -430,8 +442,9 @@
         19
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "planned_after_selected_model_exact_substrate_maintenance_allowed_now",
-      "dependency": "do not mutate or delay the frozen 57.315M data/training contract; reuse existing registered owners, mature exact command/qualification/result/effect contracts as maintenance, and defer learned-router or reflex-promotion claims until a behavior-positive selected local model and real governed traces exist",
+      "status": "pre_training_architecture_required",
+      "dependency": "reuse existing registered owners and close the exact command/qualification/result/effect/Chronicle/reflex lifecycle before the long run; learned-router and reflex-promotion efficacy still requires a behavior-positive selected model and real governed traces",
+      "pre_training_acceptance_boundary": "Before long training, the canonical dispatch path, typed command and reflex registries, precedence engine, terminal outcomes, structured concurrency, dependency-complete invalidation, Chronicle state, sole effect-commit kernel, replay/decompilation/quarantine interfaces, checkpoint compatibility, resource records, and negative controls are registered and pass exact replay. Learned routing quality, real route regret, and trace-to-reflex promotion remain post-training evidence.",
       "acceptance_gate": "A single canonical dispatch path supports origin-authenticated typed route directives, direct capabilities, workflows, explicit fallback, requested-versus-realized effort, linked declarative command/reflex registries, indexed deterministic precedence, deterministic and calibrated abstaining learned proposals, SCF qualification, finite typed terminal outcomes, minimum-sufficient-compute atomic/composite DAGs with bounded structured concurrency, dependency-complete cache invalidation, typed results, bitemporal Chronicle updates, sole-kernel effect commits, semantic-version dependency invalidation, and economically governed trace-to-reflex replay/differential/shadow/canary/quarantine/decompilation. One frozen private profile reuses existing fixtures and compares model-only, LLM-first tool, hard-rule, learned-router, semantic-cache, modular-tool, no-Chronicle, no-compiler, full reflexive, and oracle policies under matched information, model, authority, retry, verification, and total-resource opportunities, with complete utility, routing, command, temporal, effect, lifecycle, and anti-Goodhart metrics.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "The paper and roadmap contract are argument only. Fast-path coverage, route correctness, exact tools, typed ledgers, or compiled reflexes remain separately accounted from learned answer quality and cannot authorize public-transfer, autonomy, AGI, or ASI claims."
@@ -518,8 +531,9 @@
         18
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "architecture_contract_eligible_after_v8_scale_falsification",
-      "dependency": "the v8 scale-falsification disposition is recorded; OneCell may begin ABI and exact-substrate work but may not become a same-scale rescue patch, delay the practical transformer/hybrid data-and-scale decision, or create parallel Theseus subsystems",
+      "status": "pre_training_architecture_required",
+      "dependency": "the v8 scale-falsification disposition is recorded; close OneCell ABI, exact-substrate, objective/checkpoint, and matched-campaign disposition before the long run without turning it into a same-scale rescue patch or a parallel Theseus subsystem",
+      "pre_training_acceptance_boundary": "Before long training, the substrate-neutral Cognitive Kernel ABI, exact/latent workspace boundary, typed Query/Program IR, snapshots, transactions, replay/rollback, memory tiers, VCM/Octopus bridges, recurrent-cell interface, loss/accounting schema, checkpoint/migration contract, and RATCHET-100/matched-control campaign are wired. The candidate must then be included in the frozen training campaign or explicitly retired by a preregistered pre-training resource/mechanical verdict; learned generalization remains post-training evidence.",
       "acceptance_gate": "Behind one substrate-neutral Cognitive Kernel ABI, implement exact/latent workspace separation; separately accounted workspace, exact-artifact, adaptive-neural, and qualified-skill/model memory tiers; typed Query and Program IR; branch-local snapshots; transactions; receipts; replay/rollback; VCM and Octopus bridges; a shared typed gated sparse-message cell; explicit anytime search; world-model and uncertainty heads; and existing-Loop-Closure verified abstraction learning. Require exact-substrate proof before neural training, operation/pointer/workspace/value/uncertainty/transition/halting/resource objectives before open-domain adapters, and no intrinsic reward for longer reasoning. Preregister train-small/test-large algorithmic controls and RATCHET-100 frozen-core ablations; compare MoECOT, matched dense Transformer, SymLiquid, recurrent-only, memory, search, skill, and full-system channels under matched data, active/total parameters, adapters, optimizer positions, compute, memory, tools, search, verifiers, and complete lifecycle cost. Promotion requires repeatable held-out Pareto value without weak-tail regression and an SCF rollback-capable replacement transaction.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "An elegant ABI, deterministic substrate, exact tool result, retrieved answer, hand-authored skill, adapter capability, benchmark identity, larger hidden search budget, or lower central parameter count is not OneCell learned capability. CORE_ONLY, CORE_PLUS_MEMORY, CORE_PLUS_SEARCH, and FULL_SYSTEM must remain separate; failure or selected-mechanism merge is an acceptable verdict."
@@ -532,8 +546,9 @@
         10
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "blocked_by_direct_learned_emission_wall",
-      "dependency": "strict prompt/signature body-token replay must emit non-fallback, nontrivial, loadable candidates before another preference sweep can mean anything behaviorally",
+      "status": "pre_training_architecture_required",
+      "dependency": "wire the objective/reference-policy/checkpoint/rollback and evaluation interfaces now; defer only behavioral preference training until strict prompt/signature generation emits non-fallback, verifier-meaningful candidates",
+      "pre_training_acceptance_boundary": "Before long training, DPO, IPO, ORPO, KTO, and SimPO are interchangeable registered objective adapters over one provenance-bound preference schema with frozen-reference identity, policy-update leases, drift/rollback controls, MLX execution, no-cheat accounting, and negative tests. Running or selecting an objective remains post-training and requires behavior-positive private candidates.",
       "acceptance_gate": "A bounded DPO/IPO/ORPO/KTO/SimPO comparison uses the same private accepted/rejected split, frozen reference checkpoint, heldout private verifier, reward-hacking probes, drift bounds, and rollback plan.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Loss or policy-gap movement is not capability. No public benchmark rows, answer templates, fallback bodies, routers, deterministic tools, or semantic renderers count as learned generation."
@@ -547,8 +562,9 @@
         16
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "queued_after_nonfallback_candidate_quality",
-      "dependency": "requires usable learned candidates and a verifier-capacity ledger before online/group-relative reward optimization",
+      "status": "pre_training_architecture_required",
+      "dependency": "wire verifier-reward rollout, reference, lease, capacity, rollback, and reward-hacking contracts now; defer optimization efficacy until usable learned candidates exist",
+      "pre_training_acceptance_boundary": "Before long training, GRPO, RLOO, ReMax, and RLVR share a registered rollout/reward ABI, verifier-capacity ledger, reward provenance, reference/baseline identity, bounded authority, rollback, MLX checkpoint compatibility, and adversarial reward-hacking fixtures. Executing or selecting a policy optimizer remains post-training and requires verifier-positive candidates.",
       "acceptance_gate": "Run reward-present versus reward-removed ablations on private exact-verifier tasks with rollout budget, reward-hacking probes, drift bound, rollback receipt, verifier-cost ledger, and residual mining.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "A verifier-reward run cannot expand authority, cannot train on public benchmark artifacts, and cannot become a default route until heldout private behavior improves under replay."
@@ -565,8 +581,9 @@
         16
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "planned",
-      "dependency": "requires behavior-change leases with admissible feedback and per-target heldouts",
+      "status": "pre_training_architecture_required",
+      "dependency": "implement behavior-change leases, target-specific state ownership, heldout bindings, monitoring, and exact rollback before any component can be updated",
+      "pre_training_acceptance_boundary": "Before long training, planner, router, VCM selector, verifier, executor, generator, and generation-mode updates use one registered policy-update lease with target identity, admissible feedback, authority delta, state inventory, checkpoint descendants, rollback, monitor window, and task-specific heldout contract. Learned update benefit remains post-training.",
       "acceptance_gate": "Planner, router, VCM selector, verifier policy, executor policy, and generation-mode selector updates each carry target policy, feedback source, authority effect, rollback, monitor window, and task-specific heldout checks.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "A policy update is not allowed to hide displaced verification, repair, human-cleanup cost, or authority expansion."
@@ -581,8 +598,9 @@
         14
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "planned_after_direct_generator_candidates",
-      "dependency": "requires candidate integrity and semantic atom mapping for actual generated failures",
+      "status": "pre_training_architecture_required",
+      "dependency": "wire the typed GVR state machine, semantic-atom localization, verifier receipts, repair authority, and no-credit accounting before training; defer real repair efficacy until generated failures exist",
+      "pre_training_acceptance_boundary": "Before long training, the GVR state machine and localized-repair ABI are registered, replayable, checkpoint/version bound, fail closed on illegal transitions, preserve original candidate identity, separate learned output from assisted repair, and pass mutation/rollback/no-cheat tests. Behavior lift remains post-training.",
       "acceptance_gate": "Candidate states transition through generated, verified_exact, verified_lossy, repaired_exact, literal_fallback_noncredit, and quarantined with S/R/Q/G/V/E consistency checks, verifier receipts, repair cost, fallback count, and residual obligations.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Fallback or repaired output may be useful product behavior but never learned-generation promotion evidence unless independent integrity proves the learned candidate itself produced it."
@@ -597,8 +615,9 @@
         16
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "queued_after_semantic_candidate_quality_moves",
-      "dependency": "requires a nonzero behavior baseline so useful verified output per second can be measured",
+      "status": "pre_training_architecture_required",
+      "dependency": "wire MTP heads/objectives, cache and checkpoint schema, accepted-output accounting, and matched AR control before the long run; defer adoption to behavior-positive evidence",
+      "pre_training_acceptance_boundary": "Before long training, MTP is a registered optional objective/head with shape-safe checkpoints, MLX execution, inference/cache accounting, no-credit separation, and a frozen matched single-token AR campaign. It is enabled in the joint run only if the preregistered resource canary passes; quality/speed promotion remains post-training.",
       "acceptance_gate": "MTP is compared against a matched single-token AR control on the same private data, active compute, verifier, and decode budget, reporting accepted spans, verifier pass, useful-solution/sec, residuals, and regressions.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Proposed-token throughput, lower LM loss, or larger candidate count alone is not speed or capability evidence."
@@ -613,8 +632,9 @@
         16
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "planned",
-      "dependency": "requires generation-mode registry accounting and accepted-output scoring",
+      "status": "pre_training_architecture_required",
+      "dependency": "complete the generation-mode registry and decide each checkpoint-shaping mode before training; purely checkpoint-compatible draft helpers may remain disabled but must prove compatibility",
+      "pre_training_acceptance_boundary": "Before long training, Medusa, EAGLE, speculative decoding, and LayerSkip have explicit topology/objective/checkpoint/cache/resource records and matched AR controls. LayerSkip or any training-time head is included in the frozen campaign or retired; checkpoint-compatible post-hoc draft modes prove loader/migration compatibility and remain disabled until behavior-positive qualification.",
       "acceptance_gate": "Each mode has a generation_mode_record with active compute, cache policy, verification cost, accepted-output quality, useful-solution/sec, fallback count, and matched AR baseline.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Fast-generation helpers do not count as learned correctness unless verifier-accepted behavior improves under matched controls."
@@ -628,8 +648,9 @@
         13
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "planned_after_direct_generator_candidates",
-      "dependency": "typed semantic IR and localized dependent-atom replay are implemented and reduce type-handling faults, but intended-behavior lift remains zero; sketch/infill work waits for direct learned full-body candidates with behavior-positive private verifier evidence",
+      "status": "pre_training_architecture_required",
+      "dependency": "freeze the sketch/infill/diffusion topology, objective, corruption schedule, checkpoint, and matched AR decision before the long run; defer only learned efficacy",
+      "pre_training_acceptance_boundary": "Before long training, the sketch-first/LLaDA-style candidate is either implemented as a registered architecture alternative with source-disjoint transforms, Semantic-IR localization, MLX kernels, checkpoint/migration, integrity accounting, and matched AR controls, or retired by a written pre-training complexity/resource verdict. Learned repair quality remains post-training.",
       "acceptance_gate": "A sketch-first/infill candidate family is compared with AR one-shot decode on private tasks using the same verifier, candidate budget, and integrity audit, with localized repair residuals retained.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Sketch-first repair cannot claim learned generation if a deterministic renderer, hidden target field, public artifact, or fallback body supplies the answer."
@@ -721,8 +742,9 @@
         14
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "planned",
-      "dependency": "extends the existing registered training-data admission path; requires per-candidate receipt/lineage records, frozen private or public-safe policy workload, independent contamination evaluation, and a full-state inventory covering model, optimizer, scheduler, RNG, caches, checkpoints, backups, indexes, descendants, and external effects",
+      "status": "pre_training_architecture_required",
+      "dependency": "extend the existing registered admission path with per-candidate lineage, full-state update causality, checkpoint authority, contamination evaluation, rollback, deletion, and descendant invalidation before the long run creates state that cannot be governed retroactively",
+      "pre_training_acceptance_boundary": "Before long training, each admitted candidate and optimizer exposure is lineage-bound; model, optimizer, scheduler, RNG, caches, checkpoints, backups, indexes, descendants, and external effects form one replayable state inventory; best-versus-final authority, rollback, quarantine, revocation, influence accounting, and storage-deletion interfaces pass negative tests. Continual-learning and unlearning efficacy remain post-training measurements.",
       "acceptance_gate": "Compare replacement, accumulation, targeted replay, quarantine, and retraining on one frozen workload with prospective best-versus-final checkpoint authority, target utility, forgetting, tail coverage, calibration, freshness, semantic contamination, privacy/revocation risk, storage/compute, and deletion cost; replay exact full-state rollback and separately report lineage invalidation, behavioral influence, privacy evidence, and physical storage/backup erasure.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "A complete data-admission receipt proves bounded eligibility only. It cannot by itself establish data quality, privacy compliance, safe synthetic recursion, verified forgetting, training success, benchmark cleanliness, or capability promotion."
@@ -883,8 +905,9 @@
         18
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "queued_after_nonfallback_candidate_quality",
-      "dependency": "requires a verifier-positive proposer and full-state update/rollback accounting",
+      "status": "pre_training_architecture_required",
+      "dependency": "implement the governed campaign controller, state inventory, stop authority, debt limits, and rollback before training; defer autonomous improvement efficacy until a verifier-positive proposer exists",
+      "pre_training_acceptance_boundary": "Before long training, a registered campaign controller enforces generator/evaluator separation, single-axis mutations, fixed holdouts, matched budgets, champion/challenger authority, negative-knowledge retention, full-state best/final rollback, debt ceilings, shutdown handoff, and explicit stop transactions in replay and mutation tests. Autonomous improvement remains disabled until behavior-positive evidence exists.",
       "acceptance_gate": "A bounded campaign preserves generator/evaluator separation, single-axis champion/challenger mutations, matched budgets, fixed holdouts, novelty/coverage and tail metrics, best/final authority, failed families, negative knowledge, debt ceilings, rollback, shutdown handoff, and explicit stop decisions across generations.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "More generated tasks, artifacts, configurations, novelty, or self-play volume is not capability improvement, recursive self-improvement, AGI, or ASI."
@@ -907,8 +930,9 @@
         19
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "planned",
-      "dependency": "extend existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus records rather than creating a new abstraction; deterministic contract/migration fixtures may proceed as maintenance, while learned atlas, question-policy, and semantic-generation qualification waits for a data-supported behavior-positive language arm or matched dense control",
+      "status": "pre_training_architecture_required",
+      "dependency": "extend existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus records before the long run so semantic identity, contextual address, physical route, certificates, and migrations are not retrofitted into training context later; learned atlas/question-policy efficacy remains post-training",
+      "pre_training_acceptance_boundary": "Before long training, opaque SOIDs, contextual semantic addresses, physical routes, plural atlas epochs, consumer/task-bound Semantic Address Certificates, cost/risk/privacy-aware question traces, authority-safe translation, and readdress/merge/split/rollback migrations are registered and replayable with flat/random/frequency/single-tree controls and negative tests. Learned semantic routing, retrieval, and generation gains remain post-training.",
       "acceptance_gate": "A registered QCSA extension independently separates opaque SOID, contextual semantic address, and physical route identity; issues consumer/task/epoch-bound Semantic Address Certificates; compiles cost/risk/privacy-aware question traces; translates certificates through SCF-authorized VIEA plans; and replays readdress/merge/split/rollback without silent misrouting. Matched private baselines include flat IDs, random/frequency trees, one semantic tree, residual-quantized IDs, multi-view IDs without stable identity, and ablations removing active questions, physical translation, soft routing, and migration governance. Identity, atlas, question, retrieval, route, round-trip generation, governance, and migration metrics must show a meaningful Pareto gain or retain falsification.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "A schema, graph, stable identifier, semantic hierarchy, certificate, question trace, or migration receipt is not semantic correctness, interpretability, model capability, public transfer, or ASI evidence; semantic resolution never grants execution authority, and assisted semantic-first output remains separate from direct learned generation."
@@ -1228,6 +1252,7 @@
       ],
       "required_gates": [
         "python3 scripts/virtual_context_memory.py",
+        "python3 -m pytest -q tests/test_vcm_semantic_memory.py tests/test_kernel_english_protocol.py",
         "python3 tests/test_vcm_consumer_abi.py",
         "python3 scripts/vcm_task_context_bridge.py",
         "python3 scripts/vcm_context_governor_gate.py",
@@ -1252,8 +1277,10 @@
         "scripts/vcm_consumer_abi.py",
         "scripts/vcm_consumer_integration_gate.py",
         "scripts/vcm_semantic_memory.py",
+        "scripts/kernel_english_protocol.py",
         "tests/test_vcm_consumer_abi.py",
         "tests/test_vcm_semantic_memory.py",
+        "tests/test_kernel_english_protocol.py",
         "reports/virtual_context_memory.json",
         "reports/vcm_task_context_bridge.json",
         "reports/vcm_consumer_integration_gate.json",
@@ -1286,7 +1313,8 @@
         "sparse BM25 plus graph retrieval emits explainable score components while quarantined and retracted objects fail closed; dense embedding retrieval and parametric unlearning are explicitly not claimed",
         "hot/warm/cold consolidation decisions preserve provenance, bounded subgraph snapshots carry deterministic content certificates, and canonical serialization/query replay is restart-consistent",
         "merge, supersession, retraction, and cold compaction execute as typed lifecycle transactions with read/write sets, before/after hashes, provenance checks, rollback hashes, typed rejection, and retrieval-vector/payload suppression",
-        "a fresh Python process migrates a persisted ontology 0.9.0 graph plus current pages to 1.0.0 and proves state and query replay; negative tests cover revision identity, poisoned/retracted suppression, invalid compaction, merge provenance, hybrid ranking, and bounded snapshots"
+        "a fresh Python process migrates a persisted ontology 0.9.0 graph plus current pages to 1.0.0 and proves state and query replay; negative tests cover revision identity, poisoned/retracted suppression, invalid compaction, merge provenance, hybrid ranking, and bounded snapshots",
+        "the KERC exact substrate extends VCM with an append-only four-level hierarchical residual state carrying authority, privacy scope, hashes, transactional deltas, deterministic replay, migration, eviction/reset/close operations, and fail-closed stale/cross-user/document-injection controls; learned compiler/renderer efficacy is not claimed"
       ],
       "missing_items": [],
       "smallest_next_patch": "Consume the wired semantic lifecycle records in Phase 7 continual-update/deletion campaigns and Phase 10 model context paths; keep dense embedding, parametric unlearning, and public-memory capability claims separately evidence-gated.",
@@ -2549,7 +2577,7 @@
       "required_gates": [
         "python3 scripts/semantic_ir_obligation_gate.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
-        "python3 -m pytest -q tests/test_semantic_ir.py tests/test_standard_causal_transformer_survival.py",
+        "python3 -m pytest -q tests/test_semantic_ir.py tests/test_kernel_english_protocol.py tests/test_standard_causal_transformer_survival.py",
         "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
         "python3 scripts/roadmap_implementation_gate.py --gate"
       ],
@@ -2559,6 +2587,8 @@
       "current_evidence": [
         "scripts/semantic_ir.py",
         "tests/test_semantic_ir.py",
+        "scripts/kernel_english_protocol.py",
+        "tests/test_kernel_english_protocol.py",
         "reports/viea_spine_record_gate.json",
         "reports/viea_spine_materialized_view.json",
         "reports/theseus_plan_compiled_dags.json",
@@ -2602,9 +2632,9 @@
       ],
       "missing_items": [
         "The factorized full-step field removes the old 17/24 representation collision and independently proves 24/24 distinct group-closed plans, but emitted, latent, categorical-slot, and factorized-slot routes all remain 0/24 exact; Phase 13 behavioral acceptance depends on first raising the Phase 10 direct proposer floor above zero",
-        "KERC is the sole bounded pre-training cross-phase architecture tranche: no canonical Kernel Packet, protected-object compiler, four-level VCM residual lifecycle, dual-vocabulary learned core/renderer, round-trip verifier, checkpoint migration contract, frozen joint surface/KERC total-cost campaign, or falsification verdict exists. Exact substrate and campaign readiness must close before the not-yet-started long run; empirical learned utility and falsification remain post-training evidence."
+        "The finite pre-training architecture docket contains 13 cross-phase contracts. KERC remains the deepest representation tranche, while QCSA, Reflexive Router, OneCell disposition, update/data causality, policy/repair/campaign control, and generation-objective interfaces also must be wired, falsified, or retired before the not-yet-started long run. Empirical learned utility remains post-training evidence."
       ],
-      "smallest_next_patch": "Implement the registered KERC pre-training substrate through the existing Semantic-IR/VCM/English-arm owners and freeze the revised joint MLX campaign without spending the long-run optimizer budget. Then train the frozen alternatives once. Do not add another unrelated plan objective, attention variant, deterministic repair, fallback, or architecture lane.",
+      "smallest_next_patch": "Finish the active KERC exact-substrate tranche, then close the remaining finite docket in dependency order through existing owners: identity/memory/routing first, update/checkpoint causality second, objective/generation alternatives third, and the final content-bound architecture-freeze campaign last. Do not train, add an unrelated lane, or mark learned efficacy from deterministic fixtures.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
