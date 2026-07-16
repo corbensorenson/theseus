@@ -29,7 +29,7 @@ module must meet.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | task-complete contract is replayable and every arm floor is GREEN; canonical broad data is GREEN at 1,179,268,641 unique model-visible positions, 32,962,061 above the original 57.315M requirement | preserve the content-bound corpus while the bounded KERC pre-training architecture tranche closes; regenerate views only through a content-bound transform owned by the revised campaign |
+| Data engine + curriculum | Track 0 / Phase 7 | every task-complete arm floor and the aggregate broad floor are GREEN at 1,263,425,574 unique positions, but the new per-owner audit correctly rejects the 2.504M-parameter HTML/CSS specialist: 41,248,944 observed versus 50,083,860 required | preserve the content-bound corpus; close the 8,834,916-position HTML/CSS gap with genuinely unique licensed source data or reduce that arm's owned parameters in the revised preregistration, never with repeated exposure |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
@@ -298,16 +298,22 @@ to Track 1).
 - Establish a data/model scaling contract before the next capability run. Count
   unique admitted model-visible positions separately from repeated optimizer
   exposure and choose a published compute-optimal planning band before training.
-  The canonical audit now measures `1,179,268,641` unique positions after file-level
+  The canonical audit now measures `1,263,425,574` unique positions after file-level
   quality filtering and cross-source deduplication under the actual tokenizer ABI:
-  `547,303,042` English and `631,965,599` code across Python, JS/TS, HTML/CSS, Rust,
+  `547,303,042` English and `716,122,532` code across Python, JS/TS, HTML/CSS, Rust,
   and a small uncredited other-code tail. This clears both the old 10.78M floor and
-  the frozen 57.315M `1,146,306,580`-position floor by `32,962,061` positions.
+  the original 57.315M `1,146,306,580`-position aggregate floor by `117,118,994`
+  positions.
   The exact 215.55M-position balanced training view remains selected and frozen
   before results rather than reverse-engineered afterward; unused capacity is not
-  counted as optimizer exposure. The 57.315M data floor is now GREEN at `20.5751`
-  unique positions per active parameter. Older 219M- and 683M-position summaries
-  must not be used to describe current readiness.
+  counted as optimizer exposure. Aggregate capacity is GREEN at `22.043415` unique
+  positions per active parameter, but training data support is RED under the new
+  per-owner audit: a `2,504,193`-parameter specialist requires `50,083,860` unique
+  positions at the frozen 20:1 floor, while HTML/CSS has `41,248,944`, a shortfall of
+  `8,834,916`. Repeated exposure cannot close it. Admit more genuinely unique licensed
+  HTML/CSS source data or reduce that arm's owned parameter count in the revised
+  preregistration. Older 219M-, 683M-, and 1.179B-position summaries must not be used
+  to describe current readiness.
 - Keep the three data budgets mechanically separate in every scale decision:
   `broad_pretraining_unique_positions`, `task_complete_unique_target_positions`, and
   `optimizer_exposure_positions`. Task-complete targets measure product supervision;

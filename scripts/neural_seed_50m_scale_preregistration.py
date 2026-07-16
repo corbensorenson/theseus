@@ -135,6 +135,16 @@ def build_report(
     ))
     observed_positions = int(capacity["unique_model_visible_positions"])
     unique_position_ready = bool(required_positions and observed_positions >= required_positions)
+    specialist_support = specialist_data_support(
+        architecture,
+        capacity,
+        minimum_ratio=float(scale["minimum_unique_positions_per_active_parameter"]),
+    )
+    if not specialist_support["ready"]:
+        hard_gaps.append({
+            "kind": "specialist_unique_position_floor_not_met",
+            "arms": specialist_support["shortfall_arms"],
+        })
     coverage_ready = bool(task_contract["coverage_ready"])
     data_support = {
         "canonical_unique_model_visible_positions": observed_positions,
@@ -147,13 +157,17 @@ def build_report(
             scale["minimum_unique_positions_per_active_parameter"]
         ),
         "unique_position_floor_ready": unique_position_ready,
+        "specialist_unique_position_floor_ready": specialist_support["ready"],
+        "specialist_unique_position_support": specialist_support["arms"],
         "task_complete_contract_ready": task_contract["contract_ready"],
         "task_complete_coverage_ready": coverage_ready,
         "task_complete_coverage": task_contract["coverage"],
         "training_admission_contract_ready": admission_contract["contract_ready"],
         "training_admission_epistemic_tcb_qualified": admission_contract["tcb_qualified"],
         "training_admission_epistemic_tcb_surviving_mutants": admission_contract["surviving_mutant_count"],
-        "training_data_supported": unique_position_ready and coverage_ready,
+        "training_data_supported": (
+            unique_position_ready and specialist_support["ready"] and coverage_ready
+        ),
         "optimizer_repetition_counted_as_unique_data": False,
     }
 
@@ -631,6 +645,56 @@ def canonical_capacity(report: dict[str, Any]) -> dict[str, Any]:
     return {
         "receipt_valid": bool(receipt.get("valid") and receipt.get("content_bound") and not receipt.get("hard_gaps")),
         "unique_model_visible_positions": int(receipt.get("unique_model_visible_positions") or 0),
+        "domain_unique_positions": dict(receipt.get("domain_unique_positions") or {}),
+        "code_language_unique_positions": dict(
+            receipt.get("code_language_unique_positions") or {}
+        ),
+        "optimizer_repetition_counted_as_unique_data": False,
+    }
+
+
+def specialist_data_support(
+    architecture: dict[str, Any],
+    capacity: dict[str, Any],
+    *,
+    minimum_ratio: float,
+) -> dict[str, Any]:
+    """Bind every independently trained expert to unique in-scope source data."""
+
+    expert_parameters = int(architecture.get("expert_parameter_count_per_arm") or 0)
+    required = int(math.ceil(expert_parameters * minimum_ratio)) if expert_parameters else 0
+    domains = dict(capacity.get("domain_unique_positions") or {})
+    languages = dict(capacity.get("code_language_unique_positions") or {})
+    observed = {
+        "english": int(domains.get("english_natural_language_total") or 0),
+        "python": int(languages.get("python") or 0),
+        "javascript_typescript": int(languages.get("javascript_typescript") or 0),
+        "html_css": int(languages.get("html_css") or 0),
+        "rust": int(languages.get("rust") or 0),
+    }
+    rows: dict[str, Any] = {}
+    shortfall_arms: list[str] = []
+    for arm_id in ARM_IDS:
+        positions = observed[arm_id]
+        ready = bool(required and positions >= required)
+        if not ready:
+            shortfall_arms.append(arm_id)
+        rows[arm_id] = {
+            "owned_parameter_count": expert_parameters,
+            "unique_model_visible_positions": positions,
+            "minimum_required_positions": required,
+            "shortfall_positions": max(0, required - positions),
+            "positions_per_owned_parameter": round(
+                positions / max(1, expert_parameters), 6
+            ),
+            "meets_floor": ready,
+        }
+    return {
+        "policy": "project_theseus_neural_seed_specialist_data_support_v1",
+        "minimum_unique_positions_per_owned_parameter": minimum_ratio,
+        "ready": not shortfall_arms,
+        "shortfall_arms": shortfall_arms,
+        "arms": rows,
         "optimizer_repetition_counted_as_unique_data": False,
     }
 

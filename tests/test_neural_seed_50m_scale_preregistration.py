@@ -124,6 +124,33 @@ def test_capacity_receipt_does_not_treat_repetition_as_unique_data() -> None:
     assert observed["optimizer_repetition_counted_as_unique_data"] is False
 
 
+def test_specialist_data_support_fails_closed_per_parameter_owner() -> None:
+    architecture = {"expert_parameter_count_per_arm": 10}
+    capacity = {
+        "domain_unique_positions": {"english_natural_language_total": 200},
+        "code_language_unique_positions": {
+            "python": 200,
+            "javascript_typescript": 200,
+            "html_css": 199,
+            "rust": 200,
+        },
+    }
+    rejected = scale.specialist_data_support(
+        architecture, capacity, minimum_ratio=20.0
+    )
+    assert rejected["ready"] is False
+    assert rejected["shortfall_arms"] == ["html_css"]
+    assert rejected["arms"]["html_css"]["shortfall_positions"] == 1
+    assert rejected["optimizer_repetition_counted_as_unique_data"] is False
+
+    capacity["code_language_unique_positions"]["html_css"] = 200
+    accepted = scale.specialist_data_support(
+        architecture, capacity, minimum_ratio=20.0
+    )
+    assert accepted["ready"] is True
+    assert accepted["shortfall_arms"] == []
+
+
 def test_pointer_generator_forward_and_checkpoint_replay_are_deterministic(
     tmp_path: Path,
 ) -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import sys
 import tarfile
 import tempfile
@@ -20,6 +21,12 @@ from open_code_training_pantry import (  # noqa: E402
 
 
 class OpenCodeTrainingPantryTests(unittest.TestCase):
+    def test_canonical_config_preserves_expanded_per_repo_source_cap(self) -> None:
+        config = json.loads(
+            (ROOT / "configs" / "open_code_training_pantry_expanded.json").read_text()
+        )
+        self.assertEqual(4000, config["defaults"]["max_files_per_repo"])
+
     def test_repo_config_deduplicates_and_respects_disabled_rows(self) -> None:
         config = {
             "repos": [

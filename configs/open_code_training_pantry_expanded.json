@@ -3,7 +3,7 @@
   "purpose": "Curated permissive open-source repositories for train-only code expression pressure. Public benchmark repositories and benchmark-named paths remain excluded by the pantry script.",
   "defaults": {
     "max_repos": 100,
-    "max_files_per_repo": 3000,
+    "max_files_per_repo": 4000,
     "max_bytes_per_file": 220000,
     "max_expressions": 5000,
     "max_full_body_functions": 5000
