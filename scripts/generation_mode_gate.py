@@ -15,6 +15,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import generation_architecture_contracts
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "generation_mode_registry.json"
@@ -66,6 +68,9 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
     by_id = {row["id"]: row for row in mode_reports}
     comparison_reports = [audit_comparison(row, by_id) for row in list_dicts(config.get("comparisons"))]
     boundary_gates = audit_boundaries(dict_value(config.get("hard_boundaries")))
+    architecture_contracts = generation_architecture_contracts.run_reference_suite(
+        generation_architecture_contracts.load_contract()
+    )
 
     hard_gaps = [
         gap
@@ -78,6 +83,8 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
     ] + [
         gate for gate in boundary_gates if gate["severity"] == "hard" and not gate["passed"]
     ]
+    if architecture_contracts["trigger_state"] != "GREEN":
+        hard_gaps.append({"mode_id": "generation_architecture_contracts", "kind": "architecture_contract_suite_not_green", "severity": "hard", "evidence": architecture_contracts})
     warnings = [
         warning
         for mode in mode_reports
@@ -107,6 +114,13 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "modes_with_fallback_burden": sum(1 for row in mode_reports if row["metrics"]["repair_or_fallback_count"] > 0),
         "mean_accepted_span_per_second": rounded_mean([row["metrics"]["accepted_span_per_second"] for row in mode_reports if row["metrics"]["accepted_span_per_second"] is not None]),
         "mean_useful_solution_per_second": rounded_mean([row["metrics"]["useful_solution_per_second"] for row in mode_reports if row["metrics"]["useful_solution_per_second"] is not None]),
+        "architecture_mode_count": architecture_contracts["summary"]["mode_count"],
+        "architecture_included_mode_count": architecture_contracts["summary"]["included_mode_count"],
+        "architecture_retired_first_campaign_mode_count": architecture_contracts["summary"]["retired_first_campaign_mode_count"],
+        "architecture_mutation_case_count": architecture_contracts["summary"]["mutation_case_count"],
+        "architecture_mutation_passed_count": architecture_contracts["summary"]["mutation_passed_count"],
+        "architecture_mtp_mlx_canary_passed": architecture_contracts["summary"]["mtp_canary_passed"],
+        "architecture_optimizer_exposure_steps": architecture_contracts["summary"]["optimizer_exposure_steps"],
     }
     return {
         "policy": "project_theseus_generation_mode_gate_v1",
@@ -116,6 +130,7 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "boundary_gates": boundary_gates,
         "mode_records": mode_reports,
         "comparisons": comparison_reports,
+        "architecture_contracts": architecture_contracts,
         "hard_gaps": hard_gaps,
         "warnings": warnings,
         "rules": {
@@ -123,6 +138,7 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
             "promotion": "A faster mode is not promotable if verifier pass, integrity, context adequacy, no-cheat counters, or fallback burden regresses.",
             "kv_claim": "VCM descriptor reuse is not native model KV/prefix-cache parity unless a model-runtime lifecycle test passes.",
             "learned_generation": "Generation-mode acceleration does not bypass candidate-integrity or learned-generation claim rules.",
+            "first_campaign": "AR is the frozen base; MTP is the sole included checkpoint-shaping auxiliary at zero initial weight; speculative decoding is post-hoc and disabled; Medusa, EAGLE, LayerSkip, and sketch-first/LLaDA are retired from the first campaign with explicit re-entry conditions.",
         },
         "runtime_ms": int((time.perf_counter() - started) * 1000),
     }

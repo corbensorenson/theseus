@@ -9,7 +9,8 @@
     "training_admission_report": "reports/training_data_admission_v1.json",
     "training_admission_epistemic_tcb": "reports/training_admission_epistemic_tcb.json",
     "canonical_capacity_report": "reports/standard_causal_transformer_scale_v2_plan.json",
-    "vocabulary": "runtime/moecot_language_seed_v1/exact_language_vocab.json"
+    "vocabulary": "runtime/moecot_language_seed_v1/exact_language_vocab.json",
+    "generation_architecture_contract": "configs/generation_architecture_contracts.json"
   },
   "candidate": {
     "id": "moecot_mlx_57m_active_preregistered_v1",
@@ -26,7 +27,12 @@
       "source_target_separator_token_id": 2,
       "source_encoder_layers": 2,
       "source_copy_mode": "pointer_generator",
-      "source_copy_auxiliary_loss_weight": 0.25
+      "source_copy_auxiliary_loss_weight": 0.25,
+      "mtp_future_offsets": [2, 3, 4],
+      "mtp_low_rank": 1,
+      "mtp_loss_weights": [0.3, 0.2, 0.1],
+      "mtp_loss_scale": 0.0,
+      "mtp_maximum_head_parameter_overhead_ratio": 0.25
     },
     "arm_model": {
       "d_model": 512,
@@ -41,6 +47,11 @@
       "source_encoder_layers": 2,
       "source_copy_mode": "pointer_generator",
       "source_copy_auxiliary_loss_weight": 0.25,
+      "mtp_future_offsets": [2, 3, 4],
+      "mtp_low_rank": 1,
+      "mtp_loss_weights": [0.3, 0.2, 0.1],
+      "mtp_loss_scale": 0.0,
+      "mtp_maximum_head_parameter_overhead_ratio": 0.25,
       "expert_adapter_dim": 128,
       "source_expert_adapter_dim": 64
     },

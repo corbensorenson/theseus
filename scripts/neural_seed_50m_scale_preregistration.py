@@ -85,6 +85,13 @@ def build_report(
     admission_tcb = read_json(paths["training_admission_epistemic_tcb"])
     capacity_report = read_json(paths["canonical_capacity_report"])
     vocabulary = read_json(paths["vocabulary"])
+    generation_contract = read_json(paths["generation_architecture_contract"])
+    generation_alignment = generation_architecture_alignment(config, generation_contract)
+    if not generation_alignment["aligned"]:
+        hard_gaps.append({
+            "kind": "generation_architecture_contract_mismatch",
+            "evidence": generation_alignment,
+        })
     if verdict.get("decision") != "FALSIFY_10_8M_ACTIVE_SCALE_RUNG":
         hard_gaps.append({"kind": "required_scale_falsification_missing"})
     if verdict.get("confirmation_surface_spent") is not False:
@@ -209,6 +216,7 @@ def build_report(
         "falsified_rung_disposition": verdict.get("decision"),
         "confirmation_surface_spent": verdict.get("confirmation_surface_spent"),
         "architecture": architecture,
+        "generation_architecture": generation_alignment,
         "data_support": data_support,
         "resource_canaries": canary_report,
         "training_stop_contract": config["training_stop_contract"],
@@ -710,6 +718,51 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("resource canary must cover candidate and both matched controls")
     if config["boundaries"].get("falsified_10_8m_rung_restart_allowed") is not False:
         raise ValueError("falsified rung restart must remain forbidden")
+    if "generation_architecture_contract" not in config.get("inputs", {}):
+        raise ValueError("generation architecture contract input is required")
+
+
+def generation_architecture_alignment(
+    config: dict[str, Any], contract: dict[str, Any]
+) -> dict[str, Any]:
+    mtp = dict((contract.get("modes") or {}).get("mtp") or {})
+    shape = dict(contract.get("mtp_shape_contract") or {})
+    expected = {
+        "mtp_future_offsets": list(shape.get("future_offsets") or []),
+        "mtp_low_rank": int(mtp.get("low_rank") or 0),
+        "mtp_loss_weights": list(mtp.get("loss_weights") or []),
+        "mtp_loss_scale": 0.0,
+        "mtp_maximum_head_parameter_overhead_ratio": float(
+            shape.get("maximum_parameter_overhead_ratio") or 0.0
+        ),
+    }
+    candidate = config.get("candidate") or {}
+    observed = {
+        model_id: {key: (candidate.get(model_id) or {}).get(key) for key in expected}
+        for model_id in ("shared_trunk_model", "arm_model")
+    }
+    mismatches = [
+        model_id
+        for model_id, fields in observed.items()
+        if fields != expected
+    ]
+    policy_valid = (
+        contract.get("policy") == "project_theseus_generation_architecture_contracts_v1"
+        and contract.get("first_campaign_base") == "autoregressive"
+        and mtp.get("first_campaign_disposition")
+        == "included_disabled_weight_zero_until_preregistered_schedule"
+    )
+    return {
+        "aligned": policy_valid and not mismatches,
+        "contract_policy": contract.get("policy"),
+        "base_mode": contract.get("first_campaign_base"),
+        "checkpoint_shaping_auxiliary": "mtp",
+        "expected_model_fields": expected,
+        "observed_model_fields": observed,
+        "mismatched_models": mismatches,
+        "initial_optimizer_exposure": 0,
+        "behavior_or_speed_claim": "NOT_CLAIMED",
+    }
 
 
 def artifact_ref(path: Path) -> dict[str, Any]:

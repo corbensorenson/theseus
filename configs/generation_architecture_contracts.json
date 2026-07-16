@@ -1,0 +1,39 @@
+{
+  "policy": "project_theseus_generation_architecture_contracts_v1",
+  "schema_version": "1.0.0",
+  "owner": "generation_mode_registry",
+  "first_campaign_base": "autoregressive",
+  "maximum_architecture_canary_steps": 8,
+  "common_accounting": [
+    "active_parameter_count",
+    "training_flops_estimate",
+    "decode_flops_estimate",
+    "cache_bytes",
+    "proposed_tokens_or_spans",
+    "accepted_tokens_or_spans",
+    "verifier_wall_time_ms",
+    "repair_or_fallback_count",
+    "task_pass_count",
+    "task_count",
+    "integrity_mismatch_count",
+    "public_training_rows",
+    "external_inference_calls"
+  ],
+  "modes": {
+    "autoregressive": {"class": "canonical_base", "first_campaign_disposition": "included", "topology_effect": "base_causal_lm_head", "objective_effect": "next_token_cross_entropy", "checkpoint_effect": "required", "cache_policy": "causal_kv_cache", "adoption_state": "baseline_not_speed_claim"},
+    "mtp": {"class": "training_time_auxiliary", "first_campaign_disposition": "included_disabled_weight_zero_until_preregistered_schedule", "topology_effect": "shared_rank1_hidden_projection_with_three_offset_specific_vocabulary_projections", "objective_effect": "future_offsets_2_3_4_cross_entropy", "checkpoint_effect": "required_optional_head_group", "cache_policy": "heads_train_only_base_ar_cache_at_decode", "head_count": 3, "low_rank": 1, "loss_weights": [0.3, 0.2, 0.1], "adoption_state": "architecture_included_behavior_and_speed_unqualified"},
+    "medusa": {"class": "training_time_auxiliary", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "multiple_decode_heads", "objective_effect": "future_token_head_losses", "checkpoint_effect": "checkpoint_shaping", "cache_policy": "tree_attention_and_acceptance_cache_required", "reentry_condition": "MTP baseline produces verifier-positive outputs and a prospectively frozen accepted-output-per-second campaign justifies separate tree heads"},
+    "eagle": {"class": "draft_model_auxiliary", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "hidden_state_draft_predictor", "objective_effect": "draft_feature_and_token_prediction", "checkpoint_effect": "separate_checkpoint_and_base_revision_binding", "cache_policy": "draft_and_target_cache_coherence_required", "reentry_condition": "stable useful base checkpoint plus a matched post-training draft-cost campaign"},
+    "speculative": {"class": "post_hoc_checkpoint_compatible", "first_campaign_disposition": "disabled_post_training_candidate", "topology_effect": "none_to_target_model", "objective_effect": "none_to_target_model", "checkpoint_effect": "separate_draft_manifest_only", "cache_policy": "target_cache_commits_accepted_prefix_only", "reentry_condition": "draft revision is bound and accepted output per second improves without verifier or memory regression"},
+    "layerskip": {"class": "training_time_early_exit", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "early_exit_logits_and_layer_dropout_schedule", "objective_effect": "intermediate_exit_supervision", "checkpoint_effect": "checkpoint_shaping", "cache_policy": "exit_layer_specific_cache_contract_required", "reentry_condition": "base model clears utility floor and layer-exit quality can be measured on accepted outputs"},
+    "sketch_first_llada": {"class": "alternative_generation_architecture", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "bidirectional_masked_denoiser_or_sketch_infill_model", "objective_effect": "corruption_schedule_and_iterative_denoising", "checkpoint_effect": "incompatible_alternative_checkpoint", "cache_policy": "iterative_full_sequence_state_not_ar_kv_cache", "reentry_condition": "AR base clears utility floor and a prospectively frozen matched-total-cost Semantic-IR-localized repair campaign can fund the alternative"}
+  },
+  "mtp_shape_contract": {"batch": 2, "sequence": 8, "hidden": 16, "vocabulary": 32, "low_rank": 1, "future_offsets": [2, 3, 4], "maximum_parameter_overhead_ratio": 0.25, "maximum_training_flop_overhead_ratio": 0.35, "maximum_checkpoint_overhead_ratio": 0.25},
+  "activation": {"required_evidence_kind": "behavior_positive_generation_mode_receipt", "minimum_verified_pass_count": 1, "selection_metric": "useful_verified_solution_per_second"},
+  "claim_boundaries": [
+    "Proposed-token throughput, auxiliary loss, candidate count, or cache reuse is not useful speed or capability.",
+    "Only verifier-accepted output per second under matched quality, compute, memory, and repair accounting can support a speed claim.",
+    "Retired modes are excluded from the first checkpoint and optimizer state; their names do not imply implementation or capability.",
+    "No generation mode may receive learned-generation credit for templates, fallbacks, tools, deterministic renderers, hidden targets, or public benchmark artifacts."
+  ]
+}

@@ -2474,6 +2474,33 @@ def validate_config(config: dict[str, Any]) -> None:
         "--require-pre-training-ready",
     ]:
         raise ValueError("architecture readiness gate command mismatch")
+    generation = config.get("generation_architecture") or {}
+    contract_path = resolve(str(generation.get("contract") or ""))
+    if not contract_path.is_file():
+        raise ValueError("generation architecture contract is required")
+    generation_contract = read_json(contract_path)
+    if (
+        generation_contract.get("policy") != generation.get("required_policy")
+        or generation_contract.get("first_campaign_base") != generation.get("base_mode")
+        or generation.get("checkpoint_shaping_auxiliary") != "mtp"
+        or float(generation.get("initial_loss_scale", -1.0)) != 0.0
+    ):
+        raise ValueError("generation architecture selection does not match its contract")
+    mtp = dict((generation_contract.get("modes") or {}).get("mtp") or {})
+    shape = dict(generation_contract.get("mtp_shape_contract") or {})
+    expected_mtp = {
+        "mtp_future_offsets": list(shape.get("future_offsets") or []),
+        "mtp_low_rank": int(mtp.get("low_rank") or 0),
+        "mtp_loss_weights": list(mtp.get("loss_weights") or []),
+        "mtp_loss_scale": 0.0,
+        "mtp_maximum_head_parameter_overhead_ratio": float(
+            shape.get("maximum_parameter_overhead_ratio") or 0.0
+        ),
+    }
+    for model_id in ("shared_trunk_model", "arm_model"):
+        model = config.get(model_id) or {}
+        if {key: model.get(key) for key in expected_mtp} != expected_mtp:
+            raise ValueError(f"{model_id} does not consume the frozen MTP contract")
     if config.get("comparison_contract", {}).get("preregistered_before_training") is not True:
         raise ValueError("comparison contract must be preregistered")
     topology = config.get("topology") or {}

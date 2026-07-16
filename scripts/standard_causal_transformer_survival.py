@@ -2673,27 +2673,35 @@ def causal_loss(
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
-    if plan_labels is not None and plan_weight > 0.0:
-        if copy_weight > 0.0:
-            logits, _cache, plan_logits, copy_aux = model(
-                inputs, return_plan_logits=True, return_copy_aux=True
-            )
-        else:
-            logits, _cache, plan_logits = model(inputs, return_plan_logits=True)
-        if plan_logits is None:
+    mtp_weight = float(getattr(model, "mtp_loss_scale", 0.0))
+    needs_plan = plan_labels is not None and plan_weight > 0.0
+    if needs_plan or copy_weight > 0.0 or mtp_weight > 0.0:
+        logits, _cache, training_aux = model(inputs, return_training_aux=True)
+        plan_logits = training_aux.get("plan_logits")
+        copy_aux = training_aux.get("copy_aux")
+        mtp_logits = list(training_aux.get("mtp_logits") or [])
+        if needs_plan and plan_logits is None:
             raise ValueError("semantic plan labels require an enabled learned plan head")
     else:
-        if copy_weight > 0.0:
-            logits, _cache, copy_aux = model(inputs, return_copy_aux=True)
-        else:
-            logits, _cache = model(inputs)
+        logits, _cache = model(inputs)
         plan_logits = None
+        mtp_logits = []
     token_loss = nn.losses.cross_entropy(logits, labels)
     denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
     body_loss = mx.sum(token_loss * mask) / denominator
     if copy_aux is not None and copy_weight > 0.0:
         body_loss = body_loss + copy_weight * pointer_generator_auxiliary_loss(
             copy_aux, labels, mask, mx
+        )
+    if mtp_weight > 0.0:
+        body_loss = body_loss + mtp_weight * mtp_auxiliary_loss(
+            mtp_logits,
+            labels,
+            mask,
+            tuple(getattr(model, "mtp_future_offsets", ())),
+            tuple(getattr(model, "mtp_loss_weights", ())),
+            mx,
+            nn,
         )
     if plan_logits is None:
         return body_loss
@@ -2766,6 +2774,42 @@ def causal_loss(
         + plan_targets * positive_weights[None, :] * softplus_positive
     )
     return body_loss + float(plan_weight) * plan_loss
+
+
+def mtp_auxiliary_loss(
+    logits_by_offset: list[Any],
+    labels: Any,
+    mask: Any,
+    future_offsets: tuple[int, ...],
+    loss_weights: tuple[float, ...],
+    mx: Any,
+    nn: Any,
+) -> Any:
+    """Score future-token heads against the same masked causal training stream."""
+
+    if not logits_by_offset or len(logits_by_offset) != len(future_offsets):
+        raise ValueError("MTP loss requires one logits tensor per future offset")
+    if len(loss_weights) != len(future_offsets):
+        raise ValueError("MTP loss weights must align with future offsets")
+    total = mx.array(0.0, dtype=mx.float32)
+    contributed = False
+    sequence_length = int(labels.shape[1])
+    for logits, offset, weight in zip(logits_by_offset, future_offsets, loss_weights):
+        shift_from_next_token_labels = int(offset) - 1
+        if shift_from_next_token_labels < 1 or shift_from_next_token_labels >= sequence_length:
+            continue
+        head_logits = logits[:, :-shift_from_next_token_labels, :]
+        head_labels = labels[:, shift_from_next_token_labels:]
+        head_mask = mask[:, shift_from_next_token_labels:]
+        token_loss = nn.losses.cross_entropy(head_logits, head_labels)
+        denominator = mx.maximum(
+            mx.sum(head_mask), mx.array(1.0, dtype=mx.float32)
+        )
+        total = total + float(weight) * mx.sum(token_loss * head_mask) / denominator
+        contributed = contributed or float(weight) > 0.0
+    if not contributed:
+        raise ValueError("MTP loss has no valid weighted future positions")
+    return total
 
 
 def pointer_generator_auxiliary_loss(

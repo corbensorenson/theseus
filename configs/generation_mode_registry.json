@@ -1,6 +1,14 @@
 {
   "policy": "project_theseus_generation_mode_registry_v1",
   "purpose": "Governed generation-mode accounting for decode, fanout, verifier repair, VCM runtime, and tool-assisted completion. Speed claims are accepted-output and verifier-success claims, not proposed-token claims.",
+  "architecture_contract": {
+    "config": "configs/generation_architecture_contracts.json",
+    "implementation": "scripts/generation_architecture_contracts.py",
+    "first_campaign_base": "autoregressive",
+    "checkpoint_shaping_auxiliary": "mtp_zero_initial_weight",
+    "post_hoc_candidate": "speculative_disabled",
+    "retired_first_campaign": ["medusa", "eagle", "layerskip", "sketch_first_llada"]
+  },
   "hard_boundaries": {
     "public_benchmark_training_allowed": false,
     "runtime_external_inference_allowed": false,

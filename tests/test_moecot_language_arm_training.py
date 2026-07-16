@@ -76,6 +76,13 @@ def tiny_config(tmp_path: Path) -> dict:
                 "--require-pre-training-ready",
             ],
         },
+        "generation_architecture": {
+            "contract": "configs/generation_architecture_contracts.json",
+            "required_policy": "project_theseus_generation_architecture_contracts_v1",
+            "base_mode": "autoregressive",
+            "checkpoint_shaping_auxiliary": "mtp",
+            "initial_loss_scale": 0.0,
+        },
         "checkpoint_root": str(tmp_path / "checkpoints"),
         "topology": {
             "policy": "project_theseus_moecot_shared_trunk_source_specialists_v2",
@@ -102,6 +109,11 @@ def tiny_config(tmp_path: Path) -> dict:
             "rms_norm_eps": 0.00001,
             "attention_policy": "causal",
             "source_target_separator_token_id": 2,
+            "mtp_future_offsets": [2, 3, 4],
+            "mtp_low_rank": 1,
+            "mtp_loss_weights": [0.3, 0.2, 0.1],
+            "mtp_loss_scale": 0.0,
+            "mtp_maximum_head_parameter_overhead_ratio": 0.25,
         },
         "arm_model": {
             "d_model": 16,
@@ -113,6 +125,11 @@ def tiny_config(tmp_path: Path) -> dict:
             "rms_norm_eps": 0.00001,
             "attention_policy": "causal",
             "source_target_separator_token_id": 2,
+            "mtp_future_offsets": [2, 3, 4],
+            "mtp_low_rank": 1,
+            "mtp_loss_weights": [0.3, 0.2, 0.1],
+            "mtp_loss_scale": 0.0,
+            "mtp_maximum_head_parameter_overhead_ratio": 0.25,
             "expert_adapter_dim": 4,
         },
         "training": {

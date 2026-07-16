@@ -38,6 +38,11 @@ class CausalTransformerConfig:
     semantic_plan_conditioning_mode: str = "global_additive"
     semantic_plan_probability_mode: str = "independent_sigmoid"
     semantic_plan_factor_group_sizes: tuple[int, ...] = ()
+    mtp_future_offsets: tuple[int, ...] = ()
+    mtp_low_rank: int = 0
+    mtp_loss_weights: tuple[float, ...] = ()
+    mtp_loss_scale: float = 0.0
+    mtp_maximum_head_parameter_overhead_ratio: float = 0.25
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -133,6 +138,31 @@ class CausalTransformerConfig:
             0 <= self.semantic_plan_separator_token_id < self.vocab_size
         ):
             raise ValueError("semantic plan separator token must be in vocabulary")
+        mtp_offsets = tuple(int(value) for value in self.mtp_future_offsets)
+        mtp_weights = tuple(float(value) for value in self.mtp_loss_weights)
+        mtp_enabled = bool(mtp_offsets or self.mtp_low_rank or mtp_weights)
+        if mtp_enabled:
+            if self.mtp_low_rank <= 0:
+                raise ValueError("MTP requires a positive low-rank projection")
+            if not mtp_offsets or len(mtp_offsets) != len(mtp_weights):
+                raise ValueError("MTP offsets and loss weights must be nonempty and aligned")
+            if tuple(sorted(set(mtp_offsets))) != mtp_offsets or mtp_offsets[0] < 2:
+                raise ValueError("MTP future offsets must be unique, increasing, and at least two")
+            if any(weight < 0.0 for weight in mtp_weights) or not any(mtp_weights):
+                raise ValueError("MTP loss weights must be nonnegative with positive mass")
+            head_parameters = (
+                self.d_model * self.mtp_low_rank
+                + len(mtp_offsets) * self.mtp_low_rank * self.vocab_size
+            )
+            base_head_parameters = self.d_model * self.vocab_size
+            if head_parameters / base_head_parameters > float(
+                self.mtp_maximum_head_parameter_overhead_ratio
+            ):
+                raise ValueError("MTP optional heads exceed the parameter-overhead ceiling")
+        elif self.mtp_loss_scale:
+            raise ValueError("MTP loss scale requires enabled MTP heads")
+        if self.mtp_loss_scale < 0.0:
+            raise ValueError("MTP loss scale cannot be negative")
 
 
 def build_model(
@@ -167,6 +197,7 @@ def build_model(
     plan_slot_attention_enabled = (
         plan_enabled and config.semantic_plan_conditioning_mode == "slot_attention"
     )
+    mtp_enabled = bool(config.mtp_future_offsets)
     if state_enabled:
         if state_role_lookup is None:
             raise ValueError("enabled state memory requires a causal token-role lookup")
@@ -532,6 +563,17 @@ def build_model(
             self.copy_auxiliary_loss_weight = float(
                 config.source_copy_auxiliary_loss_weight
             )
+            self.mtp_future_offsets = tuple(int(value) for value in config.mtp_future_offsets)
+            self.mtp_loss_weights = tuple(float(value) for value in config.mtp_loss_weights)
+            self.mtp_loss_scale = float(config.mtp_loss_scale)
+            if mtp_enabled:
+                self.mtp_shared_projection = nn.Linear(
+                    config.d_model, config.mtp_low_rank, bias=False
+                )
+                self.mtp_output_heads = [
+                    nn.Linear(config.mtp_low_rank, config.vocab_size, bias=False)
+                    for _offset in self.mtp_future_offsets
+                ]
             if source_encoder_enabled:
                 self.source_layers = [
                     SourceEncoderBlock() for _ in range(config.source_encoder_layers)
@@ -764,6 +806,12 @@ def build_model(
                 "generator_gate": gate[:, :, 0],
             }
 
+        def mtp_logits(self, hidden: Any) -> list[Any]:
+            if not mtp_enabled:
+                return []
+            shared = self.mtp_shared_projection(hidden)
+            return [head(shared) for head in self.mtp_output_heads]
+
         def conditioned_embeddings(
             self,
             tokens: Any,
@@ -874,7 +922,12 @@ def build_model(
             *,
             return_plan_logits: bool = False,
             return_copy_aux: bool = False,
+            return_training_aux: bool = False,
         ) -> Any:
+            if return_training_aux and (return_plan_logits or return_copy_aux):
+                raise ValueError(
+                    "return_training_aux cannot be combined with legacy auxiliary returns"
+                )
             cached_plan_context = None
             cached_source_memory = None
             cached_source_mask = None
@@ -938,12 +991,19 @@ def build_model(
                     next_cache.append((source_memory, source_mask, source_copy_ids))
                 if plan_enabled:
                     next_cache.append((plan_context,))
+                final_hidden = self.final_norm(hidden)
                 logits, copy_aux = self.output_logits(
-                    self.final_norm(hidden),
+                    final_hidden,
                     source_memory,
                     source_mask,
                     source_copy_ids,
                 )
+                if return_training_aux:
+                    return logits, next_cache, {
+                        "plan_logits": plan_logits,
+                        "copy_aux": copy_aux,
+                        "mtp_logits": self.mtp_logits(final_hidden),
+                    }
                 if return_plan_logits and return_copy_aux:
                     return logits, next_cache, plan_logits, copy_aux
                 if return_plan_logits:
@@ -979,10 +1039,17 @@ def build_model(
                 outputs.append(self.final_norm(hidden))
                 current_cache = next_cache
                 start = stop
-            logits = self.token_embedding.as_linear(mx.concatenate(outputs, axis=1))
+            final_hidden = mx.concatenate(outputs, axis=1)
+            logits = self.token_embedding.as_linear(final_hidden)
             final_cache = current_cache or []
             if plan_enabled:
                 final_cache.append((plan_context,))
+            if return_training_aux:
+                return logits, final_cache, {
+                    "plan_logits": plan_logits,
+                    "copy_aux": None,
+                    "mtp_logits": self.mtp_logits(final_hidden),
+                }
             return (logits, final_cache, plan_logits) if return_plan_logits else (logits, final_cache)
 
     return StandardCausalTransformer()

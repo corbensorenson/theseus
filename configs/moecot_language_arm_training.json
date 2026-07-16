@@ -5,6 +5,13 @@
   "checkpoint_root": "checkpoints/moecot_language_seed_v9_architecture_freeze",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
+  "generation_architecture": {
+    "contract": "configs/generation_architecture_contracts.json",
+    "required_policy": "project_theseus_generation_architecture_contracts_v1",
+    "base_mode": "autoregressive",
+    "checkpoint_shaping_auxiliary": "mtp",
+    "initial_loss_scale": 0.0
+  },
   "architecture_training_authority": {
     "policy": "project_theseus_pre_training_architecture_authority_v1",
     "required_for_long_optimizer_runs": true,
@@ -61,7 +68,12 @@
     "source_target_separator_token_id": 2,
     "source_encoder_layers": 2,
     "source_copy_mode": "pointer_generator",
-    "source_copy_auxiliary_loss_weight": 0.25
+    "source_copy_auxiliary_loss_weight": 0.25,
+    "mtp_future_offsets": [2, 3, 4],
+    "mtp_low_rank": 1,
+    "mtp_loss_weights": [0.3, 0.2, 0.1],
+    "mtp_loss_scale": 0.0,
+    "mtp_maximum_head_parameter_overhead_ratio": 0.25
   },
   "arm_model": {
     "d_model": 256,
@@ -76,6 +88,11 @@
     "source_encoder_layers": 2,
     "source_copy_mode": "pointer_generator",
     "source_copy_auxiliary_loss_weight": 0.25,
+    "mtp_future_offsets": [2, 3, 4],
+    "mtp_low_rank": 1,
+    "mtp_loss_weights": [0.3, 0.2, 0.1],
+    "mtp_loss_scale": 0.0,
+    "mtp_maximum_head_parameter_overhead_ratio": 0.25,
     "expert_adapter_dim": 64,
     "source_expert_adapter_dim": 32
   },

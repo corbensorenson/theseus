@@ -661,8 +661,8 @@
         16
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "pre_training_architecture_required",
-      "dependency": "wire MTP heads/objectives, cache and checkpoint schema, accepted-output accounting, and matched AR control before the long run; defer adoption to behavior-positive evidence",
+      "status": "pretraining_wired_behavior_qualification_pending",
+      "dependency": "complete through the canonical MLX transformer/trainer and frozen campaign configs: AR remains the base; MTP uses one shared rank-1 hidden projection plus three offset-specific vocabulary projections for offsets 2/3/4, masked future-token loss, 21.875% output-head parameter overhead, explicit zero initial campaign loss scale, NPZ checkpoint/reload with zero output drift, and matched inclusion in MoECOT plus dense controls. Behavior and accepted-output speed remain post-training.",
       "pre_training_acceptance_boundary": "Before long training, MTP is a registered optional objective/head with shape-safe checkpoints, MLX execution, inference/cache accounting, no-credit separation, and a frozen matched single-token AR campaign. It is enabled in the joint run only if the preregistered resource canary passes; quality/speed promotion remains post-training.",
       "acceptance_gate": "MTP is compared against a matched single-token AR control on the same private data, active compute, verifier, and decode budget, reporting accepted spans, verifier pass, useful-solution/sec, residuals, and regressions.",
       "support_state_target": "synthetic-test-backed",
@@ -678,8 +678,8 @@
         16
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "pre_training_architecture_required",
-      "dependency": "complete the generation-mode registry and decide each checkpoint-shaping mode before training; purely checkpoint-compatible draft helpers may remain disabled but must prove compatibility",
+      "status": "pretraining_wired_behavior_qualification_pending",
+      "dependency": "complete generation-mode disposition: Medusa, EAGLE, and LayerSkip are retired from the first campaign with explicit re-entry conditions; speculative decoding is a disabled post-training helper bound to target/draft revisions, leaves target topology unchanged, commits only accepted-prefix cache state, and passes loader/migration controls. No speed or capability is claimed.",
       "pre_training_acceptance_boundary": "Before long training, Medusa, EAGLE, speculative decoding, and LayerSkip have explicit topology/objective/checkpoint/cache/resource records and matched AR controls. LayerSkip or any training-time head is included in the frozen campaign or retired; checkpoint-compatible post-hoc draft modes prove loader/migration compatibility and remain disabled until behavior-positive qualification.",
       "acceptance_gate": "Each mode has a generation_mode_record with active compute, cache policy, verification cost, accepted-output quality, useful-solution/sec, fallback count, and matched AR baseline.",
       "support_state_target": "synthetic-test-backed",
@@ -694,8 +694,8 @@
         13
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "pre_training_architecture_required",
-      "dependency": "freeze the sketch/infill/diffusion topology, objective, corruption schedule, checkpoint, and matched AR decision before the long run; defer only learned efficacy",
+      "status": "retired_by_pretraining_verdict",
+      "dependency": "retired from the first campaign by the frozen complexity/resource disposition: bidirectional masked denoising requires an incompatible checkpoint, corruption objective, and iterative full-sequence state while the AR base has not cleared utility. Re-entry requires a useful AR checkpoint and a prospectively frozen Semantic-IR-localized matched-total-cost campaign.",
       "pre_training_acceptance_boundary": "Before long training, the sketch-first/LLaDA-style candidate is either implemented as a registered architecture alternative with source-disjoint transforms, Semantic-IR localization, MLX kernels, checkpoint/migration, integrity accounting, and matched AR controls, or retired by a written pre-training complexity/resource verdict. Learned repair quality remains post-training.",
       "acceptance_gate": "A sketch-first/infill candidate family is compared with AR one-shot decode on private tasks using the same verifier, candidate budget, and integrity audit, with localized repair residuals retained.",
       "support_state_target": "synthetic-test-backed",

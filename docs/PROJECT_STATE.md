@@ -201,10 +201,11 @@ share toward zero. Public benchmarks are calibration only.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
 5. Preserve the completed KERC, QCSA, Reflexive Router, full-state causality, and
-   multi-target policy-lease and GVR pre-training dispositions and close the remaining 7 finite
+   multi-target policy-lease, GVR, policy-objective, autonomous-campaign, and generation-mode
+   pre-training dispositions and close the remaining 1 finite
    pre-training architecture contracts through full wiring, falsification, or explicit retirement.
-   This includes OneCell disposition, update/data causality, policy/GVR/campaign control, and
-   generation-objective interfaces.
+   This is the OneCell disposition; update/data causality, policy/GVR/campaign control, and
+   generation-objective interfaces are already mechanically closed without capability claims.
 6. Preserve the GREEN data floors, freeze the surface/code/control campaign with the
    hash-bound KERC retirement in its identity, publish the architecture manifest, and
    replay every canary.
@@ -241,14 +242,15 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Preserve the completed disabled open-ended improvement controller and all seven completed
+Preserve the completed disabled open-ended improvement controller and completed architecture
 pre-training dispositions; do not mistake mechanics profiles for learned routing, unlearning,
 policy improvement, repair efficacy, autonomous self-improvement, or capability evidence.
 The preference and verifier-reward objective contracts are now complete but disabled: all nine
 named adapters share content-bound private schemas, frozen reference/checkpoint identity, MLX
 parity, verifier-capacity limits, a generator update lease, exact rollback, and twelve rejecting
-mutations with zero optimizer exposure. Next, close or retire the remaining generation-mode and
-OneCell contracts, then close the remaining
-finite architecture docket and publish the independently
-replayed architecture-freeze package. Do not start long training until the strict
+mutations with zero optimizer exposure. Generation architecture is now campaign-bound through the
+canonical MLX transformer and trainer: low-rank MTP is checkpointed at zero initial loss scale,
+Medusa/EAGLE/LayerSkip/sketch-first are retired from the first campaign, and speculative decode is
+disabled but target-checkpoint-compatible. Next, close or retire OneCell, then publish the
+independently replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.
