@@ -592,9 +592,9 @@
         10
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "pre_training_architecture_required",
-      "dependency": "wire the objective/reference-policy/checkpoint/rollback and evaluation interfaces now; defer only behavioral preference training until strict prompt/signature generation emits non-fallback, verifier-meaningful candidates",
-      "pre_training_acceptance_boundary": "Before long training, DPO, IPO, ORPO, KTO, and SimPO are interchangeable registered objective adapters over one provenance-bound preference schema with frozen-reference identity, policy-update leases, drift/rollback controls, MLX execution, no-cheat accounting, and negative tests. Running or selecting an objective remains post-training and requires behavior-positive private candidates.",
+      "status": "pretraining_wired_behavior_qualification_pending",
+      "dependency": "the five offline preference adapters are executable and frozen disabled; objective selection and behavioral preference training wait for strict prompt/signature generation to emit non-fallback, verifier-positive private candidates",
+      "pre_training_acceptance_boundary": "Satisfied: DPO, IPO, ORPO, KTO, and SimPO execute interchangeably over one provenance-bound preference schema with frozen-reference identity, checkpoint/optimizer round trip, schema migration, generator policy-update lease, exact rollback, MLX numerical parity, no-cheat accounting, and rejecting mutation controls. Objective selection and optimizer exposure are both disabled until behavior-positive private evidence exists.",
       "acceptance_gate": "A bounded DPO/IPO/ORPO/KTO/SimPO comparison uses the same private accepted/rejected split, frozen reference checkpoint, heldout private verifier, reward-hacking probes, drift bounds, and rollback plan.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "Loss or policy-gap movement is not capability. No public benchmark rows, answer templates, fallback bodies, routers, deterministic tools, or semantic renderers count as learned generation."
@@ -608,9 +608,9 @@
         16
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "pre_training_architecture_required",
-      "dependency": "wire verifier-reward rollout, reference, lease, capacity, rollback, and reward-hacking contracts now; defer optimization efficacy until usable learned candidates exist",
-      "pre_training_acceptance_boundary": "Before long training, GRPO, RLOO, ReMax, and RLVR share a registered rollout/reward ABI, verifier-capacity ledger, reward provenance, reference/baseline identity, bounded authority, rollback, MLX checkpoint compatibility, and adversarial reward-hacking fixtures. Executing or selecting a policy optimizer remains post-training and requires verifier-positive candidates.",
+      "status": "pretraining_wired_behavior_qualification_pending",
+      "dependency": "the four verifier-reward adapters and bounded rollout ABI are executable and frozen disabled; optimizer selection and efficacy wait for verifier-positive learned candidates",
+      "pre_training_acceptance_boundary": "Satisfied: GRPO, RLOO, ReMax, and RLVR share one registered rollout/reward ABI with exact rollout and verifier provenance, reference/baseline identity, group/leave-one-out/greedy/binary advantages, clipped policy ratios, KL accounting, verifier-capacity ceilings, generator update lease, exact rollback, MLX-compatible checkpoint identity, and adversarial reward-hacking controls. Runtime selection and optimizer exposure remain zero until verifier-positive private candidates exist.",
       "acceptance_gate": "Run reward-present versus reward-removed ablations on private exact-verifier tasks with rollout budget, reward-hacking probes, drift bound, rollback receipt, verifier-cost ledger, and residual mining.",
       "support_state_target": "synthetic-test-backed",
       "no_claim_boundary": "A verifier-reward run cannot expand authority, cannot train on public benchmark artifacts, and cannot become a default route until heldout private behavior improves under replay."
@@ -4953,8 +4953,8 @@
       "minimum_theseus_slice": "Implement the chapter's minimal slice on registered phases [1, 2, 16]: A public plan graph plus PlanForge DAG record surface with fixtures and validation for lifecycle states, dependency order, dispatch receipts, authority, capability tiers, adequacy contracts, cost-quality ledgers, residuals, invalid cycles, contract mismatch, requirement loss, unreceipted dispatch, approval bypass, scheduler-state boundaries, and runtime-replan delta shape, while leaving decomposition quality, selected-tier adequacy, route quality, live feedback handling, runtime replanning, and deployed scheduler behavior unclaimed.",
       "beyond_sota_theseus_endpoint": "The mature version is a governed scheduler and capacity allocator for cognitive work. It receives accepted command contracts, builds and maintains plan graphs, and decides which nodes are proposed, blocked, reviewable, dispatchable, dispatched, replanned, residualized, or stopped. It never owns memory, authority, verification, or side effects; it coordinates the handoffs that let those layers do their own jobs. Each node carries dependency order, context demand, authority state, capability tier, adequacy contract, verifier, cost envelope, route assignment, merge condition, escalation path, and residual behavior. Intelligence arbitrage is measured only after verification, repair, merge, human review, and residual cost are counted, so cheaper work is accepted only when it satisfies the node adequacy contract and remains useful to downstream dependents.",
       "support_state_target": "synthetic-test-backed",
-      "current_theseus_state": "partial_reference_slice",
-      "required_gate_or_fixture": "registered roadmap gate plus expected-invalid fixture required",
+      "current_theseus_state": "pretraining_wired_behavior_qualification_pending",
+      "required_gate_or_fixture": "Policy optimization gate with unified objective-contract replay, MLX parity, checkpoint migration, update-lease rollback, and mutation controls",
       "required_records_or_receipts": [
         "adapter_receipt",
         "artifact_graph",

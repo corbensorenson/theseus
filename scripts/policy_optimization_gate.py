@@ -17,6 +17,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import policy_objective_contracts
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "policy_optimization_program.json"
@@ -82,12 +84,22 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
     hard_boundaries = dict_value(config.get("hard_boundaries"))
     record_reports = [audit_record(record, required_probes) for record in records]
     boundary_gates = audit_hard_boundaries(hard_boundaries)
+    objective_contracts = policy_objective_contracts.run_reference_suite(
+        policy_objective_contracts.load_contract()
+    )
 
     hard_failures = [
         gap
         for record_report in record_reports
         for gap in record_report["hard_gaps"]
     ] + [gate for gate in boundary_gates if gate["severity"] == "hard" and not gate["passed"]]
+    if objective_contracts["trigger_state"] != "GREEN":
+        hard_failures.append({
+            "record_id": "policy_objective_contracts",
+            "kind": "objective_contract_suite_not_green",
+            "severity": "hard",
+            "evidence": objective_contracts,
+        })
     warnings = [
         warning
         for record_report in record_reports
@@ -119,6 +131,13 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "records_with_behavior_lift": sum(1 for row in record_reports if row["behavior_evidence"]["has_behavior_lift"]),
         "records_with_loss_only_risk": sum(1 for row in record_reports if row["loss_only_risk"]),
         "records_with_authority_expansion_risk": sum(1 for row in record_reports if row["authority_expansion_risk"]),
+        "offline_objective_adapter_count": objective_contracts["summary"]["offline_objective_count"],
+        "verifier_reward_objective_adapter_count": objective_contracts["summary"]["verifier_reward_objective_count"],
+        "objective_mutation_case_count": objective_contracts["summary"]["mutation_case_count"],
+        "objective_mutation_passed_count": objective_contracts["summary"]["mutation_passed_count"],
+        "objective_mlx_parity": objective_contracts["summary"]["mlx_parity"],
+        "objective_runtime_authorized": objective_contracts["summary"]["runtime_authorized"],
+        "objective_optimizer_exposure_steps": objective_contracts["summary"]["optimizer_exposure_steps"],
     }
     return {
         "policy": "project_theseus_policy_optimization_gate_v1",
@@ -129,6 +148,7 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
         "boundary_gates": boundary_gates,
         "required_reward_hacking_probes": sorted(required_probes),
         "records": record_reports,
+        "objective_contracts": objective_contracts,
         "hard_gaps": hard_failures,
         "warnings": warnings,
         "rules": {
@@ -136,6 +156,7 @@ def build_report(config_path: Path, config: dict[str, Any], started: float) -> d
             "loss_boundary": "LM loss, selector score, or reward value is not capability evidence unless behavioral verification improves.",
             "claim_boundary": "Policy updates do not support learned-generation, public-transfer, substrate-win, or runtime-serving claims unless those claims have independent evidence.",
             "public_boundary": "Public benchmark artifacts are calibration-only and never become training rows.",
+            "objective_boundary": "DPO, IPO, ORPO, KTO, SimPO, GRPO, RLOO, ReMax, and RLVR share one executable disabled-by-default contract; numerical movement cannot activate or select an objective.",
         },
         "runtime_ms": int((time.perf_counter() - started) * 1000),
     }

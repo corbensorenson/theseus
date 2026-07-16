@@ -67,7 +67,7 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** close the remaining 6 finite architecture contracts
+- **Immediate dependency:** close the remaining 4 finite architecture contracts
   through existing registry owners. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
   DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces
@@ -244,8 +244,11 @@ python3 scripts/theseus_control_plane.py
 Preserve the completed disabled open-ended improvement controller and all seven completed
 pre-training dispositions; do not mistake mechanics profiles for learned routing, unlearning,
 policy improvement, repair efficacy, autonomous self-improvement, or capability evidence.
-Next, close the preference-objective and verifier-reward objective contracts through the shared
-policy-update lease, then close the remaining
+The preference and verifier-reward objective contracts are now complete but disabled: all nine
+named adapters share content-bound private schemas, frozen reference/checkpoint identity, MLX
+parity, verifier-capacity limits, a generator update lease, exact rollback, and twelve rejecting
+mutations with zero optimizer exposure. Next, close or retire the remaining generation-mode and
+OneCell contracts, then close the remaining
 finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.

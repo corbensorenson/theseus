@@ -1,6 +1,14 @@
 {
   "policy": "project_theseus_policy_optimization_program_v1",
   "purpose": "Governed policy-update ledger for generator, ranker, router, VCM, verifier, and generation-mode changes. This records what is being optimized, what feedback is allowed, how reward hacking is probed, when defaults may change, and what is not claimed.",
+  "objective_contract": {
+    "config": "configs/policy_objective_contracts.json",
+    "implementation": "scripts/policy_objective_contracts.py",
+    "offline_preference_families": ["dpo", "ipo", "orpo", "kto", "simpo"],
+    "verifier_reward_families": ["grpo", "rloo", "remax", "rlvr"],
+    "runtime_enabled": false,
+    "activation_evidence": "independently verified private behavior-positive candidate receipt"
+  },
   "hard_boundaries": {
     "public_benchmark_training_allowed": false,
     "runtime_external_inference_allowed": false,

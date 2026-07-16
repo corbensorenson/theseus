@@ -1,0 +1,92 @@
+{
+  "policy": "project_theseus_policy_objective_contracts_v1",
+  "schema_version": "1.0.0",
+  "owner": "policy_optimization_program",
+  "runtime_enabled": false,
+  "maximum_architecture_canary_steps": 8,
+  "preference_schema": {
+    "schema_id": "private_preference_pair_v1",
+    "required_fields": [
+      "pair_id",
+      "prompt_digest",
+      "chosen_digest",
+      "rejected_digest",
+      "chosen_policy_logp",
+      "rejected_policy_logp",
+      "chosen_reference_logp",
+      "rejected_reference_logp",
+      "provenance_receipt",
+      "private_verifier_receipt",
+      "candidate_integrity_receipt"
+    ],
+    "forbidden_fields": [
+      "public_prompt",
+      "public_test",
+      "public_solution",
+      "hidden_test",
+      "answer_template",
+      "fallback_body"
+    ]
+  },
+  "rollout_schema": {
+    "schema_id": "private_verifier_rollout_group_v1",
+    "required_fields": [
+      "group_id",
+      "prompt_digest",
+      "policy_revision",
+      "reference_revision",
+      "rollout_ids",
+      "old_logps",
+      "new_logps",
+      "reference_logps",
+      "verifier_rewards",
+      "greedy_baseline_reward",
+      "verifier_receipts",
+      "candidate_integrity_receipts"
+    ],
+    "minimum_group_size": 3,
+    "maximum_group_size": 8
+  },
+  "offline_preference_objectives": {
+    "dpo": {"beta": 0.1, "reference_required": true},
+    "ipo": {"beta": 0.1, "reference_required": true},
+    "orpo": {"beta": 0.1, "reference_required": false, "sft_weight": 1.0},
+    "kto": {"beta": 0.1, "reference_required": true, "desirable_weight": 1.0, "undesirable_weight": 1.0},
+    "simpo": {"beta": 0.1, "gamma": 0.5, "reference_required": false}
+  },
+  "verifier_reward_objectives": {
+    "grpo": {"clip_epsilon": 0.2, "kl_beta": 0.01, "baseline": "group_zscore"},
+    "rloo": {"clip_epsilon": 0.2, "kl_beta": 0.01, "baseline": "leave_one_out"},
+    "remax": {"clip_epsilon": 0.2, "kl_beta": 0.01, "baseline": "greedy_reward"},
+    "rlvr": {"clip_epsilon": 0.2, "kl_beta": 0.01, "baseline": "verified_binary"}
+  },
+  "verifier_capacity": {
+    "maximum_rollouts": 8,
+    "maximum_verifier_cases": 64,
+    "maximum_verifier_seconds": 30.0,
+    "maximum_compute_units": 100.0,
+    "maximum_energy_units": 100.0
+  },
+  "reward_hacking_probes": [
+    "shallow_identity_loop",
+    "early_return_stub",
+    "inert_stub",
+    "prompt_label_shortcut",
+    "verifier_only_hack",
+    "excessive_reasoning_or_latency",
+    "context_ignoring_answer",
+    "public_payload_leakage",
+    "fallback_template_credit"
+  ],
+  "activation": {
+    "required_evidence_kind": "private_behavior_positive_candidate_receipt",
+    "minimum_independent_passes": 1,
+    "selection_metric": "heldout_private_behavior_delta"
+  },
+  "claim_boundaries": [
+    "Objective loss, margin, reward, or KL movement is not capability or promotion evidence.",
+    "Public benchmark artifacts, templates, fallbacks, routers, tools, and semantic renderers cannot enter objective training rows or receive learned-generation credit.",
+    "All objectives remain disabled until independently verified private behavior-positive candidates exist.",
+    "MLX parity proves bounded numerical execution, not speed, convergence, behavior lift, or CUDA parity."
+  ]
+}
