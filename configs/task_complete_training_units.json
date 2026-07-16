@@ -41,7 +41,18 @@
     "html_css": {
       "minimum_verified_units": 500,
       "minimum_target_positions": 500000,
-      "required_verification_strength": "dom_a11y_layout_render_delta"
+      "required_capability_floors": {
+        "html": {
+          "minimum_verified_units": 400,
+          "minimum_target_positions": 400000,
+          "required_verification_strength": "dom_a11y_layout_render_delta"
+        },
+        "css": {
+          "minimum_verified_units": 100,
+          "minimum_target_positions": 50000,
+          "required_verification_strength": "layout_render_delta"
+        }
+      }
     },
     "rust": {
       "minimum_verified_units": 500,
@@ -71,7 +82,10 @@
     "html_css": {
       "command": "headless Chrome local-file render at 800x600 and 375x667",
       "network": "denied",
-      "timeout_seconds": 20
+      "timeout_seconds": 20,
+      "minimum_changed_pixel_fraction": 0.0005,
+      "javascript": "disabled",
+      "remote_assets": "denied_by_os_sandbox"
     },
     "rust": {
       "command": "cargo test --offline --quiet",
@@ -86,6 +100,15 @@
     "package_lock_sha256": "7210e9fb3fad10fdb8a4e07e445d2402b3086a18938f8a82bb9c4ba6a1191d7b",
     "typescript_version": "5.9.3",
     "pnpm_version": "10.34.4",
+    "prepare_timeout_seconds": 300,
+    "offline_replay_timeout_seconds": 180
+  },
+  "css_ast_toolchain": {
+    "manifest_root": "configs/toolchains/task_complete_css_ast",
+    "runtime_root": "runtime/task_complete_toolchains/css-ast-v1",
+    "parser_script": "scripts/task_complete_css_ast.mjs",
+    "package_lock_sha256": "7faf6e1703c83179ff7a82774132afc0db0592ee06d581e83afe54e9d222402a",
+    "postcss_version": "8.4.21",
     "prepare_timeout_seconds": 300,
     "offline_replay_timeout_seconds": 180
   },
@@ -414,6 +437,373 @@
       "archive": "runtime/task_complete_sources/exercism__rust__3dc1f82096828c7010718420a72c373c63fd71ea.tar.gz",
       "archive_sha256": "121f377e8a253f0123cf0c06132160bd3d3854a2e752688bb81566fe47c4ff5e",
       "language": "rust",
+      "enabled": true
+    },
+    {
+      "id": "open_repo_tabler_62178f8_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "tabler/tabler",
+      "revision": "62178f8",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/tabler__tabler__dev.tar.gz",
+      "archive_sha256": "8df0a8dccfc213f12a00c71a25e1e6706b4b5fe64ba52353df1c561a9fd8489c",
+      "language": "html_css",
+      "source_globs": ["preview/**/*.html"],
+      "exclude_source_globs": ["preview/**/generated/**"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 300,
+        "maximum_candidates_per_file": 3,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "File-stratified content-bound sampling supplies broad template coverage without selecting from render outcomes."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_gentelella_c4515bd_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "ColorlibHQ/gentelella",
+      "revision": "c4515bd",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/ColorlibHQ__gentelella__master.tar.gz",
+      "archive_sha256": "7bb47d113ac958098ad40f0bf08b9547b3ea531368faa2b47e6d07709c68e982",
+      "language": "html_css",
+      "source_globs": ["production/*.html"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 300,
+        "maximum_candidates_per_file": 8,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Content-bound round-robin coverage limits correlated holes while retaining multiple semantic components per independent page."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_coreui_487cd57_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "coreui/coreui-free-bootstrap-admin-template",
+      "revision": "487cd57",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/coreui__coreui-free-bootstrap-admin-template__main.tar.gz",
+      "archive_sha256": "3a1db34c995c255e0013ae19538feafbf147a23c3ae0e14859542b3a3c95f9bd",
+      "language": "html_css",
+      "source_globs": ["src/views/**/*.html"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 350,
+        "maximum_candidates_per_file": 10,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "The bounded campaign is distributed across source pages before any browser receipt exists."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_bootstrap_b37afd7_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "twbs/bootstrap",
+      "revision": "b37afd7",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/twbs__bootstrap__main.tar.gz",
+      "archive_sha256": "124e0f3a2a793f75a46a3f5fc0ae6d52a0f3ef3f1d37ebd9cc8445bdc0998177",
+      "language": "html_css",
+      "source_globs": ["js/tests/visual/*.html"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 100,
+        "maximum_candidates_per_file": 8,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Canonical visual fixtures add upstream framework components under a fixed source-only cap."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_sb_admin_f030988_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "StartBootstrap/startbootstrap-sb-admin-2",
+      "revision": "f030988",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/StartBootstrap__startbootstrap-sb-admin-2__master.tar.gz",
+      "archive_sha256": "b4edeff483556fbd1a38c917174e990d9d39db76d3c7fb540172e7f6812e0975",
+      "language": "html_css",
+      "source_globs": ["*.html"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 140,
+        "maximum_candidates_per_file": 10,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Complete-page MIT templates provide a source-only, page-stratified margin above the HTML/CSS floor."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_agency_b2d5d5c_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "StartBootstrap/startbootstrap-agency",
+      "revision": "b2d5d5c",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/StartBootstrap__startbootstrap-agency__master.tar.gz",
+      "archive_sha256": "9f5d2eb63073aab43752f9a750f0412bb8924003948ec8e20703a30251e59b94",
+      "language": "html_css",
+      "source_globs": ["dist/index.html"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 70,
+        "maximum_candidates_per_file": 70,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "A bounded single-page component inventory adds landing-page semantics while remaining one source-disjoint split group."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_uikit_a8950dc_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "uikit/uikit",
+      "revision": "a8950dc",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/uikit__uikit__develop.tar.gz",
+      "archive_sha256": "4236258a00b1e6b4c285717cb9afdd778783793e564e81a7b767a3d10c4dd1ef",
+      "language": "html_css",
+      "source_globs": ["tests/*.html"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 250,
+        "maximum_candidates_per_file": 3,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Pinned upstream visual-test pages provide independent responsive component contracts selected before rendering."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_semantic_ui_597843a_render_killed_html_holes",
+      "adapter": "html_render_killed_subtree_holes",
+      "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+      "repo": "semantic-org/semantic-ui",
+      "revision": "597843a",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/semantic-org__semantic-ui__master.tar.gz",
+      "archive_sha256": "a52f1cb40a299785e4aa9c8acece0aea0c574ae5ae98329ab1ed773097d8b793",
+      "language": "html_css",
+      "source_globs": ["examples/**/*.html"],
+      "semantic_tags": [
+        "article", "aside", "details", "dialog", "div", "fieldset", "figure",
+        "footer", "form", "header", "main", "nav", "ol", "section", "table", "ul"
+      ],
+      "minimum_target_bytes": 512,
+      "maximum_target_bytes": 16384,
+      "minimum_visible_text_chars": 32,
+      "minimum_descendant_tag_count": 2,
+      "maximum_document_bytes": 240000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 100,
+        "maximum_candidates_per_file": 7,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Example-page round-robin sampling adds a distinct component framework without outcome-conditioned inclusion."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_sb_admin_f030988_render_killed_css_rules",
+      "adapter": "css_render_killed_rule_holes",
+      "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+      "repo": "StartBootstrap/startbootstrap-sb-admin-2",
+      "revision": "f030988",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/StartBootstrap__startbootstrap-sb-admin-2__master.tar.gz",
+      "archive_sha256": "b4edeff483556fbd1a38c917174e990d9d39db76d3c7fb540172e7f6812e0975",
+      "language": "html_css",
+      "source_globs": ["css/sb-admin-2.css"],
+      "page_globs": ["*.html"],
+      "stylesheet_href_aliases": {
+        "css/sb-admin-2.css": ["css/sb-admin-2.min.css"]
+      },
+      "minimum_target_bytes": 64,
+      "maximum_target_bytes": 4096,
+      "context_characters_each_side": 12000,
+      "page_excerpt_characters": 12000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 200,
+        "maximum_candidates_per_file": 200,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Pinned source rules are matched to linked pages by selector tokens before any render result exists."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_agency_b2d5d5c_render_killed_css_rules",
+      "adapter": "css_render_killed_rule_holes",
+      "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+      "repo": "StartBootstrap/startbootstrap-agency",
+      "revision": "b2d5d5c",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/StartBootstrap__startbootstrap-agency__master.tar.gz",
+      "archive_sha256": "9f5d2eb63073aab43752f9a750f0412bb8924003948ec8e20703a30251e59b94",
+      "language": "html_css",
+      "source_globs": ["dist/css/styles.css"],
+      "page_globs": ["dist/index.html"],
+      "stylesheet_href_aliases": {
+        "dist/css/styles.css": ["css/styles.css"]
+      },
+      "minimum_target_bytes": 64,
+      "maximum_target_bytes": 4096,
+      "context_characters_each_side": 12000,
+      "page_excerpt_characters": 12000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 200,
+        "maximum_candidates_per_file": 200,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "The complete pinned stylesheet is paired to its canonical page without outcome-conditioned sampling."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_semantic_ui_597843a_render_killed_css_rules",
+      "adapter": "css_render_killed_rule_holes",
+      "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+      "repo": "semantic-org/semantic-ui",
+      "revision": "597843a",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/semantic-org__semantic-ui__master.tar.gz",
+      "archive_sha256": "a52f1cb40a299785e4aa9c8acece0aea0c574ae5ae98329ab1ed773097d8b793",
+      "language": "html_css",
+      "source_globs": ["dist/components/*.css"],
+      "exclude_source_globs": ["**/*.min.css"],
+      "page_globs": ["examples/components/*.html"],
+      "minimum_target_bytes": 64,
+      "maximum_target_bytes": 4096,
+      "context_characters_each_side": 12000,
+      "page_excerpt_characters": 12000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 400,
+        "maximum_candidates_per_file": 20,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "Component CSS and linked example pages provide file-stratified source-only functional coverage."
+      },
+      "enabled": true
+    },
+    {
+      "id": "open_repo_bootstrap_b37afd7_render_killed_css_rules",
+      "adapter": "css_render_killed_rule_holes",
+      "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+      "repo": "twbs/bootstrap",
+      "revision": "b37afd7",
+      "license_spdx": "MIT",
+      "archive": "data/training_data/open_code_pantry/tarballs/twbs__bootstrap__main.tar.gz",
+      "archive_sha256": "124e0f3a2a793f75a46a3f5fc0ae6d52a0f3ef3f1d37ebd9cc8445bdc0998177",
+      "language": "html_css",
+      "source_globs": ["dist/css/bootstrap.css"],
+      "page_globs": ["js/tests/visual/*.html"],
+      "stylesheet_href_aliases": {
+        "dist/css/bootstrap.css": ["../../../dist/css/bootstrap.min.css"]
+      },
+      "minimum_target_bytes": 64,
+      "maximum_target_bytes": 4096,
+      "context_characters_each_side": 12000,
+      "page_excerpt_characters": 12000,
+      "verification_checkpoint_interval": 25,
+      "verification_parallelism": 2,
+      "verification_candidate_selection": {
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 200,
+        "maximum_candidates_per_file": 200,
+        "selection_uses_verifier_outcomes": false,
+        "rationale": "A separate whole-source Bootstrap campaign closes the prospective CSS coverage shortfall; all 200 rules were selected from pinned source and linked visual fixtures before any Bootstrap render outcome was observed."
+      },
       "enabled": true
     },
     {

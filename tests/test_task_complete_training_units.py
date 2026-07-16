@@ -4,6 +4,8 @@ import io
 import json
 import sys
 import tarfile
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -15,6 +17,8 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import task_complete_training_units as units  # noqa: E402
+import task_complete_css_holes as css_holes  # noqa: E402
+import task_complete_web_holes as web_holes  # noqa: E402
 import training_data_admission_v1 as admission  # noqa: E402
 import training_data_lineage_audit as lineage  # noqa: E402
 
@@ -67,6 +71,7 @@ def test_coverage_counts_only_admitted_required_strength() -> None:
     for arm in cfg["coverage_floors_for_50m_scale_proposal"].values():
         arm["minimum_verified_units"] = 1
         arm["minimum_target_positions"] = 1
+        arm.pop("required_capability_floors", None)
     cfg["coverage_floors_for_50m_scale_proposal"]["english"].update(
         minimum_human_contributed_share=1.0,
         minimum_multi_turn_share=1.0,
@@ -101,6 +106,70 @@ def test_coverage_counts_only_admitted_required_strength() -> None:
     assert coverage["html_css"]["ready"] is True
     assert coverage["python"]["verified_units"] == 0
     assert {row["arm_id"] for row in gaps} == {"python", "javascript_typescript", "rust"}
+
+
+def test_html_css_coverage_requires_both_subcapabilities() -> None:
+    cfg = config()
+    floor = cfg["coverage_floors_for_50m_scale_proposal"]["html_css"]
+    floor.update(minimum_verified_units=2, minimum_target_positions=20)
+    floor["required_capability_floors"] = {
+        "html": {
+            "minimum_verified_units": 1,
+            "minimum_target_positions": 10,
+            "required_verification_strength": "dom_a11y_layout_render_delta",
+        },
+        "css": {
+            "minimum_verified_units": 1,
+            "minimum_target_positions": 10,
+            "required_verification_strength": "layout_render_delta",
+        },
+    }
+    html_only = [{
+        "decision": "admit",
+        "arm_id": "html_css",
+        "capability_tags": ["html"],
+        "target_positions": 20,
+        "verification": {"strength": "dom_a11y_layout_render_delta"},
+        "provenance": {},
+    }, {
+        "decision": "admit",
+        "arm_id": "html_css",
+        "capability_tags": ["html"],
+        "target_positions": 20,
+        "verification": {"strength": "dom_a11y_layout_render_delta"},
+        "provenance": {},
+    }]
+    coverage, gaps = units.coverage_summary(cfg, html_only)
+    assert coverage["html_css"]["ready"] is False
+    assert coverage["html_css"]["capabilities"]["html"]["ready"] is True
+    assert coverage["html_css"]["capabilities"]["css"]["ready"] is False
+    assert "capability:css:unit_floor" in next(
+        row["failed_checks"] for row in gaps if row["arm_id"] == "html_css"
+    )
+
+    wrong_strength_css = [*html_only, {
+        "decision": "admit",
+        "arm_id": "html_css",
+        "capability_tags": ["css"],
+        "target_positions": 10,
+        "verification": {"strength": "dom_a11y_layout_render_delta"},
+        "provenance": {},
+    }]
+    floor["minimum_verified_units"] = 3
+    coverage, _ = units.coverage_summary(cfg, wrong_strength_css)
+    assert coverage["html_css"]["capabilities"]["css"]["verified_units"] == 0
+    assert coverage["html_css"]["ready"] is False
+
+    html_and_css = [*html_only, {
+        "decision": "admit",
+        "arm_id": "html_css",
+        "capability_tags": ["css"],
+        "target_positions": 10,
+        "verification": {"strength": "layout_render_delta"},
+        "provenance": {},
+    }]
+    coverage, _ = units.coverage_summary(cfg, html_and_css)
+    assert coverage["html_css"]["ready"] is True
 
 
 def test_executable_unit_requires_target_pass_and_starter_fail(tmp_path: Path, monkeypatch) -> None:
@@ -374,6 +443,79 @@ def test_javascript_verification_selection_rejects_outcome_conditioning() -> Non
         )
 
 
+def test_javascript_package_inventory_identity_is_order_independent(tmp_path: Path) -> None:
+    first = json.dumps([
+        {"path": str(tmp_path / "b"), "dependencies": {"z": {"version": "2"}}},
+        {"path": str(tmp_path / "a"), "dependencies": {"a": {"version": "1"}}},
+    ])
+    second = json.dumps([
+        {"dependencies": {"a": {"version": "1"}}, "path": str(tmp_path / "a")},
+        {"dependencies": {"z": {"version": "2"}}, "path": str(tmp_path / "b")},
+    ])
+    assert units.canonical_javascript_package_inventory(
+        first, source_root=tmp_path
+    ) == units.canonical_javascript_package_inventory(second, source_root=tmp_path)
+
+
+def test_javascript_cache_migration_allows_only_inventory_identity_drift() -> None:
+    basis = {
+        "unit_id": "unit-1",
+        "archive_sha256": "archive",
+        "target_body": "return 42",
+        "starter_body": 'throw new Error("hole")',
+        "test_paths": ["value.test.ts"],
+    }
+    prior_toolchain = {
+        "command": ["vitest", "run"],
+        "environment": {},
+        "timeout_seconds": 30,
+        "parser_toolchain_identity": {"identity_sha256": "parser"},
+        "locked_environment_identity": {
+            "identity_sha256": "prior-derived",
+            "installed_packages_sha256": "prior-raw-order",
+            "lock_sha256": "lock",
+            "pnpm_version": "11.9.0",
+            "build_outputs": {"tree_sha256": "build"},
+        },
+    }
+    current_toolchain = json.loads(json.dumps(prior_toolchain))
+    current_toolchain["locked_environment_identity"].update({
+        "identity_sha256": "current-derived",
+        "installed_packages_sha256": "canonical-order",
+        "installed_packages_identity_kind": "canonical_unordered_json_v1",
+    })
+    cached = {
+        "verification_digest": units.stable_hash({**basis, "toolchain": prior_toolchain}),
+        "verification": {
+            "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
+            "strength": "executable_target_pass_starter_fail",
+            "state": "passed",
+            "target_passed": True,
+            "starter_failed": True,
+            "toolchain": prior_toolchain,
+        },
+    }
+    assert units.javascript_cached_verification_compatible(
+        cached, verification_basis=basis, current_toolchain=current_toolchain
+    )
+    rebound = units.javascript_rebind_cached_verification(
+        cached["verification"], current_toolchain=current_toolchain
+    )
+    assert rebound["toolchain"] == current_toolchain
+    assert rebound["cache_revalidation"]["tests_reexecuted"] is False
+
+    changed_command = json.loads(json.dumps(current_toolchain))
+    changed_command["command"].append("--changed")
+    assert not units.javascript_cached_verification_compatible(
+        cached, verification_basis=basis, current_toolchain=changed_command
+    )
+    assert not units.javascript_cached_verification_compatible(
+        cached,
+        verification_basis={**basis, "starter_body": "different mutation"},
+        current_toolchain=current_toolchain,
+    )
+
+
 def test_tailwind_campaign_cap_does_not_bound_vite_or_python_sources() -> None:
     sources = {row["id"]: row for row in config()["sources"]}
     tailwind = sources["open_repo_tailwind_35a3e9c_test_killed_function_holes"]
@@ -456,12 +598,538 @@ def test_archive_traversal_and_links_fail_closed(tmp_path: Path) -> None:
         units.safe_extract_source_archive(archive, tmp_path / "internal")
     assert (tmp_path / "internal" / "link.js").read_bytes() == b"internal"
 
+    directory = io.BytesIO()
+    with tarfile.open(fileobj=directory, mode="w") as archive:
+        root = tarfile.TarInfo("root/shared")
+        root.type = tarfile.DIRTYPE
+        archive.addfile(root)
+        payload = b"asset"
+        target = tarfile.TarInfo("root/shared/value.css")
+        target.size = len(payload)
+        archive.addfile(target, io.BytesIO(payload))
+        member = tarfile.TarInfo("root/public")
+        member.type = tarfile.SYMTYPE
+        member.linkname = "./shared"
+        archive.addfile(member)
+    directory.seek(0)
+    with tarfile.open(fileobj=directory, mode="r") as archive:
+        units.safe_extract_source_archive(archive, tmp_path / "directory")
+    assert (tmp_path / "directory" / "public" / "value.css").read_bytes() == b"asset"
+
+
+def test_html_subtree_discovery_binds_exact_source_span(tmp_path: Path) -> None:
+    page = tmp_path / "pages" / "index.html"
+    page.parent.mkdir(parents=True)
+    original = (
+        "<!doctype html><html><body>"
+        "<main><section aria-label='Account'><h1>Account</h1>"
+        "<p>Manage your profile and notification preferences.</p></section></main>"
+        "</body></html>"
+    )
+    page.write_text(original)
+    source = {
+        "source_globs": ["pages/*.html"],
+        "minimum_target_bytes": 32,
+        "maximum_target_bytes": 4096,
+        "minimum_visible_text_chars": 8,
+        "minimum_descendant_tag_count": 1,
+    }
+    holes, receipt = web_holes.discover_html_subtree_holes(tmp_path, source)
+    section = next(row for row in holes if row["tag"] == "section")
+    assert original[section["start_char"]:section["end_char"]] == section["target_body"]
+    assert section["target_body"] not in section["visible_source"]
+    assert section["visible_source"].count("<THESEUS_IMPLEMENTATION_HOLE:") == 1
+    assert web_holes.reconstruct_document(
+        section["visible_source"],
+        {
+            "start_char": section["start_char"],
+            "end_char": section["start_char"] + len(section["visible_starter_body"]),
+        },
+        section["target_body"],
+    ) == original
+    assert receipt["candidate_count"] >= 1
+
+
+def test_html_discovery_excludes_statically_non_rendered_subtrees(tmp_path: Path) -> None:
+    page = tmp_path / "index.html"
+    page.write_text(
+        "<!doctype html><html><body>"
+        "<template><section><h1>Template only</h1><p>Never painted content.</p></section></template>"
+        "<section hidden><h1>Hidden</h1><p>Also never painted.</p></section>"
+        "<section><h1>Visible</h1><p>This component is rendered for the user.</p></section>"
+        "</body></html>"
+    )
+    holes, receipt = web_holes.discover_html_subtree_holes(
+        tmp_path,
+        {
+            "source_globs": ["*.html"],
+            "minimum_target_bytes": 16,
+            "maximum_target_bytes": 4096,
+            "minimum_visible_text_chars": 4,
+            "minimum_descendant_tag_count": 1,
+        },
+    )
+    sections = [row for row in holes if row["tag"] == "section"]
+    assert len(sections) == 1
+    assert "Visible" in sections[0]["target_body"]
+    assert receipt["diagnostics"]["statically_non_rendered_rejected"] == 2
+
+
+def test_html_selection_is_file_stratified_and_outcome_blind() -> None:
+    holes = []
+    for path in ("a.html", "b.html", "c.html"):
+        for offset in range(3):
+            holes.append({
+                "path": path,
+                "start_char": offset * 10,
+                "end_char": offset * 10 + 5,
+                "tag": "section",
+                "source_sha256": f"source-{path}",
+                "target_sha256": f"target-{path}-{offset}",
+                "selection_key": f"{offset}-{path}",
+            })
+    source = {
+        "id": "fixture",
+        "verification_candidate_selection": {
+            "kind": "content_hash_file_round_robin_v1",
+            "maximum_candidates": 4,
+            "maximum_candidates_per_file": 2,
+            "selection_uses_verifier_outcomes": False,
+            "rationale": "fixture",
+        },
+    }
+    first = web_holes.select_verification_candidates(source, holes)
+    second = web_holes.select_verification_candidates(source, list(reversed(holes)))
+    first_records = [web_holes.selection_record(row) for row in first["selected"]]
+    second_records = [web_holes.selection_record(row) for row in second["selected"]]
+    assert first_records == second_records
+    assert len({row["path"] for row in first["selected"][:3]}) == 3
+    assert first["public_receipt"]["selection_uses_verifier_outcomes"] is False
+    with pytest.raises(ValueError, match="may not use verifier outcomes"):
+        web_holes.select_verification_candidates(
+            {
+                **source,
+                "verification_candidate_selection": {
+                    **source["verification_candidate_selection"],
+                    "selection_uses_verifier_outcomes": True,
+                },
+            },
+            holes,
+        )
+
+
+def test_css_discovery_uses_ast_spans_and_source_only_page_matching(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    css_path = tmp_path / "styles.css"
+    page_path = tmp_path / "index.html"
+    css_text = ".card { color: red; padding: 1rem; }\n"
+    css_path.write_text(css_text, encoding="utf-8")
+    (tmp_path / "styles.min.css").write_text(".card{color:red}", encoding="utf-8")
+    page_path.write_text(
+        '<html><head><link rel="stylesheet" href="styles.css"></head>'
+        '<body><article class="card">Visible card</article></body></html>',
+        encoding="utf-8",
+    )
+    observed_paths: list[Path] = []
+
+    def parse_fixture(paths, toolchain):
+        observed_paths.extend(paths)
+        return ([{
+            "path": str(css_path.resolve()),
+            "start_byte": 0,
+            "end_byte": len(css_text.strip().encode()),
+            "start_char": 0,
+            "end_char": len(css_text.strip()),
+            "selector": ".card",
+            "declaration_count": 2,
+            "ancestor_kinds": [],
+            "target_body": css_text.strip(),
+        }], {"parsed_file_count": 1, "parse_error_count": 0})
+
+    monkeypatch.setattr(
+        css_holes,
+        "parse_css_records",
+        parse_fixture,
+    )
+    source = {
+        "id": "css-fixture",
+        "source_globs": ["*.css"],
+        "exclude_source_globs": ["**/*.min.css", "*.min.css"],
+        "page_globs": ["*.html"],
+        "minimum_target_bytes": 10,
+        "maximum_target_bytes": 1000,
+        "verification_candidate_selection": {
+            "kind": "content_hash_file_round_robin_v1",
+            "maximum_candidates": 1,
+            "maximum_candidates_per_file": 1,
+            "selection_uses_verifier_outcomes": False,
+        },
+    }
+    holes, receipt = css_holes.discover_css_rule_holes(tmp_path.resolve(), source, {})
+    assert receipt["candidate_count"] == 1
+    assert observed_paths == [css_path.resolve()]
+    assert holes[0]["target_body"] == css_text.strip()
+    assert holes[0]["page_path"] == "index.html"
+    assert holes[0]["target_body"] not in holes[0]["stylesheet_context"]
+    selection = css_holes.select_verification_candidates(source, holes)
+    assert selection["public_receipt"]["selection_uses_verifier_outcomes"] is False
+    with pytest.raises(ValueError, match="may not use verifier outcomes"):
+        css_holes.select_verification_candidates(
+            {**source, "verification_candidate_selection": {
+                **source["verification_candidate_selection"],
+                "selection_uses_verifier_outcomes": True,
+            }},
+            holes,
+        )
+
+
+def test_css_link_rewrite_is_exact_and_preserves_other_stylesheets(tmp_path: Path) -> None:
+    page_path = tmp_path / "index.html"
+    css_path = tmp_path / ".theseus-css-rule-fixture.css"
+    page = (
+        '<link rel="stylesheet" href="base.css">\n'
+        '<link href="styles.css" rel="stylesheet" />\n'
+    )
+    rewritten = css_holes.replace_stylesheet_link(page, page_path, css_path, ["styles.css"])
+    assert 'href="base.css"' in rewritten
+    assert 'href=".theseus-css-rule-fixture.css"' in rewritten
+    assert 'href="styles.css"' not in rewritten
+
+
+def test_css_verifier_accepts_one_responsive_viewport_and_preserves_sources(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    css_path = tmp_path / "styles.css"
+    page_path = tmp_path / "index.html"
+    css_text = ".card { display: grid; gap: 1rem; }"
+    page_text = '<link rel="stylesheet" href="styles.css"><div class="card">Card</div>'
+    css_path.write_text(css_text, encoding="utf-8")
+    page_path.write_text(page_text, encoding="utf-8")
+    monkeypatch.setattr(
+        css_holes,
+        "render_css_pair",
+        lambda **kwargs: {
+            "fault": None,
+            "viewports": [
+                {
+                    "label": "wide",
+                    "target": {"ok": True},
+                    "starter": {"ok": True},
+                    "pixel_delta": {"changed_pixel_fraction": 0.002},
+                },
+                {
+                    "label": "narrow",
+                    "target": {"ok": True},
+                    "starter": {"ok": True},
+                    "pixel_delta": {"changed_pixel_fraction": 0.0},
+                },
+            ],
+        },
+    )
+    hole = {
+        "path": "styles.css",
+        "page_path": "index.html",
+        "stylesheet_aliases": ["styles.css"],
+        "start_char": 0,
+        "end_char": len(css_text),
+        "selector": ".card",
+        "declaration_count": 2,
+        "source_sha256": css_holes.sha256_text(css_text),
+        "page_sha256": css_holes.sha256_text(page_text),
+        "target_sha256": css_holes.sha256_text(css_text),
+        "target_body": css_text,
+    }
+    receipt = css_holes.verify_css_rule_hole(
+        tmp_path.resolve(), hole, {"timeout_seconds": 5, "minimum_changed_pixel_fraction": 0.0005}
+    )
+    assert receipt["state"] == "passed"
+    assert receipt["changed_viewports"] == ["wide"]
+    assert receipt["all_viewports_rendered"] is True
+    assert receipt["canonical_sources_unchanged"] is True
+    assert css_path.read_text() == css_text
+    assert page_path.read_text() == page_text
+
+
+def test_css_verifier_rejects_no_render_delta(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    css_path = tmp_path / "styles.css"
+    page_path = tmp_path / "index.html"
+    css_text = ".unused { color: red; }"
+    page_text = '<link rel="stylesheet" href="styles.css"><p>Text</p>'
+    css_path.write_text(css_text)
+    page_path.write_text(page_text)
+    monkeypatch.setattr(
+        css_holes,
+        "render_css_pair",
+        lambda **kwargs: {
+            "fault": None,
+            "viewports": [
+                {"label": label, "target": {"ok": True}, "starter": {"ok": True},
+                 "pixel_delta": {"changed_pixel_fraction": 0.0}}
+                for _, _, label in css_holes.VIEWPORTS
+            ],
+        },
+    )
+    hole = {
+        "path": "styles.css", "page_path": "index.html", "stylesheet_aliases": ["styles.css"],
+        "start_char": 0, "end_char": len(css_text), "selector": ".unused", "declaration_count": 1,
+        "source_sha256": css_holes.sha256_text(css_text), "page_sha256": css_holes.sha256_text(page_text),
+        "target_sha256": css_holes.sha256_text(css_text), "target_body": css_text,
+    }
+    receipt = css_holes.verify_css_rule_hole(
+        tmp_path.resolve(), hole, {"timeout_seconds": 5, "minimum_changed_pixel_fraction": 0.0005}
+    )
+    assert receipt["state"] == "failed"
+    assert receipt["changed_viewport_count"] == 0
+
+
+def test_css_campaigns_are_source_only_and_exclude_minified_targets() -> None:
+    sources = [
+        row for row in config()["sources"]
+        if row.get("adapter") == "css_render_killed_rule_holes"
+    ]
+    assert {row["id"] for row in sources} == {
+        "open_repo_sb_admin_f030988_render_killed_css_rules",
+        "open_repo_agency_b2d5d5c_render_killed_css_rules",
+        "open_repo_semantic_ui_597843a_render_killed_css_rules",
+        "open_repo_bootstrap_b37afd7_render_killed_css_rules",
+    }
+    assert all(
+        row["verification_candidate_selection"]["selection_uses_verifier_outcomes"] is False
+        for row in sources
+    )
+    semantic = next(row for row in sources if "semantic_ui" in row["id"])
+    assert semantic["exclude_source_globs"] == ["**/*.min.css"]
+    assert sum(
+        row["verification_candidate_selection"]["maximum_candidates"] for row in sources
+    ) == 1000
+
+
+def test_all_html_campaigns_are_source_only_and_parallelize_by_file() -> None:
+    sources = [
+        row for row in config()["sources"]
+        if row.get("adapter") == "html_render_killed_subtree_holes"
+    ]
+    assert len(sources) >= 6
+    assert all(
+        row["verification_candidate_selection"]["selection_uses_verifier_outcomes"] is False
+        for row in sources
+    )
+    assert all(int(row["verification_parallelism"]) == 2 for row in sources)
+    assert all(int(row["verification_checkpoint_interval"]) == 25 for row in sources)
+
+
+def test_html_cache_reuse_requires_bound_verifier_and_toolchain() -> None:
+    toolchain = {"verifier_abi": web_holes.VERIFIER_ABI, "chrome_version": "fixture"}
+    cached = {
+        "verification_digest": "legacy-campaign-bound-digest",
+        "verification": {
+            "kind": web_holes.VERIFIER_ABI,
+            "state": "passed",
+            "toolchain": toolchain,
+        },
+    }
+    assert units.html_cached_verification_compatible(
+        cached, verification_digest="candidate-only-digest", toolchain_identity=toolchain
+    )
+    cached["verification"]["toolchain"] = {"chrome_version": "changed"}
+    assert not units.html_cached_verification_compatible(
+        cached, verification_digest="candidate-only-digest", toolchain_identity=toolchain
+    )
+
+
+def test_html_adapter_parallelizes_distinct_files_and_admits_only_receipts(
+    tmp_path: Path, monkeypatch
+) -> None:
+    for name in ("a.html", "b.html"):
+        (tmp_path / name).write_text(
+            "<!doctype html><html><body><section><h1>Profile</h1>"
+            f"<p>Complete account panel {name} with durable details.</p>"
+            "</section></body></html>"
+        )
+    source = {
+        "id": "html-fixture",
+        "adapter": "html_render_killed_subtree_holes",
+        "repo": "fixture/repo",
+        "revision": "abc1234",
+        "archive_sha256": "a" * 64,
+        "license_spdx": "MIT",
+        "source_globs": ["*.html"],
+        "minimum_target_bytes": 16,
+        "maximum_target_bytes": 4096,
+        "minimum_visible_text_chars": 4,
+        "minimum_descendant_tag_count": 1,
+        "verification_parallelism": 2,
+        "verification_checkpoint_interval": 1,
+        "verification_candidate_selection": {
+            "kind": "content_hash_file_round_robin_v1",
+            "maximum_candidates": 2,
+            "maximum_candidates_per_file": 1,
+            "selection_uses_verifier_outcomes": False,
+            "rationale": "fixture",
+        },
+    }
+    active = 0
+    maximum_active = 0
+    lock = threading.Lock()
+
+    def fake_verify(_root, _hole, toolchain):
+        nonlocal active, maximum_active
+        with lock:
+            active += 1
+            maximum_active = max(maximum_active, active)
+        time.sleep(0.05)
+        with lock:
+            active -= 1
+        return {
+            "kind": web_holes.VERIFIER_ABI,
+            "strength": "dom_a11y_layout_render_delta",
+            "state": "passed",
+            "toolchain": web_holes.web_toolchain_identity(toolchain),
+        }
+
+    monkeypatch.setattr(units, "ensure_source_root", lambda _source: tmp_path)
+    monkeypatch.setattr(web_holes, "verify_html_subtree_hole", fake_verify)
+    observed, summary = units.html_subtree_hole_units(
+        config(),
+        source,
+        clean_contamination(),
+        prior_units={},
+        cache={},
+        cache_updates={},
+        cache_path=tmp_path / "cache.jsonl",
+        inventory_only=False,
+        max_verify=0,
+    )
+    assert len(observed) == 2
+    assert all(row["decision"] == "admit" for row in observed)
+    assert maximum_active == 2
+    assert summary["completed_verification_count"] == 2
+    assert summary["verification_cache_checkpoint_write_count"] >= 1
+
+
+def test_code_unit_reuses_only_identity_and_public_index_bound_contamination(
+    monkeypatch,
+) -> None:
+    cfg = config()
+    contamination = clean_contamination()
+    baseline = units.base_unit(
+        cfg,
+        source={"id": "fixture"},
+        source_task_id="task",
+        arm_id="rust",
+        task_family="fixture",
+        visible_context="Implement the missing checked operation.",
+        target="return Ok(42);",
+        license_spdx="MIT",
+        provenance={},
+        contamination=contamination,
+    )
+    monkeypatch.setattr(
+        lineage,
+        "semantic_overlap",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("recomputed")),
+    )
+    replay = units.base_unit(
+        cfg,
+        source={"id": "fixture"},
+        source_task_id="task",
+        arm_id="rust",
+        task_family="fixture",
+        visible_context="Implement the missing checked operation.",
+        target="return Ok(42);",
+        license_spdx="MIT",
+        provenance={},
+        contamination=contamination,
+        prior_units={baseline["unit_id"]: baseline},
+    )
+    assert replay["contamination"]["reused_prior_audit"] is True
+    altered_index = {**contamination, "digest": "changed-index"}
+    with pytest.raises(AssertionError, match="recomputed"):
+        units.base_unit(
+            cfg,
+            source={"id": "fixture"},
+            source_task_id="task",
+            arm_id="rust",
+            task_family="fixture",
+            visible_context="Implement the missing checked operation.",
+            target="return Ok(42);",
+            license_spdx="MIT",
+            provenance={},
+            contamination=altered_index,
+            prior_units={baseline["unit_id"]: baseline},
+        )
+
+
+def test_html_render_verifier_requires_both_viewports_and_restores_source(
+    tmp_path: Path, monkeypatch
+) -> None:
+    page = tmp_path / "index.html"
+    original = (
+        "<!doctype html><html><body><section><h1>Profile</h1>"
+        "<p>Update your account details.</p></section></body></html>"
+    )
+    page.write_text(original)
+    source = {
+        "source_globs": ["*.html"],
+        "minimum_target_bytes": 16,
+        "maximum_target_bytes": 4096,
+        "minimum_visible_text_chars": 4,
+        "minimum_descendant_tag_count": 1,
+    }
+    holes, _ = web_holes.discover_html_subtree_holes(tmp_path, source)
+    hole = next(row for row in holes if row["tag"] == "section")
+
+    def fake_render(_root, source_path, screenshot, _user_data, width, height, *_args):
+        has_target = "Update your account details" in source_path.read_text()
+        from PIL import Image
+        Image.new("RGB", (width, height), "black" if has_target else "white").save(screenshot)
+        return {"ok": True, "returncode": 0, "stdout": "", "stderr": "", "duration_ms": 1}
+
+    monkeypatch.setattr(web_holes, "run_chrome_render", fake_render)
+    verifier = web_holes.verify_html_subtree_hole(
+        tmp_path,
+        hole,
+        {"timeout_seconds": 2, "minimum_changed_pixel_fraction": 0.01},
+    )
+    assert verifier["state"] == "passed"
+    assert verifier["both_viewports_changed"] is True
+    assert verifier["source_restored"] is True
+    assert page.read_text() == original
+
+    def unchanged_render(_root, _source_path, screenshot, _user_data, width, height, *_args):
+        from PIL import Image
+        Image.new("RGB", (width, height), "white").save(screenshot)
+        return {"ok": True, "returncode": 0, "stdout": "", "stderr": "", "duration_ms": 1}
+
+    monkeypatch.setattr(web_holes, "run_chrome_render", unchanged_render)
+    verifier = web_holes.verify_html_subtree_hole(
+        tmp_path,
+        hole,
+        {"timeout_seconds": 2, "minimum_changed_pixel_fraction": 0.01},
+    )
+    assert verifier["state"] == "failed"
+    assert verifier["both_viewports_changed"] is False
+    assert page.read_text() == original
+
 
 def test_missing_platform_sandbox_never_runs_unsandboxed(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(units.platform, "system", lambda: "UnknownOS")
     result = units.run_sandboxed(["echo", "unsafe"], tmp_path, 1)
     assert result["ok"] is False
     assert result["fault"] == "fail_closed_sandbox_unavailable"
+
+
+def test_sandbox_output_is_tail_bounded_unless_full_capture_is_explicit(tmp_path: Path) -> None:
+    command = [sys.executable, "-c", "print('x' * 5000)"]
+    bounded = units.run_sandboxed(command, tmp_path, 5)
+    full = units.run_sandboxed(command, tmp_path, 5, output_tail_characters=None)
+    assert bounded["ok"] is True
+    assert len(bounded["stdout"]) == 4000
+    assert full["ok"] is True
+    assert len(full["stdout"]) == 5001
 
 
 def test_canonical_admission_replays_task_unit_ledger_identity(tmp_path: Path) -> None:

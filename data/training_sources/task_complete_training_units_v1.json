@@ -25,16 +25,46 @@
       "verified_units": 25566
     },
     "html_css": {
+      "capabilities": {
+        "css": {
+          "checks": {
+            "position_floor": true,
+            "unit_floor": true
+          },
+          "minimum_target_positions": 50000,
+          "minimum_verified_units": 100,
+          "ready": true,
+          "required_verification_strength": "layout_render_delta",
+          "target_positions": 58178,
+          "verified_units": 173
+        },
+        "html": {
+          "checks": {
+            "position_floor": true,
+            "unit_floor": true
+          },
+          "minimum_target_positions": 400000,
+          "minimum_verified_units": 400,
+          "ready": true,
+          "required_verification_strength": "dom_a11y_layout_render_delta",
+          "target_positions": 1848748,
+          "verified_units": 517
+        }
+      },
       "checks": {
-        "position_floor": false,
-        "unit_floor": false
+        "capability:css:position_floor": true,
+        "capability:css:unit_floor": true,
+        "capability:html:position_floor": true,
+        "capability:html:unit_floor": true,
+        "position_floor": true,
+        "unit_floor": true
       },
       "minimum_target_positions": 500000,
       "minimum_verified_units": 500,
-      "ready": false,
-      "required_verification_strength": "dom_a11y_layout_render_delta",
-      "target_positions": 146006,
-      "verified_units": 7
+      "ready": true,
+      "required_verification_strength": null,
+      "target_positions": 1906926,
+      "verified_units": 690
     },
     "javascript_typescript": {
       "checks": {
@@ -73,11 +103,11 @@
       "verified_units": 97
     }
   },
-  "created_utc": "2026-07-15T19:44:41.778509+00:00",
+  "created_utc": "2026-07-16T01:16:52.323519+00:00",
   "policy": "project_theseus_task_complete_training_unit_manifest_v1",
   "raw_unit_payloads_in_manifest": false,
   "source_config": "configs/task_complete_training_units.json",
-  "source_config_sha256": "1208fc3b73393b67fbd4ac5a04ba9bea0a547e59cbeaf35a05990940a44ba510",
+  "source_config_sha256": "7abf8471bbfaab4458eacaab1af03cfb2d5a3ca806c0c7013728dbbbe49c9c30",
   "source_summaries": [
     {
       "adapter": "governed_conversation_assistant_turns",
@@ -87,6 +117,7 @@
       },
       "input_row_count": 25570,
       "license_spdx": null,
+      "prior_contamination_audit_reuse_count": 0,
       "repo": null,
       "reused_content_bound_contamination_count": 25570,
       "revision": null,
@@ -107,6 +138,7 @@
       "incompatible_exercise_count": 0,
       "license_spdx": "MIT",
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 140,
       "repo": "exercism/python",
       "revision": "250bf19050543da09e122211fc7430fe6f44c564",
       "source_id": "exercism_python_250bf190",
@@ -130,6 +162,7 @@
       "license_spdx": "BSD-3-Clause",
       "locked_environment": null,
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 444,
       "repo": "pallets/click",
       "revision": "b67832c",
       "source_id": "open_repo_click_b67832c_function_holes",
@@ -174,6 +207,7 @@
       "license_spdx": "BSD-3-Clause",
       "locked_environment": null,
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 51,
       "repo": "pallets/markupsafe",
       "revision": "b2e4d9c",
       "source_id": "open_repo_markupsafe_b2e4d9c_function_holes",
@@ -218,6 +252,7 @@
       "license_spdx": "MIT",
       "locked_environment": null,
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 80,
       "repo": "pytest-dev/pluggy",
       "revision": "7113740",
       "source_id": "open_repo_pluggy_7113740_function_holes",
@@ -262,6 +297,7 @@
       "license_spdx": "MIT",
       "locked_environment": null,
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 833,
       "repo": "Textualize/rich",
       "revision": "9d8f9a3",
       "source_id": "open_repo_rich_9d8f9a3_function_holes",
@@ -317,12 +353,12 @@
         "manager": "uv",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 97.676,
+          "duration_ms": 152.136,
           "fault": null,
           "ok": true,
           "returncode": 0,
-          "stderr_sha256": "bceefe46a58f28277cfba09405f089edca99467339d331e0c6feae346d165a6f",
-          "stderr_tail": "Resolved 72 packages in 13ms\nChecked 13 packages in 4ms\n",
+          "stderr_sha256": "172ab38f6acd50721e05cfee80f767fa2869b575d73a4ae7a44b3a780df9d8de",
+          "stderr_tail": "Resolved 72 packages in 26ms\nChecked 13 packages in 9ms\n",
           "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stdout_tail": ""
         },
@@ -333,6 +369,7 @@
         "uv_version": "uv 0.11.28"
       },
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 689,
       "repo": "pallets/jinja",
       "revision": "5ef7011",
       "source_id": "open_repo_jinja_5ef7011_function_holes",
@@ -401,21 +438,22 @@
           "tree_sha256": "67fdea452d18a908d6f92bf9aee507a91284bc2b0631a934f29a5723db5f6f5d"
         },
         "build_replayed_this_run": false,
-        "identity_sha256": "5b199c22c01c529c32dfcef37df94eae53dd7f77486c99043ad2df33b92465ad",
-        "installed_packages_sha256": "d8350e7870f46ebcaa7e2f4b1219a8c8d830b5dc46ca7157418105fb5ba48686",
+        "identity_sha256": "b1f04ca2fb9310b65b16dc2145531f8450a1830226c708098629a58b0073fd93",
+        "installed_packages_identity_kind": "canonical_unordered_json_v1",
+        "installed_packages_sha256": "6b2dffca96e8a8c931e597ee7a1e85f3beadef01741f1a59e0aafd1e01eb5ab8",
         "lock_file": "pnpm-lock.yaml",
         "lock_sha256": "e478a9a87cb9e26e12f3f5432384a41c32c099fa7213e3e6f24407ca374facec",
         "manager": "pnpm",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 911.981,
+          "duration_ms": 1419.527,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "6f0506d622061832029c8bef1531adec9eecf2d9eb3d00d0d50c60a04af2c3f2",
-          "stdout_tail": "Scope: all 269 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +107\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 107, reused 107, downloaded 0, added 107, done\n\nDone in 865ms using pnpm v10.34.4\n"
+          "stdout_sha256": "21270e6e9740a44878aca43b79a2534f45a4bc48439621cfd207219382da244f",
+          "stdout_tail": "Scope: all 269 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +107\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 107, reused 107, downloaded 0, added 107, done\n\nDone in 1.3s using pnpm v10.34.4\n"
         },
         "offline_replay_valid": true,
         "pnpm_version": "10.34.4",
@@ -429,14 +467,14 @@
         "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
         "node_version": "v22.15.0",
         "offline_replay": {
-          "duration_ms": 738.951,
+          "duration_ms": 881.892,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "7ba7e1f7a34af219ea132c7f772337217ebce5b43dddc9e9f4410b1f341b32c8",
-          "stdout_tail": "\nadded 2 packages in 633ms\n"
+          "stdout_sha256": "7eff97c10cc0050c42fd1503182f9bb7b51e5585d8053d7e8c0d37ce6deec693",
+          "stdout_tail": "\nadded 2 packages in 754ms\n"
         },
         "offline_replay_valid": true,
         "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
@@ -450,6 +488,7 @@
         "runtime_root": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1",
         "typescript_version": "5.9.3"
       },
+      "prior_contamination_audit_reuse_count": 0,
       "repo": "vitejs/vite",
       "revision": "c961cae",
       "selected_mutation_killed_count": 682,
@@ -478,8 +517,9 @@
             "total_bytes": 2104199,
             "tree_sha256": "67fdea452d18a908d6f92bf9aee507a91284bc2b0631a934f29a5723db5f6f5d"
           },
-          "identity_sha256": "5b199c22c01c529c32dfcef37df94eae53dd7f77486c99043ad2df33b92465ad",
-          "installed_packages_sha256": "d8350e7870f46ebcaa7e2f4b1219a8c8d830b5dc46ca7157418105fb5ba48686",
+          "identity_sha256": "b1f04ca2fb9310b65b16dc2145531f8450a1830226c708098629a58b0073fd93",
+          "installed_packages_identity_kind": "canonical_unordered_json_v1",
+          "installed_packages_sha256": "6b2dffca96e8a8c931e597ee7a1e85f3beadef01741f1a59e0aafd1e01eb5ab8",
           "lock_file": "pnpm-lock.yaml",
           "lock_sha256": "e478a9a87cb9e26e12f3f5432384a41c32c099fa7213e3e6f24407ca374facec",
           "manager": "pnpm",
@@ -540,21 +580,22 @@
           "tree_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
         },
         "build_replayed_this_run": false,
-        "identity_sha256": "1ec6c965387b748514824e59bdf466fd5d59b54894d6ed1de18eb64e2e67f6ae",
-        "installed_packages_sha256": "5abebb7713f531f75e6c9c303d7e022544fc13f404a020d58b09f77155c74a3f",
+        "identity_sha256": "0e1e40c98c0c8160b4018fc77575f1a39c4407c2261e1d0fe6fbb38bab9afb8d",
+        "installed_packages_identity_kind": "canonical_unordered_json_v1",
+        "installed_packages_sha256": "21aa10adb8a1f49eef51eaa51dc92fe1e123fc25dc6db8d075b53d3ce87d2dce",
         "lock_file": "pnpm-lock.yaml",
         "lock_sha256": "abd369f52ac17042dd4ce256dd1fe53485f6373214af32ece480c09da573e712",
         "manager": "pnpm",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 322.088,
+          "duration_ms": 396.173,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "f220ac2aeb683cfb8214b8ae3de4f6a1d1db3b7a22a1022daadf410051ef7d6c",
-          "stdout_tail": "s\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-arm64-msvc         | [WARN] Unsupported platform: wanted: {\"cpu\":[\"arm64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-x64-msvc           | [WARN] Unsupported platform: wanted: {\"cpu\":[\"x64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\nScope: all 29 workspace projects\nAlready up to date\nDone in 273ms using pnpm v11.9.0\n"
+          "stdout_sha256": "f447ceca0d722a380c1038d9dd440cba071408a0d236163e313683f2e622cfda",
+          "stdout_tail": "s\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-arm64-msvc         | [WARN] Unsupported platform: wanted: {\"cpu\":[\"arm64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-x64-msvc           | [WARN] Unsupported platform: wanted: {\"cpu\":[\"x64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\nScope: all 29 workspace projects\nAlready up to date\nDone in 348ms using pnpm v11.9.0\n"
         },
         "offline_replay_valid": true,
         "package_manager_toolchain": {
@@ -577,14 +618,14 @@
         "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
         "node_version": "v22.15.0",
         "offline_replay": {
-          "duration_ms": 696.689,
+          "duration_ms": 1015.004,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "4ce67c1ce050b31eb8472f55ea7ae1cee948d827da7bf705c5e9b77f11ec0654",
-          "stdout_tail": "\nadded 2 packages in 599ms\n"
+          "stdout_sha256": "ba487db871970f43ffce304723671314954b12045ad5a40ef95eed5666c7edab",
+          "stdout_tail": "\nadded 2 packages in 788ms\n"
         },
         "offline_replay_valid": true,
         "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
@@ -598,6 +639,7 @@
         "runtime_root": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1",
         "typescript_version": "5.9.3"
       },
+      "prior_contamination_audit_reuse_count": 0,
       "repo": "tailwindlabs/tailwindcss",
       "revision": "35a3e9c",
       "selected_mutation_killed_count": 363,
@@ -626,8 +668,9 @@
             "total_bytes": 0,
             "tree_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
           },
-          "identity_sha256": "1ec6c965387b748514824e59bdf466fd5d59b54894d6ed1de18eb64e2e67f6ae",
-          "installed_packages_sha256": "5abebb7713f531f75e6c9c303d7e022544fc13f404a020d58b09f77155c74a3f",
+          "identity_sha256": "0e1e40c98c0c8160b4018fc77575f1a39c4407c2261e1d0fe6fbb38bab9afb8d",
+          "installed_packages_identity_kind": "canonical_unordered_json_v1",
+          "installed_packages_sha256": "21aa10adb8a1f49eef51eaa51dc92fe1e123fc25dc6db8d075b53d3ce87d2dce",
           "lock_file": "pnpm-lock.yaml",
           "lock_sha256": "abd369f52ac17042dd4ce256dd1fe53485f6373214af32ece480c09da573e712",
           "manager": "pnpm",
@@ -692,6 +735,7 @@
       "incompatible_exercise_count": 0,
       "license_spdx": "MIT",
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 139,
       "repo": "exercism/javascript",
       "revision": "295540983b6323edcfd457b3163ad6c63608f2da",
       "source_id": "exercism_javascript_29554098",
@@ -712,6 +756,7 @@
       "incompatible_exercise_count": 0,
       "license_spdx": "MIT",
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 106,
       "repo": "exercism/rust",
       "revision": "3dc1f82096828c7010718420a72c373c63fd71ea",
       "source_id": "exercism_rust_3dc1f820",
@@ -724,6 +769,948 @@
       }
     },
     {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 38,
+        "reject": 7
+      },
+      "discovery": {
+        "candidate_count": 86,
+        "candidate_target_bytes": 150714,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 4,
+          "insufficient_semantics": 10,
+          "statically_non_rendered_rejected": 41,
+          "target_size_rejected": 1457,
+          "template_syntax_rejected": 493
+        },
+        "source_file_count": 124
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 45,
+      "repo": "tabler/tabler",
+      "revision": "62178f8",
+      "selection": {
+        "inventory_candidate_count": 86,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 300,
+        "maximum_candidates_per_file": 3,
+        "ordered_inventory_sha256": "fd804dca17a42791cdc68f38bce847af3bc33769e6bc014cd62d9b5cda59e8b5",
+        "rationale": "File-stratified content-bound sampling supplies broad template coverage without selecting from render outcomes.",
+        "selected_candidate_count": 45,
+        "selected_inventory_sha256": "ef5f641ff5b292e557f609275d080f93cadd139835de39fa6e1434b921a8ef3d",
+        "selected_source_file_count": 19,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 41
+      },
+      "source_id": "open_repo_tabler_62178f8_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/tabler__tabler__dev",
+      "target_positions": 62168,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 45,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 7,
+        "passed": 38
+      }
+    },
+    {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 186,
+        "reject": 114
+      },
+      "discovery": {
+        "candidate_count": 755,
+        "candidate_target_bytes": 1558499,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 0,
+          "insufficient_semantics": 122,
+          "statically_non_rendered_rejected": 84,
+          "target_size_rejected": 3158
+        },
+        "source_file_count": 58
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 300,
+      "repo": "ColorlibHQ/gentelella",
+      "revision": "c4515bd",
+      "selection": {
+        "inventory_candidate_count": 755,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 300,
+        "maximum_candidates_per_file": 8,
+        "ordered_inventory_sha256": "23f84d712c1cef806d039b00612fd2fb099eadd9f888fa65cd94063333f500c9",
+        "rationale": "Content-bound round-robin coverage limits correlated holes while retaining multiple semantic components per independent page.",
+        "selected_candidate_count": 300,
+        "selected_inventory_sha256": "1ae55079230e95c865b5a96f900e8b831f74aa36fcc1565d438eb5b0d835d6d1",
+        "selected_source_file_count": 57,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 455
+      },
+      "source_id": "open_repo_gentelella_c4515bd_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/ColorlibHQ__gentelella__master",
+      "target_positions": 569216,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 300,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 114,
+        "passed": 186
+      }
+    },
+    {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 40,
+        "reject": 310
+      },
+      "discovery": {
+        "candidate_count": 2039,
+        "candidate_target_bytes": 8094828,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 0,
+          "document_too_large": 1,
+          "insufficient_semantics": 966,
+          "statically_non_rendered_rejected": 203,
+          "target_repeated_in_visible_context": 44,
+          "target_size_rejected": 5115
+        },
+        "source_file_count": 46
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 350,
+      "repo": "coreui/coreui-free-bootstrap-admin-template",
+      "revision": "487cd57",
+      "selection": {
+        "inventory_candidate_count": 2039,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 350,
+        "maximum_candidates_per_file": 10,
+        "ordered_inventory_sha256": "44913e12d1bde63956e005e0229bcc6a0962a52d69bf696dbf00f02042249a3c",
+        "rationale": "The bounded campaign is distributed across source pages before any browser receipt exists.",
+        "selected_candidate_count": 350,
+        "selected_inventory_sha256": "e9e74f6aaffbbd850c18ddc69ba72579db7561d8cb4953067c1c148be02d4fcf",
+        "selected_source_file_count": 45,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 1689
+      },
+      "source_id": "open_repo_coreui_487cd57_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/coreui__coreui-free-bootstrap-admin-template__main",
+      "target_positions": 167228,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 350,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 310,
+        "passed": 40
+      }
+    },
+    {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 31,
+        "reject": 19
+      },
+      "discovery": {
+        "candidate_count": 113,
+        "candidate_target_bytes": 177582,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 0,
+          "insufficient_semantics": 21,
+          "statically_non_rendered_rejected": 33,
+          "target_size_rejected": 101
+        },
+        "source_file_count": 13
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 50,
+      "repo": "twbs/bootstrap",
+      "revision": "b37afd7",
+      "selection": {
+        "inventory_candidate_count": 113,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 100,
+        "maximum_candidates_per_file": 8,
+        "ordered_inventory_sha256": "077ec70b4c5d064a3fc096ba7939477073261a4ea1501e35edb634ed46caac2b",
+        "rationale": "Canonical visual fixtures add upstream framework components under a fixed source-only cap.",
+        "selected_candidate_count": 50,
+        "selected_inventory_sha256": "cb59024fef1f9f016f3869676454d16a9adde2c030fb06929c2bbf4bc1641a94",
+        "selected_source_file_count": 13,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 63
+      },
+      "source_id": "open_repo_bootstrap_b37afd7_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/twbs__bootstrap__main",
+      "target_positions": 63358,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 50,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 19,
+        "passed": 31
+      }
+    },
+    {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 71,
+        "reject": 63
+      },
+      "discovery": {
+        "candidate_count": 226,
+        "candidate_target_bytes": 819925,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 0,
+          "insufficient_semantics": 76,
+          "statically_non_rendered_rejected": 125,
+          "target_repeated_in_visible_context": 4,
+          "target_size_rejected": 743
+        },
+        "source_file_count": 14
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 134,
+      "repo": "StartBootstrap/startbootstrap-sb-admin-2",
+      "revision": "f030988",
+      "selection": {
+        "inventory_candidate_count": 226,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 140,
+        "maximum_candidates_per_file": 10,
+        "ordered_inventory_sha256": "34b490a88a6097386ad686513bd193b2b0ec9a9aa4b0793869e081e5a74940bc",
+        "rationale": "Complete-page MIT templates provide a source-only, page-stratified margin above the HTML/CSS floor.",
+        "selected_candidate_count": 134,
+        "selected_inventory_sha256": "f0e5264568b960715993300ffa2d598452a514af2b0a3310693f17216668c805",
+        "selected_source_file_count": 14,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 92
+      },
+      "source_id": "open_repo_sb_admin_f030988_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/StartBootstrap__startbootstrap-sb-admin-2__master",
+      "target_positions": 394483,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 134,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 63,
+        "passed": 71
+      }
+    },
+    {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 2,
+        "reject": 30
+      },
+      "discovery": {
+        "candidate_count": 32,
+        "candidate_target_bytes": 71261,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 0,
+          "insufficient_semantics": 21,
+          "statically_non_rendered_rejected": 59,
+          "target_size_rejected": 71
+        },
+        "source_file_count": 1
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 32,
+      "repo": "StartBootstrap/startbootstrap-agency",
+      "revision": "b2d5d5c",
+      "selection": {
+        "inventory_candidate_count": 32,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 70,
+        "maximum_candidates_per_file": 70,
+        "ordered_inventory_sha256": "b9ae93e303196cb8d9dd73dbecd78f487ac05570ebf9bc5e1aafeb2f331d8c35",
+        "rationale": "A bounded single-page component inventory adds landing-page semantics while remaining one source-disjoint split group.",
+        "selected_candidate_count": 32,
+        "selected_inventory_sha256": "9949688a347a52d0da2dc0a0b0c7e2de0c9c9b44390ca1dbac6ad994298aa28b",
+        "selected_source_file_count": 1,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 0
+      },
+      "source_id": "open_repo_agency_b2d5d5c_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/StartBootstrap__startbootstrap-agency__master",
+      "target_positions": 2732,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 32,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 30,
+        "passed": 2
+      }
+    },
+    {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 99,
+        "reject": 127
+      },
+      "discovery": {
+        "candidate_count": 1279,
+        "candidate_target_bytes": 3689933,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 1,
+          "embedded_content_rejected": 23,
+          "insufficient_semantics": 612,
+          "statically_non_rendered_rejected": 15,
+          "target_repeated_in_visible_context": 585,
+          "target_size_rejected": 3862
+        },
+        "source_file_count": 86
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 226,
+      "repo": "uikit/uikit",
+      "revision": "a8950dc",
+      "selection": {
+        "inventory_candidate_count": 1279,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 250,
+        "maximum_candidates_per_file": 3,
+        "ordered_inventory_sha256": "40b0d3ec6652d58eeab2bba72e20d3e61a193af0e8fea6eda95e1b3204213ba5",
+        "rationale": "Pinned upstream visual-test pages provide independent responsive component contracts selected before rendering.",
+        "selected_candidate_count": 226,
+        "selected_inventory_sha256": "34bb7872de9ccc8b6a5ccfc000aabcbc3b58209775e75fe781bf1372094e315c",
+        "selected_source_file_count": 82,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 1053
+      },
+      "source_id": "open_repo_uikit_a8950dc_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/uikit__uikit__develop",
+      "target_positions": 360671,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 226,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 127,
+        "passed": 99
+      }
+    },
+    {
+      "adapter": "html_render_killed_subtree_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 43,
+        "reject": 38
+      },
+      "discovery": {
+        "candidate_count": 138,
+        "candidate_target_bytes": 209741,
+        "diagnostics": {
+          "discarded_unbalanced_elements": 7,
+          "embedded_content_rejected": 1,
+          "insufficient_semantics": 11,
+          "statically_non_rendered_rejected": 10,
+          "target_repeated_in_visible_context": 2,
+          "target_size_rejected": 878
+        },
+        "source_file_count": 16
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 81,
+      "repo": "semantic-org/semantic-ui",
+      "revision": "597843a",
+      "selection": {
+        "inventory_candidate_count": 138,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 100,
+        "maximum_candidates_per_file": 7,
+        "ordered_inventory_sha256": "b9410d2c1335e7422304ae24a1fcef7687770e31bd960c34e33d59671b5a386c",
+        "rationale": "Example-page round-robin sampling adds a distinct component framework without outcome-conditioned inclusion.",
+        "selected_candidate_count": 81,
+        "selected_inventory_sha256": "2b9b23a5244f6864fbc2bb4040fff39d35a705756412ccc0ca1527dee6f73214",
+        "selected_source_file_count": 15,
+        "selection_uses_verifier_outcomes": false,
+        "unselected_candidate_count": 57
+      },
+      "source_id": "open_repo_semantic_ui_597843a_render_killed_html_holes",
+      "source_root": "runtime/task_complete_sources/extracted/semantic-org__semantic-ui__master",
+      "target_positions": 82886,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_html_css_render_killed_subtree_v1",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 81,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 38,
+        "passed": 43
+      }
+    },
+    {
+      "adapter": "css_render_killed_rule_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 74,
+        "reject": 126
+      },
+      "discovery": {
+        "candidate_count": 395,
+        "candidate_target_bytes": 52303,
+        "css_file_count": 1,
+        "page_file_count": 14,
+        "parser": {
+          "parse_error_count": 0,
+          "parse_errors": {},
+          "parsed_file_count": 1,
+          "postcss_version": "8.4.21"
+        },
+        "rejected": {
+          "interaction_selector_rejected": 270,
+          "selector_absent_from_linked_pages": 529,
+          "target_size_rejected": 1165
+        }
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 200,
+      "repo": "StartBootstrap/startbootstrap-sb-admin-2",
+      "revision": "f030988",
+      "selection": {
+        "inventory_candidate_count": 395,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 200,
+        "maximum_candidates_per_file": 200,
+        "ordered_inventory_sha256": "9fcb5f7109ca9c7bf0ba198500c857bee4a7eb20be513f864a73baeb81fdc7aa",
+        "rationale": "Pinned source rules are matched to linked pages by selector tokens before any render result exists.",
+        "selected_candidate_count": 200,
+        "selected_inventory_sha256": "6ef67f7f5bea7dca2d05aa730845cd4b080212eb370586be2d653bc17ce623a4",
+        "selected_source_file_count": 1,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_sb_admin_f030988_render_killed_css_rules",
+      "source_root": "runtime/task_complete_sources/extracted/StartBootstrap__startbootstrap-sb-admin-2__master",
+      "target_positions": 17424,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "css_parser": {
+          "identity_sha256": "408be67a820dce2f2da495a494b4b68485b0563bd693e7817f4bef1907c8bd84",
+          "network_during_parsing": "denied",
+          "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+          "node_version": "v22.15.0",
+          "offline_replay_valid": true,
+          "package_json_sha256": "01b2c74987a7e8263c565defbdd44dcad07fc51adfb519205adb300e35a5a397",
+          "package_lock_sha256": "7faf6e1703c83179ff7a82774132afc0db0592ee06d581e83afe54e9d222402a",
+          "parser_script_sha256": "29dd8279491570962c860d4b58b7ac47b0d1ea310c5ed75842b387ef9424b8e0",
+          "postcss_version": "8.4.21"
+        },
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+        "verifier_source_sha256": "c096f74195e2766cacf397f3110aa8bc5b9f22feeafc720126114d95a64c477e",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 200,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 126,
+        "passed": 74
+      }
+    },
+    {
+      "adapter": "css_render_killed_rule_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 23,
+        "reject": 177
+      },
+      "discovery": {
+        "candidate_count": 222,
+        "candidate_target_bytes": 40906,
+        "css_file_count": 1,
+        "page_file_count": 1,
+        "parser": {
+          "parse_error_count": 0,
+          "parse_errors": {},
+          "parsed_file_count": 1,
+          "postcss_version": "8.4.21"
+        },
+        "rejected": {
+          "interaction_selector_rejected": 99,
+          "selector_absent_from_linked_pages": 813,
+          "target_size_rejected": 1284
+        }
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 200,
+      "repo": "StartBootstrap/startbootstrap-agency",
+      "revision": "b2d5d5c",
+      "selection": {
+        "inventory_candidate_count": 222,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 200,
+        "maximum_candidates_per_file": 200,
+        "ordered_inventory_sha256": "4cbdcf11203a8b1921f78d44422b3b3e908304508d82feb4c36026625e5eaff0",
+        "rationale": "The complete pinned stylesheet is paired to its canonical page without outcome-conditioned sampling.",
+        "selected_candidate_count": 200,
+        "selected_inventory_sha256": "9ae778cd6a48f0d4c90a332be1baf6bfa6a0bdda492920a041902fb5455e6cc1",
+        "selected_source_file_count": 1,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_agency_b2d5d5c_render_killed_css_rules",
+      "source_root": "runtime/task_complete_sources/extracted/StartBootstrap__startbootstrap-agency__master",
+      "target_positions": 12513,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "css_parser": {
+          "identity_sha256": "408be67a820dce2f2da495a494b4b68485b0563bd693e7817f4bef1907c8bd84",
+          "network_during_parsing": "denied",
+          "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+          "node_version": "v22.15.0",
+          "offline_replay_valid": true,
+          "package_json_sha256": "01b2c74987a7e8263c565defbdd44dcad07fc51adfb519205adb300e35a5a397",
+          "package_lock_sha256": "7faf6e1703c83179ff7a82774132afc0db0592ee06d581e83afe54e9d222402a",
+          "parser_script_sha256": "29dd8279491570962c860d4b58b7ac47b0d1ea310c5ed75842b387ef9424b8e0",
+          "postcss_version": "8.4.21"
+        },
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+        "verifier_source_sha256": "c096f74195e2766cacf397f3110aa8bc5b9f22feeafc720126114d95a64c477e",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 200,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 177,
+        "passed": 23
+      }
+    },
+    {
+      "adapter": "css_render_killed_rule_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 42,
+        "reject": 358
+      },
+      "discovery": {
+        "candidate_count": 1849,
+        "candidate_target_bytes": 272508,
+        "css_file_count": 47,
+        "page_file_count": 7,
+        "parser": {
+          "parse_error_count": 0,
+          "parse_errors": {},
+          "parsed_file_count": 47,
+          "postcss_version": "8.4.21"
+        },
+        "rejected": {
+          "interaction_selector_rejected": 519,
+          "no_linked_page": 1023,
+          "selector_absent_from_linked_pages": 6,
+          "target_repeated_in_visible_context": 147,
+          "target_size_rejected": 2407
+        }
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 400,
+      "repo": "semantic-org/semantic-ui",
+      "revision": "597843a",
+      "selection": {
+        "inventory_candidate_count": 1849,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 400,
+        "maximum_candidates_per_file": 20,
+        "ordered_inventory_sha256": "f268214fe6ee3050b183bee2e6a903ee70704149fa2cbc1793588e43b1bb3188",
+        "rationale": "Component CSS and linked example pages provide file-stratified source-only functional coverage.",
+        "selected_candidate_count": 400,
+        "selected_inventory_sha256": "a233b1b58fe01328fb7cc39a9820de28d35e02d90125aee0f31e904f4bd86ebd",
+        "selected_source_file_count": 24,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_semantic_ui_597843a_render_killed_css_rules",
+      "source_root": "runtime/task_complete_sources/extracted/semantic-org__semantic-ui__master",
+      "target_positions": 12461,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "css_parser": {
+          "identity_sha256": "408be67a820dce2f2da495a494b4b68485b0563bd693e7817f4bef1907c8bd84",
+          "network_during_parsing": "denied",
+          "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+          "node_version": "v22.15.0",
+          "offline_replay_valid": true,
+          "package_json_sha256": "01b2c74987a7e8263c565defbdd44dcad07fc51adfb519205adb300e35a5a397",
+          "package_lock_sha256": "7faf6e1703c83179ff7a82774132afc0db0592ee06d581e83afe54e9d222402a",
+          "parser_script_sha256": "29dd8279491570962c860d4b58b7ac47b0d1ea310c5ed75842b387ef9424b8e0",
+          "postcss_version": "8.4.21"
+        },
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+        "verifier_source_sha256": "c096f74195e2766cacf397f3110aa8bc5b9f22feeafc720126114d95a64c477e",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 400,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 358,
+        "passed": 42
+      }
+    },
+    {
+      "adapter": "css_render_killed_rule_holes",
+      "completed_verification_count": 0,
+      "decision_counts": {
+        "admit": 34,
+        "reject": 166
+      },
+      "discovery": {
+        "candidate_count": 318,
+        "candidate_target_bytes": 68821,
+        "css_file_count": 1,
+        "page_file_count": 13,
+        "parser": {
+          "parse_error_count": 0,
+          "parse_errors": {},
+          "parsed_file_count": 1,
+          "postcss_version": "8.4.21"
+        },
+        "rejected": {
+          "interaction_selector_rejected": 111,
+          "selector_absent_from_linked_pages": 817,
+          "target_size_rejected": 1310
+        }
+      },
+      "license_spdx": "MIT",
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 200,
+      "repo": "twbs/bootstrap",
+      "revision": "b37afd7",
+      "selection": {
+        "inventory_candidate_count": 318,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 200,
+        "maximum_candidates_per_file": 200,
+        "ordered_inventory_sha256": "03160f7cfb3ff970eadd2c652677e3e456907f56243cfea59e5abe3d52eeeadd",
+        "rationale": "A separate whole-source Bootstrap campaign closes the prospective CSS coverage shortfall; all 200 rules were selected from pinned source and linked visual fixtures before any Bootstrap render outcome was observed.",
+        "selected_candidate_count": 200,
+        "selected_inventory_sha256": "de5b3ac30a0d8173b458b8017d0e2322ba8dc6deefaa67af4fe24d7480005a4d",
+        "selected_source_file_count": 1,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_bootstrap_b37afd7_render_killed_css_rules",
+      "source_root": "runtime/task_complete_sources/extracted/twbs__bootstrap__main",
+      "target_positions": 15780,
+      "toolchain_identity": {
+        "chrome_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chrome_version": "Google Chrome 150.0.7871.116",
+        "command": "headless Chrome local-file render at 800x600 and 375x667",
+        "css_parser": {
+          "identity_sha256": "408be67a820dce2f2da495a494b4b68485b0563bd693e7817f4bef1907c8bd84",
+          "network_during_parsing": "denied",
+          "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+          "node_version": "v22.15.0",
+          "offline_replay_valid": true,
+          "package_json_sha256": "01b2c74987a7e8263c565defbdd44dcad07fc51adfb519205adb300e35a5a397",
+          "package_lock_sha256": "7faf6e1703c83179ff7a82774132afc0db0592ee06d581e83afe54e9d222402a",
+          "parser_script_sha256": "29dd8279491570962c860d4b58b7ac47b0d1ea310c5ed75842b387ef9424b8e0",
+          "postcss_version": "8.4.21"
+        },
+        "javascript": "disabled",
+        "minimum_changed_pixel_fraction": 0.0005,
+        "network": "denied",
+        "pillow_version": "9.4.0",
+        "remote_assets": "denied_by_os_sandbox",
+        "timeout_seconds": 20,
+        "verifier_abi": "project_theseus_css_render_killed_rule_v1",
+        "verifier_source_sha256": "c096f74195e2766cacf397f3110aa8bc5b9f22feeafc720126114d95a64c477e",
+        "viewports": [
+          [
+            800,
+            600,
+            "wide"
+          ],
+          [
+            375,
+            667,
+            "narrow"
+          ]
+        ]
+      },
+      "unit_count": 200,
+      "verification_cache_checkpoint_interval": 25,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_parallelism": 2,
+      "verification_state_counts": {
+        "failed": 166,
+        "passed": 34
+      }
+    },
+    {
       "adapter": "mdn_start_finished_assessments",
       "decision_counts": {
         "admit": 7,
@@ -732,6 +1719,7 @@
       "license_spdx": "CC0-1.0",
       "matched_assessment_pair_count": 9,
       "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 8,
       "repo": "mdn/learning-area",
       "revision": "180371ffc567f0f2ef359bf408b976667839e764",
       "source_id": "mdn_learning_area_180371ff",
@@ -745,53 +1733,55 @@
     }
   ],
   "summary": {
-    "admitted_unit_count": 28872,
+    "admitted_unit_count": 29555,
     "arm_counts": {
       "english": 25566,
-      "html_css": 7,
+      "html_css": 690,
       "javascript_typescript": 1180,
       "python": 2022,
       "rust": 97
     },
     "contract_hard_gap_count": 0,
-    "coverage_gap_count": 2,
+    "coverage_gap_count": 1,
     "decision_counts": {
-      "admit": 28872,
-      "reject": 2122
+      "admit": 29555,
+      "reject": 3657
     },
     "external_inference_calls": 0,
     "fallback_return_count": 0,
     "inventory_only": false,
+    "prior_contamination_audit_reuse_count": 4708,
     "public_exact_overlap_unit_count": 0,
     "public_semantic_overlap_unit_count": 0,
     "public_training_rows_written": 0,
     "raw_user_text_admitted": false,
-    "runtime_ms": 122130,
-    "source_count": 12,
+    "runtime_ms": 204692,
+    "source_count": 24,
     "split_counts": {
-      "confirmation": 1582,
-      "development": 1488,
-      "train": 25802
+      "confirmation": 1611,
+      "development": 1531,
+      "train": 26413
     },
-    "task_complete_unique_target_positions": 33827195,
+    "task_complete_unique_target_positions": 35588115,
     "teacher_calls": 0,
-    "unit_count": 30994,
-    "verification_cache_entry_count": 4846,
-    "verification_cache_new_or_replaced_count": 0,
+    "unit_count": 33212,
+    "verification_cache_entry_count": 7137,
+    "verification_cache_new_or_replaced_count": 2356,
     "verification_state_counts": {
-      "failed": 1540,
+      "failed": 3075,
       "not_run": 578,
-      "passed": 28876
+      "passed": 29559
     },
     "verification_strength_counts": {
-      "dom_a11y_layout_render_delta": 7,
+      "dom_a11y_layout_render_delta": 517,
       "executable_target_pass_starter_fail": 3299,
-      "governed_conversation_target_bound": 25566
+      "governed_conversation_target_bound": 25566,
+      "layout_render_delta": 173
     }
   },
   "unit_ledger": "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
-  "unit_ledger_count": 30994,
-  "unit_ledger_sha256": "bec299ba3ba356c7f746422344efedc295dc2c69189f269164be33dfc12abbef",
+  "unit_ledger_count": 33212,
+  "unit_ledger_sha256": "00fe4a090612d471d844453be11502c162a51cdb5390f50fc105c10e8e92f9d9",
   "verification_cache": "runtime/data_governance/task_complete_verification_cache_v1.jsonl",
-  "verification_cache_sha256": "a2796484ca53f7fe431ae76e4316245834fd70c95d8d6ec26a67edf3ea2e91fe"
+  "verification_cache_sha256": "10a82f7a153b4e953c445a40ed9591155c5d6003b08a466cec6db5e7bcda2214"
 }

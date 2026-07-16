@@ -27,11 +27,14 @@ import tarfile
 import tempfile
 import time
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
 import training_data_lineage_audit
+import task_complete_css_holes
+import task_complete_web_holes
 from neural_seed_functional_verifiers import CHROME, _render_chrome
 
 
@@ -64,6 +67,11 @@ def main() -> int:
         "--prepare-python-projects",
         action="store_true",
         help="Materialize lockfile-bound Python verifier environments before offline replay.",
+    )
+    parser.add_argument(
+        "--prepare-css-toolchain",
+        action="store_true",
+        help="Materialize the lockfile-bound PostCSS parser before offline replay.",
     )
     parser.add_argument(
         "--max-executable-units-per-source",
@@ -111,6 +119,7 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
     units: list[dict[str, Any]] = []
     source_summaries: list[dict[str, Any]] = []
     hard_gaps: list[dict[str, Any]] = []
+    css_parser_toolchain: dict[str, Any] | None = None
 
     for source in config["sources"]:
         if not source.get("enabled", True):
@@ -126,6 +135,7 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
                     config,
                     source,
                     contamination,
+                    prior_units=prior_units,
                     cache=cache,
                     cache_updates=cache_updates,
                     inventory_only=bool(args.inventory_only),
@@ -137,6 +147,7 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
                     config,
                     source,
                     contamination,
+                    prior_units=prior_units,
                     cache=cache,
                     cache_updates=cache_updates,
                     inventory_only=bool(args.inventory_only),
@@ -147,6 +158,7 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
                     config,
                     source,
                     contamination,
+                    prior_units=prior_units,
                     cache=cache,
                     cache_updates=cache_updates,
                     cache_path=cache_path,
@@ -159,10 +171,40 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
                     config,
                     source,
                     contamination,
+                    prior_units=prior_units,
                     cache=cache,
                     cache_updates=cache_updates,
                     cache_path=cache_path,
                     prepare_javascript_projects=bool(args.prepare_javascript_projects),
+                    inventory_only=bool(args.inventory_only),
+                    max_verify=max(0, int(args.max_executable_units_per_source)),
+                )
+            elif adapter == "html_render_killed_subtree_holes":
+                source_units, source_summary = html_subtree_hole_units(
+                    config,
+                    source,
+                    contamination,
+                    prior_units=prior_units,
+                    cache=cache,
+                    cache_updates=cache_updates,
+                    cache_path=cache_path,
+                    inventory_only=bool(args.inventory_only),
+                    max_verify=max(0, int(args.max_executable_units_per_source)),
+                )
+            elif adapter == "css_render_killed_rule_holes":
+                if css_parser_toolchain is None:
+                    css_parser_toolchain = ensure_css_ast_toolchain(
+                        config, prepare=bool(args.prepare_css_toolchain)
+                    )
+                source_units, source_summary = css_rule_hole_units(
+                    config,
+                    source,
+                    contamination,
+                    prior_units=prior_units,
+                    cache=cache,
+                    cache_updates=cache_updates,
+                    cache_path=cache_path,
+                    parser_toolchain=css_parser_toolchain,
                     inventory_only=bool(args.inventory_only),
                     max_verify=max(0, int(args.max_executable_units_per_source)),
                 )
@@ -226,6 +268,9 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
         "coverage_gap_count": len(coverage_gaps),
         "verification_cache_entry_count": len(cache),
         "verification_cache_new_or_replaced_count": len(cache_updates),
+        "prior_contamination_audit_reuse_count": sum(
+            bool(row["contamination"].get("reused_prior_audit")) for row in units
+        ),
         "inventory_only": bool(args.inventory_only),
         "runtime_ms": int((time.perf_counter() - started) * 1000),
     }
@@ -289,6 +334,22 @@ def validate_config(config: dict[str, Any]) -> None:
         "english", "python", "javascript_typescript", "html_css", "rust"
     }:
         raise ValueError("coverage floors must name all five seed arms")
+    for arm_id, floor in config["coverage_floors_for_50m_scale_proposal"].items():
+        capability_floors = floor.get("required_capability_floors") or {}
+        if not isinstance(capability_floors, dict):
+            raise ValueError(f"required capability floors must be a mapping: {arm_id}")
+        for capability, capability_floor in capability_floors.items():
+            if not str(capability).strip():
+                raise ValueError(f"required capability name is empty: {arm_id}")
+            if int(capability_floor.get("minimum_verified_units") or 0) <= 0:
+                raise ValueError(f"required capability unit floor must be positive: {arm_id}:{capability}")
+            if int(capability_floor.get("minimum_target_positions") or 0) <= 0:
+                raise ValueError(f"required capability position floor must be positive: {arm_id}:{capability}")
+            if (
+                "required_verification_strength" in capability_floor
+                and not str(capability_floor["required_verification_strength"]).strip()
+            ):
+                raise ValueError(f"required capability verifier strength is empty: {arm_id}:{capability}")
 
 
 def conversation_units(
@@ -386,6 +447,7 @@ def exercism_units(
     source: dict[str, Any],
     contamination: dict[str, Any],
     *,
+    prior_units: dict[str, dict[str, Any]],
     cache: dict[str, dict[str, Any]],
     cache_updates: dict[str, dict[str, Any]],
     inventory_only: bool,
@@ -447,6 +509,7 @@ def exercism_units(
                 "live_teacher_call": False,
             },
             contamination=contamination,
+            prior_units=prior_units,
         )
         verification_digest = stable_hash({
             "unit_id": unit["unit_id"],
@@ -495,6 +558,7 @@ def mdn_units(
     source: dict[str, Any],
     contamination: dict[str, Any],
     *,
+    prior_units: dict[str, dict[str, Any]],
     cache: dict[str, dict[str, Any]],
     cache_updates: dict[str, dict[str, Any]],
     inventory_only: bool,
@@ -522,6 +586,7 @@ def mdn_units(
             source_task_id=source_task_id,
             arm_id="html_css",
             task_family="html_css_assessment_completion",
+            capability_tags=["html", "css"],
             visible_context=visible,
             target=target,
             license_spdx=str(source["license_spdx"]),
@@ -536,6 +601,7 @@ def mdn_units(
                 "live_teacher_call": False,
             },
             contamination=contamination,
+            prior_units=prior_units,
         )
         verification_digest = stable_hash({
             "unit_id": unit["unit_id"],
@@ -571,11 +637,370 @@ def mdn_units(
     })
 
 
+def html_subtree_hole_units(
+    config: dict[str, Any],
+    source: dict[str, Any],
+    contamination: dict[str, Any],
+    *,
+    prior_units: dict[str, dict[str, Any]],
+    cache: dict[str, dict[str, Any]],
+    cache_updates: dict[str, dict[str, Any]],
+    cache_path: Path,
+    inventory_only: bool,
+    max_verify: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Build source-bound semantic component holes killed by local browser renders."""
+
+    source_root = ensure_source_root(source)
+    holes, discovery = task_complete_web_holes.discover_html_subtree_holes(source_root, source)
+    selection = task_complete_web_holes.select_verification_candidates(source, holes)
+    selected = selection["selected"]
+    selection_receipt = selection["public_receipt"]
+    toolchain = config["toolchains"]["html_css"]
+    toolchain_identity = task_complete_web_holes.web_toolchain_identity(toolchain)
+    checkpoint_interval = max(1, int(source.get("verification_checkpoint_interval", 25)))
+    parallelism = max(1, int(source.get("verification_parallelism", 2)))
+    rows: list[dict[str, Any]] = []
+    jobs_by_path: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    verified_attempts = 0
+    for hole in selected:
+        visible = canonical_json({
+            "instruction": (
+                "Restore the missing semantic HTML component without changing the surrounding "
+                "document contract, accessibility structure, or responsive layout."
+            ),
+            "repository": source["repo"],
+            "path": hole["path"],
+            "source_with_hole": hole["visible_source"],
+        })
+        target = canonical_json({
+            "path": hole["path"],
+            "start_char": hole["start_char"],
+            "end_char": hole["end_char"],
+            "replacement": hole["target_body"],
+        })
+        unit = base_unit(
+            config,
+            source=source,
+            # All overlapping components from one document must remain in one split.
+            source_task_id=f"{source['repo']}:{hole['path']}",
+            arm_id="html_css",
+            task_family="repository_semantic_html_component_hole",
+            capability_tags=["html"],
+            visible_context=visible,
+            target=target,
+            license_spdx=str(source["license_spdx"]),
+            provenance={
+                "repo": source["repo"],
+                "revision": source["revision"],
+                "archive_sha256": source["archive_sha256"],
+                "path": hole["path"],
+                "tag": hole["tag"],
+                "start_char": hole["start_char"],
+                "end_char": hole["end_char"],
+                "start_byte": hole["start_byte"],
+                "end_byte": hole["end_byte"],
+                "source_sha256": hole["source_sha256"],
+                "target_sha256": hole["target_sha256"],
+                "selection_inventory_sha256": selection_receipt["ordered_inventory_sha256"],
+                "selection_campaign_sha256": selection_receipt["selected_inventory_sha256"],
+                "selection_uses_verifier_outcomes": False,
+                "static_open_corpus": True,
+                "live_teacher_call": False,
+            },
+            contamination=contamination,
+            prior_units=prior_units,
+        )
+        verification_digest = stable_hash({
+            "unit_id": unit["unit_id"],
+            "verifier_abi": task_complete_web_holes.VERIFIER_ABI,
+            "source_sha256": hole["source_sha256"],
+            "target_sha256": hole["target_sha256"],
+            "source_span": [hole["start_char"], hole["end_char"]],
+            "toolchain": toolchain_identity,
+        })
+        cached = cache.get(unit["unit_id"])
+        should_verify = not inventory_only and (max_verify == 0 or verified_attempts < max_verify)
+        if html_cached_verification_compatible(
+            cached, verification_digest=verification_digest, toolchain_identity=toolchain_identity
+        ):
+            verifier = cached["verification"]
+        elif should_verify:
+            verified_attempts += 1
+            verifier = None
+            jobs_by_path[hole["path"]].append({
+                "row_index": len(rows),
+                "unit_id": unit["unit_id"],
+                "hole": hole,
+                "verification_digest": verification_digest,
+            })
+        else:
+            verifier = {
+                "kind": task_complete_web_holes.VERIFIER_ABI,
+                "strength": "dom_a11y_layout_render_delta",
+                "state": "not_run",
+                "reason": "inventory_only_or_bounded_verification",
+                "toolchain": toolchain_identity,
+            }
+        rows.append({"unit": unit, "verifier": verifier})
+
+    completed_verifications = 0
+    checkpoint_write_count = 0
+
+    def verify_file_group(jobs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        results = []
+        for job in jobs:
+            try:
+                verifier = task_complete_web_holes.verify_html_subtree_hole(
+                    source_root, job["hole"], toolchain
+                )
+            except Exception as exc:  # noqa: BLE001 - worker failures are non-credit receipts.
+                verifier = task_complete_web_holes.failed_receipt(
+                    f"verification_worker_fault:{type(exc).__name__}:{exc}"[:500], toolchain
+                )
+            results.append({**job, "verifier": verifier})
+        return results
+
+    file_groups = list(jobs_by_path.values())
+    if file_groups:
+        with ThreadPoolExecutor(max_workers=min(parallelism, len(file_groups))) as executor:
+            futures = [executor.submit(verify_file_group, jobs) for jobs in file_groups]
+            for future in as_completed(futures):
+                for result in future.result():
+                    rows[result["row_index"]]["verifier"] = result["verifier"]
+                    cache_updates[result["unit_id"]] = {
+                        "unit_id": result["unit_id"],
+                        "verification_digest": result["verification_digest"],
+                        "verification": result["verifier"],
+                    }
+                    completed_verifications += 1
+                    if completed_verifications % checkpoint_interval == 0:
+                        write_cache(cache_path, {**cache, **cache_updates})
+                        checkpoint_write_count += 1
+        if completed_verifications % checkpoint_interval:
+            write_cache(cache_path, {**cache, **cache_updates})
+            checkpoint_write_count += 1
+
+    units: list[dict[str, Any]] = []
+    for row in rows:
+        verifier = row["verifier"]
+        if verifier is None:
+            verifier = task_complete_web_holes.failed_receipt(
+                "verification_result_missing", toolchain
+            )
+        finish_unit(row["unit"], verifier, config)
+        units.append(row["unit"])
+    return units, summarize_source(source, units, extra={
+        "source_root": rel(source_root),
+        "discovery": discovery,
+        "selection": selection_receipt,
+        "new_verification_attempt_count": verified_attempts,
+        "completed_verification_count": completed_verifications,
+        "verification_parallelism": parallelism,
+        "verification_cache_checkpoint_interval": checkpoint_interval,
+        "verification_cache_checkpoint_write_count": checkpoint_write_count,
+        "toolchain_identity": toolchain_identity,
+    })
+
+
+def html_cached_verification_compatible(
+    cached: dict[str, Any] | None,
+    *,
+    verification_digest: str,
+    toolchain_identity: dict[str, Any],
+) -> bool:
+    if not cached or not isinstance(cached.get("verification"), dict):
+        return False
+    if cached.get("verification_digest") == verification_digest:
+        return True
+    verifier = cached["verification"]
+    # Earlier v1 receipts included the campaign-selection digest in their cache
+    # key. The unit id already binds visible source and target; safely reuse those
+    # receipts when the verifier ABI and complete toolchain identity are unchanged.
+    return bool(
+        verifier.get("kind") == task_complete_web_holes.VERIFIER_ABI
+        and verifier.get("toolchain") == toolchain_identity
+        and verifier.get("state") in {"passed", "failed"}
+    )
+
+
+def css_rule_hole_units(
+    config: dict[str, Any],
+    source: dict[str, Any],
+    contamination: dict[str, Any],
+    *,
+    prior_units: dict[str, dict[str, Any]],
+    cache: dict[str, dict[str, Any]],
+    cache_updates: dict[str, dict[str, Any]],
+    cache_path: Path,
+    parser_toolchain: dict[str, Any],
+    inventory_only: bool,
+    max_verify: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    source_root = ensure_source_root(source)
+    holes, discovery = task_complete_css_holes.discover_css_rule_holes(
+        source_root, source, parser_toolchain
+    )
+    selection = task_complete_css_holes.select_verification_candidates(source, holes)
+    selected = selection["selected"]
+    selection_receipt = selection["public_receipt"]
+    parser_identity = css_parser_public_identity(parser_toolchain)
+    verifier_toolchain = {
+        **config["toolchains"]["html_css"],
+        "css_parser": parser_identity,
+    }
+    toolchain_identity = task_complete_css_holes.css_toolchain_identity(verifier_toolchain)
+    checkpoint_interval = max(1, int(source.get("verification_checkpoint_interval", 25)))
+    parallelism = max(1, int(source.get("verification_parallelism", 2)))
+    rows: list[dict[str, Any]] = []
+    pending: list[dict[str, Any]] = []
+    verified_attempts = 0
+    for hole in selected:
+        visible = canonical_json({
+            "instruction": (
+                "Restore the missing CSS rule so the linked page retains its responsive visual "
+                "contract without changing unrelated stylesheet behavior."
+            ),
+            "repository": source["repo"],
+            "stylesheet_path": hole["path"],
+            "linked_page_path": hole["page_path"],
+            "stylesheet_context_with_hole": hole["stylesheet_context"],
+            "relevant_page_source": hole["page_excerpt"],
+        })
+        target = canonical_json({
+            "path": hole["path"],
+            "start_char": hole["start_char"],
+            "end_char": hole["end_char"],
+            "replacement": hole["target_body"],
+        })
+        unit = base_unit(
+            config,
+            source=source,
+            source_task_id=f"{source['repo']}:{hole['path']}",
+            arm_id="html_css",
+            task_family="repository_css_rule_hole",
+            capability_tags=["css"],
+            visible_context=visible,
+            target=target,
+            license_spdx=str(source["license_spdx"]),
+            provenance={
+                "repo": source["repo"],
+                "revision": source["revision"],
+                "archive_sha256": source["archive_sha256"],
+                "path": hole["path"],
+                "page_path": hole["page_path"],
+                "start_char": hole["start_char"],
+                "end_char": hole["end_char"],
+                "start_byte": hole["start_byte"],
+                "end_byte": hole["end_byte"],
+                "source_sha256": hole["source_sha256"],
+                "page_sha256": hole["page_sha256"],
+                "target_sha256": hole["target_sha256"],
+                "selector_sha256": sha256_text(hole["selector"]),
+                "selection_inventory_sha256": selection_receipt["ordered_inventory_sha256"],
+                "selection_campaign_sha256": selection_receipt["selected_inventory_sha256"],
+                "selection_uses_verifier_outcomes": False,
+                "static_open_corpus": True,
+                "live_teacher_call": False,
+            },
+            contamination=contamination,
+            prior_units=prior_units,
+        )
+        verification_digest = stable_hash({
+            "unit_id": unit["unit_id"],
+            "verifier_abi": task_complete_css_holes.VERIFIER_ABI,
+            "source_sha256": hole["source_sha256"],
+            "page_sha256": hole["page_sha256"],
+            "target_sha256": hole["target_sha256"],
+            "source_span": [hole["start_char"], hole["end_char"]],
+            "toolchain": toolchain_identity,
+        })
+        cached = cache.get(unit["unit_id"])
+        should_verify = not inventory_only and (max_verify == 0 or verified_attempts < max_verify)
+        if (
+            cached
+            and cached.get("verification_digest") == verification_digest
+            and cached.get("verification", {}).get("toolchain") == toolchain_identity
+        ):
+            verifier = cached["verification"]
+        elif should_verify:
+            verified_attempts += 1
+            verifier = None
+            pending.append({
+                "row_index": len(rows),
+                "unit_id": unit["unit_id"],
+                "hole": hole,
+                "verification_digest": verification_digest,
+            })
+        else:
+            verifier = {
+                "kind": task_complete_css_holes.VERIFIER_ABI,
+                "strength": "dom_a11y_layout_render_delta",
+                "state": "not_run",
+                "reason": "inventory_only_or_bounded_verification",
+                "toolchain": toolchain_identity,
+            }
+        rows.append({"unit": unit, "verifier": verifier})
+
+    completed = 0
+    checkpoint_writes = 0
+
+    def verify_job(job: dict[str, Any]) -> dict[str, Any]:
+        try:
+            verifier = task_complete_css_holes.verify_css_rule_hole(
+                source_root, job["hole"], verifier_toolchain
+            )
+        except Exception as exc:  # noqa: BLE001
+            verifier = task_complete_css_holes.failed_receipt(
+                f"verification_worker_fault:{type(exc).__name__}:{exc}"[:500], verifier_toolchain
+            )
+        return {**job, "verifier": verifier}
+
+    if pending:
+        with ThreadPoolExecutor(max_workers=min(parallelism, len(pending))) as executor:
+            futures = [executor.submit(verify_job, job) for job in pending]
+            for future in as_completed(futures):
+                result = future.result()
+                rows[result["row_index"]]["verifier"] = result["verifier"]
+                cache_updates[result["unit_id"]] = {
+                    "unit_id": result["unit_id"],
+                    "verification_digest": result["verification_digest"],
+                    "verification": result["verifier"],
+                }
+                completed += 1
+                if completed % checkpoint_interval == 0:
+                    write_cache(cache_path, {**cache, **cache_updates})
+                    checkpoint_writes += 1
+        if completed % checkpoint_interval:
+            write_cache(cache_path, {**cache, **cache_updates})
+            checkpoint_writes += 1
+
+    units: list[dict[str, Any]] = []
+    for row in rows:
+        verifier = row["verifier"] or task_complete_css_holes.failed_receipt(
+            "verification_result_missing", verifier_toolchain
+        )
+        finish_unit(row["unit"], verifier, config)
+        units.append(row["unit"])
+    return units, summarize_source(source, units, extra={
+        "source_root": rel(source_root),
+        "discovery": discovery,
+        "selection": selection_receipt,
+        "new_verification_attempt_count": verified_attempts,
+        "completed_verification_count": completed,
+        "verification_parallelism": parallelism,
+        "verification_cache_checkpoint_interval": checkpoint_interval,
+        "verification_cache_checkpoint_write_count": checkpoint_writes,
+        "toolchain_identity": toolchain_identity,
+    })
+
+
 def python_function_hole_units(
     config: dict[str, Any],
     source: dict[str, Any],
     contamination: dict[str, Any],
     *,
+    prior_units: dict[str, dict[str, Any]],
     cache: dict[str, dict[str, Any]],
     cache_updates: dict[str, dict[str, Any]],
     cache_path: Path,
@@ -631,6 +1056,7 @@ def python_function_hole_units(
                 "live_teacher_call": False,
             },
             contamination=contamination,
+            prior_units=prior_units,
         )
         verification_digest = stable_hash({
             "unit_id": unit["unit_id"],
@@ -1088,6 +1514,7 @@ def javascript_function_hole_units(
     source: dict[str, Any],
     contamination: dict[str, Any],
     *,
+    prior_units: dict[str, dict[str, Any]],
     cache: dict[str, dict[str, Any]],
     cache_updates: dict[str, dict[str, Any]],
     cache_path: Path,
@@ -1159,18 +1586,20 @@ def javascript_function_hole_units(
                 "live_teacher_call": False,
             },
             contamination=contamination,
+            prior_units=prior_units,
         )
-        verification_digest = stable_hash({
+        verification_basis = {
             "unit_id": unit["unit_id"],
             "archive_sha256": source["archive_sha256"],
             "target_body": hole["target_body"],
             "starter_body": hole["starter_body"],
             "test_paths": hole["test_paths"],
-            "toolchain": toolchain,
-        })
+        }
+        verification_digest = stable_hash({**verification_basis, "toolchain": toolchain})
         rows.append((
             unit,
             hole,
+            verification_basis,
             verification_digest,
             cache.get(unit["unit_id"]),
             index in selected_indexes,
@@ -1186,7 +1615,7 @@ def javascript_function_hole_units(
     checkpoint_interval = max(1, int(source.get("verification_checkpoint_interval") or 25))
     checkpoint_write_count = 0
     try:
-        for unit, hole, verification_digest, cached, selected in rows:
+        for unit, hole, verification_basis, verification_digest, cached, selected in rows:
             if not selected:
                 verifier = {
                     "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
@@ -1197,6 +1626,21 @@ def javascript_function_hole_units(
                 }
             elif cached and cached.get("verification_digest") == verification_digest:
                 verifier = cached["verification"]
+            elif javascript_cached_verification_compatible(
+                cached,
+                verification_basis=verification_basis,
+                current_toolchain=toolchain,
+            ):
+                verifier = javascript_rebind_cached_verification(
+                    cached["verification"], current_toolchain=toolchain
+                )
+                cache_row = {
+                    "unit_id": unit["unit_id"],
+                    "verification_digest": verification_digest,
+                    "verification": verifier,
+                }
+                cache[unit["unit_id"]] = cache_row
+                cache_updates[unit["unit_id"]] = cache_row
             elif inventory_only or (max_verify and verified_attempts >= max_verify):
                 verifier = {
                     "kind": "javascript_typescript_repository_test_killed_function_hole_v1",
@@ -1263,17 +1707,14 @@ def javascript_function_hole_units(
         if work_context is not None:
             work_context.cleanup()
 
-    cached_selected_verifiers = [
-        cached["verification"]
-        for _unit, _hole, verification_digest, cached, selected in rows
+    selected_verifiers = [
+        unit["verification"]
+        for unit, _hole, _basis, _digest, _cached, selected in rows
         if selected
-        and cached
-        and cached.get("verification_digest") == verification_digest
-        and isinstance(cached.get("verification"), dict)
     ]
     cached_target_results = [
         bool(verifier.get("target_passed"))
-        for verifier in cached_selected_verifiers
+        for verifier in selected_verifiers
         if verifier.get("target_passed") is not None
     ]
     if baseline_runs:
@@ -1288,9 +1729,6 @@ def javascript_function_hole_units(
         baseline_target_passed = None
         baseline_target_evidence = "not_run"
 
-    selected_verifiers = [
-        unit["verification"] for unit, _hole, _digest, _cached, selected in rows if selected
-    ]
     cached_effective_test_paths = {
         str(path)
         for verifier in selected_verifiers
@@ -1333,6 +1771,69 @@ def javascript_function_hole_units(
         "parser_toolchain": parser_toolchain,
         "toolchain": toolchain,
     })
+
+
+def javascript_cached_verification_compatible(
+    cached: dict[str, Any] | None,
+    *,
+    verification_basis: dict[str, Any],
+    current_toolchain: dict[str, Any],
+) -> bool:
+    """Reuse a receipt only across non-semantic package-inventory ordering drift."""
+
+    if not cached or not isinstance(cached.get("verification"), dict):
+        return False
+    verifier = cached["verification"]
+    if (
+        verifier.get("kind")
+        != "javascript_typescript_repository_test_killed_function_hole_v1"
+        or verifier.get("state") not in {"passed", "failed"}
+    ):
+        return False
+    prior_toolchain = verifier.get("toolchain")
+    if not isinstance(prior_toolchain, dict):
+        return False
+    if cached.get("verification_digest") != stable_hash({
+        **verification_basis,
+        "toolchain": prior_toolchain,
+    }):
+        return False
+    return javascript_toolchain_inventory_equivalent(prior_toolchain, current_toolchain)
+
+
+def javascript_toolchain_inventory_equivalent(
+    prior: dict[str, Any], current: dict[str, Any]
+) -> bool:
+    def invariant(value: dict[str, Any]) -> dict[str, Any]:
+        normalized = copy.deepcopy(value)
+        locked = normalized.get("locked_environment_identity")
+        if isinstance(locked, dict):
+            locked.pop("identity_sha256", None)
+            locked.pop("installed_packages_sha256", None)
+            locked.pop("installed_packages_identity_kind", None)
+        return normalized
+
+    return invariant(prior) == invariant(current)
+
+
+def javascript_rebind_cached_verification(
+    verifier: dict[str, Any], *, current_toolchain: dict[str, Any]
+) -> dict[str, Any]:
+    rebound = copy.deepcopy(verifier)
+    prior_toolchain = rebound.get("toolchain") or {}
+    prior_locked = prior_toolchain.get("locked_environment_identity") or {}
+    current_locked = current_toolchain.get("locked_environment_identity") or {}
+    rebound["toolchain"] = current_toolchain
+    rebound["cache_revalidation"] = {
+        "kind": "frozen_lock_inventory_order_migration_v1",
+        "tests_reexecuted": False,
+        "semantic_toolchain_fields_equal": True,
+        "prior_installed_packages_sha256": prior_locked.get("installed_packages_sha256"),
+        "current_installed_packages_sha256": current_locked.get("installed_packages_sha256"),
+        "lock_sha256": current_locked.get("lock_sha256"),
+        "package_manager_version": current_locked.get("pnpm_version"),
+    }
+    return rebound
 
 
 def javascript_verification_candidate_selection(
@@ -1484,6 +1985,98 @@ def ensure_javascript_ast_toolchain(
     }
 
 
+def ensure_css_ast_toolchain(config: dict[str, Any], *, prepare: bool) -> dict[str, Any]:
+    policy = config["css_ast_toolchain"]
+    manifest_root = resolve(str(policy["manifest_root"]))
+    runtime_root = resolve(str(policy["runtime_root"]))
+    package_json = manifest_root / "package.json"
+    package_lock = manifest_root / "package-lock.json"
+    parser_script = resolve(str(policy["parser_script"]))
+    if not package_json.is_file() or not package_lock.is_file() or not parser_script.is_file():
+        raise FileNotFoundError("pinned CSS AST toolchain manifest is incomplete")
+    lock_sha256 = file_sha256(package_lock)
+    if lock_sha256 != str(policy["package_lock_sha256"]):
+        raise ValueError("CSS AST toolchain lock identity mismatch")
+    manifest_identity = {
+        "package_json_sha256": file_sha256(package_json),
+        "package_lock_sha256": lock_sha256,
+        "parser_script_sha256": file_sha256(parser_script),
+        "postcss_version": str(policy["postcss_version"]),
+    }
+    runtime_marker = runtime_root / ".theseus-toolchain.json"
+    observed = read_json(runtime_marker) if runtime_marker.is_file() else {}
+    if observed != manifest_identity:
+        if runtime_root.exists():
+            shutil.rmtree(runtime_root)
+        runtime_root.mkdir(parents=True)
+        shutil.copy2(package_json, runtime_root / "package.json")
+        shutil.copy2(package_lock, runtime_root / "package-lock.json")
+        runtime_marker.write_text(canonical_json(manifest_identity), encoding="utf-8")
+    npm_cache = runtime_root / ".npm-cache"
+    install_command = [
+        shutil.which("npm") or "npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"
+    ]
+    prepared_with_network = False
+    if prepare:
+        completed = subprocess.run(
+            install_command,
+            cwd=runtime_root,
+            env={**os.environ, "npm_config_cache": str(npm_cache)},
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=int(policy.get("prepare_timeout_seconds") or 300),
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError(f"CSS AST toolchain preparation failed: {completed.stderr[-1000:]}")
+        prepared_with_network = True
+    offline_replay = run_sandboxed(
+        [*install_command, "--offline"],
+        runtime_root,
+        int(policy.get("offline_replay_timeout_seconds") or 180),
+        extra_env={"npm_config_cache": str(npm_cache)},
+    )
+    if not offline_replay.get("ok"):
+        raise RuntimeError(
+            "CSS AST toolchain is not offline-replayable; rerun with --prepare-css-toolchain: "
+            f"{offline_replay.get('stderr') or offline_replay.get('fault')}"
+        )
+    node = Path(shutil.which("node") or "node").absolute()
+    postcss_package = runtime_root / "node_modules" / "postcss" / "package.json"
+    if not postcss_package.is_file():
+        raise FileNotFoundError("PostCSS package is missing after replay")
+    postcss_version = str(read_json(postcss_package)["version"])
+    if postcss_version != str(policy["postcss_version"]):
+        raise RuntimeError("pinned PostCSS parser version mismatch")
+    identity = {
+        **manifest_identity,
+        "node_version": subprocess.check_output([str(node), "--version"], text=True).strip(),
+        "node_executable_sha256": file_sha256(node),
+        "offline_replay_valid": True,
+        "network_during_parsing": "denied",
+    }
+    return {
+        **identity,
+        "identity_sha256": stable_hash(identity),
+        "runtime_root": str(runtime_root),
+        "node_executable": str(node),
+        "parser_script": str(parser_script),
+        "prepared_with_network_this_run": prepared_with_network,
+        "offline_replay": public_run_receipt(offline_replay),
+    }
+
+
+def css_parser_public_identity(toolchain: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: value for key, value in toolchain.items()
+        if key not in {
+            "runtime_root", "node_executable", "parser_script",
+            "prepared_with_network_this_run", "offline_replay",
+        }
+    }
+
+
 def ensure_locked_javascript_environment(
     source_root: Path,
     source: dict[str, Any],
@@ -1543,10 +2136,13 @@ def ensure_locked_javascript_environment(
         source_root,
         120,
         extra_env={"CI": "1", "COREPACK_ENABLE_PROJECT_SPEC": "0"},
+        output_tail_characters=None,
     )
     if not inventory.get("ok"):
         raise RuntimeError(f"JavaScript package inventory failed: {inventory.get('stderr')}")
-    normalized_inventory = str(inventory.get("stdout") or "").replace(str(source_root), "{SOURCE_ROOT}")
+    normalized_inventory = canonical_javascript_package_inventory(
+        str(inventory.get("stdout") or ""), source_root=source_root
+    )
     build_steps = list(policy.get("build_steps") or [])
     build_basis = {
         "archive_sha256": source["archive_sha256"],
@@ -1597,6 +2193,7 @@ def ensure_locked_javascript_environment(
         "lock_file": str(policy["lock_file"]),
         "lock_sha256": str(policy["lock_sha256"]),
         "installed_packages_sha256": sha256_text(normalized_inventory),
+        "installed_packages_identity_kind": "canonical_unordered_json_v1",
         "build_basis_sha256": stable_hash(build_basis),
         "build_outputs": build_outputs,
         "offline_replay_valid": True,
@@ -1614,6 +2211,25 @@ def ensure_locked_javascript_environment(
         "build_replayed_this_run": build_replayed,
         "offline_replay": public_run_receipt(offline_replay),
     }
+
+
+def canonical_javascript_package_inventory(raw: str, *, source_root: Path) -> str:
+    """Canonicalize pnpm's unordered workspace inventory before binding receipts."""
+
+    try:
+        parsed = json.loads(raw.replace(str(source_root), "{SOURCE_ROOT}"))
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"JavaScript package inventory is not valid JSON: {exc}") from exc
+
+    def normalize(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {str(key): normalize(item) for key, item in sorted(value.items())}
+        if isinstance(value, list):
+            rows = [normalize(item) for item in value]
+            return sorted(rows, key=canonical_json)
+        return value
+
+    return canonical_json(normalize(parsed))
 
 
 def ensure_pnpm_toolchain(
@@ -2153,15 +2769,37 @@ def base_unit(
     source_task_id: str,
     arm_id: str,
     task_family: str,
+    capability_tags: Iterable[str] = (),
     visible_context: str,
     target: str,
     license_spdx: str,
     provenance: dict[str, Any],
     contamination: dict[str, Any],
     precomputed_contamination: dict[str, Any] | None = None,
+    prior_units: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     split = split_for(config, source_task_id)
     normalized_license = normalize_license(license_spdx)
+    identity_payload = {
+        "source_id": source["id"],
+        "source_task_id": source_task_id,
+        "arm_id": arm_id,
+        "visible_context_sha256": sha256_text(visible_context),
+        "target_sha256": sha256_text(target),
+    }
+    unit_id = stable_id("task-complete-unit", identity_payload)
+    reused_prior_audit = False
+    if precomputed_contamination is None and prior_units:
+        prior = prior_units.get(unit_id) or {}
+        prior_contamination = prior.get("contamination")
+        if (
+            isinstance(prior_contamination, dict)
+            and prior.get("visible_context_sha256") == identity_payload["visible_context_sha256"]
+            and prior.get("target_sha256") == identity_payload["target_sha256"]
+            and prior_contamination.get("public_index_digest") == contamination["digest"]
+        ):
+            precomputed_contamination = prior_contamination
+            reused_prior_audit = True
     if precomputed_contamination:
         exact = bool(precomputed_contamination.get("exact_overlap"))
         semantic_count = int(precomputed_contamination.get("semantic_match_count") or 0)
@@ -2182,20 +2820,15 @@ def base_unit(
         or semantic_count >= int(config["contamination"]["semantic_match_count_for_quarantine"])
         or semantic_max >= float(config["contamination"]["single_semantic_match_max_for_quarantine"])
     )
-    identity_payload = {
-        "source_id": source["id"],
-        "source_task_id": source_task_id,
-        "arm_id": arm_id,
-        "visible_context_sha256": sha256_text(visible_context),
-        "target_sha256": sha256_text(target),
-    }
+    normalized_capabilities = sorted({str(value).strip() for value in capability_tags if str(value).strip()})
     return {
         "policy": config["unit_abi"],
-        "unit_id": stable_id("task-complete-unit", identity_payload),
+        "unit_id": unit_id,
         "source_id": source["id"],
         "source_task_id": source_task_id,
         "arm_id": arm_id,
         "task_family": task_family,
+        "capability_tags": normalized_capabilities,
         "split": split,
         "visible_context": visible_context,
         "visible_context_sha256": identity_payload["visible_context_sha256"],
@@ -2212,6 +2845,7 @@ def base_unit(
             "semantic_match_count": semantic_count,
             "semantic_max_jaccard": round(float(semantic_max), 6),
             "quarantine": quarantine,
+            "reused_prior_audit": reused_prior_audit,
         },
         "public_benchmark_training_rows": 0,
         "external_inference_calls": 0,
@@ -2445,6 +3079,7 @@ def run_sandboxed(
     *,
     extra_env: dict[str, str] | None = None,
     writable_root: Path | None = None,
+    output_tail_characters: int | None = 4000,
 ) -> dict[str, Any]:
     workdir = workdir.resolve()
     write_root = (writable_root or workdir).resolve()
@@ -2481,6 +3116,12 @@ def run_sandboxed(
             "fault": "fail_closed_sandbox_unavailable",
             "duration_ms": round((time.monotonic() - started) * 1000, 3),
         }
+
+    def captured(value: str) -> str:
+        if output_tail_characters is None:
+            return value
+        return value[-max(0, int(output_tail_characters)):]
+
     try:
         completed = subprocess.run(
             [*launcher, *command],
@@ -2495,16 +3136,16 @@ def run_sandboxed(
         return {
             "ok": completed.returncode == 0,
             "returncode": completed.returncode,
-            "stdout": completed.stdout[-4000:],
-            "stderr": completed.stderr[-4000:],
+            "stdout": captured(completed.stdout),
+            "stderr": captured(completed.stderr),
             "duration_ms": round((time.monotonic() - started) * 1000, 3),
         }
     except subprocess.TimeoutExpired as exc:
         return {
             "ok": False,
             "fault": "timeout",
-            "stdout": (exc.stdout or "")[-4000:] if isinstance(exc.stdout, str) else "",
-            "stderr": (exc.stderr or "")[-4000:] if isinstance(exc.stderr, str) else "",
+            "stdout": captured(exc.stdout or "") if isinstance(exc.stdout, str) else "",
+            "stderr": captured(exc.stderr or "") if isinstance(exc.stderr, str) else "",
             "duration_ms": round((time.monotonic() - started) * 1000, 3),
         }
 
@@ -2598,10 +3239,19 @@ def safe_extract_source_archive(handle: tarfile.TarFile, target: Path) -> str:
     handle.extractall(target, members=selected, filter="data")
     for member in links:
         resolved = resolve_archive_file_link(member, member_by_name, root_name)
+        destination = target / member.name.split("/", 1)[1]
+        if resolved.isdir():
+            source_relative = resolved.name.split("/", 1)[1]
+            source_directory = (target / source_relative).resolve()
+            if source_directory != target_root and target_root not in source_directory.parents:
+                raise ValueError(f"unsafe archive directory link: {member.name}")
+            if not source_directory.is_dir():
+                raise ValueError(f"archive directory link target missing: {member.name}")
+            shutil.copytree(source_directory, destination, dirs_exist_ok=True, symlinks=False)
+            continue
         source = handle.extractfile(resolved)
         if source is None:
             raise ValueError(f"archive link target is not a regular file: {member.name}")
-        destination = target / member.name.split("/", 1)[1]
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(source.read())
         destination.chmod(resolved.mode & 0o777)
@@ -2623,8 +3273,8 @@ def resolve_archive_file_link(
         elif current.islnk():
             candidate = posixpath.normpath(current.linkname)
         else:
-            if not current.isfile():
-                raise ValueError(f"archive link target is not a regular file: {member.name}")
+            if not (current.isfile() or current.isdir()):
+                raise ValueError(f"archive link target is not a regular file or directory: {member.name}")
             return current
         if (
             current.linkname.startswith("/")
@@ -2747,6 +3397,35 @@ def coverage_summary(
             "unit_floor": len(strength_rows) >= int(floor["minimum_verified_units"]),
             "position_floor": positions >= int(floor["minimum_target_positions"]),
         }
+        capability_coverage: dict[str, Any] = {}
+        for capability, capability_floor in (floor.get("required_capability_floors") or {}).items():
+            capability_strength = capability_floor.get("required_verification_strength", required_strength)
+            capability_rows = [
+                row for row in rows
+                if capability in set(row.get("capability_tags") or [])
+                and (
+                    not capability_strength
+                    or row["verification"]["strength"] == capability_strength
+                )
+            ]
+            capability_positions = sum(int(row["target_positions"]) for row in capability_rows)
+            capability_checks = {
+                "unit_floor": len(capability_rows) >= int(capability_floor["minimum_verified_units"]),
+                "position_floor": capability_positions >= int(capability_floor["minimum_target_positions"]),
+            }
+            capability_coverage[capability] = {
+                "verified_units": len(capability_rows),
+                "target_positions": capability_positions,
+                "minimum_verified_units": int(capability_floor["minimum_verified_units"]),
+                "minimum_target_positions": int(capability_floor["minimum_target_positions"]),
+                "required_verification_strength": capability_strength,
+                "checks": capability_checks,
+                "ready": all(capability_checks.values()),
+            }
+            for check_name, passed in capability_checks.items():
+                checks[f"capability:{capability}:{check_name}"] = passed
+        if capability_coverage:
+            observed["capabilities"] = capability_coverage
         if arm_id == "english":
             human = sum(row["provenance"].get("provenance_class") == "human_contributed" for row in rows)
             multi = sum(bool(row["verification"].get("multi_turn")) for row in rows)
@@ -2810,6 +3489,9 @@ def summarize_source(source: dict[str, Any], units: list[dict[str, Any]], *, ext
         "decision_counts": dict(sorted(decisions.items())),
         "verification_state_counts": dict(sorted(verification.items())),
         "target_positions": sum(int(row["target_positions"]) for row in units if row["decision"] == "admit"),
+        "prior_contamination_audit_reuse_count": sum(
+            bool(row["contamination"].get("reused_prior_audit")) for row in units
+        ),
         **extra,
     }
 

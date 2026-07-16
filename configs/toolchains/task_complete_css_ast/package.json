@@ -1,0 +1,10 @@
+{
+  "name": "theseus-task-complete-css-ast",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pinned PostCSS parser used by the task-complete CSS admission adapter.",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "postcss": "8.4.21"
+  }
+}

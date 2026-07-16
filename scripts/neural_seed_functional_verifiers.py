@@ -137,16 +137,34 @@ def _render_chrome(command: list[str], workdir: Path, screenshot: Path, timeout:
         time.sleep(0.05)
     terminated_after_render = False
     try:
-        stdout, stderr = process.communicate(timeout=min(2.0, max(0.1, deadline - time.monotonic())))
+        # A complete screenshot is the browser verifier's durable output. Chrome
+        # often keeps background processes alive for seconds after flushing it;
+        # a short grace preserves stderr while avoiding that fixed per-render tax.
+        stdout, stderr = process.communicate(timeout=min(0.5, max(0.1, deadline - time.monotonic())))
     except subprocess.TimeoutExpired:
         terminated_after_render = screenshot.exists() and screenshot.stat().st_size >= 512
         if process.poll() is None:
-            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
             try:
                 process.wait(timeout=2)
             except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-        stdout, stderr = process.communicate(timeout=2)
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        try:
+            stdout, stderr = process.communicate(timeout=2)
+        except subprocess.TimeoutExpired:
+            if process.poll() is None:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.wait(timeout=2)
+            stdout, stderr = process.communicate(timeout=2)
     rendered = screenshot.exists() and screenshot.stat().st_size >= 512
     completed_cleanly = process.returncode == 0 or terminated_after_render
     return {

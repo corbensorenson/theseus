@@ -54,7 +54,7 @@
       "rejected_candidate_count": 304,
       "report_cache_reused": true,
       "runtime_external_inference_calls": 0,
-      "runtime_ms": 8732,
+      "runtime_ms": 9628,
       "semantic_public_overlap_candidate_count": 0,
       "source_count": 98,
       "teacher_candidate_count": 0,
@@ -62,7 +62,7 @@
     },
     "trigger_state": "YELLOW"
   },
-  "created_utc": "2026-07-15T19:45:12.632330+00:00",
+  "created_utc": "2026-07-16T01:17:32.128617+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -2286,11 +2286,11 @@
     "public_open_training_allowed": true,
     "quarantined_source_count": 190,
     "rejected_source_count": 100,
-    "task_complete_admitted_units": 28872,
+    "task_complete_admitted_units": 29555,
     "task_complete_contract_ready": true,
     "task_complete_coverage_ready": false,
     "task_complete_ledger_replay_valid": true,
-    "task_complete_target_positions": 33827195,
+    "task_complete_target_positions": 35588115,
     "teacher_distillation_admission_safety_clean": true,
     "teacher_distillation_gate_allowed": true,
     "teacher_distillation_ledger_rows": 46,
@@ -2311,7 +2311,7 @@
     "vcm_context_resolver_status": "ready"
   },
   "task_complete_training_units": {
-    "admitted_unit_count": 28872,
+    "admitted_unit_count": 29555,
     "boundary_clean": true,
     "contract_ready": true,
     "contract_state": "GREEN",
@@ -2333,16 +2333,46 @@
         "verified_units": 25566
       },
       "html_css": {
+        "capabilities": {
+          "css": {
+            "checks": {
+              "position_floor": true,
+              "unit_floor": true
+            },
+            "minimum_target_positions": 50000,
+            "minimum_verified_units": 100,
+            "ready": true,
+            "required_verification_strength": "layout_render_delta",
+            "target_positions": 58178,
+            "verified_units": 173
+          },
+          "html": {
+            "checks": {
+              "position_floor": true,
+              "unit_floor": true
+            },
+            "minimum_target_positions": 400000,
+            "minimum_verified_units": 400,
+            "ready": true,
+            "required_verification_strength": "dom_a11y_layout_render_delta",
+            "target_positions": 1848748,
+            "verified_units": 517
+          }
+        },
         "checks": {
-          "position_floor": false,
-          "unit_floor": false
+          "capability:css:position_floor": true,
+          "capability:css:unit_floor": true,
+          "capability:html:position_floor": true,
+          "capability:html:unit_floor": true,
+          "position_floor": true,
+          "unit_floor": true
         },
         "minimum_target_positions": 500000,
         "minimum_verified_units": 500,
-        "ready": false,
-        "required_verification_strength": "dom_a11y_layout_render_delta",
-        "target_positions": 146006,
-        "verified_units": 7
+        "ready": true,
+        "required_verification_strength": null,
+        "target_positions": 1906926,
+        "verified_units": 690
       },
       "javascript_typescript": {
         "checks": {
@@ -2389,7 +2419,7 @@
     "path": "reports/task_complete_training_units_v1.json",
     "policy": "project_theseus_task_complete_training_units_v1",
     "report_present": true,
-    "target_positions": 33827195
+    "target_positions": 35588115
   },
   "train_admitted_sources": [
     {
@@ -12821,7 +12851,7 @@
       "full_packet_evidence_required": true,
       "governor_content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
       "governor_receipt_id": "ac9238c24b5c801b9bc12dec",
-      "lease_expires_utc": "2026-07-15T19:59:55.861267Z",
+      "lease_expires_utc": "2026-07-16T01:32:17.051624Z",
       "lease_id": "edda95cab7bfc11ddabd5eb9",
       "lease_state": "active",
       "omissions": [

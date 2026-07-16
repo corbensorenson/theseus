@@ -27,18 +27,19 @@ share toward zero. Public benchmarks are calibration only.
   `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
   canary rung; it does not select an architecture or authorize a route.
 - **Data gate:** the content-bound audit credits 683,254,465 unique governed
-  positions. The task-complete ledger admits `28,872/30,994` units with zero public
+  positions. The task-complete ledger admits `29,555/33,212` units with zero public
   overlap, teacher calls, external inference, or fallback returns. Verified coverage
-  is English `25,566`, Python `2,022`, JS/TS `1,180`, HTML/CSS `7`, and Rust `97`.
+  is English `25,566`, Python `2,022`, JS/TS `1,180`, HTML/CSS `690`, and Rust `97`.
   Python is GREEN at `1,129,825` target positions after five pinned repository
   test-kill campaigns. JS/TS is GREEN at `1,612,835` after Vite plus a content-bound,
-  outcome-blind 600-candidate Tailwind campaign; HTML/CSS and Rust remain below their
-  frozen floors.
+  outcome-blind 600-candidate Tailwind campaign. HTML/CSS is GREEN at `1,906,926`:
+  `517` semantic HTML components contribute `1,848,748`, and `173` independently
+  render-killed CSS rules contribute `58,178`. Rust remains below its frozen floor.
 - **Immediate dependency:** keep the consumed rung and the new 57.315M-active proposal
   immutable. Its candidate and both matched dense controls pass real MLX update,
   exact checkpoint reload, optimizer-resume, and cleanup canaries, but training is
   denied: the proposal needs 1,146,306,580 unique positions, leaving a 463,052,115
-  shortfall plus two code-arm coverage gaps. Add pinned high-quality licensed
+  shortfall plus the Rust coverage gap. Add pinned high-quality licensed
   product data through the existing task-complete admission contract; do not spend
   confirmation, public calibration, or another same-scale architecture patch.
 
@@ -194,7 +195,7 @@ python3 scripts/theseus_control_plane.py
 ## Next Falsifiable Action
 
 Add pinned high-quality licensed product sources to the existing task-complete ledger.
-Close the measured JS/TS, HTML/CSS, Rust, and 463,052,115-position shortfalls
+Close the measured Rust and 463,052,115-position shortfalls
 without counting repetition, target-only snippets, unverified rows, or public
 calibration payloads. Rerun canonical admission and the frozen 57.315M proposal only
 to refresh content-bound evidence; train only after every data floor is satisfied.
