@@ -71,6 +71,7 @@ def main() -> int:
     parser.add_argument("--unauthenticated", action="store_true")
     parser.add_argument("--requested-route", default="")
     parser.add_argument("--fallback-policy", default="no_fallback", choices=["no_fallback", "explicit_only"])
+    parser.add_argument("--effort", default="balanced", choices=["direct", "balanced", "deliberative"])
     parser.add_argument("--feedback", default="completed")
     parser.add_argument("--error-family", default="")
     parser.add_argument("--out", default=rel(DEFAULT_OUT))
@@ -125,6 +126,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         private_verifier_receipt=private_verifier_receipt,
     )
     reflexive_verification = verify_reflexive_dispatch_trace(reflexive_trace, config)
+    selected_capabilities = selected_reflexive_capabilities(reflexive_trace)
     intent = effective_intent_from_dispatch(reflexive_trace, requested_intent)
     route = route_for(config, intent)
     dispatch_prepared = reflexive_dispatch_prepared(reflexive_trace, reflexive_verification)
@@ -187,22 +189,28 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     checkpoint_session = checkpoint_payload.get("session") if isinstance(checkpoint_payload.get("session"), dict) else {}
     code_route = code_route_packet(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
     code_private_probe = run_code_private_probe(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
-    tool_context = tool_context_packet(intent) if dispatch_prepared else {"active": False, "skipped": True}
-    tool_evidence = run_tool_evidence(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
-    plan_context = plan_context_packet(intent) if dispatch_prepared else {"active": False, "skipped": True}
+    tool_required = "assistant.deterministic_tool" in selected_capabilities
+    planning_required = "assistant.plan_dag" in selected_capabilities
+    tool_context = tool_context_packet(tool_required) if dispatch_prepared else {"active": False, "required": tool_required, "skipped": True}
+    tool_evidence = run_tool_evidence(tool_required, route_for(config, "tool")) if dispatch_prepared else {"active": False, "required": tool_required, "skipped": True}
+    plan_context = plan_context_packet(planning_required) if dispatch_prepared else {"active": False, "required": planning_required, "skipped": True}
     procedural_default_route = (
         procedural_default_route_packet(intent, route, config, surface=str(args.surface or "local_assistant"))
         if dispatch_prepared
         else {"active": False, "ready": False, "skipped": True}
     )
     effect_canary = run_local_effect_canary(
-        enabled=bool(args.effect_canary) and dispatch_prepared,
+        enabled=(
+            bool(args.effect_canary)
+            and dispatch_prepared
+            and selected_reflexive_capabilities(reflexive_trace) == ["assistant.route_authority_effect"]
+        ),
         target=resolve(args.effect_target),
         allowed_root=DEFAULT_EFFECT_ROOT,
         session_id=session_id,
         intent=intent,
         prompt_hash=sha256_text(prompt),
-        procedural_default_route=procedural_default_route,
+        reflexive_dispatch_trace=reflexive_trace,
     )
     teacher_policy = teacher_policy_packet()
     benchmark_status = benchmark_status_packet(prompt)
@@ -710,11 +718,15 @@ def build_reflexive_dispatch_trace(
             ),
             deadline_ms=int(get_path(contract, ["resource_limits", "default_deadline_ms"], 30000) or 30000),
         )
+        requested_route = str(getattr(args, "requested_route", "") or "")
+        if bool(getattr(args, "effect_canary", False)) and not requested_route:
+            requested_route = "assistant.route_authority_effect"
         return reflexive_dispatch.dispatch(
             event,
             intent=requested_intent,
             profile=str(config.get("reflexive_router_profile") or "local_private_assistant"),
-            requested_route=str(getattr(args, "requested_route", "") or ""),
+            effort_profile=str(getattr(args, "effort", "balanced") or "balanced"),
+            requested_route=requested_route,
             fallback_policy=str(getattr(args, "fallback_policy", "no_fallback") or "no_fallback"),
             route_health=route_health,
             contract=contract,
@@ -751,13 +763,12 @@ def verify_reflexive_dispatch_trace(trace: dict[str, Any], config: dict[str, Any
 def selected_reflexive_capabilities(trace: dict[str, Any]) -> list[str]:
     selection = trace.get("selection") if isinstance(trace.get("selection"), dict) else {}
     selected = set(str(value) for value in list_value(selection.get("selected_proposal_ids")))
-    return sorted(
-        {
-            str(row.get("capability_id") or "")
-            for row in list_value(trace.get("proposals"))
-            if isinstance(row, dict) and str(row.get("proposal_id") or "") in selected and row.get("capability_id")
-        }
-    )
+    capabilities = set()
+    for row in list_value(trace.get("proposals")):
+        if not isinstance(row, dict) or str(row.get("proposal_id") or "") not in selected:
+            continue
+        capabilities.update(reflexive_dispatch.proposal_capability_ids(row))
+    return sorted(capabilities)
 
 
 def effective_intent_from_dispatch(trace: dict[str, Any], requested_intent: str) -> str:
@@ -766,8 +777,11 @@ def effective_intent_from_dispatch(trace: dict[str, Any], requested_intent: str)
         "assistant.code_candidate": "code",
         "assistant.deterministic_tool": "tool",
         "assistant.plan_dag": "planning",
+        "assistant.route_authority_effect": "chat",
     }
     selected = selected_reflexive_capabilities(trace)
+    if "assistant.plan_dag" in selected:
+        return "planning"
     return capability_to_intent.get(selected[0], requested_intent) if len(selected) == 1 else requested_intent
 
 
@@ -779,7 +793,7 @@ def reflexive_dispatch_prepared(trace: dict[str, Any], verification: dict[str, A
     return (
         verification.get("state") == "VERIFIED"
         and reflexive_terminal_outcome(trace) == "prepared"
-        and len(selected_reflexive_capabilities(trace)) == 1
+        and len(selected_reflexive_capabilities(trace)) >= 1
         and get_path(trace, ["effect", "effect_authority_granted"], False) is False
     )
 
@@ -1103,6 +1117,13 @@ def compose_assistant_text(
                 "The assistant should compile work into VCM-backed DAGs, then route to existing registered executors.",
             ]
         )
+        if tool_evidence.get("required"):
+            evidence_summary = tool_evidence.get("summary") if isinstance(tool_evidence.get("summary"), dict) else {}
+            lines.append(
+                "Deterministic evidence step: "
+                f"{tool_evidence.get('trigger_state')} results={evidence_summary.get('result_count')} "
+                f"verified={evidence_summary.get('verified_solved_count')} trace={tool_evidence.get('trace')}."
+            )
         if procedural_default_route.get("active"):
             selected_route = procedural_default_route.get("selected_route") if isinstance(procedural_default_route.get("selected_route"), dict) else {}
             lines.append(
@@ -1176,25 +1197,26 @@ def sanitize_checkpoint_answer(base_text: str, *, drop_benchmark_status: bool) -
     return "\n".join(lines).strip()
 
 
-def tool_context_packet(intent: str) -> dict[str, Any]:
+def tool_context_packet(required: bool) -> dict[str, Any]:
     registry = read_json(REPORTS / "deterministic_tool_registry.json", {})
     return {
-        "active": intent == "tool",
+        "active": required,
+        "required": required,
         "registry_state": registry.get("trigger_state"),
         "tool_count": len(registry.get("tools") or []) if isinstance(registry.get("tools"), list) else 0,
         "strict_no_fallback_returns": registry.get("strict_no_fallback_returns"),
     }
 
 
-def run_tool_evidence(intent: str, route: dict[str, Any]) -> dict[str, Any]:
-    if intent != "tool":
-        return {"active": False}
+def run_tool_evidence(required: bool, route: dict[str, Any]) -> dict[str, Any]:
+    if not required:
+        return {"active": False, "required": False}
     evidence = route.get("tool_evidence") if isinstance(route.get("tool_evidence"), dict) else {}
     if evidence.get("enabled") is False:
-        return {"active": False, "reason": "disabled"}
+        return {"active": False, "required": True, "reason": "disabled"}
     command = [str(part) for part in evidence.get("command", []) if str(part)]
     if not command:
-        return {"active": False, "reason": "no_tool_evidence_command"}
+        return {"active": False, "required": True, "reason": "no_tool_evidence_command"}
     command_result = run_command(
         str(evidence.get("id") or "assistant_deterministic_tool_evidence"),
         command,
@@ -1225,6 +1247,7 @@ def run_tool_evidence(intent: str, route: dict[str, Any]) -> dict[str, Any]:
         )
     return {
         "active": True,
+        "required": True,
         "trigger_state": report.get("trigger_state") or ("RED" if command_result.get("returncode") not in {0, None} else ""),
         "summary": {
             "tool_count": summary.get("tool_count", summary.get("tool_card_count")),
@@ -1819,9 +1842,9 @@ def assistant_plan_nodes(
     ]
     if intent == "code":
         nodes.insert(2, {"node_id": f"{node_id}:private_replay_probe", "kind": "private_code_probe", "active": bool(code_private_probe.get("active")), "verifier": "candidate_integrity_and_replay"})
-    if intent == "tool":
+    if tool_evidence.get("required"):
         nodes.insert(2, {"node_id": f"{node_id}:tool_evidence", "kind": "deterministic_tool_evidence", "active": bool(tool_evidence.get("active")), "verifier": "tool_trace_and_artifact_graph"})
-    if intent == "planning":
+    if plan_context.get("required"):
         nodes.insert(2, {"node_id": f"{node_id}:plan_context", "kind": "plan_compiler_context", "active": bool(plan_context.get("active")), "verifier": "plan_compiler_gate"})
         nodes.insert(
             3,
@@ -1884,7 +1907,7 @@ def assistant_faults(
             faults.append({"family": "learned_generator_semantic_pass_zero", "wall": wall})
         if int_or_zero(wall.get("candidate_integrity_mismatch_count")):
             faults.append({"family": "candidate_integrity_mismatch", "wall": wall})
-    if intent == "tool" and tool_evidence.get("active") and tool_evidence.get("trigger_state") not in {"GREEN", "YELLOW"}:
+    if tool_evidence.get("required") and tool_evidence.get("active") and tool_evidence.get("trigger_state") not in {"GREEN", "YELLOW"}:
         faults.append({"family": "tool_evidence_fault", "state": tool_evidence.get("trigger_state")})
     return faults
 
@@ -1925,11 +1948,12 @@ def tool_refs_for_trace(tool_evidence: dict[str, Any]) -> list[str]:
     return unique_strings(refs)
 
 
-def plan_context_packet(intent: str) -> dict[str, Any]:
+def plan_context_packet(required: bool) -> dict[str, Any]:
     plan = read_json(REPORTS / "theseus_plan_compiler.json", {})
     summary = plan.get("summary") if isinstance(plan.get("summary"), dict) else {}
     return {
-        "active": intent == "planning",
+        "active": required,
+        "required": required,
         "planner_state": plan.get("trigger_state"),
         "compiled_goal_count": summary.get("compiled_goal_count"),
         "hard_failed_gate_count": summary.get("hard_failed_gate_count"),
@@ -1944,7 +1968,7 @@ def run_local_effect_canary(
     session_id: str,
     intent: str,
     prompt_hash: str,
-    procedural_default_route: dict[str, Any],
+    reflexive_dispatch_trace: dict[str, Any],
 ) -> dict[str, Any]:
     """Perform one real route-authority change and prove exact rollback.
 
@@ -1962,13 +1986,29 @@ def run_local_effect_canary(
     proposer_id = "theseus_assistant_effect_proposer_v1"
     observer_id = "theseus_filesystem_effect_observer_v1"
     evaluator_id = "theseus_effect_rollback_evaluator_v1"
-    selected_route_id = str(get_path(procedural_default_route, ["selected_route", "id"], ""))
+    dispatch_trace_id = str(reflexive_dispatch_trace.get("trace_id") or "")
+    decision_digest = str(reflexive_dispatch_trace.get("decision_digest") or "")
+    selected_capabilities = selected_reflexive_capabilities(reflexive_dispatch_trace)
+    try:
+        dispatch_verification = reflexive_dispatch.verify_trace(reflexive_dispatch_trace)
+    except reflexive_dispatch.ReflexiveDispatchFault:
+        dispatch_verification = {"state": "REJECTED"}
+    dispatch_bound = bool(
+        dispatch_verification.get("state") == "VERIFIED"
+        and dispatch_trace_id
+        and decision_digest
+        and reflexive_terminal_outcome(reflexive_dispatch_trace) == "prepared"
+        and selected_capabilities == ["assistant.route_authority_effect"]
+        and get_path(reflexive_dispatch_trace, ["effect", "required"], False) is True
+        and get_path(reflexive_dispatch_trace, ["effect", "effect_authority_granted"], True) is False
+    )
     transaction_id = stable_id(
         "assistant_effect_transaction",
         session_id,
         intent,
         prompt_hash,
-        selected_route_id,
+        dispatch_trace_id,
+        decision_digest,
     )
     base = {
         "enabled": True,
@@ -1978,6 +2018,10 @@ def run_local_effect_canary(
         "proposer_id": proposer_id,
         "observer_id": observer_id,
         "evaluator_id": evaluator_id,
+        "dispatch_trace_id": dispatch_trace_id,
+        "dispatch_decision_digest": decision_digest,
+        "selected_capability_ids": selected_capabilities,
+        "dispatch_bound": dispatch_bound,
         "target": rel(target),
         "effect_inventory": [],
         "observation": {},
@@ -1991,6 +2035,9 @@ def run_local_effect_canary(
             "the route-authority state is rolled back before the assistant call returns",
         ],
     }
+    if not dispatch_bound:
+        base["residuals"] = [{"kind": "effect_dispatch_binding_invalid"}]
+        return base
     try:
         target = validate_effect_target(target, allowed_root)
     except ValueError as exc:
@@ -2001,7 +2048,9 @@ def run_local_effect_canary(
     candidate = {
         "policy": "project_theseus_local_route_authority_canary_v1",
         "transaction_id": transaction_id,
-        "route_id": selected_route_id,
+        "dispatch_trace_id": dispatch_trace_id,
+        "dispatch_decision_digest": decision_digest,
+        "capability_id": "assistant.route_authority_effect",
         "intent": intent,
         "assistant_surface": "local_assistant",
         "authority_ceiling": ["bounded_local_metadata_route"],
@@ -2038,15 +2087,17 @@ def run_local_effect_canary(
         observed.get("exists")
         and observed.get("sha256") == intended_sha
         and parsed.get("transaction_id") == transaction_id
-        and parsed.get("route_id") == selected_route_id
-        and selected_route_id
-        and procedural_default_route.get("ready") is True
+        and parsed.get("dispatch_trace_id") == dispatch_trace_id
+        and parsed.get("dispatch_decision_digest") == decision_digest
+        and parsed.get("capability_id") == "assistant.route_authority_effect"
+        and dispatch_bound
     )
     base["observation"] = {
         **observed,
         "matches_intent": matches_intent,
         "expected_content_sha256": intended_sha,
-        "expected_route_id": selected_route_id,
+        "expected_dispatch_trace_id": dispatch_trace_id,
+        "expected_dispatch_decision_digest": decision_digest,
         "write_fault": write_fault,
     }
 
@@ -2493,7 +2544,7 @@ def build_gates(
         ),
         gate(
             "tool_evidence_recorded",
-            intent != "tool"
+            tool_evidence.get("required") is not True
             or (
                 tool_evidence.get("active") is True
                 and tool_evidence.get("trigger_state") in {"GREEN", "YELLOW"}
@@ -2653,7 +2704,7 @@ def build_gates(
                 and materialized_view_receipt.get("ready") is True
                 and route_validator_receipt.get("ready") is True
                 and private_verifier_receipt.get("ready") is True
-                and ((intent != "tool") or tool_evidence.get("active") is True)
+                and (tool_evidence.get("required") is not True or tool_evidence.get("active") is True)
                 and ((not feedback) or event_state in {"GREEN", "YELLOW"})
             ),
             {

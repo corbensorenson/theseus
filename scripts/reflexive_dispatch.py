@@ -92,13 +92,35 @@ def validate_contract(payload: dict[str, Any]) -> dict[str, Any]:
     limits = payload.get("resource_limits") if isinstance(payload.get("resource_limits"), dict) else {}
     if any(int(limits.get(key) or 0) <= 0 for key in ("max_nodes", "max_depth", "max_fanout", "max_retries_per_node", "max_aggregate_cost_units", "default_deadline_ms")):
         raise ReflexiveDispatchFault("REFLEX_RESOURCE_LIMIT_INVALID", limits, path="resource_limits")
+    validate_effort_profiles(payload.get("effort_profiles"), limits)
     capability_index = validate_capabilities(payload.get("capabilities"))
-    validate_user_commands(payload.get("user_commands"), capability_index)
+    command_index = validate_user_commands(payload.get("user_commands"), capability_index)
+    validate_workflows(payload.get("workflows"), capability_index, command_index, limits)
     compile_reflex_index(payload.get("reflexes"), capability_index)
     compile_policy = payload.get("compilation") if isinstance(payload.get("compilation"), dict) else {}
     if set(compile_policy.get("states") or []) != {"ineligible", "candidate", "shadow", "qualified", "quarantined", "decompiled"}:
         raise ReflexiveDispatchFault("REFLEX_COMPILATION_STATES_INVALID", compile_policy, path="compilation.states")
     return copy.deepcopy(payload)
+
+
+def validate_effort_profiles(value: Any, global_limits: dict[str, Any]) -> dict[str, dict[str, int]]:
+    profiles = value if isinstance(value, dict) else {}
+    required = {"direct", "balanced", "deliberative"}
+    if set(profiles) != required:
+        raise ReflexiveDispatchFault("REFLEX_EFFORT_PROFILE_SET_INVALID", sorted(profiles), path="effort_profiles")
+    limit_keys = ("max_nodes", "max_depth", "max_fanout", "max_retries_per_node", "max_aggregate_cost_units")
+    validated: dict[str, dict[str, int]] = {}
+    for name, row in profiles.items():
+        if not isinstance(row, dict) or any(int(row.get(key, -1)) < 0 for key in (*limit_keys, "deadline_ms")):
+            raise ReflexiveDispatchFault("REFLEX_EFFORT_PROFILE_INVALID", row, path=f"effort_profiles.{name}")
+        bounded = {key: min(int(row[key]), int(global_limits[key])) for key in limit_keys}
+        bounded["deadline_ms"] = min(int(row["deadline_ms"]), int(global_limits["default_deadline_ms"]))
+        if any(bounded[key] <= 0 for key in ("max_nodes", "max_depth", "max_fanout", "max_aggregate_cost_units", "deadline_ms")):
+            raise ReflexiveDispatchFault("REFLEX_EFFORT_PROFILE_INVALID", row, path=f"effort_profiles.{name}")
+        validated[name] = bounded
+    if any(validated["direct"][key] > validated["balanced"][key] or validated["balanced"][key] > validated["deliberative"][key] for key in (*limit_keys, "deadline_ms")):
+        raise ReflexiveDispatchFault("REFLEX_EFFORT_PROFILE_ORDER_INVALID", validated, path="effort_profiles")
+    return validated
 
 
 def validate_capabilities(value: Any) -> dict[str, dict[str, Any]]:
@@ -140,6 +162,46 @@ def validate_user_commands(value: Any, capabilities: dict[str, dict[str, Any]]) 
             raise ReflexiveDispatchFault("REFLEX_COMMAND_PARAMETER_SCHEMA_INVALID", schema, path=f"user_commands[{offset}].parameter_schema")
         ids.add(command_id)
         aliases[alias] = copy.deepcopy(row)
+    return aliases
+
+
+def validate_workflows(
+    value: Any,
+    capabilities: dict[str, dict[str, Any]],
+    commands: dict[str, dict[str, Any]],
+    limits: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    rows = value if isinstance(value, list) else []
+    aliases: dict[str, dict[str, Any]] = {}
+    ids: set[str] = set()
+    for offset, row in enumerate(rows):
+        if not isinstance(row, dict):
+            raise ReflexiveDispatchFault("REFLEX_WORKFLOW_INVALID", row, path=f"workflows[{offset}]")
+        workflow_id = str(row.get("workflow_id") or "")
+        alias = str(row.get("alias") or "")
+        capability_ids = [str(item) for item in row.get("capability_ids", []) if str(item)] if isinstance(row.get("capability_ids"), list) else []
+        if not workflow_id or workflow_id in ids or not re.fullmatch(r"/[a-z][a-z0-9_-]*", alias) or alias in aliases or alias in commands:
+            raise ReflexiveDispatchFault("REFLEX_WORKFLOW_NAMESPACE_CONFLICT", {"id": workflow_id, "alias": alias}, path=f"workflows[{offset}]")
+        if len(capability_ids) < 2 or len(capability_ids) != len(set(capability_ids)) or any(item not in capabilities for item in capability_ids):
+            raise ReflexiveDispatchFault("REFLEX_WORKFLOW_CAPABILITY_INVALID", capability_ids, path=f"workflows[{offset}].capability_ids")
+        if row.get("fallback") != "none" or FORBIDDEN_BINDING_FIELDS.intersection(row):
+            raise ReflexiveDispatchFault("REFLEX_WORKFLOW_BINDING_INVALID", row, path=f"workflows[{offset}]")
+        schema = row.get("parameter_schema")
+        if not isinstance(schema, dict) or any(not re.fullmatch(r"[a-z][a-z0-9_]*", str(key)) for key in schema):
+            raise ReflexiveDispatchFault("REFLEX_WORKFLOW_PARAMETER_SCHEMA_INVALID", schema, path=f"workflows[{offset}].parameter_schema")
+        nodes = row.get("nodes") if isinstance(row.get("nodes"), list) else []
+        node_capabilities = {str(node.get("capability_id") or "") for node in nodes if isinstance(node, dict)}
+        if node_capabilities != set(capability_ids):
+            raise ReflexiveDispatchFault("REFLEX_WORKFLOW_NODE_COVERAGE_INVALID", node_capabilities, path=f"workflows[{offset}].nodes")
+        for node_offset, node in enumerate(nodes):
+            capability = capabilities.get(str(node.get("capability_id") or ""), {})
+            if node.get("effect_class") != capability.get("effect_class") or node.get("verifier_ref") != capability.get("verifier_ref"):
+                raise ReflexiveDispatchFault("REFLEX_WORKFLOW_NODE_CONTRACT_MISMATCH", node, path=f"workflows[{offset}].nodes[{node_offset}]")
+        validate_plan_dag(nodes, limits)
+        enriched = copy.deepcopy(row)
+        enriched["binding_kind"] = "workflow"
+        aliases[alias] = enriched
+        ids.add(workflow_id)
     return aliases
 
 
@@ -211,11 +273,29 @@ def canonical_event(
     return body
 
 
+def realize_effort_profile(event: dict[str, Any], requested: str, contract: dict[str, Any]) -> dict[str, Any]:
+    profiles = validate_effort_profiles(contract.get("effort_profiles"), contract["resource_limits"])
+    if requested not in profiles:
+        raise ReflexiveDispatchFault("REFLEX_EFFORT_PROFILE_UNKNOWN", requested, path="effort_profile")
+    limits = copy.deepcopy(profiles[requested])
+    event_deadline = int(event.get("deadline_ms") or limits["deadline_ms"])
+    limits["deadline_ms"] = min(limits["deadline_ms"], event_deadline)
+    return {
+        "requested_profile": requested,
+        "realized_profile": requested,
+        "realized_limits": limits,
+        "event_deadline_ms": event_deadline,
+        "downgrade_reasons": [],
+        "profile_fidelity": True,
+    }
+
+
 def dispatch(
     event: dict[str, Any],
     *,
     intent: str,
     profile: str = "local_private_assistant",
+    effort_profile: str = "balanced",
     requested_route: str = "",
     fallback_policy: str = "no_fallback",
     learned_proposals: list[dict[str, Any]] | None = None,
@@ -225,9 +305,12 @@ def dispatch(
 ) -> dict[str, Any]:
     contract = validate_contract(contract or load_contract())
     started = datetime.now(timezone.utc)
+    effort = realize_effort_profile(event, effort_profile, contract)
     ingress = classify_ingress(event, requested_route=requested_route, fallback_policy=fallback_policy, contract=contract)
     capabilities = validate_capabilities(contract["capabilities"])
     command_index = validate_user_commands(contract["user_commands"], capabilities)
+    workflow_index = validate_workflows(contract.get("workflows"), capabilities, command_index, contract["resource_limits"])
+    command_index.update(workflow_index)
     reflex_index = compile_reflex_index(contract["reflexes"], capabilities)
     proposals = propose_routes(
         event,
@@ -243,9 +326,11 @@ def dispatch(
             proposal,
             event=event,
             ingress=ingress,
-            capability=capabilities.get(str(proposal.get("capability_id") or "")),
+            capabilities=[capabilities[item] for item in proposal_capability_ids(proposal) if item in capabilities],
+            requested_capability_ids=proposal_capability_ids(proposal),
             profile=profile,
             route_health=route_health or {},
+            effort_limits=effort["realized_limits"],
         )
         for proposal in proposals
     ]
@@ -257,15 +342,14 @@ def dispatch(
         fallback_policy=fallback_policy,
         terminal_outcomes=set(contract["terminal_outcomes"]),
     )
-    selected_capabilities = [
-        capabilities[proposal["capability_id"]]
-        for proposal in proposals
-        if proposal["proposal_id"] in selection["selected_proposal_ids"]
-    ]
+    selected_proposals = [proposal for proposal in proposals if proposal["proposal_id"] in selection["selected_proposal_ids"]]
+    selected_capability_ids = list(dict.fromkeys(item for proposal in selected_proposals for item in proposal_capability_ids(proposal)))
+    selected_capabilities = [capabilities[item] for item in selected_capability_ids]
+    workflow_nodes = next((row.get("workflow_nodes") for row in selected_proposals if isinstance(row.get("workflow_nodes"), list)), None)
     nodes = build_plan_nodes(
         selected_capabilities,
-        explicit_nodes=plan_nodes,
-        limits=contract["resource_limits"],
+        explicit_nodes=plan_nodes if plan_nodes is not None else workflow_nodes,
+        limits=effort["realized_limits"],
     ) if selection["selected_proposal_ids"] else []
     recorded = now()
     trace = {
@@ -273,6 +357,7 @@ def dispatch(
         "source_contract": contract["policy"],
         "event": redact_event(event),
         "ingress": ingress,
+        "effort": effort,
         "proposals": proposals,
         "qualification": qualifications,
         "selection": selection,
@@ -313,7 +398,7 @@ def dispatch(
     }
     decision_view = {
         key: trace[key]
-        for key in ("ingress", "proposals", "qualification", "selection", "plan_nodes")
+        for key in ("ingress", "effort", "proposals", "qualification", "selection", "plan_nodes")
     }
     trace["decision_digest"] = digest(decision_view)
     trace["trace_id"] = stable_id("reflex-trace", event.get("event_id"), trace["decision_digest"])
@@ -329,7 +414,7 @@ def verify_trace(trace: dict[str, Any], contract: dict[str, Any] | None = None) 
         raise ReflexiveDispatchFault("REFLEX_TRACE_DIGEST_INVALID", observed, path="trace_digest")
     decision_view = {
         key: trace.get(key)
-        for key in ("ingress", "proposals", "qualification", "selection", "plan_nodes")
+        for key in ("ingress", "effort", "proposals", "qualification", "selection", "plan_nodes")
     }
     if trace.get("decision_digest") != digest(decision_view):
         raise ReflexiveDispatchFault("REFLEX_DECISION_REPLAY_INVALID", trace.get("decision_digest"), path="decision_digest")
@@ -385,7 +470,21 @@ def propose_routes(
     elif ingress["mode"] == "direct_command":
         command = command_index.get(ingress["command_token"])
         if command:
-            proposals.append(proposal(command["command_id"], "command_binding", command["capability_id"], 1.0, False, False))
+            if command.get("binding_kind") == "workflow":
+                proposals.append(
+                    proposal(
+                        str(command["workflow_id"]),
+                        "workflow_binding",
+                        "",
+                        1.0,
+                        False,
+                        True,
+                        capability_ids=[str(item) for item in command["capability_ids"]],
+                        workflow_nodes=command["nodes"],
+                    )
+                )
+            else:
+                proposals.append(proposal(command["command_id"], "command_binding", command["capability_id"], 1.0, False, False))
         else:
             proposals.append(proposal("unknown-command", "command_binding", "", 0.0, True, False))
     else:
@@ -400,23 +499,46 @@ def propose_routes(
                     float(row.get("score") or 0.0),
                     bool(row.get("ood")),
                     bool(row.get("composite")),
+                    capability_ids=[str(item) for item in row.get("capability_ids", []) if str(item)] if isinstance(row.get("capability_ids"), list) else None,
+                    workflow_nodes=row.get("plan_nodes") if isinstance(row.get("plan_nodes"), list) else None,
                 )
             )
     return proposals
 
 
-def proposal(proposal_id: str, proposer_type: str, capability_id: str, score: float, ood: bool, composite: bool) -> dict[str, Any]:
+def proposal(
+    proposal_id: str,
+    proposer_type: str,
+    capability_id: str,
+    score: float,
+    ood: bool,
+    composite: bool,
+    *,
+    capability_ids: list[str] | None = None,
+    workflow_nodes: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    ids = list(dict.fromkeys(capability_ids or ([capability_id] if capability_id else [])))
     return {
         "proposal_id": stable_id("route-proposal", proposal_id, capability_id),
         "source_id": proposal_id,
         "proposer_type": proposer_type,
-        "capability_id": capability_id,
+        "capability_id": ids[0] if len(ids) == 1 else "",
+        "capability_ids": ids,
         "score": score,
         "ood": ood,
         "composite": composite,
+        "workflow_nodes": copy.deepcopy(workflow_nodes) if workflow_nodes is not None else None,
         "proposal_grants_authority": False,
         "learned_generation_credit": 0,
     }
+
+
+def proposal_capability_ids(row: dict[str, Any]) -> list[str]:
+    ids = row.get("capability_ids") if isinstance(row.get("capability_ids"), list) else []
+    if ids:
+        return [str(item) for item in ids if str(item)]
+    capability_id = str(row.get("capability_id") or "")
+    return [capability_id] if capability_id else []
 
 
 def qualify_proposal(
@@ -424,24 +546,47 @@ def qualify_proposal(
     *,
     event: dict[str, Any],
     ingress: dict[str, Any],
-    capability: dict[str, Any] | None,
+    capabilities: list[dict[str, Any]],
+    requested_capability_ids: list[str],
     profile: str,
     route_health: dict[str, bool],
+    effort_limits: dict[str, int],
 ) -> dict[str, Any]:
     failures: list[str] = []
+    capability_failures: dict[str, list[str]] = defaultdict(list)
     if ingress.get("mode") in {"forced_route", "direct_command"} and not ingress.get("directive_authenticated"):
         failures.append("directive_authentication_failed")
-    if capability is None:
+    if not requested_capability_ids or len(capabilities) != len(requested_capability_ids):
         failures.append("capability_unknown")
     else:
-        if profile not in set(capability.get("qualified_profiles") or []):
-            failures.append("profile_unqualified")
-        if capability.get("required_authority") not in set(event.get("authority_refs") or []):
-            failures.append("authority_missing")
-        if not capability.get("verifier_ref"):
-            failures.append("verifier_missing")
-        if route_health.get(str(capability.get("capability_id"))) is False:
-            failures.append("implementation_stale_or_blocked")
+        for capability in capabilities:
+            capability_id = str(capability.get("capability_id") or "")
+            if profile not in set(capability.get("qualified_profiles") or []):
+                failures.append("profile_unqualified")
+                capability_failures[capability_id].append("profile_unqualified")
+            if capability.get("required_authority") not in set(event.get("authority_refs") or []):
+                failures.append("authority_missing")
+                capability_failures[capability_id].append("authority_missing")
+            if not capability.get("verifier_ref"):
+                failures.append("verifier_missing")
+                capability_failures[capability_id].append("verifier_missing")
+            if route_health.get(capability_id) is False:
+                failures.append("implementation_stale_or_blocked")
+                capability_failures[capability_id].append("implementation_stale_or_blocked")
+        aggregate_cost = sum(int(row.get("cost_units") or 0) for row in capabilities)
+        if aggregate_cost > int(effort_limits["max_aggregate_cost_units"]):
+            failures.append("effort_cost_exceeded")
+        workflow_nodes = proposal_row.get("workflow_nodes") if isinstance(proposal_row.get("workflow_nodes"), list) else []
+        if proposal_row.get("composite"):
+            if not workflow_nodes:
+                failures.append("composite_plan_missing")
+            else:
+                try:
+                    build_plan_nodes(capabilities, explicit_nodes=workflow_nodes, limits=effort_limits)
+                except ReflexiveDispatchFault as exc:
+                    failures.append(f"composite_plan_invalid:{exc.code}")
+        elif workflow_nodes:
+            failures.append("atomic_proposal_has_workflow_plan")
     if proposal_row.get("ood"):
         failures.append("ood")
     if proposal_row.get("proposer_type") == "learned_router" and float(proposal_row.get("score") or 0.0) < 0.8:
@@ -450,9 +595,11 @@ def qualify_proposal(
     receipt = {
         "proposal_id": proposal_row["proposal_id"],
         "capability_id": proposal_row.get("capability_id"),
+        "capability_ids": requested_capability_ids,
         "qualified": qualified,
         "obligations": ["schema", "authority", "profile", "freshness", "verifier", "effect_bounds", "explicit_fallback"],
-        "failures": failures,
+        "failures": sorted(set(failures)),
+        "capability_failures": {key: sorted(set(value)) for key, value in sorted(capability_failures.items())},
         "effect_authority_granted": False,
     }
     receipt["receipt_ref"] = stable_id("qualification", receipt)
@@ -473,7 +620,7 @@ def select_route(
     fallback_used = False
     if ingress["mode"] in {"forced_route", "direct_command"} and not qualified:
         failures = [failure for row in qualifications for failure in row["failures"]]
-        terminal = "unauthorized" if {"authority_missing", "directive_authentication_failed"}.intersection(failures) else ("ood" if "ood" in failures else "unsupported")
+        terminal = terminal_from_failures(failures)
         return selection_packet([], "none", f"explicit route unqualified: {sorted(set(failures))}", False, terminal, terminal_outcomes)
     if not qualified and fallback_policy == "explicit_only":
         fallback = next((row for row in proposals if row.get("proposer_type") == "fallback"), None)
@@ -482,18 +629,29 @@ def select_route(
             fallback_used = True
     if not qualified:
         failures = [failure for row in qualifications for failure in row["failures"]]
-        terminal = "ood" if "ood" in failures else "unsupported"
+        terminal = terminal_from_failures(failures)
         return selection_packet([], "none", f"no qualified route: {sorted(set(failures))}", False, terminal, terminal_outcomes)
     ranked = sorted(
         qualified,
         key=lambda row: (
-            int(capabilities[row["capability_id"]]["cost_units"]),
+            sum(int(capabilities[item]["cost_units"]) for item in proposal_capability_ids(row)),
             -float(row.get("score") or 0.0),
             str(row["proposal_id"]),
         ),
     )
     selected = ranked[0]
-    return selection_packet([selected["proposal_id"]], "dag" if selected.get("composite") else "atomic", "minimum qualified total cost", fallback_used, "prepared", terminal_outcomes)
+    return selection_packet([selected["proposal_id"]], "dag" if selected.get("composite") or len(proposal_capability_ids(selected)) > 1 else "atomic", "minimum qualified total cost", fallback_used, "prepared", terminal_outcomes)
+
+
+def terminal_from_failures(failures: list[str]) -> str:
+    roots = {str(value).split(":", 1)[0] for value in failures}
+    if {"authority_missing", "directive_authentication_failed"}.intersection(roots):
+        return "unauthorized"
+    if {"effort_cost_exceeded", "effort_node_count_exceeded"}.intersection(roots):
+        return "resource_exceeded"
+    if "ood" in roots:
+        return "ood"
+    return "unsupported"
 
 
 def selection_packet(selected: list[str], kind: str, reason: str, fallback_used: bool, terminal: str, allowed: set[str]) -> dict[str, Any]:

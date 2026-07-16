@@ -47,10 +47,13 @@ share toward zero. Public benchmarks are calibration only.
   This is architecture evidence, not learned memory or generation capability.
 - **Immediate dependency:** close the remaining 11 finite architecture contracts
   through existing registry owners. Reflexive Router canonical predispatch now works
-  across the real assistant's chat/code/tool/planning E2E and fails closed before
-  downstream execution, but its frozen eight-track/ten-policy profile, effort fidelity,
-  and broader effect/lifecycle qualification remain. Complete those rather than
-  treating four-route mechanics as the final verdict, then publish a
+  across the real assistant's chat/code/tool/planning routes plus a true tool-to-plan
+  workflow and a reversible effect route. Its 24 focused tests pass; the six-case E2E
+  passes every hard gate; direct effort fails over-budget code routing closed; and the
+  effect transaction is bound to the verified dispatch digest and rolls back exactly.
+  The frozen eight-track/ten-policy profile, typed parameters/defaults, registry mutation,
+  structured cancellation/partial results, and full lifecycle qualification still remain.
+  Complete those rather than treating mechanics as a capability verdict, then publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
   Preserve the now-GREEN content-bound data receipts while architecture closes.

@@ -145,6 +145,118 @@ class ReflexiveDispatchTests(unittest.TestCase):
         with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_DAG_CAPABILITY_NOT_SELECTED"):
             reflex.dispatch(event(), intent="planning", plan_nodes=alien)
 
+    def test_registered_workflow_selects_and_orders_multiple_capabilities(self) -> None:
+        trace = reflex.dispatch(event("/plan-tool"), intent="chat")
+        selected = {
+            capability_id
+            for row in trace["proposals"]
+            if row["proposal_id"] in trace["selection"]["selected_proposal_ids"]
+            for capability_id in reflex.proposal_capability_ids(row)
+        }
+        self.assertEqual(trace["selection"]["kind"], "dag")
+        self.assertEqual(trace["selection"]["terminal_outcome"], "prepared")
+        self.assertEqual(selected, {"assistant.deterministic_tool", "assistant.plan_dag"})
+        self.assertEqual([row["node_id"] for row in trace["plan_nodes"]], ["tool-evidence", "compile-plan"])
+        self.assertEqual(trace["plan_nodes"][1]["dependencies"], ["tool-evidence"])
+        self.assertEqual(trace["metrics"]["total_cost_units"], 30)
+        self.assertEqual(reflex.verify_trace(trace)["state"], "VERIFIED")
+
+    def test_workflow_registry_rejects_alias_collision_cycle_and_contract_mismatch(self) -> None:
+        contract = reflex.load_contract()
+        collision = copy.deepcopy(contract)
+        collision["workflows"][0]["alias"] = "/tool"
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_WORKFLOW_NAMESPACE_CONFLICT"):
+            reflex.validate_contract(collision)
+
+        cycle = copy.deepcopy(contract)
+        cycle["workflows"][0]["nodes"][0]["dependencies"] = ["compile-plan"]
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_DAG_CYCLE"):
+            reflex.validate_contract(cycle)
+
+        mismatch = copy.deepcopy(contract)
+        mismatch["workflows"][0]["nodes"][0]["verifier_ref"] = "unregistered_verifier"
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_WORKFLOW_NODE_CONTRACT_MISMATCH"):
+            reflex.validate_contract(mismatch)
+
+    def test_effort_profiles_are_realized_and_fail_closed_at_the_budget_boundary(self) -> None:
+        direct = reflex.dispatch(event(), intent="code", effort_profile="direct")
+        balanced = reflex.dispatch(event(), intent="code", effort_profile="balanced")
+        self.assertEqual(direct["effort"]["requested_profile"], "direct")
+        self.assertTrue(direct["effort"]["profile_fidelity"])
+        self.assertEqual(direct["selection"]["terminal_outcome"], "resource_exceeded")
+        self.assertEqual(direct["plan_nodes"], [])
+        self.assertEqual(balanced["selection"]["terminal_outcome"], "prepared")
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_EFFORT_PROFILE_UNKNOWN"):
+            reflex.dispatch(event(), intent="chat", effort_profile="unbounded")
+
+        tampered = copy.deepcopy(balanced)
+        tampered["effort"]["realized_limits"]["max_nodes"] += 1
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_TRACE_DIGEST_INVALID"):
+            reflex.verify_trace(tampered)
+
+    def test_effect_capability_requires_explicit_authority_and_never_grants_it_from_proposal(self) -> None:
+        denied = reflex.dispatch(
+            event(authorities=["local_assistant_read", "local_tool_read"]),
+            intent="chat",
+            requested_route="assistant.route_authority_effect",
+        )
+        self.assertEqual(denied["selection"]["terminal_outcome"], "unauthorized")
+
+        prepared = reflex.dispatch(
+            event(authorities=["local_assistant_read", "local_tool_read", "local_effect_write"]),
+            intent="chat",
+            requested_route="assistant.route_authority_effect",
+        )
+        self.assertEqual(prepared["selection"]["terminal_outcome"], "prepared")
+        self.assertTrue(prepared["effect"]["required"])
+        self.assertEqual(prepared["effect"]["state"], "prepared")
+        self.assertFalse(prepared["effect"]["effect_authority_granted"])
+        self.assertFalse(prepared["proposals"][0]["proposal_grants_authority"])
+
+    def test_composite_route_fails_when_any_member_is_stale(self) -> None:
+        trace = reflex.dispatch(
+            event("/plan-tool"),
+            intent="chat",
+            route_health={"assistant.deterministic_tool": True, "assistant.plan_dag": False},
+        )
+        self.assertEqual(trace["selection"]["terminal_outcome"], "unsupported")
+        self.assertEqual(trace["plan_nodes"], [])
+        self.assertEqual(
+            trace["qualification"][0]["capability_failures"]["assistant.plan_dag"],
+            ["implementation_stale_or_blocked"],
+        )
+
+    def test_malformed_learned_composite_is_typed_unsupported_not_an_exception(self) -> None:
+        trace = reflex.dispatch(
+            event(),
+            intent="chat",
+            learned_proposals=[
+                {
+                    "proposal_id": "malformed-composite",
+                    "capability_ids": ["assistant.deterministic_tool", "assistant.plan_dag"],
+                    "score": 0.99,
+                    "composite": True,
+                    "plan_nodes": [
+                        {
+                            "node_id": "alien",
+                            "capability_id": "assistant.code_candidate",
+                            "dependencies": [],
+                            "effect_class": "none",
+                            "verifier_ref": "private_code_verifier",
+                            "cost_units": 1,
+                            "retry_limit": 0,
+                            "completion_policy": "all_or_nothing",
+                        }
+                    ],
+                }
+            ],
+        )
+        learned = next(row for row in trace["qualification"] if len(row["capability_ids"]) == 2)
+        self.assertFalse(learned["qualified"])
+        self.assertIn("composite_plan_invalid:REFLEX_DAG_CAPABILITY_NOT_SELECTED", learned["failures"])
+        self.assertEqual(trace["selection"]["terminal_outcome"], "prepared")
+        self.assertEqual(trace["no_cheat"]["learned_generation_credit"], 0)
+
     def test_chronicle_is_bitemporal_append_only_and_keeps_claims_separate(self) -> None:
         base = {
             "record_id": "chronicle:a",

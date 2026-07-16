@@ -28,6 +28,11 @@
     "max_aggregate_cost_units": 100,
     "default_deadline_ms": 30000
   },
+  "effort_profiles": {
+    "direct": {"max_nodes": 2, "max_depth": 2, "max_fanout": 1, "max_retries_per_node": 0, "max_aggregate_cost_units": 40, "deadline_ms": 5000},
+    "balanced": {"max_nodes": 8, "max_depth": 4, "max_fanout": 3, "max_retries_per_node": 1, "max_aggregate_cost_units": 100, "deadline_ms": 30000},
+    "deliberative": {"max_nodes": 16, "max_depth": 5, "max_fanout": 4, "max_retries_per_node": 2, "max_aggregate_cost_units": 100, "deadline_ms": 30000}
+  },
   "precedence_order": [
     "authority", "effect_risk", "specificity", "verified_confidence",
     "freshness", "owner_priority", "stable_tie_break"
@@ -68,6 +73,15 @@
       "required_authority": "local_assistant_read",
       "cost_units": 20,
       "qualified_profiles": ["local_private_assistant"]
+    },
+    {
+      "capability_id": "assistant.route_authority_effect",
+      "intent": "chat",
+      "effect_class": "reversible",
+      "verifier_ref": "assistant.effect_transaction",
+      "required_authority": "local_effect_write",
+      "cost_units": 15,
+      "qualified_profiles": ["local_private_assistant"]
     }
   ],
   "user_commands": [
@@ -75,6 +89,20 @@
     {"command_id": "command.code", "alias": "/code", "capability_id": "assistant.code_candidate", "parameter_schema": {}, "owner_priority": 100},
     {"command_id": "command.tool", "alias": "/tool", "capability_id": "assistant.deterministic_tool", "parameter_schema": {}, "owner_priority": 100},
     {"command_id": "command.plan", "alias": "/plan", "capability_id": "assistant.plan_dag", "parameter_schema": {}, "owner_priority": 100}
+  ],
+  "workflows": [
+    {
+      "workflow_id": "workflow.plan_with_tool",
+      "alias": "/plan-tool",
+      "capability_ids": ["assistant.deterministic_tool", "assistant.plan_dag"],
+      "parameter_schema": {},
+      "owner_priority": 100,
+      "fallback": "none",
+      "nodes": [
+        {"node_id": "tool-evidence", "capability_id": "assistant.deterministic_tool", "dependencies": [], "effect_class": "read_only", "verifier_ref": "deterministic_tool_receipt", "cost_units": 10, "retry_limit": 0, "completion_policy": "all_or_nothing"},
+        {"node_id": "compile-plan", "capability_id": "assistant.plan_dag", "dependencies": ["tool-evidence"], "effect_class": "none", "verifier_ref": "viea_plan_contract", "cost_units": 20, "retry_limit": 0, "completion_policy": "all_or_nothing"}
+      ]
+    }
   ],
   "reflexes": [
     {

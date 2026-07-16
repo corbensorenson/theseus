@@ -8,7 +8,8 @@
   "reflexive_router_profile": "local_private_assistant",
   "reflexive_router_authority_refs": [
     "local_assistant_read",
-    "local_tool_read"
+    "local_tool_read",
+    "local_effect_write"
   ],
   "metadata_only_dogfood_feedback": true,
   "raw_text_training_allowed": false,

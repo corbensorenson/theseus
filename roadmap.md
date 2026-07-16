@@ -1822,15 +1822,20 @@ dispatch contract before checkpoint inference and before code, tool, planning, d
 or effect execution. Authenticated direct commands, literal isolation, authority/profile/
 freshness qualification, finite terminal outcomes, bounded DAGs, trace integrity,
 bitemporal Chronicle records, dependency-complete cache identities, and governed
-compile/decompile helpers pass 16 focused tests. The existing assistant E2E passes all
-hard gates across chat, code, tool, and planning; each route is `prepared`, independently
-verified, and bound to the expected existing capability. A forced unknown route produces
-`unsupported`, skips downstream inference, and grants no effect authority. This is
-canonical mechanics evidence only. Reflexive Router remains
-`pre_training_architecture_required` until the frozen eight-track, ten-policy matched
-ReflexBench profile, requested-versus-realized effort accounting, and broader effect/
-lifecycle qualification are complete. No learned routing, route-regret, or capability
-gain is claimed.
+compile/decompile helpers, three bounded effort profiles, true multi-capability workflow
+selection, per-capability qualification, and malformed learned-plan rejection pass 24
+focused tests. The existing assistant
+E2E now passes all hard gates across six cases: chat, code, tool, planning, a tool-to-plan
+workflow, and a reversible effect route. The workflow executes 15 independently verified
+deterministic-tool cases before exposing plan context. The effect canary is bound to the
+verified dispatch trace and decision digest, materially observed, and restored to the
+exact prior filesystem identity. Direct effort rejects the over-budget code route with
+`resource_exceeded`; a forced unknown route produces `unsupported`, skips downstream
+inference, and grants no effect authority. This is canonical mechanics evidence only.
+Reflexive Router remains `pre_training_architecture_required` until the frozen eight-track,
+ten-policy matched ReflexBench profile, parameter/default and registry-mutation surfaces,
+structured cancellation/partial-result semantics, and full lifecycle qualification are
+complete. No learned routing, route-regret, answer-quality, or capability gain is claimed.
 
 - Put one canonical pre-deliberative path before ordinary assistant inference:
   canonical event and authenticated command plane -> deterministic and learned

@@ -45,6 +45,19 @@ CASES = [
         "feedback": "completed",
         "prompt": "Plan the next cohesive Theseus assistant improvement as a VCM-backed DAG.",
     },
+    {
+        "id": "composite_tool_planning_route",
+        "intent": "chat",
+        "feedback": "completed",
+        "prompt": "/plan-tool inspect architecture evidence before planning",
+    },
+    {
+        "id": "effect_route_rollback",
+        "intent": "chat",
+        "feedback": "completed",
+        "prompt": "Exercise the bounded local effect transaction and prove rollback.",
+        "extra_args": ["--effect-canary"],
+    },
 ]
 
 
@@ -190,6 +203,7 @@ def run_case(case: dict[str, Any], args: argparse.Namespace, *, index: int) -> d
         "reports/theseus_assistant_e2e_events.jsonl",
         "--print-answer",
     ]
+    command.extend(str(value) for value in case.get("extra_args", []) if str(value))
     if args.skip_context_refresh_after_first and index > 0:
         command.append("--skip-context-refresh")
     started = time.perf_counter()
@@ -390,6 +404,7 @@ def compact_report(report: dict[str, Any]) -> dict[str, Any]:
         "tool_context": report.get("tool_context"),
         "tool_evidence": report.get("tool_evidence"),
         "plan_context": report.get("plan_context"),
+        "effect_canary": report.get("effect_canary"),
         "teacher_policy": report.get("teacher_policy"),
         "benchmark_status": report.get("benchmark_status"),
         "vcm_context_packet": {
@@ -575,6 +590,25 @@ def build_gates(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "hard",
         ),
         gate("planning_case_has_compiler", bool(get_path(by_id, ["planning_route", "report", "plan_context", "active"], False)), get_path(by_id, ["planning_route", "report", "plan_context"], {}), "hard"),
+        gate(
+            "composite_case_executes_tool_then_planning",
+            get_path(by_id, ["composite_tool_planning_route", "report", "summary", "reflexive_dispatch_selected_capabilities"], [])
+            == ["assistant.deterministic_tool", "assistant.plan_dag"]
+            and get_path(by_id, ["composite_tool_planning_route", "report", "tool_evidence", "active"], False) is True
+            and get_path(by_id, ["composite_tool_planning_route", "report", "plan_context", "active"], False) is True,
+            get_path(by_id, ["composite_tool_planning_route", "report"], {}),
+            "hard",
+        ),
+        gate(
+            "effect_case_binds_dispatch_and_rolls_back",
+            get_path(by_id, ["effect_route_rollback", "report", "summary", "reflexive_dispatch_selected_capabilities"], [])
+            == ["assistant.route_authority_effect"]
+            and get_path(by_id, ["effect_route_rollback", "report", "effect_canary", "dispatch_bound"], False) is True
+            and get_path(by_id, ["effect_route_rollback", "report", "effect_canary", "ready"], False) is True
+            and get_path(by_id, ["effect_route_rollback", "report", "effect_canary", "rollback", "complete"], False) is True,
+            get_path(by_id, ["effect_route_rollback", "report", "effect_canary"], {}),
+            "hard",
+        ),
         gate(
             "teacher_policy_carried_by_all_cases",
             all(

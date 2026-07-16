@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -25,6 +27,8 @@ def args(**overrides: object) -> argparse.Namespace:
         "unauthenticated": False,
         "requested_route": "",
         "fallback_policy": "no_fallback",
+        "effort": "balanced",
+        "effect_canary": False,
     }
     values.update(overrides)
     return argparse.Namespace(**values)
@@ -107,3 +111,56 @@ def test_forced_unknown_route_is_rejected_without_execution_authority() -> None:
         "external_inference_calls": 0,
         "public_training_rows_written": 0,
     }
+
+
+def test_composite_workflow_is_prepared_as_a_planning_execution() -> None:
+    row = trace("/plan-tool inspect the architecture", "chat")
+    verification = assistant.verify_reflexive_dispatch_trace(row, config())
+
+    assert verification["state"] == "VERIFIED"
+    assert assistant.reflexive_dispatch_prepared(row, verification)
+    assert assistant.selected_reflexive_capabilities(row) == [
+        "assistant.deterministic_tool",
+        "assistant.plan_dag",
+    ]
+    assert assistant.effective_intent_from_dispatch(row, "chat") == "planning"
+
+
+def test_effect_canary_is_bound_to_verified_dispatch_and_rolls_back_exactly() -> None:
+    row = trace("change local route authority", "chat", effect_canary=True)
+    verification = assistant.verify_reflexive_dispatch_trace(row, config())
+    assert verification["state"] == "VERIFIED"
+    assert assistant.selected_reflexive_capabilities(row) == ["assistant.route_authority_effect"]
+
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        target = root / "authority.json"
+        result = assistant.run_local_effect_canary(
+            enabled=True,
+            target=target,
+            allowed_root=root,
+            session_id="session:test",
+            intent="chat",
+            prompt_hash=assistant.sha256_text("change local route authority"),
+            reflexive_dispatch_trace=row,
+        )
+        assert result["ready"] is True
+        assert result["dispatch_bound"] is True
+        assert result["rollback"]["complete"] is True
+        assert not target.exists()
+
+        tampered = copy.deepcopy(row)
+        tampered["decision_digest"] = "0" * 64
+        denied = assistant.run_local_effect_canary(
+            enabled=True,
+            target=target,
+            allowed_root=root,
+            session_id="session:test",
+            intent="chat",
+            prompt_hash=assistant.sha256_text("change local route authority"),
+            reflexive_dispatch_trace=tampered,
+        )
+        assert denied["ready"] is False
+        assert denied["dispatch_bound"] is False
+        assert denied["residuals"] == [{"kind": "effect_dispatch_binding_invalid"}]
+        assert not target.exists()
