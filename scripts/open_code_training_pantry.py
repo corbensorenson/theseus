@@ -144,6 +144,7 @@ def main() -> int:
         if isinstance(row, dict) and row.get("repo")
     }
     config_repos = repos_from_config(config)
+    repo_policies = repo_policies_from_config(config)
     repos = config_repos or [repo.strip() for repo in str(args.repos).split(",") if repo.strip()]
     repos = [repo for repo in repos if not excluded_by_benchmark_name(repo)][: max(0, args.max_repos)]
     admitted: list[dict[str, Any]] = []
@@ -152,6 +153,39 @@ def main() -> int:
     train_rows: list[dict[str, Any]] = []
 
     for repo in repos:
+        repo_policy = repo_policies.get(repo, {})
+        language_scope = {
+            str(value).strip()
+            for value in repo_policy.get("languages", [])
+            if str(value).strip()
+        }
+        unsupported_languages = language_scope - {
+            "python",
+            "rust",
+            "javascript",
+            "typescript",
+            "html",
+            "css",
+            "go",
+            "java",
+            "c",
+            "cpp",
+            "c_header",
+            "cpp_header",
+        }
+        if unsupported_languages:
+            skipped.append({
+                "repo": repo,
+                "reason": "unsupported_language_scope",
+                "languages": sorted(unsupported_languages),
+            })
+            continue
+        repo_file_cap = int(
+            repo_policy.get("max_files_per_repo") or args.max_files_per_repo
+        )
+        if repo_file_cap <= 0:
+            skipped.append({"repo": repo, "reason": "invalid_repo_file_cap"})
+            continue
         cached = cached_sources.get(repo) if not args.refresh else None
         cached_tarball = resolve(str((cached or {}).get("tarball") or ""))
         cache_valid = bool(
@@ -196,14 +230,17 @@ def main() -> int:
             "html_url": meta.get("html_url"),
             "tarball": str(tarball_path).replace("\\", "/"),
             "tarball_sha256": stable_hash_hex(tarball_path.read_bytes()),
+            "language_scope": sorted(language_scope),
+            "max_files_per_repo": repo_file_cap,
         }
         try:
             for file_row in iter_tar_source_files(
                 tarball_path,
                 repo=repo,
                 license_spdx=license_spdx,
-                max_files=max(1, args.max_files_per_repo),
+                max_files=repo_file_cap,
                 max_bytes=max(1024, args.max_bytes_per_file),
+                allowed_languages=language_scope or None,
             ):
                 sample_rows.append(file_row)
                 repo_sample_count += 1
@@ -256,6 +293,8 @@ def main() -> int:
                 "tarball": row["tarball"],
                 "tarball_sha256": row["tarball_sha256"],
                 "sample_count": row["sample_count"],
+                "language_scope": row["language_scope"],
+                "max_files_per_repo": row["max_files_per_repo"],
             }
             for row in admitted
         ],
@@ -350,6 +389,29 @@ def repos_from_config(config: dict[str, Any]) -> list[str]:
     return repos
 
 
+def repo_policies_from_config(config: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Return the first enabled policy for each canonical repository id."""
+
+    raw_repos = config.get("repos", [])
+    if not isinstance(raw_repos, list):
+        return {}
+    policies: dict[str, dict[str, Any]] = {}
+    for row in raw_repos:
+        if isinstance(row, str):
+            repo = row.strip()
+            policy: dict[str, Any] = {}
+            enabled = True
+        elif isinstance(row, dict):
+            repo = str(row.get("repo") or "").strip()
+            policy = dict(row)
+            enabled = bool(row.get("enabled", True))
+        else:
+            continue
+        if enabled and repo and repo not in policies:
+            policies[repo] = policy
+    return policies
+
+
 def option_omitted(name: str) -> bool:
     import sys
 
@@ -371,6 +433,7 @@ def iter_tar_source_files(
     license_spdx: str,
     max_files: int,
     max_bytes: int,
+    allowed_languages: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     with tarfile.open(tarball_path, mode="r:gz") as archive:
@@ -400,6 +463,9 @@ def iter_tar_source_files(
             ext = Path(path).suffix.lower()
             if ext not in SOURCE_EXTENSIONS:
                 continue
+            language = language_for_extension(ext)
+            if allowed_languages is not None and language not in allowed_languages:
+                continue
             extracted = archive.extractfile(member)
             if extracted is None:
                 continue
@@ -411,7 +477,7 @@ def iter_tar_source_files(
                 {
                     "repo": repo,
                     "path": strip_tar_root(path),
-                    "language": language_for_extension(ext),
+                    "language": language,
                     "license_spdx": license_spdx,
                     "size_bytes": len(raw),
                     "sha256": stable_hash_hex(raw),

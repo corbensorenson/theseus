@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -13,14 +14,17 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from moecot_source_conditioned_pretraining import (  # noqa: E402
+    contract_sha256,
     delete_spans,
     denoising_rows,
     inspect_kernel_english,
     kernel_english_split_overlap,
     materialize_kernel_english,
     source_rejection,
+    source_conditioning_dependencies,
     validate_config,
     validate_kernel_english_config,
+    validate_manifest,
 )
 import kernel_english_protocol as kernel  # noqa: E402
 import vcm_semantic_memory as memory  # noqa: E402
@@ -229,6 +233,70 @@ def test_source_rejection_fails_closed_on_license_and_public_payloads() -> None:
     assert source_rejection(clean, cfg) == ""
     assert source_rejection({**clean, "license_spdx": "unknown"}, cfg) == "license_not_allowed"
     assert source_rejection({**clean, "public_benchmark": True}, cfg).startswith("public_")
+
+
+def test_source_conditioned_manifest_binds_all_mutable_dependencies(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source.jsonl"
+    source.write_text('{"text":"alpha"}\n', encoding="utf-8")
+    stage = tmp_path / "stage"
+    stage.mkdir()
+    metadata = stage / "stage_metadata_v1.json"
+    metadata.write_text('{"source_vocab":{"a":1},"target_vocab":{"a":1}}\n', encoding="utf-8")
+    supervision = tmp_path / "supervision"
+    (supervision / "private_train").mkdir(parents=True)
+    supervision_manifest = supervision / "manifest.json"
+    supervision_manifest.write_text('{"policy":"fixture"}\n', encoding="utf-8")
+    supervision_rows = supervision / "private_train" / "python.jsonl"
+    supervision_rows.write_text('{"target_sha256":"abc"}\n', encoding="utf-8")
+    artifact = tmp_path / "python.jsonl"
+    artifact.write_text('{"row_id":"one"}\n{"row_id":"two"}\n', encoding="utf-8")
+
+    full_config = config()
+    cfg = full_config["source_conditioned_pretraining"]
+    cfg["source_jsonl"] = str(source)
+    cfg["stage_root"] = str(tmp_path / "source-conditioned")
+    cfg["rows_by_arm"] = {
+        "english": 0,
+        "python": 2,
+        "javascript_typescript": 0,
+        "html_css": 0,
+        "rust": 0,
+    }
+    full_config["stage_dir"] = str(stage)
+    full_config["supervision"] = {"stage_root": str(supervision)}
+    payload = {
+        "policy": cfg["policy"],
+        "contract_sha256": contract_sha256(cfg),
+        "dependencies": source_conditioning_dependencies(full_config),
+        "artifacts": {
+            "python": {
+                "path": str(artifact),
+                "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+                "row_count": 2,
+            }
+        },
+        "public_training_rows_written": 0,
+        "public_benchmark_payload_count": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    assert validate_manifest(payload, cfg, full_config) == []
+
+    source.write_text('{"text":"changed"}\n', encoding="utf-8")
+    gaps = validate_manifest(payload, cfg, full_config)
+    assert "dependency_identity_mismatch:source_jsonl" in gaps
+    source.write_text('{"text":"alpha"}\n', encoding="utf-8")
+
+    metadata.write_text('{"source_vocab":{"b":2},"target_vocab":{"a":1}}\n', encoding="utf-8")
+    gaps = validate_manifest(payload, cfg, full_config)
+    assert "dependency_identity_mismatch:stage_metadata" in gaps
+    metadata.write_text('{"source_vocab":{"a":1},"target_vocab":{"a":1}}\n', encoding="utf-8")
+
+    supervision_rows.write_text('{"target_sha256":"changed"}\n', encoding="utf-8")
+    gaps = validate_manifest(payload, cfg, full_config)
+    assert "dependency_identity_mismatch:supervision_stage" in gaps
 
 
 def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Path) -> None:

@@ -16,6 +16,7 @@ if str(SCRIPTS) not in sys.path:
 from open_code_training_pantry import (  # noqa: E402
     iter_tar_source_files,
     language_for_extension,
+    repo_policies_from_config,
     repos_from_config,
 )
 
@@ -37,6 +38,36 @@ class OpenCodeTrainingPantryTests(unittest.TestCase):
             ]
         }
         self.assertEqual(["owner/one", "owner/three"], repos_from_config(config))
+        self.assertEqual(
+            {"repo": "owner/one"},
+            repo_policies_from_config(config)["owner/one"],
+        )
+        self.assertEqual({}, repo_policies_from_config(config)["owner/three"])
+
+    def test_repo_language_scope_filters_before_the_source_cap(self) -> None:
+        entries = [
+            ("fixture-main/a.py", b"def ignored():\n    return 1\n"),
+            ("fixture-main/b.css", b".button { color: red; }\n"),
+            ("fixture-main/c.html", b"<button>Save</button>\n"),
+        ]
+        parent = Path(tempfile.mkdtemp())
+        try:
+            archive = parent / "fixture.tar.gz"
+            write_tar(archive, entries)
+            rows = iter_tar_source_files(
+                archive,
+                repo="owner/fixture",
+                license_spdx="MIT",
+                max_files=1,
+                max_bytes=1024,
+                allowed_languages={"html", "css"},
+            )
+            self.assertEqual(["b.css"], [row["path"] for row in rows])
+            self.assertEqual(["css"], [row["language"] for row in rows])
+        finally:
+            for path in parent.glob("*"):
+                path.unlink()
+            parent.rmdir()
 
     def test_web_and_rust_extensions_map_to_canonical_languages(self) -> None:
         self.assertEqual("typescript", language_for_extension(".tsx"))

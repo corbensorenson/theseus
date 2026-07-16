@@ -54,7 +54,7 @@
       "rejected_candidate_count": 304,
       "report_cache_reused": true,
       "runtime_external_inference_calls": 0,
-      "runtime_ms": 8166,
+      "runtime_ms": 10758,
       "semantic_public_overlap_candidate_count": 0,
       "source_count": 98,
       "teacher_candidate_count": 0,
@@ -62,7 +62,7 @@
     },
     "trigger_state": "YELLOW"
   },
-  "created_utc": "2026-07-16T15:10:02.290753+00:00",
+  "created_utc": "2026-07-16T19:54:36.665601+00:00",
   "external_inference_calls": 0,
   "open_code_public_corpus_candidates": [
     {
@@ -1645,6 +1645,346 @@
       "source_kind": "public_code_corpus_candidate",
       "training_use": "eligible_after_local_import_hash_license_and_decontamination",
       "why": "standards-focused browser examples with HTML and CSS, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "adobe/spectrum-css",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "bbcc81177ee75944",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production design-system CSS, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "SAP/fundamental-styles",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "b49d477ca704381e",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production enterprise HTML and Sass design system, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "ionic-team/ionic-framework",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "c50d3634be19f602",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production mobile-web HTML and Sass components, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "material-components/material-web",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "2fc7d66f1e4193f3",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "Material web-component Sass and HTML, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "argyleink/open-props",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "a6552ba948875f41",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "authored CSS design tokens and examples, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "radix-ui/themes",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "c6edd10eba37f117",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production component-theme CSS, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "mantinedev/mantine",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "3648045c8549d392",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production component CSS modules, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "primer/react",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "3d4dc848b30e179a",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "GitHub design-system component CSS, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "storybookjs/storybook",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "82c5ab6dcbf61b93",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production component-workbench HTML and CSS, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "shadcn-ui/ui",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "1422d3f7ddca45ef",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production application CSS and themes, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "heroui-inc/heroui",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "6a88ff35487f47c1",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production UI theme CSS, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "open-wc/open-wc",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "6070400ba250d59b",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "standards-focused web-component HTML examples, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "lit/lit",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "e5fdd5c61bd2c041",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "standards-focused web-component HTML and CSS, BSD-3-Clause"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "mdn/learning-area",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "52529e25067daf5c",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "standards-focused HTML and CSS learning examples, CC0-1.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "quasarframework/quasar",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "96488e83cde7bb03",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production web-component CSS and Sass, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "framework7io/framework7",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "66891a4c46c76ec1",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production mobile-web HTML and Less, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "NativeScript/theme",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "28832ae1e29bdb6e",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production cross-platform Sass theme, Apache-2.0"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "ing-bank/lion",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "f276fe30ef4c2c9b",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "accessible web-component HTML and CSS, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "primefaces/primevue",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "496a8bf9b35e90a5",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "production component Sass theme corpus, MIT"
+    },
+    {
+      "allowed_for_training": false,
+      "benchmark_overlap_check": "not_run_until_local_source_import",
+      "license_status": "pending_spdx_verification",
+      "provenance_status": "manifested_candidate_only",
+      "repo": "a11yproject/a11yproject.com",
+      "required_before_training": [
+        "local source archive or clone path",
+        "verified SPDX license in allowlist",
+        "source hash manifest",
+        "benchmark-name and public-prompt decontamination scan"
+      ],
+      "source_id": "f6fbe0df3025b35d",
+      "source_kind": "public_code_corpus_candidate",
+      "training_use": "eligible_after_local_import_hash_license_and_decontamination",
+      "why": "accessibility-focused authored Sass, Apache-2.0"
     }
   ],
   "policy": "project_theseus_training_data_admission_manifest_v1",
@@ -2278,7 +2618,7 @@
     "external_inference_calls": 0,
     "heldout_eval_only_source_count": 13,
     "local_source_count": 401,
-    "open_code_candidate_count": 93,
+    "open_code_candidate_count": 113,
     "public_benchmark_payload_admitted": false,
     "public_benchmark_quarantine_source_count": 100,
     "public_benchmark_training_allowed": false,
@@ -2308,7 +2648,7 @@
     "training_admission_epistemic_tcb_state": "GREEN",
     "training_admission_epistemic_tcb_surviving_mutants": 0,
     "vcm_context_governor_ready": true,
-    "vcm_context_governor_receipt_id": "ac9238c24b5c801b9bc12dec",
+    "vcm_context_governor_receipt_id": "8e269cb62a48839c0466c9e0",
     "vcm_context_governor_state": "GREEN",
     "vcm_context_resolver_passed_count": 7,
     "vcm_context_resolver_request_count": 7,
@@ -12843,7 +13183,7 @@
     "policy": "project_theseus_training_admission_epistemic_tcb_v1",
     "position_budgets_reported_separately": true,
     "qualified": true,
-    "sha256": "cfbc1002c990624e55a461b57c78ee24f5a6887d75281f450945613dee17b693",
+    "sha256": "c0cfc4a761e072dfdf603f8f9add1c9220e05c7765cf548bd29799f068fe2dd5",
     "surviving_mutant_count": 0,
     "task_report_identity_matches": true,
     "trigger_state": "GREEN",
@@ -12856,7 +13196,7 @@
         "local_training_metadata_read",
         "governed_context_read"
       ],
-      "branch_snapshot_id": "snapshot://theseus/vcm/48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da/branch/1b8ab82456eb9a30e7123c32",
+      "branch_snapshot_id": "snapshot://theseus/vcm/a05306484b36e86e28c2884c20e1370df9cf317c2094e27ab5a98d1c31b97ca0/branch/7fd53843d28c415f01158359",
       "closure_state": "closed",
       "consumer_id": "training_data_admission_v1",
       "deletion_obligations": [
@@ -12867,18 +13207,18 @@
       "external_inference_calls": 0,
       "fallback_return_count": 0,
       "full_packet_evidence_required": true,
-      "governor_content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
-      "governor_receipt_id": "ac9238c24b5c801b9bc12dec",
-      "lease_expires_utc": "2026-07-16T15:24:49.301660Z",
-      "lease_id": "edda95cab7bfc11ddabd5eb9",
+      "governor_content_hash": "a05306484b36e86e28c2884c20e1370df9cf317c2094e27ab5a98d1c31b97ca0",
+      "governor_receipt_id": "8e269cb62a48839c0466c9e0",
+      "lease_expires_utc": "2026-07-16T20:09:20.757884Z",
+      "lease_id": "70f87004f2a31b82ebd9d695",
       "lease_state": "active",
       "omissions": [
         "raw_payload_text_not_embedded",
         "raw_prompt_not_embedded",
         "context_packet_contains_refs_hashes_and_policy_only"
       ],
-      "packet_id": "1b8ab82456eb9a30e7123c32",
-      "parent_snapshot_id": "snapshot://theseus/vcm/48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
+      "packet_id": "7fd53843d28c415f01158359",
+      "parent_snapshot_id": "snapshot://theseus/vcm/a05306484b36e86e28c2884c20e1370df9cf317c2094e27ab5a98d1c31b97ca0",
       "permitted_uses": [
         "training_source_metadata_admission",
         "lineage_accounting",
@@ -12899,12 +13239,12 @@
         "context_transaction",
         "failure_boundary"
       ],
-      "representation_certificate_id": "ed281025747738e8fbfeba4c",
-      "semantic_index_content_hash": "8b25c213038b3f706abc1c3c1314e6622eb53ab9076a92c209e462df7e0c47f0",
+      "representation_certificate_id": "dbc8a228c454654576e87c15",
+      "semantic_index_content_hash": "b84da679e5b8466cad9c98e85bb1dfab3bdbe411c41e4dc9b7f01c39ced5ddf6",
       "semantic_index_path": "reports/virtual_context_memory_index.json",
-      "snapshot_branch_id": "02610f36873d152a4fc5914f",
+      "snapshot_branch_id": "fae9a12a7fb941c274511ee5",
       "source_ref_count": 3,
-      "source_ref_digest": "e2f5d508dfbcc8edd0ca5bf3",
+      "source_ref_digest": "7f19a1564f4e0ec9544c44b0",
       "taint_labels": [
         "training_metadata",
         "raw_text_not_staged"
@@ -12916,14 +13256,14 @@
       }
     },
     "consumer_id": "training_data_admission_v1",
-    "content_hash": "48565f4f597542830f446d07051c40603dc5a2ccb0fe469772f0ca100362c5da",
+    "content_hash": "a05306484b36e86e28c2884c20e1370df9cf317c2094e27ab5a98d1c31b97ca0",
     "context_resolver_materialized_count": 3,
     "context_resolver_passed_count": 7,
     "context_resolver_request_count": 7,
     "context_resolver_status": "ready",
     "context_resolver_typed_fault_count": 4,
     "context_resolver_viea_record_count": 56,
-    "created_utc": "2026-07-11T19:31:40.719200Z",
+    "created_utc": "2026-07-16T17:58:36.982445Z",
     "external_inference_calls": 0,
     "fallback_return_count": 0,
     "hard_gap_count": 0,
@@ -12933,7 +13273,7 @@
     "raw_private_text_stored": false,
     "raw_prompt_stored": false,
     "ready": true,
-    "receipt_id": "ac9238c24b5c801b9bc12dec",
+    "receipt_id": "8e269cb62a48839c0466c9e0",
     "record_type": "vcm_context_governor_receipt",
     "required_escalation": "none",
     "required_for": "training_data_admission",

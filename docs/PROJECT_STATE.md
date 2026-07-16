@@ -25,11 +25,12 @@ share toward zero. Public benchmarks are calibration only.
   qualification then scored MoECOT, dense-active, and dense-total at `0/160`, with
   `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
   canary rung; it does not select an architecture or authorize a route.
-- **Data gate:** the content-bound audit credits `1,263,425,574` unique governed
-  model-visible positions with no repetition credit, public training rows, external
-  inference, or fallback returns. English, Python, JS/TS, Rust, and the aggregate
-  57.315M floor are GREEN. The 2.504M-parameter HTML/CSS specialist is RED at
-  `41,248,944 / 50,083,860`, an `8,834,916`-position owner-specific shortfall.
+- **Data gate:** GREEN for the frozen 57.315M proposal. The content-bound audit
+  credits `1,293,454,903 / 1,146,306,580` required unique governed model-visible
+  positions with no repetition credit, public training rows, external inference, or
+  fallback returns. Every specialist clears its 20:1 owned-parameter floor; HTML/CSS
+  is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
+  finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
 - **Immediate dependency:** KERC's exact packet/VCM substrate and canonical four-
   objective MoECOT training/checkpoint path are wired without learned or deterministic
   renderer credit. Materialize the governed 1024/128/128 source-group-disjoint KERC
@@ -38,8 +39,7 @@ share toward zero. Public benchmarks are calibration only.
   architecture docket through existing registry owners. Publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
-  Close the HTML/CSS data gap with genuinely unique licensed source data or reduce
-  that arm's owned parameters in a revised preregistration; never use repetition.
+  Preserve the now-GREEN content-bound data receipts while architecture closes.
 
 ## Evidence Boundaries
 
@@ -92,7 +92,7 @@ share toward zero. Public benchmarks are calibration only.
   exact; Python syntax was `46/128` and `48/128`. The separately frozen functional
   qualification scored both `0/160`, so these remain immutable negative evidence.
 - **Tokenizer/data correctness:** all corpus categories use exact reversible text
-  streams. The frozen stage contains 452,782 non-overlapping windows, zero admitted
+  streams. The rebuilt stage contains 453,740 non-overlapping windows, zero admitted
   unknown positions, zero public training rows, zero external inference calls, and
   zero fallback/template/router/tool generation credit.
 - **Post-v8 MLX preregistration:** the frozen candidate has `57,315,329` active and
@@ -156,8 +156,8 @@ share toward zero. Public benchmarks are calibration only.
    falsification, or explicit retirement. This includes KERC, QCSA, Reflexive Router,
    OneCell disposition, update/data causality, policy/GVR/campaign control, and
    generation-objective interfaces.
-6. Close the HTML/CSS arm's unique-position floor, freeze the joint surface/KERC/
-   code/control campaign, publish the architecture manifest, and replay every canary.
+6. Preserve the GREEN data floors, freeze the joint surface/KERC/code/control
+   campaign, publish the architecture manifest, and replay every canary.
 7. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
 8. Calibrate once on fresh frozen public surfaces after material model improvement.
@@ -194,5 +194,6 @@ python3 scripts/theseus_control_plane.py
 Complete and register the KERC immutable-source/protected-object packet, VCM-owned
 hierarchical residual lifecycle, learned compiler/renderer interfaces, round-trip
 verifier, checkpoint migration, cost accounting, and adversarial lifecycle tests.
-Then close the remaining finite architecture docket and the HTML/CSS owner floor.
-Do not start long training until the strict pre-training readiness gate is GREEN.
+Then close the remaining finite architecture docket and publish the independently
+replayed architecture-freeze package. Do not start long training until the strict
+pre-training readiness gate is GREEN.

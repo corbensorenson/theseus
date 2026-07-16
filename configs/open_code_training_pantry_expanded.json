@@ -2,7 +2,7 @@
   "policy": "project_theseus_open_code_training_pantry_expanded_v0",
   "purpose": "Curated permissive open-source repositories for train-only code expression pressure. Public benchmark repositories and benchmark-named paths remain excluded by the pantry script.",
   "defaults": {
-    "max_repos": 100,
+    "max_repos": 120,
     "max_files_per_repo": 4000,
     "max_bytes_per_file": 220000,
     "max_expressions": 5000,
@@ -109,6 +109,26 @@
     {"repo": "mdbootstrap/bootstrap-material-design", "why": "authored Bootstrap-compatible CSS component system, MIT"},
     {"repo": "saadeghi/daisyui", "why": "large production Tailwind component CSS corpus, MIT"},
     {"repo": "mdn/pwa-examples", "why": "small standards-focused web application examples, CC0-1.0"},
-    {"repo": "GoogleChrome/samples", "why": "standards-focused browser examples with HTML and CSS, Apache-2.0"}
+    {"repo": "GoogleChrome/samples", "why": "standards-focused browser examples with HTML and CSS, Apache-2.0"},
+    {"repo": "adobe/spectrum-css", "why": "production design-system CSS, Apache-2.0", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "SAP/fundamental-styles", "why": "production enterprise HTML and Sass design system, Apache-2.0", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "ionic-team/ionic-framework", "why": "production mobile-web HTML and Sass components, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "material-components/material-web", "why": "Material web-component Sass and HTML, Apache-2.0", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "argyleink/open-props", "why": "authored CSS design tokens and examples, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "radix-ui/themes", "why": "production component-theme CSS, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "mantinedev/mantine", "why": "production component CSS modules, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "primer/react", "why": "GitHub design-system component CSS, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "storybookjs/storybook", "why": "production component-workbench HTML and CSS, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "shadcn-ui/ui", "why": "production application CSS and themes, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "heroui-inc/heroui", "why": "production UI theme CSS, Apache-2.0", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "open-wc/open-wc", "why": "standards-focused web-component HTML examples, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "lit/lit", "why": "standards-focused web-component HTML and CSS, BSD-3-Clause", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "mdn/learning-area", "why": "standards-focused HTML and CSS learning examples, CC0-1.0", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "quasarframework/quasar", "why": "production web-component CSS and Sass, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "framework7io/framework7", "why": "production mobile-web HTML and Less, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "NativeScript/theme", "why": "production cross-platform Sass theme, Apache-2.0", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "ing-bank/lion", "why": "accessible web-component HTML and CSS, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "primefaces/primevue", "why": "production component Sass theme corpus, MIT", "languages": ["html", "css"], "max_files_per_repo": 8000},
+    {"repo": "a11yproject/a11yproject.com", "why": "accessibility-focused authored Sass, Apache-2.0", "languages": ["html", "css"], "max_files_per_repo": 8000}
   ]
 }

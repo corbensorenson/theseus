@@ -462,7 +462,7 @@ def inspect(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
     if not manifest_path.is_file():
         return base_report(config_path, cfg, "PLANNED", ["stage_not_materialized"])
     payload = read_json(manifest_path)
-    gaps = validate_manifest(payload, cfg)
+    gaps = validate_manifest(payload, cfg, config)
     return {
         **payload,
         "created_utc": now(),
@@ -477,6 +477,7 @@ def materialize(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
     started = time.perf_counter()
     stage_root = resolve(cfg["stage_root"])
     stage_root.mkdir(parents=True, exist_ok=True)
+    dependencies = source_conditioning_dependencies(config)
     metadata = read_json(resolve(config["stage_dir"]) / "stage_metadata_v1.json")
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
@@ -541,6 +542,7 @@ def materialize(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "trigger_state": "RED" if gaps else "GREEN",
         "config": relative(config_path),
         "contract_sha256": contract_sha256(cfg),
+        "dependencies": dependencies,
         "source": {
             "path": relative(source_path),
             "sha256": sha256_file(source_path),
@@ -701,18 +703,75 @@ def supervision_target_hashes(config: dict[str, Any]) -> set[str]:
     return hashes
 
 
+def source_conditioning_dependencies(config: dict[str, Any]) -> dict[str, Any]:
+    """Bind every mutable input that changes source-conditioned row selection."""
+
+    cfg = validate_config(config)
+    source_path = resolve(cfg["source_jsonl"])
+    metadata_path = resolve(config["stage_dir"]) / "stage_metadata_v1.json"
+    supervision_root = resolve(config["supervision"]["stage_root"])
+    supervision_paths = [
+        path
+        for path in [
+            supervision_root / "manifest.json",
+            *sorted(supervision_root.glob("private_*/*.jsonl")),
+        ]
+        if path.is_file()
+    ]
+    supervision_files = [
+        {
+            "path": relative(path),
+            "sha256": sha256_file(path),
+            "bytes": path.stat().st_size,
+        }
+        for path in supervision_paths
+    ]
+    supervision_digest = hashlib.sha256(
+        json.dumps(supervision_files, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return {
+        "source_jsonl": {
+            "path": relative(source_path),
+            "sha256": sha256_file(source_path),
+            "bytes": source_path.stat().st_size,
+        },
+        "stage_metadata": {
+            "path": relative(metadata_path),
+            "sha256": sha256_file(metadata_path),
+            "bytes": metadata_path.stat().st_size,
+        },
+        "supervision_stage": {
+            "root": relative(supervision_root),
+            "file_count": len(supervision_files),
+            "files": supervision_files,
+            "sha256": supervision_digest,
+        },
+    }
+
+
 def contract_sha256(cfg: dict[str, Any]) -> str:
     return hashlib.sha256(
         json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
 
 
-def validate_manifest(payload: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
+def validate_manifest(
+    payload: dict[str, Any], cfg: dict[str, Any], config: dict[str, Any]
+) -> list[str]:
     gaps = []
     if payload.get("policy") != cfg["policy"]:
         gaps.append("policy_mismatch")
     if payload.get("contract_sha256") != contract_sha256(cfg):
         gaps.append("contract_identity_mismatch")
+    recorded_dependencies = payload.get("dependencies") or {}
+    try:
+        current_dependencies = source_conditioning_dependencies(config)
+    except (FileNotFoundError, KeyError, OSError) as exc:
+        gaps.append(f"dependency_identity_unavailable:{type(exc).__name__}")
+        current_dependencies = {}
+    for dependency in ("source_jsonl", "stage_metadata", "supervision_stage"):
+        if recorded_dependencies.get(dependency) != current_dependencies.get(dependency):
+            gaps.append(f"dependency_identity_mismatch:{dependency}")
     for arm, wanted in cfg["rows_by_arm"].items():
         if int(wanted) <= 0:
             continue

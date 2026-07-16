@@ -52,13 +52,13 @@ idea now, not postpone training forever in pursuit of unspecified perfection.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | every task-complete arm floor and the aggregate broad floor are GREEN at 1,263,425,574 unique positions, but the new per-owner audit correctly rejects the 2.504M-parameter HTML/CSS specialist: 41,248,944 observed versus 50,083,860 required | preserve the content-bound corpus and its known 8,834,916-position HTML/CSS gap while architecture closes; after the freeze, close the gap with genuinely unique licensed source data or reduce that arm's owned parameters in the revised preregistration, never with repeated exposure |
+| Data engine + curriculum | Track 0 / Phase 7 | GREEN for the frozen 57.315M proposal: 1,293,454,903 broad unique positions versus 1,146,306,580 required; every task-complete floor is GREEN; HTML/CSS now has 71,416,629 unique positions versus 50,083,860 required; source/vocabulary/supervision identities replay exactly | preserve the content-bound corpus and receipts unchanged while the finite architecture docket closes; any architecture change that alters ownership or tokenization must recompute, never assume, these floors |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | learned optimization remains premature at the zero-pass floor, but objective/reference/reward/lease/checkpoint interfaces are pre-training requirements | wire and canary the complete objective family now; run and select it only after a behavior-positive proposer creates honest verifier signal |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | efficacy is deferred, but every topology- or objective-changing mode now requires a pre-training include/retire decision and checkpoint-compatible modes require loader/migration proof | freeze MTP, LayerSkip, speculative/draft, and sketch-first contracts with matched AR controls before training; adopt only from accepted verified output per second afterward |
-| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the original 57.315M-active contract has sufficient governed data and useful mechanical canary evidence, but no long optimizer run has started and training authority is held by the 13-item finite architecture docket | close or retire every docket item, publish the final architecture-freeze manifest and joint campaign, then replay all finite-update/checkpoint/resume/migration/resource/no-cheat canaries before training |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active contract now has sufficient governed data and GREEN finite-loss/update/checkpoint/reload/optimizer-resume/cleanup MLX canaries for MoECOT plus both dense controls, but no long optimizer run has started and training authority remains held by the 13-item finite architecture docket | close or retire every docket item, publish the final architecture-freeze manifest and joint campaign, then replay the same canaries against the final package before training |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is a non-routeable candidate behind the shared Cognitive Kernel ABI and now requires a pre-training architecture/campaign disposition; no neural or language claim exists | finish its exact substrate, objective/checkpoint interfaces, and matched campaign decision; include it in the frozen run or retire it without delaying the practical transformer/hybrid lane indefinitely |
 | Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | exact packet/protected-object/three-space/VCM-residual/answer-verifier substrate and the canonical four-objective MoECOT training/checkpoint path are wired; deterministic fixtures earn no learned credit and the real record stage is not materialized | admit 1024/128/128 governed source-group-disjoint KERC records, freeze the conventional surface-English versus KERC campaign under equal raw bytes/compute/end-to-end cost, then pass learned compiler/core/renderer plus reload/resume/migration/resource/integrity canaries |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | behavior loop cannot start at zero pass, but the campaign controller, full-state causality, stop authority, rollback, and negative-knowledge contracts are pre-training requirements | wire and trap-test the autonomous loop while disabled; enable generate->verify->admit->retrain only after the proposer produces independently verified successes |
@@ -322,13 +322,15 @@ promoted; their purpose is to falsify or select the practical architecture.
 - The preregistered verdict is `FALSIFY_10_8M_ACTIVE_SCALE_RUNG`. No architecture was
   selected, no Pareto relation was claimed, confirmation remains untouched, and route
   replacement is unauthorized. Do not rerun, reweight, or patch this consumed rung.
-- The practical model lane remains task-complete licensed product data followed by the
-  smallest supported 50M-100M active MLX proposal, but it is **not the current primary
-  execution lane**. First close the finite architecture docket and freeze the joint
-  campaign. Then close the known HTML/CSS data floor and replay the final mechanics
-  canaries before optimizer spend. Learned qualification of STS, VCM conditioning,
-  search, preference/RL, and fast generation still waits for a nonzero model-only
-  numerator; their training-invalidating interfaces do not.
+- The practical model lane is now data-supported at 57.315M active parameters. The
+  canonical corpus has 1,293,454,903 unique positions, every specialist clears its
+  20:1 owned-parameter floor, every task-complete floor is GREEN, and all three MLX
+  mechanics canaries pass with temporary artifacts removed. It is **not the current
+  primary execution lane**: first close the finite architecture docket and freeze the
+  joint campaign, then replay these canaries against the final package before optimizer
+  spend. Learned qualification of STS, VCM conditioning, search, preference/RL, and
+  fast generation still waits for a nonzero model-only numerator; their
+  training-invalidating interfaces do not.
 - Public calibration follows a material, confirmation-qualified model change. It is
   measurement only and never a source of prompts, tests, solutions, traces, labels,
   templates, or residual training rows.
