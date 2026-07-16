@@ -20,7 +20,11 @@ from pathlib import Path
 from typing import Any
 
 
-ONTOLOGY_VERSION = "1.0.0"
+ONTOLOGY_VERSION = "1.1.0"
+QCSA_VERSION = "QCSA-VCM-1.0"
+DEFAULT_QCSA_CONFIG = (
+    Path(__file__).resolve().parents[1] / "configs" / "vcm_semantic_addressing.json"
+)
 OBJECT_TYPES = {
     "architecture_spec",
     "checkpoint",
@@ -31,6 +35,26 @@ OBJECT_TYPES = {
     "task_state",
     "tool_output",
     "unknown",
+}
+SEMANTIC_IDENTITY_KINDS = {
+    "occurrence",
+    "type",
+    "instance",
+    "proposition",
+    "expression",
+    "memory",
+    "tool",
+    "policy",
+    "capability",
+    "artifact",
+    "obligation",
+}
+QCSA_AUTHORITY_RANK = {
+    "none": 0,
+    "read_context": 1,
+    "propose_route": 2,
+    "request_effect": 3,
+    "release_effect": 4,
 }
 RELATION_TYPES = {
     "contradicts": {"temporal": True, "transitive": False},
@@ -64,6 +88,104 @@ class HRLStateFault(ValueError):
             "path": self.path,
             "failure_behavior": "reject_without_approximation_or_cross_scope_reuse",
         }
+
+
+class QCSAFault(ValueError):
+    """Typed, fail-closed semantic-addressing contract fault."""
+
+    def __init__(self, code: str, detail: str, *, path: str = "") -> None:
+        super().__init__(f"{code}: {detail}")
+        self.code = code
+        self.detail = detail
+        self.path = path
+
+    def record(self) -> dict[str, Any]:
+        return {
+            "fault_type": self.code,
+            "detail": self.detail,
+            "path": self.path,
+            "failure_behavior": "reject_without_identity_retarget_or_authority_widening",
+        }
+
+
+def load_qcsa_config(path: Path = DEFAULT_QCSA_CONFIG) -> dict[str, Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise QCSAFault("VCM_QCSA_CONFIG_UNREADABLE", str(exc), path=str(path)) from exc
+    return validate_qcsa_config(payload)
+
+
+def validate_qcsa_config(payload: dict[str, Any]) -> dict[str, Any]:
+    if payload.get("policy") != "project_theseus_vcm_qcsa_integration_v1":
+        raise QCSAFault("VCM_QCSA_POLICY_INVALID", str(payload.get("policy")), path="policy")
+    if payload.get("state") != "RETAIN_BOUNDED_MECHANISMS_RETIRE_FULL_QCSA_FIRST_RUN":
+        raise QCSAFault("VCM_QCSA_DISPOSITION_INVALID", str(payload.get("state")), path="state")
+    if payload.get("architecture_scope") != "existing_vcm_scf_viea_owners_only":
+        raise QCSAFault("VCM_QCSA_SIDECAR_SCOPE_INVALID", str(payload.get("architecture_scope")), path="architecture_scope")
+    retained = tuple(payload.get("retained_mechanisms") or ())
+    expected_retained = (
+        "stable_soid_address_physical_route_indirection",
+        "plural_authoritative_atlas_facets",
+        "semantic_address_certificate_with_residual_and_authority_fields",
+        "explicit_atlas_migration_compatibility_and_exact_rollback",
+        "semantic_resolution_separate_from_effect_authority",
+    )
+    if retained != expected_retained:
+        raise QCSAFault("VCM_QCSA_RETAINED_MECHANISMS_INVALID", _canonical(retained), path="retained_mechanisms")
+    if tuple(payload.get("retired_from_first_long_run") or ()) != (
+        "full_qcsa_composed_training_objective",
+        "adaptive_active_question_policy",
+    ):
+        raise QCSAFault("VCM_QCSA_RETIRED_MECHANISMS_INVALID", _canonical(payload.get("retired_from_first_long_run")), path="retired_from_first_long_run")
+    atlas = payload.get("atlas") if isinstance(payload.get("atlas"), dict) else {}
+    facets = atlas.get("facets") if isinstance(atlas.get("facets"), list) else []
+    facet_ids = [str(row.get("facet_id") or "") for row in facets if isinstance(row, dict)]
+    if len(facet_ids) < 3 or len(set(facet_ids)) != len(facet_ids) or any(not value for value in facet_ids):
+        raise QCSAFault("VCM_QCSA_ATLAS_FACETS_INVALID", _canonical(facet_ids), path="atlas.facets")
+    certificate = payload.get("certificate") if isinstance(payload.get("certificate"), dict) else {}
+    allowed = set(certificate.get("allowed_uses") or [])
+    prohibited = set(certificate.get("prohibited_uses") or [])
+    if not allowed or allowed.intersection(prohibited):
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_USE_POLICY_INVALID", _canonical(certificate), path="certificate")
+    if certificate.get("authority_ceiling") != "propose_route":
+        raise QCSAFault("VCM_QCSA_AUTHORITY_CEILING_INVALID", str(certificate.get("authority_ceiling")), path="certificate.authority_ceiling")
+    evidence = payload.get("evidence") if isinstance(payload.get("evidence"), dict) else {}
+    hashes = evidence.get("artifact_sha256") if isinstance(evidence.get("artifact_sha256"), dict) else {}
+    expected_hashes = {
+        "whitepaper", "package_manifest", "implementation_result", "frozen_evaluation_result",
+        "evaluation_dispositions", "vertical_result", "implementation_validator",
+        "evaluation_validator", "vertical_validator",
+    }
+    if set(hashes) != expected_hashes or any(not re.fullmatch(r"[0-9a-f]{64}", str(value)) for value in hashes.values()):
+        raise QCSAFault("VCM_QCSA_EVIDENCE_HASH_SET_INVALID", _canonical(hashes), path="evidence.artifact_sha256")
+    denominators = evidence.get("denominators")
+    if denominators != {
+        "implementation_lanes": 12,
+        "heldout_cases": 60,
+        "systems": 13,
+        "seeds": 3,
+        "prediction_records": 2340,
+        "vertical_stages": 13,
+        "vertical_adversarial_paths": 10,
+    }:
+        raise QCSAFault("VCM_QCSA_EVIDENCE_DENOMINATOR_INVALID", _canonical(denominators), path="evidence.denominators")
+    measurements = evidence.get("measurements") if isinstance(evidence.get("measurements"), dict) else {}
+    if not (
+        float(measurements.get("qcsa_task_decision_accuracy", -1.0))
+        == float(measurements.get("best_baseline_task_decision_accuracy", -2.0))
+        == 1.0
+        and float(measurements.get("operation_ratio", 0.0)) > 1.5
+        and float(measurements.get("no_active_questions_object_accuracy", -1.0)) == 1.0
+        and float(measurements.get("no_active_questions_task_accuracy", -1.0)) == 1.0
+        and int(measurements.get("no_certificate_authority_unsafe_release_count", -1)) == 9
+        and float(measurements.get("full_migration_compatibility", -1.0)) == 1.0
+    ):
+        raise QCSAFault("VCM_QCSA_EVIDENCE_MEASUREMENTS_INVALID", _canonical(measurements), path="evidence.measurements")
+    replay = evidence.get("replay_state") if isinstance(evidence.get("replay_state"), dict) else {}
+    if replay.get("evaluation_byte_replay") != "RED_ONE_MICRO_ROUNDING_DRIFT" or (replay.get("rounding_drift") or {}).get("decision_or_gate_changed") is not False:
+        raise QCSAFault("VCM_QCSA_REPLAY_BOUNDARY_INVALID", _canonical(replay), path="evidence.replay_state")
+    return copy.deepcopy(payload)
 
 
 def create_hierarchical_residual_state(
@@ -494,8 +616,75 @@ def _object_root(address: str) -> str:
     return re.sub(r"@v[^/]+$", "", address)
 
 
-def _semantic_id(address: str) -> str:
-    return _stable_id("semobj", _object_root(address))
+def _page_source(page: dict[str, Any]) -> dict[str, Any]:
+    source = page.get("source")
+    if isinstance(source, dict) and source.get("source_path"):
+        return source
+    authoritative = page.get("authoritative_sources")
+    if isinstance(authoritative, list):
+        for row in authoritative:
+            if isinstance(row, dict) and row.get("source_path"):
+                return row
+    return {}
+
+
+def _identity_kind(page: dict[str, Any]) -> str:
+    metadata = page.get("metadata") if isinstance(page.get("metadata"), dict) else {}
+    explicit = str(metadata.get("semantic_identity_kind") or "")
+    if explicit:
+        if explicit not in SEMANTIC_IDENTITY_KINDS:
+            raise QCSAFault("VCM_QCSA_IDENTITY_KIND_INVALID", explicit, path="page.metadata.semantic_identity_kind")
+        return explicit
+    page_type = str(page.get("type") or "unknown")
+    return {
+        "architecture_spec": "artifact",
+        "checkpoint": "artifact",
+        "evidence": "proposition",
+        "policy": "policy",
+        "procedure": "obligation",
+        "scoped_preference": "proposition",
+        "task_state": "memory",
+        "tool_output": "artifact",
+    }.get(page_type, "occurrence")
+
+
+def _semantic_identity(page: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    metadata = page.get("metadata") if isinstance(page.get("metadata"), dict) else {}
+    explicit_soid = str(metadata.get("semantic_object_id") or "")
+    if explicit_soid:
+        if not re.fullmatch(r"soid:[0-9a-f]{24,64}", explicit_soid):
+            raise QCSAFault("VCM_QCSA_SOID_INVALID", explicit_soid, path="page.metadata.semantic_object_id")
+        return explicit_soid, {
+            "kind": "explicit_soid",
+            "basis_digest": _digest(explicit_soid),
+            "address_independent": True,
+        }
+    explicit_key = str(metadata.get("semantic_identity_key") or "")
+    packet_id = str(metadata.get("packet_id") or "")
+    usage_id = str(
+        metadata.get("usage_event_id")
+        or metadata.get("usage_id")
+        or metadata.get("event_id")
+        or ""
+    )
+    source_kind = str(metadata.get("source_kind") or "")
+    source = _page_source(page)
+    source_path = str(source.get("source_path") or "")
+    if explicit_key:
+        basis_kind, basis = "explicit_identity_key", explicit_key
+    elif source_kind == "context_packet" and packet_id:
+        basis_kind, basis = "context_packet_id", packet_id
+    elif source_kind == "dogfood_usage_event" and usage_id:
+        basis_kind, basis = "usage_event_id", usage_id
+    elif source_path:
+        basis_kind, basis = "authoritative_source_path", source_path
+    else:
+        basis_kind, basis = "legacy_address_root", _object_root(str(page.get("address") or ""))
+    return _stable_id("soid", f"project-theseus\n{basis_kind}\n{basis}"), {
+        "kind": basis_kind,
+        "basis_digest": _digest(basis),
+        "address_independent": basis_kind != "legacy_address_root",
+    }
 
 
 def _page_text(page: dict[str, Any]) -> str:
@@ -509,7 +698,7 @@ def _page_text(page: dict[str, Any]) -> str:
     for level in ("L1", "L2", "L3"):
         rep = reps.get(level) if isinstance(reps.get(level), dict) else {}
         pieces.append(str(rep.get("materialized_text") or ""))
-    source = page.get("source") if isinstance(page.get("source"), dict) else {}
+    source = _page_source(page)
     pieces.append(str(source.get("source_path") or ""))
     return " ".join(pieces)
 
@@ -562,8 +751,8 @@ def _object_record(
     prior_objects: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
     address = str(page.get("address") or "")
-    object_id = _semantic_id(address)
-    source = page.get("source") if isinstance(page.get("source"), dict) else {}
+    object_id, identity_basis = _semantic_identity(page)
+    source = _page_source(page)
     source_path = str(source.get("source_path") or "")
     lifecycle = _lifecycle_state(page, invalidated)
     usage_count = usage_counts[address] + usage_counts[source_path]
@@ -579,6 +768,21 @@ def _object_record(
         "observed_utc": page.get("created_utc") or _now(),
     }
     prior = prior_objects.get(object_id, {})
+    if not prior:
+        address_root = _object_root(address)
+        prior = next(
+            (
+                row
+                for row in prior_objects.values()
+                if str(row.get("stable_namespace") or "") == address_root
+                or any(
+                    _object_root(str(revision_row.get("address") or "")) == address_root
+                    for revision_row in row.get("revision_history", [])
+                    if isinstance(revision_row, dict)
+                )
+            ),
+            {},
+        )
     prior_revisions = prior.get("revision_history") if isinstance(prior.get("revision_history"), list) else []
     revisions = [row for row in prior_revisions if isinstance(row, dict) and row.get("content_hash") != revision["content_hash"]]
     revisions.append(revision)
@@ -587,6 +791,15 @@ def _object_record(
     return {
         "record_type": "semantic_object_record",
         "semantic_object_id": object_id,
+        "identity_kind": _identity_kind(page),
+        "identity_basis": identity_basis,
+        "legacy_semantic_object_ids": sorted(
+            {
+                str(prior.get("semantic_object_id") or ""),
+                *[str(value) for value in prior.get("legacy_semantic_object_ids", [])],
+            }
+            - {"", object_id}
+        ),
         "stable_namespace": _object_root(address),
         "current_address": address,
         "object_type": object_type,
@@ -610,6 +823,465 @@ def _object_record(
             "forgetting_semantics": "retrieval_suppression_and_payload_tombstone_only",
             "parametric_unlearning_claimed": False,
         },
+    }
+
+
+def build_semantic_identity_registry(
+    objects: list[dict[str, Any]],
+    *,
+    previous: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    previous = previous if isinstance(previous, dict) else {}
+    bindings: list[dict[str, Any]] = []
+    seen_addresses: dict[str, str] = {}
+    seen_soids: set[str] = set()
+    legacy_lineage: list[dict[str, Any]] = []
+    for row in objects:
+        soid = str(row.get("semantic_object_id") or "")
+        address = str(row.get("current_address") or "")
+        if not re.fullmatch(r"soid:[0-9a-f]{24,64}", soid):
+            raise QCSAFault("VCM_QCSA_SOID_INVALID", soid, path="objects.semantic_object_id")
+        if not address:
+            raise QCSAFault("VCM_QCSA_ADDRESS_MISSING", soid, path="objects.current_address")
+        if address in seen_addresses:
+            raise QCSAFault(
+                "VCM_QCSA_ADDRESS_COLLISION",
+                f"{address};owners={seen_addresses[address]},{soid}",
+                path="identity_registry.address_bindings",
+            )
+        seen_addresses[address] = soid
+        seen_soids.add(soid)
+        bindings.append(
+            {
+                "address": address,
+                "soid": soid,
+                "identity_kind": row.get("identity_kind"),
+                "lifecycle_state": row.get("lifecycle_state"),
+                "binding_digest": _digest({"address": address, "soid": soid}),
+            }
+        )
+        for legacy in row.get("legacy_semantic_object_ids", []):
+            legacy_lineage.append(
+                {
+                    "from_id": str(legacy),
+                    "to_soid": soid,
+                    "mode": "explicit_qcsa_identity_projection",
+                }
+            )
+    previous_bindings = {
+        str(row.get("address") or ""): str(row.get("soid") or "")
+        for row in previous.get("address_bindings", [])
+        if isinstance(row, dict)
+    }
+    retargets = []
+    for address, old in previous_bindings.items():
+        current = seen_addresses.get(address)
+        if not current or not old or old == current:
+            continue
+        retargets.append({"address": address, "previous_soid": old, "current_soid": current})
+    if retargets:
+        raise QCSAFault("VCM_QCSA_SILENT_ADDRESS_RETARGET", _canonical(retargets), path="identity_registry.address_bindings")
+    body = {
+        "policy": "project_theseus_vcm_semantic_identity_registry_v1",
+        "qcsa_version": QCSA_VERSION,
+        "object_count": len(seen_soids),
+        "address_bindings": sorted(bindings, key=lambda row: (str(row["address"]), str(row["soid"]))),
+        "legacy_lineage": sorted(legacy_lineage, key=lambda row: (row["from_id"], row["to_soid"])),
+        "approved_identity_migrations": [],
+        "identity_is_separate_from_address": all(
+            bool((row.get("identity_basis") or {}).get("address_independent"))
+            for row in objects
+        ),
+        "similarity_or_neighborhood_establishes_identity": False,
+    }
+    body["registry_digest"] = _digest(body)
+    return body
+
+
+def _atlas_path(object_row: dict[str, Any], facet_id: str, epoch: str) -> list[str]:
+    provenance = object_row.get("provenance") if isinstance(object_row.get("provenance"), dict) else {}
+    if facet_id == "task_retrieval":
+        raw = [
+            str(object_row.get("object_type") or "unknown"),
+            str(object_row.get("execution_class") or "unknown"),
+            *sorted((object_row.get("retrieval_vector") or {}).keys())[:2],
+        ]
+    elif facet_id == "evidence_authority":
+        raw = [
+            str(provenance.get("source_role") or "unknown"),
+            "protected" if object_row.get("object_type") in PROTECTED_TYPES else "ordinary",
+            str(object_row.get("identity_kind") or "occurrence"),
+        ]
+    elif facet_id == "lifecycle_storage":
+        raw = [
+            str(object_row.get("lifecycle_state") or "unknown"),
+            str(object_row.get("consolidation_tier") or "unknown"),
+            str((object_row.get("payload_policy") or {}).get("materialization") or "unknown"),
+        ]
+    else:
+        raise QCSAFault("VCM_QCSA_FACET_UNKNOWN", facet_id, path="atlas.facets")
+    path: list[str] = []
+    prefix: list[str] = []
+    for value in [item for item in raw if item]:
+        prefix.append(value)
+        path.append(f"sva:{epoch}:{facet_id}:{sha256(_canonical(prefix).encode('utf-8')).hexdigest()[:16]}")
+    if not path:
+        raise QCSAFault("VCM_QCSA_EMPTY_ADDRESS_PATH", str(object_row.get("semantic_object_id")), path=f"atlas.paths.{facet_id}")
+    return path
+
+
+def build_semantic_address_atlas(
+    objects: list[dict[str, Any]],
+    config: dict[str, Any],
+    *,
+    epoch: str | None = None,
+) -> dict[str, Any]:
+    config = validate_qcsa_config(config)
+    atlas_config = config["atlas"]
+    authoritative_epoch = str(epoch or atlas_config["authoritative_epoch"])
+    if not authoritative_epoch:
+        raise QCSAFault("VCM_QCSA_ATLAS_EPOCH_MISSING", "", path="atlas.authoritative_epoch")
+    facet_rows = copy.deepcopy(atlas_config["facets"])
+    paths: dict[str, dict[str, list[str]]] = {}
+    for row in objects:
+        soid = str(row["semantic_object_id"])
+        paths[soid] = {
+            str(facet["facet_id"]): _atlas_path(row, str(facet["facet_id"]), authoritative_epoch)
+            for facet in facet_rows
+        }
+    body = {
+        "record_type": "vcm_plural_semantic_address_atlas",
+        "policy": "project_theseus_vcm_plural_atlas_v1",
+        "qcsa_version": QCSA_VERSION,
+        "epoch_id": authoritative_epoch,
+        "authority_state": "authoritative",
+        "candidate_epochs_may_route": False,
+        "immutable": True,
+        "facets": facet_rows,
+        "paths": paths,
+        "object_count": len(paths),
+        "residuals": [
+            "paths_are_deterministic_local_projections_not_learned_semantic_quality",
+            "natural_task_advantage_unestablished",
+        ],
+    }
+    body["codebook_digest"] = _digest(
+        {key: body[key] for key in ("epoch_id", "facets", "paths")}
+    )
+    return body
+
+
+def issue_semantic_address_certificate(
+    object_row: dict[str, Any],
+    atlas: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    task: str,
+    consumer: str = "vcm_context_compiler",
+) -> dict[str, Any]:
+    config = validate_qcsa_config(config)
+    soid = str(object_row.get("semantic_object_id") or "")
+    paths = (atlas.get("paths") or {}).get(soid)
+    if not isinstance(paths, dict) or not paths:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_PATHS_MISSING", soid, path="atlas.paths")
+    certificate_config = config["certificate"]
+    weighted_paths = [
+        {
+            "facet_id": facet_id,
+            "path": path,
+            "weight": round(1.0 / len(paths), 8),
+        }
+        for facet_id, path in sorted(paths.items())
+    ]
+    body = {
+        "record_type": "semantic_address_certificate",
+        "policy": "project_theseus_vcm_semantic_address_certificate_v1",
+        "qcsa_version": QCSA_VERSION,
+        "soid": soid,
+        "identity_kind": object_row.get("identity_kind"),
+        "occurrence_or_expression": {
+            "address": object_row.get("current_address"),
+            "content_hash": (object_row.get("current_revision") or {}).get("content_hash"),
+        },
+        "context": {"task_digest": _digest(task), "scope": "local_private_vcm"},
+        "task": task,
+        "consumer": consumer,
+        "atlas_epoch": atlas.get("epoch_id"),
+        "weighted_top_k_paths": weighted_paths,
+        "confidence": 1.0,
+        "confidence_semantics": "exact_registry_binding_not_semantic_correctness",
+        "entropy": 0.0,
+        "boundary_state": "exact_registered_object",
+        "adequacy_termination": "sufficient_for_address_resolution_only",
+        "cross_facet_consistency": len(weighted_paths) == len(paths),
+        "provenance": copy.deepcopy(object_row.get("provenance") or {}),
+        "groundings": [
+            {
+                "address": object_row.get("current_address"),
+                "content_hash": (object_row.get("current_revision") or {}).get("content_hash"),
+            }
+        ],
+        "residuals": [
+            "natural_semantic_adequacy_unestablished",
+            "learned_addressing_unestablished",
+            "production_route_quality_unestablished",
+        ],
+        "allowed_uses": list(certificate_config["allowed_uses"]),
+        "prohibited_uses": list(certificate_config["prohibited_uses"]),
+        "authority_ceiling": certificate_config["authority_ceiling"],
+        "validity": {
+            "lifecycle_state": object_row.get("lifecycle_state"),
+            "expires_utc": None,
+            "revalidation_triggers": list(certificate_config["revalidation_triggers"]),
+        },
+        "migration": {
+            "compatible_epoch": atlas.get("epoch_id"),
+            "requires_explicit_receipt_for_new_epoch": True,
+            "silent_soid_retarget_forbidden": True,
+        },
+        "effect_authority_granted": False,
+    }
+    body["certificate_digest"] = _digest(body)
+    body["certificate_id"] = _stable_id("sac", body["certificate_digest"])
+    return body
+
+
+def verify_semantic_address_certificate(
+    certificate: dict[str, Any],
+    semantic_memory: dict[str, Any],
+    *,
+    requested_use: str,
+    requested_authority: str,
+    expected_task: str | None = None,
+    expected_consumer: str | None = None,
+) -> dict[str, Any]:
+    if certificate.get("policy") != "project_theseus_vcm_semantic_address_certificate_v1":
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_POLICY_INVALID", str(certificate.get("policy")), path="certificate.policy")
+    unsigned = copy.deepcopy(certificate)
+    observed_digest = str(unsigned.pop("certificate_digest", ""))
+    unsigned.pop("certificate_id", None)
+    expected_digest = _digest(unsigned)
+    if observed_digest != expected_digest:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_DIGEST_INVALID", observed_digest, path="certificate.certificate_digest")
+    if certificate.get("certificate_id") != _stable_id("sac", observed_digest):
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_ID_INVALID", str(certificate.get("certificate_id")), path="certificate.certificate_id")
+    atlas = semantic_memory.get("semantic_address_atlas") if isinstance(semantic_memory.get("semantic_address_atlas"), dict) else {}
+    if certificate.get("atlas_epoch") != atlas.get("epoch_id") or atlas.get("authority_state") != "authoritative":
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_EPOCH_STALE", str(certificate.get("atlas_epoch")), path="certificate.atlas_epoch")
+    expected_codebook_digest = _digest(
+        {key: atlas.get(key) for key in ("epoch_id", "facets", "paths")}
+    )
+    if atlas.get("codebook_digest") != expected_codebook_digest:
+        raise QCSAFault("VCM_QCSA_ATLAS_DIGEST_INVALID", str(atlas.get("codebook_digest")), path="atlas.codebook_digest")
+    soid = str(certificate.get("soid") or "")
+    objects = {str(row.get("semantic_object_id") or ""): row for row in semantic_memory.get("objects", []) if isinstance(row, dict)}
+    if soid not in objects:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_SOID_UNKNOWN", soid, path="certificate.soid")
+    object_row = objects[soid]
+    occurrence = certificate.get("occurrence_or_expression") if isinstance(certificate.get("occurrence_or_expression"), dict) else {}
+    current_revision = object_row.get("current_revision") if isinstance(object_row.get("current_revision"), dict) else {}
+    if occurrence != {
+        "address": object_row.get("current_address"),
+        "content_hash": current_revision.get("content_hash"),
+    }:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_OBJECT_STATE_STALE", soid, path="certificate.occurrence_or_expression")
+    validity = certificate.get("validity") if isinstance(certificate.get("validity"), dict) else {}
+    if validity.get("lifecycle_state") != object_row.get("lifecycle_state"):
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_LIFECYCLE_STALE", soid, path="certificate.validity.lifecycle_state")
+    atlas_paths = (atlas.get("paths") or {}).get(soid)
+    expected_weighted_paths = [
+        {
+            "facet_id": facet_id,
+            "path": path,
+            "weight": round(1.0 / len(atlas_paths), 8),
+        }
+        for facet_id, path in sorted(atlas_paths.items())
+    ] if isinstance(atlas_paths, dict) and atlas_paths else []
+    if certificate.get("weighted_top_k_paths") != expected_weighted_paths:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_PATHS_STALE", soid, path="certificate.weighted_top_k_paths")
+    if requested_use not in set(certificate.get("allowed_uses") or []) or requested_use in set(certificate.get("prohibited_uses") or []):
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_USE_DENIED", requested_use, path="requested_use")
+    if requested_authority not in QCSA_AUTHORITY_RANK:
+        raise QCSAFault("VCM_QCSA_AUTHORITY_UNKNOWN", requested_authority, path="requested_authority")
+    ceiling = str(certificate.get("authority_ceiling") or "none")
+    if ceiling not in QCSA_AUTHORITY_RANK or QCSA_AUTHORITY_RANK[requested_authority] > QCSA_AUTHORITY_RANK[ceiling]:
+        raise QCSAFault("VCM_QCSA_AUTHORITY_CEILING_EXCEEDED", f"requested={requested_authority};ceiling={ceiling}", path="requested_authority")
+    if expected_task is not None and certificate.get("task") != expected_task:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_TASK_MISMATCH", str(certificate.get("task")), path="certificate.task")
+    if expected_consumer is not None and certificate.get("consumer") != expected_consumer:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_CONSUMER_MISMATCH", str(certificate.get("consumer")), path="certificate.consumer")
+    if not certificate.get("residuals") or certificate.get("effect_authority_granted") is not False:
+        raise QCSAFault("VCM_QCSA_CERTIFICATE_BOUNDARY_INVALID", soid, path="certificate")
+    return {
+        "state": "VERIFIED_FOR_REQUESTED_USE",
+        "soid": soid,
+        "requested_use": requested_use,
+        "requested_authority": requested_authority,
+        "effect_authority_granted": False,
+        "certificate_digest": observed_digest,
+    }
+
+
+def translate_semantic_address(
+    semantic_memory: dict[str, Any],
+    certificate: dict[str, Any],
+    *,
+    requested_use: str = "route_proposal",
+    requested_authority: str = "propose_route",
+    preferred_representation: str = "L2",
+    expected_task: str | None = None,
+    expected_consumer: str = "vcm_context_compiler",
+) -> dict[str, Any]:
+    if preferred_representation not in {"L0", "L1", "L2", "L3", "L4", "L5"}:
+        raise QCSAFault("VCM_QCSA_REPRESENTATION_INVALID", preferred_representation, path="preferred_representation")
+    verified = verify_semantic_address_certificate(
+        certificate,
+        semantic_memory,
+        requested_use=requested_use,
+        requested_authority=requested_authority,
+        expected_task=expected_task,
+        expected_consumer=expected_consumer,
+    )
+    objects = {str(row.get("semantic_object_id") or ""): row for row in semantic_memory.get("objects", []) if isinstance(row, dict)}
+    row = objects[verified["soid"]]
+    if row.get("lifecycle_state") != "active":
+        raise QCSAFault("VCM_QCSA_ROUTE_LIFECYCLE_DENIED", str(row.get("lifecycle_state")), path="object.lifecycle_state")
+    route = {
+        "record_type": "vcm_semantic_to_physical_route",
+        "policy": "project_theseus_vcm_semantic_to_physical_route_v1",
+        "soid": verified["soid"],
+        "semantic_address_epoch": certificate["atlas_epoch"],
+        "physical_address": row.get("current_address"),
+        "representation": preferred_representation,
+        "requested_use": requested_use,
+        "authority_request": requested_authority,
+        "authority_ceiling": certificate["authority_ceiling"],
+        "effect_authority_granted": False,
+        "requires_separate_scf_effect_authorization": True,
+        "certificate_digest": verified["certificate_digest"],
+    }
+    route["route_digest"] = _digest(route)
+    return route
+
+
+def _qcsa_state_digest(state: dict[str, Any]) -> str:
+    return _digest(
+        {
+            key: state.get(key)
+            for key in (
+                "ontology", "objects", "relations", "identity_registry",
+                "semantic_address_atlas", "semantic_address_certificates",
+            )
+        }
+    )
+
+
+def migrate_semantic_atlas(
+    semantic_memory: dict[str, Any],
+    *,
+    target_epoch: str,
+    changes: list[dict[str, Any]],
+    inventory: dict[str, list[str]],
+    shadow_passed: bool,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    required_inventory = {"descendants", "caches", "backups", "receipts"}
+    if set(inventory) != required_inventory or any(not isinstance(inventory[key], list) or not inventory[key] for key in required_inventory):
+        raise QCSAFault("VCM_QCSA_MIGRATION_INVENTORY_INCOMPLETE", _canonical(inventory), path="inventory")
+    source_atlas = semantic_memory.get("semantic_address_atlas") if isinstance(semantic_memory.get("semantic_address_atlas"), dict) else {}
+    source_epoch = str(source_atlas.get("epoch_id") or "")
+    if not source_epoch or source_atlas.get("authority_state") != "authoritative" or not target_epoch or target_epoch == source_epoch:
+        raise QCSAFault("VCM_QCSA_MIGRATION_EPOCH_INVALID", f"{source_epoch}->{target_epoch}", path="target_epoch")
+    if not shadow_passed:
+        raise QCSAFault("VCM_QCSA_MIGRATION_SHADOW_FAILED", target_epoch, path="shadow_passed")
+    before = copy.deepcopy(semantic_memory)
+    working = copy.deepcopy(semantic_memory)
+    by_id = {str(row.get("semantic_object_id") or ""): row for row in working.get("objects", []) if isinstance(row, dict)}
+    address_owner = {str(row.get("current_address") or ""): soid for soid, row in by_id.items()}
+    compatibility: list[dict[str, Any]] = []
+    typed_failures: list[dict[str, Any]] = []
+    for index, change in enumerate(changes):
+        mode = str(change.get("mode") or "readdress")
+        if mode == "fail":
+            typed_failures.append({**copy.deepcopy(change), "status": "typed_failure"})
+            continue
+        if mode != "readdress":
+            raise QCSAFault("VCM_QCSA_MIGRATION_MODE_UNSUPPORTED", mode, path=f"changes[{index}].mode")
+        soid = str(change.get("soid") or "")
+        row = by_id.get(soid)
+        if row is None:
+            raise QCSAFault("VCM_QCSA_MIGRATION_SOID_UNKNOWN", soid, path=f"changes[{index}].soid")
+        old_address = str(row.get("current_address") or "")
+        new_address = str(change.get("new_address") or "")
+        if not new_address or (new_address in address_owner and address_owner[new_address] != soid):
+            raise QCSAFault("VCM_QCSA_MIGRATION_ADDRESS_COLLISION", new_address, path=f"changes[{index}].new_address")
+        if change.get("new_soid") not in {None, "", soid}:
+            raise QCSAFault("VCM_QCSA_SILENT_MIGRATION_RETARGET", str(change.get("new_soid")), path=f"changes[{index}].new_soid")
+        row["current_address"] = new_address
+        row["stable_namespace"] = _object_root(new_address)
+        row.setdefault("revision_history", []).append(
+            {
+                **copy.deepcopy(row.get("current_revision") or {}),
+                "address": new_address,
+                "migration_epoch": target_epoch,
+            }
+        )
+        row["current_revision"] = copy.deepcopy(row["revision_history"][-1])
+        address_owner.pop(old_address, None)
+        address_owner[new_address] = soid
+        compatibility.append(
+            {"soid": soid, "old_address": old_address, "new_address": new_address, "status": "compatible_same_soid"}
+        )
+    config = load_qcsa_config()
+    prior_identity_context = copy.deepcopy(semantic_memory.get("identity_registry") or {})
+    prior_identity_context["objects"] = copy.deepcopy(semantic_memory.get("objects") or [])
+    working["identity_registry"] = build_semantic_identity_registry(
+        working["objects"], previous=prior_identity_context
+    )
+    working["semantic_address_atlas"] = build_semantic_address_atlas(
+        working["objects"], config, epoch=target_epoch
+    )
+    task = str(working.get("task") or "")
+    working["semantic_address_certificates"] = [
+        issue_semantic_address_certificate(row, working["semantic_address_atlas"], config, task=task)
+        for row in working["objects"]
+    ]
+    before_digest = _qcsa_state_digest(before)
+    after_digest = _qcsa_state_digest(working)
+    receipt = {
+        "record_type": "vcm_semantic_atlas_migration_receipt",
+        "policy": "project_theseus_vcm_semantic_atlas_migration_v1",
+        "source_epoch": source_epoch,
+        "target_epoch": target_epoch,
+        "compatibility": compatibility,
+        "typed_failures": typed_failures,
+        "shadow_passed": True,
+        "inventory": copy.deepcopy(inventory),
+        "before_state_digest": before_digest,
+        "after_state_digest": after_digest,
+        "same_soid_preserved": all(row["soid"] in by_id for row in compatibility),
+        "rollback_state": before,
+        "rollback_state_digest": before_digest,
+        "effect_authority_granted": False,
+    }
+    receipt["receipt_digest"] = _digest({key: value for key, value in receipt.items() if key != "rollback_state"})
+    return working, receipt
+
+
+def rollback_semantic_atlas(
+    migrated: dict[str, Any],
+    receipt: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    if _qcsa_state_digest(migrated) != receipt.get("after_state_digest"):
+        raise QCSAFault("VCM_QCSA_ROLLBACK_AFTER_STATE_MISMATCH", str(receipt.get("after_state_digest")), path="receipt.after_state_digest")
+    restored = copy.deepcopy(receipt.get("rollback_state"))
+    if not isinstance(restored, dict) or _qcsa_state_digest(restored) != receipt.get("rollback_state_digest"):
+        raise QCSAFault("VCM_QCSA_ROLLBACK_STATE_INVALID", str(receipt.get("rollback_state_digest")), path="receipt.rollback_state")
+    return restored, {
+        "state": "ROLLED_BACK_EXACTLY",
+        "restored_epoch": (restored.get("semantic_address_atlas") or {}).get("epoch_id"),
+        "restored_state_digest": _qcsa_state_digest(restored),
+        "matches_pre_migration": True,
+        "effect_authority_granted": False,
     }
 
 
@@ -654,15 +1326,29 @@ def _relation_records(
     return sorted(unique.values(), key=lambda row: str(row["relation_id"])), rejected
 
 
-def _migration_record(previous: dict[str, Any]) -> dict[str, Any]:
+def _migration_record(previous: dict[str, Any], objects: list[dict[str, Any]]) -> dict[str, Any]:
     prior_ontology = previous.get("ontology") if isinstance(previous.get("ontology"), dict) else {}
     from_version = str(prior_ontology.get("version") or "none")
     changes = [] if from_version == ONTOLOGY_VERSION else [
-        "stable semantic object identity",
+        "opaque semantic object identity independent of semantic address",
         "typed temporal relation records",
         "explicit lifecycle and consolidation tiers",
         "hybrid sparse-vector and graph retrieval",
+        "plural authoritative semantic-address facets",
+        "consumer-bound semantic address certificates",
+        "authority-safe semantic-to-physical route proposals",
     ]
+    prior_ids = {
+        str(row.get("semantic_object_id") or "")
+        for row in previous.get("objects", [])
+        if isinstance(row, dict) and row.get("semantic_object_id")
+    }
+    current_ids = {str(row.get("semantic_object_id") or "") for row in objects}
+    legacy_ids = {
+        str(value)
+        for row in objects
+        for value in row.get("legacy_semantic_object_ids", [])
+    }
     return {
         "record_type": "ontology_migration_record",
         "migration_id": _stable_id("ontmig", f"{from_version}->{ONTOLOGY_VERSION}"),
@@ -671,7 +1357,8 @@ def _migration_record(previous: dict[str, Any]) -> dict[str, Any]:
         "mode": "identity" if not changes else "additive_projection",
         "changes": changes,
         "destructive": False,
-        "preserves_object_ids": True,
+        "preserves_object_ids": prior_ids.issubset(current_ids),
+        "preserves_identity_lineage": prior_ids.issubset(current_ids | legacy_ids),
         "preserves_revision_history": True,
         "rollback": "reload prior graph artifact; source VCM pages remain authoritative",
     }
@@ -989,7 +1676,11 @@ def _bounded_snapshot(
 def restart_replay_receipt(semantic_memory: dict[str, Any], *, query: str = "current project policy") -> dict[str, Any]:
     durable = {
         key: semantic_memory.get(key)
-        for key in ("ontology", "objects", "relations", "consolidation_records", "bounded_snapshot")
+        for key in (
+            "ontology", "objects", "relations", "consolidation_records",
+            "bounded_snapshot", "identity_registry", "semantic_address_atlas",
+            "semantic_address_certificates", "qcsa_integration",
+        )
     }
     before_digest = _digest(durable)
     reloaded = json.loads(_canonical(durable))
@@ -1020,6 +1711,16 @@ def build_semantic_memory(
     task: str = "",
 ) -> dict[str, Any]:
     previous = previous if isinstance(previous, dict) else {}
+    qcsa_config = load_qcsa_config()
+    input_addresses = [str(page.get("address") or "") for page in pages]
+    address_counts = Counter(input_addresses)
+    duplicate_addresses = sorted(address for address, count in address_counts.items() if address and count > 1)
+    if duplicate_addresses:
+        raise QCSAFault(
+            "VCM_QCSA_ADDRESS_COLLISION",
+            _canonical(duplicate_addresses),
+            path="pages.address",
+        )
     previous_objects = {
         str(row.get("semantic_object_id") or ""): row
         for row in previous.get("objects", [])
@@ -1036,6 +1737,17 @@ def build_semantic_memory(
     relations, rejected_relations = _relation_records(graph, object_by_address)
     lifecycle_operations = derive_lifecycle_operations(objects, relations)
     objects, relations, lifecycle_transactions = apply_lifecycle_transactions(objects, relations, lifecycle_operations)
+    prior_identity_context = copy.deepcopy(previous.get("identity_registry") or {})
+    prior_identity_context["objects"] = copy.deepcopy(previous.get("objects") or [])
+    identity_registry = build_semantic_identity_registry(
+        objects,
+        previous=prior_identity_context,
+    )
+    semantic_address_atlas = build_semantic_address_atlas(objects, qcsa_config)
+    semantic_address_certificates = [
+        issue_semantic_address_certificate(row, semantic_address_atlas, qcsa_config, task=task)
+        for row in objects
+    ]
     ontology = {
         "record_type": "semantic_memory_ontology",
         "version": ONTOLOGY_VERSION,
@@ -1044,20 +1756,32 @@ def build_semantic_memory(
         "lifecycle_states": ["active", "quarantined", "retracted", "superseded"],
         "consolidation_tiers": ["hot", "warm", "cold"],
         "unknown_types_fail_closed": True,
+        "semantic_identity_kinds": sorted(SEMANTIC_IDENTITY_KINDS),
+        "identity_address_physical_route_are_distinct": True,
     }
     semantic_memory = {
         "policy": "project_theseus_vcm_semantic_memory_v1",
         "created_utc": _now(),
+        "task": task,
         "ontology": ontology,
-        "ontology_migrations": [_migration_record(previous)],
+        "ontology_migrations": [_migration_record(previous, objects)],
         "objects": objects,
         "relations": relations,
         "rejected_relations": rejected_relations,
         "lifecycle_transactions": lifecycle_transactions,
         "consolidation_records": _consolidation_records(objects),
         "bounded_snapshot": _bounded_snapshot(objects, relations, task=task),
+        "identity_registry": identity_registry,
+        "semantic_address_atlas": semantic_address_atlas,
+        "semantic_address_certificates": semantic_address_certificates,
         "claims": {
             "stable_semantic_identity": True,
+            "identity_address_physical_route_indirection": True,
+            "plural_authoritative_atlas_facets": True,
+            "semantic_address_certificates": True,
+            "semantic_resolution_grants_effect_authority": False,
+            "adaptive_active_question_policy": False,
+            "full_qcsa_matched_advantage": False,
             "typed_temporal_relations": True,
             "ontology_migration": True,
             "graph_sparse_vector_hybrid_retrieval": True,
@@ -1068,9 +1792,81 @@ def build_semantic_memory(
         },
         "external_inference_calls": 0,
     }
+    certificate_verifications = [
+        verify_semantic_address_certificate(
+            certificate,
+            semantic_memory,
+            requested_use="context_retrieval",
+            requested_authority="read_context",
+            expected_task=task,
+            expected_consumer="vcm_context_compiler",
+        )
+        for certificate in semantic_address_certificates
+    ]
+    route_probe = None
+    authority_denial = {"state": "NOT_APPLICABLE_EMPTY_MEMORY"}
+    routeable_soids = {
+        str(row.get("semantic_object_id") or "")
+        for row in objects
+        if row.get("lifecycle_state") == "active"
+    }
+    route_probe_certificate = next(
+        (
+            certificate
+            for certificate in semantic_address_certificates
+            if certificate.get("soid") in routeable_soids
+        ),
+        None,
+    )
+    if route_probe_certificate is not None:
+        route_probe = translate_semantic_address(
+            semantic_memory,
+            route_probe_certificate,
+            requested_use="route_proposal",
+            requested_authority="propose_route",
+        )
+        try:
+            translate_semantic_address(
+                semantic_memory,
+                route_probe_certificate,
+                requested_use="route_proposal",
+                requested_authority="release_effect",
+            )
+        except QCSAFault as exc:
+            authority_denial = exc.record()
+        else:
+            raise QCSAFault("VCM_QCSA_EFFECT_AUTHORITY_ESCAPE", "release_effect was accepted", path="qcsa_integration.authority_denial")
+    semantic_memory["qcsa_integration"] = {
+        "policy": qcsa_config["policy"],
+        "state": "GREEN",
+        "architecture_scope": qcsa_config["architecture_scope"],
+        "retained_mechanisms": copy.deepcopy(qcsa_config["retained_mechanisms"]),
+        "retired_from_first_long_run": copy.deepcopy(qcsa_config["retired_from_first_long_run"]),
+        "full_qcsa_training_objective_exposure": 0,
+        "adaptive_active_question_policy_state": "RETIRED_FROM_FIRST_LONG_RUN",
+        "certificate_verification_count": len(certificate_verifications),
+        "certificate_count": len(semantic_address_certificates),
+        "address_independent_identity_count": sum(
+            1 for row in objects if (row.get("identity_basis") or {}).get("address_independent") is True
+        ),
+        "legacy_address_root_identity_count": sum(
+            1 for row in objects if (row.get("identity_basis") or {}).get("address_independent") is not True
+        ),
+        "route_probe": route_probe,
+        "authority_denial_probe": authority_denial,
+        "evidence": copy.deepcopy(qcsa_config["evidence"]),
+        "non_claims": copy.deepcopy(qcsa_config["non_claims"]),
+    }
     semantic_memory["restart_replay"] = restart_replay_receipt(semantic_memory)
     semantic_memory["state_digest"] = _digest(
-        {key: semantic_memory[key] for key in ("ontology", "objects", "relations", "consolidation_records", "bounded_snapshot")}
+        {
+            key: semantic_memory[key]
+            for key in (
+                "ontology", "objects", "relations", "consolidation_records",
+                "bounded_snapshot", "identity_registry", "semantic_address_atlas",
+                "semantic_address_certificates", "qcsa_integration",
+            )
+        }
     )
     return semantic_memory
 

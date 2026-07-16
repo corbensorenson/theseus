@@ -14,8 +14,8 @@ share toward zero. Public benchmarks are calibration only.
 ## Current Verdict
 
 - **Architecture readiness:** not ready for long training. The finite pre-training
-  docket contains 13 known checkpoint-shaping contracts; KERC has a bounded retirement
-  verdict and the remaining 12 must be wired,
+  docket contains 13 known checkpoint-shaping contracts; KERC and QCSA have bounded
+  dispositions and the remaining 11 must be wired,
   falsified, or retired before the architecture-freeze manifest can authorize a run.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
@@ -39,9 +39,15 @@ share toward zero. Public benchmarks are calibration only.
   simple control; and one attack false-allowed. The canonical trainer now enforces
   zero KERC optimizer repetitions and a new plan identity. Protected exact objects and
   scoped interaction glossary residuals remain under VCM/SCF with zero learned credit.
-- **Immediate dependency:** close the remaining 12 finite architecture contracts
-  through existing registry owners, beginning with QCSA identity/address/physical-
-  route separation and migration. Publish a
+- **QCSA disposition:** VCM now owns stable SOID/address/route indirection, three
+  authoritative atlas facets, task/consumer/epoch-bound Semantic Address Certificates,
+  authority-safe physical translation, and exact migration/rollback. The matched
+  source campaign found no task advantage and `1.913386x` operation cost, so the full
+  QCSA objective and adaptive-question policy are retired from the first long run.
+  This is architecture evidence, not learned memory or generation capability.
+- **Immediate dependency:** close the remaining 11 finite architecture contracts
+  through existing registry owners, beginning with the Reflexive Router command,
+  qualification, Chronicle, effect, and reflex lifecycle. Publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
   Preserve the now-GREEN content-bound data receipts while architecture closes.
@@ -78,9 +84,11 @@ share toward zero. Public benchmarks are calibration only.
 - **VIEA execution spine:** intent, command, context, job, plan, authority, artifact,
   claim, evidence transition, residual, and failure-boundary records are materialized
   and validated.
-- **Virtual Context Memory (VCM):** stable semantic objects, typed temporal relations, hybrid sparse/graph
-  retrieval, lifecycle transactions, compaction, deletion closure, and deterministic
-  migration/replay are wired. Native KV/prefix-cache parity is not claimed.
+- **Virtual Context Memory (VCM):** stable semantic objects, typed temporal relations,
+  hybrid sparse/graph retrieval, lifecycle transactions, compaction, deletion closure,
+  QCSA identity/address/route separation, plural atlas facets, Semantic Address
+  Certificates, and deterministic migration/replay are wired. Semantic routing never
+  grants effect authority. Native KV/prefix-cache parity is not claimed.
 - **Verifier/search:** bounded propose/verify/repair search is registered with typed
   budgets, independent integrity, sanitized feedback, replay, and separate learned,
   deterministic, and tool-assisted channels. It has not yet produced a behavior win
@@ -157,9 +165,9 @@ share toward zero. Public benchmarks are calibration only.
    immutable negative evidence; all three candidates scored `0/160`.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
-5. Preserve the completed KERC retirement and close the remaining 12 finite pre-training
-   architecture contracts through full wiring, falsification, or explicit retirement.
-   This includes QCSA, Reflexive Router,
+5. Preserve the completed KERC and QCSA dispositions and close the remaining 11 finite
+   pre-training architecture contracts through full wiring, falsification, or explicit retirement.
+   This includes Reflexive Router,
    OneCell disposition, update/data causality, policy/GVR/campaign control, and
    generation-objective interfaces.
 6. Preserve the GREEN data floors, freeze the surface/code/control campaign with the
@@ -198,9 +206,10 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete and register QCSA's stable-object/address/physical-route separation, plural
-atlas epochs, task-bound Semantic Address Certificates, authority-safe translation,
-and migration/rollback replay through the existing VCM/SCF/VIEA owners. Preserve the
-KERC retirement. Then close the remaining finite architecture docket and publish the independently
+Complete and register the Reflexive Router's typed command/reflex registries,
+qualification and precedence engine, finite terminal outcomes, dependency-complete
+Chronicle/cache invalidation, sole effect-commit route, and replayable lifecycle through
+the existing assistant/SCF/VIEA/VCM owners. Preserve the KERC and QCSA dispositions.
+Then close the remaining finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.

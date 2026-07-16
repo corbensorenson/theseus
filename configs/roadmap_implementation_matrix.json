@@ -287,7 +287,7 @@
       "candidate_id": "future.question_compiled_semantic_addressing",
       "title": "Question-Compiled Semantic Addressing",
       "item_kind": "chapter_candidate",
-      "book_disposition": "source_available_manifest_pending",
+      "book_disposition": "source_available_manifest_pending_theseus_disposition_complete",
       "source_id": "qcsa_whitepaper",
       "source_path": "sources/raw/question_compiled_semantic_addressing_whitepaper.md",
       "phase_refs": [
@@ -303,9 +303,9 @@
         18,
         19
       ],
-      "entry_condition": "source text is available; admit to the active chapter crosswalk when AI_book book_structure.json adds the chapter, while learned atlas/question-policy qualification waits for a data-supported behavior-positive language arm or matched dense control",
-      "theseus_scope": "extend the existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus stack with opaque stable SOIDs independent of semantic addresses and physical routes, plural task-scoped atlas epochs, Semantic Address Certificates, information-value question compilation, open-world expressions, authority-safe semantic-to-physical translation, and lifecycle-safe migration",
-      "acceptance_boundary": "existing private VCM/planner/router fixtures compare flat, random/frequency tree, one-semantic-tree, residual-quantized, multi-view-without-indirection, and QCSA variants under matched resources; identity, atlas, questioning, retrieval, routing, generation-round-trip, governance, and migration metrics show a meaningful Pareto gain or retain a falsifying result",
+      "entry_condition": "admit the source to the active chapter crosswalk when AI_book book_structure.json adds it; the Theseus pre-training disposition is already content-bound and does not wait on chapter-manifest movement",
+      "theseus_scope": "retain opaque stable SOIDs, plural task-scoped atlas facets, Semantic Address Certificates, authority-safe semantic-to-physical route proposals, and lifecycle-safe migration under VCM/SCF/VIEA; retire the full QCSA objective and adaptive active-question policy from the first long run",
+      "acceptance_boundary": "the content-bound source campaign and Theseus integration preserve the falsifying result: task accuracy tied at 1.0, QCSA object accuracy was 1.0 versus 0.633333, operation ratio was 1.913386, active-question removal retained 1.0 task/object accuracy, certificates prevented nine unsafe releases, and identity/migration negatives fail closed",
       "non_claim_boundary": "a coherent schema, stable ID, graph, certificate, question trace, or address hierarchy is not semantic correctness, interpretability, model capability, public transfer, or ASI evidence; semantic classification never grants execution authority"
     },
     {
@@ -950,10 +950,10 @@
         19
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "pre_training_architecture_required",
-      "dependency": "extend existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus records before the long run so semantic identity, contextual address, physical route, certificates, and migrations are not retrofitted into training context later; learned atlas/question-policy efficacy remains post-training",
-      "pre_training_acceptance_boundary": "Before long training, opaque SOIDs, contextual semantic addresses, physical routes, plural atlas epochs, consumer/task-bound Semantic Address Certificates, cost/risk/privacy-aware question traces, authority-safe translation, and readdress/merge/split/rollback migrations are registered and replayable with flat/random/frequency/single-tree controls and negative tests. Learned semantic routing, retrieval, and generation gains remain post-training.",
-      "acceptance_gate": "A registered QCSA extension independently separates opaque SOID, contextual semantic address, and physical route identity; issues consumer/task/epoch-bound Semantic Address Certificates; compiles cost/risk/privacy-aware question traces; translates certificates through SCF-authorized VIEA plans; and replays readdress/merge/split/rollback without silent misrouting. Matched private baselines include flat IDs, random/frequency trees, one semantic tree, residual-quantized IDs, multi-view IDs without stable identity, and ablations removing active questions, physical translation, soft routing, and migration governance. Identity, atlas, question, retrieval, route, round-trip generation, governance, and migration metrics must show a meaningful Pareto gain or retain falsification.",
+      "status": "pretraining_wired_behavior_qualification_pending",
+      "dependency": "bounded mechanisms are integrated under VCM/SCF/VIEA and the full objective plus adaptive-question policy are retired from the first long run; learned semantic-routing or generation efficacy remains post-training and may re-enter only through a stronger prospectively frozen matched-total-cost campaign",
+      "pre_training_acceptance_boundary": "Satisfied for the first long run: opaque occurrence-safe SOIDs, contextual addresses, physical route proposals, three atlas facets, consumer/task/epoch-bound Semantic Address Certificates, separate effect authority, exact readdress/rollback, typed migration failures, and silent-retarget rejection are registered and replayable. The full question-compiled objective has zero optimizer exposure and adaptive questioning is retired by the frozen negative matched-cost result.",
+      "acceptance_gate": "The retained VCM path independently separates SOID, contextual semantic address, and physical route; issues and verifies certificates; rejects tampering, stale epochs, consumer laundering, authority widening, superseded routes, and silent identity retargets; and replays inventory-bound migration/rollback exactly. The source campaign is content-bound with complete denominators and preserves its negative task/cost and active-question dispositions, including the visible one-micro evaluation replay drift.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "A schema, graph, stable identifier, semantic hierarchy, certificate, question trace, or migration receipt is not semantic correctness, interpretability, model capability, public transfer, or ASI evidence; semantic resolution never grants execution authority, and assisted semantic-first output remains separate from direct learned generation."
     }
@@ -1405,7 +1405,7 @@
       ],
       "completion_rule": "Assistant, planner, verifier, tool, training-data, candidate-generation, and fanout paths independently validate the same source-bound VCM packet ABI; expected-invalid context cases fail closed; causal on/off accounting uses equal budgets; exact native KV/prefix claims remain backend-scoped.",
       "book_followup_items": [
-        "QCSA follow-up: extend this existing VCM field with opaque SOID/address/physical-route indirection, plural atlas epochs, consumer-bound Semantic Address Certificates, active question traces, open-world expressions, authority-safe route translation, and migration falsification under planned.question_compiled_semantic_addressing_v1; do not create a parallel memory abstraction or claim semantic capability from schemas."
+        "QCSA disposition complete for the first long run: retain occurrence-safe SOID/address/route indirection, three atlas facets, consumer/task/epoch-bound Semantic Address Certificates, authority-safe route proposals, and exact migration/rollback under this VCM field; retire the full objective and adaptive questions with zero optimizer exposure, preserve the negative matched-cost result, and claim no semantic or learned capability from schemas."
       ]
     },
     {
@@ -2652,9 +2652,9 @@
       ],
       "missing_items": [
         "The factorized full-step field removes the old 17/24 representation collision and independently proves 24/24 distinct group-closed plans, but emitted, latent, categorical-slot, and factorized-slot routes all remain 0/24 exact; Phase 13 behavioral acceptance depends on first raising the Phase 10 direct proposer floor above zero",
-        "The finite pre-training architecture docket contains 13 cross-phase contracts. Full KERC is retired by a bounded content-bound pre-training verdict, leaving 12 unresolved contracts: QCSA, Reflexive Router, OneCell disposition, update/data causality, policy/repair/campaign control, and generation-objective interfaces. Empirical learned utility remains post-training evidence."
+        "The finite pre-training architecture docket contains 13 cross-phase contracts. Full KERC is retired and QCSA is bounded to retained VCM identity/certificate/migration mechanisms with the full objective retired, leaving 11 unresolved contracts: Reflexive Router, OneCell disposition, update/data causality, policy/repair/campaign control, and generation-objective interfaces. Empirical learned utility remains post-training evidence."
       ],
-      "smallest_next_patch": "Close the remaining finite docket in dependency order through existing owners: QCSA identity/memory addressing first, Reflexive Router dispatch second, update/checkpoint causality third, objective/generation alternatives fourth, and the final content-bound architecture-freeze campaign last. Preserve the KERC retirement and do not train, add an unrelated lane, or mark learned efficacy from deterministic fixtures.",
+      "smallest_next_patch": "Close the remaining finite docket in dependency order through existing owners: Reflexive Router dispatch first, update/checkpoint causality second, objective/generation alternatives third, and the final content-bound architecture-freeze campaign last. Preserve the KERC and QCSA dispositions; do not train, add an unrelated lane, or mark learned efficacy from deterministic fixtures.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",

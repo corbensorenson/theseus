@@ -31,7 +31,7 @@ The current priority is **finite architecture closure**, not corpus-scale optimi
 work. Theseus will not spend a long training run on an architecture that is already
 known to be missing accepted representation, objective, context, routing, generation,
 update, checkpoint, or self-improvement contracts. The 13-item matrix-owned docket has
-one bounded retirement verdict and 12 remaining contracts; it is
+two completed dispositions and 11 remaining contracts; it is
 the complete pre-training decision set known at this revision. Each item must be
 implemented through its pre-training boundary, falsified by a relevant canary, or
 explicitly retired with reasons before the first 50M-100M campaign begins.
@@ -59,7 +59,7 @@ idea now, not postpone training forever in pursuit of unspecified perfection.
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | learned optimization remains premature at the zero-pass floor, but objective/reference/reward/lease/checkpoint interfaces are pre-training requirements | wire and canary the complete objective family now; run and select it only after a behavior-positive proposer creates honest verifier signal |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | efficacy is deferred, but every topology- or objective-changing mode now requires a pre-training include/retire decision and checkpoint-compatible modes require loader/migration proof | freeze MTP, LayerSkip, speculative/draft, and sketch-first contracts with matched AR controls before training; adopt only from accepted verified output per second afterward |
-| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active contract now has sufficient governed data and GREEN finite-loss/update/checkpoint/reload/optimizer-resume/cleanup MLX canaries for MoECOT plus both dense controls, but no long optimizer run has started and training authority remains held by the 12 unresolved contracts in the finite architecture docket | close or retire every remaining docket item, publish the final architecture-freeze manifest and joint campaign, then replay the same canaries against the final package before training |
+| Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the 57.315M-active contract now has sufficient governed data and GREEN finite-loss/update/checkpoint/reload/optimizer-resume/cleanup MLX canaries for MoECOT plus both dense controls, but no long optimizer run has started and training authority remains held by the 11 unresolved contracts in the finite architecture docket | close or retire every remaining docket item, publish the final architecture-freeze manifest and joint campaign, then replay the same canaries against the final package before training |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is a non-routeable candidate behind the shared Cognitive Kernel ABI and now requires a pre-training architecture/campaign disposition; no neural or language claim exists | finish its exact substrate, objective/checkpoint interfaces, and matched campaign decision; include it in the frozen run or retire it without delaying the practical transformer/hybrid lane indefinitely |
 | Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | full KERC is `retired_by_pretraining_verdict` from the first long run: on the bounded hash-bound campaign it tied surface/simple controls at `0.5`, cost `714` mean packet bytes versus `73.25` for the best simple control, and false-allowed one attack; the canonical trainer now enforces zero KERC optimizer exposure and a new plan identity | retain protected exact objects and scoped interaction glossary residuals through existing VCM/SCF owners with zero learned credit; reconsider full KERC only through a stronger prospectively frozen source-disjoint campaign |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | behavior loop cannot start at zero pass, but the campaign controller, full-state causality, stop authority, rollback, and negative-knowledge contracts are pre-training requirements | wire and trap-test the autonomous loop while disabled; enable generate->verify->admit->retrain only after the proposer produces independently verified successes |
@@ -255,8 +255,11 @@ promoted; their purpose is to falsify or select the practical architecture.
    exact objects and scoped interaction glossary residuals through existing VCM/SCF
    owners. Any re-entry requires a stronger prospectively frozen source-disjoint,
    independently labeled matched-total-cost campaign; do not manufacture a KERC corpus.
-3. Close the remaining pre-training contracts: QCSA identity/address/physical-route
-   separation and migration; Reflexive Router command/reflex/Chronicle lifecycle;
+3. Preserve the completed QCSA disposition: VCM owns stable SOID/address/route
+   indirection, plural facets, Semantic Address Certificates, authority separation,
+   and exact migration/rollback; the full QCSA objective and adaptive-question policy
+   remain outside the first long run. Close the remaining pre-training contracts:
+   Reflexive Router command/reflex/Chronicle lifecycle;
    OneCell exact-substrate and campaign disposition; full-state data/update rollback;
    policy-update leases; GVR state transitions; open-ended-campaign stop authority;
    and objective/generation-mode interfaces for preference/RL, MTP, speculative/
@@ -630,8 +633,8 @@ The July 11 architecture closure was valid for the source set known then: Regist
 SCF, VIEA, VCM, candidate integrity, deterministic tools, bounded search, resource
 routing, SymLiquid isolation, evidence/claim records, procedural memory,
 authority/failure contracts, and book synchronization were wired or implemented.
-The subsequent KERC, QCSA, Reflexive Router, OneCell, and update-causality work expose
-concrete missing representation, routing, memory-address, lifecycle, training, and
+The subsequent KERC/QCSA disposition work plus Reflexive Router, OneCell, and
+update-causality intake exposed concrete missing representation, routing, memory-address, lifecycle, training, and
 evaluation contracts, and no 57.315M long optimizer run has started. It is cheaper
 and more honest to close these known gaps now than to train and retrofit them. Existing
 corpus receipts and original MLX canaries remain evidence for their exact inputs; they
@@ -868,78 +871,41 @@ as a source-available, manifest-pending chapter candidate. It extends existing V
 SCF, PlanForge, VIEA, Semantic IR, tool, and Octopus contracts; it does not create a
 new memory abstraction or bypass the active C1 capability flagship.
 
-Implement it through the existing fields in this order:
+The bounded pre-training disposition is complete and content-bound by
+`configs/vcm_semantic_addressing.json`. The source campaign covered 12 implementation
+lanes, 60 heldout tasks, 13 systems, three seeds, 2,340 predictions, a 13-stage
+vertical path, and ten vertical adversarial paths. QCSA and the best task baseline
+both scored `1.0` task accuracy; QCSA scored `1.0` object accuracy versus `0.633333`,
+but consumed `4.05` mean operations versus `2.116667` (`1.913386x`). The active-
+question ablation also retained `1.0` object/task accuracy. Therefore the complete
+QCSA objective and adaptive active-question policy do not enter the first long run.
 
-1. **Identity/address/route type separation (Phases 0, 2, 3, 14).** Make an opaque
-   stable Semantic Object ID independent of page revision, semantic address, label,
-   embedding, atlas epoch, and physical location. Distinguish occurrence, type,
-   instance, proposition, expression, memory, tool, policy, capability, and artifact
-   obligation. Creation is provisional; merge, split, deprecation, alias, and
-   revocation preserve lineage. Similarity, translation, or neighborhood never
-   establishes identity by itself.
-2. **Plural semantic address atlas and certificates (Phases 3, 13, 14).** Extend
-   the existing VCM representation certificate into a `SemanticAddressCertificate`
-   bound to SOID, occurrence/expression, context, task, consumer, atlas epoch,
-   facet/version, weighted top-k variable-length paths, confidence/entropy/boundary,
-   adequacy termination, cross-facet consistency, provenance, groundings,
-   residuals, permitted/prohibited uses, authority ceiling, expiry/revalidation,
-   migration refs, and digest/signature. Facets declare consumer, objective,
-   source relations, arity/depth policy, stability budget, and prohibited uses.
-3. **Question compiler (Phases 1, 3, 6, 8, 14).** Compile unresolved posteriors
-   into internal discriminators, retrievals, verifier/tool calls, or human
-   clarifications selected by decision-relevant information value minus compute,
-   latency, privacy, interaction, and risk cost. Support soft candidates, batched
-   questions, noisy answers, backtracking, `UNKNOWN`, and abstention. Persist the
-   posterior change and evidence refs as a replayable question trace; never invent
-   an intensional explanation for an operational-only latent split.
-4. **Semantic-to-physical translation (Phases 1, 2, 3, 6, 8, 16, 18).** Compile
-   SOID plus certificate into temporary VIEA/PlanForge route plans for VCM shards,
-   retrieval indexes, specialists, tools, verifiers, compute tiers, decoders,
-   approvals, fallback, and abstention. Physical remapping may not alter identity or
-   atlas meaning. Semantic classification never grants authority; the translator
-   must independently consume SCF, resource, privacy, and effect constraints.
-5. **Atlas release and migration (Phases 0, 2, 3, 14, 18).** Publish atlas epochs
-   with codebooks/topology, facet purposes, data/objective summaries, branch
-   utilization/calibration, boundary examples, collisions, prohibited uses,
-   migration maps, signatures, and rollback. Distinguish readdress from object
-   merge/split. Shadow new epochs, dual-resolve supported old addresses, preserve
-   SOID identity, reject silent misrouting, and retain explicit orphan/conflict
-   faults and residual burden.
-6. **Compositional/open-world semantics (Phases 3, 13, 14).** Represent novel
-   compositions as typed expression DAGs/programs with roles, quantity, negation,
-   modality, time, and causal operators before creating permanent leaves. Require
-   semantic-to-surface-to-semantic round-trip checks for generation claims while
-   keeping direct model-only behavior separate from certificate/tool assistance.
+The mechanisms with attributable value are retained through the existing VCM field:
 
-Testing must reuse existing VCM, planner, routing, evidence, and private capability
-fixtures rather than create another benchmark lane. Preregister matched baselines:
-flat IDs, random/frequency trees, one semantic tree, residual-quantized IDs,
-multi-view IDs without stable identity, and full QCSA with active-question,
-physical-translation, soft-routing, and migration-governance ablations. Cover:
+1. **Stable identity and plural addresses.** Opaque SOIDs are independent of VCM
+   page revisions, contextual semantic addresses, atlas facets, and physical routes.
+   Context-packet and usage-event occurrences remain distinct even when they share a
+   backing report. Similarity and neighborhood never establish identity.
+2. **Semantic Address Certificates.** Every governed semantic object receives a
+   task-, consumer-, epoch-, facet-, provenance-, residual-, permitted-use-, and
+   authority-bound certificate. Tampering, stale epochs, consumer laundering, and
+   use/authority widening fail closed.
+3. **Authority-safe translation.** A valid certificate may propose a temporary
+   physical route but cannot authorize an effect; SCF/VIEA effect authority remains a
+   separate mandatory decision. Superseded, quarantined, and retracted objects are
+   not routeable.
+4. **Atlas lifecycle.** Readdressing preserves SOID identity and explicit lineage;
+   migrations require descendant/cache/backup/receipt inventory and a passed shadow,
+   emit typed failures, reject silent retargeting, and support exact rollback.
 
-- identity consistency, false merge/split, novel-object detection, correction
-  persistence, and provenance completeness;
-- atlas prefix utility, branch balance, entropy/path cost, boundary calibration,
-  collision/ambiguity, perturbation robustness, and migration stability;
-- question cost, decision error after each question, noisy-answer recovery,
-  privacy/user burden, unnecessary clarification, and downstream utility;
-- retrieval recall/ranking/latency/tail behavior, deletion, stale-address recovery,
-  authority filtering, and stable-reference preservation after reindexing;
-- expert/tool route quality at matched compute, paraphrase stability, permission
-  violations, fallback, throughput, and replacement blast radius;
-- semantic round-trip role/quantity/negation/time/citation accuracy, repair locality,
-  latency, and direct-generation fallback frequency;
-- old-address resolution, silent-misroute rate, migration coverage, rollback,
-  unauthorized activation, residual preservation, and epoch operating cost.
-
-Adopt only on a meaningful Pareto gain in task quality, matched-quality cost,
-calibrated disambiguation, tail/generalization, migration blast radius, or governed
-policy compliance. Falsify or narrow the mechanism if learned addresses do not beat
-random/frequency controls, plural facets add only cost, questions do not beat direct
-inference/simple clarification, identity indirection does not reduce migration
-errors, certificates prevent no failures, or semantic-first generation loses
-quality/latency without a compensating gain. Architecture coherence alone earns no
-support-state promotion.
+The complete learned address/question objective, adaptive question selection,
+soft-routing efficacy, and semantic-to-surface generation remain outside the frozen
+campaign. They may return only through a prospectively frozen, source-disjoint,
+matched-total-cost trial that beats direct/simple controls; deterministic schemas and
+certificates receive no learned-generation credit. The observed reference replay is
+also recorded honestly: the implementation validator passed, but byte-identical
+evaluation replay differed by `0.000001` on one Brier value while leaving every gate
+and disposition unchanged; the vertical validator was not rerun after that fault.
 
 ### Phase 4: Candidate Integrity and Learned-Generation Accounting
 - Independently recompute candidate family, provenance, blind read-set, loadability,
@@ -1960,7 +1926,7 @@ gaps route into the phases above:
 | Data engines + continual learning + unlearning | admission is file-level metadata; candidate receipts, policy comparison, semantic leakage, lineage closure, and descendant deletion proof are missing | 3, 7, 12, 14 |
 | Full-state update causality | model/optimizer/scheduler/RNG/cache/backup/index/descendant inventory, prospective best/final authority, forgetting, influence, storage erasure, and exact rollback are not unified | 0, 2, 7, 10, 14 |
 | Durable semantic memory inside VCM | wired: stable objects, typed/temporal relations, additive ontology migration, transactional merge/supersession/retraction/compaction, sparse-vector/graph retrieval, bounded snapshots, and fresh-process replay; dense embedding and parametric unlearning remain explicit non-claims | 3, 14, 15 |
-| Question-Compiled Semantic Addressing | source available, chapter manifest pending; current VCM derives semantic object identity from address roots and lacks explicit SOID/address/physical-route indirection, plural atlas epochs, SACs, information-value question compilation, and matched migration/routing falsification | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 |
+| Question-Compiled Semantic Addressing | bounded pre-training disposition complete: VCM now owns stable SOID/address/route indirection, three authoritative facets, Semantic Address Certificates, authority-safe translation, and exact migration/rollback; the matched source campaign retired the full objective and adaptive-question policy from the first long run because they added cost without task advantage | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 |
 | Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |
 | Claim ledgers + belief revision | claim/transition records + contradiction links not first-class per run | 14 |
 | Proof-carrying + tribunal/adversarial review | broader independent-review records not standard for architecture changes | 14, 18 |
@@ -2008,7 +1974,7 @@ explicit retirement decision.
 | Book candidate or section | Theseus owner phases | Entry condition / disposition |
 |---|---|---|
 | Reasoning-Trace Faithfulness (section route) | 1, 4, 14, 18 | source queue now includes information-flow faithfulness and MonitorBench comparators; distinguish traces from receipts, test trace/action and monitorability under pressure, and never treat hidden reasoning as authoritative |
-| Question-Compiled Semantic Addressing | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 | pre-training exact-substrate requirement: extend VCM/SCF/VIEA with stable SOID-address-route indirection, plural address atlases, active question traces, SACs, authority-safe physical translation, migration/rollback receipts, and frozen matched controls without creating a parallel memory lane; learned semantic-routing efficacy remains post-training |
+| Question-Compiled Semantic Addressing | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 | pre-training disposition complete: retain stable SOID-address-route indirection, plural atlas facets, SACs, authority-safe translation, and exact migration/rollback under VCM/SCF/VIEA; retire the full objective and adaptive questions from the first run after the matched campaign found no task advantage and higher cost; learned semantic-routing efficacy remains post-training |
 | Kernel English with Hierarchical Residuals | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 | pre-training disposition complete for the first long run: retain protected exact objects and scoped interaction glossary residuals through VCM/SCF, keep full KERC objective exposure at zero, and preserve its source/design as a re-entry candidate only if a stronger source-disjoint independently labeled matched-total-cost campaign overturns the bounded negative result |
 | World Models and Model-Based Cognition | 10, 13, 17 | V-JEPA 2 is now a source comparator; activation still waits for the core proposer floor and requires prediction/error ledgers, model-predictive control, imagination/search, causal limits, and sim-to-real controls |
 | Multi-Agent Systemic Risk and Agent Economies | 9, 16, 18 | before multi-agent economic/autonomous operation; collusion, cascades, miscoordination, market behavior, gradual disempowerment |

@@ -275,6 +275,11 @@ def refresh_vcm(args: argparse.Namespace) -> int:
         "graph_edge_count": graph.get("edge_count", 0),
         "semantic_object_count": len(get_path(graph, ["semantic_memory", "objects"], []) or []),
         "semantic_relation_count": len(get_path(graph, ["semantic_memory", "relations"], []) or []),
+        "qcsa_soid_count": get_path(graph, ["semantic_memory", "identity_registry", "object_count"], 0),
+        "qcsa_atlas_epoch": get_path(graph, ["semantic_memory", "semantic_address_atlas", "epoch_id"], None),
+        "qcsa_certificate_count": len(
+            get_path(graph, ["semantic_memory", "semantic_address_certificates"], []) or []
+        ),
         "semantic_restart_replay_match": bool(
             get_path(graph, ["semantic_memory", "restart_replay", "state_digest_match"], False)
             and get_path(graph, ["semantic_memory", "restart_replay", "query_replay_match"], False)
@@ -1707,6 +1712,14 @@ def run_probe(
     bench = bench or {}
     training_admission = training_admission or {}
     consumer_audit = consumer_audit or {}
+    semantic_memory = graph.get("semantic_memory") if isinstance(graph.get("semantic_memory"), dict) else {}
+    qcsa = semantic_memory.get("qcsa_integration") if isinstance(semantic_memory.get("qcsa_integration"), dict) else {}
+    semantic_objects = [row for row in semantic_memory.get("objects", []) if isinstance(row, dict)]
+    semantic_certificates = [
+        row for row in semantic_memory.get("semantic_address_certificates", []) if isinstance(row, dict)
+    ]
+    identity_registry = semantic_memory.get("identity_registry") if isinstance(semantic_memory.get("identity_registry"), dict) else {}
+    atlas = semantic_memory.get("semantic_address_atlas") if isinstance(semantic_memory.get("semantic_address_atlas"), dict) else {}
     probe_pages = build_probe_pages()
     tainted_probe = next(page for page in probe_pages if page["metadata"].get("probe_case") == "tainted_external_instruction")
     stale_probe = next(page for page in probe_pages if page["metadata"].get("probe_case") == "stale_current_claim")
@@ -1788,6 +1801,59 @@ def run_probe(
         gate("durable_event_log_present", len(event_log) > 0 and required_event_types.issubset(event_types), f"events={len(event_log)} missing={sorted(required_event_types - event_types)}"),
         gate("semantic_graph_present", graph.get("edge_count", 0) > 0 and bool(graph.get("alias_table")) and bool(graph.get("version_table")), f"edges={graph.get('edge_count', 0)} aliases={len(graph.get('alias_table') or {})}"),
         gate("semantic_graph_relation_taxonomy_present", required_relation_types.issubset(relation_types), f"missing={sorted(required_relation_types - relation_types)}"),
+        gate(
+            "qcsa_identity_address_route_indirection_present",
+            bool(semantic_objects)
+            and identity_registry.get("object_count") == len(semantic_objects)
+            and identity_registry.get("identity_is_separate_from_address") is True,
+            {
+                "objects": len(semantic_objects),
+                "registered": identity_registry.get("object_count"),
+                "address_independent": identity_registry.get("identity_is_separate_from_address"),
+            },
+        ),
+        gate(
+            "qcsa_plural_authoritative_atlas_present",
+            atlas.get("authority_state") == "authoritative"
+            and len(atlas.get("facets") or []) >= 3
+            and atlas.get("candidate_epochs_may_route") is False,
+            {"epoch": atlas.get("epoch_id"), "facets": len(atlas.get("facets") or [])},
+        ),
+        gate(
+            "qcsa_certificates_cover_semantic_objects",
+            len(semantic_certificates) == len(semantic_objects)
+            and qcsa.get("certificate_verification_count") == len(semantic_certificates),
+            {
+                "objects": len(semantic_objects),
+                "certificates": len(semantic_certificates),
+                "verified": qcsa.get("certificate_verification_count"),
+            },
+        ),
+        gate(
+            "qcsa_semantic_resolution_does_not_grant_effect_authority",
+            get_path(qcsa, ["route_probe", "effect_authority_granted"], False) is False
+            and get_path(qcsa, ["route_probe", "requires_separate_scf_effect_authorization"], False) is True
+            and get_path(qcsa, ["authority_denial_probe", "fault_type"], "") == "VCM_QCSA_AUTHORITY_CEILING_EXCEEDED",
+            {
+                "route_probe": qcsa.get("route_probe"),
+                "denial": qcsa.get("authority_denial_probe"),
+            },
+        ),
+        gate(
+            "qcsa_failed_full_and_active_question_paths_not_exposed_to_training",
+            qcsa.get("full_qcsa_training_objective_exposure") == 0
+            and qcsa.get("adaptive_active_question_policy_state") == "RETIRED_FROM_FIRST_LONG_RUN",
+            {
+                "full_objective_exposure": qcsa.get("full_qcsa_training_objective_exposure"),
+                "active_question_state": qcsa.get("adaptive_active_question_policy_state"),
+            },
+        ),
+        gate(
+            "qcsa_evaluation_replay_fault_remains_visible",
+            get_path(qcsa, ["evidence", "replay_state", "evaluation_byte_replay"], "")
+            == "RED_ONE_MICRO_ROUNDING_DRIFT",
+            get_path(qcsa, ["evidence", "replay_state"], {}),
+        ),
         gate("transactions_have_commit_and_rollback", bool(committed_transactions) and bool(rollback_transactions), f"committed={len(committed_transactions)} rollback={len(rollback_transactions)}"),
         gate("snapshots_and_mounts_present", bool(snapshot_rows) and bool(get_path(snapshots, ["c_tlb"], [])), f"snapshots={len(snapshot_rows)} c_tlb={len(get_path(snapshots, ['c_tlb'], []))}"),
         gate("l5_raw_source_refs_present", all("L5" in object_field(page, "representations") for page in pages), "L5 present on all pages"),
@@ -1839,6 +1905,13 @@ def run_probe(
         "proof_coverage": round(proof_coverage, 4),
         "semantic_fault_count": len(compiled.get("semantic_page_faults") or []),
         "semantic_fault_counts": fault_counts,
+        "qcsa_state": qcsa.get("state"),
+        "qcsa_soid_count": identity_registry.get("object_count", 0),
+        "qcsa_atlas_epoch": atlas.get("epoch_id"),
+        "qcsa_facet_count": len(atlas.get("facets") or []),
+        "qcsa_certificate_count": len(semantic_certificates),
+        "qcsa_active_question_policy": qcsa.get("adaptive_active_question_policy_state"),
+        "qcsa_full_training_objective_exposure": qcsa.get("full_qcsa_training_objective_exposure"),
         "promoted_address_count": len(promoted_addresses),
         "external_inference_calls": 0,
         "public_training_rows_written": 0,
@@ -1876,6 +1949,8 @@ def run_probe(
             "Public benchmark metadata remains data-only and is not trainable pressure.",
             "Teacher-derived metadata remains provisional/data-only unless a governed distillation gate accepts it.",
             "Native runtime/KV-cache paging remains future work; VCM v1 records L5 source references and cache invalidation keys but does not claim native model integration.",
+            "QCSA contributes stable identity/address/route indirection, plural facets, certificates, and migration boundaries inside VCM; the full composed path and active-question policy are retired from the first long run.",
+            "The AI-book QCSA evaluation retains a one-micro rounding replay fault, so Theseus does not claim byte-identical independent evaluation replay.",
         ],
     }
 
@@ -1985,6 +2060,29 @@ def build_ledger(
             "object_count": len(get_path(graph, ["semantic_memory", "objects"], []) or []),
             "relation_count": len(get_path(graph, ["semantic_memory", "relations"], []) or []),
             "consolidation_record_count": len(get_path(graph, ["semantic_memory", "consolidation_records"], []) or []),
+            "soid_count": get_path(graph, ["semantic_memory", "identity_registry", "object_count"], 0),
+            "identity_is_separate_from_address": get_path(
+                graph,
+                ["semantic_memory", "identity_registry", "identity_is_separate_from_address"],
+                False,
+            ),
+            "semantic_address_atlas_epoch": get_path(
+                graph, ["semantic_memory", "semantic_address_atlas", "epoch_id"], None
+            ),
+            "semantic_address_certificate_count": len(
+                get_path(graph, ["semantic_memory", "semantic_address_certificates"], []) or []
+            ),
+            "qcsa_state": get_path(graph, ["semantic_memory", "qcsa_integration", "state"], None),
+            "qcsa_active_question_policy": get_path(
+                graph,
+                ["semantic_memory", "qcsa_integration", "adaptive_active_question_policy_state"],
+                None,
+            ),
+            "qcsa_full_training_objective_exposure": get_path(
+                graph,
+                ["semantic_memory", "qcsa_integration", "full_qcsa_training_objective_exposure"],
+                None,
+            ),
             "state_digest": get_path(graph, ["semantic_memory", "state_digest"], None),
             "restart_replay": get_path(graph, ["semantic_memory", "restart_replay"], {}),
         },

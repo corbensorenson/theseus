@@ -1,0 +1,115 @@
+{
+  "policy": "project_theseus_vcm_qcsa_integration_v1",
+  "state": "RETAIN_BOUNDED_MECHANISMS_RETIRE_FULL_QCSA_FIRST_RUN",
+  "architecture_scope": "existing_vcm_scf_viea_owners_only",
+  "atlas": {
+    "authoritative_epoch": "vcm-atlas-1.0.0",
+    "facets": [
+      {
+        "facet_id": "task_retrieval",
+        "consumer": "vcm_context_compiler",
+        "objective": "bounded task-relevant retrieval",
+        "prohibited_uses": ["identity_creation", "effect_authorization"]
+      },
+      {
+        "facet_id": "evidence_authority",
+        "consumer": "viea_claim_and_authority_auditor",
+        "objective": "preserve provenance and authority boundaries",
+        "prohibited_uses": ["truth_by_graph_position", "effect_authorization"]
+      },
+      {
+        "facet_id": "lifecycle_storage",
+        "consumer": "vcm_lifecycle_manager",
+        "objective": "route current lifecycle-safe materialization",
+        "prohibited_uses": ["silent_identity_retarget", "effect_authorization"]
+      }
+    ]
+  },
+  "certificate": {
+    "allowed_uses": ["address_resolution", "context_retrieval", "route_proposal"],
+    "prohibited_uses": [
+      "effect_authorization",
+      "identity_merge_without_lineage",
+      "learned_capability_credit",
+      "truth_by_address"
+    ],
+    "authority_ceiling": "propose_route",
+    "revalidation_triggers": [
+      "atlas_epoch_changed",
+      "object_lifecycle_changed",
+      "source_digest_changed",
+      "consumer_or_task_changed",
+      "authority_policy_changed"
+    ]
+  },
+  "retained_mechanisms": [
+    "stable_soid_address_physical_route_indirection",
+    "plural_authoritative_atlas_facets",
+    "semantic_address_certificate_with_residual_and_authority_fields",
+    "explicit_atlas_migration_compatibility_and_exact_rollback",
+    "semantic_resolution_separate_from_effect_authority"
+  ],
+  "retired_from_first_long_run": [
+    "full_qcsa_composed_training_objective",
+    "adaptive_active_question_policy"
+  ],
+  "evidence": {
+    "source_project": "AI_book",
+    "source_commit_observed": "cd98c0c4bfe69604b2df9b96a7d299ce7346f4cd",
+    "artifact_sha256": {
+      "whitepaper": "d9e594d40dfd62c899ab25e9d395d34c702dac12e8afd75eed133392f78c0c8c",
+      "package_manifest": "6ea878b4f2c77c407902d2527be0386d63398249a4b967d0cfd47f218be5ec43",
+      "implementation_result": "52528115e47ae80482479bb238f40062401a3bfde430906585dfe40c7b18caba",
+      "frozen_evaluation_result": "d1bb7aede10b8c7cebd76856581116e1c49298e62eb26521946bab522c974353",
+      "evaluation_dispositions": "0f6c6c6b78b049326c3a31b03119c463b5d664b03894161dd0a8f4fe15bb3b76",
+      "vertical_result": "b78b7dc9918647d02269e6da31b38f8206c0fd0bcc895615ac54fb59792953a2",
+      "implementation_validator": "01d9d239d9aeb4c643fac713e2bd5be1a032d5930394b2aa1edfa643f07bd1b4",
+      "evaluation_validator": "6f8b3ea3b17214b8469335e883111a77f51084a2a2cbfbd1e05f4e887fa76ff1",
+      "vertical_validator": "5a6569f1a89b770174b837164e1f611fbe029629f401f20e3b41412082c21a4b"
+    },
+    "denominators": {
+      "implementation_lanes": 12,
+      "heldout_cases": 60,
+      "systems": 13,
+      "seeds": 3,
+      "prediction_records": 2340,
+      "vertical_stages": 13,
+      "vertical_adversarial_paths": 10
+    },
+    "measurements": {
+      "qcsa_task_decision_accuracy": 1.0,
+      "best_baseline_task_decision_accuracy": 1.0,
+      "qcsa_object_resolution_accuracy": 1.0,
+      "best_baseline_object_resolution_accuracy": 0.633333,
+      "qcsa_operation_count_mean": 4.05,
+      "best_baseline_operation_count_mean": 2.116667,
+      "operation_ratio": 1.913386,
+      "no_active_questions_object_accuracy": 1.0,
+      "no_active_questions_task_accuracy": 1.0,
+      "no_identity_indirection_object_accuracy": 0.9,
+      "no_identity_indirection_migration_compatibility": 0.4,
+      "no_plural_facets_object_accuracy": 0.916667,
+      "no_certificate_authority_unsafe_release_count": 9,
+      "no_migration_compatibility_task_accuracy": 0.833333,
+      "full_migration_compatibility": 1.0
+    },
+    "replay_state": {
+      "implementation_validator": "GREEN",
+      "vertical_validator": "NOT_RERUN_AFTER_EVALUATION_REPLAY_FAULT",
+      "evaluation_semantic_checks": "MATCHED_FROZEN_DECISIONS",
+      "evaluation_byte_replay": "RED_ONE_MICRO_ROUNDING_DRIFT",
+      "rounding_drift": {
+        "path": "aggregate.qcsa_without_identity_address_indirection.brier_score",
+        "frozen": 0.087693,
+        "replayed": 0.087692,
+        "decision_or_gate_changed": false
+      }
+    }
+  },
+  "non_claims": [
+    "The bounded synthetic campaign does not establish natural semantic correctness, learned addressing, production transfer, safety, privacy, security, AGI, or ASI.",
+    "The byte-replay mismatch prevents an independently replayed evaluation claim even though the frozen decision metrics remain unchanged.",
+    "A SOID, atlas path, graph position, or certificate does not establish truth or grant execution authority.",
+    "The retained deterministic mechanisms receive no learned-generation or model-capability credit."
+  ]
+}

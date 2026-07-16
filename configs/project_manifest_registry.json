@@ -5257,7 +5257,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M-active v8 MoECOT candidate and both matched dense controls are immutable negative evidence: all code arms remained functionally zero and no architecture was selected. The post-v8 candidate is separately preregistered at 57,315,329 active and 67,332,614 total parameters with a 54,811,649-parameter shared trunk and five independently owned 2,504,193-parameter specialist deltas; matched dense controls, task-complete data floors, exact position accounting, and finite MLX mechanics canaries are GREEN but grant no training or capability claim. The full KERC compiler/core/renderer training path is retired from the first long run with zero optimizer exposure after a content-addressed 192-row, 64-heldout, five-seed campaign found no matched utility advantage and substantially higher packet cost; only protected exact-object handling and a scoped shared-glossary residual remain under VCM/SCF, with no learned-generation credit. Twelve pre-training architecture contracts remain unresolved, beginning with QCSA, so long optimization remains denied by the roadmap gate. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no model-only capability credit."
+      "current_wall": "The completed 10.8M-active v8 MoECOT candidate and both matched dense controls are immutable negative evidence: all code arms remained functionally zero and no architecture was selected. The post-v8 candidate is separately preregistered at 57,315,329 active and 67,332,614 total parameters with a 54,811,649-parameter shared trunk and five independently owned 2,504,193-parameter specialist deltas; matched dense controls, task-complete data floors, exact position accounting, and finite MLX mechanics canaries are GREEN but grant no training or capability claim. Full KERC is retired from the first long run. QCSA is bounded to occurrence-safe SOID/address/route separation, plural VCM facets, Semantic Address Certificates, authority-safe route proposals, and exact migration/rollback; its full objective and adaptive questions are retired from the first run by the preserved negative matched-cost result. Eleven pre-training architecture contracts remain unresolved, beginning with Reflexive Router, so long optimization remains denied by the roadmap gate. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no model-only capability credit."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",
@@ -5503,7 +5503,7 @@
       "surface_id": "vcm_memory",
       "status": "live",
       "implementation_type": "virtual_context_memory",
-      "backend": "python_memory_index_context_packets",
+      "backend": "python_memory_index_context_packets_qcsa_identity_certificate_atlas",
       "canonical_entrypoint": "scripts/virtual_context_memory.py",
       "swappable_under_contract": true,
       "replacement_policy": "Runtime/KV/native cache successors must first preserve packet provenance and same-protocol VCM on/off evidence.",
@@ -5512,6 +5512,7 @@
       "trust_tier": "governed_local_memory",
       "dependencies": [
         "configs/project_manifest_registry.json",
+        "configs/vcm_semantic_addressing.json",
         "scripts/virtual_context_memory.py",
         "scripts/vcm_semantic_memory.py",
         "tests/test_vcm_semantic_memory.py",
@@ -5537,6 +5538,7 @@
       ],
       "evidence_outputs": [
         "reports/virtual_context_memory_status.json",
+        "reports/virtual_context_memory_probe.json",
         "reports/vcm_runtime_claim_readiness.json",
         "reports/vcm_context_governor.json",
         "reports/vcm_task_context_bridge.json",
@@ -5549,7 +5551,10 @@
           "duplicate_family",
           "stale_evidence",
           "sidecar_implementation",
-          "generated_active_state"
+          "generated_active_state",
+          "semantic_identity_retarget",
+          "stale_address_certificate",
+          "atlas_migration_without_rollback"
         ],
         "maintenance_packet_prefix": "registry_impl_vcm_memory_v1"
       },
@@ -5591,19 +5596,21 @@
         "state_compatibility": {
           "reads": [
           "configs/project_manifest_registry.json",
+          "configs/vcm_semantic_addressing.json",
           "scripts/virtual_context_memory.py",
           "scripts/vcm_consumer_abi.py"
           ],
           "writes": [
           "reports/virtual_context_memory_status.json",
+          "reports/virtual_context_memory_probe.json",
           "reports/vcm_runtime_claim_readiness.json",
           "reports/vcm_context_governor.json",
           "reports/vcm_task_context_bridge.json",
           "reports/vcm_consumer_integration_gate.json",
           "reports/vcm_native_runtime_probe.json"
           ],
-          "migration_required": false,
-          "rollback_mode": "route_containment_plus_registered_successor_or_prior_evidence_view"
+          "migration_required": true,
+          "rollback_mode": "exact_qcsa_atlas_restore_plus_route_containment_and_registered_prior_evidence_view"
         },
         "deployment_profiles": [
           "local_private_context_construction",
@@ -5612,6 +5619,7 @@
         "evidence_binding": {
           "evidence_outputs": [
             "reports/virtual_context_memory_status.json",
+            "reports/virtual_context_memory_probe.json",
             "reports/vcm_runtime_claim_readiness.json",
             "reports/vcm_context_governor.json",
             "reports/vcm_task_context_bridge.json",
@@ -5622,6 +5630,7 @@
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
+            "configs/vcm_semantic_addressing.json",
             "scripts/virtual_context_memory.py",
             "scripts/vcm_semantic_memory.py",
             "scripts/vcm_consumer_abi.py",
@@ -8343,6 +8352,7 @@
         "scripts/virtual_context_memory.py",
         "tests/test_vcm_semantic_memory.py",
         "configs/vcm_context_governor.json",
+        "configs/vcm_semantic_addressing.json",
         "memory/**",
         "docs/reference/virtual_context_memory_v1.0/**",
         "runtime/vcm_runtime_cache/**"
@@ -8350,6 +8360,7 @@
       "canonical": "scripts/virtual_context_memory.py",
       "report_outputs": [
         "reports/virtual_context_memory_status.json",
+        "reports/virtual_context_memory_probe.json",
         "reports/vcm_runtime_claim_readiness.json",
         "reports/vcm_context_governor.json",
         "reports/vcm_context_governor.md",
