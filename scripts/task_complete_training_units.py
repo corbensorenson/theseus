@@ -34,6 +34,7 @@ from typing import Any, Iterable
 
 import training_data_lineage_audit
 import task_complete_css_holes
+import task_complete_rust_holes
 import task_complete_web_holes
 from neural_seed_functional_verifiers import CHROME, _render_chrome
 
@@ -72,6 +73,11 @@ def main() -> int:
         "--prepare-css-toolchain",
         action="store_true",
         help="Materialize the lockfile-bound PostCSS parser before offline replay.",
+    )
+    parser.add_argument(
+        "--prepare-rust-toolchain",
+        action="store_true",
+        help="Install the pinned cargo-mutants verifier under runtime when missing.",
     )
     parser.add_argument(
         "--max-executable-units-per-source",
@@ -205,6 +211,22 @@ def build_report(config: dict[str, Any], args: argparse.Namespace) -> dict[str, 
                     cache_updates=cache_updates,
                     cache_path=cache_path,
                     parser_toolchain=css_parser_toolchain,
+                    inventory_only=bool(args.inventory_only),
+                    max_verify=max(0, int(args.max_executable_units_per_source)),
+                )
+            elif adapter == "rust_test_killed_function_body_holes":
+                ensure_rust_mutation_toolchain(
+                    config, prepare=bool(args.prepare_rust_toolchain)
+                )
+                source_units, source_summary = rust_function_hole_units(
+                    config,
+                    source,
+                    contamination,
+                    prior_units=prior_units,
+                    cache=cache,
+                    cache_updates=cache_updates,
+                    cache_path=cache_path,
+                    prepare_rust_projects=bool(args.prepare_rust_toolchain),
                     inventory_only=bool(args.inventory_only),
                     max_verify=max(0, int(args.max_executable_units_per_source)),
                 )
@@ -822,6 +844,192 @@ def html_cached_verification_compatible(
         and verifier.get("toolchain") == toolchain_identity
         and verifier.get("state") in {"passed", "failed"}
     )
+
+
+def rust_function_hole_units(
+    config: dict[str, Any],
+    source: dict[str, Any],
+    contamination: dict[str, Any],
+    *,
+    prior_units: dict[str, dict[str, Any]],
+    cache: dict[str, dict[str, Any]],
+    cache_updates: dict[str, dict[str, Any]],
+    cache_path: Path,
+    prepare_rust_projects: bool,
+    inventory_only: bool,
+    max_verify: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Build Rust implementation holes whose exact bodies are killed by tests."""
+
+    source_root = ensure_source_root(source)
+    toolchain = config["rust_mutation_toolchain"]
+    locked_environment = task_complete_rust_holes.ensure_locked_cargo_home(
+        source_root, source, toolchain, prepare=prepare_rust_projects
+    )
+    holes, discovery, toolchain_identity = task_complete_rust_holes.discover_function_holes(
+        source_root, source, toolchain, locked_environment
+    )
+    selection = task_complete_rust_holes.select_verification_candidates(source, holes)
+    selected = selection["selected"]
+    selection_receipt = selection["public_receipt"]
+    rows: list[dict[str, Any]] = []
+    pending: list[dict[str, Any]] = []
+    pending_by_candidate: dict[str, dict[str, Any]] = {}
+    verified_attempts = 0
+    for hole in selected:
+        visible = canonical_json({
+            "instruction": (
+                "Restore the missing Rust function body without changing its public contract, "
+                "surrounding module, or package behavior."
+            ),
+            "repository": source["repo"],
+            "package": hole["package"],
+            "path": hole["path"],
+            "function_name": hole["function_name"],
+            "source_with_hole": hole["visible_source"],
+        })
+        target = canonical_json({
+            "path": hole["path"],
+            "body_start_char": hole["body_start_char"],
+            "body_end_char": hole["body_end_char"],
+            "replacement": hole["target_body"],
+        })
+        unit = base_unit(
+            config,
+            source=source,
+            # All functions from one source file stay in one split so adjacent
+            # implementation text cannot cross the heldout boundary.
+            source_task_id=f"{source['repo']}:{hole['path']}",
+            arm_id="rust",
+            task_family="repository_rust_function_body_hole",
+            capability_tags=["rust"],
+            visible_context=visible,
+            target=target,
+            license_spdx=str(source["license_spdx"]),
+            provenance={
+                "repo": source["repo"],
+                "revision": source["revision"],
+                "archive_sha256": source["archive_sha256"],
+                "cargo_lock_sha256": toolchain_identity["cargo_lock_sha256"],
+                "path": hole["path"],
+                "package": hole["package"],
+                "verification_root_package": hole["verification_root_package"],
+                "cargo_all_features": hole["cargo_all_features"],
+                "cargo_features": hole["cargo_features"],
+                "test_target_args": hole["test_target_args"],
+                "function_name": hole["function_name"],
+                "source_sha256": hole["source_sha256"],
+                "target_sha256": hole["target_sha256"],
+                "body_start_byte": hole["body_start_byte"],
+                "body_end_byte": hole["body_end_byte"],
+                "selection_inventory_sha256": selection_receipt["ordered_inventory_sha256"],
+                "selection_campaign_sha256": selection_receipt["selected_inventory_sha256"],
+                "selection_uses_verifier_outcomes": False,
+                "static_open_corpus": True,
+                "live_teacher_call": False,
+            },
+            contamination=contamination,
+            prior_units=prior_units,
+        )
+        verification_digest = stable_hash({
+            "unit_id": unit["unit_id"],
+            "verifier_abi": task_complete_rust_holes.VERIFIER_ABI,
+            "source_sha256": hole["source_sha256"],
+            "target_sha256": hole["target_sha256"],
+            "body_span": [hole["body_start_char"], hole["body_end_char"]],
+            "verification_route": {
+                "owning_package": hole["package"],
+                "root_package": hole["verification_root_package"],
+                "cargo_all_features": hole["cargo_all_features"],
+                "cargo_features": hole["cargo_features"],
+                "test_target_args": hole["test_target_args"],
+            },
+            "toolchain": toolchain_identity,
+        })
+        cached = cache.get(unit["unit_id"])
+        should_verify = not inventory_only and (max_verify == 0 or verified_attempts < max_verify)
+        if (
+            cached
+            and cached.get("verification_digest") == verification_digest
+            and cached.get("verification", {}).get("toolchain") == toolchain_identity
+        ):
+            verifier = cached["verification"]
+        elif should_verify:
+            verified_attempts += 1
+            verifier = None
+            pending.append(hole)
+            pending_by_candidate[hole["candidate_id"]] = {
+                "unit_id": unit["unit_id"],
+                "verification_digest": verification_digest,
+            }
+        else:
+            verifier = {
+                "kind": task_complete_rust_holes.VERIFIER_ABI,
+                "strength": "executable_target_pass_starter_fail",
+                "state": "not_run",
+                "reason": "inventory_only_or_bounded_verification",
+                "toolchain": toolchain_identity,
+            }
+        rows.append({
+            "unit": unit,
+            "hole": hole,
+            "verifier": verifier,
+            "verification_digest": verification_digest,
+        })
+
+    checkpoint_write_count = 0
+
+    def checkpoint_package(package_results: dict[str, dict[str, Any]]) -> None:
+        nonlocal checkpoint_write_count
+        for candidate_id, verifier in package_results.items():
+            pending_row = pending_by_candidate[candidate_id]
+            cache_row = {
+                "unit_id": pending_row["unit_id"],
+                "verification_digest": pending_row["verification_digest"],
+                "verification": verifier,
+            }
+            cache[pending_row["unit_id"]] = cache_row
+            cache_updates[pending_row["unit_id"]] = cache_row
+        write_cache(cache_path, cache)
+        checkpoint_write_count += 1
+
+    verification_summary: dict[str, Any] = {
+        "package_count": 0,
+        "verification_parallelism": int(toolchain.get("verification_parallelism", 2)),
+        "package_receipts": {},
+    }
+    if pending:
+        result_by_candidate, verification_summary = task_complete_rust_holes.verify_selected_holes(
+            source_root,
+            pending,
+            toolchain_identity,
+            toolchain,
+            package_completed=checkpoint_package,
+        )
+        for row in rows:
+            if row["verifier"] is None:
+                row["verifier"] = result_by_candidate.get(row["hole"]["candidate_id"])
+
+    units: list[dict[str, Any]] = []
+    for row in rows:
+        verifier = row["verifier"] or task_complete_rust_holes.failed_receipt(
+            "verification_result_missing", toolchain_identity
+        )
+        finish_unit(row["unit"], verifier, config)
+        units.append(row["unit"])
+    return units, summarize_source(source, units, extra={
+        "source_root": rel(source_root),
+        "discovery": discovery,
+        "selection": selection_receipt,
+        "new_verification_attempt_count": verified_attempts,
+        "verification_cache_checkpoint_write_count": checkpoint_write_count,
+        "verification_summary": verification_summary,
+        "toolchain_identity": toolchain_identity,
+        "locked_environment": {
+            key: value for key, value in locked_environment.items()
+            if key not in {"prepared_with_network_this_run", "offline_replay"}
+        },
+    })
 
 
 def css_rule_hole_units(
@@ -2065,6 +2273,46 @@ def ensure_css_ast_toolchain(config: dict[str, Any], *, prepare: bool) -> dict[s
         "prepared_with_network_this_run": prepared_with_network,
         "offline_replay": public_run_receipt(offline_replay),
     }
+
+
+def ensure_rust_mutation_toolchain(config: dict[str, Any], *, prepare: bool) -> None:
+    policy = config["rust_mutation_toolchain"]
+    binary = resolve(str(policy["cargo_mutants_binary"]))
+    if not binary.is_file() and prepare:
+        root = binary.parents[1]
+        root.mkdir(parents=True, exist_ok=True)
+        command = [
+            shutil.which("cargo") or "cargo",
+            "install",
+            "cargo-mutants",
+            "--version",
+            str(policy["cargo_mutants_release"]),
+            "--locked",
+            "--root",
+            str(root),
+        ]
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=int(policy.get("prepare_timeout_seconds", 1200)),
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError(
+                f"cargo-mutants preparation failed: {completed.stderr[-2000:]}"
+            )
+    if not binary.is_file():
+        raise FileNotFoundError(
+            "pinned cargo-mutants is missing; rerun with --prepare-rust-toolchain"
+        )
+    observed_hash = file_sha256(binary)
+    if observed_hash != str(policy["cargo_mutants_sha256"]):
+        raise ValueError(
+            f"cargo-mutants binary hash mismatch: {observed_hash}"
+        )
 
 
 def css_parser_public_identity(toolchain: dict[str, Any]) -> dict[str, Any]:

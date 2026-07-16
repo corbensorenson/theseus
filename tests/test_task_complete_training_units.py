@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import sys
 import tarfile
 import threading
@@ -18,6 +19,7 @@ if str(SCRIPTS) not in sys.path:
 
 import task_complete_training_units as units  # noqa: E402
 import task_complete_css_holes as css_holes  # noqa: E402
+import task_complete_rust_holes as rust_holes  # noqa: E402
 import task_complete_web_holes as web_holes  # noqa: E402
 import training_data_admission_v1 as admission  # noqa: E402
 import training_data_lineage_audit as lineage  # noqa: E402
@@ -1341,3 +1343,245 @@ def test_python_toolchain_expands_source_environment_and_binds_lock(
     assert "prepared_with_network_this_run" not in observed["locked_environment_identity"]
     assert "uv_bootstrapped_with_network_this_run" not in observed["locked_environment_identity"]
     assert "offline_replay" not in observed["locked_environment_identity"]
+
+
+def test_rust_body_parser_ignores_literals_comments_and_lifetimes() -> None:
+    source = r'''fn render<'a>(value: &'a str) -> String
+where
+    'a: 'static,
+{
+    let char_brace = '{';
+    let raw = r###"not a body } or {"###;
+    /* nested { comment /* } */ still comment } */
+    format!("{{{value}}}: {raw}: {char_brace}")
+}
+'''
+    start, end = rust_holes.find_function_body(source, 0, len(source))
+    body = source[start:end]
+    assert body.startswith("{\n")
+    assert body.endswith("\n}")
+    assert "format!" in body
+
+
+def test_rust_selection_is_source_only_deterministic_and_capped() -> None:
+    source = {
+        "id": "rust-fixture",
+        "verification_candidate_selection": {
+            "kind": "content_hash_file_round_robin_v1",
+            "maximum_candidates": 3,
+            "maximum_candidates_per_file": 2,
+            "maximum_candidates_per_package": 2,
+            "selection_uses_verifier_outcomes": False,
+        },
+    }
+    holes = []
+    for index, path in enumerate(("src/a.rs", "src/a.rs", "src/a.rs", "src/b.rs")):
+        holes.append({
+            "candidate_id": f"candidate-{index}",
+            "path": path,
+            "package": "fixture" if index < 3 else "other",
+            "function_name": f"function_{index}",
+            "body_start_char": index * 10,
+            "body_end_char": index * 10 + 8,
+            "target_sha256": f"sha-{index}",
+            "target_bytes": 8,
+        })
+    first = rust_holes.select_verification_candidates(source, holes)
+    second = rust_holes.select_verification_candidates(source, list(reversed(holes)))
+    assert first["public_receipt"] == second["public_receipt"]
+    assert [row["candidate_id"] for row in first["selected"]] == [
+        row["candidate_id"] for row in second["selected"]
+    ]
+    assert first["public_receipt"]["selected_count"] == 3
+    assert first["public_receipt"]["selection_uses_verifier_outcomes"] is False
+
+
+def test_rust_verifier_requires_compile_pass_test_kill_and_restore(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source_root = tmp_path / "source"
+    source_path = source_root / "src" / "lib.rs"
+    source_path.parent.mkdir(parents=True)
+    source_text = "pub fn answer() -> u8 {\n    42\n}\n"
+    source_path.write_text(source_text)
+    body_start = source_text.index("{")
+    body_end = source_text.rindex("}") + 1
+    hole = {
+        "candidate_id": "candidate-a",
+        "path": "src/lib.rs",
+        "package": "fixture",
+        "verification_root_package": "fixture_integration",
+        "body_start_char": body_start,
+        "body_end_char": body_end,
+        "source_sha256": rust_holes.sha256_text(source_text),
+        "target_sha256": rust_holes.sha256_text(source_text[body_start:body_end]),
+    }
+    outcomes = iter((
+        {"ok": True, "returncode": 0, "timed_out": False},
+        {"ok": False, "returncode": 101, "timed_out": False},
+        {"ok": True, "returncode": 0, "timed_out": False},
+        {"ok": True, "returncode": 0, "timed_out": False},
+    ))
+
+    commands = []
+
+    environments = []
+
+    def fake_run(
+        command, workdir, timeout_seconds, *, target_dir=None, cargo_home=None, environment=None
+    ):
+        commands.append(command)
+        environments.append(environment)
+        result = next(outcomes)
+        return {
+            **result,
+            "command": command,
+            "duration_ms": 1,
+            "stdout": "",
+            "stderr": "",
+        }
+
+    monkeypatch.setattr(rust_holes, "run_command", fake_run)
+    results, package = rust_holes._verify_package_group(
+        source_root,
+        "fixture",
+        [hole],
+        {
+            "cargo_path": "cargo",
+            "verifier_abi": rust_holes.VERIFIER_ABI,
+            "locked_environment": {"cargo_home_path": str(tmp_path / "cargo-home")},
+        },
+        {"work_root": str(tmp_path / "work"), "test_timeout_seconds": 5},
+    )
+    assert results["candidate-a"]["state"] == "passed"
+    assert results["candidate-a"]["starter_compiled"] is True
+    assert results["candidate-a"]["starter_test_failed"] is True
+    assert results["candidate-a"]["source_restored"] is True
+    assert package["final_baseline"]["ok"] is True
+    assert package["verification_packages"] == ["fixture", "fixture_integration"]
+    assert results["candidate-a"]["starter_compile_evidence"] == "cargo_check_after_test_failure"
+    assert all(
+        command.count("-p") == 2 and "fixture_integration" in command
+        for command in commands
+    )
+    assert all(environment and environment["TMPDIR"] for environment in environments)
+
+
+def test_rust_verifier_uses_passing_tests_as_compile_evidence(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source_root = tmp_path / "source"
+    source_path = source_root / "src" / "lib.rs"
+    source_path.parent.mkdir(parents=True)
+    source_text = "pub fn unobserved() -> u8 {\n    42\n}\n"
+    source_path.write_text(source_text)
+    body_start = source_text.index("{")
+    body_end = source_text.rindex("}") + 1
+    hole = {
+        "candidate_id": "candidate-missed",
+        "path": "src/lib.rs",
+        "package": "fixture",
+        "verification_root_package": "fixture",
+        "body_start_char": body_start,
+        "body_end_char": body_end,
+        "source_sha256": rust_holes.sha256_text(source_text),
+        "target_sha256": rust_holes.sha256_text(source_text[body_start:body_end]),
+    }
+    outcomes = iter((
+        {"ok": True, "returncode": 0, "timed_out": False},
+        {"ok": True, "returncode": 0, "timed_out": False},
+        {"ok": True, "returncode": 0, "timed_out": False},
+    ))
+    commands = []
+
+    def fake_run(
+        command, workdir, timeout_seconds, *, target_dir=None, cargo_home=None, environment=None
+    ):
+        commands.append(command)
+        result = next(outcomes)
+        return {
+            **result,
+            "command": command,
+            "duration_ms": 1,
+            "stdout": "",
+            "stderr": "",
+        }
+
+    monkeypatch.setattr(rust_holes, "run_command", fake_run)
+    results, _ = rust_holes._verify_package_group(
+        source_root,
+        "fixture",
+        [hole],
+        {
+            "cargo_path": "cargo",
+            "verifier_abi": rust_holes.VERIFIER_ABI,
+            "locked_environment": {"cargo_home_path": str(tmp_path / "cargo-home")},
+        },
+        {"work_root": str(tmp_path / "work"), "test_timeout_seconds": 5},
+    )
+    result = results["candidate-missed"]
+    assert result["state"] == "failed"
+    assert result["reason"] == "starter_tests_passed"
+    assert result["starter_compiled"] is True
+    assert result["starter_compile_evidence"] == "cargo_test_completed"
+    assert len(commands) == 3
+    assert all(command[1] == "test" for command in commands)
+
+
+def test_rust_timeout_terminates_the_entire_process_group(tmp_path: Path) -> None:
+    child_pid_path = tmp_path / "child.pid"
+    result = rust_holes.run_command(
+        [
+            "/bin/sh",
+            "-c",
+            "(trap '' TERM; while :; do sleep 30; done) & "
+            "child=$!; echo $child > child.pid; wait",
+        ],
+        tmp_path,
+        1,
+    )
+    assert result["timed_out"] is True
+    assert result["timeout_termination"] == "process_group_sigkill_after_grace"
+    child_pid = int(child_pid_path.read_text().strip())
+    deadline = time.time() + 2
+    while time.time() < deadline:
+        try:
+            os.kill(child_pid, 0)
+        except ProcessLookupError:
+            break
+        time.sleep(0.05)
+    else:
+        raise AssertionError(f"timed-out child process {child_pid} survived")
+
+
+def test_rust_timeout_taxonomy_prefers_the_test_phase() -> None:
+    assert rust_holes._failure_reason(
+        {"ok": False, "timed_out": True},
+        {"ok": False, "timed_out": True},
+        True,
+    ) == "starter_test_timeout"
+
+
+def test_rust_worktree_cleanup_retries_transient_directory_race(
+    tmp_path: Path, monkeypatch
+) -> None:
+    real_rmtree = rust_holes.shutil.rmtree
+    attempts = 0
+
+    def transient_rmtree(path: Path) -> None:
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise OSError(66, "Directory not empty", "debug")
+        real_rmtree(path)
+
+    monkeypatch.setattr(rust_holes.shutil, "rmtree", transient_rmtree)
+    with rust_holes.resilient_temporary_directory(
+        prefix="rust-cleanup-", directory=tmp_path
+    ) as raw:
+        worktree = Path(raw)
+        (worktree / "debug").mkdir()
+        (worktree / "debug" / "artifact").write_text("complete")
+
+    assert attempts == 2
+    assert not worktree.exists()

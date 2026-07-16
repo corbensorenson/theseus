@@ -92,22 +92,22 @@
     },
     "rust": {
       "checks": {
-        "position_floor": false,
-        "unit_floor": false
+        "position_floor": true,
+        "unit_floor": true
       },
       "minimum_target_positions": 1000000,
       "minimum_verified_units": 500,
-      "ready": false,
+      "ready": true,
       "required_verification_strength": "executable_target_pass_starter_fail",
-      "target_positions": 197774,
-      "verified_units": 97
+      "target_positions": 1162003,
+      "verified_units": 1504
     }
   },
-  "created_utc": "2026-07-16T01:16:52.323519+00:00",
+  "created_utc": "2026-07-16T13:01:48.639692+00:00",
   "policy": "project_theseus_task_complete_training_unit_manifest_v1",
   "raw_unit_payloads_in_manifest": false,
   "source_config": "configs/task_complete_training_units.json",
-  "source_config_sha256": "7abf8471bbfaab4458eacaab1af03cfb2d5a3ca806c0c7013728dbbbe49c9c30",
+  "source_config_sha256": "a8ed227cfb029bf229842f192be197c3100b0498c249421558b15d2cc499f039",
   "source_summaries": [
     {
       "adapter": "governed_conversation_assistant_turns",
@@ -353,12 +353,12 @@
         "manager": "uv",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 152.136,
+          "duration_ms": 142.262,
           "fault": null,
           "ok": true,
           "returncode": 0,
-          "stderr_sha256": "172ab38f6acd50721e05cfee80f767fa2869b575d73a4ae7a44b3a780df9d8de",
-          "stderr_tail": "Resolved 72 packages in 26ms\nChecked 13 packages in 9ms\n",
+          "stderr_sha256": "e5a3f299ad15fa5c6bf30438f7310beb74b9c6363f486298a7f99fa78eaffb51",
+          "stderr_tail": "Resolved 72 packages in 27ms\nChecked 13 packages in 6ms\n",
           "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stdout_tail": ""
         },
@@ -446,14 +446,14 @@
         "manager": "pnpm",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 1419.527,
+          "duration_ms": 907.617,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "21270e6e9740a44878aca43b79a2534f45a4bc48439621cfd207219382da244f",
-          "stdout_tail": "Scope: all 269 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +107\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 107, reused 107, downloaded 0, added 107, done\n\nDone in 1.3s using pnpm v10.34.4\n"
+          "stdout_sha256": "6f0506d622061832029c8bef1531adec9eecf2d9eb3d00d0d50c60a04af2c3f2",
+          "stdout_tail": "Scope: all 269 workspace projects\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +107\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nProgress: resolved 107, reused 107, downloaded 0, added 107, done\n\nDone in 865ms using pnpm v10.34.4\n"
         },
         "offline_replay_valid": true,
         "pnpm_version": "10.34.4",
@@ -467,14 +467,14 @@
         "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
         "node_version": "v22.15.0",
         "offline_replay": {
-          "duration_ms": 881.892,
+          "duration_ms": 1061.417,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "7eff97c10cc0050c42fd1503182f9bb7b51e5585d8053d7e8c0d37ce6deec693",
-          "stdout_tail": "\nadded 2 packages in 754ms\n"
+          "stdout_sha256": "4ded432fe6092caefb7ddfa7fa846fe2df86050280003083318ca324fe336c6a",
+          "stdout_tail": "\nadded 2 packages in 853ms\n"
         },
         "offline_replay_valid": true,
         "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
@@ -488,7 +488,7 @@
         "runtime_root": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1",
         "typescript_version": "5.9.3"
       },
-      "prior_contamination_audit_reuse_count": 0,
+      "prior_contamination_audit_reuse_count": 1756,
       "repo": "vitejs/vite",
       "revision": "c961cae",
       "selected_mutation_killed_count": 682,
@@ -588,14 +588,14 @@
         "manager": "pnpm",
         "network_during_verification": "denied",
         "offline_replay": {
-          "duration_ms": 396.173,
+          "duration_ms": 328.405,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "f447ceca0d722a380c1038d9dd440cba071408a0d236163e313683f2e622cfda",
-          "stdout_tail": "s\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-arm64-msvc         | [WARN] Unsupported platform: wanted: {\"cpu\":[\"arm64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-x64-msvc           | [WARN] Unsupported platform: wanted: {\"cpu\":[\"x64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\nScope: all 29 workspace projects\nAlready up to date\nDone in 348ms using pnpm v11.9.0\n"
+          "stdout_sha256": "93da641913ae273d682c94d235505bf3b337ec5ee8cc6b6914bf3b3858539466",
+          "stdout_tail": "s\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-arm64-msvc         | [WARN] Unsupported platform: wanted: {\"cpu\":[\"arm64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\ncrates/node/npm/win32-x64-msvc           | [WARN] Unsupported platform: wanted: {\"cpu\":[\"x64\"],\"os\":[\"win32\"],\"libc\":[\"any\"]} (current: {\"os\":\"darwin\",\"cpu\":\"arm64\",\"libc\":\"unknown\"})\nScope: all 29 workspace projects\nAlready up to date\nDone in 272ms using pnpm v11.9.0\n"
         },
         "offline_replay_valid": true,
         "package_manager_toolchain": {
@@ -618,14 +618,14 @@
         "node_executable_sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
         "node_version": "v22.15.0",
         "offline_replay": {
-          "duration_ms": 1015.004,
+          "duration_ms": 720.233,
           "fault": null,
           "ok": true,
           "returncode": 0,
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "stderr_tail": "",
-          "stdout_sha256": "ba487db871970f43ffce304723671314954b12045ad5a40ef95eed5666c7edab",
-          "stdout_tail": "\nadded 2 packages in 788ms\n"
+          "stdout_sha256": "548ad79e92c64d5753552b5b38b0c1314d05b2d57bcb58aedd53ff4a4295416c",
+          "stdout_tail": "\nadded 2 packages in 607ms\n"
         },
         "offline_replay_valid": true,
         "package_json_sha256": "3dcdcf24438f0eb62036ff0ed7a88f7388173d50c5c4c3b3dd7fddb7577d6609",
@@ -639,7 +639,7 @@
         "runtime_root": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/javascript-ast-v1",
         "typescript_version": "5.9.3"
       },
-      "prior_contamination_audit_reuse_count": 0,
+      "prior_contamination_audit_reuse_count": 1178,
       "repo": "tailwindlabs/tailwindcss",
       "revision": "35a3e9c",
       "selected_mutation_killed_count": 363,
@@ -766,6 +766,632 @@
       "verification_state_counts": {
         "failed": 9,
         "passed": 97
+      }
+    },
+    {
+      "adapter": "rust_test_killed_function_body_holes",
+      "decision_counts": {
+        "admit": 559,
+        "reject": 253
+      },
+      "discovery": {
+        "cargo_mutant_count": 4764,
+        "distinct_eligible_function_count": 812,
+        "eligible_target_bytes": 483038,
+        "inventory_command": [
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+          "mutants",
+          "--list",
+          "--json",
+          "--workspace",
+          "--no-config",
+          "--dir",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/BurntSushi__ripgrep__master"
+        ],
+        "inventory_stderr_tail": "",
+        "rejection_counts": {
+          "missing_function_span": 3,
+          "target_size_outside_bounds": 2138
+        }
+      },
+      "license_spdx": "MIT",
+      "locked_environment": {
+        "cargo_home_artifact_bytes": 10282789,
+        "cargo_home_artifact_count": 51,
+        "cargo_home_inventory_sha256": "ea7a92573f6e45d7750b26e703ddbb4adfc79bbb3d2864ba074b6dd11337f2a3",
+        "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_ripgrep_d5b85d4_test_killed_rust_function_bodies",
+        "cargo_lock_sha256": "7d0fc6b674662a91a640e1ba17027873ea109e63bdc192beb8413d7d4a8879cf",
+        "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/ripgrep-d5b85d4-Cargo.lock",
+        "network_during_verification": "denied",
+        "offline_replay_valid": true
+      },
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 812,
+      "repo": "BurntSushi/ripgrep",
+      "revision": "d5b85d44057ff729a89be9c6549958c45d95aa99",
+      "selection": {
+        "candidate_count": 812,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 1000,
+        "maximum_candidates_per_file": 1000,
+        "maximum_candidates_per_package": 1000,
+        "ordered_inventory_sha256": "40b4d674648b78467c403d9a74b6a577354b46f706f8843798a5d5f47c31ece9",
+        "selected_count": 812,
+        "selected_inventory_sha256": "232292f3af2045890cbc319593c55e24a3be0ef0f615b84d9828a63e4534ad4d",
+        "selected_package_counts": {
+          "globset": 69,
+          "grep-cli": 49,
+          "grep-matcher": 19,
+          "grep-pcre2": 6,
+          "grep-printer": 138,
+          "grep-regex": 43,
+          "grep-searcher": 68,
+          "ignore": 129,
+          "ripgrep": 291
+        },
+        "selected_target_bytes": 483038,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_ripgrep_d5b85d4_test_killed_rust_function_bodies",
+      "source_root": "runtime/task_complete_sources/extracted/BurntSushi__ripgrep__master",
+      "target_positions": 402055,
+      "toolchain_identity": {
+        "archive_sha256": "dfaac8e72c94cc9d05abaf0dd293fb68552c1725051792f0f2532cbfcac4b793",
+        "baseline_command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "cargo_lock_sha256": "7d0fc6b674662a91a640e1ba17027873ea109e63bdc192beb8413d7d4a8879cf",
+        "cargo_mutants_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+        "cargo_mutants_sha256": "d5ca411b60922d90f9c0aaaa283edf6f2c66ca768ae102fc702c0307367d27f9",
+        "cargo_mutants_version": "cargo-mutants 27.1.0",
+        "cargo_path": "/Users/corbensorenson/.cargo/bin/cargo",
+        "cargo_resolved_path": "/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init",
+        "cargo_sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505",
+        "cargo_version": "cargo 1.90.0 (840b83a10 2025-07-30)",
+        "compile_command": [
+          "cargo",
+          "check",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "locked_environment": {
+          "cargo_home_artifact_bytes": 10282789,
+          "cargo_home_artifact_count": 51,
+          "cargo_home_inventory_sha256": "ea7a92573f6e45d7750b26e703ddbb4adfc79bbb3d2864ba074b6dd11337f2a3",
+          "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_ripgrep_d5b85d4_test_killed_rust_function_bodies",
+          "cargo_lock_sha256": "7d0fc6b674662a91a640e1ba17027873ea109e63bdc192beb8413d7d4a8879cf",
+          "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/ripgrep-d5b85d4-Cargo.lock",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true
+        },
+        "network": "denied",
+        "verification_runtime_contract": {
+          "baseline_timeout_seconds": 300,
+          "compile_timeout_seconds": 120,
+          "mutation_test_timeout_seconds": 60,
+          "timeout_termination": "process_group_sigterm_then_sigkill_v1",
+          "verification_checkpoint_interval": 25,
+          "verification_parallelism": 2,
+          "worker_temp_isolation": "unique_os_tmp_outside_project_v1"
+        },
+        "verifier_abi": "project_theseus_rust_test_killed_function_body_v3"
+      },
+      "unit_count": 812,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 253,
+        "passed": 559
+      },
+      "verification_summary": {
+        "package_count": 0,
+        "package_receipts": {},
+        "verification_parallelism": 2
+      }
+    },
+    {
+      "adapter": "rust_test_killed_function_body_holes",
+      "decision_counts": {
+        "admit": 434,
+        "reject": 348
+      },
+      "discovery": {
+        "cargo_mutant_count": 3908,
+        "distinct_eligible_function_count": 782,
+        "eligible_target_bytes": 563200,
+        "inventory_command": [
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+          "mutants",
+          "--list",
+          "--json",
+          "--workspace",
+          "--no-config",
+          "--dir",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/clap-rs__clap__master"
+        ],
+        "inventory_stderr_tail": "",
+        "rejection_counts": {
+          "target_size_outside_bounds": 1465
+        }
+      },
+      "license_spdx": "MIT",
+      "locked_environment": {
+        "cargo_home_artifact_bytes": 82455464,
+        "cargo_home_artifact_count": 464,
+        "cargo_home_inventory_sha256": "c8c66293226fa189d6e42bb4090bb7c0921b073f6c19224e394ea8301f159e9b",
+        "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_clap_4a35e3b_test_killed_rust_function_bodies",
+        "cargo_lock_sha256": "a64ef1553a451cbe5d14215b8f33eb642584bfdc95c074ae16c18047a2900d41",
+        "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/clap-4a35e3b-Cargo.lock",
+        "network_during_verification": "denied",
+        "offline_replay_valid": true
+      },
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 782,
+      "repo": "clap-rs/clap",
+      "revision": "4a35e3bcabf7b6326e646f88ef9cf312ac0fa2da",
+      "selection": {
+        "candidate_count": 782,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 1000,
+        "maximum_candidates_per_file": 1000,
+        "maximum_candidates_per_package": 1000,
+        "ordered_inventory_sha256": "964142f75787da19c50b0b35886eff5edc979ae27f22ff9ba4a0294f4f23939a",
+        "selected_count": 782,
+        "selected_inventory_sha256": "119743c805c807a44ffc2d0b03990745e69d8ce1d05db0866b0169803a4aad8d",
+        "selected_package_counts": {
+          "clap": 1,
+          "clap_builder": 515,
+          "clap_complete": 102,
+          "clap_complete_nushell": 6,
+          "clap_derive": 103,
+          "clap_lex": 19,
+          "clap_mangen": 36
+        },
+        "selected_target_bytes": 563200,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_clap_4a35e3b_test_killed_rust_function_bodies",
+      "source_root": "runtime/task_complete_sources/extracted/clap-rs__clap__master",
+      "target_positions": 347886,
+      "toolchain_identity": {
+        "archive_sha256": "98a4c32c402e4037616ce6353d10490fec14ff8b7fe9cd66c00600970c427eec",
+        "baseline_command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "cargo_lock_sha256": "a64ef1553a451cbe5d14215b8f33eb642584bfdc95c074ae16c18047a2900d41",
+        "cargo_mutants_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+        "cargo_mutants_sha256": "d5ca411b60922d90f9c0aaaa283edf6f2c66ca768ae102fc702c0307367d27f9",
+        "cargo_mutants_version": "cargo-mutants 27.1.0",
+        "cargo_path": "/Users/corbensorenson/.cargo/bin/cargo",
+        "cargo_resolved_path": "/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init",
+        "cargo_sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505",
+        "cargo_version": "cargo 1.90.0 (840b83a10 2025-07-30)",
+        "compile_command": [
+          "cargo",
+          "check",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "locked_environment": {
+          "cargo_home_artifact_bytes": 82455464,
+          "cargo_home_artifact_count": 464,
+          "cargo_home_inventory_sha256": "c8c66293226fa189d6e42bb4090bb7c0921b073f6c19224e394ea8301f159e9b",
+          "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_clap_4a35e3b_test_killed_rust_function_bodies",
+          "cargo_lock_sha256": "a64ef1553a451cbe5d14215b8f33eb642584bfdc95c074ae16c18047a2900d41",
+          "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/clap-4a35e3b-Cargo.lock",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true
+        },
+        "network": "denied",
+        "verification_runtime_contract": {
+          "baseline_timeout_seconds": 300,
+          "compile_timeout_seconds": 120,
+          "mutation_test_timeout_seconds": 60,
+          "timeout_termination": "process_group_sigterm_then_sigkill_v1",
+          "verification_checkpoint_interval": 25,
+          "verification_parallelism": 2,
+          "worker_temp_isolation": "unique_os_tmp_outside_project_v1"
+        },
+        "verifier_abi": "project_theseus_rust_test_killed_function_body_v3"
+      },
+      "unit_count": 782,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 348,
+        "passed": 434
+      },
+      "verification_summary": {
+        "package_count": 0,
+        "package_receipts": {},
+        "verification_parallelism": 2
+      }
+    },
+    {
+      "adapter": "rust_test_killed_function_body_holes",
+      "decision_counts": {
+        "admit": 34,
+        "reject": 218
+      },
+      "discovery": {
+        "cargo_mutant_count": 1829,
+        "distinct_eligible_function_count": 252,
+        "eligible_target_bytes": 114142,
+        "inventory_command": [
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+          "mutants",
+          "--list",
+          "--json",
+          "--workspace",
+          "--no-config",
+          "--features",
+          "full,test-util",
+          "--dir",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/tokio-rs__tokio__master"
+        ],
+        "inventory_stderr_tail": "",
+        "rejection_counts": {
+          "excluded_source_path": 3,
+          "target_size_outside_bounds": 884
+        }
+      },
+      "license_spdx": "MIT",
+      "locked_environment": {
+        "cargo_home_artifact_bytes": 18368512,
+        "cargo_home_artifact_count": 184,
+        "cargo_home_inventory_sha256": "f7dcc221e4cd1d84eed6e032160ba101b1abbe812b043f81c1960499ece43c06",
+        "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_tokio_9c465e2_test_killed_rust_function_bodies",
+        "cargo_lock_sha256": "78f416df0de2f5954345f573f21784eadcb6b79cdc5cd53a747f9d680d108c45",
+        "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/tokio-9c465e2-Cargo.lock",
+        "network_during_verification": "denied",
+        "offline_replay_valid": true
+      },
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 252,
+      "repo": "tokio-rs/tokio",
+      "revision": "9c465e2f427f12999054bf086682080764dd3364",
+      "selection": {
+        "candidate_count": 252,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 800,
+        "maximum_candidates_per_file": 40,
+        "maximum_candidates_per_package": 800,
+        "ordered_inventory_sha256": "9aa810440c5aacd50d449a9ce08a3c928b8a18cd083f3fb99c6cbc37aa832182",
+        "selected_count": 252,
+        "selected_inventory_sha256": "d8b7831340019b1a37365646df1aab9d9de338049f9fb8d9bdc29d77a98cef5a",
+        "selected_package_counts": {
+          "tokio": 68,
+          "tokio-macros": 30,
+          "tokio-stream": 63,
+          "tokio-test": 26,
+          "tokio-util": 65
+        },
+        "selected_target_bytes": 114142,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_tokio_9c465e2_test_killed_rust_function_bodies",
+      "source_root": "runtime/task_complete_sources/extracted/tokio-rs__tokio__master",
+      "target_positions": 14892,
+      "toolchain_identity": {
+        "archive_sha256": "820eb239537e410a984896179133861fc1e7d16f94d8b123f242614785db3bb1",
+        "baseline_command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "cargo_lock_sha256": "78f416df0de2f5954345f573f21784eadcb6b79cdc5cd53a747f9d680d108c45",
+        "cargo_mutants_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+        "cargo_mutants_sha256": "d5ca411b60922d90f9c0aaaa283edf6f2c66ca768ae102fc702c0307367d27f9",
+        "cargo_mutants_version": "cargo-mutants 27.1.0",
+        "cargo_path": "/Users/corbensorenson/.cargo/bin/cargo",
+        "cargo_resolved_path": "/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init",
+        "cargo_sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505",
+        "cargo_version": "cargo 1.90.0 (840b83a10 2025-07-30)",
+        "compile_command": [
+          "cargo",
+          "check",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "locked_environment": {
+          "cargo_home_artifact_bytes": 18368512,
+          "cargo_home_artifact_count": 184,
+          "cargo_home_inventory_sha256": "f7dcc221e4cd1d84eed6e032160ba101b1abbe812b043f81c1960499ece43c06",
+          "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_tokio_9c465e2_test_killed_rust_function_bodies",
+          "cargo_lock_sha256": "78f416df0de2f5954345f573f21784eadcb6b79cdc5cd53a747f9d680d108c45",
+          "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/tokio-9c465e2-Cargo.lock",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true
+        },
+        "network": "denied",
+        "verification_runtime_contract": {
+          "baseline_timeout_seconds": 300,
+          "compile_timeout_seconds": 120,
+          "mutation_test_timeout_seconds": 60,
+          "timeout_termination": "process_group_sigterm_then_sigkill_v1",
+          "verification_checkpoint_interval": 25,
+          "verification_parallelism": 2,
+          "worker_temp_isolation": "unique_os_tmp_outside_project_v1"
+        },
+        "verifier_abi": "project_theseus_rust_test_killed_function_body_v3"
+      },
+      "unit_count": 252,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 218,
+        "passed": 34
+      },
+      "verification_summary": {
+        "package_count": 0,
+        "package_receipts": {},
+        "verification_parallelism": 2
+      }
+    },
+    {
+      "adapter": "rust_test_killed_function_body_holes",
+      "decision_counts": {
+        "admit": 378,
+        "reject": 250
+      },
+      "discovery": {
+        "cargo_mutant_count": 4664,
+        "distinct_eligible_function_count": 628,
+        "eligible_target_bytes": 215793,
+        "inventory_command": [
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+          "mutants",
+          "--list",
+          "--json",
+          "--workspace",
+          "--no-config",
+          "--dir",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/rayon-rs__rayon__main"
+        ],
+        "inventory_stderr_tail": "",
+        "rejection_counts": {
+          "missing_function_span": 21,
+          "outside_source_globs": 1702,
+          "target_size_outside_bounds": 1351
+        }
+      },
+      "license_spdx": "MIT",
+      "locked_environment": {
+        "cargo_home_artifact_bytes": 45929726,
+        "cargo_home_artifact_count": 235,
+        "cargo_home_inventory_sha256": "5b5e785e0c212923f2781986fcbc1edb90c9a05923dae604532d9518b9728637",
+        "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_rayon_6d9e94b_test_killed_rust_function_bodies",
+        "cargo_lock_sha256": "02d2d33d28c6f56f9a6f8ead5e47df589f810698bda6f8311efea059f02608af",
+        "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/rayon-6d9e94b-Cargo.lock",
+        "network_during_verification": "denied",
+        "offline_replay_valid": true
+      },
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 0,
+      "repo": "rayon-rs/rayon",
+      "revision": "6d9e94bf6cf72fe73012524e1461a93dc58ff265",
+      "selection": {
+        "candidate_count": 628,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 1000,
+        "maximum_candidates_per_file": 1000,
+        "maximum_candidates_per_package": 1000,
+        "ordered_inventory_sha256": "2b6640c4f0cf05b8d1ec2c2b6615658b26b0b138d40c7a96e6f9853602369c05",
+        "selected_count": 628,
+        "selected_inventory_sha256": "0b628a00df5bc80486f15e0e8782cf88dd0bd4d0a53536971bd9b26d6367f17d",
+        "selected_package_counts": {
+          "rayon": 526,
+          "rayon-core": 102
+        },
+        "selected_target_bytes": 215793,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_rayon_6d9e94b_test_killed_rust_function_bodies",
+      "source_root": "runtime/task_complete_sources/extracted/rayon-rs__rayon__main",
+      "target_positions": 197128,
+      "toolchain_identity": {
+        "archive_sha256": "05c3b92fbedad8e1749be36410ac2b36be2278a8c53356d37f0a6d117618ac4f",
+        "baseline_command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "cargo_lock_sha256": "02d2d33d28c6f56f9a6f8ead5e47df589f810698bda6f8311efea059f02608af",
+        "cargo_mutants_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+        "cargo_mutants_sha256": "d5ca411b60922d90f9c0aaaa283edf6f2c66ca768ae102fc702c0307367d27f9",
+        "cargo_mutants_version": "cargo-mutants 27.1.0",
+        "cargo_path": "/Users/corbensorenson/.cargo/bin/cargo",
+        "cargo_resolved_path": "/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init",
+        "cargo_sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505",
+        "cargo_version": "cargo 1.90.0 (840b83a10 2025-07-30)",
+        "compile_command": [
+          "cargo",
+          "check",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "locked_environment": {
+          "cargo_home_artifact_bytes": 45929726,
+          "cargo_home_artifact_count": 235,
+          "cargo_home_inventory_sha256": "5b5e785e0c212923f2781986fcbc1edb90c9a05923dae604532d9518b9728637",
+          "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_rayon_6d9e94b_test_killed_rust_function_bodies",
+          "cargo_lock_sha256": "02d2d33d28c6f56f9a6f8ead5e47df589f810698bda6f8311efea059f02608af",
+          "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/rayon-6d9e94b-Cargo.lock",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true
+        },
+        "network": "denied",
+        "verification_runtime_contract": {
+          "baseline_timeout_seconds": 300,
+          "compile_timeout_seconds": 120,
+          "mutation_test_timeout_seconds": 60,
+          "timeout_termination": "process_group_sigterm_then_sigkill_v1",
+          "verification_checkpoint_interval": 25,
+          "verification_parallelism": 2,
+          "worker_temp_isolation": "unique_os_tmp_outside_project_v1"
+        },
+        "verifier_abi": "project_theseus_rust_test_killed_function_body_v3"
+      },
+      "unit_count": 628,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 250,
+        "passed": 378
+      },
+      "verification_summary": {
+        "package_count": 0,
+        "package_receipts": {},
+        "verification_parallelism": 2
+      }
+    },
+    {
+      "adapter": "rust_test_killed_function_body_holes",
+      "decision_counts": {
+        "admit": 2,
+        "reject": 199
+      },
+      "discovery": {
+        "cargo_mutant_count": 763,
+        "distinct_eligible_function_count": 201,
+        "eligible_target_bytes": 247687,
+        "inventory_command": [
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+          "mutants",
+          "--list",
+          "--json",
+          "--workspace",
+          "--no-config",
+          "--all-features",
+          "--dir",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/serde-rs__serde__master"
+        ],
+        "inventory_stderr_tail": " WARN referent of mod not found definition_site=\"serde_derive_internals/lib.rs:50:1\" mod_name=internals tried_paths=[\"/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/serde-rs__serde__master/serde_derive_internals/internals.rs\", \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_sources/extracted/serde-rs__serde__master/serde_derive_internals/internals/mod.rs\"]\n",
+        "rejection_counts": {
+          "target_size_outside_bounds": 151
+        }
+      },
+      "license_spdx": "MIT",
+      "locked_environment": {
+        "cargo_home_artifact_bytes": 4078385,
+        "cargo_home_artifact_count": 29,
+        "cargo_home_inventory_sha256": "8513e30a8b166630435fcf9fcc332da541eb82bb9b884a435fc308f427aea0b8",
+        "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_serde_cfe6692_test_killed_rust_function_bodies",
+        "cargo_lock_sha256": "bac67dae4aa52de3216b9072fdd776d63223b688342be46a637c072380896fa3",
+        "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/serde-cfe6692-Cargo.lock",
+        "network_during_verification": "denied",
+        "offline_replay_valid": true
+      },
+      "new_verification_attempt_count": 0,
+      "prior_contamination_audit_reuse_count": 201,
+      "repo": "serde-rs/serde",
+      "revision": "cfe669241065984177ff63af8b45058e6e9b499d",
+      "selection": {
+        "candidate_count": 201,
+        "kind": "content_hash_file_round_robin_v1",
+        "maximum_candidates": 500,
+        "maximum_candidates_per_file": 40,
+        "maximum_candidates_per_package": 300,
+        "ordered_inventory_sha256": "1d613c9b47ec71ecb16846318f136b7dc4b3e63d89071f96f5c9b5363cac33cf",
+        "selected_count": 201,
+        "selected_inventory_sha256": "ae21caf0ed05756d7d9a83e00109cdcc111a1e4be3867fddf8d12c5737de6675",
+        "selected_package_counts": {
+          "serde_derive": 201
+        },
+        "selected_target_bytes": 247687,
+        "selection_uses_verifier_outcomes": false
+      },
+      "source_id": "open_repo_serde_cfe6692_test_killed_rust_function_bodies",
+      "source_root": "runtime/task_complete_sources/extracted/serde-rs__serde__master",
+      "target_positions": 2268,
+      "toolchain_identity": {
+        "archive_sha256": "8981bd6e0f0ed911b549edc3d973ebd81be368d2ae7cb80d2db38eec24f86d48",
+        "baseline_command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "cargo_lock_sha256": "bac67dae4aa52de3216b9072fdd776d63223b688342be46a637c072380896fa3",
+        "cargo_mutants_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/toolchains/cargo-mutants-27.1.0/bin/cargo-mutants",
+        "cargo_mutants_sha256": "d5ca411b60922d90f9c0aaaa283edf6f2c66ca768ae102fc702c0307367d27f9",
+        "cargo_mutants_version": "cargo-mutants 27.1.0",
+        "cargo_path": "/Users/corbensorenson/.cargo/bin/cargo",
+        "cargo_resolved_path": "/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init",
+        "cargo_sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505",
+        "cargo_version": "cargo 1.90.0 (840b83a10 2025-07-30)",
+        "compile_command": [
+          "cargo",
+          "check",
+          "--offline",
+          "--locked",
+          "-p",
+          "PACKAGE",
+          "--quiet"
+        ],
+        "locked_environment": {
+          "cargo_home_artifact_bytes": 4078385,
+          "cargo_home_artifact_count": 29,
+          "cargo_home_inventory_sha256": "8513e30a8b166630435fcf9fcc332da541eb82bb9b884a435fc308f427aea0b8",
+          "cargo_home_path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/rust-cargo-homes-v1/open_repo_serde_cfe6692_test_killed_rust_function_bodies",
+          "cargo_lock_sha256": "bac67dae4aa52de3216b9072fdd776d63223b688342be46a637c072380896fa3",
+          "cargo_lock_snapshot": "/Users/corbensorenson/Documents/Theseus-Hive/configs/toolchains/task_complete_rust_locks/serde-cfe6692-Cargo.lock",
+          "network_during_verification": "denied",
+          "offline_replay_valid": true
+        },
+        "network": "denied",
+        "verification_runtime_contract": {
+          "baseline_timeout_seconds": 300,
+          "compile_timeout_seconds": 120,
+          "mutation_test_timeout_seconds": 60,
+          "timeout_termination": "process_group_sigterm_then_sigkill_v1",
+          "verification_checkpoint_interval": 25,
+          "verification_parallelism": 2,
+          "worker_temp_isolation": "unique_os_tmp_outside_project_v1"
+        },
+        "verifier_abi": "project_theseus_rust_test_killed_function_body_v3"
+      },
+      "unit_count": 201,
+      "verification_cache_checkpoint_write_count": 0,
+      "verification_state_counts": {
+        "failed": 199,
+        "passed": 2
+      },
+      "verification_summary": {
+        "package_count": 0,
+        "package_receipts": {},
+        "verification_parallelism": 2
       }
     },
     {
@@ -1733,55 +2359,55 @@
     }
   ],
   "summary": {
-    "admitted_unit_count": 29555,
+    "admitted_unit_count": 30962,
     "arm_counts": {
       "english": 25566,
       "html_css": 690,
       "javascript_typescript": 1180,
       "python": 2022,
-      "rust": 97
+      "rust": 1504
     },
     "contract_hard_gap_count": 0,
-    "coverage_gap_count": 1,
+    "coverage_gap_count": 0,
     "decision_counts": {
-      "admit": 29555,
-      "reject": 3657
+      "admit": 30962,
+      "reject": 4925
     },
     "external_inference_calls": 0,
     "fallback_return_count": 0,
     "inventory_only": false,
-    "prior_contamination_audit_reuse_count": 4708,
+    "prior_contamination_audit_reuse_count": 9689,
     "public_exact_overlap_unit_count": 0,
     "public_semantic_overlap_unit_count": 0,
     "public_training_rows_written": 0,
     "raw_user_text_admitted": false,
-    "runtime_ms": 204692,
-    "source_count": 24,
+    "runtime_ms": 133640,
+    "source_count": 29,
     "split_counts": {
-      "confirmation": 1611,
-      "development": 1531,
-      "train": 26413
+      "confirmation": 1800,
+      "development": 1549,
+      "train": 27613
     },
-    "task_complete_unique_target_positions": 35588115,
+    "task_complete_unique_target_positions": 36552344,
     "teacher_calls": 0,
-    "unit_count": 33212,
-    "verification_cache_entry_count": 7137,
-    "verification_cache_new_or_replaced_count": 2356,
+    "unit_count": 35887,
+    "verification_cache_entry_count": 9812,
+    "verification_cache_new_or_replaced_count": 0,
     "verification_state_counts": {
-      "failed": 3075,
+      "failed": 4343,
       "not_run": 578,
-      "passed": 29559
+      "passed": 30966
     },
     "verification_strength_counts": {
       "dom_a11y_layout_render_delta": 517,
-      "executable_target_pass_starter_fail": 3299,
+      "executable_target_pass_starter_fail": 4706,
       "governed_conversation_target_bound": 25566,
       "layout_render_delta": 173
     }
   },
   "unit_ledger": "runtime/data_governance/task_complete_training_units_v1.jsonl.gz",
-  "unit_ledger_count": 33212,
-  "unit_ledger_sha256": "00fe4a090612d471d844453be11502c162a51cdb5390f50fc105c10e8e92f9d9",
+  "unit_ledger_count": 35887,
+  "unit_ledger_sha256": "a165d767acc2a832775deb08f771248a4b04a9c39b6577a5bcf8a4ca4c43d0a6",
   "verification_cache": "runtime/data_governance/task_complete_verification_cache_v1.jsonl",
-  "verification_cache_sha256": "10a82f7a153b4e953c445a40ed9591155c5d6003b08a466cec6db5e7bcda2214"
+  "verification_cache_sha256": "afb5f01bb0c99b8f555e69f02378940cdfd35e156a8c47fb6c1274577517e32b"
 }
