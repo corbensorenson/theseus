@@ -106,7 +106,7 @@ retirement/falsification receipt.
 |---:|---|---|---|
 | 1 | Kernel English + hierarchical residual compiler | `retired_by_pretraining_verdict` | preserve exact protected objects, enforce zero full-KERC optimizer exposure |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
-| 3 | Reflexive Router | `pre_training_architecture_required` | canonical pre-deliberative dispatch, typed outcomes, Chronicle/cache lifecycle, compilation/decompilation, route isolation |
+| 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
 | 4 | Full-state data/update causality | `pre_training_architecture_required` | lineage-complete model/optimizer/RNG/cache/checkpoint inventory, best/final authority, deletion/invalidation and exact rollback |
 | 5 | Multi-target policy-update leases | `pre_training_architecture_required` | one authority-safe update contract for planner/router/VCM/verifier/executor/generator and generation modes |
 | 6 | GVR state machine and localized repair | `pre_training_architecture_required` | typed transitions, candidate identity, verifier/repair receipts, rollback, and learned-versus-assisted accounting |
@@ -1824,18 +1824,34 @@ freshness qualification, finite terminal outcomes, bounded DAGs, trace integrity
 bitemporal Chronicle records, dependency-complete cache identities, and governed
 compile/decompile helpers, three bounded effort profiles, true multi-capability workflow
 selection, per-capability qualification, and malformed learned-plan rejection pass 24
-focused tests. The existing assistant
+foundational focused tests. Typed parameter schemas and bounded dynamic defaults, preview/apply/rollback
+registry mutation, structured cancellation and immutable partial-result semantics, retry
+idempotency, late-result suppression, compensation, and exact registry/effect rollback are
+also implemented; the complete focused suite is now 34 tests. The existing assistant
 E2E now passes all hard gates across six cases: chat, code, tool, planning, a tool-to-plan
 workflow, and a reversible effect route. The workflow executes 15 independently verified
-deterministic-tool cases before exposing plan context. The effect canary is bound to the
+deterministic-tool cases, then executes the actual `tool-evidence -> compile-plan` DAG
+through the structured reference kernel before exposing only verified references and
+digests to checkpoint synthesis. The effect canary is bound to the
 verified dispatch trace and decision digest, materially observed, and restored to the
 exact prior filesystem identity. Direct effort rejects the over-budget code route with
 `resource_exceeded`; a forced unknown route produces `unsupported`, skips downstream
-inference, and grants no effect authority. This is canonical mechanics evidence only.
-Reflexive Router remains `pre_training_architecture_required` until the frozen eight-track,
-ten-policy matched ReflexBench profile, parameter/default and registry-mutation surfaces,
-structured cancellation/partial-result semantics, and full lifecycle qualification are
-complete. No learned routing, route-regret, answer-quality, or capability gain is claimed.
+inference, and grants no effect authority. The frozen private ReflexBench mechanics
+profile executes 32 cases across eight tracks against ten policies (320 result rows).
+The full reflexive route resolves 32/32 mechanics cases; no-Chronicle and no-compiler
+ablations each resolve 28/32. Non-oracle policies cannot read held fields, held-field
+mutation does not change their route decisions, and all literal-isolation, authority,
+unsafe-effect, mutation, and replay counters remain zero. Because profile intent is a
+visible fixture field and the learned-router arm is an untrained proxy, these are
+interface/mechanics results, not learned language-routing evidence.
+
+Pre-training disposition: `pretraining_wired_behavior_qualification_pending`. The
+architecture, ownership, negative controls, state transitions, checkpoint compatibility,
+and exact replay boundary are complete enough to freeze. Learned-router calibration,
+selective-risk curves, real route regret and end-to-end latency, trace-to-reflex promotion
+from diverse governed traces, dogfood drift detection, and answer-quality improvement
+remain post-training qualifications. No learned routing, reflex-promotion, answer-quality,
+public-transfer, or capability-gain claim is made from the mechanics profile.
 
 - Put one canonical pre-deliberative path before ordinary assistant inference:
   canonical event and authenticated command plane -> deterministic and learned
@@ -2029,7 +2045,7 @@ gaps route into the phases above:
 | Labor OS typed jobs / artifact graphs | typed job + unified artifact graph not the universal unit | 1, 14 |
 | Procedural memory | adoption discipline applied to only one trace so far | 15 |
 | Routing heads + MoECOT + specialist cores | v8 shared trunk and five specialist deltas are trained and arm-evaluated; matched dense verdict, confirmation, live arm-card binding, typed composition, and route-versus-answer qualification remain | 10, 16 |
-| Reflexive Router / compiled reflexes | source is argument-backed and the high-level cross-phase contract is mapped, but the canonical pre-deliberative runtime, typed command/reflex registries, finite outcome protocol, indexed precedence engine, dependency-complete cache/Chronicle invalidation, structured-concurrency semantics, full matched ReflexBench profile, and governed compilation/decompilation campaign are not yet implemented | 0, 1, 2, 3, 5, 6, 8, 14, 15, 16, 18, 19 |
+| Reflexive Router / compiled reflexes | pre-training mechanics are wired through the canonical assistant: typed command/reflex registries, finite outcomes, precedence and qualification, Chronicle/cache invalidation, structured concurrency, sole-kernel reversible effects, compilation/decompilation interfaces, and a frozen 32-case/eight-track/ten-policy mechanics profile. Learned calibration, real route regret, diverse trace promotion, drift response, and answer-quality benefit remain post-training evidence | 0, 1, 2, 3, 5, 6, 8, 14, 15, 16, 18, 19 |
 | Ambiguous routing + adaptive deliberation | naturally ambiguous route corpus, fallback/abstention calibration, first-hit/last-correct, overthinking harm, branch credit, and verifier-disagreement accounting are missing on useful model outputs | 4, 6, 8, 10, 14, 16, 18 |
 | Readiness gates + residual escrow | stale outputs/duplicate families reduce trust | 0, 2 |
 | Generate-verify-repair | correctness still eval-only, not a training/search signal | 6, 10, 13 |

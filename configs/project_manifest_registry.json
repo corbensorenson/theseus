@@ -883,8 +883,12 @@
           "path": "reports/theseus_assistant_product_lane_gate.json",
           "freshness_mode": "source_bound",
           "source_paths": [
+            "scripts/reflexive_dispatch.py",
+            "scripts/theseus_assistant_e2e.py",
             "scripts/theseus_assistant_runtime.py",
-            "scripts/theseus_assistant_product_lane_gate.py"
+            "scripts/theseus_assistant_product_lane_gate.py",
+            "configs/reflexive_router_contract.json",
+            "configs/reflexive_router_profile.json"
           ],
           "acceptance": {
             "field": "trigger_state",
@@ -6143,6 +6147,7 @@
         "scripts/reflexive_dispatch.py",
         "scripts/viea_spine_records.py",
         "configs/reflexive_router_contract.json",
+        "configs/reflexive_router_profile.json",
         "configs/assistant_trace_schema.json",
         "configs/vcm_context_governor.json",
         "scripts/vcm_context_governor_gate.py",
@@ -8451,6 +8456,7 @@
         "configs/assistant_trace_schema.json",
         "configs/theseus_assistant_runtime.json",
         "configs/reflexive_router_contract.json",
+        "configs/reflexive_router_profile.json",
         "scripts/theseus_assistant_product_lane_gate.py"
       ],
       "canonical": "scripts/theseus_assistant_runtime.py",

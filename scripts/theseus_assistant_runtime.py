@@ -169,34 +169,61 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     vcm_governor["consumer_abi"] = vcm_consumer_packet
     vcm_governor["ready"] = bool(vcm_governor.get("ready")) and bool(vcm_consumer_packet.get("ready"))
     checkpoint_out = REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}.json"
-    chat_result = (
-        run_checkpoint_chat(
-            prompt=prompt,
-            session_id=session_id,
-            checkpoint_id=checkpoint_id,
-            out=checkpoint_out,
-        )
-        if dispatch_prepared
-        else {
-            "returncode": None,
-            "skipped": True,
-            "skip_reason": f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}",
-            "stderr_tail": "",
-        }
-    )
-    checkpoint_payload = read_json(checkpoint_out, {}) if dispatch_prepared else {}
-    response = checkpoint_payload.get("response") if isinstance(checkpoint_payload.get("response"), dict) else {}
-    checkpoint_session = checkpoint_payload.get("session") if isinstance(checkpoint_payload.get("session"), dict) else {}
     code_route = code_route_packet(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
     code_private_probe = run_code_private_probe(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
     tool_required = "assistant.deterministic_tool" in selected_capabilities
     planning_required = "assistant.plan_dag" in selected_capabilities
     tool_context = tool_context_packet(tool_required) if dispatch_prepared else {"active": False, "required": tool_required, "skipped": True}
-    tool_evidence = run_tool_evidence(tool_required, route_for(config, "tool")) if dispatch_prepared else {"active": False, "required": tool_required, "skipped": True}
-    plan_context = plan_context_packet(planning_required) if dispatch_prepared else {"active": False, "required": planning_required, "skipped": True}
+    tool_evidence = {"active": False, "required": tool_required, "skipped": not dispatch_prepared}
+    plan_context = {"active": False, "required": planning_required, "skipped": not dispatch_prepared}
+    structured_execution: dict[str, Any] = {"active": False, "terminal_outcome": "not_required", "node_results": []}
+    if dispatch_prepared and len(selected_capabilities) > 1:
+        def execute_composite_node(node: dict[str, Any], _context: dict[str, Any]) -> dict[str, Any]:
+            nonlocal tool_evidence, plan_context
+            capability_id = str(node.get("capability_id") or "")
+            if capability_id == "assistant.deterministic_tool":
+                tool_evidence = run_tool_evidence(True, route_for(config, "tool"))
+                passed = tool_evidence.get("trigger_state") in {"GREEN", "YELLOW"} and int_or_zero(get_path(tool_evidence, ["summary", "result_count"], 0)) > 0
+                return {
+                    "terminal_outcome": "resolved" if passed else "verification_failed",
+                    "verification_state": "passed" if passed else "failed",
+                    "value_ref": str(tool_evidence.get("trace") or tool_evidence.get("report") or ""),
+                    "completed_at_ms": 1,
+                }
+            if capability_id == "assistant.plan_dag":
+                plan_context = plan_context_packet(True)
+                passed = plan_context.get("active") is True and plan_context.get("planner_state") in {"GREEN", "YELLOW"}
+                return {
+                    "terminal_outcome": "resolved" if passed else "verification_failed",
+                    "verification_state": "passed" if passed else "failed",
+                    "value_ref": "reports/theseus_plan_compiler.json" if passed else "",
+                    "completed_at_ms": 2,
+                }
+            return {"terminal_outcome": "execution_failed", "verification_state": "failed"}
+
+        execution_event = {
+            "event_id": get_path(reflexive_trace, ["event", "event_id"], ""),
+            "authority_refs": get_path(reflexive_trace, ["event", "authority_refs"], []),
+            "deadline_ms": get_path(reflexive_trace, ["effort", "realized_limits", "deadline_ms"], 30000),
+        }
+        structured_execution = {
+            "active": True,
+            **reflexive_dispatch.execute_plan_reference(
+                list_value(reflexive_trace.get("plan_nodes")),
+                event=execution_event,
+                executor=execute_composite_node,
+                limits=get_path(reflexive_trace, ["effort", "realized_limits"], {}),
+            ),
+        }
+    elif dispatch_prepared:
+        tool_evidence = run_tool_evidence(tool_required, route_for(config, "tool"))
+        plan_context = plan_context_packet(planning_required)
+    execution_prepared = dispatch_prepared and (
+        structured_execution.get("active") is not True or structured_execution.get("terminal_outcome") == "resolved"
+    )
     procedural_default_route = (
         procedural_default_route_packet(intent, route, config, surface=str(args.surface or "local_assistant"))
-        if dispatch_prepared
+        if execution_prepared
         else {"active": False, "ready": False, "skipped": True}
     )
     effect_canary = run_local_effect_canary(
@@ -212,6 +239,31 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         prompt_hash=sha256_text(prompt),
         reflexive_dispatch_trace=reflexive_trace,
     )
+    checkpoint_prompt = prompt
+    if structured_execution.get("active") is True:
+        checkpoint_prompt = structured_execution_prompt(prompt, structured_execution, tool_evidence, plan_context)
+    chat_result = (
+        run_checkpoint_chat(
+            prompt=checkpoint_prompt,
+            session_id=session_id,
+            checkpoint_id=checkpoint_id,
+            out=checkpoint_out,
+        )
+        if execution_prepared
+        else {
+            "returncode": None,
+            "skipped": True,
+            "skip_reason": (
+                f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}"
+                if not dispatch_prepared
+                else f"structured_execution_{structured_execution.get('terminal_outcome')}"
+            ),
+            "stderr_tail": "",
+        }
+    )
+    checkpoint_payload = read_json(checkpoint_out, {}) if execution_prepared else {}
+    response = checkpoint_payload.get("response") if isinstance(checkpoint_payload.get("response"), dict) else {}
+    checkpoint_session = checkpoint_payload.get("session") if isinstance(checkpoint_payload.get("session"), dict) else {}
     teacher_policy = teacher_policy_packet()
     benchmark_status = benchmark_status_packet(prompt)
     assistant_text = compose_assistant_text(
@@ -283,6 +335,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         assistant_text=assistant_text,
         reflexive_dispatch_trace=reflexive_trace,
         reflexive_dispatch_verification=reflexive_verification,
+        structured_execution=structured_execution,
         feedback=feedback,
         dogfood=dogfood,
         selected_context=selected_context,
@@ -332,7 +385,13 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         "reflexive_dispatch_prepared": dispatch_prepared,
         "reflexive_dispatch_verified": reflexive_verification.get("state") == "VERIFIED",
         "reflexive_dispatch_selected_capabilities": selected_reflexive_capabilities(reflexive_trace),
-        "reflexive_dispatch_downstream_skipped": not dispatch_prepared,
+        "reflexive_dispatch_downstream_skipped": not execution_prepared,
+        "structured_execution_active": structured_execution.get("active"),
+        "structured_execution_terminal_outcome": structured_execution.get("terminal_outcome"),
+        "structured_execution_digest": structured_execution.get("execution_digest"),
+        "structured_execution_resolved_count": structured_execution.get("resolved_count", 0),
+        "structured_execution_failed_count": structured_execution.get("failed_count", 0),
+        "structured_execution_cancelled_count": structured_execution.get("cancelled_count", 0),
         "vcm_task_family": route.get("vcm_task_family"),
         "vcm_context_ready": selected_context.get("ready"),
         "vcm_selected_page_count": len(selected_context.get("selected_pages") or []),
@@ -450,6 +509,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         "assistant_text": assistant_text,
         "reflexive_dispatch": reflexive_trace,
         "reflexive_dispatch_verification": reflexive_verification,
+        "structured_execution": structured_execution,
         "checkpoint_chat": {
             "returncode": chat_result.get("returncode"),
             "out": rel(checkpoint_out),
@@ -813,6 +873,31 @@ def reflexive_terminal_text(trace: dict[str, Any]) -> str:
     reasons = qualification_failures or ([str(fault)] if fault else [])
     suffix = f" Reasons: {', '.join(reasons)}." if reasons else ""
     return f"{outcome}: no qualified assistant route was executed.{suffix}"
+
+
+def structured_execution_prompt(
+    prompt: str,
+    execution: dict[str, Any],
+    tool_evidence: dict[str, Any],
+    plan_context: dict[str, Any],
+) -> str:
+    context = {
+        "policy": execution.get("policy"),
+        "terminal_outcome": execution.get("terminal_outcome"),
+        "execution_digest": execution.get("execution_digest"),
+        "node_result_refs": [
+            row.get("result_ref")
+            for row in list_value(execution.get("node_results"))
+            if isinstance(row, dict)
+        ],
+        "tool_evidence_ref": tool_evidence.get("trace") or tool_evidence.get("report"),
+        "tool_result_count": get_path(tool_evidence, ["summary", "result_count"], 0),
+        "plan_compiler_state": plan_context.get("planner_state"),
+        "plan_compiler_ref": "reports/theseus_plan_compiler.json" if plan_context.get("active") else "",
+        "raw_tool_payloads_included": False,
+        "effect_authority_granted": False,
+    }
+    return f"{prompt}\n\n[verified_structured_route_context]\n{json.dumps(context, sort_keys=True)}"
 
 
 def route_for(config: dict[str, Any], intent: str) -> dict[str, Any]:
@@ -2440,6 +2525,7 @@ def build_gates(
     assistant_text: str,
     reflexive_dispatch_trace: dict[str, Any],
     reflexive_dispatch_verification: dict[str, Any],
+    structured_execution: dict[str, Any],
     feedback: str,
     dogfood: dict[str, Any],
     selected_context: dict[str, Any],
@@ -2486,6 +2572,20 @@ def build_gates(
                 "selected_capabilities": selected_reflexive_capabilities(reflexive_dispatch_trace),
                 "checkpoint_skipped": chat_result.get("skipped") is True,
             },
+            "hard",
+        ),
+        gate(
+            "reflexive_composite_uses_structured_execution_kernel",
+            len(selected_reflexive_capabilities(reflexive_dispatch_trace)) <= 1
+            or (
+                structured_execution.get("active") is True
+                and structured_execution.get("terminal_outcome") == "resolved"
+                and int_or_zero(structured_execution.get("resolved_count"))
+                == len(list_value(reflexive_dispatch_trace.get("plan_nodes")))
+                and structured_execution.get("effect_authority_granted") is False
+                and bool(structured_execution.get("execution_digest"))
+            ),
+            structured_execution,
             "hard",
         ),
         gate("checkpoint_chat_completed", dispatch_safely_stopped or chat_result.get("returncode") == 0, chat_result, "hard"),

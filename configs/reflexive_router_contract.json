@@ -95,7 +95,16 @@
       "workflow_id": "workflow.plan_with_tool",
       "alias": "/plan-tool",
       "capability_ids": ["assistant.deterministic_tool", "assistant.plan_dag"],
-      "parameter_schema": {},
+      "parameter_schema": {
+        "properties": {
+          "mode": {"type": "enum", "values": ["evidence_first", "plan_first"], "default": {"kind": "literal", "value": "evidence_first"}},
+          "limit": {"type": "integer", "minimum": 1, "maximum": 32, "default": {"kind": "literal", "value": 8}},
+          "principal": {"type": "string", "default": {"kind": "context_ref", "value": "principal"}, "sensitive": true}
+        },
+        "positional": [],
+        "additional_properties": false,
+        "free_text_tail": true
+      },
       "owner_priority": 100,
       "fallback": "none",
       "nodes": [

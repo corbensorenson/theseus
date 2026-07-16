@@ -257,6 +257,213 @@ class ReflexiveDispatchTests(unittest.TestCase):
         self.assertEqual(trace["selection"]["terminal_outcome"], "prepared")
         self.assertEqual(trace["no_cheat"]["learned_generation_credit"], 0)
 
+    def test_parameter_binding_validates_named_values_defaults_and_redacts_text(self) -> None:
+        payload = "/plan-tool --mode=plan_first --limit=12 inspect private architecture"
+        trace = reflex.dispatch(event(payload), intent="chat")
+        proposal = trace["proposals"][0]
+        binding = proposal["parameter_binding"]
+        serialized = reflex.canonical(trace)
+        self.assertEqual(trace["selection"]["terminal_outcome"], "prepared")
+        self.assertEqual(binding["binding_state"], "valid")
+        self.assertEqual(binding["bindings"]["mode"]["normalized_value"], "plan_first")
+        self.assertEqual(binding["bindings"]["limit"]["normalized_value"], 12)
+        self.assertEqual(binding["bindings"]["principal"]["source"], "context_ref")
+        self.assertNotIn("local-user", reflex.canonical(binding["bindings"]["principal"]))
+        self.assertEqual(binding["capability_input_tail"]["token_count"], 3)
+        self.assertNotIn("inspect private architecture", serialized)
+
+        denied = reflex.dispatch(event("/plan-tool --limit=99"), intent="chat")
+        self.assertEqual(denied["selection"]["terminal_outcome"], "unsupported")
+        self.assertIn("parameter_binding_invalid", denied["qualification"][0]["failures"])
+
+    def test_parameter_schema_rejects_unbounded_dynamic_defaults(self) -> None:
+        contract = reflex.load_contract()
+        poisoned = copy.deepcopy(contract)
+        poisoned["workflows"][0]["parameter_schema"]["properties"]["principal"]["default"] = {
+            "kind": "context_ref",
+            "value": "environment.HOME",
+        }
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_PARAMETER_DYNAMIC_DEFAULT_FORBIDDEN"):
+            reflex.validate_contract(poisoned)
+
+    def test_registry_mutation_previews_authority_diff_and_rolls_back_exactly(self) -> None:
+        contract = reflex.load_contract()
+        descriptor = copy.deepcopy(contract["user_commands"][3])
+        descriptor["capability_id"] = "assistant.route_authority_effect"
+        mutation = {
+            "mutation_id": "mutation:plan-to-effect",
+            "action": "update",
+            "registry": "user_commands",
+            "target_id": "command.plan",
+            "descriptor": descriptor,
+            "expected_contract_digest": reflex.digest(contract),
+            "source_kind": "local_operator",
+            "signer_tier": "operator",
+            "approval_refs": [],
+        }
+        denied = reflex.preview_registry_mutation(contract, mutation)
+        self.assertEqual(denied["receipt"]["state"], "denied")
+        self.assertTrue(denied["receipt"]["authority_diff"]["expanded"])
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_REGISTRY_MUTATION_NOT_APPROVED"):
+            reflex.apply_registry_mutation(denied)
+
+        approved = reflex.preview_registry_mutation(
+            contract,
+            {**mutation, "approval_refs": ["authority_expansion_review", "effect_risk_review"]},
+        )
+        applied = reflex.apply_registry_mutation(approved)
+        self.assertEqual(applied["receipt"]["state"], "applied")
+        self.assertEqual(applied["contract"]["user_commands"][3]["capability_id"], "assistant.route_authority_effect")
+        rolled = reflex.rollback_registry_mutation(applied["contract"], applied["receipt"])
+        self.assertEqual(reflex.digest(rolled["contract"]), reflex.digest(contract))
+        self.assertEqual(rolled["receipt"]["state"], "rolled_back")
+
+    def test_registry_mutation_rejects_collisions_stale_bases_and_untrusted_packages(self) -> None:
+        contract = reflex.load_contract()
+        descriptor = copy.deepcopy(contract["user_commands"][0])
+        descriptor["command_id"] = "command.collision"
+        base = {
+            "mutation_id": "mutation:collision",
+            "action": "add",
+            "registry": "user_commands",
+            "target_id": "command.collision",
+            "descriptor": descriptor,
+            "expected_contract_digest": reflex.digest(contract),
+            "source_kind": "local_operator",
+            "signer_tier": "operator",
+            "approval_refs": [],
+        }
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_COMMAND_NAMESPACE_CONFLICT"):
+            reflex.preview_registry_mutation(contract, base)
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_REGISTRY_MUTATION_STALE_BASE"):
+            reflex.preview_registry_mutation(contract, {**base, "expected_contract_digest": "sha256:stale"})
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_REGISTRY_MUTATION_SUPPLY_CHAIN_INVALID"):
+            reflex.preview_registry_mutation(contract, {**base, "source_kind": "signed_package", "signer_tier": "unknown"})
+
+    def test_structured_execution_preserves_retry_identity_and_immutable_partial_results(self) -> None:
+        nodes = [
+            {"node_id": "a", "capability_id": "assistant.deterministic_tool", "dependencies": [], "effect_class": "read_only", "verifier_ref": "deterministic_tool_receipt", "cost_units": 5, "retry_limit": 1, "completion_policy": "best_effort"},
+            {"node_id": "b", "capability_id": "assistant.plan_dag", "dependencies": [], "effect_class": "none", "verifier_ref": "viea_plan_contract", "cost_units": 5, "retry_limit": 0, "completion_policy": "best_effort"},
+            {"node_id": "c", "capability_id": "assistant.plan_dag", "dependencies": ["b"], "effect_class": "none", "verifier_ref": "viea_plan_contract", "cost_units": 5, "retry_limit": 0, "completion_policy": "best_effort"},
+            {"node_id": "d", "capability_id": "assistant.plan_dag", "dependencies": [], "effect_class": "none", "verifier_ref": "viea_plan_contract", "cost_units": 5, "retry_limit": 0, "completion_policy": "best_effort"},
+        ]
+        seen: dict[str, list[str]] = {}
+
+        def executor(node: dict, context: dict) -> dict:
+            seen.setdefault(node["node_id"], []).append(context["idempotency_key"])
+            if node["node_id"] == "a" and context["attempt"] == 0:
+                return {"terminal_outcome": "execution_failed", "completed_at_ms": 1}
+            if node["node_id"] == "b":
+                return {"terminal_outcome": "verification_failed", "completed_at_ms": 2}
+            return {"terminal_outcome": "resolved", "verification_state": "passed", "value_ref": f"value:{node['node_id']}", "completed_at_ms": 3}
+
+        packet = reflex.execute_plan_reference(nodes, event=event(), executor=executor)
+        by_id = {row["node_id"]: row for row in packet["node_results"]}
+        self.assertEqual(packet["terminal_outcome"], "partial")
+        self.assertEqual(seen["a"][0], seen["a"][1])
+        self.assertEqual(by_id["a"]["terminal_outcome"], "resolved")
+        self.assertEqual(by_id["b"]["terminal_outcome"], "verification_failed")
+        self.assertEqual(by_id["c"]["terminal_outcome"], "rejected")
+        self.assertEqual(by_id["d"]["terminal_outcome"], "resolved")
+        self.assertTrue(packet["partial_results_immutable"])
+        self.assertFalse(packet["effect_authority_granted"])
+
+    def test_structured_execution_suppresses_late_results_and_requires_effect_receipts(self) -> None:
+        node = {"node_id": "late", "capability_id": "assistant.plan_dag", "dependencies": [], "effect_class": "none", "verifier_ref": "viea_plan_contract", "cost_units": 1, "retry_limit": 0, "completion_policy": "stop"}
+        late_event = {**event(), "deadline_ms": 5}
+        late = reflex.execute_plan_reference(
+            [node],
+            event=late_event,
+            executor=lambda _node, _context: {"terminal_outcome": "resolved", "verification_state": "passed", "value_ref": "late-value", "completed_at_ms": 6},
+        )
+        self.assertEqual(late["terminal_outcome"], "execution_failed")
+        self.assertTrue(late["late_results_suppressed"])
+        self.assertEqual(late["node_results"][0]["value_ref"], "")
+
+        effect_node = {**node, "node_id": "effect", "effect_class": "reversible", "completion_policy": "stop"}
+        missing_receipt = reflex.execute_plan_reference(
+            [effect_node],
+            event=event(),
+            executor=lambda _node, _context: {"terminal_outcome": "resolved", "verification_state": "passed", "value_ref": "written"},
+        )
+        self.assertEqual(missing_receipt["node_results"][0]["terminal_outcome"], "verification_failed")
+
+        effort_limits = reflex.load_contract()["effort_profiles"]["balanced"]
+        effort_packet = reflex.execute_plan_reference(
+            [node],
+            event=event(),
+            limits=effort_limits,
+            executor=lambda _node, _context: {"terminal_outcome": "resolved", "verification_state": "passed", "value_ref": "ok"},
+        )
+        self.assertEqual(effort_packet["terminal_outcome"], "resolved")
+        self.assertEqual(effort_packet["deadline_ms"], effort_limits["deadline_ms"])
+
+    def test_structured_execution_compensates_prior_effects_and_cancels_remaining_work(self) -> None:
+        nodes = [
+            {"node_id": "a-effect", "capability_id": "assistant.route_authority_effect", "dependencies": [], "effect_class": "reversible", "verifier_ref": "assistant.effect_transaction", "cost_units": 5, "retry_limit": 0, "completion_policy": "best_effort"},
+            {"node_id": "b-fail", "capability_id": "assistant.plan_dag", "dependencies": ["a-effect"], "effect_class": "none", "verifier_ref": "viea_plan_contract", "cost_units": 5, "retry_limit": 0, "completion_policy": "compensate"},
+            {"node_id": "c-never", "capability_id": "assistant.plan_dag", "dependencies": ["b-fail"], "effect_class": "none", "verifier_ref": "viea_plan_contract", "cost_units": 5, "retry_limit": 0, "completion_policy": "best_effort"},
+        ]
+
+        def executor(node: dict, _context: dict) -> dict:
+            if node["node_id"] == "a-effect":
+                return {"terminal_outcome": "resolved", "verification_state": "passed", "value_ref": "effect:value", "effect_receipt_ref": "effect:receipt"}
+            return {"terminal_outcome": "execution_failed"}
+
+        packet = reflex.execute_plan_reference(
+            nodes,
+            event=event(authorities=["local_assistant_read", "local_effect_write"]),
+            executor=executor,
+            compensator=lambda _node, _result, _context: {"state": "compensated", "receipt_ref": "rollback:receipt"},
+        )
+        self.assertEqual(packet["terminal_outcome"], "partial")
+        self.assertEqual(packet["compensation_receipts"][0]["state"], "compensated")
+        self.assertEqual(packet["node_results"][2]["terminal_outcome"], "rejected")
+
+    def test_reflexbench_profile_has_complete_matched_denominators_and_causal_ablations(self) -> None:
+        report = reflex.evaluate_reflexbench_profile()
+        verification = reflex.verify_reflexbench_result(report)
+        metrics = {row["policy_id"]: row for row in report["policy_metrics"]}
+        self.assertEqual(verification["state"], "VERIFIED")
+        self.assertEqual((report["track_count"], report["policy_count"], report["case_count"], report["result_count"]), (8, 10, 32, 320))
+        self.assertTrue(report["full_reflexive_pretraining_mechanics_ready"])
+        self.assertEqual(metrics["full_reflexive"]["useful_rate"], 1.0)
+        self.assertEqual(metrics["full_reflexive"]["per_track"]["E_temporal_chronicle"]["rate"], 1.0)
+        self.assertLess(metrics["reflexive_without_chronicle"]["per_track"]["E_temporal_chronicle"]["rate"], 1.0)
+        self.assertLess(metrics["reflexive_without_compiler"]["per_track"]["H_reflex_compilation"]["rate"], 1.0)
+        self.assertEqual(report["no_cheat"]["non_oracle_held_field_reads"], 0)
+
+    def test_reflexbench_verifier_rejects_tampering_and_information_boundary_overlap(self) -> None:
+        profile = reflex.load_reflexbench_profile()
+        report = reflex.evaluate_reflexbench_profile(profile)
+        tampered = copy.deepcopy(report)
+        tampered["results"][0]["useful"] = not tampered["results"][0]["useful"]
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_PROFILE_RESULT_DIGEST_INVALID"):
+            reflex.verify_reflexbench_result(tampered, profile)
+
+        leaking = copy.deepcopy(profile)
+        leaking["case_information_boundary"]["policy_visible_fields"].append("expected_terminal")
+        with self.assertRaisesRegex(reflex.ReflexiveDispatchFault, "REFLEX_PROFILE_INFORMATION_BOUNDARY_INVALID"):
+            reflex.evaluate_reflexbench_profile(leaking)
+
+    def test_reflexbench_non_oracle_decisions_do_not_change_when_only_held_answers_change(self) -> None:
+        profile = reflex.load_reflexbench_profile()
+        baseline = reflex.evaluate_reflexbench_profile(profile)
+        changed = copy.deepcopy(profile)
+        changed["cases"][0]["expected_terminal"] = "unsupported"
+        changed["cases"][0]["expected_capability_ids"] = []
+        mutated = reflex.evaluate_reflexbench_profile(changed)
+
+        def observed(report: dict) -> tuple:
+            row = next(item for item in report["results"] if item["policy_id"] == "full_reflexive" and item["case_id"] == "A01")
+            return row["terminal_outcome"], tuple(row["capability_ids"]), row["total_cost_units"]
+
+        self.assertEqual(observed(baseline), observed(mutated))
+        baseline_score = next(item for item in baseline["results"] if item["policy_id"] == "full_reflexive" and item["case_id"] == "A01")["useful"]
+        mutated_score = next(item for item in mutated["results"] if item["policy_id"] == "full_reflexive" and item["case_id"] == "A01")["useful"]
+        self.assertTrue(baseline_score)
+        self.assertFalse(mutated_score)
+
     def test_chronicle_is_bitemporal_append_only_and_keeps_claims_separate(self) -> None:
         base = {
             "record_id": "chronicle:a",

@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import reflexive_dispatch
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -77,6 +79,9 @@ def main() -> int:
     feedback_case = run_feedback_case(args)
     memory_case = run_memory_case(args)
     gates = build_gates(rows)
+    reflexbench_profile = reflexive_dispatch.evaluate_reflexbench_profile()
+    reflexbench_verification = reflexive_dispatch.verify_reflexbench_result(reflexbench_profile)
+    gates.extend(reflexbench_gates(reflexbench_profile, reflexbench_verification))
     usefulness_report = build_usefulness_report(rows, cli_case, feedback_case, memory_case)
     gates.append(
         gate(
@@ -163,12 +168,18 @@ def main() -> int:
             "usefulness_completed_or_accepted_count": usefulness_report.get("completed_or_accepted_count"),
             "current_code_generator_wall": usefulness_report.get("current_code_generator_wall"),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
+            "reflexbench_profile_id": reflexbench_profile.get("profile_id"),
+            "reflexbench_case_count": reflexbench_profile.get("case_count"),
+            "reflexbench_policy_count": reflexbench_profile.get("policy_count"),
+            "reflexbench_full_mechanics_ready": reflexbench_profile.get("full_reflexive_pretraining_mechanics_ready"),
         },
         "usefulness_report": usefulness_report,
         "cases": rows,
         "cli_case": cli_case,
         "feedback_case": feedback_case,
         "memory_case": memory_case,
+        "reflexbench_profile": reflexbench_profile,
+        "reflexbench_verification": reflexbench_verification,
         "gates": gates,
         "external_inference_calls": 0,
         "public_training_rows_written": 0,
@@ -664,6 +675,54 @@ def build_gates(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         gate("no_public_training_rows", not any(int(get_path(row, ["report", "public_training_rows_written"], 0) or 0) for row in rows), 0, "hard"),
         gate("no_external_inference", not any(int(get_path(row, ["report", "external_inference_calls"], 0) or 0) for row in rows), 0, "hard"),
         gate("no_fallback_returns", not any(int(get_path(row, ["report", "fallback_return_count"], 0) or 0) for row in rows), 0, "hard"),
+    ]
+
+
+def reflexbench_gates(profile: dict[str, Any], verification: dict[str, Any]) -> list[dict[str, Any]]:
+    metrics = {str(row.get("policy_id")): row for row in profile.get("policy_metrics", []) if isinstance(row, dict)}
+    full = metrics.get("full_reflexive", {})
+    no_chronicle = metrics.get("reflexive_without_chronicle", {})
+    no_compiler = metrics.get("reflexive_without_compiler", {})
+    return [
+        gate("reflexbench_result_replay_verified", verification.get("state") == "VERIFIED", verification, "hard"),
+        gate(
+            "reflexbench_frozen_8track_10policy_denominators_complete",
+            profile.get("case_count") == 32
+            and profile.get("track_count") == 8
+            and profile.get("policy_count") == 10
+            and profile.get("result_count") == 320,
+            {key: profile.get(key) for key in ("profile_id", "profile_digest", "case_count", "track_count", "policy_count", "result_count")},
+            "hard",
+        ),
+        gate(
+            "reflexbench_full_mechanics_pass_without_authority_or_verification_escape",
+            profile.get("full_reflexive_pretraining_mechanics_ready") is True
+            and full.get("useful_rate") == 1.0
+            and full.get("unauthorized_action_rate") == 0.0
+            and full.get("verification_escape_rate") == 0.0
+            and full.get("silent_fallback_rate") == 0.0,
+            full,
+            "hard",
+        ),
+        gate(
+            "reflexbench_lifecycle_ablations_are_causal",
+            get_path(full, ["per_track", "E_temporal_chronicle", "rate"], 0) == 1.0
+            and get_path(no_chronicle, ["per_track", "E_temporal_chronicle", "rate"], 1) < 1.0
+            and get_path(full, ["per_track", "H_reflex_compilation", "rate"], 0) == 1.0
+            and get_path(no_compiler, ["per_track", "H_reflex_compilation", "rate"], 1) < 1.0,
+            {"full": full.get("per_track"), "no_chronicle": no_chronicle.get("per_track"), "no_compiler": no_compiler.get("per_track")},
+            "hard",
+        ),
+        gate(
+            "reflexbench_information_boundary_and_no_cheat_clean",
+            get_path(profile, ["no_cheat", "non_oracle_held_field_reads"], 1) == 0
+            and get_path(profile, ["no_cheat", "learned_generation_credit"], 1) == 0
+            and get_path(profile, ["no_cheat", "external_inference_calls"], 1) == 0
+            and get_path(profile, ["no_cheat", "public_training_rows_written"], 1) == 0
+            and get_path(profile, ["no_cheat", "fallback_return_count"], 1) == 0,
+            profile.get("no_cheat"),
+            "hard",
+        ),
     ]
 
 

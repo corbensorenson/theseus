@@ -15,7 +15,8 @@ share toward zero. Public benchmarks are calibration only.
 
 - **Architecture readiness:** not ready for long training. The finite pre-training
   docket contains 13 known checkpoint-shaping contracts; KERC and QCSA have bounded
-  dispositions and the remaining 11 must be wired,
+  dispositions, Reflexive Router has a complete pre-training mechanics disposition,
+  and the remaining 10 must be wired,
   falsified, or retired before the architecture-freeze manifest can authorize a run.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
@@ -45,15 +46,16 @@ share toward zero. Public benchmarks are calibration only.
   source campaign found no task advantage and `1.913386x` operation cost, so the full
   QCSA objective and adaptive-question policy are retired from the first long run.
   This is architecture evidence, not learned memory or generation capability.
-- **Immediate dependency:** close the remaining 11 finite architecture contracts
-  through existing registry owners. Reflexive Router canonical predispatch now works
-  across the real assistant's chat/code/tool/planning routes plus a true tool-to-plan
-  workflow and a reversible effect route. Its 24 focused tests pass; the six-case E2E
-  passes every hard gate; direct effort fails over-budget code routing closed; and the
-  effect transaction is bound to the verified dispatch digest and rolls back exactly.
-  The frozen eight-track/ten-policy profile, typed parameters/defaults, registry mutation,
-  structured cancellation/partial results, and full lifecycle qualification still remain.
-  Complete those rather than treating mechanics as a capability verdict, then publish a
+- **Immediate dependency:** close the remaining 10 finite architecture contracts
+  through existing registry owners. Reflexive Router pre-training mechanics are complete:
+  34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
+  DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces
+  320 replayable result rows with full mechanics at 32/32 and no-Chronicle/no-compiler
+  ablations at 28/32. Typed parameters, bounded defaults, registry mutation and rollback,
+  structured cancellation/partial results, dependency invalidation, compilation surfaces,
+  literal isolation, and authority/effect traps are covered. This is not a learned-routing
+  or answer-quality verdict. Full-state data/update/checkpoint causality is now the next
+  dependency; after the docket closes, publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
   Preserve the now-GREEN content-bound data receipts while architecture closes.
@@ -171,10 +173,10 @@ share toward zero. Public benchmarks are calibration only.
    immutable negative evidence; all three candidates scored `0/160`.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
-5. Preserve the completed KERC and QCSA dispositions and close the remaining 11 finite
+5. Preserve the completed KERC, QCSA, and Reflexive Router pre-training dispositions and
+   close the remaining 10 finite
    pre-training architecture contracts through full wiring, falsification, or explicit retirement.
-   This includes Reflexive Router,
-   OneCell disposition, update/data causality, policy/GVR/campaign control, and
+   This includes OneCell disposition, update/data causality, policy/GVR/campaign control, and
    generation-objective interfaces.
 6. Preserve the GREEN data floors, freeze the surface/code/control campaign with the
    hash-bound KERC retirement in its identity, publish the architecture manifest, and
@@ -212,12 +214,10 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Complete the Reflexive Router's frozen eight-track/ten-policy matched profile,
-requested-versus-realized effort accounting, and broader effect/lifecycle qualification.
-Its typed command/reflex registries, qualification/precedence, finite outcomes,
-Chronicle/cache lifecycle, and fail-closed canonical assistant predispatch are now wired;
-do not mistake that mechanics result for learned routing or capability evidence. Preserve
-the KERC and QCSA dispositions.
-Then close the remaining finite architecture docket and publish the independently
+Complete full-state data/update/checkpoint causality across model, optimizer, RNG, cache,
+lineage, best/final authority, deletion/invalidation, and exact rollback. Preserve the KERC,
+QCSA, and Reflexive Router pre-training dispositions; do not mistake the Router's 32/32
+mechanics profile for learned routing or capability evidence. Then close the remaining
+finite architecture docket and publish the independently
 replayed architecture-freeze package. Do not start long training until the strict
 pre-training readiness gate is GREEN.
