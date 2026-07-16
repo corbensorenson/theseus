@@ -41,7 +41,7 @@ module must meet.
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
 | Replacement transactions | Phase 2 | replayable-reference-backed for one bounded local route-authority effect | keep the independent effect audit and mutation controls green; require equivalent receipts for each new effect class |
-| Procedural memory + toolification | Phase 15 | implemented; three real metadata workflows guarded | keep lifecycle receipts live; stale/drifted routes retire and exact lookahead abstains on ambiguity |
+| Procedural memory + toolification | Phase 15 | implemented for the three guarded exact assets; broader reflex compilation is a post-selection extension | after a behavior-positive local model exists, qualify trace-to-reflex guards, differential/shadow evidence, route-regret monitoring, and decompilation without delaying the frozen training rung |
 | Authority kernel / SCIF | Phase 18 | replayable-reference-backed for the same bounded local effect; SCIF and wider authority controls remain synthetic | preserve exact effect/rollback auditing and expand support only when another real effect class earns it |
 | Assistant product | Phase 5 | assisted runtime wired; model-only general chat unavailable | dogfood deterministic/verified assistance now, but earn model usefulness only from real multi-day use after the local model clears its behavior floor |
 | Report hygiene | Phases 0, 8, 14 | budget gate GREEN, but archive/runtime/data/checkpoints/reports remain artifact-heavy and roadmap history had regrown | preserve active-run state, then compact superseded payloads behind content-bound replay pointers and enforce per-family retention |
@@ -1486,6 +1486,53 @@ utility, or matched total task cost fails.
   fanout refresh correctly emits a typed stale-checkpoint deferral rather than
   running an obsolete model. New learned/default routing evidence now belongs to
   the Phase-10 replacement proposer, not to more router scaffolding.
+
+#### Reflexive Router integration extension
+
+Author-source intake: *The Reflexive Router* v1.2 (2026-07-16), content SHA-256
+`003a693741c40ca96ec3aece5b76ee90ec95a1d6c27ec81a970cff175f509068`.
+The source is currently uncommitted in the AI_book worktree, so this is an
+argument-backed intake contract until it is rebound to a committed book revision.
+It extends the existing assistant, SCF, Octopus, VIEA, VCM, deterministic-tool,
+effect, and Loop-Closure owners; it must not create another router or ledger lane.
+
+- Put one canonical pre-deliberative path before ordinary assistant inference:
+  canonical event and authenticated command plane -> deterministic and learned
+  route proposals -> SCF qualification -> minimum-sufficient-compute DAG -> VIEA
+  execution/effect commit -> verification -> typed result/VCM Chronicle update.
+- Support typed user route directives, direct capability commands, workflows, and
+  requested-versus-realized deliberation profiles. A forced route fails with a
+  typed unqualified outcome unless the user explicitly permits fallback. The user
+  may bypass inference, never authentication, authority, verification, or rollback.
+- Make the learned router a calibrated, abstaining proposal mechanism with atomicity,
+  composite-task, OOD, selective-risk, and deadline-aware cascade outputs. Route
+  selection minimizes total qualified cost, including verification, repair, human
+  cleanup, privacy, energy, and route-regret burden; ranking never grants authority.
+- Extend VCM with a small rebuildable Reflex Context Frame and bitemporal Chronicle
+  records that keep entity/event/state/claim/plan/prediction/counterfactual types,
+  valid time, transaction time, epistemic status, provenance, and corrections
+  separate. Every executor returns one typed result packet; rendering is a consumer.
+- Make the existing effect transaction the sole external-write kernel: prepare,
+  authorize, commit, observe, verify, record, and compensate or roll back. Retries
+  require idempotency identity, and verification failure remains a typed failure.
+- Extend Phase 15 from exact procedural lookup to governed reflex compilation:
+  diverse verified traces, negative-space guard synthesis, static overlap/cycle and
+  privilege analysis, historical replay, differential tests, live shadowing, canary
+  activation, signed SCF replacement, monitoring, narrowing, quarantine, revocation,
+  and decompilation back to deliberation.
+- Evaluate through one frozen private ReflexBench profile over existing assistant,
+  router, tool, temporal, composite-DAG, effect, and procedural fixtures rather than
+  a new benchmark family. Compare current heuristic routing, deterministic registry,
+  calibrated learned routing, and deliberative-only baselines. Report qualified
+  coverage, wrong-fast-path rate, selective risk, OOD abstention, route regret,
+  P50/P95/P99 dispatch latency, end-to-end quality/cost/energy, unauthorized effects,
+  verification escapes, context continuity, reflex transfer, and drift-to-quarantine.
+- Sequence: exact command/qualification/result/effect contracts may mature as
+  maintenance, but learned-router and reflex-promotion claims wait for the selected
+  behavior-positive local model. Default adoption requires a preregistered Pareto
+  gain with no weak-tail, authority, privacy, or verification regression. Fast tool
+  success, route accuracy, typed records, and compiled procedures remain separate
+  from learned answer capability and public-transfer claims.
 
 ### Phase 17: Simulation, Fidelity, and World-Model Contracts
 - Simulation contract records for toy environments/private fixtures/proxy

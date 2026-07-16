@@ -276,6 +276,33 @@
       "theseus_scope": "extend the existing VCM/SCF/VIEA/PlanForge/Semantic-IR/Octopus stack with opaque stable SOIDs independent of semantic addresses and physical routes, plural task-scoped atlas epochs, Semantic Address Certificates, information-value question compilation, open-world expressions, authority-safe semantic-to-physical translation, and lifecycle-safe migration",
       "acceptance_boundary": "existing private VCM/planner/router fixtures compare flat, random/frequency tree, one-semantic-tree, residual-quantized, multi-view-without-indirection, and QCSA variants under matched resources; identity, atlas, questioning, retrieval, routing, generation-round-trip, governance, and migration metrics show a meaningful Pareto gain or retain a falsifying result",
       "non_claim_boundary": "a coherent schema, stable ID, graph, certificate, question trace, or address hierarchy is not semantic correctness, interpretability, model capability, public transfer, or ASI evidence; semantic classification never grants execution authority"
+    },
+    {
+      "candidate_id": "future.reflexive_router_pre_deliberative_dispatch",
+      "title": "The Reflexive Router",
+      "item_kind": "cross_cutting_section",
+      "book_disposition": "source_available_manifest_pending",
+      "source_id": "reflexive_router_whitepaper_v1_2",
+      "source_sha256": "003a693741c40ca96ec3aece5b76ee90ec95a1d6c27ec81a970cff175f509068",
+      "source_state": "author_supplied_uncommitted_ai_book_intake_argument_only",
+      "phase_refs": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        8,
+        14,
+        15,
+        16,
+        18,
+        19
+      ],
+      "entry_condition": "record the cross-phase contract now without changing the in-flight data/training flagship; rebind source authority to the committed AI_book chapter when available, mature exact command/qualification/result/effect dependencies as maintenance, and qualify learned routing or reflex promotion only after a behavior-positive selected local model exists",
+      "theseus_scope": "compose the existing assistant, SCF, Octopus, VIEA, VCM, deterministic-tool, effect-transaction, evidence, and Loop-Closure owners into one canonical pre-deliberative path with an authenticated typed command plane, minimum-sufficient-compute qualification, calibrated abstaining learned proposals, atomic/composite DAG dispatch, typed result continuity, bitemporal Temporal Chronicle semantics, and governed trace-to-reflex compilation plus decompilation",
+      "acceptance_boundary": "one frozen private evaluation profile over existing assistant/router/tool/temporal/effect/procedural fixtures compares heuristic, deterministic-registry, calibrated-learned, and deliberative-only routes; it measures qualified coverage, wrong-fast-path rate, selective risk, OOD abstention, route regret, latency/quality/cost/energy, context continuity, unauthorized effects, verification escapes, reflex transfer, and drift-to-quarantine, while forced routes fail closed unless fallback is explicit",
+      "non_claim_boundary": "route accuracy, fast-path coverage, exact tool success, typed records, procedural reuse, or reduced deliberation does not establish learned answer capability, factual truth, safe open-world autonomy, public transfer, AGI, or ASI; explicit user dispatch may bypass inference but never enforcement"
     }
   ],
   "book_future_cross_cutting_obligations": [
@@ -285,7 +312,8 @@
     "temporal-logic monitoring, interlocks, fallback controllers, degraded operation, and sim-to-real residuals under Phases 17 and 18",
     "AIBOM/reproducible builds/derivative revocation plus privacy budgets, cross-user leakage, and deletion propagation under Phases 0, 3, 7, 14, and 18",
     "objective fingerprints, periodic recontracting, time-horizon and automated-R&D measures, dual-use profiles, provider concentration, portability, and shutdown handoff under Phases 2, 8, 9, and 18",
-    "QCSA stable identity/address/physical-route indirection, consumer-relative adequacy, plural atlas epochs, active-question value/cost/privacy/risk traces, authority-nonwidening translation, and migration-safe old-address resolution under Phases 0, 1, 2, 3, 6, 8, 13, 14, 16, and 18"
+    "QCSA stable identity/address/physical-route indirection, consumer-relative adequacy, plural atlas epochs, active-question value/cost/privacy/risk traces, authority-nonwidening translation, and migration-safe old-address resolution under Phases 0, 1, 2, 3, 6, 8, 13, 14, 16, and 18",
+    "Reflexive Router canonical event and user command plane, qualification-first minimum-sufficient-compute dispatch, typed result and bitemporal Chronicle continuity, effect-commit enforcement, calibrated abstaining learned proposals, and governed reflex compilation/decompilation under Phases 0, 1, 2, 3, 5, 6, 8, 14, 15, 16, and 18"
   ],
   "weekly_focus_decision": {
     "date": "2026-07-11",
@@ -343,6 +371,31 @@
     "Treat OneCell-RWM as a future cognitive-kernel discovery candidate only: it cannot alter or delay frozen v8, become a same-scale rescue patch, duplicate VIEA/VCM/Octopus/SCF/Loop-Closure/SparkStream/registry machinery, or receive route authority before a preregistered matched total-cost verdict."
   ],
   "planned_codex_test_backlog": [
+    {
+      "backlog_id": "planned.reflexive_router_integration_v1",
+      "source_basis": "Author-supplied The Reflexive Router v1.2 content SHA-256 003a693741c40ca96ec3aece5b76ee90ec95a1d6c27ec81a970cff175f509068; argument-backed until rebound to a committed AI_book chapter",
+      "technique_family": "qualification_first_pre_deliberative_dispatch_and_reflex_compilation",
+      "owned_phase_refs": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        8,
+        14,
+        15,
+        16,
+        18,
+        19
+      ],
+      "track_id": "F_memory_planning_tool_substrate",
+      "status": "planned_after_selected_model_exact_substrate_maintenance_allowed_now",
+      "dependency": "do not mutate or delay the frozen 57.315M data/training contract; reuse existing registered owners, mature exact command/qualification/result/effect contracts as maintenance, and defer learned-router or reflex-promotion claims until a behavior-positive selected local model and real governed traces exist",
+      "acceptance_gate": "A single canonical dispatch path supports authenticated typed route directives, direct capabilities, workflows, explicit fallback, requested-versus-realized effort, deterministic and calibrated abstaining learned proposals, SCF qualification, minimum-sufficient-compute atomic/composite DAGs, typed results, bitemporal Chronicle updates, sole-kernel effect commits, and governed trace-to-reflex replay/differential/shadow/canary/decompilation. One frozen private profile reuses existing fixtures and compares heuristic, deterministic, learned, and deliberative-only baselines under matched requests and full lifecycle cost.",
+      "support_state_target": "empirical-test-backed",
+      "no_claim_boundary": "The paper and roadmap contract are argument only. Fast-path coverage, route correctness, exact tools, typed ledgers, or compiled reflexes remain separately accounted from learned answer quality and cannot authorize public-transfer, autonomy, AGI, or ASI claims."
+    },
     {
       "backlog_id": "planned.private_functional_utility_qualification_v1",
       "source_basis": "Product-utility correction to the v8 exact-recovery diagnostic and AI_book benchmark-ratchet/evaluation-integrity requirements",
@@ -2742,7 +2795,7 @@
         "Three bounded canaries execute over 203 matching metadata events, then three SCF replacement transactions adopt independent guarded routes with exact asset and lifecycle receipt identities. The plan compiler emits three canary and three default-route DAGs; the assistant runtime selects planning/chat/tool routes independently.",
         "Procedural assets remain workflow compression only: learned-generation credit, public training rows, runtime external inference, and fallback returns are all zero."
       ],
-      "smallest_next_patch": "Maintain Phase 15 through the canonical gate: new procedures require diverse repeated real traces, replay, lifecycle monitoring, exact/abstaining lookup, canary execution, and a guarded SCF replacement transaction. Do not create a second procedural-memory lane.",
+      "smallest_next_patch": "After a behavior-positive selected local model produces real governed traces, extend the canonical Loop-Closure owner from exact procedural lookup through negative-space guard synthesis, differential plus live-shadow qualification, canary SCF replacement, route-regret monitoring, and decompilation. Preserve the three current exact assets and do not create a second procedural-memory or router lane.",
       "integration_smoke": [
         "python3 scripts/procedural_memory_toolification_gate.py",
         "reports/procedural_memory_toolification.json summary.assistant_trace_candidate_count=10",
