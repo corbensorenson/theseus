@@ -25,11 +25,34 @@ Read order: Status at a Glance -> Non-Negotiable Rules -> Capability Plan v2 ->
 the Phase that owns the surface you are working on -> the Quality Bars a "done"
 module must meet.
 
+## Current Operating Decision: Architecture Before Long Training
+
+The current priority is **finite architecture closure**, not corpus-scale optimizer
+work. Theseus will not spend a long training run on an architecture that is already
+known to be missing accepted representation, objective, context, routing, generation,
+update, checkpoint, or self-improvement contracts. The 13-item matrix-owned docket is
+the complete pre-training decision set known at this revision. Each item must be
+implemented through its pre-training boundary, falsified by a relevant canary, or
+explicitly retired with reasons before the first 50M-100M campaign begins.
+
+This is not a demand to prove learned efficacy without learned weights. Pre-training
+closure proves that selected mechanisms are real, integrated, checkpointable,
+migratable, resource-accounted, replayable, negatively tested, and represented in the
+frozen campaign. Tiny finite-update canaries of at most eight optimizer steps remain
+allowed for mechanics. Full-corpus training, architecture tuning from interim losses,
+public calibration, and capability claims remain after the freeze.
+
+The closure is finite. New ideas discovered after the freeze target the successor
+campaign unless they expose a concrete correctness, security, information-flow,
+checkpoint, migration, or replay defect that invalidates the frozen system. "Make the
+architecture excellent" therefore means close every accepted training-invalidating
+idea now, not postpone training forever in pursuit of unspecified perfection.
+
 ## Status at a Glance
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | every task-complete arm floor and the aggregate broad floor are GREEN at 1,263,425,574 unique positions, but the new per-owner audit correctly rejects the 2.504M-parameter HTML/CSS specialist: 41,248,944 observed versus 50,083,860 required | preserve the content-bound corpus; close the 8,834,916-position HTML/CSS gap with genuinely unique licensed source data or reduce that arm's owned parameters in the revised preregistration, never with repeated exposure |
+| Data engine + curriculum | Track 0 / Phase 7 | every task-complete arm floor and the aggregate broad floor are GREEN at 1,263,425,574 unique positions, but the new per-owner audit correctly rejects the 2.504M-parameter HTML/CSS specialist: 41,248,944 observed versus 50,083,860 required | preserve the content-bound corpus and its known 8,834,916-position HTML/CSS gap while architecture closes; after the freeze, close the gap with genuinely unique licensed source data or reduce that arm's owned parameters in the revised preregistration, never with repeated exposure |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
@@ -299,11 +322,13 @@ promoted; their purpose is to falsify or select the practical architecture.
 - The preregistered verdict is `FALSIFY_10_8M_ACTIVE_SCALE_RUNG`. No architecture was
   selected, no Pareto relation was claimed, confirmation remains untouched, and route
   replacement is unauthorized. Do not rerun, reweight, or patch this consumed rung.
-- The practical next lane is task-complete licensed product data followed by the
-  smallest supported 50M-100M active MLX proposal with a scaling estimate, unique-
-  position and verified-unit floors per arm, matched controls, memory/throughput/
-  resume canaries, fixed stop criteria, and heldout tail floors. STS, VCM, search,
-  preference/RL, and fast generation still wait for a nonzero model-only numerator.
+- The practical model lane remains task-complete licensed product data followed by the
+  smallest supported 50M-100M active MLX proposal, but it is **not the current primary
+  execution lane**. First close the finite architecture docket and freeze the joint
+  campaign. Then close the known HTML/CSS data floor and replay the final mechanics
+  canaries before optimizer spend. Learned qualification of STS, VCM conditioning,
+  search, preference/RL, and fast generation still waits for a nonzero model-only
+  numerator; their training-invalidating interfaces do not.
 - Public calibration follows a material, confirmation-qualified model change. It is
   measurement only and never a source of prompts, tests, solutions, traces, labels,
   templates, or residual training rows.
@@ -639,6 +664,46 @@ post-training evidence and cannot circularly block the run. The following rules 
 5. **Calibrate publicly after a material model change, not by calendar.** Fresh
    frozen surfaces remain available without arbitrary budgets, but an unchanged
    zero-pass model does not justify spending another public surface.
+
+### Architecture-Freeze Package
+
+The architecture docket is not closed by prose or by changing a matrix status. One
+content-addressed freeze package must bind all of the following before long training:
+
+1. **Model topology and ownership:** trunk, each Octopus/MoECOT arm, dense controls,
+   parameter accounting, route boundaries, OneCell disposition, and the exact
+   conventional-English versus KERC alternatives.
+2. **Representation and context:** tokenizers, Kernel Packet/compiler/renderer,
+   protected-object rules, Semantic IR, VCM/QCSA schemas and atlas epochs, context
+   budgets, residual lifecycle, and migration compatibility.
+3. **Objectives and update causality:** causal LM, KERC objectives, preference/RLVR
+   interfaces, policy leases, GVR transitions, optimizer ownership, best/final
+   checkpoint authority, rollback, deletion, unlearning, and invalidation semantics.
+4. **Generation and deliberation:** autoregressive baseline plus explicit include,
+   checkpoint-compatible defer, falsify, or retire decisions for MTP, speculative/
+   LayerSkip, diffusion/sketch-first, search, STS, reflex compilation, and tool use.
+   Assisted mechanisms remain separately scored and receive no learned-generation
+   credit.
+5. **Execution and autonomy:** VIEA plan/effect spine, Reflexive Router lifecycle,
+   campaign stop authority, resource/thermal limits, structured failures, exact replay,
+   negative knowledge, and sole effect-commit ownership.
+6. **Evaluation contract:** source-disjoint development and heldout identities,
+   English rubric policy, per-language functional verifiers, weak-tail floors, matched
+   data/compute/cost views, no-cheat checks, and public-calibration separation.
+7. **State portability:** checkpoint schemas, loader and migration matrix, optimizer
+   resume, deterministic replay tolerance, cleanup, storage retention, AIBOM/source
+   identity, and failure recovery on Apple Silicon MLX.
+
+Every binding records its registry abstraction and implementation IDs, schema/version,
+source digest, configuration digest, evidence refs, support state, rollback route, and
+explicit non-claims. The final gate independently recomputes those bindings and runs
+negative mutations; a self-declared GREEN report cannot grant training authority.
+
+Only three classes of work may remain after this package freezes: evidence that
+intrinsically requires learned behavior, evidence that requires real elapsed use or
+external peers, and checkpoint-compatible additions explicitly shown not to alter the
+campaign comparison. Everything else is either implemented now or deliberately
+retired now.
 
 ## Governed-Surface Work (Phases)
 
