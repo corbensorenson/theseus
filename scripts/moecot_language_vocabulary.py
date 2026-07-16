@@ -14,11 +14,13 @@ from typing import Any, Iterable
 
 from moecot_language_tokenizer import exact_text_tokens
 from neural_seed_open_vocab import populate_open_vocab
+from kernel_english_protocol import TRAINING_TASK_TAGS
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 SPECIAL = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3}
+KERC_SOURCE_CONTROL_TOKENS = tuple(TRAINING_TASK_TAGS.values())
 
 
 def main() -> int:
@@ -42,6 +44,8 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("unexpected MoECOT vocabulary policy")
     if int(cfg.get("source_max_vocab") or 0) != 4096 or int(cfg.get("target_max_vocab") or 0) != 4096:
         raise ValueError("vocabulary size must preserve frozen model accounting")
+    if tuple(cfg.get("required_source_control_tokens") or ()) != KERC_SOURCE_CONTROL_TOKENS:
+        raise ValueError("trusted KERC source-control token contract mismatch")
     return cfg
 
 
@@ -113,6 +117,7 @@ def build(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
 
     source_vocab = dict(SPECIAL)
     target_vocab = dict(SPECIAL)
+    reserve_required_tokens(source_vocab, KERC_SOURCE_CONTROL_TOKENS)
     populate_open_vocab(
         source_vocab,
         source_basis,
@@ -145,6 +150,8 @@ def build(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
             "source_common_token_coverage": coverage(source_basis, source_vocab),
             "target_common_token_coverage": coverage(target_counts, target_vocab),
             "source_basis": "conversation_prompts_plus_open_code_counts_divided_by_50",
+            "required_source_control_tokens": list(KERC_SOURCE_CONTROL_TOKENS),
+            "trusted_control_tokens_observed_in_raw_text": False,
             "derived_supervision_rows_consumed": 0,
             "input_artifacts": input_artifacts,
             "public_benchmark_payload_count": 0,
@@ -193,7 +200,19 @@ def validate_payload(payload: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
                 gaps.append(f"{stream}_byte_boundary_missing")
         if not all(f"<byte:{value:02x}>" in vocab for value in range(256)):
             gaps.append(f"{stream}_byte_inventory_incomplete")
+        required = cfg.get(f"required_{stream}_control_tokens") or []
+        for token in required:
+            if token not in vocab:
+                gaps.append(f"{stream}_required_control_token_missing:{token}")
     return gaps
+
+
+def reserve_required_tokens(vocab: dict[str, int], tokens: Iterable[str]) -> None:
+    for token in tokens:
+        value = str(token)
+        if not value or value in vocab:
+            raise ValueError(f"required vocabulary token invalid or duplicated: {value}")
+        vocab[value] = len(vocab)
 
 
 def read_jsonl(path: Path) -> Iterable[dict[str, Any]]:

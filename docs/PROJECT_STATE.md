@@ -30,8 +30,12 @@ share toward zero. Public benchmarks are calibration only.
   inference, or fallback returns. English, Python, JS/TS, Rust, and the aggregate
   57.315M floor are GREEN. The 2.504M-parameter HTML/CSS specialist is RED at
   `41,248,944 / 50,083,860`, an `8,834,916`-position owner-specific shortfall.
-- **Immediate dependency:** finish the active KERC exact substrate, then close the
-  remaining finite architecture docket through existing registry owners. Publish a
+- **Immediate dependency:** KERC's exact packet/VCM substrate and canonical four-
+  objective MoECOT training/checkpoint path are wired without learned or deterministic
+  renderer credit. Materialize the governed 1024/128/128 source-group-disjoint KERC
+  record stage, freeze its matched surface-English campaign, and pass end-to-end learned
+  compiler/core/renderer plus lifecycle canaries; then close the remaining finite
+  architecture docket through existing registry owners. Publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
   Close the HTML/CSS data gap with genuinely unique licensed source data or reduce

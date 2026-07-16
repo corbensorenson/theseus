@@ -17,6 +17,7 @@ if str(SCRIPTS) not in sys.path:
 
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
+    architecture_training_authority,
     audit_arm_views,
     audit_specialist_data_scaling,
     audit_tokenizer_stage,
@@ -64,6 +65,17 @@ def tiny_config(tmp_path: Path) -> dict:
     return {
         "policy": "project_theseus_moecot_language_arm_training_v1",
         "seed": 7,
+        "architecture_training_authority": {
+            "policy": "project_theseus_pre_training_architecture_authority_v1",
+            "required_for_long_optimizer_runs": True,
+            "pre_training_canary_max_steps": 8,
+            "gate_command": [
+                "python3",
+                "scripts/roadmap_implementation_gate.py",
+                "--gate",
+                "--require-pre-training-ready",
+            ],
+        },
         "checkpoint_root": str(tmp_path / "checkpoints"),
         "topology": {
             "policy": "project_theseus_moecot_shared_trunk_source_specialists_v2",
@@ -114,10 +126,24 @@ def tiny_config(tmp_path: Path) -> dict:
             "maximum_optimizer_repetitions": 4,
             "maximum_supervision_optimizer_repetitions": 32,
             "supervision_optimizer_repetitions": 4,
+            "maximum_kernel_english_optimizer_repetitions": 2,
+            "kernel_english_optimizer_repetitions": 1,
             "termination_loss_weight": 4.0,
             "byte_boundary_loss_weight": 2.0,
         },
         "comparison_contract": {"preregistered_before_training": True},
+        "kernel_english_training": {
+            "policy": "project_theseus_moecot_kernel_english_stage_v1",
+            "required": True,
+            "objective_order": [
+                "surface_direct_control_v1",
+                "surface_to_kernel_program_v1",
+                "kernel_program_to_answer_packet_v1",
+                "answer_packet_to_surface_v1",
+            ],
+            "maximum_sequence_tokens": 128,
+            "batch_size": 1,
+        },
         "evaluation": {
             "policy": "project_theseus_moecot_direct_model_only_evaluation_v1",
             "beam_width": 2,
@@ -134,6 +160,35 @@ def tiny_config(tmp_path: Path) -> dict:
             "runtime_serving_allowed": False,
         },
     }
+
+
+def test_training_authority_allows_bounded_canaries_but_gates_long_runs(
+    tmp_path: Path,
+) -> None:
+    cfg = tiny_config(tmp_path)
+    calls: list[list[str]] = []
+
+    def denied_runner(command: list[str], **_: object) -> SimpleNamespace:
+        calls.append(command)
+        return SimpleNamespace(returncode=2, stdout="not ready", stderr="")
+
+    canary = architecture_training_authority(cfg, max_steps=8, runner=denied_runner)
+    assert canary["trigger_state"] == "GREEN"
+    assert canary["authority"] == "BOUNDED_ARCHITECTURE_CANARY"
+    assert canary["long_optimizer_run_authorized"] is False
+    assert calls == []
+
+    long_run = architecture_training_authority(cfg, max_steps=0, runner=denied_runner)
+    assert long_run["trigger_state"] == "RED"
+    assert long_run["authority"] == "DENIED"
+    assert calls == [
+        [
+            "python3",
+            "scripts/roadmap_implementation_gate.py",
+            "--gate",
+            "--require-pre-training-ready",
+        ]
+    ]
 
 
 def test_arm_views_are_an_exact_non_overlapping_partition() -> None:
@@ -493,6 +548,17 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
     assert stage.receipt["weighted_loss_positions"] > stage.receipt["target_positions"]
 
     base["tokenization"]["max_sequence_tokens"] = 4
+    widened = materialize_target_supervision(
+        training_config,
+        base,
+        target,
+        metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
+        artifact_field="supervision_artifacts",
+        receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
+        maximum_sequence_tokens=32,
+    )
+    assert widened.receipt["sequence_width"] == 32
+    assert widened.receipt["sequence_width_source"] == "objective_override"
     with pytest.raises(ValueError, match="requires truncation"):
         materialize_target_supervision(
             training_config,
@@ -731,7 +797,7 @@ def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(tmp_pa
     assert json.loads(receipt_path.read_text())["optimizer_state_sha256"] == second["optimizer_state_sha256"]
 
 
-def test_source_conditioned_phase_is_accounted_separately_before_sft(tmp_path: Path) -> None:
+def test_source_and_kernel_phases_are_accounted_separately_before_sft(tmp_path: Path) -> None:
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.optimizers as optim
@@ -755,9 +821,16 @@ def test_source_conditioned_phase_is_accounted_separately_before_sft(tmp_path: P
         loss_mask=np.asarray([[0, 0, 1, 1], [0, 0, 1, 1]], dtype=np.float32),
         receipt={"policy": "project_theseus_moecot_source_conditioned_arrays_v1"},
     )
-    checkpoint = tmp_path / "checkpoints" / "rust" / "weights.npz"
+    kernel_stage = SimpleNamespace(
+        inputs=np.asarray([[1, 12, 2, 22]], dtype=np.int32),
+        labels=np.asarray([[12, 2, 22, 3]], dtype=np.int32),
+        mask=np.asarray([[0, 0, 1, 1]], dtype=np.uint8),
+        loss_mask=np.asarray([[0, 0, 1, 1]], dtype=np.float32),
+        receipt={"policy": "project_theseus_moecot_kernel_english_arrays_v1"},
+    )
+    checkpoint = tmp_path / "checkpoints" / "english" / "weights.npz"
     target = {
-        "target_id": "rust",
+        "target_id": "english",
         "role": "language_arm",
         "row_ranges": [{"start": 0, "stop": 1}],
         "unique_target_positions": 0,
@@ -778,7 +851,8 @@ def test_source_conditioned_phase_is_accounted_separately_before_sft(tmp_path: P
         target,
         stage=base_stage,
         source_conditioned_stage=source_stage,
-        max_steps=1,
+        kernel_english_stage=kernel_stage,
+        max_steps=2,
         resume=False,
         mx=mx,
         nn=nn,
@@ -787,9 +861,12 @@ def test_source_conditioned_phase_is_accounted_separately_before_sft(tmp_path: P
     )
     assert result["pretrain_optimizer_positions"] == 0
     assert result["source_conditioned_optimizer_positions"] == 4
+    assert result["kernel_english_optimizer_positions"] == 2
     assert result["supervision_optimizer_positions"] == 0
     assert result["phases"]["source_conditioned_pretraining"]["optimizer_steps"] == 1
+    assert result["phases"]["kernel_english"]["optimizer_steps"] == 1
     assert result["source_conditioned_stage"]["policy"].endswith("arrays_v1")
+    assert result["kernel_english_stage"]["policy"].endswith("arrays_v1")
 
 
 def test_shared_trunk_and_expert_checkpoint_ownership_are_separate(tmp_path: Path) -> None:

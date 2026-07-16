@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Consolidated 2026-07-14; bound to AI Stack commit
+Consolidated 2026-07-16; bound to AI Stack commit
 `32635eb94ded42a5f54e528302685cab343993b7`. This
 roadmap lists only work that still needs doing. It is the forward plan; it is not
 an audit trail. Historical execution logs, dated
@@ -37,7 +37,7 @@ module must meet.
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | efficacy is deferred, but every topology- or objective-changing mode now requires a pre-training include/retire decision and checkpoint-compatible modes require loader/migration proof | freeze MTP, LayerSkip, speculative/draft, and sketch-first contracts with matched AR controls before training; adopt only from accepted verified output per second afterward |
 | Generator capability (held-out utility) | Phase 10 | 10.8M is closed; the original 57.315M-active contract has sufficient governed data and useful mechanical canary evidence, but no long optimizer run has started and training authority is held by the 13-item finite architecture docket | close or retire every docket item, publish the final architecture-freeze manifest and joint campaign, then replay all finite-update/checkpoint/resume/migration/resource/no-cheat canaries before training |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is a non-routeable candidate behind the shared Cognitive Kernel ABI and now requires a pre-training architecture/campaign disposition; no neural or language claim exists | finish its exact substrate, objective/checkpoint interfaces, and matched campaign decision; include it in the frozen run or retire it without delaying the practical transformer/hybrid lane indefinitely |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | author paper is ingested as an argument-backed cross-phase candidate; its exact substrate, training transforms, lifecycle, and revised matched campaign are now a bounded pre-training requirement because the 57.315M long run has not started | implement the canonical packet/compiler/core/renderer/verifier and VCM residual lifecycle, freeze conventional surface-English and KERC alternatives under equal raw bytes, training compute, end-to-end inference budget, and fidelity, then replay all architecture canaries before either trains |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | exact packet/protected-object/three-space/VCM-residual/answer-verifier substrate and the canonical four-objective MoECOT training/checkpoint path are wired; deterministic fixtures earn no learned credit and the real record stage is not materialized | admit 1024/128/128 governed source-group-disjoint KERC records, freeze the conventional surface-English versus KERC campaign under equal raw bytes/compute/end-to-end cost, then pass learned compiler/core/renderer plus reload/resume/migration/resource/integrity canaries |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | behavior loop cannot start at zero pass, but the campaign controller, full-state causality, stop authority, rollback, and negative-knowledge contracts are pre-training requirements | wire and trap-test the autonomous loop while disabled; enable generate->verify->admit->retrain only after the proposer produces independently verified successes |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -71,6 +71,13 @@ duplicate an existing owner, or cannot justify their total cost are retired befo
 the run rather than half-added afterward. Once the finite docket closes, architecture
 freezes for the campaign; later ideas target a successor campaign unless a concrete
 correctness, security, replay, migration, or checkpoint-invalidating defect is found.
+
+This sequencing is machine-enforced in the canonical MoECOT trainer. Finite-update
+architecture canaries are allowed for at most eight optimizer steps so contracts can
+be tested without circularity. Unbounded or longer runs fail closed unless
+`roadmap_implementation_gate.py --gate --require-pre-training-ready` is GREEN. This
+is an optimizer-spend boundary, not a ban on implementing, integrating, replaying,
+or negatively testing architecture before training.
 
 Public-result interpretation is deliberately split by route. The historical
 single-card `45/64` diagnostic is mostly a private n-gram body route (`44` of the

@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Materialize licensed source-conditioned denoising rows for MoECOT arms."""
+"""Materialize licensed auxiliary objectives for canonical MoECOT arms.
+
+This owner materializes code denoising and the KERC English objective views. It
+does not train another model or grant capability credit to deterministic record
+validation and compilation.
+"""
 
 from __future__ import annotations
 
@@ -25,6 +30,13 @@ from moecot_language_supervision import (
 )
 from moecot_language_tokenizer import exact_text_tokens
 from neural_seed_open_vocab import encode_tokens
+from kernel_english_protocol import (
+    TRAINING_OBJECTIVES,
+    TRAINING_VERIFICATION_POLICY,
+    compile_training_views,
+    kernel_training_contract,
+    validate_training_record,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,11 +49,23 @@ def main() -> int:
     parser.add_argument("--config", default=relative(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--kernel-english", action="store_true")
     args = parser.parse_args()
     config_path = resolve(args.config)
     config = read_json(config_path)
-    cfg = validate_config(config)
-    report = materialize(config, config_path) if args.execute else inspect(config, config_path)
+    cfg = (
+        validate_kernel_english_config(config)
+        if args.kernel_english
+        else validate_config(config)
+    )
+    if args.kernel_english:
+        report = (
+            materialize_kernel_english(config, config_path)
+            if args.execute
+            else inspect_kernel_english(config, config_path)
+        )
+    else:
+        report = materialize(config, config_path) if args.execute else inspect(config, config_path)
     write_json(resolve(args.out or cfg["report"]), report)
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] in {"GREEN", "PLANNED"} else 2
@@ -64,6 +88,372 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         if int(cfg.get(key) or 0):
             raise ValueError(f"source-conditioned no-cheat counter must remain zero: {key}")
     return cfg
+
+
+def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
+    cfg = config.get("kernel_english_training")
+    cfg = cfg if isinstance(cfg, dict) else {}
+    if cfg.get("policy") != "project_theseus_moecot_kernel_english_stage_v1":
+        raise ValueError("unexpected KERC training-stage policy")
+    if cfg.get("required") is not True:
+        raise ValueError("KERC training stage must remain required for the joint campaign")
+    if tuple(cfg.get("objective_order") or ()) != TRAINING_OBJECTIVES:
+        raise ValueError("KERC objective order/identity mismatch")
+    rows = cfg.get("records_by_split") or {}
+    if tuple(rows) != ("private_train", "private_dev", "private_eval"):
+        raise ValueError("KERC record split set/order mismatch")
+    if any(int(value or 0) <= 0 for value in rows.values()):
+        raise ValueError("KERC record floors must be positive for every split")
+    if not cfg.get("allowed_licenses"):
+        raise ValueError("KERC stage requires an explicit license allowlist")
+    if not str(cfg.get("verification_ledger_jsonl") or "").strip():
+        raise ValueError("KERC stage requires a separate verification ledger")
+    if int(cfg.get("maximum_sequence_tokens") or 0) <= 0:
+        raise ValueError("KERC maximum sequence tokens must be positive")
+    if not 1 <= int(cfg.get("batch_size") or 0) <= 16:
+        raise ValueError("KERC batch size must be bounded")
+    for key in (
+        "public_training_rows_written",
+        "public_benchmark_payload_count",
+        "external_inference_calls",
+        "fallback_return_count",
+        "template_credit",
+        "deterministic_renderer_credit",
+        "candidate_generation_credit",
+    ):
+        if int(cfg.get(key) or 0):
+            raise ValueError(f"KERC no-cheat counter must remain zero: {key}")
+    return cfg
+
+
+def inspect_kernel_english(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
+    cfg = validate_kernel_english_config(config)
+    manifest_path = resolve(cfg["stage_root"]) / "manifest.json"
+    if not manifest_path.is_file():
+        return kernel_english_base_report(
+            config_path, cfg, "PLANNED", ["kernel_english_stage_not_materialized"]
+        )
+    payload = read_json(manifest_path)
+    gaps = validate_kernel_english_manifest(payload, cfg)
+    return {
+        **payload,
+        "created_utc": now(),
+        "mode": "inspection",
+        "trigger_state": "RED" if gaps else "GREEN",
+        "hard_gaps": gaps,
+    }
+
+
+def materialize_kernel_english(
+    config: dict[str, Any], config_path: Path
+) -> dict[str, Any]:
+    cfg = validate_kernel_english_config(config)
+    started = time.perf_counter()
+    stage_root = resolve(cfg["stage_root"])
+    stage_root.mkdir(parents=True, exist_ok=True)
+    records_path = resolve(cfg["records_jsonl"])
+    ledger_path = resolve(cfg["verification_ledger_jsonl"])
+    missing = []
+    if not records_path.is_file():
+        missing.append("kernel_english_records_missing")
+    if not ledger_path.is_file():
+        missing.append("kernel_english_verification_ledger_missing")
+    if missing:
+        report = kernel_english_base_report(
+            config_path,
+            cfg,
+            "RED",
+            missing,
+        )
+        write_json_atomic(stage_root / "manifest.json", report)
+        return report
+
+    ledger, ledger_gaps = load_kernel_verification_ledger(ledger_path)
+    metadata = read_json(resolve(config["stage_dir"]) / "stage_metadata_v1.json")
+    source_vocab = dict(metadata.get("source_vocab") or {})
+    target_vocab = dict(metadata.get("target_vocab") or {})
+    selectors = {
+        split: BoundedRows(int(count))
+        for split, count in cfg["records_by_split"].items()
+    }
+    rejection_counts: Counter[str] = Counter()
+    candidate_count: Counter[str] = Counter()
+    for line_number, raw in enumerate(records_path.read_text(encoding="utf-8").splitlines(), 1):
+        if not raw.strip():
+            continue
+        try:
+            record = validate_training_record(json.loads(raw))
+        except Exception as exc:
+            code = str(getattr(exc, "code", "KERC_RECORD_INVALID"))
+            rejection_counts[code] += 1
+            continue
+        split = str(record["split"])
+        candidate_count[split] += 1
+        receipt = record["verification_receipt"]
+        ledger_receipt = ledger.get(str(receipt["receipt_id"]))
+        if ledger_receipt is None:
+            rejection_counts["verification_receipt_absent_from_ledger"] += 1
+            continue
+        if ledger_receipt != receipt:
+            rejection_counts["verification_receipt_ledger_mismatch"] += 1
+            continue
+        if str(record["provenance"]["license_spdx"]).lower() not in {
+            str(value).lower() for value in cfg["allowed_licenses"]
+        }:
+            rejection_counts["license_not_allowed"] += 1
+            continue
+        selectors[split].add(str(record["record_sha256"]).split(":", 1)[-1], record)
+
+    selected = {split: selector.rows() for split, selector in selectors.items()}
+    overlaps = kernel_english_split_overlap(selected)
+    gaps = [*ledger_gaps, *overlaps["hard_gaps"]]
+    artifacts: dict[str, Any] = {}
+    objective_counts: Counter[str] = Counter()
+    encoded_length_stats: dict[str, Any] = {}
+    all_source_hashes: set[str] = set()
+    raw_source_bytes = 0
+    for split, records in selected.items():
+        wanted = int(cfg["records_by_split"][split])
+        if len(records) != wanted:
+            gaps.append(f"insufficient_kernel_records:{split}:{len(records)}:{wanted}")
+        views: list[dict[str, Any]] = []
+        source_lengths: list[int] = []
+        target_lengths: list[int] = []
+        for record in records:
+            all_source_hashes.add(str(record["raw_source_sha256"]))
+            raw_source_bytes += len(str(record["source_text"]).encode("utf-8"))
+            for view in compile_training_views(record):
+                source_body_ids, source_receipt = encode_tokens(
+                    exact_text_tokens(view["prompt"]), source_vocab, stream="source"
+                )
+                trusted_prefix = list(view.get("trusted_source_prefix_tokens") or [])
+                if len(trusted_prefix) != 1 or trusted_prefix[0] not in source_vocab:
+                    gaps.append(f"kernel_view_trusted_prefix_invalid:{view['row_id']}")
+                    continue
+                source_ids = [int(source_vocab[trusted_prefix[0]]), *source_body_ids]
+                target_ids, target_receipt = encode_tokens(
+                    exact_text_tokens(view["target"]), target_vocab, stream="target"
+                )
+                if int(source_receipt.get("unknown_token_count") or 0) or int(
+                    target_receipt.get("unknown_token_count") or 0
+                ):
+                    gaps.append(f"kernel_view_unrepresentable:{view['row_id']}")
+                    continue
+                sequence_tokens = len(source_ids) + len(target_ids) + 4
+                if sequence_tokens > int(cfg["maximum_sequence_tokens"]):
+                    gaps.append(
+                        f"kernel_view_requires_truncation:{view['row_id']}:{sequence_tokens}"
+                    )
+                    continue
+                source_lengths.append(len(source_ids))
+                target_lengths.append(len(target_ids))
+                objective_counts[str(view["objective"])] += 1
+                views.append(view)
+        path = stage_root / f"{split}.jsonl"
+        write_jsonl_atomic(path, views)
+        artifacts[f"english:{split}"] = {
+            "path": relative(path),
+            "sha256": sha256_file(path),
+            "row_count": len(views),
+            "unique_record_count": len(records),
+            "bytes": path.stat().st_size,
+        }
+        encoded_length_stats[split] = {
+            "maximum_source_tokens": max(source_lengths or [0]),
+            "maximum_target_tokens": max(target_lengths or [0]),
+            "maximum_sequence_tokens": max(
+                (source + target + 4 for source, target in zip(source_lengths, target_lengths)),
+                default=0,
+            ),
+        }
+
+    report = {
+        "policy": cfg["policy"],
+        "created_utc": now(),
+        "mode": "materialized",
+        "trigger_state": "RED" if gaps else "GREEN",
+        "config": relative(config_path),
+        "contract_sha256": kernel_english_stage_contract_sha256(cfg),
+        "learned_pipeline_contract": kernel_training_contract(),
+        "required_records_by_split": dict(cfg["records_by_split"]),
+        "verification_ledger_required": True,
+        "source": {
+            "path": relative(records_path),
+            "sha256": sha256_file(records_path),
+            "license_policy": "row_level_explicit_allowlist",
+        },
+        "verification_ledger": {
+            "path": relative(ledger_path),
+            "sha256": sha256_file(ledger_path),
+            "receipt_count": len(ledger),
+            "producer_separate_from_training_rows": True,
+        },
+        "artifacts": artifacts,
+        "candidate_record_count_by_split": dict(candidate_count),
+        "selected_record_count_by_split": {
+            split: len(records) for split, records in selected.items()
+        },
+        "compiled_view_count_by_objective": dict(objective_counts),
+        "unique_raw_source_count": len(all_source_hashes),
+        "unique_raw_source_bytes": raw_source_bytes,
+        "derived_view_unique_data_credit": 0,
+        "derived_view_optimizer_exposure_count": sum(objective_counts.values()),
+        "split_overlap_audit": overlaps,
+        "encoded_length_stats": encoded_length_stats,
+        "rejection_counts": dict(rejection_counts),
+        "failure_behavior": "reject_without_template_literal_tool_or_router_fallback",
+        "score_semantics": "KERC learned-objective data readiness; not learned capability",
+        "elapsed_seconds": round(time.perf_counter() - started, 6),
+        "hard_gaps": sorted(set(gaps)),
+        "public_training_rows_written": 0,
+        "public_benchmark_payload_count": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "template_credit": 0,
+        "deterministic_renderer_credit": 0,
+        "candidate_generation_credit": 0,
+    }
+    write_json_atomic(stage_root / "manifest.json", report)
+    return report
+
+
+def kernel_english_split_overlap(
+    selected: dict[str, list[dict[str, Any]]]
+) -> dict[str, Any]:
+    groups: dict[str, set[str]] = {}
+    sources: dict[str, set[str]] = {}
+    for split, records in selected.items():
+        groups[split] = {str(row["provenance"]["source_group"]) for row in records}
+        sources[split] = {str(row["raw_source_sha256"]) for row in records}
+    group_overlap = 0
+    source_overlap = 0
+    for left_index, left in enumerate(selected):
+        for right in tuple(selected)[left_index + 1 :]:
+            group_overlap += len(groups[left] & groups[right])
+            source_overlap += len(sources[left] & sources[right])
+    gaps = []
+    if group_overlap:
+        gaps.append(f"kernel_source_group_cross_split_overlap:{group_overlap}")
+    if source_overlap:
+        gaps.append(f"kernel_raw_source_cross_split_overlap:{source_overlap}")
+    return {
+        "source_group_overlap_count": group_overlap,
+        "raw_source_overlap_count": source_overlap,
+        "content_bound_disjoint": not gaps,
+        "hard_gaps": gaps,
+    }
+
+
+def load_kernel_verification_ledger(
+    path: Path,
+) -> tuple[dict[str, dict[str, Any]], list[str]]:
+    receipts: dict[str, dict[str, Any]] = {}
+    gaps: list[str] = []
+    for line_number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not raw.strip():
+            continue
+        try:
+            row = json.loads(raw)
+        except json.JSONDecodeError:
+            gaps.append(f"kernel_verification_ledger_json_invalid:{line_number}")
+            continue
+        receipt_id = str(row.get("receipt_id") or "") if isinstance(row, dict) else ""
+        if not receipt_id:
+            gaps.append(f"kernel_verification_ledger_receipt_id_missing:{line_number}")
+            continue
+        if receipt_id in receipts:
+            gaps.append(f"kernel_verification_ledger_receipt_duplicate:{receipt_id}")
+            continue
+        if row.get("policy") != TRAINING_VERIFICATION_POLICY:
+            gaps.append(f"kernel_verification_ledger_policy_invalid:{receipt_id}")
+            continue
+        if row.get("accepted") is not True:
+            gaps.append(f"kernel_verification_ledger_unaccepted:{receipt_id}")
+            continue
+        receipts[receipt_id] = row
+    return receipts, sorted(set(gaps))
+
+
+def validate_kernel_english_manifest(
+    payload: dict[str, Any], cfg: dict[str, Any]
+) -> list[str]:
+    gaps: list[str] = []
+    if payload.get("policy") != cfg["policy"]:
+        gaps.append("kernel_stage_policy_mismatch")
+    if payload.get("contract_sha256") != kernel_english_stage_contract_sha256(cfg):
+        gaps.append("kernel_stage_contract_identity_mismatch")
+    artifacts = payload.get("artifacts") if isinstance(payload.get("artifacts"), dict) else {}
+    objective_count = len(TRAINING_OBJECTIVES)
+    for split, record_count in cfg["records_by_split"].items():
+        key = f"english:{split}"
+        artifact = artifacts.get(key) if isinstance(artifacts.get(key), dict) else {}
+        path = resolve(str(artifact.get("path") or ""))
+        if not path.is_file() or sha256_file(path) != str(artifact.get("sha256") or ""):
+            gaps.append(f"kernel_stage_artifact_identity_mismatch:{key}")
+        if int(artifact.get("row_count") or 0) != int(record_count) * objective_count:
+            gaps.append(f"kernel_stage_view_count_mismatch:{key}")
+        if int(artifact.get("unique_record_count") or 0) != int(record_count):
+            gaps.append(f"kernel_stage_record_count_mismatch:{key}")
+    overlap = payload.get("split_overlap_audit") or {}
+    if not bool(overlap.get("content_bound_disjoint")):
+        gaps.append("kernel_stage_split_overlap")
+    if int(payload.get("derived_view_unique_data_credit") or 0):
+        gaps.append("kernel_stage_derived_view_unique_credit_nonzero")
+    ledger = payload.get("verification_ledger") or {}
+    ledger_path = resolve(str(ledger.get("path") or ""))
+    if (
+        not ledger_path.is_file()
+        or sha256_file(ledger_path) != str(ledger.get("sha256") or "")
+    ):
+        gaps.append("kernel_stage_verification_ledger_identity_mismatch")
+    if ledger.get("producer_separate_from_training_rows") is not True:
+        gaps.append("kernel_stage_verification_ledger_not_independent")
+    for key in (
+        "public_training_rows_written",
+        "public_benchmark_payload_count",
+        "external_inference_calls",
+        "fallback_return_count",
+        "template_credit",
+        "deterministic_renderer_credit",
+        "candidate_generation_credit",
+    ):
+        if int(payload.get(key) or 0):
+            gaps.append(f"kernel_stage_nonzero_boundary:{key}")
+    return sorted(set(gaps))
+
+
+def kernel_english_stage_contract_sha256(cfg: dict[str, Any]) -> str:
+    return hashlib.sha256(
+        json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def kernel_english_base_report(
+    config_path: Path,
+    cfg: dict[str, Any],
+    state: str,
+    gaps: list[str],
+) -> dict[str, Any]:
+    return {
+        "policy": cfg["policy"],
+        "created_utc": now(),
+        "mode": "inspection",
+        "trigger_state": state,
+        "config": relative(config_path),
+        "contract_sha256": kernel_english_stage_contract_sha256(cfg),
+        "learned_pipeline_contract": kernel_training_contract(),
+        "required_records_by_split": dict(cfg["records_by_split"]),
+        "verification_ledger_required": True,
+        "hard_gaps": gaps,
+        "score_semantics": "KERC learned-objective data readiness; not learned capability",
+        "public_training_rows_written": 0,
+        "public_benchmark_payload_count": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "template_credit": 0,
+        "deterministic_renderer_credit": 0,
+        "candidate_generation_credit": 0,
+    }
 
 
 def inspect(config: dict[str, Any], config_path: Path) -> dict[str, Any]:

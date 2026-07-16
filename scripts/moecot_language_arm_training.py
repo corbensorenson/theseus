@@ -16,6 +16,7 @@ import json
 import os
 import random
 import shutil
+import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -84,6 +85,18 @@ def main() -> int:
         return 2
     report = plan
     if args.execute:
+        authority = architecture_training_authority(config, max_steps=args.max_steps)
+        if authority["trigger_state"] != "GREEN":
+            report = {
+                **plan,
+                "trigger_state": "RED",
+                "hard_gaps": list(plan.get("hard_gaps") or [])
+                + ["pre_training_architecture_authority_denied"],
+                "architecture_training_authority": authority,
+            }
+            write_json(resolve(args.out or config["report"]), report)
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 2
         report = execute_targets(
             config,
             plan,
@@ -94,6 +107,66 @@ def main() -> int:
     write_json(resolve(args.out or config["report"]), report)
     print(json.dumps(report, indent=2, sort_keys=True))
     return 2 if report["trigger_state"] == "RED" else 0
+
+
+def architecture_training_authority(
+    config: dict[str, Any],
+    *,
+    max_steps: int,
+    runner: Any = subprocess.run,
+) -> dict[str, Any]:
+    """Permit bounded architecture canaries, but gate long optimizer spend."""
+
+    cfg = config.get("architecture_training_authority")
+    if not isinstance(cfg, dict) or cfg.get("policy") != (
+        "project_theseus_pre_training_architecture_authority_v1"
+    ):
+        return {
+            "policy": "project_theseus_pre_training_architecture_authority_v1",
+            "trigger_state": "RED",
+            "authority": "DENIED",
+            "reason": "architecture_training_authority_contract_missing",
+        }
+    canary_cap = int(cfg.get("pre_training_canary_max_steps") or 0)
+    if 0 < max_steps <= canary_cap:
+        return {
+            "policy": cfg["policy"],
+            "trigger_state": "GREEN",
+            "authority": "BOUNDED_ARCHITECTURE_CANARY",
+            "maximum_steps": max_steps,
+            "canary_cap": canary_cap,
+            "long_optimizer_run_authorized": False,
+        }
+    command = [str(value) for value in cfg.get("gate_command") or []]
+    if cfg.get("required_for_long_optimizer_runs") is not True or not command:
+        return {
+            "policy": cfg["policy"],
+            "trigger_state": "RED",
+            "authority": "DENIED",
+            "reason": "long_optimizer_gate_contract_invalid",
+        }
+    completed = runner(
+        command,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return {
+        "policy": cfg["policy"],
+        "trigger_state": "GREEN" if completed.returncode == 0 else "RED",
+        "authority": (
+            "ARCHITECTURE_FREEZE_GREEN"
+            if completed.returncode == 0
+            else "DENIED"
+        ),
+        "maximum_steps": max_steps,
+        "canary_cap": canary_cap,
+        "long_optimizer_run_authorized": completed.returncode == 0,
+        "gate_command": command,
+        "gate_exit_code": int(completed.returncode),
+        "gate_output_tail": (completed.stdout or completed.stderr or "")[-2000:],
+    }
 
 
 def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
@@ -123,6 +196,8 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     gaps.extend(supervision_audit["hard_gaps"])
     source_conditioned_audit = audit_source_conditioned_stage(config)
     gaps.extend(source_conditioned_audit["hard_gaps"])
+    kernel_english_audit = audit_kernel_english_stage(config)
+    gaps.extend(kernel_english_audit["hard_gaps"])
     stage_arrays = canonical.get("array_artifacts") if isinstance(canonical.get("array_artifacts"), dict) else {}
     for key, row in stage_arrays.items():
         path = resolve(str(row.get("path") or ""))
@@ -149,7 +224,12 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         if active_delta > 0.01:
             gaps.append("active_parameter_control_mismatch")
     plan_identity = plan_sha256(
-        config, metadata, models, supervision_audit, source_conditioned_audit
+        config,
+        metadata,
+        models,
+        supervision_audit,
+        source_conditioned_audit,
+        kernel_english_audit,
     )
     targets = target_contracts(
         config,
@@ -158,6 +238,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         plan_identity,
         supervision_audit=supervision_audit,
         source_conditioned_audit=source_conditioned_audit,
+        kernel_english_audit=kernel_english_audit,
     )
     specialist_scaling = audit_specialist_data_scaling(
         base,
@@ -189,6 +270,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         "models": models,
         "supervision": supervision_audit,
         "source_conditioned_pretraining": source_conditioned_audit,
+        "kernel_english_training": kernel_english_audit,
         "targets": targets,
         "specialist_data_scaling": specialist_scaling,
         "checkpoint_inventory": checkpoint_inventory,
@@ -460,6 +542,7 @@ def target_contracts(
     *,
     supervision_audit: dict[str, Any],
     source_conditioned_audit: dict[str, Any],
+    kernel_english_audit: dict[str, Any],
 ) -> dict[str, Any]:
     root = resolve(str(config["checkpoint_root"]))
     targets: dict[str, Any] = {}
@@ -537,6 +620,23 @@ def target_contracts(
                     if source_conditioned_audit["artifacts"].get(arm)
                 }
                 if target not in ARM_IDS
+                else {}
+            ),
+            "kernel_english_artifacts": (
+                {
+                    "private_train": kernel_english_audit["artifacts"].get(
+                        "english:private_train"
+                    )
+                }
+                if target == "english"
+                and kernel_english_audit["artifacts"].get("english:private_train")
+                else {
+                    "english:private_train": kernel_english_audit["artifacts"].get(
+                        "english:private_train"
+                    )
+                }
+                if (target == SHARED_TRUNK_ID or target in CONTROL_IDS)
+                and kernel_english_audit["artifacts"].get("english:private_train")
                 else {}
             ),
         }
@@ -728,6 +828,85 @@ def audit_source_conditioned_stage(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
+    cfg = config.get("kernel_english_training")
+    cfg = cfg if isinstance(cfg, dict) else {}
+    root = resolve(str(cfg.get("stage_root") or ""))
+    manifest_path = root / "manifest.json"
+    manifest = read_json(manifest_path) if manifest_path.is_file() else {}
+    gaps: list[str] = []
+    if cfg.get("required") is not True:
+        gaps.append("kernel_english_stage_not_required")
+    if not manifest:
+        return {
+            "state": "RED",
+            "manifest": relative(manifest_path),
+            "manifest_sha256": "",
+            "artifacts": {},
+            "learned_pipeline_contract": {},
+            "selected_record_count_by_split": {},
+            "compiled_view_count_by_objective": {},
+            "unique_raw_source_count": 0,
+            "derived_view_unique_data_credit": 0,
+            "split_overlap_audit": {},
+            "hard_gaps": sorted(set([*gaps, "kernel_english_manifest_missing"])),
+            "score_semantics": "KERC objective/checkpoint readiness only; not learned capability",
+        }
+    if manifest.get("policy") != "project_theseus_moecot_kernel_english_stage_v1":
+        gaps.append("kernel_english_manifest_policy_mismatch")
+    if manifest.get("trigger_state") != "GREEN":
+        gaps.append("kernel_english_manifest_not_green")
+    expected_contract = hashlib.sha256(
+        json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if manifest.get("contract_sha256") != expected_contract:
+        gaps.append("kernel_english_contract_identity_mismatch")
+    artifacts = manifest.get("artifacts") if isinstance(manifest.get("artifacts"), dict) else {}
+    objective_count = len(tuple(cfg.get("objective_order") or ()))
+    for split, wanted in (cfg.get("records_by_split") or {}).items():
+        key = f"english:{split}"
+        row = artifacts.get(key) if isinstance(artifacts.get(key), dict) else {}
+        path = resolve(str(row.get("path") or ""))
+        if not path.is_file() or sha256_file(path) != str(row.get("sha256") or ""):
+            gaps.append(f"kernel_english_artifact_identity_mismatch:{key}")
+        if int(row.get("unique_record_count") or 0) != int(wanted):
+            gaps.append(f"kernel_english_record_count_mismatch:{key}")
+        if int(row.get("row_count") or 0) != int(wanted) * objective_count:
+            gaps.append(f"kernel_english_view_count_mismatch:{key}")
+    overlap = manifest.get("split_overlap_audit") or {}
+    if overlap.get("content_bound_disjoint") is not True:
+        gaps.append("kernel_english_split_overlap")
+    if int(manifest.get("derived_view_unique_data_credit") or 0):
+        gaps.append("kernel_english_derived_view_unique_credit_nonzero")
+    for key in (
+        "public_training_rows_written",
+        "public_benchmark_payload_count",
+        "external_inference_calls",
+        "fallback_return_count",
+        "template_credit",
+        "deterministic_renderer_credit",
+        "candidate_generation_credit",
+    ):
+        if int(manifest.get(key) or 0):
+            gaps.append(f"kernel_english_nonzero_boundary:{key}")
+    return {
+        "state": "GREEN" if not gaps else "RED",
+        "manifest": relative(manifest_path),
+        "manifest_sha256": sha256_file(manifest_path) if manifest_path.is_file() else "",
+        "artifacts": artifacts,
+        "learned_pipeline_contract": manifest.get("learned_pipeline_contract") or {},
+        "selected_record_count_by_split": manifest.get("selected_record_count_by_split") or {},
+        "compiled_view_count_by_objective": manifest.get("compiled_view_count_by_objective") or {},
+        "unique_raw_source_count": int(manifest.get("unique_raw_source_count") or 0),
+        "derived_view_unique_data_credit": int(
+            manifest.get("derived_view_unique_data_credit") or 0
+        ),
+        "split_overlap_audit": overlap,
+        "hard_gaps": sorted(set(gaps)),
+        "score_semantics": "KERC objective/checkpoint readiness only; not learned capability",
+    }
+
+
 def execute_targets(
     config: dict[str, Any], plan: dict[str, Any], *, targets: list[str], max_steps: int, resume: bool
 ) -> dict[str, Any]:
@@ -783,6 +962,22 @@ def execute_targets(
         else None
         for target_id in targets
     }
+    kernel_english_stages = {
+        target_id: materialize_target_supervision(
+            config,
+            base,
+            plan["targets"][target_id],
+            metadata=metadata,
+            artifact_field="kernel_english_artifacts",
+            receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
+            maximum_sequence_tokens=int(
+                config["kernel_english_training"]["maximum_sequence_tokens"]
+            ),
+        )
+        if (plan["targets"][target_id].get("kernel_english_artifacts") or {})
+        else None
+        for target_id in targets
+    }
     results = []
     for target_id in targets:
         target = plan["targets"][target_id]
@@ -792,6 +987,7 @@ def execute_targets(
             target,
             stage=stage,
             source_conditioned_stage=source_conditioned_stages[target_id],
+            kernel_english_stage=kernel_english_stages[target_id],
             supervision_stage=supervision_stages[target_id],
             max_steps=max_steps,
             resume=resume,
@@ -981,6 +1177,7 @@ def materialize_target_supervision(
     metadata: dict[str, Any],
     artifact_field: str = "supervision_artifacts",
     receipt_policy: str = "project_theseus_moecot_exact_supervision_arrays_v1",
+    maximum_sequence_tokens: int | None = None,
 ) -> Any:
     """Encode the frozen train split without truncation or hidden-field routing."""
 
@@ -990,7 +1187,11 @@ def materialize_target_supervision(
         raise ValueError("canonical stage metadata is missing exact vocabularies")
     source_offset = source_token_offset(base, source_vocab)
     target_offset = target_token_offset(base, source_vocab)
-    max_sequence = int((base.get("tokenization") or {}).get("max_sequence_tokens") or 0)
+    max_sequence = int(
+        maximum_sequence_tokens
+        or (base.get("tokenization") or {}).get("max_sequence_tokens")
+        or 0
+    )
     artifacts = target.get(artifact_field) or {}
     selected = [
         (key, row)
@@ -1020,9 +1221,22 @@ def materialize_target_supervision(
                     raise ValueError(f"invalid supervision boundary: {key}:{observed_rows}")
                 prompt = str(row.get("prompt") or "")
                 answer = str(row.get("target") or "")
-                source_ids, source_receipt = encode_tokens(
+                source_body_ids, source_receipt = encode_tokens(
                     exact_text_tokens(prompt), source_vocab, stream="source"
                 )
+                trusted_prefix = list(row.get("trusted_source_prefix_tokens") or [])
+                if trusted_prefix:
+                    if (
+                        len(trusted_prefix) != 1
+                        or trusted_prefix[0] not in source_vocab
+                        or row.get("trusted_prefix_authority")
+                        != "internal_objective_route_only"
+                    ):
+                        raise ValueError(f"invalid trusted source-prefix contract: {key}")
+                source_ids = [
+                    *(int(source_vocab[token]) for token in trusted_prefix),
+                    *source_body_ids,
+                ]
                 target_ids, target_receipt = encode_tokens(
                     exact_text_tokens(answer), target_vocab, stream="target"
                 )
@@ -1042,7 +1256,15 @@ def materialize_target_supervision(
                 sequences.append(sequence)
                 mask_starts.append(target_start - 1)
                 row_hashes.append(
-                    hashlib.sha256((prompt + "\0" + answer).encode()).hexdigest()
+                    hashlib.sha256(
+                        (
+                            json.dumps(trusted_prefix, separators=(",", ":"))
+                            + "\0"
+                            + prompt
+                            + "\0"
+                            + answer
+                        ).encode()
+                    ).hexdigest()
                 )
                 observed_rows += 1
         if observed_rows != int(artifact.get("row_count") or 0):
@@ -1084,8 +1306,12 @@ def materialize_target_supervision(
         "termination_loss_weight": float(config["training"]["termination_loss_weight"]),
         "byte_boundary_loss_weight": float(config["training"]["byte_boundary_loss_weight"]),
         "sequence_width": max_sequence,
+        "sequence_width_source": (
+            "objective_override" if maximum_sequence_tokens is not None else "base_stage"
+        ),
         "content_digest": hashlib.sha256("\n".join(row_hashes).encode()).hexdigest(),
-        "generator_visible_fields": ["prompt"],
+        "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
+        "trusted_source_prefix_injected_separately_from_raw_text": True,
         "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
         "source_truncation_count": 0,
         "target_truncation_count": 0,
@@ -1503,6 +1729,7 @@ def train_target(
     optim: Any,
     mlx_utils: Any,
     source_conditioned_stage: Any | None = None,
+    kernel_english_stage: Any | None = None,
     supervision_stage: Any | None = None,
 ) -> dict[str, Any]:
     target_id = str(target["target_id"])
@@ -1589,16 +1816,41 @@ def train_target(
         if source_positions
         else 0
     )
+    unique_kernel_positions = (
+        int(kernel_english_stage.mask.sum())
+        if kernel_english_stage is not None
+        else 0
+    )
+    kernel_repetitions = int(training.get("kernel_english_optimizer_repetitions") or 1)
+    kernel_positions = unique_kernel_positions * kernel_repetitions
+    kernel_batch_size = int(
+        (config.get("kernel_english_training") or {}).get("batch_size")
+        or training["batch_size"]
+    )
+    kernel_planned_steps = (
+        required_steps(
+            kernel_english_stage.mask,
+            kernel_batch_size,
+            kernel_positions,
+        )
+        if kernel_positions
+        else 0
+    )
     schedule = build_schedule(
         optim,
         mx,
         training,
-        planned_steps + source_planned_steps + sft_planned_steps + 128,
+        planned_steps
+        + source_planned_steps
+        + kernel_planned_steps
+        + sft_planned_steps
+        + 128,
     )
     optimizer = optim.AdamW(learning_rate=schedule, weight_decay=float(training["weight_decay"]))
     prior_steps = 0
     prior_pretrain_positions = 0
     prior_source_positions = 0
+    prior_kernel_positions = 0
     prior_sft_positions = 0
     prior_checkpoint_hash = ""
     if resume:
@@ -1624,6 +1876,9 @@ def train_target(
         prior_source_positions = int(
             prior.get("source_conditioned_optimizer_positions") or 0
         )
+        prior_kernel_positions = int(
+            prior.get("kernel_english_optimizer_positions") or 0
+        )
         prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
         prior_checkpoint_hash = sha256_file(resume_checkpoint)
     remaining_positions = max(
@@ -1631,10 +1886,15 @@ def train_target(
     )
     remaining_sft_positions = max(0, sft_positions - prior_sft_positions)
     remaining_source_positions = max(0, source_positions - prior_source_positions)
+    remaining_kernel_positions = max(0, kernel_positions - prior_kernel_positions)
     allowed_steps = (
         max_steps
         if max_steps
-        else planned_steps + source_planned_steps + sft_planned_steps + 128
+        else planned_steps
+        + source_planned_steps
+        + kernel_planned_steps
+        + sft_planned_steps
+        + 128
     )
     temporary_checkpoint = checkpoint.with_name(
         checkpoint.stem + ".partial" + checkpoint.suffix
@@ -1644,13 +1904,18 @@ def train_target(
     completed_positions = {
         "pretrain": prior_pretrain_positions,
         "source": prior_source_positions,
+        "kernel": prior_kernel_positions,
         "supervision": prior_sft_positions,
     }
 
     def commit_progress_checkpoint(progress: dict[str, Any]) -> None:
         phase = str(progress["phase"])
         positions = dict(completed_positions)
-        if "source_conditioned_pretraining" in phase:
+        if "kernel_english" in phase:
+            positions["kernel"] = prior_kernel_positions + int(
+                progress["target_positions_consumed"]
+            )
+        elif "source_conditioned_pretraining" in phase:
             positions["source"] = prior_source_positions + int(
                 progress["target_positions_consumed"]
             )
@@ -1701,6 +1966,7 @@ def train_target(
             "optimizer_positions": sum(positions.values()),
             "pretrain_optimizer_positions": positions["pretrain"],
             "source_conditioned_optimizer_positions": positions["source"],
+            "kernel_english_optimizer_positions": positions["kernel"],
             "supervision_optimizer_positions": positions["supervision"],
             "unique_target_positions": int(target["unique_target_positions"]),
             "checkpoint": relative(generation_checkpoint),
@@ -1807,6 +2073,54 @@ def train_target(
         completed_positions["source"] = prior_source_positions + int(
             source_conditioned_phase["target_positions_consumed"]
         )
+    kernel_english_phase = {
+        "phase": f"moecot_kernel_english:{target_id}",
+        "optimizer_steps": 0,
+        "target_positions_consumed": 0,
+        "target_positions_requested": remaining_kernel_positions,
+        "mean_loss": None,
+        "final_loss": None,
+    }
+    if (
+        kernel_english_stage is not None
+        and remaining_kernel_positions > 0
+        and used_steps < allowed_steps
+    ):
+        kernel_english_phase = train_phase(
+            model,
+            optimizer,
+            loss_and_grad,
+            kernel_english_stage.inputs,
+            kernel_english_stage.labels,
+            kernel_english_stage.loss_mask,
+            progress_mask=kernel_english_stage.mask,
+            ordered_plan_loss_weight=1.0,
+            sample_weights=None,
+            plan_labels=None,
+            plan_label_mode="none",
+            plan_auxiliary_weight=0.0,
+            plan_shuffle_seed=0,
+            plan_loss_mode="binary_multilabel",
+            plan_slot_count=0,
+            plan_factor_group_sizes=(),
+            phase_name=f"moecot_kernel_english:{target_id}",
+            target_positions=remaining_kernel_positions,
+            batch_size=kernel_batch_size,
+            gradient_clip=float(training["gradient_clip_norm"]),
+            seed=int(config["seed"]) + stable_int(target_id) + prior_steps + used_steps,
+            max_steps=allowed_steps - used_steps,
+            checkpoint=temporary_checkpoint,
+            checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
+            heartbeat=heartbeat,
+            global_step_offset=prior_steps + used_steps,
+            mx=mx,
+            optim=optim,
+            checkpoint_callback=commit_progress_checkpoint,
+        )
+        used_steps += int(kernel_english_phase["optimizer_steps"])
+        completed_positions["kernel"] = prior_kernel_positions + int(
+            kernel_english_phase["target_positions_consumed"]
+        )
     supervision_phase = {
         "phase": f"moecot_supervision:{target_id}",
         "optimizer_steps": 0,
@@ -1866,7 +2180,15 @@ def train_target(
     total_source_positions = prior_source_positions + int(
         source_conditioned_phase["target_positions_consumed"]
     )
-    total_positions = total_pretrain_positions + total_source_positions + total_sft_positions
+    total_kernel_positions = prior_kernel_positions + int(
+        kernel_english_phase["target_positions_consumed"]
+    )
+    total_positions = (
+        total_pretrain_positions
+        + total_source_positions
+        + total_kernel_positions
+        + total_sft_positions
+    )
     receipt = {
         "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
         "created_utc": now(),
@@ -1890,17 +2212,22 @@ def train_target(
         "optimizer_positions": total_positions,
         "pretrain_optimizer_positions": total_pretrain_positions,
         "source_conditioned_optimizer_positions": total_source_positions,
+        "kernel_english_optimizer_positions": total_kernel_positions,
         "supervision_optimizer_positions": total_sft_positions,
         "unique_target_positions": int(target["unique_target_positions"]),
         "unique_source_conditioned_target_positions": unique_source_positions,
         "source_conditioned_optimizer_target_positions": source_positions,
         "source_conditioned_optimizer_repetitions": source_repetitions,
+        "unique_kernel_english_target_positions": unique_kernel_positions,
+        "kernel_english_optimizer_target_positions": kernel_positions,
+        "kernel_english_optimizer_repetitions": kernel_repetitions,
         "unique_supervision_target_positions": unique_sft_positions,
         "supervision_optimizer_target_positions": sft_positions,
         "supervision_optimizer_repetitions": sft_repetitions,
         "complete": (
             total_pretrain_positions >= int(target["unique_target_positions"])
             and total_source_positions >= source_positions
+            and total_kernel_positions >= kernel_positions
             and total_sft_positions >= sft_positions
         ),
         "checkpoint": relative(checkpoint),
@@ -1912,12 +2239,16 @@ def train_target(
         "phases": {
             "pretraining": pretrain_phase,
             "source_conditioned_pretraining": source_conditioned_phase,
+            "kernel_english": kernel_english_phase,
             "supervision": supervision_phase,
         },
         "source_conditioned_stage": (
             source_conditioned_stage.receipt
             if source_conditioned_stage is not None
             else None
+        ),
+        "kernel_english_stage": (
+            kernel_english_stage.receipt if kernel_english_stage is not None else None
         ),
         "supervision_stage": (
             supervision_stage.receipt if supervision_stage is not None else None
@@ -2060,6 +2391,7 @@ def plan_sha256(
     models: dict[str, Any],
     supervision: dict[str, Any],
     source_conditioned: dict[str, Any],
+    kernel_english: dict[str, Any],
 ) -> str:
     training_artifacts = {
         key: value
@@ -2086,6 +2418,11 @@ def plan_sha256(
         "supervision_training_artifacts": training_artifacts,
         "source_conditioned_training_artifacts": source_conditioned.get("artifacts")
         or {},
+        "kernel_english_training_artifacts": kernel_english.get("artifacts") or {},
+        "kernel_english_learned_pipeline_contract": kernel_english.get(
+            "learned_pipeline_contract"
+        )
+        or {},
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
@@ -2093,6 +2430,20 @@ def plan_sha256(
 def validate_config(config: dict[str, Any]) -> None:
     if config.get("policy") != "project_theseus_moecot_language_arm_training_v1":
         raise ValueError("unexpected MoECOT training policy")
+    authority = config.get("architecture_training_authority") or {}
+    if authority.get("policy") != "project_theseus_pre_training_architecture_authority_v1":
+        raise ValueError("pre-training architecture authority contract is required")
+    if authority.get("required_for_long_optimizer_runs") is not True:
+        raise ValueError("long optimizer runs must require architecture readiness")
+    if int(authority.get("pre_training_canary_max_steps") or 0) != 8:
+        raise ValueError("pre-training architecture canaries must remain capped at eight steps")
+    if [str(value) for value in authority.get("gate_command") or []] != [
+        "python3",
+        "scripts/roadmap_implementation_gate.py",
+        "--gate",
+        "--require-pre-training-ready",
+    ]:
+        raise ValueError("architecture readiness gate command mismatch")
     if config.get("comparison_contract", {}).get("preregistered_before_training") is not True:
         raise ValueError("comparison contract must be preregistered")
     topology = config.get("topology") or {}
@@ -2170,6 +2521,27 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError(
             "source-conditioned repetition must remain within the frozen maximum"
         )
+    kernel_cfg = config.get("kernel_english_training") or {}
+    if kernel_cfg.get("policy") != "project_theseus_moecot_kernel_english_stage_v1":
+        raise ValueError("KERC training contract is required")
+    if kernel_cfg.get("required") is not True:
+        raise ValueError("KERC joint-campaign training contract must remain required")
+    if tuple(kernel_cfg.get("objective_order") or ()) != (
+        "surface_direct_control_v1",
+        "surface_to_kernel_program_v1",
+        "kernel_program_to_answer_packet_v1",
+        "answer_packet_to_surface_v1",
+    ):
+        raise ValueError("KERC objective identity/order mismatch")
+    kernel_repetitions = int(training.get("kernel_english_optimizer_repetitions") or 0)
+    if not 1 <= kernel_repetitions <= int(
+        training.get("maximum_kernel_english_optimizer_repetitions") or 0
+    ):
+        raise ValueError("KERC repetition must remain within the frozen maximum")
+    if not 1 <= int(kernel_cfg.get("batch_size") or 0) <= int(training["batch_size"]):
+        raise ValueError("KERC batch size must be positive and no larger than the base batch")
+    if int(kernel_cfg.get("maximum_sequence_tokens") or 0) <= 0:
+        raise ValueError("KERC sequence budget must be positive")
     if not 1.0 <= float(training.get("termination_loss_weight") or 0.0) <= 8.0:
         raise ValueError("termination loss weight must remain bounded")
     if not 1.0 <= float(training.get("byte_boundary_loss_weight") or 0.0) <= 8.0:

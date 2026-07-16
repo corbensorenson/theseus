@@ -2,9 +2,20 @@
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
   "stage_dir": "runtime/standard_causal_transformer_scale_v2",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v8",
+  "checkpoint_root": "checkpoints/moecot_language_seed_v9_architecture_freeze",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
+  "architecture_training_authority": {
+    "policy": "project_theseus_pre_training_architecture_authority_v1",
+    "required_for_long_optimizer_runs": true,
+    "pre_training_canary_max_steps": 8,
+    "gate_command": [
+      "python3",
+      "scripts/roadmap_implementation_gate.py",
+      "--gate",
+      "--require-pre-training-ready"
+    ]
+  },
   "vocabulary": {
     "policy": "project_theseus_moecot_exact_language_vocabulary_v1",
     "output": "runtime/moecot_language_seed_v1/exact_language_vocab.json",
@@ -12,6 +23,13 @@
     "source_max_vocab": 4096,
     "target_max_vocab": 4096,
     "byte_piece_budget": 512,
+    "required_source_control_tokens": [
+      "<KERC_TASK_SURFACE_DIRECT>",
+      "<KERC_TASK_SURFACE_TO_KERNEL>",
+      "<KERC_TASK_KERNEL_TO_ANSWER>",
+      "<KERC_TASK_ANSWER_TO_SURFACE>"
+    ],
+    "required_target_control_tokens": [],
     "code_samples": "data/training_data/open_code_pantry/samples/open_code_samples.jsonl",
     "conversation_root": "data/training_data/open_conversation_pantry/private_train/shards",
     "broad_english_root": "data/training_data/open_conversation_pantry/broad_text/private_train/shards",
@@ -86,6 +104,8 @@
     "supervision_optimizer_repetitions": 4,
     "maximum_source_conditioned_optimizer_repetitions": 2,
     "source_conditioned_optimizer_repetitions": 1,
+    "maximum_kernel_english_optimizer_repetitions": 2,
+    "kernel_english_optimizer_repetitions": 1,
     "termination_loss_weight": 4.0,
     "byte_boundary_loss_weight": 2.0
   },
@@ -238,6 +258,45 @@
     "public_training_rows_written": 0,
     "external_inference_calls": 0,
     "fallback_return_count": 0
+  },
+  "kernel_english_training": {
+    "policy": "project_theseus_moecot_kernel_english_stage_v1",
+    "required": true,
+    "stage_root": "data/training_data/moecot_kernel_english_v1",
+    "report": "reports/moecot_kernel_english_stage.json",
+    "records_jsonl": "data/training_data/kernel_english_governed_v1/records.jsonl",
+    "verification_ledger_jsonl": "data/training_data/kernel_english_governed_v1/verification_ledger.jsonl",
+    "objective_order": [
+      "surface_direct_control_v1",
+      "surface_to_kernel_program_v1",
+      "kernel_program_to_answer_packet_v1",
+      "answer_packet_to_surface_v1"
+    ],
+    "records_by_split": {
+      "private_train": 1024,
+      "private_dev": 128,
+      "private_eval": 128
+    },
+    "maximum_sequence_tokens": 4096,
+    "batch_size": 2,
+    "allowed_licenses": [
+      "apache-2.0",
+      "bsd-2-clause",
+      "bsd-3-clause",
+      "cc-by-4.0",
+      "cc-by-sa-3.0",
+      "cc0-1.0",
+      "isc",
+      "mit",
+      "unlicense"
+    ],
+    "public_training_rows_written": 0,
+    "public_benchmark_payload_count": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "template_credit": 0,
+    "deterministic_renderer_credit": 0,
+    "candidate_generation_credit": 0
   },
   "comparison_contract": {
     "policy": "project_theseus_moecot_dense_falsification_comparison_v1",

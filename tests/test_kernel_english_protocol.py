@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 import sys
 from pathlib import Path
 
@@ -88,6 +89,63 @@ def answer_packet(*, modality: str = "POSSIBLE") -> dict:
         "required_caveats": ["Approval remains uncertain."],
         "style": {"register": "technical_accessible"},
     }
+
+
+def training_record(*, split: str = "private_train") -> dict:
+    state = memory.create_hierarchical_residual_state(
+        f"training-{split}", scope=scope(f"training-{split}")
+    )
+    packet = kernel.build_kernel_packet(
+        SOURCE,
+        program(),
+        hrl_state=state,
+        explicit_spans=[
+            {
+                "start": 0,
+                "end": len("Dr. Alvarez"),
+                "object_type": "PERSON",
+                "copy_policy": "EXACT",
+            }
+        ],
+        provenance={"source": "private_test_fixture"},
+    )
+    record = {
+        "policy": kernel.TRAINING_RECORD_POLICY,
+        "split": split,
+        "language": "en",
+        "source_text": SOURCE,
+        "kernel_packet": packet,
+        "hrl_state": state,
+        "answer_packet": answer_packet(),
+        "surface_target": "Dr. Alvarez may approve $2.75 million; approval remains uncertain.",
+        "provenance": {
+            "source_id": f"fixture-{split}",
+            "source_group": f"fixture-group-{split}",
+            "license_spdx": "CC0-1.0",
+            "permitted_use": "model_training",
+        },
+        "verification_receipt": {
+            "policy": kernel.TRAINING_VERIFICATION_POLICY,
+            "receipt_id": f"receipt-{split}",
+            "accepted": True,
+            "verifier_id": "private-kerc-fixture-verifier-v1",
+            "reviewer_independent_of_record_producer": True,
+            "method": "human_dual_review",
+            "evidence_sha256": "sha256:" + "a" * 64,
+        },
+        "public_benchmark": False,
+        "public_tests_included": False,
+        "public_benchmark_solutions_included": False,
+        "external_inference": False,
+        "fallback_return_count": 0,
+        "template_credit": 0,
+        "deterministic_renderer_credit": 0,
+        "candidate_generation_credit": 0,
+    }
+    record["verification_receipt"]["semantic_payload_sha256"] = (
+        kernel.training_semantic_payload_sha256(record)
+    )
+    return record
 
 
 def test_source_protection_precedes_correction_and_preserves_exact_bytes() -> None:
@@ -360,3 +418,102 @@ def test_packet_rejects_stale_hrl_and_roundtrip_verifier_fails_closed() -> None:
     assert mismatch["hard_failure_count"] == 1
     assert mismatch["failure_behavior"].endswith("without_literal_or_template_fallback")
     assert mismatch["fallback_return_count"] == 0
+
+
+def test_training_record_compiles_four_matched_noncredit_views() -> None:
+    record = kernel.validate_training_record(training_record())
+    views = kernel.compile_training_views(record)
+
+    assert tuple(row["objective"] for row in views) == kernel.TRAINING_OBJECTIVES
+    assert len({row["raw_source_sha256"] for row in views}) == 1
+    assert all(row["unique_source_credit"] == 0 for row in views)
+    assert all(row["optimizer_exposure_credit"] == 1 for row in views)
+    assert all(
+        row["generator_visible_fields"] == ["trusted_source_prefix_tokens", "prompt"]
+        for row in views
+    )
+    assert all(
+        row["trusted_source_prefix_tokens"] == [kernel.TRAINING_TASK_TAGS[row["objective"]]]
+        for row in views
+    )
+    assert all(row["task_tag"] not in row["prompt"] for row in views)
+    assert all(row["public_benchmark"] is False for row in views)
+    assert all(row["fallback_return_count"] == 0 for row in views)
+    assert views[0]["target"] != views[1]["target"]
+
+    compiler_view = next(
+        row for row in views if row["objective"] == "surface_to_kernel_program_v1"
+    )
+    parsed = kernel.parse_learned_compiler_output(
+        compiler_view["target"],
+        protected_objects=record["kernel_packet"]["protected_objects"],
+        concept_capsules=record["kernel_packet"]["concept_capsules"],
+        source_character_length=len(SOURCE),
+    )
+    assert parsed["state"] == "READY"
+
+    answer_view = next(
+        row
+        for row in views
+        if row["objective"] == "kernel_program_to_answer_packet_v1"
+    )
+    assert kernel.parse_learned_answer_output(answer_view["target"])[
+        "answer_packet_sha256"
+    ]
+
+
+def test_training_record_and_learned_outputs_fail_closed() -> None:
+    public = training_record()
+    public["public_benchmark"] = True
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_TRAINING_BOUNDARY_INVALID"):
+        kernel.validate_training_record(public)
+
+    unverified = training_record()
+    unverified["verification_receipt"]["accepted"] = False
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_TRAINING_RECORD_UNVERIFIED"):
+        kernel.validate_training_record(unverified)
+
+    stale_packet = training_record()
+    first_handle = next(iter(stale_packet["kernel_packet"]["protected_objects"]))
+    stale_packet["kernel_packet"]["protected_objects"][first_handle]["content_ref"] = (
+        "sha256:" + "0" * 64
+    )
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_PACKET_IDENTITY_MISMATCH"):
+        kernel.validate_training_record(stale_packet)
+
+    rehashed_packet = training_record()
+    first_handle = next(iter(rehashed_packet["kernel_packet"]["protected_objects"]))
+    object_row = rehashed_packet["kernel_packet"]["protected_objects"][first_handle]
+    object_row["content_ref"] = "sha256:" + "0" * 64
+    object_row["object_sha256"] = kernel.stable_hash(
+        {key: value for key, value in object_row.items() if key != "object_sha256"}
+    )
+    rehashed_packet["kernel_packet"]["packet_sha256"] = kernel.stable_hash(
+        {
+            key: value
+            for key, value in rehashed_packet["kernel_packet"].items()
+            if key != "packet_sha256"
+        }
+    )
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_TRAINING_OBJECT_CONTENT_MISMATCH"
+    ):
+        kernel.validate_training_record(rehashed_packet)
+
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_LEARNED_COMPILER_OUTPUT_INVALID"):
+        kernel.parse_learned_compiler_output(
+            "not json",
+            protected_objects={},
+            concept_capsules={},
+            source_character_length=1,
+        )
+    malformed = json.dumps({"kernel_version": kernel.KERNEL_VERSION, "program": {}})
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_PROGRAM_NODES_MISSING"):
+        kernel.parse_learned_compiler_output(
+            malformed,
+            protected_objects={},
+            concept_capsules={},
+            source_character_length=1,
+        )
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_LEARNED_ANSWER_OUTPUT_INVALID"):
+        kernel.parse_learned_answer_output("not json")

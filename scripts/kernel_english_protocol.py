@@ -82,6 +82,23 @@ NO_CHEAT = {
     "external_inference_calls": 0,
     "fallback_return_count": 0,
 }
+TRAINING_RECORD_POLICY = "project_theseus_kernel_english_training_record_v1"
+TRAINING_VIEW_POLICY = "project_theseus_kernel_english_training_view_v1"
+TRAINING_CONTRACT_POLICY = "project_theseus_kernel_english_learned_pipeline_v1"
+TRAINING_VERIFICATION_POLICY = "project_theseus_kernel_english_verification_receipt_v1"
+TRAINING_SPLITS = {"private_train", "private_dev", "private_eval"}
+TRAINING_OBJECTIVES = (
+    "surface_direct_control_v1",
+    "surface_to_kernel_program_v1",
+    "kernel_program_to_answer_packet_v1",
+    "answer_packet_to_surface_v1",
+)
+TRAINING_TASK_TAGS = {
+    "surface_direct_control_v1": "<KERC_TASK_SURFACE_DIRECT>",
+    "surface_to_kernel_program_v1": "<KERC_TASK_SURFACE_TO_KERNEL>",
+    "kernel_program_to_answer_packet_v1": "<KERC_TASK_KERNEL_TO_ANSWER>",
+    "answer_packet_to_surface_v1": "<KERC_TASK_ANSWER_TO_SURFACE>",
+}
 
 
 class KernelProtocolFault(ValueError):
@@ -121,6 +138,423 @@ def stable_hash(value: Any) -> str:
     if isinstance(payload, bytearray):
         payload = bytes(payload)
     return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
+def kernel_training_contract() -> dict[str, Any]:
+    """Return the checkpoint-shaping learned KERC contract.
+
+    The exact protocol validates records and learned outputs. It does not infer a
+    Kernel program, answer packet, or surface answer and therefore earns no model
+    capability credit.
+    """
+
+    contract = {
+        "policy": TRAINING_CONTRACT_POLICY,
+        "record_policy": TRAINING_RECORD_POLICY,
+        "view_policy": TRAINING_VIEW_POLICY,
+        "packet_version": PACKET_VERSION,
+        "kernel_version": KERNEL_VERSION,
+        "hrl_version": HRL_VERSION,
+        "codebook_version": CODEBOOK_VERSION,
+        "objective_order": list(TRAINING_OBJECTIVES),
+        "task_tags": dict(TRAINING_TASK_TAGS),
+        "task_mode_transport": "trusted_internal_source_prefix_token",
+        "raw_text_may_select_task_mode": False,
+        "trusted_source_control_tokens": list(TRAINING_TASK_TAGS.values()),
+        "pipeline": [
+            "deterministic_protect_visible_source",
+            "learned_surface_to_kernel_program",
+            "independent_kernel_program_validation",
+            "learned_kernel_program_to_answer_packet",
+            "independent_answer_packet_validation",
+            "learned_answer_packet_to_surface",
+            "learned_surface_recompile_and_roundtrip_verification",
+        ],
+        "derived_views_receive_unique_source_credit": False,
+        "surface_direct_control_required": True,
+        "failure_behavior": "reject_without_template_literal_tool_or_router_fallback",
+        **NO_CHEAT,
+    }
+    contract["contract_sha256"] = stable_hash(contract)
+    return contract
+
+
+def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
+    """Validate one governed source/Kernel/answer/surface training record."""
+
+    if not isinstance(record, dict) or record.get("policy") != TRAINING_RECORD_POLICY:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_RECORD_POLICY_INVALID",
+            str(record.get("policy") if isinstance(record, dict) else type(record)),
+            path="record.policy",
+        )
+    split = str(record.get("split") or "")
+    if split not in TRAINING_SPLITS:
+        raise KernelProtocolFault("KERC_TRAINING_SPLIT_INVALID", split, path="record.split")
+    if str(record.get("language") or "") != "en":
+        raise KernelProtocolFault(
+            "KERC_TRAINING_LANGUAGE_INVALID", str(record.get("language")), path="record.language"
+        )
+    source = str(record.get("source_text") or "")
+    surface_target = str(record.get("surface_target") or "")
+    if not source.strip() or not surface_target.strip():
+        raise KernelProtocolFault(
+            "KERC_TRAINING_TEXT_MISSING", "source and surface target are required", path="record"
+        )
+    provenance = record.get("provenance") if isinstance(record.get("provenance"), dict) else {}
+    for key in ("source_id", "source_group", "license_spdx", "permitted_use"):
+        if not str(provenance.get(key) or "").strip():
+            raise KernelProtocolFault(
+                "KERC_TRAINING_PROVENANCE_INCOMPLETE", key, path=f"record.provenance.{key}"
+            )
+    if provenance.get("permitted_use") != "model_training":
+        raise KernelProtocolFault(
+            "KERC_TRAINING_USE_NOT_PERMITTED",
+            str(provenance.get("permitted_use")),
+            path="record.provenance.permitted_use",
+        )
+    verification = (
+        record.get("verification_receipt")
+        if isinstance(record.get("verification_receipt"), dict)
+        else {}
+    )
+    if verification.get("policy") != TRAINING_VERIFICATION_POLICY:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_VERIFICATION_POLICY_INVALID",
+            str(verification.get("policy")),
+            path="record.verification_receipt.policy",
+        )
+    if verification.get("accepted") is not True or not str(
+        verification.get("verifier_id") or ""
+    ).strip():
+        raise KernelProtocolFault(
+            "KERC_TRAINING_RECORD_UNVERIFIED",
+            canonical_json(verification),
+            path="record.verification_receipt",
+        )
+    if not str(verification.get("receipt_id") or "").strip():
+        raise KernelProtocolFault(
+            "KERC_TRAINING_VERIFICATION_RECEIPT_ID_MISSING",
+            "receipt_id",
+            path="record.verification_receipt.receipt_id",
+        )
+    if verification.get("reviewer_independent_of_record_producer") is not True:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_VERIFIER_NOT_INDEPENDENT",
+            str(verification.get("verifier_id")),
+            path="record.verification_receipt",
+        )
+    if verification.get("method") not in {
+        "human_dual_review",
+        "governed_teacher_plus_independent_verifier",
+        "licensed_semantic_dataset_plus_independent_schema_review",
+    }:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_VERIFICATION_METHOD_INVALID",
+            str(verification.get("method")),
+            path="record.verification_receipt.method",
+        )
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", str(verification.get("evidence_sha256") or "")):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_VERIFICATION_EVIDENCE_INVALID",
+            str(verification.get("evidence_sha256")),
+            path="record.verification_receipt.evidence_sha256",
+        )
+    for key in (
+        "public_benchmark",
+        "public_tests_included",
+        "public_benchmark_solutions_included",
+        "external_inference",
+    ):
+        if record.get(key) is not False:
+            raise KernelProtocolFault(
+                "KERC_TRAINING_BOUNDARY_INVALID", key, path=f"record.{key}"
+            )
+    for key in (
+        "fallback_return_count",
+        "template_credit",
+        "deterministic_renderer_credit",
+        "candidate_generation_credit",
+    ):
+        if int(record.get(key) or 0):
+            raise KernelProtocolFault(
+                "KERC_TRAINING_CREDIT_BOUNDARY_INVALID", key, path=f"record.{key}"
+            )
+
+    hrl_state = record.get("hrl_state") if isinstance(record.get("hrl_state"), dict) else {}
+    packet = record.get("kernel_packet") if isinstance(record.get("kernel_packet"), dict) else {}
+    packet_replay = validate_kernel_packet(packet, local_hrl_state=hrl_state)
+    expected_source = capture_source(source)
+    if (packet.get("source") or {}).get("source_sha256") != expected_source["source_sha256"]:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_SOURCE_PACKET_MISMATCH",
+            str((packet.get("source") or {}).get("source_sha256")),
+            path="record.kernel_packet.source",
+        )
+    _validate_packet_objects_against_source(
+        source,
+        packet.get("protected_objects")
+        if isinstance(packet.get("protected_objects"), dict)
+        else {},
+    )
+    answer = validate_answer_packet(
+        record.get("answer_packet") if isinstance(record.get("answer_packet"), dict) else {}
+    )
+    semantic_payload_sha256 = training_semantic_payload_sha256(
+        {
+            **record,
+            "answer_packet": answer,
+        }
+    )
+    if verification.get("semantic_payload_sha256") != semantic_payload_sha256:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_VERIFICATION_BINDING_MISMATCH",
+            f"expected={semantic_payload_sha256} observed={verification.get('semantic_payload_sha256')}",
+            path="record.verification_receipt.semantic_payload_sha256",
+        )
+    canonical = copy.deepcopy(record)
+    canonical["answer_packet"] = answer
+    canonical["raw_source_sha256"] = expected_source["source_sha256"]
+    canonical["surface_target_sha256"] = stable_hash(surface_target.encode("utf-8"))
+    canonical["packet_replay"] = packet_replay
+    canonical["semantic_payload_sha256"] = semantic_payload_sha256
+    canonical["record_sha256"] = stable_hash(
+        {key: value for key, value in canonical.items() if key != "record_sha256"}
+    )
+    return canonical
+
+
+def training_semantic_payload_sha256(record: dict[str, Any]) -> str:
+    packet = record.get("kernel_packet") if isinstance(record.get("kernel_packet"), dict) else {}
+    provenance = record.get("provenance") if isinstance(record.get("provenance"), dict) else {}
+    answer = validate_answer_packet(
+        record.get("answer_packet") if isinstance(record.get("answer_packet"), dict) else {}
+    )
+    return stable_hash(
+        {
+            "source_text": str(record.get("source_text") or ""),
+            "kernel_packet_sha256": str(packet.get("packet_sha256") or ""),
+            "answer_packet": answer,
+            "surface_target": str(record.get("surface_target") or ""),
+            "source_id": str(provenance.get("source_id") or ""),
+            "source_group": str(provenance.get("source_group") or ""),
+            "license_spdx": str(provenance.get("license_spdx") or ""),
+            "permitted_use": str(provenance.get("permitted_use") or ""),
+        }
+    )
+
+
+def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
+    """Compile matched learned objectives without multiplying unique-data credit."""
+
+    record = validate_training_record(record)
+    packet = record["kernel_packet"]
+    protected_context = {
+        "protected_objects": packet["protected_objects"],
+        "concept_capsules": packet["concept_capsules"],
+        "source_character_length": packet["source"]["character_length"],
+    }
+    compiler_input = {
+        **protected_context,
+        "masked_surface": _masked_surface_from_packet_objects(
+            record["source_text"], packet["protected_objects"]
+        ),
+        "correction_lattice": packet["correction_lattice"],
+    }
+    compiler_target = {
+        "kernel_version": KERNEL_VERSION,
+        "program": packet["program"],
+    }
+    core_input = {
+        **protected_context,
+        "program": packet["program"],
+        "residual": packet["residual"],
+    }
+    renderer_input = {
+        "answer_packet": record["answer_packet"],
+        "protected_objects": packet["protected_objects"],
+        "residual_mode": packet["residual"]["mode"],
+        "fidelity": packet["residual"]["fidelity"],
+    }
+    source = record["source_text"]
+    rows = (
+        ("surface_direct_control_v1", source, record["surface_target"]),
+        (
+            "surface_to_kernel_program_v1",
+            canonical_json(compiler_input),
+            canonical_json(compiler_target),
+        ),
+        (
+            "kernel_program_to_answer_packet_v1",
+            canonical_json(core_input),
+            canonical_json(record["answer_packet"]),
+        ),
+        (
+            "answer_packet_to_surface_v1",
+            canonical_json(renderer_input),
+            record["surface_target"],
+        ),
+    )
+    compiled = []
+    for objective, visible, target in rows:
+        prompt = visible
+        trusted_prefix = [TRAINING_TASK_TAGS[objective]]
+        identity = stable_hash(
+            {
+                "record_sha256": record["record_sha256"],
+                "objective": objective,
+                "trusted_source_prefix_tokens": trusted_prefix,
+                "prompt": prompt,
+                "target": target,
+            }
+        )
+        compiled.append(
+            {
+                "policy": TRAINING_VIEW_POLICY,
+                "row_id": "kerc-view:" + identity.split(":", 1)[1][:24],
+                "split": record["split"],
+                "arm_id": "english",
+                "objective": objective,
+                "task_tag": TRAINING_TASK_TAGS[objective],
+                "trusted_source_prefix_tokens": trusted_prefix,
+                "trusted_prefix_authority": "internal_objective_route_only",
+                "prompt": prompt,
+                "prompt_sha256": stable_hash(prompt.encode("utf-8")),
+                "target": target,
+                "target_sha256": stable_hash(target.encode("utf-8")),
+                "source_record_sha256": record["record_sha256"],
+                "raw_source_sha256": record["raw_source_sha256"],
+                "source_group": record["provenance"]["source_group"],
+                "license_spdx": record["provenance"]["license_spdx"],
+                "derived_view": True,
+                "unique_source_credit": 0,
+                "optimizer_exposure_credit": 1,
+                "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
+                "evaluator_only_fields": [
+                    "target",
+                    "target_sha256",
+                    "source_record_sha256",
+                ],
+                "public_benchmark": False,
+                "public_tests_included": False,
+                "public_benchmark_solutions_included": False,
+                "external_inference": False,
+                **NO_CHEAT,
+            }
+        )
+    return compiled
+
+
+def parse_learned_compiler_output(
+    output: str,
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+    concept_capsules: dict[str, dict[str, Any]],
+    source_character_length: int,
+) -> dict[str, Any]:
+    """Parse and independently validate a learned compiler result."""
+
+    try:
+        decoded = json.loads(output)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_COMPILER_OUTPUT_INVALID", str(exc), path="compiler_output"
+        ) from exc
+    if not isinstance(decoded, dict) or decoded.get("kernel_version") != KERNEL_VERSION:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_COMPILER_VERSION_INVALID",
+            str(decoded.get("kernel_version") if isinstance(decoded, dict) else type(decoded)),
+            path="compiler_output.kernel_version",
+        )
+    return validate_kernel_program(
+        decoded.get("program") if isinstance(decoded.get("program"), dict) else {},
+        protected_objects=protected_objects,
+        concept_capsules=concept_capsules,
+        source_character_length=source_character_length,
+    )
+
+
+def parse_learned_answer_output(output: str) -> dict[str, Any]:
+    """Parse and independently validate a learned core answer packet."""
+
+    try:
+        decoded = json.loads(output)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_ANSWER_OUTPUT_INVALID", str(exc), path="answer_output"
+        ) from exc
+    return validate_answer_packet(decoded if isinstance(decoded, dict) else {})
+
+
+def _masked_surface_from_packet_objects(
+    source: str, objects: dict[str, dict[str, Any]]
+) -> str:
+    spans = sorted(
+        (
+            int(row["source_span"]["character_start"]),
+            int(row["source_span"]["character_end"]),
+            handle,
+        )
+        for handle, row in objects.items()
+    )
+    pieces: list[str] = []
+    cursor = 0
+    for start, end, handle in spans:
+        if start < cursor or not 0 <= start < end <= len(source):
+            raise KernelProtocolFault(
+                "KERC_TRAINING_OBJECT_SPAN_INVALID",
+                f"{handle}:{start}:{end}",
+                path="record.kernel_packet.protected_objects",
+            )
+        pieces.extend((source[cursor:start], handle))
+        cursor = end
+    pieces.append(source[cursor:])
+    return "".join(pieces)
+
+
+def _validate_packet_objects_against_source(
+    source: str, objects: dict[str, dict[str, Any]]
+) -> None:
+    cursor = 0
+    for start, end, handle in sorted(
+        (
+            int(row["source_span"]["character_start"]),
+            int(row["source_span"]["character_end"]),
+            handle,
+        )
+        for handle, row in objects.items()
+    ):
+        row = objects[handle]
+        if start < cursor or not 0 <= start < end <= len(source):
+            raise KernelProtocolFault(
+                "KERC_TRAINING_OBJECT_SPAN_INVALID",
+                f"{handle}:{start}:{end}",
+                path="record.kernel_packet.protected_objects",
+            )
+        raw = source[start:end].encode("utf-8")
+        if stable_hash(raw) != row.get("content_ref"):
+            raise KernelProtocolFault(
+                "KERC_TRAINING_OBJECT_CONTENT_MISMATCH",
+                handle,
+                path=f"record.kernel_packet.protected_objects.{handle}",
+            )
+        inline = row.get("inline_bytes_b64")
+        if inline is not None:
+            try:
+                decoded = base64.b64decode(str(inline), validate=True)
+            except Exception as exc:
+                raise KernelProtocolFault(
+                    "KERC_TRAINING_OBJECT_INLINE_INVALID",
+                    handle,
+                    path=f"record.kernel_packet.protected_objects.{handle}",
+                ) from exc
+            if decoded != raw:
+                raise KernelProtocolFault(
+                    "KERC_TRAINING_OBJECT_INLINE_MISMATCH",
+                    handle,
+                    path=f"record.kernel_packet.protected_objects.{handle}",
+                )
+        cursor = end
 
 
 def capture_source(
@@ -591,6 +1025,15 @@ def build_kernel_packet(
 def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str, Any]) -> dict[str, Any]:
     if packet.get("policy") != POLICY or packet.get("packet_version") != PACKET_VERSION:
         raise KernelProtocolFault("KERC_PACKET_PROTOCOL_INCOMPATIBLE", str(packet.get("packet_version")), path="packet")
+    expected_packet_sha256 = stable_hash(
+        {key: value for key, value in packet.items() if key != "packet_sha256"}
+    )
+    if packet.get("packet_sha256") != expected_packet_sha256:
+        raise KernelProtocolFault(
+            "KERC_PACKET_IDENTITY_MISMATCH",
+            f"expected={expected_packet_sha256} observed={packet.get('packet_sha256')}",
+            path="packet.packet_sha256",
+        )
     _validate_hrl_reference(local_hrl_state)
     residual = packet.get("residual") if isinstance(packet.get("residual"), dict) else {}
     if residual.get("global_state_hash") != local_hrl_state.get("state_hash"):
@@ -602,12 +1045,39 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
     source = packet.get("source") if isinstance(packet.get("source"), dict) else {}
     objects = packet.get("protected_objects") if isinstance(packet.get("protected_objects"), dict) else {}
     concepts = packet.get("concept_capsules") if isinstance(packet.get("concept_capsules"), dict) else {}
+    expected_source_record_sha256 = stable_hash(
+        {key: value for key, value in source.items() if key != "record_sha256"}
+    )
+    if source.get("record_sha256") != expected_source_record_sha256:
+        raise KernelProtocolFault(
+            "KERC_SOURCE_RECORD_IDENTITY_MISMATCH",
+            str(source.get("record_sha256")),
+            path="packet.source.record_sha256",
+        )
+    for handle, row in objects.items():
+        expected_object_sha256 = stable_hash(
+            {key: value for key, value in row.items() if key != "object_sha256"}
+        )
+        if row.get("object_sha256") != expected_object_sha256:
+            raise KernelProtocolFault(
+                "KERC_PROTECTED_OBJECT_IDENTITY_MISMATCH",
+                str(handle),
+                path=f"packet.protected_objects.{handle}.object_sha256",
+            )
     validated = validate_kernel_program(
         packet.get("program") if isinstance(packet.get("program"), dict) else {},
         protected_objects=objects,
         concept_capsules=concepts,
         source_character_length=int(source.get("character_length") or 0),
     )
+    if (packet.get("program") or {}).get("program_sha256") != validated[
+        "canonical_program"
+    ]["program_sha256"]:
+        raise KernelProtocolFault(
+            "KERC_PROGRAM_IDENTITY_MISMATCH",
+            str((packet.get("program") or {}).get("program_sha256")),
+            path="packet.program.program_sha256",
+        )
     serialization = packet.get("serialization") if isinstance(packet.get("serialization"), dict) else {}
     expanded = expand_macros(serialization.get("compact_tokens") or [], serialization.get("macro_registry") or [])
     if stable_hash(expanded) != serialization.get("expanded_sha256"):

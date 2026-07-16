@@ -53,6 +53,13 @@
       "falsified_pretraining",
       "retired_by_pretraining_verdict"
     ],
+    "long_optimizer_machine_enforcement": {
+      "owner": "scripts/moecot_language_arm_training.py",
+      "policy": "project_theseus_pre_training_architecture_authority_v1",
+      "required_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
+      "bounded_architecture_canary_max_steps": 8,
+      "rule": "Finite-update canaries may execute before readiness so architecture contracts can be proven. Any unbounded or greater-than-eight-step canonical optimizer run fails closed until the architecture readiness gate is GREEN."
+    },
     "rule": "Architecture readiness requires every architecture prerequisite and every finite cross-phase pre-training backlog contract to be fully wired, implemented, falsified, or retired before long optimizer spend. Training, empirical product qualification, public calibration, real-use evidence, and behavior-dependent efficacy remain follow-through rather than circular prerequisites, but their model, objective, state, checkpoint, routing, memory, verifier, resource, migration, rollback, and evaluation interfaces must already exist when later adoption would invalidate the campaign.",
     "no_shortcut": "A phase or backlog item may defer only evidence that intrinsically requires learned behavior, training, public calibration, real-use time, unavailable external peers, or a future modality. Missing contracts, authority, memory, evidence, deterministic tooling, runtime, migration, security, checkpoint lineage, campaign preregistration, objective plumbing, or governance remain architecture blockers. A speculative item may be retired before training; it may not remain vaguely planned and then silently invalidate the frozen run."
   },
@@ -471,7 +478,20 @@
       ],
       "track_id": "C_capability_research_survival_lane",
       "status": "pre_training_architecture_required",
-      "dependency": "hold the not-yet-started long optimizer run; reuse existing English-arm, Semantic-IR, VCM, SCF, evidence, compression, and Octopus owners; preserve the original 57.315M surface canary as mechanical baseline evidence; implement the exact substrate and freeze conventional surface-English plus KERC alternatives before either trains; keep every assisted or deterministic renderer result separate",
+      "implementation_state": "exact_substrate_and_canonical_training_path_wired_real_records_campaign_and_canaries_pending",
+      "implemented_contracts": [
+        "versioned immutable-source Kernel Packet, protect-before-correct objects, ambiguity-preserving correction lattice, typed Kernel program, V_S/V_K/V_P serialization, exact macro replay, and structured answer round-trip verification",
+        "VCM-owned four-level hierarchical residual state with authority, privacy, append-only deltas, replay, migration, reset, eviction, checkpoint, close, and stale/cross-user/document-injection rejection",
+        "governed KERC training-record validation and four matched English objective views: surface direct control, surface-to-Kernel compiler, Kernel-to-answer core, and answer-to-surface learned renderer",
+        "derived views share one raw-source identity and receive zero unique-data credit; a separately hashed independent-verification ledger is required and row-local accepted flags cannot authorize training; public payloads, external inference, fallback/template/deterministic-renderer credit, invalid licenses, cross-split groups, malformed learned outputs, and truncation fail closed",
+        "the existing MoECOT trainer owns KERC as a separately accounted English phase for the English arm, shared trunk, and both dense controls, with a fresh checkpoint root, plan-bound resume denial, explicit sequence/batch budgets, optimizer-position receipts, and no new trainer lane"
+      ],
+      "remaining_pre_training_evidence": [
+        "materialize 1024 private-train, 128 private-dev, and 128 private-eval governed KERC records with source-group/content-disjoint splits and accepted semantic labels",
+        "freeze the joint conventional surface-English versus KERC campaign and all representation, cost, weak-tail, and falsification controls",
+        "run finite-update, reload, optimizer-resume, migration, cleanup, memory, resource, learned compiler/core/renderer, independent replay, integrity, and no-cheat canaries against the final architecture package"
+      ],
+      "dependency": "hold the not-yet-started revised long optimizer run; the exact substrate and canonical MoECOT KERC objective/checkpoint path are wired, but the governed KERC record stage, joint campaign freeze, and final architecture canaries remain required. Preserve v8 checkpoints as immutable evidence under their old plan identity and use the fresh v9 architecture-freeze checkpoint lineage; keep every assisted or deterministic renderer result separate",
       "pre_training_acceptance_boundary": "Before long training, implement and register the versioned Kernel Packet, protected-object path, ambiguity-preserving compiler, three code spaces, VCM-backed four-level residual lifecycle, structured answer packet, learned renderer/copy interface, round-trip verifier, checkpoint and deterministic migration schema, training transforms/objectives, complete cost instrumentation, lifecycle/security tests, and a content-bound joint MLX campaign with conventional surface-English, KERC-English, unchanged code arms, and matched dense controls. Finite-update, reload, optimizer-resume, migration, cleanup, memory, resource, replay, integrity, and no-cheat canaries must be GREEN. Empirical learned utility and the KERC verdict remain post-training and cannot circularly block readiness.",
       "acceptance_gate": "Implement a versioned immutable-source Kernel Packet; protect-before-correct extraction; calibrated ambiguity-preserving Surface-to-Kernel compilation; stable concept identities separate from compact codes; surface, Kernel, and pointer vocabularies; typed handles, capsules, expandable grammar-safe macros, and byte fallback; a VCM-backed interaction/segment/token/exact residual lifecycle with authority, privacy, synchronization, migration, revocation, and deletion; structured answer packets; copy-aware learned rendering; and round-trip exact plus semantic verification. Run a frozen source-disjoint multi-seed comparison against strong surface-token, byte, dynamic-chunking, compression, compact-reasoning, semantic-graph, and KERC ablation controls under equal raw bytes, total train FLOPs, and end-to-end inference cost. Charge all parameters, bits, state, objects, registries, KV/cache, retries, verification, migration, security, and human work; report learned utility, fidelity, amortization, robustness, and complete lifecycle cost; retain only a preregistered Pareto gain without weak-tail regression.",
       "support_state_target": "empirical-test-backed",
