@@ -2657,6 +2657,64 @@ def semantic_plan_positive_weights(
     }
 
 
+def balanced_binary_class_weights(
+    labels: np.ndarray,
+    *,
+    maximum: float = 16.0,
+    require_both_classes: bool = True,
+) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
+    """Build feature-local inverse-frequency weights for a binary objective.
+
+    KERC verifier corruptions are sparse by construction: a negative example
+    invalidates one verifier dimension while the other dimensions remain true.
+    A raw mean BCE therefore rewards an all-positive classifier.  These weights
+    make each observed class contribute equal mass within each dimension.
+    """
+
+    matrix = np.asarray(labels, dtype=np.float32)
+    if matrix.ndim != 2 or not len(matrix) or matrix.shape[1] <= 0:
+        raise ValueError("balanced binary labels must be a non-empty rank-two matrix")
+    if not np.all((matrix == 0.0) | (matrix == 1.0)):
+        raise ValueError("balanced binary labels must contain only zero or one")
+    if maximum < 1.0 or not math.isfinite(maximum):
+        raise ValueError("maximum binary class weight must be finite and at least one")
+    positives = matrix.sum(axis=0)
+    negatives = float(len(matrix)) - positives
+    missing = (positives == 0.0) | (negatives == 0.0)
+    if require_both_classes and bool(np.any(missing)):
+        indices = np.flatnonzero(missing).tolist()
+        raise ValueError(
+            f"balanced binary objective requires both classes in features {indices}"
+        )
+    positive_weights = np.ones_like(positives, dtype=np.float32)
+    negative_weights = np.ones_like(negatives, dtype=np.float32)
+    observed = ~missing
+    positive_weights[observed] = np.clip(
+        float(len(matrix)) / (2.0 * positives[observed]),
+        1.0 / float(maximum),
+        float(maximum),
+    )
+    negative_weights[observed] = np.clip(
+        float(len(matrix)) / (2.0 * negatives[observed]),
+        1.0 / float(maximum),
+        float(maximum),
+    )
+    inventory = np.stack((positive_weights, negative_weights), axis=0)
+    return positive_weights, negative_weights, {
+        "state": "MEASURED",
+        "row_count": int(len(matrix)),
+        "feature_count": int(matrix.shape[1]),
+        "positive_counts": [int(value) for value in positives],
+        "negative_counts": [int(value) for value in negatives],
+        "missing_class_features": np.flatnonzero(missing).tolist(),
+        "require_both_classes": bool(require_both_classes),
+        "maximum_class_weight": float(maximum),
+        "minimum_weight": round(float(inventory.min()), 8),
+        "maximum_weight": round(float(inventory.max()), 8),
+        "weight_sha256": hashlib.sha256(inventory.tobytes()).hexdigest(),
+    }
+
+
 def causal_loss(
     model: Any,
     inputs: Any,
@@ -2674,6 +2732,8 @@ def causal_loss(
     kerc_residual_weight: float = 0.0,
     kerc_verifier_labels: Any | None = None,
     kerc_verifier_weight: float = 0.0,
+    kerc_verifier_positive_weights: Any | None = None,
+    kerc_verifier_negative_weights: Any | None = None,
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
@@ -2731,11 +2791,24 @@ def causal_loss(
         if verifier_logits is None:
             raise ValueError("KERC verifier labels require full-sequence verifier logits")
         verifier_targets = kerc_verifier_labels.astype(mx.float32)
-        verifier_loss = mx.mean(
+        verifier_element_loss = (
             mx.maximum(verifier_logits, 0.0)
             - verifier_logits * verifier_targets
             + mx.log1p(mx.exp(-mx.abs(verifier_logits)))
         )
+        if (kerc_verifier_positive_weights is None) != (
+            kerc_verifier_negative_weights is None
+        ):
+            raise ValueError(
+                "KERC verifier positive and negative weights must be supplied together"
+            )
+        if kerc_verifier_positive_weights is not None:
+            class_weights = (
+                verifier_targets * kerc_verifier_positive_weights
+                + (1.0 - verifier_targets) * kerc_verifier_negative_weights
+            )
+            verifier_element_loss = verifier_element_loss * class_weights
+        verifier_loss = mx.mean(verifier_element_loss)
         body_loss = body_loss + float(kerc_verifier_weight) * verifier_loss
     if plan_logits is None:
         return body_loss
@@ -2912,6 +2985,8 @@ def train_phase(
     kerc_residual_weight: float = 0.0,
     kerc_verifier_labels: np.ndarray | None = None,
     kerc_verifier_weight: float = 0.0,
+    kerc_verifier_balance_maximum: float = 16.0,
+    kerc_verifier_require_both_classes: bool = True,
     phase_name: str,
     target_positions: int,
     batch_size: int,
@@ -2942,6 +3017,23 @@ def train_phase(
         raise ValueError("KERC residual labels and positive weight must be supplied together")
     if (kerc_verifier_labels is None) != (float(kerc_verifier_weight) == 0.0):
         raise ValueError("KERC verifier labels and positive weight must be supplied together")
+    if kerc_verifier_labels is None:
+        verifier_positive_weights = None
+        verifier_negative_weights = None
+        verifier_class_weight_receipt = {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": "",
+        }
+    else:
+        (
+            verifier_positive_weights,
+            verifier_negative_weights,
+            verifier_class_weight_receipt,
+        ) = balanced_binary_class_weights(
+            kerc_verifier_labels,
+            maximum=float(kerc_verifier_balance_maximum),
+            require_both_classes=bool(kerc_verifier_require_both_classes),
+        )
     prepared_plan_labels, plan_label_receipt = prepare_semantic_plan_labels(
         plan_labels,
         mode=plan_label_mode,
@@ -2992,6 +3084,18 @@ def train_phase(
     )
     if matrix_positive_weights is not None:
         mx.eval(matrix_positive_weights)
+    matrix_verifier_positive_weights = (
+        mx.array(verifier_positive_weights, dtype=mx.float32)
+        if verifier_positive_weights is not None
+        else None
+    )
+    matrix_verifier_negative_weights = (
+        mx.array(verifier_negative_weights, dtype=mx.float32)
+        if verifier_negative_weights is not None
+        else None
+    )
+    if matrix_verifier_positive_weights is not None:
+        mx.eval(matrix_verifier_positive_weights, matrix_verifier_negative_weights)
     order = list(range(len(inputs)))
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
     consumed = 0
@@ -3072,6 +3176,8 @@ def train_phase(
                 float(kerc_residual_weight),
                 batch_kerc_verifier,
                 float(kerc_verifier_weight),
+                matrix_verifier_positive_weights,
+                matrix_verifier_negative_weights,
             )
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
@@ -3153,6 +3259,7 @@ def train_phase(
         "semantic_plan_factor_group_sizes": list(plan_factor_group_sizes),
         "kerc_residual_auxiliary_weight": float(kerc_residual_weight),
         "kerc_verifier_auxiliary_weight": float(kerc_verifier_weight),
+        "kerc_verifier_class_weights": verifier_class_weight_receipt,
         "kerc_residual_labels_sha256": (
             hashlib.sha256(np.asarray(kerc_residual_labels, dtype=np.int32).tobytes()).hexdigest()
             if kerc_residual_labels is not None

@@ -575,8 +575,10 @@
     },
     "maximum_sequence_tokens": 4096,
     "batch_size": 2,
-    "residual_auxiliary_weight": 0.25,
-    "verifier_auxiliary_weight": 0.5,
+  "residual_auxiliary_weight": 0.25,
+  "verifier_auxiliary_weight": 0.5,
+  "verifier_class_balance_maximum": 16.0,
+  "verifier_require_both_classes": true,
     "code_vocabulary": {
       "policy": "project_theseus_kerc_dual_code_vocabulary_v1",
       "fit_split": "private_train",

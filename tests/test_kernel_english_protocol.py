@@ -20,6 +20,30 @@ import vcm_semantic_memory as memory  # noqa: E402
 SOURCE = 'Dr. Alvarez may aproove $2.75 million and said "Proceed."'
 
 
+def test_learned_residual_view_compacts_typed_spans_without_losing_roles() -> None:
+    view = kernel.learned_residual_view(
+        {
+            "mode": "SOURCE_RECONSTRUCTION",
+            "fidelity": "exact",
+            "segment_frame": {
+                "frame_name": "Self_motion",
+                "lexical_unit": "run.v",
+                "target_spans": [[6, 10]],
+                "frame_roles": ["SELF_MOVER"],
+            },
+            "token_tags": [
+                {"tag": "FRAME_TARGET:SELF_MOTION", "source_span": [6, 10]},
+                {"tag": "FRAME_ROLE:SELF_MOVER", "source_span": [0, 5]},
+                {"tag": "ENTITY:PERSON", "source_span": [0, 5]},
+            ],
+            "exact_object_handles": ["@E1"],
+        }
+    )
+    assert view["segment"][3] == ["SELF_MOVER"]
+    assert view["tokens"] == [["T", 6, 10], ["R", 0, 0, 5], ["E", "PERSON", 0, 5]]
+    assert view["exact_handles"] == ["@E1"]
+
+
 def scope(conversation: str = "test-conversation") -> dict:
     return {
         "user": "user-a",

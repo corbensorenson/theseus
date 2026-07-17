@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import itertools
 import json
 import os
 import resource
@@ -22,7 +23,17 @@ from typing import Any
 
 import numpy as np
 
-from kernel_english_protocol import TRAINING_OBJECTIVES
+from kerc_checkpoint_schema import (
+    canonical_sha256 as checkpoint_contract_sha256,
+    migrate_legacy_checkpoint,
+    rollback_checkpoint_contract,
+    validate_checkpoint_contract,
+)
+from kernel_english_protocol import (
+    KERC_RESIDUAL_CHANNELS,
+    KERC_VERIFIER_DIMENSIONS,
+    TRAINING_OBJECTIVES,
+)
 from moecot_language_arm_training import (
     build_plan,
     build_source_to_target_lookup,
@@ -32,7 +43,10 @@ from moecot_language_arm_training import (
     validate_resume,
 )
 from standard_causal_transformer_model import CausalTransformerConfig, build_model
-from standard_causal_transformer_survival import causal_loss
+from standard_causal_transformer_survival import (
+    balanced_binary_class_weights,
+    causal_loss,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -92,8 +106,9 @@ def select_balanced_subset(
         raise ValueError("KERC task-token inventory does not match objective inventory")
     positive = np.asarray(stage.mask).sum(axis=1) > 0
     identities = [source_identity(row, separator_id) for row in np.asarray(stage.inputs)]
-    selected: list[int] = []
-    selected_by_objective: dict[str, list[int]] = {}
+    if positives_per_objective != 1:
+        raise ValueError("balanced KERC adequacy selection currently requires one positive per objective")
+    candidate_matrix: dict[str, dict[int, tuple[int, int]]] = {}
     for objective, token_id in zip(TRAINING_OBJECTIVES, task_token_ids):
         candidates = [
             index
@@ -110,25 +125,70 @@ def select_balanced_subset(
                 canonical_sha256(stage.inputs[index].tolist()),
             )
         )
-        chosen = candidates[:positives_per_objective]
-        if len(chosen) != positives_per_objective:
-            raise ValueError(f"insufficient positive KERC rows for {objective}")
-        objective_indices: list[int] = []
-        for index in chosen:
-            paired = [
-                candidate
-                for candidate, identity in enumerate(identities)
-                if not positive[candidate]
-                and identity == identities[index]
-                and bool(np.any(stage.inputs[candidate] == int(token_id)))
-            ]
-            if len(paired) != 1:
+        by_dimension: dict[int, list[tuple[int, int]]] = {}
+        for index in candidates:
+            negative = index + 1
+            if (
+                negative >= len(identities)
+                or positive[negative]
+                or identities[negative] != identities[index]
+                or not bool(np.any(stage.inputs[negative] == int(token_id)))
+            ):
                 raise ValueError(
                     f"KERC row does not have one exact-source verifier pair: {objective}"
                 )
-            objective_indices.extend([index, paired[0]])
-        selected.extend(objective_indices)
-        selected_by_objective[objective] = objective_indices
+            dimensions = np.flatnonzero(
+                np.asarray(stage.kerc_verifier_labels[negative]) < 0.5
+            )
+            if len(dimensions) != 1:
+                raise ValueError(
+                    f"KERC verifier pair must corrupt exactly one dimension: {objective}"
+                )
+            by_dimension.setdefault(int(dimensions[0]), []).append((index, negative))
+        candidate_matrix[objective] = {
+            dimension: min(
+                rows,
+                key=lambda pair: (
+                    active_width(
+                        stage.inputs[pair[0] : pair[0] + 1],
+                        stage.labels[pair[0] : pair[0] + 1],
+                        stage.loss_mask[pair[0] : pair[0] + 1],
+                    ),
+                    canonical_sha256(stage.inputs[pair[0]].tolist()),
+                ),
+            )
+            for dimension, rows in by_dimension.items()
+        }
+    assignments = []
+    for dimensions in itertools.permutations(range(len(KERC_VERIFIER_DIMENSIONS))):
+        pairs = []
+        for objective, dimension in zip(TRAINING_OBJECTIVES, dimensions):
+            pair = candidate_matrix[objective].get(dimension)
+            if pair is None:
+                break
+            pairs.append(pair)
+        if len(pairs) == len(TRAINING_OBJECTIVES):
+            assignments.append((dimensions, pairs))
+    if not assignments:
+        raise ValueError("KERC adequacy subset cannot cover every verifier dimension")
+    dimensions, pairs = min(
+        assignments,
+        key=lambda assignment: (
+            sum(
+                active_width(
+                    stage.inputs[pair[0] : pair[0] + 1],
+                    stage.labels[pair[0] : pair[0] + 1],
+                    stage.loss_mask[pair[0] : pair[0] + 1],
+                )
+                for pair in assignment[1]
+            ),
+            canonical_sha256(assignment),
+        ),
+    )
+    selected_by_objective = {
+        objective: list(pair) for objective, pair in zip(TRAINING_OBJECTIVES, pairs)
+    }
+    selected = [index for pair in pairs for index in pair]
     if len(selected) != len(set(selected)):
         raise ValueError("KERC adequacy subset contains duplicate rows")
     width = active_width(
@@ -146,6 +206,10 @@ def select_balanced_subset(
     return subset, {
         "row_indices": selected,
         "rows_by_objective": selected_by_objective,
+        "verifier_dimension_by_objective": {
+            objective: KERC_VERIFIER_DIMENSIONS[dimension]
+            for objective, dimension in zip(TRAINING_OBJECTIVES, dimensions)
+        },
         "row_count": len(selected),
         "positive_row_count": int(np.asarray(subset.mask).sum(axis=1).astype(bool).sum()),
         "verifier_only_row_count": int((np.asarray(subset.mask).sum(axis=1) == 0).sum()),
@@ -168,9 +232,11 @@ def build_faithful_model(
     copy_lookup: np.ndarray,
     mx: Any,
     nn: Any,
+    ablations: dict[str, str] | None = None,
 ) -> Any:
+    model_config = {**target["model"], **(ablations or {})}
     return build_model(
-        CausalTransformerConfig(vocab_size=int(target["vocab_size"]), **target["model"]),
+        CausalTransformerConfig(vocab_size=int(target["vocab_size"]), **model_config),
         mx=mx,
         nn=nn,
         state_role_lookup=None,
@@ -203,6 +269,15 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
     verifier_total = 0
     expected_token_logits: list[list[float]] = []
     verifier_logits_rows: list[list[float]] = []
+    residual_prediction_rows: list[list[int]] = []
+    residual_target_rows: list[list[int]] = []
+    verifier_prediction_rows: list[list[int]] = []
+    verifier_target_rows: list[list[int]] = []
+    mechanism_activity = {
+        "stage_weights_maximum_absolute": 0.0,
+        "residual_logits_maximum_absolute": 0.0,
+        "verifier_logits_maximum_absolute": 0.0,
+    }
     model.eval()
     for index in range(len(stage.inputs)):
         inputs, labels, loss_mask, residual, verifier = row_arrays(stage, index)
@@ -244,22 +319,105 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
         else:
             expected_token_logits.append([])
         residual_logits = np.asarray(aux["kerc"]["residual_logits"])
-        residual_correct += int((residual_logits.argmax(axis=-1) == residual).sum())
+        mechanism_activity["stage_weights_maximum_absolute"] = max(
+            mechanism_activity["stage_weights_maximum_absolute"],
+            float(np.max(np.abs(np.asarray(aux["kerc"]["stage_weights"])))),
+        )
+        mechanism_activity["residual_logits_maximum_absolute"] = max(
+            mechanism_activity["residual_logits_maximum_absolute"],
+            float(np.max(np.abs(residual_logits))),
+        )
+        residual_predictions = residual_logits.argmax(axis=-1)
+        residual_prediction_rows.extend(residual_predictions.astype(int).tolist())
+        residual_target_rows.extend(np.asarray(residual).astype(int).tolist())
+        residual_correct += int((residual_predictions == residual).sum())
         residual_total += int(np.asarray(residual).size)
         verifier_logits = np.asarray(aux["kerc"]["verifier_logits"])
+        mechanism_activity["verifier_logits_maximum_absolute"] = max(
+            mechanism_activity["verifier_logits_maximum_absolute"],
+            float(np.max(np.abs(verifier_logits))),
+        )
         verifier_logits_rows.append(verifier_logits[0].astype(float).tolist())
-        verifier_correct += int(((verifier_logits >= 0.0) == (verifier >= 0.5)).sum())
+        verifier_predictions = verifier_logits >= 0.0
+        verifier_prediction_rows.extend(verifier_predictions.astype(int).tolist())
+        verifier_target_rows.extend((np.asarray(verifier) >= 0.5).astype(int).tolist())
+        verifier_correct += int((verifier_predictions == (verifier >= 0.5)).sum())
         verifier_total += int(np.asarray(verifier).size)
+    residual_predictions_array = np.asarray(residual_prediction_rows, dtype=np.int32)
+    residual_targets_array = np.asarray(residual_target_rows, dtype=np.int32)
+    residual_channels: dict[str, Any] = {}
+    for index, channel in enumerate(KERC_RESIDUAL_CHANNELS):
+        target_values = residual_targets_array[:, index]
+        predicted_values = residual_predictions_array[:, index]
+        classes = sorted(int(value) for value in np.unique(target_values))
+        recalls = [
+            float(np.mean(predicted_values[target_values == value] == value))
+            for value in classes
+        ]
+        residual_channels[channel] = {
+            "observed_classes": classes,
+            "informative": len(classes) > 1,
+            "accuracy": float(np.mean(predicted_values == target_values)),
+            "balanced_accuracy": float(np.mean(recalls)),
+            "majority_baseline_accuracy": max(
+                float(np.mean(target_values == value)) for value in classes
+            ),
+        }
+    informative_residual = [
+        row["balanced_accuracy"]
+        for row in residual_channels.values()
+        if row["informative"]
+    ]
+    verifier_predictions_array = np.asarray(verifier_prediction_rows, dtype=np.int32)
+    verifier_targets_array = np.asarray(verifier_target_rows, dtype=np.int32)
+    verifier_dimensions: dict[str, Any] = {}
+    for index, dimension in enumerate(KERC_VERIFIER_DIMENSIONS):
+        target_values = verifier_targets_array[:, index]
+        predicted_values = verifier_predictions_array[:, index]
+        positive = target_values == 1
+        negative = target_values == 0
+        positive_recall = float(np.mean(predicted_values[positive] == 1)) if bool(positive.any()) else None
+        negative_recall = float(np.mean(predicted_values[negative] == 0)) if bool(negative.any()) else None
+        verifier_dimensions[dimension] = {
+            "positive_count": int(positive.sum()),
+            "negative_count": int(negative.sum()),
+            "positive_recall": positive_recall,
+            "negative_recall": negative_recall,
+            "balanced_accuracy": (
+                (positive_recall + negative_recall) / 2.0
+                if positive_recall is not None and negative_recall is not None
+                else None
+            ),
+        }
+    informative_verifier = [
+        row["balanced_accuracy"]
+        for row in verifier_dimensions.values()
+        if row["balanced_accuracy"] is not None
+    ]
     return {
         "mean_total_loss": float(np.mean(total_losses)),
         "token_accuracy": token_correct / max(1, token_total),
         "token_position_count": token_total,
         "residual_accuracy": residual_correct / max(1, residual_total),
+        "residual_informative_channel_count": len(informative_residual),
+        "residual_informative_macro_balanced_accuracy": (
+            float(np.mean(informative_residual)) if informative_residual else None
+        ),
+        "residual_channels": residual_channels,
         "residual_label_count": residual_total,
         "verifier_bit_accuracy": verifier_correct / max(1, verifier_total),
+        "verifier_macro_balanced_accuracy": (
+            float(np.mean(informative_verifier)) if informative_verifier else None
+        ),
+        "verifier_minimum_negative_recall": min(
+            (row["negative_recall"] for row in verifier_dimensions.values() if row["negative_recall"] is not None),
+            default=None,
+        ),
+        "verifier_dimensions": verifier_dimensions,
         "verifier_label_count": verifier_total,
         "expected_token_logits": expected_token_logits,
         "verifier_logits": verifier_logits_rows,
+        "mechanism_activity": mechanism_activity,
     }
 
 
@@ -271,6 +429,8 @@ def one_update(
     index: int,
     *,
     gradient_clip: float,
+    verifier_positive_weights: Any,
+    verifier_negative_weights: Any,
     mx: Any,
     nn: Any,
     optim: Any,
@@ -296,6 +456,8 @@ def one_update(
         0.25,
         mx.array(verifier, dtype=mx.float32),
         0.5,
+        verifier_positive_weights,
+        verifier_negative_weights,
     )
     grads, norm = optim.clip_grad_norm(grads, gradient_clip)
     optimizer.update(model, grads)
@@ -311,11 +473,28 @@ def train_steps(
     start_step: int,
     steps: int,
     gradient_clip: float,
+    verifier_balance_maximum: float,
     mx: Any,
     nn: Any,
     optim: Any,
 ) -> dict[str, Any]:
     loss_and_grad = nn.value_and_grad(model, causal_loss)
+    (
+        verifier_positive_weights,
+        verifier_negative_weights,
+        verifier_class_weight_receipt,
+    ) = balanced_binary_class_weights(
+        stage.kerc_verifier_labels,
+        maximum=float(verifier_balance_maximum),
+        require_both_classes=True,
+    )
+    matrix_verifier_positive_weights = mx.array(
+        verifier_positive_weights, dtype=mx.float32
+    )
+    matrix_verifier_negative_weights = mx.array(
+        verifier_negative_weights, dtype=mx.float32
+    )
+    mx.eval(matrix_verifier_positive_weights, matrix_verifier_negative_weights)
     losses: list[float] = []
     target_positions = 0
     started = time.perf_counter()
@@ -329,6 +508,8 @@ def train_steps(
             stage,
             index,
             gradient_clip=gradient_clip,
+            verifier_positive_weights=matrix_verifier_positive_weights,
+            verifier_negative_weights=matrix_verifier_negative_weights,
             mx=mx,
             nn=nn,
             optim=optim,
@@ -344,6 +525,7 @@ def train_steps(
         "mean_loss": float(np.mean(losses)) if losses else None,
         "wall_seconds": elapsed,
         "target_tokens_per_second": target_positions / max(elapsed, 1e-9),
+        "verifier_class_weights": verifier_class_weight_receipt,
     }
 
 
@@ -382,6 +564,73 @@ def compact_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
         "diagnostic_vectors_sha256": canonical_sha256(private),
         "diagnostic_vectors_embedded": False,
     }
+
+
+def train_mechanism_ablations(
+    target: dict[str, Any],
+    copy_lookup: np.ndarray,
+    stage: Any,
+    config: dict[str, Any],
+    *,
+    mx: Any,
+    nn: Any,
+    optim: Any,
+) -> dict[str, Any]:
+    """Train matched same-seed controls with one named KERC mechanism removed."""
+
+    variants = {
+        "without_stage_routing": {"kerc_stage_routing_ablation": "zero"},
+        "without_hierarchical_residual": {"kerc_residual_ablation": "zero"},
+        "without_independent_verifier": {"kerc_verifier_ablation": "zero"},
+    }
+    optimization = config["optimization"]
+    steps = int(optimization["steps_before_resume"]) + int(
+        optimization["steps_after_resume"]
+    )
+    receipts: dict[str, Any] = {}
+    for name, ablation in variants.items():
+        mx.random.seed(int(config["seed"]))
+        model = build_faithful_model(
+            target,
+            copy_lookup=copy_lookup,
+            mx=mx,
+            nn=nn,
+            ablations=ablation,
+        )
+        mx.eval(model.parameters())
+        optimizer = optim.AdamW(
+            learning_rate=float(optimization["learning_rate"]),
+            weight_decay=float(optimization["weight_decay"]),
+        )
+        before = evaluate_model(model, stage, mx=mx, nn=nn)
+        training = train_steps(
+            model,
+            optimizer,
+            stage,
+            start_step=0,
+            steps=steps,
+            gradient_clip=float(optimization["gradient_clip_norm"]),
+            verifier_balance_maximum=float(
+                optimization["verifier_class_balance_maximum"]
+            ),
+            mx=mx,
+            nn=nn,
+            optim=optim,
+        )
+        after = evaluate_model(model, stage, mx=mx, nn=nn)
+        receipts[name] = {
+            "ablation": ablation,
+            "seed": int(config["seed"]),
+            "same_subset": True,
+            "same_optimizer_steps": True,
+            "same_optimizer_hyperparameters": True,
+            "training": training,
+            "before": compact_metrics(before),
+            "after": compact_metrics(after),
+            "capability_claim": "NONE_MECHANICS_ONLY",
+            "negative_verdict_authority": "NONE",
+        }
+    return receipts
 
 
 def expected_logit_delta_by_objective(
@@ -478,6 +727,11 @@ def classify_gates(
     resume_delta: float,
     interventions: dict[str, Any],
     migration_rejection: bool,
+    schema_migration_valid: bool,
+    schema_unknown_rejection: bool,
+    migration_logit_delta: float,
+    rollback_logit_delta: float,
+    trained_ablations: dict[str, Any],
     partial_file_count: int,
 ) -> tuple[str, list[dict[str, Any]]]:
     accept = config["acceptance"]
@@ -486,11 +740,32 @@ def classify_gates(
     checks.append(("tiny_subset_loss_reduction", loss_ratio <= accept["maximum_final_to_initial_loss_ratio"], loss_ratio, "adequacy"))
     token_gain = after["token_accuracy"] - before["token_accuracy"]
     checks.append(("tiny_subset_token_accuracy_gain", token_gain >= accept["minimum_token_accuracy_gain"], token_gain, "adequacy"))
-    checks.append(("residual_allocator_learned", after["residual_accuracy"] >= accept["minimum_residual_accuracy"], after["residual_accuracy"], "adequacy"))
-    checks.append(("verifier_learned", after["verifier_bit_accuracy"] >= accept["minimum_verifier_bit_accuracy"], after["verifier_bit_accuracy"], "adequacy"))
+    residual_observed = {
+        "informative_channel_count": after["residual_informative_channel_count"],
+        "macro_balanced_accuracy": after["residual_informative_macro_balanced_accuracy"],
+    }
+    checks.append(("residual_allocator_learned", after["residual_informative_channel_count"] >= accept["minimum_residual_informative_channel_count"] and after["residual_informative_macro_balanced_accuracy"] is not None and after["residual_informative_macro_balanced_accuracy"] >= accept["minimum_residual_macro_balanced_accuracy"], residual_observed, "adequacy"))
+    verifier_observed = {
+        "macro_balanced_accuracy": after["verifier_macro_balanced_accuracy"],
+        "minimum_negative_recall": after["verifier_minimum_negative_recall"],
+    }
+    checks.append(("verifier_learned", after["verifier_macro_balanced_accuracy"] is not None and after["verifier_macro_balanced_accuracy"] >= accept["minimum_verifier_macro_balanced_accuracy"] and after["verifier_minimum_negative_recall"] is not None and after["verifier_minimum_negative_recall"] >= accept["minimum_verifier_negative_recall"], verifier_observed, "adequacy"))
     checks.append(("checkpoint_reload_equivalent", reload_delta <= accept["maximum_checkpoint_reload_logit_delta"], reload_delta, "hard"))
     checks.append(("optimizer_resume_equivalent", resume_delta <= accept["maximum_resume_equivalence_logit_delta"], resume_delta, "hard"))
     checks.append(("resume_mismatch_rejected", migration_rejection, migration_rejection, "hard"))
+    checks.append(("checkpoint_schema_migration_valid", schema_migration_valid, schema_migration_valid, "hard"))
+    checks.append(("unknown_checkpoint_schema_rejected", schema_unknown_rejection, schema_unknown_rejection, "hard"))
+    checks.append(("migration_behavior_equivalent", migration_logit_delta <= accept["maximum_checkpoint_migration_logit_delta"], migration_logit_delta, "hard"))
+    checks.append(("rollback_behavior_equivalent", rollback_logit_delta <= accept["maximum_checkpoint_rollback_logit_delta"], rollback_logit_delta, "hard"))
+    required_ablations = set(config["required_trained_ablations"])
+    checks.append(("trained_mechanism_ablation_inventory", set(trained_ablations) == required_ablations, sorted(trained_ablations), "hard"))
+    activity_limit = float(accept["maximum_disabled_mechanism_activity"])
+    disabled_activity = {
+        "without_stage_routing": trained_ablations.get("without_stage_routing", {}).get("after", {}).get("mechanism_activity", {}).get("stage_weights_maximum_absolute"),
+        "without_hierarchical_residual": trained_ablations.get("without_hierarchical_residual", {}).get("after", {}).get("mechanism_activity", {}).get("residual_logits_maximum_absolute"),
+        "without_independent_verifier": trained_ablations.get("without_independent_verifier", {}).get("after", {}).get("mechanism_activity", {}).get("verifier_logits_maximum_absolute"),
+    }
+    checks.append(("trained_ablations_remove_named_mechanism", all(value is not None and float(value) <= activity_limit for value in disabled_activity.values()), disabled_activity, "hard"))
     checks.append(("temporary_artifacts_cleaned", partial_file_count == 0, partial_file_count, "hard"))
     minimum_delta = float(accept["minimum_active_intervention_logit_delta"])
     route_deltas = interventions["trusted_stage_token_removed"]["delta_by_objective"]
@@ -572,6 +847,11 @@ def run(config_path: Path) -> dict[str, Any]:
     checkpoint = output_root / "kerc_adequacy_weights.npz"
     optimizer_path = output_root / "kerc_adequacy_optimizer.safetensors"
     initial_checkpoint = output_root / "kerc_adequacy_initial_weights.npz"
+    migrated_checkpoint = output_root / "kerc_adequacy_weights.v1.safetensors"
+    migrated_optimizer = output_root / "kerc_adequacy_optimizer.v1.safetensors"
+    migration_manifest_path = output_root / "kerc_adequacy_checkpoint_manifest.v1.json"
+    rollback_checkpoint = output_root / "kerc_adequacy_weights.rollback.npz"
+    rollback_optimizer = output_root / "kerc_adequacy_optimizer.rollback.safetensors"
     for stale in output_root.glob("*.partial*"):
         stale.unlink()
 
@@ -591,6 +871,9 @@ def run(config_path: Path) -> dict[str, Any]:
         start_step=0,
         steps=int(optimization["steps_before_resume"]),
         gradient_clip=float(optimization["gradient_clip_norm"]),
+        verifier_balance_maximum=float(
+            optimization["verifier_class_balance_maximum"]
+        ),
         mx=mx,
         nn=nn,
         optim=optim,
@@ -622,6 +905,9 @@ def run(config_path: Path) -> dict[str, Any]:
         start_step=int(optimization["steps_before_resume"]),
         steps=int(optimization["steps_after_resume"]),
         gradient_clip=float(optimization["gradient_clip_norm"]),
+        verifier_balance_maximum=float(
+            optimization["verifier_class_balance_maximum"]
+        ),
         mx=mx,
         nn=nn,
         optim=optim,
@@ -633,6 +919,9 @@ def run(config_path: Path) -> dict[str, Any]:
         start_step=int(optimization["steps_before_resume"]),
         steps=int(optimization["steps_after_resume"]),
         gradient_clip=float(optimization["gradient_clip_norm"]),
+        verifier_balance_maximum=float(
+            optimization["verifier_class_balance_maximum"]
+        ),
         mx=mx,
         nn=nn,
         optim=optim,
@@ -641,6 +930,82 @@ def run(config_path: Path) -> dict[str, Any]:
     after = evaluate_model(reloaded, subset, mx=mx, nn=nn)
     reloaded.save_weights(str(checkpoint))
     publish_optimizer(mx, mlx_utils, reloaded_optimizer, optimizer_path)
+    checkpoint_binding = {
+        "target_id": target["target_id"],
+        "role": target["role"],
+        "model_config_sha256": canonical_sha256(target["model"]),
+        "plan_sha256": plan["plan_sha256"],
+        "stage_signature": plan["stage"]["stage_signature"],
+        "vocab_size": target["vocab_size"],
+        "kernel_code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"]["contract_sha256"],
+    }
+    migration_manifest = migrate_legacy_checkpoint(
+        legacy_checkpoint=checkpoint,
+        legacy_optimizer=optimizer_path,
+        checkpoint=migrated_checkpoint,
+        optimizer=migrated_optimizer,
+        manifest_path=migration_manifest_path,
+        binding=checkpoint_binding,
+    )
+    validate_checkpoint_contract(
+        migration_manifest,
+        checkpoint=migrated_checkpoint,
+        optimizer=migrated_optimizer,
+        binding=checkpoint_binding,
+    )
+    migrated_model = build_faithful_model(target, copy_lookup=copy_lookup, mx=mx, nn=nn)
+    migrated_model.load_weights(str(migrated_checkpoint), strict=True)
+    migrated_metrics = evaluate_model(migrated_model, subset, mx=mx, nn=nn)
+    migration_logit_delta = nested_logit_delta(
+        after["expected_token_logits"], migrated_metrics["expected_token_logits"]
+    )
+    rollback_receipt = rollback_checkpoint_contract(
+        migration_manifest,
+        checkpoint=migrated_checkpoint,
+        optimizer=migrated_optimizer,
+        rollback_checkpoint=rollback_checkpoint,
+        rollback_optimizer=rollback_optimizer,
+        binding=checkpoint_binding,
+    )
+    rollback_model = build_faithful_model(target, copy_lookup=copy_lookup, mx=mx, nn=nn)
+    rollback_model.load_weights(str(rollback_checkpoint), strict=True)
+    rollback_metrics = evaluate_model(rollback_model, subset, mx=mx, nn=nn)
+    rollback_logit_delta = nested_logit_delta(
+        after["expected_token_logits"], rollback_metrics["expected_token_logits"]
+    )
+    schema_unknown_rejection = False
+    unknown_manifest = {**migration_manifest, "schema_version": 999}
+    unknown_unsigned = dict(unknown_manifest)
+    unknown_unsigned.pop("contract_sha256", None)
+    unknown_manifest["contract_sha256"] = checkpoint_contract_sha256(unknown_unsigned)
+    try:
+        validate_checkpoint_contract(
+            unknown_manifest,
+            checkpoint=migrated_checkpoint,
+            optimizer=migrated_optimizer,
+            binding=checkpoint_binding,
+        )
+    except ValueError as exc:
+        schema_unknown_rejection = "unsupported_schema_version" in str(exc)
+    schema_migration_valid = (
+        migration_manifest["source"]["checkpoint_inventory"]["inventory_sha256"]
+        == migration_manifest["target"]["checkpoint_inventory"]["inventory_sha256"]
+        and migration_manifest["source"]["optimizer_inventory"]["inventory_sha256"]
+        == migration_manifest["target"]["optimizer_inventory"]["inventory_sha256"]
+        and rollback_receipt["checkpoint_inventory_sha256"]
+        == migration_manifest["source"]["checkpoint_inventory"]["inventory_sha256"]
+        and rollback_receipt["optimizer_inventory_sha256"]
+        == migration_manifest["source"]["optimizer_inventory"]["inventory_sha256"]
+    )
+    trained_ablations = train_mechanism_ablations(
+        target,
+        copy_lookup,
+        subset,
+        config,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+    )
     interventions = intervention_receipts(
         checkpoint,
         target,
@@ -660,6 +1025,9 @@ def run(config_path: Path) -> dict[str, Any]:
         "row_ranges": target["row_ranges"],
         "vocab_size": target["vocab_size"],
         "kernel_code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"]["contract_sha256"],
+        "checkpoint_schema_policy": target["checkpoint_schema_policy"],
+        "checkpoint_schema": target["checkpoint_schema"],
+        "checkpoint_schema_version": target["checkpoint_schema_version"],
         "checkpoint_sha256": sha256_file(checkpoint),
         "optimizer_state_sha256": sha256_file(optimizer_path),
     }
@@ -681,6 +1049,11 @@ def run(config_path: Path) -> dict[str, Any]:
         resume_delta=resume_parameter_delta,
         interventions=interventions,
         migration_rejection=migration_rejection,
+        schema_migration_valid=schema_migration_valid,
+        schema_unknown_rejection=schema_unknown_rejection,
+        migration_logit_delta=migration_logit_delta,
+        rollback_logit_delta=rollback_logit_delta,
+        trained_ablations=trained_ablations,
         partial_file_count=len(partial_files),
     )
     rss_after = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
@@ -710,9 +1083,20 @@ def run(config_path: Path) -> dict[str, Any]:
             "resume_maximum_parameter_delta": resume_parameter_delta,
         },
         "interventions": interventions,
+        "trained_mechanism_ablations": trained_ablations,
         "lifecycle": {
             "valid_resume_accepted": True,
             "mismatched_codebook_resume_rejected": migration_rejection,
+            "schema_migration_valid": schema_migration_valid,
+            "unknown_schema_rejected": schema_unknown_rejection,
+            "migration_maximum_logit_delta": migration_logit_delta,
+            "rollback_maximum_logit_delta": rollback_logit_delta,
+            "migration_manifest": relative(migration_manifest_path),
+            "migration_manifest_sha256": sha256_file(migration_manifest_path),
+            "migration_contract_sha256": migration_manifest["contract_sha256"],
+            "migration_source_schema": migration_manifest["source_schema"],
+            "migration_target_schema": migration_manifest["target_schema"],
+            "rollback_receipt": rollback_receipt,
             "partial_file_count": len(partial_files),
             "checkpoint": relative(checkpoint),
             "checkpoint_sha256": sha256_file(checkpoint),

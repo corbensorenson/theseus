@@ -700,6 +700,53 @@ def learned_protected_object_view(
     return output
 
 
+def learned_residual_view(residual: dict[str, Any]) -> dict[str, Any]:
+    """Compile governed residual state into the compact model-visible ABI.
+
+    Authority, provenance, lifecycle, and full state hashes remain in VCM and the
+    packet evidence plane.  The learned stages receive only the realization
+    choices and alignments they can act on.
+    """
+
+    segment = residual.get("segment_frame") or {}
+    roles = list(segment.get("frame_roles") or [])
+    compiled_tags: list[list[Any]] = []
+    for row in residual.get("token_tags") or []:
+        tag = str(row.get("tag") or "")
+        start, end = (int(value) for value in (row.get("source_span") or [0, 0]))
+        if tag.startswith("FRAME_TARGET:"):
+            compiled_tags.append(["T", start, end])
+        elif tag.startswith("FRAME_ROLE:"):
+            role = tag.split(":", 1)[1]
+            if role not in roles:
+                raise KernelProtocolFault(
+                    "KERC_LEARNED_RESIDUAL_ROLE_UNKNOWN", role, path="residual.token_tags"
+                )
+            compiled_tags.append(["R", roles.index(role), start, end])
+        elif tag.startswith("ENTITY:"):
+            compiled_tags.append(["E", tag.split(":", 1)[1], start, end])
+        else:
+            raise KernelProtocolFault(
+                "KERC_LEARNED_RESIDUAL_TAG_UNKNOWN", tag, path="residual.token_tags"
+            )
+    return {
+        "mode": str(residual.get("mode") or ""),
+        "fidelity": str(residual.get("fidelity") or ""),
+        "segment": (
+            [
+                str(segment.get("frame_name") or ""),
+                str(segment.get("lexical_unit") or ""),
+                list(segment.get("target_spans") or []),
+                roles,
+            ]
+            if segment
+            else []
+        ),
+        "tokens": compiled_tags,
+        "exact_handles": list(residual.get("exact_object_handles") or []),
+    }
+
+
 def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     """Compile matched learned objectives without multiplying unique-data credit."""
 
@@ -725,13 +772,12 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     core_input = {
         **protected_context,
         "program": packet["program"],
-        "residual": packet["residual"],
+        "residual": learned_residual_view(packet["residual"]),
     }
     renderer_input = {
         "answer_packet": record["answer_packet"],
         "protected_objects": learned_objects,
-        "residual_mode": packet["residual"]["mode"],
-        "fidelity": packet["residual"]["fidelity"],
+        "residual": learned_residual_view(packet["residual"]),
     }
     source = record["source_text"]
     rows = (
@@ -941,7 +987,7 @@ def execute_learned_pipeline(
             "concept_capsules": packet["concept_capsules"],
             "source_character_length": packet["source"]["character_length"],
             "program": packet["program"],
-            "residual": packet["residual"],
+            "residual": learned_residual_view(packet["residual"]),
         }
         answer_text = run_stage(
             "kernel_program_to_answer_packet_v1", canonical_json(core_input)
@@ -960,8 +1006,7 @@ def execute_learned_pipeline(
         "protected_objects": learned_protected_object_view(
             packet["protected_objects"]
         ),
-        "residual_mode": packet["residual"]["mode"],
-        "fidelity": packet["residual"]["fidelity"],
+        "residual": learned_residual_view(packet["residual"]),
     }
     surface = run_stage(
         "answer_packet_to_surface_v1", canonical_json(renderer_input)
@@ -1836,6 +1881,27 @@ def expand_macros(tokens: Sequence[dict[str, str]], registry: Sequence[dict[str,
     return output
 
 
+def _validate_residual_spans(
+    spans: Any, *, source_character_length: int, path: str
+) -> list[list[int]]:
+    if not isinstance(spans, list):
+        raise KernelProtocolFault("KERC_RESIDUAL_SPANS_INVALID", canonical_json(spans), path=path)
+    normalized: list[list[int]] = []
+    for index, span in enumerate(spans):
+        if not isinstance(span, list) or len(span) != 2:
+            raise KernelProtocolFault(
+                "KERC_RESIDUAL_SPAN_INVALID", canonical_json(span), path=f"{path}[{index}]"
+            )
+        start, end = int(span[0]), int(span[1])
+        if not 0 <= start < end <= source_character_length:
+            raise KernelProtocolFault(
+                "KERC_RESIDUAL_SPAN_INVALID", f"{start}:{end}", path=f"{path}[{index}]"
+            )
+        normalized.append([start, end])
+    unique = sorted(set(tuple(row) for row in normalized))
+    return [list(row) for row in unique]
+
+
 def build_kernel_packet(
     source: str,
     program: dict[str, Any],
@@ -1845,6 +1911,8 @@ def build_kernel_packet(
     concept_capsules: dict[str, dict[str, Any]] | None = None,
     explicit_spans: Sequence[dict[str, Any]] = (),
     macros: Sequence[dict[str, Any]] = (),
+    segment_frame: dict[str, Any] | None = None,
+    token_tags: Sequence[dict[str, Any]] = (),
     residual_mode: str = "SOURCE_RECONSTRUCTION",
     fidelity: str = "faithful",
     retain_source_inline: bool = False,
@@ -1868,14 +1936,69 @@ def build_kernel_packet(
         source_character_length=len(source),
     )
     serialization = serialize_kernel_program(validated["canonical_program"], macros=macros)
+    normalized_segment = copy.deepcopy(segment_frame or {})
+    if normalized_segment:
+        if set(normalized_segment) != {
+            "frame_name",
+            "lexical_unit",
+            "target_spans",
+            "frame_roles",
+        }:
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_SCHEMA_INVALID",
+                canonical_json(normalized_segment),
+                path="residual.segment_frame",
+            )
+        if not str(normalized_segment["frame_name"]).strip():
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_NAME_MISSING", "", path="residual.segment_frame.frame_name"
+            )
+        normalized_segment["target_spans"] = _validate_residual_spans(
+            normalized_segment["target_spans"],
+            source_character_length=len(source),
+            path="residual.segment_frame.target_spans",
+        )
+        roles = normalized_segment["frame_roles"]
+        if not isinstance(roles, list) or not roles or any(
+            not isinstance(role, str) or not role.strip() for role in roles
+        ):
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_ROLES_INVALID",
+                canonical_json(roles),
+                path="residual.segment_frame.frame_roles",
+            )
+        normalized_segment["frame_roles"] = sorted(set(roles))
+    normalized_tags: list[dict[str, Any]] = []
+    for index, raw_tag in enumerate(token_tags):
+        if not isinstance(raw_tag, dict) or set(raw_tag) != {"tag", "source_span", "authority"}:
+            raise KernelProtocolFault(
+                "KERC_TOKEN_TAG_SCHEMA_INVALID",
+                canonical_json(raw_tag),
+                path=f"residual.token_tags[{index}]",
+            )
+        if not str(raw_tag["tag"]).strip() or raw_tag["authority"] != "licensed_manual_annotation":
+            raise KernelProtocolFault(
+                "KERC_TOKEN_TAG_AUTHORITY_INVALID",
+                canonical_json(raw_tag),
+                path=f"residual.token_tags[{index}]",
+            )
+        span = _validate_residual_spans(
+            [raw_tag["source_span"]],
+            source_character_length=len(source),
+            path=f"residual.token_tags[{index}].source_span",
+        )[0]
+        normalized_tags.append(
+            {"tag": str(raw_tag["tag"]), "source_span": span, "authority": raw_tag["authority"]}
+        )
+    normalized_tags.sort(key=lambda row: (row["source_span"], row["tag"]))
     residual = {
         "mode": residual_mode,
         "fidelity": fidelity,
         "hrl_version": hrl_state["hrl_version"],
         "global_state_hash": hrl_state["state_hash"],
         "interaction_id": hrl_state["interaction_id"],
-        "segment_frame": {},
-        "token_tags": [],
+        "segment_frame": normalized_segment,
+        "token_tags": normalized_tags,
         "exact_object_handles": sorted(protected["protected_objects"]),
         "missing_state_behavior": "reject_or_request_checkpoint_without_approximation",
     }
@@ -1943,8 +2066,60 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
             f"packet={residual.get('global_state_hash')} local={local_hrl_state.get('state_hash')}",
             path="packet.residual.global_state_hash",
         )
+    if residual.get("mode") not in RESIDUAL_MODES or residual.get("fidelity") not in FIDELITY_MODES:
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_CONTRACT_INVALID", canonical_json(residual), path="packet.residual"
+        )
+    if residual.get("hrl_version") != local_hrl_state.get("hrl_version") or residual.get(
+        "interaction_id"
+    ) != local_hrl_state.get("interaction_id"):
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_STATE_IDENTITY_MISMATCH",
+            canonical_json(residual),
+            path="packet.residual",
+        )
     source = packet.get("source") if isinstance(packet.get("source"), dict) else {}
     objects = packet.get("protected_objects") if isinstance(packet.get("protected_objects"), dict) else {}
+    if residual.get("exact_object_handles") != sorted(objects):
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_EXACT_OBJECT_SET_MISMATCH",
+            canonical_json(residual.get("exact_object_handles")),
+            path="packet.residual.exact_object_handles",
+        )
+    segment = residual.get("segment_frame")
+    if not isinstance(segment, dict):
+        raise KernelProtocolFault(
+            "KERC_SEGMENT_FRAME_SCHEMA_INVALID", canonical_json(segment), path="packet.residual.segment_frame"
+        )
+    if segment:
+        if set(segment) != {"frame_name", "lexical_unit", "target_spans", "frame_roles"}:
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_SCHEMA_INVALID", canonical_json(segment), path="packet.residual.segment_frame"
+            )
+        _validate_residual_spans(
+            segment.get("target_spans"),
+            source_character_length=int(source.get("character_length") or 0),
+            path="packet.residual.segment_frame.target_spans",
+        )
+    tags = residual.get("token_tags")
+    if not isinstance(tags, list):
+        raise KernelProtocolFault(
+            "KERC_TOKEN_TAG_SCHEMA_INVALID", canonical_json(tags), path="packet.residual.token_tags"
+        )
+    for index, tag in enumerate(tags):
+        if not isinstance(tag, dict) or set(tag) != {"tag", "source_span", "authority"}:
+            raise KernelProtocolFault(
+                "KERC_TOKEN_TAG_SCHEMA_INVALID", canonical_json(tag), path=f"packet.residual.token_tags[{index}]"
+            )
+        if tag.get("authority") != "licensed_manual_annotation" or not str(tag.get("tag") or "").strip():
+            raise KernelProtocolFault(
+                "KERC_TOKEN_TAG_AUTHORITY_INVALID", canonical_json(tag), path=f"packet.residual.token_tags[{index}]"
+            )
+        _validate_residual_spans(
+            [tag.get("source_span")],
+            source_character_length=int(source.get("character_length") or 0),
+            path=f"packet.residual.token_tags[{index}].source_span",
+        )
     concepts = packet.get("concept_capsules") if isinstance(packet.get("concept_capsules"), dict) else {}
     expected_source_record_sha256 = stable_hash(
         {key: value for key, value in source.items() if key != "record_sha256"}

@@ -26,6 +26,7 @@ from standard_causal_transformer_model import (
 from standard_causal_transformer_survival import (
     EXECUTABLE_STATE_ROLES,
     beam_rank_score,
+    balanced_binary_class_weights,
     batched_beam_advance,
     build_data_model_scaling_contract,
     cache_arrays,
@@ -1067,6 +1068,27 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
     observed, _ = restored(inputs)
     mx.eval(expected, observed)
     assert bool(mx.allclose(expected, observed, atol=1e-6))
+
+
+def test_kerc_verifier_class_weights_balance_sparse_corruptions() -> None:
+    labels = np.ones((8, 4), dtype=np.float32)
+    for index in range(4):
+        labels[index, index] = 0.0
+    positive, negative, receipt = balanced_binary_class_weights(labels)
+
+    assert np.allclose(positive, np.full(4, 4.0 / 7.0, dtype=np.float32))
+    assert np.allclose(negative, np.full(4, 4.0, dtype=np.float32))
+    assert receipt["positive_counts"] == [7, 7, 7, 7]
+    assert receipt["negative_counts"] == [1, 1, 1, 1]
+    for feature in range(4):
+        positive_mass = float(labels[:, feature].sum() * positive[feature])
+        negative_mass = float((1.0 - labels[:, feature]).sum() * negative[feature])
+        assert positive_mass == pytest.approx(negative_mass)
+
+
+def test_kerc_verifier_class_weights_fail_closed_without_both_classes() -> None:
+    with pytest.raises(ValueError, match="requires both classes"):
+        balanced_binary_class_weights(np.ones((8, 4), dtype=np.float32))
 
 
 def test_encoder_decoder_source_memory_excludes_target_values() -> None:

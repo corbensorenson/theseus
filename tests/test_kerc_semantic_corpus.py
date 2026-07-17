@@ -151,10 +151,54 @@ def test_independent_masc_replay_binds_manual_frame_and_roles(tmp_path: Path) ->
     )
     expected = {**rows[0], "split": "private_train"}
     verifier.verify_masc_record(candidate, source, expected)
+    residual = candidate["kernel_packet"]["residual"]
+    assert residual["segment_frame"] == {
+        "frame_name": "Self_motion",
+        "lexical_unit": "run.v",
+        "target_spans": [[6, 10]],
+        "frame_roles": ["SELF_MOVER"],
+    }
+    assert {row["tag"] for row in residual["token_tags"]} == {
+        "ENTITY:PERSON",
+        "FRAME_ROLE:SELF_MOVER",
+        "FRAME_TARGET:SELF_MOTION",
+    }
+    assert candidate["residual_supervision"]["labels_by_channel"] == {
+        "interaction": 0,
+        "segment": 1,
+        "token": 2,
+        "exact": 3,
+    }
     value = candidate["kernel_packet"]["program"]["nodes"][0]["arguments"][0]["value"]
     assert value == {"type": "handle", "value": "@E1"}
     candidate["kernel_packet"]["program"]["nodes"][0]["operator"] = "WRONG"
     with pytest.raises(ValueError, match="kernel program replay mismatch"):
+        verifier.verify_masc_record(candidate, source, expected)
+
+
+def test_independent_masc_replay_rejects_forged_residual_annotation(tmp_path: Path) -> None:
+    fn = write_masc_fixture(tmp_path)
+    row = verifier.independent_masc_document(fn, tmp_path / "data")[0]
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "2" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": [
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        ],
+    }
+    candidate = producer.masc_record(
+        row,
+        split="private_train",
+        source=source,
+        producer_sha256="sha256:" + "1" * 64,
+    )
+    expected = {**row, "split": "private_train"}
+    candidate["kernel_packet"]["residual"]["token_tags"][0]["tag"] = "FORGED"
+    with pytest.raises(ValueError, match="token residual replay mismatch"):
         verifier.verify_masc_record(candidate, source, expected)
 
 

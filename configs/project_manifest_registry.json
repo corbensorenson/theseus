@@ -262,11 +262,11 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "91b9ae22d2c2496a639e59b59268d1e7b668f3426f72a90709b0081ad85456b9"
+          "sha256": "7d38440956c910f63d9bb8c0aa82d0c26fee1df35008031b837b907b90e214b3"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "8635b51874b9d6f36ed4f47fef59aa27ab7dbe3e321e7f45ba5b88e6152b623e"
+          "sha256": "e6d76a292a662238ab5bc84b5421b32637094dfc44f46896c47ee87c756984d8"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
@@ -282,35 +282,47 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "03f8fa1296a6bdd7215dae97ba24cb726072de417a0e988e9242473a2382e52e"
+          "sha256": "3f813e34f61a87e9adc78563a974cfd06d31ea03007b32c714f795051ef97cc6"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "ca5edaf09726750a5f297135585e558b5f52b3e1e469352d9ea7876bd0f7ee7f"
+          "sha256": "2ad76f56aa87b057d0bc6b912c990a2e26bed6c2e1e01e82560de2382fcbab8d"
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "8eea3fadd544695780eb831404924834c5de1a8f4ddfc1b9bbc746fa2273b17a"
+          "sha256": "b5ef2a38415a5f43f302952dcb5126ea248402860f658bed5f6da74cf3d74e37"
         },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "5c9a679003ac76c70641e37c92f9b9b83564703c23e52fcc3fb21bb30955d4ea"
+          "sha256": "0bb9d4246b3db4c6ae142ff142fac0f79e68cd2c8a8a5f48fdc6866af17e588a"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "89c9c338b5e8f246b0c72491fd78246195dbe4af19fb242f86bdc6ae33d21769"
+          "sha256": "36c9e56207a10f19da345b4bed13614a8d635c65d037e15162c93419eb149d9a"
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
-          "sha256": "285c7ca1150436ed894bfc059a83987407d5796cf9a7cc9faf7366c9ee2e0720"
+          "sha256": "2e6ab498b9717609bb70140e73355fe72b608e8855da9e390c969f79daf0bc78"
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "f20b77ac37ab2b689b53895bd192c0c63a11d904d36f9cf880e78d46b3f16761"
+          "sha256": "1f958196226c9b1edd2bf3708ba22caa92273f94dfd7b4f4d615d6c09117b83e"
         },
         "kerc_adequacy_tests": {
           "path": "tests/test_kerc_adequacy_canary.py",
-          "sha256": "fa876b9d386f3998a89b912d8b672b933a2fcc27c1dcb744f06dd1b69e27f27c"
+          "sha256": "4e73bbc9e192c8920bc47f6bc863249b6d6e9de79ee5eb5d08c4070bdcfa824d"
+        },
+        "kerc_checkpoint_schema": {
+          "path": "scripts/kerc_checkpoint_schema.py",
+          "sha256": "56cced2fedd5dd705984ea1689def8b61afc037da0efdb6755635e516c67a5b9"
+        },
+        "kernel_english_protocol_tests": {
+          "path": "tests/test_kernel_english_protocol.py",
+          "sha256": "dc7b8eff237589c5d045764a9ab53b72d4e6919612ba633442b1378c1def26d2"
+        },
+        "canonical_training_loop_tests": {
+          "path": "tests/test_standard_causal_transformer_survival.py",
+          "sha256": "714be775efd5d2cce9cb567c881079f2b576a2ea8c131fdae6c984302fff1fb6"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -338,7 +350,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "0b52d81d61d06798e586799c0c6b473bd56e511af85de3f78783f736fd23f60c"
+          "sha256": "f65d512e8c72da3b4d545956451a53c634c63075a4ced49da50dabfdf82ee7e4"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5318,6 +5330,7 @@
         "scripts/kerc_semantic_corpus.py",
         "scripts/kerc_semantic_corpus_verify.py",
         "scripts/kerc_adequacy_canary.py",
+        "scripts/kerc_checkpoint_schema.py",
         "scripts/kernel_english_protocol.py",
         "scripts/moecot_language_tokenizer.py",
         "scripts/moecot_language_vocabulary.py",
@@ -8123,6 +8136,7 @@
         "scripts/standard_causal_transformer_survival.py",
         "scripts/moecot_language_arm_training.py",
         "scripts/kerc_adequacy_canary.py",
+        "scripts/kerc_checkpoint_schema.py",
         "scripts/standard_causal_transformer_conditioning.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_preference.py",

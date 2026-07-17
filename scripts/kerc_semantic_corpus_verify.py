@@ -433,6 +433,9 @@ def verify_dolly_record(record: dict[str, Any], source: dict[str, Any], expected
         raise ValueError("Dolly packet task binding mismatch")
     if claim.get("predicate") != "RESPOND" or decode_literal(claim["arguments"][0]["value"]) != expected["target"]:
         raise ValueError("Dolly answer binding mismatch")
+    residual = record["kernel_packet"].get("residual") or {}
+    if residual.get("segment_frame") or residual.get("token_tags"):
+        raise ValueError("Dolly record received unsupported semantic residual annotations")
     return {"source_row_sha256": expected["annotation"]["source_row_sha256"]}
 
 
@@ -489,6 +492,48 @@ def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected:
         raise ValueError("MASC kernel program replay mismatch")
     if claim.get("predicate") != predicate or observed_claim_arguments != expected_arguments:
         raise ValueError("MASC answer packet replay mismatch")
+    expected_segment = {
+        "frame_name": annotation["frame_name"],
+        "lexical_unit": annotation["lexical_unit"],
+        "target_spans": annotation["target_spans"],
+        "frame_roles": sorted(
+            {safe_symbol(element["role"], "ROLE") for element in annotation["frame_elements"]}
+        ),
+    }
+    expected_tags = [
+        {
+            "tag": "FRAME_TARGET:" + safe_symbol(annotation["frame_name"], "UNKNOWN"),
+            "source_span": list(span),
+            "authority": "licensed_manual_annotation",
+        }
+        for span in annotation["target_spans"]
+    ]
+    expected_tags.extend(
+        {
+            "tag": "FRAME_ROLE:" + safe_symbol(element["role"], "ROLE"),
+            "source_span": list(span),
+            "authority": "licensed_manual_annotation",
+        }
+        for element in annotation["frame_elements"]
+        for span in element["spans"]
+    )
+    expected_tags.extend(
+        {
+            "tag": "ENTITY:" + str(span["object_type"]),
+            "source_span": [int(span["start"]), int(span["end"])],
+            "authority": "licensed_manual_annotation",
+        }
+        for span in annotation.get("protected_spans") or []
+    )
+    expected_tags.sort(key=lambda row: (row["source_span"], row["tag"]))
+    residual = record["kernel_packet"].get("residual") or {}
+    if residual.get("segment_frame") != expected_segment:
+        raise ValueError("MASC segment residual replay mismatch")
+    if residual.get("token_tags") != expected_tags:
+        raise ValueError("MASC token residual replay mismatch")
+    labels = (record.get("residual_supervision") or {}).get("labels_by_channel") or {}
+    if labels.get("segment") != 1 or labels.get("token") != 2:
+        raise ValueError("MASC residual supervision does not reflect manual annotations")
     return {
         "document_id": annotation["document_id"],
         "annotation_set_node": annotation["annotation_set_node"],

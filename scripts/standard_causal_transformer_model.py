@@ -55,6 +55,9 @@ class CausalTransformerConfig:
     kerc_pointer_token_start: int = 0
     kerc_pointer_token_end: int = 0
     kerc_end_token_id: int = 0
+    kerc_stage_routing_ablation: str = "none"
+    kerc_residual_ablation: str = "none"
+    kerc_verifier_ablation: str = "none"
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -177,6 +180,15 @@ class CausalTransformerConfig:
             raise ValueError("MTP loss scale cannot be negative")
         kerc_tokens = tuple(int(value) for value in self.kerc_task_token_ids)
         kerc_enabled = bool(kerc_tokens)
+        for name, value in (
+            ("stage routing", self.kerc_stage_routing_ablation),
+            ("residual", self.kerc_residual_ablation),
+            ("verifier", self.kerc_verifier_ablation),
+        ):
+            if value not in {"none", "zero"}:
+                raise ValueError(f"KERC {name} ablation must be none or zero")
+            if not kerc_enabled and value != "none":
+                raise ValueError(f"KERC {name} ablation requires KERC")
         if kerc_enabled:
             if self.attention_policy != "encoder_decoder":
                 raise ValueError("KERC requires the encoder-decoder architecture")
@@ -931,7 +943,10 @@ def build_model(
             count = mx.sum(matches, axis=-1, keepdims=True)
             # Multiple control tokens fail closed to the ordinary surface route.
             valid = count == 1.0
-            return mx.where(valid, matches, mx.zeros_like(matches))
+            weights = mx.where(valid, matches, mx.zeros_like(matches))
+            if config.kerc_stage_routing_ablation == "zero":
+                return mx.zeros_like(weights)
+            return weights
 
         def kerc_context(
             self,
@@ -965,6 +980,9 @@ def build_model(
                 axis=2,
             )
             residual_context = mx.mean(residual_levels, axis=1)
+            if config.kerc_residual_ablation == "zero":
+                residual_logits = mx.zeros_like(residual_logits)
+                residual_context = mx.zeros_like(residual_context)
             stage_context = mx.matmul(stage_weights, self.kerc_stage_embedding.weight)
             # Residual state belongs on compiler and renderer paths, not the core-only
             # reasoner or the conventional surface control.
@@ -1035,6 +1053,8 @@ def build_model(
         def kerc_verifier_logits(self, tokens: Any) -> Any | None:
             if not kerc_enabled:
                 return None
+            if config.kerc_verifier_ablation == "zero":
+                return mx.zeros((int(tokens.shape[0]), 4), dtype=mx.float32)
             separator = tokens == config.source_target_separator_token_id
             seen = mx.cumsum(separator.astype(mx.int32), axis=1)
             has_separator = (mx.sum(separator.astype(mx.int32), axis=1) > 0).astype(

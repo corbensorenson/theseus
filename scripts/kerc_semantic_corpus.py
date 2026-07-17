@@ -199,6 +199,8 @@ def base_record(
     source_annotation: dict[str, Any],
     exact_residual: bool,
     explicit_spans: list[dict[str, Any]] | None = None,
+    segment_frame: dict[str, Any] | None = None,
+    token_tags: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     identity = stable_hash(
         {
@@ -223,6 +225,8 @@ def base_record(
             "source_annotation_sha256": stable_hash(source_annotation),
         },
         explicit_spans=explicit_spans or [],
+        segment_frame=segment_frame,
+        token_tags=token_tags or [],
         fidelity="exact" if exact_residual else "faithful",
     )
     return {
@@ -730,6 +734,39 @@ def masc_record(
         "style": {"register": "source_authored"},
     }
     identity = row["selection_key"].split(":", 1)[1]
+    segment_frame = {
+        "frame_name": annotation["frame_name"],
+        "lexical_unit": annotation["lexical_unit"],
+        "target_spans": annotation["target_spans"],
+        "frame_roles": sorted(
+            {safe_symbol(element["role"], prefix="ROLE") for element in annotation["frame_elements"]}
+        ),
+    }
+    token_tags = [
+        {
+            "tag": "FRAME_TARGET:" + safe_symbol(annotation["frame_name"], prefix="UNKNOWN"),
+            "source_span": list(span),
+            "authority": "licensed_manual_annotation",
+        }
+        for span in annotation["target_spans"]
+    ]
+    token_tags.extend(
+        {
+            "tag": "FRAME_ROLE:" + safe_symbol(element["role"], prefix="ROLE"),
+            "source_span": list(span),
+            "authority": "licensed_manual_annotation",
+        }
+        for element in annotation["frame_elements"]
+        for span in element["spans"]
+    )
+    token_tags.extend(
+        {
+            "tag": "ENTITY:" + str(span["object_type"]),
+            "source_span": [int(span["start"]), int(span["end"])],
+            "authority": "licensed_manual_annotation",
+        }
+        for span in annotation.get("protected_spans") or []
+    )
     return base_record(
         split=split,
         source_text=annotation["sentence"],
@@ -748,6 +785,8 @@ def masc_record(
         source_annotation=annotation,
         exact_residual=True,
         explicit_spans=explicit_spans,
+        segment_frame=segment_frame,
+        token_tags=token_tags,
     )
 
 

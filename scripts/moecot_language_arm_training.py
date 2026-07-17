@@ -25,6 +25,7 @@ from typing import Any
 
 import numpy as np
 
+from kerc_checkpoint_schema import CURRENT_SCHEMA, CURRENT_SCHEMA_VERSION, POLICY as KERC_CHECKPOINT_POLICY
 from kernel_english_protocol import (
     KernelProtocolFault,
     TRAINING_TASK_TAGS,
@@ -739,6 +740,13 @@ def target_contracts(
                 else "english_surface_control"
             )
         directory = root / target
+        checkpoint_name = (
+            "expert_delta.safetensors"
+            if target in ARM_IDS
+            else "weights.safetensors"
+            if target == KERC_ENGLISH_ID
+            else "weights.npz"
+        )
         targets[target] = {
             "target_id": target,
             "role": role,
@@ -761,8 +769,14 @@ def target_contracts(
             "estimated_parameter_token_product": parameter_count_value
             * int(view.get("target_positions") or 0),
             "checkpoint": relative(
-                directory
-                / ("expert_delta.safetensors" if target in ARM_IDS else "weights.npz")
+                directory / checkpoint_name
+            ),
+            "checkpoint_schema_policy": (
+                KERC_CHECKPOINT_POLICY if target == KERC_ENGLISH_ID else ""
+            ),
+            "checkpoint_schema": CURRENT_SCHEMA if target == KERC_ENGLISH_ID else "",
+            "checkpoint_schema_version": (
+                CURRENT_SCHEMA_VERSION if target == KERC_ENGLISH_ID else 0
             ),
             "shared_trunk_checkpoint": (
                 relative(root / SHARED_TRUNK_ID / "weights.npz")
@@ -2824,6 +2838,9 @@ def train_target(
                 )
                 or "")
             ),
+            "checkpoint_schema_policy": str(target.get("checkpoint_schema_policy") or ""),
+            "checkpoint_schema": str(target.get("checkpoint_schema") or ""),
+            "checkpoint_schema_version": int(target.get("checkpoint_schema_version") or 0),
             "trainable_parameter_count": trainable_parameters,
             "expert_trainable_scope": expert_scope if expert_mode else "",
             "shared_trunk_checkpoint": (
@@ -2991,6 +3008,16 @@ def train_target(
                 if str(target.get("role") or "") == "kerc_english_candidate"
                 else 0.0
             ),
+            kerc_verifier_balance_maximum=float(
+                (config.get("kernel_english_training") or {}).get(
+                    "verifier_class_balance_maximum", 16.0
+                )
+            ),
+            kerc_verifier_require_both_classes=bool(
+                (config.get("kernel_english_training") or {}).get(
+                    "verifier_require_both_classes", True
+                )
+            ),
             phase_name=f"moecot_kernel_english:{target_id}",
             target_positions=remaining_kernel_positions,
             batch_size=kernel_batch_size,
@@ -3095,6 +3122,9 @@ def train_target(
             )
             or "")
         ),
+        "checkpoint_schema_policy": str(target.get("checkpoint_schema_policy") or ""),
+        "checkpoint_schema": str(target.get("checkpoint_schema") or ""),
+        "checkpoint_schema_version": int(target.get("checkpoint_schema_version") or 0),
         "trainable_parameter_count": trainable_parameters,
         "expert_trainable_scope": (
             expert_scope if expert_mode else ""
@@ -3278,6 +3308,15 @@ def validate_resume(
     )
     if expected_codebook and receipt.get("kernel_code_vocabulary_sha256") != expected_codebook:
         faults.append("kernel_code_vocabulary_identity_mismatch")
+    if target.get("role") == "kerc_english_candidate":
+        if receipt.get("checkpoint_schema_policy") != target.get("checkpoint_schema_policy"):
+            faults.append("kerc_checkpoint_schema_policy_mismatch")
+        if receipt.get("checkpoint_schema") != target.get("checkpoint_schema"):
+            faults.append("kerc_checkpoint_schema_mismatch")
+        if int(receipt.get("checkpoint_schema_version") or -1) != int(
+            target.get("checkpoint_schema_version") or 0
+        ):
+            faults.append("kerc_checkpoint_schema_version_mismatch")
     if target.get("role") == "language_expert":
         shared = resolve(str(target.get("shared_trunk_checkpoint") or ""))
         if (

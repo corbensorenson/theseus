@@ -173,7 +173,7 @@ rebuilt; learned efficacy still requires the prospectively frozen joint campaign
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
 | Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the 57.315M package previously replayed, but its authority is invalidated by the KERC adequacy correction. No long optimizer run or new capability evidence exists yet | complete faithful KERC architecture/data/objective/checkpoint integration, add its matched English-arm alternative, rebuild the freeze package, then begin the unchanged joint campaign |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: exact packets/VCM residual mechanics now feed an explicit MLX KERC model with trusted stage routing, train-only content-bound V_K/V_P codebooks, disjoint Kernel/pointer/surface output support, learned four-level residual allocation, an independent verifier, joint auxiliary losses, strict reload, and a parameter-matched surface-English target. A source-replayed 10,240-record licensed corpus and GREEN canonical stage exist. A full-size, 64-update real-row MLX adequacy canary passed tiny-subset learning, scoped interventions, verifier causality, checkpoint/optimizer replay, mismatch rejection, cleanup, and sustained-batch checks without capability or negative-verdict authority. The prior keyword/linear result remains proxy-negative only | add richer ambiguity/protection/multiple-valid supervision, VCM interaction rewards, explicit schema migration and trained leave-one-mechanism-out controls, then freeze the multi-seed matched-total-cost campaign; no KERC utility or failure claim before that campaign |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: exact packets/VCM residual mechanics now feed an explicit MLX KERC model with trusted stage routing, train-only content-bound V_K/V_P codebooks, disjoint Kernel/pointer/surface output support, manual FrameNet segment/token supervision, learned hierarchical residual allocation, an independently parameterized verifier, balanced per-dimension corruption loss, joint auxiliary losses, strict reload, versioned NPZ-to-safetensors migration with lossless rollback, and a parameter-matched surface-English target. A source-replayed 10,240-record licensed corpus and GREEN 18,432-view canonical stage exist. A full-size, 64-update real-row MLX adequacy canary passes balanced residual/verifier learning, scoped interventions, checkpoint/optimizer replay, unknown-schema and mismatch rejection, trained leave-one-mechanism-out controls, cleanup, and sustained-batch checks without capability or negative-verdict authority. The prior keyword/linear result remains proxy-negative only | add interaction/multi-turn residual supervision, richer ambiguity and multiple-valid-output coverage, then freeze and run the multi-seed source-disjoint matched-total-cost campaign; no KERC utility or failure claim before that campaign |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -1702,18 +1702,25 @@ date protections, and 395 exactly aligned semantic arguments use packet-owned ha
 rather than byte literals. Learned stages now consume a compact least-privilege object
 view while full hashes, authority, provenance, and access policy stay in the packet and
 evidence plane. The genuinely rematerialized stage retains all 18,432 positive views
-and 18,432 zero-generator-loss negatives, fits within 2,872 tokens, and rotates 13
-syntax-valid corruptions across semantic, protected-object, numeric, and exact-surface
-dimensions. The rebuilt canary remains GREEN: total loss fell to `0.247716` of baseline,
-token accuracy gained `0.359788`, residual accuracy reached `1.0`, verifier bit accuracy
-reached `0.875`, and sustained resumed throughput remained at least `66.020` target
-tokens/s. Checkpoint reload was exact, optimizer resume differed by at most
-`1.63540e-06`, stale
-codebook identity was rejected, partial artifacts were absent, and trusted-stage,
-residual-scope, and verifier interventions behaved causally. This still has no utility
-or negative-verdict authority. Richer semantic coverage, VCM interaction rewards,
-explicit schema migration and trained leave-one-mechanism-out controls, full-size
-multi-seed resource evidence, and the matched utility campaign remain open.
+and 18,432 zero-generator-loss negatives without truncation; the maximum staged
+sequence is 3,577 tokens. Manual FrameNet targets, roles, and named entities now
+provide genuine segment- and token-level residual labels rather than an all-zero
+proxy. The first balanced audit caught that raw verifier bit accuracy rewarded an
+all-positive classifier; the canonical trainer now derives content-bound inverse-
+frequency weights per verifier dimension and fails closed when either class is absent.
+Under the corrected objective, the rebuilt canary is GREEN: total loss is `0.278031`
+of baseline, token accuracy gains `0.346154`, informative residual macro balanced
+accuracy is `0.916667` across segment/token/exact, verifier macro balanced accuracy is
+`0.857143`, and minimum corruption recall is `1.0`. Sustained throughput remains at
+least `83.383` target tokens/s across the matched trained controls. Checkpoint reload
+is exact; optimizer resume differs by at most `1.62423e-06`; real NPZ-to-safetensors
+migration and rollback produce zero logit drift; unknown schema and stale codebook
+identities are rejected; partial artifacts are absent; and trusted-stage, residual-
+scope, verifier, and trained leave-one-mechanism-out controls execute. Interaction
+residuals remain uninformative because this corpus is single-turn. This still has no
+utility or negative-verdict authority. Multi-turn interaction supervision, richer
+ambiguity/multiple-valid-output coverage, full-size multi-seed resource evidence, and
+the matched utility campaign remain open.
 
 - Define one versioned `KernelPacket` protocol spanning immutable/content-addressed
   source identity, protected objects, correction lattice, expanded semantic Kernel,
