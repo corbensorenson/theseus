@@ -371,9 +371,9 @@
       "answer_packet_to_surface_v1"
     ],
     "records_by_split": {
-      "private_train": 8192,
-      "private_dev": 1024,
-      "private_eval": 1024
+      "private_train": 6144,
+      "private_dev": 2048,
+      "private_eval": 2048
     },
     "semantic_supervision": {
       "policy": "project_theseus_kerc_semantic_supervision_program_v1",
@@ -383,7 +383,7 @@
           "maximum_optimizer_sampling_weight": 1.0,
           "training_only": false
         },
-        "licensed_human_semantic_gold": {
+        "licensed_human_task_gold": {
           "claim_authority": "decision_grade_reference",
           "maximum_optimizer_sampling_weight": 1.0,
           "training_only": false
@@ -399,10 +399,25 @@
           "training_only": true
         }
       },
-      "minimum_decision_grade_records_by_split": {
-        "private_train": 1024,
-        "private_dev": 1024,
-        "private_eval": 1024
+      "minimum_decision_grade_records_by_split_and_objective": {
+        "private_train": {
+          "surface_direct_control_v1": 4096,
+          "surface_to_kernel_program_v1": 2048,
+          "kernel_program_to_answer_packet_v1": 2048,
+          "answer_packet_to_surface_v1": 2048
+        },
+        "private_dev": {
+          "surface_direct_control_v1": 1024,
+          "surface_to_kernel_program_v1": 1024,
+          "kernel_program_to_answer_packet_v1": 1024,
+          "answer_packet_to_surface_v1": 1024
+        },
+        "private_eval": {
+          "surface_direct_control_v1": 1024,
+          "surface_to_kernel_program_v1": 1024,
+          "kernel_program_to_answer_packet_v1": 1024,
+          "answer_packet_to_surface_v1": 1024
+        }
       },
       "maximum_train_record_share_by_tier": {
         "local_parser_silver": 0.8,
@@ -422,7 +437,7 @@
         },
         {
           "source_id": "wikidata_cc0_structured_semantics",
-          "intended_tier": "licensed_human_semantic_gold",
+          "intended_tier": "licensed_human_task_gold",
           "disposition": "candidate_pending_mapper_and_independent_semantic_audit",
           "public_benchmark_surface": false,
           "license_spdx": "CC0-1.0",
@@ -430,11 +445,27 @@
         },
         {
           "source_id": "databricks_dolly_15k_admitted_text",
-          "intended_tier": "local_parser_silver",
-          "disposition": "eligible_input_only_after_parser_artifact_qualification",
+          "intended_tier": "licensed_human_task_gold",
+          "disposition": "eligible_for_surface_direct_control_only_after_source_disjoint_split_replay",
           "public_benchmark_surface": false,
           "license_spdx": "CC-BY-SA-3.0",
           "source_url": "local://data/training_data/moecot_language_supervision_v1"
+        },
+        {
+          "source_id": "masc_3_manual_framenet",
+          "intended_tier": "licensed_human_task_gold",
+          "disposition": "eligible_for_compiler_reasoner_renderer_after_independent_graf_replay",
+          "public_benchmark_surface": false,
+          "license_spdx": "LicenseRef-MASC-Unrestricted",
+          "source_url": "https://www.anc.org/MASC/download/MASC-3.0.0.tgz"
+        },
+        {
+          "source_id": "conceptnet_5_7_assertions",
+          "intended_tier": "local_parser_silver",
+          "disposition": "qualified_semantic_relation_source_but_not_decision_grade_surface_realization",
+          "public_benchmark_surface": false,
+          "license_spdx": "CC-BY-SA-4.0",
+          "source_url": "https://conceptnet.s3.amazonaws.com/downloads/2019/edges/conceptnet-assertions-5.7.0.csv.gz"
         },
         {
           "source_id": "ucca_public_corpora_and_tupa",
@@ -446,7 +477,7 @@
         },
         {
           "source_id": "snli",
-          "intended_tier": "licensed_human_semantic_gold",
+          "intended_tier": "licensed_human_task_gold",
           "disposition": "calibration_only_public_benchmark",
           "public_benchmark_surface": true,
           "license_spdx": "CC-BY-SA-4.0",
@@ -454,7 +485,7 @@
         },
         {
           "source_id": "parallel_meaning_bank",
-          "intended_tier": "licensed_human_semantic_gold",
+          "intended_tier": "licensed_human_task_gold",
           "disposition": "quarantined_license_and_shared_task_review_incomplete",
           "public_benchmark_surface": true,
           "license_spdx": "UNKNOWN",
@@ -462,7 +493,7 @@
         },
         {
           "source_id": "ldc_amr",
-          "intended_tier": "licensed_human_semantic_gold",
+          "intended_tier": "licensed_human_task_gold",
           "disposition": "excluded_restricted_ldc_license_and_public_evaluation_surface",
           "public_benchmark_surface": true,
           "license_spdx": "LicenseRef-LDC-User-Agreement",
@@ -471,6 +502,76 @@
       ],
       "public_semantic_benchmarks_training_forbidden": true,
       "silver_can_satisfy_decision_grade_floor": false
+    },
+    "semantic_corpus_materialization": {
+      "policy": "project_theseus_kerc_semantic_corpus_materialization_v1",
+      "output_root": "data/training_data/kernel_english_governed_v1",
+      "candidate_records_jsonl": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
+      "producer_manifest_json": "runtime/kerc_semantic_corpus/producer_manifest.json",
+      "dolly": {
+        "path": "resource_pantry/kerc/databricks-dolly-15k.jsonl",
+        "dataset_id": "databricks/databricks-dolly-15k",
+        "dataset_revision": "bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a",
+        "source_url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+        "license_evidence_url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/blob/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/README.md",
+        "content_sha256": "sha256:2df9083338b4abd6bceb5635764dab5d833b393b55759dffb0959b6fcbf794ec",
+        "license_spdx": "CC-BY-SA-3.0",
+        "records_by_split": {
+          "private_train": 4096,
+          "private_dev": 1024,
+          "private_eval": 1024
+        },
+        "allowed_objectives": ["surface_direct_control_v1"]
+      },
+      "masc": {
+        "archive_path": "resource_pantry/kerc/MASC-3.0.0.tgz",
+        "extracted_root": "resource_pantry/kerc/MASC-3.0.0",
+        "dataset_id": "anc/MASC-3.0.0-FrameNet",
+        "dataset_revision": "MASC-3.0.0",
+        "source_url": "https://www.anc.org/MASC/download/MASC-3.0.0.tgz",
+        "license_evidence_url": "https://anc.org/data/masc/about/",
+        "content_sha256": "sha256:206d87511fb27cdbf82cc87982e08351ae84fd98e86d518c15a7461573589d0c",
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "records_by_split": {
+          "private_train": 2048,
+          "private_dev": 1024,
+          "private_eval": 1024
+        },
+        "allowed_objectives": [
+          "surface_to_kernel_program_v1",
+          "kernel_program_to_answer_packet_v1",
+          "answer_packet_to_surface_v1"
+        ],
+        "document_groups": {
+          "private_dev": [
+            "written/travel-guides/HistoryJerusalem",
+            "written/journal/Article247_3500",
+            "written/newspaper/nyt/20000415_apw_eng-NEW",
+            "written/letters/philanthropic-fundraising/602CZL285"
+          ],
+          "private_eval": [
+            "written/travel-guides/HistoryLasVegas",
+            "written/journal/Article247_66",
+            "written/letters/philanthropic-fundraising/110CYL070",
+            "written/email/enron/enron-thread-159550"
+          ]
+        }
+      },
+      "minimum_source_groups_by_split": {
+        "private_train": 8,
+        "private_dev": 4,
+        "private_eval": 4
+      },
+      "minimum_source_sentences_by_split": {
+        "private_train": 384,
+        "private_dev": 192,
+        "private_eval": 192
+      },
+      "maximum_source_characters": 2048,
+      "public_benchmark_payload_count": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "template_credit": 0
     },
     "maximum_sequence_tokens": 4096,
     "batch_size": 2,
@@ -491,10 +592,12 @@
       "bsd-3-clause",
       "cc-by-4.0",
       "cc-by-sa-3.0",
+      "cc-by-sa-4.0",
       "cc0-1.0",
       "isc",
       "mit",
-      "unlicense"
+      "unlicense",
+      "licenseref-masc-unrestricted"
     ],
     "public_training_rows_written": 0,
     "public_benchmark_payload_count": 0,

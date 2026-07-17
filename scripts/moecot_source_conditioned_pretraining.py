@@ -71,6 +71,7 @@ KERC_POINTER_CONTROL_TOKENS = {
 }
 KERC_SOURCE_CATALOG_POLICY = "project_theseus_kerc_semantic_source_catalog_v1"
 KERC_SEMANTIC_PROGRAM_POLICY = "project_theseus_kerc_semantic_supervision_program_v1"
+KERC_SEMANTIC_CORPUS_POLICY = "project_theseus_kerc_semantic_corpus_materialization_v1"
 
 
 def kerc_code_tokens(text: str) -> list[str]:
@@ -360,6 +361,7 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
         if not str(cfg.get("semantic_source_catalog_json") or "").strip():
             raise ValueError("KERC stage requires a semantic source catalog")
         validate_kerc_semantic_program(cfg)
+        validate_kerc_semantic_corpus_config(cfg)
     elif any(int(value or 0) != 0 for value in rows.values()):
         raise ValueError("retired KERC stage must request zero records")
     if int(cfg.get("maximum_sequence_tokens") or 0) <= 0:
@@ -411,17 +413,21 @@ def validate_kerc_semantic_program(cfg: dict[str, Any]) -> dict[str, Any]:
         }
         if configured != expected:
             raise ValueError(f"KERC semantic evidence tier contract mismatch: {tier}")
-    floors = program.get("minimum_decision_grade_records_by_split") or {}
+    floors = program.get("minimum_decision_grade_records_by_split_and_objective") or {}
     requested = cfg.get("records_by_split") or {}
     if tuple(floors) != tuple(requested):
         raise ValueError("KERC decision-grade split floor set/order mismatch")
-    for split, floor in floors.items():
-        if not 0 <= int(floor) <= int(requested[split]):
-            raise ValueError(f"KERC decision-grade split floor invalid: {split}")
-    if int(floors.get("private_dev") or 0) != int(requested.get("private_dev") or 0):
-        raise ValueError("KERC private-dev must be entirely decision-grade")
-    if int(floors.get("private_eval") or 0) != int(requested.get("private_eval") or 0):
-        raise ValueError("KERC private-eval must be entirely decision-grade")
+    for split, objective_floors in floors.items():
+        if (
+            not isinstance(objective_floors, dict)
+            or tuple(objective_floors) != TRAINING_OBJECTIVES
+        ):
+            raise ValueError(f"KERC decision-grade objective floor set/order invalid: {split}")
+        for objective, floor in objective_floors.items():
+            if not 0 <= int(floor) <= int(requested[split]):
+                raise ValueError(
+                    f"KERC decision-grade objective floor invalid: {split}:{objective}"
+                )
     record_caps = program.get("maximum_train_record_share_by_tier") or {}
     probability_caps = program.get("maximum_train_optimizer_probability_by_tier") or {}
     if set(record_caps) != {"local_parser_silver", "governed_openai_residual"}:
@@ -464,6 +470,75 @@ def validate_kerc_semantic_program(cfg: dict[str, Any]) -> dict[str, Any]:
     return program
 
 
+def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
+    corpus = cfg.get("semantic_corpus_materialization")
+    corpus = corpus if isinstance(corpus, dict) else {}
+    if corpus.get("policy") != KERC_SEMANTIC_CORPUS_POLICY:
+        raise ValueError("KERC semantic corpus materialization policy mismatch")
+    sources = {name: corpus.get(name) or {} for name in ("dolly", "masc")}
+    for name, source in sources.items():
+        path_key = "archive_path" if name == "masc" else "path"
+        if (
+            not str(source.get(path_key) or "")
+            or not str(source.get("dataset_id") or "")
+            or not str(source.get("dataset_revision") or "")
+            or not str(source.get("source_url") or "").startswith("https://")
+            or not str(source.get("license_evidence_url") or "").startswith("https://")
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(source.get("content_sha256") or ""))
+            or not str(source.get("license_spdx") or "")
+            or tuple(source.get("records_by_split") or {})
+            != ("private_train", "private_dev", "private_eval")
+            or any(int(value or 0) < 0 for value in (source.get("records_by_split") or {}).values())
+            or not any(int(value or 0) > 0 for value in (source.get("records_by_split") or {}).values())
+            or not set(source.get("allowed_objectives") or {}) <= set(TRAINING_OBJECTIVES)
+            or not source.get("allowed_objectives")
+        ):
+            raise ValueError(f"KERC semantic corpus source contract invalid: {name}")
+    requested = cfg.get("records_by_split") or {}
+    for split in requested:
+        total = sum(int(source["records_by_split"][split]) for source in sources.values())
+        if total != int(requested[split]):
+            raise ValueError(f"KERC semantic corpus split total mismatch: {split}")
+    floors = cfg["semantic_supervision"][
+        "minimum_decision_grade_records_by_split_and_objective"
+    ]
+    for split, objective_floors in floors.items():
+        for objective, floor in objective_floors.items():
+            available = sum(
+                int(source["records_by_split"][split])
+                for source in sources.values()
+                if objective in source["allowed_objectives"]
+            )
+            if available < int(floor):
+                raise ValueError(
+                    f"KERC semantic corpus cannot satisfy objective floor: {split}:{objective}"
+                )
+    groups = sources["masc"].get("document_groups") or {}
+    if tuple(groups) != ("private_dev", "private_eval"):
+        raise ValueError("KERC MASC heldout document groups are incomplete")
+    dev = {str(value) for value in groups["private_dev"]}
+    evaluation = {str(value) for value in groups["private_eval"]}
+    if not dev or not evaluation or dev & evaluation:
+        raise ValueError("KERC MASC heldout document groups overlap or are empty")
+    for key in ("minimum_source_groups_by_split", "minimum_source_sentences_by_split"):
+        values = corpus.get(key) or {}
+        if tuple(values) != ("private_train", "private_dev", "private_eval") or any(
+            int(value or 0) <= 0 for value in values.values()
+        ):
+            raise ValueError(f"KERC semantic corpus diversity floor invalid: {key}")
+    if int(corpus.get("maximum_source_characters") or 0) < 256:
+        raise ValueError("KERC semantic corpus source-character cap is too small")
+    for key in (
+        "public_benchmark_payload_count",
+        "external_inference_calls",
+        "fallback_return_count",
+        "template_credit",
+    ):
+        if int(corpus.get(key) or 0):
+            raise ValueError(f"KERC semantic corpus no-cheat counter must remain zero: {key}")
+    return corpus
+
+
 def load_kerc_semantic_source_catalog(
     path: Path, cfg: dict[str, Any]
 ) -> tuple[dict[str, dict[str, Any]], list[str]]:
@@ -494,11 +569,15 @@ def load_kerc_semantic_source_catalog(
             and row.get("public_benchmark_payload") is False
         )
         tiers = row.get("allowed_evidence_tiers")
+        objectives = row.get("allowed_objectives")
         if (
             not required
             or not isinstance(tiers, list)
             or not tiers
             or any(str(tier) not in SEMANTIC_EVIDENCE_TIERS for tier in tiers)
+            or not isinstance(objectives, list)
+            or not objectives
+            or any(str(objective) not in TRAINING_OBJECTIVES for objective in objectives)
         ):
             gaps.append(f"kernel_semantic_source_catalog_contract_invalid:{dataset_id}")
             continue
@@ -515,6 +594,11 @@ def validate_kerc_record_source(
     if source is None:
         return "semantic_source_absent_from_catalog"
     semantic = record.get("semantic_supervision") or {}
+    authorized_objectives = {
+        objective
+        for objective, authorized in (semantic.get("objective_authority") or {}).items()
+        if authorized is True
+    }
     checks = (
         str(provenance.get("dataset_revision") or "") == str(source.get("dataset_revision") or ""),
         str(provenance.get("license_spdx") or "").lower()
@@ -523,6 +607,8 @@ def validate_kerc_record_source(
         in {str(value) for value in source.get("allowed_evidence_tiers") or []},
         str(semantic.get("annotation_source_sha256") or "")
         == str(source.get("content_sha256") or ""),
+        authorized_objectives
+        <= {str(value) for value in source.get("allowed_objectives") or []},
     )
     return "" if all(checks) else "semantic_source_catalog_binding_mismatch"
 
@@ -641,16 +727,34 @@ def materialize_kernel_english(
         for tier, contract in SEMANTIC_EVIDENCE_TIERS.items()
         if contract["claim_authority"] == "decision_grade_reference"
     }
-    decision_grade_counts = {
-        split: sum(counts[tier] for tier in decision_grade_tiers)
-        for split, counts in evidence_counts_by_split.items()
-    }
-    for split, floor in semantic_program["minimum_decision_grade_records_by_split"].items():
-        if decision_grade_counts.get(split, 0) < int(floor):
-            gaps.append(
-                f"insufficient_decision_grade_kernel_records:{split}:"
-                f"{decision_grade_counts.get(split, 0)}:{int(floor)}"
+    decision_grade_counts_by_split_and_objective = {
+        split: {
+            objective: sum(
+                1
+                for record in records
+                if str((record.get("semantic_supervision") or {}).get("evidence_tier") or "")
+                in decision_grade_tiers
+                and (record.get("semantic_supervision") or {})
+                .get("objective_authority", {})
+                .get(objective)
+                is True
             )
+            for objective in TRAINING_OBJECTIVES
+        }
+        for split, records in selected.items()
+    }
+    for split, objective_floors in semantic_program[
+        "minimum_decision_grade_records_by_split_and_objective"
+    ].items():
+        for objective, floor in objective_floors.items():
+            observed = decision_grade_counts_by_split_and_objective.get(split, {}).get(
+                objective, 0
+            )
+            if observed < int(floor):
+                gaps.append(
+                    f"insufficient_decision_grade_kernel_records:{split}:{objective}:"
+                    f"{observed}:{int(floor)}"
+                )
     train_records = selected.get("private_train") or []
     train_count = len(train_records)
     train_counts = evidence_counts_by_split.get("private_train") or Counter()
@@ -674,6 +778,9 @@ def materialize_kernel_english(
             )
     artifacts: dict[str, Any] = {}
     objective_counts: Counter[str] = Counter()
+    objective_counts_by_split: dict[str, Counter[str]] = {
+        split: Counter() for split in selected
+    }
     encoded_length_stats: dict[str, Any] = {}
     all_source_hashes: set[str] = set()
     raw_source_bytes = 0
@@ -704,11 +811,10 @@ def materialize_kernel_english(
         source_lengths: list[int] = []
         target_lengths: list[int] = []
         sequence_lengths: list[int] = []
-        split_views = iter(compiled_views[split])
         for record in records:
             all_source_hashes.add(str(record["raw_source_sha256"]))
             raw_source_bytes += len(str(record["source_text"]).encode("utf-8"))
-            for view in (next(split_views) for _ in TRAINING_OBJECTIVES):
+            for view in compile_training_views(record):
                 source_body_ids, source_receipt = encode_tokens(
                     exact_text_tokens(view["prompt"]), source_vocab, stream="source"
                 )
@@ -759,6 +865,7 @@ def materialize_kernel_english(
                 target_lengths.append(len(negative_ids))
                 sequence_lengths.extend((sequence_tokens, negative_sequence_tokens))
                 objective_counts[str(view["objective"])] += 1
+                objective_counts_by_split[split][str(view["objective"])] += 1
                 verifier_corruption_count += 1
                 views.append(view)
         path = stage_root / f"{split}.jsonl"
@@ -808,9 +915,11 @@ def materialize_kernel_english(
             "evidence_record_counts_by_split": {
                 split: dict(counts) for split, counts in evidence_counts_by_split.items()
             },
-            "decision_grade_record_counts_by_split": decision_grade_counts,
-            "minimum_decision_grade_records_by_split": dict(
-                semantic_program["minimum_decision_grade_records_by_split"]
+            "decision_grade_record_counts_by_split_and_objective": (
+                decision_grade_counts_by_split_and_objective
+            ),
+            "minimum_decision_grade_records_by_split_and_objective": dict(
+                semantic_program["minimum_decision_grade_records_by_split_and_objective"]
             ),
             "train_weight_by_tier": dict(train_weight_by_tier),
             "train_optimizer_probability_by_tier": {
@@ -837,6 +946,9 @@ def materialize_kernel_english(
             split: len(records) for split, records in selected.items()
         },
         "compiled_view_count_by_objective": dict(objective_counts),
+        "compiled_view_count_by_split_and_objective": {
+            split: dict(counts) for split, counts in objective_counts_by_split.items()
+        },
         "unique_raw_source_count": len(all_source_hashes),
         "unique_raw_source_bytes": raw_source_bytes,
         "derived_view_unique_data_credit": 0,
@@ -928,19 +1040,17 @@ def validate_kernel_english_manifest(
     if payload.get("contract_sha256") != kernel_english_stage_contract_sha256(cfg):
         gaps.append("kernel_stage_contract_identity_mismatch")
     artifacts = payload.get("artifacts") if isinstance(payload.get("artifacts"), dict) else {}
-    objective_count = len(TRAINING_OBJECTIVES)
-    expected_view_count = sum(
-        int(record_count) * objective_count
-        for record_count in cfg["records_by_split"].values()
-    )
+    expected_view_count = 0
     for split, record_count in cfg["records_by_split"].items():
         key = f"english:{split}"
         artifact = artifacts.get(key) if isinstance(artifacts.get(key), dict) else {}
         path = resolve(str(artifact.get("path") or ""))
         if not path.is_file() or sha256_file(path) != str(artifact.get("sha256") or ""):
             gaps.append(f"kernel_stage_artifact_identity_mismatch:{key}")
-        if int(artifact.get("row_count") or 0) != int(record_count) * objective_count:
+        row_count = int(artifact.get("row_count") or 0)
+        if not int(record_count) <= row_count <= int(record_count) * len(TRAINING_OBJECTIVES):
             gaps.append(f"kernel_stage_view_count_mismatch:{key}")
+        expected_view_count += row_count
         if int(artifact.get("unique_record_count") or 0) != int(record_count):
             gaps.append(f"kernel_stage_record_count_mismatch:{key}")
     overlap = payload.get("split_overlap_audit") or {}
@@ -973,14 +1083,21 @@ def validate_kernel_english_manifest(
     program = validate_kerc_semantic_program(cfg)
     if semantic.get("policy") != KERC_SEMANTIC_PROGRAM_POLICY:
         gaps.append("kernel_stage_semantic_supervision_policy_mismatch")
-    if semantic.get("minimum_decision_grade_records_by_split") != program.get(
-        "minimum_decision_grade_records_by_split"
+    if semantic.get("minimum_decision_grade_records_by_split_and_objective") != program.get(
+        "minimum_decision_grade_records_by_split_and_objective"
     ):
         gaps.append("kernel_stage_decision_grade_floor_mismatch")
-    decision_counts = semantic.get("decision_grade_record_counts_by_split") or {}
-    for split, floor in program["minimum_decision_grade_records_by_split"].items():
-        if int(decision_counts.get(split) or 0) < int(floor):
-            gaps.append(f"kernel_stage_decision_grade_floor_not_met:{split}")
+    decision_counts = (
+        semantic.get("decision_grade_record_counts_by_split_and_objective") or {}
+    )
+    for split, objective_floors in program[
+        "minimum_decision_grade_records_by_split_and_objective"
+    ].items():
+        for objective, floor in objective_floors.items():
+            if int((decision_counts.get(split) or {}).get(objective) or 0) < int(floor):
+                gaps.append(
+                    f"kernel_stage_decision_grade_floor_not_met:{split}:{objective}"
+                )
     if semantic.get("silver_supports_decision_grade_claims") is not False:
         gaps.append("kernel_stage_silver_claim_authority_invalid")
     if semantic.get("teacher_residual_supports_decision_grade_claims") is not False:

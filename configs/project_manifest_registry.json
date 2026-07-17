@@ -262,23 +262,43 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "c91fb4c6bf8e9a208b1c02ff5e75eb367fe95f8d2655a1455d7613f80d066483"
+          "sha256": "91b9ae22d2c2496a639e59b59268d1e7b668f3426f72a90709b0081ad85456b9"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "b1d9d172f5378329d887989f8ae750d55393440ef1c6c485fae16efffaa3c570"
+          "sha256": "8635b51874b9d6f36ed4f47fef59aa27ab7dbe3e321e7f45ba5b88e6152b623e"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "29cdd26da20c3f0d82c0fd26d9b5debb5839f4c995240bd159bf9c5f479d73bb"
+          "sha256": "ccbbf6d47354271d3cbb0cfce933aab5a5c24c498f5e6899f932795f035c24bd"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "e597652972966a06ef06ae839238eed8bfb8d7141b76a4e69404a1a64b039d5f"
+          "sha256": "bb384d7458ae70233939fd322839b6a6d870cdb3b22b3db0c3aa31d705ce4d24"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "47a5ec12b1ad94a02781599aee1122c0cec4c7e32f1671369259725199ce6cbd"
+          "sha256": "a49e9a5842bdc43ee3156f672c3acc880288b682f9d05dee255445d8966d13ed"
+        },
+        "canonical_training_loop": {
+          "path": "scripts/standard_causal_transformer_survival.py",
+          "sha256": "03f8fa1296a6bdd7215dae97ba24cb726072de417a0e988e9242473a2382e52e"
+        },
+        "kernel_english_protocol": {
+          "path": "scripts/kernel_english_protocol.py",
+          "sha256": "3e910b3ac6edec27e4ecba17b9d9c68858405c38799ea930bb32fc8c5592bcdb"
+        },
+        "kerc_semantic_corpus_producer": {
+          "path": "scripts/kerc_semantic_corpus.py",
+          "sha256": "3c8ed81df4c7854ce1af8aad806e438e955fff7597b0f9eac06db10b65261412"
+        },
+        "kerc_semantic_corpus_verifier": {
+          "path": "scripts/kerc_semantic_corpus_verify.py",
+          "sha256": "6c8678287b0303008544afacef7118de9519827b3273944a206b71285e7ae0fa"
+        },
+        "kerc_semantic_corpus_tests": {
+          "path": "tests/test_kerc_semantic_corpus.py",
+          "sha256": "51845ec7e97d42751fc0d4ac405ea3f93d29358e78ce96e40ebe612313f4abba"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -5262,7 +5282,7 @@
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
@@ -5282,6 +5302,8 @@
         "scripts/neural_seed_local_english_raters.py",
         "scripts/moecot_language_supervision.py",
         "scripts/moecot_source_conditioned_pretraining.py",
+        "scripts/kerc_semantic_corpus.py",
+        "scripts/kerc_semantic_corpus_verify.py",
         "scripts/kernel_english_protocol.py",
         "scripts/moecot_language_tokenizer.py",
         "scripts/moecot_language_vocabulary.py",
@@ -5298,6 +5320,7 @@
         "tests/test_neural_seed_local_english_raters.py",
         "tests/test_moecot_language_supervision.py",
         "tests/test_moecot_source_conditioned_pretraining.py",
+        "tests/test_kerc_semantic_corpus.py",
         "tests/test_moecot_language_tokenizer.py",
         "tests/test_moecot_language_vocabulary.py",
         "runtime/standard_causal_transformer_survival_v1/stage_metadata_v1.json"
@@ -5310,6 +5333,7 @@
         "reports/moecot_language_supervision.json",
         "reports/moecot_source_conditioned_pretraining.json",
         "reports/moecot_kernel_english_stage.json",
+        "reports/runtime/kerc_semantic_corpus_verification.json",
         "reports/moecot_language_vocabulary.json"
       ],
       "attd_hooks": {
@@ -5341,7 +5365,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has a 19,531,230-parameter MLX target with KERC-only V_K/V_P capacity, a 19,534,090-parameter canonical-vocabulary surface-English control, learned stage/residual/verifier mechanics, route-constrained output spaces, joint auxiliary losses, cache parity, gradient coverage, and strict reload. The ten-target plan is RED only because the governed KERC stage manifest and real content-bound codebook are absent. VCM interaction rewards, executable recompile verification, overfit/intervention/ablation/resume/resource evidence, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has a source-replayed 10,240-record governed corpus, per-objective semantic authority, a content-bound dual codebook, a GREEN canonical stage, and a bounded MLX phase canary with real residual/verifier gradients and checkpoint publication. This is mechanics evidence only. VCM interaction rewards, overfit/intervention/ablation/resume/resource evidence, efficient long-sequence execution, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

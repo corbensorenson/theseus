@@ -82,6 +82,12 @@ def main() -> int:
         choices=[SHARED_TRUNK_ID, *ARM_IDS, *CONTROL_IDS, *ENGLISH_COMPARISON_IDS],
     )
     parser.add_argument("--max-steps", type=int, default=0)
+    parser.add_argument(
+        "--phase",
+        choices=("all", "pretraining", "source_conditioned_pretraining", "kernel_english", "supervision"),
+        default="all",
+        help="Run the full ordered curriculum or one canonical phase for a bounded mechanics canary.",
+    )
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
     if args.resume and not args.execute:
@@ -118,6 +124,7 @@ def main() -> int:
             targets=list(dict.fromkeys(args.target or [])),
             max_steps=args.max_steps,
             resume=args.resume,
+            training_phase=args.phase,
         )
     write_json(resolve(args.out or config["report"]), report)
     print(json.dumps(report, indent=2, sort_keys=True))
@@ -358,6 +365,7 @@ def inspect_checkpoint_inventory(
     gaps = []
     checkpoint_hashes: set[str] = set()
     optimizer_hashes: set[str] = set()
+    stale_canary_count = 0
     for target_id, target in targets.items():
         receipt_path = resolve(str(target["receipt"]))
         if not receipt_path.is_file():
@@ -387,12 +395,21 @@ def inspect_checkpoint_inventory(
             faults.append("optimizer_digest_not_distinct")
         checkpoint_hashes.add(checkpoint_hash)
         optimizer_hashes.add(optimizer_hash)
-        if faults:
+        stale_canary = bool(faults) and (
+            receipt.get("bounded_phase_canary") is True
+            and receipt.get("complete") is False
+            and receipt.get("capability_claim") == "NOT_EVALUATED"
+        )
+        if stale_canary:
+            stale_canary_count += 1
+        elif faults:
             gaps.extend(f"checkpoint_inventory:{target_id}:{fault}" for fault in faults)
         rows.append(
             {
                 "target_id": target_id,
-                "state": "GREEN" if not faults else "RED",
+                "state": (
+                    "GREEN" if not faults else "STALE_CANARY" if stale_canary else "RED"
+                ),
                 "optimizer_steps": int(receipt.get("optimizer_steps") or 0),
                 "optimizer_positions": int(receipt.get("optimizer_positions") or 0),
                 "complete": bool(receipt.get("complete")),
@@ -414,6 +431,7 @@ def inspect_checkpoint_inventory(
         "distinct_checkpoint_digest_count": len(checkpoint_hashes),
         "distinct_optimizer_digest_count": len(optimizer_hashes),
         "all_targets_smoke_ready": completed_smokes == len(targets) and not gaps,
+        "stale_canary_count": stale_canary_count,
         "rows": rows,
         "hard_gaps": gaps,
         "capability_claim": "NOT_EVALUATED",
@@ -1078,11 +1096,11 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
     if manifest.get("contract_sha256") != expected_contract:
         gaps.append("kernel_english_contract_identity_mismatch")
     artifacts = manifest.get("artifacts") if isinstance(manifest.get("artifacts"), dict) else {}
-    objective_count = len(tuple(cfg.get("objective_order") or ()))
-    expected_view_count = sum(
-        int(wanted) * objective_count
-        for wanted in (cfg.get("records_by_split") or {}).values()
-    )
+    compiled_by_objective = manifest.get("compiled_view_count_by_objective") or {}
+    compiled_by_split = manifest.get("compiled_view_count_by_split_and_objective") or {}
+    expected_view_count = sum(int(value) for value in compiled_by_objective.values())
+    if set(compiled_by_objective) != set(cfg.get("objective_order") or ()):
+        gaps.append("kernel_english_compiled_objective_inventory_mismatch")
     for split, wanted in (cfg.get("records_by_split") or {}).items():
         key = f"english:{split}"
         row = artifacts.get(key) if isinstance(artifacts.get(key), dict) else {}
@@ -1091,8 +1109,16 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
             gaps.append(f"kernel_english_artifact_identity_mismatch:{key}")
         if int(row.get("unique_record_count") or 0) != int(wanted):
             gaps.append(f"kernel_english_record_count_mismatch:{key}")
-        if int(row.get("row_count") or 0) != int(wanted) * objective_count:
+        expected_split_views = sum(
+            int(value) for value in (compiled_by_split.get(split) or {}).values()
+        )
+        if not expected_split_views or int(row.get("row_count") or 0) != expected_split_views:
             gaps.append(f"kernel_english_view_count_mismatch:{key}")
+    if sum(
+        sum(int(value) for value in (compiled_by_split.get(split) or {}).values())
+        for split in (cfg.get("records_by_split") or {})
+    ) != expected_view_count:
+        gaps.append("kernel_english_compiled_view_accounting_mismatch")
     overlap = manifest.get("split_overlap_audit") or {}
     if overlap.get("content_bound_disjoint") is not True:
         gaps.append("kernel_english_split_overlap")
@@ -1182,7 +1208,13 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def execute_targets(
-    config: dict[str, Any], plan: dict[str, Any], *, targets: list[str], max_steps: int, resume: bool
+    config: dict[str, Any],
+    plan: dict[str, Any],
+    *,
+    targets: list[str],
+    max_steps: int,
+    resume: bool,
+    training_phase: str = "all",
 ) -> dict[str, Any]:
     import mlx.core as mx
     import mlx.nn as nn
@@ -1221,6 +1253,8 @@ def execute_targets(
             plan["targets"][target_id],
             metadata=metadata,
         )
+        if training_phase in {"all", "supervision"}
+        else None
         for target_id in targets
     }
     source_conditioned_stages = {
@@ -1232,7 +1266,8 @@ def execute_targets(
             artifact_field="source_conditioned_artifacts",
             receipt_policy="project_theseus_moecot_source_conditioned_arrays_v1",
         )
-        if (plan["targets"][target_id].get("source_conditioned_artifacts") or {})
+        if training_phase in {"all", "source_conditioned_pretraining"}
+        and (plan["targets"][target_id].get("source_conditioned_artifacts") or {})
         else None
         for target_id in targets
     }
@@ -1251,7 +1286,8 @@ def execute_targets(
                 plan["targets"][target_id].get("kernel_english_objectives") or ()
             ),
         )
-        if (plan["targets"][target_id].get("kernel_english_artifacts") or {})
+        if training_phase in {"all", "kernel_english"}
+        and (plan["targets"][target_id].get("kernel_english_artifacts") or {})
         else None
         for target_id in targets
     }
@@ -1268,6 +1304,7 @@ def execute_targets(
             supervision_stage=supervision_stages[target_id],
             max_steps=max_steps,
             resume=resume,
+            training_phase=training_phase,
             mx=mx,
             nn=nn,
             optim=optim,
@@ -1497,7 +1534,8 @@ def materialize_target_supervision(
     sampling_weights: list[float] = []
     kerc_residual_rows: list[list[int]] = []
     kerc_verifier_rows: list[list[int]] = []
-    kerc_mode = str(target.get("role") or "") == "kerc_english_candidate"
+    kerc_model = str(target.get("role") or "") == "kerc_english_candidate"
+    kerc_mode = kerc_model and artifact_field == "kernel_english_artifacts"
     code_vocabulary = (
         ((target.get("kernel_code_vocabulary") or {}).get("payload") or {})
         if kerc_mode
@@ -1691,9 +1729,12 @@ def materialize_target_supervision(
             }
         )
 
-    inputs = np.zeros((len(sequences), max_sequence), dtype=np.int32)
-    labels = np.zeros((len(sequences), max_sequence), dtype=np.int32)
-    mask = np.zeros((len(sequences), max_sequence), dtype=np.uint8)
+    materialized_width = max((len(sequence) - 1 for sequence in sequences), default=1)
+    if materialized_width > max_sequence:
+        raise ValueError("materialized supervision width exceeds its sequence contract")
+    inputs = np.zeros((len(sequences), materialized_width), dtype=np.int32)
+    labels = np.zeros((len(sequences), materialized_width), dtype=np.int32)
+    mask = np.zeros((len(sequences), materialized_width), dtype=np.uint8)
     for index, (sequence, mask_start, generator_enabled) in enumerate(
         zip(sequences, mask_starts, generator_loss_enabled)
     ):
@@ -1739,7 +1780,9 @@ def materialize_target_supervision(
         "sampling_weight_maximum": float(max(sampling_weights or [1.0])),
         "termination_loss_weight": float(config["training"]["termination_loss_weight"]),
         "byte_boundary_loss_weight": float(config["training"]["byte_boundary_loss_weight"]),
-        "sequence_width": max_sequence,
+        "sequence_width": materialized_width,
+        "maximum_sequence_tokens_contract": max_sequence,
+        "staged_padding_columns_elided": max_sequence - materialized_width,
         "sequence_width_source": (
             "objective_override" if maximum_sequence_tokens is not None else "base_stage"
         ),
@@ -2513,6 +2556,7 @@ def train_target(
     stage: Any,
     max_steps: int,
     resume: bool,
+    training_phase: str = "all",
     mx: Any,
     nn: Any,
     optim: Any,
@@ -2521,6 +2565,16 @@ def train_target(
     kernel_english_stage: Any | None = None,
     supervision_stage: Any | None = None,
 ) -> dict[str, Any]:
+    active_phases = {
+        "pretraining",
+        "source_conditioned_pretraining",
+        "kernel_english",
+        "supervision",
+    }
+    if training_phase != "all":
+        if training_phase not in active_phases:
+            raise ValueError(f"unknown training phase: {training_phase}")
+        active_phases = {training_phase}
     target_id = str(target["target_id"])
     trained_vocab_size = int(
         target.get("vocab_size") or plan["models"]["vocab_size"]
@@ -2674,12 +2728,26 @@ def train_target(
         )
         prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
         prior_checkpoint_hash = sha256_file(resume_checkpoint)
-    remaining_positions = max(
-        0, int(target["unique_target_positions"]) - prior_pretrain_positions
+    remaining_positions = (
+        max(0, int(target["unique_target_positions"]) - prior_pretrain_positions)
+        if "pretraining" in active_phases
+        else 0
     )
-    remaining_sft_positions = max(0, sft_positions - prior_sft_positions)
-    remaining_source_positions = max(0, source_positions - prior_source_positions)
-    remaining_kernel_positions = max(0, kernel_positions - prior_kernel_positions)
+    remaining_sft_positions = (
+        max(0, sft_positions - prior_sft_positions)
+        if "supervision" in active_phases
+        else 0
+    )
+    remaining_source_positions = (
+        max(0, source_positions - prior_source_positions)
+        if "source_conditioned_pretraining" in active_phases
+        else 0
+    )
+    remaining_kernel_positions = (
+        max(0, kernel_positions - prior_kernel_positions)
+        if "kernel_english" in active_phases
+        else 0
+    )
     allowed_steps = (
         max_steps
         if max_steps
@@ -3062,6 +3130,8 @@ def train_target(
         "optimizer_state": relative(optimizer_path),
         "optimizer_state_sha256": sha256_file(optimizer_path),
         "resume": resume,
+        "training_phase_selection": training_phase,
+        "bounded_phase_canary": training_phase != "all",
         "resume_base_checkpoint_sha256": prior_checkpoint_hash,
         "phases": {
             "pretraining": pretrain_phase,

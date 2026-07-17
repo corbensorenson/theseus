@@ -2998,6 +2998,9 @@ def train_phase(
     all_target_consumed = 0
     steps = 0
     losses: list[float] = []
+    batch_sequence_widths: list[int] = []
+    static_sequence_width = int(inputs.shape[1])
+    padded_positions_avoided = 0
     started = time.perf_counter()
     epoch = 0
     model.train()
@@ -3012,10 +3015,29 @@ def train_phase(
             if consumed >= target_positions or steps >= max_steps:
                 break
             indices = order[start : start + batch_size]
-            x = mx.array(np.asarray(inputs[indices]), dtype=mx.int32)
-            y = mx.array(np.asarray(labels[indices]), dtype=mx.int32)
-            all_targets = mx.array(np.asarray(mask[indices]), dtype=mx.float32)
-            body_targets = mx.array(np.asarray(progress_mask[indices]), dtype=mx.float32)
+            batch_inputs = np.asarray(inputs[indices])
+            batch_labels = np.asarray(labels[indices])
+            batch_mask = np.asarray(mask[indices])
+            batch_progress_mask = np.asarray(progress_mask[indices])
+            active_columns = np.any(
+                (batch_inputs != 0)
+                | (batch_labels != 0)
+                | (batch_mask != 0)
+                | (batch_progress_mask != 0),
+                axis=0,
+            )
+            active_indices = np.flatnonzero(active_columns)
+            batch_width = int(active_indices[-1] + 1) if len(active_indices) else 1
+            if batch_width > static_sequence_width:
+                raise ValueError("dynamic batch width exceeds staged sequence width")
+            batch_sequence_widths.append(batch_width)
+            padded_positions_avoided += len(indices) * (static_sequence_width - batch_width)
+            x = mx.array(batch_inputs[:, :batch_width], dtype=mx.int32)
+            y = mx.array(batch_labels[:, :batch_width], dtype=mx.int32)
+            all_targets = mx.array(batch_mask[:, :batch_width], dtype=mx.float32)
+            body_targets = mx.array(
+                batch_progress_mask[:, :batch_width], dtype=mx.float32
+            )
             plan_targets = mx.maximum(all_targets - body_targets, 0.0)
             m = body_targets + float(ordered_plan_loss_weight) * plan_targets
             batch_plan = (
@@ -3111,6 +3133,13 @@ def train_phase(
         "final_loss": round(losses[-1], 6) if losses else None,
         "tokens_per_second": round(consumed / max(1e-9, time.perf_counter() - started), 3),
         "weighted_sampling": probabilities is not None,
+        "static_sequence_width": static_sequence_width,
+        "maximum_dynamic_batch_width": max(batch_sequence_widths or [0]),
+        "mean_dynamic_batch_width": round(
+            sum(batch_sequence_widths) / max(1, len(batch_sequence_widths)), 3
+        ),
+        "padded_positions_avoided": padded_positions_avoided,
+        "dynamic_batch_cropping": True,
         "sampling_effective_size": (
             round(float(1.0 / np.square(probabilities).sum()), 3)
             if probabilities is not None

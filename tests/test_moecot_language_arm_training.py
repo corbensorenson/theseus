@@ -29,6 +29,7 @@ from moecot_language_arm_training import (  # noqa: E402
     ensure_shared_trunk_migration,
     generate_kerc_pipeline_text,
     generate_model_text,
+    inspect_checkpoint_inventory,
     kerc_global_token_rows,
     kerc_serialization_valid_ids,
     matched_decoder_only_config,
@@ -618,6 +619,17 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
     assert stage.receipt["public_training_rows_written"] == 0
     assert stage.receipt["weighted_loss_positions"] > stage.receipt["target_positions"]
 
+    kerc_target = {**target, "target_id": "english_kerc", "role": "kerc_english_candidate"}
+    ordinary_stage = materialize_target_supervision(
+        training_config,
+        base,
+        kerc_target,
+        metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
+    )
+    assert ordinary_stage.kerc_residual_labels is None
+    assert ordinary_stage.kerc_verifier_labels is None
+    assert ordinary_stage.receipt["dual_code_vocabulary_sha256"] == ""
+
     base["tokenization"]["max_sequence_tokens"] = 4
     widened = materialize_target_supervision(
         training_config,
@@ -628,7 +640,9 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
         receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
         maximum_sequence_tokens=32,
     )
-    assert widened.receipt["sequence_width"] == 32
+    assert widened.receipt["sequence_width"] < 32
+    assert widened.receipt["maximum_sequence_tokens_contract"] == 32
+    assert widened.receipt["staged_padding_columns_elided"] > 0
     assert widened.receipt["sequence_width_source"] == "objective_override"
     with pytest.raises(ValueError, match="requires truncation"):
         materialize_target_supervision(
@@ -1039,10 +1053,10 @@ def test_source_and_kernel_phases_are_accounted_separately_before_sft(tmp_path: 
         receipt={"policy": "project_theseus_moecot_source_conditioned_arrays_v1"},
     )
     kernel_stage = SimpleNamespace(
-        inputs=np.asarray([[1, 12, 2, 22]], dtype=np.int32),
-        labels=np.asarray([[12, 2, 22, 3]], dtype=np.int32),
-        mask=np.asarray([[0, 0, 1, 1]], dtype=np.uint8),
-        loss_mask=np.asarray([[0, 0, 1, 1]], dtype=np.float32),
+        inputs=np.asarray([[1, 12, 2, 22, 0, 0, 0, 0]], dtype=np.int32),
+        labels=np.asarray([[12, 2, 22, 3, 0, 0, 0, 0]], dtype=np.int32),
+        mask=np.asarray([[0, 0, 1, 1, 0, 0, 0, 0]], dtype=np.uint8),
+        loss_mask=np.asarray([[0, 0, 1, 1, 0, 0, 0, 0]], dtype=np.float32),
         receipt={"policy": "project_theseus_moecot_kernel_english_arrays_v1"},
     )
     checkpoint = tmp_path / "checkpoints" / "english" / "weights.npz"
@@ -1082,8 +1096,85 @@ def test_source_and_kernel_phases_are_accounted_separately_before_sft(tmp_path: 
     assert result["supervision_optimizer_positions"] == 0
     assert result["phases"]["source_conditioned_pretraining"]["optimizer_steps"] == 1
     assert result["phases"]["kernel_english"]["optimizer_steps"] == 1
+    assert result["phases"]["kernel_english"]["static_sequence_width"] == 8
+    assert result["phases"]["kernel_english"]["maximum_dynamic_batch_width"] == 4
+    assert result["phases"]["kernel_english"]["padded_positions_avoided"] == 4
     assert result["source_conditioned_stage"]["policy"].endswith("arrays_v1")
     assert result["kernel_english_stage"]["policy"].endswith("arrays_v1")
+
+    canary_target = {
+        **target,
+        "checkpoint": str(tmp_path / "canary" / "weights.npz"),
+        "optimizer_state": str(tmp_path / "canary" / "optimizer.safetensors"),
+        "receipt": str(tmp_path / "canary" / "training_receipt.json"),
+    }
+    canary = train_target(
+        config,
+        plan,
+        canary_target,
+        stage=base_stage,
+        source_conditioned_stage=source_stage,
+        kernel_english_stage=kernel_stage,
+        max_steps=1,
+        resume=False,
+        training_phase="kernel_english",
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+    )
+    assert canary["pretrain_optimizer_positions"] == 0
+    assert canary["source_conditioned_optimizer_positions"] == 0
+    assert canary["kernel_english_optimizer_positions"] == 2
+    assert canary["training_phase_selection"] == "kernel_english"
+    assert canary["bounded_phase_canary"] is True
+    assert canary["complete"] is False
+
+
+def test_stale_bounded_canary_does_not_poison_fresh_plan(tmp_path: Path) -> None:
+    checkpoint = tmp_path / "weights.npz"
+    optimizer = tmp_path / "optimizer.safetensors"
+    checkpoint.write_bytes(b"checkpoint")
+    optimizer.write_bytes(b"optimizer")
+    receipt = tmp_path / "training_receipt.json"
+    target = {
+        "target_id": "english_kerc",
+        "receipt": str(receipt),
+        "checkpoint": str(checkpoint),
+        "optimizer_state": str(optimizer),
+        "row_ranges": [{"start": 0, "stop": 1}],
+        "parameter_count": 1,
+        "vocab_size": 8,
+    }
+    receipt.write_text(
+        json.dumps(
+            {
+                "target_id": "english_kerc",
+                "plan_sha256": "old-plan",
+                "stage_signature": "stage",
+                "row_ranges": target["row_ranges"],
+                "parameter_count": 1,
+                "vocab_size": 8,
+                "checkpoint": str(checkpoint),
+                "checkpoint_sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+                "optimizer_state": str(optimizer),
+                "optimizer_state_sha256": hashlib.sha256(optimizer.read_bytes()).hexdigest(),
+                "optimizer_steps": 1,
+                "optimizer_positions": 10,
+                "complete": False,
+                "bounded_phase_canary": True,
+                "capability_claim": "NOT_EVALUATED",
+            }
+        )
+    )
+
+    inventory = inspect_checkpoint_inventory(
+        {"english_kerc": target}, "new-plan", "stage"
+    )
+    assert inventory["state"] == "NOT_RUN"
+    assert inventory["hard_gaps"] == []
+    assert inventory["stale_canary_count"] == 1
+    assert inventory["rows"][0]["state"] == "STALE_CANARY"
 
 
 def test_shared_trunk_and_expert_checkpoint_ownership_are_separate(tmp_path: Path) -> None:

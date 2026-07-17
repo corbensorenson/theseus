@@ -173,7 +173,7 @@ rebuilt; learned efficacy still requires the prospectively frozen joint campaign
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
 | Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the 57.315M package previously replayed, but its authority is invalidated by the KERC adequacy correction. No long optimizer run or new capability evidence exists yet | complete faithful KERC architecture/data/objective/checkpoint integration, add its matched English-arm alternative, rebuild the freeze package, then begin the unchanged joint campaign |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: exact packets/VCM residual mechanics now feed an explicit MLX KERC model with trusted stage routing, train-only content-bound V_K/V_P codebooks, disjoint Kernel/pointer/surface output support, learned four-level residual allocation, an independent verifier, joint auxiliary losses, strict reload, and a parameter-matched surface-English target. The prior keyword/linear result remains proxy-negative only | build the governed source-disjoint stage corpus/codebook artifact, calibrate residual/verifier labels and VCM lifecycle rewards, pass overfit/intervention/ablation/resume/resource canaries, then refreeze; no KERC utility or failure claim before the matched campaign |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: exact packets/VCM residual mechanics now feed an explicit MLX KERC model with trusted stage routing, train-only content-bound V_K/V_P codebooks, disjoint Kernel/pointer/surface output support, learned four-level residual allocation, an independent verifier, joint auxiliary losses, strict reload, and a parameter-matched surface-English target. A source-replayed 10,240-record licensed corpus and GREEN canonical stage now exist, and a bounded MLX KERC-only step exercised residual/verifier gradients. The prior keyword/linear result remains proxy-negative only | improve the currently weak KERC hot-loop throughput, calibrate residual/verifier labels and VCM lifecycle rewards, pass overfit/intervention/ablation/resume/resource canaries, then refreeze; no KERC utility or failure claim before the matched campaign |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -1676,8 +1676,8 @@ requires answer handles to resolve against packet-owned objects/capsules, and re
 the candidate unless structured round-trip constraints match; the direct-surface head,
 templates, literals, tools, and fallback returns cannot satisfy this route. The live
 plan has ten explicit targets and is RED only on `kernel_english_manifest_missing`.
-This is architecture mechanics, not a learned KERC system or capability result: the
-semantic admission owner now separates audited/licensed human gold from local-parser
+This is architecture mechanics, not a learned KERC system or capability result. The
+semantic admission owner separates audited/licensed human gold from local-parser
 silver and governed OpenAI residual evidence. Only gold can occupy private-dev/eval or
 satisfy decision-grade floors. Silver and teacher residual rows are train-only, carry
 maximum sampling weights of `0.25` and `0.02`, cannot support semantic claims, and are
@@ -1685,11 +1685,20 @@ subject to record-share and optimizer-probability caps. Every record must bind a
 content-addressed dataset revision/license/source catalog; public semantic benchmark
 surfaces are rejected even when permissively licensed. The MLX stage consumes these
 weights for positive and verifier-only pairs. The source qualification ledger keeps
-UCCA/TUPA and SNLI calibration-only, PMB quarantined, LDC AMR excluded, and Dolly text
-eligible only as parser-silver input after a parser adequacy audit. The actual governed
-stage corpus/codebook artifact, distribution-calibrated labels, VCM interaction
-reward, calibrated neural-verifier use, full resume/migration/resource proofs, overfit,
-intervention, ablation, and matched multi-seed campaign remain open.
+UCCA/TUPA and SNLI calibration-only, PMB quarantined, and LDC AMR excluded. A separate
+producer and independently implemented raw-source replayer now admit 6,144 Dolly
+instruction/response records for the direct-surface objective only and 4,096 manual
+MASC FrameNet records for compiler/reasoner/renderer objectives only. Document-disjoint
+heldouts, per-objective authority, archive/revision/license hashes, and a verification
+ledger are mandatory. The canonical stage is GREEN with 18,432 authorized views and
+18,432 verifier corruptions; derived views receive zero unique-data credit. A bounded
+Apple-MLX KERC-only step consumed KERC target positions with nonzero residual and verifier
+auxiliary weights and published a reloadable checkpoint. Dynamic staging and batch
+cropping raised the bounded canary from `2.648` to `39.552` target tokens/second while
+retaining the same governed loss path, but the multi-batch replayed speed proof,
+distribution-calibrated labels, VCM interaction reward, calibrated neural-verifier use,
+full resume/migration/resource proofs, overfit, intervention, ablation, and matched
+multi-seed campaign remain open.
 
 - Define one versioned `KernelPacket` protocol spanning immutable/content-addressed
   source identity, protected objects, correction lattice, expanded semantic Kernel,

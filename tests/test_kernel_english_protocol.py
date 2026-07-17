@@ -752,3 +752,24 @@ def test_weak_semantic_evidence_cannot_become_heldout_gold_or_exceed_weight() ->
         kernel.KernelProtocolFault, match="KERC_SEMANTIC_SAMPLING_WEIGHT_INVALID"
     ):
         kernel.validate_training_record(residual)
+
+
+def test_objective_authority_compiles_only_supported_views() -> None:
+    record = training_record()
+    record["semantic_supervision"]["objective_authority"] = {
+        objective: objective
+        in {
+            "surface_to_kernel_program_v1",
+            "answer_packet_to_surface_v1",
+        }
+        for objective in kernel.TRAINING_OBJECTIVES
+    }
+    record["verification_receipt"]["semantic_payload_sha256"] = (
+        kernel.training_semantic_payload_sha256(record)
+    )
+    views = kernel.compile_training_views(record)
+    assert [view["objective"] for view in views] == [
+        "surface_to_kernel_program_v1",
+        "answer_packet_to_surface_v1",
+    ]
+    assert all(view["objective_semantic_authority"] is True for view in views)

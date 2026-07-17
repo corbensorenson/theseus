@@ -90,10 +90,9 @@ def kernel_config(tmp_path: Path) -> dict:
                     }
                     for tier, contract in kernel.SEMANTIC_EVIDENCE_TIERS.items()
                 },
-                "minimum_decision_grade_records_by_split": {
-                    "private_train": 1,
-                    "private_dev": 1,
-                    "private_eval": 1,
+                "minimum_decision_grade_records_by_split_and_objective": {
+                    split: {objective: 1 for objective in kernel.TRAINING_OBJECTIVES}
+                    for split in ("private_train", "private_dev", "private_eval")
                 },
                 "maximum_train_record_share_by_tier": {
                     "local_parser_silver": 0.8,
@@ -114,6 +113,62 @@ def kernel_config(tmp_path: Path) -> dict:
                 ],
                 "public_semantic_benchmarks_training_forbidden": True,
                 "silver_can_satisfy_decision_grade_floor": False,
+            },
+            "semantic_corpus_materialization": {
+                "policy": "project_theseus_kerc_semantic_corpus_materialization_v1",
+                "output_root": str(tmp_path / "kernel-output"),
+                "candidate_records_jsonl": str(tmp_path / "candidate-records.jsonl"),
+                "producer_manifest_json": str(tmp_path / "producer-manifest.json"),
+                "dolly": {
+                    "path": str(tmp_path / "dolly.jsonl"),
+                    "dataset_id": "fixture-dolly",
+                    "dataset_revision": "fixture-v1",
+                    "source_url": "https://example.test/dolly",
+                    "license_evidence_url": "https://example.test/dolly-license",
+                    "content_sha256": "sha256:" + "1" * 64,
+                    "license_spdx": "CC0-1.0",
+                    "records_by_split": {
+                        "private_train": 1,
+                        "private_dev": 0,
+                        "private_eval": 0,
+                    },
+                    "allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
+                },
+                "masc": {
+                    "archive_path": str(tmp_path / "masc.tgz"),
+                    "extracted_root": str(tmp_path / "masc"),
+                    "dataset_id": "fixture-masc",
+                    "dataset_revision": "fixture-v1",
+                    "source_url": "https://example.test/masc",
+                    "license_evidence_url": "https://example.test/masc-license",
+                    "content_sha256": "sha256:" + "2" * 64,
+                    "license_spdx": "CC0-1.0",
+                    "records_by_split": {
+                        "private_train": 0,
+                        "private_dev": 1,
+                        "private_eval": 1,
+                    },
+                    "allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
+                    "document_groups": {
+                        "private_dev": ["fixture/dev"],
+                        "private_eval": ["fixture/eval"],
+                    },
+                },
+                "minimum_source_groups_by_split": {
+                    "private_train": 1,
+                    "private_dev": 1,
+                    "private_eval": 1,
+                },
+                "minimum_source_sentences_by_split": {
+                    "private_train": 1,
+                    "private_dev": 1,
+                    "private_eval": 1,
+                },
+                "maximum_source_characters": 2048,
+                "public_benchmark_payload_count": 0,
+                "external_inference_calls": 0,
+                "fallback_return_count": 0,
+                "template_credit": 0,
             },
             "maximum_sequence_tokens": 20000,
             "batch_size": 1,
@@ -433,6 +488,7 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
                         "public_benchmark_surface": False,
                         "public_benchmark_payload": False,
                         "allowed_evidence_tiers": ["audited_human_gold"],
+                        "allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
                     }
                 ],
             },
@@ -448,10 +504,11 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     assert report["unique_raw_source_count"] == 3
     assert report["derived_view_unique_data_credit"] == 0
     assert report["derived_view_optimizer_exposure_count"] == 12
-    assert report["semantic_supervision"]["decision_grade_record_counts_by_split"] == {
-        "private_train": 1,
-        "private_dev": 1,
-        "private_eval": 1,
+    assert report["semantic_supervision"][
+        "decision_grade_record_counts_by_split_and_objective"
+    ] == {
+        split: {objective: 1 for objective in kernel.TRAINING_OBJECTIVES}
+        for split in ("private_train", "private_dev", "private_eval")
     }
     assert all(value == 3 for value in report["compiled_view_count_by_objective"].values())
     codebook_path = Path(report["code_vocabulary"]["path"])
@@ -518,7 +575,8 @@ def test_semantic_source_catalog_rejects_public_calibration_sources(tmp_path: Pa
                         "training_allowed": True,
                         "public_benchmark_surface": True,
                         "public_benchmark_payload": True,
-                        "allowed_evidence_tiers": ["licensed_human_semantic_gold"],
+                        "allowed_evidence_tiers": ["licensed_human_task_gold"],
+                        "allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
                     }
                 ],
             }

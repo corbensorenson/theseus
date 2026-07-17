@@ -118,7 +118,7 @@ SEMANTIC_EVIDENCE_TIERS = {
         "maximum_optimizer_sampling_weight": 1.0,
         "verification_methods": {"human_dual_review"},
     },
-    "licensed_human_semantic_gold": {
+    "licensed_human_task_gold": {
         "producer_kind": "licensed_semantic_dataset",
         "claim_authority": "decision_grade_reference",
         "model_derived": False,
@@ -224,6 +224,8 @@ def kernel_training_contract() -> dict[str, Any]:
                 }
                 for tier, contract in SEMANTIC_EVIDENCE_TIERS.items()
             },
+            "authority_granularity": "per_objective",
+            "unauthorized_objectives_are_not_compiled": True,
             "heldout_requires_decision_grade_reference": True,
             "public_semantic_benchmark_training_forbidden": True,
         },
@@ -615,9 +617,15 @@ def validate_semantic_supervision_evidence(
             canonical_json(objectives),
             path="record.semantic_supervision.objective_authority",
         )
-    if any(objectives.get(objective) is not True for objective in TRAINING_OBJECTIVES):
+    if any(not isinstance(objectives.get(objective), bool) for objective in TRAINING_OBJECTIVES):
         raise KernelProtocolFault(
-            "KERC_SEMANTIC_OBJECTIVE_AUTHORITY_INCOMPLETE",
+            "KERC_SEMANTIC_OBJECTIVE_AUTHORITY_INVALID",
+            canonical_json(objectives),
+            path="record.semantic_supervision.objective_authority",
+        )
+    if not any(objectives.values()):
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_OBJECTIVE_AUTHORITY_EMPTY",
             canonical_json(objectives),
             path="record.semantic_supervision.objective_authority",
         )
@@ -714,7 +722,10 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
         ),
     )
     compiled = []
+    objective_authority = record["semantic_supervision"]["objective_authority"]
     for objective, visible, target in rows:
+        if objective_authority[objective] is not True:
+            continue
         prompt = visible
         trusted_prefix = [TRAINING_TASK_TAGS[objective]]
         identity = stable_hash(
@@ -754,6 +765,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                 "optimizer_exposure_credit": 1,
                 "semantic_evidence_tier": record["semantic_supervision"]["evidence_tier"],
                 "semantic_claim_authority": record["semantic_supervision"]["claim_authority"],
+                "objective_semantic_authority": True,
                 "decision_grade_reference": record["semantic_supervision"][
                     "claim_authority"
                 ]
