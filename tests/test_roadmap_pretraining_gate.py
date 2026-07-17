@@ -180,6 +180,12 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
                 "backlog_id": "planned.kernel_v1",
                 "status": "retired_by_pretraining_verdict",
                 "pre_training_acceptance_boundary": "Retired by a source-bound verdict.",
+                "negative_disposition_contract": {
+                    "kind": "campaign_scope_only",
+                    "scientific_falsification_claimed": False,
+                    "exact_scope": "first campaign only",
+                    "reentry_condition": "run a separate matched campaign",
+                },
                 "pre_training_evidence": {
                     "path": str(report_path),
                     "policy": "fixture_disposition_v1",
@@ -198,6 +204,46 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             self.assertFalse(stale["ready"])
             contract = stale["required_backlog_contracts"][0]
             self.assertIn("source_artifacts_stale:source", contract["evidence"]["faults"])
+
+    def test_proxy_failure_cannot_retire_a_mechanism(self) -> None:
+        payload = matrix()
+        payload["pre_training_architecture_contract"].update(
+            {
+                "required_backlog_ids": ["planned.kernel_v1"],
+                "ready_backlog_statuses": ["retired_by_pretraining_verdict"],
+            }
+        )
+        row = {
+            "backlog_id": "planned.kernel_v1",
+            "status": "retired_by_pretraining_verdict",
+            "pre_training_acceptance_boundary": "A toy proxy failed.",
+        }
+        payload["planned_codex_test_backlog"] = [row]
+
+        missing = gate.audit_pre_training_architecture_readiness(
+            matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+        )
+        self.assertFalse(missing["ready"])
+        self.assertFalse(
+            missing["required_backlog_contracts"][0]["negative_disposition"]["ready"]
+        )
+
+        row["negative_disposition_contract"] = {
+            "kind": "campaign_scope_only",
+            "scientific_falsification_claimed": False,
+            "exact_scope": "the first campaign only",
+            "reentry_condition": "run a faithful separately preregistered campaign",
+        }
+        scoped = gate.audit_pre_training_architecture_readiness(
+            matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+        )
+        self.assertTrue(scoped["ready"])
+
+        row["negative_disposition_contract"]["scientific_falsification_claimed"] = True
+        overclaimed = gate.audit_pre_training_architecture_readiness(
+            matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+        )
+        self.assertFalse(overclaimed["ready"])
 
     def test_strict_architecture_first_contract_is_machine_enforced(self) -> None:
         payload = matrix()

@@ -1,5 +1,5 @@
 # Project State
-Last consolidated: 2026-07-16 UTC.
+Last consolidated: 2026-07-17 UTC.
 
 This is the bounded current-wall page. The machine contract is
 `configs/roadmap_implementation_matrix.json`, the forward plan is `roadmap.md`, and
@@ -13,11 +13,11 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Current Verdict
 
-- **Architecture readiness:** not ready for long training. The finite pre-training
-  docket contains 13 known checkpoint-shaping contracts; KERC and QCSA have bounded
-  dispositions, while Reflexive Router, full-state update causality, and multi-target
-  policy leases and GVR have complete pre-training mechanics dispositions. The remaining 7 must be wired,
-  falsified, or retired before the architecture-freeze manifest can authorize a run.
+- **Architecture readiness:** not ready for long training. Twelve of thirteen finite
+  checkpoint-shaping contracts retain complete mechanics dispositions. KERC is reopened
+  after an evidence-adequacy audit found that its retirement used a toy proxy rather
+  than the proposed learned architecture. The previously GREEN freeze package is stale
+  and cannot authorize training until faithful KERC integration and a new replay.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -28,18 +28,19 @@ share toward zero. Public benchmarks are calibration only.
   `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
   canary rung; it does not select an architecture or authorize a route.
 - **Data gate:** GREEN for the frozen 57.315M proposal. The content-bound audit
-  credits `1,293,454,903 / 1,146,306,580` required unique governed model-visible
+  credits `1,293,454,903 / 1,146,808,520` required unique governed model-visible
   positions with no repetition credit, public training rows, external inference, or
   fallback returns. Every specialist clears its 20:1 owned-parameter floor; HTML/CSS
   is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
-- **KERC disposition:** full KERC compiler/core/renderer training is retired from the
-  first long run by the independently replayed, content-bound
-  `p4-m8-kerc-runtime-001` verdict. Kernel-native, surface, and simple-handle controls
-  tied at `0.5`; complete packets averaged `714` bytes versus `73.25` for the best
-  simple control; and one attack false-allowed. The canonical trainer now enforces
-  zero KERC optimizer repetitions and a new plan identity. Protected exact objects and
-  scoped interaction glossary residuals remain under VCM/SCF with zero learned credit.
+- **KERC disposition:** `partial` / `INCONCLUSIVE_IMPLEMENTATION`. The exact packet and
+  VCM residual substrate are useful mechanics, but `p4-m8-kerc-runtime-001` trained a
+  TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
+  hand-coded keyword compiler and renderer. It did not implement or train the paper's
+  constrained compiler, Kernel reasoner, learned residual allocator, structured answer
+  generator, copy-aware learned renderer, or neural round-trip verifier. Its `0.5`
+  accuracy, `714`-byte packet cost, and attack escape reject only that proxy. They cannot
+  retire KERC or grant a general efficiency verdict.
 - **QCSA disposition:** VCM now owns stable SOID/address/route indirection, three
   authoritative atlas facets, task/consumer/epoch-bound Semantic Address Certificates,
   authority-safe physical translation, and exact migration/rollback. The matched
@@ -67,8 +68,11 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** close the remaining 4 finite architecture contracts
-  through existing registry owners. Reflexive Router pre-training mechanics are complete:
+- **Immediate dependency:** implement faithful KERC through existing English-arm,
+  Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier owners; build governed licensed
+  source-disjoint stage supervision; pass learnability/gradient/overfit/intervention/
+  ablation/resource/security canaries; freeze strong matched controls and total-system
+  accounting; then rebuild the architecture package. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
   DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces
   320 replayable result rows with full mechanics at 32/32 and no-Chronicle/no-compiler
@@ -82,10 +86,10 @@ share toward zero. Public benchmarks are calibration only.
   stops with an explicit handoff, and restores exact state. Fourteen mutation controls pass;
   optimizer exposure and runtime effects are both zero. Runtime activation and efficacy remain
   disabled pending independently verified behavior-positive evidence;
-  after the docket closes, publish a
+  after KERC closes, publish a
   content-addressed architecture-freeze manifest and replay final MLX, checkpoint,
   resume, migration, cleanup, rollback, resource, integrity, and no-cheat canaries.
-  Preserve the now-GREEN content-bound data receipts while architecture closes.
+ Preserve the now-GREEN content-bound data receipts while architecture closes.
 
 ## Evidence Boundaries
 
@@ -94,6 +98,9 @@ share toward zero. Public benchmarks are calibration only.
 - Candidate family and integrity are independently recomputed; producer-declared
   flags cannot support promotion.
 - No fallback return receives learned-generation credit.
+- Negative evidence is scoped to the exact implementation and regime. Toy proxies,
+  missing learned stages, underpowered designs, or construct-invalid evaluators produce
+  an inconclusive state, never a broad mechanism-level falsification or retirement.
 - Public prompts, tests, solutions, traces, and answer templates never become
   training rows. Fresh frozen public surfaces may be used for calibration after a
   material model change; consumed surfaces are not rerun.
@@ -200,17 +207,16 @@ share toward zero. Public benchmarks are calibration only.
    immutable negative evidence; all three candidates scored `0/160`.
 4. Record the preregistered verdict: the 10.8M rung is falsified, no architecture is
    selected, confirmation is untouched, and route replacement is unauthorized.
-5. Preserve the completed KERC, QCSA, Reflexive Router, full-state causality, and
+5. Preserve the completed QCSA, Reflexive Router, full-state causality,
    multi-target policy-lease, GVR, policy-objective, autonomous-campaign, and generation-mode
-   pre-training dispositions. All finite architecture contracts now have full wiring,
-   falsification, or explicit retirement evidence. OneCell is retired from the first language
+   pre-training dispositions. Reopen only KERC: implement the learned pipeline and a
+   decision-grade experiment rather than laundering its toy proxy into retirement. OneCell is excluded from the first language
    campaign without route, optimizer, or checkpoint exposure; update/data causality,
    policy/GVR/campaign control, and generation-objective interfaces are mechanically closed
    without capability claims.
-6. Preserve the GREEN data floors and the content-addressed surface/code/control
-   architecture package. Its independent replay covers the finite docket, hash-bound
-   retirements, governance contracts, and final bounded MLX mechanics; any bound change
-   invalidates training authority until the package is rebuilt.
+6. Preserve the GREEN data floors. Treat the previous content-addressed architecture
+   package as stale because its KERC disposition is no longer valid; rebuild it only
+   after faithful KERC integration and full replay.
 7. Require nonzero clean behavior before enabling STS/VCM/search/preference/RL as
    causal amplifiers; ablate every amplifier under equal budgets.
 8. Calibrate once on fresh frozen public surfaces after material model improvement.
@@ -244,7 +250,7 @@ python3 scripts/theseus_control_plane.py
 
 ## Next Falsifiable Action
 
-Preserve the completed disabled open-ended improvement controller and completed architecture
+Preserve the completed disabled open-ended improvement controller and the twelve valid
 pre-training dispositions; do not mistake mechanics profiles for learned routing, unlearning,
 policy improvement, repair efficacy, autonomous self-improvement, or capability evidence.
 The preference and verifier-reward objective contracts are now complete but disabled: all nine
@@ -253,9 +259,8 @@ parity, verifier-capacity limits, a generator update lease, exact rollback, and 
 mutations with zero optimizer exposure. Generation architecture is now campaign-bound through the
 canonical MLX transformer and trainer: low-rank MTP is checkpointed at zero initial loss scale,
 Medusa/EAGLE/LayerSkip/sketch-first are retired from the first campaign, and speculative decode is
-disabled but target-checkpoint-compatible. OneCell is separately retired from the first language
-campaign by a source-bound mechanical verdict. The independently replayed architecture
-package now binds the exact campaign, all 13 finite dispositions, model/objective/memory/
-routing/update contracts, registry identity, and final bounded MLX canaries. The strict
-pre-training readiness gate is GREEN; the next step is the exact frozen joint campaign,
-not another architecture addition or public calibration.
+disabled but target-checkpoint-compatible. OneCell is separately excluded from the first
+language campaign by a source-bound sequencing disposition, not a scientific failure.
+The prior architecture package and GREEN readiness state are invalidated by the KERC
+adequacy correction. The next step is faithful KERC implementation plus a rebuilt
+content-addressed freeze package, not long training or public calibration.

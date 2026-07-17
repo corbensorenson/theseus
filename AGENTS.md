@@ -63,6 +63,34 @@ generation and cannot support learned-generation promotion claims.
 Any report violating this rule must be marked invalid. Do not repair the
 violation with wording, a new label, a nearby green report, or a broader claim.
 
+## Negative-Evidence Guardrail
+
+A negative result is scoped to the exact implementation, data, scale, objective,
+optimizer, budget, evaluator, and operating regime that produced it. A mechanics
+canary, toy proxy, hand-authored corpus, rule-based stand-in, linear probe, missing
+training stage, underpowered run, or evaluator with known construct-validity gaps
+cannot falsify the full mechanism it approximates.
+
+Before a result may retire or broadly falsify an architecture, an independent
+adequacy audit must establish all of the following:
+
+1. The implementation faithfully exercises every causal mechanism named in the
+   claim and is not a deliberately simplified proxy.
+2. The candidate passes learnability, gradient-flow, overfit, checkpoint/reload,
+   intervention, and ablation sanity checks appropriate to the mechanism.
+3. Baselines are strong and receive matched raw data, total training compute,
+   tuning opportunity, inference budget, verifier budget, and total-system cost.
+4. The evaluation has adequate task diversity, multiple seeds, uncertainty or
+   confidence intervals, weak-tail reporting, and power to detect the predeclared
+   useful effect.
+5. Heldouts, evaluators, and integrity checks are source-disjoint and independent
+   of the implementation and training-data producer.
+
+If any condition is missing, record `INCONCLUSIVE_IMPLEMENTATION` or
+`INCONCLUSIVE_EXPERIMENT`, preserve the evidence, and repair the owner. Campaign
+exclusion for cost or sequencing is an engineering disposition, not scientific
+falsification. Never translate "this proxy failed" into "this idea failed."
+
 ## Current Priorities
 
 1. Neural seed track: build independently trained English, Python, JS/TS,

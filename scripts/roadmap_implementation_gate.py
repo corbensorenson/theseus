@@ -1055,6 +1055,44 @@ def audit_pre_training_architecture_readiness(
         boundary = str(row.get("pre_training_acceptance_boundary") or "")
         evidence_contract = dict_value(row.get("pre_training_evidence"))
         evidence_receipt = audit_pre_training_backlog_evidence(evidence_contract)
+        negative_contract = dict_value(row.get("negative_disposition_contract"))
+        negative_receipt = {
+            "required": status in {"falsified_pretraining", "retired_by_pretraining_verdict"},
+            "ready": True,
+            "kind": str(negative_contract.get("kind") or ""),
+            "scientific_falsification_claimed": negative_contract.get(
+                "scientific_falsification_claimed"
+            ),
+        }
+        if negative_receipt["required"]:
+            kind = negative_receipt["kind"]
+            scope_only_ready = (
+                status == "retired_by_pretraining_verdict"
+                and kind == "campaign_scope_only"
+                and negative_contract.get("scientific_falsification_claimed") is False
+                and bool(str(negative_contract.get("exact_scope") or ""))
+                and bool(str(negative_contract.get("reentry_condition") or ""))
+            )
+            decision_grade_fields = (
+                "mechanism_fidelity_audited",
+                "learnability_sanity_passed",
+                "matched_opportunity_audited",
+                "independent_construct_valid_evaluation",
+                "multi_seed_uncertainty_and_power_reported",
+                "replicated",
+            )
+            decision_grade_ready = (
+                kind == "decision_grade_negative"
+                and all(negative_contract.get(key) is True for key in decision_grade_fields)
+                and bool(str(negative_contract.get("exact_claim_scope") or ""))
+            )
+            negative_receipt.update(
+                {
+                    "ready": scope_only_ready or decision_grade_ready,
+                    "scope_only_ready": scope_only_ready,
+                    "decision_grade_ready": decision_grade_ready,
+                }
+            )
         required_backlog_rows.append(
             {
                 "backlog_id": backlog_id,
@@ -1063,9 +1101,11 @@ def audit_pre_training_architecture_readiness(
                     status in ready_backlog_statuses
                     and bool(boundary)
                     and evidence_receipt["ready"]
+                    and negative_receipt["ready"]
                 ),
                 "pre_training_acceptance_boundary_present": bool(boundary),
                 "evidence": evidence_receipt,
+                "negative_disposition": negative_receipt,
             }
         )
     unfinished_required_backlog = [row for row in required_backlog_rows if not row["ready"]]

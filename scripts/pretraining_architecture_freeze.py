@@ -39,6 +39,33 @@ def digest(value: Any) -> str:
     return "sha256:" + hashlib.sha256(canonical(value).encode("utf-8")).hexdigest()
 
 
+def negative_disposition_ready(row: dict[str, Any]) -> bool:
+    status = str(row.get("status") or "")
+    if status not in {"falsified_pretraining", "retired_by_pretraining_verdict"}:
+        return True
+    contract = row.get("negative_disposition_contract") or {}
+    kind = str(contract.get("kind") or "")
+    if status == "retired_by_pretraining_verdict" and kind == "campaign_scope_only":
+        return (
+            contract.get("scientific_falsification_claimed") is False
+            and bool(str(contract.get("exact_scope") or ""))
+            and bool(str(contract.get("reentry_condition") or ""))
+        )
+    required = (
+        "mechanism_fidelity_audited",
+        "learnability_sanity_passed",
+        "matched_opportunity_audited",
+        "independent_construct_valid_evaluation",
+        "multi_seed_uncertainty_and_power_reported",
+        "replicated",
+    )
+    return (
+        kind == "decision_grade_negative"
+        and all(contract.get(key) is True for key in required)
+        and bool(str(contract.get("exact_claim_scope") or ""))
+    )
+
+
 def load_config(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     config = json.loads(path.read_text(encoding="utf-8"))
     if config.get("policy") != "project_theseus_pretraining_architecture_freeze_v1":
@@ -69,7 +96,9 @@ def architecture_dispositions(config: dict[str, Any]) -> dict[str, Any]:
     missing = sorted(required - set(backlog))
     unready = sorted(
         backlog_id for backlog_id, row in backlog.items()
-        if row.get("status") not in ready_statuses or not row.get("pre_training_acceptance_boundary")
+        if row.get("status") not in ready_statuses
+        or not row.get("pre_training_acceptance_boundary")
+        or not negative_disposition_ready(row)
     )
     if missing or unready:
         raise ArchitectureFreezeFault(
@@ -81,6 +110,9 @@ def architecture_dispositions(config: dict[str, Any]) -> dict[str, Any]:
             "status": backlog[backlog_id]["status"],
             "acceptance_boundary_digest": digest(backlog[backlog_id]["pre_training_acceptance_boundary"]),
             "evidence": backlog[backlog_id].get("pre_training_evidence"),
+            "negative_disposition": backlog[backlog_id].get(
+                "negative_disposition_contract"
+            ),
         }
         for backlog_id in sorted(required)
     }
