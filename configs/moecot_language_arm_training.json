@@ -96,6 +96,29 @@
     "expert_adapter_dim": 64,
     "source_expert_adapter_dim": 32
   },
+  "kerc_english_model": {
+    "d_model": 256,
+    "num_layers": 8,
+    "num_heads": 8,
+    "num_kv_heads": 2,
+    "ff_dim": 672,
+    "rope_base": 10000.0,
+    "rms_norm_eps": 0.00001,
+    "attention_policy": "encoder_decoder",
+    "source_target_separator_token_id": 2,
+    "source_encoder_layers": 2,
+    "source_copy_mode": "pointer_generator",
+    "source_copy_auxiliary_loss_weight": 0.25,
+    "mtp_future_offsets": [2, 3, 4],
+    "mtp_low_rank": 1,
+    "mtp_loss_weights": [0.3, 0.2, 0.1],
+    "mtp_loss_scale": 0.0,
+    "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+    "kerc_stage_adapter_dim": 64,
+    "kerc_residual_choice_count": 4,
+    "kerc_residual_bottleneck_dim": 64,
+    "kerc_verifier_dim": 64
+  },
   "controls": {
     "dense_total_parameter": {
       "model_source": "base_config",
@@ -122,7 +145,7 @@
     "maximum_source_conditioned_optimizer_repetitions": 2,
     "source_conditioned_optimizer_repetitions": 1,
     "maximum_kernel_english_optimizer_repetitions": 2,
-    "kernel_english_optimizer_repetitions": 0,
+    "kernel_english_optimizer_repetitions": 1,
     "termination_loss_weight": 4.0,
     "byte_boundary_loss_weight": 2.0
   },
@@ -278,7 +301,7 @@
   },
   "kernel_english_training": {
     "policy": "project_theseus_moecot_kernel_english_stage_v1",
-    "required": false,
+    "required": true,
     "disposition": {
       "policy": "project_theseus_kerc_pretraining_disposition_v1",
       "state": "RETIRED_FROM_FIRST_LONG_RUN",
@@ -347,12 +370,14 @@
       "answer_packet_to_surface_v1"
     ],
     "records_by_split": {
-      "private_train": 0,
-      "private_dev": 0,
-      "private_eval": 0
+      "private_train": 8192,
+      "private_dev": 1024,
+      "private_eval": 1024
     },
     "maximum_sequence_tokens": 4096,
     "batch_size": 2,
+    "residual_auxiliary_weight": 0.25,
+    "verifier_auxiliary_weight": 0.5,
     "allowed_licenses": [
       "apache-2.0",
       "bsd-2-clause",
@@ -373,11 +398,12 @@
     "candidate_generation_credit": 0
   },
   "comparison_contract": {
-    "policy": "project_theseus_moecot_dense_falsification_comparison_v1",
+    "policy": "project_theseus_neural_seed_architecture_comparison_v2",
     "preregistered_before_training": true,
     "required_views": [
       "equal_unique_system_positions_total_parameter_control",
-      "equal_active_parameters_active_compute_control"
+      "equal_active_parameters_active_compute_control",
+      "matched_english_raw_bytes_training_flops_and_total_system_cost"
     ],
     "required_metrics": [
       "direct_family_disjoint_verifier_pass_rate",
@@ -393,10 +419,14 @@
       "wall_seconds",
       "peak_memory_bytes",
       "energy_joules_when_available",
-      "verifier_and_search_budget"
+      "verifier_and_search_budget",
+      "kerc_compiler_core_renderer_verifier_stage_cost",
+      "kerc_residual_bits_by_level_and_interaction_amortization",
+      "protected_object_copy_and_semantic_roundtrip_fidelity"
     ],
     "adoption_rule": "MoECOT may become default only if it has nonzero direct model-only behavior, does not regress any required language arm below its frozen floor, and beats or Pareto-dominates both dense controls without selecting a favorable accounting view after results are known.",
-    "falsification_rule": "If either dense control wins repeated frozen direct-behavior comparisons, retain the result and route the practical assistant through the winning dense architecture.",
+    "kerc_adoption_rule": "KERC may replace the conventional English path only if the faithful full system Pareto-dominates the matched surface control on functional utility and total end-to-end cost without protected-object, calibration, robustness, or weak-tail regression.",
+    "falsification_rule": "If a dense or matched surface control wins repeated decision-grade direct-behavior comparisons, retain the result and route the practical assistant through the winning conventional architecture. KERC may be retired only for the exact faithful regime tested after the independent adequacy audit passes.",
     "route_success_is_answer_success": false,
     "assisted_output_is_model_only_output": false
   },

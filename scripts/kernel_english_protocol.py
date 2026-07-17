@@ -100,6 +100,14 @@ TRAINING_TASK_TAGS = {
     "kernel_program_to_answer_packet_v1": "<KERC_TASK_KERNEL_TO_ANSWER>",
     "answer_packet_to_surface_v1": "<KERC_TASK_ANSWER_TO_SURFACE>",
 }
+KERC_RESIDUAL_CHANNELS = ("interaction", "segment", "token", "exact")
+KERC_FIDELITY_LABELS = {"semantic": 0, "faithful": 1, "lexical": 2, "exact": 3}
+KERC_VERIFIER_DIMENSIONS = (
+    "semantic_consistency",
+    "protected_object_consistency",
+    "numeric_value_consistency",
+    "surface_fidelity",
+)
 
 
 class KernelProtocolFault(ValueError):
@@ -162,6 +170,15 @@ def kernel_training_contract() -> dict[str, Any]:
         "task_mode_transport": "trusted_internal_source_prefix_token",
         "raw_text_may_select_task_mode": False,
         "trusted_source_control_tokens": list(TRAINING_TASK_TAGS.values()),
+        "residual_channels": list(KERC_RESIDUAL_CHANNELS),
+        "residual_fidelity_labels": dict(KERC_FIDELITY_LABELS),
+        "verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
+        "verifier_training": {
+            "positive_pairs": "independently_verified_governed_records",
+            "negative_pairs": "deterministic_targeted_corruptions",
+            "negative_generator_loss_enabled": False,
+            "shared_generator_verifier_parameters": False,
+        },
         "pipeline": [
             "deterministic_protect_visible_source",
             "learned_surface_to_kernel_program",
@@ -404,6 +421,8 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
             raise KernelProtocolFault(
                 "KERC_TRAINING_BOUNDARY_INVALID", key, path=f"record.{key}"
             )
+
+    residual_supervision = _validate_residual_supervision(record, packet=record.get("kernel_packet") or {})
     for key in (
         "fallback_return_count",
         "template_credit",
@@ -447,6 +466,7 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
             path="record.verification_receipt.semantic_payload_sha256",
         )
     canonical = copy.deepcopy(record)
+    canonical["residual_supervision"] = residual_supervision
     canonical["answer_packet"] = answer
     canonical["raw_source_sha256"] = expected_source["source_sha256"]
     canonical["surface_target_sha256"] = stable_hash(surface_target.encode("utf-8"))
@@ -470,6 +490,7 @@ def training_semantic_payload_sha256(record: dict[str, Any]) -> str:
             "kernel_packet_sha256": str(packet.get("packet_sha256") or ""),
             "answer_packet": answer,
             "surface_target": str(record.get("surface_target") or ""),
+            "residual_supervision": record.get("residual_supervision") or {},
             "source_id": str(provenance.get("source_id") or ""),
             "source_group": str(provenance.get("source_group") or ""),
             "license_spdx": str(provenance.get("license_spdx") or ""),
@@ -542,6 +563,11 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                 "target": target,
             }
         )
+        verifier_negative = _targeted_verifier_corruption(
+            objective,
+            target,
+            protected_objects=packet["protected_objects"],
+        )
         compiled.append(
             {
                 "policy": TRAINING_VIEW_POLICY,
@@ -563,11 +589,20 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                 "derived_view": True,
                 "unique_source_credit": 0,
                 "optimizer_exposure_credit": 1,
+                "kerc_residual_channels": list(KERC_RESIDUAL_CHANNELS),
+                "kerc_residual_labels": [
+                    int(record["residual_supervision"]["labels_by_channel"][channel])
+                    for channel in KERC_RESIDUAL_CHANNELS
+                ],
+                "kerc_verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
+                "kerc_verifier_positive_labels": [1, 1, 1, 1],
+                "kerc_verifier_negative": verifier_negative,
                 "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
                 "evaluator_only_fields": [
                     "target",
                     "target_sha256",
                     "source_record_sha256",
+                    "kerc_verifier_negative",
                 ],
                 "public_benchmark": False,
                 "public_tests_included": False,
@@ -577,6 +612,165 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
     return compiled
+
+
+def _validate_residual_supervision(
+    record: dict[str, Any], *, packet: dict[str, Any]
+) -> dict[str, Any]:
+    supervision = (
+        record.get("residual_supervision")
+        if isinstance(record.get("residual_supervision"), dict)
+        else {}
+    )
+    if supervision.get("policy") != "project_theseus_kerc_residual_supervision_v1":
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_POLICY_INVALID",
+            str(supervision.get("policy")),
+            path="record.residual_supervision.policy",
+        )
+    labels = (
+        supervision.get("labels_by_channel")
+        if isinstance(supervision.get("labels_by_channel"), dict)
+        else {}
+    )
+    if set(labels) != set(KERC_RESIDUAL_CHANNELS):
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_CHANNELS_INVALID",
+            canonical_json(labels),
+            path="record.residual_supervision.labels_by_channel",
+        )
+    for channel in KERC_RESIDUAL_CHANNELS:
+        value = labels[channel]
+        if isinstance(value, bool) or not isinstance(value, int) or value not in range(4):
+            raise KernelProtocolFault(
+                "KERC_RESIDUAL_SUPERVISION_LABEL_INVALID",
+                f"{channel}:{value}",
+                path=f"record.residual_supervision.labels_by_channel.{channel}",
+            )
+    residual = packet.get("residual") if isinstance(packet.get("residual"), dict) else {}
+    expected_fidelity = KERC_FIDELITY_LABELS.get(str(residual.get("fidelity") or ""))
+    if expected_fidelity is None or int(supervision.get("record_fidelity_label", -1)) != expected_fidelity:
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_FIDELITY_MISMATCH",
+            canonical_json(supervision),
+            path="record.residual_supervision.record_fidelity_label",
+        )
+    if residual.get("exact_object_handles") and labels["exact"] != 3:
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_EXACT_OBJECT_UNDERSPECIFIED",
+            str(labels["exact"]),
+            path="record.residual_supervision.labels_by_channel.exact",
+        )
+    if not residual.get("segment_frame") and labels["segment"] != 0:
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_EMPTY_SEGMENT_NONZERO",
+            str(labels["segment"]),
+            path="record.residual_supervision.labels_by_channel.segment",
+        )
+    if not residual.get("token_tags") and labels["token"] != 0:
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_EMPTY_TOKEN_NONZERO",
+            str(labels["token"]),
+            path="record.residual_supervision.labels_by_channel.token",
+        )
+    evidence = str(supervision.get("evidence_sha256") or "")
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", evidence):
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_EVIDENCE_INVALID",
+            evidence,
+            path="record.residual_supervision.evidence_sha256",
+        )
+    if supervision.get("annotator_independent_of_model") is not True:
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_SUPERVISION_ANNOTATOR_INVALID",
+            canonical_json(supervision),
+            path="record.residual_supervision.annotator_independent_of_model",
+        )
+    return copy.deepcopy(supervision)
+
+
+def _targeted_verifier_corruption(
+    objective: str,
+    target: str,
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    dimension_by_objective = {
+        "surface_direct_control_v1": "protected_object_consistency",
+        "surface_to_kernel_program_v1": "semantic_consistency",
+        "kernel_program_to_answer_packet_v1": "numeric_value_consistency",
+        "answer_packet_to_surface_v1": "surface_fidelity",
+    }
+    dimension = dimension_by_objective[objective]
+    corrupted = target
+    strategy = ""
+    if objective == "surface_to_kernel_program_v1":
+        payload = json.loads(target)
+        payload["program"]["nodes"][0]["operator"] = "CORRUPTED_OPERATOR"
+        corrupted = canonical_json(payload)
+        strategy = "replace_first_kernel_operator"
+    elif objective == "kernel_program_to_answer_packet_v1":
+        payload = json.loads(target)
+        changed = _increment_first_numeric_value(payload)
+        if not changed:
+            payload["claims"][0]["confidence"] = max(
+                0.0, min(1.0, float(payload["claims"][0].get("confidence", 0.5)) / 2.0)
+            )
+            dimension = "semantic_consistency"
+            strategy = "change_first_claim_confidence"
+        else:
+            strategy = "increment_first_numeric_value"
+        corrupted = canonical_json(payload)
+    elif objective == "surface_direct_control_v1":
+        for row in protected_objects.values():
+            raw = row.get("inline_bytes_b64")
+            if not raw:
+                continue
+            exact = base64.b64decode(str(raw)).decode("utf-8")
+            if exact in corrupted:
+                corrupted = corrupted.replace(exact, "[CORRUPTED_OBJECT]", 1)
+                strategy = "replace_first_protected_object"
+                break
+        if not strategy:
+            corrupted += " [CORRUPTED_OBJECT]"
+            strategy = "append_protected_object_mismatch_marker"
+    else:
+        corrupted += " [CORRUPTED_SURFACE_FIDELITY]"
+        strategy = "append_surface_fidelity_mismatch_marker"
+    if corrupted == target:
+        raise KernelProtocolFault(
+            "KERC_VERIFIER_CORRUPTION_NOOP",
+            objective,
+            path="training_view.kerc_verifier_negative",
+        )
+    labels = [1, 1, 1, 1]
+    labels[KERC_VERIFIER_DIMENSIONS.index(dimension)] = 0
+    return {
+        "policy": "project_theseus_kerc_targeted_verifier_corruption_v1",
+        "target": corrupted,
+        "target_sha256": stable_hash(corrupted.encode("utf-8")),
+        "labels": labels,
+        "failed_dimension": dimension,
+        "strategy": strategy,
+        "generator_loss_enabled": False,
+        "unique_source_credit": 0,
+        "candidate_generation_credit": 0,
+    }
+
+
+def _increment_first_numeric_value(value: Any) -> bool:
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key == "value" and isinstance(item, (int, float)) and not isinstance(item, bool):
+                value[key] = item + 1
+                return True
+            if _increment_first_numeric_value(item):
+                return True
+    elif isinstance(value, list):
+        for item in value:
+            if _increment_first_numeric_value(item):
+                return True
+    return False
 
 
 def parse_learned_compiler_output(

@@ -124,6 +124,18 @@ def training_record(*, split: str = "private_train") -> dict:
             "license_spdx": "CC0-1.0",
             "permitted_use": "model_training",
         },
+        "residual_supervision": {
+            "policy": "project_theseus_kerc_residual_supervision_v1",
+            "labels_by_channel": {
+                "interaction": 1,
+                "segment": 0,
+                "token": 0,
+                "exact": 3,
+            },
+            "record_fidelity_label": 1,
+            "annotator_independent_of_model": True,
+            "evidence_sha256": "sha256:" + "b" * 64,
+        },
         "verification_receipt": {
             "policy": kernel.TRAINING_VERIFICATION_POLICY,
             "receipt_id": f"receipt-{split}",
@@ -152,7 +164,14 @@ def retired_training_config() -> dict:
     payload = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
-    return payload["kernel_english_training"]
+    cfg = payload["kernel_english_training"]
+    cfg["required"] = False
+    cfg["records_by_split"] = {
+        "private_train": 0,
+        "private_dev": 0,
+        "private_eval": 0,
+    }
+    return cfg
 
 
 def test_bounded_kerc_retirement_is_content_bound_and_narrow() -> None:
@@ -483,7 +502,26 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
     assert all(row["task_tag"] not in row["prompt"] for row in views)
     assert all(row["public_benchmark"] is False for row in views)
     assert all(row["fallback_return_count"] == 0 for row in views)
+    assert all(row["kerc_residual_labels"] == [1, 0, 0, 3] for row in views)
+    assert all(row["kerc_verifier_positive_labels"] == [1, 1, 1, 1] for row in views)
+    assert all(
+        row["kerc_verifier_negative"]["generator_loss_enabled"] is False
+        and row["kerc_verifier_negative"]["target"] != row["target"]
+        and sum(row["kerc_verifier_negative"]["labels"]) == 3
+        for row in views
+    )
     assert views[0]["target"] != views[1]["target"]
+
+    invalid_residual = training_record()
+    invalid_residual["residual_supervision"]["labels_by_channel"]["exact"] = 1
+    invalid_residual["verification_receipt"]["semantic_payload_sha256"] = (
+        kernel.training_semantic_payload_sha256(invalid_residual)
+    )
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_RESIDUAL_SUPERVISION_EXACT_OBJECT_UNDERSPECIFIED",
+    ):
+        kernel.validate_training_record(invalid_residual)
 
     compiler_view = next(
         row for row in views if row["objective"] == "surface_to_kernel_program_v1"

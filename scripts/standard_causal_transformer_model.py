@@ -43,6 +43,11 @@ class CausalTransformerConfig:
     mtp_loss_weights: tuple[float, ...] = ()
     mtp_loss_scale: float = 0.0
     mtp_maximum_head_parameter_overhead_ratio: float = 0.25
+    kerc_task_token_ids: tuple[int, ...] = ()
+    kerc_stage_adapter_dim: int = 0
+    kerc_residual_choice_count: int = 0
+    kerc_residual_bottleneck_dim: int = 0
+    kerc_verifier_dim: int = 0
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -163,6 +168,35 @@ class CausalTransformerConfig:
             raise ValueError("MTP loss scale requires enabled MTP heads")
         if self.mtp_loss_scale < 0.0:
             raise ValueError("MTP loss scale cannot be negative")
+        kerc_tokens = tuple(int(value) for value in self.kerc_task_token_ids)
+        kerc_enabled = bool(kerc_tokens)
+        if kerc_enabled:
+            if self.attention_policy != "encoder_decoder":
+                raise ValueError("KERC requires the encoder-decoder architecture")
+            if self.source_copy_mode != "pointer_generator":
+                raise ValueError("KERC requires the copy-aware pointer generator")
+            if len(kerc_tokens) != 4 or len(set(kerc_tokens)) != 4:
+                raise ValueError("KERC requires four distinct trusted task tokens")
+            if any(token_id < 0 or token_id >= self.vocab_size for token_id in kerc_tokens):
+                raise ValueError("KERC task tokens must be inside the model vocabulary")
+            if self.kerc_stage_adapter_dim <= 0:
+                raise ValueError("KERC requires positive stage adapters")
+            if self.kerc_residual_choice_count < 4:
+                raise ValueError("KERC requires at least four residual fidelity choices")
+            if self.kerc_residual_bottleneck_dim <= 0:
+                raise ValueError("KERC requires a learned residual bottleneck")
+            if self.kerc_verifier_dim <= 0:
+                raise ValueError("KERC requires an independent verifier dimension")
+        elif any(
+            value
+            for value in (
+                self.kerc_stage_adapter_dim,
+                self.kerc_residual_choice_count,
+                self.kerc_residual_bottleneck_dim,
+                self.kerc_verifier_dim,
+            )
+        ):
+            raise ValueError("KERC dimensions require trusted task tokens")
 
 
 def build_model(
@@ -198,6 +232,7 @@ def build_model(
         plan_enabled and config.semantic_plan_conditioning_mode == "slot_attention"
     )
     mtp_enabled = bool(config.mtp_future_offsets)
+    kerc_enabled = bool(config.kerc_task_token_ids)
     if state_enabled:
         if state_role_lookup is None:
             raise ValueError("enabled state memory requires a causal token-role lookup")
@@ -566,6 +601,12 @@ def build_model(
             self.mtp_future_offsets = tuple(int(value) for value in config.mtp_future_offsets)
             self.mtp_loss_weights = tuple(float(value) for value in config.mtp_loss_weights)
             self.mtp_loss_scale = float(config.mtp_loss_scale)
+            self.kerc_task_token_ids = tuple(
+                int(value) for value in config.kerc_task_token_ids
+            )
+            self.kerc_residual_choice_count = int(
+                config.kerc_residual_choice_count
+            )
             if mtp_enabled:
                 self.mtp_shared_projection = nn.Linear(
                     config.d_model, config.mtp_low_rank, bias=False
@@ -574,6 +615,44 @@ def build_model(
                     nn.Linear(config.mtp_low_rank, config.vocab_size, bias=False)
                     for _offset in self.mtp_future_offsets
                 ]
+            if kerc_enabled:
+                self.kerc_stage_embedding = nn.Embedding(4, config.d_model)
+                self.kerc_stage_adapters = [
+                    ExpertAdapter(config.kerc_stage_adapter_dim) for _stage in range(4)
+                ]
+                self.kerc_kernel_output = nn.Linear(
+                    config.d_model, config.vocab_size, bias=False
+                )
+                self.kerc_surface_output = nn.Linear(
+                    config.d_model, config.vocab_size, bias=False
+                )
+                self.kerc_residual_encoder = nn.Linear(
+                    config.d_model,
+                    config.kerc_residual_bottleneck_dim,
+                    bias=False,
+                )
+                self.kerc_residual_allocator = nn.Linear(
+                    config.kerc_residual_bottleneck_dim,
+                    4 * config.kerc_residual_choice_count,
+                    bias=True,
+                )
+                self.kerc_residual_values = nn.Embedding(
+                    4 * config.kerc_residual_choice_count, config.d_model
+                )
+                # The verifier intentionally has its own token embedding and projections;
+                # it does not reuse answer-producing hidden states.
+                self.kerc_verifier_embedding = nn.Embedding(
+                    config.vocab_size, config.kerc_verifier_dim
+                )
+                self.kerc_verifier_source = nn.Linear(
+                    config.kerc_verifier_dim, config.kerc_verifier_dim, bias=False
+                )
+                self.kerc_verifier_target = nn.Linear(
+                    config.kerc_verifier_dim, config.kerc_verifier_dim, bias=False
+                )
+                self.kerc_verifier_classifier = nn.Linear(
+                    4 * config.kerc_verifier_dim, 4, bias=True
+                )
             if source_encoder_enabled:
                 self.source_layers = [
                     SourceEncoderBlock() for _ in range(config.source_encoder_layers)
@@ -729,8 +808,11 @@ def build_model(
             source_memory: Any | None,
             source_mask: Any | None,
             source_copy_ids: Any | None,
+            generator_logits: Any | None = None,
+            pointer_access: Any | None = None,
         ) -> tuple[Any, dict[str, Any] | None]:
-            generator_logits = self.token_embedding.as_linear(hidden)
+            if generator_logits is None:
+                generator_logits = self.token_embedding.as_linear(hidden)
             if (
                 not pointer_generator_enabled
                 or source_memory is None
@@ -795,6 +877,9 @@ def build_model(
                 pointer_logits, axis=-1, keepdims=True
             )
             gate = mx.sigmoid(self.copy_gate(hidden))
+            if pointer_access is not None:
+                access = pointer_access[:, None, None]
+                gate = gate * access + (1.0 - access)
             logits = mx.logaddexp(
                 generator_log_probs + mx.log(mx.maximum(gate, 1e-6)),
                 pointer_log_probs + mx.log(mx.maximum(1.0 - gate, 1e-6)),
@@ -805,6 +890,111 @@ def build_model(
                 "source_copy_valid": unique_valid,
                 "generator_gate": gate[:, :, 0],
             }
+
+        def kerc_stage_weights(self, tokens: Any) -> Any | None:
+            if not kerc_enabled:
+                return None
+            matches = mx.stack(
+                [
+                    mx.any(tokens == token_id, axis=1).astype(mx.float32)
+                    for token_id in self.kerc_task_token_ids
+                ],
+                axis=-1,
+            )
+            count = mx.sum(matches, axis=-1, keepdims=True)
+            # Multiple control tokens fail closed to the ordinary surface route.
+            valid = count == 1.0
+            return mx.where(valid, matches, mx.zeros_like(matches))
+
+        def kerc_context(
+            self,
+            tokens: Any,
+            source_memory: Any | None,
+            source_mask: Any | None,
+        ) -> tuple[Any, Any, Any]:
+            stage_weights = self.kerc_stage_weights(tokens)
+            if stage_weights is None or source_memory is None or source_mask is None:
+                batch = int(tokens.shape[0])
+                return (
+                    mx.zeros((batch, config.d_model), dtype=mx.float32),
+                    mx.zeros((batch, 4), dtype=mx.float32),
+                    mx.zeros(
+                        (batch, 4, config.kerc_residual_choice_count),
+                        dtype=mx.float32,
+                    ),
+                )
+            denominator = mx.maximum(mx.sum(source_mask, axis=1, keepdims=True), 1.0)
+            summary = mx.sum(source_memory * source_mask[:, :, None], axis=1) / denominator
+            residual_hidden = nn.silu(self.kerc_residual_encoder(summary))
+            residual_logits = self.kerc_residual_allocator(residual_hidden).reshape(
+                int(tokens.shape[0]), 4, config.kerc_residual_choice_count
+            )
+            residual_probabilities = mx.softmax(residual_logits, axis=-1)
+            values = self.kerc_residual_values(
+                mx.arange(4 * config.kerc_residual_choice_count, dtype=mx.int32)
+            ).reshape(4, config.kerc_residual_choice_count, config.d_model)
+            residual_levels = mx.sum(
+                residual_probabilities[:, :, :, None] * values[None, :, :, :],
+                axis=2,
+            )
+            residual_context = mx.mean(residual_levels, axis=1)
+            stage_context = mx.matmul(stage_weights, self.kerc_stage_embedding.weight)
+            # Residual state belongs on compiler and renderer paths, not the core-only
+            # reasoner or the conventional surface control.
+            residual_access = (stage_weights[:, 1] + stage_weights[:, 3])[:, None]
+            return (
+                stage_context + residual_context * residual_access,
+                stage_weights,
+                residual_logits,
+            )
+
+        def kerc_generator_logits(
+            self, hidden: Any, stage_weights: Any | None
+        ) -> Any:
+            base = self.token_embedding.as_linear(hidden)
+            if not kerc_enabled or stage_weights is None:
+                return base
+            stage_hidden = [
+                hidden + adapter(hidden) for adapter in self.kerc_stage_adapters
+            ]
+            stage_logits = mx.stack(
+                [
+                    self.token_embedding.as_linear(stage_hidden[0]),
+                    self.kerc_kernel_output(stage_hidden[1]),
+                    self.kerc_kernel_output(stage_hidden[2]),
+                    self.kerc_surface_output(stage_hidden[3]),
+                ],
+                axis=1,
+            )
+            selected = mx.sum(
+                stage_logits * stage_weights[:, :, None, None], axis=1
+            )
+            active = mx.sum(stage_weights, axis=-1)[:, None, None]
+            return base * (1.0 - active) + selected
+
+        def kerc_verifier_logits(self, tokens: Any) -> Any | None:
+            if not kerc_enabled:
+                return None
+            separator = tokens == config.source_target_separator_token_id
+            seen = mx.cumsum(separator.astype(mx.int32), axis=1)
+            has_separator = (mx.sum(separator.astype(mx.int32), axis=1) > 0).astype(
+                mx.float32
+            )
+            source_mask = (seen == 0).astype(mx.float32) * has_separator[:, None]
+            target_mask = ((seen > 0) & ~separator).astype(mx.float32)
+            embedded = self.kerc_verifier_embedding(tokens)
+            source = mx.sum(embedded * source_mask[:, :, None], axis=1) / mx.maximum(
+                mx.sum(source_mask, axis=1, keepdims=True), 1.0
+            )
+            target = mx.sum(embedded * target_mask[:, :, None], axis=1) / mx.maximum(
+                mx.sum(target_mask, axis=1, keepdims=True), 1.0
+            )
+            source = self.kerc_verifier_source(source)
+            target = self.kerc_verifier_target(target)
+            features = mx.concatenate(
+                [source, target, mx.abs(source - target), source * target], axis=-1
+            )
+            return self.kerc_verifier_classifier(features) * has_separator[:, None]
 
         def mtp_logits(self, hidden: Any) -> list[Any]:
             if not mtp_enabled:
@@ -932,14 +1122,24 @@ def build_model(
             cached_source_memory = None
             cached_source_mask = None
             cached_source_copy_ids = None
+            cached_kerc_context = None
+            cached_kerc_stage_weights = None
+            cached_kerc_residual_logits = None
             layer_cache_input = cache
             trailing = 0
+            if kerc_enabled and cache is not None and len(cache) > config.num_layers:
+                (
+                    cached_kerc_context,
+                    cached_kerc_stage_weights,
+                    cached_kerc_residual_logits,
+                ) = cache[-1]
+                trailing += 1
             if (
                 plan_enabled
                 and cache is not None
-                and len(cache) > config.num_layers
+                and len(cache) > config.num_layers + trailing
             ):
-                cached_plan_context = cache[-1][0]
+                cached_plan_context = cache[-(trailing + 1)][0]
                 trailing += 1
             if (
                 source_encoder_enabled
@@ -970,6 +1170,30 @@ def build_model(
                 cached_plan_context,
                 source_mask if cached_source_memory is None else None,
             )
+            if kerc_enabled:
+                if cached_kerc_context is None:
+                    (
+                        kerc_context,
+                        kerc_stage_weights,
+                        kerc_residual_logits,
+                    ) = self.kerc_context(tokens, source_memory, source_mask)
+                else:
+                    kerc_context = cached_kerc_context
+                    kerc_stage_weights = cached_kerc_stage_weights
+                    kerc_residual_logits = cached_kerc_residual_logits
+                kerc_access = (
+                    source_access
+                    if source_access is not None
+                    else mx.ones(tokens.shape, dtype=mx.float32)
+                )
+                conditioned_hidden = (
+                    conditioned_hidden
+                    + kerc_context[:, None, :] * kerc_access[:, :, None]
+                )
+            else:
+                kerc_context = None
+                kerc_stage_weights = None
+                kerc_residual_logits = None
             attention_mask = self.sequence_attention_mask(tokens, cache)
             if not state_enabled:
                 hidden = conditioned_hidden
@@ -991,18 +1215,47 @@ def build_model(
                     next_cache.append((source_memory, source_mask, source_copy_ids))
                 if plan_enabled:
                     next_cache.append((plan_context,))
+                if kerc_enabled:
+                    next_cache.append(
+                        (kerc_context, kerc_stage_weights, kerc_residual_logits)
+                    )
                 final_hidden = self.final_norm(hidden)
+                generator_logits = self.kerc_generator_logits(
+                    final_hidden, kerc_stage_weights
+                )
+                pointer_access = None
+                if kerc_enabled and kerc_stage_weights is not None:
+                    active = mx.sum(kerc_stage_weights, axis=-1)
+                    pointer_access = (
+                        1.0
+                        - active
+                        + kerc_stage_weights[:, 0]
+                        + kerc_stage_weights[:, 3]
+                    )
                 logits, copy_aux = self.output_logits(
                     final_hidden,
                     source_memory,
                     source_mask,
                     source_copy_ids,
+                    generator_logits,
+                    pointer_access,
                 )
                 if return_training_aux:
                     return logits, next_cache, {
                         "plan_logits": plan_logits,
                         "copy_aux": copy_aux,
                         "mtp_logits": self.mtp_logits(final_hidden),
+                        "kerc": {
+                            "stage_weights": kerc_stage_weights,
+                            "residual_logits": kerc_residual_logits,
+                            "verifier_logits": (
+                                self.kerc_verifier_logits(tokens)
+                                if cache is None
+                                else None
+                            ),
+                        }
+                        if kerc_enabled
+                        else None,
                     }
                 if return_plan_logits and return_copy_aux:
                     return logits, next_cache, plan_logits, copy_aux

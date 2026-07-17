@@ -25,7 +25,7 @@ from typing import Any
 
 import numpy as np
 
-from kernel_english_protocol import validate_training_disposition
+from kernel_english_protocol import TRAINING_TASK_TAGS, validate_training_disposition
 from standard_causal_transformer_model import CausalTransformerConfig, build_model, parameter_count
 from standard_causal_transformer_corpus import load_pretrain_memmaps, pretrain_array_paths
 from standard_causal_transformer_survival import (
@@ -55,6 +55,9 @@ DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
 SHARED_TRUNK_ID = "shared_trunk"
 CONTROL_IDS = ("dense_total_parameter", "dense_active_parameter")
+KERC_ENGLISH_ID = "english_kerc"
+SURFACE_ENGLISH_CONTROL_ID = "english_surface_control"
+ENGLISH_COMPARISON_IDS = (SURFACE_ENGLISH_CONTROL_ID, KERC_ENGLISH_ID)
 
 
 def main() -> int:
@@ -65,7 +68,7 @@ def main() -> int:
     parser.add_argument(
         "--target",
         action="append",
-        choices=[SHARED_TRUNK_ID, *ARM_IDS, *CONTROL_IDS],
+        choices=[SHARED_TRUNK_ID, *ARM_IDS, *CONTROL_IDS, *ENGLISH_COMPARISON_IDS],
     )
     parser.add_argument("--max-steps", type=int, default=0)
     parser.add_argument("--resume", action="store_true")
@@ -446,6 +449,36 @@ def model_accounting(
     if expert_count <= 0:
         raise ValueError("language expert must add parameters to the shared trunk")
     system_total = trunk_count + expert_count * len(ARM_IDS)
+    source_vocab = dict(metadata.get("source_vocab") or {})
+    source_offset = source_token_offset(base, source_vocab)
+    missing_kerc_tokens = [
+        token for token in TRAINING_TASK_TAGS.values() if token not in source_vocab
+    ]
+    if missing_kerc_tokens:
+        raise ValueError(
+            "KERC trusted task tokens missing from canonical vocabulary: "
+            + ",".join(missing_kerc_tokens)
+        )
+    kerc_model = dict(
+        config.get("kerc_english_model")
+        or {
+            **config["shared_trunk_model"],
+            "kerc_stage_adapter_dim": 64,
+            "kerc_residual_choice_count": 4,
+            "kerc_residual_bottleneck_dim": 64,
+            "kerc_verifier_dim": 64,
+        }
+    )
+    kerc_model["kerc_task_token_ids"] = [
+        source_offset + int(source_vocab[TRAINING_TASK_TAGS[objective]])
+        for objective in TRAINING_TASK_TAGS
+    ]
+    kerc_count = count(kerc_model)
+    surface_model, surface_count = matched_encoder_decoder_config(
+        kerc_count,
+        config["shared_trunk_model"],
+        count=count,
+    )
     dense_active_model, dense_active_count = matched_decoder_only_config(
         arm_count, config["arm_model"], count=count
     )
@@ -482,6 +515,19 @@ def model_accounting(
             "parameter_delta_vs_active_arm": dense_active_count - arm_count,
             "architecture": "decoder_only_prefix_lm_control",
         },
+        KERC_ENGLISH_ID: {
+            "model": kerc_model,
+            "parameter_count": kerc_count,
+            "active_parameter_count_per_request": kerc_count,
+            "architecture": "kerc_modular_shared_trunk_candidate",
+        },
+        SURFACE_ENGLISH_CONTROL_ID: {
+            "model": surface_model,
+            "parameter_count": surface_count,
+            "active_parameter_count_per_request": surface_count,
+            "parameter_delta_vs_kerc": surface_count - kerc_count,
+            "architecture": "matched_surface_encoder_decoder_control",
+        },
         "vocab_size": vocab_size,
     }
 
@@ -509,6 +555,39 @@ def matched_decoder_only_config(
         raise ValueError("decoder-only parameter matching requires positive FF slope")
     estimated = max(1, round(1 + (reference_parameters - low_count) / slope))
     choices: list[tuple[int, int, dict[str, Any]]] = []
+    for width in range(max(1, estimated - 3), estimated + 4):
+        model = {**candidate, "ff_dim": width}
+        observed = int(count(model))
+        choices.append((abs(observed - reference_parameters), observed, model))
+    _delta, observed, selected = min(choices, key=lambda row: (row[0], row[1]))
+    return selected, observed
+
+
+def matched_encoder_decoder_config(
+    reference_parameters: int,
+    seed: dict[str, Any],
+    *,
+    count: Any,
+) -> tuple[dict[str, Any], int]:
+    """Width-match a conventional surface model to the full KERC system."""
+
+    candidate = dict(seed)
+    for key in (
+        "kerc_task_token_ids",
+        "kerc_stage_adapter_dim",
+        "kerc_residual_choice_count",
+        "kerc_residual_bottleneck_dim",
+        "kerc_verifier_dim",
+    ):
+        candidate.pop(key, None)
+    candidate["ff_dim"] = 1
+    low_count = int(count(candidate))
+    candidate["ff_dim"] = 2
+    slope = int(count(candidate)) - low_count
+    if slope <= 0:
+        raise ValueError("surface-control parameter matching requires positive FF slope")
+    estimated = max(1, round(1 + (reference_parameters - low_count) / slope))
+    choices = []
     for width in range(max(1, estimated - 3), estimated + 4):
         model = {**candidate, "ff_dim": width}
         observed = int(count(model))
@@ -547,7 +626,12 @@ def target_contracts(
 ) -> dict[str, Any]:
     root = resolve(str(config["checkpoint_root"]))
     targets: dict[str, Any] = {}
-    for target in (SHARED_TRUNK_ID, *ARM_IDS, *CONTROL_IDS):
+    for target in (
+        SHARED_TRUNK_ID,
+        *ARM_IDS,
+        *CONTROL_IDS,
+        *ENGLISH_COMPARISON_IDS,
+    ):
         if target == SHARED_TRUNK_ID:
             view = arm_views.get("mixed_dense_control") or {}
             model_key = "moecot_system"
@@ -564,11 +648,22 @@ def target_contracts(
             model = (models.get(model_key) or {}).get("arm_model") or config["arm_model"]
             parameter_count_value = int((models.get(model_key) or {}).get("arm_parameter_count") or 0)
             role = "language_expert"
-        else:
+        elif target in CONTROL_IDS:
             view = arm_views.get("mixed_dense_control") or {}
             model = (models.get(target) or {}).get("model") or {}
             parameter_count_value = int((models.get(target) or {}).get("parameter_count") or 0)
             role = "dense_control"
+        else:
+            view = (arm_views.get("arms") or {}).get("english") or {}
+            model = (models.get(target) or {}).get("model") or {}
+            parameter_count_value = int(
+                (models.get(target) or {}).get("parameter_count") or 0
+            )
+            role = (
+                "kerc_english_candidate"
+                if target == KERC_ENGLISH_ID
+                else "english_surface_control"
+            )
         directory = root / target
         targets[target] = {
             "target_id": target,
@@ -608,8 +703,16 @@ def target_contracts(
                     for arm in ARM_IDS
                     for split in ("private_train", "private_dev", "private_eval")
                 }
+                if target not in ENGLISH_COMPARISON_IDS
+                else {
+                    split: supervision_audit["artifacts"].get(f"english:{split}")
+                    for split in ("private_train", "private_dev", "private_eval")
+                }
             ),
             "source_conditioned_artifacts": (
+                {}
+                if target in ENGLISH_COMPARISON_IDS
+                else
                 {
                     "private_train": source_conditioned_audit["artifacts"].get(target)
                 }
@@ -632,6 +735,13 @@ def target_contracts(
                 if target == "english"
                 and kernel_english_audit["artifacts"].get("english:private_train")
                 else {
+                    "private_train": kernel_english_audit["artifacts"].get(
+                        "english:private_train"
+                    )
+                }
+                if target in ENGLISH_COMPARISON_IDS
+                and kernel_english_audit["artifacts"].get("english:private_train")
+                else {
                     "english:private_train": kernel_english_audit["artifacts"].get(
                         "english:private_train"
                     )
@@ -639,6 +749,13 @@ def target_contracts(
                 if (target == SHARED_TRUNK_ID or target in CONTROL_IDS)
                 and kernel_english_audit["artifacts"].get("english:private_train")
                 else {}
+            ),
+            "kernel_english_objectives": (
+                list(TRAINING_TASK_TAGS)
+                if target == KERC_ENGLISH_ID
+                else ["surface_direct_control_v1"]
+                if target == SURFACE_ENGLISH_CONTROL_ID
+                else []
             ),
         }
     return targets
@@ -893,6 +1010,10 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
         gaps.append("kernel_english_contract_identity_mismatch")
     artifacts = manifest.get("artifacts") if isinstance(manifest.get("artifacts"), dict) else {}
     objective_count = len(tuple(cfg.get("objective_order") or ()))
+    expected_view_count = sum(
+        int(wanted) * objective_count
+        for wanted in (cfg.get("records_by_split") or {}).values()
+    )
     for split, wanted in (cfg.get("records_by_split") or {}).items():
         key = f"english:{split}"
         row = artifacts.get(key) if isinstance(artifacts.get(key), dict) else {}
@@ -908,6 +1029,10 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
         gaps.append("kernel_english_split_overlap")
     if int(manifest.get("derived_view_unique_data_credit") or 0):
         gaps.append("kernel_english_derived_view_unique_credit_nonzero")
+    if int(manifest.get("verifier_corruption_count") or 0) != expected_view_count:
+        gaps.append("kernel_english_verifier_corruption_count_mismatch")
+    if manifest.get("verifier_corruptions_receive_generator_loss") is not False:
+        gaps.append("kernel_english_verifier_corruption_generator_credit")
     for key in (
         "public_training_rows_written",
         "public_benchmark_payload_count",
@@ -1002,6 +1127,9 @@ def execute_targets(
             receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
             maximum_sequence_tokens=int(
                 config["kernel_english_training"]["maximum_sequence_tokens"]
+            ),
+            objective_filter=tuple(
+                plan["targets"][target_id].get("kernel_english_objectives") or ()
             ),
         )
         if (plan["targets"][target_id].get("kernel_english_artifacts") or {})
@@ -1196,7 +1324,12 @@ def should_evaluate_target(target: dict[str, Any]) -> bool:
     """Only executable model compositions receive direct behavior evaluation."""
 
     role = str(target.get("role") or "")
-    return role in {"language_expert", "dense_control"}
+    return role in {
+        "language_expert",
+        "dense_control",
+        "english_surface_control",
+        "kerc_english_candidate",
+    }
 
 
 def materialize_target_supervision(
@@ -1208,6 +1341,7 @@ def materialize_target_supervision(
     artifact_field: str = "supervision_artifacts",
     receipt_policy: str = "project_theseus_moecot_exact_supervision_arrays_v1",
     maximum_sequence_tokens: int | None = None,
+    objective_filter: tuple[str, ...] = (),
 ) -> Any:
     """Encode the frozen train split without truncation or hidden-field routing."""
 
@@ -1235,6 +1369,10 @@ def materialize_target_supervision(
 
     sequences: list[list[int]] = []
     mask_starts: list[int] = []
+    generator_loss_enabled: list[bool] = []
+    kerc_residual_rows: list[list[int]] = []
+    kerc_verifier_rows: list[list[int]] = []
+    kerc_mode = str(target.get("role") or "") == "kerc_english_candidate"
     row_hashes: list[str] = []
     artifact_receipts: list[dict[str, Any]] = []
     for key, artifact in selected:
@@ -1244,11 +1382,15 @@ def materialize_target_supervision(
         if not path.is_file() or sha256_file(path) != str(artifact.get("sha256") or ""):
             raise ValueError(f"supervision artifact identity mismatch: {key}")
         observed_rows = 0
+        source_rows = 0
         with path.open(encoding="utf-8") as handle:
             for line in handle:
                 row = json.loads(line)
+                source_rows += 1
                 if row.get("split") != "private_train" or row.get("public_benchmark") is not False:
-                    raise ValueError(f"invalid supervision boundary: {key}:{observed_rows}")
+                    raise ValueError(f"invalid supervision boundary: {key}:{source_rows - 1}")
+                if objective_filter and str(row.get("objective") or "") not in objective_filter:
+                    continue
                 prompt = str(row.get("prompt") or "")
                 answer = str(row.get("target") or "")
                 source_body_ids, source_receipt = encode_tokens(
@@ -1285,6 +1427,77 @@ def materialize_target_supervision(
                     raise ValueError(f"frozen supervision row requires truncation: {key}")
                 sequences.append(sequence)
                 mask_starts.append(target_start - 1)
+                generator_loss_enabled.append(True)
+                if kerc_mode:
+                    residual = list(row.get("kerc_residual_labels") or [])
+                    positive = list(row.get("kerc_verifier_positive_labels") or [])
+                    negative = (
+                        row.get("kerc_verifier_negative")
+                        if isinstance(row.get("kerc_verifier_negative"), dict)
+                        else {}
+                    )
+                    negative_labels = list(negative.get("labels") or [])
+                    if (
+                        len(residual) != 4
+                        or any(isinstance(value, bool) or not isinstance(value, int) or value not in range(4) for value in residual)
+                        or positive != [1, 1, 1, 1]
+                        or len(negative_labels) != 4
+                        or any(
+                            isinstance(value, bool)
+                            or not isinstance(value, int)
+                            or value not in (0, 1)
+                            for value in negative_labels
+                        )
+                        or negative_labels.count(0) != 1
+                        or negative.get("generator_loss_enabled") is not False
+                    ):
+                        raise ValueError(f"invalid KERC auxiliary supervision: {key}:{source_rows - 1}")
+                    negative_answer = str(negative.get("target") or "")
+                    negative_ids, negative_receipt = encode_tokens(
+                        exact_text_tokens(negative_answer), target_vocab, stream="target"
+                    )
+                    if (
+                        not negative_answer
+                        or int(negative_receipt.get("unknown_token_count") or 0)
+                        or negative_answer == answer
+                        or str(negative.get("target_sha256") or "")
+                        != "sha256:"
+                        + hashlib.sha256(negative_answer.encode("utf-8")).hexdigest()
+                    ):
+                        raise ValueError(f"invalid KERC verifier corruption: {key}:{source_rows - 1}")
+                    negative_sequence = [GLOBAL_BOS_ID]
+                    negative_sequence.extend(source_offset + int(value) for value in source_ids)
+                    negative_sequence.append(SOURCE_TARGET_SEPARATOR_ID)
+                    negative_sequence.append(target_offset + int(target_vocab["<bos>"]))
+                    negative_start = len(negative_sequence)
+                    negative_sequence.extend(
+                        target_offset + int(value) for value in negative_ids
+                    )
+                    negative_sequence.append(target_offset + int(target_vocab["<eos>"]))
+                    if len(negative_sequence) > max_sequence + 1:
+                        raise ValueError(
+                            f"KERC verifier corruption requires truncation: {key}"
+                        )
+                    kerc_residual_rows.append([int(value) for value in residual])
+                    kerc_verifier_rows.append([1, 1, 1, 1])
+                    sequences.append(negative_sequence)
+                    mask_starts.append(negative_start - 1)
+                    generator_loss_enabled.append(False)
+                    kerc_residual_rows.append([int(value) for value in residual])
+                    kerc_verifier_rows.append([int(value) for value in negative_labels])
+                    row_hashes.append(
+                        hashlib.sha256(
+                            (
+                                json.dumps(trusted_prefix, separators=(",", ":"))
+                                + "\0"
+                                + prompt
+                                + "\0VERIFIER_ONLY\0"
+                                + negative_answer
+                                + "\0"
+                                + json.dumps(negative_labels, separators=(",", ":"))
+                            ).encode()
+                        ).hexdigest()
+                    )
                 row_hashes.append(
                     hashlib.sha256(
                         (
@@ -1297,25 +1510,29 @@ def materialize_target_supervision(
                     ).hexdigest()
                 )
                 observed_rows += 1
-        if observed_rows != int(artifact.get("row_count") or 0):
+        if source_rows != int(artifact.get("row_count") or 0):
             raise ValueError(f"supervision row count changed: {key}")
         artifact_receipts.append(
             {
                 "key": key,
                 "path": relative(path),
                 "sha256": str(artifact["sha256"]),
-                "row_count": observed_rows,
+                "row_count": source_rows,
+                "selected_row_count": observed_rows,
             }
         )
 
     inputs = np.zeros((len(sequences), max_sequence), dtype=np.int32)
     labels = np.zeros((len(sequences), max_sequence), dtype=np.int32)
     mask = np.zeros((len(sequences), max_sequence), dtype=np.uint8)
-    for index, (sequence, mask_start) in enumerate(zip(sequences, mask_starts)):
+    for index, (sequence, mask_start, generator_enabled) in enumerate(
+        zip(sequences, mask_starts, generator_loss_enabled)
+    ):
         width = len(sequence) - 1
         inputs[index, :width] = sequence[:-1]
         labels[index, :width] = sequence[1:]
-        mask[index, mask_start:width] = 1
+        if generator_enabled:
+            mask[index, mask_start:width] = 1
     loss_mask = mask.astype(np.float32)
     termination_id = target_offset + int(target_vocab["<eos>"])
     byte_begin_id = target_offset + int(target_vocab[TARGET_BYTE_BEGIN])
@@ -1331,6 +1548,8 @@ def materialize_target_supervision(
         "target_id": target["target_id"],
         "artifacts": artifact_receipts,
         "row_count": len(sequences),
+        "generator_training_row_count": sum(generator_loss_enabled),
+        "verifier_only_row_count": len(generator_loss_enabled) - sum(generator_loss_enabled),
         "target_positions": int(mask.sum()),
         "weighted_loss_positions": float(loss_mask.sum()),
         "termination_loss_weight": float(config["training"]["termination_loss_weight"]),
@@ -1345,6 +1564,7 @@ def materialize_target_supervision(
         "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
         "source_truncation_count": 0,
         "target_truncation_count": 0,
+        "objective_filter": list(objective_filter),
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -1354,6 +1574,12 @@ def materialize_target_supervision(
         labels=labels,
         mask=mask,
         loss_mask=loss_mask,
+        kerc_residual_labels=(
+            np.asarray(kerc_residual_rows, dtype=np.int32) if kerc_mode else None
+        ),
+        kerc_verifier_labels=(
+            np.asarray(kerc_verifier_rows, dtype=np.float32) if kerc_mode else None
+        ),
         receipt=receipt,
     )
 
@@ -2133,6 +2359,26 @@ def train_target(
             plan_loss_mode="binary_multilabel",
             plan_slot_count=0,
             plan_factor_group_sizes=(),
+            kerc_residual_labels=(
+                kernel_english_stage.kerc_residual_labels
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else None
+            ),
+            kerc_residual_weight=(
+                float(config["kernel_english_training"]["residual_auxiliary_weight"])
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else 0.0
+            ),
+            kerc_verifier_labels=(
+                kernel_english_stage.kerc_verifier_labels
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else None
+            ),
+            kerc_verifier_weight=(
+                float(config["kernel_english_training"]["verifier_auxiliary_weight"])
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else 0.0
+            ),
             phase_name=f"moecot_kernel_english:{target_id}",
             target_positions=remaining_kernel_positions,
             batch_size=kernel_batch_size,
@@ -2497,7 +2743,9 @@ def validate_config(config: dict[str, Any]) -> None:
             shape.get("maximum_parameter_overhead_ratio") or 0.0
         ),
     }
-    for model_id in ("shared_trunk_model", "arm_model"):
+    for model_id in ("shared_trunk_model", "arm_model", "kerc_english_model"):
+        if model_id not in config:
+            continue
         model = config.get(model_id) or {}
         if {key: model.get(key) for key in expected_mtp} != expected_mtp:
             raise ValueError(f"{model_id} does not consume the frozen MTP contract")
@@ -2518,6 +2766,26 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("language expert dimension must match the topology contract")
     if source_expert_dim != int(topology.get("source_expert_adapter_dim") or 0):
         raise ValueError("source expert dimension must match the topology contract")
+    kerc_model = dict(config.get("kerc_english_model") or {})
+    if kerc_model:
+        kerc_dimensions = {
+            key: int(kerc_model.pop(key, 0))
+            for key in (
+                "kerc_stage_adapter_dim",
+                "kerc_residual_choice_count",
+                "kerc_residual_bottleneck_dim",
+                "kerc_verifier_dim",
+            )
+        }
+        if kerc_model != dict(config.get("shared_trunk_model") or {}):
+            raise ValueError("KERC English model must exactly extend the shared trunk")
+        if (
+            kerc_dimensions["kerc_stage_adapter_dim"] <= 0
+            or kerc_dimensions["kerc_residual_choice_count"] < 4
+            or kerc_dimensions["kerc_residual_bottleneck_dim"] <= 0
+            or kerc_dimensions["kerc_verifier_dim"] <= 0
+        ):
+            raise ValueError("KERC English learned module dimensions are incomplete")
     if topology.get("expert_trainable_scope") not in {
         "adapter_only",
         "source_conditioned_delta",
@@ -2603,6 +2871,10 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("KERC batch size must be positive and no larger than the base batch")
     if int(kernel_cfg.get("maximum_sequence_tokens") or 0) <= 0:
         raise ValueError("KERC sequence budget must be positive")
+    for key in ("residual_auxiliary_weight", "verifier_auxiliary_weight"):
+        value = float(kernel_cfg.get(key) or 0.0)
+        if not 0.0 < value <= 1.0:
+            raise ValueError(f"KERC {key} must be positive and no greater than one")
     if not 1.0 <= float(training.get("termination_loss_weight") or 0.0) <= 8.0:
         raise ValueError("termination loss weight must remain bounded")
     if not 1.0 <= float(training.get("byte_boundary_loss_weight") or 0.0) <= 8.0:

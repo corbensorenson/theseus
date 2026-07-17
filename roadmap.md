@@ -173,7 +173,7 @@ rebuilt; learned efficacy still requires the prospectively frozen joint campaign
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
 | Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the 57.315M package previously replayed, but its authority is invalidated by the KERC adequacy correction. No long optimizer run or new capability evidence exists yet | complete faithful KERC architecture/data/objective/checkpoint integration, add its matched English-arm alternative, rebuild the freeze package, then begin the unchanged joint campaign |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: exact packets and VCM residual mechanics exist, but the prior 192-row campaign used a keyword compiler/renderer and TF-IDF logistic regression rather than the paper's learned pipeline. Its result is proxy-negative, not KERC-negative | implement all learned stages and decision-grade controls before refreezing; no KERC utility or failure claim until the faithful matched campaign runs |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: exact packets/VCM residual mechanics now feed an explicit MLX KERC model with trusted stage routing, separate Kernel/surface heads, learned four-level residual allocation, an independent verifier, joint auxiliary losses, strict reload, and a parameter-matched surface-English target. The prior keyword/linear result remains proxy-negative only | build the governed source-disjoint stage corpus and separate V_K/V_P vocabulary, bind real residual/verifier labels and VCM lifecycle rewards, pass overfit/intervention/ablation/resume/resource canaries, then refreeze; no KERC utility or failure claim before the matched campaign |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -1653,6 +1653,22 @@ escape are retained as negative evidence for that exact toy proxy and as useful
 instrument defects. They are `INCONCLUSIVE_IMPLEMENTATION` for KERC and cannot retire
 the architecture. The previous freeze package is stale until the work below is real,
 integrated, mechanically replayed, and prospectively frozen.
+
+**First faithful neural mechanics tranche (2026-07-17):** the canonical MLX model and
+MoECOT trainer now expose `english_kerc` as a separately checkpointed candidate and
+`english_surface_control` as a conventional encoder-decoder control matched within
+300 parameters (`15,256,030` versus `15,256,330`). KERC has trusted source-only stage
+selection, stage adapters, separate Kernel/surface output paths, a learned four-level
+residual allocator, an independently parameterized raw-token verifier, copy access,
+content-bound residual labels, one targeted semantic/object/value/fidelity corruption
+per positive view with zero generator loss, joint residual/verifier losses, cached
+decode, and strict checkpoint reload. The stage checks both positive and corruption
+representability before publishing. The live
+plan has ten explicit targets and is RED only on `kernel_english_manifest_missing`.
+This is architecture mechanics, not a learned KERC system or capability result: the
+separate Kernel vocabulary, governed stage corpus, distribution-calibrated labels, VCM interaction
+reward, executable recompile verifier, full resume/migration/resource proofs, overfit,
+intervention, ablation, and matched multi-seed campaign remain open.
 
 - Define one versioned `KernelPacket` protocol spanning immutable/content-addressed
   source identity, protected objects, correction lattice, expanded semantic Kernel,

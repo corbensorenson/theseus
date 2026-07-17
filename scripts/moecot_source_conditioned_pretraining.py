@@ -226,6 +226,7 @@ def materialize_kernel_english(
     encoded_length_stats: dict[str, Any] = {}
     all_source_hashes: set[str] = set()
     raw_source_bytes = 0
+    verifier_corruption_count = 0
     for split, records in selected.items():
         wanted = int(cfg["records_by_split"][split])
         if len(records) != wanted:
@@ -253,15 +254,38 @@ def materialize_kernel_english(
                 ):
                     gaps.append(f"kernel_view_unrepresentable:{view['row_id']}")
                     continue
+                verifier_negative = view.get("kerc_verifier_negative") or {}
+                negative_target = str(verifier_negative.get("target") or "")
+                negative_ids, negative_receipt = encode_tokens(
+                    exact_text_tokens(negative_target), target_vocab, stream="target"
+                )
+                if (
+                    not negative_target
+                    or verifier_negative.get("generator_loss_enabled") is not False
+                    or int(negative_receipt.get("unknown_token_count") or 0)
+                ):
+                    gaps.append(
+                        f"kernel_view_verifier_corruption_invalid:{view['row_id']}"
+                    )
+                    continue
                 sequence_tokens = len(source_ids) + len(target_ids) + 4
+                negative_sequence_tokens = len(source_ids) + len(negative_ids) + 4
                 if sequence_tokens > int(cfg["maximum_sequence_tokens"]):
                     gaps.append(
                         f"kernel_view_requires_truncation:{view['row_id']}:{sequence_tokens}"
                     )
                     continue
+                if negative_sequence_tokens > int(cfg["maximum_sequence_tokens"]):
+                    gaps.append(
+                        "kernel_view_verifier_corruption_requires_truncation:"
+                        f"{view['row_id']}:{negative_sequence_tokens}"
+                    )
+                    continue
                 source_lengths.append(len(source_ids))
                 target_lengths.append(len(target_ids))
+                target_lengths.append(len(negative_ids))
                 objective_counts[str(view["objective"])] += 1
+                verifier_corruption_count += 1
                 views.append(view)
         path = stage_root / f"{split}.jsonl"
         write_jsonl_atomic(path, views)
@@ -312,6 +336,8 @@ def materialize_kernel_english(
         "unique_raw_source_bytes": raw_source_bytes,
         "derived_view_unique_data_credit": 0,
         "derived_view_optimizer_exposure_count": sum(objective_counts.values()),
+        "verifier_corruption_count": verifier_corruption_count,
+        "verifier_corruptions_receive_generator_loss": False,
         "split_overlap_audit": overlaps,
         "encoded_length_stats": encoded_length_stats,
         "rejection_counts": dict(rejection_counts),
@@ -398,6 +424,10 @@ def validate_kernel_english_manifest(
         gaps.append("kernel_stage_contract_identity_mismatch")
     artifacts = payload.get("artifacts") if isinstance(payload.get("artifacts"), dict) else {}
     objective_count = len(TRAINING_OBJECTIVES)
+    expected_view_count = sum(
+        int(record_count) * objective_count
+        for record_count in cfg["records_by_split"].values()
+    )
     for split, record_count in cfg["records_by_split"].items():
         key = f"english:{split}"
         artifact = artifacts.get(key) if isinstance(artifacts.get(key), dict) else {}
@@ -413,6 +443,10 @@ def validate_kernel_english_manifest(
         gaps.append("kernel_stage_split_overlap")
     if int(payload.get("derived_view_unique_data_credit") or 0):
         gaps.append("kernel_stage_derived_view_unique_credit_nonzero")
+    if int(payload.get("verifier_corruption_count") or 0) != expected_view_count:
+        gaps.append("kernel_stage_verifier_corruption_count_mismatch")
+    if payload.get("verifier_corruptions_receive_generator_loss") is not False:
+        gaps.append("kernel_stage_verifier_corruption_generator_credit")
     ledger = payload.get("verification_ledger") or {}
     ledger_path = resolve(str(ledger.get("path") or ""))
     if (

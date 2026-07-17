@@ -34,7 +34,13 @@ share toward zero. Public benchmarks are calibration only.
   is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
 - **KERC disposition:** `partial` / `INCONCLUSIVE_IMPLEMENTATION`. The exact packet and
-  VCM residual substrate are useful mechanics, but `p4-m8-kerc-runtime-001` trained a
+  VCM residual substrate now connect to an explicit MLX KERC candidate with trusted
+  source-only stage routing, separate Kernel/surface output paths, a learned four-level
+  residual allocator, independent verifier parameters, content-bound four-channel
+  residual labels, targeted verifier counterexamples that receive zero generator loss,
+  joint auxiliary losses, cached decode, gradient-flow coverage, and strict reload. A conventional English control is
+  matched within 300 parameters. The live ten-target plan remains RED only because the
+  governed KERC stage manifest is absent. `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
   hand-coded keyword compiler and renderer. It did not implement or train the paper's
   constrained compiler, Kernel reasoner, learned residual allocator, structured answer
@@ -69,9 +75,11 @@ share toward zero. Public benchmarks are calibration only.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
 - **Immediate dependency:** implement faithful KERC through existing English-arm,
-  Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier owners; build governed licensed
-  source-disjoint stage supervision; pass learnability/gradient/overfit/intervention/
-  ablation/resource/security canaries; freeze strong matched controls and total-system
+  Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier owners. The first neural mechanics
+  tranche is integrated; next build governed licensed source-disjoint stage supervision,
+  a real separate V_K/V_P vocabulary, residual/interaction and verifier-corruption labels,
+  and executable recompile verification. Then pass overfit/intervention/ablation/resume/
+  migration/resource/security canaries and freeze strong matched controls and total-system
   accounting; then rebuild the architecture package. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
   DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces

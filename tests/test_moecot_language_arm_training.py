@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import inspect
+import hashlib
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -160,6 +161,8 @@ def tiny_config(tmp_path: Path) -> dict:
             ],
             "maximum_sequence_tokens": 128,
             "batch_size": 1,
+            "residual_auxiliary_weight": 0.25,
+            "verifier_auxiliary_weight": 0.5,
         },
         "evaluation": {
             "policy": "project_theseus_moecot_direct_model_only_evaluation_v1",
@@ -214,6 +217,12 @@ def test_retired_kerc_path_has_zero_optimizer_exposure(tmp_path: Path) -> None:
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
     cfg["kernel_english_training"] = canonical["kernel_english_training"]
+    cfg["kernel_english_training"]["required"] = False
+    cfg["kernel_english_training"]["records_by_split"] = {
+        "private_train": 0,
+        "private_dev": 0,
+        "private_eval": 0,
+    }
     cfg["training"]["kernel_english_optimizer_repetitions"] = 0
 
     validate_config(cfg)
@@ -363,6 +372,8 @@ def test_config_rejects_capability_credit_and_hidden_fallback(tmp_path: Path) ->
 def test_only_executable_compositions_receive_direct_evaluation() -> None:
     assert should_evaluate_target({"role": "language_expert"}) is True
     assert should_evaluate_target({"role": "dense_control"}) is True
+    assert should_evaluate_target({"role": "english_surface_control"}) is True
+    assert should_evaluate_target({"role": "kerc_english_candidate"}) is True
     assert should_evaluate_target({"role": "shared_trunk"}) is False
     assert should_evaluate_target({"role": ""}) is False
 
@@ -557,8 +568,6 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
     }
     artifact = tmp_path / "train.jsonl"
     artifact.write_text(json.dumps(row) + "\n")
-    import hashlib
-
     target = {
         "target_id": "english",
         "supervision_artifacts": {
@@ -608,6 +617,72 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
             target,
             metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
         )
+
+
+def test_kerc_materialization_trains_verifier_negatives_without_generator_credit(
+    tmp_path: Path,
+) -> None:
+    source_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3}
+    target_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3}
+    reserve_byte_fallback_tokens(source_vocab, max_vocab=270, stream="source")
+    reserve_byte_fallback_tokens(target_vocab, max_vocab=270, stream="target")
+    source_vocab["<KERC_TASK_SURFACE_TO_KERNEL>"] = len(source_vocab)
+    row = {
+        "split": "private_train",
+        "arm_id": "english",
+        "objective": "surface_to_kernel_program_v1",
+        "public_benchmark": False,
+        "prompt": "Compile this governed sentence.",
+        "target": '{"program":"valid"}',
+        "trusted_source_prefix_tokens": ["<KERC_TASK_SURFACE_TO_KERNEL>"],
+        "trusted_prefix_authority": "internal_objective_route_only",
+        "kerc_residual_labels": [1, 0, 0, 3],
+        "kerc_verifier_positive_labels": [1, 1, 1, 1],
+        "kerc_verifier_negative": {
+            "target": '{"program":"corrupted"}',
+            "target_sha256": "sha256:"
+            + hashlib.sha256(b'{"program":"corrupted"}').hexdigest(),
+            "labels": [0, 1, 1, 1],
+            "generator_loss_enabled": False,
+        },
+    }
+    artifact = tmp_path / "kerc.jsonl"
+    artifact.write_text(json.dumps(row) + "\n")
+
+    target = {
+        "target_id": "english_kerc",
+        "role": "kerc_english_candidate",
+        "kernel_english_artifacts": {
+            "private_train": {
+                "path": str(artifact),
+                "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+                "row_count": 1,
+            }
+        },
+    }
+    stage = materialize_target_supervision(
+        {
+            "training": {
+                "termination_loss_weight": 4.0,
+                "byte_boundary_loss_weight": 2.0,
+            }
+        },
+        {"tokenization": {"max_sequence_tokens": 128}},
+        target,
+        metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
+        artifact_field="kernel_english_artifacts",
+        receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
+        maximum_sequence_tokens=128,
+        objective_filter=("surface_to_kernel_program_v1",),
+    )
+
+    assert stage.inputs.shape[0] == 2
+    assert int(stage.mask[0].sum()) > 0
+    assert int(stage.mask[1].sum()) == 0
+    assert stage.receipt["generator_training_row_count"] == 1
+    assert stage.receipt["verifier_only_row_count"] == 1
+    assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3], [1, 0, 0, 3]]
+    assert stage.kerc_verifier_labels.tolist() == [[1, 1, 1, 1], [0, 1, 1, 1]]
 
 
 def test_generation_api_cannot_receive_hidden_target() -> None:

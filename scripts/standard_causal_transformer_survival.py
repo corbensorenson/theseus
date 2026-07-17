@@ -2670,22 +2670,33 @@ def causal_loss(
     plan_loss_mode: str = "binary_multilabel",
     plan_slot_count: int = 0,
     plan_factor_group_sizes: tuple[int, ...] = (),
+    kerc_residual_labels: Any | None = None,
+    kerc_residual_weight: float = 0.0,
+    kerc_verifier_labels: Any | None = None,
+    kerc_verifier_weight: float = 0.0,
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
     mtp_weight = float(getattr(model, "mtp_loss_scale", 0.0))
     needs_plan = plan_labels is not None and plan_weight > 0.0
-    if needs_plan or copy_weight > 0.0 or mtp_weight > 0.0:
+    needs_kerc = (
+        kerc_residual_labels is not None and kerc_residual_weight > 0.0
+    ) or (kerc_verifier_labels is not None and kerc_verifier_weight > 0.0)
+    if needs_plan or copy_weight > 0.0 or mtp_weight > 0.0 or needs_kerc:
         logits, _cache, training_aux = model(inputs, return_training_aux=True)
         plan_logits = training_aux.get("plan_logits")
         copy_aux = training_aux.get("copy_aux")
         mtp_logits = list(training_aux.get("mtp_logits") or [])
+        kerc_aux = training_aux.get("kerc")
         if needs_plan and plan_logits is None:
             raise ValueError("semantic plan labels require an enabled learned plan head")
+        if needs_kerc and not isinstance(kerc_aux, dict):
+            raise ValueError("KERC labels require the faithful learned KERC modules")
     else:
         logits, _cache = model(inputs)
         plan_logits = None
         mtp_logits = []
+        kerc_aux = None
     token_loss = nn.losses.cross_entropy(logits, labels)
     denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
     body_loss = mx.sum(token_loss * mask) / denominator
@@ -2703,6 +2714,29 @@ def causal_loss(
             mx,
             nn,
         )
+    if kerc_residual_labels is not None and kerc_residual_weight > 0.0:
+        residual_logits = kerc_aux.get("residual_logits") if kerc_aux else None
+        if residual_logits is None:
+            raise ValueError("KERC residual labels require residual allocator logits")
+        choices = int(residual_logits.shape[-1])
+        residual_loss = mx.mean(
+            nn.losses.cross_entropy(
+                residual_logits.reshape(-1, choices),
+                kerc_residual_labels.astype(mx.int32).reshape(-1),
+            )
+        )
+        body_loss = body_loss + float(kerc_residual_weight) * residual_loss
+    if kerc_verifier_labels is not None and kerc_verifier_weight > 0.0:
+        verifier_logits = kerc_aux.get("verifier_logits") if kerc_aux else None
+        if verifier_logits is None:
+            raise ValueError("KERC verifier labels require full-sequence verifier logits")
+        verifier_targets = kerc_verifier_labels.astype(mx.float32)
+        verifier_loss = mx.mean(
+            mx.maximum(verifier_logits, 0.0)
+            - verifier_logits * verifier_targets
+            + mx.log1p(mx.exp(-mx.abs(verifier_logits)))
+        )
+        body_loss = body_loss + float(kerc_verifier_weight) * verifier_loss
     if plan_logits is None:
         return body_loss
     plan_targets = plan_labels.astype(mx.float32)
@@ -2874,6 +2908,10 @@ def train_phase(
     plan_loss_mode: str,
     plan_slot_count: int,
     plan_factor_group_sizes: tuple[int, ...],
+    kerc_residual_labels: np.ndarray | None = None,
+    kerc_residual_weight: float = 0.0,
+    kerc_verifier_labels: np.ndarray | None = None,
+    kerc_verifier_weight: float = 0.0,
     phase_name: str,
     target_positions: int,
     batch_size: int,
@@ -2890,6 +2928,20 @@ def train_phase(
 ) -> dict[str, Any]:
     if not len(inputs) or max_steps <= 0:
         return {"phase": phase_name, "optimizer_steps": 0, "target_positions_consumed": 0, "losses": []}
+    if kerc_residual_labels is not None and (
+        len(kerc_residual_labels) != len(inputs)
+        or np.asarray(kerc_residual_labels).shape[1:] != (4,)
+    ):
+        raise ValueError("KERC residual labels must be one four-channel row per sequence")
+    if kerc_verifier_labels is not None and (
+        len(kerc_verifier_labels) != len(inputs)
+        or np.asarray(kerc_verifier_labels).shape[1:] != (4,)
+    ):
+        raise ValueError("KERC verifier labels must be one four-dimension row per sequence")
+    if (kerc_residual_labels is None) != (float(kerc_residual_weight) == 0.0):
+        raise ValueError("KERC residual labels and positive weight must be supplied together")
+    if (kerc_verifier_labels is None) != (float(kerc_verifier_weight) == 0.0):
+        raise ValueError("KERC verifier labels and positive weight must be supplied together")
     prepared_plan_labels, plan_label_receipt = prepare_semantic_plan_labels(
         plan_labels,
         mode=plan_label_mode,
@@ -2971,6 +3023,16 @@ def train_phase(
                 if prepared_plan_labels is not None
                 else None
             )
+            batch_kerc_residual = (
+                mx.array(np.asarray(kerc_residual_labels[indices]), dtype=mx.int32)
+                if kerc_residual_labels is not None
+                else None
+            )
+            batch_kerc_verifier = (
+                mx.array(np.asarray(kerc_verifier_labels[indices]), dtype=mx.float32)
+                if kerc_verifier_labels is not None
+                else None
+            )
             loss, grads = loss_and_grad(
                 model,
                 x,
@@ -2984,6 +3046,10 @@ def train_phase(
                 plan_loss_mode,
                 plan_slot_count,
                 plan_factor_group_sizes,
+                batch_kerc_residual,
+                float(kerc_residual_weight),
+                batch_kerc_verifier,
+                float(kerc_verifier_weight),
             )
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
@@ -3056,6 +3122,18 @@ def train_phase(
         "semantic_plan_loss_mode": plan_loss_mode,
         "semantic_plan_slot_count": int(plan_slot_count),
         "semantic_plan_factor_group_sizes": list(plan_factor_group_sizes),
+        "kerc_residual_auxiliary_weight": float(kerc_residual_weight),
+        "kerc_verifier_auxiliary_weight": float(kerc_verifier_weight),
+        "kerc_residual_labels_sha256": (
+            hashlib.sha256(np.asarray(kerc_residual_labels, dtype=np.int32).tobytes()).hexdigest()
+            if kerc_residual_labels is not None
+            else ""
+        ),
+        "kerc_verifier_labels_sha256": (
+            hashlib.sha256(np.asarray(kerc_verifier_labels, dtype=np.float32).tobytes()).hexdigest()
+            if kerc_verifier_labels is not None
+            else ""
+        ),
         "external_inference_calls": 0,
     }
 

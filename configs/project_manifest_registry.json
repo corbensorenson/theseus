@@ -262,15 +262,15 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "0694e4d739b48e47d336418ad1d64f2c471ff13f11fced4d7ab9671f51e32f29"
+          "sha256": "e6023d243dadd2340e1a54454774d67a2b48cf96498e63e6c397460ef098515a"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "e81a72518231985efcbee57ee0ec70d5ebf8c529befa84742d47e059f8d16ab5"
+          "sha256": "6c910565ed3e79d91ddd47edf6f660bfa132ecac3dcb922d56988f38970a0b98"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "baec10a873658fd24cfa5c5cf68181e702fe1ece5bba717f4d671500f1218ec8"
+          "sha256": "0da8da3954f182195285c17639bc384c6d2f583a711d5bac407e2d1db5b5e3f2"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -298,7 +298,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "cded94760c53fc20217de4f0ead85480a9287361e5146a18d7d63144ecbebc46"
+          "sha256": "34267ca334186ed7d442325fe1a48f3fbbd42345274ffb8d146f29372ea7c3bf"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5250,7 +5250,7 @@
       "surface_id": "neural_seed_and_decoder",
       "status": "experimental",
       "implementation_type": "independent_language_arm_mlx_training_runtime",
-      "backend": "python_mlx_apple_all_data_shared_trunk_target_isolated_encoder_decoder_pointer_generator_language_expert_adapters",
+      "backend": "python_mlx_apple_shared_trunk_language_experts_plus_explicit_kerc_and_matched_surface_english_targets",
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
@@ -5281,6 +5281,7 @@
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_survival.py",
         "tests/test_moecot_language_arm_training.py",
+        "tests/test_standard_causal_transformer_survival.py",
         "tests/test_moecot_dense_exact_recovery_diagnostic.py",
         "tests/test_neural_seed_functional_cases.py",
         "tests/test_neural_seed_functional_verifiers.py",
@@ -5313,7 +5314,10 @@
           "copy_gate_or_exact_token_identity_mapping_changed",
           "copy_alignment_auxiliary_or_training_only_target_flow_changed",
           "shared_trunk_or_expert_checkpoint_ownership_changed",
-          "direct_behavior_remains_zero"
+          "direct_behavior_remains_zero",
+          "kerc_stage_manifest_missing_or_identity_changed",
+          "kerc_target_or_surface_control_parameter_matching_changed",
+          "kerc_stage_residual_verifier_gradient_or_cache_parity_changed"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
       },
@@ -5329,7 +5333,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M-active v8 MoECOT candidate and both matched dense controls are immutable negative evidence for that exact scale/data/training regime: all code arms remained functionally zero and no architecture was selected. The post-v8 candidate is separately preregistered at 57,315,329 active and 67,332,614 total parameters with a 54,811,649-parameter shared trunk and five independently owned 2,504,193-parameter specialist deltas; matched dense controls, task-complete data floors, exact position accounting, and finite MLX mechanics canaries are GREEN but grant no training or capability claim. The KERC retirement is withdrawn: its prior authored-template keyword/linear proxy omitted the claimed learned compiler, Kernel reasoner, residual allocator, renderer, and verifier, so it is INCONCLUSIVE_IMPLEMENTATION for KERC and negative only for that proxy. Twelve architecture contracts retain complete mechanics dispositions; faithful KERC integration and a rebuilt decision-grade freeze package are the sole reopened pre-training architecture obligation. QCSA remains bounded to its retained VCM identity/certificate/migration mechanisms. Routing, deterministic rendering, templates, tools, forced closure, and assisted output receive no model-only capability credit."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has an explicit 15,256,030-parameter MLX target, a 15,256,330-parameter surface-English control, learned stage/residual/verifier mechanics, joint auxiliary losses, cache parity, gradient coverage, and strict reload. The ten-target plan is RED only because the governed KERC stage manifest is absent. Separate V_K/V_P data, VCM interaction rewards, executable recompile verification, overfit/intervention/ablation/resume/resource evidence, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

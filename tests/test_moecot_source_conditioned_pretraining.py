@@ -151,6 +151,18 @@ def kernel_record(split: str, index: int) -> dict:
             "license_spdx": "CC0-1.0",
             "permitted_use": "model_training",
         },
+        "residual_supervision": {
+            "policy": "project_theseus_kerc_residual_supervision_v1",
+            "labels_by_channel": {
+                "interaction": 1,
+                "segment": 0,
+                "token": 0,
+                "exact": 3,
+            },
+            "record_fidelity_label": 1,
+            "annotator_independent_of_model": True,
+            "evidence_sha256": "sha256:" + "c" * 64,
+        },
         "verification_receipt": {
             "policy": kernel.TRAINING_VERIFICATION_POLICY,
             "receipt_id": f"receipt-{split}-{index}",
@@ -337,6 +349,8 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
 
     report = materialize_kernel_english(cfg, tmp_path / "config.json")
     assert report["trigger_state"] == "GREEN"
+    assert report["verifier_corruption_count"] == 12
+    assert report["verifier_corruptions_receive_generator_loss"] is False
     assert report["unique_raw_source_count"] == 3
     assert report["derived_view_unique_data_credit"] == 0
     assert report["derived_view_optimizer_exposure_count"] == 12
@@ -359,6 +373,12 @@ def test_retired_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(
     canonical = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )["kernel_english_training"]
+    canonical["required"] = False
+    canonical["records_by_split"] = {
+        "private_train": 0,
+        "private_dev": 0,
+        "private_eval": 0,
+    }
     canonical["stage_root"] = str(tmp_path / "retired-kernel-stage")
     canonical["report"] = str(tmp_path / "retired-kernel-report.json")
     canonical["records_jsonl"] = str(tmp_path / "must-not-exist-records.jsonl")

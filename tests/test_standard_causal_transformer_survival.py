@@ -843,6 +843,203 @@ def test_pointer_generator_requires_lookup_and_only_copies_source_partition() ->
     assert bool(mx.allclose(logits[:, :4], changed_logits[:, :4], atol=1e-6))
 
 
+def test_kerc_configuration_requires_complete_modular_architecture() -> None:
+    common = {
+        "vocab_size": 96,
+        "d_model": 32,
+        "num_layers": 1,
+        "num_heads": 4,
+        "num_kv_heads": 2,
+        "ff_dim": 64,
+        "attention_policy": "encoder_decoder",
+        "source_encoder_layers": 1,
+        "source_copy_mode": "pointer_generator",
+    }
+    with pytest.raises(ValueError, match="four distinct"):
+        CausalTransformerConfig(
+            **common,
+            kerc_task_token_ids=(10, 10, 11, 12),
+            kerc_stage_adapter_dim=8,
+            kerc_residual_choice_count=4,
+            kerc_residual_bottleneck_dim=8,
+            kerc_verifier_dim=8,
+        ).validate()
+    with pytest.raises(ValueError, match="copy-aware"):
+        CausalTransformerConfig(
+            **{**common, "source_copy_mode": "none"},
+            kerc_task_token_ids=(10, 11, 12, 13),
+            kerc_stage_adapter_dim=8,
+            kerc_residual_choice_count=4,
+            kerc_residual_bottleneck_dim=8,
+            kerc_verifier_dim=8,
+        ).validate()
+    with pytest.raises(ValueError, match="trusted task tokens"):
+        CausalTransformerConfig(**common, kerc_stage_adapter_dim=8).validate()
+
+
+def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(47)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    compiler = mx.array([[1, 11, 20, 21, 2, 30, 31]], dtype=mx.int32)
+    target_changed = mx.array([[1, 11, 20, 21, 2, 30, 44]], dtype=mx.int32)
+    logits, _cache, aux = model(compiler, return_training_aux=True)
+    changed_logits, _changed_cache, changed_aux = model(
+        target_changed, return_training_aux=True
+    )
+    mx.eval(
+        logits,
+        changed_logits,
+        aux["kerc"]["stage_weights"],
+        aux["kerc"]["residual_logits"],
+        changed_aux["kerc"]["residual_logits"],
+    )
+    assert np.asarray(aux["kerc"]["stage_weights"]).tolist() == [
+        [0.0, 1.0, 0.0, 0.0]
+    ]
+    assert bool(mx.allclose(
+        aux["kerc"]["residual_logits"],
+        changed_aux["kerc"]["residual_logits"],
+        atol=1e-6,
+    ))
+    assert bool(mx.allclose(logits[:, :6], changed_logits[:, :6], atol=1e-6))
+    assert bool(mx.allclose(
+        aux["copy_aux"]["generator_gate"],
+        mx.ones_like(aux["copy_aux"]["generator_gate"]),
+        atol=1e-7,
+    ))
+
+    renderer = mx.array([[1, 13, 20, 21, 2, 30, 31]], dtype=mx.int32)
+    _renderer_logits, _renderer_cache, renderer_aux = model(
+        renderer, return_training_aux=True
+    )
+    mx.eval(renderer_aux["copy_aux"]["generator_gate"])
+    assert not bool(mx.allclose(
+        renderer_aux["copy_aux"]["generator_gate"],
+        mx.ones_like(renderer_aux["copy_aux"]["generator_gate"]),
+        atol=1e-7,
+    ))
+
+    _prefill, cache = model(compiler[:, :6])
+    cached, _next = model(compiler[:, 6:], cache)
+    full, _full_cache = model(compiler)
+    mx.eval(cached, full)
+    assert bool(mx.allclose(cached[:, -1], full[:, -1], atol=1e-4))
+
+    malformed = mx.array([[1, 10, 11, 20, 2, 30]], dtype=mx.int32)
+    _logits, _cache, malformed_aux = model(malformed, return_training_aux=True)
+    mx.eval(malformed_aux["kerc"]["stage_weights"])
+    assert np.asarray(malformed_aux["kerc"]["stage_weights"]).tolist() == [
+        [0.0, 0.0, 0.0, 0.0]
+    ]
+
+
+def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    mx.random.seed(53)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+    )
+    lookup = np.arange(96, dtype=np.int32)
+    model = build_model(config, mx=mx, nn=nn, source_to_target_lookup=lookup)
+    inputs = mx.array(
+        [[1, 11, 20, 2, 30, 31], [1, 13, 22, 2, 32, 33]], dtype=mx.int32
+    )
+    labels = mx.array(
+        [[11, 20, 2, 30, 31, 0], [13, 22, 2, 32, 33, 0]], dtype=mx.int32
+    )
+    mask = mx.array(
+        [[0, 0, 0, 1, 1, 0], [0, 0, 0, 1, 1, 0]], dtype=mx.float32
+    )
+    residual_labels = mx.array([[0, 1, 2, 3], [3, 2, 1, 0]], dtype=mx.int32)
+    verifier_labels = mx.array([[0, 0, 0, 0], [1, 0, 1, 0]], dtype=mx.float32)
+    optimizer = optim.SGD(learning_rate=0.05)
+    value_and_grad = nn.value_and_grad(model, causal_loss)
+    before = {
+        name: np.asarray(value).copy()
+        for name, value in mlx_utils.tree_flatten(model.parameters())
+        if "kerc_" in name
+    }
+    loss, gradients = value_and_grad(
+        model,
+        inputs,
+        labels,
+        mask,
+        mx,
+        nn,
+        kerc_residual_labels=residual_labels,
+        kerc_residual_weight=0.5,
+        kerc_verifier_labels=verifier_labels,
+        kerc_verifier_weight=0.5,
+    )
+    optimizer.update(model, gradients)
+    mx.eval(model.parameters(), optimizer.state, loss)
+    after = {
+        name: np.asarray(value).copy()
+        for name, value in mlx_utils.tree_flatten(model.parameters())
+        if "kerc_" in name
+    }
+    assert before.keys() == after.keys()
+    assert before and all(np.isfinite(value).all() for value in after.values())
+    changed = {name for name in before if not np.array_equal(before[name], after[name])}
+    assert any("kerc_residual" in name for name in changed)
+    assert any("kerc_verifier" in name for name in changed)
+    assert any(
+        "kerc_stage" in name or "kerc_kernel_output" in name
+        or "kerc_surface_output" in name
+        for name in changed
+    )
+
+    checkpoint = tmp_path / "kerc_mechanics.npz"
+    model.save_weights(str(checkpoint))
+    restored = build_model(config, mx=mx, nn=nn, source_to_target_lookup=lookup)
+    restored.load_weights(str(checkpoint), strict=True)
+    expected, _ = model(inputs)
+    observed, _ = restored(inputs)
+    mx.eval(expected, observed)
+    assert bool(mx.allclose(expected, observed, atol=1e-6))
+
+
 def test_encoder_decoder_source_memory_excludes_target_values() -> None:
     import mlx.core as mx
     import mlx.nn as nn
