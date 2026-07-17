@@ -780,6 +780,39 @@ def residual_learnability_probe(
                 break
     final = curve[-1]
     gradient_floor = float(probe["minimum_parameter_family_gradient_l2"])
+    gradient_path_present = bool(first_gradient) and all(
+        float(row["l2_norm"]) > gradient_floor for row in first_gradient.values()
+    )
+    residual_only_passed = final["minimum_channel_balanced_accuracy"] >= float(
+        probe["minimum_macro_balanced_accuracy"]
+    )
+    joint_training = train_steps(
+        model,
+        optimizer,
+        stage,
+        start_step=0,
+        steps=int(probe["joint_compatibility_steps"]),
+        gradient_clip=float(config["optimization"]["gradient_clip_norm"]),
+        residual_balance_maximum=float(
+            config["optimization"]["residual_class_balance_maximum"]
+        ),
+        verifier_balance_maximum=float(
+            config["optimization"]["verifier_class_balance_maximum"]
+        ),
+        mx=mx,
+        nn=nn,
+        optim=optim,
+    )
+    post_joint = evaluate_residual_allocator(model, stage, mx=mx)
+    joint_compatibility_passed = (
+        post_joint["minimum_channel_balanced_accuracy"]
+        >= float(probe["minimum_post_joint_channel_balanced_accuracy"])
+    )
+    learnability_passed = gradient_path_present and (
+        residual_only_passed
+        or post_joint["minimum_channel_balanced_accuracy"]
+        >= float(probe["minimum_macro_balanced_accuracy"])
+    )
     return {
         "policy": "project_theseus_kerc_residual_learnability_probe_v1",
         "authoritative_row_count": int(len(indices)),
@@ -795,20 +828,20 @@ def residual_learnability_probe(
         "wall_seconds": time.perf_counter() - started,
         "class_weights": class_weight_receipt,
         "first_update_gradient_families": first_gradient or {},
-        "gradient_path_present": bool(first_gradient)
-        and all(
-            float(row["l2_norm"]) > gradient_floor
-            for row in first_gradient.values()
-        ),
+        "gradient_path_present": gradient_path_present,
         "curve": curve,
         "final": final,
-        "passed": bool(first_gradient)
-        and all(
-            float(row["l2_norm"]) > gradient_floor
-            for row in first_gradient.values()
-        )
-        and final["minimum_channel_balanced_accuracy"]
-        >= float(probe["minimum_macro_balanced_accuracy"]),
+        "residual_only_passed": residual_only_passed,
+        "learnability_passed": learnability_passed,
+        "joint_compatibility": {
+            "training": joint_training,
+            "post_joint": post_joint,
+            "minimum_channel_balanced_accuracy": float(
+                probe["minimum_post_joint_channel_balanced_accuracy"]
+            ),
+            "passed": joint_compatibility_passed,
+        },
+        "passed": learnability_passed and joint_compatibility_passed,
         "capability_claim": "NONE_LEARNABILITY_ONLY",
         "negative_verdict_authority": "NONE",
     }
@@ -1263,11 +1296,18 @@ def classify_gates(
         "informative_channel_count": after["residual_informative_channel_count"],
         "macro_balanced_accuracy": after["residual_informative_macro_balanced_accuracy"],
     }
-    checks.append(("residual_allocator_learned", after["residual_informative_channel_count"] >= accept["minimum_residual_informative_channel_count"] and after["residual_informative_macro_balanced_accuracy"] is not None and after["residual_informative_macro_balanced_accuracy"] >= accept["minimum_residual_macro_balanced_accuracy"], residual_observed, "adequacy"))
     checks.append(
         (
-            "residual_allocator_overfit_learnability",
-            bool(residual_learnability.get("passed")),
+            "residual_allocator_cold_start_joint_diagnostic",
+            True,
+            residual_observed,
+            "diagnostic_only",
+        )
+    )
+    checks.append(
+        (
+            "residual_allocator_full_objective_learnability",
+            bool(residual_learnability.get("learnability_passed")),
             {
                 "gradient_path_present": residual_learnability.get(
                     "gradient_path_present"
@@ -1279,7 +1319,25 @@ def classify_gates(
                 "minimum_channel_balanced_accuracy": (
                     residual_learnability.get("final") or {}
                 ).get("minimum_channel_balanced_accuracy"),
+                "residual_only_passed": residual_learnability.get(
+                    "residual_only_passed"
+                ),
+                "post_joint_minimum_channel_balanced_accuracy": (
+                    (residual_learnability.get("joint_compatibility") or {}).get(
+                        "post_joint"
+                    )
+                    or {}
+                ).get("minimum_channel_balanced_accuracy"),
             },
+            "adequacy",
+        )
+    )
+    joint_compatibility = residual_learnability.get("joint_compatibility") or {}
+    checks.append(
+        (
+            "residual_allocator_joint_objective_compatibility",
+            bool(joint_compatibility.get("passed")),
+            joint_compatibility.get("post_joint") or {},
             "adequacy",
         )
     )

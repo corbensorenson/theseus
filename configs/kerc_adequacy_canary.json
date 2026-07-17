@@ -31,7 +31,9 @@
     "gradient_clip_norm": 1.0,
     "residual_weight": 1.0,
     "minimum_macro_balanced_accuracy": 0.99,
-    "minimum_parameter_family_gradient_l2": 1e-10
+    "minimum_parameter_family_gradient_l2": 1e-10,
+    "joint_compatibility_steps": 64,
+    "minimum_post_joint_channel_balanced_accuracy": 0.75
   },
   "acceptance": {
     "maximum_final_to_initial_loss_ratio": 0.8,

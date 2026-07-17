@@ -315,11 +315,19 @@ def test_failed_learning_is_inconclusive_not_architecture_falsification() -> Non
         trained_ablations=trained_ablation_fixture(),
         residual_learnability={
             "passed": True,
+            "learnability_passed": True,
             "gradient_path_present": True,
             "optimizer_steps": 64,
             "final": {
                 "macro_balanced_accuracy": 1.0,
                 "minimum_channel_balanced_accuracy": 1.0,
+            },
+            "joint_compatibility": {
+                "passed": True,
+                "post_joint": {
+                    "macro_balanced_accuracy": 1.0,
+                    "minimum_channel_balanced_accuracy": 1.0,
+                },
             },
         },
         partial_file_count=0,
@@ -359,11 +367,19 @@ def test_lifecycle_failure_is_red() -> None:
         trained_ablations=trained_ablation_fixture(),
         residual_learnability={
             "passed": True,
+            "learnability_passed": True,
             "gradient_path_present": True,
             "optimizer_steps": 64,
             "final": {
                 "macro_balanced_accuracy": 1.0,
                 "minimum_channel_balanced_accuracy": 1.0,
+            },
+            "joint_compatibility": {
+                "passed": True,
+                "post_joint": {
+                    "macro_balanced_accuracy": 1.0,
+                    "minimum_channel_balanced_accuracy": 1.0,
+                },
             },
         },
         partial_file_count=0,

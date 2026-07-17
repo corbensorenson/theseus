@@ -310,15 +310,15 @@
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
-          "sha256": "a536c49106e456144265a887d3e2471845d575d22d57beea521b7fd611252ebe"
+          "sha256": "1a4502082919831f4fd2ef7433a0c4b7a1871fc9720f063b3e81a2b7cacee70a"
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "32101204cd725eda166c09f458d4be34610b52250ca9c77781580c1a18ff31b3"
+          "sha256": "2f02ba605fc11ddc8ad4476214198b433d9f25a0b2e7ee98fbb55a6d36d754d2"
         },
         "kerc_adequacy_tests": {
           "path": "tests/test_kerc_adequacy_canary.py",
-          "sha256": "cb61734fc065bbebfda2eeac0c54efea738c04c48fcc5c72c889a7424ecd3a5e"
+          "sha256": "e5f88e5c46792a4e3a2f4dbeb5d338471c111e9a630821c9998e44282d7e3344"
         },
         "kerc_checkpoint_schema": {
           "path": "scripts/kerc_checkpoint_schema.py",
@@ -358,7 +358,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "9bb01cb958caff46580fd3b9981d826e39e4cbaf18402b3f6ab0a02b3b6e6890"
+          "sha256": "2ea3bd277c886ac7c1fcb45ea22262e267b38b0396300c92d4db5b83b51c0d3b"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5403,7 +5403,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 11,424-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and five verifier dimensions. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 26,360-view stage has maximum sequence length 4,243 with no truncation. It includes 1,064 bounded multi-turn records, 2,128 reviewed alternative answers, 24 explicit clarify/abstain records, 96 unique-extractive-support questions across six required forms, and 384 verifier-only withheld/shuffled context interventions. A train-only contextual FrameNet prior covers 59 lexical units and binds typed alternatives to 411 train, 178 development, and 157 evaluation rows; independent replay fits only private-train annotations, and no calibrated-probability or unresolved-ambiguity claim is made. The 64-update MLX joint-objective canary is INCONCLUSIVE_EXPERIMENT: token accuracy is 0.352399, verifier macro balanced accuracy is 0.776876 with 1.0 minimum negative recall, and residual macro balanced accuracy is 0.5. Verifier-only rows carry zero residual authority. A same-model residual-only rung records nonzero residual-head/source gradients and reaches 1.0 on every channel within 256 updates, proving mechanism learnability but not utility. Reload, resume, migration, rollback, causal interventions, trained ablations, and sustained Metal execution pass. Joint-objective scheduling, unresolved ambiguity, broad entailment, protected-span abstention, calibrated decisions/verifier behavior, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 11,424-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and five verifier dimensions. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 26,360-view stage has maximum sequence length 4,243 with no truncation. It includes 1,064 bounded multi-turn records, 2,128 reviewed alternative answers, 24 explicit clarify/abstain records, 96 unique-extractive-support questions across six required forms, and 384 verifier-only withheld/shuffled context interventions. A train-only contextual FrameNet prior covers 59 lexical units and binds typed alternatives to 411 train, 178 development, and 157 evaluation rows; independent replay fits only private-train annotations, and no calibrated-probability or unresolved-ambiguity claim is made. The cold 64-update MLX mixed-objective diagnostic reaches 0.354244 token accuracy and 0.784569 verifier macro balanced accuracy with 1.0 minimum negative recall while residual macro balanced accuracy remains 0.5. Verifier-only rows carry zero residual authority. A source-and-stage-conditioned same-model rung records nonzero residual-head/source gradients, reaches 1.0 on every residual channel within 160 updates, and retains 1.0 after 64 canonical joint updates. Reload, resume, migration, rollback, causal interventions, trained ablations, and sustained Metal execution pass; the KERC mechanics canary is GREEN but grants no utility claim. Unresolved ambiguity, broad entailment, protected-span abstention, calibrated decisions/verifier behavior, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

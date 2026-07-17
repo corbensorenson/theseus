@@ -974,7 +974,13 @@ def build_model(
                 )
             denominator = mx.maximum(mx.sum(source_mask, axis=1, keepdims=True), 1.0)
             summary = mx.sum(source_memory * source_mask[:, :, None], axis=1) / denominator
-            residual_hidden = nn.silu(self.kerc_residual_encoder(summary))
+            stage_context = mx.matmul(stage_weights, self.kerc_stage_embedding.weight)
+            # Residual fidelity is conditional on both source content and the trusted
+            # compiler/core/renderer stage. Supplying stage context explicitly avoids
+            # washing a single trusted token out of long-source mean pooling.
+            residual_hidden = nn.silu(
+                self.kerc_residual_encoder(summary + stage_context)
+            )
             residual_logits = self.kerc_residual_allocator(residual_hidden).reshape(
                 int(tokens.shape[0]), 4, config.kerc_residual_choice_count
             )
@@ -1005,7 +1011,6 @@ def build_model(
             if config.kerc_residual_ablation == "zero":
                 residual_logits = mx.zeros_like(residual_logits)
                 residual_context = mx.zeros_like(residual_context)
-            stage_context = mx.matmul(stage_weights, self.kerc_stage_embedding.weight)
             # Residual state belongs on compiler and renderer paths, not the core-only
             # reasoner or the conventional surface control.
             residual_access = (stage_weights[:, 1] + stage_weights[:, 3])[:, None]
