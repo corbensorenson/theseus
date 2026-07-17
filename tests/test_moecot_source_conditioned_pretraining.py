@@ -163,6 +163,13 @@ def kernel_config(tmp_path: Path) -> dict:
                         "private_dev": ["fixture/dev"],
                         "private_eval": ["fixture/eval"],
                     },
+                    "contextual_frame_ambiguity": {
+                        "policy": "project_theseus_kerc_masc_train_only_contextual_frame_ambiguity_v1",
+                        "fit_split": "private_train",
+                        "minimum_distinct_frames": 2,
+                        "minimum_total_occurrences": 2,
+                        "claim_scope": "fixture contextual frame selection only",
+                    },
                 },
                 "oasst2": {
                     "dataset_id": "fixture-oasst2",

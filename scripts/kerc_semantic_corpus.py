@@ -56,6 +56,9 @@ MASC_ENTITY_TYPES = {
 DOLLY_GROUNDED_QUESTION_POLICY = (
     "project_theseus_dolly_unique_extractive_question_support_v1"
 )
+MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY = (
+    "project_theseus_kerc_masc_train_only_contextual_frame_ambiguity_v1"
+)
 DOLLY_QUESTION_FORM_RE = re.compile(
     r"^(who|what|when|where|which|how(?:\s+(?:many|much|long|old|far))?)\b",
     re.IGNORECASE,
@@ -1487,8 +1490,18 @@ def masc_record(
     source: dict[str, Any],
     producer_sha256: str,
     interaction_annotation: dict[str, Any] | None = None,
+    contextual_frame_ambiguity: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    annotation = row["annotation"]
+    annotation = copy.deepcopy(row["annotation"])
+    if contextual_frame_ambiguity is not None:
+        alternatives = contextual_frame_ambiguity.get("alternatives") or []
+        if annotation["frame_name"] not in {
+            alternative.get("frame_name") for alternative in alternatives
+        }:
+            raise ValueError("selected MASC frame absent from contextual alternatives")
+        annotation["contextual_frame_ambiguity"] = copy.deepcopy(
+            contextual_frame_ambiguity
+        )
     explicit_spans = [
         {
             "start": span["start"],
@@ -1527,6 +1540,23 @@ def masc_record(
         }
         for element in annotation["frame_elements"]
     ]
+    if contextual_frame_ambiguity is not None:
+        arguments.append(
+            {
+                "role": "CONTEXTUAL_FRAME_ALTERNATIVES",
+                "value": {
+                    "type": "ambiguity",
+                    "value": [
+                        {
+                            "value": copy.deepcopy(alternative["value"]),
+                            "probability": float(alternative["probability"]),
+                            "evidence": alternative["evidence"],
+                        }
+                        for alternative in contextual_frame_ambiguity["alternatives"]
+                    ],
+                },
+            }
+        )
     predicate = "FRAME_" + safe_symbol(annotation["frame_name"], prefix="UNKNOWN")
     program = {
         "roots": ["k0"],
@@ -1701,6 +1731,71 @@ def select_masc(
     return output
 
 
+def frame_concept(frame_name: str) -> str:
+    return "framenet." + re.sub(
+        r"[^a-z0-9]+", "_", frame_name.lower()
+    ).strip("_")
+
+
+def masc_contextual_frame_priors(
+    selected_by_split: dict[str, list[dict[str, Any]]],
+    contract: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Fit lexical-frame alternatives from selected private-train rows only."""
+
+    if (
+        contract.get("policy") != MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY
+        or contract.get("fit_split") != "private_train"
+    ):
+        raise ValueError("MASC contextual-frame ambiguity contract mismatch")
+    minimum_frames = int(contract.get("minimum_distinct_frames") or 0)
+    minimum_total = int(contract.get("minimum_total_occurrences") or 0)
+    if minimum_frames < 2 or minimum_total < minimum_frames:
+        raise ValueError("MASC contextual-frame ambiguity floors are invalid")
+    counts_by_lexical_unit: dict[str, Counter[str]] = defaultdict(Counter)
+    for row in selected_by_split.get("private_train", []):
+        annotation = row["annotation"]
+        lexical_unit = str(annotation.get("lexical_unit") or "").strip().lower()
+        frame_name = str(annotation.get("frame_name") or "").strip()
+        if lexical_unit and frame_name:
+            counts_by_lexical_unit[lexical_unit][frame_name] += 1
+    priors: dict[str, dict[str, Any]] = {}
+    for lexical_unit, frame_counts in sorted(counts_by_lexical_unit.items()):
+        total = sum(frame_counts.values())
+        if len(frame_counts) < minimum_frames or total < minimum_total:
+            continue
+        ordered = sorted(frame_counts.items(), key=lambda row: (-row[1], row[0]))
+        alternatives = []
+        assigned_mass = 0.0
+        for index, (frame_name, count) in enumerate(ordered):
+            probability = (
+                1.0 - assigned_mass
+                if index == len(ordered) - 1
+                else count / total
+            )
+            assigned_mass += probability
+            alternatives.append(
+                {
+                    "frame_name": frame_name,
+                    "value": {"type": "concept", "value": frame_concept(frame_name)},
+                    "count": count,
+                    "probability": probability,
+                    "evidence": "selected_private_train_manual_framenet_frequency",
+                }
+            )
+        payload = {
+            "policy": MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY,
+            "fit_split": "private_train",
+            "lexical_unit": lexical_unit,
+            "total_occurrences": total,
+            "alternatives": alternatives,
+            "claim_scope": str(contract["claim_scope"]),
+        }
+        payload["content_sha256"] = stable_hash(payload)
+        priors[lexical_unit] = payload
+    return priors
+
+
 def select_oasst(
     rows: dict[str, list[dict[str, Any]]], counts: dict[str, int]
 ) -> dict[str, list[dict[str, Any]]]:
@@ -1753,6 +1848,9 @@ def produce(config_path: Path) -> dict[str, Any]:
         corpus["masc"], maximum_characters=int(corpus["maximum_source_characters"])
     )
     masc_selected = select_masc(masc_rows, corpus["masc"]["records_by_split"])
+    masc_frame_priors = masc_contextual_frame_priors(
+        masc_selected, corpus["masc"]["contextual_frame_ambiguity"]
+    )
     oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
     oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
         corpus["oasst2"]
@@ -1808,6 +1906,13 @@ def produce(config_path: Path) -> dict[str, Any]:
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
             category_counts[split]["grounded_" + row["question_form"]] += 1
         for row in masc_selected[split]:
+            lexical_unit = str(row["annotation"]["lexical_unit"]).strip().lower()
+            frame_prior = masc_frame_priors.get(lexical_unit)
+            if frame_prior is not None and row["annotation"]["frame_name"] not in {
+                alternative["frame_name"]
+                for alternative in frame_prior["alternatives"]
+            }:
+                frame_prior = None
             record = masc_record(
                 row,
                 split=split,
@@ -1816,6 +1921,7 @@ def produce(config_path: Path) -> dict[str, Any]:
                 interaction_annotation=masc_interactions[split].get(
                     row["selection_key"]
                 ),
+                contextual_frame_ambiguity=frame_prior,
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
@@ -1897,6 +2003,38 @@ def produce(config_path: Path) -> dict[str, Any]:
         },
         "masc_interaction_record_count_by_split": {
             split: len(values) for split, values in masc_interactions.items()
+        },
+        "masc_contextual_frame_ambiguity": {
+            "policy": MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY,
+            "fit_split": "private_train",
+            "eligible_lexical_unit_count": len(masc_frame_priors),
+            "bound_record_count_by_split": {
+                split: sum(
+                    1
+                    for row in rows
+                    if str(row["annotation"]["lexical_unit"]).strip().lower()
+                    in masc_frame_priors
+                    and row["annotation"]["frame_name"]
+                    in {
+                        alternative["frame_name"]
+                        for alternative in masc_frame_priors[
+                            str(row["annotation"]["lexical_unit"])
+                            .strip()
+                            .lower()
+                        ]["alternatives"]
+                    }
+                )
+                for split, rows in masc_selected.items()
+            },
+            "prior_sha256_by_lexical_unit": {
+                lexical_unit: prior["content_sha256"]
+                for lexical_unit, prior in masc_frame_priors.items()
+            },
+            "unresolved_ambiguity_record_count": 0,
+            "calibrated_probability_claimed": False,
+            "claim_scope": corpus["masc"]["contextual_frame_ambiguity"][
+                "claim_scope"
+            ],
         },
         "oasst2_context_bound_record_count_by_split": {
             split: len(values) for split, values in oasst_selected.items()

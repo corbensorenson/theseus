@@ -537,6 +537,18 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         or not str(sources["dolly"].get("grounded_question_claim_scope") or "")
     ):
         raise ValueError("KERC Dolly grounded-question contract invalid")
+    frame_ambiguity = sources["masc"].get("contextual_frame_ambiguity")
+    if (
+        not isinstance(frame_ambiguity, dict)
+        or frame_ambiguity.get("policy")
+        != "project_theseus_kerc_masc_train_only_contextual_frame_ambiguity_v1"
+        or frame_ambiguity.get("fit_split") != "private_train"
+        or int(frame_ambiguity.get("minimum_distinct_frames") or 0) < 2
+        or int(frame_ambiguity.get("minimum_total_occurrences") or 0)
+        < int(frame_ambiguity.get("minimum_distinct_frames") or 0)
+        or not str(frame_ambiguity.get("claim_scope") or "")
+    ):
+        raise ValueError("KERC MASC contextual-frame ambiguity contract invalid")
     behavior_counts = sources["oasst2"].get("explicit_behavior_records_by_split")
     if (
         not isinstance(behavior_counts, dict)

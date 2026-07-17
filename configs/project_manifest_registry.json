@@ -262,7 +262,7 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "07e8b3869fc7187a0f30b1e11e90e8c9bc816994a91b95c16c5b29c59e5eb1df"
+          "sha256": "0f72a08a85208d302a708b4d07e0efd48c720ae31b12a19a4c041d96347c9468"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
@@ -274,11 +274,11 @@
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "dcc700fe7354d80a8e5f864ef2d9bb550f158e88d652a9902623155870700902"
+          "sha256": "db753a2cecfe8fc2b727cc46e55890e25fcb72a9b377cf69111c094220db25b8"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "4aa2ad244d0eef22db9d412cd9a2cc7ffdbc9c45921dabe7e5213bd12459bc15"
+          "sha256": "dbd24a0af537891eff49b0b6f57414bd36485e19d291aa4f14f06d4eb1a3f379"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
@@ -298,15 +298,15 @@
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "ca048bcf254641e66381a02f38b5055264b1f87a3537ff58a2b94b5dfd38ca64"
+          "sha256": "99ceefdf938e86d2cba4c5947db0b949083484bf66115a36c92240294ab2cc7a"
         },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "811d8d7d9d359bbb50ec1b882a07f8c717338353644550d380ebadca194bdbe3"
+          "sha256": "7217c7a75452f9e26847fb0e3340d2a0b4de2c35f4eddccd3f4ea004ebe95dc3"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "a13193a99e71dd6cc49fe1c3288de80d52d81971faff0b01ae787857d5017be3"
+          "sha256": "4668a75acb14f48ccf0854a3e943c523284ca1333a642fd58c6d9d413024fd41"
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
@@ -5403,7 +5403,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 11,424-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and five verifier dimensions. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 26,360-view stage has maximum sequence length 4,243 with no truncation. It includes 1,064 bounded multi-turn records, 2,128 reviewed alternative answers, 24 explicit clarify/abstain records, and 96 unique-extractive-support questions across six required forms. The question stratum independently replays source, split, support span, Kernel program, VCM state, claim, and decision, but grants no broad-entailment, truth, calibration, or utility credit. The GREEN 64-update MLX adequacy canary learns all four residual channels, proves interaction-specific causal use and a trained leave-interaction-out control, passes exact optimizer reload and float32 resume parity, and sustains at least 51.088 target tokens/s. This remains mechanics evidence only: current targets do not prove interaction utility. Formal ambiguity, broad-entailment, protected-span abstention, trained context counterfactuals, calibrated decisions/verifier behavior, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 11,424-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and five verifier dimensions. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 26,360-view stage has maximum sequence length 4,243 with no truncation. It includes 1,064 bounded multi-turn records, 2,128 reviewed alternative answers, 24 explicit clarify/abstain records, and 96 unique-extractive-support questions across six required forms. A train-only contextual FrameNet prior covers 59 lexical units and binds typed alternatives to 411 train, 178 development, and 157 evaluation rows; independent replay fits only private-train annotations, and no calibrated-probability or unresolved-ambiguity claim is made. The GREEN 64-update MLX adequacy canary learns all four residual channels, proves interaction-specific causal use and a trained leave-interaction-out control, passes exact optimizer reload and float32 resume parity, and sustains at least 51.088 target tokens/s. This remains mechanics evidence only: current targets do not prove interaction utility. Unresolved ambiguity, broad-entailment, protected-span abstention, trained context counterfactuals, calibrated decisions/verifier behavior, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

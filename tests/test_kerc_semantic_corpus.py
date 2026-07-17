@@ -591,6 +591,124 @@ def test_independent_masc_replay_binds_manual_frame_and_roles(tmp_path: Path) ->
         verifier.verify_masc_record(candidate, source, expected)
 
 
+def test_masc_contextual_frame_prior_is_train_only_and_independently_replayed() -> None:
+    def row(split: str, frame: str, identity: int) -> tuple[str, dict]:
+        return split, {
+            "selection_key": f"sha256:{identity:064x}",
+            "annotation": {"lexical_unit": "run.v", "frame_name": frame},
+        }
+
+    selected = {split: [] for split in ("private_train", "private_dev", "private_eval")}
+    for split, value in (
+        row("private_train", "Self_motion", 1),
+        row("private_train", "Self_motion", 2),
+        row("private_train", "Competition", 3),
+        row("private_dev", "Competition", 4),
+        row("private_eval", "Forged_heldout_frame", 5),
+    ):
+        selected[split].append(value)
+    contract = {
+        "policy": producer.MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY,
+        "fit_split": "private_train",
+        "minimum_distinct_frames": 2,
+        "minimum_total_occurrences": 2,
+        "claim_scope": "manual contextual frame selection only",
+    }
+    produced = producer.masc_contextual_frame_priors(selected, contract)
+    replayed = verifier.independent_masc_contextual_frame_priors(selected, contract)
+    assert produced == replayed
+    alternatives = produced["run.v"]["alternatives"]
+    assert [(row["frame_name"], row["count"]) for row in alternatives] == [
+        ("Self_motion", 2),
+        ("Competition", 1),
+    ]
+    assert alternatives[0]["probability"] == pytest.approx(2 / 3)
+    assert alternatives[1]["probability"] == pytest.approx(1 / 3)
+    assert "Forged_heldout_frame" not in json.dumps(produced)
+
+
+def test_masc_contextual_frame_supervision_is_hidden_from_compiler_input(
+    tmp_path: Path,
+) -> None:
+    fn = write_masc_fixture(tmp_path)
+    row = verifier.independent_masc_document(fn, tmp_path / "data")[0]
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "2" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": [
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        ],
+    }
+    contract = {
+        "policy": producer.MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY,
+        "fit_split": "private_train",
+        "minimum_distinct_frames": 2,
+        "minimum_total_occurrences": 2,
+        "claim_scope": "manual contextual frame selection only",
+    }
+    prior = producer.masc_contextual_frame_priors(
+        {
+            "private_train": [
+                row,
+                {
+                    "selection_key": "sha256:" + "4" * 64,
+                    "annotation": {
+                        **row["annotation"],
+                        "frame_name": "Competition",
+                    },
+                },
+            ],
+            "private_dev": [],
+            "private_eval": [],
+        },
+        contract,
+    )["run.v"]
+    candidate = producer.masc_record(
+        row,
+        split="private_train",
+        source=source,
+        producer_sha256="sha256:" + "1" * 64,
+        contextual_frame_ambiguity=prior,
+    )
+    expected = {
+        **row,
+        "annotation": json.loads(json.dumps(row["annotation"])),
+        "split": "private_train",
+    }
+    expected["annotation"]["contextual_frame_ambiguity"] = prior
+    receipt = verifier.verify_masc_record(candidate, source, expected)
+    assert receipt["contextual_frame_ambiguity_bound"] is True
+    candidate["verification_receipt"] = {
+        "policy": kernel.TRAINING_VERIFICATION_POLICY,
+        "receipt_id": "fixture-source-replay",
+        "accepted": True,
+        "verifier_id": "fixture-independent-source-replay",
+        "reviewer_independent_of_record_producer": True,
+        "method": "licensed_semantic_dataset_plus_independent_schema_review",
+        "evidence_sha256": "sha256:" + "2" * 64,
+        "semantic_payload_sha256": kernel.training_semantic_payload_sha256(candidate),
+    }
+    compiler_view = next(
+        view
+        for view in kernel.compile_training_views(candidate)
+        if view["objective"] == "surface_to_kernel_program_v1"
+    )
+    assert producer.MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY not in compiler_view["prompt"]
+    assert "Self_motion" not in compiler_view["prompt"]
+    assert "Competition" not in compiler_view["prompt"]
+
+    forged = json.loads(json.dumps(candidate))
+    forged["kernel_packet"]["program"]["nodes"][0]["arguments"][-1]["value"][
+        "value"
+    ][0]["probability"] = 0.9
+    with pytest.raises(ValueError, match="kernel program replay mismatch"):
+        verifier.verify_masc_record(forged, source, expected)
+
+
 def test_independent_masc_replay_rejects_forged_residual_annotation(tmp_path: Path) -> None:
     fn = write_masc_fixture(tmp_path)
     row = verifier.independent_masc_document(fn, tmp_path / "data")[0]

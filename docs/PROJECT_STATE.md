@@ -68,7 +68,13 @@ share toward zero. Public benchmarks are calibration only.
   Kernel program, answer decision, and interaction state across all four objectives.
   The learned compiler never receives the evaluator-owned answer span. This supports
   extractive source grounding only, not broad entailment, truth, completeness,
-  calibration, reasoning quality, or model capability. Duplicate replies, answer leakage, oversized compiled
+  calibration, reasoning quality, or model capability. Selected private-train MASC rows
+  additionally fit a typed contextual FrameNet prior for 59 lexical units with at least
+  two manually annotated frames. It binds alternatives to 411 train, 178 development,
+  and 157 evaluation records. Independent raw-source replay reconstructs the prior from
+  private-train rows only, so heldout labels cannot influence it. These are empirical
+  source-train weights, not calibrated probabilities, and they do not establish unresolved
+  ambiguity, WordNet equivalence, or learned disambiguation. Duplicate replies, answer leakage, oversized compiled
   contexts, and producer-only identity claims fail closed. Adjacent
   human-authored document sentences add journaled, independently replayed VCM state to
   1,997 train, 998 development, and 1,015 evaluation MASC records. The canonical stage
@@ -90,7 +96,7 @@ share toward zero. Public benchmarks are calibration only.
   target proves interaction representation, learning, replay, and causal mechanics, not
   interaction utility. The new dialogue and multiple-valid rows establish source
   authority and representability only until trained context-present/context-withheld/
-  shuffled/wrong-user controls run. Formal ambiguity/broad-entailment, protected-span
+  shuffled/wrong-user controls run. Unresolved ambiguity/broad-entailment, protected-span
   abstention, decision calibration,
   calibrated verifier behavior, and the matched campaign remain open.
   `p4-m8-kerc-runtime-001` trained a
@@ -132,8 +138,8 @@ share toward zero. Public benchmarks are calibration only.
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,
   cleanup, source-replayed multi-turn/multiple-valid/explicit-decision materialization,
-  deterministic canary coverage, and sustained-batch canaries now pass. Next add formal
-  ambiguity, entailment/question, protected-span abstention, calibrated verifier behavior,
+  deterministic canary coverage, train-only contextual FrameNet ambiguity, and sustained-batch canaries now pass. Next add unresolved
+  ambiguity, broad entailment, protected-span abstention, calibrated verifier behavior,
   and trained context counterfactuals; then
   freeze strong matched controls and total-system accounting and rebuild the architecture
   package. Reflexive Router pre-training mechanics are complete:

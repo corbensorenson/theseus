@@ -55,6 +55,9 @@ MASC_ENTITY_TYPES = {
     "org": "ORGANIZATION",
     "date": "DATE_TIME",
 }
+MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY = (
+    "project_theseus_kerc_masc_train_only_contextual_frame_ambiguity_v1"
+)
 
 
 def resolve(path: str | Path) -> Path:
@@ -799,6 +802,72 @@ def independent_masc_document(path: Path, root: Path) -> list[dict[str, Any]]:
     return output
 
 
+def independent_frame_concept(frame_name: str) -> str:
+    return "framenet." + re.sub(
+        r"[^a-z0-9]+", "_", frame_name.lower()
+    ).strip("_")
+
+
+def independent_masc_contextual_frame_priors(
+    selected_by_split: dict[str, list[dict[str, Any]]],
+    contract: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    if (
+        contract.get("policy") != MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY
+        or contract.get("fit_split") != "private_train"
+    ):
+        raise ValueError("MASC contextual-frame ambiguity contract mismatch")
+    minimum_frames = int(contract.get("minimum_distinct_frames") or 0)
+    minimum_total = int(contract.get("minimum_total_occurrences") or 0)
+    if minimum_frames < 2 or minimum_total < minimum_frames:
+        raise ValueError("MASC contextual-frame ambiguity floors are invalid")
+    counts_by_lexical_unit: dict[str, Counter[str]] = defaultdict(Counter)
+    for row in selected_by_split.get("private_train", []):
+        annotation = row["annotation"]
+        lexical_unit = str(annotation.get("lexical_unit") or "").strip().lower()
+        frame_name = str(annotation.get("frame_name") or "").strip()
+        if lexical_unit and frame_name:
+            counts_by_lexical_unit[lexical_unit][frame_name] += 1
+    priors: dict[str, dict[str, Any]] = {}
+    for lexical_unit, frame_counts in sorted(counts_by_lexical_unit.items()):
+        total = sum(frame_counts.values())
+        if len(frame_counts) < minimum_frames or total < minimum_total:
+            continue
+        ordered = sorted(frame_counts.items(), key=lambda row: (-row[1], row[0]))
+        alternatives = []
+        assigned_mass = 0.0
+        for index, (frame_name, count) in enumerate(ordered):
+            probability = (
+                1.0 - assigned_mass
+                if index == len(ordered) - 1
+                else count / total
+            )
+            assigned_mass += probability
+            alternatives.append(
+                {
+                    "frame_name": frame_name,
+                    "value": {
+                        "type": "concept",
+                        "value": independent_frame_concept(frame_name),
+                    },
+                    "count": count,
+                    "probability": probability,
+                    "evidence": "selected_private_train_manual_framenet_frequency",
+                }
+            )
+        payload = {
+            "policy": MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY,
+            "fit_split": "private_train",
+            "lexical_unit": lexical_unit,
+            "total_occurrences": total,
+            "alternatives": alternatives,
+            "claim_scope": str(contract["claim_scope"]),
+        }
+        payload["content_sha256"] = stable_hash(payload)
+        priors[lexical_unit] = payload
+    return priors
+
+
 def independent_masc_assignments(source: dict[str, Any], maximum_characters: int) -> dict[str, dict[str, Any]]:
     archive = resolve(source["archive_path"])
     if sha256_file(archive) != source["content_sha256"]:
@@ -813,15 +882,29 @@ def independent_masc_assignments(source: dict[str, Any], maximum_characters: int
         for row in independent_masc_document(path, root):
             if 12 <= len(row["annotation"]["sentence"]) <= maximum_characters:
                 by_split[split].append(row)
-    output: dict[str, dict[str, Any]] = {}
+    selected_by_split: dict[str, list[dict[str, Any]]] = {}
     for split, count in source["records_by_split"].items():
         selected = sorted(by_split[split], key=lambda row: row["selection_key"])[: int(count)]
         if len(selected) != int(count):
             raise ValueError(f"MASC independent split reconstruction is incomplete: {split}")
+        selected_by_split[split] = selected
+    priors = independent_masc_contextual_frame_priors(
+        selected_by_split, source["contextual_frame_ambiguity"]
+    )
+    output: dict[str, dict[str, Any]] = {}
+    for split, selected in selected_by_split.items():
         interactions = independent_interaction_predecessors(selected)
         for row in selected:
+            annotation = json.loads(json.dumps(row["annotation"]))
+            lexical_unit = str(annotation["lexical_unit"]).strip().lower()
+            prior = priors.get(lexical_unit)
+            if prior is not None and annotation["frame_name"] in {
+                alternative["frame_name"] for alternative in prior["alternatives"]
+            }:
+                annotation["contextual_frame_ambiguity"] = prior
             output[row["source_id"]] = {
                 **row,
+                "annotation": annotation,
                 "split": split,
                 "interaction_annotation": interactions.get(row["selection_key"]),
             }
@@ -890,9 +973,26 @@ def expected_masc_value(
     return {"type": "byte_literal", "text": element["text"]}
 
 
-def observed_masc_value(value: Any) -> dict[str, str]:
+def observed_masc_value(value: Any) -> dict[str, Any]:
     if isinstance(value, dict) and value.get("type") == "handle":
         return {"type": "handle", "value": str(value.get("value") or "")}
+    if isinstance(value, dict) and value.get("type") == "concept":
+        return {"type": "concept", "value": str(value.get("value") or "")}
+    if isinstance(value, dict) and value.get("type") == "ambiguity":
+        alternatives = value.get("value")
+        if not isinstance(alternatives, list):
+            raise ValueError("expected ambiguity alternatives")
+        return {
+            "type": "ambiguity",
+            "value": [
+                {
+                    "value": observed_masc_value(alternative.get("value")),
+                    "probability": float(alternative.get("probability") or 0.0),
+                    "evidence": alternative.get("evidence"),
+                }
+                for alternative in alternatives
+            ],
+        }
     return {"type": "byte_literal", "text": decode_literal(value)}
 
 
@@ -1404,6 +1504,35 @@ def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected:
         }
         for element in annotation["frame_elements"]
     ]
+    contextual_frame_ambiguity = annotation.get("contextual_frame_ambiguity")
+    if contextual_frame_ambiguity is not None:
+        if (
+            contextual_frame_ambiguity.get("policy")
+            != MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY
+            or contextual_frame_ambiguity.get("fit_split") != "private_train"
+            or annotation["frame_name"]
+            not in {
+                alternative.get("frame_name")
+                for alternative in contextual_frame_ambiguity.get("alternatives") or []
+            }
+        ):
+            raise ValueError("MASC contextual-frame ambiguity replay mismatch")
+        expected_arguments.append(
+            {
+                "role": "CONTEXTUAL_FRAME_ALTERNATIVES",
+                "value": {
+                    "type": "ambiguity",
+                    "value": [
+                        {
+                            "value": alternative["value"],
+                            "probability": float(alternative["probability"]),
+                            "evidence": alternative["evidence"],
+                        }
+                        for alternative in contextual_frame_ambiguity["alternatives"]
+                    ],
+                },
+            }
+        )
     node = record["kernel_packet"]["program"]["nodes"][0]
     claim = record["answer_packet"]["claims"][0]
     observed_node_arguments = [
@@ -1524,6 +1653,7 @@ def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected:
         "annotation_set_node": annotation["annotation_set_node"],
         "frame_name": annotation["frame_name"],
         "interaction_bound": bool(interaction),
+        "contextual_frame_ambiguity_bound": bool(contextual_frame_ambiguity),
     }
 
 
@@ -1577,6 +1707,7 @@ def verify(config_path: Path) -> dict[str, Any]:
         row["annotation"]["source_row_sha256"]
         for row in grounded_expected.values()
     }
+    masc_expected = independent_masc_assignments(corpus["masc"], maximum_characters)
     expected = {
         **independent_dolly_assignments(
             corpus["dolly"],
@@ -1584,13 +1715,42 @@ def verify(config_path: Path) -> dict[str, Any]:
             reserved_source_hashes=grounded_source_hashes,
         ),
         **grounded_expected,
-        **independent_masc_assignments(corpus["masc"], maximum_characters),
+        **masc_expected,
         **independent_oasst_assignments(
             corpus["oasst2"],
             reserved_groups={row["source_group"] for row in behavior_expected.values()},
         ),
         **behavior_expected,
     }
+    expected_frame_priors = {
+        row["annotation"]["contextual_frame_ambiguity"]["lexical_unit"]: row[
+            "annotation"
+        ]["contextual_frame_ambiguity"]["content_sha256"]
+        for row in masc_expected.values()
+        if "contextual_frame_ambiguity" in row["annotation"]
+    }
+    expected_frame_ambiguity_counts = {
+        split: sum(
+            1
+            for row in masc_expected.values()
+            if row["split"] == split
+            and "contextual_frame_ambiguity" in row["annotation"]
+        )
+        for split in SPLITS
+    }
+    producer_frame_ambiguity = manifest.get("masc_contextual_frame_ambiguity") or {}
+    if (
+        producer_frame_ambiguity.get("policy")
+        != MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY
+        or producer_frame_ambiguity.get("fit_split") != "private_train"
+        or producer_frame_ambiguity.get("prior_sha256_by_lexical_unit")
+        != expected_frame_priors
+        or producer_frame_ambiguity.get("bound_record_count_by_split")
+        != expected_frame_ambiguity_counts
+        or producer_frame_ambiguity.get("unresolved_ambiguity_record_count") != 0
+        or producer_frame_ambiguity.get("calibrated_probability_claimed") is not False
+    ):
+        raise ValueError("producer MASC contextual-frame ambiguity telemetry mismatch")
     verifier_sha256 = sha256_file(Path(__file__).resolve())
     canonical_records: list[dict[str, Any]] = []
     receipts: list[dict[str, Any]] = []
@@ -1714,6 +1874,18 @@ def verify(config_path: Path) -> dict[str, Any]:
         "semantic_source_catalog": {"path": relative(catalog_path), "sha256": catalog_sha256},
         "decision_grade_counts_by_split_and_objective": {
             split: dict(counts_by_split_and_objective[split]) for split in SPLITS
+        },
+        "masc_contextual_frame_ambiguity": {
+            "policy": MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY,
+            "fit_split": "private_train",
+            "eligible_lexical_unit_count": len(expected_frame_priors),
+            "bound_record_count_by_split": expected_frame_ambiguity_counts,
+            "prior_sha256_by_lexical_unit": expected_frame_priors,
+            "unresolved_ambiguity_record_count": 0,
+            "calibrated_probability_claimed": False,
+            "claim_scope": corpus["masc"]["contextual_frame_ambiguity"][
+                "claim_scope"
+            ],
         },
         "verification_failures": dict(failures),
         "public_training_rows_written": 0,

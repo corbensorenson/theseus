@@ -584,6 +584,13 @@
             "written/letters/philanthropic-fundraising/110CYL070",
             "written/email/enron/enron-thread-159550"
           ]
+        },
+        "contextual_frame_ambiguity": {
+          "policy": "project_theseus_kerc_masc_train_only_contextual_frame_ambiguity_v1",
+          "fit_split": "private_train",
+          "minimum_distinct_frames": 2,
+          "minimum_total_occurrences": 2,
+          "claim_scope": "manual FrameNet contextual sense selection with alternatives and empirical source-train priors; not unresolved ambiguity, calibrated probability, WordNet equivalence, or model utility"
         }
       },
       "oasst2": {
