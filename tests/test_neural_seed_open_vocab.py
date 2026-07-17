@@ -15,6 +15,7 @@ from neural_seed_open_vocab import (
     MAX_TOKEN_BYTES,
     TARGET_BYTE_BEGIN,
     TARGET_BYTE_END,
+    bound_logical_tokens,
     decode_target_tokens,
     encode_tokens,
     reserve_byte_fallback_tokens,
@@ -111,6 +112,21 @@ def test_over_bound_token_reports_unknown_instead_of_partial_encoding() -> None:
     assert ids == [vocab["<unk>"]]
     assert receipt["unknown_token_count"] == 1
     assert receipt["fallback_token_count"] == 0
+
+
+def test_explicit_bounding_preserves_long_utf8_atoms_without_weakening_codec_limit() -> None:
+    logical = ["prefix", "\u03bb" * (MAX_TOKEN_BYTES + 3), "suffix"]
+    bounded = bound_logical_tokens(logical)
+    vocab = target_only_byte_vocab()
+    ids, receipt = encode_tokens(bounded, vocab, stream="target")
+    inverse = {value: token for token, value in vocab.items()}
+    decoded, decode_receipt = decode_target_tokens([inverse[token_id] for token_id in ids])
+
+    assert all(len(token.encode("utf-8")) <= MAX_TOKEN_BYTES for token in bounded)
+    assert "".join(bounded) == "".join(logical)
+    assert receipt["unknown_token_count"] == 0
+    assert decode_receipt["state"] == "READY"
+    assert "".join(decoded) == "".join(logical)
 
 
 def test_reconstructed_disallowed_name_is_rejected_by_grammar() -> None:

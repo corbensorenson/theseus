@@ -262,43 +262,51 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "7d38440956c910f63d9bb8c0aa82d0c26fee1df35008031b837b907b90e214b3"
+          "sha256": "24716996ca937f891fc4703eb45b1e284dd40d77267bc17d1929629420902494"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "e6d76a292a662238ab5bc84b5421b32637094dfc44f46896c47ee87c756984d8"
+          "sha256": "b6e06ac89be1d179ea5ec5bd4c84e058f8e883c23aaec1e2a9d779ead93e0f70"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "ccbbf6d47354271d3cbb0cfce933aab5a5c24c498f5e6899f932795f035c24bd"
+          "sha256": "4114c65d1d6f340643d8754f7412b556afad8628053ccf84151464200a7f9d5e"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "bb384d7458ae70233939fd322839b6a6d870cdb3b22b3db0c3aa31d705ce4d24"
+          "sha256": "ce95d689b7e4211d942166082058cc384a4c198cbad41ae9928dfb423ad79203"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "a49e9a5842bdc43ee3156f672c3acc880288b682f9d05dee255445d8966d13ed"
+          "sha256": "ddbfcb521842c96047ed6867ca038bb11645024b9dd7387a4ff495633174b080"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "3f813e34f61a87e9adc78563a974cfd06d31ea03007b32c714f795051ef97cc6"
+          "sha256": "49adbe3edb56a9b23c07676497cf378e1516f63105d6374077580dda8753fe0a"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "8ab9b42969340e7881c87fa04cf0e5c42d6f66b053cd117204081641ae00ba6c"
+          "sha256": "53b5b2c102c80141a7729920fd71e6dedc6066ec5cdf421e71ac017f48e614e9"
+        },
+        "open_vocabulary_implementation": {
+          "path": "scripts/neural_seed_open_vocab.py",
+          "sha256": "df93257ef356e8d5ae8da03297cf46a0011440b7817660fbbb54dad6f8d5a385"
+        },
+        "open_vocabulary_tests": {
+          "path": "tests/test_neural_seed_open_vocab.py",
+          "sha256": "9e24ba0c912a6efa04658c11db570178bc886842eff86d72221e4663cd863aaa"
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "5e34974907220401b7f13700db79f5588eac2c7b4a84a619b3cb44b2d971f1ea"
+          "sha256": "2200db026fddc5cc2610f627f71a15f4eea3426e18c6d8d413aa2acbb4f4b23d"
         },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "69813aeef770d4be96bc39bf09246cb6f7ce1d5730e1385af29fa33936f4c3de"
+          "sha256": "7a14d2fb7a99a3584a3eb5958b3c08240c01311cf049083f517da2daf1d815f4"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "8547cbb0dfdc6291e338eb8604bb6729a17e66140990ec4b30c7031e7e3cd2be"
+          "sha256": "7623ba870a26c2e808d6f0bfdb0fabd544dd1189515db4943873d7e2b5ae5acd"
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
@@ -318,11 +326,11 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "dbb9c758e23d96aec87e84e4dc728891594dc51fa86e24bac38404cb14f5ac40"
+          "sha256": "38f5c8be43fd8c131676bba3512959d6479f398f5a9dcaea5f695c509749c702"
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "714be775efd5d2cce9cb567c881079f2b576a2ea8c131fdae6c984302fff1fb6"
+          "sha256": "3c0ad3d647e4727f74998a532d0be55b7c2653a44bb0c99cfb5a44181ff956ae"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -350,7 +358,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "6f565425ca6c749ca85425653fb177aec9f9b19f012589e14c1a8fc6af43519c"
+          "sha256": "8b737623af0be9ccf8e03e03130affeadbc76a950d37c2839d13827423018ed0"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",

@@ -30,7 +30,12 @@ from moecot_language_supervision import (
     write_jsonl_atomic,
 )
 from moecot_language_tokenizer import exact_text_tokens
-from neural_seed_open_vocab import decode_target_tokens, encode_tokens, populate_open_vocab
+from neural_seed_open_vocab import (
+    bound_logical_tokens,
+    decode_target_tokens,
+    encode_tokens,
+    populate_open_vocab,
+)
 from kernel_english_protocol import (
     SEMANTIC_EVIDENCE_TIERS,
     SEMANTIC_SUPERVISION_POLICY,
@@ -77,7 +82,7 @@ KERC_SEMANTIC_CORPUS_POLICY = "project_theseus_kerc_semantic_corpus_materializat
 def kerc_code_tokens(text: str) -> list[str]:
     """Losslessly tokenize typed Kernel/answer JSON while preserving handles."""
 
-    raw = exact_text_tokens(text)
+    raw = bound_logical_tokens(exact_text_tokens(text))
     tokens: list[str] = []
     index = 0
     while index < len(raw):
@@ -93,6 +98,15 @@ def kerc_code_tokens(text: str) -> list[str]:
         index += 1
     if "".join(tokens) != str(text):
         raise ValueError("KERC code tokenizer failed exact reconstruction")
+    return tokens
+
+
+def kerc_surface_tokens(text: str) -> list[str]:
+    """Tokenize arbitrary KERC surface text without oversized unknown atoms."""
+
+    tokens = bound_logical_tokens(exact_text_tokens(text))
+    if "".join(tokens) != str(text):
+        raise ValueError("KERC surface tokenizer failed exact reconstruction")
     return tokens
 
 
@@ -174,13 +188,13 @@ def encode_kerc_view_target(
     objective = str(view.get("objective") or "")
     target = str(view.get("target") or "")
     if objective not in KERC_KERNEL_OBJECTIVES:
-        return encode_tokens(exact_text_tokens(target), target_vocab, stream="target")
+        return encode_tokens(kerc_surface_tokens(target), target_vocab, stream="target")
     ids: list[int] = []
     unknown = 0
     fallback_tokens = 0
     by_space = {"V_K": 0, "V_P": 0}
-    kernel_vocab = dict(code_vocabulary.get("kernel_vocab") or {})
-    pointer_vocab = dict(code_vocabulary.get("pointer_vocab") or {})
+    kernel_vocab = code_vocabulary.get("kernel_vocab") or {}
+    pointer_vocab = code_vocabulary.get("pointer_vocab") or {}
     for token in kerc_code_tokens(target):
         space = kerc_code_space(token)
         vocab = pointer_vocab if space == "V_P" else kernel_vocab
@@ -213,8 +227,8 @@ def encode_kerc_global_target(
     unknown = 0
     fallback_tokens = 0
     by_space = {"V_K": 0, "V_P": 0}
-    kernel_vocab = dict(code_vocabulary.get("kernel_vocab") or {})
-    pointer_vocab = dict(code_vocabulary.get("pointer_vocab") or {})
+    kernel_vocab = code_vocabulary.get("kernel_vocab") or {}
+    pointer_vocab = code_vocabulary.get("pointer_vocab") or {}
     for token in kerc_code_tokens(text):
         space = kerc_code_space(token)
         vocab = pointer_vocab if space == "V_P" else kernel_vocab
@@ -475,11 +489,24 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
     corpus = corpus if isinstance(corpus, dict) else {}
     if corpus.get("policy") != KERC_SEMANTIC_CORPUS_POLICY:
         raise ValueError("KERC semantic corpus materialization policy mismatch")
-    sources = {name: corpus.get(name) or {} for name in ("dolly", "masc")}
+    sources = {name: corpus.get(name) or {} for name in ("dolly", "masc", "oasst2")}
     for name, source in sources.items():
         path_key = "archive_path" if name == "masc" else "path"
+        source_path_ready = (
+            isinstance(source.get("files"), dict)
+            and tuple(source["files"]) == ("train", "validation")
+            and all(
+                str(row.get("path") or "")
+                and re.fullmatch(
+                    r"sha256:[0-9a-f]{64}", str(row.get("content_sha256") or "")
+                )
+                for row in source["files"].values()
+            )
+            if name == "oasst2"
+            else bool(str(source.get(path_key) or ""))
+        )
         if (
-            not str(source.get(path_key) or "")
+            not source_path_ready
             or not str(source.get("dataset_id") or "")
             or not str(source.get("dataset_revision") or "")
             or not str(source.get("source_url") or "").startswith("https://")
@@ -489,14 +516,26 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
             or tuple(source.get("records_by_split") or {})
             != ("private_train", "private_dev", "private_eval")
             or any(int(value or 0) < 0 for value in (source.get("records_by_split") or {}).values())
-            or not any(int(value or 0) > 0 for value in (source.get("records_by_split") or {}).values())
             or not set(source.get("allowed_objectives") or {}) <= set(TRAINING_OBJECTIVES)
             or not source.get("allowed_objectives")
         ):
             raise ValueError(f"KERC semantic corpus source contract invalid: {name}")
     requested = cfg.get("records_by_split") or {}
+    behavior_counts = sources["oasst2"].get("explicit_behavior_records_by_split")
+    if (
+        not isinstance(behavior_counts, dict)
+        or tuple(behavior_counts) != ("private_train", "private_dev", "private_eval")
+        or any(
+            set((behavior_counts.get(split) or {})) != {"CLARIFY", "ABSTAIN"}
+            or any(int(value) < 0 for value in behavior_counts[split].values())
+            for split in behavior_counts
+        )
+        or not str(sources["oasst2"].get("explicit_behavior_claim_scope") or "")
+    ):
+        raise ValueError("KERC OASST2 explicit behavior contract invalid")
     for split in requested:
         total = sum(int(source["records_by_split"][split]) for source in sources.values())
+        total += sum(int(value) for value in behavior_counts[split].values())
         if total != int(requested[split]):
             raise ValueError(f"KERC semantic corpus split total mismatch: {split}")
     floors = cfg["semantic_supervision"][
@@ -509,6 +548,8 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
                 for source in sources.values()
                 if objective in source["allowed_objectives"]
             )
+            if objective in sources["oasst2"]["allowed_objectives"]:
+                available += sum(int(value) for value in behavior_counts[split].values())
             if available < int(floor):
                 raise ValueError(
                     f"KERC semantic corpus cannot satisfy objective floor: {split}:{objective}"
@@ -520,6 +561,31 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
     evaluation = {str(value) for value in groups["private_eval"]}
     if not dev or not evaluation or dev & evaluation:
         raise ValueError("KERC MASC heldout document groups overlap or are empty")
+    oasst = sources["oasst2"]
+    if (
+        oasst.get("required_valid_realization_ranks") != [0, 1]
+        or not 0.0 <= float(oasst.get("minimum_quality", -1.0)) <= 1.0
+        or set(oasst.get("maximum_label_values") or {})
+        != {"spam", "lang_mismatch", "pii", "not_appropriate"}
+        or any(
+            not 0.0 <= float(value) <= 1.0
+            for value in (oasst.get("maximum_label_values") or {}).values()
+        )
+        or any(
+            int(oasst.get(key) or 0) <= 0
+            for key in (
+                "maximum_current_characters",
+                "maximum_response_characters",
+                "maximum_context_characters",
+                "maximum_compiled_context_bytes",
+                "minimum_prior_turns",
+                "maximum_prior_turns",
+            )
+        )
+        or int(oasst.get("minimum_prior_turns") or 0)
+        > int(oasst.get("maximum_prior_turns") or 0)
+    ):
+        raise ValueError("KERC OASST2 conversation-tree contract is incomplete")
     for key in ("minimum_source_groups_by_split", "minimum_source_sentences_by_split"):
         values = corpus.get(key) or {}
         if tuple(values) != ("private_train", "private_dev", "private_eval") or any(
@@ -816,7 +882,7 @@ def materialize_kernel_english(
             raw_source_bytes += len(str(record["source_text"]).encode("utf-8"))
             for view in compile_training_views(record):
                 source_body_ids, source_receipt = encode_tokens(
-                    exact_text_tokens(view["prompt"]), source_vocab, stream="source"
+                    kerc_surface_tokens(view["prompt"]), source_vocab, stream="source"
                 )
                 trusted_prefix = list(view.get("trusted_source_prefix_tokens") or [])
                 if len(trusted_prefix) != 1 or trusted_prefix[0] not in source_vocab:

@@ -115,7 +115,24 @@ KERC_VERIFIER_DIMENSIONS = (
     "protected_object_consistency",
     "numeric_value_consistency",
     "surface_fidelity",
+    "answer_decision_consistency",
 )
+ANSWER_DECISION_POLICY = "project_theseus_kernel_answer_decision_v1"
+ANSWER_DISPOSITIONS = {"ANSWER", "PARTIAL", "CLARIFY", "ABSTAIN"}
+ANSWER_EVIDENCE_STATES = {
+    "SUPPORTED",
+    "PARTIALLY_SUPPORTED",
+    "UNVERIFIED",
+    "AMBIGUOUS",
+    "INSUFFICIENT_CONTEXT",
+    "CONFLICTING_EVIDENCE",
+}
+ANSWER_UNCERTAINTY_STATES = {
+    "RESOLVED",
+    "AMBIGUOUS",
+    "INSUFFICIENT_CONTEXT",
+    "CONFLICTING",
+}
 SEMANTIC_EVIDENCE_TIERS = {
     "audited_human_gold": {
         "producer_kind": "human_annotation",
@@ -559,6 +576,15 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
         record.get("answer_packet") if isinstance(record.get("answer_packet"), dict) else {},
         protected_objects=packet.get("protected_objects") or {},
         concept_capsules=packet.get("concept_capsules") or {},
+        correction_lattice=packet.get("correction_lattice") or {},
+    )
+    valid_realizations = validate_valid_realizations(
+        record.get("valid_realizations"),
+        canonical_surface_target=surface_target,
+        canonical_answer_packet=answer,
+        protected_objects=packet.get("protected_objects") or {},
+        concept_capsules=packet.get("concept_capsules") or {},
+        correction_lattice=packet.get("correction_lattice") or {},
     )
     semantic_payload_sha256 = training_semantic_payload_sha256(
         {
@@ -576,6 +602,7 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
     canonical["semantic_supervision"] = semantic_supervision
     canonical["residual_supervision"] = residual_supervision
     canonical["answer_packet"] = answer
+    canonical["valid_realizations"] = valid_realizations
     canonical["raw_source_sha256"] = expected_source["source_sha256"]
     canonical["surface_target_sha256"] = stable_hash(surface_target.encode("utf-8"))
     canonical["packet_replay"] = packet_replay
@@ -691,11 +718,126 @@ def validate_semantic_supervision_evidence(
     return canonical
 
 
+def validate_valid_realizations(
+    realizations: Any,
+    *,
+    canonical_surface_target: str,
+    canonical_answer_packet: dict[str, Any],
+    protected_objects: dict[str, dict[str, Any]],
+    concept_capsules: dict[str, dict[str, Any]],
+    correction_lattice: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Validate source-bound alternative answers without exposing them to generation.
+
+    A missing list means the ordinary single observed target.  Multiple targets must
+    be independently source-bound, unique, and carry complete answer packets.  They
+    are compiled as separate target views over one prompt and never enter the prompt.
+    """
+
+    if realizations is None:
+        return [
+            {
+                "realization_id": "canonical",
+                "surface_target": canonical_surface_target,
+                "answer_packet": copy.deepcopy(canonical_answer_packet),
+                "source_rank": 0,
+                "human_source_bound": True,
+                "source_message_sha256": "",
+            }
+        ]
+    if not isinstance(realizations, list) or not 1 <= len(realizations) <= 8:
+        raise KernelProtocolFault(
+            "KERC_VALID_REALIZATIONS_INVALID",
+            str(type(realizations)),
+            path="record.valid_realizations",
+        )
+    canonical: list[dict[str, Any]] = []
+    ids: set[str] = set()
+    targets: set[str] = set()
+    for index, row in enumerate(realizations):
+        path = f"record.valid_realizations[{index}]"
+        if not isinstance(row, dict):
+            raise KernelProtocolFault(
+                "KERC_VALID_REALIZATION_INVALID", str(type(row)), path=path
+            )
+        realization_id = str(row.get("realization_id") or "")
+        surface_target = str(row.get("surface_target") or "")
+        if (
+            not realization_id
+            or realization_id in ids
+            or not surface_target.strip()
+            or surface_target in targets
+            or row.get("human_source_bound") is not True
+        ):
+            raise KernelProtocolFault(
+                "KERC_VALID_REALIZATION_IDENTITY_INVALID",
+                realization_id,
+                path=path,
+            )
+        rank = row.get("source_rank")
+        if isinstance(rank, bool) or not isinstance(rank, int) or rank < 0:
+            raise KernelProtocolFault(
+                "KERC_VALID_REALIZATION_RANK_INVALID", str(rank), path=f"{path}.source_rank"
+            )
+        answer_packet = validate_answer_packet_against_context(
+            row.get("answer_packet") if isinstance(row.get("answer_packet"), dict) else {},
+            protected_objects=protected_objects,
+            concept_capsules=concept_capsules,
+            correction_lattice=correction_lattice,
+        )
+        ids.add(realization_id)
+        targets.add(surface_target)
+        canonical.append(
+            {
+                "realization_id": realization_id,
+                "surface_target": surface_target,
+                "answer_packet": answer_packet,
+                "source_rank": rank,
+                "human_source_bound": True,
+                "source_message_sha256": str(row.get("source_message_sha256") or ""),
+            }
+        )
+        if canonical[-1]["source_message_sha256"] and not re.fullmatch(
+            r"sha256:[0-9a-f]{64}", canonical[-1]["source_message_sha256"]
+        ):
+            raise KernelProtocolFault(
+                "KERC_VALID_REALIZATION_SOURCE_HASH_INVALID",
+                canonical[-1]["source_message_sha256"],
+                path=f"{path}.source_message_sha256",
+            )
+    if (
+        canonical[0]["surface_target"] != canonical_surface_target
+        or canonical[0]["answer_packet"] != canonical_answer_packet
+    ):
+        raise KernelProtocolFault(
+            "KERC_VALID_REALIZATION_CANONICAL_MISMATCH",
+            canonical[0]["realization_id"],
+            path="record.valid_realizations[0]",
+        )
+    if len(canonical) > 1 and sorted(row["source_rank"] for row in canonical) != list(
+        range(len(canonical))
+    ):
+        raise KernelProtocolFault(
+            "KERC_VALID_REALIZATION_RANK_SET_INVALID",
+            canonical_json([row["source_rank"] for row in canonical]),
+            path="record.valid_realizations",
+        )
+    return canonical
+
+
 def training_semantic_payload_sha256(record: dict[str, Any]) -> str:
     packet = record.get("kernel_packet") if isinstance(record.get("kernel_packet"), dict) else {}
     provenance = record.get("provenance") if isinstance(record.get("provenance"), dict) else {}
     answer = validate_answer_packet(
         record.get("answer_packet") if isinstance(record.get("answer_packet"), dict) else {}
+    )
+    valid_realizations = validate_valid_realizations(
+        record.get("valid_realizations"),
+        canonical_surface_target=str(record.get("surface_target") or ""),
+        canonical_answer_packet=answer,
+        protected_objects=packet.get("protected_objects") or {},
+        concept_capsules=packet.get("concept_capsules") or {},
+        correction_lattice=packet.get("correction_lattice") or {},
     )
     return stable_hash(
         {
@@ -703,6 +845,7 @@ def training_semantic_payload_sha256(record: dict[str, Any]) -> str:
             "kernel_packet_sha256": str(packet.get("packet_sha256") or ""),
             "answer_packet": answer,
             "surface_target": str(record.get("surface_target") or ""),
+            "valid_realizations": valid_realizations,
             "residual_supervision": record.get("residual_supervision") or {},
             "semantic_supervision": record.get("semantic_supervision") or {},
             "source_id": str(provenance.get("source_id") or ""),
@@ -892,27 +1035,42 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
         ),
     }
     source = record["source_text"]
-    rows = (
-        ("surface_direct_control_v1", source, record["surface_target"]),
-        (
-            "surface_to_kernel_program_v1",
-            canonical_json(compiler_input),
-            canonical_json(compiler_target),
-        ),
-        (
-            "kernel_program_to_answer_packet_v1",
-            canonical_json(core_input),
-            canonical_json(record["answer_packet"]),
-        ),
-        (
-            "answer_packet_to_surface_v1",
-            canonical_json(renderer_input),
-            record["surface_target"],
-        ),
+    interaction = learned_interaction_residual_view(record["hrl_state"])
+    direct_prompt = (
+        canonical_json({"current_surface": source, "interaction": interaction})
+        if interaction
+        else source
     )
+    rows: list[tuple[str, str, str, str]] = []
+    for objective in TRAINING_OBJECTIVES:
+        if objective == "surface_to_kernel_program_v1":
+            rows.append(
+                (
+                    objective,
+                    canonical_json(compiler_input),
+                    canonical_json(compiler_target),
+                    "compiler",
+                )
+            )
+            continue
+        for realization in record["valid_realizations"]:
+            realization_id = str(realization["realization_id"])
+            answer_packet = realization["answer_packet"]
+            if objective == "surface_direct_control_v1":
+                visible = direct_prompt
+                target = str(realization["surface_target"])
+            elif objective == "kernel_program_to_answer_packet_v1":
+                visible = canonical_json(core_input)
+                target = canonical_json(answer_packet)
+            else:
+                visible = canonical_json(
+                    {**renderer_input, "answer_packet": answer_packet}
+                )
+                target = str(realization["surface_target"])
+            rows.append((objective, visible, target, realization_id))
     compiled = []
     objective_authority = record["semantic_supervision"]["objective_authority"]
-    for objective, visible, target in rows:
+    for objective, visible, target, realization_id in rows:
         if objective_authority[objective] is not True:
             continue
         prompt = visible
@@ -924,6 +1082,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                 "trusted_source_prefix_tokens": trusted_prefix,
                 "prompt": prompt,
                 "target": target,
+                "realization_id": realization_id,
             }
         )
         verifier_negative = _targeted_verifier_corruption(
@@ -969,7 +1128,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                     for channel in KERC_RESIDUAL_CHANNELS
                 ],
                 "kerc_verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
-                "kerc_verifier_positive_labels": [1, 1, 1, 1],
+                "kerc_verifier_positive_labels": [1] * len(KERC_VERIFIER_DIMENSIONS),
                 "kerc_verifier_negative": verifier_negative,
                 "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
                 "evaluator_only_fields": [
@@ -977,6 +1136,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                     "target_sha256",
                     "source_record_sha256",
                     "kerc_verifier_negative",
+                    "realization_id",
                 ],
                 "public_benchmark": False,
                 "public_tests_included": False,
@@ -1118,6 +1278,8 @@ def execute_learned_pipeline(
             answer,
             protected_objects=packet["protected_objects"],
             concept_capsules=packet["concept_capsules"],
+            correction_lattice=packet["correction_lattice"],
+            require_explicit_decision=True,
         )
 
     packet = compile_surface(source)
@@ -1282,7 +1444,7 @@ def _targeted_verifier_corruption(
             objective,
             path="training_view.kerc_verifier_negative",
         )
-    labels = [1, 1, 1, 1]
+    labels = [1] * len(KERC_VERIFIER_DIMENSIONS)
     labels[KERC_VERIFIER_DIMENSIONS.index(dimension)] = 0
     return {
         "policy": "project_theseus_kerc_targeted_verifier_corruption_v1",
@@ -1291,7 +1453,7 @@ def _targeted_verifier_corruption(
         "labels": labels,
         "failed_dimension": dimension,
         "strategy": strategy,
-        "strategy_selector": selector % 4,
+        "strategy_selector": selector % len(KERC_VERIFIER_DIMENSIONS),
         "record_identity_sha256": stable_hash(record_identity.encode("utf-8")),
         "generator_loss_enabled": False,
         "unique_source_credit": 0,
@@ -1319,7 +1481,9 @@ def _structured_verifier_corruption(
             objective,
             path="training_view.kerc_verifier_negative",
         )
-    options = list(range(4))
+    options = list(
+        range(5 if objective == "kernel_program_to_answer_packet_v1" else 4)
+    )
     options = options[selector % len(options) :] + options[: selector % len(options)]
     for option in options:
         candidate = copy.deepcopy(payload)
@@ -1329,6 +1493,17 @@ def _structured_verifier_corruption(
             else candidate["claims"]
         )
         first = candidate_rows[0]
+        if option == 4:
+            decision = candidate.get("decision")
+            if not isinstance(decision, dict):
+                continue
+            confidence = float(decision.get("confidence", 0.5))
+            decision["confidence"] = 0.0 if confidence > 0.0 else 1.0
+            return (
+                canonical_json(candidate),
+                "answer_decision_consistency",
+                "change_answer_decision_confidence",
+            )
         if option == 0:
             field = (
                 "operator"
@@ -1550,7 +1725,10 @@ def parse_learned_answer_output(output: str) -> dict[str, Any]:
         raise KernelProtocolFault(
             "KERC_LEARNED_ANSWER_OUTPUT_INVALID", str(exc), path="answer_output"
         ) from exc
-    return validate_answer_packet(decoded if isinstance(decoded, dict) else {})
+    return validate_answer_packet(
+        decoded if isinstance(decoded, dict) else {},
+        require_explicit_decision=True,
+    )
 
 
 def _masked_surface_from_packet_objects(
@@ -2293,7 +2471,147 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
     }
 
 
-def validate_answer_packet(packet: dict[str, Any]) -> dict[str, Any]:
+def _default_answer_decision(claims: list[dict[str, Any]]) -> dict[str, Any]:
+    """Migrate pre-decision source packets without granting calibrated authority."""
+
+    return {
+        "policy": ANSWER_DECISION_POLICY,
+        "disposition": "ANSWER",
+        "evidence_status": "UNVERIFIED",
+        "uncertainty_state": "RESOLVED",
+        "confidence": min(float(claim.get("confidence", 0.0)) for claim in claims),
+        "controlling_claim_ids": [str(claim["claim_id"]) for claim in claims],
+        "unresolved_ambiguity_ids": [],
+    }
+
+
+def _validate_answer_decision(
+    decision: Any,
+    *,
+    claims: list[dict[str, Any]],
+    require_explicit: bool,
+) -> dict[str, Any]:
+    if decision is None and not require_explicit:
+        return _default_answer_decision(claims)
+    if not isinstance(decision, dict) or decision.get("policy") != ANSWER_DECISION_POLICY:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_DECISION_POLICY_INVALID",
+            str(decision.get("policy") if isinstance(decision, dict) else type(decision)),
+            path="answer.decision.policy",
+        )
+    required = {
+        "policy",
+        "disposition",
+        "evidence_status",
+        "uncertainty_state",
+        "confidence",
+        "controlling_claim_ids",
+        "unresolved_ambiguity_ids",
+    }
+    if set(decision) != required:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_DECISION_SCHEMA_INVALID",
+            canonical_json(sorted(decision)),
+            path="answer.decision",
+        )
+    disposition = str(decision.get("disposition") or "")
+    evidence_status = str(decision.get("evidence_status") or "")
+    uncertainty_state = str(decision.get("uncertainty_state") or "")
+    if disposition not in ANSWER_DISPOSITIONS:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_DISPOSITION_INVALID", disposition, path="answer.decision.disposition"
+        )
+    if evidence_status not in ANSWER_EVIDENCE_STATES:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_EVIDENCE_STATUS_INVALID",
+            evidence_status,
+            path="answer.decision.evidence_status",
+        )
+    if uncertainty_state not in ANSWER_UNCERTAINTY_STATES:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_UNCERTAINTY_STATE_INVALID",
+            uncertainty_state,
+            path="answer.decision.uncertainty_state",
+        )
+    confidence = decision.get("confidence")
+    if isinstance(confidence, bool) or not isinstance(confidence, (int, float)):
+        raise KernelProtocolFault(
+            "KERC_ANSWER_DECISION_CONFIDENCE_INVALID",
+            str(confidence),
+            path="answer.decision.confidence",
+        )
+    confidence = float(confidence)
+    if not math.isfinite(confidence) or not 0.0 <= confidence <= 1.0:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_DECISION_CONFIDENCE_INVALID",
+            str(confidence),
+            path="answer.decision.confidence",
+        )
+    claim_ids = {str(claim["claim_id"]) for claim in claims}
+    controlling = decision.get("controlling_claim_ids")
+    if (
+        not isinstance(controlling, list)
+        or not controlling
+        or len(controlling) != len(set(controlling))
+        or not set(controlling) <= claim_ids
+    ):
+        raise KernelProtocolFault(
+            "KERC_ANSWER_DECISION_CLAIM_REFERENCE_INVALID",
+            canonical_json(controlling),
+            path="answer.decision.controlling_claim_ids",
+        )
+    ambiguity_ids = decision.get("unresolved_ambiguity_ids")
+    if (
+        not isinstance(ambiguity_ids, list)
+        or len(ambiguity_ids) != len(set(ambiguity_ids))
+        or any(not re.fullmatch(r"amb-[a-z0-9][a-z0-9_.:-]*", str(value)) for value in ambiguity_ids)
+    ):
+        raise KernelProtocolFault(
+            "KERC_ANSWER_AMBIGUITY_REFERENCE_INVALID",
+            canonical_json(ambiguity_ids),
+            path="answer.decision.unresolved_ambiguity_ids",
+        )
+    predicates = {str(claim["predicate"]) for claim in claims if claim["claim_id"] in controlling}
+    if disposition == "CLARIFY" and "REQUEST_CLARIFICATION" not in predicates:
+        raise KernelProtocolFault(
+            "KERC_CLARIFICATION_CLAIM_MISSING",
+            canonical_json(sorted(predicates)),
+            path="answer.decision.disposition",
+        )
+    if disposition == "ABSTAIN" and "ABSTAIN" not in predicates:
+        raise KernelProtocolFault(
+            "KERC_ABSTENTION_CLAIM_MISSING",
+            canonical_json(sorted(predicates)),
+            path="answer.decision.disposition",
+        )
+    if disposition in {"CLARIFY", "ABSTAIN"} and uncertainty_state == "RESOLVED":
+        raise KernelProtocolFault(
+            "KERC_UNCERTAIN_DISPOSITION_MARKED_RESOLVED",
+            disposition,
+            path="answer.decision.uncertainty_state",
+        )
+    if uncertainty_state == "AMBIGUOUS" and not ambiguity_ids:
+        raise KernelProtocolFault(
+            "KERC_AMBIGUITY_ID_MISSING",
+            disposition,
+            path="answer.decision.unresolved_ambiguity_ids",
+        )
+    if uncertainty_state == "RESOLVED" and ambiguity_ids:
+        raise KernelProtocolFault(
+            "KERC_RESOLVED_DECISION_HAS_AMBIGUITY",
+            canonical_json(ambiguity_ids),
+            path="answer.decision.unresolved_ambiguity_ids",
+        )
+    canonical = copy.deepcopy(decision)
+    canonical["confidence"] = confidence
+    canonical["controlling_claim_ids"] = sorted(controlling)
+    canonical["unresolved_ambiguity_ids"] = sorted(str(value) for value in ambiguity_ids)
+    return canonical
+
+
+def validate_answer_packet(
+    packet: dict[str, Any], *, require_explicit_decision: bool = False
+) -> dict[str, Any]:
     claims = packet.get("claims")
     if not isinstance(claims, list) or not claims:
         raise KernelProtocolFault("KERC_ANSWER_CLAIMS_MISSING", "claims must be non-empty", path="answer.claims")
@@ -2318,6 +2636,11 @@ def validate_answer_packet(packet: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(claim.get("arguments"), list):
             raise KernelProtocolFault("KERC_ANSWER_ARGUMENTS_INVALID", "arguments must be a list", path=f"{path}.arguments")
     canonical = copy.deepcopy(packet)
+    canonical["decision"] = _validate_answer_decision(
+        packet.get("decision"),
+        claims=claims,
+        require_explicit=require_explicit_decision,
+    )
     canonical["answer_packet_sha256"] = stable_hash({key: value for key, value in canonical.items() if key != "answer_packet_sha256"})
     return canonical
 
@@ -2327,10 +2650,14 @@ def validate_answer_packet_against_context(
     *,
     protected_objects: dict[str, dict[str, Any]],
     concept_capsules: dict[str, dict[str, Any]],
+    correction_lattice: dict[str, Any] | None = None,
+    require_explicit_decision: bool = False,
 ) -> dict[str, Any]:
     """Validate answer value types and references against its packet context."""
 
-    canonical = validate_answer_packet(packet)
+    canonical = validate_answer_packet(
+        packet, require_explicit_decision=require_explicit_decision
+    )
     handles_seen: set[str] = set()
     node_refs: set[str] = set()
     for claim_index, claim in enumerate(canonical["claims"]):
@@ -2355,6 +2682,18 @@ def validate_answer_packet_against_context(
             "KERC_ANSWER_NODE_REFERENCE_FORBIDDEN",
             canonical_json(sorted(node_refs)),
             path="answer.claims",
+        )
+    unresolved_corrections = len((correction_lattice or {}).get("corrections") or [])
+    decision = canonical["decision"]
+    if (
+        unresolved_corrections
+        and decision["disposition"] == "ANSWER"
+        and decision["uncertainty_state"] == "RESOLVED"
+    ):
+        raise KernelProtocolFault(
+            "KERC_UNRESOLVED_CORRECTION_CERTAINTY_LAUNDERING",
+            str(unresolved_corrections),
+            path="answer.decision",
         )
     return canonical
 
@@ -2384,6 +2723,7 @@ def verify_answer_roundtrip(
         "quotation_handles",
         "required_terms",
         "required_caveats",
+        "answer_decision",
     ):
         if intended_constraints[field] != reconstructed_constraints[field]:
             failures.append(
@@ -2543,6 +2883,7 @@ def _answer_constraints(packet: dict[str, Any], objects: dict[str, dict[str, Any
         "quotation_handles": quote_handles,
         "required_terms": sorted(canonical_json(row) for row in packet.get("required_terms") or []),
         "required_caveats": sorted(str(row) for row in packet.get("required_caveats") or []),
+        "answer_decision": copy.deepcopy(packet["decision"]),
     }
 
 

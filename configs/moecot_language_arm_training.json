@@ -117,7 +117,8 @@
     "kerc_stage_adapter_dim": 64,
     "kerc_residual_choice_count": 4,
     "kerc_residual_bottleneck_dim": 64,
-    "kerc_verifier_dim": 64
+    "kerc_verifier_dim": 64,
+    "kerc_verifier_output_dim": 5
   },
   "controls": {
     "dense_total_parameter": {
@@ -371,9 +372,9 @@
       "answer_packet_to_surface_v1"
     ],
     "records_by_split": {
-      "private_train": 6144,
-      "private_dev": 2048,
-      "private_eval": 2048
+      "private_train": 7184,
+      "private_dev": 2072,
+      "private_eval": 2072
     },
     "semantic_supervision": {
       "policy": "project_theseus_kerc_semantic_supervision_program_v1",
@@ -401,22 +402,22 @@
       },
       "minimum_decision_grade_records_by_split_and_objective": {
         "private_train": {
-          "surface_direct_control_v1": 4096,
-          "surface_to_kernel_program_v1": 2048,
-          "kernel_program_to_answer_packet_v1": 2048,
-          "answer_packet_to_surface_v1": 2048
+          "surface_direct_control_v1": 5120,
+          "surface_to_kernel_program_v1": 3072,
+          "kernel_program_to_answer_packet_v1": 3072,
+          "answer_packet_to_surface_v1": 3072
         },
         "private_dev": {
-          "surface_direct_control_v1": 1024,
-          "surface_to_kernel_program_v1": 1024,
-          "kernel_program_to_answer_packet_v1": 1024,
-          "answer_packet_to_surface_v1": 1024
+          "surface_direct_control_v1": 1044,
+          "surface_to_kernel_program_v1": 1044,
+          "kernel_program_to_answer_packet_v1": 1044,
+          "answer_packet_to_surface_v1": 1044
         },
         "private_eval": {
-          "surface_direct_control_v1": 1024,
-          "surface_to_kernel_program_v1": 1024,
-          "kernel_program_to_answer_packet_v1": 1024,
-          "answer_packet_to_surface_v1": 1024
+          "surface_direct_control_v1": 1044,
+          "surface_to_kernel_program_v1": 1044,
+          "kernel_program_to_answer_packet_v1": 1044,
+          "answer_packet_to_surface_v1": 1044
         }
       },
       "maximum_train_record_share_by_tier": {
@@ -458,6 +459,14 @@
           "public_benchmark_surface": false,
           "license_spdx": "LicenseRef-MASC-Unrestricted",
           "source_url": "https://www.anc.org/MASC/download/MASC-3.0.0.tgz"
+        },
+        {
+          "source_id": "openassistant_oasst2_reviewed_trees",
+          "intended_tier": "licensed_human_task_gold",
+          "disposition": "eligible_for_context_bound_dialogue_and_multiple_valid_realizations_after_independent_tree_replay",
+          "public_benchmark_surface": false,
+          "license_spdx": "Apache-2.0",
+          "source_url": "https://huggingface.co/datasets/OpenAssistant/oasst2/tree/179dd21fc55192153d94adb0e0ce8f69e222bf75"
         },
         {
           "source_id": "conceptnet_5_7_assertions",
@@ -557,6 +566,55 @@
           ]
         }
       },
+      "oasst2": {
+        "dataset_id": "OpenAssistant/oasst2",
+        "dataset_revision": "179dd21fc55192153d94adb0e0ce8f69e222bf75",
+        "source_url": "https://huggingface.co/datasets/OpenAssistant/oasst2/tree/179dd21fc55192153d94adb0e0ce8f69e222bf75",
+        "license_evidence_url": "https://huggingface.co/datasets/OpenAssistant/oasst2/blob/179dd21fc55192153d94adb0e0ce8f69e222bf75/README.md",
+        "content_sha256": "sha256:366dca1433a2f123700616d968ff3c0c8b5a4b45ea762ee5be8c398c47b011b3",
+        "license_spdx": "Apache-2.0",
+        "files": {
+          "train": {
+            "path": "resource_pantry/kerc/oasst2/data/train-00000-of-00001-88ba0162028a73fc.parquet",
+            "content_sha256": "sha256:9638227b41b0a4fb69afa5d5c4b52e3fb6abfd56c9870d81bae32c9981e769b1"
+          },
+          "validation": {
+            "path": "resource_pantry/kerc/oasst2/data/validation-00000-of-00001-1deeef95c3248fe0.parquet",
+            "content_sha256": "sha256:fd46c63babc0756909a957ee40975bcf5610d58c5d1ab5ff2c57c0f57be1f273"
+          }
+        },
+        "records_by_split": {
+          "private_train": 1024,
+          "private_dev": 20,
+          "private_eval": 20
+        },
+        "explicit_behavior_records_by_split": {
+          "private_train": {"CLARIFY": 8, "ABSTAIN": 8},
+          "private_dev": {"CLARIFY": 2, "ABSTAIN": 2},
+          "private_eval": {"CLARIFY": 2, "ABSTAIN": 2}
+        },
+        "explicit_behavior_claim_scope": "surface-explicit reviewed human behavior; not optimality, factuality, semantic completeness, or calibrated utility",
+        "allowed_objectives": [
+          "surface_direct_control_v1",
+          "surface_to_kernel_program_v1",
+          "kernel_program_to_answer_packet_v1",
+          "answer_packet_to_surface_v1"
+        ],
+        "minimum_quality": 0.5,
+        "maximum_label_values": {
+          "spam": 0.5,
+          "lang_mismatch": 0.5,
+          "pii": 0.5,
+          "not_appropriate": 0.5
+        },
+        "maximum_current_characters": 1024,
+        "maximum_response_characters": 1024,
+        "maximum_context_characters": 2048,
+        "maximum_compiled_context_bytes": 4096,
+        "minimum_prior_turns": 2,
+        "maximum_prior_turns": 4,
+        "required_valid_realization_ranks": [0, 1]
+      },
       "minimum_source_groups_by_split": {
         "private_train": 8,
         "private_dev": 4,
@@ -573,7 +631,7 @@
       "fallback_return_count": 0,
       "template_credit": 0
     },
-    "maximum_sequence_tokens": 4096,
+    "maximum_sequence_tokens": 8192,
     "batch_size": 2,
   "residual_auxiliary_weight": 0.25,
   "verifier_auxiliary_weight": 0.5,

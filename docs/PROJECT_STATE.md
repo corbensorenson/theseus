@@ -33,10 +33,13 @@ share toward zero. Public benchmarks are calibration only.
   fallback returns. Every specialist clears its 20:1 owned-parameter floor; HTML/CSS
   is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
-- **KERC disposition:** `partial` / `INCONCLUSIVE_IMPLEMENTATION`. The exact packet and
+- **KERC disposition:** `partial` / `INCONCLUSIVE_EXPERIMENT`. The old keyword/linear
+  proxy remains `INCONCLUSIVE_IMPLEMENTATION`; the faithful candidate now has enough
+  architecture mechanics to require the prospectively frozen matched experiment. The exact packet and
   VCM residual substrate now connect to an explicit MLX KERC candidate with trusted
   source-only stage routing, separate Kernel/surface output paths, a learned four-level
-  residual allocator, independent verifier parameters, content-bound four-channel
+  residual allocator, independent verifier parameters with five content-bound decision
+  dimensions, content-bound four-channel
   residual labels, targeted verifier counterexamples that receive zero generator loss,
   train-only content-bound V_K/V_P codebook construction, disjoint compiler/core versus
   surface logit support, joint auxiliary losses, cached decode, gradient-flow coverage,
@@ -45,31 +48,45 @@ share toward zero. Public benchmarks are calibration only.
   answer handles, invalid packets, direct-surface bypass, fallback use, or structured
   round-trip disagreement. The KERC candidate carries a `13,315`-symbol vocabulary while the
   conventional control retains `8,195`; independent width matching leaves a `2,860`
-  parameter delta (`19,531,230` versus `19,534,090`). The live ten-target plan and
+  parameter delta (`19,531,487` versus `19,534,090`). The live ten-target plan and
   governed KERC stage are GREEN for mechanics readiness. Semantic admission distinguishes
   decision-grade audited/licensed human gold from train-only parser silver and governed
   OpenAI residual rows; weak rows cannot enter heldouts or satisfy gold floors, are
   sampling-weighted in the MLX trainer, and are bounded by record-share/optimizer caps.
   A content-addressed source catalog rejects public semantic benchmark payloads and binds
   dataset revision, license, source identity, producer, evidence tier, and verification
-  method. A separate producer plus independent raw-source replayer admitted 10,240
-  source-bound rows: Dolly supports direct-surface training only, while manual MASC
-  FrameNet annotations support compiler/reasoner/renderer objectives. Adjacent
+  method. A separate producer plus independent raw-source replayer admitted 11,328
+  source-bound rows: Dolly supports direct-surface training only, manual MASC
+  FrameNet annotations support compiler/reasoner/renderer objectives, and 1,064 bounded
+  OASST2 dialogue trees provide multi-turn VCM context plus 2,128 distinct reviewed
+  rank-0/rank-1 human answers. A reserved 24-record source-disjoint stratum adds only
+  explicit reviewed human clarification/abstention behavior; it does not claim those
+  responses were optimal, truthful, complete, or calibrated. Duplicate replies, answer leakage, oversized compiled
+  contexts, and producer-only identity claims fail closed. Adjacent
   human-authored document sentences add journaled, independently replayed VCM state to
   1,997 train, 998 development, and 1,015 evaluation MASC records. The canonical stage
-  has 18,432 authorized views, 18,432 verifier corruptions, document-disjoint heldouts,
-  zero derived-view unique-data credit, and no truncation at a maximum sequence width
-  of 3,570 tokens. A full-size, 64-update real-row MLX adequacy canary learns all four
+  has 25,976 authorized views, 25,976 verifier corruptions, source-disjoint heldouts,
+  zero derived-view unique-data credit, no unknown-token substitution, and no truncation
+  at a maximum sequence width of 4,243 tokens. A full-size, 64-update real-row MLX adequacy canary learns all four
   residual channels at `1.0` macro balanced accuracy, reaches `0.857143` verifier macro
   balanced accuracy and `1.0` minimum corruption recall, and proves scoped stage,
   full-residual, interaction-only, and verifier causality plus trained leave-one-
   mechanism-out controls. Optimizer reload is exact; resumed logits are float32-
   equivalent within `2.14577e-06` with unchanged discrete outcomes; schema migration,
   rollback, mismatch rejection, cleanup, and sustained throughput (`>=51.088` target
-  tokens/s) pass. This carries no capability or negative-verdict authority: the current
+  tokens/s) pass for the original four verifier dimensions. A fresh eight-step Apple-MLX
+  canary covers all four objectives, normal answer/clarify/abstain decisions, interaction
+  present/absent, all four residual channels, verifier positives, and all five targeted
+  corruptions in 789 positions with zero missing groups. It proves route/gradient mechanics
+  only; the new decision dimension is not calibrated and the checkpoint is `NOT_EVALUATED`.
+  This carries no capability or negative-verdict authority: the prior
   target proves interaction representation, learning, replay, and causal mechanics, not
-  interaction utility. Richer ambiguity/question/entailment/abstention and multiple-
-  valid supervision plus the matched campaign remain open. `p4-m8-kerc-runtime-001` trained a
+  interaction utility. The new dialogue and multiple-valid rows establish source
+  authority and representability only until trained context-present/context-withheld/
+  shuffled/wrong-user controls run. Formal ambiguity/question/entailment, protected-span
+  abstention, decision calibration,
+  calibrated verifier behavior, and the matched campaign remain open.
+  `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
   hand-coded keyword compiler and renderer. It did not implement or train the paper's
   constrained compiler, Kernel reasoner, learned residual allocator, structured answer
@@ -107,8 +124,10 @@ share toward zero. Public benchmarks are calibration only.
   through the existing English-arm, Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,
-  cleanup, and sustained-batch canaries now pass. Next add richer ambiguity,
-  entailment/question, abstention, and multiple-valid supervision; then
+  cleanup, source-replayed multi-turn/multiple-valid/explicit-decision materialization,
+  deterministic canary coverage, and sustained-batch canaries now pass. Next add formal
+  ambiguity, entailment/question, protected-span abstention, calibrated verifier behavior,
+  and trained context counterfactuals; then
   freeze strong matched controls and total-system accounting and rebuild the architecture
   package. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured

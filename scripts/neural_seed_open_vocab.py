@@ -135,6 +135,47 @@ def encode_tokens(
     }
 
 
+def bound_logical_tokens(
+    tokens: Iterable[str], *, maximum_token_bytes: int = MAX_TOKEN_BYTES
+) -> list[str]:
+    """Losslessly split oversized logical tokens before byte fallback encoding.
+
+    The open-vocabulary codec deliberately rejects a single fallback span above
+    ``MAX_TOKEN_BYTES``. Structured formats can nevertheless contain legitimate
+    long atoms (for example, base64-encoded exact byte fields). This helper keeps
+    the codec's per-span bound while producing adjacent UTF-8-safe spans whose
+    concatenation is byte-identical to the original token stream.
+    """
+
+    bound = int(maximum_token_bytes)
+    if bound <= 0:
+        raise ValueError("maximum_token_bytes_must_be_positive")
+    logical_tokens = [str(token) for token in tokens]
+    result: list[str] = []
+    for raw in logical_tokens:
+        token = str(raw)
+        if len(token.encode("utf-8")) <= bound:
+            result.append(token)
+            continue
+        chunk: list[str] = []
+        chunk_bytes = 0
+        for character in token:
+            character_bytes = len(character.encode("utf-8"))
+            if character_bytes > bound:
+                raise ValueError("unicode_scalar_exceeds_open_vocab_span_bound")
+            if chunk and chunk_bytes + character_bytes > bound:
+                result.append("".join(chunk))
+                chunk = []
+                chunk_bytes = 0
+            chunk.append(character)
+            chunk_bytes += character_bytes
+        if chunk:
+            result.append("".join(chunk))
+    if "".join(result) != "".join(logical_tokens):
+        raise ValueError("bounded_logical_tokens_failed_exact_reconstruction")
+    return result
+
+
 def decode_target_tokens(tokens: Iterable[str]) -> tuple[list[str], dict[str, Any]]:
     out: list[str] = []
     payload = bytearray()

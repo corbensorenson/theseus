@@ -125,6 +125,105 @@ def test_contextual_answer_validation_rejects_unknown_handle() -> None:
         )
 
 
+def test_learned_answer_requires_explicit_decision_contract() -> None:
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_ANSWER_DECISION_POLICY_INVALID"
+    ):
+        kernel.parse_learned_answer_output(kernel.canonical_json(answer_packet()))
+
+
+def test_clarification_and_abstention_dispositions_require_matching_claims() -> None:
+    packet = {
+        "claims": [
+            {
+                "claim_id": "claim-1",
+                "predicate": "REQUEST_CLARIFICATION",
+                "modality": "REQUIRED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 0.8,
+                "arguments": [
+                    {
+                        "role": "QUESTION",
+                        "value": {
+                            "type": "byte_literal",
+                            "value": "V2hpY2ggdmVyc2lvbiBkbyB5b3UgbWVhbj8=",
+                        },
+                    }
+                ],
+            }
+        ],
+        "required_terms": [],
+        "required_caveats": [],
+        "style": {"register": "plain"},
+        "decision": {
+            "policy": kernel.ANSWER_DECISION_POLICY,
+            "disposition": "CLARIFY",
+            "evidence_status": "AMBIGUOUS",
+            "uncertainty_state": "AMBIGUOUS",
+            "confidence": 0.8,
+            "controlling_claim_ids": ["claim-1"],
+            "unresolved_ambiguity_ids": ["amb-request-scope"],
+        },
+    }
+    assert kernel.validate_answer_packet(packet)["decision"]["disposition"] == "CLARIFY"
+    packet["claims"][0]["predicate"] = "RESPOND"
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_CLARIFICATION_CLAIM_MISSING"):
+        kernel.validate_answer_packet(packet)
+
+
+def test_unresolved_correction_cannot_be_laundered_as_resolved_answer() -> None:
+    source = "Use teh file."
+    lattice = kernel.build_correction_lattice(
+        source,
+        {},
+        [
+            {
+                "start": 4,
+                "end": 7,
+                "alternatives": [
+                    {"form": "teh", "probability": 0.5, "evidence": "source"},
+                    {"form": "the", "probability": 0.5, "evidence": "spell hypothesis"},
+                ],
+            }
+        ],
+    )
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_UNRESOLVED_CORRECTION_CERTAINTY_LAUNDERING",
+    ):
+        packet = {
+            "claims": [
+                {
+                    "claim_id": "claim-1",
+                    "predicate": "RESPOND",
+                    "modality": "ASSERTED",
+                    "polarity": "AFFIRMED",
+                    "quantifier": "NONE",
+                    "confidence": 1.0,
+                    "arguments": [
+                        {
+                            "role": "CONTENT",
+                            "value": {
+                                "type": "byte_literal",
+                                "value": "YW5zd2Vy",
+                            },
+                        }
+                    ],
+                }
+            ],
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "plain"},
+        }
+        kernel.validate_answer_packet_against_context(
+            packet,
+            protected_objects={},
+            concept_capsules={},
+            correction_lattice=lattice,
+        )
+
+
 def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route() -> None:
     source = 'Budget is $20 and the note says "Proceed".'
     state = memory.create_hierarchical_residual_state(
@@ -167,6 +266,15 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
         "required_terms": [],
         "required_caveats": [],
         "style": {"register": "plain"},
+        "decision": {
+            "policy": kernel.ANSWER_DECISION_POLICY,
+            "disposition": "ANSWER",
+            "evidence_status": "UNVERIFIED",
+            "uncertainty_state": "RESOLVED",
+            "confidence": 0.95,
+            "controlling_claim_ids": ["claim-1"],
+            "unresolved_ambiguity_ids": [],
+        },
     }
     calls: list[str] = []
 
@@ -661,12 +769,18 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
     assert all(row["public_benchmark"] is False for row in views)
     assert all(row["fallback_return_count"] == 0 for row in views)
     assert all(row["kerc_residual_labels"] == [0, 0, 0, 3] for row in views)
-    assert all(row["kerc_verifier_positive_labels"] == [1, 1, 1, 1] for row in views)
+    assert all(
+        row["kerc_verifier_positive_labels"]
+        == [1] * len(kernel.KERC_VERIFIER_DIMENSIONS)
+        for row in views
+    )
     assert all(
         row["kerc_verifier_negative"]["generator_loss_enabled"] is False
         and row["kerc_verifier_negative"]["target"] != row["target"]
-        and sum(row["kerc_verifier_negative"]["labels"]) == 3
-        and row["kerc_verifier_negative"]["strategy_selector"] in range(4)
+        and sum(row["kerc_verifier_negative"]["labels"])
+        == len(kernel.KERC_VERIFIER_DIMENSIONS) - 1
+        and row["kerc_verifier_negative"]["strategy_selector"]
+        in range(len(kernel.KERC_VERIFIER_DIMENSIONS))
         for row in views
     )
     assert views[0]["target"] != views[1]["target"]

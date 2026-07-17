@@ -3798,6 +3798,46 @@ def test_private_prompt_variants_share_fixed_body_sampling_mass() -> None:
     assert float(probabilities.sum()) == pytest.approx(1.0)
 
 
+def test_coverage_first_plan_is_deterministic_and_covers_overlapping_groups() -> None:
+    labels = (
+        ("objective:a", "verifier:positive"),
+        ("objective:a", "decision:clarify", "verifier:negative:semantic"),
+        ("objective:b", "decision:abstain", "verifier:negative:decision"),
+        ("objective:b", "verifier:positive"),
+    )
+    required = (
+        "objective:a",
+        "objective:b",
+        "decision:clarify",
+        "decision:abstain",
+        "verifier:positive",
+        "verifier:negative:semantic",
+        "verifier:negative:decision",
+    )
+    first = survival.coverage_first_plan(
+        labels, required, row_count=len(labels), capacity=4
+    )
+    second = survival.coverage_first_plan(
+        labels, required, row_count=len(labels), capacity=4
+    )
+    assert first == second
+    assert first["state"] == "PLANNED"
+    observed = {
+        label
+        for index in first["selected_indices"]
+        for label in labels[index]
+    }
+    assert set(required) <= observed
+    assert len(first["selected_indices"]) == 3
+
+
+def test_coverage_first_plan_fails_closed_when_capacity_is_too_small() -> None:
+    with pytest.raises(ValueError, match="bounded run permits"):
+        survival.coverage_first_plan(
+            (("a",), ("b",)), ("a", "b"), row_count=2, capacity=1
+        )
+
+
 def test_private_sampling_mass_can_match_a_frozen_probability() -> None:
     examples = [
         {"source": "licensed_function", "source_text": "licensed-a", "body": "return data"},

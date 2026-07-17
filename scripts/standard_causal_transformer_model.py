@@ -48,6 +48,7 @@ class CausalTransformerConfig:
     kerc_residual_choice_count: int = 0
     kerc_residual_bottleneck_dim: int = 0
     kerc_verifier_dim: int = 0
+    kerc_verifier_output_dim: int = 4
     kerc_surface_token_start: int = 0
     kerc_surface_token_end: int = 0
     kerc_kernel_token_start: int = 0
@@ -208,6 +209,8 @@ class CausalTransformerConfig:
                 raise ValueError("KERC requires a learned residual bottleneck")
             if self.kerc_verifier_dim <= 0:
                 raise ValueError("KERC requires an independent verifier dimension")
+            if self.kerc_verifier_output_dim <= 0:
+                raise ValueError("KERC requires positive verifier output dimensions")
             ranges = (
                 (self.kerc_surface_token_start, self.kerc_surface_token_end, "surface"),
                 (self.kerc_kernel_token_start, self.kerc_kernel_token_end, "kernel"),
@@ -692,7 +695,9 @@ def build_model(
                     config.kerc_verifier_dim, config.kerc_verifier_dim, bias=False
                 )
                 self.kerc_verifier_classifier = nn.Linear(
-                    4 * config.kerc_verifier_dim, 4, bias=True
+                    4 * config.kerc_verifier_dim,
+                    config.kerc_verifier_output_dim,
+                    bias=True,
                 )
             if source_encoder_enabled:
                 self.source_layers = [

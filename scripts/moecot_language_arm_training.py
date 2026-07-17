@@ -27,6 +27,7 @@ import numpy as np
 
 from kerc_checkpoint_schema import CURRENT_SCHEMA, CURRENT_SCHEMA_VERSION, POLICY as KERC_CHECKPOINT_POLICY
 from kernel_english_protocol import (
+    KERC_VERIFIER_DIMENSIONS,
     KernelProtocolFault,
     TRAINING_TASK_TAGS,
     execute_learned_pipeline,
@@ -50,6 +51,7 @@ from moecot_source_conditioned_pretraining import (
     KERC_KERNEL_OBJECTIVES,
     decode_kerc_global_target,
     encode_kerc_global_target,
+    kerc_surface_tokens,
 )
 from neural_seed_open_vocab import (
     TARGET_BYTE_BEGIN,
@@ -70,6 +72,20 @@ CONTROL_IDS = ("dense_total_parameter", "dense_active_parameter")
 KERC_ENGLISH_ID = "english_kerc"
 SURFACE_ENGLISH_CONTROL_ID = "english_surface_control"
 ENGLISH_COMPARISON_IDS = (SURFACE_ENGLISH_CONTROL_ID, KERC_ENGLISH_ID)
+KERC_CANARY_REQUIRED_COVERAGE = (
+    *(f"objective:{objective}" for objective in TRAINING_TASK_TAGS),
+    "decision:ANSWER",
+    "decision:CLARIFY",
+    "decision:ABSTAIN",
+    "interaction:present",
+    "interaction:absent",
+    "residual:interaction:active",
+    "residual:segment:active",
+    "residual:token:active",
+    "residual:exact:active",
+    "verifier:positive",
+    *(f"verifier:negative:{dimension}" for dimension in KERC_VERIFIER_DIMENSIONS),
+)
 
 
 def main() -> int:
@@ -524,6 +540,7 @@ def model_accounting(
         source_offset + int(source_vocab[TRAINING_TASK_TAGS[objective]])
         for objective in TRAINING_TASK_TAGS
     ]
+    kerc_model["kerc_verifier_output_dim"] = len(KERC_VERIFIER_DIMENSIONS)
     canonical_target_start = target_token_offset(base, source_vocab)
     kerc_model.update(
         {
@@ -651,6 +668,7 @@ def matched_encoder_decoder_config(
         "kerc_residual_choice_count",
         "kerc_residual_bottleneck_dim",
         "kerc_verifier_dim",
+        "kerc_verifier_output_dim",
     ):
         candidate.pop(key, None)
     candidate["ff_dim"] = 1
@@ -1548,6 +1566,7 @@ def materialize_target_supervision(
     sampling_weights: list[float] = []
     kerc_residual_rows: list[list[int]] = []
     kerc_verifier_rows: list[list[int]] = []
+    kerc_coverage_rows: list[tuple[str, ...]] = []
     kerc_model = str(target.get("role") or "") == "kerc_english_candidate"
     kerc_mode = kerc_model and artifact_field == "kernel_english_artifacts"
     code_vocabulary = (
@@ -1582,7 +1601,9 @@ def materialize_target_supervision(
                 prompt = str(row.get("prompt") or "")
                 answer = str(row.get("target") or "")
                 source_body_ids, source_receipt = encode_tokens(
-                    exact_text_tokens(prompt), source_vocab, stream="source"
+                    kerc_surface_tokens(prompt) if kerc_mode else exact_text_tokens(prompt),
+                    source_vocab,
+                    stream="source",
                 )
                 trusted_prefix = list(row.get("trusted_source_prefix_tokens") or [])
                 if trusted_prefix:
@@ -1610,7 +1631,7 @@ def materialize_target_supervision(
                     )
                 else:
                     target_ids, target_receipt = encode_tokens(
-                        exact_text_tokens(answer), target_vocab, stream="target"
+                        kerc_surface_tokens(answer), target_vocab, stream="target"
                     )
                 if int(source_receipt.get("unknown_token_count") or 0) or int(
                     target_receipt.get("unknown_token_count") or 0
@@ -1637,6 +1658,8 @@ def materialize_target_supervision(
                 sampling_weights.append(sampling_weight)
                 if kerc_mode:
                     residual = list(row.get("kerc_residual_labels") or [])
+                    residual_channels = list(row.get("kerc_residual_channels") or [])
+                    verifier_dimensions = list(row.get("kerc_verifier_dimensions") or [])
                     positive = list(row.get("kerc_verifier_positive_labels") or [])
                     negative = (
                         row.get("kerc_verifier_negative")
@@ -1646,9 +1669,11 @@ def materialize_target_supervision(
                     negative_labels = list(negative.get("labels") or [])
                     if (
                         len(residual) != 4
+                        or residual_channels != ["interaction", "segment", "token", "exact"]
                         or any(isinstance(value, bool) or not isinstance(value, int) or value not in range(4) for value in residual)
-                        or positive != [1, 1, 1, 1]
-                        or len(negative_labels) != 4
+                        or verifier_dimensions != list(KERC_VERIFIER_DIMENSIONS)
+                        or positive != [1] * len(KERC_VERIFIER_DIMENSIONS)
+                        or len(negative_labels) != len(KERC_VERIFIER_DIMENSIONS)
                         or any(
                             isinstance(value, bool)
                             or not isinstance(value, int)
@@ -1669,7 +1694,7 @@ def materialize_target_supervision(
                         )
                     else:
                         negative_ids, negative_receipt = encode_tokens(
-                            exact_text_tokens(negative_answer),
+                            kerc_surface_tokens(negative_answer),
                             target_vocab,
                             stream="target",
                         )
@@ -1699,13 +1724,23 @@ def materialize_target_supervision(
                             f"KERC verifier corruption requires truncation: {key}"
                         )
                     kerc_residual_rows.append([int(value) for value in residual])
-                    kerc_verifier_rows.append([1, 1, 1, 1])
+                    kerc_verifier_rows.append([1] * len(KERC_VERIFIER_DIMENSIONS))
+                    base_coverage = kerc_training_coverage_labels(row, residual)
+                    kerc_coverage_rows.append((*base_coverage, "verifier:positive"))
                     sequences.append(negative_sequence)
                     mask_starts.append(negative_start - 1)
                     generator_loss_enabled.append(False)
                     sampling_weights.append(sampling_weight)
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_verifier_rows.append([int(value) for value in negative_labels])
+                    failed_dimension = str(negative.get("failed_dimension") or "")
+                    if failed_dimension not in KERC_VERIFIER_DIMENSIONS:
+                        raise ValueError(
+                            f"invalid KERC verifier failed dimension: {key}:{source_rows - 1}"
+                        )
+                    kerc_coverage_rows.append(
+                        (*base_coverage, f"verifier:negative:{failed_dimension}")
+                    )
                     row_hashes.append(
                         hashlib.sha256(
                             (
@@ -1813,6 +1848,18 @@ def materialize_target_supervision(
         "kernel_target_token_offset": kernel_offset if kerc_mode else 0,
         "pointer_target_token_offset": pointer_offset if kerc_mode else 0,
         "dual_code_byte_boundary_ids": code_boundary_ids,
+        "kerc_verifier_dimensions": (
+            list(KERC_VERIFIER_DIMENSIONS) if kerc_mode else []
+        ),
+        "canary_coverage_catalog": (
+            {
+                label: sum(label in labels for labels in kerc_coverage_rows)
+                for label in KERC_CANARY_REQUIRED_COVERAGE
+            }
+            if kerc_mode
+            else {}
+        ),
+        "canary_coverage_labels_are_model_inputs": False,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -1829,8 +1876,56 @@ def materialize_target_supervision(
         kerc_verifier_labels=(
             np.asarray(kerc_verifier_rows, dtype=np.float32) if kerc_mode else None
         ),
+        kerc_coverage_labels=(tuple(kerc_coverage_rows) if kerc_mode else None),
         receipt=receipt,
     )
+
+
+def kerc_training_coverage_labels(
+    row: dict[str, Any], residual: list[int]
+) -> tuple[str, ...]:
+    """Classify training-only mechanics coverage without changing model-visible text."""
+
+    labels = [f"objective:{str(row.get('objective') or '')}"]
+    labels.append("interaction:present" if residual[0] > 0 else "interaction:absent")
+    for channel, value in zip(("interaction", "segment", "token", "exact"), residual):
+        if value > 0:
+            labels.append(f"residual:{channel}:active")
+    disposition = answer_disposition_from_training_row(row)
+    if disposition:
+        labels.append(f"decision:{disposition}")
+    return tuple(labels)
+
+
+def answer_disposition_from_training_row(row: dict[str, Any]) -> str:
+    """Read a supervised decision label for sampler accounting, never generation."""
+
+    def visit(value: Any) -> str:
+        if isinstance(value, dict):
+            decision = value.get("decision")
+            if isinstance(decision, dict):
+                disposition = str(decision.get("disposition") or "")
+                if disposition in {"ANSWER", "PARTIAL", "CLARIFY", "ABSTAIN"}:
+                    return disposition
+            for child in value.values():
+                found = visit(child)
+                if found:
+                    return found
+        elif isinstance(value, list):
+            for child in value:
+                found = visit(child)
+                if found:
+                    return found
+        return ""
+
+    for field in ("target", "prompt"):
+        try:
+            found = visit(json.loads(str(row.get(field) or "")))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            found = ""
+        if found:
+            return found
+    return ""
 
 
 def evaluate_target(
@@ -2127,7 +2222,7 @@ def generate_kerc_code_text(
     """Decode one grammar-serialized KERC code object in disjoint V_K/V_P."""
 
     source_ids, source_receipt = encode_tokens(
-        exact_text_tokens(prompt), source_vocab, stream="source"
+        kerc_surface_tokens(prompt), source_vocab, stream="source"
     )
     if int(source_receipt.get("unknown_token_count") or 0):
         return "", generation_fault("source_unrepresentable")
@@ -2322,8 +2417,13 @@ def generate_model_text(
 ) -> tuple[str, dict[str, Any]]:
     """Generate from prompt only; the grammar constrains byte serialization, not meaning."""
 
+    prompt_tokens = (
+        kerc_surface_tokens(prompt)
+        if any(str(token).startswith("<KERC_TASK_") for token in trusted_source_prefix_tokens)
+        else exact_text_tokens(prompt)
+    )
     source_ids, source_receipt = encode_tokens(
-        exact_text_tokens(prompt), source_vocab, stream="source"
+        prompt_tokens, source_vocab, stream="source"
     )
     if int(source_receipt.get("unknown_token_count") or 0):
         return "", generation_fault("source_unrepresentable")
@@ -3018,6 +3118,30 @@ def train_target(
                     "verifier_require_both_classes", True
                 )
             ),
+            coverage_labels=(
+                kernel_english_stage.kerc_coverage_labels
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                and max_steps > 0
+                and max_steps
+                <= int(
+                    (config.get("architecture_training_authority") or {}).get(
+                        "pre_training_canary_max_steps", 0
+                    )
+                )
+                else None
+            ),
+            required_coverage_labels=(
+                KERC_CANARY_REQUIRED_COVERAGE
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                and max_steps > 0
+                and max_steps
+                <= int(
+                    (config.get("architecture_training_authority") or {}).get(
+                        "pre_training_canary_max_steps", 0
+                    )
+                )
+                else ()
+            ),
             phase_name=f"moecot_kernel_english:{target_id}",
             target_positions=remaining_kernel_positions,
             batch_size=kernel_batch_size,
@@ -3447,6 +3571,7 @@ def validate_config(config: dict[str, Any]) -> None:
                 "kerc_residual_choice_count",
                 "kerc_residual_bottleneck_dim",
                 "kerc_verifier_dim",
+                "kerc_verifier_output_dim",
             )
         }
         if kerc_model != dict(config.get("shared_trunk_model") or {}):
@@ -3456,6 +3581,8 @@ def validate_config(config: dict[str, Any]) -> None:
             or kerc_dimensions["kerc_residual_choice_count"] < 4
             or kerc_dimensions["kerc_residual_bottleneck_dim"] <= 0
             or kerc_dimensions["kerc_verifier_dim"] <= 0
+            or kerc_dimensions["kerc_verifier_output_dim"]
+            != len(KERC_VERIFIER_DIMENSIONS)
         ):
             raise ValueError("KERC English learned module dimensions are incomplete")
     if topology.get("expert_trainable_scope") not in {

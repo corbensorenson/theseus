@@ -21,7 +21,10 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
+import pyarrow.parquet as pq
+
 from kernel_english_protocol import (
+    ANSWER_DECISION_POLICY,
     SEMANTIC_SUPERVISION_POLICY,
     TRAINING_OBJECTIVES,
     TRAINING_RECORD_POLICY,
@@ -207,6 +210,9 @@ def base_record(
     segment_frame: dict[str, Any] | None = None,
     token_tags: list[dict[str, Any]] | None = None,
     interaction_annotation: dict[str, Any] | None = None,
+    interaction_entries: list[dict[str, Any]] | None = None,
+    interaction_actor_id: str = "licensed_source_context",
+    valid_realizations: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     identity = stable_hash(
         {
@@ -217,35 +223,30 @@ def base_record(
             "surface_target": surface_target,
             "source_annotation": source_annotation,
             "interaction_annotation": interaction_annotation,
+            "valid_realizations": valid_realizations,
         }
     ).split(":", 1)[1]
     state = create_hierarchical_residual_state(
         "kerc-corpus-" + identity[:24], scope=scope(identity[:24])
     )
     hrl_deltas: list[dict[str, Any]] = []
-    if interaction_annotation:
+    if interaction_entries:
         operations = [
             {
                 "op": "OVERRIDE",
-                "segment_id": "previous_turn",
-                "key": "frame_name",
-                "value": str(interaction_annotation["frame_name"]),
+                "segment_id": str(entry["segment_id"]),
+                "key": str(entry["key"]),
+                "value": copy.deepcopy(entry["value"]),
                 "privacy": "interaction_private",
-            },
-            {
-                "op": "OVERRIDE",
-                "segment_id": "previous_turn",
-                "key": "lexical_unit",
-                "value": str(interaction_annotation["lexical_unit"]),
-                "privacy": "interaction_private",
-            },
+            }
+            for entry in interaction_entries
         ]
         state, delta = apply_hierarchical_residual_delta(
             state,
             operations,
             expected_state_hash=state["state_hash"],
             actor_authority="document",
-            actor_id="masc_manual_framenet",
+            actor_id=interaction_actor_id,
             provenance={
                 "source": source["dataset_id"],
                 "interaction_annotation_sha256": stable_hash(interaction_annotation),
@@ -296,6 +297,7 @@ def base_record(
         "verification_receipt": provisional_receipt(identity[:24]),
         "source_annotation": source_annotation,
         "interaction_annotation": interaction_annotation,
+        "valid_realizations": valid_realizations,
         "public_benchmark": False,
         "public_tests_included": False,
         "public_benchmark_solutions_included": False,
@@ -308,9 +310,7 @@ def base_record(
 
 
 def dolly_prompt(row: dict[str, Any]) -> str:
-    instruction = str(row.get("instruction") or "").strip()
-    context = str(row.get("context") or "").strip()
-    return instruction + (("\n\nContext:\n" + context) if context else "")
+    return str(row.get("instruction") or "").strip()
 
 
 def load_dolly_candidates(
@@ -329,7 +329,12 @@ def load_dolly_candidates(
         source_row = json.loads(raw)
         prompt = dolly_prompt(source_row)
         target = str(source_row.get("response") or "").strip()
-        if not 12 <= len(prompt) <= maximum_characters or not 2 <= len(target) <= maximum_characters:
+        context = str(source_row.get("context") or "").strip()
+        if (
+            not 12 <= len(prompt) <= maximum_characters
+            or not 2 <= len(target) <= maximum_characters
+            or len(context) > maximum_characters
+        ):
             rejects["length"] += 1
             continue
         prompt_hash = stable_hash(prompt.encode("utf-8"))
@@ -406,6 +411,23 @@ def dolly_record(
         "style": {"register": "source_authored"},
     }
     identity = row["selection_key"].split(":", 1)[1]
+    context = str(row["annotation"].get("context") or "").strip()
+    interaction_annotation = (
+        {
+            "kind": "licensed_document_context",
+            "source_row_sha256": row["annotation"]["source_row_sha256"],
+            "context_sha256": stable_hash(context.encode("utf-8")),
+            "context": context,
+            "source_category": row["annotation"]["category"],
+        }
+        if context
+        else None
+    )
+    interaction_entries = (
+        [{"segment_id": "document_context", "key": "content", "value": context}]
+        if context
+        else []
+    )
     return base_record(
         split=split,
         source_text=row["prompt"],
@@ -419,6 +441,552 @@ def dolly_record(
         producer_sha256=producer_sha256,
         source_annotation=row["annotation"],
         exact_residual=False,
+        interaction_annotation=interaction_annotation,
+        interaction_entries=interaction_entries,
+        interaction_actor_id="databricks_dolly_human_context",
+    )
+
+
+def source_labels(row: dict[str, Any]) -> dict[str, float]:
+    labels = row.get("labels") if isinstance(row.get("labels"), dict) else {}
+    names = labels.get("name") if isinstance(labels.get("name"), list) else []
+    values = labels.get("value") if isinstance(labels.get("value"), list) else []
+    return {str(name): float(value) for name, value in zip(names, values)}
+
+
+def oasst_row_eligible(row: dict[str, Any], source: dict[str, Any]) -> bool:
+    labels = source_labels(row)
+    safety_dimensions = tuple(source["maximum_label_values"])
+    return bool(
+        str(row.get("lang") or "").lower() == "en"
+        and row.get("review_result") is True
+        and row.get("deleted") is not True
+        and row.get("synthetic") is not True
+        and str(row.get("tree_state") or "") == "ready_for_export"
+        and str(row.get("text") or "").strip()
+        and float(labels.get("quality", -1.0)) >= float(source["minimum_quality"])
+        and all(
+            float(labels.get(dimension, 0.0))
+            <= float(source["maximum_label_values"][dimension])
+            for dimension in safety_dimensions
+        )
+    )
+
+
+def oasst_answer_packet(text: str) -> dict[str, Any]:
+    return {
+        "claims": [
+            {
+                "claim_id": "claim-1",
+                "predicate": "DIALOGUE_RESPONSE",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [{"role": "CONTENT", "value": byte_literal(text)}],
+            }
+        ],
+        "required_terms": [],
+        "required_caveats": [],
+        "style": {"register": "source_authored_conversation"},
+    }
+
+
+OASST_BEHAVIOR_POLICY = "project_theseus_oasst_explicit_answer_behavior_v1"
+_CLARIFICATION_RULES = (
+    ("request_more_detail", re.compile(r"^(?:i(?:'m| am) sorry[^?!.]{0,120}[,.]?\s*)?(?:could|can|would|will) you (?:please )?(?:clarify|provide|specify|explain|elaborate|tell me|give me)\b")),
+    ("imperative_more_detail", re.compile(r"^please (?:clarify|provide|specify|explain|elaborate)\b")),
+    ("meaning_question", re.compile(r"^(?:what do you mean|which .{0,100} do you mean|do you mean)\b")),
+    ("explicit_choice_question", re.compile(r"^there (?:are|is) .{0,120}(?:which|what).{0,120}\?")),
+)
+_ABSTENTION_RULES = (
+    ("explicit_unknown", re.compile(r"^(?:i(?:'m| am) sorry,? (?:but )?)?i (?:do not|don't) know\b")),
+    ("explicit_cannot_determine", re.compile(r"^(?:as [^.!?]{1,120}[,.]\s*)?[^.!?]{0,120}\bi (?:cannot|can't) (?:determine|answer|know|tell)\b")),
+    ("explicit_insufficient", re.compile(r"^(?:there is|there's) (?:insufficient|not enough) (?:information|context|details)\b")),
+    ("explicit_missing_context", re.compile(r"^i (?:do not|don't) have (?:enough |sufficient )?(?:information|context|details)\b")),
+)
+
+
+def explicit_answer_behavior(text: str) -> tuple[str, str] | None:
+    """Admit only surface-explicit human behavior; this is not truth verification."""
+
+    normalized = " ".join(text.strip().lower().split())[:400]
+    if "?" in normalized:
+        for rule_id, pattern in _CLARIFICATION_RULES:
+            if pattern.search(normalized):
+                return "CLARIFY", rule_id
+    for rule_id, pattern in _ABSTENTION_RULES:
+        if pattern.search(normalized):
+            return "ABSTAIN", rule_id
+    return None
+
+
+def oasst_behavior_answer_packet(
+    text: str, *, disposition: str, ambiguity_id: str
+) -> dict[str, Any]:
+    predicate = "REQUEST_CLARIFICATION" if disposition == "CLARIFY" else "ABSTAIN"
+    uncertainty = "AMBIGUOUS" if disposition == "CLARIFY" else "INSUFFICIENT_CONTEXT"
+    evidence = "AMBIGUOUS" if disposition == "CLARIFY" else "INSUFFICIENT_CONTEXT"
+    return {
+        "claims": [
+            {
+                "claim_id": "claim-1",
+                "predicate": predicate,
+                "modality": "REQUIRED" if disposition == "CLARIFY" else "UNKNOWN",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [{"role": "CONTENT", "value": byte_literal(text)}],
+            }
+        ],
+        "required_terms": [],
+        "required_caveats": [],
+        "style": {"register": "source_authored_conversation"},
+        "decision": {
+            "policy": ANSWER_DECISION_POLICY,
+            "disposition": disposition,
+            "evidence_status": evidence,
+            "uncertainty_state": uncertainty,
+            "confidence": 1.0,
+            "controlling_claim_ids": ["claim-1"],
+            "unresolved_ambiguity_ids": [ambiguity_id] if disposition == "CLARIFY" else [],
+        },
+    }
+
+
+def load_oasst_candidates(
+    source: dict[str, Any],
+) -> tuple[dict[str, list[dict[str, Any]]], Counter[str]]:
+    nodes_by_official_split: dict[str, dict[str, dict[str, Any]]] = {}
+    rejects: Counter[str] = Counter()
+    observed_file_hashes: dict[str, str] = {}
+    for official_split, contract in source["files"].items():
+        path = resolve(contract["path"])
+        observed_file_hashes[official_split] = sha256_file(path)
+        if observed_file_hashes[official_split] != contract["content_sha256"]:
+            raise ValueError(f"OASST2 source hash mismatch: {official_split}")
+        rows = pq.read_table(path).to_pylist()
+        nodes_by_official_split[official_split] = {
+            str(row["message_id"]): row for row in rows if row.get("message_id")
+        }
+    if stable_hash(observed_file_hashes) != source["content_sha256"]:
+        raise ValueError("OASST2 aggregate source identity mismatch")
+
+    selected: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for official_split, nodes in nodes_by_official_split.items():
+        assistants_by_parent: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for row in nodes.values():
+            if (
+                oasst_row_eligible(row, source)
+                and str(row.get("role") or "") == "assistant"
+                and row.get("rank") in (0, 1)
+            ):
+                assistants_by_parent[str(row.get("parent_id") or "")].append(row)
+        for parent_id, responses in assistants_by_parent.items():
+            if sorted(int(row["rank"]) for row in responses) != [0, 1]:
+                rejects["rank_zero_one_pair_missing"] += 1
+                continue
+            chain: list[dict[str, Any]] = []
+            current = nodes.get(parent_id)
+            seen: set[str] = set()
+            while current and str(current["message_id"]) not in seen and len(chain) < 8:
+                if not oasst_row_eligible(current, source):
+                    chain = []
+                    break
+                seen.add(str(current["message_id"]))
+                chain.append(current)
+                current = nodes.get(str(current.get("parent_id") or ""))
+            chain.reverse()
+            if current is not None or len(chain) < 3:
+                rejects["context_free_or_incomplete_ancestry"] += 1
+                continue
+            roles = [
+                "user" if str(row.get("role")) == "prompter" else "assistant"
+                for row in chain
+            ]
+            if roles != ["user" if index % 2 == 0 else "assistant" for index in range(len(chain))]:
+                rejects["nonalternating_ancestry"] += 1
+                continue
+            current_prompt = str(chain[-1]["text"]).strip()
+            responses = sorted(responses, key=lambda row: int(row["rank"]))
+            targets = [str(row["text"]).strip() for row in responses]
+            if len(set(targets)) != len(targets):
+                rejects["duplicate_ranked_realization"] += 1
+                continue
+            prior_turns = chain[:-1]
+            compiled_context = [
+                [f"turn_{index:03d}", key, value]
+                for index, prior in enumerate(prior_turns)
+                for key, value in (
+                    ("content", str(prior["text"]).strip()),
+                    (
+                        "role",
+                        "user"
+                        if str(prior.get("role") or "") == "prompter"
+                        else "assistant",
+                    ),
+                )
+            ]
+            if (
+                len(prior_turns) < int(source["minimum_prior_turns"])
+                or len(prior_turns) > int(source["maximum_prior_turns"])
+                or len(current_prompt) > int(source["maximum_current_characters"])
+                or any(len(target) > int(source["maximum_response_characters"]) for target in targets)
+                or sum(len(str(row["text"])) for row in prior_turns)
+                > int(source["maximum_context_characters"])
+                or len(canonical_json(compiled_context).encode("utf-8"))
+                > int(source["maximum_compiled_context_bytes"])
+            ):
+                rejects["bounded_context_or_response_length"] += 1
+                continue
+            tree_hash = stable_hash(str(chain[-1]["message_tree_id"]).encode("utf-8"))
+            split = "private_train"
+            if official_split == "validation":
+                split = (
+                    "private_dev"
+                    if int(tree_hash.split(":", 1)[1][:2], 16) % 2 == 0
+                    else "private_eval"
+                )
+            interaction_turns = [
+                {
+                    "turn_index": index,
+                    "role": roles[index],
+                    "content": str(row["text"]).strip(),
+                    "source_message_sha256": stable_hash(
+                        str(row["message_id"]).encode("utf-8")
+                    ),
+                }
+                for index, row in enumerate(prior_turns)
+            ]
+            annotation = {
+                "source_kind": "oasst2_reviewed_conversation_tree",
+                "official_split": official_split,
+                "message_tree_sha256": tree_hash,
+                "parent_message_sha256": stable_hash(parent_id.encode("utf-8")),
+                "current_prompt": current_prompt,
+                "interaction_turns": interaction_turns,
+                "responses": [
+                    {
+                        "rank": int(row["rank"]),
+                        "text": str(row["text"]).strip(),
+                        "source_message_sha256": stable_hash(
+                            str(row["message_id"]).encode("utf-8")
+                        ),
+                        "quality": source_labels(row).get("quality"),
+                    }
+                    for row in responses
+                ],
+            }
+            selection_key = stable_hash(
+                {"dataset": source["dataset_id"], "annotation": annotation}
+            )
+            selected[split].append(
+                {
+                    "selection_key": selection_key,
+                    "source_group": "oasst2-tree:" + tree_hash.split(":", 1)[1],
+                    "prompt": current_prompt,
+                    "interaction_turns": interaction_turns,
+                    "targets": targets,
+                    "annotation": annotation,
+                }
+            )
+    return {
+        split: sorted(rows, key=lambda row: row["selection_key"])
+        for split, rows in selected.items()
+    }, rejects
+
+
+def load_oasst_behavior_candidates(
+    source: dict[str, Any],
+) -> tuple[list[dict[str, Any]], Counter[str]]:
+    """Extract conservative, human-written clarification/abstention examples.
+
+    The rule only identifies an explicit surface behavior. It does not establish
+    that the behavior was optimal, factually correct, or semantically exhaustive.
+    """
+
+    contract = source["files"]["train"]
+    path = resolve(contract["path"])
+    if sha256_file(path) != contract["content_sha256"]:
+        raise ValueError("OASST2 behavior source hash mismatch")
+    rows = pq.read_table(path).to_pylist()
+    nodes = {str(row["message_id"]): row for row in rows if row.get("message_id")}
+    rejects: Counter[str] = Counter()
+    candidates: list[dict[str, Any]] = []
+    for response in nodes.values():
+        if not (
+            oasst_row_eligible(response, source)
+            and str(response.get("role") or "") == "assistant"
+        ):
+            continue
+        behavior = explicit_answer_behavior(str(response.get("text") or ""))
+        if behavior is None:
+            continue
+        parent_id = str(response.get("parent_id") or "")
+        parent = nodes.get(parent_id)
+        if not (
+            parent
+            and oasst_row_eligible(parent, source)
+            and str(parent.get("role") or "") == "prompter"
+        ):
+            rejects["missing_reviewed_user_parent"] += 1
+            continue
+        chain: list[dict[str, Any]] = []
+        current = parent
+        seen: set[str] = set()
+        while current and str(current["message_id"]) not in seen and len(chain) < 16:
+            if not oasst_row_eligible(current, source):
+                chain = []
+                break
+            seen.add(str(current["message_id"]))
+            chain.append(current)
+            current = nodes.get(str(current.get("parent_id") or ""))
+        chain.reverse()
+        if current is not None or not chain:
+            rejects["incomplete_ancestry"] += 1
+            continue
+        roles = [
+            "user" if str(row.get("role") or "") == "prompter" else "assistant"
+            for row in chain
+        ]
+        if roles != ["user" if index % 2 == 0 else "assistant" for index in range(len(chain))]:
+            rejects["nonalternating_ancestry"] += 1
+            continue
+        prompt = str(parent["text"]).strip()
+        target = str(response["text"]).strip()
+        prior = chain[:-1][-int(source["maximum_prior_turns"]) :]
+        interaction_turns = [
+            {
+                "turn_index": index,
+                "role": "user" if str(row.get("role") or "") == "prompter" else "assistant",
+                "content": str(row["text"]).strip(),
+                "source_message_sha256": stable_hash(str(row["message_id"]).encode("utf-8")),
+            }
+            for index, row in enumerate(prior)
+        ]
+        compiled_context = [
+            [f"turn_{turn['turn_index']:03d}", key, turn[key]]
+            for turn in interaction_turns
+            for key in ("content", "role")
+        ]
+        if (
+            len(prompt) > int(source["maximum_current_characters"])
+            or len(target) > int(source["maximum_response_characters"])
+            or sum(len(turn["content"]) for turn in interaction_turns)
+            > int(source["maximum_context_characters"])
+            or len(canonical_json(compiled_context).encode("utf-8"))
+            > int(source["maximum_compiled_context_bytes"])
+        ):
+            rejects["bounded_context_or_response_length"] += 1
+            continue
+        disposition, rule_id = behavior
+        tree_hash = stable_hash(str(response["message_tree_id"]).encode("utf-8"))
+        annotation = {
+            "source_kind": "oasst2_reviewed_explicit_answer_behavior",
+            "official_split": "train",
+            "message_tree_sha256": tree_hash,
+            "parent_message_sha256": stable_hash(parent_id.encode("utf-8")),
+            "response_message_sha256": stable_hash(
+                str(response["message_id"]).encode("utf-8")
+            ),
+            "prompt": prompt,
+            "target": target,
+            "interaction_turns": interaction_turns,
+            "behavior_policy": OASST_BEHAVIOR_POLICY,
+            "disposition": disposition,
+            "matched_rule_id": rule_id,
+            "behavior_claim_scope": "explicit_human_surface_behavior_only",
+            "optimality_or_truth_verified": False,
+        }
+        candidates.append(
+            {
+                "selection_key": stable_hash(
+                    {"dataset": source["dataset_id"], "annotation": annotation}
+                ),
+                "source_group": "oasst2-tree:" + tree_hash.split(":", 1)[1],
+                "prompt": prompt,
+                "target": target,
+                "interaction_turns": interaction_turns,
+                "annotation": annotation,
+                "disposition": disposition,
+            }
+        )
+    by_tree: dict[str, dict[str, Any]] = {}
+    for row in sorted(candidates, key=lambda value: value["selection_key"]):
+        if row["source_group"] in by_tree:
+            rejects["additional_behavior_in_same_tree"] += 1
+            continue
+        by_tree[row["source_group"]] = row
+    return list(by_tree.values()), rejects
+
+
+def select_oasst_behavior(
+    rows: list[dict[str, Any]], counts: dict[str, dict[str, int]]
+) -> dict[str, list[dict[str, Any]]]:
+    pools = {
+        disposition: sorted(
+            (row for row in rows if row["disposition"] == disposition),
+            key=lambda row: row["selection_key"],
+        )
+        for disposition in ("CLARIFY", "ABSTAIN")
+    }
+    cursors = {disposition: 0 for disposition in pools}
+    output: dict[str, list[dict[str, Any]]] = {}
+    for split in ("private_train", "private_dev", "private_eval"):
+        selected: list[dict[str, Any]] = []
+        for disposition in ("CLARIFY", "ABSTAIN"):
+            count = int(counts[split][disposition])
+            start = cursors[disposition]
+            end = start + count
+            if len(pools[disposition]) < end:
+                raise ValueError(
+                    f"insufficient OASST2 behavior rows: {split}:{disposition}:"
+                    f"{len(pools[disposition]) - start}:{count}"
+                )
+            selected.extend(pools[disposition][start:end])
+            cursors[disposition] = end
+        output[split] = sorted(selected, key=lambda row: row["selection_key"])
+    return output
+
+
+def oasst_record(
+    row: dict[str, Any],
+    *,
+    split: str,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    program = {
+        "roots": ["k0"],
+        "nodes": [
+            {
+                "node_id": "k0",
+                "operator": "DIALOGUE_RESPOND",
+                "modality": "REQUIRED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [[0, len(row["prompt"])]],
+                "arguments": [
+                    {"role": "USER_UTTERANCE", "value": byte_literal(row["prompt"])}
+                ],
+            }
+        ],
+    }
+    valid_realizations = [
+        {
+            "realization_id": f"oasst-rank-{rank}",
+            "surface_target": target,
+            "answer_packet": oasst_answer_packet(target),
+            "source_rank": rank,
+            "human_source_bound": True,
+            "source_message_sha256": row["annotation"]["responses"][rank][
+                "source_message_sha256"
+            ],
+        }
+        for rank, target in enumerate(row["targets"])
+    ]
+    interaction_entries = [
+        {
+            "segment_id": f"turn_{turn['turn_index']:03d}",
+            "key": key,
+            "value": turn[key],
+        }
+        for turn in row["interaction_turns"]
+        for key in ("role", "content")
+    ]
+    identity = row["selection_key"].split(":", 1)[1]
+    return base_record(
+        split=split,
+        source_text=row["prompt"],
+        surface_target=row["targets"][0],
+        program=program,
+        answer_packet=valid_realizations[0]["answer_packet"],
+        source=source,
+        source_id="oasst2:" + identity[:24],
+        source_group=row["source_group"],
+        objectives=set(source["allowed_objectives"]),
+        producer_sha256=producer_sha256,
+        source_annotation=row["annotation"],
+        exact_residual=False,
+        interaction_annotation={
+            "kind": "reviewed_conversation_ancestry",
+            "turns": row["interaction_turns"],
+        },
+        interaction_entries=interaction_entries,
+        interaction_actor_id="openassistant_oasst2_reviewed_tree",
+        valid_realizations=valid_realizations,
+    )
+
+
+def oasst_behavior_record(
+    row: dict[str, Any],
+    *,
+    split: str,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    disposition = str(row["disposition"])
+    ambiguity_id = "amb-" + row["selection_key"].split(":", 1)[1][:16]
+    answer = oasst_behavior_answer_packet(
+        row["target"], disposition=disposition, ambiguity_id=ambiguity_id
+    )
+    program = {
+        "roots": ["k0"],
+        "nodes": [
+            {
+                "node_id": "k0",
+                "operator": "DIALOGUE_RESPOND",
+                "modality": "REQUIRED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [[0, len(row["prompt"])]],
+                "arguments": [
+                    {"role": "USER_UTTERANCE", "value": byte_literal(row["prompt"])}
+                ],
+            }
+        ],
+    }
+    realization = {
+        "realization_id": "oasst-explicit-behavior",
+        "surface_target": row["target"],
+        "answer_packet": answer,
+        "source_rank": 0,
+        "human_source_bound": True,
+        "source_message_sha256": row["annotation"]["response_message_sha256"],
+    }
+    entries = [
+        {
+            "segment_id": f"turn_{turn['turn_index']:03d}",
+            "key": key,
+            "value": turn[key],
+        }
+        for turn in row["interaction_turns"]
+        for key in ("role", "content")
+    ]
+    return base_record(
+        split=split,
+        source_text=row["prompt"],
+        surface_target=row["target"],
+        program=program,
+        answer_packet=answer,
+        source=source,
+        source_id="oasst2-behavior:" + row["selection_key"].split(":", 1)[1][:24],
+        source_group=row["source_group"],
+        objectives=set(source["allowed_objectives"]),
+        producer_sha256=producer_sha256,
+        source_annotation=row["annotation"],
+        exact_residual=False,
+        interaction_annotation={
+            "kind": "reviewed_conversation_ancestry",
+            "turns": row["interaction_turns"],
+        },
+        interaction_entries=entries,
+        interaction_actor_id="openassistant_oasst2_reviewed_tree",
+        valid_realizations=[realization],
     )
 
 
@@ -830,6 +1398,23 @@ def masc_record(
         segment_frame=segment_frame,
         token_tags=token_tags,
         interaction_annotation=interaction_annotation,
+        interaction_entries=(
+            [
+                {
+                    "segment_id": "previous_turn",
+                    "key": "frame_name",
+                    "value": str(interaction_annotation["frame_name"]),
+                },
+                {
+                    "segment_id": "previous_turn",
+                    "key": "lexical_unit",
+                    "value": str(interaction_annotation["lexical_unit"]),
+                },
+            ]
+            if interaction_annotation
+            else []
+        ),
+        interaction_actor_id="masc_manual_framenet",
     )
 
 
@@ -893,6 +1478,18 @@ def select_masc(
     return output
 
 
+def select_oasst(
+    rows: dict[str, list[dict[str, Any]]], counts: dict[str, int]
+) -> dict[str, list[dict[str, Any]]]:
+    output: dict[str, list[dict[str, Any]]] = {}
+    for split, count in counts.items():
+        available = rows.get(split, [])
+        if len(available) < int(count):
+            raise ValueError(f"insufficient OASST2 rows: {split}:{len(available)}:{count}")
+        output[split] = available[: int(count)]
+    return output
+
+
 def produce(config_path: Path) -> dict[str, Any]:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     stage = validate_kernel_english_config(config)
@@ -910,6 +1507,28 @@ def produce(config_path: Path) -> dict[str, Any]:
         corpus["masc"], maximum_characters=int(corpus["maximum_source_characters"])
     )
     masc_selected = select_masc(masc_rows, corpus["masc"]["records_by_split"])
+    oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
+    oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
+        corpus["oasst2"]
+    )
+    oasst_behavior_selected = select_oasst_behavior(
+        oasst_behavior_rows,
+        corpus["oasst2"]["explicit_behavior_records_by_split"],
+    )
+    reserved_behavior_groups = {
+        row["source_group"]
+        for rows in oasst_behavior_selected.values()
+        for row in rows
+    }
+    oasst_rows = {
+        split: [
+            row for row in rows if row["source_group"] not in reserved_behavior_groups
+        ]
+        for split, rows in oasst_rows.items()
+    }
+    oasst_selected = select_oasst(
+        oasst_rows, corpus["oasst2"]["records_by_split"]
+    )
     masc_interactions = {
         split: interaction_predecessors(rows)
         for split, rows in masc_selected.items()
@@ -945,6 +1564,26 @@ def produce(config_path: Path) -> dict[str, Any]:
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(row["sentence_identity"])
             frame_counts[split][row["annotation"]["frame_name"]] += 1
+        for row in oasst_selected[split]:
+            record = oasst_record(
+                row,
+                split=split,
+                source=corpus["oasst2"],
+                producer_sha256=producer_sha256,
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
+        for row in oasst_behavior_selected[split]:
+            record = oasst_behavior_record(
+                row,
+                split=split,
+                source=corpus["oasst2"],
+                producer_sha256=producer_sha256,
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
     candidates.sort(
         key=lambda row: (
             ("private_train", "private_dev", "private_eval").index(row["split"]),
@@ -977,6 +1616,8 @@ def produce(config_path: Path) -> dict[str, Any]:
             split: {
                 "dolly": len(dolly_selected[split]),
                 "masc": len(masc_selected[split]),
+                "oasst2": len(oasst_selected[split]),
+                "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
             }
             for split in ("private_train", "private_dev", "private_eval")
         },
@@ -995,13 +1636,28 @@ def produce(config_path: Path) -> dict[str, Any]:
         "masc_interaction_record_count_by_split": {
             split: len(values) for split, values in masc_interactions.items()
         },
+        "oasst2_context_bound_record_count_by_split": {
+            split: len(values) for split, values in oasst_selected.items()
+        },
+        "oasst2_human_valid_realization_count_by_split": {
+            split: sum(len(row["targets"]) for row in values)
+            for split, values in oasst_selected.items()
+        },
+        "oasst2_explicit_behavior_counts_by_split": {
+            split: dict(Counter(row["disposition"] for row in rows))
+            for split, rows in oasst_behavior_selected.items()
+        },
         "candidate_pool_counts": {
             "dolly": len(dolly_rows),
             "masc_by_split": {split: len(rows) for split, rows in masc_rows.items()},
+            "oasst2_by_split": {split: len(rows) for split, rows in oasst_rows.items()},
+            "oasst2_explicit_behavior": len(oasst_behavior_rows),
         },
         "rejection_counts": {
             "dolly": dict(dolly_rejects),
             "masc": dict(masc_rejects),
+            "oasst2": dict(oasst_rejects),
+            "oasst2_explicit_behavior": dict(oasst_behavior_rejects),
         },
         "independent_verification_required": True,
         "canonical_training_rows_written": 0,

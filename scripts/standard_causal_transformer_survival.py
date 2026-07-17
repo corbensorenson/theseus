@@ -2987,6 +2987,8 @@ def train_phase(
     kerc_verifier_weight: float = 0.0,
     kerc_verifier_balance_maximum: float = 16.0,
     kerc_verifier_require_both_classes: bool = True,
+    coverage_labels: tuple[tuple[str, ...], ...] | None = None,
+    required_coverage_labels: tuple[str, ...] = (),
     phase_name: str,
     target_positions: int,
     batch_size: int,
@@ -3008,11 +3010,16 @@ def train_phase(
         or np.asarray(kerc_residual_labels).shape[1:] != (4,)
     ):
         raise ValueError("KERC residual labels must be one four-channel row per sequence")
-    if kerc_verifier_labels is not None and (
-        len(kerc_verifier_labels) != len(inputs)
-        or np.asarray(kerc_verifier_labels).shape[1:] != (4,)
-    ):
-        raise ValueError("KERC verifier labels must be one four-dimension row per sequence")
+    if kerc_verifier_labels is not None:
+        verifier_shape = np.asarray(kerc_verifier_labels).shape
+        if (
+            len(kerc_verifier_labels) != len(inputs)
+            or len(verifier_shape) != 2
+            or verifier_shape[1] <= 0
+        ):
+            raise ValueError(
+                "KERC verifier labels must be one nonempty dimension vector per sequence"
+            )
     if (kerc_residual_labels is None) != (float(kerc_residual_weight) == 0.0):
         raise ValueError("KERC residual labels and positive weight must be supplied together")
     if (kerc_verifier_labels is None) != (float(kerc_verifier_weight) == 0.0):
@@ -3098,6 +3105,16 @@ def train_phase(
         mx.eval(matrix_verifier_positive_weights, matrix_verifier_negative_weights)
     order = list(range(len(inputs)))
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
+    coverage_receipt = coverage_first_plan(
+        coverage_labels,
+        required_coverage_labels,
+        row_count=len(inputs),
+        capacity=max_steps * batch_size,
+    )
+    coverage_prefix = list(coverage_receipt["selected_indices"])
+    observed_coverage_counts = {
+        label: 0 for label in coverage_receipt["required_labels"]
+    }
     consumed = 0
     all_target_consumed = 0
     steps = 0
@@ -3115,10 +3132,18 @@ def train_phase(
             order = np.random.default_rng(seed + epoch).choice(
                 len(inputs), size=len(inputs), replace=True, p=probabilities
             ).tolist()
+        if epoch == 0 and coverage_prefix:
+            selected = set(coverage_prefix)
+            order = coverage_prefix + [index for index in order if index not in selected]
         for start in range(0, len(order), batch_size):
             if consumed >= target_positions or steps >= max_steps:
                 break
             indices = order[start : start + batch_size]
+            if coverage_labels is not None:
+                for index in indices:
+                    for label in coverage_labels[index]:
+                        if label in observed_coverage_counts:
+                            observed_coverage_counts[label] += 1
             batch_inputs = np.asarray(inputs[indices])
             batch_labels = np.asarray(labels[indices])
             batch_mask = np.asarray(mask[indices])
@@ -3224,6 +3249,14 @@ def train_phase(
                 else:
                     checkpoint_callback(progress)
         epoch += 1
+    missing_coverage = sorted(
+        label for label, count in observed_coverage_counts.items() if count <= 0
+    )
+    if missing_coverage:
+        raise RuntimeError(
+            "bounded training did not exercise required coverage: "
+            + ",".join(missing_coverage)
+        )
     return {
         "phase": phase_name,
         "optimizer_steps": steps,
@@ -3270,7 +3303,75 @@ def train_phase(
             if kerc_verifier_labels is not None
             else ""
         ),
+        "coverage_first_sampling": {
+            "policy": "project_theseus_training_canary_coverage_first_v1",
+            "state": coverage_receipt["state"],
+            "required_labels": coverage_receipt["required_labels"],
+            "required_label_count": len(coverage_receipt["required_labels"]),
+            "selected_row_count": len(coverage_prefix),
+            "selected_indices_sha256": coverage_receipt["selected_indices_sha256"],
+            "observed_label_counts": observed_coverage_counts,
+            "missing_labels": missing_coverage,
+            "capacity": max_steps * batch_size,
+        },
         "external_inference_calls": 0,
+    }
+
+
+def coverage_first_plan(
+    row_labels: tuple[tuple[str, ...], ...] | None,
+    required_labels: tuple[str, ...],
+    *,
+    row_count: int,
+    capacity: int,
+) -> dict[str, Any]:
+    """Build a deterministic minimum-like set cover for bounded mechanics runs."""
+
+    required = tuple(dict.fromkeys(str(label) for label in required_labels if label))
+    if not required:
+        return {
+            "state": "NOT_REQUESTED",
+            "required_labels": [],
+            "selected_indices": [],
+            "selected_indices_sha256": "",
+        }
+    if row_labels is None or len(row_labels) != row_count:
+        raise ValueError("coverage labels must align one-to-one with training rows")
+    if capacity <= 0:
+        raise ValueError("coverage-first sampling requires positive batch capacity")
+    normalized = tuple(tuple(dict.fromkeys(labels)) for labels in row_labels)
+    available = {label for labels in normalized for label in labels}
+    missing = sorted(set(required) - available)
+    if missing:
+        raise ValueError("required training coverage is unavailable: " + ",".join(missing))
+
+    uncovered = set(required)
+    selected: list[int] = []
+    candidates = set(range(row_count))
+    while uncovered:
+        best_index = min(
+            candidates,
+            key=lambda index: (
+                -len(uncovered.intersection(normalized[index])),
+                index,
+            ),
+        )
+        gain = uncovered.intersection(normalized[best_index])
+        if not gain:
+            raise ValueError("coverage-first set cover stalled before satisfying contract")
+        selected.append(best_index)
+        candidates.remove(best_index)
+        uncovered.difference_update(gain)
+    if len(selected) > capacity:
+        raise ValueError(
+            f"coverage-first plan needs {len(selected)} rows but bounded run permits {capacity}"
+        )
+    encoded = json.dumps(selected, separators=(",", ":")).encode()
+    return {
+        "state": "PLANNED",
+        "required_labels": list(required),
+        "selected_indices": selected,
+        "selected_indices_sha256": hashlib.sha256(encoded).hexdigest(),
     }
 
 

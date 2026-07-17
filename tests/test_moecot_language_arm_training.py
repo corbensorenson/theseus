@@ -671,13 +671,22 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
         "trusted_source_prefix_tokens": ["<KERC_TASK_SURFACE_TO_KERNEL>"],
         "trusted_prefix_authority": "internal_objective_route_only",
         "optimizer_sampling_weight": 0.25,
+        "kerc_residual_channels": ["interaction", "segment", "token", "exact"],
         "kerc_residual_labels": [1, 0, 0, 3],
-        "kerc_verifier_positive_labels": [1, 1, 1, 1],
+        "kerc_verifier_dimensions": [
+            "semantic_consistency",
+            "protected_object_consistency",
+            "numeric_value_consistency",
+            "surface_fidelity",
+            "answer_decision_consistency",
+        ],
+        "kerc_verifier_positive_labels": [1, 1, 1, 1, 1],
         "kerc_verifier_negative": {
             "target": '{"program":"corrupted"}',
             "target_sha256": "sha256:"
             + hashlib.sha256(b'{"program":"corrupted"}').hexdigest(),
-            "labels": [0, 1, 1, 1],
+            "labels": [0, 1, 1, 1, 1],
+            "failed_dimension": "semantic_consistency",
             "generator_loss_enabled": False,
         },
     }
@@ -726,7 +735,17 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.receipt["generator_training_row_count"] == 1
     assert stage.receipt["verifier_only_row_count"] == 1
     assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3], [1, 0, 0, 3]]
-    assert stage.kerc_verifier_labels.tolist() == [[1, 1, 1, 1], [0, 1, 1, 1]]
+    assert stage.kerc_verifier_labels.tolist() == [
+        [1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1],
+    ]
+    assert stage.receipt["kerc_verifier_dimensions"][-1] == (
+        "answer_decision_consistency"
+    )
+    assert stage.kerc_coverage_labels[0][-1] == "verifier:positive"
+    assert stage.kerc_coverage_labels[1][-1] == (
+        "verifier:negative:semantic_consistency"
+    )
     assert stage.sample_weights.tolist() == [0.25, 0.25]
     assert stage.receipt["sampling_weight_sum"] == 0.5
     assert stage.receipt["dual_code_vocabulary_sha256"] == code_vocabulary[

@@ -154,6 +154,50 @@ def kernel_config(tmp_path: Path) -> dict:
                         "private_eval": ["fixture/eval"],
                     },
                 },
+                "oasst2": {
+                    "dataset_id": "fixture-oasst2",
+                    "dataset_revision": "fixture-v1",
+                    "source_url": "https://example.test/oasst2",
+                    "license_evidence_url": "https://example.test/oasst2-license",
+                    "content_sha256": "sha256:" + "3" * 64,
+                    "license_spdx": "CC0-1.0",
+                    "files": {
+                        "train": {
+                            "path": str(tmp_path / "oasst2-train.parquet"),
+                            "content_sha256": "sha256:" + "4" * 64,
+                        },
+                        "validation": {
+                            "path": str(tmp_path / "oasst2-validation.parquet"),
+                            "content_sha256": "sha256:" + "5" * 64,
+                        },
+                    },
+                    "records_by_split": {
+                        "private_train": 0,
+                        "private_dev": 0,
+                        "private_eval": 0,
+                    },
+                    "explicit_behavior_records_by_split": {
+                        "private_train": {"CLARIFY": 0, "ABSTAIN": 0},
+                        "private_dev": {"CLARIFY": 0, "ABSTAIN": 0},
+                        "private_eval": {"CLARIFY": 0, "ABSTAIN": 0},
+                    },
+                    "explicit_behavior_claim_scope": "fixture surface behavior only",
+                    "allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
+                    "minimum_quality": 0.5,
+                    "maximum_label_values": {
+                        "spam": 0.5,
+                        "lang_mismatch": 0.5,
+                        "pii": 0.5,
+                        "not_appropriate": 0.5,
+                    },
+                    "maximum_current_characters": 1024,
+                    "maximum_response_characters": 1024,
+                    "maximum_context_characters": 2048,
+                    "maximum_compiled_context_bytes": 4096,
+                    "minimum_prior_turns": 2,
+                    "maximum_prior_turns": 4,
+                    "required_valid_realization_ranks": [0, 1],
+                },
                 "minimum_source_groups_by_split": {
                     "private_train": 1,
                     "private_dev": 1,
@@ -248,6 +292,7 @@ def kernel_record(split: str, index: int) -> dict:
         "source_text": source,
         "kernel_packet": packet,
         "hrl_state": state,
+        "hrl_deltas": [],
         "answer_packet": answer,
         "surface_target": f"Request {index} may proceed, but the outcome remains uncertain.",
         "provenance": {
@@ -278,7 +323,7 @@ def kernel_record(split: str, index: int) -> dict:
         "residual_supervision": {
             "policy": "project_theseus_kerc_residual_supervision_v1",
             "labels_by_channel": {
-                "interaction": 1,
+                "interaction": 0,
                 "segment": 0,
                 "token": 0,
                 "exact": 3,
