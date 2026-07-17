@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import random
+import re
 import time
 from collections import Counter
 from pathlib import Path
@@ -29,7 +30,7 @@ from moecot_language_supervision import (
     write_jsonl_atomic,
 )
 from moecot_language_tokenizer import exact_text_tokens
-from neural_seed_open_vocab import encode_tokens
+from neural_seed_open_vocab import decode_target_tokens, encode_tokens, populate_open_vocab
 from kernel_english_protocol import (
     TRAINING_OBJECTIVES,
     TRAINING_VERIFICATION_POLICY,
@@ -43,6 +44,248 @@ from kernel_english_protocol import (
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
+KERC_KERNEL_OBJECTIVES = {
+    "surface_to_kernel_program_v1",
+    "kernel_program_to_answer_packet_v1",
+}
+KERC_POINTER_TOKEN_RE = re.compile(
+    r"(?:@[A-Z][A-Za-z0-9_]*|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\Z"
+)
+KERC_POINTER_CONTROL_TOKENS = {
+    "{",
+    "}",
+    "[",
+    "]",
+    "(",
+    ")",
+    ":",
+    ",",
+    '"',
+    "\\",
+    " ",
+    "\n",
+    "\r",
+    "\t",
+}
+
+
+def kerc_code_tokens(text: str) -> list[str]:
+    """Losslessly tokenize typed Kernel/answer JSON while preserving handles."""
+
+    raw = exact_text_tokens(text)
+    tokens: list[str] = []
+    index = 0
+    while index < len(raw):
+        if (
+            raw[index] == "@"
+            and index + 1 < len(raw)
+            and str(raw[index + 1]).replace("_", "").isalnum()
+        ):
+            tokens.append("@" + str(raw[index + 1]))
+            index += 2
+            continue
+        tokens.append(str(raw[index]))
+        index += 1
+    if "".join(tokens) != str(text):
+        raise ValueError("KERC code tokenizer failed exact reconstruction")
+    return tokens
+
+
+def kerc_code_space(token: str) -> str:
+    value = str(token)
+    if (
+        value in KERC_POINTER_CONTROL_TOKENS
+        or value.isspace()
+        or KERC_POINTER_TOKEN_RE.fullmatch(value)
+    ):
+        return "V_P"
+    return "V_K"
+
+
+def build_kerc_code_vocabulary(
+    private_train_views: list[dict[str, Any]], contract: dict[str, Any]
+) -> dict[str, Any]:
+    """Fit V_K/V_P on private-train positive targets only."""
+
+    kernel_counts: Counter[str] = Counter()
+    pointer_counts: Counter[str] = Counter()
+    source_view_count = 0
+    for view in private_train_views:
+        if str(view.get("objective") or "") not in KERC_KERNEL_OBJECTIVES:
+            continue
+        source_view_count += 1
+        for token in kerc_code_tokens(str(view.get("target") or "")):
+            (pointer_counts if kerc_code_space(token) == "V_P" else kernel_counts)[
+                token
+            ] += 1
+    if not source_view_count or not kernel_counts or not pointer_counts:
+        raise ValueError("KERC code vocabulary requires compiler/core private-train views")
+    kernel_vocab = {"<pad>": 0, "<unk>": 1}
+    pointer_vocab = {"<pad>": 0, "<unk>": 1}
+    populate_open_vocab(
+        kernel_vocab,
+        kernel_counts,
+        max_vocab=int(contract["kernel_max_vocab"]),
+        stream="target",
+    )
+    populate_open_vocab(
+        pointer_vocab,
+        pointer_counts,
+        max_vocab=int(contract["pointer_max_vocab"]),
+        stream="target",
+    )
+    payload = {
+        "policy": "project_theseus_kerc_dual_code_vocabulary_v1",
+        "fit_split": "private_train",
+        "fit_positive_targets_only": True,
+        "dev_eval_vocabulary_fit_count": 0,
+        "verifier_corruption_vocabulary_fit_count": 0,
+        "surface_vocabulary_owner": "canonical_moecot_target_vocab",
+        "kernel_max_vocab": int(contract["kernel_max_vocab"]),
+        "pointer_max_vocab": int(contract["pointer_max_vocab"]),
+        "kernel_vocab": kernel_vocab,
+        "pointer_vocab": pointer_vocab,
+        "kernel_observed_token_count": int(sum(kernel_counts.values())),
+        "pointer_observed_token_count": int(sum(pointer_counts.values())),
+        "source_view_count": source_view_count,
+        "tokenizer": "lossless_exact_json_with_typed_handle_coalescing_v1",
+        "byte_fallback_required": True,
+        "fallback_return_count": 0,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+    }
+    payload["contract_sha256"] = "sha256:" + hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return payload
+
+
+def encode_kerc_view_target(
+    view: dict[str, Any],
+    *,
+    target_vocab: dict[str, int],
+    code_vocabulary: dict[str, Any],
+) -> tuple[list[int], dict[str, Any]]:
+    objective = str(view.get("objective") or "")
+    target = str(view.get("target") or "")
+    if objective not in KERC_KERNEL_OBJECTIVES:
+        return encode_tokens(exact_text_tokens(target), target_vocab, stream="target")
+    ids: list[int] = []
+    unknown = 0
+    fallback_tokens = 0
+    by_space = {"V_K": 0, "V_P": 0}
+    kernel_vocab = dict(code_vocabulary.get("kernel_vocab") or {})
+    pointer_vocab = dict(code_vocabulary.get("pointer_vocab") or {})
+    for token in kerc_code_tokens(target):
+        space = kerc_code_space(token)
+        vocab = pointer_vocab if space == "V_P" else kernel_vocab
+        encoded, receipt = encode_tokens([token], vocab, stream="target")
+        ids.extend(encoded)
+        unknown += int(receipt.get("unknown_token_count") or 0)
+        fallback_tokens += int(receipt.get("fallback_token_count") or 0)
+        by_space[space] += len(encoded)
+    return ids, {
+        "policy": "project_theseus_kerc_dual_code_encoding_v1",
+        "unknown_token_count": unknown,
+        "fallback_token_count": fallback_tokens,
+        "encoded_token_count": len(ids),
+        "encoded_tokens_by_space": by_space,
+        "code_vocabulary_sha256": code_vocabulary.get("contract_sha256"),
+        "failure_behavior": "reject_without_surface_or_template_fallback",
+    }
+
+
+def encode_kerc_global_target(
+    text: str,
+    *,
+    code_vocabulary: dict[str, Any],
+    kernel_offset: int,
+    pointer_offset: int,
+) -> tuple[list[int], dict[str, Any]]:
+    """Encode a Kernel/answer target into disjoint global V_K/V_P ranges."""
+
+    ids: list[int] = []
+    unknown = 0
+    fallback_tokens = 0
+    by_space = {"V_K": 0, "V_P": 0}
+    kernel_vocab = dict(code_vocabulary.get("kernel_vocab") or {})
+    pointer_vocab = dict(code_vocabulary.get("pointer_vocab") or {})
+    for token in kerc_code_tokens(text):
+        space = kerc_code_space(token)
+        vocab = pointer_vocab if space == "V_P" else kernel_vocab
+        offset = pointer_offset if space == "V_P" else kernel_offset
+        encoded, receipt = encode_tokens([token], vocab, stream="target")
+        ids.extend(offset + int(value) for value in encoded)
+        unknown += int(receipt.get("unknown_token_count") or 0)
+        fallback_tokens += int(receipt.get("fallback_token_count") or 0)
+        by_space[space] += len(encoded)
+    return ids, {
+        "policy": "project_theseus_kerc_global_dual_code_encoding_v1",
+        "unknown_token_count": unknown,
+        "fallback_token_count": fallback_tokens,
+        "encoded_token_count": len(ids),
+        "encoded_tokens_by_space": by_space,
+        "kernel_offset": int(kernel_offset),
+        "pointer_offset": int(pointer_offset),
+        "code_vocabulary_sha256": code_vocabulary.get("contract_sha256"),
+        "failure_behavior": "reject_without_surface_or_template_fallback",
+    }
+
+
+def decode_kerc_global_target(
+    ids: list[int],
+    *,
+    code_vocabulary: dict[str, Any],
+    kernel_offset: int,
+    pointer_offset: int,
+) -> tuple[str, dict[str, Any]]:
+    kernel_inverse = {
+        int(value): str(token)
+        for token, value in (code_vocabulary.get("kernel_vocab") or {}).items()
+    }
+    pointer_inverse = {
+        int(value): str(token)
+        for token, value in (code_vocabulary.get("pointer_vocab") or {}).items()
+    }
+    logical: list[str] = []
+    by_space = {"V_K": 0, "V_P": 0}
+    for global_id in ids:
+        value = int(global_id)
+        if kernel_offset <= value < pointer_offset:
+            token = kernel_inverse.get(value - kernel_offset)
+            space = "V_K"
+        elif value >= pointer_offset:
+            token = pointer_inverse.get(value - pointer_offset)
+            space = "V_P"
+        else:
+            token = None
+            space = ""
+        if token is None:
+            return "", {
+                "policy": "project_theseus_kerc_global_dual_code_decoding_v1",
+                "state": "FAULT",
+                "reason": "unassigned_or_cross_space_token",
+                "token_id": value,
+                "failure_behavior": "reject_without_surface_or_template_fallback",
+            }
+        logical.append(token)
+        by_space[space] += 1
+    decoded, receipt = decode_target_tokens(logical)
+    if receipt.get("state") != "READY":
+        return "", {
+            "policy": "project_theseus_kerc_global_dual_code_decoding_v1",
+            "state": "FAULT",
+            "reason": "byte_fallback_decode_fault",
+            "open_vocab": receipt,
+            "failure_behavior": "reject_without_surface_or_template_fallback",
+        }
+    return "".join(decoded), {
+        "policy": "project_theseus_kerc_global_dual_code_decoding_v1",
+        "state": "READY",
+        "decoded_tokens_by_space": by_space,
+        "exact_reconstruction": True,
+        "fallback_return_count": 0,
+    }
 
 
 def main() -> int:
@@ -116,6 +359,18 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("KERC maximum sequence tokens must be positive")
     if not 1 <= int(cfg.get("batch_size") or 0) <= 16:
         raise ValueError("KERC batch size must be bounded")
+    vocabulary = cfg.get("code_vocabulary") or {}
+    if (
+        vocabulary.get("policy") != "project_theseus_kerc_dual_code_vocabulary_v1"
+        or vocabulary.get("fit_split") != "private_train"
+        or vocabulary.get("surface_vocabulary_owner")
+        != "canonical_moecot_target_vocab"
+        or vocabulary.get("byte_fallback_required") is not True
+        or vocabulary.get("dev_eval_vocabulary_fit_forbidden") is not True
+        or int(vocabulary.get("kernel_max_vocab") or 0) < 512
+        or int(vocabulary.get("pointer_max_vocab") or 0) < 512
+    ):
+        raise ValueError("KERC dual-code vocabulary contract is incomplete")
     for key in (
         "public_training_rows_written",
         "public_benchmark_payload_count",
@@ -227,6 +482,19 @@ def materialize_kernel_english(
     all_source_hashes: set[str] = set()
     raw_source_bytes = 0
     verifier_corruption_count = 0
+    compiled_views = {
+        split: [
+            view
+            for record in records
+            for view in compile_training_views(record)
+        ]
+        for split, records in selected.items()
+    }
+    code_vocabulary = build_kerc_code_vocabulary(
+        compiled_views.get("private_train") or [], cfg["code_vocabulary"]
+    )
+    code_vocabulary_path = stage_root / "code_vocabulary_v1.json"
+    write_json_atomic(code_vocabulary_path, code_vocabulary)
     for split, records in selected.items():
         wanted = int(cfg["records_by_split"][split])
         if len(records) != wanted:
@@ -234,10 +502,12 @@ def materialize_kernel_english(
         views: list[dict[str, Any]] = []
         source_lengths: list[int] = []
         target_lengths: list[int] = []
+        sequence_lengths: list[int] = []
+        split_views = iter(compiled_views[split])
         for record in records:
             all_source_hashes.add(str(record["raw_source_sha256"]))
             raw_source_bytes += len(str(record["source_text"]).encode("utf-8"))
-            for view in compile_training_views(record):
+            for view in (next(split_views) for _ in TRAINING_OBJECTIVES):
                 source_body_ids, source_receipt = encode_tokens(
                     exact_text_tokens(view["prompt"]), source_vocab, stream="source"
                 )
@@ -246,8 +516,8 @@ def materialize_kernel_english(
                     gaps.append(f"kernel_view_trusted_prefix_invalid:{view['row_id']}")
                     continue
                 source_ids = [int(source_vocab[trusted_prefix[0]]), *source_body_ids]
-                target_ids, target_receipt = encode_tokens(
-                    exact_text_tokens(view["target"]), target_vocab, stream="target"
+                target_ids, target_receipt = encode_kerc_view_target(
+                    view, target_vocab=target_vocab, code_vocabulary=code_vocabulary
                 )
                 if int(source_receipt.get("unknown_token_count") or 0) or int(
                     target_receipt.get("unknown_token_count") or 0
@@ -256,8 +526,10 @@ def materialize_kernel_english(
                     continue
                 verifier_negative = view.get("kerc_verifier_negative") or {}
                 negative_target = str(verifier_negative.get("target") or "")
-                negative_ids, negative_receipt = encode_tokens(
-                    exact_text_tokens(negative_target), target_vocab, stream="target"
+                negative_ids, negative_receipt = encode_kerc_view_target(
+                    {**view, "target": negative_target},
+                    target_vocab=target_vocab,
+                    code_vocabulary=code_vocabulary,
                 )
                 if (
                     not negative_target
@@ -284,6 +556,7 @@ def materialize_kernel_english(
                 source_lengths.append(len(source_ids))
                 target_lengths.append(len(target_ids))
                 target_lengths.append(len(negative_ids))
+                sequence_lengths.extend((sequence_tokens, negative_sequence_tokens))
                 objective_counts[str(view["objective"])] += 1
                 verifier_corruption_count += 1
                 views.append(view)
@@ -299,10 +572,7 @@ def materialize_kernel_english(
         encoded_length_stats[split] = {
             "maximum_source_tokens": max(source_lengths or [0]),
             "maximum_target_tokens": max(target_lengths or [0]),
-            "maximum_sequence_tokens": max(
-                (source + target + 4 for source, target in zip(source_lengths, target_lengths)),
-                default=0,
-            ),
+            "maximum_sequence_tokens": max(sequence_lengths or [0]),
         }
 
     report = {
@@ -325,6 +595,17 @@ def materialize_kernel_english(
             "sha256": sha256_file(ledger_path),
             "receipt_count": len(ledger),
             "producer_separate_from_training_rows": True,
+        },
+        "code_vocabulary": {
+            "path": relative(code_vocabulary_path),
+            "sha256": sha256_file(code_vocabulary_path),
+            "policy": code_vocabulary["policy"],
+            "contract_sha256": code_vocabulary["contract_sha256"],
+            "fit_split": code_vocabulary["fit_split"],
+            "kernel_vocab_count": len(code_vocabulary["kernel_vocab"]),
+            "pointer_vocab_count": len(code_vocabulary["pointer_vocab"]),
+            "kernel_max_vocab": code_vocabulary["kernel_max_vocab"],
+            "pointer_max_vocab": code_vocabulary["pointer_max_vocab"],
         },
         "artifacts": artifacts,
         "candidate_record_count_by_split": dict(candidate_count),
@@ -456,6 +737,36 @@ def validate_kernel_english_manifest(
         gaps.append("kernel_stage_verification_ledger_identity_mismatch")
     if ledger.get("producer_separate_from_training_rows") is not True:
         gaps.append("kernel_stage_verification_ledger_not_independent")
+    code = payload.get("code_vocabulary") or {}
+    code_path = resolve(str(code.get("path") or ""))
+    code_payload = read_json(code_path) if code_path.is_file() else {}
+    if (
+        not code_path.is_file()
+        or sha256_file(code_path) != str(code.get("sha256") or "")
+        or code_payload.get("policy")
+        != "project_theseus_kerc_dual_code_vocabulary_v1"
+        or code_payload.get("fit_split") != "private_train"
+        or int(code_payload.get("dev_eval_vocabulary_fit_count") or 0) != 0
+        or int(code_payload.get("verifier_corruption_vocabulary_fit_count") or 0) != 0
+        or code_payload.get("contract_sha256") != code.get("contract_sha256")
+    ):
+        gaps.append("kernel_stage_code_vocabulary_identity_mismatch")
+    else:
+        unsigned = {
+            key: value for key, value in code_payload.items() if key != "contract_sha256"
+        }
+        observed_contract = "sha256:" + hashlib.sha256(
+            json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        if observed_contract != code_payload["contract_sha256"]:
+            gaps.append("kernel_stage_code_vocabulary_contract_mismatch")
+        if (
+            len(code_payload.get("kernel_vocab") or {})
+            != int(code.get("kernel_vocab_count") or 0)
+            or len(code_payload.get("pointer_vocab") or {})
+            != int(code.get("pointer_vocab_count") or 0)
+        ):
+            gaps.append("kernel_stage_code_vocabulary_count_mismatch")
     for key in (
         "public_training_rows_written",
         "public_benchmark_payload_count",

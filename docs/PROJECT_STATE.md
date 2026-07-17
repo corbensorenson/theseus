@@ -38,8 +38,11 @@ share toward zero. Public benchmarks are calibration only.
   source-only stage routing, separate Kernel/surface output paths, a learned four-level
   residual allocator, independent verifier parameters, content-bound four-channel
   residual labels, targeted verifier counterexamples that receive zero generator loss,
-  joint auxiliary losses, cached decode, gradient-flow coverage, and strict reload. A conventional English control is
-  matched within 300 parameters. The live ten-target plan remains RED only because the
+  train-only content-bound V_K/V_P codebook construction, disjoint compiler/core versus
+  surface logit support, joint auxiliary losses, cached decode, gradient-flow coverage,
+  and strict reload. The KERC candidate carries a `13,315`-symbol vocabulary while the
+  conventional control retains `8,195`; independent width matching leaves a `2,860`
+  parameter delta (`19,531,230` versus `19,534,090`). The live ten-target plan remains RED only because the
   governed KERC stage manifest is absent. `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
   hand-coded keyword compiler and renderer. It did not implement or train the paper's
@@ -77,7 +80,7 @@ share toward zero. Public benchmarks are calibration only.
 - **Immediate dependency:** implement faithful KERC through existing English-arm,
   Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier owners. The first neural mechanics
   tranche is integrated; next build governed licensed source-disjoint stage supervision,
-  a real separate V_K/V_P vocabulary, residual/interaction and verifier-corruption labels,
+  a real governed V_K/V_P codebook artifact, residual/interaction and verifier-corruption labels,
   and executable recompile verification. Then pass overfit/intervention/ablation/resume/
   migration/resource/security canaries and freeze strong matched controls and total-system
   accounting; then rebuild the architecture package. Reflexive Router pre-training mechanics are complete:

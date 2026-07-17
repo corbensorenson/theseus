@@ -30,6 +30,7 @@ from moecot_language_arm_training import (  # noqa: E402
     generate_model_text,
     matched_decoder_only_config,
     materialize_target_supervision,
+    model_accounting,
     range_view,
     serialization_valid_local_ids,
     should_evaluate_target,
@@ -44,6 +45,9 @@ from standard_causal_transformer_model import (  # noqa: E402
 )
 from standard_causal_transformer_survival import causal_loss  # noqa: E402
 from neural_seed_open_vocab import reserve_byte_fallback_tokens  # noqa: E402
+from moecot_source_conditioned_pretraining import (  # noqa: E402
+    build_kerc_code_vocabulary,
+)
 
 
 def arm_views() -> dict:
@@ -163,6 +167,15 @@ def tiny_config(tmp_path: Path) -> dict:
             "batch_size": 1,
             "residual_auxiliary_weight": 0.25,
             "verifier_auxiliary_weight": 0.5,
+            "code_vocabulary": {
+                "policy": "project_theseus_kerc_dual_code_vocabulary_v1",
+                "fit_split": "private_train",
+                "kernel_max_vocab": 512,
+                "pointer_max_vocab": 512,
+                "surface_vocabulary_owner": "canonical_moecot_target_vocab",
+                "byte_fallback_required": True,
+                "dev_eval_vocabulary_fit_forbidden": True,
+            },
         },
         "evaluation": {
             "policy": "project_theseus_moecot_direct_model_only_evaluation_v1",
@@ -648,10 +661,19 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     }
     artifact = tmp_path / "kerc.jsonl"
     artifact.write_text(json.dumps(row) + "\n")
+    code_vocabulary = build_kerc_code_vocabulary(
+        [row],
+        {"kernel_max_vocab": 512, "pointer_max_vocab": 512},
+    )
 
     target = {
         "target_id": "english_kerc",
         "role": "kerc_english_candidate",
+        "model": {
+            "kerc_kernel_token_start": 600,
+            "kerc_pointer_token_start": 1200,
+        },
+        "kernel_code_vocabulary": {"payload": code_vocabulary},
         "kernel_english_artifacts": {
             "private_train": {
                 "path": str(artifact),
@@ -683,6 +705,38 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.receipt["verifier_only_row_count"] == 1
     assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3], [1, 0, 0, 3]]
     assert stage.kerc_verifier_labels.tolist() == [[1, 1, 1, 1], [0, 1, 1, 1]]
+    assert stage.receipt["dual_code_vocabulary_sha256"] == code_vocabulary[
+        "contract_sha256"
+    ]
+    positive_ids = set(int(value) for value in stage.inputs[0])
+    assert any(600 <= value < 1200 for value in positive_ids)
+    assert any(value >= 1200 for value in positive_ids)
+
+
+def test_kerc_dual_vocab_is_charged_only_to_candidate_and_surface_control_is_matched() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    base = json.loads((ROOT / config["base_config"]).read_text())
+    metadata = json.loads(
+        (ROOT / config["stage_dir"] / "stage_metadata_v1.json").read_text()
+    )
+    models = model_accounting(config, base, metadata)
+    kerc = models["english_kerc"]
+    control = models["english_surface_control"]
+
+    assert models["kerc_vocab_size"] == (
+        models["canonical_vocab_size"]
+        + config["kernel_english_training"]["code_vocabulary"]["kernel_max_vocab"]
+        + config["kernel_english_training"]["code_vocabulary"]["pointer_max_vocab"]
+    )
+    assert kerc["vocab_size"] == models["kerc_vocab_size"]
+    assert control["vocab_size"] == models["canonical_vocab_size"]
+    assert abs(control["parameter_delta_vs_kerc"]) / kerc["parameter_count"] < 0.001
+    model = kerc["model"]
+    assert model["kerc_surface_token_end"] == models["canonical_vocab_size"]
+    assert model["kerc_kernel_token_start"] == models["canonical_vocab_size"]
+    assert model["kerc_pointer_token_end"] == models["kerc_vocab_size"]
 
 
 def test_generation_api_cannot_receive_hidden_target() -> None:

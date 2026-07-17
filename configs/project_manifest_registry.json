@@ -262,15 +262,23 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "e6023d243dadd2340e1a54454774d67a2b48cf96498e63e6c397460ef098515a"
+          "sha256": "4fa7eac2d2d1e0ee03820696154e15fd49d957a91fee9fc58901a163edff4425"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "6c910565ed3e79d91ddd47edf6f660bfa132ecac3dcb922d56988f38970a0b98"
+          "sha256": "ff7f1598618ddb4e8f02b2bddcba9df6be404cb570e0acd830d96db09542cc38"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "0da8da3954f182195285c17639bc384c6d2f583a711d5bac407e2d1db5b5e3f2"
+          "sha256": "8b15fad975511ba3e6589f516464b60b8f60c352725b1e0db15b777464af57aa"
+        },
+        "moecot_source_conditioned_implementation": {
+          "path": "scripts/moecot_source_conditioned_pretraining.py",
+          "sha256": "ed48984293520cc9f349715e0de5b23b281591bd2ce75de92434e430225c06c0"
+        },
+        "moecot_source_conditioned_tests": {
+          "path": "tests/test_moecot_source_conditioned_pretraining.py",
+          "sha256": "bc6ea2c6bd437577516debabd4c4bfc0fa3a4ae051d5f2c5d5f50806869278eb"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -298,7 +306,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "34267ca334186ed7d442325fe1a48f3fbbd42345274ffb8d146f29372ea7c3bf"
+          "sha256": "0b52d81d61d06798e586799c0c6b473bd56e511af85de3f78783f736fd23f60c"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5333,7 +5341,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has an explicit 15,256,030-parameter MLX target, a 15,256,330-parameter surface-English control, learned stage/residual/verifier mechanics, joint auxiliary losses, cache parity, gradient coverage, and strict reload. The ten-target plan is RED only because the governed KERC stage manifest is absent. Separate V_K/V_P data, VCM interaction rewards, executable recompile verification, overfit/intervention/ablation/resume/resource evidence, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has a 19,531,230-parameter MLX target with KERC-only V_K/V_P capacity, a 19,534,090-parameter canonical-vocabulary surface-English control, learned stage/residual/verifier mechanics, route-constrained output spaces, joint auxiliary losses, cache parity, gradient coverage, and strict reload. The ten-target plan is RED only because the governed KERC stage manifest and real content-bound codebook are absent. VCM interaction rewards, executable recompile verification, overfit/intervention/ablation/resume/resource evidence, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

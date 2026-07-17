@@ -854,6 +854,13 @@ def test_kerc_configuration_requires_complete_modular_architecture() -> None:
         "attention_policy": "encoder_decoder",
         "source_encoder_layers": 1,
         "source_copy_mode": "pointer_generator",
+        "kerc_surface_token_start": 20,
+        "kerc_surface_token_end": 40,
+        "kerc_kernel_token_start": 40,
+        "kerc_kernel_token_end": 60,
+        "kerc_pointer_token_start": 60,
+        "kerc_pointer_token_end": 90,
+        "kerc_end_token_id": 3,
     }
     with pytest.raises(ValueError, match="four distinct"):
         CausalTransformerConfig(
@@ -897,6 +904,13 @@ def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
         kerc_residual_choice_count=4,
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
     )
     model = build_model(
         config,
@@ -904,8 +918,8 @@ def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
         nn=nn,
         source_to_target_lookup=np.arange(96, dtype=np.int32),
     )
-    compiler = mx.array([[1, 11, 20, 21, 2, 30, 31]], dtype=mx.int32)
-    target_changed = mx.array([[1, 11, 20, 21, 2, 30, 44]], dtype=mx.int32)
+    compiler = mx.array([[1, 11, 20, 21, 2, 45, 46]], dtype=mx.int32)
+    target_changed = mx.array([[1, 11, 20, 21, 2, 45, 44]], dtype=mx.int32)
     logits, _cache, aux = model(compiler, return_training_aux=True)
     changed_logits, _changed_cache, changed_aux = model(
         target_changed, return_training_aux=True
@@ -926,6 +940,14 @@ def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
         atol=1e-6,
     ))
     assert bool(mx.allclose(logits[:, :6], changed_logits[:, :6], atol=1e-6))
+    assert float(logits[0, -1, 25].item()) < -1e8
+    assert np.isfinite(float(logits[0, -1, 45].item()))
+    renderer_logits, _renderer_cache = model(
+        mx.array([[1, 13, 20, 21, 2, 32]], dtype=mx.int32)
+    )
+    mx.eval(renderer_logits)
+    assert np.isfinite(float(renderer_logits[0, -1, 25].item()))
+    assert float(renderer_logits[0, -1, 45].item()) < -1e8
     assert bool(mx.allclose(
         aux["copy_aux"]["generator_gate"],
         mx.ones_like(aux["copy_aux"]["generator_gate"]),
@@ -979,14 +1001,21 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
         kerc_residual_choice_count=4,
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
     )
     lookup = np.arange(96, dtype=np.int32)
     model = build_model(config, mx=mx, nn=nn, source_to_target_lookup=lookup)
     inputs = mx.array(
-        [[1, 11, 20, 2, 30, 31], [1, 13, 22, 2, 32, 33]], dtype=mx.int32
+        [[1, 11, 20, 2, 45, 46], [1, 13, 22, 2, 32, 33]], dtype=mx.int32
     )
     labels = mx.array(
-        [[11, 20, 2, 30, 31, 0], [13, 22, 2, 32, 33, 0]], dtype=mx.int32
+        [[11, 20, 2, 45, 46, 0], [13, 22, 2, 32, 33, 0]], dtype=mx.int32
     )
     mask = mx.array(
         [[0, 0, 0, 1, 1, 0], [0, 0, 0, 1, 1, 0]], dtype=mx.float32

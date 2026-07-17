@@ -378,6 +378,15 @@
     "batch_size": 2,
     "residual_auxiliary_weight": 0.25,
     "verifier_auxiliary_weight": 0.5,
+    "code_vocabulary": {
+      "policy": "project_theseus_kerc_dual_code_vocabulary_v1",
+      "fit_split": "private_train",
+      "kernel_max_vocab": 4096,
+      "pointer_max_vocab": 1024,
+      "surface_vocabulary_owner": "canonical_moecot_target_vocab",
+      "byte_fallback_required": true,
+      "dev_eval_vocabulary_fit_forbidden": true
+    },
     "allowed_licenses": [
       "apache-2.0",
       "bsd-2-clause",

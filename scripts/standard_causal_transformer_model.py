@@ -48,6 +48,13 @@ class CausalTransformerConfig:
     kerc_residual_choice_count: int = 0
     kerc_residual_bottleneck_dim: int = 0
     kerc_verifier_dim: int = 0
+    kerc_surface_token_start: int = 0
+    kerc_surface_token_end: int = 0
+    kerc_kernel_token_start: int = 0
+    kerc_kernel_token_end: int = 0
+    kerc_pointer_token_start: int = 0
+    kerc_pointer_token_end: int = 0
+    kerc_end_token_id: int = 0
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -187,6 +194,19 @@ class CausalTransformerConfig:
                 raise ValueError("KERC requires a learned residual bottleneck")
             if self.kerc_verifier_dim <= 0:
                 raise ValueError("KERC requires an independent verifier dimension")
+            ranges = (
+                (self.kerc_surface_token_start, self.kerc_surface_token_end, "surface"),
+                (self.kerc_kernel_token_start, self.kerc_kernel_token_end, "kernel"),
+                (self.kerc_pointer_token_start, self.kerc_pointer_token_end, "pointer"),
+            )
+            for start, end, name in ranges:
+                if not 0 <= start < end <= self.vocab_size:
+                    raise ValueError(f"KERC {name} token range is invalid")
+            ordered = sorted((start, end, name) for start, end, name in ranges)
+            if any(left[1] > right[0] for left, right in zip(ordered, ordered[1:])):
+                raise ValueError("KERC token ranges must be disjoint")
+            if not 0 <= self.kerc_end_token_id < self.vocab_size:
+                raise ValueError("KERC end token must be inside the model vocabulary")
         elif any(
             value
             for value in (
@@ -194,6 +214,13 @@ class CausalTransformerConfig:
                 self.kerc_residual_choice_count,
                 self.kerc_residual_bottleneck_dim,
                 self.kerc_verifier_dim,
+                self.kerc_surface_token_start,
+                self.kerc_surface_token_end,
+                self.kerc_kernel_token_start,
+                self.kerc_kernel_token_end,
+                self.kerc_pointer_token_start,
+                self.kerc_pointer_token_end,
+                self.kerc_end_token_id,
             )
         ):
             raise ValueError("KERC dimensions require trusted task tokens")
@@ -957,12 +984,45 @@ def build_model(
             stage_hidden = [
                 hidden + adapter(hidden) for adapter in self.kerc_stage_adapters
             ]
+            token_ids = mx.arange(config.vocab_size, dtype=mx.int32)
+            surface_allowed = (
+                (
+                    (token_ids >= config.kerc_surface_token_start)
+                    & (token_ids < config.kerc_surface_token_end)
+                )
+                | (token_ids == config.kerc_end_token_id)
+            )
+            kernel_allowed = (
+                (
+                    (token_ids >= config.kerc_kernel_token_start)
+                    & (token_ids < config.kerc_kernel_token_end)
+                )
+                | (
+                    (token_ids >= config.kerc_pointer_token_start)
+                    & (token_ids < config.kerc_pointer_token_end)
+                )
+                | (token_ids == config.kerc_end_token_id)
+            )
+            surface_mask = mx.where(
+                surface_allowed,
+                mx.array(0.0, dtype=mx.float32),
+                mx.array(-1e9, dtype=mx.float32),
+            )
+            kernel_mask = mx.where(
+                kernel_allowed,
+                mx.array(0.0, dtype=mx.float32),
+                mx.array(-1e9, dtype=mx.float32),
+            )
             stage_logits = mx.stack(
                 [
-                    self.token_embedding.as_linear(stage_hidden[0]),
-                    self.kerc_kernel_output(stage_hidden[1]),
-                    self.kerc_kernel_output(stage_hidden[2]),
-                    self.kerc_surface_output(stage_hidden[3]),
+                    self.token_embedding.as_linear(stage_hidden[0])
+                    + surface_mask,
+                    self.kerc_kernel_output(stage_hidden[1])
+                    + kernel_mask,
+                    self.kerc_kernel_output(stage_hidden[2])
+                    + kernel_mask,
+                    self.kerc_surface_output(stage_hidden[3])
+                    + surface_mask,
                 ],
                 axis=1,
             )

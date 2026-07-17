@@ -40,6 +40,10 @@ from standard_causal_transformer_survival import (
     train_phase,
 )
 from moecot_language_tokenizer import exact_text_tokens
+from moecot_source_conditioned_pretraining import (
+    KERC_KERNEL_OBJECTIVES,
+    encode_kerc_global_target,
+)
 from neural_seed_open_vocab import (
     TARGET_BYTE_BEGIN,
     TARGET_BYTE_END,
@@ -416,24 +420,45 @@ def model_accounting(
     import mlx.nn as nn
     import mlx.utils as mlx_utils
 
-    vocab_size = model_vocab_size(
+    canonical_vocab_size = model_vocab_size(
         base,
         dict(metadata.get("source_vocab") or {}),
         dict(metadata.get("target_vocab") or {}),
     )
-    copy_lookup = build_source_to_target_lookup(base, metadata)
+    code_contract = config["kernel_english_training"]["code_vocabulary"]
+    kernel_capacity = int(code_contract["kernel_max_vocab"])
+    pointer_capacity = int(code_contract["pointer_max_vocab"])
+    kerc_vocab_size = canonical_vocab_size + kernel_capacity + pointer_capacity
+    copy_lookup = build_source_to_target_lookup(
+        base, metadata, vocab_size=canonical_vocab_size
+    )
 
-    def instantiate(model_config: dict[str, Any]) -> Any:
+    def instantiate(
+        model_config: dict[str, Any], *, vocab_size: int = canonical_vocab_size
+    ) -> Any:
+        lookup = (
+            copy_lookup
+            if vocab_size == canonical_vocab_size
+            else np.pad(
+                copy_lookup,
+                (0, vocab_size - canonical_vocab_size),
+                constant_values=-1,
+            )
+        )
         return build_model(
             CausalTransformerConfig(vocab_size=vocab_size, **model_config),
             mx=mx,
             nn=nn,
             state_role_lookup=None,
-            source_to_target_lookup=copy_lookup,
+            source_to_target_lookup=lookup,
         )
 
-    def count(model_config: dict[str, Any]) -> int:
-        return int(parameter_count(instantiate(model_config), mlx_utils))
+    def count(
+        model_config: dict[str, Any], *, vocab_size: int = canonical_vocab_size
+    ) -> int:
+        return int(
+            parameter_count(instantiate(model_config, vocab_size=vocab_size), mlx_utils)
+        )
 
     trunk_count = count(config["shared_trunk_model"])
     arm = instantiate(config["arm_model"])
@@ -473,11 +498,25 @@ def model_accounting(
         source_offset + int(source_vocab[TRAINING_TASK_TAGS[objective]])
         for objective in TRAINING_TASK_TAGS
     ]
-    kerc_count = count(kerc_model)
+    canonical_target_start = target_token_offset(base, source_vocab)
+    kerc_model.update(
+        {
+            "kerc_surface_token_start": canonical_target_start,
+            "kerc_surface_token_end": canonical_vocab_size,
+            "kerc_kernel_token_start": canonical_vocab_size,
+            "kerc_kernel_token_end": canonical_vocab_size + kernel_capacity,
+            "kerc_pointer_token_start": canonical_vocab_size + kernel_capacity,
+            "kerc_pointer_token_end": kerc_vocab_size,
+            "kerc_end_token_id": canonical_target_start
+            + int((metadata.get("target_vocab") or {})["<eos>"]),
+        }
+    )
+    kerc_count = count(kerc_model, vocab_size=kerc_vocab_size)
+    surface_count_fn = lambda model: count(model, vocab_size=canonical_vocab_size)
     surface_model, surface_count = matched_encoder_decoder_config(
         kerc_count,
         config["shared_trunk_model"],
-        count=count,
+        count=surface_count_fn,
     )
     dense_active_model, dense_active_count = matched_decoder_only_config(
         arm_count, config["arm_model"], count=count
@@ -520,6 +559,11 @@ def model_accounting(
             "parameter_count": kerc_count,
             "active_parameter_count_per_request": kerc_count,
             "architecture": "kerc_modular_shared_trunk_candidate",
+            "vocab_size": kerc_vocab_size,
+            "code_vocabulary_capacity": {
+                "kernel": kernel_capacity,
+                "pointer": pointer_capacity,
+            },
         },
         SURFACE_ENGLISH_CONTROL_ID: {
             "model": surface_model,
@@ -527,8 +571,11 @@ def model_accounting(
             "active_parameter_count_per_request": surface_count,
             "parameter_delta_vs_kerc": surface_count - kerc_count,
             "architecture": "matched_surface_encoder_decoder_control",
+            "vocab_size": canonical_vocab_size,
         },
-        "vocab_size": vocab_size,
+        "vocab_size": canonical_vocab_size,
+        "canonical_vocab_size": canonical_vocab_size,
+        "kerc_vocab_size": kerc_vocab_size,
     }
 
 
@@ -597,13 +644,15 @@ def matched_encoder_decoder_config(
 
 
 def build_source_to_target_lookup(
-    base: dict[str, Any], metadata: dict[str, Any]
+    base: dict[str, Any], metadata: dict[str, Any], *, vocab_size: int | None = None
 ) -> np.ndarray:
     """Map exact source token identities into target IDs for learned copying."""
 
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
-    vocab_size = model_vocab_size(base, source_vocab, target_vocab)
+    vocab_size = int(
+        vocab_size or model_vocab_size(base, source_vocab, target_vocab)
+    )
     lookup = np.full(vocab_size, -1, dtype=np.int32)
     source_offset = source_token_offset(base, source_vocab)
     target_offset = target_token_offset(base, source_vocab)
@@ -677,6 +726,12 @@ def target_contracts(
             "row_count": sum(int(row["stop"]) - int(row["start"]) for row in view.get("row_ranges") or []),
             "unique_target_positions": int(view.get("target_positions") or 0),
             "model": model,
+            "vocab_size": int(
+                (models.get(target) or {}).get("vocab_size")
+                or models.get("canonical_vocab_size")
+                or models.get("vocab_size")
+                or 0
+            ),
             "parameter_count": parameter_count_value,
             "estimated_parameter_token_product": parameter_count_value
             * int(view.get("target_positions") or 0),
@@ -756,6 +811,11 @@ def target_contracts(
                 else ["surface_direct_control_v1"]
                 if target == SURFACE_ENGLISH_CONTROL_ID
                 else []
+            ),
+            "kernel_code_vocabulary": (
+                kernel_english_audit.get("code_vocabulary") or {}
+                if target == KERC_ENGLISH_ID
+                else {}
             ),
         }
     return targets
@@ -956,6 +1016,7 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
             "manifest": "",
             "manifest_sha256": "",
             "artifacts": {},
+            "code_vocabulary": {},
             "learned_pipeline_contract": {},
             "architecture_disposition": disposition,
             "full_kerc_training_enabled": False,
@@ -990,6 +1051,7 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
             "manifest": relative(manifest_path),
             "manifest_sha256": "",
             "artifacts": {},
+            "code_vocabulary": {},
             "learned_pipeline_contract": {},
             "selected_record_count_by_split": {},
             "compiled_view_count_by_objective": {},
@@ -1033,6 +1095,52 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
         gaps.append("kernel_english_verifier_corruption_count_mismatch")
     if manifest.get("verifier_corruptions_receive_generator_loss") is not False:
         gaps.append("kernel_english_verifier_corruption_generator_credit")
+    code_vocabulary = manifest.get("code_vocabulary") or {}
+    code_path = resolve(str(code_vocabulary.get("path") or ""))
+    if (
+        not code_path.is_file()
+        or sha256_file(code_path) != str(code_vocabulary.get("sha256") or "")
+    ):
+        gaps.append("kernel_english_code_vocabulary_identity_mismatch")
+        code_vocabulary_payload: dict[str, Any] = {}
+    else:
+        code_vocabulary_payload = read_json(code_path)
+        if (
+            code_vocabulary_payload.get("policy")
+            != "project_theseus_kerc_dual_code_vocabulary_v1"
+            or code_vocabulary_payload.get("contract_sha256")
+            != code_vocabulary.get("contract_sha256")
+            or code_vocabulary_payload.get("fit_split") != "private_train"
+            or int(code_vocabulary_payload.get("dev_eval_vocabulary_fit_count") or 0)
+            or int(
+                code_vocabulary_payload.get(
+                    "verifier_corruption_vocabulary_fit_count"
+                )
+                or 0
+            )
+        ):
+            gaps.append("kernel_english_code_vocabulary_contract_mismatch")
+        else:
+            unsigned_codebook = {
+                key: value
+                for key, value in code_vocabulary_payload.items()
+                if key != "contract_sha256"
+            }
+            observed_codebook_hash = "sha256:" + hashlib.sha256(
+                json.dumps(
+                    unsigned_codebook, sort_keys=True, separators=(",", ":")
+                ).encode()
+            ).hexdigest()
+            configured_codebook = cfg.get("code_vocabulary") or {}
+            if (
+                observed_codebook_hash
+                != code_vocabulary_payload.get("contract_sha256")
+                or int(code_vocabulary_payload.get("kernel_max_vocab") or 0)
+                != int(configured_codebook.get("kernel_max_vocab") or 0)
+                or int(code_vocabulary_payload.get("pointer_max_vocab") or 0)
+                != int(configured_codebook.get("pointer_max_vocab") or 0)
+            ):
+                gaps.append("kernel_english_code_vocabulary_content_mismatch")
     for key in (
         "public_training_rows_written",
         "public_benchmark_payload_count",
@@ -1049,6 +1157,10 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
         "manifest": relative(manifest_path),
         "manifest_sha256": sha256_file(manifest_path) if manifest_path.is_file() else "",
         "artifacts": artifacts,
+        "code_vocabulary": {
+            **code_vocabulary,
+            "payload": code_vocabulary_payload,
+        },
         "learned_pipeline_contract": manifest.get("learned_pipeline_contract") or {},
         "selected_record_count_by_split": manifest.get("selected_record_count_by_split") or {},
         "compiled_view_count_by_objective": manifest.get("compiled_view_count_by_objective") or {},
@@ -1259,10 +1371,15 @@ def ensure_shared_trunk_migration(
     if source_receipt.get("stage_signature") != plan["stage"]["stage_signature"]:
         raise ValueError("shared trunk migration stage identity mismatch")
 
-    copy_lookup = build_source_to_target_lookup(base, metadata)
+    target_vocab_size = int(
+        target.get("vocab_size") or plan["models"]["vocab_size"]
+    )
+    copy_lookup = build_source_to_target_lookup(
+        base, metadata, vocab_size=target_vocab_size
+    )
     model = build_model(
         CausalTransformerConfig(
-            vocab_size=int(plan["models"]["vocab_size"]), **target["model"]
+            vocab_size=target_vocab_size, **target["model"]
         ),
         mx=mx,
         nn=nn,
@@ -1373,6 +1490,17 @@ def materialize_target_supervision(
     kerc_residual_rows: list[list[int]] = []
     kerc_verifier_rows: list[list[int]] = []
     kerc_mode = str(target.get("role") or "") == "kerc_english_candidate"
+    code_vocabulary = (
+        ((target.get("kernel_code_vocabulary") or {}).get("payload") or {})
+        if kerc_mode
+        else {}
+    )
+    if kerc_mode and code_vocabulary.get("policy") != (
+        "project_theseus_kerc_dual_code_vocabulary_v1"
+    ):
+        raise ValueError("KERC target requires its content-bound dual-code vocabulary")
+    kernel_offset = int((target.get("model") or {}).get("kerc_kernel_token_start") or 0)
+    pointer_offset = int((target.get("model") or {}).get("kerc_pointer_token_start") or 0)
     row_hashes: list[str] = []
     artifact_receipts: list[dict[str, Any]] = []
     for key, artifact in selected:
@@ -1409,9 +1537,21 @@ def materialize_target_supervision(
                     *(int(source_vocab[token]) for token in trusted_prefix),
                     *source_body_ids,
                 ]
-                target_ids, target_receipt = encode_tokens(
-                    exact_text_tokens(answer), target_vocab, stream="target"
+                kernel_objective = (
+                    kerc_mode
+                    and str(row.get("objective") or "") in KERC_KERNEL_OBJECTIVES
                 )
+                if kernel_objective:
+                    target_ids, target_receipt = encode_kerc_global_target(
+                        answer,
+                        code_vocabulary=code_vocabulary,
+                        kernel_offset=kernel_offset,
+                        pointer_offset=pointer_offset,
+                    )
+                else:
+                    target_ids, target_receipt = encode_tokens(
+                        exact_text_tokens(answer), target_vocab, stream="target"
+                    )
                 if int(source_receipt.get("unknown_token_count") or 0) or int(
                     target_receipt.get("unknown_token_count") or 0
                 ):
@@ -1421,7 +1561,10 @@ def materialize_target_supervision(
                 sequence.append(SOURCE_TARGET_SEPARATOR_ID)
                 sequence.append(target_offset + int(target_vocab["<bos>"]))
                 target_start = len(sequence)
-                sequence.extend(target_offset + int(value) for value in target_ids)
+                sequence.extend(
+                    int(value) if kernel_objective else target_offset + int(value)
+                    for value in target_ids
+                )
                 sequence.append(target_offset + int(target_vocab["<eos>"]))
                 if len(sequence) > max_sequence + 1:
                     raise ValueError(f"frozen supervision row requires truncation: {key}")
@@ -1453,9 +1596,19 @@ def materialize_target_supervision(
                     ):
                         raise ValueError(f"invalid KERC auxiliary supervision: {key}:{source_rows - 1}")
                     negative_answer = str(negative.get("target") or "")
-                    negative_ids, negative_receipt = encode_tokens(
-                        exact_text_tokens(negative_answer), target_vocab, stream="target"
-                    )
+                    if kernel_objective:
+                        negative_ids, negative_receipt = encode_kerc_global_target(
+                            negative_answer,
+                            code_vocabulary=code_vocabulary,
+                            kernel_offset=kernel_offset,
+                            pointer_offset=pointer_offset,
+                        )
+                    else:
+                        negative_ids, negative_receipt = encode_tokens(
+                            exact_text_tokens(negative_answer),
+                            target_vocab,
+                            stream="target",
+                        )
                     if (
                         not negative_answer
                         or int(negative_receipt.get("unknown_token_count") or 0)
@@ -1471,7 +1624,10 @@ def materialize_target_supervision(
                     negative_sequence.append(target_offset + int(target_vocab["<bos>"]))
                     negative_start = len(negative_sequence)
                     negative_sequence.extend(
-                        target_offset + int(value) for value in negative_ids
+                        int(value)
+                        if kernel_objective
+                        else target_offset + int(value)
+                        for value in negative_ids
                     )
                     negative_sequence.append(target_offset + int(target_vocab["<eos>"]))
                     if len(negative_sequence) > max_sequence + 1:
@@ -1543,6 +1699,19 @@ def materialize_target_supervision(
     loss_mask[
         (mask == 1) & ((labels == byte_begin_id) | (labels == byte_end_id))
     ] = float(config["training"]["byte_boundary_loss_weight"])
+    code_boundary_ids: list[int] = []
+    if kerc_mode:
+        for vocab, offset in (
+            (code_vocabulary.get("kernel_vocab") or {}, kernel_offset),
+            (code_vocabulary.get("pointer_vocab") or {}, pointer_offset),
+        ):
+            for token in (TARGET_BYTE_BEGIN, TARGET_BYTE_END):
+                if token not in vocab:
+                    raise ValueError("KERC code vocabulary is missing byte boundaries")
+                code_boundary_ids.append(offset + int(vocab[token]))
+        loss_mask[(mask == 1) & np.isin(labels, code_boundary_ids)] = float(
+            config["training"]["byte_boundary_loss_weight"]
+        )
     receipt = {
         "policy": receipt_policy,
         "target_id": target["target_id"],
@@ -1565,6 +1734,12 @@ def materialize_target_supervision(
         "source_truncation_count": 0,
         "target_truncation_count": 0,
         "objective_filter": list(objective_filter),
+        "dual_code_vocabulary_sha256": (
+            code_vocabulary.get("contract_sha256") if kerc_mode else ""
+        ),
+        "kernel_target_token_offset": kernel_offset if kerc_mode else 0,
+        "pointer_target_token_offset": pointer_offset if kerc_mode else 0,
+        "dual_code_byte_boundary_ids": code_boundary_ids,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -1599,14 +1774,19 @@ def evaluate_target(
 
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
+    evaluated_vocab_size = int(
+        target.get("vocab_size") or plan["models"]["vocab_size"]
+    )
     model = build_model(
         CausalTransformerConfig(
-            vocab_size=int(plan["models"]["vocab_size"]), **target["model"]
+            vocab_size=evaluated_vocab_size, **target["model"]
         ),
         mx=mx,
         nn=nn,
         state_role_lookup=None,
-        source_to_target_lookup=build_source_to_target_lookup(base, metadata),
+        source_to_target_lookup=build_source_to_target_lookup(
+            base, metadata, vocab_size=evaluated_vocab_size
+        ),
     )
     checkpoint = resolve(str(target["checkpoint"]))
     if target.get("role") == "language_expert":
@@ -1657,6 +1837,11 @@ def evaluate_target(
                     beam_width=int(config["evaluation"]["beam_width"]),
                     branching_factor=int(config["evaluation"]["branching_factor"]),
                     length_penalty=float(config["evaluation"]["length_penalty"]),
+                    trusted_source_prefix_tokens=(
+                        (TRAINING_TASK_TAGS["surface_direct_control_v1"],)
+                        if target.get("role") == "kerc_english_candidate"
+                        else ()
+                    ),
                     mx=mx,
                 )
                 expected = str(row.get("target") or "")
@@ -1737,6 +1922,7 @@ def generate_model_text(
     beam_width: int,
     branching_factor: int,
     length_penalty: float,
+    trusted_source_prefix_tokens: tuple[str, ...] = (),
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Generate from prompt only; the grammar constrains byte serialization, not meaning."""
@@ -1746,6 +1932,14 @@ def generate_model_text(
     )
     if int(source_receipt.get("unknown_token_count") or 0):
         return "", generation_fault("source_unrepresentable")
+    if any(token not in source_vocab for token in trusted_source_prefix_tokens):
+        return "", generation_fault("trusted_source_prefix_unrepresentable")
+    if len(trusted_source_prefix_tokens) > 1:
+        return "", generation_fault("trusted_source_prefix_ambiguous")
+    source_ids = [
+        *(int(source_vocab[token]) for token in trusted_source_prefix_tokens),
+        *source_ids,
+    ]
     if len(source_ids) > max_source_tokens:
         return "", generation_fault("source_requires_truncation")
     source_offset = source_token_offset(base, source_vocab)
@@ -1838,6 +2032,7 @@ def generate_model_text(
         ).hexdigest(),
         "byte_serialization_valid": True,
         "target_visible_to_generator": False,
+        "trusted_source_prefix_tokens": list(trusted_source_prefix_tokens),
         "fallback_return_count": 0,
     }
 
@@ -1989,6 +2184,9 @@ def train_target(
     supervision_stage: Any | None = None,
 ) -> dict[str, Any]:
     target_id = str(target["target_id"])
+    trained_vocab_size = int(
+        target.get("vocab_size") or plan["models"]["vocab_size"]
+    )
     inputs = range_view(stage.pretrain_inputs, target["row_ranges"])
     labels = range_view(stage.pretrain_labels, target["row_ranges"])
     mask = range_view(stage.pretrain_mask, target["row_ranges"])
@@ -1997,9 +2195,10 @@ def train_target(
         copy_lookup = build_source_to_target_lookup(
             read_json(resolve(str(config["base_config"]))),
             read_json(resolve(str(config["stage_dir"])) / "stage_metadata_v1.json"),
+            vocab_size=trained_vocab_size,
         )
     model = build_model(
-        CausalTransformerConfig(vocab_size=int(plan["models"]["vocab_size"]), **target["model"]),
+        CausalTransformerConfig(vocab_size=trained_vocab_size, **target["model"]),
         mx=mx,
         nn=nn,
         state_role_lookup=None,
@@ -2212,6 +2411,13 @@ def train_target(
             "stage_metadata_sha256": plan["stage"]["metadata_sha256"],
             "row_ranges": target["row_ranges"],
             "parameter_count": observed_parameters,
+            "vocab_size": trained_vocab_size,
+            "kernel_code_vocabulary_sha256": str(
+                (((target.get("kernel_code_vocabulary") or {}).get("payload") or {}).get(
+                    "contract_sha256"
+                )
+                or "")
+            ),
             "trainable_parameter_count": trainable_parameters,
             "expert_trainable_scope": expert_scope if expert_mode else "",
             "shared_trunk_checkpoint": (
@@ -2476,6 +2682,13 @@ def train_target(
         "stage_metadata_sha256": plan["stage"]["metadata_sha256"],
         "row_ranges": target["row_ranges"],
         "parameter_count": observed_parameters,
+        "vocab_size": trained_vocab_size,
+        "kernel_code_vocabulary_sha256": str(
+            (((target.get("kernel_code_vocabulary") or {}).get("payload") or {}).get(
+                "contract_sha256"
+            )
+            or "")
+        ),
         "trainable_parameter_count": trainable_parameters,
         "expert_trainable_scope": (
             expert_scope if expert_mode else ""
@@ -2645,6 +2858,18 @@ def validate_resume(
         faults.append("stage_identity_mismatch")
     if receipt.get("row_ranges") != target["row_ranges"]:
         faults.append("stage_range_mismatch")
+    if target.get("vocab_size") is not None and int(receipt.get("vocab_size") or 0) != int(
+        target["vocab_size"]
+    ):
+        faults.append("vocab_size_mismatch")
+    expected_codebook = str(
+        (((target.get("kernel_code_vocabulary") or {}).get("payload") or {}).get(
+            "contract_sha256"
+        )
+        or "")
+    )
+    if expected_codebook and receipt.get("kernel_code_vocabulary_sha256") != expected_codebook:
+        faults.append("kernel_code_vocabulary_identity_mismatch")
     if target.get("role") == "language_expert":
         shared = resolve(str(target.get("shared_trunk_checkpoint") or ""))
         if (
@@ -2875,6 +3100,19 @@ def validate_config(config: dict[str, Any]) -> None:
         value = float(kernel_cfg.get(key) or 0.0)
         if not 0.0 < value <= 1.0:
             raise ValueError(f"KERC {key} must be positive and no greater than one")
+    code_vocabulary = kernel_cfg.get("code_vocabulary") or {}
+    if (
+        code_vocabulary.get("policy")
+        != "project_theseus_kerc_dual_code_vocabulary_v1"
+        or code_vocabulary.get("fit_split") != "private_train"
+        or code_vocabulary.get("surface_vocabulary_owner")
+        != "canonical_moecot_target_vocab"
+        or code_vocabulary.get("byte_fallback_required") is not True
+        or code_vocabulary.get("dev_eval_vocabulary_fit_forbidden") is not True
+        or int(code_vocabulary.get("kernel_max_vocab") or 0) < 512
+        or int(code_vocabulary.get("pointer_max_vocab") or 0) < 512
+    ):
+        raise ValueError("KERC dual-code vocabulary contract is incomplete")
     if not 1.0 <= float(training.get("termination_loss_weight") or 0.0) <= 8.0:
         raise ValueError("termination loss weight must remain bounded")
     if not 1.0 <= float(training.get("byte_boundary_loss_weight") or 0.0) <= 8.0:

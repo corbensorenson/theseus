@@ -14,6 +14,8 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from moecot_source_conditioned_pretraining import (  # noqa: E402
+    decode_kerc_global_target,
+    encode_kerc_global_target,
     contract_sha256,
     delete_spans,
     denoising_rows,
@@ -76,6 +78,15 @@ def kernel_config(tmp_path: Path) -> dict:
             },
             "maximum_sequence_tokens": 20000,
             "batch_size": 1,
+            "code_vocabulary": {
+                "policy": "project_theseus_kerc_dual_code_vocabulary_v1",
+                "fit_split": "private_train",
+                "kernel_max_vocab": 512,
+                "pointer_max_vocab": 512,
+                "surface_vocabulary_owner": "canonical_moecot_target_vocab",
+                "byte_fallback_required": True,
+                "dev_eval_vocabulary_fit_forbidden": True,
+            },
             "allowed_licenses": ["cc0-1.0"],
             "public_training_rows_written": 0,
             "public_benchmark_payload_count": 0,
@@ -355,6 +366,38 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     assert report["derived_view_unique_data_credit"] == 0
     assert report["derived_view_optimizer_exposure_count"] == 12
     assert all(value == 3 for value in report["compiled_view_count_by_objective"].values())
+    codebook_path = Path(report["code_vocabulary"]["path"])
+    if not codebook_path.is_absolute():
+        codebook_path = ROOT / codebook_path
+    codebook = json.loads(codebook_path.read_text())
+    assert codebook["fit_split"] == "private_train"
+    assert codebook["dev_eval_vocabulary_fit_count"] == 0
+    assert codebook["verifier_corruption_vocabulary_fit_count"] == 0
+    assert codebook["kernel_vocab"] != codebook["pointer_vocab"]
+    assert codebook["source_view_count"] == 2
+    train_artifact = Path(report["artifacts"]["english:private_train"]["path"])
+    if not train_artifact.is_absolute():
+        train_artifact = ROOT / train_artifact
+    compiler_view = next(
+        json.loads(line)
+        for line in train_artifact.read_text().splitlines()
+        if json.loads(line)["objective"] == "surface_to_kernel_program_v1"
+    )
+    encoded, encoded_receipt = encode_kerc_global_target(
+        compiler_view["target"],
+        code_vocabulary=codebook,
+        kernel_offset=1000,
+        pointer_offset=2000,
+    )
+    decoded, decoded_receipt = decode_kerc_global_target(
+        encoded,
+        code_vocabulary=codebook,
+        kernel_offset=1000,
+        pointer_offset=2000,
+    )
+    assert encoded_receipt["unknown_token_count"] == 0
+    assert decoded_receipt["state"] == "READY"
+    assert decoded == compiler_view["target"]
     assert inspect_kernel_english(cfg, tmp_path / "config.json")["trigger_state"] == "GREEN"
     assert not list(Path(cfg["kernel_english_training"]["stage_root"]).glob("*.partial"))
 
