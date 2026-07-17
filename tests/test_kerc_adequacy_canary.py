@@ -112,6 +112,11 @@ def fixture_stage() -> SimpleNamespace:
             + [[1, 0, 0, 0], [1, 0, 0, 0]],
             dtype=np.int32,
         ),
+        kerc_residual_loss_mask=np.asarray(
+            [value for _signature in signatures for value in (1.0, 0.0)]
+            + [0.0, 0.0],
+            dtype=np.float32,
+        ),
         kerc_verifier_labels=verifier_labels,
         kerc_coverage_labels=tuple(coverage),
     )
@@ -179,6 +184,7 @@ def test_balanced_subset_requires_exact_source_bound_corruption() -> None:
     assert len(subset.inputs) == 12
     assert receipt["positive_row_count"] == 5
     assert receipt["verifier_only_row_count"] == 7
+    assert subset.kerc_residual_loss_mask.sum() == 5.0
     assert sum(len(pairs) for pairs in receipt["rows_by_objective"].values()) == 5
     assert receipt["missing_required_coverage"] == []
     assert receipt["required_coverage_count"] == 21
@@ -307,6 +313,15 @@ def test_failed_learning_is_inconclusive_not_architecture_falsification() -> Non
         migration_logit_delta=0.0,
         rollback_logit_delta=0.0,
         trained_ablations=trained_ablation_fixture(),
+        residual_learnability={
+            "passed": True,
+            "gradient_path_present": True,
+            "optimizer_steps": 64,
+            "final": {
+                "macro_balanced_accuracy": 1.0,
+                "minimum_channel_balanced_accuracy": 1.0,
+            },
+        },
         partial_file_count=0,
     )
     assert state == "INCONCLUSIVE_EXPERIMENT"
@@ -342,6 +357,15 @@ def test_lifecycle_failure_is_red() -> None:
         migration_logit_delta=0.0,
         rollback_logit_delta=0.0,
         trained_ablations=trained_ablation_fixture(),
+        residual_learnability={
+            "passed": True,
+            "gradient_path_present": True,
+            "optimizer_steps": 64,
+            "final": {
+                "macro_balanced_accuracy": 1.0,
+                "minimum_channel_balanced_accuracy": 1.0,
+            },
+        },
         partial_file_count=0,
     )
     assert state == "RED"

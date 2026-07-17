@@ -266,11 +266,11 @@
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "8f2920391d9a29da8ef8210c7785c830be63f0e85382e0788d05b4b3997eedd4"
+          "sha256": "75e60bdbe0790a62b992206ece6acf88d592e31128f5190710e90d40875530b7"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "88e060aa5ca282b600e50147c1071a0571f49e193ddd6a101a90037c11cec889"
+          "sha256": "2e77d0bb794dea1c7ca03ed4f3a71a39ead524f5d5d82727d3b8193c63ba5bed"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
@@ -282,7 +282,7 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "49adbe3edb56a9b23c07676497cf378e1516f63105d6374077580dda8753fe0a"
+          "sha256": "12b9eb4d6d49386d6010dc5c2126776580236dcde5907a96591716ff224367f7"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
@@ -310,15 +310,15 @@
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
-          "sha256": "22d8968a5d34ab551c321eb3133add5f16c93762343ba7a5f788e1e6928f0f04"
+          "sha256": "a536c49106e456144265a887d3e2471845d575d22d57beea521b7fd611252ebe"
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "b83f73ac29d918f22f3597414d346404454030753b771cd78ee41c6253f207ac"
+          "sha256": "32101204cd725eda166c09f458d4be34610b52250ca9c77781580c1a18ff31b3"
         },
         "kerc_adequacy_tests": {
           "path": "tests/test_kerc_adequacy_canary.py",
-          "sha256": "8a0fd0570158707132c33f587373c55c5653fba60963655ab9d7d5e50f063611"
+          "sha256": "cb61734fc065bbebfda2eeac0c54efea738c04c48fcc5c72c889a7424ecd3a5e"
         },
         "kerc_checkpoint_schema": {
           "path": "scripts/kerc_checkpoint_schema.py",
@@ -330,7 +330,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "3e7ae63afaa28f1c64a170499898bb65b033e6d60bce529c392009ebcd2c04c5"
+          "sha256": "3f8288f57440026702c4a848345b06927e3be5c483f0d999972e93a8ca00de95"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -5403,7 +5403,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 11,424-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and five verifier dimensions. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 26,360-view stage has maximum sequence length 4,243 with no truncation. It includes 1,064 bounded multi-turn records, 2,128 reviewed alternative answers, 24 explicit clarify/abstain records, and 96 unique-extractive-support questions across six required forms. A train-only contextual FrameNet prior covers 59 lexical units and binds typed alternatives to 411 train, 178 development, and 157 evaluation rows; independent replay fits only private-train annotations, and no calibrated-probability or unresolved-ambiguity claim is made. The GREEN 64-update MLX adequacy canary learns all four residual channels, proves interaction-specific causal use and a trained leave-interaction-out control, passes exact optimizer reload and float32 resume parity, and sustains at least 51.088 target tokens/s. This remains mechanics evidence only: current targets do not prove interaction utility. Unresolved ambiguity, broad-entailment, protected-span abstention, trained context counterfactuals, calibrated decisions/verifier behavior, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 11,424-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and five verifier dimensions. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 26,360-view stage has maximum sequence length 4,243 with no truncation. It includes 1,064 bounded multi-turn records, 2,128 reviewed alternative answers, 24 explicit clarify/abstain records, 96 unique-extractive-support questions across six required forms, and 384 verifier-only withheld/shuffled context interventions. A train-only contextual FrameNet prior covers 59 lexical units and binds typed alternatives to 411 train, 178 development, and 157 evaluation rows; independent replay fits only private-train annotations, and no calibrated-probability or unresolved-ambiguity claim is made. The 64-update MLX joint-objective canary is INCONCLUSIVE_EXPERIMENT: token accuracy is 0.352399, verifier macro balanced accuracy is 0.776876 with 1.0 minimum negative recall, and residual macro balanced accuracy is 0.5. Verifier-only rows carry zero residual authority. A same-model residual-only rung records nonzero residual-head/source gradients and reaches 1.0 on every channel within 256 updates, proving mechanism learnability but not utility. Reload, resume, migration, rollback, causal interventions, trained ablations, and sustained Metal execution pass. Joint-objective scheduling, unresolved ambiguity, broad entailment, protected-span abstention, calibrated decisions/verifier behavior, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

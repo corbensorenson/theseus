@@ -19,7 +19,19 @@
     "weight_decay": 0.0,
     "gradient_clip_norm": 1.0,
     "batch_size": 1,
+    "residual_class_balance_maximum": 16.0,
     "verifier_class_balance_maximum": 16.0
+  },
+  "residual_learnability": {
+    "maximum_steps": 256,
+    "minimum_steps": 64,
+    "evaluation_interval": 32,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.0,
+    "gradient_clip_norm": 1.0,
+    "residual_weight": 1.0,
+    "minimum_macro_balanced_accuracy": 0.99,
+    "minimum_parameter_family_gradient_l2": 1e-10
   },
   "acceptance": {
     "maximum_final_to_initial_loss_ratio": 0.8,

@@ -27,6 +27,7 @@ from standard_causal_transformer_survival import (
     EXECUTABLE_STATE_ROLES,
     beam_rank_score,
     balanced_binary_class_weights,
+    balanced_categorical_class_weights,
     batched_beam_advance,
     build_data_model_scaling_contract,
     cache_arrays,
@@ -1133,6 +1134,86 @@ def test_kerc_verifier_class_weights_balance_sparse_corruptions() -> None:
 def test_kerc_verifier_class_weights_fail_closed_without_both_classes() -> None:
     with pytest.raises(ValueError, match="requires both classes"):
         balanced_binary_class_weights(np.ones((8, 4), dtype=np.float32))
+
+
+def test_kerc_residual_class_weights_balance_each_channel() -> None:
+    labels = np.asarray(
+        [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [1, 1, 2, 3],
+        ],
+        dtype=np.int32,
+    )
+
+    weights, receipt = balanced_categorical_class_weights(
+        labels,
+        class_count=4,
+        maximum=16.0,
+        require_two_classes_per_feature=True,
+    )
+
+    assert weights.shape == (4, 4)
+    assert weights[0, 1] > weights[0, 0]
+    assert weights[1, 1] > weights[1, 0]
+    assert weights[2, 2] > weights[2, 0]
+    assert weights[3, 3] > weights[3, 0]
+    assert receipt["observed_class_count_by_feature"] == [2, 2, 2, 2]
+    assert receipt["weight_sha256"] == hashlib.sha256(weights.tobytes()).hexdigest()
+
+
+def test_kerc_residual_loss_mask_removes_verifier_only_rows() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(43)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_verifier_output_dim=5,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    inputs = mx.array([[1, 10, 20, 2, 30, 31]], dtype=mx.int32)
+    labels = mx.array([[10, 20, 2, 30, 31, 0]], dtype=mx.int32)
+    zero_token_mask = mx.zeros((1, 6), dtype=mx.float32)
+    loss = causal_loss(
+        model,
+        inputs,
+        labels,
+        zero_token_mask,
+        mx,
+        nn,
+        kerc_residual_labels=mx.array([[0, 1, 2, 3]], dtype=mx.int32),
+        kerc_residual_weight=1.0,
+        kerc_residual_loss_mask=mx.array([0.0], dtype=mx.float32),
+    )
+    mx.eval(loss)
+    assert float(loss.item()) == pytest.approx(0.0)
 
 
 def test_encoder_decoder_source_memory_excludes_target_values() -> None:

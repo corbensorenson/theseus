@@ -72,8 +72,15 @@ share toward zero. Public benchmarks are calibration only.
   64-update Apple-MLX canary selects 16 real rows and covers all 21 objective, decision,
   interaction, residual, five-dimension verifier, and context-counterfactual groups. It
   is `INCONCLUSIVE_EXPERIMENT`: token accuracy is `0.352399` and verifier macro balanced
-  accuracy is `0.761492` with `1.0` minimum negative recall, but all four residual
-  channels remain at their `0.5` balanced-accuracy baselines. This supports extractive
+  accuracy is `0.776876` with `1.0` minimum negative recall, but all four residual
+  channels remain at their `0.5` balanced-accuracy baselines under the short joint
+  objective. Verifier-only corruptions and context counterfactuals now carry an explicit
+  zero residual-authority mask, so they cannot duplicate or contradict source-grounded
+  residual supervision. A separate same-model, same-row residual-only learnability rung
+  records nonzero residual-head (`1.173791` L2) and source-representation (`0.813901` L2)
+  gradients and reaches `1.0` balanced accuracy on every channel within 256 bounded
+  updates. The allocator is therefore learnable; joint-objective scheduling remains the
+  open mechanics wall. This supports extractive
   grounding and counterfactual-support mechanics only, not context utility, a negative
   KERC verdict, broad entailment, truth, completeness,
   calibration, reasoning quality, or model capability. Selected private-train MASC rows
@@ -94,17 +101,19 @@ share toward zero. Public benchmarks are calibration only.
   proves scoped stage, full-residual, interaction-only, and verifier causality plus
   trained leave-one-mechanism-out controls. Optimizer reload is exact; resume, schema
   migration, rollback, mismatch rejection, cleanup, and sustained execution pass. The
-  result remains `INCONCLUSIVE_EXPERIMENT`, however: the verifier reaches `0.761492`
-  macro balanced accuracy and `1.0` minimum negative recall, while the residual allocator
-  remains at `0.5` macro balanced accuracy on each informative channel. The checkpoint
+  result remains `INCONCLUSIVE_EXPERIMENT`, however: the verifier reaches `0.776876`
+  macro balanced accuracy and `1.0` minimum negative recall, while the short joint
+  schedule leaves the residual allocator at `0.5` macro balanced accuracy on each
+  informative channel despite the independent residual-only overfit rung reaching `1.0`
+  on all four channels. The checkpoint
   is not capability-qualified and the decision dimension is not calibrated.
   This carries no capability or negative-verdict authority: the prior
   target proves interaction representation, learning, replay, and causal mechanics, not
   interaction utility. The new dialogue, multiple-valid, withheld, and shuffled rows
   establish source authority, representability, and counterfactual testability only until
   full context-present/context-withheld/shuffled/wrong-user utility controls run.
-  Unresolved ambiguity/broad-entailment, protected-span abstention, residual-objective
-  repair, decision calibration,
+  Unresolved ambiguity/broad-entailment, protected-span abstention, joint residual/token/
+  verifier objective scheduling, decision calibration,
   calibrated verifier behavior, and the matched campaign remain open.
   `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a

@@ -627,6 +627,7 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
         metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
     )
     assert ordinary_stage.kerc_residual_labels is None
+    assert ordinary_stage.kerc_residual_loss_mask is None
     assert ordinary_stage.kerc_verifier_labels is None
     assert ordinary_stage.receipt["dual_code_vocabulary_sha256"] == ""
 
@@ -760,6 +761,9 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.receipt["generator_training_row_count"] == 1
     assert stage.receipt["verifier_only_row_count"] == 3
     assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3]] * 4
+    assert stage.kerc_residual_loss_mask.tolist() == [1.0, 0.0, 0.0, 0.0]
+    assert stage.receipt["kerc_residual_supervision_row_count"] == 1
+    assert stage.receipt["kerc_verifier_only_rows_receive_residual_loss"] is False
     assert stage.kerc_verifier_labels.tolist() == [
         [1, 1, 1, 1, 1],
         [0, 1, 1, 1, 1],

@@ -2715,6 +2715,64 @@ def balanced_binary_class_weights(
     }
 
 
+def balanced_categorical_class_weights(
+    labels: np.ndarray,
+    *,
+    class_count: int,
+    maximum: float,
+    require_two_classes_per_feature: bool = True,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Derive per-channel inverse-frequency weights for categorical auxiliaries."""
+
+    matrix = np.asarray(labels, dtype=np.int32)
+    if matrix.ndim != 2 or not len(matrix) or class_count <= 1:
+        raise ValueError("balanced categorical objective requires a nonempty label matrix")
+    if np.any(matrix < 0) or np.any(matrix >= int(class_count)):
+        raise ValueError("balanced categorical labels exceed the declared class inventory")
+    if not np.isfinite(maximum) or maximum < 1.0:
+        raise ValueError("maximum categorical class weight must be finite and at least one")
+    counts = np.stack(
+        [
+            np.bincount(matrix[:, feature], minlength=class_count)
+            for feature in range(matrix.shape[1])
+        ],
+        axis=0,
+    ).astype(np.float32)
+    observed = counts > 0.0
+    observed_counts = observed.sum(axis=1)
+    if require_two_classes_per_feature and bool(np.any(observed_counts < 2)):
+        features = np.flatnonzero(observed_counts < 2).tolist()
+        raise ValueError(
+            f"balanced categorical objective requires two classes in features {features}"
+        )
+    weights = np.ones_like(counts, dtype=np.float32)
+    for feature in range(matrix.shape[1]):
+        active = observed[feature]
+        weights[feature, active] = np.clip(
+            float(len(matrix))
+            / (float(observed_counts[feature]) * counts[feature, active]),
+            1.0 / float(maximum),
+            float(maximum),
+        )
+    return weights, {
+        "state": "MEASURED",
+        "row_count": int(len(matrix)),
+        "feature_count": int(matrix.shape[1]),
+        "class_count": int(class_count),
+        "counts_by_feature_and_class": [
+            [int(value) for value in row] for row in counts
+        ],
+        "observed_class_count_by_feature": [
+            int(value) for value in observed_counts
+        ],
+        "require_two_classes_per_feature": bool(require_two_classes_per_feature),
+        "maximum_class_weight": float(maximum),
+        "minimum_weight": round(float(weights.min()), 8),
+        "maximum_weight": round(float(weights.max()), 8),
+        "weight_sha256": hashlib.sha256(weights.tobytes()).hexdigest(),
+    }
+
+
 def causal_loss(
     model: Any,
     inputs: Any,
@@ -2734,6 +2792,8 @@ def causal_loss(
     kerc_verifier_weight: float = 0.0,
     kerc_verifier_positive_weights: Any | None = None,
     kerc_verifier_negative_weights: Any | None = None,
+    kerc_residual_class_weights: Any | None = None,
+    kerc_residual_loss_mask: Any | None = None,
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
@@ -2779,12 +2839,44 @@ def causal_loss(
         if residual_logits is None:
             raise ValueError("KERC residual labels require residual allocator logits")
         choices = int(residual_logits.shape[-1])
-        residual_loss = mx.mean(
-            nn.losses.cross_entropy(
-                residual_logits.reshape(-1, choices),
-                kerc_residual_labels.astype(mx.int32).reshape(-1),
+        residual_targets = kerc_residual_labels.astype(mx.int32)
+        residual_element_loss = nn.losses.cross_entropy(
+            residual_logits.reshape(-1, choices),
+            residual_targets.reshape(-1),
+        ).reshape(int(residual_logits.shape[0]), int(residual_logits.shape[1]))
+        if kerc_residual_class_weights is not None:
+            if tuple(kerc_residual_class_weights.shape) != (
+                int(residual_logits.shape[1]),
+                choices,
+            ):
+                raise ValueError("KERC residual class weights do not match logits")
+            broadcast_weights = mx.broadcast_to(
+                kerc_residual_class_weights[None, :, :],
+                residual_logits.shape,
             )
+            selected_weights = mx.take_along_axis(
+                broadcast_weights,
+                residual_targets[:, :, None],
+                axis=-1,
+            )[:, :, 0]
+            residual_element_loss = residual_element_loss * selected_weights
+        if kerc_residual_loss_mask is None:
+            residual_authority = mx.ones(
+                (int(residual_logits.shape[0]),), dtype=mx.float32
+            )
+        else:
+            if tuple(kerc_residual_loss_mask.shape) != (
+                int(residual_logits.shape[0]),
+            ):
+                raise ValueError("KERC residual loss mask must be one value per row")
+            residual_authority = kerc_residual_loss_mask.astype(mx.float32)
+        residual_denominator = mx.maximum(
+            mx.sum(residual_authority) * int(residual_logits.shape[1]),
+            mx.array(1.0, dtype=mx.float32),
         )
+        residual_loss = mx.sum(
+            residual_element_loss * residual_authority[:, None]
+        ) / residual_denominator
         body_loss = body_loss + float(kerc_residual_weight) * residual_loss
     if kerc_verifier_labels is not None and kerc_verifier_weight > 0.0:
         verifier_logits = kerc_aux.get("verifier_logits") if kerc_aux else None
@@ -2983,6 +3075,9 @@ def train_phase(
     plan_factor_group_sizes: tuple[int, ...],
     kerc_residual_labels: np.ndarray | None = None,
     kerc_residual_weight: float = 0.0,
+    kerc_residual_balance_maximum: float = 16.0,
+    kerc_residual_require_two_classes: bool = True,
+    kerc_residual_loss_mask: np.ndarray | None = None,
     kerc_verifier_labels: np.ndarray | None = None,
     kerc_verifier_weight: float = 0.0,
     kerc_verifier_balance_maximum: float = 16.0,
@@ -3010,6 +3105,15 @@ def train_phase(
         or np.asarray(kerc_residual_labels).shape[1:] != (4,)
     ):
         raise ValueError("KERC residual labels must be one four-channel row per sequence")
+    if kerc_residual_loss_mask is not None and (
+        kerc_residual_labels is None
+        or np.asarray(kerc_residual_loss_mask).shape != (len(inputs),)
+        or not np.isin(np.asarray(kerc_residual_loss_mask), [0.0, 1.0]).all()
+        or not bool(np.asarray(kerc_residual_loss_mask).astype(bool).any())
+    ):
+        raise ValueError(
+            "KERC residual loss mask must authorize at least one labeled row"
+        )
     if kerc_verifier_labels is not None:
         verifier_shape = np.asarray(kerc_verifier_labels).shape
         if (
@@ -3024,6 +3128,28 @@ def train_phase(
         raise ValueError("KERC residual labels and positive weight must be supplied together")
     if (kerc_verifier_labels is None) != (float(kerc_verifier_weight) == 0.0):
         raise ValueError("KERC verifier labels and positive weight must be supplied together")
+    if kerc_residual_labels is None:
+        residual_class_weights = None
+        residual_class_weight_receipt = {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": "",
+        }
+    else:
+        residual_authority = (
+            np.asarray(kerc_residual_loss_mask).astype(bool)
+            if kerc_residual_loss_mask is not None
+            else np.ones(len(kerc_residual_labels), dtype=bool)
+        )
+        residual_class_weights, residual_class_weight_receipt = (
+            balanced_categorical_class_weights(
+                np.asarray(kerc_residual_labels)[residual_authority],
+                class_count=4,
+                maximum=float(kerc_residual_balance_maximum),
+                require_two_classes_per_feature=bool(
+                    kerc_residual_require_two_classes
+                ),
+            )
+        )
     if kerc_verifier_labels is None:
         verifier_positive_weights = None
         verifier_negative_weights = None
@@ -3101,8 +3227,15 @@ def train_phase(
         if verifier_negative_weights is not None
         else None
     )
+    matrix_residual_class_weights = (
+        mx.array(residual_class_weights, dtype=mx.float32)
+        if residual_class_weights is not None
+        else None
+    )
     if matrix_verifier_positive_weights is not None:
         mx.eval(matrix_verifier_positive_weights, matrix_verifier_negative_weights)
+    if matrix_residual_class_weights is not None:
+        mx.eval(matrix_residual_class_weights)
     order = list(range(len(inputs)))
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
     coverage_receipt = coverage_first_plan(
@@ -3179,6 +3312,14 @@ def train_phase(
                 if kerc_residual_labels is not None
                 else None
             )
+            batch_kerc_residual_mask = (
+                mx.array(
+                    np.asarray(kerc_residual_loss_mask[indices]),
+                    dtype=mx.float32,
+                )
+                if kerc_residual_loss_mask is not None
+                else None
+            )
             batch_kerc_verifier = (
                 mx.array(np.asarray(kerc_verifier_labels[indices]), dtype=mx.float32)
                 if kerc_verifier_labels is not None
@@ -3203,6 +3344,8 @@ def train_phase(
                 float(kerc_verifier_weight),
                 matrix_verifier_positive_weights,
                 matrix_verifier_negative_weights,
+                matrix_residual_class_weights,
+                batch_kerc_residual_mask,
             )
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
@@ -3291,11 +3434,24 @@ def train_phase(
         "semantic_plan_slot_count": int(plan_slot_count),
         "semantic_plan_factor_group_sizes": list(plan_factor_group_sizes),
         "kerc_residual_auxiliary_weight": float(kerc_residual_weight),
+        "kerc_residual_class_weights": residual_class_weight_receipt,
+        "kerc_residual_supervision_row_count": (
+            int(np.asarray(kerc_residual_loss_mask).sum())
+            if kerc_residual_loss_mask is not None
+            else (len(kerc_residual_labels) if kerc_residual_labels is not None else 0)
+        ),
         "kerc_verifier_auxiliary_weight": float(kerc_verifier_weight),
         "kerc_verifier_class_weights": verifier_class_weight_receipt,
         "kerc_residual_labels_sha256": (
             hashlib.sha256(np.asarray(kerc_residual_labels, dtype=np.int32).tobytes()).hexdigest()
             if kerc_residual_labels is not None
+            else ""
+        ),
+        "kerc_residual_loss_mask_sha256": (
+            hashlib.sha256(
+                np.asarray(kerc_residual_loss_mask, dtype=np.float32).tobytes()
+            ).hexdigest()
+            if kerc_residual_loss_mask is not None
             else ""
         ),
         "kerc_verifier_labels_sha256": (

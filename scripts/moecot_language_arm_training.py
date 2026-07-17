@@ -1567,6 +1567,7 @@ def materialize_target_supervision(
     generator_loss_enabled: list[bool] = []
     sampling_weights: list[float] = []
     kerc_residual_rows: list[list[int]] = []
+    kerc_residual_loss_enabled: list[bool] = []
     kerc_verifier_rows: list[list[int]] = []
     kerc_coverage_rows: list[tuple[str, ...]] = []
     kerc_model = str(target.get("role") or "") == "kerc_english_candidate"
@@ -1730,6 +1731,7 @@ def materialize_target_supervision(
                             f"KERC verifier corruption requires truncation: {key}"
                         )
                     kerc_residual_rows.append([int(value) for value in residual])
+                    kerc_residual_loss_enabled.append(True)
                     kerc_verifier_rows.append([1] * len(KERC_VERIFIER_DIMENSIONS))
                     base_coverage = kerc_training_coverage_labels(row, residual)
                     kerc_coverage_rows.append((*base_coverage, "verifier:positive"))
@@ -1738,6 +1740,7 @@ def materialize_target_supervision(
                     generator_loss_enabled.append(False)
                     sampling_weights.append(sampling_weight)
                     kerc_residual_rows.append([int(value) for value in residual])
+                    kerc_residual_loss_enabled.append(False)
                     kerc_verifier_rows.append([int(value) for value in negative_labels])
                     failed_dimension = str(negative.get("failed_dimension") or "")
                     if failed_dimension not in KERC_VERIFIER_DIMENSIONS:
@@ -1867,6 +1870,7 @@ def materialize_target_supervision(
                         generator_loss_enabled.append(False)
                         sampling_weights.append(sampling_weight)
                         kerc_residual_rows.append([int(value) for value in residual])
+                        kerc_residual_loss_enabled.append(False)
                         kerc_verifier_rows.append(
                             [int(value) for value in counter_labels]
                         )
@@ -1997,6 +2001,10 @@ def materialize_target_supervision(
             context_counterfactual_counts if kerc_mode else {}
         ),
         "kerc_context_counterfactuals_receive_generator_loss": False,
+        "kerc_verifier_only_rows_receive_residual_loss": False,
+        "kerc_residual_supervision_row_count": (
+            sum(kerc_residual_loss_enabled) if kerc_mode else 0
+        ),
         "kerc_context_counterfactuals_receive_unique_source_credit": 0,
         "kerc_context_counterfactuals_receive_candidate_generation_credit": 0,
         "canary_coverage_catalog": (
@@ -2020,6 +2028,11 @@ def materialize_target_supervision(
         sample_weights=np.asarray(sampling_weights, dtype=np.float64),
         kerc_residual_labels=(
             np.asarray(kerc_residual_rows, dtype=np.int32) if kerc_mode else None
+        ),
+        kerc_residual_loss_mask=(
+            np.asarray(kerc_residual_loss_enabled, dtype=np.float32)
+            if kerc_mode
+            else None
         ),
         kerc_verifier_labels=(
             np.asarray(kerc_verifier_rows, dtype=np.float32) if kerc_mode else None
@@ -3245,6 +3258,11 @@ def train_target(
                 float(config["kernel_english_training"]["residual_auxiliary_weight"])
                 if str(target.get("role") or "") == "kerc_english_candidate"
                 else 0.0
+            ),
+            kerc_residual_loss_mask=(
+                kernel_english_stage.kerc_residual_loss_mask
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else None
             ),
             kerc_verifier_labels=(
                 kernel_english_stage.kerc_verifier_labels
