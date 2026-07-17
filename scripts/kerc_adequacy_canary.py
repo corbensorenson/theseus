@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import itertools
 import json
 import os
 import resource
@@ -35,6 +34,7 @@ from kernel_english_protocol import (
     TRAINING_OBJECTIVES,
 )
 from moecot_language_arm_training import (
+    KERC_CANARY_REQUIRED_COVERAGE,
     build_plan,
     build_source_to_target_lookup,
     materialize_target_supervision,
@@ -169,48 +169,138 @@ def select_balanced_subset(
                 )
                 for signature, signature_rows in by_signature.items()
             }
-    assignments = []
-    for dimensions in itertools.permutations(range(len(KERC_VERIFIER_DIMENSIONS))):
-        options = []
-        for objective, dimension in zip(TRAINING_OBJECTIVES, dimensions):
-            signatures = candidate_matrix[objective].get(dimension)
-            if not signatures:
-                break
-            options.append(list(signatures.items()))
-        if len(options) != len(TRAINING_OBJECTIVES):
-            continue
-        for selected_options in itertools.product(*options):
-            signatures = [row[0] for row in selected_options]
-            if any(
-                len({signature[channel] for signature in signatures}) < 2
-                for channel in range(len(KERC_RESIDUAL_CHANNELS))
-            ):
-                continue
-            assignments.append(
-                (dimensions, [row[1] for row in selected_options], signatures)
-            )
-    if not assignments:
-        raise ValueError(
-            "KERC adequacy subset cannot cover every verifier dimension and residual channel"
-        )
-    dimensions, pairs, signatures = min(
-        assignments,
-        key=lambda assignment: (
-            sum(
-                active_width(
-                    stage.inputs[pair[0] : pair[0] + 1],
-                    stage.labels[pair[0] : pair[0] + 1],
-                    stage.loss_mask[pair[0] : pair[0] + 1],
+    representatives = []
+    for objective, dimensions in candidate_matrix.items():
+        for dimension, signatures in dimensions.items():
+            for signature, pair in signatures.items():
+                representatives.append(
+                    {
+                        "objective": objective,
+                        "dimension": int(dimension),
+                        "signature": tuple(int(value) for value in signature),
+                        "pair": tuple(int(value) for value in pair),
+                        "width": active_width(
+                            stage.inputs[pair[0] : pair[0] + 1],
+                            stage.labels[pair[0] : pair[0] + 1],
+                            stage.loss_mask[pair[0] : pair[0] + 1],
+                        ),
+                    }
                 )
-                for pair in assignment[1]
-            ),
-            canonical_sha256(assignment),
-        ),
-    )
+    selected_representatives: list[dict[str, Any]] = []
+    covered_objectives: set[str] = set()
+    covered_dimensions: set[int] = set()
+    residual_values = [set() for _ in KERC_RESIDUAL_CHANNELS]
+    while (
+        covered_objectives != set(TRAINING_OBJECTIVES)
+        or covered_dimensions != set(range(len(KERC_VERIFIER_DIMENSIONS)))
+        or any(len(values) < 2 for values in residual_values)
+    ):
+        options = []
+        for row in representatives:
+            if row in selected_representatives:
+                continue
+            objective_gain = int(row["objective"] not in covered_objectives)
+            dimension_gain = int(row["dimension"] not in covered_dimensions)
+            residual_gain = sum(
+                int(value not in residual_values[index])
+                for index, value in enumerate(row["signature"])
+            )
+            gain = objective_gain + dimension_gain + residual_gain
+            if gain:
+                options.append(
+                    (
+                        -gain,
+                        -(objective_gain + dimension_gain),
+                        -residual_gain,
+                        int(row["width"]),
+                        canonical_sha256(row),
+                        row,
+                    )
+                )
+        if not options:
+            raise ValueError(
+                "KERC adequacy subset cannot cover every objective, verifier "
+                "dimension, and residual channel contrast"
+            )
+        selected_row = min(options)[-1]
+        selected_representatives.append(selected_row)
+        covered_objectives.add(str(selected_row["objective"]))
+        covered_dimensions.add(int(selected_row["dimension"]))
+        for index, value in enumerate(selected_row["signature"]):
+            residual_values[index].add(int(value))
+
+    pairs = [row["pair"] for row in selected_representatives]
+    signatures = [row["signature"] for row in selected_representatives]
     selected_by_objective = {
-        objective: list(pair) for objective, pair in zip(TRAINING_OBJECTIVES, pairs)
+        objective: [
+            list(row["pair"])
+            for row in selected_representatives
+            if row["objective"] == objective
+        ]
+        for objective in TRAINING_OBJECTIVES
     }
     selected = [index for pair in pairs for index in pair]
+    coverage_rows = getattr(stage, "kerc_coverage_labels", None)
+    if coverage_rows is not None:
+        uncovered = set(KERC_CANARY_REQUIRED_COVERAGE) - {
+            label for index in selected for label in coverage_rows[index]
+        }
+        while uncovered:
+            candidates = []
+            for index, labels in enumerate(coverage_rows):
+                if index in selected:
+                    continue
+                if positive[index]:
+                    paired = index + 1
+                    if (
+                        paired >= len(positive)
+                        or positive[paired]
+                        or identities[paired] != identities[index]
+                    ):
+                        raise ValueError(
+                            "KERC coverage positive is missing its exact-source verifier pair"
+                        )
+                    group = (index, paired)
+                elif (
+                    index > 0
+                    and positive[index - 1]
+                    and identities[index - 1] == identities[index]
+                ):
+                    group = (index - 1, index)
+                else:
+                    group = (index,)
+                group_labels = {
+                    label for row_index in group for label in coverage_rows[row_index]
+                }
+                gain = uncovered & group_labels
+                if not gain:
+                    continue
+                candidates.append(
+                    (
+                        -len(gain),
+                        len(group),
+                        max(
+                            active_width(
+                                stage.inputs[row_index : row_index + 1],
+                                stage.labels[row_index : row_index + 1],
+                                stage.loss_mask[row_index : row_index + 1],
+                            )
+                            for row_index in group
+                        ),
+                        canonical_sha256(group),
+                        group,
+                    )
+                )
+            if not candidates:
+                raise ValueError(
+                    "KERC adequacy subset cannot cover required mechanics labels: "
+                    + ",".join(sorted(uncovered))
+                )
+            group = min(candidates)[-1]
+            selected.extend(index for index in group if index not in selected)
+            uncovered -= {
+                label for index in group for label in coverage_rows[index]
+            }
     if len(selected) != len(set(selected)):
         raise ValueError("KERC adequacy subset contains duplicate rows")
     width = active_width(
@@ -229,8 +319,12 @@ def select_balanced_subset(
         "row_indices": selected,
         "rows_by_objective": selected_by_objective,
         "verifier_dimension_by_objective": {
-            objective: KERC_VERIFIER_DIMENSIONS[dimension]
-            for objective, dimension in zip(TRAINING_OBJECTIVES, dimensions)
+            objective: [
+                KERC_VERIFIER_DIMENSIONS[int(row["dimension"])]
+                for row in selected_representatives
+                if row["objective"] == objective
+            ]
+            for objective in TRAINING_OBJECTIVES
         },
         "residual_signature_by_objective": {
             objective: list(signature)
@@ -241,6 +335,22 @@ def select_balanced_subset(
             for index, channel in enumerate(KERC_RESIDUAL_CHANNELS)
             if len({signature[index] for signature in signatures}) > 1
         ],
+        "required_coverage_count": len(KERC_CANARY_REQUIRED_COVERAGE),
+        "observed_coverage": sorted(
+            {
+                label
+                for index in selected
+                for label in (coverage_rows[index] if coverage_rows is not None else ())
+            }
+        ),
+        "missing_required_coverage": sorted(
+            set(KERC_CANARY_REQUIRED_COVERAGE)
+            - {
+                label
+                for index in selected
+                for label in (coverage_rows[index] if coverage_rows is not None else ())
+            }
+        ),
         "row_count": len(selected),
         "positive_row_count": int(np.asarray(subset.mask).sum(axis=1).astype(bool).sum()),
         "verifier_only_row_count": int((np.asarray(subset.mask).sum(axis=1) == 0).sum()),
@@ -729,13 +839,17 @@ def expected_logit_delta_by_objective(
     selection: dict[str, Any],
 ) -> dict[str, float]:
     position = {row_index: local for local, row_index in enumerate(selection["row_indices"])}
-    return {
-        objective: nested_logit_delta(
-            [baseline["expected_token_logits"][position[indices[0]]]],
-            [changed["expected_token_logits"][position[indices[0]]]],
+    deltas: dict[str, float] = {}
+    for objective, pairs in selection["rows_by_objective"].items():
+        if not pairs:
+            raise ValueError(f"KERC intervention has no selected pair for {objective}")
+        first_pair = pairs[0] if isinstance(pairs[0], list) else pairs
+        positive_index = int(first_pair[0])
+        deltas[objective] = nested_logit_delta(
+            [baseline["expected_token_logits"][position[positive_index]]],
+            [changed["expected_token_logits"][position[positive_index]]],
         )
-        for objective, indices in selection["rows_by_objective"].items()
-    }
+    return deltas
 
 
 def intervention_receipts(

@@ -9,6 +9,8 @@ validation and compilation.
 from __future__ import annotations
 
 import argparse
+import base64
+import copy
 import hashlib
 import json
 import random
@@ -37,12 +39,14 @@ from neural_seed_open_vocab import (
     populate_open_vocab,
 )
 from kernel_english_protocol import (
+    KERC_VERIFIER_DIMENSIONS,
     SEMANTIC_EVIDENCE_TIERS,
-    SEMANTIC_SUPERVISION_POLICY,
     TRAINING_OBJECTIVES,
     TRAINING_VERIFICATION_POLICY,
+    canonical_json,
     compile_training_views,
     kernel_training_contract,
+    stable_hash,
     validate_training_disposition,
     validate_training_record,
 )
@@ -77,6 +81,259 @@ KERC_POINTER_CONTROL_TOKENS = {
 KERC_SOURCE_CATALOG_POLICY = "project_theseus_kerc_semantic_source_catalog_v1"
 KERC_SEMANTIC_PROGRAM_POLICY = "project_theseus_kerc_semantic_supervision_program_v1"
 KERC_SEMANTIC_CORPUS_POLICY = "project_theseus_kerc_semantic_corpus_materialization_v1"
+KERC_CONTEXT_COUNTERFACTUAL_POLICY = (
+    "project_theseus_kerc_grounded_context_counterfactual_v1"
+)
+KERC_CONTEXT_COUNTERFACTUAL_OBJECTIVES = {
+    "surface_direct_control_v1",
+    "kernel_program_to_answer_packet_v1",
+}
+KERC_CONTEXT_COUNTERFACTUAL_FAILED_DIMENSIONS = (
+    "semantic_consistency",
+    "answer_decision_consistency",
+)
+
+
+def _replace_exact_strings(value: Any, replacements: dict[str, str]) -> Any:
+    """Replace bound identities without performing unsafe substring rewrites."""
+
+    if isinstance(value, dict):
+        return {
+            key: _replace_exact_strings(child, replacements)
+            for key, child in value.items()
+        }
+    if isinstance(value, list):
+        return [_replace_exact_strings(child, replacements) for child in value]
+    if isinstance(value, str):
+        return replacements.get(value, value)
+    return value
+
+
+def _replace_interaction_context(
+    prompt: dict[str, Any], *, replacement: str | None
+) -> bool:
+    """Replace or remove the governed document-context entry in a prompt."""
+
+    interaction = prompt.get("interaction")
+    if not isinstance(interaction, list):
+        residual = prompt.get("residual")
+        interaction = residual.get("interaction") if isinstance(residual, dict) else None
+    if not isinstance(interaction, list):
+        return False
+    matches = [
+        index
+        for index, entry in enumerate(interaction)
+        if isinstance(entry, list)
+        and len(entry) == 3
+        and entry[0] == "document_context"
+        and entry[1] == "content"
+    ]
+    if len(matches) != 1:
+        return False
+    index = matches[0]
+    if replacement is None:
+        del interaction[index]
+    else:
+        interaction[index][2] = replacement
+    return True
+
+
+def _rehash_bound_program(prompt: dict[str, Any]) -> None:
+    program = prompt.get("program")
+    if not isinstance(program, dict):
+        return
+    unsigned = {key: value for key, value in program.items() if key != "program_sha256"}
+    program["program_sha256"] = stable_hash(unsigned)
+
+
+def _rehash_answer_packet(packet: dict[str, Any]) -> None:
+    unsigned = {
+        key: value for key, value in packet.items() if key != "answer_packet_sha256"
+    }
+    packet["answer_packet_sha256"] = stable_hash(unsigned)
+
+
+def _grounded_context_record(record: dict[str, Any]) -> dict[str, str] | None:
+    annotation = record.get("interaction_annotation")
+    source = record.get("source_annotation")
+    provenance = record.get("provenance")
+    if (
+        not isinstance(annotation, dict)
+        or annotation.get("kind") != "licensed_grounded_question_context"
+        or not isinstance(source, dict)
+        or not isinstance(provenance, dict)
+    ):
+        return None
+    context = str(source.get("context") or "")
+    answer = str(source.get("response") or record.get("surface_target") or "")
+    context_sha256 = str(annotation.get("context_sha256") or "")
+    if not context or not answer or not re.fullmatch(r"sha256:[0-9a-f]{64}", context_sha256):
+        return None
+    return {
+        "record_sha256": str(record.get("record_sha256") or ""),
+        "source_group": str(provenance.get("source_group") or ""),
+        "context": context,
+        "answer": answer,
+        "context_sha256": context_sha256,
+    }
+
+
+def attach_grounded_context_counterfactuals(
+    compiled_views: dict[str, list[dict[str, Any]]],
+    selected_records: dict[str, list[dict[str, Any]]],
+) -> dict[str, Any]:
+    """Attach source-disjoint verifier-only context interventions.
+
+    Donors stay within the same split, never contain the original answer, and
+    receive fresh program/answer checksums. The negative signal therefore tests
+    answer support rather than a stale-hash shortcut.
+    """
+
+    grounded_by_split: dict[str, list[dict[str, str]]] = {}
+    grounded_by_record: dict[str, dict[str, str]] = {}
+    for split, records in selected_records.items():
+        grounded = [
+            item
+            for record in records
+            if (item := _grounded_context_record(record)) is not None
+        ]
+        grounded_by_split[split] = sorted(
+            grounded, key=lambda item: item["record_sha256"]
+        )
+        grounded_by_record.update(
+            {item["record_sha256"]: item for item in grounded}
+        )
+
+    counts: Counter[str] = Counter()
+    missing_donors: list[str] = []
+    for split, views in compiled_views.items():
+        split_grounded = grounded_by_split.get(split) or []
+        for view in views:
+            objective = str(view.get("objective") or "")
+            source_record = grounded_by_record.get(
+                str(view.get("source_record_sha256") or "")
+            )
+            if source_record is None or objective not in KERC_CONTEXT_COUNTERFACTUAL_OBJECTIVES:
+                continue
+            donor_candidates = [
+                donor
+                for donor in split_grounded
+                if donor["source_group"] != source_record["source_group"]
+                and source_record["answer"].casefold().strip()
+                not in donor["context"].casefold()
+            ]
+            donor_candidates.sort(
+                key=lambda donor: stable_hash(
+                    {
+                        "source_record_sha256": source_record["record_sha256"],
+                        "donor_record_sha256": donor["record_sha256"],
+                        "objective": objective,
+                    }
+                )
+            )
+            if not donor_candidates:
+                missing_donors.append(source_record["record_sha256"])
+                continue
+            donor = donor_candidates[0]
+            original_prompt = json.loads(str(view["prompt"]))
+            old_hash = source_record["context_sha256"]
+            new_hash = donor["context_sha256"]
+            old_hash_b64 = base64.b64encode(old_hash.encode()).decode()
+            new_hash_b64 = base64.b64encode(new_hash.encode()).decode()
+            labels = [1] * len(KERC_VERIFIER_DIMENSIONS)
+            labels[0] = 0
+            labels[4] = 0
+            counterfactuals: list[dict[str, Any]] = []
+
+            withheld_prompt = copy.deepcopy(original_prompt)
+            if not _replace_interaction_context(withheld_prompt, replacement=None):
+                raise ValueError(
+                    "grounded KERC prompt is missing its document context: "
+                    + source_record["record_sha256"]
+                )
+            withheld_prompt_text = canonical_json(withheld_prompt)
+            counterfactuals.append(
+                {
+                    "policy": KERC_CONTEXT_COUNTERFACTUAL_POLICY,
+                    "strategy": "context_withheld",
+                    "prompt": withheld_prompt_text,
+                    "prompt_sha256": stable_hash(withheld_prompt_text.encode()),
+                    "target": str(view["target"]),
+                    "target_sha256": str(view["target_sha256"]),
+                    "labels": labels,
+                    "failed_dimensions": list(
+                        KERC_CONTEXT_COUNTERFACTUAL_FAILED_DIMENSIONS
+                    ),
+                    "donor_record_sha256": "",
+                    "donor_source_group": "",
+                    "generator_loss_enabled": False,
+                    "unique_source_credit": 0,
+                    "candidate_generation_credit": 0,
+                }
+            )
+
+            shuffled_prompt = _replace_exact_strings(
+                copy.deepcopy(original_prompt),
+                {old_hash: new_hash, old_hash_b64: new_hash_b64},
+            )
+            if not _replace_interaction_context(
+                shuffled_prompt, replacement=donor["context"]
+            ):
+                raise ValueError(
+                    "grounded KERC prompt is missing its shuffled context: "
+                    + source_record["record_sha256"]
+                )
+            _rehash_bound_program(shuffled_prompt)
+            shuffled_target = str(view["target"])
+            if objective == "kernel_program_to_answer_packet_v1":
+                packet = _replace_exact_strings(
+                    json.loads(shuffled_target),
+                    {old_hash: new_hash, old_hash_b64: new_hash_b64},
+                )
+                _rehash_answer_packet(packet)
+                shuffled_target = canonical_json(packet)
+            shuffled_prompt_text = canonical_json(shuffled_prompt)
+            counterfactuals.append(
+                {
+                    "policy": KERC_CONTEXT_COUNTERFACTUAL_POLICY,
+                    "strategy": "context_shuffled",
+                    "prompt": shuffled_prompt_text,
+                    "prompt_sha256": stable_hash(shuffled_prompt_text.encode()),
+                    "target": shuffled_target,
+                    "target_sha256": stable_hash(shuffled_target.encode()),
+                    "labels": labels,
+                    "failed_dimensions": list(
+                        KERC_CONTEXT_COUNTERFACTUAL_FAILED_DIMENSIONS
+                    ),
+                    "donor_record_sha256": donor["record_sha256"],
+                    "donor_source_group": donor["source_group"],
+                    "donor_context_sha256": new_hash,
+                    "answer_absent_from_donor_context": True,
+                    "generator_loss_enabled": False,
+                    "unique_source_credit": 0,
+                    "candidate_generation_credit": 0,
+                }
+            )
+            view["kerc_context_counterfactuals"] = counterfactuals
+            evaluator_only = list(view.get("evaluator_only_fields") or [])
+            if "kerc_context_counterfactuals" not in evaluator_only:
+                evaluator_only.append("kerc_context_counterfactuals")
+            view["evaluator_only_fields"] = evaluator_only
+            for counterfactual in counterfactuals:
+                counts[
+                    f"{split}:{objective}:{counterfactual['strategy']}"
+                ] += 1
+
+    return {
+        "policy": KERC_CONTEXT_COUNTERFACTUAL_POLICY,
+        "counts": dict(sorted(counts.items())),
+        "total_count": sum(counts.values()),
+        "missing_donor_record_sha256": sorted(set(missing_donors)),
+        "generator_loss_enabled": False,
+        "unique_source_credit": 0,
+        "candidate_generation_credit": 0,
+        "claim_scope": "source-grounded_counterfactual_support_sensitivity_only",
+    }
 
 
 def kerc_code_tokens(text: str) -> list[str]:
@@ -890,6 +1147,30 @@ def materialize_kernel_english(
         ]
         for split, records in selected.items()
     }
+    context_counterfactuals = attach_grounded_context_counterfactuals(
+        compiled_views, selected
+    )
+    expected_context_counterfactual_count = 4 * sum(
+        int(value)
+        for value in (
+            (((cfg.get("semantic_corpus_materialization") or {}).get("dolly") or {}))
+            .get("grounded_question_records_by_split", {})
+        ).values()
+    )
+    context_counterfactuals["expected_total_count"] = (
+        expected_context_counterfactual_count
+    )
+    if int(context_counterfactuals["total_count"]) != expected_context_counterfactual_count:
+        gaps.append(
+            "kernel_context_counterfactual_count_mismatch:"
+            f"{context_counterfactuals['total_count']}:"
+            f"{expected_context_counterfactual_count}"
+        )
+    if context_counterfactuals["missing_donor_record_sha256"]:
+        gaps.append(
+            "kernel_context_counterfactual_donor_missing:"
+            + str(len(context_counterfactuals["missing_donor_record_sha256"]))
+        )
     if not compiled_views.get("private_train"):
         raise ValueError(
             "KERC stage has no admitted private-train views: "
@@ -911,7 +1192,7 @@ def materialize_kernel_english(
         for record in records:
             all_source_hashes.add(str(record["raw_source_sha256"]))
             raw_source_bytes += len(str(record["source_text"]).encode("utf-8"))
-            for view in compile_training_views(record):
+        for view in compiled_views[split]:
                 source_body_ids, source_receipt = encode_tokens(
                     kerc_surface_tokens(view["prompt"]), source_vocab, stream="source"
                 )
@@ -957,10 +1238,56 @@ def materialize_kernel_english(
                         f"{view['row_id']}:{negative_sequence_tokens}"
                     )
                     continue
+                counterfactual_lengths: list[tuple[int, int]] = []
+                counterfactual_invalid = False
+                for counterfactual in view.get("kerc_context_counterfactuals") or []:
+                    counterfactual_prompt = str(counterfactual.get("prompt") or "")
+                    counterfactual_target = str(counterfactual.get("target") or "")
+                    counterfactual_source_ids, counterfactual_source_receipt = encode_tokens(
+                        kerc_surface_tokens(counterfactual_prompt),
+                        source_vocab,
+                        stream="source",
+                    )
+                    counterfactual_target_ids, counterfactual_target_receipt = (
+                        encode_kerc_view_target(
+                            {**view, "target": counterfactual_target},
+                            target_vocab=target_vocab,
+                            code_vocabulary=code_vocabulary,
+                        )
+                    )
+                    counterfactual_sequence_tokens = (
+                        1
+                        + len(trusted_prefix)
+                        + len(counterfactual_source_ids)
+                        + len(counterfactual_target_ids)
+                        + 3
+                    )
+                    if (
+                        not counterfactual_prompt
+                        or not counterfactual_target
+                        or counterfactual.get("generator_loss_enabled") is not False
+                        or int(counterfactual_source_receipt.get("unknown_token_count") or 0)
+                        or int(counterfactual_target_receipt.get("unknown_token_count") or 0)
+                        or counterfactual_sequence_tokens
+                        > int(cfg["maximum_sequence_tokens"])
+                    ):
+                        gaps.append(
+                            "kernel_view_context_counterfactual_invalid:"
+                            f"{view['row_id']}:{counterfactual.get('strategy')}"
+                        )
+                        counterfactual_invalid = True
+                        break
+                    counterfactual_lengths.append(
+                        (len(counterfactual_target_ids), counterfactual_sequence_tokens)
+                    )
+                if counterfactual_invalid:
+                    continue
                 source_lengths.append(len(source_ids))
                 target_lengths.append(len(target_ids))
                 target_lengths.append(len(negative_ids))
                 sequence_lengths.extend((sequence_tokens, negative_sequence_tokens))
+                target_lengths.extend(length[0] for length in counterfactual_lengths)
+                sequence_lengths.extend(length[1] for length in counterfactual_lengths)
                 objective_counts[str(view["objective"])] += 1
                 objective_counts_by_split[split][str(view["objective"])] += 1
                 verifier_corruption_count += 1
@@ -1052,6 +1379,7 @@ def materialize_kernel_english(
         "derived_view_optimizer_exposure_count": sum(objective_counts.values()),
         "verifier_corruption_count": verifier_corruption_count,
         "verifier_corruptions_receive_generator_loss": False,
+        "context_counterfactuals": context_counterfactuals,
         "split_overlap_audit": overlaps,
         "encoded_length_stats": encoded_length_stats,
         "rejection_counts": dict(rejection_counts),
@@ -1159,6 +1487,29 @@ def validate_kernel_english_manifest(
         gaps.append("kernel_stage_verifier_corruption_count_mismatch")
     if payload.get("verifier_corruptions_receive_generator_loss") is not False:
         gaps.append("kernel_stage_verifier_corruption_generator_credit")
+    counterfactuals = payload.get("context_counterfactuals") or {}
+    counterfactual_counts = counterfactuals.get("counts") or {}
+    expected_counterfactual_count = 4 * sum(
+        int(value)
+        for value in (
+            (((cfg.get("semantic_corpus_materialization") or {}).get("dolly") or {}))
+            .get("grounded_question_records_by_split", {})
+        ).values()
+    )
+    if (
+        counterfactuals.get("policy") != KERC_CONTEXT_COUNTERFACTUAL_POLICY
+        or int(counterfactuals.get("total_count") or 0)
+        != sum(int(value) for value in counterfactual_counts.values())
+        or int(counterfactuals.get("total_count") or 0)
+        != expected_counterfactual_count
+        or int(counterfactuals.get("expected_total_count") or 0)
+        != expected_counterfactual_count
+        or counterfactuals.get("missing_donor_record_sha256") != []
+        or counterfactuals.get("generator_loss_enabled") is not False
+        or int(counterfactuals.get("unique_source_credit") or 0)
+        or int(counterfactuals.get("candidate_generation_credit") or 0)
+    ):
+        gaps.append("kernel_stage_context_counterfactual_contract_invalid")
     ledger = payload.get("verification_ledger") or {}
     ledger_path = resolve(str(ledger.get("path") or ""))
     if (

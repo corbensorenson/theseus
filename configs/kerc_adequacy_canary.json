@@ -8,8 +8,8 @@
   "subset": {
     "positive_rows_per_objective": 1,
     "include_paired_verifier_corruptions": true,
-    "selection": "shortest_content_bound_real_row_per_objective_then_exact_source_pair",
-    "maximum_rows": 8
+    "selection": "deterministic_content_bound_set_cover_over_objectives_decisions_residuals_all_verifier_dimensions_and_context_counterfactuals_with_exact_source_pairs",
+    "maximum_rows": 24
   },
   "optimization": {
     "steps_before_resume": 48,

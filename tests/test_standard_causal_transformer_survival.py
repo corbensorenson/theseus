@@ -885,6 +885,50 @@ def test_kerc_configuration_requires_complete_modular_architecture() -> None:
         CausalTransformerConfig(**common, kerc_stage_adapter_dim=8).validate()
 
 
+def test_kerc_verifier_zero_ablation_preserves_configured_output_contract() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_verifier_output_dim=5,
+        kerc_verifier_ablation="zero",
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    logits = model.kerc_verifier_logits(
+        mx.array([[1, 10, 20, 2, 30]], dtype=mx.int32)
+    )
+    mx.eval(logits)
+
+    assert tuple(logits.shape) == (1, 5)
+    assert bool(mx.all(logits == 0.0))
+
+
 def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
     import mlx.core as mx
     import mlx.nn as nn

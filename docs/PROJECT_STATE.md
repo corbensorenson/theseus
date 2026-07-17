@@ -41,6 +41,8 @@ share toward zero. Public benchmarks are calibration only.
   residual allocator, independent verifier parameters with five content-bound decision
   dimensions, content-bound four-channel
   residual labels, targeted verifier counterexamples that receive zero generator loss,
+  and 384 withheld/shuffled source-grounded context interventions whose donor contexts
+  are split-local, source-disjoint, answer-free, and checksum-rebuilt rather than stale,
   train-only content-bound V_K/V_P codebook construction, disjoint compiler/core versus
   surface logit support, joint auxiliary losses, cached decode, gradient-flow coverage,
   and strict reload. Its private evaluation owner now runs the actual learned five-stage
@@ -66,8 +68,14 @@ share toward zero. Public benchmarks are calibration only.
   only questions whose answer is one unique bounded exact span in source context. It
   binds that context through VCM and independently replays the source, split, span,
   Kernel program, answer decision, and interaction state across all four objectives.
-  The learned compiler never receives the evaluator-owned answer span. This supports
-  extractive source grounding only, not broad entailment, truth, completeness,
+  The learned compiler never receives the evaluator-owned answer span. The current
+  64-update Apple-MLX canary selects 16 real rows and covers all 21 objective, decision,
+  interaction, residual, five-dimension verifier, and context-counterfactual groups. It
+  is `INCONCLUSIVE_EXPERIMENT`: token accuracy is `0.352399` and verifier macro balanced
+  accuracy is `0.761492` with `1.0` minimum negative recall, but all four residual
+  channels remain at their `0.5` balanced-accuracy baselines. This supports extractive
+  grounding and counterfactual-support mechanics only, not context utility, a negative
+  KERC verdict, broad entailment, truth, completeness,
   calibration, reasoning quality, or model capability. Selected private-train MASC rows
   additionally fit a typed contextual FrameNet prior for 59 lexical units with at least
   two manually annotated frames. It binds alternatives to 411 train, 178 development,
@@ -78,26 +86,25 @@ share toward zero. Public benchmarks are calibration only.
   contexts, and producer-only identity claims fail closed. Adjacent
   human-authored document sentences add journaled, independently replayed VCM state to
   1,997 train, 998 development, and 1,015 evaluation MASC records. The canonical stage
-  has 26,360 authorized views, 26,360 verifier corruptions, source-disjoint heldouts,
+  has 26,360 authorized views, 26,360 primary verifier corruptions, 384 verifier-only
+  context counterfactuals, source-disjoint heldouts,
   zero derived-view unique-data credit, no unknown-token substitution, and no truncation
-  at a maximum sequence width of 4,243 tokens. A full-size, 64-update real-row MLX adequacy canary learns all four
-  residual channels at `1.0` macro balanced accuracy, reaches `0.857143` verifier macro
-  balanced accuracy and `1.0` minimum corruption recall, and proves scoped stage,
-  full-residual, interaction-only, and verifier causality plus trained leave-one-
-  mechanism-out controls. Optimizer reload is exact; resumed logits are float32-
-  equivalent within `2.14577e-06` with unchanged discrete outcomes; schema migration,
-  rollback, mismatch rejection, cleanup, and sustained throughput (`>=51.088` target
-  tokens/s) pass for the original four verifier dimensions. A fresh eight-step Apple-MLX
-  canary covers all four objectives, normal answer/clarify/abstain decisions, interaction
-  present/absent, all four residual channels, verifier positives, and all five targeted
-  corruptions in 789 positions with zero missing groups. It proves route/gradient mechanics
-  only; the new decision dimension is not calibrated and the checkpoint is `NOT_EVALUATED`.
+  at a maximum sequence width of 4,243 tokens. The expanded full-size, 64-update
+  real-row MLX adequacy canary covers all 21 required groups with zero omissions and
+  proves scoped stage, full-residual, interaction-only, and verifier causality plus
+  trained leave-one-mechanism-out controls. Optimizer reload is exact; resume, schema
+  migration, rollback, mismatch rejection, cleanup, and sustained execution pass. The
+  result remains `INCONCLUSIVE_EXPERIMENT`, however: the verifier reaches `0.761492`
+  macro balanced accuracy and `1.0` minimum negative recall, while the residual allocator
+  remains at `0.5` macro balanced accuracy on each informative channel. The checkpoint
+  is not capability-qualified and the decision dimension is not calibrated.
   This carries no capability or negative-verdict authority: the prior
   target proves interaction representation, learning, replay, and causal mechanics, not
-  interaction utility. The new dialogue and multiple-valid rows establish source
-  authority and representability only until trained context-present/context-withheld/
-  shuffled/wrong-user controls run. Unresolved ambiguity/broad-entailment, protected-span
-  abstention, decision calibration,
+  interaction utility. The new dialogue, multiple-valid, withheld, and shuffled rows
+  establish source authority, representability, and counterfactual testability only until
+  full context-present/context-withheld/shuffled/wrong-user utility controls run.
+  Unresolved ambiguity/broad-entailment, protected-span abstention, residual-objective
+  repair, decision calibration,
   calibrated verifier behavior, and the matched campaign remain open.
   `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
@@ -138,9 +145,9 @@ share toward zero. Public benchmarks are calibration only.
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,
   cleanup, source-replayed multi-turn/multiple-valid/explicit-decision materialization,
-  deterministic canary coverage, train-only contextual FrameNet ambiguity, and sustained-batch canaries now pass. Next add unresolved
-  ambiguity, broad entailment, protected-span abstention, calibrated verifier behavior,
-  and trained context counterfactuals; then
+  deterministic 21-group canary coverage, train-only contextual FrameNet ambiguity, and sustained-batch execution now pass. The expanded canary remains inconclusive on residual learning. Next add unresolved
+  ambiguity, broad entailment, protected-span abstention, repair the residual objective,
+  and calibrate verifier behavior; then
   freeze strong matched controls and total-system accounting and rebuild the architecture
   package. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured

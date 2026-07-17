@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from kerc_adequacy_canary import (  # noqa: E402
     classify_gates,
     compact_metrics,
+    expected_logit_delta_by_objective,
     nested_logit_equivalence,
     select_balanced_subset,
 )
@@ -24,40 +25,95 @@ from kerc_checkpoint_schema import (  # noqa: E402
 
 
 def fixture_stage() -> SimpleNamespace:
-    inputs = np.zeros((8, 8), dtype=np.int32)
-    labels = np.zeros((8, 8), dtype=np.int32)
-    mask = np.zeros((8, 8), dtype=np.uint8)
-    verifier_labels = np.ones((8, 4), dtype=np.float32)
-    for objective in range(4):
-        positive = objective * 2
+    inputs = np.zeros((12, 8), dtype=np.int32)
+    labels = np.zeros((12, 8), dtype=np.int32)
+    mask = np.zeros((12, 8), dtype=np.uint8)
+    verifier_labels = np.ones((12, 5), dtype=np.float32)
+    objectives = [0, 1, 2, 3, 0]
+    signatures = [
+        [0, 0, 0, 0],
+        [1, 1, 2, 3],
+        [0, 1, 2, 3],
+        [1, 1, 2, 3],
+        [1, 0, 0, 3],
+    ]
+    coverage: list[tuple[str, ...]] = []
+    for pair_index, objective in enumerate(objectives):
+        positive = pair_index * 2
         negative = positive + 1
-        source = [1, 10 + objective, 50 + objective, 2]
-        inputs[positive, :6] = [*source, 3, 20 + objective]
-        inputs[negative, :6] = [*source, 3, 21 + objective]
-        labels[positive, :6] = [10 + objective, 50 + objective, 2, 3, 20 + objective, 4]
-        labels[negative, :6] = [10 + objective, 50 + objective, 2, 3, 21 + objective, 4]
+        source = [1, 10 + objective, 50 + pair_index, 2]
+        inputs[positive, :6] = [*source, 3, 20 + pair_index]
+        inputs[negative, :6] = [*source, 3, 30 + pair_index]
+        labels[positive, :6] = [
+            10 + objective,
+            50 + pair_index,
+            2,
+            3,
+            20 + pair_index,
+            4,
+        ]
+        labels[negative, :6] = [
+            10 + objective,
+            50 + pair_index,
+            2,
+            3,
+            30 + pair_index,
+            4,
+        ]
         mask[positive, 4:6] = 1
-        verifier_labels[negative, objective] = 0.0
+        verifier_labels[negative, pair_index] = 0.0
+        base = [
+            f"objective:{('surface_direct_control_v1', 'surface_to_kernel_program_v1', 'kernel_program_to_answer_packet_v1', 'answer_packet_to_surface_v1')[objective]}",
+            "interaction:present" if signatures[pair_index][0] else "interaction:absent",
+        ]
+        base.extend(
+            f"residual:{channel}:active"
+            for channel, value in zip(
+                ("interaction", "segment", "token", "exact"),
+                signatures[pair_index],
+            )
+            if value
+        )
+        base.append(f"decision:{('ANSWER', 'CLARIFY', 'ABSTAIN', 'ANSWER', 'ANSWER')[pair_index]}")
+        coverage.append((*base, "verifier:positive"))
+        coverage.append(
+            (
+                *base,
+                "verifier:negative:"
+                + (
+                    "semantic_consistency",
+                    "protected_object_consistency",
+                    "numeric_value_consistency",
+                    "surface_fidelity",
+                    "answer_decision_consistency",
+                )[pair_index],
+            )
+        )
+    for offset, strategy in enumerate(("context_withheld", "context_shuffled")):
+        index = 10 + offset
+        inputs[index, :6] = [1, 10, 80 + offset, 2, 3, 90 + offset]
+        labels[index, :6] = [10, 80 + offset, 2, 3, 90 + offset, 4]
+        verifier_labels[index] = np.asarray([0, 1, 1, 1, 0], dtype=np.float32)
+        coverage.append(
+            (
+                "objective:surface_direct_control_v1",
+                "interaction:absent",
+                f"verifier:counterfactual:{strategy}",
+            )
+        )
     return SimpleNamespace(
         inputs=inputs,
         labels=labels,
         mask=mask,
         loss_mask=mask.astype(np.float32),
-        sample_weights=np.ones((8,), dtype=np.float64),
-        kerc_residual_labels=np.repeat(
-            np.asarray(
-                [
-                    [0, 0, 0, 0],
-                    [1, 1, 2, 3],
-                    [0, 1, 2, 3],
-                    [1, 1, 2, 3],
-                ],
-                dtype=np.int32,
-            ),
-            2,
-            axis=0,
+        sample_weights=np.ones((12,), dtype=np.float64),
+        kerc_residual_labels=np.asarray(
+            [value for signature in signatures for value in (signature, signature)]
+            + [[1, 0, 0, 0], [1, 0, 0, 0]],
+            dtype=np.int32,
         ),
         kerc_verifier_labels=verifier_labels,
+        kerc_coverage_labels=tuple(coverage),
     )
 
 
@@ -96,6 +152,23 @@ def test_resume_logit_equivalence_uses_absolute_and_relative_float_tolerance() -
     assert divergent["violation_count"] == 1
 
 
+def test_intervention_delta_supports_multiple_pairs_per_objective() -> None:
+    baseline = {"expected_token_logits": [[1.0], [2.0], [3.0]]}
+    changed = {"expected_token_logits": [[1.5], [9.0], [3.25]]}
+    selection = {
+        "row_indices": [10, 11, 12],
+        "rows_by_objective": {
+            "surface_direct_control_v1": [[10, 11], [12, 13]],
+            "surface_to_kernel_program_v1": [[12, 14]],
+        },
+    }
+
+    deltas = expected_logit_delta_by_objective(baseline, changed, selection)
+
+    assert deltas["surface_direct_control_v1"] == 0.5
+    assert deltas["surface_to_kernel_program_v1"] == 0.25
+
+
 def test_balanced_subset_requires_exact_source_bound_corruption() -> None:
     subset, receipt = select_balanced_subset(
         fixture_stage(),
@@ -103,10 +176,12 @@ def test_balanced_subset_requires_exact_source_bound_corruption() -> None:
         separator_id=2,
         positives_per_objective=1,
     )
-    assert len(subset.inputs) == 8
-    assert receipt["positive_row_count"] == 4
-    assert receipt["verifier_only_row_count"] == 4
-    assert all(len(indices) == 2 for indices in receipt["rows_by_objective"].values())
+    assert len(subset.inputs) == 12
+    assert receipt["positive_row_count"] == 5
+    assert receipt["verifier_only_row_count"] == 7
+    assert sum(len(pairs) for pairs in receipt["rows_by_objective"].values()) == 5
+    assert receipt["missing_required_coverage"] == []
+    assert receipt["required_coverage_count"] == 21
     assert receipt["informative_residual_channels"] == [
         "interaction",
         "segment",
@@ -142,7 +217,7 @@ def test_balanced_subset_rejects_missing_interaction_contrast() -> None:
             positives_per_objective=1,
         )
     except ValueError as exc:
-        assert "every verifier dimension and residual channel" in str(exc)
+        assert "residual channel contrast" in str(exc)
     else:
         raise AssertionError("interaction-free adequacy subset was admitted")
 

@@ -1076,7 +1076,10 @@ def build_model(
             if not kerc_enabled:
                 return None
             if config.kerc_verifier_ablation == "zero":
-                return mx.zeros((int(tokens.shape[0]), 4), dtype=mx.float32)
+                return mx.zeros(
+                    (int(tokens.shape[0]), config.kerc_verifier_output_dim),
+                    dtype=mx.float32,
+                )
             separator = tokens == config.source_target_separator_token_id
             seen = mx.cumsum(separator.astype(mx.int32), axis=1)
             has_separator = (mx.sum(separator.astype(mx.int32), axis=1) > 0).astype(

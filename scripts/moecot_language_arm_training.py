@@ -85,6 +85,8 @@ KERC_CANARY_REQUIRED_COVERAGE = (
     "residual:exact:active",
     "verifier:positive",
     *(f"verifier:negative:{dimension}" for dimension in KERC_VERIFIER_DIMENSIONS),
+    "verifier:counterfactual:context_withheld",
+    "verifier:counterfactual:context_shuffled",
 )
 
 
@@ -1582,6 +1584,10 @@ def materialize_target_supervision(
     pointer_offset = int((target.get("model") or {}).get("kerc_pointer_token_start") or 0)
     row_hashes: list[str] = []
     artifact_receipts: list[dict[str, Any]] = []
+    context_counterfactual_counts = {
+        "context_withheld": 0,
+        "context_shuffled": 0,
+    }
     for key, artifact in selected:
         if not isinstance(artifact, dict):
             raise ValueError(f"invalid supervision artifact contract: {key}")
@@ -1754,6 +1760,142 @@ def materialize_target_supervision(
                             ).encode()
                         ).hexdigest()
                     )
+                    for counterfactual in row.get("kerc_context_counterfactuals") or []:
+                        if not isinstance(counterfactual, dict):
+                            raise ValueError(
+                                f"invalid KERC context counterfactual: {key}:{source_rows - 1}"
+                            )
+                        strategy = str(counterfactual.get("strategy") or "")
+                        counter_prompt = str(counterfactual.get("prompt") or "")
+                        counter_answer = str(counterfactual.get("target") or "")
+                        counter_labels = list(counterfactual.get("labels") or [])
+                        failed_dimensions = list(
+                            counterfactual.get("failed_dimensions") or []
+                        )
+                        expected_failed_dimensions = [
+                            KERC_VERIFIER_DIMENSIONS[index]
+                            for index, value in enumerate(counter_labels)
+                            if value == 0
+                        ]
+                        if (
+                            strategy not in context_counterfactual_counts
+                            or not counter_prompt
+                            or counter_prompt == prompt
+                            or not counter_answer
+                            or counterfactual.get("generator_loss_enabled") is not False
+                            or int(counterfactual.get("unique_source_credit") or 0)
+                            or int(counterfactual.get("candidate_generation_credit") or 0)
+                            or len(counter_labels) != len(KERC_VERIFIER_DIMENSIONS)
+                            or any(
+                                isinstance(value, bool)
+                                or not isinstance(value, int)
+                                or value not in (0, 1)
+                                for value in counter_labels
+                            )
+                            or counter_labels.count(0) != 2
+                            or failed_dimensions != expected_failed_dimensions
+                            or failed_dimensions
+                            != [
+                                "semantic_consistency",
+                                "answer_decision_consistency",
+                            ]
+                            or str(counterfactual.get("prompt_sha256") or "")
+                            != "sha256:"
+                            + hashlib.sha256(counter_prompt.encode()).hexdigest()
+                            or str(counterfactual.get("target_sha256") or "")
+                            != "sha256:"
+                            + hashlib.sha256(counter_answer.encode()).hexdigest()
+                        ):
+                            raise ValueError(
+                                "invalid KERC context counterfactual contract: "
+                                f"{key}:{source_rows - 1}:{strategy}"
+                            )
+                        counter_source_body_ids, counter_source_receipt = encode_tokens(
+                            kerc_surface_tokens(counter_prompt),
+                            source_vocab,
+                            stream="source",
+                        )
+                        counter_source_ids = [
+                            *(int(source_vocab[token]) for token in trusted_prefix),
+                            *counter_source_body_ids,
+                        ]
+                        if kernel_objective:
+                            counter_target_ids, counter_target_receipt = (
+                                encode_kerc_global_target(
+                                    counter_answer,
+                                    code_vocabulary=code_vocabulary,
+                                    kernel_offset=kernel_offset,
+                                    pointer_offset=pointer_offset,
+                                )
+                            )
+                        else:
+                            counter_target_ids, counter_target_receipt = encode_tokens(
+                                kerc_surface_tokens(counter_answer),
+                                target_vocab,
+                                stream="target",
+                            )
+                        if int(counter_source_receipt.get("unknown_token_count") or 0) or int(
+                            counter_target_receipt.get("unknown_token_count") or 0
+                        ):
+                            raise ValueError(
+                                "unrepresentable KERC context counterfactual: "
+                                f"{key}:{source_rows - 1}:{strategy}"
+                            )
+                        counter_sequence = [GLOBAL_BOS_ID]
+                        counter_sequence.extend(
+                            source_offset + int(value) for value in counter_source_ids
+                        )
+                        counter_sequence.append(SOURCE_TARGET_SEPARATOR_ID)
+                        counter_sequence.append(target_offset + int(target_vocab["<bos>"]))
+                        counter_start = len(counter_sequence)
+                        counter_sequence.extend(
+                            int(value)
+                            if kernel_objective
+                            else target_offset + int(value)
+                            for value in counter_target_ids
+                        )
+                        counter_sequence.append(
+                            target_offset + int(target_vocab["<eos>"])
+                        )
+                        if len(counter_sequence) > max_sequence + 1:
+                            raise ValueError(
+                                "KERC context counterfactual requires truncation: "
+                                f"{key}:{strategy}"
+                            )
+                        sequences.append(counter_sequence)
+                        mask_starts.append(counter_start - 1)
+                        generator_loss_enabled.append(False)
+                        sampling_weights.append(sampling_weight)
+                        kerc_residual_rows.append([int(value) for value in residual])
+                        kerc_verifier_rows.append(
+                            [int(value) for value in counter_labels]
+                        )
+                        kerc_coverage_rows.append(
+                            (
+                                *base_coverage,
+                                f"verifier:counterfactual:{strategy}",
+                            )
+                        )
+                        context_counterfactual_counts[strategy] += 1
+                        row_hashes.append(
+                            hashlib.sha256(
+                                (
+                                    json.dumps(
+                                        trusted_prefix, separators=(",", ":")
+                                    )
+                                    + "\0CONTEXT_COUNTERFACTUAL\0"
+                                    + strategy
+                                    + "\0"
+                                    + counter_prompt
+                                    + "\0"
+                                    + counter_answer
+                                    + "\0"
+                                    + json.dumps(
+                                        counter_labels, separators=(",", ":")
+                                    )
+                                ).encode()
+                            ).hexdigest()
+                        )
                 row_hashes.append(
                     hashlib.sha256(
                         (
@@ -1851,6 +1993,12 @@ def materialize_target_supervision(
         "kerc_verifier_dimensions": (
             list(KERC_VERIFIER_DIMENSIONS) if kerc_mode else []
         ),
+        "kerc_context_counterfactual_counts": (
+            context_counterfactual_counts if kerc_mode else {}
+        ),
+        "kerc_context_counterfactuals_receive_generator_loss": False,
+        "kerc_context_counterfactuals_receive_unique_source_credit": 0,
+        "kerc_context_counterfactuals_receive_candidate_generation_credit": 0,
         "canary_coverage_catalog": (
             {
                 label: sum(label in labels for labels in kerc_coverage_rows)

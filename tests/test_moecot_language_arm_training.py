@@ -689,6 +689,29 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
             "failed_dimension": "semantic_consistency",
             "generator_loss_enabled": False,
         },
+        "kerc_context_counterfactuals": [
+            {
+                "strategy": strategy,
+                "prompt": counter_prompt,
+                "prompt_sha256": "sha256:"
+                + hashlib.sha256(counter_prompt.encode()).hexdigest(),
+                "target": '{"program":"valid"}',
+                "target_sha256": "sha256:"
+                + hashlib.sha256(b'{"program":"valid"}').hexdigest(),
+                "labels": [0, 1, 1, 1, 0],
+                "failed_dimensions": [
+                    "semantic_consistency",
+                    "answer_decision_consistency",
+                ],
+                "generator_loss_enabled": False,
+                "unique_source_credit": 0,
+                "candidate_generation_credit": 0,
+            }
+            for strategy, counter_prompt in (
+                ("context_withheld", "Compile without document support."),
+                ("context_shuffled", "Compile against unrelated support."),
+            )
+        ],
     }
     artifact = tmp_path / "kerc.jsonl"
     artifact.write_text(json.dumps(row) + "\n")
@@ -729,15 +752,19 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
         objective_filter=("surface_to_kernel_program_v1",),
     )
 
-    assert stage.inputs.shape[0] == 2
+    assert stage.inputs.shape[0] == 4
     assert int(stage.mask[0].sum()) > 0
     assert int(stage.mask[1].sum()) == 0
+    assert int(stage.mask[2].sum()) == 0
+    assert int(stage.mask[3].sum()) == 0
     assert stage.receipt["generator_training_row_count"] == 1
-    assert stage.receipt["verifier_only_row_count"] == 1
-    assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3], [1, 0, 0, 3]]
+    assert stage.receipt["verifier_only_row_count"] == 3
+    assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3]] * 4
     assert stage.kerc_verifier_labels.tolist() == [
         [1, 1, 1, 1, 1],
         [0, 1, 1, 1, 1],
+        [0, 1, 1, 1, 0],
+        [0, 1, 1, 1, 0],
     ]
     assert stage.receipt["kerc_verifier_dimensions"][-1] == (
         "answer_decision_consistency"
@@ -746,14 +773,46 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.kerc_coverage_labels[1][-1] == (
         "verifier:negative:semantic_consistency"
     )
-    assert stage.sample_weights.tolist() == [0.25, 0.25]
-    assert stage.receipt["sampling_weight_sum"] == 0.5
+    assert stage.kerc_coverage_labels[2][-1] == (
+        "verifier:counterfactual:context_withheld"
+    )
+    assert stage.kerc_coverage_labels[3][-1] == (
+        "verifier:counterfactual:context_shuffled"
+    )
+    assert stage.sample_weights.tolist() == [0.25] * 4
+    assert stage.receipt["sampling_weight_sum"] == 1.0
+    assert stage.receipt["kerc_context_counterfactual_counts"] == {
+        "context_withheld": 1,
+        "context_shuffled": 1,
+    }
     assert stage.receipt["dual_code_vocabulary_sha256"] == code_vocabulary[
         "contract_sha256"
     ]
     positive_ids = set(int(value) for value in stage.inputs[0])
     assert any(600 <= value < 1200 for value in positive_ids)
     assert any(value >= 1200 for value in positive_ids)
+
+    row["kerc_context_counterfactuals"][0]["generator_loss_enabled"] = True
+    artifact.write_text(json.dumps(row) + "\n")
+    target["kernel_english_artifacts"]["private_train"]["sha256"] = (
+        hashlib.sha256(artifact.read_bytes()).hexdigest()
+    )
+    with pytest.raises(ValueError, match="context counterfactual contract"):
+        materialize_target_supervision(
+            {
+                "training": {
+                    "termination_loss_weight": 4.0,
+                    "byte_boundary_loss_weight": 2.0,
+                }
+            },
+            {"tokenization": {"max_sequence_tokens": 128}},
+            target,
+            metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
+            artifact_field="kernel_english_artifacts",
+            receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
+            maximum_sequence_tokens=128,
+            objective_filter=("surface_to_kernel_program_v1",),
+        )
 
 
 def test_kerc_dual_vocab_is_charged_only_to_candidate_and_surface_control_is_matched() -> None:

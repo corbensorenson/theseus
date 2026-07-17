@@ -14,6 +14,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from moecot_source_conditioned_pretraining import (  # noqa: E402
+    attach_grounded_context_counterfactuals,
     decode_kerc_global_target,
     encode_kerc_global_target,
     contract_sha256,
@@ -383,6 +384,166 @@ def test_config_rejects_cross_arm_data_and_nonzero_boundaries() -> None:
     cfg["source_conditioned_pretraining"]["public_training_rows_written"] = 1
     with pytest.raises(ValueError, match="no-cheat"):
         validate_config(cfg)
+
+
+def test_grounded_context_counterfactuals_remove_stale_hash_shortcuts() -> None:
+    first_hash = "sha256:" + "1" * 64
+    donor_hash = "sha256:" + "2" * 64
+    first = {
+        "record_sha256": "sha256:" + "a" * 64,
+        "surface_target": "Alpha",
+        "provenance": {"source_group": "first"},
+        "interaction_annotation": {
+            "kind": "licensed_grounded_question_context",
+            "context_sha256": first_hash,
+        },
+        "source_annotation": {
+            "context": "Alpha is supported by this source.",
+            "response": "Alpha",
+        },
+    }
+    donor = {
+        "record_sha256": "sha256:" + "b" * 64,
+        "surface_target": "Beta",
+        "provenance": {"source_group": "donor"},
+        "interaction_annotation": {
+            "kind": "licensed_grounded_question_context",
+            "context_sha256": donor_hash,
+        },
+        "source_annotation": {
+            "context": "Beta is supported by a separate source.",
+            "response": "Beta",
+        },
+    }
+    encoded_first_hash = __import__("base64").b64encode(first_hash.encode()).decode()
+    program = {
+        "record_type": "kernel_program",
+        "kernel_version": "KE-1.0",
+        "roots": ["k0"],
+        "nodes": [
+            {
+                "node_id": "k0",
+                "operator": "ANSWER_FROM_CONTEXT",
+                "arguments": [
+                    {
+                        "role": "CONTEXT_SHA256",
+                        "value": {
+                            "type": "byte_literal",
+                            "value": encoded_first_hash,
+                        },
+                    }
+                ],
+            }
+        ],
+    }
+    program["program_sha256"] = kernel.stable_hash(program)
+    packet = {
+        "claims": [
+            {
+                "claim_id": "claim-1",
+                "arguments": [
+                    {
+                        "role": "ANSWER_SPAN",
+                        "value": {
+                            "type": "byte_literal",
+                            "value": "QWxwaGE=",
+                        },
+                    },
+                    {
+                        "role": "CONTEXT_SHA256",
+                        "value": {
+                            "type": "byte_literal",
+                            "value": encoded_first_hash,
+                        },
+                    },
+                ],
+            }
+        ]
+    }
+    packet["answer_packet_sha256"] = kernel.stable_hash(packet)
+    core_prompt = kernel.canonical_json(
+        {
+            "program": program,
+            "residual": {
+                "interaction": [
+                    ["document_context", "content", first["source_annotation"]["context"]],
+                    ["question_contract", "context_sha256", first_hash],
+                ]
+            },
+        }
+    )
+    direct_prompt = kernel.canonical_json(
+        {
+            "current_surface": "Which value is supported?",
+            "interaction": [
+                ["document_context", "content", first["source_annotation"]["context"]],
+                ["question_contract", "context_sha256", first_hash],
+            ],
+        }
+    )
+    views = {
+        "private_train": [
+            {
+                "objective": "surface_direct_control_v1",
+                "source_record_sha256": first["record_sha256"],
+                "prompt": direct_prompt,
+                "target": "Alpha",
+                "target_sha256": kernel.stable_hash(b"Alpha"),
+                "evaluator_only_fields": [],
+            },
+            {
+                "objective": "kernel_program_to_answer_packet_v1",
+                "source_record_sha256": first["record_sha256"],
+                "prompt": core_prompt,
+                "target": kernel.canonical_json(packet),
+                "target_sha256": kernel.stable_hash(
+                    kernel.canonical_json(packet).encode()
+                ),
+                "evaluator_only_fields": [],
+            },
+        ]
+    }
+
+    receipt = attach_grounded_context_counterfactuals(
+        views, {"private_train": [first, donor]}
+    )
+
+    assert receipt["total_count"] == 4
+    assert receipt["missing_donor_record_sha256"] == []
+    for view in views["private_train"]:
+        by_strategy = {
+            item["strategy"]: item
+            for item in view["kerc_context_counterfactuals"]
+        }
+        withheld = json.loads(by_strategy["context_withheld"]["prompt"])
+        interaction = withheld.get("interaction") or withheld["residual"]["interaction"]
+        assert ["document_context", "content", first["source_annotation"]["context"]] not in interaction
+        shuffled = by_strategy["context_shuffled"]
+        assert first_hash not in shuffled["prompt"]
+        assert encoded_first_hash not in shuffled["prompt"]
+        assert first["surface_target"].casefold() not in donor["source_annotation"]["context"].casefold()
+        if view["objective"] == "kernel_program_to_answer_packet_v1":
+            shuffled_prompt = json.loads(shuffled["prompt"])
+            unsigned_program = {
+                key: value
+                for key, value in shuffled_prompt["program"].items()
+                if key != "program_sha256"
+            }
+            assert shuffled_prompt["program"]["program_sha256"] == kernel.stable_hash(
+                unsigned_program
+            )
+            shuffled_packet = json.loads(shuffled["target"])
+            unsigned_packet = {
+                key: value
+                for key, value in shuffled_packet.items()
+                if key != "answer_packet_sha256"
+            }
+            assert shuffled_packet["answer_packet_sha256"] == kernel.stable_hash(
+                unsigned_packet
+            )
+        assert shuffled["labels"] == [0, 1, 1, 1, 0]
+        assert shuffled["generator_loss_enabled"] is False
+        assert shuffled["unique_source_credit"] == 0
 
 
 def test_corruption_is_deterministic_bounded_and_not_identity() -> None:
