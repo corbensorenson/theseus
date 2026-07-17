@@ -46,7 +46,14 @@ share toward zero. Public benchmarks are calibration only.
   round-trip disagreement. The KERC candidate carries a `13,315`-symbol vocabulary while the
   conventional control retains `8,195`; independent width matching leaves a `2,860`
   parameter delta (`19,531,230` versus `19,534,090`). The live ten-target plan remains RED only because the
-  governed KERC stage manifest is absent. `p4-m8-kerc-runtime-001` trained a
+  governed KERC stage manifest is absent. Semantic admission now distinguishes
+  decision-grade audited/licensed human gold from train-only parser silver and governed
+  OpenAI residual rows; weak rows cannot enter heldouts or satisfy gold floors, are
+  sampling-weighted in the MLX trainer, and are bounded by record-share/optimizer caps.
+  A content-addressed source catalog rejects public semantic benchmark payloads and binds
+  dataset revision, license, source identity, producer, evidence tier, and verification
+  method. This closes the data-authority contract, not the corpus: the required 8,192/
+  1,024/1,024 records and independent ledger are not materialized. `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
   hand-coded keyword compiler and renderer. It did not implement or train the paper's
   constrained compiler, Kernel reasoner, learned residual allocator, structured answer
@@ -82,7 +89,8 @@ share toward zero. Public benchmarks are calibration only.
   so no repair-efficacy or model-capability gain is claimed.
 - **Immediate dependency:** implement faithful KERC through existing English-arm,
   Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier owners. The first neural mechanics
-  tranche is integrated; next build governed licensed source-disjoint stage supervision,
+  and semantic evidence-tier tranches are integrated; next build governed licensed
+  source-disjoint stage supervision with 1,024 decision-grade train and all-gold dev/eval,
   a real governed V_K/V_P codebook artifact, residual/interaction and verifier-corruption labels,
   and executable recompile verification. Then pass overfit/intervention/ablation/resume/
   migration/resource/security canaries and freeze strong matched controls and total-system

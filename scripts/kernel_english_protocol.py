@@ -87,6 +87,7 @@ TRAINING_VIEW_POLICY = "project_theseus_kernel_english_training_view_v1"
 TRAINING_CONTRACT_POLICY = "project_theseus_kernel_english_learned_pipeline_v1"
 TRAINING_VERIFICATION_POLICY = "project_theseus_kernel_english_verification_receipt_v1"
 TRAINING_DISPOSITION_POLICY = "project_theseus_kerc_pretraining_disposition_v1"
+SEMANTIC_SUPERVISION_POLICY = "project_theseus_kerc_semantic_supervision_evidence_v1"
 TRAINING_SPLITS = {"private_train", "private_dev", "private_eval"}
 TRAINING_OBJECTIVES = (
     "surface_direct_control_v1",
@@ -108,6 +109,42 @@ KERC_VERIFIER_DIMENSIONS = (
     "numeric_value_consistency",
     "surface_fidelity",
 )
+SEMANTIC_EVIDENCE_TIERS = {
+    "audited_human_gold": {
+        "producer_kind": "human_annotation",
+        "claim_authority": "decision_grade_reference",
+        "model_derived": False,
+        "allowed_splits": TRAINING_SPLITS,
+        "maximum_optimizer_sampling_weight": 1.0,
+        "verification_methods": {"human_dual_review"},
+    },
+    "licensed_human_semantic_gold": {
+        "producer_kind": "licensed_semantic_dataset",
+        "claim_authority": "decision_grade_reference",
+        "model_derived": False,
+        "allowed_splits": TRAINING_SPLITS,
+        "maximum_optimizer_sampling_weight": 1.0,
+        "verification_methods": {
+            "licensed_semantic_dataset_plus_independent_schema_review"
+        },
+    },
+    "local_parser_silver": {
+        "producer_kind": "local_semantic_parser",
+        "claim_authority": "training_only_silver",
+        "model_derived": True,
+        "allowed_splits": {"private_train"},
+        "maximum_optimizer_sampling_weight": 0.25,
+        "verification_methods": {"local_parser_plus_independent_schema_review"},
+    },
+    "governed_openai_residual": {
+        "producer_kind": "governed_openai_teacher",
+        "claim_authority": "residual_training_only",
+        "model_derived": True,
+        "allowed_splits": {"private_train"},
+        "maximum_optimizer_sampling_weight": 0.02,
+        "verification_methods": {"governed_teacher_plus_independent_verifier"},
+    },
+}
 
 
 class KernelProtocolFault(ValueError):
@@ -173,6 +210,23 @@ def kernel_training_contract() -> dict[str, Any]:
         "residual_channels": list(KERC_RESIDUAL_CHANNELS),
         "residual_fidelity_labels": dict(KERC_FIDELITY_LABELS),
         "verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
+        "semantic_supervision": {
+            "policy": SEMANTIC_SUPERVISION_POLICY,
+            "tiers": {
+                tier: {
+                    "producer_kind": contract["producer_kind"],
+                    "claim_authority": contract["claim_authority"],
+                    "model_derived": contract["model_derived"],
+                    "allowed_splits": sorted(contract["allowed_splits"]),
+                    "maximum_optimizer_sampling_weight": contract[
+                        "maximum_optimizer_sampling_weight"
+                    ],
+                }
+                for tier, contract in SEMANTIC_EVIDENCE_TIERS.items()
+            },
+            "heldout_requires_decision_grade_reference": True,
+            "public_semantic_benchmark_training_forbidden": True,
+        },
         "verifier_training": {
             "positive_pairs": "independently_verified_governed_records",
             "negative_pairs": "deterministic_targeted_corruptions",
@@ -399,6 +453,7 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
         "human_dual_review",
         "governed_teacher_plus_independent_verifier",
         "licensed_semantic_dataset_plus_independent_schema_review",
+        "local_parser_plus_independent_schema_review",
     }:
         raise KernelProtocolFault(
             "KERC_TRAINING_VERIFICATION_METHOD_INVALID",
@@ -411,6 +466,11 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
             str(verification.get("evidence_sha256")),
             path="record.verification_receipt.evidence_sha256",
         )
+    semantic_supervision = validate_semantic_supervision_evidence(
+        record.get("semantic_supervision"),
+        split=split,
+        verification_method=str(verification.get("method") or ""),
+    )
     for key in (
         "public_benchmark",
         "public_tests_included",
@@ -468,6 +528,7 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
             path="record.verification_receipt.semantic_payload_sha256",
         )
     canonical = copy.deepcopy(record)
+    canonical["semantic_supervision"] = semantic_supervision
     canonical["residual_supervision"] = residual_supervision
     canonical["answer_packet"] = answer
     canonical["raw_source_sha256"] = expected_source["source_sha256"]
@@ -477,6 +538,105 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
     canonical["record_sha256"] = stable_hash(
         {key: value for key, value in canonical.items() if key != "record_sha256"}
     )
+    return canonical
+
+
+def validate_semantic_supervision_evidence(
+    evidence: Any,
+    *,
+    split: str,
+    verification_method: str,
+) -> dict[str, Any]:
+    """Validate semantic-target authority separately from schema validity.
+
+    Silver and residual rows may shape the optimizer, but only independently
+    audited human semantic targets may occupy development/evaluation splits or
+    support a decision-grade semantic claim.
+    """
+
+    if not isinstance(evidence, dict) or evidence.get("policy") != SEMANTIC_SUPERVISION_POLICY:
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_SUPERVISION_POLICY_INVALID",
+            str(evidence.get("policy") if isinstance(evidence, dict) else type(evidence)),
+            path="record.semantic_supervision.policy",
+        )
+    tier = str(evidence.get("evidence_tier") or "")
+    contract = SEMANTIC_EVIDENCE_TIERS.get(tier)
+    if contract is None:
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_EVIDENCE_TIER_INVALID",
+            tier,
+            path="record.semantic_supervision.evidence_tier",
+        )
+    expected = {
+        "producer_kind": contract["producer_kind"],
+        "claim_authority": contract["claim_authority"],
+        "model_derived": contract["model_derived"],
+        "public_calibration_surface": False,
+        "benchmark_payload_used": False,
+    }
+    for key, value in expected.items():
+        if evidence.get(key) != value:
+            raise KernelProtocolFault(
+                "KERC_SEMANTIC_EVIDENCE_CONTRACT_INVALID",
+                f"{key}={evidence.get(key)!r}",
+                path=f"record.semantic_supervision.{key}",
+            )
+    if split not in contract["allowed_splits"]:
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_EVIDENCE_SPLIT_FORBIDDEN",
+            f"{tier}:{split}",
+            path="record.semantic_supervision.evidence_tier",
+        )
+    if verification_method not in contract["verification_methods"]:
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_VERIFICATION_METHOD_MISMATCH",
+            f"{tier}:{verification_method}",
+            path="record.verification_receipt.method",
+        )
+    for key in ("producer_id", "annotation_source_id"):
+        if not str(evidence.get(key) or "").strip():
+            raise KernelProtocolFault(
+                "KERC_SEMANTIC_EVIDENCE_IDENTITY_MISSING",
+                key,
+                path=f"record.semantic_supervision.{key}",
+            )
+    for key in ("producer_artifact_sha256", "annotation_source_sha256"):
+        if not re.fullmatch(r"sha256:[0-9a-f]{64}", str(evidence.get(key) or "")):
+            raise KernelProtocolFault(
+                "KERC_SEMANTIC_EVIDENCE_HASH_INVALID",
+                key,
+                path=f"record.semantic_supervision.{key}",
+            )
+    objectives = evidence.get("objective_authority")
+    if not isinstance(objectives, dict) or set(objectives) != set(TRAINING_OBJECTIVES):
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_OBJECTIVE_AUTHORITY_INVALID",
+            canonical_json(objectives),
+            path="record.semantic_supervision.objective_authority",
+        )
+    if any(objectives.get(objective) is not True for objective in TRAINING_OBJECTIVES):
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_OBJECTIVE_AUTHORITY_INCOMPLETE",
+            canonical_json(objectives),
+            path="record.semantic_supervision.objective_authority",
+        )
+    weight = evidence.get("optimizer_sampling_weight")
+    if isinstance(weight, bool) or not isinstance(weight, (int, float)):
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_SAMPLING_WEIGHT_INVALID",
+            str(weight),
+            path="record.semantic_supervision.optimizer_sampling_weight",
+        )
+    weight = float(weight)
+    if not 0.0 < weight <= float(contract["maximum_optimizer_sampling_weight"]):
+        raise KernelProtocolFault(
+            "KERC_SEMANTIC_SAMPLING_WEIGHT_INVALID",
+            f"{tier}:{weight}",
+            path="record.semantic_supervision.optimizer_sampling_weight",
+        )
+    canonical = copy.deepcopy(evidence)
+    canonical["optimizer_sampling_weight"] = weight
     return canonical
 
 
@@ -493,6 +653,7 @@ def training_semantic_payload_sha256(record: dict[str, Any]) -> str:
             "answer_packet": answer,
             "surface_target": str(record.get("surface_target") or ""),
             "residual_supervision": record.get("residual_supervision") or {},
+            "semantic_supervision": record.get("semantic_supervision") or {},
             "source_id": str(provenance.get("source_id") or ""),
             "source_group": str(provenance.get("source_group") or ""),
             "license_spdx": str(provenance.get("license_spdx") or ""),
@@ -591,6 +752,15 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                 "derived_view": True,
                 "unique_source_credit": 0,
                 "optimizer_exposure_credit": 1,
+                "semantic_evidence_tier": record["semantic_supervision"]["evidence_tier"],
+                "semantic_claim_authority": record["semantic_supervision"]["claim_authority"],
+                "decision_grade_reference": record["semantic_supervision"][
+                    "claim_authority"
+                ]
+                == "decision_grade_reference",
+                "optimizer_sampling_weight": record["semantic_supervision"][
+                    "optimizer_sampling_weight"
+                ],
                 "kerc_residual_channels": list(KERC_RESIDUAL_CHANNELS),
                 "kerc_residual_labels": [
                     int(record["residual_supervision"]["labels_by_channel"][channel])

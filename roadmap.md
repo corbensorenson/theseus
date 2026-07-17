@@ -1677,7 +1677,17 @@ the candidate unless structured round-trip constraints match; the direct-surface
 templates, literals, tools, and fallback returns cannot satisfy this route. The live
 plan has ten explicit targets and is RED only on `kernel_english_manifest_missing`.
 This is architecture mechanics, not a learned KERC system or capability result: the
-governed stage corpus/codebook artifact, distribution-calibrated labels, VCM interaction
+semantic admission owner now separates audited/licensed human gold from local-parser
+silver and governed OpenAI residual evidence. Only gold can occupy private-dev/eval or
+satisfy decision-grade floors. Silver and teacher residual rows are train-only, carry
+maximum sampling weights of `0.25` and `0.02`, cannot support semantic claims, and are
+subject to record-share and optimizer-probability caps. Every record must bind a
+content-addressed dataset revision/license/source catalog; public semantic benchmark
+surfaces are rejected even when permissively licensed. The MLX stage consumes these
+weights for positive and verifier-only pairs. The source qualification ledger keeps
+UCCA/TUPA and SNLI calibration-only, PMB quarantined, LDC AMR excluded, and Dolly text
+eligible only as parser-silver input after a parser adequacy audit. The actual governed
+stage corpus/codebook artifact, distribution-calibrated labels, VCM interaction
 reward, calibrated neural-verifier use, full resume/migration/resource proofs, overfit,
 intervention, ablation, and matched multi-seed campaign remain open.
 
@@ -1729,6 +1739,16 @@ intervention, ablation, and matched multi-seed campaign remain open.
   benchmark payloads remain calibration-only, and live teacher use remains governed
   OpenAI-only residual pressure. Version migration is deterministic or the row stays
   explicitly versioned; no compiled row silently changes meaning across revisions.
+- Build the semantic corpus as a tiered evidence program, not a bulk generated proxy.
+  Require at least `1,024` decision-grade train records and all `1,024` private-dev plus
+  all `1,024` private-eval records to be audited/licensed human semantic gold. Qualified
+  local-parser output may supply at most 80% of train records at weight <= `0.25`; it
+  remains silver and cannot satisfy heldout or claim floors. Governed OpenAI residual
+  rows remain capped at 10% accepted records and 2% optimizer probability. Candidate
+  sources must pass license, revision, content identity, public-surface, contamination,
+  producer fidelity, and independent-review checks. Do not convert a syntax parse,
+  deterministic wrapper, self-reconstruction target, VIEA metadata trace, or public
+  semantic benchmark corpus into purported Kernel semantic gold.
 - Pre-training closure requires a faithful English-arm architecture alternative. Implement the
   exact substrate, dataset transforms, objectives, checkpoint/migration path,
   instrumentation, lifecycle, and security contracts before optimizer spend, then

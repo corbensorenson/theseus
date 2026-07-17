@@ -211,6 +211,25 @@ def training_record(*, split: str = "private_train") -> dict:
             "source_group": f"fixture-group-{split}",
             "license_spdx": "CC0-1.0",
             "permitted_use": "model_training",
+            "dataset_id": "private-kerc-fixture-v1",
+            "dataset_revision": "fixture-revision-v1",
+        },
+        "semantic_supervision": {
+            "policy": kernel.SEMANTIC_SUPERVISION_POLICY,
+            "evidence_tier": "audited_human_gold",
+            "producer_kind": "human_annotation",
+            "producer_id": "fixture-annotator-v1",
+            "producer_artifact_sha256": "sha256:" + "d" * 64,
+            "annotation_source_id": "private-kerc-fixture-v1",
+            "annotation_source_sha256": "sha256:" + "e" * 64,
+            "claim_authority": "decision_grade_reference",
+            "model_derived": False,
+            "public_calibration_surface": False,
+            "benchmark_payload_used": False,
+            "objective_authority": {
+                objective: True for objective in kernel.TRAINING_OBJECTIVES
+            },
+            "optimizer_sampling_weight": 1.0,
         },
         "residual_supervision": {
             "policy": "project_theseus_kerc_residual_supervision_v1",
@@ -687,3 +706,49 @@ def test_training_record_and_learned_outputs_fail_closed() -> None:
         )
     with pytest.raises(kernel.KernelProtocolFault, match="KERC_LEARNED_ANSWER_OUTPUT_INVALID"):
         kernel.parse_learned_answer_output("not json")
+
+
+def test_weak_semantic_evidence_cannot_become_heldout_gold_or_exceed_weight() -> None:
+    silver = training_record(split="private_dev")
+    silver["semantic_supervision"].update(
+        {
+            "evidence_tier": "local_parser_silver",
+            "producer_kind": "local_semantic_parser",
+            "producer_id": "licensed-local-parser-v1",
+            "claim_authority": "training_only_silver",
+            "model_derived": True,
+            "optimizer_sampling_weight": 0.25,
+        }
+    )
+    silver["verification_receipt"]["method"] = (
+        "local_parser_plus_independent_schema_review"
+    )
+    silver["verification_receipt"]["semantic_payload_sha256"] = (
+        kernel.training_semantic_payload_sha256(silver)
+    )
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_SEMANTIC_EVIDENCE_SPLIT_FORBIDDEN"
+    ):
+        kernel.validate_training_record(silver)
+
+    residual = training_record()
+    residual["semantic_supervision"].update(
+        {
+            "evidence_tier": "governed_openai_residual",
+            "producer_kind": "governed_openai_teacher",
+            "producer_id": "gpt-5.6-sol-governed-residual",
+            "claim_authority": "residual_training_only",
+            "model_derived": True,
+            "optimizer_sampling_weight": 0.021,
+        }
+    )
+    residual["verification_receipt"]["method"] = (
+        "governed_teacher_plus_independent_verifier"
+    )
+    residual["verification_receipt"]["semantic_payload_sha256"] = (
+        kernel.training_semantic_payload_sha256(residual)
+    )
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_SEMANTIC_SAMPLING_WEIGHT_INVALID"
+    ):
+        kernel.validate_training_record(residual)

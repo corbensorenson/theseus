@@ -21,6 +21,7 @@ from moecot_source_conditioned_pretraining import (  # noqa: E402
     denoising_rows,
     inspect_kernel_english,
     kernel_english_split_overlap,
+    load_kerc_semantic_source_catalog,
     materialize_kernel_english,
     source_rejection,
     source_conditioning_dependencies,
@@ -70,11 +71,49 @@ def kernel_config(tmp_path: Path) -> dict:
             "report": str(tmp_path / "kernel-report.json"),
             "records_jsonl": str(tmp_path / "records.jsonl"),
             "verification_ledger_jsonl": str(tmp_path / "verification-ledger.jsonl"),
+            "semantic_source_catalog_json": str(tmp_path / "semantic-source-catalog.json"),
             "objective_order": list(kernel.TRAINING_OBJECTIVES),
             "records_by_split": {
                 "private_train": 1,
                 "private_dev": 1,
                 "private_eval": 1,
+            },
+            "semantic_supervision": {
+                "policy": "project_theseus_kerc_semantic_supervision_program_v1",
+                "tiers": {
+                    tier: {
+                        "claim_authority": contract["claim_authority"],
+                        "maximum_optimizer_sampling_weight": float(
+                            contract["maximum_optimizer_sampling_weight"]
+                        ),
+                        "training_only": contract["allowed_splits"] == {"private_train"},
+                    }
+                    for tier, contract in kernel.SEMANTIC_EVIDENCE_TIERS.items()
+                },
+                "minimum_decision_grade_records_by_split": {
+                    "private_train": 1,
+                    "private_dev": 1,
+                    "private_eval": 1,
+                },
+                "maximum_train_record_share_by_tier": {
+                    "local_parser_silver": 0.8,
+                    "governed_openai_residual": 0.1,
+                },
+                "maximum_train_optimizer_probability_by_tier": {
+                    "governed_openai_residual": 0.02,
+                },
+                "source_qualification": [
+                    {
+                        "source_id": "private-kerc-fixture-v1",
+                        "intended_tier": "audited_human_gold",
+                        "disposition": "eligible_after_dual_review_and_content_addressing",
+                        "public_benchmark_surface": False,
+                        "license_spdx": "CC0-1.0",
+                        "source_url": "local://private-kerc-fixture-v1",
+                    }
+                ],
+                "public_semantic_benchmarks_training_forbidden": True,
+                "silver_can_satisfy_decision_grade_floor": False,
             },
             "maximum_sequence_tokens": 20000,
             "batch_size": 1,
@@ -161,6 +200,25 @@ def kernel_record(split: str, index: int) -> dict:
             "source_group": f"group-{split}-{index}",
             "license_spdx": "CC0-1.0",
             "permitted_use": "model_training",
+            "dataset_id": "private-kerc-fixture-v1",
+            "dataset_revision": "fixture-revision-v1",
+        },
+        "semantic_supervision": {
+            "policy": kernel.SEMANTIC_SUPERVISION_POLICY,
+            "evidence_tier": "audited_human_gold",
+            "producer_kind": "human_annotation",
+            "producer_id": "fixture-annotator-v1",
+            "producer_artifact_sha256": "sha256:" + "e" * 64,
+            "annotation_source_id": "private-kerc-fixture-v1",
+            "annotation_source_sha256": "sha256:" + "d" * 64,
+            "claim_authority": "decision_grade_reference",
+            "model_derived": False,
+            "public_calibration_surface": False,
+            "benchmark_payload_used": False,
+            "objective_authority": {
+                objective: True for objective in kernel.TRAINING_OBJECTIVES
+            },
+            "optimizer_sampling_weight": 1.0,
         },
         "residual_supervision": {
             "policy": "project_theseus_kerc_residual_supervision_v1",
@@ -357,6 +415,31 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
         ),
         encoding="utf-8",
     )
+    catalog_path = Path(
+        cfg["kernel_english_training"]["semantic_source_catalog_json"]
+    )
+    catalog_path.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_kerc_semantic_source_catalog_v1",
+                "sources": [
+                    {
+                        "dataset_id": "private-kerc-fixture-v1",
+                        "dataset_revision": "fixture-revision-v1",
+                        "content_sha256": "sha256:" + "d" * 64,
+                        "license_spdx": "CC0-1.0",
+                        "permitted_use": "model_training",
+                        "training_allowed": True,
+                        "public_benchmark_surface": False,
+                        "public_benchmark_payload": False,
+                        "allowed_evidence_tiers": ["audited_human_gold"],
+                    }
+                ],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
 
     report = materialize_kernel_english(cfg, tmp_path / "config.json")
     assert report["trigger_state"] == "GREEN"
@@ -365,6 +448,11 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     assert report["unique_raw_source_count"] == 3
     assert report["derived_view_unique_data_credit"] == 0
     assert report["derived_view_optimizer_exposure_count"] == 12
+    assert report["semantic_supervision"]["decision_grade_record_counts_by_split"] == {
+        "private_train": 1,
+        "private_dev": 1,
+        "private_eval": 1,
+    }
     assert all(value == 3 for value in report["compiled_view_count_by_objective"].values())
     codebook_path = Path(report["code_vocabulary"]["path"])
     if not codebook_path.is_absolute():
@@ -383,6 +471,9 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
         for line in train_artifact.read_text().splitlines()
         if json.loads(line)["objective"] == "surface_to_kernel_program_v1"
     )
+    assert compiler_view["semantic_evidence_tier"] == "audited_human_gold"
+    assert compiler_view["decision_grade_reference"] is True
+    assert compiler_view["optimizer_sampling_weight"] == 1.0
     encoded, encoded_receipt = encode_kerc_global_target(
         compiler_view["target"],
         code_vocabulary=codebook,
@@ -408,6 +499,37 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     replay = inspect_kernel_english(cfg, tmp_path / "config.json")
     assert replay["trigger_state"] == "RED"
     assert any("artifact_identity" in gap for gap in replay["hard_gaps"])
+
+
+def test_semantic_source_catalog_rejects_public_calibration_sources(tmp_path: Path) -> None:
+    cfg = kernel_config(tmp_path)["kernel_english_training"]
+    catalog = tmp_path / "semantic-source-catalog.json"
+    catalog.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_kerc_semantic_source_catalog_v1",
+                "sources": [
+                    {
+                        "dataset_id": "public-semantic-benchmark",
+                        "dataset_revision": "frozen-v1",
+                        "content_sha256": "sha256:" + "f" * 64,
+                        "license_spdx": "CC0-1.0",
+                        "permitted_use": "model_training",
+                        "training_allowed": True,
+                        "public_benchmark_surface": True,
+                        "public_benchmark_payload": True,
+                        "allowed_evidence_tiers": ["licensed_human_semantic_gold"],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    sources, gaps = load_kerc_semantic_source_catalog(catalog, cfg)
+    assert sources == {}
+    assert gaps == [
+        "kernel_semantic_source_catalog_contract_invalid:public-semantic-benchmark"
+    ]
 
 
 def test_retired_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(

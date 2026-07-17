@@ -1494,6 +1494,7 @@ def materialize_target_supervision(
     sequences: list[list[int]] = []
     mask_starts: list[int] = []
     generator_loss_enabled: list[bool] = []
+    sampling_weights: list[float] = []
     kerc_residual_rows: list[list[int]] = []
     kerc_verifier_rows: list[list[int]] = []
     kerc_mode = str(target.get("role") or "") == "kerc_english_candidate"
@@ -1578,6 +1579,10 @@ def materialize_target_supervision(
                 sequences.append(sequence)
                 mask_starts.append(target_start - 1)
                 generator_loss_enabled.append(True)
+                sampling_weight = float(row.get("optimizer_sampling_weight", 1.0))
+                if not 0.0 < sampling_weight <= 1.0:
+                    raise ValueError(f"invalid supervision sampling weight: {key}:{source_rows - 1}")
+                sampling_weights.append(sampling_weight)
                 if kerc_mode:
                     residual = list(row.get("kerc_residual_labels") or [])
                     positive = list(row.get("kerc_verifier_positive_labels") or [])
@@ -1646,6 +1651,7 @@ def materialize_target_supervision(
                     sequences.append(negative_sequence)
                     mask_starts.append(negative_start - 1)
                     generator_loss_enabled.append(False)
+                    sampling_weights.append(sampling_weight)
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_verifier_rows.append([int(value) for value in negative_labels])
                     row_hashes.append(
@@ -1728,6 +1734,9 @@ def materialize_target_supervision(
         "verifier_only_row_count": len(generator_loss_enabled) - sum(generator_loss_enabled),
         "target_positions": int(mask.sum()),
         "weighted_loss_positions": float(loss_mask.sum()),
+        "sampling_weight_sum": float(sum(sampling_weights)),
+        "sampling_weight_minimum": float(min(sampling_weights or [1.0])),
+        "sampling_weight_maximum": float(max(sampling_weights or [1.0])),
         "termination_loss_weight": float(config["training"]["termination_loss_weight"]),
         "byte_boundary_loss_weight": float(config["training"]["byte_boundary_loss_weight"]),
         "sequence_width": max_sequence,
@@ -1756,6 +1765,7 @@ def materialize_target_supervision(
         labels=labels,
         mask=mask,
         loss_mask=loss_mask,
+        sample_weights=np.asarray(sampling_weights, dtype=np.float64),
         kerc_residual_labels=(
             np.asarray(kerc_residual_rows, dtype=np.int32) if kerc_mode else None
         ),
@@ -2885,7 +2895,7 @@ def train_target(
             kernel_english_stage.loss_mask,
             progress_mask=kernel_english_stage.mask,
             ordered_plan_loss_weight=1.0,
-            sample_weights=None,
+            sample_weights=getattr(kernel_english_stage, "sample_weights", None),
             plan_labels=None,
             plan_label_mode="none",
             plan_auxiliary_weight=0.0,

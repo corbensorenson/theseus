@@ -32,6 +32,8 @@ from moecot_language_supervision import (
 from moecot_language_tokenizer import exact_text_tokens
 from neural_seed_open_vocab import decode_target_tokens, encode_tokens, populate_open_vocab
 from kernel_english_protocol import (
+    SEMANTIC_EVIDENCE_TIERS,
+    SEMANTIC_SUPERVISION_POLICY,
     TRAINING_OBJECTIVES,
     TRAINING_VERIFICATION_POLICY,
     compile_training_views,
@@ -67,6 +69,8 @@ KERC_POINTER_CONTROL_TOKENS = {
     "\r",
     "\t",
 }
+KERC_SOURCE_CATALOG_POLICY = "project_theseus_kerc_semantic_source_catalog_v1"
+KERC_SEMANTIC_PROGRAM_POLICY = "project_theseus_kerc_semantic_supervision_program_v1"
 
 
 def kerc_code_tokens(text: str) -> list[str]:
@@ -353,6 +357,9 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("KERC stage requires an explicit license allowlist")
         if not str(cfg.get("verification_ledger_jsonl") or "").strip():
             raise ValueError("KERC stage requires a separate verification ledger")
+        if not str(cfg.get("semantic_source_catalog_json") or "").strip():
+            raise ValueError("KERC stage requires a semantic source catalog")
+        validate_kerc_semantic_program(cfg)
     elif any(int(value or 0) != 0 for value in rows.values()):
         raise ValueError("retired KERC stage must request zero records")
     if int(cfg.get("maximum_sequence_tokens") or 0) <= 0:
@@ -383,6 +390,141 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
         if int(cfg.get(key) or 0):
             raise ValueError(f"KERC no-cheat counter must remain zero: {key}")
     return cfg
+
+
+def validate_kerc_semantic_program(cfg: dict[str, Any]) -> dict[str, Any]:
+    program = cfg.get("semantic_supervision")
+    program = program if isinstance(program, dict) else {}
+    if program.get("policy") != KERC_SEMANTIC_PROGRAM_POLICY:
+        raise ValueError("KERC semantic-supervision program policy mismatch")
+    tiers = program.get("tiers") if isinstance(program.get("tiers"), dict) else {}
+    if tuple(tiers) != tuple(SEMANTIC_EVIDENCE_TIERS):
+        raise ValueError("KERC semantic evidence tier set/order mismatch")
+    for tier, contract in SEMANTIC_EVIDENCE_TIERS.items():
+        configured = tiers.get(tier) if isinstance(tiers.get(tier), dict) else {}
+        expected = {
+            "claim_authority": contract["claim_authority"],
+            "maximum_optimizer_sampling_weight": float(
+                contract["maximum_optimizer_sampling_weight"]
+            ),
+            "training_only": contract["allowed_splits"] == {"private_train"},
+        }
+        if configured != expected:
+            raise ValueError(f"KERC semantic evidence tier contract mismatch: {tier}")
+    floors = program.get("minimum_decision_grade_records_by_split") or {}
+    requested = cfg.get("records_by_split") or {}
+    if tuple(floors) != tuple(requested):
+        raise ValueError("KERC decision-grade split floor set/order mismatch")
+    for split, floor in floors.items():
+        if not 0 <= int(floor) <= int(requested[split]):
+            raise ValueError(f"KERC decision-grade split floor invalid: {split}")
+    if int(floors.get("private_dev") or 0) != int(requested.get("private_dev") or 0):
+        raise ValueError("KERC private-dev must be entirely decision-grade")
+    if int(floors.get("private_eval") or 0) != int(requested.get("private_eval") or 0):
+        raise ValueError("KERC private-eval must be entirely decision-grade")
+    record_caps = program.get("maximum_train_record_share_by_tier") or {}
+    probability_caps = program.get("maximum_train_optimizer_probability_by_tier") or {}
+    if set(record_caps) != {"local_parser_silver", "governed_openai_residual"}:
+        raise ValueError("KERC train record-share caps are incomplete")
+    if set(probability_caps) != {"governed_openai_residual"}:
+        raise ValueError("KERC optimizer-probability cap is incomplete")
+    if not 0.0 <= float(record_caps["local_parser_silver"]) <= 0.9:
+        raise ValueError("KERC parser-silver record share may not exceed 0.9")
+    if not 0.0 <= float(record_caps["governed_openai_residual"]) <= 0.1:
+        raise ValueError("KERC teacher residual record share may not exceed 0.1")
+    if not 0.0 <= float(probability_caps["governed_openai_residual"]) <= 0.02:
+        raise ValueError("KERC teacher residual optimizer probability may not exceed 0.02")
+    if program.get("public_semantic_benchmarks_training_forbidden") is not True:
+        raise ValueError("KERC public semantic benchmarks must remain calibration-only")
+    if program.get("silver_can_satisfy_decision_grade_floor") is not False:
+        raise ValueError("KERC silver rows may not satisfy decision-grade floors")
+    qualifications = program.get("source_qualification")
+    if not isinstance(qualifications, list) or not qualifications:
+        raise ValueError("KERC semantic source qualification ledger is required")
+    identities: set[str] = set()
+    for row in qualifications:
+        if not isinstance(row, dict):
+            raise ValueError("KERC semantic source qualification row is invalid")
+        source_id = str(row.get("source_id") or "")
+        disposition = str(row.get("disposition") or "")
+        if (
+            not source_id
+            or source_id in identities
+            or str(row.get("intended_tier") or "") not in SEMANTIC_EVIDENCE_TIERS
+            or not disposition
+            or not str(row.get("license_spdx") or "")
+            or not str(row.get("source_url") or "")
+        ):
+            raise ValueError(f"KERC semantic source qualification invalid: {source_id}")
+        if row.get("public_benchmark_surface") is True and disposition.startswith(
+            "eligible"
+        ):
+            raise ValueError(f"public semantic benchmark cannot be training-eligible: {source_id}")
+        identities.add(source_id)
+    return program
+
+
+def load_kerc_semantic_source_catalog(
+    path: Path, cfg: dict[str, Any]
+) -> tuple[dict[str, dict[str, Any]], list[str]]:
+    payload = read_json(path) if path.is_file() else {}
+    gaps: list[str] = []
+    if payload.get("policy") != KERC_SOURCE_CATALOG_POLICY:
+        return {}, ["kernel_semantic_source_catalog_policy_invalid"]
+    raw_sources = payload.get("sources")
+    if not isinstance(raw_sources, list) or not raw_sources:
+        return {}, ["kernel_semantic_source_catalog_empty"]
+    sources: dict[str, dict[str, Any]] = {}
+    allowed_licenses = {str(value).lower() for value in cfg.get("allowed_licenses") or []}
+    for index, row in enumerate(raw_sources):
+        if not isinstance(row, dict):
+            gaps.append(f"kernel_semantic_source_catalog_row_invalid:{index}")
+            continue
+        dataset_id = str(row.get("dataset_id") or "")
+        if not dataset_id or dataset_id in sources:
+            gaps.append(f"kernel_semantic_source_catalog_identity_invalid:{index}")
+            continue
+        required = (
+            str(row.get("dataset_revision") or "").strip()
+            and re.fullmatch(r"sha256:[0-9a-f]{64}", str(row.get("content_sha256") or ""))
+            and str(row.get("license_spdx") or "").lower() in allowed_licenses
+            and row.get("permitted_use") == "model_training"
+            and row.get("training_allowed") is True
+            and row.get("public_benchmark_surface") is False
+            and row.get("public_benchmark_payload") is False
+        )
+        tiers = row.get("allowed_evidence_tiers")
+        if (
+            not required
+            or not isinstance(tiers, list)
+            or not tiers
+            or any(str(tier) not in SEMANTIC_EVIDENCE_TIERS for tier in tiers)
+        ):
+            gaps.append(f"kernel_semantic_source_catalog_contract_invalid:{dataset_id}")
+            continue
+        sources[dataset_id] = row
+    return sources, sorted(set(gaps))
+
+
+def validate_kerc_record_source(
+    record: dict[str, Any], sources: dict[str, dict[str, Any]]
+) -> str:
+    provenance = record.get("provenance") or {}
+    dataset_id = str(provenance.get("dataset_id") or "")
+    source = sources.get(dataset_id)
+    if source is None:
+        return "semantic_source_absent_from_catalog"
+    semantic = record.get("semantic_supervision") or {}
+    checks = (
+        str(provenance.get("dataset_revision") or "") == str(source.get("dataset_revision") or ""),
+        str(provenance.get("license_spdx") or "").lower()
+        == str(source.get("license_spdx") or "").lower(),
+        str(semantic.get("evidence_tier") or "")
+        in {str(value) for value in source.get("allowed_evidence_tiers") or []},
+        str(semantic.get("annotation_source_sha256") or "")
+        == str(source.get("content_sha256") or ""),
+    )
+    return "" if all(checks) else "semantic_source_catalog_binding_mismatch"
 
 
 def inspect_kernel_english(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
@@ -422,11 +564,14 @@ def materialize_kernel_english(
     stage_root.mkdir(parents=True, exist_ok=True)
     records_path = resolve(cfg["records_jsonl"])
     ledger_path = resolve(cfg["verification_ledger_jsonl"])
+    source_catalog_path = resolve(cfg["semantic_source_catalog_json"])
     missing = []
     if not records_path.is_file():
         missing.append("kernel_english_records_missing")
     if not ledger_path.is_file():
         missing.append("kernel_english_verification_ledger_missing")
+    if not source_catalog_path.is_file():
+        missing.append("kernel_english_semantic_source_catalog_missing")
     if missing:
         report = kernel_english_base_report(
             config_path,
@@ -438,6 +583,9 @@ def materialize_kernel_english(
         return report
 
     ledger, ledger_gaps = load_kernel_verification_ledger(ledger_path)
+    source_catalog, source_catalog_gaps = load_kerc_semantic_source_catalog(
+        source_catalog_path, cfg
+    )
     metadata = read_json(resolve(config["stage_dir"]) / "stage_metadata_v1.json")
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
@@ -471,11 +619,59 @@ def materialize_kernel_english(
         }:
             rejection_counts["license_not_allowed"] += 1
             continue
+        source_gap = validate_kerc_record_source(record, source_catalog)
+        if source_gap:
+            rejection_counts[source_gap] += 1
+            continue
         selectors[split].add(str(record["record_sha256"]).split(":", 1)[-1], record)
 
     selected = {split: selector.rows() for split, selector in selectors.items()}
     overlaps = kernel_english_split_overlap(selected)
-    gaps = [*ledger_gaps, *overlaps["hard_gaps"]]
+    gaps = [*ledger_gaps, *source_catalog_gaps, *overlaps["hard_gaps"]]
+    semantic_program = validate_kerc_semantic_program(cfg)
+    evidence_counts_by_split: dict[str, Counter[str]] = {
+        split: Counter(
+            str((record.get("semantic_supervision") or {}).get("evidence_tier") or "")
+            for record in records
+        )
+        for split, records in selected.items()
+    }
+    decision_grade_tiers = {
+        tier
+        for tier, contract in SEMANTIC_EVIDENCE_TIERS.items()
+        if contract["claim_authority"] == "decision_grade_reference"
+    }
+    decision_grade_counts = {
+        split: sum(counts[tier] for tier in decision_grade_tiers)
+        for split, counts in evidence_counts_by_split.items()
+    }
+    for split, floor in semantic_program["minimum_decision_grade_records_by_split"].items():
+        if decision_grade_counts.get(split, 0) < int(floor):
+            gaps.append(
+                f"insufficient_decision_grade_kernel_records:{split}:"
+                f"{decision_grade_counts.get(split, 0)}:{int(floor)}"
+            )
+    train_records = selected.get("private_train") or []
+    train_count = len(train_records)
+    train_counts = evidence_counts_by_split.get("private_train") or Counter()
+    for tier, cap in semantic_program["maximum_train_record_share_by_tier"].items():
+        share = train_counts[tier] / max(1, train_count)
+        if share > float(cap) + 1e-12:
+            gaps.append(f"kernel_semantic_record_share_exceeded:{tier}:{share:.8f}:{cap}")
+    train_weight_by_tier: Counter[str] = Counter()
+    for record in train_records:
+        semantic = record["semantic_supervision"]
+        train_weight_by_tier[str(semantic["evidence_tier"])] += float(
+            semantic["optimizer_sampling_weight"]
+        )
+    train_weight_total = sum(train_weight_by_tier.values())
+    for tier, cap in semantic_program["maximum_train_optimizer_probability_by_tier"].items():
+        probability = train_weight_by_tier[tier] / max(1e-12, train_weight_total)
+        if probability > float(cap) + 1e-12:
+            gaps.append(
+                f"kernel_semantic_optimizer_probability_exceeded:{tier}:"
+                f"{probability:.8f}:{cap}"
+            )
     artifacts: dict[str, Any] = {}
     objective_counts: Counter[str] = Counter()
     encoded_length_stats: dict[str, Any] = {}
@@ -490,8 +686,13 @@ def materialize_kernel_english(
         ]
         for split, records in selected.items()
     }
+    if not compiled_views.get("private_train"):
+        raise ValueError(
+            "KERC stage has no admitted private-train views: "
+            + json.dumps(dict(rejection_counts), sort_keys=True)
+        )
     code_vocabulary = build_kerc_code_vocabulary(
-        compiled_views.get("private_train") or [], cfg["code_vocabulary"]
+        compiled_views["private_train"], cfg["code_vocabulary"]
     )
     code_vocabulary_path = stage_root / "code_vocabulary_v1.json"
     write_json_atomic(code_vocabulary_path, code_vocabulary)
@@ -595,6 +796,29 @@ def materialize_kernel_english(
             "sha256": sha256_file(ledger_path),
             "receipt_count": len(ledger),
             "producer_separate_from_training_rows": True,
+        },
+        "semantic_source_catalog": {
+            "path": relative(source_catalog_path),
+            "sha256": sha256_file(source_catalog_path),
+            "policy": KERC_SOURCE_CATALOG_POLICY,
+            "source_count": len(source_catalog),
+        },
+        "semantic_supervision": {
+            "policy": KERC_SEMANTIC_PROGRAM_POLICY,
+            "evidence_record_counts_by_split": {
+                split: dict(counts) for split, counts in evidence_counts_by_split.items()
+            },
+            "decision_grade_record_counts_by_split": decision_grade_counts,
+            "minimum_decision_grade_records_by_split": dict(
+                semantic_program["minimum_decision_grade_records_by_split"]
+            ),
+            "train_weight_by_tier": dict(train_weight_by_tier),
+            "train_optimizer_probability_by_tier": {
+                tier: round(weight / max(1e-12, train_weight_total), 10)
+                for tier, weight in train_weight_by_tier.items()
+            },
+            "silver_supports_decision_grade_claims": False,
+            "teacher_residual_supports_decision_grade_claims": False,
         },
         "code_vocabulary": {
             "path": relative(code_vocabulary_path),
@@ -737,6 +961,30 @@ def validate_kernel_english_manifest(
         gaps.append("kernel_stage_verification_ledger_identity_mismatch")
     if ledger.get("producer_separate_from_training_rows") is not True:
         gaps.append("kernel_stage_verification_ledger_not_independent")
+    source_catalog = payload.get("semantic_source_catalog") or {}
+    source_catalog_path = resolve(str(source_catalog.get("path") or ""))
+    if (
+        not source_catalog_path.is_file()
+        or sha256_file(source_catalog_path) != str(source_catalog.get("sha256") or "")
+        or source_catalog.get("policy") != KERC_SOURCE_CATALOG_POLICY
+    ):
+        gaps.append("kernel_stage_semantic_source_catalog_identity_mismatch")
+    semantic = payload.get("semantic_supervision") or {}
+    program = validate_kerc_semantic_program(cfg)
+    if semantic.get("policy") != KERC_SEMANTIC_PROGRAM_POLICY:
+        gaps.append("kernel_stage_semantic_supervision_policy_mismatch")
+    if semantic.get("minimum_decision_grade_records_by_split") != program.get(
+        "minimum_decision_grade_records_by_split"
+    ):
+        gaps.append("kernel_stage_decision_grade_floor_mismatch")
+    decision_counts = semantic.get("decision_grade_record_counts_by_split") or {}
+    for split, floor in program["minimum_decision_grade_records_by_split"].items():
+        if int(decision_counts.get(split) or 0) < int(floor):
+            gaps.append(f"kernel_stage_decision_grade_floor_not_met:{split}")
+    if semantic.get("silver_supports_decision_grade_claims") is not False:
+        gaps.append("kernel_stage_silver_claim_authority_invalid")
+    if semantic.get("teacher_residual_supports_decision_grade_claims") is not False:
+        gaps.append("kernel_stage_teacher_claim_authority_invalid")
     code = payload.get("code_vocabulary") or {}
     code_path = resolve(str(code.get("path") or ""))
     code_payload = read_json(code_path) if code_path.is_file() else {}

@@ -656,6 +656,7 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
         "target": '{"program":"valid"}',
         "trusted_source_prefix_tokens": ["<KERC_TASK_SURFACE_TO_KERNEL>"],
         "trusted_prefix_authority": "internal_objective_route_only",
+        "optimizer_sampling_weight": 0.25,
         "kerc_residual_labels": [1, 0, 0, 3],
         "kerc_verifier_positive_labels": [1, 1, 1, 1],
         "kerc_verifier_negative": {
@@ -712,6 +713,8 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.receipt["verifier_only_row_count"] == 1
     assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3], [1, 0, 0, 3]]
     assert stage.kerc_verifier_labels.tolist() == [[1, 1, 1, 1], [0, 1, 1, 1]]
+    assert stage.sample_weights.tolist() == [0.25, 0.25]
+    assert stage.receipt["sampling_weight_sum"] == 0.5
     assert stage.receipt["dual_code_vocabulary_sha256"] == code_vocabulary[
         "contract_sha256"
     ]
