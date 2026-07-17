@@ -24,6 +24,13 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
+from vcm_semantic_memory import (
+    HRLStateFault,
+    create_hierarchical_residual_state,
+    replay_hierarchical_residual_deltas,
+    validate_hierarchical_residual_state,
+)
+
 
 POLICY = "project_theseus_kernel_packet_protocol_v1"
 KERNEL_VERSION = "KE-1.0"
@@ -497,6 +504,42 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
             )
 
     hrl_state = record.get("hrl_state") if isinstance(record.get("hrl_state"), dict) else {}
+    validate_hierarchical_residual_state(hrl_state)
+    hrl_deltas = record.get("hrl_deltas")
+    if not isinstance(hrl_deltas, list):
+        raise KernelProtocolFault(
+            "KERC_TRAINING_HRL_DELTAS_INVALID",
+            str(type(hrl_deltas)),
+            path="record.hrl_deltas",
+        )
+    initial_hrl_state = create_hierarchical_residual_state(
+        str(hrl_state.get("interaction_id") or ""),
+        scope=copy.deepcopy(hrl_state.get("scope") or {}),
+        language=str((hrl_state.get("global") or {}).get("language") or "en"),
+    )
+    if hrl_deltas:
+        try:
+            replayed_hrl = replay_hierarchical_residual_deltas(
+                initial_hrl_state, copy.deepcopy(hrl_deltas)
+            )["state"]
+        except HRLStateFault as exc:
+            raise KernelProtocolFault(
+                "KERC_TRAINING_HRL_REPLAY_INVALID",
+                str(exc),
+                path="record.hrl_deltas",
+            ) from exc
+        if replayed_hrl != hrl_state:
+            raise KernelProtocolFault(
+                "KERC_TRAINING_HRL_REPLAY_MISMATCH",
+                str(hrl_state.get("state_hash")),
+                path="record.hrl_deltas",
+            )
+    elif hrl_state != initial_hrl_state:
+        raise KernelProtocolFault(
+            "KERC_TRAINING_HRL_UNJOURNALED_STATE",
+            str(hrl_state.get("state_hash")),
+            path="record.hrl_state",
+        )
     packet = record.get("kernel_packet") if isinstance(record.get("kernel_packet"), dict) else {}
     packet_replay = validate_kernel_packet(packet, local_hrl_state=hrl_state)
     expected_source = capture_source(source)
@@ -700,7 +743,59 @@ def learned_protected_object_view(
     return output
 
 
-def learned_residual_view(residual: dict[str, Any]) -> dict[str, Any]:
+def learned_interaction_residual_view(hrl_state: dict[str, Any]) -> list[list[Any]]:
+    """Expose bounded, segment-scoped VCM state without widening authority."""
+
+    _validate_hrl_reference(hrl_state)
+    if hrl_state.get("cross_user_reuse_allowed") is not False:
+        raise KernelProtocolFault(
+            "KERC_INTERACTION_CROSS_USER_REUSE_FORBIDDEN",
+            str(hrl_state.get("cross_user_reuse_allowed")),
+            path="hrl_state.cross_user_reuse_allowed",
+        )
+    scope = hrl_state.get("scope") if isinstance(hrl_state.get("scope"), dict) else {}
+    if scope.get("privacy") != "private_local":
+        raise KernelProtocolFault(
+            "KERC_INTERACTION_PRIVACY_INVALID",
+            str(scope.get("privacy")),
+            path="hrl_state.scope.privacy",
+        )
+    compiled: list[list[Any]] = []
+    segments = hrl_state.get("segments") if isinstance(hrl_state.get("segments"), dict) else {}
+    for segment_id, segment in sorted(segments.items()):
+        entries = segment.get("entries") if isinstance(segment, dict) else None
+        if not isinstance(entries, dict):
+            raise KernelProtocolFault(
+                "KERC_INTERACTION_SEGMENT_INVALID",
+                str(segment_id),
+                path=f"hrl_state.segments.{segment_id}",
+            )
+        for key, row in sorted(entries.items()):
+            if not isinstance(row, dict) or row.get("privacy") != "interaction_private":
+                raise KernelProtocolFault(
+                    "KERC_INTERACTION_ENTRY_PRIVACY_INVALID",
+                    str(key),
+                    path=f"hrl_state.segments.{segment_id}.entries.{key}",
+                )
+            if row.get("authority") not in {"document", "user", "system"}:
+                raise KernelProtocolFault(
+                    "KERC_INTERACTION_ENTRY_AUTHORITY_INVALID",
+                    str(row.get("authority")),
+                    path=f"hrl_state.segments.{segment_id}.entries.{key}",
+                )
+            compiled.append([str(segment_id), str(key), copy.deepcopy(row.get("value"))])
+    if len(compiled) > 64 or len(canonical_json(compiled).encode("utf-8")) > 8192:
+        raise KernelProtocolFault(
+            "KERC_INTERACTION_VIEW_BUDGET_EXCEEDED",
+            f"entries={len(compiled)} bytes={len(canonical_json(compiled).encode('utf-8'))}",
+            path="hrl_state.segments",
+        )
+    return compiled
+
+
+def learned_residual_view(
+    residual: dict[str, Any], *, hrl_state: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Compile governed residual state into the compact model-visible ABI.
 
     Authority, provenance, lifecycle, and full state hashes remain in VCM and the
@@ -729,9 +824,21 @@ def learned_residual_view(residual: dict[str, Any]) -> dict[str, Any]:
             raise KernelProtocolFault(
                 "KERC_LEARNED_RESIDUAL_TAG_UNKNOWN", tag, path="residual.token_tags"
             )
+    interaction = (
+        learned_interaction_residual_view(hrl_state)
+        if isinstance(hrl_state, dict)
+        else []
+    )
+    if int((hrl_state or {}).get("sequence") or 0) > 0 and not interaction:
+        raise KernelProtocolFault(
+            "KERC_INTERACTION_STATE_NOT_VISIBLE",
+            str((hrl_state or {}).get("state_hash")),
+            path="hrl_state.segments",
+        )
     return {
         "mode": str(residual.get("mode") or ""),
         "fidelity": str(residual.get("fidelity") or ""),
+        "interaction": interaction,
         "segment": (
             [
                 str(segment.get("frame_name") or ""),
@@ -764,6 +871,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
             record["source_text"], packet["protected_objects"]
         ),
         "correction_lattice": packet["correction_lattice"],
+        "interaction": learned_interaction_residual_view(record["hrl_state"]),
     }
     compiler_target = {
         "kernel_version": KERNEL_VERSION,
@@ -772,12 +880,16 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     core_input = {
         **protected_context,
         "program": packet["program"],
-        "residual": learned_residual_view(packet["residual"]),
+        "residual": learned_residual_view(
+            packet["residual"], hrl_state=record["hrl_state"]
+        ),
     }
     renderer_input = {
         "answer_packet": record["answer_packet"],
         "protected_objects": learned_objects,
-        "residual": learned_residual_view(packet["residual"]),
+        "residual": learned_residual_view(
+            packet["residual"], hrl_state=record["hrl_state"]
+        ),
     }
     source = record["source_text"]
     rows = (
@@ -876,7 +988,9 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     return compiled
 
 
-def compiler_input_from_source(source: str) -> dict[str, Any]:
+def compiler_input_from_source(
+    source: str, *, hrl_state: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Build the deterministic, source-only front end seen by the compiler."""
 
     protected = extract_protected_objects(source)
@@ -889,6 +1003,11 @@ def compiler_input_from_source(source: str) -> dict[str, Any]:
         "masked_surface": protected["masked_surface"],
         "correction_lattice": build_correction_lattice(
             source, protected["protected_objects"], []
+        ),
+        "interaction": (
+            learned_interaction_residual_view(hrl_state)
+            if isinstance(hrl_state, dict)
+            else []
         ),
     }
 
@@ -948,7 +1067,7 @@ def execute_learned_pipeline(
         return payload
 
     def compile_surface(surface: str) -> dict[str, Any]:
-        front_end = compiler_input_from_source(surface)
+        front_end = compiler_input_from_source(surface, hrl_state=hrl_state)
         compiler_text = run_stage(
             "surface_to_kernel_program_v1", canonical_json(front_end)
         )
@@ -987,7 +1106,9 @@ def execute_learned_pipeline(
             "concept_capsules": packet["concept_capsules"],
             "source_character_length": packet["source"]["character_length"],
             "program": packet["program"],
-            "residual": learned_residual_view(packet["residual"]),
+            "residual": learned_residual_view(
+                packet["residual"], hrl_state=hrl_state
+            ),
         }
         answer_text = run_stage(
             "kernel_program_to_answer_packet_v1", canonical_json(core_input)
@@ -1006,7 +1127,7 @@ def execute_learned_pipeline(
         "protected_objects": learned_protected_object_view(
             packet["protected_objects"]
         ),
-        "residual": learned_residual_view(packet["residual"]),
+        "residual": learned_residual_view(packet["residual"], hrl_state=hrl_state),
     }
     surface = run_stage(
         "answer_packet_to_surface_v1", canonical_json(renderer_input)

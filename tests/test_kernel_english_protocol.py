@@ -203,10 +203,36 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
     assert receipt["fallback_return_count"] == 0
 
 
-def training_record(*, split: str = "private_train") -> dict:
+def training_record(*, split: str = "private_train", with_interaction: bool = False) -> dict:
     state = memory.create_hierarchical_residual_state(
         f"training-{split}", scope=scope(f"training-{split}")
     )
+    hrl_deltas = []
+    if with_interaction:
+        state, delta = memory.apply_hierarchical_residual_delta(
+            state,
+            [
+                {
+                    "op": "OVERRIDE",
+                    "segment_id": "previous_turn",
+                    "key": "frame_name",
+                    "value": "Approval",
+                    "privacy": "interaction_private",
+                },
+                {
+                    "op": "OVERRIDE",
+                    "segment_id": "previous_turn",
+                    "key": "lexical_unit",
+                    "value": "approve.v",
+                    "privacy": "interaction_private",
+                },
+            ],
+            expected_state_hash=state["state_hash"],
+            actor_authority="document",
+            actor_id="private-test-fixture",
+            provenance={"kind": "human_authored_previous_turn"},
+        )
+        hrl_deltas.append(delta)
     packet = kernel.build_kernel_packet(
         SOURCE,
         program(),
@@ -228,6 +254,7 @@ def training_record(*, split: str = "private_train") -> dict:
         "source_text": SOURCE,
         "kernel_packet": packet,
         "hrl_state": state,
+        "hrl_deltas": hrl_deltas,
         "answer_packet": answer_packet(),
         "surface_target": "Dr. Alvarez may approve $2.75 million; approval remains uncertain.",
         "provenance": {
@@ -258,7 +285,7 @@ def training_record(*, split: str = "private_train") -> dict:
         "residual_supervision": {
             "policy": "project_theseus_kerc_residual_supervision_v1",
             "labels_by_channel": {
-                "interaction": 1,
+                "interaction": 1 if with_interaction else 0,
                 "segment": 0,
                 "token": 0,
                 "exact": 3,
@@ -633,7 +660,7 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
     assert all(row["task_tag"] not in row["prompt"] for row in views)
     assert all(row["public_benchmark"] is False for row in views)
     assert all(row["fallback_return_count"] == 0 for row in views)
-    assert all(row["kerc_residual_labels"] == [1, 0, 0, 3] for row in views)
+    assert all(row["kerc_residual_labels"] == [0, 0, 0, 3] for row in views)
     assert all(row["kerc_verifier_positive_labels"] == [1, 1, 1, 1] for row in views)
     assert all(
         row["kerc_verifier_negative"]["generator_loss_enabled"] is False
@@ -682,6 +709,78 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
     assert kernel.parse_learned_answer_output(answer_view["target"])[
         "answer_packet_sha256"
     ]
+
+
+def test_journaled_interaction_is_visible_to_every_structured_learned_stage() -> None:
+    record = kernel.validate_training_record(training_record(with_interaction=True))
+    views = kernel.compile_training_views(record)
+
+    assert all(row["kerc_residual_labels"][0] == 1 for row in views)
+    expected = [
+        ["previous_turn", "frame_name", "Approval"],
+        ["previous_turn", "lexical_unit", "approve.v"],
+    ]
+    compiler = next(
+        row for row in views if row["objective"] == "surface_to_kernel_program_v1"
+    )
+    core = next(
+        row
+        for row in views
+        if row["objective"] == "kernel_program_to_answer_packet_v1"
+    )
+    renderer = next(
+        row for row in views if row["objective"] == "answer_packet_to_surface_v1"
+    )
+    assert json.loads(compiler["prompt"])["interaction"] == expected
+    assert json.loads(core["prompt"])["residual"]["interaction"] == expected
+    assert json.loads(renderer["prompt"])["residual"]["interaction"] == expected
+
+
+def test_interaction_journal_and_visibility_boundaries_fail_closed() -> None:
+    tampered = training_record(with_interaction=True)
+    tampered["hrl_deltas"][0]["operations"][0]["value"] = "Forgery"
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_TRAINING_HRL_REPLAY_INVALID"
+    ):
+        kernel.validate_training_record(tampered)
+
+    state = training_record(with_interaction=True)["hrl_state"]
+    cross_user = copy.deepcopy(state)
+    cross_user["cross_user_reuse_allowed"] = True
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_INTERACTION_CROSS_USER_REUSE_FORBIDDEN"
+    ):
+        kernel.learned_interaction_residual_view(cross_user)
+
+    widened = copy.deepcopy(state)
+    widened["scope"]["privacy"] = "public"
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_INTERACTION_PRIVACY_INVALID"):
+        kernel.learned_interaction_residual_view(widened)
+
+    initial = memory.create_hierarchical_residual_state(
+        "interaction-budget", scope=scope("interaction-budget")
+    )
+    over_budget, _delta = memory.apply_hierarchical_residual_delta(
+        initial,
+        [
+            {
+                "op": "OVERRIDE",
+                "segment_id": "previous_turn",
+                "key": f"field_{index:02d}",
+                "value": index,
+                "privacy": "interaction_private",
+            }
+            for index in range(65)
+        ],
+        expected_state_hash=initial["state_hash"],
+        actor_authority="document",
+        actor_id="private-test-fixture",
+        provenance={"kind": "bounded_context_rejection_fixture"},
+    )
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_INTERACTION_VIEW_BUDGET_EXCEEDED"
+    ):
+        kernel.learned_interaction_residual_view(over_budget)
 
 
 def test_verifier_corruptions_cover_all_dimensions_with_valid_nonempty_targets() -> None:

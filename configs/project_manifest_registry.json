@@ -286,31 +286,31 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "2ad76f56aa87b057d0bc6b912c990a2e26bed6c2e1e01e82560de2382fcbab8d"
+          "sha256": "8ab9b42969340e7881c87fa04cf0e5c42d6f66b053cd117204081641ae00ba6c"
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "b5ef2a38415a5f43f302952dcb5126ea248402860f658bed5f6da74cf3d74e37"
+          "sha256": "5e34974907220401b7f13700db79f5588eac2c7b4a84a619b3cb44b2d971f1ea"
         },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "0bb9d4246b3db4c6ae142ff142fac0f79e68cd2c8a8a5f48fdc6866af17e588a"
+          "sha256": "69813aeef770d4be96bc39bf09246cb6f7ce1d5730e1385af29fa33936f4c3de"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "36c9e56207a10f19da345b4bed13614a8d635c65d037e15162c93419eb149d9a"
+          "sha256": "8547cbb0dfdc6291e338eb8604bb6729a17e66140990ec4b30c7031e7e3cd2be"
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
-          "sha256": "2e6ab498b9717609bb70140e73355fe72b608e8855da9e390c969f79daf0bc78"
+          "sha256": "55c03f85d912eb89321dd35d7f12994aa2df545d9f6b2a5555ebbf51fb11b72d"
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "1f958196226c9b1edd2bf3708ba22caa92273f94dfd7b4f4d615d6c09117b83e"
+          "sha256": "7c0a42bb79be25d2afd501381ffadfa1f50e6a2414da94b3806b568b8aed5cc6"
         },
         "kerc_adequacy_tests": {
           "path": "tests/test_kerc_adequacy_canary.py",
-          "sha256": "4e73bbc9e192c8920bc47f6bc863249b6d6e9de79ee5eb5d08c4070bdcfa824d"
+          "sha256": "a1228fabe5ca4d2cb158221d63c2debe5808eaee8e5870bb2f0407b2d749d7ef"
         },
         "kerc_checkpoint_schema": {
           "path": "scripts/kerc_checkpoint_schema.py",
@@ -318,7 +318,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "dc7b8eff237589c5d045764a9ab53b72d4e6919612ba633442b1378c1def26d2"
+          "sha256": "dbb9c758e23d96aec87e84e4dc728891594dc51fa86e24bac38404cb14f5ac40"
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
@@ -350,7 +350,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "f65d512e8c72da3b4d545956451a53c634c63075a4ced49da50dabfdf82ee7e4"
+          "sha256": "6f565425ca6c749ca85425653fb177aec9f9b19f012589e14c1a8fc6af43519c"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5378,7 +5378,8 @@
           "direct_behavior_remains_zero",
           "kerc_stage_manifest_missing_or_identity_changed",
           "kerc_target_or_surface_control_parameter_matching_changed",
-          "kerc_stage_residual_verifier_gradient_or_cache_parity_changed"
+          "kerc_stage_residual_verifier_gradient_or_cache_parity_changed",
+          "kerc_interaction_state_journal_privacy_or_causal_ablation_changed"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
       },
@@ -5394,7 +5395,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has a source-replayed 10,240-record governed corpus, per-objective semantic authority, 7,220 independently replayed human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, 13 verifier corruption strategies across all four dimensions, a GREEN canonical stage with maximum sequence length 2,872, and a GREEN real-row MLX adequacy canary sustaining at least 66.020 target tokens/s while covering tiny-subset learning, scoped interventions, verifier causality, checkpoint/optimizer replay, mismatch rejection, cleanup, and sustained batches. This remains mechanics evidence only. VCM interaction rewards, ambiguity and multiple-valid supervision, a full-size multi-seed resource replay, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 10,240-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and 13 verifier corruption strategies. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 18,432-view stage has maximum sequence length 3,570 with no truncation. The GREEN 64-update MLX adequacy canary learns all four residual channels, proves interaction-specific causal use and a trained leave-interaction-out control, passes exact optimizer reload and float32 resume parity, and sustains at least 51.088 target tokens/s. This remains mechanics evidence only: current targets do not prove interaction utility. Ambiguity, question/entailment, abstention, multiple-valid supervision, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

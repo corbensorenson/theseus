@@ -14,6 +14,7 @@ if str(SCRIPTS) not in sys.path:
 
 import kerc_semantic_corpus as producer  # noqa: E402
 import kerc_semantic_corpus_verify as verifier  # noqa: E402
+import vcm_semantic_memory as memory  # noqa: E402
 
 
 def source_contract(path: Path) -> dict:
@@ -232,6 +233,59 @@ def test_independent_masc_replay_rejects_forged_protected_span(tmp_path: Path) -
         verifier.verify_masc_record(candidate, source, expected)
 
 
+def test_independent_masc_replay_binds_and_rejects_forged_interaction_state(
+    tmp_path: Path,
+) -> None:
+    fn = write_masc_fixture(tmp_path)
+    row = verifier.independent_masc_document(fn, tmp_path / "data")[0]
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "2" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": [
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        ],
+    }
+    interaction = {
+        "document_id": row["annotation"]["document_id"],
+        "sentence_node": "prior-sentence",
+        "annotation_set_node": "prior-frame",
+        "frame_name": "Prior_frame",
+        "lexical_unit": "prior.v",
+        "source_annotation_sha256": "sha256:" + "3" * 64,
+    }
+    expected = {
+        **row,
+        "split": "private_train",
+        "interaction_annotation": interaction,
+    }
+    candidate = producer.masc_record(
+        row,
+        split="private_train",
+        source=source,
+        producer_sha256="sha256:" + "1" * 64,
+        interaction_annotation=interaction,
+    )
+    receipt = verifier.verify_masc_record(candidate, source, expected)
+    assert receipt["interaction_bound"] is True
+    assert candidate["residual_supervision"]["labels_by_channel"]["interaction"] == 1
+
+    forged_state = json.loads(json.dumps(candidate))
+    forged_state["hrl_state"]["segments"]["previous_turn"]["entries"][
+        "frame_name"
+    ]["value"] = "Forged"
+    with pytest.raises(ValueError, match="VCM interaction state replay mismatch"):
+        verifier.verify_masc_record(forged_state, source, expected)
+
+    forged_label = json.loads(json.dumps(candidate))
+    forged_label["residual_supervision"]["labels_by_channel"]["interaction"] = 0
+    with pytest.raises(ValueError, match="interaction residual label mismatch"):
+        verifier.verify_masc_record(forged_label, source, expected)
+
+
 def test_residual_supervision_matches_packet_mechanics() -> None:
     packet = {
         "residual": {
@@ -241,7 +295,12 @@ def test_residual_supervision_matches_packet_mechanics() -> None:
             "exact_object_handles": ["@E1"],
         }
     }
-    supervision = producer.residual_supervision("fixture", packet=packet)
+    state = memory.create_hierarchical_residual_state(
+        "fixture", scope=producer.scope("fixture")
+    )
+    supervision = producer.residual_supervision(
+        "fixture", packet=packet, hrl_state=state
+    )
     assert supervision["record_fidelity_label"] == 3
     assert supervision["labels_by_channel"] == {
         "interaction": 0,

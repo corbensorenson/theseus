@@ -108,7 +108,9 @@ def select_balanced_subset(
     identities = [source_identity(row, separator_id) for row in np.asarray(stage.inputs)]
     if positives_per_objective != 1:
         raise ValueError("balanced KERC adequacy selection currently requires one positive per objective")
-    candidate_matrix: dict[str, dict[int, tuple[int, int]]] = {}
+    candidate_matrix: dict[
+        str, dict[int, dict[tuple[int, ...], tuple[int, int]]]
+    ] = {}
     for objective, token_id in zip(TRAINING_OBJECTIVES, task_token_ids):
         candidates = [
             index
@@ -145,33 +147,53 @@ def select_balanced_subset(
                     f"KERC verifier pair must corrupt exactly one dimension: {objective}"
                 )
             by_dimension.setdefault(int(dimensions[0]), []).append((index, negative))
-        candidate_matrix[objective] = {
-            dimension: min(
-                rows,
-                key=lambda pair: (
-                    active_width(
-                        stage.inputs[pair[0] : pair[0] + 1],
-                        stage.labels[pair[0] : pair[0] + 1],
-                        stage.loss_mask[pair[0] : pair[0] + 1],
+        candidate_matrix[objective] = {}
+        for dimension, rows in by_dimension.items():
+            by_signature: dict[tuple[int, ...], list[tuple[int, int]]] = {}
+            for pair in rows:
+                signature = tuple(
+                    int(value) for value in stage.kerc_residual_labels[pair[0]]
+                )
+                by_signature.setdefault(signature, []).append(pair)
+            candidate_matrix[objective][dimension] = {
+                signature: min(
+                    signature_rows,
+                    key=lambda pair: (
+                        active_width(
+                            stage.inputs[pair[0] : pair[0] + 1],
+                            stage.labels[pair[0] : pair[0] + 1],
+                            stage.loss_mask[pair[0] : pair[0] + 1],
+                        ),
+                        canonical_sha256(stage.inputs[pair[0]].tolist()),
                     ),
-                    canonical_sha256(stage.inputs[pair[0]].tolist()),
-                ),
-            )
-            for dimension, rows in by_dimension.items()
-        }
+                )
+                for signature, signature_rows in by_signature.items()
+            }
     assignments = []
     for dimensions in itertools.permutations(range(len(KERC_VERIFIER_DIMENSIONS))):
-        pairs = []
+        options = []
         for objective, dimension in zip(TRAINING_OBJECTIVES, dimensions):
-            pair = candidate_matrix[objective].get(dimension)
-            if pair is None:
+            signatures = candidate_matrix[objective].get(dimension)
+            if not signatures:
                 break
-            pairs.append(pair)
-        if len(pairs) == len(TRAINING_OBJECTIVES):
-            assignments.append((dimensions, pairs))
+            options.append(list(signatures.items()))
+        if len(options) != len(TRAINING_OBJECTIVES):
+            continue
+        for selected_options in itertools.product(*options):
+            signatures = [row[0] for row in selected_options]
+            if any(
+                len({signature[channel] for signature in signatures}) < 2
+                for channel in range(len(KERC_RESIDUAL_CHANNELS))
+            ):
+                continue
+            assignments.append(
+                (dimensions, [row[1] for row in selected_options], signatures)
+            )
     if not assignments:
-        raise ValueError("KERC adequacy subset cannot cover every verifier dimension")
-    dimensions, pairs = min(
+        raise ValueError(
+            "KERC adequacy subset cannot cover every verifier dimension and residual channel"
+        )
+    dimensions, pairs, signatures = min(
         assignments,
         key=lambda assignment: (
             sum(
@@ -210,6 +232,15 @@ def select_balanced_subset(
             objective: KERC_VERIFIER_DIMENSIONS[dimension]
             for objective, dimension in zip(TRAINING_OBJECTIVES, dimensions)
         },
+        "residual_signature_by_objective": {
+            objective: list(signature)
+            for objective, signature in zip(TRAINING_OBJECTIVES, signatures)
+        },
+        "informative_residual_channels": [
+            channel
+            for index, channel in enumerate(KERC_RESIDUAL_CHANNELS)
+            if len({signature[index] for signature in signatures}) > 1
+        ],
         "row_count": len(selected),
         "positive_row_count": int(np.asarray(subset.mask).sum(axis=1).astype(bool).sum()),
         "verifier_only_row_count": int((np.asarray(subset.mask).sum(axis=1) == 0).sum()),
@@ -276,6 +307,7 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
     mechanism_activity = {
         "stage_weights_maximum_absolute": 0.0,
         "residual_logits_maximum_absolute": 0.0,
+        "interaction_residual_logits_maximum_absolute": 0.0,
         "verifier_logits_maximum_absolute": 0.0,
     }
     model.eval()
@@ -326,6 +358,10 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
         mechanism_activity["residual_logits_maximum_absolute"] = max(
             mechanism_activity["residual_logits_maximum_absolute"],
             float(np.max(np.abs(residual_logits))),
+        )
+        mechanism_activity["interaction_residual_logits_maximum_absolute"] = max(
+            mechanism_activity["interaction_residual_logits_maximum_absolute"],
+            float(np.max(np.abs(residual_logits[:, 0, :]))),
         )
         residual_predictions = residual_logits.argmax(axis=-1)
         residual_prediction_rows.extend(residual_predictions.astype(int).tolist())
@@ -540,6 +576,17 @@ def flatten_parameter_delta(left: Any, right: Any, *, mlx_utils: Any) -> float:
     )
 
 
+def flattened_tree_delta(left: Any, right: Any, *, mlx_utils: Any) -> float:
+    left_rows = dict(mlx_utils.tree_flatten(left))
+    right_rows = dict(mlx_utils.tree_flatten(right))
+    if left_rows.keys() != right_rows.keys():
+        raise ValueError("serialized tree inventories differ")
+    return max(
+        float(np.max(np.abs(np.asarray(left_rows[name]) - np.asarray(right_rows[name]))))
+        for name in left_rows
+    )
+
+
 def nested_logit_delta(left: list[list[float]], right: list[list[float]]) -> float:
     values = [
         abs(a - b)
@@ -547,6 +594,44 @@ def nested_logit_delta(left: list[list[float]], right: list[list[float]]) -> flo
         for a, b in zip(left_row, right_row)
     ]
     return float(max(values or [0.0]))
+
+
+def nested_logit_equivalence(
+    left: list[list[float]],
+    right: list[list[float]],
+    *,
+    absolute_tolerance: float,
+    relative_tolerance: float,
+) -> dict[str, Any]:
+    if len(left) != len(right) or any(
+        len(left_row) != len(right_row)
+        for left_row, right_row in zip(left, right)
+    ):
+        return {
+            "equivalent": False,
+            "shape_match": False,
+            "maximum_absolute_delta": None,
+            "violation_count": 1,
+        }
+    pairs = [
+        (float(a), float(b))
+        for left_row, right_row in zip(left, right)
+        for a, b in zip(left_row, right_row)
+    ]
+    deltas = [abs(a - b) for a, b in pairs]
+    violations = [
+        delta
+        for delta, (a, b) in zip(deltas, pairs)
+        if delta > absolute_tolerance + relative_tolerance * max(abs(a), abs(b))
+    ]
+    return {
+        "equivalent": not violations,
+        "shape_match": True,
+        "maximum_absolute_delta": float(max(deltas or [0.0])),
+        "violation_count": len(violations),
+        "absolute_tolerance": float(absolute_tolerance),
+        "relative_tolerance": float(relative_tolerance),
+    }
 
 
 def compact_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
@@ -581,6 +666,9 @@ def train_mechanism_ablations(
     variants = {
         "without_stage_routing": {"kerc_stage_routing_ablation": "zero"},
         "without_hierarchical_residual": {"kerc_residual_ablation": "zero"},
+        "without_interaction_residual": {
+            "kerc_interaction_residual_ablation": "zero"
+        },
         "without_independent_verifier": {"kerc_verifier_ablation": "zero"},
     }
     optimization = config["optimization"]
@@ -630,6 +718,8 @@ def train_mechanism_ablations(
             "capability_claim": "NONE_MECHANICS_ONLY",
             "negative_verdict_authority": "NONE",
         }
+        del model, optimizer
+        mx.clear_cache()
     return receipts
 
 
@@ -671,6 +761,8 @@ def intervention_receipts(
         route_inputs[route_inputs == int(token_id)] = 0
     route_stage = SimpleNamespace(**{**stage.__dict__, "inputs": route_inputs})
     route_metrics = evaluate_model(route_model, route_stage, mx=mx, nn=nn)
+    del route_model
+    mx.clear_cache()
 
     residual_model = loaded()
     residual_model.kerc_residual_values.weight = mx.zeros_like(
@@ -678,6 +770,24 @@ def intervention_receipts(
     )
     mx.eval(residual_model.parameters())
     residual_metrics = evaluate_model(residual_model, stage, mx=mx, nn=nn)
+    del residual_model
+    mx.clear_cache()
+
+    interaction_model = loaded()
+    choice_count = int(target["model"]["kerc_residual_choice_count"])
+    interaction_model.kerc_residual_values.weight = mx.concatenate(
+        [
+            mx.zeros_like(
+                interaction_model.kerc_residual_values.weight[:choice_count]
+            ),
+            interaction_model.kerc_residual_values.weight[choice_count:],
+        ],
+        axis=0,
+    )
+    mx.eval(interaction_model.parameters())
+    interaction_metrics = evaluate_model(interaction_model, stage, mx=mx, nn=nn)
+    del interaction_model
+    mx.clear_cache()
 
     verifier_model = loaded()
     verifier_model.kerc_verifier_classifier.weight = mx.zeros_like(
@@ -691,6 +801,8 @@ def intervention_receipts(
     verifier_delta = nested_logit_delta(
         baseline["verifier_logits"], verifier_metrics["verifier_logits"]
     )
+    del verifier_model
+    mx.clear_cache()
     return {
         "trusted_stage_token_removed": {
             "delta_by_objective": expected_logit_delta_by_objective(
@@ -710,6 +822,17 @@ def intervention_receipts(
                 "kernel_program_to_answer_packet_v1",
             ],
         },
+        "interaction_residual_values_zeroed": {
+            "delta_by_objective": expected_logit_delta_by_objective(
+                baseline, interaction_metrics, selection
+            ),
+            "expected_active_objectives": [
+                "surface_to_kernel_program_v1",
+                "answer_packet_to_surface_v1",
+            ],
+            "channel_index": 0,
+            "channel_name": "interaction",
+        },
         "independent_verifier_classifier_zeroed": {
             "maximum_verifier_logit_delta": verifier_delta
         },
@@ -724,7 +847,8 @@ def classify_gates(
     first_phase: dict[str, Any],
     second_phase: dict[str, Any],
     reload_delta: float,
-    resume_delta: float,
+    resume_equivalence: dict[str, Any],
+    optimizer_reload_delta: float,
     interventions: dict[str, Any],
     migration_rejection: bool,
     schema_migration_valid: bool,
@@ -751,7 +875,8 @@ def classify_gates(
     }
     checks.append(("verifier_learned", after["verifier_macro_balanced_accuracy"] is not None and after["verifier_macro_balanced_accuracy"] >= accept["minimum_verifier_macro_balanced_accuracy"] and after["verifier_minimum_negative_recall"] is not None and after["verifier_minimum_negative_recall"] >= accept["minimum_verifier_negative_recall"], verifier_observed, "adequacy"))
     checks.append(("checkpoint_reload_equivalent", reload_delta <= accept["maximum_checkpoint_reload_logit_delta"], reload_delta, "hard"))
-    checks.append(("optimizer_resume_equivalent", resume_delta <= accept["maximum_resume_equivalence_logit_delta"], resume_delta, "hard"))
+    checks.append(("optimizer_state_reload_exact", optimizer_reload_delta <= accept["maximum_optimizer_state_reload_delta"], optimizer_reload_delta, "hard"))
+    checks.append(("optimizer_resume_equivalent", resume_equivalence.get("equivalent") is True and resume_equivalence.get("discrete_outcomes_preserved") is True, resume_equivalence, "hard"))
     checks.append(("resume_mismatch_rejected", migration_rejection, migration_rejection, "hard"))
     checks.append(("checkpoint_schema_migration_valid", schema_migration_valid, schema_migration_valid, "hard"))
     checks.append(("unknown_checkpoint_schema_rejected", schema_unknown_rejection, schema_unknown_rejection, "hard"))
@@ -763,10 +888,13 @@ def classify_gates(
     disabled_activity = {
         "without_stage_routing": trained_ablations.get("without_stage_routing", {}).get("after", {}).get("mechanism_activity", {}).get("stage_weights_maximum_absolute"),
         "without_hierarchical_residual": trained_ablations.get("without_hierarchical_residual", {}).get("after", {}).get("mechanism_activity", {}).get("residual_logits_maximum_absolute"),
+        "without_interaction_residual": trained_ablations.get("without_interaction_residual", {}).get("after", {}).get("mechanism_activity", {}).get("interaction_residual_logits_maximum_absolute"),
         "without_independent_verifier": trained_ablations.get("without_independent_verifier", {}).get("after", {}).get("mechanism_activity", {}).get("verifier_logits_maximum_absolute"),
     }
     checks.append(("trained_ablations_remove_named_mechanism", all(value is not None and float(value) <= activity_limit for value in disabled_activity.values()), disabled_activity, "hard"))
     checks.append(("temporary_artifacts_cleaned", partial_file_count == 0, partial_file_count, "hard"))
+    required_interventions = set(config["required_interventions"])
+    checks.append(("causal_intervention_inventory", set(interventions) == required_interventions, sorted(interventions), "hard"))
     minimum_delta = float(accept["minimum_active_intervention_logit_delta"])
     route_deltas = interventions["trusted_stage_token_removed"]["delta_by_objective"]
     checks.append(("trusted_stage_route_is_causal", all(value > minimum_delta for value in route_deltas.values()), route_deltas, "adequacy"))
@@ -774,6 +902,8 @@ def classify_gates(
     checks.append(("residual_path_is_causal_when_active", all(residual["delta_by_objective"][name] > minimum_delta for name in residual["expected_active_objectives"]), residual["delta_by_objective"], "adequacy"))
     inactive_max = float(accept["maximum_inactive_residual_intervention_logit_delta"])
     checks.append(("residual_path_is_scoped_when_inactive", all(residual["delta_by_objective"][name] <= inactive_max for name in residual["expected_inactive_objectives"]), residual["delta_by_objective"], "hard"))
+    interaction = interventions["interaction_residual_values_zeroed"]
+    checks.append(("interaction_residual_path_is_causal", all(interaction["delta_by_objective"][name] > minimum_delta for name in interaction["expected_active_objectives"]), interaction["delta_by_objective"], "adequacy"))
     checks.append(("independent_verifier_is_causal", interventions["independent_verifier_classifier_zeroed"]["maximum_verifier_logit_delta"] > minimum_delta, interventions["independent_verifier_classifier_zeroed"], "adequacy"))
     throughput = min(first_phase["target_tokens_per_second"], second_phase["target_tokens_per_second"])
     checks.append(("multi_batch_mlx_throughput", throughput >= accept["minimum_target_tokens_per_second"], throughput, "adequacy"))
@@ -892,6 +1022,9 @@ def run(config_path: Path) -> dict[str, Any]:
         list(mx.load(str(optimizer_path)).items())
     )
     mx.eval(reloaded.parameters(), reloaded_optimizer.state)
+    optimizer_reload_delta = flattened_tree_delta(
+        optimizer.state, reloaded_optimizer.state, mlx_utils=mlx_utils
+    )
     reloaded_metrics = evaluate_model(reloaded, subset, mx=mx, nn=nn)
     reload_delta = nested_logit_delta(
         checkpoint_metrics["expected_token_logits"],
@@ -927,7 +1060,50 @@ def run(config_path: Path) -> dict[str, Any]:
         optim=optim,
     )
     resume_parameter_delta = flatten_parameter_delta(model, reloaded, mlx_utils=mlx_utils)
+    continuous_after = evaluate_model(model, subset, mx=mx, nn=nn)
     after = evaluate_model(reloaded, subset, mx=mx, nn=nn)
+    absolute_tolerance = float(
+        config["acceptance"]["maximum_resume_equivalence_logit_delta"]
+    )
+    relative_tolerance = float(
+        config["acceptance"]["maximum_resume_equivalence_relative_logit_delta"]
+    )
+    token_resume = nested_logit_equivalence(
+        continuous_after["expected_token_logits"],
+        after["expected_token_logits"],
+        absolute_tolerance=absolute_tolerance,
+        relative_tolerance=relative_tolerance,
+    )
+    verifier_resume = nested_logit_equivalence(
+        continuous_after["verifier_logits"],
+        after["verifier_logits"],
+        absolute_tolerance=absolute_tolerance,
+        relative_tolerance=relative_tolerance,
+    )
+    discrete_outcomes_preserved = all(
+        continuous_after[key] == after[key]
+        for key in (
+            "token_accuracy",
+            "residual_accuracy",
+            "verifier_bit_accuracy",
+            "residual_channels",
+            "verifier_dimensions",
+        )
+    )
+    resume_equivalence = {
+        "equivalent": bool(
+            token_resume["equivalent"]
+            and verifier_resume["equivalent"]
+            and discrete_outcomes_preserved
+        ),
+        "discrete_outcomes_preserved": discrete_outcomes_preserved,
+        "token_logits": token_resume,
+        "verifier_logits": verifier_resume,
+        "maximum_absolute_logit_delta": max(
+            float(token_resume["maximum_absolute_delta"] or 0.0),
+            float(verifier_resume["maximum_absolute_delta"] or 0.0),
+        ),
+    }
     reloaded.save_weights(str(checkpoint))
     publish_optimizer(mx, mlx_utils, reloaded_optimizer, optimizer_path)
     checkpoint_binding = {
@@ -997,6 +1173,8 @@ def run(config_path: Path) -> dict[str, Any]:
         and rollback_receipt["optimizer_inventory_sha256"]
         == migration_manifest["source"]["optimizer_inventory"]["inventory_sha256"]
     )
+    del model, optimizer, reloaded, reloaded_optimizer, migrated_model, rollback_model
+    mx.clear_cache()
     trained_ablations = train_mechanism_ablations(
         target,
         copy_lookup,
@@ -1046,7 +1224,8 @@ def run(config_path: Path) -> dict[str, Any]:
         first_phase=first_phase,
         second_phase=second_phase,
         reload_delta=reload_delta,
-        resume_delta=resume_parameter_delta,
+        resume_equivalence=resume_equivalence,
+        optimizer_reload_delta=optimizer_reload_delta,
         interventions=interventions,
         migration_rejection=migration_rejection,
         schema_migration_valid=schema_migration_valid,
@@ -1080,6 +1259,8 @@ def run(config_path: Path) -> dict[str, Any]:
             "continuous_second_phase": second_phase_left,
             "resumed_second_phase": second_phase,
             "checkpoint_reload_maximum_logit_delta": reload_delta,
+            "optimizer_state_reload_maximum_tensor_delta": optimizer_reload_delta,
+            "resume_equivalence": resume_equivalence,
             "resume_maximum_parameter_delta": resume_parameter_delta,
         },
         "interventions": interventions,

@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from kerc_adequacy_canary import (  # noqa: E402
     classify_gates,
     compact_metrics,
+    nested_logit_equivalence,
     select_balanced_subset,
 )
 from kerc_checkpoint_schema import (  # noqa: E402
@@ -43,7 +44,19 @@ def fixture_stage() -> SimpleNamespace:
         mask=mask,
         loss_mask=mask.astype(np.float32),
         sample_weights=np.ones((8,), dtype=np.float64),
-        kerc_residual_labels=np.tile(np.arange(4, dtype=np.int32), (8, 1)),
+        kerc_residual_labels=np.repeat(
+            np.asarray(
+                [
+                    [0, 0, 0, 0],
+                    [1, 1, 2, 3],
+                    [0, 1, 2, 3],
+                    [1, 1, 2, 3],
+                ],
+                dtype=np.int32,
+            ),
+            2,
+            axis=0,
+        ),
         kerc_verifier_labels=verifier_labels,
     )
 
@@ -63,6 +76,26 @@ def test_compact_metrics_preserves_scalars_and_hides_diagnostic_vectors() -> Non
     assert compact["diagnostic_vectors_embedded"] is False
 
 
+def test_resume_logit_equivalence_uses_absolute_and_relative_float_tolerance() -> None:
+    equivalent = nested_logit_equivalence(
+        [[2.0, -3.0]],
+        [[2.000015, -3.00002]],
+        absolute_tolerance=1e-5,
+        relative_tolerance=1e-5,
+    )
+    assert equivalent["equivalent"] is True
+    assert equivalent["violation_count"] == 0
+
+    divergent = nested_logit_equivalence(
+        [[0.0, 1.0]],
+        [[0.001, 1.0]],
+        absolute_tolerance=1e-5,
+        relative_tolerance=1e-5,
+    )
+    assert divergent["equivalent"] is False
+    assert divergent["violation_count"] == 1
+
+
 def test_balanced_subset_requires_exact_source_bound_corruption() -> None:
     subset, receipt = select_balanced_subset(
         fixture_stage(),
@@ -74,6 +107,12 @@ def test_balanced_subset_requires_exact_source_bound_corruption() -> None:
     assert receipt["positive_row_count"] == 4
     assert receipt["verifier_only_row_count"] == 4
     assert all(len(indices) == 2 for indices in receipt["rows_by_objective"].values())
+    assert receipt["informative_residual_channels"] == [
+        "interaction",
+        "segment",
+        "token",
+        "exact",
+    ]
 
 
 def test_balanced_subset_rejects_missing_verifier_pair() -> None:
@@ -92,19 +131,37 @@ def test_balanced_subset_rejects_missing_verifier_pair() -> None:
         raise AssertionError("missing verifier pair was admitted")
 
 
+def test_balanced_subset_rejects_missing_interaction_contrast() -> None:
+    stage = fixture_stage()
+    stage.kerc_residual_labels[:, 0] = 0
+    try:
+        select_balanced_subset(
+            stage,
+            task_token_ids=(10, 11, 12, 13),
+            separator_id=2,
+            positives_per_objective=1,
+        )
+    except ValueError as exc:
+        assert "every verifier dimension and residual channel" in str(exc)
+    else:
+        raise AssertionError("interaction-free adequacy subset was admitted")
+
+
 def gate_fixture() -> dict:
     return {
         "acceptance": {
             "maximum_final_to_initial_loss_ratio": 0.8,
             "minimum_token_accuracy_gain": 0.01,
-            "minimum_residual_informative_channel_count": 3,
+            "minimum_residual_informative_channel_count": 4,
             "minimum_residual_macro_balanced_accuracy": 0.75,
             "minimum_verifier_macro_balanced_accuracy": 0.75,
             "minimum_verifier_negative_recall": 0.5,
             "maximum_checkpoint_reload_logit_delta": 1e-6,
+            "maximum_optimizer_state_reload_delta": 0.0,
             "maximum_checkpoint_migration_logit_delta": 1e-6,
             "maximum_checkpoint_rollback_logit_delta": 1e-6,
             "maximum_resume_equivalence_logit_delta": 1e-5,
+            "maximum_resume_equivalence_relative_logit_delta": 1e-5,
             "maximum_disabled_mechanism_activity": 0.0,
             "minimum_active_intervention_logit_delta": 1e-7,
             "maximum_inactive_residual_intervention_logit_delta": 1e-7,
@@ -113,7 +170,14 @@ def gate_fixture() -> dict:
         "required_trained_ablations": [
             "without_stage_routing",
             "without_hierarchical_residual",
+            "without_interaction_residual",
             "without_independent_verifier",
+        ],
+        "required_interventions": [
+            "trusted_stage_token_removed",
+            "hierarchical_residual_values_zeroed",
+            "interaction_residual_values_zeroed",
+            "independent_verifier_classifier_zeroed",
         ],
     }
 
@@ -125,6 +189,13 @@ def trained_ablation_fixture() -> dict:
         },
         "without_hierarchical_residual": {
             "after": {"mechanism_activity": {"residual_logits_maximum_absolute": 0.0}}
+        },
+        "without_interaction_residual": {
+            "after": {
+                "mechanism_activity": {
+                    "interaction_residual_logits_maximum_absolute": 0.0
+                }
+            }
         },
         "without_independent_verifier": {
             "after": {"mechanism_activity": {"verifier_logits_maximum_absolute": 0.0}}
@@ -140,13 +211,18 @@ def test_failed_learning_is_inconclusive_not_architecture_falsification() -> Non
         first_phase={"target_tokens_per_second": 2.0},
         second_phase={"target_tokens_per_second": 2.0},
         reload_delta=0.0,
-        resume_delta=0.0,
+        resume_equivalence={"equivalent": True, "discrete_outcomes_preserved": True},
+        optimizer_reload_delta=0.0,
         interventions={
             "trusted_stage_token_removed": {"delta_by_objective": {name: 1e-3 for name in ("a", "b")}},
             "hierarchical_residual_values_zeroed": {
                 "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3, "surface_direct_control_v1": 0.0, "kernel_program_to_answer_packet_v1": 0.0},
                 "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
                 "expected_inactive_objectives": ["surface_direct_control_v1", "kernel_program_to_answer_packet_v1"],
+            },
+            "interaction_residual_values_zeroed": {
+                "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3},
+                "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
             },
             "independent_verifier_classifier_zeroed": {"maximum_verifier_logit_delta": 1e-3},
         },
@@ -170,13 +246,18 @@ def test_lifecycle_failure_is_red() -> None:
         first_phase={"target_tokens_per_second": 2.0},
         second_phase={"target_tokens_per_second": 2.0},
         reload_delta=0.0,
-        resume_delta=0.0,
+        resume_equivalence={"equivalent": True, "discrete_outcomes_preserved": True},
+        optimizer_reload_delta=0.0,
         interventions={
             "trusted_stage_token_removed": {"delta_by_objective": {"a": 1e-3}},
             "hierarchical_residual_values_zeroed": {
                 "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3, "surface_direct_control_v1": 0.0, "kernel_program_to_answer_packet_v1": 0.0},
                 "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
                 "expected_inactive_objectives": ["surface_direct_control_v1", "kernel_program_to_answer_packet_v1"],
+            },
+            "interaction_residual_values_zeroed": {
+                "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3},
+                "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
             },
             "independent_verifier_classifier_zeroed": {"maximum_verifier_logit_delta": 1e-3},
         },

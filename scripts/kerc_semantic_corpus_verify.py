@@ -33,6 +33,10 @@ from moecot_source_conditioned_pretraining import (
     KERC_SOURCE_CATALOG_POLICY,
     validate_kernel_english_config,
 )
+from vcm_semantic_memory import (
+    apply_hierarchical_residual_delta,
+    create_hierarchical_residual_state,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -371,8 +375,47 @@ def independent_masc_assignments(source: dict[str, Any], maximum_characters: int
         selected = sorted(by_split[split], key=lambda row: row["selection_key"])[: int(count)]
         if len(selected) != int(count):
             raise ValueError(f"MASC independent split reconstruction is incomplete: {split}")
+        interactions = independent_interaction_predecessors(selected)
         for row in selected:
-            output[row["source_id"]] = {**row, "split": split}
+            output[row["source_id"]] = {
+                **row,
+                "split": split,
+                "interaction_annotation": interactions.get(row["selection_key"]),
+            }
+    return output
+
+
+def independent_interaction_predecessors(
+    rows: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Reconstruct adjacent-document interaction bindings from raw GrAF rows."""
+
+    documents: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        documents[row["annotation"]["document_id"]].append(row)
+    output: dict[str, dict[str, Any]] = {}
+    for document_rows in documents.values():
+        sentences: dict[tuple[int, int], list[dict[str, Any]]] = defaultdict(list)
+        for row in document_rows:
+            annotation = row["annotation"]
+            sentences[
+                (int(annotation["sentence_start"]), int(annotation["sentence_end"]))
+            ].append(row)
+        ordered = sorted(sentences.items())
+        for index in range(1, len(ordered)):
+            previous = min(ordered[index - 1][1], key=lambda row: row["selection_key"])[
+                "annotation"
+            ]
+            descriptor = {
+                "document_id": previous["document_id"],
+                "sentence_node": previous["sentence_node"],
+                "annotation_set_node": previous["annotation_set_node"],
+                "frame_name": previous["frame_name"],
+                "lexical_unit": previous["lexical_unit"],
+                "source_annotation_sha256": stable_hash(previous),
+            }
+            for current in ordered[index][1]:
+                output[current["selection_key"]] = descriptor
     return output
 
 
@@ -436,6 +479,12 @@ def verify_dolly_record(record: dict[str, Any], source: dict[str, Any], expected
     residual = record["kernel_packet"].get("residual") or {}
     if residual.get("segment_frame") or residual.get("token_tags"):
         raise ValueError("Dolly record received unsupported semantic residual annotations")
+    if record.get("interaction_annotation") is not None or record.get("hrl_deltas"):
+        raise ValueError("Dolly record received unsupported interaction state")
+    if (record.get("residual_supervision") or {}).get("labels_by_channel", {}).get(
+        "interaction"
+    ) != 0:
+        raise ValueError("Dolly interaction residual label must be zero")
     return {"source_row_sha256": expected["annotation"]["source_row_sha256"]}
 
 
@@ -534,10 +583,69 @@ def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected:
     labels = (record.get("residual_supervision") or {}).get("labels_by_channel") or {}
     if labels.get("segment") != 1 or labels.get("token") != 2:
         raise ValueError("MASC residual supervision does not reflect manual annotations")
+    interaction = expected.get("interaction_annotation")
+    if record.get("interaction_annotation") != interaction:
+        raise ValueError("MASC interaction predecessor replay mismatch")
+    identity = stable_hash(
+        {
+            "split": expected["split"],
+            "source_id": record["provenance"]["source_id"],
+            "source_group": record["provenance"]["source_group"],
+            "source_text": annotation["sentence"],
+            "surface_target": annotation["sentence"],
+            "source_annotation": annotation,
+            "interaction_annotation": interaction,
+        }
+    ).split(":", 1)[1]
+    expected_state = create_hierarchical_residual_state(
+        "kerc-corpus-" + identity[:24],
+        scope={
+            "user": "project-theseus-corpus",
+            "project": "theseus",
+            "conversation": identity[:24],
+            "privacy": "private_local",
+        },
+    )
+    expected_deltas: list[dict[str, Any]] = []
+    if interaction:
+        operations = [
+            {
+                "op": "OVERRIDE",
+                "segment_id": "previous_turn",
+                "key": "frame_name",
+                "value": str(interaction["frame_name"]),
+                "privacy": "interaction_private",
+            },
+            {
+                "op": "OVERRIDE",
+                "segment_id": "previous_turn",
+                "key": "lexical_unit",
+                "value": str(interaction["lexical_unit"]),
+                "privacy": "interaction_private",
+            },
+        ]
+        expected_state, delta = apply_hierarchical_residual_delta(
+            expected_state,
+            operations,
+            expected_state_hash=expected_state["state_hash"],
+            actor_authority="document",
+            actor_id="masc_manual_framenet",
+            provenance={
+                "source": source["dataset_id"],
+                "interaction_annotation_sha256": stable_hash(interaction),
+            },
+        )
+        expected_deltas.append(delta)
+    if record.get("hrl_state") != expected_state or record.get("hrl_deltas") != expected_deltas:
+        raise ValueError("MASC VCM interaction state replay mismatch")
+    expected_interaction_label = 1 if interaction else 0
+    if labels.get("interaction") != expected_interaction_label:
+        raise ValueError("MASC interaction residual label mismatch")
     return {
         "document_id": annotation["document_id"],
         "annotation_set_node": annotation["annotation_set_node"],
         "frame_name": annotation["frame_name"],
+        "interaction_bound": bool(interaction),
     }
 
 

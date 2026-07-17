@@ -24,14 +24,16 @@
   "acceptance": {
     "maximum_final_to_initial_loss_ratio": 0.8,
     "minimum_token_accuracy_gain": 0.01,
-    "minimum_residual_informative_channel_count": 3,
+    "minimum_residual_informative_channel_count": 4,
     "minimum_residual_macro_balanced_accuracy": 0.75,
     "minimum_verifier_macro_balanced_accuracy": 0.75,
     "minimum_verifier_negative_recall": 0.5,
     "maximum_checkpoint_reload_logit_delta": 1e-06,
+    "maximum_optimizer_state_reload_delta": 0.0,
     "maximum_checkpoint_migration_logit_delta": 1e-06,
     "maximum_checkpoint_rollback_logit_delta": 1e-06,
     "maximum_resume_equivalence_logit_delta": 1e-05,
+    "maximum_resume_equivalence_relative_logit_delta": 1e-05,
     "maximum_disabled_mechanism_activity": 0.0,
     "minimum_active_intervention_logit_delta": 1e-07,
     "maximum_inactive_residual_intervention_logit_delta": 1e-07,
@@ -40,11 +42,13 @@
   "required_interventions": [
     "trusted_stage_token_removed",
     "hierarchical_residual_values_zeroed",
+    "interaction_residual_values_zeroed",
     "independent_verifier_classifier_zeroed"
   ],
   "required_trained_ablations": [
     "without_stage_routing",
     "without_hierarchical_residual",
+    "without_interaction_residual",
     "without_independent_verifier"
   ],
   "boundaries": {

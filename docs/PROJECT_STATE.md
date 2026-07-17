@@ -54,15 +54,22 @@ share toward zero. Public benchmarks are calibration only.
   dataset revision, license, source identity, producer, evidence tier, and verification
   method. A separate producer plus independent raw-source replayer admitted 10,240
   source-bound rows: Dolly supports direct-surface training only, while manual MASC
-  FrameNet annotations support compiler/reasoner/renderer objectives. The canonical
-  stage has 18,432 authorized views, 18,432 verifier corruptions, document-disjoint
-  heldouts, and zero derived-view unique-data credit. A full-size, 64-update real-row
-  MLX adequacy canary now passes tiny-subset learning, scoped stage/residual/verifier
-  interventions, exact checkpoint reload, optimizer resume within `4.59701e-06`,
-  codebook-mismatch rejection, cleanup, and sustained throughput (`>=32.687` target
-  tokens/s). It carries no capability or negative-verdict authority; richer semantic
-  coverage, VCM interaction rewards, explicit schema migration/trained ablations, and
-  the matched campaign remain open. `p4-m8-kerc-runtime-001` trained a
+  FrameNet annotations support compiler/reasoner/renderer objectives. Adjacent
+  human-authored document sentences add journaled, independently replayed VCM state to
+  1,997 train, 998 development, and 1,015 evaluation MASC records. The canonical stage
+  has 18,432 authorized views, 18,432 verifier corruptions, document-disjoint heldouts,
+  zero derived-view unique-data credit, and no truncation at a maximum sequence width
+  of 3,570 tokens. A full-size, 64-update real-row MLX adequacy canary learns all four
+  residual channels at `1.0` macro balanced accuracy, reaches `0.857143` verifier macro
+  balanced accuracy and `1.0` minimum corruption recall, and proves scoped stage,
+  full-residual, interaction-only, and verifier causality plus trained leave-one-
+  mechanism-out controls. Optimizer reload is exact; resumed logits are float32-
+  equivalent within `2.14577e-06` with unchanged discrete outcomes; schema migration,
+  rollback, mismatch rejection, cleanup, and sustained throughput (`>=51.088` target
+  tokens/s) pass. This carries no capability or negative-verdict authority: the current
+  target proves interaction representation, learning, replay, and causal mechanics, not
+  interaction utility. Richer ambiguity/question/entailment/abstention and multiple-
+  valid supervision plus the matched campaign remain open. `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
   hand-coded keyword compiler and renderer. It did not implement or train the paper's
   constrained compiler, Kernel reasoner, learned residual allocator, structured answer
@@ -100,9 +107,8 @@ share toward zero. Public benchmarks are calibration only.
   through the existing English-arm, Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,
-  cleanup, and sustained-batch canaries now pass. Next add richer ambiguity, protected-span,
-  entailment/question, and multiple-valid supervision; bind VCM interaction rewards; rehearse
-  explicit checkpoint-schema migration and trained leave-one-mechanism-out controls; then
+  cleanup, and sustained-batch canaries now pass. Next add richer ambiguity,
+  entailment/question, abstention, and multiple-valid supervision; then
   freeze strong matched controls and total-system accounting and rebuild the architecture
   package. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured

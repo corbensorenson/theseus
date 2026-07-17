@@ -57,6 +57,7 @@ class CausalTransformerConfig:
     kerc_end_token_id: int = 0
     kerc_stage_routing_ablation: str = "none"
     kerc_residual_ablation: str = "none"
+    kerc_interaction_residual_ablation: str = "none"
     kerc_verifier_ablation: str = "none"
 
     def validate(self) -> None:
@@ -183,6 +184,7 @@ class CausalTransformerConfig:
         for name, value in (
             ("stage routing", self.kerc_stage_routing_ablation),
             ("residual", self.kerc_residual_ablation),
+            ("interaction residual", self.kerc_interaction_residual_ablation),
             ("verifier", self.kerc_verifier_ablation),
         ):
             if value not in {"none", "zero"}:
@@ -979,6 +981,21 @@ def build_model(
                 residual_probabilities[:, :, :, None] * values[None, :, :, :],
                 axis=2,
             )
+            if config.kerc_interaction_residual_ablation == "zero":
+                residual_logits = mx.concatenate(
+                    [
+                        mx.zeros_like(residual_logits[:, :1, :]),
+                        residual_logits[:, 1:, :],
+                    ],
+                    axis=1,
+                )
+                residual_levels = mx.concatenate(
+                    [
+                        mx.zeros_like(residual_levels[:, :1, :]),
+                        residual_levels[:, 1:, :],
+                    ],
+                    axis=1,
+                )
             residual_context = mx.mean(residual_levels, axis=1)
             if config.kerc_residual_ablation == "zero":
                 residual_logits = mx.zeros_like(residual_logits)

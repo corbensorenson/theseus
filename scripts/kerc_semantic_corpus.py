@@ -33,7 +33,10 @@ from moecot_source_conditioned_pretraining import (
     KERC_SEMANTIC_CORPUS_POLICY,
     validate_kernel_english_config,
 )
-from vcm_semantic_memory import create_hierarchical_residual_state
+from vcm_semantic_memory import (
+    apply_hierarchical_residual_delta,
+    create_hierarchical_residual_state,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -151,11 +154,13 @@ def scope(identity: str) -> dict[str, Any]:
     }
 
 
-def residual_supervision(identity: str, *, packet: dict[str, Any]) -> dict[str, Any]:
+def residual_supervision(
+    identity: str, *, packet: dict[str, Any], hrl_state: dict[str, Any]
+) -> dict[str, Any]:
     residual = packet["residual"]
     fidelity_labels = {"semantic": 0, "faithful": 1, "lexical": 2, "exact": 3}
     labels = {
-        "interaction": 0,
+        "interaction": 1 if (hrl_state.get("segments") or {}) else 0,
         "segment": 1 if residual["segment_frame"] else 0,
         "token": 2 if residual["token_tags"] else 0,
         "exact": 3 if residual["exact_object_handles"] else 0,
@@ -201,6 +206,7 @@ def base_record(
     explicit_spans: list[dict[str, Any]] | None = None,
     segment_frame: dict[str, Any] | None = None,
     token_tags: list[dict[str, Any]] | None = None,
+    interaction_annotation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     identity = stable_hash(
         {
@@ -210,11 +216,42 @@ def base_record(
             "source_text": source_text,
             "surface_target": surface_target,
             "source_annotation": source_annotation,
+            "interaction_annotation": interaction_annotation,
         }
     ).split(":", 1)[1]
     state = create_hierarchical_residual_state(
         "kerc-corpus-" + identity[:24], scope=scope(identity[:24])
     )
+    hrl_deltas: list[dict[str, Any]] = []
+    if interaction_annotation:
+        operations = [
+            {
+                "op": "OVERRIDE",
+                "segment_id": "previous_turn",
+                "key": "frame_name",
+                "value": str(interaction_annotation["frame_name"]),
+                "privacy": "interaction_private",
+            },
+            {
+                "op": "OVERRIDE",
+                "segment_id": "previous_turn",
+                "key": "lexical_unit",
+                "value": str(interaction_annotation["lexical_unit"]),
+                "privacy": "interaction_private",
+            },
+        ]
+        state, delta = apply_hierarchical_residual_delta(
+            state,
+            operations,
+            expected_state_hash=state["state_hash"],
+            actor_authority="document",
+            actor_id="masc_manual_framenet",
+            provenance={
+                "source": source["dataset_id"],
+                "interaction_annotation_sha256": stable_hash(interaction_annotation),
+            },
+        )
+        hrl_deltas.append(delta)
     packet = build_kernel_packet(
         source_text,
         program,
@@ -236,6 +273,7 @@ def base_record(
         "source_text": source_text,
         "kernel_packet": packet,
         "hrl_state": state,
+        "hrl_deltas": hrl_deltas,
         "answer_packet": answer_packet,
         "surface_target": surface_target,
         "provenance": {
@@ -252,9 +290,12 @@ def base_record(
             objectives=objectives,
             producer_sha256=producer_sha256,
         ),
-        "residual_supervision": residual_supervision(identity, packet=packet),
+        "residual_supervision": residual_supervision(
+            identity, packet=packet, hrl_state=state
+        ),
         "verification_receipt": provisional_receipt(identity[:24]),
         "source_annotation": source_annotation,
+        "interaction_annotation": interaction_annotation,
         "public_benchmark": False,
         "public_tests_included": False,
         "public_benchmark_solutions_included": False,
@@ -654,6 +695,7 @@ def masc_record(
     split: str,
     source: dict[str, Any],
     producer_sha256: str,
+    interaction_annotation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     annotation = row["annotation"]
     explicit_spans = [
@@ -787,7 +829,42 @@ def masc_record(
         explicit_spans=explicit_spans,
         segment_frame=segment_frame,
         token_tags=token_tags,
+        interaction_annotation=interaction_annotation,
     )
+
+
+def interaction_predecessors(
+    rows: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Bind a frame to the preceding distinct sentence in the same document."""
+
+    by_document: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        by_document[row["annotation"]["document_id"]].append(row)
+    output: dict[str, dict[str, Any]] = {}
+    for document_rows in by_document.values():
+        by_sentence: dict[tuple[int, int], list[dict[str, Any]]] = defaultdict(list)
+        for row in document_rows:
+            annotation = row["annotation"]
+            by_sentence[
+                (int(annotation["sentence_start"]), int(annotation["sentence_end"]))
+            ].append(row)
+        ordered = sorted(by_sentence.items())
+        for index in range(1, len(ordered)):
+            previous = min(ordered[index - 1][1], key=lambda row: row["selection_key"])[
+                "annotation"
+            ]
+            descriptor = {
+                "document_id": previous["document_id"],
+                "sentence_node": previous["sentence_node"],
+                "annotation_set_node": previous["annotation_set_node"],
+                "frame_name": previous["frame_name"],
+                "lexical_unit": previous["lexical_unit"],
+                "source_annotation_sha256": stable_hash(previous),
+            }
+            for current in ordered[index][1]:
+                output[current["selection_key"]] = descriptor
+    return output
 
 
 def partition_dolly(
@@ -833,6 +910,10 @@ def produce(config_path: Path) -> dict[str, Any]:
         corpus["masc"], maximum_characters=int(corpus["maximum_source_characters"])
     )
     masc_selected = select_masc(masc_rows, corpus["masc"]["records_by_split"])
+    masc_interactions = {
+        split: interaction_predecessors(rows)
+        for split, rows in masc_selected.items()
+    }
     candidates: list[dict[str, Any]] = []
     source_groups_by_split: dict[str, set[str]] = defaultdict(set)
     source_sentences_by_split: dict[str, set[str]] = defaultdict(set)
@@ -856,6 +937,9 @@ def produce(config_path: Path) -> dict[str, Any]:
                 split=split,
                 source=corpus["masc"],
                 producer_sha256=producer_sha256,
+                interaction_annotation=masc_interactions[split].get(
+                    row["selection_key"]
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
@@ -907,6 +991,9 @@ def produce(config_path: Path) -> dict[str, Any]:
         },
         "masc_frame_counts": {
             split: dict(values) for split, values in frame_counts.items()
+        },
+        "masc_interaction_record_count_by_split": {
+            split: len(values) for split, values in masc_interactions.items()
         },
         "candidate_pool_counts": {
             "dolly": len(dolly_rows),
