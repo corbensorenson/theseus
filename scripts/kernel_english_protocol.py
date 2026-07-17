@@ -670,13 +670,44 @@ def training_semantic_payload_sha256(record: dict[str, Any]) -> str:
     )
 
 
+def learned_protected_object_view(
+    protected_objects: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Expose only generation-relevant object fields to learned KERC stages.
+
+    Packet hashes, authority, provenance, byte offsets, and audit metadata remain
+    in the deterministic packet/evidence plane. The model receives the typed
+    handle, copy rule, exact authorized bytes, and character alignment needed to
+    compile, reason, and render without learning on audit-envelope repetition.
+    """
+
+    output: dict[str, dict[str, Any]] = {}
+    for handle, row in sorted(protected_objects.items()):
+        source_span = (
+            row.get("source_span")
+            if isinstance(row.get("source_span"), dict)
+            else {}
+        )
+        output[str(handle)] = {
+            "object_type": str(row.get("object_type") or ""),
+            "copy_policy": str(row.get("copy_policy") or ""),
+            "inline_bytes_b64": row.get("inline_bytes_b64"),
+            "source_span": {
+                "character_start": int(source_span.get("character_start", -1)),
+                "character_end": int(source_span.get("character_end", -1)),
+            },
+        }
+    return output
+
+
 def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     """Compile matched learned objectives without multiplying unique-data credit."""
 
     record = validate_training_record(record)
     packet = record["kernel_packet"]
+    learned_objects = learned_protected_object_view(packet["protected_objects"])
     protected_context = {
-        "protected_objects": packet["protected_objects"],
+        "protected_objects": learned_objects,
         "concept_capsules": packet["concept_capsules"],
         "source_character_length": packet["source"]["character_length"],
     }
@@ -698,7 +729,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     }
     renderer_input = {
         "answer_packet": record["answer_packet"],
-        "protected_objects": packet["protected_objects"],
+        "protected_objects": learned_objects,
         "residual_mode": packet["residual"]["mode"],
         "fidelity": packet["residual"]["fidelity"],
     }
@@ -741,6 +772,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
             objective,
             target,
             protected_objects=packet["protected_objects"],
+            record_identity=record["record_sha256"],
         )
         compiled.append(
             {
@@ -803,7 +835,9 @@ def compiler_input_from_source(source: str) -> dict[str, Any]:
 
     protected = extract_protected_objects(source)
     return {
-        "protected_objects": protected["protected_objects"],
+        "protected_objects": learned_protected_object_view(
+            protected["protected_objects"]
+        ),
         "concept_capsules": {},
         "source_character_length": len(source),
         "masked_surface": protected["masked_surface"],
@@ -901,7 +935,9 @@ def execute_learned_pipeline(
 
     def reason(packet: dict[str, Any]) -> dict[str, Any]:
         core_input = {
-            "protected_objects": packet["protected_objects"],
+            "protected_objects": learned_protected_object_view(
+                packet["protected_objects"]
+            ),
             "concept_capsules": packet["concept_capsules"],
             "source_character_length": packet["source"]["character_length"],
             "program": packet["program"],
@@ -921,7 +957,9 @@ def execute_learned_pipeline(
     intended_answer = reason(packet)
     renderer_input = {
         "answer_packet": intended_answer,
-        "protected_objects": packet["protected_objects"],
+        "protected_objects": learned_protected_object_view(
+            packet["protected_objects"]
+        ),
         "residual_mode": packet["residual"]["mode"],
         "fidelity": packet["residual"]["fidelity"],
     }
@@ -1041,49 +1079,37 @@ def _targeted_verifier_corruption(
     target: str,
     *,
     protected_objects: dict[str, dict[str, Any]],
+    record_identity: str,
 ) -> dict[str, Any]:
-    dimension_by_objective = {
-        "surface_direct_control_v1": "protected_object_consistency",
-        "surface_to_kernel_program_v1": "semantic_consistency",
-        "kernel_program_to_answer_packet_v1": "numeric_value_consistency",
-        "answer_packet_to_surface_v1": "surface_fidelity",
-    }
-    dimension = dimension_by_objective[objective]
-    corrupted = target
-    strategy = ""
-    if objective == "surface_to_kernel_program_v1":
-        payload = json.loads(target)
-        payload["program"]["nodes"][0]["operator"] = "CORRUPTED_OPERATOR"
-        corrupted = canonical_json(payload)
-        strategy = "replace_first_kernel_operator"
-    elif objective == "kernel_program_to_answer_packet_v1":
-        payload = json.loads(target)
-        changed = _increment_first_numeric_value(payload)
-        if not changed:
-            payload["claims"][0]["confidence"] = max(
-                0.0, min(1.0, float(payload["claims"][0].get("confidence", 0.5)) / 2.0)
-            )
-            dimension = "semantic_consistency"
-            strategy = "change_first_claim_confidence"
-        else:
-            strategy = "increment_first_numeric_value"
-        corrupted = canonical_json(payload)
-    elif objective == "surface_direct_control_v1":
-        for row in protected_objects.values():
-            raw = row.get("inline_bytes_b64")
-            if not raw:
-                continue
-            exact = base64.b64decode(str(raw)).decode("utf-8")
-            if exact in corrupted:
-                corrupted = corrupted.replace(exact, "[CORRUPTED_OBJECT]", 1)
-                strategy = "replace_first_protected_object"
-                break
-        if not strategy:
-            corrupted += " [CORRUPTED_OBJECT]"
-            strategy = "append_protected_object_mismatch_marker"
+    if objective not in TRAINING_OBJECTIVES:
+        raise KernelProtocolFault(
+            "KERC_VERIFIER_CORRUPTION_OBJECTIVE_INVALID",
+            objective,
+            path="training_view.kerc_verifier_negative",
+        )
+    selector = int(
+        stable_hash(
+            {"record_identity": record_identity, "objective": objective}
+        ).split(":", 1)[1][:8],
+        16,
+    )
+    if objective in {
+        "surface_to_kernel_program_v1",
+        "kernel_program_to_answer_packet_v1",
+    }:
+        corrupted, dimension, strategy = _structured_verifier_corruption(
+            objective,
+            target,
+            protected_objects=protected_objects,
+            selector=selector,
+        )
     else:
-        corrupted += " [CORRUPTED_SURFACE_FIDELITY]"
-        strategy = "append_surface_fidelity_mismatch_marker"
+        corrupted, dimension, strategy = _surface_verifier_corruption(
+            objective,
+            target,
+            protected_objects=protected_objects,
+            selector=selector,
+        )
     if corrupted == target:
         raise KernelProtocolFault(
             "KERC_VERIFIER_CORRUPTION_NOOP",
@@ -1099,10 +1125,210 @@ def _targeted_verifier_corruption(
         "labels": labels,
         "failed_dimension": dimension,
         "strategy": strategy,
+        "strategy_selector": selector % 4,
+        "record_identity_sha256": stable_hash(record_identity.encode("utf-8")),
         "generator_loss_enabled": False,
         "unique_source_credit": 0,
         "candidate_generation_credit": 0,
     }
+
+
+def _structured_verifier_corruption(
+    objective: str,
+    target: str,
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+    selector: int,
+) -> tuple[str, str, str]:
+    payload = json.loads(target)
+    container_key = "program" if objective == "surface_to_kernel_program_v1" else None
+    rows = (
+        payload.get(container_key, {}).get("nodes")
+        if container_key
+        else payload.get("claims")
+    )
+    if not isinstance(rows, list) or not rows:
+        raise KernelProtocolFault(
+            "KERC_VERIFIER_STRUCTURED_TARGET_INVALID",
+            objective,
+            path="training_view.kerc_verifier_negative",
+        )
+    options = list(range(4))
+    options = options[selector % len(options) :] + options[: selector % len(options)]
+    for option in options:
+        candidate = copy.deepcopy(payload)
+        candidate_rows = (
+            candidate["program"]["nodes"]
+            if objective == "surface_to_kernel_program_v1"
+            else candidate["claims"]
+        )
+        first = candidate_rows[0]
+        if option == 0:
+            field = (
+                "operator"
+                if objective == "surface_to_kernel_program_v1"
+                else "predicate"
+            )
+            first[field] = "SEMANTIC_CONTRADICTION_" + str(
+                first.get(field) or "UNKNOWN"
+            )
+            return (
+                canonical_json(candidate),
+                "semantic_consistency",
+                "replace_first_predicate",
+            )
+        if option == 1:
+            observed = str(first.get("modality") or "ASSERTED")
+            first["modality"] = "POSSIBLE" if observed != "POSSIBLE" else "REQUIRED"
+            return canonical_json(candidate), "semantic_consistency", "change_first_modality"
+        if option == 2:
+            observed = str(first.get("polarity") or "AFFIRMED")
+            first["polarity"] = "NEGATED" if observed != "NEGATED" else "AFFIRMED"
+            return canonical_json(candidate), "semantic_consistency", "flip_first_polarity"
+        handles = sorted(protected_objects)
+        if len(handles) >= 2 and _replace_first_handle(first, handles):
+            return (
+                canonical_json(candidate),
+                "protected_object_consistency",
+                "swap_first_protected_handle",
+            )
+        if _increment_first_numeric_value(first):
+            return (
+                canonical_json(candidate),
+                "numeric_value_consistency",
+                "increment_first_numeric_value",
+            )
+        if _replace_first_byte_literal(first):
+            return (
+                canonical_json(candidate),
+                "semantic_consistency",
+                "replace_first_literal_value",
+            )
+    raise KernelProtocolFault(
+        "KERC_VERIFIER_CORRUPTION_UNAVAILABLE",
+        objective,
+        path="training_view.kerc_verifier_negative",
+    )
+
+
+def _surface_verifier_corruption(
+    objective: str,
+    target: str,
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+    selector: int,
+) -> tuple[str, str, str]:
+    options = list(range(4))
+    options = options[selector % len(options) :] + options[: selector % len(options)]
+    for option in options:
+        if option == 3 and objective == "answer_packet_to_surface_v1":
+            if '"' in target:
+                return (
+                    target.replace('"', "\u201c", 1),
+                    "surface_fidelity",
+                    "change_first_quote_glyph",
+                )
+            if "\n" in target:
+                return (
+                    target.replace("\n", " ", 1),
+                    "surface_fidelity",
+                    "replace_first_line_break",
+                )
+            return target + " ", "surface_fidelity", "append_exact_surface_space"
+        if option == 0:
+            exact_values = []
+            for row in protected_objects.values():
+                raw = row.get("inline_bytes_b64")
+                if raw:
+                    exact_values.append(base64.b64decode(str(raw)).decode("utf-8"))
+            for exact in exact_values:
+                if exact and exact in target:
+                    replacement = "different protected value"
+                    return (
+                        target.replace(exact, replacement, 1),
+                        "protected_object_consistency",
+                        "replace_first_protected_object",
+                    )
+        if option == 1:
+            match = re.search(r"(?<!\w)-?\d+(?:[,.]\d+)*(?!\w)", target)
+            if match:
+                raw = match.group(0)
+                digits = re.sub(r"\D", "", raw)
+                if digits:
+                    changed = str(int(digits) + 1)
+                    return (
+                        target[: match.start()] + changed + target[match.end() :],
+                        "numeric_value_consistency",
+                        "increment_first_surface_number",
+                    )
+        if option == 2:
+            negated = re.search(r"\b(?:not|never|no)\b", target, flags=re.IGNORECASE)
+            if negated:
+                changed = (target[: negated.start()] + target[negated.end() :]).strip()
+                if changed:
+                    return (
+                        changed,
+                        "semantic_consistency",
+                        "remove_first_surface_negation",
+                    )
+            auxiliary = re.search(
+                r"\b(?:is|are|was|were|can|could|will|would|should|has|have|had|does|do|did)\b",
+                target,
+                flags=re.IGNORECASE,
+            )
+            if auxiliary:
+                return (
+                    target[: auxiliary.end()] + " not" + target[auxiliary.end() :],
+                    "semantic_consistency",
+                    "insert_surface_negation",
+                )
+        if option == 3:
+            word = re.search(r"\S+", target)
+            if word:
+                observed = word.group(0)
+                normalized = observed.strip(".,!?;:\"'").lower()
+                replacement = (
+                    "no"
+                    if normalized in {"yes", "true"}
+                    else "yes"
+                    if normalized in {"no", "false"}
+                    else "different"
+                )
+                return (
+                    target[: word.start()] + replacement + target[word.end() :],
+                    "semantic_consistency",
+                    "replace_first_surface_token",
+                )
+    raise KernelProtocolFault(
+        "KERC_VERIFIER_CORRUPTION_UNAVAILABLE",
+        "surface",
+        path="training_view.kerc_verifier_negative",
+    )
+
+
+def _replace_first_handle(value: Any, handles: list[str]) -> bool:
+    if isinstance(value, dict):
+        if value.get("type") == "handle" and value.get("value") in handles:
+            observed = str(value["value"])
+            value["value"] = next(handle for handle in handles if handle != observed)
+            return True
+        return any(_replace_first_handle(item, handles) for item in value.values())
+    if isinstance(value, list):
+        return any(_replace_first_handle(item, handles) for item in value)
+    return False
+
+
+def _replace_first_byte_literal(value: Any) -> bool:
+    if isinstance(value, dict):
+        if value.get("type") == "byte_literal" and isinstance(value.get("value"), str):
+            value["value"] = base64.b64encode(
+                b"semantically different value"
+            ).decode("ascii")
+            return True
+        return any(_replace_first_byte_literal(item) for item in value.values())
+    if isinstance(value, list):
+        return any(_replace_first_byte_literal(item) for item in value)
+    return False
 
 
 def _increment_first_numeric_value(value: Any) -> bool:

@@ -1699,11 +1699,16 @@ content-bound adequacy run used exact-source real-row pairs across all four obje
 and 64 full-size MLX updates. MASC manual named-entity graphs are now independently
 replayed alongside FrameNet: 3,070 records carry 7,220 typed person/place/organization/
 date protections, and 395 exactly aligned semantic arguments use packet-owned handles
-rather than byte literals. The rebuilt stage and canary remain GREEN: total loss fell
-to `0.244008` of baseline, token accuracy gained `0.354497`, residual accuracy reached
-`1.0`, verifier bit accuracy reached `0.90625`, and sustained throughput remained at
-least `40.868` target tokens/s. Checkpoint reload was exact, optimizer resume differed
-by at most `3.71039e-06`, stale
+rather than byte literals. Learned stages now consume a compact least-privilege object
+view while full hashes, authority, provenance, and access policy stay in the packet and
+evidence plane. The genuinely rematerialized stage retains all 18,432 positive views
+and 18,432 zero-generator-loss negatives, fits within 2,872 tokens, and rotates 13
+syntax-valid corruptions across semantic, protected-object, numeric, and exact-surface
+dimensions. The rebuilt canary remains GREEN: total loss fell to `0.247716` of baseline,
+token accuracy gained `0.359788`, residual accuracy reached `1.0`, verifier bit accuracy
+reached `0.875`, and sustained resumed throughput remained at least `66.020` target
+tokens/s. Checkpoint reload was exact, optimizer resume differed by at most
+`1.63540e-06`, stale
 codebook identity was rejected, partial artifacts were absent, and trusted-stage,
 residual-scope, and verifier interventions behaved causally. This still has no utility
 or negative-verdict authority. Richer semantic coverage, VCM interaction rewards,

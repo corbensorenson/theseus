@@ -615,6 +615,7 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
         row["kerc_verifier_negative"]["generator_loss_enabled"] is False
         and row["kerc_verifier_negative"]["target"] != row["target"]
         and sum(row["kerc_verifier_negative"]["labels"]) == 3
+        and row["kerc_verifier_negative"]["strategy_selector"] in range(4)
         for row in views
     )
     assert views[0]["target"] != views[1]["target"]
@@ -633,6 +634,14 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
     compiler_view = next(
         row for row in views if row["objective"] == "surface_to_kernel_program_v1"
     )
+    compiler_prompt = json.loads(compiler_view["prompt"])
+    assert set(compiler_prompt["protected_objects"]["@E1"]) == {
+        "object_type",
+        "copy_policy",
+        "inline_bytes_b64",
+        "source_span",
+    }
+    assert "object_sha256" not in compiler_prompt["protected_objects"]["@E1"]
     parsed = kernel.parse_learned_compiler_output(
         compiler_view["target"],
         protected_objects=record["kernel_packet"]["protected_objects"],
@@ -649,6 +658,28 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
     assert kernel.parse_learned_answer_output(answer_view["target"])[
         "answer_packet_sha256"
     ]
+
+
+def test_verifier_corruptions_cover_all_dimensions_with_valid_nonempty_targets() -> None:
+    record = kernel.validate_training_record(training_record())
+    views = kernel.compile_training_views(record)
+    dimensions = set()
+    strategies = set()
+    for index in range(128):
+        for view in views:
+            negative = kernel._targeted_verifier_corruption(
+                view["objective"],
+                view["target"],
+                protected_objects=record["kernel_packet"]["protected_objects"],
+                record_identity=f"fixture-{index}",
+            )
+            assert negative["target"].strip()
+            assert negative["target"] != view["target"]
+            assert negative["labels"].count(0) == 1
+            dimensions.add(negative["failed_dimension"])
+            strategies.add(negative["strategy"])
+    assert dimensions == set(kernel.KERC_VERIFIER_DIMENSIONS)
+    assert len(strategies) >= 8
 
 
 def test_training_record_and_learned_outputs_fail_closed() -> None:
