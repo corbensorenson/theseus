@@ -110,7 +110,12 @@ def dolly_prompt(row: dict[str, Any]) -> str:
     return str(row.get("instruction") or "").strip()
 
 
-def independent_dolly_assignments(source: dict[str, Any], maximum_characters: int) -> dict[str, dict[str, Any]]:
+def independent_dolly_assignments(
+    source: dict[str, Any],
+    maximum_characters: int,
+    *,
+    reserved_source_hashes: set[str] | None = None,
+) -> dict[str, dict[str, Any]]:
     path = resolve(source["path"])
     if sha256_file(path) != source["content_sha256"]:
         raise ValueError("Dolly source hash mismatch")
@@ -145,6 +150,8 @@ def independent_dolly_assignments(source: dict[str, Any], maximum_characters: in
             "category": str(row.get("category") or ""),
             "source_row_sha256": stable_hash(row),
         }
+        if annotation["source_row_sha256"] in (reserved_source_hashes or set()):
+            continue
         selection_key = stable_hash({"dataset": source["dataset_id"], "annotation": annotation})
         eligible.append(
             {
@@ -164,6 +171,120 @@ def independent_dolly_assignments(source: dict[str, Any], maximum_characters: in
         offset += int(count)
     if len(output) != sum(int(value) for value in source["records_by_split"].values()):
         raise ValueError("Dolly independent split reconstruction is incomplete")
+    return output
+
+
+def independent_dolly_grounded_assignments(
+    source: dict[str, Any], maximum_characters: int
+) -> dict[str, dict[str, Any]]:
+    """Replay unique extractive QA eligibility and balanced split assignment."""
+
+    path = resolve(source["path"])
+    if sha256_file(path) != source["content_sha256"]:
+        raise ValueError("Dolly grounded-question source hash mismatch")
+    question_re = re.compile(
+        r"^(who|what|when|where|which|how(?:\s+(?:many|much|long|old|far))?)\b",
+        re.IGNORECASE,
+    )
+    eligible: list[dict[str, Any]] = []
+    seen_prompts: set[str] = set()
+    seen_targets: set[str] = set()
+    for line_number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not raw.strip():
+            continue
+        row = json.loads(raw)
+        prompt = dolly_prompt(row)
+        target = str(row.get("response") or "").strip()
+        context = str(row.get("context") or "").strip()
+        question_match = question_re.match(prompt)
+        if (
+            str(row.get("category") or "") != "closed_qa"
+            or question_match is None
+            or not prompt.endswith("?")
+            or not 12 <= len(prompt) <= maximum_characters
+            or not 2 <= len(target) <= min(512, maximum_characters)
+            or not 16 <= len(context) <= maximum_characters
+            or context.count(target) != 1
+            or len(target) / len(context) > 0.5
+        ):
+            continue
+        prompt_hash = stable_hash(prompt.encode("utf-8"))
+        target_hash = stable_hash(target.encode("utf-8"))
+        if prompt_hash in seen_prompts or target_hash in seen_targets:
+            continue
+        seen_prompts.add(prompt_hash)
+        seen_targets.add(target_hash)
+        answer_start = context.index(target)
+        question_form = question_match.group(1).lower().replace(" ", "_")
+        annotation = {
+            "source_kind": "dolly_human_unique_extractive_question_answer",
+            "line_number": line_number,
+            "instruction": str(row.get("instruction") or ""),
+            "context": str(row.get("context") or ""),
+            "response": str(row.get("response") or ""),
+            "category": "closed_qa",
+            "question_form": question_form,
+            "answer_span": [answer_start, answer_start + len(target)],
+            "support_relation": "unique_contiguous_exact_span",
+            "support_claim_scope": "extractive_source_support_only",
+            "broad_entailment_or_truth_claimed": False,
+            "source_row_sha256": stable_hash(row),
+        }
+        selection_key = stable_hash(
+            {"dataset": source["dataset_id"], "annotation": annotation}
+        )
+        eligible.append(
+            {
+                "selection_key": selection_key,
+                "source_id": "dolly-grounded:"
+                + selection_key.split(":", 1)[1][:24],
+                "source_group": "dolly-grounded-row:"
+                + annotation["source_row_sha256"].split(":", 1)[1],
+                "prompt": prompt,
+                "target": target,
+                "context": context,
+                "question_form": question_form,
+                "annotation": annotation,
+            }
+        )
+    available = sorted(eligible, key=lambda row: row["selection_key"])
+    output: dict[str, dict[str, Any]] = {}
+    required_forms = list(source["grounded_question_required_forms"])
+    split_rows = list(source["grounded_question_records_by_split"].items())
+    for split_index, (split, raw_count) in enumerate(split_rows):
+        count = int(raw_count)
+        future_split_count = len(split_rows) - split_index - 1
+        selected: list[dict[str, Any]] = []
+        for form in required_forms:
+            match = next(
+                (row for row in available if row["question_form"] == form), None
+            )
+            if match is None:
+                raise ValueError(
+                    f"Dolly grounded-question form reconstruction incomplete: {split}:{form}"
+                )
+            selected.append(match)
+            available.remove(match)
+        form_counts = Counter(row["question_form"] for row in selected)
+        while len(selected) < count:
+            available_form_counts = Counter(row["question_form"] for row in available)
+            fillable = [
+                row
+                for row in available
+                if row["question_form"] not in required_forms
+                or available_form_counts[row["question_form"]] > future_split_count
+            ]
+            if not fillable:
+                raise ValueError("Dolly grounded-question reconstruction incomplete")
+            match = min(
+                fillable,
+                key=lambda row: (form_counts[row["question_form"]], row["selection_key"]),
+            )
+            selected.append(match)
+            available.remove(match)
+            form_counts[match["question_form"]] += 1
+        for row in selected:
+            output[row["source_id"]] = {**row, "split": split}
     return output
 
 
@@ -965,6 +1086,125 @@ def verify_dolly_record(record: dict[str, Any], source: dict[str, Any], expected
     }
 
 
+def verify_dolly_grounded_record(
+    record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]
+) -> dict[str, Any]:
+    """Verify extractive support and KERC bindings directly from the pinned source."""
+
+    annotation = expected["annotation"]
+    if record.get("source_annotation") != annotation:
+        raise ValueError("Dolly grounded-question annotation replay mismatch")
+    if (
+        record.get("split") != expected["split"]
+        or record.get("source_text") != expected["prompt"]
+        or record.get("surface_target") != expected["target"]
+        or record.get("provenance", {}).get("source_group")
+        != expected["source_group"]
+    ):
+        raise ValueError("Dolly grounded-question split or source replay mismatch")
+    authority = record.get("semantic_supervision", {}).get("objective_authority")
+    if authority != {objective: True for objective in TRAINING_OBJECTIVES}:
+        raise ValueError("Dolly grounded-question objective authority mismatch")
+    context = expected["context"]
+    start, end = (int(value) for value in annotation["answer_span"])
+    if (
+        annotation.get("support_relation") != "unique_contiguous_exact_span"
+        or annotation.get("support_claim_scope") != "extractive_source_support_only"
+        or annotation.get("broad_entailment_or_truth_claimed") is not False
+        or context.count(expected["target"]) != 1
+        or context[start:end] != expected["target"]
+    ):
+        raise ValueError("Dolly grounded-question support relation mismatch")
+    context_sha256 = stable_hash(context.encode("utf-8"))
+    node = record["kernel_packet"]["program"]["nodes"][0]
+    arguments = {
+        str(argument.get("role") or ""): decode_literal(argument.get("value"))
+        for argument in node.get("arguments") or []
+    }
+    if (
+        node.get("operator") != "ANSWER_FROM_CONTEXT"
+        or arguments
+        != {
+            "QUESTION": expected["prompt"],
+            "QUESTION_FORM": expected["question_form"],
+            "CONTEXT_SHA256": context_sha256,
+        }
+    ):
+        raise ValueError("Dolly grounded-question Kernel program replay mismatch")
+    answer = record.get("answer_packet") or {}
+    claims = answer.get("claims") if isinstance(answer.get("claims"), list) else []
+    claim = claims[0] if len(claims) == 1 else {}
+    claim_arguments = {
+        str(argument.get("role") or ""): decode_literal(argument.get("value"))
+        for argument in claim.get("arguments") or []
+    }
+    if (
+        claim.get("claim_id") != "claim-1"
+        or claim.get("predicate") != "SUPPORTED_ANSWER"
+        or claim_arguments
+        != {
+            "ANSWER_SPAN": expected["target"],
+            "CONTEXT_SHA256": context_sha256,
+        }
+        or answer.get("decision")
+        != {
+            "policy": "project_theseus_kernel_answer_decision_v1",
+            "disposition": "ANSWER",
+            "evidence_status": "SUPPORTED",
+            "uncertainty_state": "RESOLVED",
+            "confidence": 1.0,
+            "controlling_claim_ids": ["claim-1"],
+            "unresolved_ambiguity_ids": [],
+        }
+    ):
+        raise ValueError("Dolly grounded-question answer decision replay mismatch")
+    interaction = {
+        "kind": "licensed_grounded_question_context",
+        "policy": "project_theseus_dolly_unique_extractive_question_support_v1",
+        "source_row_sha256": annotation["source_row_sha256"],
+        "context_sha256": context_sha256,
+        "answer_span": [start, end],
+        "support_relation": "unique_contiguous_exact_span",
+        "support_claim_scope": "extractive_source_support_only",
+    }
+    entries = [
+        {"segment_id": "document_context", "key": "content", "value": context},
+        {
+            "segment_id": "question_contract",
+            "key": "context_sha256",
+            "value": context_sha256,
+        },
+    ]
+    if record.get("interaction_annotation") != interaction:
+        raise ValueError("Dolly grounded-question interaction replay mismatch")
+    state, deltas = independent_hrl_replay(
+        split=expected["split"],
+        source_id=record["provenance"]["source_id"],
+        source_group=expected["source_group"],
+        source_text=expected["prompt"],
+        surface_target=expected["target"],
+        source_annotation=annotation,
+        interaction_annotation=interaction,
+        interaction_entries=entries,
+        actor_id="databricks_dolly_grounded_question",
+        source=source,
+        valid_realizations=None,
+    )
+    if record.get("hrl_state") != state or record.get("hrl_deltas") != deltas:
+        raise ValueError("Dolly grounded-question VCM replay mismatch")
+    if (record.get("residual_supervision") or {}).get("labels_by_channel", {}).get(
+        "interaction"
+    ) != 1:
+        raise ValueError("Dolly grounded-question interaction label mismatch")
+    return {
+        "source_row_sha256": annotation["source_row_sha256"],
+        "question_form": expected["question_form"],
+        "answer_span": [start, end],
+        "support_relation": "unique_contiguous_exact_span",
+        "claim_scope": "extractive_source_support_only",
+    }
+
+
 def verify_oasst_record(
     record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]
 ) -> dict[str, Any]:
@@ -1304,7 +1544,10 @@ def source_catalog(corpus: dict[str, Any]) -> dict[str, Any]:
                 "public_benchmark_surface": False,
                 "public_benchmark_payload": False,
                 "allowed_evidence_tiers": ["licensed_human_task_gold"],
-                "allowed_objectives": list(source["allowed_objectives"]),
+                "allowed_objectives": sorted(
+                    set(source["allowed_objectives"])
+                    | set(source.get("grounded_question_allowed_objectives") or [])
+                ),
             }
         )
     return {"policy": KERC_SOURCE_CATALOG_POLICY, "sources": sources}
@@ -1327,8 +1570,20 @@ def verify(config_path: Path) -> dict[str, Any]:
 
     maximum_characters = int(corpus["maximum_source_characters"])
     behavior_expected = independent_oasst_behavior_assignments(corpus["oasst2"])
+    grounded_expected = independent_dolly_grounded_assignments(
+        corpus["dolly"], maximum_characters
+    )
+    grounded_source_hashes = {
+        row["annotation"]["source_row_sha256"]
+        for row in grounded_expected.values()
+    }
     expected = {
-        **independent_dolly_assignments(corpus["dolly"], maximum_characters),
+        **independent_dolly_assignments(
+            corpus["dolly"],
+            maximum_characters,
+            reserved_source_hashes=grounded_source_hashes,
+        ),
+        **grounded_expected,
         **independent_masc_assignments(corpus["masc"], maximum_characters),
         **independent_oasst_assignments(
             corpus["oasst2"],
@@ -1372,7 +1627,9 @@ def verify(config_path: Path) -> dict[str, Any]:
             if semantic.get("annotation_source_sha256") != source["content_sha256"] or semantic.get("producer_artifact_sha256") != manifest["producer_sha256"]:
                 raise ValueError("candidate semantic source binding mismatch")
             replay = (
-                verify_dolly_record(record, source, expected_row)
+                verify_dolly_grounded_record(record, source, expected_row)
+                if source_id.startswith("dolly-grounded:")
+                else verify_dolly_record(record, source, expected_row)
                 if source_key == "dolly"
                 else verify_masc_record(record, source, expected_row)
                 if source_key == "masc"

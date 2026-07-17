@@ -141,7 +141,7 @@ retirement/falsification receipt.
 
 | Order | Contract | Current disposition | Required before long training |
 |---:|---|---|---|
-| 1 | Kernel English + hierarchical residual compiler | `partial` / `INCONCLUSIVE_EXPERIMENT` | faithful learned mechanics, VCM interaction binding, lifecycle, source-replayed multi-turn context, and reviewed multiple-valid supervision are GREEN; add formal ambiguity/entailment/abstention coverage, freeze total-cost controls, and run the multi-seed source-disjoint matched campaign before any utility verdict |
+| 1 | Kernel English + hierarchical residual compiler | `partial` / `INCONCLUSIVE_EXPERIMENT` | faithful learned mechanics, VCM interaction binding, lifecycle, source-replayed multi-turn/multiple-valid supervision, explicit clarify/abstain decisions, and narrow source-grounded question support are GREEN; add formal ambiguity/broad-entailment and protected-span abstention coverage, freeze total-cost controls, and run the multi-seed source-disjoint matched campaign before any utility verdict |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
 | 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
 | 4 | Full-state data/update causality | `pretraining_wired_behavior_qualification_pending` | canonical admission owns a 13-kind content-addressed state inventory, distinct best/final authority, package replay, bounded update, deletion receipts, and exact rollback; learned forgetting/unlearning efficacy waits for training |
@@ -173,7 +173,7 @@ rebuilt; learned efficacy still requires the prospectively frozen joint campaign
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
 | Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the 57.315M package previously replayed, but its authority is invalidated by the KERC adequacy correction. No long optimizer run or new capability evidence exists yet | complete faithful KERC architecture/data/objective/checkpoint integration, add its matched English-arm alternative, rebuild the freeze package, then begin the unchanged joint campaign |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial` / `INCONCLUSIVE_EXPERIMENT`: exact packets/VCM residual mechanics feed an explicit MLX KERC model with trusted stage routing, content-bound V_K/V_P codebooks, disjoint Kernel/pointer/surface support, manual FrameNet segment/token supervision, bounded VCM interaction state, learned four-channel allocation, and an independent five-dimension verifier. The independently replayed 11,328-record corpus yields a GREEN 25,976-view stage, including 1,064 multi-turn OASST2 records, 2,128 reviewed source-bound answers, and a reserved 24-record explicit clarification/abstention stratum. The prior 64-update canary covers the original four verifier dimensions; a new eight-step canary covers all 19 decision/residual/verifier groups with zero omissions but grants no quality credit. Strict reload, resume, migration, rollback, cleanup, and sustained Metal mechanics pass. Dialogue/decision utility and calibration remain unclaimed. The prior keyword/linear result remains proxy-negative only | add formal ambiguity and question/entailment labels, protected-span abstention, trained context counterfactuals, and decision calibration; then freeze and run the multi-seed source-disjoint matched-total-cost campaign before any KERC utility or failure claim |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial` / `INCONCLUSIVE_EXPERIMENT`: exact packets/VCM residual mechanics feed an explicit MLX KERC model with trusted stage routing, content-bound V_K/V_P codebooks, disjoint Kernel/pointer/surface support, manual FrameNet segment/token supervision, bounded VCM interaction state, learned four-channel allocation, and an independent five-dimension verifier. The independently replayed 11,424-record corpus yields a GREEN 26,360-view stage, including 1,064 multi-turn OASST2 records, 2,128 reviewed source-bound answers, a reserved 24-record explicit clarification/abstention stratum, and 96 source-disjoint Dolly questions with unique exact answer support across six required question forms. The new question stratum supports extractive source-grounding only, not broad entailment, truth, completeness, or learned utility. The prior 64-update canary covers the original four verifier dimensions; a new eight-step canary covers all 19 decision/residual/verifier groups with zero omissions but grants no quality credit. Strict reload, resume, migration, rollback, cleanup, and sustained Metal mechanics pass. Dialogue/decision utility and calibration remain unclaimed. The prior keyword/linear result remains proxy-negative only | add formal ambiguity/broad-entailment labels and protected-span abstention, train context counterfactuals, calibrate decisions/verifier behavior, freeze total-cost controls, and run the multi-seed source-disjoint matched campaign before any KERC utility or failure claim |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -1698,10 +1698,23 @@ human-authored document sentences supply journaled, independently replayed VCM
 interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records.
 Compiler, reasoner, and renderer consume a bounded interaction ABI; cross-user reuse,
 privacy widening, unjournaled or tampered deltas, and context overflow fail closed.
+The same independently replayed Dolly source contributes a separate 96-record stratum
+(`64/16/16` train/development/evaluation) in which a natural question's answer is a
+unique bounded contiguous span of its source context. Every split covers `what`, `who`,
+`where`, `when`, `how many`, and `which`; rare forms are reserved before larger-split
+balancing so train selection cannot starve heldouts. These records authorize all four
+learned objectives, bind context through the VCM interaction ABI, and carry explicit
+`ANSWER`/`SUPPORTED`/`RESOLVED` decisions. The compiler input sees the question, form,
+context identity, and governed context but never the evaluator-owned answer span.
+Independent raw-source replay reconstructs eligibility, split assignment, support span,
+Kernel program, VCM state, answer claim, and decision. This is narrow extractive-source
+support only; it does not establish broad entailment, truth, completeness, reasoning,
+calibration, or model quality.
 Source-disjoint heldouts, per-objective authority, archive/revision/license hashes,
 and a verification ledger are mandatory. Duplicate reviewed replies, answer leakage,
 compiled-context overflow, and producer-only identity claims fail closed. The canonical
-stage is GREEN with 25,976 authorized views and 25,976 verifier corruptions; derived
+stage is GREEN with 26,360 authorized views and 26,360 verifier corruptions over 11,424
+source-bound records; derived
 views receive zero unique-data credit. A bounded
 Apple-MLX KERC-only step consumed KERC target positions with nonzero residual and verifier
 auxiliary weights and published a reloadable checkpoint. Dynamic staging and batch
@@ -1712,8 +1725,8 @@ replayed alongside FrameNet: 3,070 records carry 7,220 typed person/place/organi
 date protections, and 395 exactly aligned semantic arguments use packet-owned handles
 rather than byte literals. Learned stages now consume a compact least-privilege object
 view while full hashes, authority, provenance, and access policy stay in the packet and
-evidence plane. The genuinely rematerialized stage retains all 25,976 positive views
-and 25,976 zero-generator-loss negatives without unknown-token substitution or
+evidence plane. The genuinely rematerialized stage retains all 26,360 positive views
+and 26,360 zero-generator-loss negatives without unknown-token substitution or
 truncation; the maximum staged sequence is 4,243 tokens under an 8,192-token contract.
 Lossless UTF-8-safe splitting handles oversized structured atoms while preserving the
 codec's per-span safety bound. Manual FrameNet targets, roles, and named entities now
@@ -1743,8 +1756,10 @@ content-hashed deterministic set-cover prefix and observes all 19 required objec
 normal/clarify/abstain, interaction, residual, and five-dimension verifier groups in
 789 target positions. Its checkpoint remains `NOT_EVALUATED`; this is mechanics
 evidence, not quality or calibration. The new OASST2 rows establish source-bound
-multi-turn, multiple-valid, and explicit-decision supervision, but do not prove semantic
-equivalence or context benefit. Formal ambiguity/question/entailment and protected-span abstention,
+multi-turn, multiple-valid, and explicit-decision supervision, while the Dolly question
+stratum establishes unique extractive support; neither proves semantic equivalence,
+context benefit, broad entailment, truth, or learned question-answer quality. Formal
+ambiguity/broad-entailment and protected-span abstention,
 trained context counterfactuals, calibrated verifier behavior, full-size multi-seed
 resource evidence, and the matched utility campaign remain open.
 

@@ -47,7 +47,7 @@ share toward zero. Public benchmarks are calibration only.
   compile/reason/render/recompile/reason chain and rejects malformed JSON, unresolved
   answer handles, invalid packets, direct-surface bypass, fallback use, or structured
   round-trip disagreement. The KERC candidate carries a `13,315`-symbol vocabulary while the
-  conventional control retains `8,195`; independent width matching leaves a `2,860`
+  conventional control retains `8,195`; independent width matching leaves a `2,603`
   parameter delta (`19,531,487` versus `19,534,090`). The live ten-target plan and
   governed KERC stage are GREEN for mechanics readiness. Semantic admission distinguishes
   decision-grade audited/licensed human gold from train-only parser silver and governed
@@ -55,17 +55,24 @@ share toward zero. Public benchmarks are calibration only.
   sampling-weighted in the MLX trainer, and are bounded by record-share/optimizer caps.
   A content-addressed source catalog rejects public semantic benchmark payloads and binds
   dataset revision, license, source identity, producer, evidence tier, and verification
-  method. A separate producer plus independent raw-source replayer admitted 11,328
+  method. A separate producer plus independent raw-source replayer admitted 11,424
   source-bound rows: Dolly supports direct-surface training only, manual MASC
   FrameNet annotations support compiler/reasoner/renderer objectives, and 1,064 bounded
   OASST2 dialogue trees provide multi-turn VCM context plus 2,128 distinct reviewed
   rank-0/rank-1 human answers. A reserved 24-record source-disjoint stratum adds only
   explicit reviewed human clarification/abstention behavior; it does not claim those
-  responses were optimal, truthful, complete, or calibrated. Duplicate replies, answer leakage, oversized compiled
+  responses were optimal, truthful, complete, or calibrated. A separate 96-record
+  (`64/16/16`) Dolly stratum covers six required question forms in every split and admits
+  only questions whose answer is one unique bounded exact span in source context. It
+  binds that context through VCM and independently replays the source, split, span,
+  Kernel program, answer decision, and interaction state across all four objectives.
+  The learned compiler never receives the evaluator-owned answer span. This supports
+  extractive source grounding only, not broad entailment, truth, completeness,
+  calibration, reasoning quality, or model capability. Duplicate replies, answer leakage, oversized compiled
   contexts, and producer-only identity claims fail closed. Adjacent
   human-authored document sentences add journaled, independently replayed VCM state to
   1,997 train, 998 development, and 1,015 evaluation MASC records. The canonical stage
-  has 25,976 authorized views, 25,976 verifier corruptions, source-disjoint heldouts,
+  has 26,360 authorized views, 26,360 verifier corruptions, source-disjoint heldouts,
   zero derived-view unique-data credit, no unknown-token substitution, and no truncation
   at a maximum sequence width of 4,243 tokens. A full-size, 64-update real-row MLX adequacy canary learns all four
   residual channels at `1.0` macro balanced accuracy, reaches `0.857143` verifier macro
@@ -83,7 +90,7 @@ share toward zero. Public benchmarks are calibration only.
   target proves interaction representation, learning, replay, and causal mechanics, not
   interaction utility. The new dialogue and multiple-valid rows establish source
   authority and representability only until trained context-present/context-withheld/
-  shuffled/wrong-user controls run. Formal ambiguity/question/entailment, protected-span
+  shuffled/wrong-user controls run. Formal ambiguity/broad-entailment, protected-span
   abstention, decision calibration,
   calibrated verifier behavior, and the matched campaign remain open.
   `p4-m8-kerc-runtime-001` trained a

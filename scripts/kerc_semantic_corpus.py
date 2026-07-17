@@ -53,6 +53,13 @@ MASC_ENTITY_TYPES = {
     "org": "ORGANIZATION",
     "date": "DATE_TIME",
 }
+DOLLY_GROUNDED_QUESTION_POLICY = (
+    "project_theseus_dolly_unique_extractive_question_support_v1"
+)
+DOLLY_QUESTION_FORM_RE = re.compile(
+    r"^(who|what|when|where|which|how(?:\s+(?:many|much|long|old|far))?)\b",
+    re.IGNORECASE,
+)
 
 
 def resolve(path: str | Path) -> Path:
@@ -444,6 +451,222 @@ def dolly_record(
         interaction_annotation=interaction_annotation,
         interaction_entries=interaction_entries,
         interaction_actor_id="databricks_dolly_human_context",
+    )
+
+
+def load_dolly_grounded_question_candidates(
+    source: dict[str, Any], *, maximum_characters: int
+) -> tuple[list[dict[str, Any]], Counter[str]]:
+    """Select narrow human QA rows with independently replayable extractive support."""
+
+    path = resolve(source["path"])
+    if sha256_file(path) != source["content_sha256"]:
+        raise ValueError("Dolly grounded-question source hash mismatch")
+    rows: list[dict[str, Any]] = []
+    rejects: Counter[str] = Counter()
+    seen_prompts: set[str] = set()
+    seen_targets: set[str] = set()
+    for line_number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not raw.strip():
+            continue
+        source_row = json.loads(raw)
+        prompt = dolly_prompt(source_row)
+        target = str(source_row.get("response") or "").strip()
+        context = str(source_row.get("context") or "").strip()
+        if str(source_row.get("category") or "") != "closed_qa":
+            rejects["not_closed_qa"] += 1
+            continue
+        question_match = DOLLY_QUESTION_FORM_RE.match(prompt)
+        if not question_match or not prompt.endswith("?"):
+            rejects["question_form"] += 1
+            continue
+        if (
+            not 12 <= len(prompt) <= maximum_characters
+            or not 2 <= len(target) <= min(512, maximum_characters)
+            or not 16 <= len(context) <= maximum_characters
+        ):
+            rejects["length"] += 1
+            continue
+        if context.count(target) != 1 or len(target) / len(context) > 0.5:
+            rejects["not_unique_bounded_exact_support"] += 1
+            continue
+        prompt_hash = stable_hash(prompt.encode("utf-8"))
+        target_hash = stable_hash(target.encode("utf-8"))
+        if prompt_hash in seen_prompts or target_hash in seen_targets:
+            rejects["duplicate_prompt_or_target"] += 1
+            continue
+        seen_prompts.add(prompt_hash)
+        seen_targets.add(target_hash)
+        answer_start = context.index(target)
+        question_form = question_match.group(1).lower().replace(" ", "_")
+        annotation = {
+            "source_kind": "dolly_human_unique_extractive_question_answer",
+            "line_number": line_number,
+            "instruction": str(source_row.get("instruction") or ""),
+            "context": str(source_row.get("context") or ""),
+            "response": str(source_row.get("response") or ""),
+            "category": "closed_qa",
+            "question_form": question_form,
+            "answer_span": [answer_start, answer_start + len(target)],
+            "support_relation": "unique_contiguous_exact_span",
+            "support_claim_scope": "extractive_source_support_only",
+            "broad_entailment_or_truth_claimed": False,
+            "source_row_sha256": stable_hash(source_row),
+        }
+        rows.append(
+            {
+                "selection_key": stable_hash(
+                    {"dataset": source["dataset_id"], "annotation": annotation}
+                ),
+                "prompt": prompt,
+                "target": target,
+                "context": context,
+                "question_form": question_form,
+                "annotation": annotation,
+            }
+        )
+    return sorted(rows, key=lambda row: row["selection_key"]), rejects
+
+
+def select_dolly_grounded_questions(
+    rows: list[dict[str, Any]],
+    counts: dict[str, int],
+    *,
+    required_question_forms: list[str],
+) -> dict[str, list[dict[str, Any]]]:
+    """Create source-disjoint, form-diverse deterministic private splits."""
+
+    available = list(rows)
+    output: dict[str, list[dict[str, Any]]] = {}
+    split_rows = list(counts.items())
+    for split_index, (split, raw_count) in enumerate(split_rows):
+        count = int(raw_count)
+        future_split_count = len(split_rows) - split_index - 1
+        selected: list[dict[str, Any]] = []
+        for form in required_question_forms:
+            match = next(
+                (row for row in available if row["question_form"] == form), None
+            )
+            if match is None:
+                raise ValueError(
+                    f"Dolly grounded-question form unavailable: {split}:{form}"
+                )
+            selected.append(match)
+            available.remove(match)
+        if len(selected) > count:
+            raise ValueError("grounded-question split smaller than required form set")
+        form_counts = Counter(row["question_form"] for row in selected)
+        while len(selected) < count:
+            available_form_counts = Counter(row["question_form"] for row in available)
+            fillable = [
+                row
+                for row in available
+                if row["question_form"] not in required_question_forms
+                or available_form_counts[row["question_form"]] > future_split_count
+            ]
+            if not fillable:
+                raise ValueError(f"insufficient Dolly grounded questions: {split}")
+            match = min(
+                fillable,
+                key=lambda row: (form_counts[row["question_form"]], row["selection_key"]),
+            )
+            selected.append(match)
+            available.remove(match)
+            form_counts[match["question_form"]] += 1
+        output[split] = sorted(selected, key=lambda row: row["selection_key"])
+    return output
+
+
+def dolly_grounded_question_record(
+    row: dict[str, Any],
+    *,
+    split: str,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    context_sha256 = stable_hash(row["context"].encode("utf-8"))
+    program = {
+        "roots": ["k0"],
+        "nodes": [
+            {
+                "node_id": "k0",
+                "operator": "ANSWER_FROM_CONTEXT",
+                "modality": "REQUIRED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [[0, len(row["prompt"])]],
+                "arguments": [
+                    {"role": "QUESTION", "value": byte_literal(row["prompt"])},
+                    {"role": "QUESTION_FORM", "value": byte_literal(row["question_form"])},
+                    {"role": "CONTEXT_SHA256", "value": byte_literal(context_sha256)},
+                ],
+            }
+        ],
+    }
+    answer = {
+        "claims": [
+            {
+                "claim_id": "claim-1",
+                "predicate": "SUPPORTED_ANSWER",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [
+                    {"role": "ANSWER_SPAN", "value": byte_literal(row["target"])},
+                    {"role": "CONTEXT_SHA256", "value": byte_literal(context_sha256)},
+                ],
+            }
+        ],
+        "decision": {
+            "policy": ANSWER_DECISION_POLICY,
+            "disposition": "ANSWER",
+            "evidence_status": "SUPPORTED",
+            "uncertainty_state": "RESOLVED",
+            "confidence": 1.0,
+            "controlling_claim_ids": ["claim-1"],
+            "unresolved_ambiguity_ids": [],
+        },
+        "required_terms": [],
+        "required_caveats": [],
+        "style": {"register": "source_authored_extractive_answer"},
+    }
+    identity = row["selection_key"].split(":", 1)[1]
+    interaction_annotation = {
+        "kind": "licensed_grounded_question_context",
+        "policy": DOLLY_GROUNDED_QUESTION_POLICY,
+        "source_row_sha256": row["annotation"]["source_row_sha256"],
+        "context_sha256": context_sha256,
+        "answer_span": list(row["annotation"]["answer_span"]),
+        "support_relation": "unique_contiguous_exact_span",
+        "support_claim_scope": "extractive_source_support_only",
+    }
+    return base_record(
+        split=split,
+        source_text=row["prompt"],
+        surface_target=row["target"],
+        program=program,
+        answer_packet=answer,
+        source=source,
+        source_id="dolly-grounded:" + identity[:24],
+        source_group="dolly-grounded-row:"
+        + row["annotation"]["source_row_sha256"].split(":", 1)[1],
+        objectives=set(TRAINING_OBJECTIVES),
+        producer_sha256=producer_sha256,
+        source_annotation=row["annotation"],
+        exact_residual=False,
+        interaction_annotation=interaction_annotation,
+        interaction_entries=[
+            {"segment_id": "document_context", "key": "content", "value": row["context"]},
+            {
+                "segment_id": "question_contract",
+                "key": "context_sha256",
+                "value": context_sha256,
+            },
+        ],
+        interaction_actor_id="databricks_dolly_grounded_question",
     )
 
 
@@ -1500,6 +1723,29 @@ def produce(config_path: Path) -> dict[str, Any]:
     dolly_rows, dolly_rejects = load_dolly_candidates(
         corpus["dolly"], maximum_characters=int(corpus["maximum_source_characters"])
     )
+    dolly_grounded_rows, dolly_grounded_rejects = (
+        load_dolly_grounded_question_candidates(
+            corpus["dolly"],
+            maximum_characters=int(corpus["maximum_source_characters"]),
+        )
+    )
+    dolly_grounded_selected = select_dolly_grounded_questions(
+        dolly_grounded_rows,
+        corpus["dolly"]["grounded_question_records_by_split"],
+        required_question_forms=list(
+            corpus["dolly"]["grounded_question_required_forms"]
+        ),
+    )
+    grounded_source_hashes = {
+        row["annotation"]["source_row_sha256"]
+        for rows in dolly_grounded_selected.values()
+        for row in rows
+    }
+    dolly_rows = [
+        row
+        for row in dolly_rows
+        if row["annotation"]["source_row_sha256"] not in grounded_source_hashes
+    ]
     dolly_selected = partition_dolly(
         dolly_rows, corpus["dolly"]["records_by_split"]
     )
@@ -1550,6 +1796,17 @@ def produce(config_path: Path) -> dict[str, Any]:
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
             category_counts[split][row["category"]] += 1
+        for row in dolly_grounded_selected[split]:
+            record = dolly_grounded_question_record(
+                row,
+                split=split,
+                source=corpus["dolly"],
+                producer_sha256=producer_sha256,
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
+            category_counts[split]["grounded_" + row["question_form"]] += 1
         for row in masc_selected[split]:
             record = masc_record(
                 row,
@@ -1615,6 +1872,7 @@ def produce(config_path: Path) -> dict[str, Any]:
         "rows_by_split_and_source": {
             split: {
                 "dolly": len(dolly_selected[split]),
+                "dolly_grounded_question": len(dolly_grounded_selected[split]),
                 "masc": len(masc_selected[split]),
                 "oasst2": len(oasst_selected[split]),
                 "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
@@ -1629,6 +1887,10 @@ def produce(config_path: Path) -> dict[str, Any]:
         },
         "dolly_category_counts": {
             split: dict(values) for split, values in category_counts.items()
+        },
+        "dolly_grounded_question_form_counts_by_split": {
+            split: dict(Counter(row["question_form"] for row in rows))
+            for split, rows in dolly_grounded_selected.items()
         },
         "masc_frame_counts": {
             split: dict(values) for split, values in frame_counts.items()
@@ -1649,12 +1911,14 @@ def produce(config_path: Path) -> dict[str, Any]:
         },
         "candidate_pool_counts": {
             "dolly": len(dolly_rows),
+            "dolly_grounded_question": len(dolly_grounded_rows),
             "masc_by_split": {split: len(rows) for split, rows in masc_rows.items()},
             "oasst2_by_split": {split: len(rows) for split, rows in oasst_rows.items()},
             "oasst2_explicit_behavior": len(oasst_behavior_rows),
         },
         "rejection_counts": {
             "dolly": dict(dolly_rejects),
+            "dolly_grounded_question": dict(dolly_grounded_rejects),
             "masc": dict(masc_rejects),
             "oasst2": dict(oasst_rejects),
             "oasst2_explicit_behavior": dict(oasst_behavior_rejects),

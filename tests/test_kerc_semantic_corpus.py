@@ -70,6 +70,131 @@ def test_dolly_replay_rejects_candidate_target_corruption(tmp_path: Path) -> Non
         verifier.verify_dolly_record(candidate, source, expected)
 
 
+def test_dolly_grounded_question_replays_unique_support_and_rejects_forgery(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "dolly-grounded.jsonl"
+    rows = [
+        {
+            "instruction": f"What is the fixture value for record {index}?",
+            "context": (
+                f"Record {index} has introductory material. "
+                f"The fixture value is value-{index}. End of source context."
+            ),
+            "response": f"value-{index}",
+            "category": "closed_qa",
+        }
+        for index in range(3)
+    ]
+    path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    source = {
+        "path": str(path),
+        "dataset_id": "fixture/dolly-grounded",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": verifier.sha256_file(path),
+        "license_spdx": "CC0-1.0",
+        "records_by_split": {
+            "private_train": 0,
+            "private_dev": 0,
+            "private_eval": 0,
+        },
+        "grounded_question_records_by_split": {
+            "private_train": 1,
+            "private_dev": 1,
+            "private_eval": 1,
+        },
+        "grounded_question_required_forms": ["what"],
+        "grounded_question_allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
+        "allowed_objectives": ["surface_direct_control_v1"],
+    }
+    produced, rejects = producer.load_dolly_grounded_question_candidates(
+        source, maximum_characters=2048
+    )
+    selected = producer.select_dolly_grounded_questions(
+        produced,
+        source["grounded_question_records_by_split"],
+        required_question_forms=source["grounded_question_required_forms"],
+    )
+    independent = verifier.independent_dolly_grounded_assignments(source, 2048)
+    assert not rejects["not_unique_bounded_exact_support"]
+    assert len(independent) == 3
+    for split, split_rows in selected.items():
+        candidate = producer.dolly_grounded_question_record(
+            split_rows[0],
+            split=split,
+            source=source,
+            producer_sha256="sha256:" + "1" * 64,
+        )
+        expected = independent[candidate["provenance"]["source_id"]]
+        receipt = verifier.verify_dolly_grounded_record(candidate, source, expected)
+        assert receipt["support_relation"] == "unique_contiguous_exact_span"
+        candidate["verification_receipt"] = {
+            "policy": kernel.TRAINING_VERIFICATION_POLICY,
+            "receipt_id": "fixture-source-replay",
+            "accepted": True,
+            "verifier_id": "fixture-independent-source-replay",
+            "reviewer_independent_of_record_producer": True,
+            "method": "licensed_semantic_dataset_plus_independent_schema_review",
+            "evidence_sha256": "sha256:" + "2" * 64,
+            "semantic_payload_sha256": kernel.training_semantic_payload_sha256(
+                candidate
+            ),
+        }
+        views = {
+            view["objective"]: view for view in kernel.compile_training_views(candidate)
+        }
+        for objective in (
+            "surface_direct_control_v1",
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+        ):
+            assert '"answer_span"' not in views[objective]["prompt"].lower()
+            assert "source_annotation" not in views[objective]["prompt"]
+            assert "surface_target" not in views[objective]["prompt"]
+            assert views[objective]["generator_visible_fields"] == [
+                "trusted_source_prefix_tokens",
+                "prompt",
+            ]
+            assert "target" in views[objective]["evaluator_only_fields"]
+        forged = json.loads(json.dumps(candidate))
+        forged["source_annotation"]["answer_span"][0] += 1
+        with pytest.raises(ValueError, match="annotation replay mismatch"):
+            verifier.verify_dolly_grounded_record(forged, source, expected)
+
+
+def test_grounded_question_split_reserves_rare_forms_for_future_splits() -> None:
+    rows = [
+        {
+            "selection_key": f"sha256:{index:064x}",
+            "question_form": "who",
+        }
+        for index in range(3)
+    ]
+    rows.extend(
+        {
+            "selection_key": f"sha256:{index + 100:064x}",
+            "question_form": "what",
+        }
+        for index in range(9)
+    )
+
+    selected = producer.select_dolly_grounded_questions(
+        rows,
+        {"private_train": 8, "private_dev": 2, "private_eval": 2},
+        required_question_forms=["what", "who"],
+    )
+
+    assert {split: len(split_rows) for split, split_rows in selected.items()} == {
+        "private_train": 8,
+        "private_dev": 2,
+        "private_eval": 2,
+    }
+    assert all(
+        {row["question_form"] for row in split_rows} == {"what", "who"}
+        for split_rows in selected.values()
+    )
+
+
 def write_oasst_fixture(tmp_path: Path, *, duplicate_responses: bool = False) -> dict:
     labels = {
         "name": ["spam", "lang_mismatch", "pii", "not_appropriate", "quality"],

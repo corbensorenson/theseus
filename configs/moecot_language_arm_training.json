@@ -372,9 +372,9 @@
       "answer_packet_to_surface_v1"
     ],
     "records_by_split": {
-      "private_train": 7184,
-      "private_dev": 2072,
-      "private_eval": 2072
+      "private_train": 7248,
+      "private_dev": 2088,
+      "private_eval": 2088
     },
     "semantic_supervision": {
       "policy": "project_theseus_kerc_semantic_supervision_program_v1",
@@ -530,6 +530,26 @@
           "private_dev": 1024,
           "private_eval": 1024
         },
+        "grounded_question_records_by_split": {
+          "private_train": 64,
+          "private_dev": 16,
+          "private_eval": 16
+        },
+        "grounded_question_required_forms": [
+          "what",
+          "who",
+          "where",
+          "when",
+          "how_many",
+          "which"
+        ],
+        "grounded_question_claim_scope": "unique contiguous reviewed answer span in supplied context; extractive source support only, not broad entailment or truth",
+        "grounded_question_allowed_objectives": [
+          "surface_direct_control_v1",
+          "surface_to_kernel_program_v1",
+          "kernel_program_to_answer_packet_v1",
+          "answer_packet_to_surface_v1"
+        ],
         "allowed_objectives": ["surface_direct_control_v1"]
       },
       "masc": {

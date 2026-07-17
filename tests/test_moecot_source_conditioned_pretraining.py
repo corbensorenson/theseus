@@ -132,6 +132,16 @@ def kernel_config(tmp_path: Path) -> dict:
                         "private_dev": 0,
                         "private_eval": 0,
                     },
+                    "grounded_question_records_by_split": {
+                        "private_train": 0,
+                        "private_dev": 0,
+                        "private_eval": 0,
+                    },
+                    "grounded_question_required_forms": ["what", "who", "where", "when"],
+                    "grounded_question_claim_scope": "fixture extractive support only",
+                    "grounded_question_allowed_objectives": list(
+                        kernel.TRAINING_OBJECTIVES
+                    ),
                     "allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
                 },
                 "masc": {

@@ -521,6 +521,22 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         ):
             raise ValueError(f"KERC semantic corpus source contract invalid: {name}")
     requested = cfg.get("records_by_split") or {}
+    grounded_counts = sources["dolly"].get("grounded_question_records_by_split")
+    grounded_objectives = sources["dolly"].get("grounded_question_allowed_objectives")
+    grounded_forms = sources["dolly"].get("grounded_question_required_forms")
+    if (
+        not isinstance(grounded_counts, dict)
+        or tuple(grounded_counts) != ("private_train", "private_dev", "private_eval")
+        or any(int(value) < 0 for value in grounded_counts.values())
+        or not isinstance(grounded_objectives, list)
+        or set(grounded_objectives) != set(TRAINING_OBJECTIVES)
+        or not isinstance(grounded_forms, list)
+        or len(grounded_forms) < 4
+        or len(set(grounded_forms)) != len(grounded_forms)
+        or any(not str(value) for value in grounded_forms)
+        or not str(sources["dolly"].get("grounded_question_claim_scope") or "")
+    ):
+        raise ValueError("KERC Dolly grounded-question contract invalid")
     behavior_counts = sources["oasst2"].get("explicit_behavior_records_by_split")
     if (
         not isinstance(behavior_counts, dict)
@@ -535,6 +551,7 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("KERC OASST2 explicit behavior contract invalid")
     for split in requested:
         total = sum(int(source["records_by_split"][split]) for source in sources.values())
+        total += int(grounded_counts[split])
         total += sum(int(value) for value in behavior_counts[split].values())
         if total != int(requested[split]):
             raise ValueError(f"KERC semantic corpus split total mismatch: {split}")
@@ -548,6 +565,8 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
                 for source in sources.values()
                 if objective in source["allowed_objectives"]
             )
+            if objective in grounded_objectives:
+                available += int(grounded_counts[split])
             if objective in sources["oasst2"]["allowed_objectives"]:
                 available += sum(int(value) for value in behavior_counts[split].values())
             if available < int(floor):
