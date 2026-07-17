@@ -1,0 +1,48 @@
+{
+  "policy": "project_theseus_kerc_adequacy_canary_v1",
+  "training_config": "configs/moecot_language_arm_training.json",
+  "target_id": "english_kerc",
+  "output_root": "runtime/kerc_adequacy_canary_v1",
+  "report": "reports/kerc_adequacy_canary.json",
+  "seed": 20260717,
+  "subset": {
+    "positive_rows_per_objective": 1,
+    "include_paired_verifier_corruptions": true,
+    "selection": "shortest_content_bound_real_row_per_objective_then_exact_source_pair",
+    "maximum_rows": 8
+  },
+  "optimization": {
+    "steps_before_resume": 48,
+    "steps_after_resume": 16,
+    "maximum_total_steps": 64,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.0,
+    "gradient_clip_norm": 1.0,
+    "batch_size": 1
+  },
+  "acceptance": {
+    "maximum_final_to_initial_loss_ratio": 0.8,
+    "minimum_token_accuracy_gain": 0.01,
+    "minimum_residual_accuracy": 0.5,
+    "minimum_verifier_bit_accuracy": 0.75,
+    "maximum_checkpoint_reload_logit_delta": 1e-06,
+    "maximum_resume_equivalence_logit_delta": 1e-05,
+    "minimum_active_intervention_logit_delta": 1e-07,
+    "maximum_inactive_residual_intervention_logit_delta": 1e-07,
+    "minimum_target_tokens_per_second": 1.0
+  },
+  "required_interventions": [
+    "trusted_stage_token_removed",
+    "hierarchical_residual_values_zeroed",
+    "independent_verifier_classifier_zeroed"
+  ],
+  "boundaries": {
+    "public_training_rows_written": 0,
+    "public_benchmark_payload_count": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "template_credit": 0,
+    "capability_claim": "NONE_MECHANICS_ONLY",
+    "negative_verdict_authority": "NONE"
+  }
+}

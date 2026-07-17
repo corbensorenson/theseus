@@ -56,11 +56,13 @@ share toward zero. Public benchmarks are calibration only.
   source-bound rows: Dolly supports direct-surface training only, while manual MASC
   FrameNet annotations support compiler/reasoner/renderer objectives. The canonical
   stage has 18,432 authorized views, 18,432 verifier corruptions, document-disjoint
-  heldouts, and zero derived-view unique-data credit. A bounded KERC-only MLX step
-  exercised residual and verifier auxiliary gradients and published a reloadable
-  checkpoint. Dynamic staging/batch cropping raised the bounded KERC canary from
-  `2.648` to `39.552` target tokens/second; this remains mechanics evidence, not
-  utility. `p4-m8-kerc-runtime-001` trained a
+  heldouts, and zero derived-view unique-data credit. A full-size, 64-update real-row
+  MLX adequacy canary now passes tiny-subset learning, scoped stage/residual/verifier
+  interventions, exact checkpoint reload, optimizer resume within `4.59701e-06`,
+  codebook-mismatch rejection, cleanup, and sustained throughput (`>=32.687` target
+  tokens/s). It carries no capability or negative-verdict authority; richer semantic
+  coverage, VCM interaction rewards, explicit schema migration/trained ablations, and
+  the matched campaign remain open. `p4-m8-kerc-runtime-001` trained a
   TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
   hand-coded keyword compiler and renderer. It did not implement or train the paper's
   constrained compiler, Kernel reasoner, learned residual allocator, structured answer
@@ -94,14 +96,15 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** implement faithful KERC through existing English-arm,
-  Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier owners. The first neural mechanics
-  and semantic evidence-tier tranches are integrated; next build governed licensed
-  source-disjoint stage supervision with 1,024 decision-grade train and all-gold dev/eval,
-  a real governed V_K/V_P codebook artifact, residual/interaction and verifier-corruption labels,
-  and executable recompile verification. Then pass overfit/intervention/ablation/resume/
-  migration/resource/security canaries and freeze strong matched controls and total-system
-  accounting; then rebuild the architecture package. Reflexive Router pre-training mechanics are complete:
+- **Immediate dependency:** finish the remaining faithful KERC pre-training boundary
+  through the existing English-arm, Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier
+  owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
+  scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,
+  cleanup, and sustained-batch canaries now pass. Next add richer ambiguity, protected-span,
+  entailment/question, and multiple-valid supervision; bind VCM interaction rewards; rehearse
+  explicit checkpoint-schema migration and trained leave-one-mechanism-out controls; then
+  freeze strong matched controls and total-system accounting and rebuild the architecture
+  package. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured
   DAG and reversible effect, and the frozen 32-case/eight-track/ten-policy profile produces
   320 replayable result rows with full mechanics at 32/32 and no-Chronicle/no-compiler
