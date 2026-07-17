@@ -27,7 +27,10 @@ from moecot_language_arm_training import (  # noqa: E402
     checkpoint_generation_paths,
     cleanup_progress_generation,
     ensure_shared_trunk_migration,
+    generate_kerc_pipeline_text,
     generate_model_text,
+    kerc_global_token_rows,
+    kerc_serialization_valid_ids,
     matched_decoder_only_config,
     materialize_target_supervision,
     model_accounting,
@@ -44,7 +47,11 @@ from standard_causal_transformer_model import (  # noqa: E402
     parameter_count,
 )
 from standard_causal_transformer_survival import causal_loss  # noqa: E402
-from neural_seed_open_vocab import reserve_byte_fallback_tokens  # noqa: E402
+from neural_seed_open_vocab import (  # noqa: E402
+    TARGET_BYTE_BEGIN,
+    TARGET_BYTE_END,
+    reserve_byte_fallback_tokens,
+)
 from moecot_source_conditioned_pretraining import (  # noqa: E402
     build_kerc_code_vocabulary,
 )
@@ -744,6 +751,42 @@ def test_generation_api_cannot_receive_hidden_target() -> None:
     assert "prompt" in parameters
     assert "target" not in parameters
     assert "expected" not in parameters
+    pipeline_parameters = inspect.signature(generate_kerc_pipeline_text).parameters
+    assert "prompt" in pipeline_parameters
+    assert "expected" not in pipeline_parameters
+
+
+def test_kerc_code_decoder_keeps_byte_fallback_inside_one_code_space() -> None:
+    code_vocabulary = {
+        "kernel_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+            TARGET_BYTE_BEGIN: 2,
+            "<byte:41>": 3,
+            TARGET_BYTE_END: 4,
+            "PROGRAM": 5,
+        },
+        "pointer_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+            TARGET_BYTE_BEGIN: 2,
+            "<byte:42>": 3,
+            TARGET_BYTE_END: 4,
+            "@E1": 5,
+        },
+    }
+    rows = kerc_global_token_rows(
+        code_vocabulary, kernel_offset=100, pointer_offset=200, pointer_end=300
+    )
+    open_ids = kerc_serialization_valid_ids([], rows, end_id=10)
+    assert 10 in open_ids
+    assert 102 in open_ids and 202 in open_ids
+    kernel_byte_ids = kerc_serialization_valid_ids(
+        [{"space": "V_K", "token": TARGET_BYTE_BEGIN}], rows, end_id=10
+    )
+    assert 103 in kernel_byte_ids and 104 in kernel_byte_ids
+    assert 203 not in kernel_byte_ids and 204 not in kernel_byte_ids
+    assert 10 not in kernel_byte_ids
 
 
 def test_decoder_only_control_is_mechanically_parameter_matched() -> None:

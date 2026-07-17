@@ -1669,11 +1669,16 @@ representability before publishing. V_K/V_P are fit only on positive private-tra
 compiler/core targets; development/evaluation rows and verifier corruptions contribute
 zero vocabulary-fit signal. Compiler/core logits are restricted to V_K/V_P plus EOS,
 while direct/renderer logits are restricted to V_S plus EOS. Vocabulary identity and
-size are checkpoint/resume invariants. The live
+size are checkpoint/resume invariants. The KERC evaluation route now executes the
+learned compiler, Kernel reasoner, learned renderer, learned surface recompiler, and
+second Kernel reasoner in sequence. It independently parses and validates every packet,
+requires answer handles to resolve against packet-owned objects/capsules, and rejects
+the candidate unless structured round-trip constraints match; the direct-surface head,
+templates, literals, tools, and fallback returns cannot satisfy this route. The live
 plan has ten explicit targets and is RED only on `kernel_english_manifest_missing`.
 This is architecture mechanics, not a learned KERC system or capability result: the
 governed stage corpus/codebook artifact, distribution-calibrated labels, VCM interaction
-reward, executable recompile verifier, full resume/migration/resource proofs, overfit,
+reward, calibrated neural-verifier use, full resume/migration/resource proofs, overfit,
 intervention, ablation, and matched multi-seed campaign remain open.
 
 - Define one versioned `KernelPacket` protocol spanning immutable/content-addressed

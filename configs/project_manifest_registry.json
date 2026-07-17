@@ -266,11 +266,11 @@
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "ff7f1598618ddb4e8f02b2bddcba9df6be404cb570e0acd830d96db09542cc38"
+          "sha256": "10bc9b81ba0bf948a44904339ed17676375f3fe659b7187d4dbf9d876c07e411"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "8b15fad975511ba3e6589f516464b60b8f60c352725b1e0db15b777464af57aa"
+          "sha256": "fa05bf3bd34dd26db6f7ab077eaf5107ccc119d87c68a84d4317e465f23af567"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
@@ -5258,7 +5258,7 @@
       "surface_id": "neural_seed_and_decoder",
       "status": "experimental",
       "implementation_type": "independent_language_arm_mlx_training_runtime",
-      "backend": "python_mlx_apple_shared_trunk_language_experts_plus_explicit_kerc_and_matched_surface_english_targets",
+      "backend": "python_mlx_apple_shared_trunk_language_experts_plus_fail_closed_five_stage_kerc_and_matched_surface_english_targets",
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",

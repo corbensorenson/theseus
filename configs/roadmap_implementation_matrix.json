@@ -516,7 +516,7 @@
       ],
       "track_id": "C_capability_research_survival_lane",
       "status": "partial",
-      "implementation_state": "exact_protocol_neural_module_mechanics_and_dual_code_spaces_wired_governed_stage_data_and_decision_grade_training_pending",
+      "implementation_state": "exact_protocol_neural_module_dual_code_spaces_and_fail_closed_five_stage_evaluation_wired_governed_stage_data_and_decision_grade_training_pending",
       "implemented_contracts": [
         "versioned immutable-source Kernel Packet, protect-before-correct objects, ambiguity-preserving correction lattice, typed Kernel program, V_S/V_K/V_P serialization, exact macro replay, and structured answer round-trip verification",
         "VCM-owned four-level hierarchical residual state with authority, privacy, append-only deltas, replay, migration, reset, eviction, checkpoint, close, and stale/cross-user/document-injection rejection",
@@ -526,6 +526,7 @@
         "the MoECOT trainer now exposes a 19,531,230-parameter english_kerc candidate with a 13,315-symbol vocabulary and a 19,534,090-parameter conventional English encoder-decoder control with the canonical 8,195-symbol vocabulary; the KERC-only vocabulary cost is charged before independent width matching, leaving a 2,860-parameter delta",
         "the KERC stage fits separate V_K and V_P vocabularies only from positive private-train compiler/core targets, gives dev/eval and verifier corruptions zero vocabulary-fit signal, preserves arbitrary unseen symbols through bounded byte fallback, and content-addresses the codebook in the stage manifest",
         "compiler/core output logits are constrained to assigned Kernel/pointer capacity plus EOS while direct-surface/renderer logits are constrained to the canonical V_S range plus EOS; target-specific vocabulary size and codebook identity are checkpoint/resume invariants",
+        "the KERC candidate evaluation route now executes learned Surface-to-Kernel, Kernel-to-answer, answer-to-surface, surface recompilation, and second Kernel-to-answer stages; every JSON intermediate is independently schema/context validated, answer handles must resolve against packet-owned objects or capsules, and the result receives zero KERC behavior credit unless structured round-trip constraints pass without a direct-surface, template, literal, tool, or fallback route",
         "the shared causal-loss owner accepts separately weighted residual-allocation and verifier objectives; focused MLX canaries prove source-only residual/stage routing, target noninterference, cached decode equivalence, gradient updates across residual/verifier/stage-output families, finite state, and strict checkpoint reload equivalence",
         "governed records now bind independently evidenced interaction/segment/token/exact residual labels into the semantic payload hash; each positive objective view carries a targeted semantic, protected-object, numeric-value, or surface-fidelity corruption, and the materializer gives those counterexamples verifier loss but exactly zero generator-token loss",
         "the stage publisher checks positive and verifier-counterexample token representability and sequence budgets, records their count, and fails closed if any counterexample could train the generator",
@@ -537,7 +538,7 @@
         "licensed English source-disjoint training records for Surface-to-Kernel, Kernel reasoning, residual allocation, answer packets, copy-aware rendering, and round-trip verification without public benchmark payloads",
         "materialize the implemented V_K/V_P builder on the governed source-disjoint corpus, then train the constrained compiler and Kernel-native reasoner at preregistered capacity with calibrated ambiguity/protected-span abstention labels and structured answer supervision",
         "calibrate the now-content-bound residual-allocation labels on governed source-disjoint records, bind interaction-amortization rewards to the VCM lifecycle/privacy owner, and prove all four levels are used causally",
-        "expand the targeted verifier-corruption mechanics into governed multiple-valid-realization and hard-negative coverage, train the copy-aware renderer and independent verifier, then execute actual recompile-and-compare verification rather than treating verifier logits as proof",
+        "expand the targeted verifier-corruption mechanics into governed multiple-valid-realization and hard-negative coverage, train and calibrate the copy-aware renderer plus independently parameterized verifier, and add calibrated neural-verifier decisions to the now-executable learned recompile-and-compare route rather than treating raw logits as proof",
         "extend the passing MLX mechanics receipt to full optimizer resume, version migration, cleanup, resource accounting, tiny-subset overfit, causal interventions, module-use, and leave-one-mechanism-out ablations on governed stage records",
         "prospectively frozen multi-seed matched-total-cost KERC versus conventional English campaign with strong faithful baselines, confidence intervals, weak-tail floors, and adequate power"
       ],

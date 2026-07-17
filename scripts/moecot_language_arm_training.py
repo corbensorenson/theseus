@@ -25,7 +25,12 @@ from typing import Any
 
 import numpy as np
 
-from kernel_english_protocol import TRAINING_TASK_TAGS, validate_training_disposition
+from kernel_english_protocol import (
+    KernelProtocolFault,
+    TRAINING_TASK_TAGS,
+    execute_learned_pipeline,
+    validate_training_disposition,
+)
 from standard_causal_transformer_model import CausalTransformerConfig, build_model, parameter_count
 from standard_causal_transformer_corpus import load_pretrain_memmaps, pretrain_array_paths
 from standard_causal_transformer_survival import (
@@ -42,6 +47,7 @@ from standard_causal_transformer_survival import (
 from moecot_language_tokenizer import exact_text_tokens
 from moecot_source_conditioned_pretraining import (
     KERC_KERNEL_OBJECTIVES,
+    decode_kerc_global_target,
     encode_kerc_global_target,
 )
 from neural_seed_open_vocab import (
@@ -52,6 +58,7 @@ from neural_seed_open_vocab import (
     encode_tokens,
     is_byte_token,
 )
+import vcm_semantic_memory
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1824,26 +1831,52 @@ def evaluate_target(
                 row = json.loads(line)
                 if row.get("split") != split or row.get("public_benchmark") is not False:
                     raise ValueError(f"invalid evaluation boundary: {key}")
-                generated, generation = generate_model_text(
-                    model,
-                    str(row.get("prompt") or ""),
-                    source_vocab,
-                    target_vocab,
-                    base,
-                    max_tokens=int(config["evaluation"]["decode_max_target_tokens"]),
-                    max_source_tokens=int(
-                        config["supervision"]["maximum_source_encoded_tokens"]
-                    ),
-                    beam_width=int(config["evaluation"]["beam_width"]),
-                    branching_factor=int(config["evaluation"]["branching_factor"]),
-                    length_penalty=float(config["evaluation"]["length_penalty"]),
-                    trusted_source_prefix_tokens=(
-                        (TRAINING_TASK_TAGS["surface_direct_control_v1"],)
-                        if target.get("role") == "kerc_english_candidate"
-                        else ()
-                    ),
-                    mx=mx,
-                )
+                if target.get("role") == "kerc_english_candidate":
+                    generated, generation = generate_kerc_pipeline_text(
+                        model,
+                        str(row.get("prompt") or ""),
+                        source_vocab,
+                        target_vocab,
+                        base,
+                        target=target,
+                        max_tokens=int(
+                            config["evaluation"]["decode_max_target_tokens"]
+                        ),
+                        max_source_tokens=int(
+                            config["kernel_english_training"]["maximum_sequence_tokens"]
+                        ),
+                        beam_width=int(config["evaluation"]["beam_width"]),
+                        branching_factor=int(
+                            config["evaluation"]["branching_factor"]
+                        ),
+                        length_penalty=float(
+                            config["evaluation"]["length_penalty"]
+                        ),
+                        interaction_id=f"kerc-eval:{split}:{row.get('row_id')}",
+                        mx=mx,
+                    )
+                else:
+                    generated, generation = generate_model_text(
+                        model,
+                        str(row.get("prompt") or ""),
+                        source_vocab,
+                        target_vocab,
+                        base,
+                        max_tokens=int(
+                            config["evaluation"]["decode_max_target_tokens"]
+                        ),
+                        max_source_tokens=int(
+                            config["supervision"]["maximum_source_encoded_tokens"]
+                        ),
+                        beam_width=int(config["evaluation"]["beam_width"]),
+                        branching_factor=int(
+                            config["evaluation"]["branching_factor"]
+                        ),
+                        length_penalty=float(
+                            config["evaluation"]["length_penalty"]
+                        ),
+                        mx=mx,
+                    )
                 expected = str(row.get("target") or "")
                 arm_id = str(row.get("arm_id") or "")
                 diagnostics = behavior_diagnostics(
@@ -1893,7 +1926,11 @@ def evaluate_target(
         "generator_visible_fields": ["prompt"],
         "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
         "target_visible_to_generator": False,
-        "candidate_family": "direct_autoregressive_model_text",
+        "candidate_family": (
+            "learned_kerc_compiler_core_renderer_roundtrip"
+            if target.get("role") == "kerc_english_candidate"
+            else "direct_autoregressive_model_text"
+        ),
         "templates_renderers_routers_tools_credit": 0,
         "public_training_rows_written": 0,
         "public_benchmark_payload_count": 0,
@@ -1908,6 +1945,297 @@ def evaluate_target(
     output = resolve(str(target["receipt"])).with_name(f"evaluation_{split}_receipt.json")
     write_json_atomic(output, report)
     return {**report, "rows": {"path": relative(output), "embedded_row_count": len(rows)}}
+
+
+def generate_kerc_pipeline_text(
+    model: Any,
+    prompt: str,
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+    base: dict[str, Any],
+    *,
+    target: dict[str, Any],
+    max_tokens: int,
+    max_source_tokens: int,
+    beam_width: int,
+    branching_factor: int,
+    length_penalty: float,
+    interaction_id: str,
+    mx: Any,
+) -> tuple[str, dict[str, Any]]:
+    """Run the actual learned KERC chain; reject any broken intermediate."""
+
+    code_vocabulary = (
+        ((target.get("kernel_code_vocabulary") or {}).get("payload") or {})
+    )
+    model_contract = target.get("model") or {}
+    if code_vocabulary.get("policy") != "project_theseus_kerc_dual_code_vocabulary_v1":
+        return "", generation_fault("kerc_code_vocabulary_missing")
+    hrl_state = vcm_semantic_memory.create_hierarchical_residual_state(
+        interaction_id,
+        scope={
+            "user": "local-evaluation",
+            "project": "theseus",
+            "conversation": interaction_id,
+            "privacy": "private_local",
+        },
+    )
+
+    def execute_stage(objective: str, stage_prompt: str) -> tuple[str, dict[str, Any]]:
+        if objective in KERC_KERNEL_OBJECTIVES:
+            return generate_kerc_code_text(
+                model,
+                stage_prompt,
+                source_vocab,
+                target_vocab,
+                base,
+                code_vocabulary=code_vocabulary,
+                kernel_offset=int(model_contract["kerc_kernel_token_start"]),
+                pointer_offset=int(model_contract["kerc_pointer_token_start"]),
+                pointer_end=int(model_contract["kerc_pointer_token_end"]),
+                max_tokens=max_tokens,
+                max_source_tokens=max_source_tokens,
+                beam_width=beam_width,
+                branching_factor=branching_factor,
+                length_penalty=length_penalty,
+                trusted_source_prefix_token=TRAINING_TASK_TAGS[objective],
+                mx=mx,
+            )
+        if objective == "answer_packet_to_surface_v1":
+            return generate_model_text(
+                model,
+                stage_prompt,
+                source_vocab,
+                target_vocab,
+                base,
+                max_tokens=max_tokens,
+                max_source_tokens=max_source_tokens,
+                beam_width=beam_width,
+                branching_factor=branching_factor,
+                length_penalty=length_penalty,
+                trusted_source_prefix_tokens=(TRAINING_TASK_TAGS[objective],),
+                mx=mx,
+            )
+        return "", generation_fault("kerc_objective_not_routeable")
+
+    try:
+        text, receipt = execute_learned_pipeline(
+            prompt, hrl_state=hrl_state, stage_executor=execute_stage
+        )
+    except KernelProtocolFault as exc:
+        return "", {
+            **generation_fault(exc.code),
+            "policy": "project_theseus_kerc_learned_pipeline_execution_v1",
+            "fault": exc.record(),
+            "direct_surface_route_used": False,
+        }
+    return text, {
+        **receipt,
+        "decoder": "learned_kerc_five_stage_roundtrip_v1",
+        "target_visible_to_generator": False,
+        "byte_serialization_valid": True,
+        "stop_reason": "validated_roundtrip",
+    }
+
+
+def generate_kerc_code_text(
+    model: Any,
+    prompt: str,
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+    base: dict[str, Any],
+    *,
+    code_vocabulary: dict[str, Any],
+    kernel_offset: int,
+    pointer_offset: int,
+    pointer_end: int,
+    max_tokens: int,
+    max_source_tokens: int,
+    beam_width: int,
+    branching_factor: int,
+    length_penalty: float,
+    trusted_source_prefix_token: str,
+    mx: Any,
+) -> tuple[str, dict[str, Any]]:
+    """Decode one grammar-serialized KERC code object in disjoint V_K/V_P."""
+
+    source_ids, source_receipt = encode_tokens(
+        exact_text_tokens(prompt), source_vocab, stream="source"
+    )
+    if int(source_receipt.get("unknown_token_count") or 0):
+        return "", generation_fault("source_unrepresentable")
+    if trusted_source_prefix_token not in source_vocab:
+        return "", generation_fault("trusted_source_prefix_unrepresentable")
+    source_ids = [int(source_vocab[trusted_source_prefix_token]), *source_ids]
+    if len(source_ids) > max_source_tokens:
+        return "", generation_fault("source_requires_truncation")
+    source_offset = source_token_offset(base, source_vocab)
+    target_offset = target_token_offset(base, source_vocab)
+    end_id = target_offset + int(target_vocab["<eos>"])
+    prompt_ids = [GLOBAL_BOS_ID]
+    prompt_ids.extend(source_offset + int(value) for value in source_ids)
+    prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
+    prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
+    logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
+    mx.eval(logits)
+    token_rows = kerc_global_token_rows(
+        code_vocabulary,
+        kernel_offset=kernel_offset,
+        pointer_offset=pointer_offset,
+        pointer_end=pointer_end,
+    )
+    beams = [{"ids": [], "tokens": [], "score": 0.0, "logits": logits, "cache": cache}]
+    complete: list[dict[str, Any]] = []
+    for _ in range(max_tokens):
+        expansions: list[dict[str, Any]] = []
+        for beam in beams:
+            allowed = kerc_serialization_valid_ids(
+                beam["tokens"], token_rows, end_id=end_id
+            )
+            if not allowed:
+                continue
+            values = np.asarray(beam["logits"][0, -1]).astype(np.float64)
+            allowed_values = np.asarray(
+                [values[token_id] for token_id in allowed], dtype=np.float64
+            )
+            maximum = float(allowed_values.max())
+            normalizer = maximum + float(
+                np.log(np.exp(allowed_values - maximum).sum())
+            )
+            ranked = sorted(
+                allowed, key=lambda token_id: float(values[token_id]), reverse=True
+            )[: max(1, branching_factor)]
+            for token_id in ranked:
+                score = float(beam["score"]) + float(values[token_id]) - normalizer
+                if token_id == end_id:
+                    complete.append(
+                        {
+                            "ids": list(beam["ids"]),
+                            "tokens": list(beam["tokens"]),
+                            "score": score,
+                        }
+                    )
+                    continue
+                row = token_rows[token_id]
+                next_logits, next_cache = model(
+                    mx.array([[token_id]], dtype=mx.int32), beam["cache"]
+                )
+                mx.eval(next_logits)
+                expansions.append(
+                    {
+                        "ids": [*beam["ids"], token_id],
+                        "tokens": [*beam["tokens"], row],
+                        "score": score,
+                        "logits": next_logits,
+                        "cache": next_cache,
+                    }
+                )
+        beams = sorted(
+            expansions, key=lambda row: beam_score(row, length_penalty), reverse=True
+        )[: max(1, beam_width)]
+        complete = sorted(
+            complete, key=lambda row: beam_score(row, length_penalty), reverse=True
+        )[: max(1, beam_width)]
+        if not beams or (
+            complete
+            and len(complete) >= beam_width
+            and beam_score(complete[0], length_penalty)
+            >= beam_score(beams[0], length_penalty)
+        ):
+            break
+    if complete:
+        selected = max(complete, key=lambda row: beam_score(row, length_penalty))
+        stop_reason = "eos"
+    elif beams:
+        selected = max(beams, key=lambda row: beam_score(row, length_penalty))
+        stop_reason = "max_tokens"
+    else:
+        return "", generation_fault("no_serialization_valid_sequence")
+    decoded, decode_receipt = decode_kerc_global_target(
+        list(selected["ids"]),
+        code_vocabulary=code_vocabulary,
+        kernel_offset=kernel_offset,
+        pointer_offset=pointer_offset,
+    )
+    if decode_receipt.get("state") != "READY":
+        return "", {
+            **generation_fault("kerc_code_decode_fault"),
+            "decode_receipt": decode_receipt,
+        }
+    return decoded, {
+        "state": "GREEN",
+        "decoder": "beam_kerc_dual_code_serialization_v1",
+        "beam_width": int(beam_width),
+        "branching_factor": int(branching_factor),
+        "stop_reason": stop_reason,
+        "generated_token_count": len(selected["ids"]),
+        "generated_token_sha256": hashlib.sha256(
+            json.dumps(selected["ids"], separators=(",", ":")).encode()
+        ).hexdigest(),
+        "byte_serialization_valid": True,
+        "target_visible_to_generator": False,
+        "trusted_source_prefix_tokens": [trusted_source_prefix_token],
+        "fallback_return_count": 0,
+    }
+
+
+def kerc_global_token_rows(
+    code_vocabulary: dict[str, Any],
+    *,
+    kernel_offset: int,
+    pointer_offset: int,
+    pointer_end: int,
+) -> dict[int, dict[str, str]]:
+    rows: dict[int, dict[str, str]] = {}
+    for space, key, offset, end in (
+        ("V_K", "kernel_vocab", kernel_offset, pointer_offset),
+        ("V_P", "pointer_vocab", pointer_offset, pointer_end),
+    ):
+        for token, local_id in (code_vocabulary.get(key) or {}).items():
+            global_id = offset + int(local_id)
+            if not offset <= global_id < end or global_id in rows:
+                raise ValueError("KERC code vocabulary exceeds its assigned range")
+            rows[global_id] = {"space": space, "token": str(token)}
+    return rows
+
+
+def kerc_serialization_valid_ids(
+    generated: list[dict[str, str]],
+    token_rows: dict[int, dict[str, str]],
+    *,
+    end_id: int,
+) -> list[int]:
+    active_space = ""
+    for row in generated:
+        token = row["token"]
+        if token == TARGET_BYTE_BEGIN:
+            if active_space:
+                return []
+            active_space = row["space"]
+        elif token == TARGET_BYTE_END:
+            if row["space"] != active_space:
+                return []
+            active_space = ""
+        elif active_space and (
+            row["space"] != active_space or not is_byte_token(token)
+        ):
+            return []
+    allowed: list[int] = []
+    for token_id, row in token_rows.items():
+        token = row["token"]
+        if active_space:
+            if row["space"] == active_space and (
+                is_byte_token(token) or token == TARGET_BYTE_END
+            ):
+                allowed.append(token_id)
+        elif token == TARGET_BYTE_BEGIN or (
+            token not in {"<pad>", "<unk>", "<bos>", "<eos>", TARGET_BYTE_END}
+            and not is_byte_token(token)
+        ):
+            allowed.append(token_id)
+    if not active_space:
+        allowed.append(end_id)
+    return allowed
 
 
 def generate_model_text(

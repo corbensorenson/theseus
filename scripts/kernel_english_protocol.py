@@ -22,7 +22,7 @@ import math
 import re
 import unicodedata
 from dataclasses import dataclass
-from typing import Any, Iterable, Sequence
+from typing import Any, Callable, Iterable, Sequence
 
 
 POLICY = "project_theseus_kernel_packet_protocol_v1"
@@ -450,8 +450,10 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
         if isinstance(packet.get("protected_objects"), dict)
         else {},
     )
-    answer = validate_answer_packet(
-        record.get("answer_packet") if isinstance(record.get("answer_packet"), dict) else {}
+    answer = validate_answer_packet_against_context(
+        record.get("answer_packet") if isinstance(record.get("answer_packet"), dict) else {},
+        protected_objects=packet.get("protected_objects") or {},
+        concept_capsules=packet.get("concept_capsules") or {},
     )
     semantic_payload_sha256 = training_semantic_payload_sha256(
         {
@@ -612,6 +614,169 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
     return compiled
+
+
+def compiler_input_from_source(source: str) -> dict[str, Any]:
+    """Build the deterministic, source-only front end seen by the compiler."""
+
+    protected = extract_protected_objects(source)
+    return {
+        "protected_objects": protected["protected_objects"],
+        "concept_capsules": {},
+        "source_character_length": len(source),
+        "masked_surface": protected["masked_surface"],
+        "correction_lattice": build_correction_lattice(
+            source, protected["protected_objects"], []
+        ),
+    }
+
+
+def execute_learned_pipeline(
+    source: str,
+    *,
+    hrl_state: dict[str, Any],
+    stage_executor: Callable[[str, str], tuple[str, dict[str, Any]]],
+) -> tuple[str, dict[str, Any]]:
+    """Execute compiler, core, renderer, and learned round-trip verification.
+
+    ``stage_executor`` is the only learned boundary. It receives one trusted
+    objective id and one source-only prompt. Every intermediate is parsed and
+    independently validated before it can become input to the next stage.
+    There is no literal, template, tool, direct-surface, or best-effort route.
+    """
+
+    stage_receipts: list[dict[str, Any]] = []
+
+    def run_stage(objective: str, prompt: str) -> str:
+        output, receipt = stage_executor(objective, prompt)
+        if not isinstance(receipt, dict) or receipt.get("state") != "GREEN":
+            raise KernelProtocolFault(
+                "KERC_LEARNED_STAGE_FAULT",
+                f"{objective}:{receipt.get('reason') if isinstance(receipt, dict) else type(receipt)}",
+                path=objective,
+            )
+        if int(receipt.get("fallback_return_count") or 0):
+            raise KernelProtocolFault(
+                "KERC_LEARNED_STAGE_FALLBACK_FORBIDDEN", objective, path=objective
+            )
+        if not str(output).strip():
+            raise KernelProtocolFault(
+                "KERC_LEARNED_STAGE_EMPTY", objective, path=objective
+            )
+        stage_receipts.append(
+            {
+                "objective": objective,
+                "output_sha256": stable_hash(str(output).encode("utf-8")),
+                "receipt": copy.deepcopy(receipt),
+            }
+        )
+        return str(output)
+
+    def parse_object(objective: str, text: str) -> dict[str, Any]:
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise KernelProtocolFault(
+                "KERC_LEARNED_STAGE_JSON_INVALID", str(exc), path=objective
+            ) from exc
+        if not isinstance(payload, dict):
+            raise KernelProtocolFault(
+                "KERC_LEARNED_STAGE_OBJECT_REQUIRED", type(payload).__name__, path=objective
+            )
+        return payload
+
+    def compile_surface(surface: str) -> dict[str, Any]:
+        front_end = compiler_input_from_source(surface)
+        compiler_text = run_stage(
+            "surface_to_kernel_program_v1", canonical_json(front_end)
+        )
+        compiler_output = parse_object(
+            "surface_to_kernel_program_v1", compiler_text
+        )
+        if compiler_output.get("kernel_version") != KERNEL_VERSION:
+            raise KernelProtocolFault(
+                "KERC_LEARNED_COMPILER_VERSION_INVALID",
+                str(compiler_output.get("kernel_version")),
+                path="surface_to_kernel_program_v1.kernel_version",
+            )
+        program = compiler_output.get("program")
+        if not isinstance(program, dict):
+            raise KernelProtocolFault(
+                "KERC_LEARNED_COMPILER_PROGRAM_MISSING",
+                str(type(program)),
+                path="surface_to_kernel_program_v1.program",
+            )
+        packet = build_kernel_packet(
+            surface,
+            program,
+            hrl_state=hrl_state,
+            residual_mode="OUTPUT_REALIZATION",
+            fidelity="faithful",
+            provenance={"source": "learned_kerc_pipeline_v1"},
+        )
+        validate_kernel_packet(packet, local_hrl_state=hrl_state)
+        return packet
+
+    def reason(packet: dict[str, Any]) -> dict[str, Any]:
+        core_input = {
+            "protected_objects": packet["protected_objects"],
+            "concept_capsules": packet["concept_capsules"],
+            "source_character_length": packet["source"]["character_length"],
+            "program": packet["program"],
+            "residual": packet["residual"],
+        }
+        answer_text = run_stage(
+            "kernel_program_to_answer_packet_v1", canonical_json(core_input)
+        )
+        answer = parse_object("kernel_program_to_answer_packet_v1", answer_text)
+        return validate_answer_packet_against_context(
+            answer,
+            protected_objects=packet["protected_objects"],
+            concept_capsules=packet["concept_capsules"],
+        )
+
+    packet = compile_surface(source)
+    intended_answer = reason(packet)
+    renderer_input = {
+        "answer_packet": intended_answer,
+        "protected_objects": packet["protected_objects"],
+        "residual_mode": packet["residual"]["mode"],
+        "fidelity": packet["residual"]["fidelity"],
+    }
+    surface = run_stage(
+        "answer_packet_to_surface_v1", canonical_json(renderer_input)
+    )
+    reconstructed_packet = compile_surface(surface)
+    reconstructed_answer = reason(reconstructed_packet)
+    roundtrip = verify_answer_roundtrip(
+        intended_answer,
+        reconstructed_answer,
+        protected_objects=packet["protected_objects"],
+    )
+    if roundtrip.get("passes") is not True:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_ROUNDTRIP_MISMATCH",
+            canonical_json(roundtrip.get("hard_failures") or []),
+            path="roundtrip",
+        )
+    receipt = {
+        "policy": "project_theseus_kerc_learned_pipeline_execution_v1",
+        "state": "GREEN",
+        "stage_count": len(stage_receipts),
+        "stage_objectives": [row["objective"] for row in stage_receipts],
+        "stage_receipts": stage_receipts,
+        "source_sha256": stable_hash(source.encode("utf-8")),
+        "surface_sha256": stable_hash(surface.encode("utf-8")),
+        "initial_packet_sha256": packet["packet_sha256"],
+        "recompiled_packet_sha256": reconstructed_packet["packet_sha256"],
+        "roundtrip": roundtrip,
+        "direct_surface_route_used": False,
+        "semantic_equivalence_claimed": False,
+        "truth_verified": False,
+        "failure_behavior": "reject_without_fallback",
+        **NO_CHEAT,
+    }
+    return surface, receipt
 
 
 def _validate_residual_supervision(
@@ -1450,6 +1615,43 @@ def validate_answer_packet(packet: dict[str, Any]) -> dict[str, Any]:
             raise KernelProtocolFault("KERC_ANSWER_ARGUMENTS_INVALID", "arguments must be a list", path=f"{path}.arguments")
     canonical = copy.deepcopy(packet)
     canonical["answer_packet_sha256"] = stable_hash({key: value for key, value in canonical.items() if key != "answer_packet_sha256"})
+    return canonical
+
+
+def validate_answer_packet_against_context(
+    packet: dict[str, Any],
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+    concept_capsules: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Validate answer value types and references against its packet context."""
+
+    canonical = validate_answer_packet(packet)
+    handles_seen: set[str] = set()
+    node_refs: set[str] = set()
+    for claim_index, claim in enumerate(canonical["claims"]):
+        for argument_index, argument in enumerate(claim["arguments"]):
+            path = f"answer.claims[{claim_index}].arguments[{argument_index}]"
+            if not isinstance(argument, dict) or not re.fullmatch(
+                r"[A-Z][A-Z0-9_]*", str(argument.get("role") or "")
+            ):
+                raise KernelProtocolFault(
+                    "KERC_ANSWER_ROLE_INVALID", canonical_json(argument), path=path
+                )
+            _validate_value(
+                argument.get("value"),
+                path=f"{path}.value",
+                protected_objects=protected_objects,
+                concept_capsules=concept_capsules,
+                node_refs=node_refs,
+                handles_seen=handles_seen,
+            )
+    if node_refs:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_NODE_REFERENCE_FORBIDDEN",
+            canonical_json(sorted(node_refs)),
+            path="answer.claims",
+        )
     return canonical
 
 

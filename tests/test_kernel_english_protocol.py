@@ -91,6 +91,94 @@ def answer_packet(*, modality: str = "POSSIBLE") -> dict:
     }
 
 
+def test_contextual_answer_validation_rejects_unknown_handle() -> None:
+    packet = answer_packet()
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_HANDLE_REFERENCE_UNKNOWN"):
+        kernel.validate_answer_packet_against_context(
+            packet,
+            protected_objects={},
+            concept_capsules={},
+        )
+
+
+def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route() -> None:
+    source = 'Budget is $20 and the note says "Proceed".'
+    state = memory.create_hierarchical_residual_state(
+        "pipeline-test", scope=scope("pipeline-test")
+    )
+    learned_program = {
+        "roots": ["k0"],
+        "nodes": [
+            {
+                "node_id": "k0",
+                "operator": "REPORT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 0.95,
+                "derivation": "compiler_inference",
+                "source_spans": [],
+                "arguments": [
+                    {"role": "VALUE", "value": {"type": "handle", "value": "@N1"}},
+                    {"role": "SOURCE", "value": {"type": "handle", "value": "@Q1"}},
+                ],
+            }
+        ],
+    }
+    learned_answer = {
+        "claims": [
+            {
+                "claim_id": "claim-1",
+                "predicate": "REPORT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 0.95,
+                "arguments": [
+                    {"role": "VALUE", "value": {"type": "handle", "value": "@N1"}},
+                    {"role": "SOURCE", "value": {"type": "handle", "value": "@Q1"}},
+                ],
+            }
+        ],
+        "required_terms": [],
+        "required_caveats": [],
+        "style": {"register": "plain"},
+    }
+    calls: list[str] = []
+
+    def execute(objective: str, _prompt: str) -> tuple[str, dict]:
+        calls.append(objective)
+        if objective == "surface_to_kernel_program_v1":
+            output = kernel.canonical_json(
+                {"kernel_version": kernel.KERNEL_VERSION, "program": learned_program}
+            )
+        elif objective == "kernel_program_to_answer_packet_v1":
+            output = kernel.canonical_json(learned_answer)
+        elif objective == "answer_packet_to_surface_v1":
+            output = source
+        else:  # pragma: no cover - a new route must fail this fixture loudly
+            raise AssertionError(objective)
+        return output, {"state": "GREEN", "fallback_return_count": 0}
+
+    surface, receipt = kernel.execute_learned_pipeline(
+        source, hrl_state=state, stage_executor=execute
+    )
+
+    assert surface == source
+    assert calls == [
+        "surface_to_kernel_program_v1",
+        "kernel_program_to_answer_packet_v1",
+        "answer_packet_to_surface_v1",
+        "surface_to_kernel_program_v1",
+        "kernel_program_to_answer_packet_v1",
+    ]
+    assert receipt["state"] == "GREEN"
+    assert receipt["stage_count"] == 5
+    assert receipt["roundtrip"]["passes"] is True
+    assert receipt["direct_surface_route_used"] is False
+    assert receipt["fallback_return_count"] == 0
+
+
 def training_record(*, split: str = "private_train") -> dict:
     state = memory.create_hierarchical_residual_state(
         f"training-{split}", scope=scope(f"training-{split}")

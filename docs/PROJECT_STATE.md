@@ -40,7 +40,10 @@ share toward zero. Public benchmarks are calibration only.
   residual labels, targeted verifier counterexamples that receive zero generator loss,
   train-only content-bound V_K/V_P codebook construction, disjoint compiler/core versus
   surface logit support, joint auxiliary losses, cached decode, gradient-flow coverage,
-  and strict reload. The KERC candidate carries a `13,315`-symbol vocabulary while the
+  and strict reload. Its private evaluation owner now runs the actual learned five-stage
+  compile/reason/render/recompile/reason chain and rejects malformed JSON, unresolved
+  answer handles, invalid packets, direct-surface bypass, fallback use, or structured
+  round-trip disagreement. The KERC candidate carries a `13,315`-symbol vocabulary while the
   conventional control retains `8,195`; independent width matching leaves a `2,860`
   parameter delta (`19,531,230` versus `19,534,090`). The live ten-target plan remains RED only because the
   governed KERC stage manifest is absent. `p4-m8-kerc-runtime-001` trained a
