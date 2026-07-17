@@ -290,15 +290,15 @@
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "3c8ed81df4c7854ce1af8aad806e438e955fff7597b0f9eac06db10b65261412"
+          "sha256": "8eea3fadd544695780eb831404924834c5de1a8f4ddfc1b9bbc746fa2273b17a"
         },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "6c8678287b0303008544afacef7118de9519827b3273944a206b71285e7ae0fa"
+          "sha256": "5c9a679003ac76c70641e37c92f9b9b83564703c23e52fcc3fb21bb30955d4ea"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "51845ec7e97d42751fc0d4ac405ea3f93d29358e78ce96e40ebe612313f4abba"
+          "sha256": "89c9c338b5e8f246b0c72491fd78246195dbe4af19fb242f86bdc6ae33d21769"
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
@@ -5381,7 +5381,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has a source-replayed 10,240-record governed corpus, per-objective semantic authority, a content-bound dual codebook, a GREEN canonical stage, and a GREEN real-row MLX adequacy canary covering tiny-subset learning, scoped interventions, verifier causality, checkpoint/optimizer replay, mismatch rejection, cleanup, and sustained batches. This remains mechanics evidence only. VCM interaction rewards, richer semantic coverage, a full-size multi-seed resource replay, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC now has a source-replayed 10,240-record governed corpus, per-objective semantic authority, 7,220 independently replayed human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a content-bound dual codebook, a GREEN canonical stage, and a GREEN real-row MLX adequacy canary covering tiny-subset learning, scoped interventions, verifier causality, checkpoint/optimizer replay, mismatch rejection, cleanup, and sustained batches. This remains mechanics evidence only. VCM interaction rewards, ambiguity and multiple-valid supervision, a full-size multi-seed resource replay, and the matched campaign remain required; no capability claim or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

@@ -1696,10 +1696,14 @@ Apple-MLX KERC-only step consumed KERC target positions with nonzero residual an
 auxiliary weights and published a reloadable checkpoint. Dynamic staging and batch
 cropping raised that path from `2.648` to `39.552` target tokens/second. The subsequent
 content-bound adequacy run used exact-source real-row pairs across all four objectives
-and 64 full-size MLX updates: total loss fell to `0.244007` of baseline, token accuracy
-gained `0.354497`, residual accuracy reached `1.0`, verifier bit accuracy reached
-`0.90625`, and sustained throughput remained at least `32.687` target tokens/s.
-Checkpoint reload was exact, optimizer resume differed by at most `4.59701e-06`, stale
+and 64 full-size MLX updates. MASC manual named-entity graphs are now independently
+replayed alongside FrameNet: 3,070 records carry 7,220 typed person/place/organization/
+date protections, and 395 exactly aligned semantic arguments use packet-owned handles
+rather than byte literals. The rebuilt stage and canary remain GREEN: total loss fell
+to `0.244008` of baseline, token accuracy gained `0.354497`, residual accuracy reached
+`1.0`, verifier bit accuracy reached `0.90625`, and sustained throughput remained at
+least `40.868` target tokens/s. Checkpoint reload was exact, optimizer resume differed
+by at most `3.71039e-06`, stale
 codebook identity was rejected, partial artifacts were absent, and trusted-stage,
 residual-scope, and verifier interventions behaved causally. This still has no utility
 or negative-verdict authority. Richer semantic coverage, VCM interaction rewards,

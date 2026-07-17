@@ -26,6 +26,7 @@ from kernel_english_protocol import (
     TRAINING_OBJECTIVES,
     TRAINING_RECORD_POLICY,
     build_kernel_packet,
+    extract_protected_objects,
     stable_hash,
 )
 from moecot_source_conditioned_pretraining import (
@@ -40,6 +41,12 @@ DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 GRAF = "{http://www.xces.org/ns/GrAF/1.0/}"
 XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 PRODUCER_POLICY = "project_theseus_kerc_semantic_corpus_producer_v1"
+MASC_ENTITY_TYPES = {
+    "person": "PERSON",
+    "location": "PLACE",
+    "org": "ORGANIZATION",
+    "date": "DATE_TIME",
+}
 
 
 def resolve(path: str | Path) -> Path:
@@ -191,6 +198,7 @@ def base_record(
     producer_sha256: str,
     source_annotation: dict[str, Any],
     exact_residual: bool,
+    explicit_spans: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     identity = stable_hash(
         {
@@ -214,6 +222,7 @@ def base_record(
             "source_id": source_id,
             "source_annotation_sha256": stable_hash(source_annotation),
         },
+        explicit_spans=explicit_spans or [],
         fidelity="exact" if exact_residual else "faithful",
     )
     return {
@@ -429,6 +438,68 @@ def token_spans(
     return sorted(spans)
 
 
+def masc_named_entities(
+    base: Path,
+    *,
+    source_text: str,
+    anchors: dict[str, tuple[int, int]],
+) -> list[dict[str, Any]]:
+    """Read MASC's manual named entities through their Penn-token anchors."""
+
+    entity_path = Path(str(base) + "-ne.xml")
+    penn_path = Path(str(base) + "-penn.xml")
+    if not entity_path.exists() or not penn_path.exists():
+        return []
+    entity_annotations, entity_edges, _ = parse_graf(entity_path)
+    _, _, penn_links = parse_graf(penn_path)
+    candidates: list[dict[str, Any]] = []
+    for node, rows in entity_annotations.items():
+        for label, fields in rows:
+            object_type = MASC_ENTITY_TYPES.get(label)
+            if object_type is None:
+                continue
+            spans = token_spans(
+                node,
+                edges=entity_edges,
+                token_links=penn_links,
+                anchors=anchors,
+            )
+            if not spans:
+                continue
+            start = min(value[0] for value in spans)
+            end = max(value[1] for value in spans)
+            if not 0 <= start < end <= len(source_text):
+                continue
+            candidates.append(
+                {
+                    "start": start,
+                    "end": end,
+                    "object_type": object_type,
+                    "copy_policy": "EXACT",
+                    "source_label": label,
+                    "source_features": dict(sorted(fields.items())),
+                    "text": source_text[start:end],
+                }
+            )
+    unique = {
+        (row["start"], row["end"], row["object_type"], row["source_label"]): row
+        for row in candidates
+    }
+    selected: list[dict[str, Any]] = []
+    for row in sorted(
+        unique.values(),
+        key=lambda value: (
+            value["start"],
+            -(value["end"] - value["start"]),
+            value["object_type"],
+        ),
+    ):
+        if any(row["start"] < prior["end"] and row["end"] > prior["start"] for prior in selected):
+            continue
+        selected.append(row)
+    return sorted(selected, key=lambda value: (value["start"], value["end"]))
+
+
 def masc_document_instances(path: Path, root: Path) -> list[dict[str, Any]]:
     base = Path(str(path)[: -len("-fn.xml")])
     document_id = str(base.relative_to(root)).replace(os.sep, "/")
@@ -444,6 +515,11 @@ def masc_document_instances(path: Path, root: Path) -> list[dict[str, Any]]:
         )
         for region in segment_root.findall(GRAF + "region")
     }
+    named_entities = masc_named_entities(
+        base,
+        source_text=source_text,
+        anchors=anchors,
+    )
     output: list[dict[str, Any]] = []
     sentence_nodes = [
         node
@@ -459,6 +535,15 @@ def masc_document_instances(path: Path, root: Path) -> list[dict[str, Any]]:
         sentence_start = min(start for start, _end in sentence_token_spans)
         sentence_end = max(end for _start, end in sentence_token_spans)
         sentence = source_text[sentence_start:sentence_end]
+        protected_spans = [
+            {
+                **entity,
+                "start": entity["start"] - sentence_start,
+                "end": entity["end"] - sentence_start,
+            }
+            for entity in named_entities
+            if sentence_start <= entity["start"] < entity["end"] <= sentence_end
+        ]
         for annotation_node in edges.get(sentence_node, ()):
             sets = field_rows(annotations, annotation_node, "annotationSet")
             if not sets:
@@ -510,6 +595,7 @@ def masc_document_instances(path: Path, root: Path) -> list[dict[str, Any]]:
                     frame_elements,
                     key=lambda row: (row["role"], row["spans"], row["text"]),
                 ),
+                "protected_spans": protected_spans,
             }
             output.append(
                 {
@@ -566,10 +652,41 @@ def masc_record(
     producer_sha256: str,
 ) -> dict[str, Any]:
     annotation = row["annotation"]
+    explicit_spans = [
+        {
+            "start": span["start"],
+            "end": span["end"],
+            "object_type": span["object_type"],
+            "copy_policy": span["copy_policy"],
+        }
+        for span in annotation.get("protected_spans") or []
+    ]
+    protected = extract_protected_objects(
+        annotation["sentence"],
+        explicit_spans=explicit_spans,
+    )
+    handles_by_span = {
+        (
+            value["source_span"]["character_start"],
+            value["source_span"]["character_end"],
+        ): handle
+        for handle, value in protected["protected_objects"].items()
+        if value["protection_source"] == "explicit_user_or_caller_span"
+    }
+
+    def semantic_value(element: dict[str, Any]) -> dict[str, Any]:
+        spans = element["spans"]
+        if spans:
+            bounds = (min(value[0] for value in spans), max(value[1] for value in spans))
+            handle = handles_by_span.get(bounds)
+            if handle is not None and annotation["sentence"][bounds[0] : bounds[1]] == element["text"]:
+                return {"type": "handle", "value": handle}
+        return byte_literal(element["text"])
+
     arguments = [
         {
             "role": safe_symbol(element["role"], prefix="ROLE"),
-            "value": byte_literal(element["text"]),
+            "value": semantic_value(element),
         }
         for element in annotation["frame_elements"]
     ]
@@ -630,6 +747,7 @@ def masc_record(
         producer_sha256=producer_sha256,
         source_annotation=annotation,
         exact_residual=True,
+        explicit_spans=explicit_spans,
     )
 
 

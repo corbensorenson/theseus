@@ -42,6 +42,12 @@ XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 VERIFIER_POLICY = "project_theseus_kerc_semantic_corpus_verifier_v1"
 VERIFIER_ID = "kerc_semantic_corpus_source_replay_v1"
 SPLITS = ("private_train", "private_dev", "private_eval")
+MASC_ENTITY_TYPES = {
+    "person": "PERSON",
+    "location": "PLACE",
+    "org": "ORGANIZATION",
+    "date": "DATE_TIME",
+}
 
 
 def resolve(path: str | Path) -> Path:
@@ -199,6 +205,61 @@ def spans_for(node: str, edges: dict[str, list[str]], token_links: dict[str, lis
     )
 
 
+def independent_masc_named_entities(
+    base: Path,
+    *,
+    text: str,
+    anchors: dict[str, tuple[int, int]],
+) -> list[dict[str, Any]]:
+    entity_path = Path(str(base) + "-ne.xml")
+    penn_path = Path(str(base) + "-penn.xml")
+    if not entity_path.exists() or not penn_path.exists():
+        return []
+    annotations, edges, _ = parse_graf(entity_path)
+    _, _, penn_links = parse_graf(penn_path)
+    candidates: list[dict[str, Any]] = []
+    for node, rows in annotations.items():
+        for label, fields in rows:
+            object_type = MASC_ENTITY_TYPES.get(label)
+            if object_type is None:
+                continue
+            spans = spans_for(node, edges, penn_links, anchors)
+            if not spans:
+                continue
+            start = min(value[0] for value in spans)
+            end = max(value[1] for value in spans)
+            if not 0 <= start < end <= len(text):
+                continue
+            candidates.append(
+                {
+                    "start": start,
+                    "end": end,
+                    "object_type": object_type,
+                    "copy_policy": "EXACT",
+                    "source_label": label,
+                    "source_features": dict(sorted(fields.items())),
+                    "text": text[start:end],
+                }
+            )
+    unique = {
+        (row["start"], row["end"], row["object_type"], row["source_label"]): row
+        for row in candidates
+    }
+    selected: list[dict[str, Any]] = []
+    for row in sorted(
+        unique.values(),
+        key=lambda value: (
+            value["start"],
+            -(value["end"] - value["start"]),
+            value["object_type"],
+        ),
+    ):
+        if any(row["start"] < prior["end"] and row["end"] > prior["start"] for prior in selected):
+            continue
+        selected.append(row)
+    return sorted(selected, key=lambda value: (value["start"], value["end"]))
+
+
 def independent_masc_document(path: Path, root: Path) -> list[dict[str, Any]]:
     base = Path(str(path)[: -len("-fn.xml")])
     document_id = str(base.relative_to(root)).replace(os.sep, "/")
@@ -210,6 +271,11 @@ def independent_masc_document(path: Path, root: Path) -> list[dict[str, Any]]:
         str(region.get(XML_ID)): tuple(int(value) for value in str(region.get("anchors") or "").split())
         for region in segment_root.findall(GRAF + "region")
     }
+    named_entities = independent_masc_named_entities(
+        base,
+        text=text,
+        anchors=anchors,
+    )
     output: list[dict[str, Any]] = []
     for sentence_node, annotation_rows in annotations.items():
         if not any(label == "sentence" for label, _fields in annotation_rows):
@@ -220,6 +286,15 @@ def independent_masc_document(path: Path, root: Path) -> list[dict[str, Any]]:
         sentence_start = min(start for start, _end in sentence_spans)
         sentence_end = max(end for _start, end in sentence_spans)
         sentence = text[sentence_start:sentence_end]
+        protected_spans = [
+            {
+                **entity,
+                "start": entity["start"] - sentence_start,
+                "end": entity["end"] - sentence_start,
+            }
+            for entity in named_entities
+            if sentence_start <= entity["start"] < entity["end"] <= sentence_end
+        ]
         for annotation_node in edges.get(sentence_node, ()):
             sets = fields_for(annotations, annotation_node, "annotationSet")
             if not sets or sets[0].get("status") != "MANUAL" or not sets[0].get("frameName"):
@@ -263,6 +338,7 @@ def independent_masc_document(path: Path, root: Path) -> list[dict[str, Any]]:
                 "sentence": sentence,
                 "target_spans": sorted({tuple(value) for value in target_spans}),
                 "frame_elements": sorted(frame_elements, key=lambda row: (row["role"], row["spans"], row["text"])),
+                "protected_spans": protected_spans,
             }
             annotation["target_spans"] = [list(value) for value in annotation["target_spans"]]
             selection_key = stable_hash(annotation)
@@ -306,6 +382,34 @@ def decode_literal(value: Any) -> str:
     return base64.b64decode(str(value.get("value") or ""), validate=True).decode("utf-8")
 
 
+def expected_masc_value(
+    element: dict[str, Any],
+    *,
+    sentence: str,
+    protected_objects: dict[str, dict[str, Any]],
+) -> dict[str, str]:
+    spans = element["spans"]
+    if spans:
+        start = min(value[0] for value in spans)
+        end = max(value[1] for value in spans)
+        if sentence[start:end] == element["text"]:
+            for handle, value in protected_objects.items():
+                source_span = value.get("source_span") or {}
+                if (
+                    source_span.get("character_start") == start
+                    and source_span.get("character_end") == end
+                    and value.get("protection_source") == "explicit_user_or_caller_span"
+                ):
+                    return {"type": "handle", "value": handle}
+    return {"type": "byte_literal", "text": element["text"]}
+
+
+def observed_masc_value(value: Any) -> dict[str, str]:
+    if isinstance(value, dict) and value.get("type") == "handle":
+        return {"type": "handle", "value": str(value.get("value") or "")}
+    return {"type": "byte_literal", "text": decode_literal(value)}
+
+
 def safe_symbol(value: str, prefix: str) -> str:
     symbol = re.sub(r"[^A-Za-z0-9]+", "_", value).strip("_").upper()
     if not symbol or not symbol[0].isalpha():
@@ -343,18 +447,42 @@ def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected:
     if authority != {objective: objective in allowed for objective in TRAINING_OBJECTIVES}:
         raise ValueError("MASC objective authority exceeds manual annotation evidence")
     predicate = "FRAME_" + safe_symbol(annotation["frame_name"], "UNKNOWN")
+    protected_objects = record["kernel_packet"].get("protected_objects") or {}
+    expected_explicit = {
+        (span["start"], span["end"], span["object_type"], span["copy_policy"])
+        for span in annotation.get("protected_spans") or []
+    }
+    observed_explicit = {
+        (
+            value["source_span"]["character_start"],
+            value["source_span"]["character_end"],
+            value["object_type"],
+            value["copy_policy"],
+        )
+        for value in protected_objects.values()
+        if value.get("protection_source") == "explicit_user_or_caller_span"
+    }
+    if observed_explicit != expected_explicit:
+        raise ValueError("MASC protected-object replay mismatch")
     expected_arguments = [
-        {"role": safe_symbol(element["role"], "ROLE"), "text": element["text"]}
+        {
+            "role": safe_symbol(element["role"], "ROLE"),
+            "value": expected_masc_value(
+                element,
+                sentence=annotation["sentence"],
+                protected_objects=protected_objects,
+            ),
+        }
         for element in annotation["frame_elements"]
     ]
     node = record["kernel_packet"]["program"]["nodes"][0]
     claim = record["answer_packet"]["claims"][0]
     observed_node_arguments = [
-        {"role": row.get("role"), "text": decode_literal(row.get("value"))}
+        {"role": row.get("role"), "value": observed_masc_value(row.get("value"))}
         for row in node.get("arguments") or []
     ]
     observed_claim_arguments = [
-        {"role": row.get("role"), "text": decode_literal(row.get("value"))}
+        {"role": row.get("role"), "value": observed_masc_value(row.get("value"))}
         for row in claim.get("arguments") or []
     ]
     if node.get("operator") != predicate or node.get("source_spans") != annotation["target_spans"] or observed_node_arguments != expected_arguments:

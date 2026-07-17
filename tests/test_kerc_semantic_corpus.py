@@ -83,6 +83,20 @@ def write_masc_fixture(root: Path) -> Path:
         </graph>''',
         encoding="utf-8",
     )
+    Path(str(base) + "-penn.xml").write_text(
+        f'''<graph xmlns="{verifier.GRAF[1:-1]}">
+        <node xml:id="p1"><link targets="r1"/></node>
+        <node xml:id="p2"><link targets="r2"/></node>
+        </graph>''',
+        encoding="utf-8",
+    )
+    Path(str(base) + "-ne.xml").write_text(
+        f'''<graph xmlns="{verifier.GRAF[1:-1]}">
+        <node xml:id="e1"/><a label="person" ref="e1"><fs><f name="type" value="person"/></fs></a>
+        <edge from="e1" to="p1"/>
+        </graph>''',
+        encoding="utf-8",
+    )
     fn = Path(str(base) + "-fn.xml")
     fn.write_text(
         f'''<graph xmlns="{verifier.GRAF[1:-1]}">
@@ -107,6 +121,17 @@ def test_independent_masc_replay_binds_manual_frame_and_roles(tmp_path: Path) ->
     annotation = rows[0]["annotation"]
     assert annotation["frame_name"] == "Self_motion"
     assert annotation["frame_elements"][0]["role"] == "Self_mover"
+    assert annotation["protected_spans"] == [
+        {
+            "start": 0,
+            "end": 5,
+            "object_type": "PERSON",
+            "copy_policy": "EXACT",
+            "source_label": "person",
+            "source_features": {"type": "person"},
+            "text": "Alice",
+        }
+    ]
     source = {
         "dataset_id": "fixture/masc",
         "dataset_revision": "fixture-v1",
@@ -126,8 +151,40 @@ def test_independent_masc_replay_binds_manual_frame_and_roles(tmp_path: Path) ->
     )
     expected = {**rows[0], "split": "private_train"}
     verifier.verify_masc_record(candidate, source, expected)
+    value = candidate["kernel_packet"]["program"]["nodes"][0]["arguments"][0]["value"]
+    assert value == {"type": "handle", "value": "@E1"}
     candidate["kernel_packet"]["program"]["nodes"][0]["operator"] = "WRONG"
     with pytest.raises(ValueError, match="kernel program replay mismatch"):
+        verifier.verify_masc_record(candidate, source, expected)
+
+
+def test_independent_masc_replay_rejects_forged_protected_span(tmp_path: Path) -> None:
+    fn = write_masc_fixture(tmp_path)
+    row = verifier.independent_masc_document(fn, tmp_path / "data")[0]
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "2" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": [
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        ],
+    }
+    candidate = producer.masc_record(
+        row,
+        split="private_train",
+        source=source,
+        producer_sha256="sha256:" + "1" * 64,
+    )
+    expected = {
+        **row,
+        "annotation": json.loads(json.dumps(row["annotation"])),
+        "split": "private_train",
+    }
+    candidate["source_annotation"]["protected_spans"][0]["object_type"] = "PLACE"
+    with pytest.raises(ValueError, match="annotation replay mismatch"):
         verifier.verify_masc_record(candidate, source, expected)
 
 
