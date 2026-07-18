@@ -145,7 +145,7 @@ retirement/falsification receipt.
 
 | Order | Contract | Current disposition | Required before long training |
 |---:|---|---|---|
-| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN, K1a multi-frame and K1b decision-semantic raw-source replay GREEN, broader construct validity RED, utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. Two separately accounted 256-row MASC strata now carry either 2-8 manual frames or aligned committed-belief, MPQA subjectivity, and event annotations through bounded multi-node/multi-claim ABIs with zero extra unique-source credit. K1b contributes 3,666 typed nonliteral arguments for observed modality, polarity, temporal orientation, event, and subjectivity fields. It does not resolve cross-annotation links, lost event-coreference groups, scope, truth, or complete sentence semantics. The corpus now has 11,936 records, 512 multi-node/multi-root programs, 512 multi-claim answers, and 18,759 opaque byte literals. The neural head still predicts structural channel-presence labels rather than independently measured per-unit `q_i` targets; record-wide allocation uses omitted residual mass and one protected object can force the whole record to exact fidelity. Complete K1-K8 in the KERC section: broader decision-grade semantic data; per-unit packet/economics; real interaction amortization; coordinated compiler/core/renderer objectives; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
+| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN; K1a multi-frame, K1b decision-semantic, K1c exact-run cache, and K1d selective replay-cache evidence GREEN; broader construct validity RED; utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. Two separately accounted 256-row MASC strata now carry either 2-8 manual frames or aligned committed-belief, MPQA subjectivity, and event annotations through bounded multi-node/multi-claim ABIs with zero extra unique-source credit. K1b contributes 3,666 typed nonliteral arguments for observed modality, polarity, temporal orientation, event, and subjectivity fields. It does not resolve cross-annotation links, lost event-coreference groups, scope, truth, or complete sentence semantics. The corpus now has 11,936 records, 512 multi-node/multi-root programs, 512 multi-claim answers, and 18,759 opaque byte literals. Independent selective replay is fast for semantic admission, but source parse, split, packet compilation, aggregate calibration, and serialization remain open incremental owners. The neural head still predicts structural channel-presence labels rather than independently measured per-unit `q_i` targets; record-wide allocation uses omitted residual mass and one protected object can force the whole record to exact fidelity. Complete K1-K8 in the KERC section: broader decision-grade semantic data; per-unit packet/economics; real interaction amortization; coordinated compiler/core/renderer objectives; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
 | 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
 | 4 | Full-state data/update causality | `pretraining_wired_behavior_qualification_pending` | canonical admission owns a 13-kind content-addressed state inventory, distinct best/final authority, package replay, bounded update, deletion receipts, and exact rollback; learned forgetting/unlearning efficacy waits for training |
@@ -1882,22 +1882,25 @@ beat the exact finite-state baseline under identical payloads with parameters, l
 memory, energy, state synchronization, and recovery charged. No codec or allocation
 receipt receives learned-language capability credit.
 
-**Construct-validity review (binding current boundary):** a fresh source-and-artifact
-audit found that the protocol surface is substantially ahead of the evidence surface.
-Across the current `11,424` canonical records, every Kernel program has exactly one node
-and one root; all nodes are marked `preserved`; correction lattices, concept capsules,
-and grammar-macro registries are empty; and the interaction-global dictionary is empty
-even though `6,812` rows receive a nonzero interaction-channel label from segment state.
-Every answer packet has exactly one claim, while `14,738` claim arguments carry opaque
-`byte_literal` values. The hard round-trip constraint projection compares predicates,
-handles, typed numbers, polarity, modality, quantifiers, temporal/causal relations,
-attribution, terms, caveats, and decisions, but not opaque byte-literal content. These
-facts do not invalidate the packet, codec, or lifecycle mechanics. They do invalidate
-any claim that the current corpus exercises compositional Kernel reasoning, learned
-per-unit allocation, true interaction amortization, or broad semantic round-trip
-fidelity. High importance-policy scores are label-recovery diagnostics because the
-targets are source-structure preservation classes closely exposed by packet features;
-they are not downstream entailment-sensitivity evidence.
+**Construct-validity review (binding current boundary, corrected 2026-07-18):** a
+fresh source-and-artifact audit found that the protocol surface remains substantially
+ahead of the evidence surface. Across `11,936` canonical records, `512` programs and
+answer packets are multi-node/multi-root/multi-claim; the remaining `11,424` retain the
+earlier single-node/single-claim shape. There are `18,759` opaque `byte_literal` values,
+zero correction alternatives, zero concept capsules, zero nonempty macro registries,
+zero nonempty interaction-global dictionaries, zero `PARTIAL` decisions, and zero
+per-unit allocation receipts. `6,809` rows still receive a nonzero interaction-channel
+label while the coded global dictionary is empty. The hard round-trip probe does not
+reject byte-literal substitution. These facts do not invalidate packet, codec, replay,
+or lifecycle mechanics, and the two manual MASC strata are a real construct-validity
+improvement. They do invalidate claims of complete semantic compilation, compositional
+Kernel reasoning, learned per-unit allocation, true interaction amortization, broad
+semantic round-trip fidelity, or KERC utility. High importance-policy scores remain
+label-recovery diagnostics because the targets are source-structure preservation
+classes closely exposed by packet features; they are not downstream entailment-
+sensitivity evidence. The last staged MLX package still contains `11,424` records and
+is stale relative to this `11,936`-record corpus; it must be rebuilt after K1 closes,
+not silently treated as evidence for the newer semantic surface.
 
 **Better-than-paper rule:** the paper defines the hypothesis and minimum faithful
 baseline, not an implementation ceiling. A stronger constrained optimizer, packed ABI,
@@ -1905,6 +1908,17 @@ neural hyperprior, graph-equivalence objective, uncertainty policy, or modular/s
 hybrid may replace a paper mechanism when it is registered as a distinct implementation,
 preserves the same information and hard constraints, and wins a matched ablation. Do not
 silently change the mechanism under the KERC name or handicap the paper-faithful control.
+
+**2026-07-18 review conclusion:** the present implementation is neither a throwaway
+fake nor a decision-grade KERC system. The protocol, exact-object path, arithmetic-code
+baseline, VCM transaction mechanics, split discipline, independent raw-source replay,
+and checkpoint/migration path are real. The current learned path is still an
+underpowered shared-trunk mechanics candidate whose allocator target, semantic breadth,
+interaction state, renderer evidence, and verifier independence are insufficient for a
+utility verdict. Future work must improve these owners in place through the registered
+abstraction/implementation records. Do not add a `v2` side lane, and do not translate
+failure of the present head, corpus slice, or teacher-forced route into failure of the
+paper mechanism.
 
 **Binding K0-K8 closure sequence (complete in order):**
 
@@ -1973,9 +1987,36 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    cached run must preserve byte-identical outputs and independent replay; only a
    previously completed independent verification transaction with the exact same bound
    identities may be reused, and producer-owned artifacts cannot grant admission.
-   Acceptance: every claimed construct has nontrivial train/dev/eval coverage, weak-tail
-   counts, mutation tests, and an explicit missingness mask; no count of derived views is
-   presented as unique semantic data.
+   **K1d selective replay-cache evidence (`GREEN`, 2026-07-18):** namespace-separated
+   canonical SQLite caches now bind producer structural-economics objects and verifier
+   semantic-admission objects to their complete role-specific dependencies. Full-corpus
+   cold/selective-hit production improved from `1151.89s` to `802.88s`; independent
+   verification improved from `997.70s` to `71.47s`; both paths recorded
+   `11,936/11,936` hits, zero misses, byte-identical outputs, and zero producer-authority
+   reuse. Exact-run replay remains `1.70s/1.84s`; corruption, cross-namespace reuse, and
+   targeted dependency mutation fail closed. This is performance/replay evidence only.
+   Pinned raw parsing, split reconstruction, packet compilation, aggregate calibration,
+   and serialization still require independently keyed selective invalidation.
+   **K1e source-grounded relation reconstruction (`planned`):** recover only relations
+   actually present in original human annotation, beginning with manual MASC named-event
+   coreference groups that the converted GrAF layer discarded. Producer and verifier
+   must use independently implemented alignment algorithms; every mention in a group
+   must align with an unambiguous margin or the complete group is rejected. Partial
+   groups, co-occurrence-inferred edges, truth, causality, temporality, and complete-
+   sentence semantics receive no authority. Derived group views receive zero additional
+   source credit and must carry explicit missingness. Follow with licensed human gold
+   for scope, quantification, conditionals, compositional negation, causal/temporal
+   relations, attribution, unresolved ambiguity, correction lattices, concept capsules,
+   quantities/units, and grammar-aware macros; do not synthesize these labels from the
+   same rules that will evaluate them.
+   **K1 closure gate:** maintain a construct-by-domain-by-composition-depth coverage
+   matrix, not one aggregate record count. Every claimed construct needs source-group-
+   disjoint train/development/evaluation examples, adversarial minimal pairs, multiple
+   valid realizations where appropriate, weak-tail counts, mutation tests, and an
+   explicit missingness mask. The existing `1,024/1,024/1,024` human-gold floor is a
+   minimum, not evidence of adequacy by itself: preregister learning curves and a power
+   analysis, and expand only the underpowered cells until the intended effect is
+   detectable. No count of derived views is presented as unique semantic data.
 
 3. **K2 - per-unit packet and rate-distortion contract.** Replace the single record-wide
    fidelity control with stable residual-unit identities and independently selectable
@@ -1997,7 +2038,13 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    to predict fidelity and calibrated confidence from Kernel, higher-level residual
    state, unit type/content, discourse centrality, recurrence, normalization uncertainty,
    task/risk context, and verifier sensitivity; evaluator-only answers and hidden targets
-   never enter its features. Prefer constrained optimization (`min rate/cost` subject to
+   never enter its features. Allocation-target production and final evaluation must be
+   cross-fitted and organizationally separate: no verifier, corruption generator,
+   semantic parser, or human adjudication rubric may both manufacture a target and judge
+   the same heldout decision. Use an evaluator panel combining hard typed checks,
+   source-disjoint semantic models, executable downstream tasks where available, and
+   adjudicated human gold; disagreement remains uncertainty rather than being collapsed
+   into a convenient label. Prefer constrained optimization (`min rate/cost` subject to
    distortion and hard-safety bounds) over one global scalar lambda when it is measurably
    more stable; calibrate dual variables/thresholds on development only. Retire
    `labels_by_channel` from allocator loss and feed the actual unit decisions, estimated
@@ -2031,17 +2078,32 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    interaction-promotion, and task losses under one versioned objective ledger. The
    current four stage adapters and task tokens are a shared-trunk baseline, not proof of
    logically separable learned stages. Stage tokens may route authority but may not leak
-   labels or become the only predictive feature. Acceptance: each module has nonzero
+   labels or become the only predictive feature. Compare stagewise warm-start, joint,
+   and alternating optimization under the same total tuning allowance; instrument
+   gradient conflict, loss-scale domination, dead modules, and capacity starvation
+   instead of assuming one weighted sum is adequate. Close the train/inference exposure
+   gap with scheduled self-generated intermediate packets and report teacher-forced,
+   mixed, and fully autoregressive results separately. Build an oracle-substitution
+   ladder (`gold compiler`, `gold residual allocation`, `gold core answer`, `gold
+   renderer`, and combinations) so the achievable ceiling and each propagated error are
+   measured before blaming the whole architecture. Sweep compiler/core/renderer/verifier
+   capacity allocations within a matched total-parameter/FLOP envelope; a deliberately
+   tiny component may not establish a negative. Acceptance: each module has nonzero
    gradients, can overfit a genuinely representative subset, survives checkpoint/resume,
-   changes the intended behavior when intervened on, and has no deterministic answer
-   bypass or uncredited generalist fallback.
+   changes the intended behavior when intervened on, retains competence when upstream
+   inputs are model-generated, and has no deterministic answer bypass or uncredited
+   generalist fallback.
 
 7. **K6 - construct-valid verification and decisions.** Expand the hard verifier to
    compare byte literals when they are legitimate exact values; numbers with units,
    ranges, precision and approximation; identity/aliases; scope; modality; time;
    causality; attribution; quotations; terminology; caveats; evidence and uncertainty.
-   Pair it with an independently parameterized semantic entailment/recompiler evaluator
-   whose data producer, features, and checkpoint are disjoint from the generator. Add
+   Pair it with independently implemented semantic entailment and recompiler evaluators
+   whose data producers, features, tokenization where practical, checkpoints, and
+   corruption families are disjoint from the generator and allocator-target producer.
+   Use executable task oracles and blinded human adjudication for a frozen subset to
+   estimate every automated evaluator's false-positive/false-negative rate and
+   correlated blind spots. Add
    PARTIAL, unresolved ambiguity, insufficient/conflicting evidence, protected-span
    detector misses, and calibrated ANSWER/CLARIFY/ABSTAIN behavior. Test correlated
    compiler/recompiler errors and evaluator blind spots with human-audited and
@@ -2056,11 +2118,22 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    migration/rollback, intervention, leave-one-mechanism-out, resource, security,
    information-flow, and fresh-process replay checks. Canaries test mechanics only and
    must include nontrivial semantic structures; memorizing seven presence-label rows or
-   passing a schema fixture cannot clear adequacy. Independently audit whether the data,
-   objective, evaluator, scale, and runtime actually exercise each claimed causal
-   mechanism. Missing fidelity yields `INCONCLUSIVE_IMPLEMENTATION`; insufficient power,
-   baseline strength, or construct validity yields `INCONCLUSIVE_EXPERIMENT`. Neither is
-   translated into a KERC failure or a nearby green proxy.
+   passing a schema fixture cannot clear adequacy. Require a decision-grade adequacy
+   packet with five independent sections before any negative verdict:
+   (a) specification traceability from each paper mechanism to code, data, objective,
+   checkpoint tensor, intervention, and metric; (b) component oracle ceilings and
+   end-to-end error propagation; (c) data/capacity/optimization learning curves showing
+   the run is above random, trivial-copy, and shared floor effects; (d) matched strong-
+   baseline and architecture-specific tuning receipts; and (e) statistical power for
+   the preregistered minimum useful effect with multiple seeds, paired items, confidence
+   intervals, and weak-tail/domain results. Independently audit that the runtime path is
+   the tested path and that every claimed causal mechanism is active. If all learned
+   systems are near floor, an oracle route fails, tuning is unstable, the evaluator is
+   underpowered, or model-generated interfaces collapse relative to teacher forcing,
+   repair that owner and report `INCONCLUSIVE_*`; do not call KERC negative. Missing
+   fidelity yields `INCONCLUSIVE_IMPLEMENTATION`; insufficient power, baseline strength,
+   optimization adequacy, or construct validity yields `INCONCLUSIVE_EXPERIMENT`.
+   Neither is translated into a KERC failure or a nearby green proxy.
 
 9. **K8 - matched campaign, adoption, and integration.** Prospectively freeze a
    multi-seed, source-disjoint 25M-75M-active comparison covering the conventional
@@ -2068,12 +2141,20 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    compact-reasoning without a compiler, byte/dynamic-chunking, and reproducible
    compression controls. Match raw data, total FLOPs, tuning opportunity, active and
    total parameters, inference/search/verifier budget, hardware, and full lifecycle
-   cost while allowing equal-budget architecture-specific tuning. Measure H1-H8 on
+   cost while allowing equal-budget architecture-specific tuning. Freeze a minimum
+   useful effect, noninferiority margins for fidelity/weak tails, stopping rule, seed
+   count, and capacity/data scaling ladder before outcome inspection. Run representation,
+   component-oracle, core-modeling, and end-to-end tracks separately: a representation
+   win cannot become a utility claim, and an end-to-end loss cannot identify a substrate
+   failure without the component evidence. The 25M-75M tier is a debugging tier; a
+   scientific negative requires both KERC and strong controls to demonstrate nontrivial
+   learning and enough power in the tested regime. Measure H1-H8 on
    short and long contexts, model-only English utility, fidelity, calibration, accepted
    verified output per second, KV/memory/energy, and weak tails. STS, VCM retrieval,
    tools, and Octopus routing are held equal or separately ablated and cannot rescue a
-   KERC model-only claim. The practical English arm adopts the Pareto winner; useful
-   KERC components may survive independently. One decision-grade negative closes only
+   KERC model-only claim. Publish total-system Pareto fronts and per-stage failure
+   decomposition, not one aggregate winner. The practical English arm adopts the Pareto
+   winner; useful KERC components may survive independently. One decision-grade negative closes only
    the exact regime; broad retirement requires replication. Failure to reach K7 excludes
    KERC from this first practical campaign as `INCONCLUSIVE_IMPLEMENTATION` without
    blocking conventional-model training indefinitely.
@@ -2129,6 +2210,11 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
   benchmark payloads remain calibration-only, and live teacher use remains governed
   OpenAI-only residual pressure. Version migration is deterministic or the row stays
   explicitly versioned; no compiled row silently changes meaning across revisions.
+- Treat every learned interface as a distribution-shift boundary. Report performance
+  under gold upstream state, corrupted upstream state, mixed scheduled state, and fully
+  model-generated state; measure recovery, calibration, and error amplification at each
+  boundary. Teacher forcing, deterministic packet construction, and oracle rendering are
+  training/debugging instruments only and cannot support end-to-end learned utility.
 - Build the semantic corpus as a tiered evidence program, not a bulk generated proxy.
   Require at least `1,024` decision-grade train records and all `1,024` private-dev plus
   all `1,024` private-eval records to be audited/licensed human semantic gold. Qualified
