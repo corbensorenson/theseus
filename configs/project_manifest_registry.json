@@ -262,31 +262,43 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "0f72a08a85208d302a708b4d07e0efd48c720ae31b12a19a4c041d96347c9468"
+          "sha256": "50d377b9792dd8cbabae8cb2c02856fe713dc0aed477ce24e1930be7d516a52b"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "75e60bdbe0790a62b992206ece6acf88d592e31128f5190710e90d40875530b7"
+          "sha256": "650e92ca6c4129ef16afbbe78ed172021aa6b4f940ad43e8692b53442bf35f38"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "2e77d0bb794dea1c7ca03ed4f3a71a39ead524f5d5d82727d3b8193c63ba5bed"
+          "sha256": "6ac968c6183dbf47d1f9a6211d3ce4c8718eb3e773a9bd30a2ea5e0e476d9fd1"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "a9d64f3cb780ecf2a5036d01102ef6e4338cc8233040f92e2f50698c313d9af5"
+          "sha256": "2e4db285091b81570c6ff558cad85bc9907f6837dccec1aefa5ab777f8d9982b"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "e23c5f94f43c2d5eda21970b2d4e204fa3fc4b2799a94f1cbc93fe8193e965d3"
+          "sha256": "df4d79c1b43af96a98bd0b6429452dc3438a8d86c8c38e26e5279b192746b3b8"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "12b9eb4d6d49386d6010dc5c2126776580236dcde5907a96591716ff224367f7"
+          "sha256": "244be7a5b4dc64398f1ef499ee9b768bfca350a7e101dc737a8bafddb7292821"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "53b5b2c102c80141a7729920fd71e6dedc6066ec5cdf421e71ac017f48e614e9"
+          "sha256": "e4b402adc4a6f5eac62574a8feaba0f56adfd78a6c9ec40bfe6d4dff95bdc076"
+        },
+        "kerc_importance_policy": {
+          "path": "scripts/kerc_importance_policy.py",
+          "sha256": "4502585a6148631a6fa8bae06c542f0bdb749d84808f9a574be272bce94f1334"
+        },
+        "kerc_residual_economics": {
+          "path": "scripts/kerc_residual_economics.py",
+          "sha256": "d3127a7ab1ae09de5a693d26664fc42dbad47e68852e1fefcdc40588118b563c"
+        },
+        "vcm_residual_lifecycle": {
+          "path": "scripts/vcm_semantic_memory.py",
+          "sha256": "b8426b160405360a4f2ae33f2ea154407033007b1b1132e5682b73d6cd620f68"
         },
         "open_vocabulary_implementation": {
           "path": "scripts/neural_seed_open_vocab.py",
@@ -298,27 +310,39 @@
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "99ceefdf938e86d2cba4c5947db0b949083484bf66115a36c92240294ab2cc7a"
+          "sha256": "8971bc8738d612925c72691a3e307a06b82b68d1b5a9f19bf4baf6e6511ba573"
         },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "7217c7a75452f9e26847fb0e3340d2a0b4de2c35f4eddccd3f4ea004ebe95dc3"
+          "sha256": "2605d9707da99d8bb0d75695a11e2303b615bc5581e55fd02c83feb0feeab3cd"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "4668a75acb14f48ccf0854a3e943c523284ca1333a642fd58c6d9d413024fd41"
+          "sha256": "25d8feca9b87d486b133b3df117790fad2f4a2be232f37070c15de00faeafb09"
+        },
+        "kerc_importance_policy_tests": {
+          "path": "tests/test_kerc_importance_policy.py",
+          "sha256": "07a90b820214f138e0fb5478c997445bc902c9b2d5bff95d86c5f2633075210e"
+        },
+        "kerc_residual_economics_tests": {
+          "path": "tests/test_kerc_residual_economics.py",
+          "sha256": "1f108217c36007cd312216fccde71f9f4b66262722b5a734849f7370a0c893b0"
+        },
+        "vcm_residual_lifecycle_tests": {
+          "path": "tests/test_vcm_semantic_memory.py",
+          "sha256": "fa05dbbdd17ca7d2dc3ffbe23ff7f25c1d19e21ac63d25a3e208893306cddfed"
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
-          "sha256": "1a4502082919831f4fd2ef7433a0c4b7a1871fc9720f063b3e81a2b7cacee70a"
+          "sha256": "2629f28a5ce7009b353ed99fdf105f17f1951b289286db96a4724e078818dec9"
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "2f02ba605fc11ddc8ad4476214198b433d9f25a0b2e7ee98fbb55a6d36d754d2"
+          "sha256": "08571937260c6dabc16dd0c80a3544c617f0497a75821a4ad9eb29d254129f8c"
         },
         "kerc_adequacy_tests": {
           "path": "tests/test_kerc_adequacy_canary.py",
-          "sha256": "e5f88e5c46792a4e3a2f4dbeb5d338471c111e9a630821c9998e44282d7e3344"
+          "sha256": "92cca20991420c6362168f4e07b6a424545b3e401a247003de7a76c0b106a06a"
         },
         "kerc_checkpoint_schema": {
           "path": "scripts/kerc_checkpoint_schema.py",
@@ -326,11 +350,11 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "38f5c8be43fd8c131676bba3512959d6479f398f5a9dcaea5f695c509749c702"
+          "sha256": "daa19d56f226f31cce06ff3c56f616b0c13cde468ebd02215b262d2bddb725e9"
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "3f8288f57440026702c4a848345b06927e3be5c483f0d999972e93a8ca00de95"
+          "sha256": "b27e09f7fcb44628358c2352ed684bb6823e71dbf241b1a65dbd6585eca2dfe7"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -358,7 +382,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "2ea3bd277c886ac7c1fcb45ea22262e267b38b0396300c92d4db5b83b51c0d3b"
+          "sha256": "bc0ae438ca2a889521aef3a6841946749d4006d12dc07b987604c1245ba21e34"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5314,7 +5338,7 @@
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 -m pytest -q tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
@@ -5335,11 +5359,14 @@
         "scripts/neural_seed_local_english_raters.py",
         "scripts/moecot_language_supervision.py",
         "scripts/moecot_source_conditioned_pretraining.py",
+        "scripts/kerc_importance_policy.py",
+        "scripts/kerc_residual_economics.py",
         "scripts/kerc_semantic_corpus.py",
         "scripts/kerc_semantic_corpus_verify.py",
         "scripts/kerc_adequacy_canary.py",
         "scripts/kerc_checkpoint_schema.py",
         "scripts/kernel_english_protocol.py",
+        "scripts/vcm_semantic_memory.py",
         "scripts/moecot_language_tokenizer.py",
         "scripts/moecot_language_vocabulary.py",
         "scripts/standard_causal_transformer_corpus.py",
@@ -5355,8 +5382,11 @@
         "tests/test_neural_seed_local_english_raters.py",
         "tests/test_moecot_language_supervision.py",
         "tests/test_moecot_source_conditioned_pretraining.py",
+        "tests/test_kerc_importance_policy.py",
+        "tests/test_kerc_residual_economics.py",
         "tests/test_kerc_semantic_corpus.py",
         "tests/test_kerc_adequacy_canary.py",
+        "tests/test_vcm_semantic_memory.py",
         "tests/test_moecot_language_tokenizer.py",
         "tests/test_moecot_language_vocabulary.py",
         "runtime/standard_causal_transformer_survival_v1/stage_metadata_v1.json"
@@ -5387,7 +5417,12 @@
           "kerc_stage_manifest_missing_or_identity_changed",
           "kerc_target_or_surface_control_parameter_matching_changed",
           "kerc_stage_residual_verifier_gradient_or_cache_parity_changed",
-          "kerc_interaction_state_journal_privacy_or_causal_ablation_changed"
+          "kerc_interaction_state_journal_privacy_or_causal_ablation_changed",
+          "kerc_codec_exact_replay_or_bit_accounting_changed",
+          "kerc_rate_distortion_candidate_or_lambda_calibration_changed",
+          "kerc_importance_feature_authority_or_split_calibration_changed",
+          "kerc_shared_residual_promotion_economics_changed",
+          "kerc_exact_roundtrip_constraint_inventory_changed"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
       },
@@ -5403,7 +5438,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The completed 10.8M v8 models remain negative evidence only for that exact regime. The post-v8 MoECOT and dense campaign remains untrained. KERC has an independently replayed 11,424-record governed corpus, per-objective semantic authority, 7,220 human named-entity protections across 3,070 records, 395 source-bound semantic handle arguments, a compact least-privilege learned object view, a content-bound dual codebook, and five verifier dimensions. Adjacent human-authored document sentences bind journaled VCM interaction state to 1,997 train, 998 development, and 1,015 evaluation MASC records. The GREEN 26,360-view stage has maximum sequence length 4,243 with no truncation. It includes 1,064 bounded multi-turn records, 2,128 reviewed alternative answers, 24 explicit clarify/abstain records, 96 unique-extractive-support questions across six required forms, and 384 verifier-only withheld/shuffled context interventions. A train-only contextual FrameNet prior covers 59 lexical units and binds typed alternatives to 411 train, 178 development, and 157 evaluation rows; independent replay fits only private-train annotations, and no calibrated-probability or unresolved-ambiguity claim is made. The cold 64-update MLX mixed-objective diagnostic reaches 0.354244 token accuracy and 0.784569 verifier macro balanced accuracy with 1.0 minimum negative recall while residual macro balanced accuracy remains 0.5. Verifier-only rows carry zero residual authority. A source-and-stage-conditioned same-model rung records nonzero residual-head/source gradients, reaches 1.0 on every residual channel within 160 updates, and retains 1.0 after 64 canonical joint updates. Reload, resume, migration, rollback, causal interventions, trained ablations, and sustained Metal execution pass; the KERC mechanics canary is GREEN but grants no utility claim. Unresolved ambiguity, broad entailment, protected-span abstention, calibrated decisions/verifier behavior, a full-size multi-seed replay, and the matched campaign remain required; no capability claim or runtime route exists."
+      "current_wall": "The 10.8M v8 models remain negative only for that exact regime; the post-v8 matched campaign is untrained. KERC now has an independently replayed 11,424-record governed corpus and GREEN 26,360-view canonical stage under KPP-1.1. Exact conditional arithmetic coding binds all four residual channels; four actual structural fidelity candidates are measured; lambda 4096 is selected on private-development only; a source-visible importance policy is trained/calibrated/evaluated on source-group-disjoint private splits; protected minima and strict VCM promotion break-even fail closed; hard round-trip checks include predicate, identity, number, polarity, modality, quantifier, temporal/causal direction, attribution, quotation, terminology, caveat, and decision consistency. The fresh Apple-MLX mechanics canary covers 21 groups, learns all residual channels to 1.0 by step 128 and observed ANSWER/CLARIFY/ABSTAIN dispositions to 1.0 by step 64, retains both after joint updates, and passes replay/resume/migration/rollback/ablation/resource checks. This grants no utility claim. Held-out residual bits are 5.114718 times source, total Kernel-plus-residual wire is 9.998350 times source, stage materialization takes 1365.17 seconds, importance is structural rather than semantic-utility supervision, allocation remains record-level, PARTIAL is unobserved, and no matched multi-seed behavior verdict or runtime route exists."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

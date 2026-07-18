@@ -12,6 +12,7 @@ import argparse
 import base64
 import hashlib
 import json
+import math
 import os
 import re
 import tempfile
@@ -30,6 +31,12 @@ from kernel_english_protocol import (
     stable_hash,
     training_semantic_payload_sha256,
     validate_training_record,
+)
+from kerc_importance_policy import fit_importance_policy, predict_importance
+from kerc_residual_economics import (
+    calibrate_allocation_lambda,
+    residual_wire_bytes,
+    validate_structural_rate_distortion_allocation,
 )
 from moecot_source_conditioned_pretraining import (
     KERC_SEMANTIC_CORPUS_POLICY,
@@ -70,6 +77,95 @@ def relative(path: Path) -> str:
         return str(path.resolve().relative_to(ROOT))
     except ValueError:
         return str(path.resolve())
+
+
+def bit_distribution(values: list[int]) -> dict[str, Any]:
+    if not values:
+        return {"count": 0, "total": 0, "mean": None, "p50": None, "p95": None, "p99": None, "maximum": None}
+    ordered = sorted(int(value) for value in values)
+
+    def percentile(fraction: float) -> int:
+        return ordered[min(len(ordered) - 1, math.ceil(fraction * len(ordered)) - 1)]
+
+    return {
+        "count": len(ordered),
+        "total": sum(ordered),
+        "mean": sum(ordered) / len(ordered),
+        "p50": percentile(0.50),
+        "p95": percentile(0.95),
+        "p99": percentile(0.99),
+        "maximum": ordered[-1],
+    }
+
+
+def residual_codec_accounting(records: list[dict[str, Any]]) -> dict[str, Any]:
+    codec_bits: dict[str, dict[str, list[int]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    source_bits: dict[str, list[int]] = defaultdict(list)
+    kernel_bits: dict[str, list[int]] = defaultdict(list)
+    reasoning_wire_bits: dict[str, list[int]] = defaultdict(list)
+    encoded_storage_bytes: dict[str, list[int]] = defaultdict(list)
+    cleartext_residual_storage_bytes: dict[str, list[int]] = defaultdict(list)
+    packet_audit_storage_bytes: dict[str, list[int]] = defaultdict(list)
+    for record in records:
+        split = str(record["split"])
+        source_bits[split].append(len(record["source_text"].encode("utf-8")) * 8)
+        codec = record["kernel_packet"]["residual"]["codec"]
+        packet = record["kernel_packet"]
+        codec_bits[split]["total"].append(int(codec["total_encoded_bits"]))
+        kernel = len(residual_wire_bytes(packet["program"])) * 8
+        kernel_bits[split].append(kernel)
+        reasoning_wire_bits[split].append(kernel + int(codec["total_encoded_bits"]))
+        encoded_storage_bytes[split].append(int(codec["encoded_storage_bytes"]))
+        cleartext_residual_storage_bytes[split].append(
+            int(codec["cleartext_abi_storage_bytes"])
+        )
+        packet_audit_storage_bytes[split].append(
+            len(canonical_json(packet).encode("utf-8"))
+        )
+        for channel in ("interaction", "segment", "token", "exact"):
+            codec_bits[split][channel].append(
+                int(codec["channels"][channel]["encoded_bits"])
+            )
+    return {
+        "policy": "project_theseus_kerc_corpus_residual_bit_accounting_v1",
+        "codec_policy": "project_theseus_kerc_conditional_residual_codec_v1",
+        "by_split": {
+            split: {
+                "source_bits": bit_distribution(source_bits[split]),
+                "residual_bits": {
+                    channel: bit_distribution(codec_bits[split][channel])
+                    for channel in ("interaction", "segment", "token", "exact", "total")
+                },
+                "aggregate_residual_to_source_bit_ratio": (
+                    sum(codec_bits[split]["total"])
+                    / max(1, sum(source_bits[split]))
+                ),
+                "kernel_wire_bits": bit_distribution(kernel_bits[split]),
+                "total_reasoning_wire_bits": bit_distribution(
+                    reasoning_wire_bits[split]
+                ),
+                "aggregate_total_reasoning_wire_to_source_bit_ratio": (
+                    sum(reasoning_wire_bits[split])
+                    / max(1, sum(source_bits[split]))
+                ),
+                "encoded_residual_storage_bytes": bit_distribution(
+                    encoded_storage_bytes[split]
+                ),
+                "cleartext_residual_abi_storage_bytes": bit_distribution(
+                    cleartext_residual_storage_bytes[split]
+                ),
+                "full_packet_audit_storage_bytes": bit_distribution(
+                    packet_audit_storage_bytes[split]
+                ),
+            }
+            for split in SPLITS
+        },
+        "cleartext_abi_copy_charged_to_wire_bits": False,
+        "cleartext_abi_copy_charged_to_storage": True,
+        "capability_or_efficiency_claim": False,
+    }
 
 
 def sha256_file(path: Path) -> str:
@@ -1751,15 +1847,39 @@ def verify(config_path: Path) -> dict[str, Any]:
         or producer_frame_ambiguity.get("calibrated_probability_claimed") is not False
     ):
         raise ValueError("producer MASC contextual-frame ambiguity telemetry mismatch")
+    raw_records = [
+        json.loads(raw)
+        for raw in candidate_path.read_text(encoding="utf-8").splitlines()
+        if raw.strip()
+    ]
+    importance_policy = fit_importance_policy(raw_records)
+    if importance_policy != manifest.get("importance_policy"):
+        raise ValueError("producer importance policy replay mismatch")
     verifier_sha256 = sha256_file(Path(__file__).resolve())
     canonical_records: list[dict[str, Any]] = []
     receipts: list[dict[str, Any]] = []
     failures: Counter[str] = Counter()
     seen_source_ids: set[str] = set()
     counts_by_split_and_objective: dict[str, Counter[str]] = {split: Counter() for split in SPLITS}
-    for line_number, raw in enumerate(candidate_path.read_text(encoding="utf-8").splitlines(), 1):
+    for line_number, record in enumerate(raw_records, 1):
         try:
-            record = json.loads(raw)
+            expected_importance = predict_importance(record, importance_policy)
+            supervision = record.get("residual_supervision") or {}
+            if supervision.get("importance") != expected_importance:
+                raise ValueError("candidate importance receipt replay mismatch")
+            packet = record.get("kernel_packet") or {}
+            residual = packet.get("residual") or {}
+            expected_allocation = validate_structural_rate_distortion_allocation(
+                supervision.get("rate_distortion_allocation") or {},
+                kernel_program=packet.get("program") or {},
+                global_state=(record.get("hrl_state") or {}).get("global") or {},
+                segment_residual=residual.get("segment_frame") or {},
+                token_residuals=residual.get("token_tags") or [],
+                exact_objects=packet.get("protected_objects") or {},
+                exact_codec=residual.get("codec") or None,
+            )
+            if expected_allocation["selected_fidelity"] != residual.get("fidelity"):
+                raise ValueError("candidate allocation fidelity mismatch")
             source_id = str(record.get("provenance", {}).get("source_id") or "")
             if source_id in seen_source_ids:
                 raise ValueError("duplicate candidate source id")
@@ -1842,6 +1962,40 @@ def verify(config_path: Path) -> dict[str, Any]:
         for objective, floor in objective_floors.items():
             if counts_by_split_and_objective[split][objective] < int(floor):
                 hard_gaps.append(f"decision_grade_floor_unmet:{split}:{objective}")
+    codec_accounting = residual_codec_accounting(canonical_records)
+    if codec_accounting != manifest.get("residual_codec_accounting"):
+        hard_gaps.append("residual_codec_accounting_replay_mismatch")
+    economics = corpus["residual_economics"]
+    lambda_calibration = calibrate_allocation_lambda(
+        [
+            record["residual_supervision"]["rate_distortion_allocation"]
+            for record in canonical_records
+            if record["split"] == "private_dev"
+        ],
+        lambda_grid=economics["allocation_lambda_grid_bits"],
+        maximum_importance_weighted_distortion=float(
+            economics["maximum_dev_importance_weighted_structural_distortion"]
+        ),
+    )
+    allocation_counts: dict[str, Counter[str]] = {split: Counter() for split in SPLITS}
+    for record in canonical_records:
+        allocation_counts[record["split"]][
+            record["residual_supervision"]["rate_distortion_allocation"][
+                "selected_fidelity"
+            ]
+        ] += 1
+    allocation_report = {
+        "policy": "project_theseus_kerc_corpus_rate_distortion_allocation_v1",
+        "lambda_calibration": lambda_calibration,
+        "lambda_bits": float(lambda_calibration["selected_lambda"]),
+        "selected_fidelity_counts_by_split": {
+            split: dict(allocation_counts[split]) for split in SPLITS
+        },
+        "target_authority": "source_bound_structural_omission_not_semantic_utility",
+        "semantic_utility_claim": False,
+    }
+    if allocation_report != manifest.get("rate_distortion_allocation"):
+        hard_gaps.append("rate_distortion_allocation_replay_mismatch")
 
     output_root = resolve(corpus["output_root"])
     records_path = output_root / "records.jsonl"
@@ -1875,6 +2029,9 @@ def verify(config_path: Path) -> dict[str, Any]:
         "decision_grade_counts_by_split_and_objective": {
             split: dict(counts_by_split_and_objective[split]) for split in SPLITS
         },
+        "residual_codec_accounting": codec_accounting,
+        "importance_policy": importance_policy,
+        "rate_distortion_allocation": allocation_report,
         "masc_contextual_frame_ambiguity": {
             "policy": MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY,
             "fit_split": "private_train",

@@ -49,6 +49,8 @@ class CausalTransformerConfig:
     kerc_residual_bottleneck_dim: int = 0
     kerc_verifier_dim: int = 0
     kerc_verifier_output_dim: int = 4
+    kerc_decision_bottleneck_dim: int = 0
+    kerc_decision_output_dim: int = 0
     kerc_surface_token_start: int = 0
     kerc_surface_token_end: int = 0
     kerc_kernel_token_start: int = 0
@@ -60,6 +62,7 @@ class CausalTransformerConfig:
     kerc_residual_ablation: str = "none"
     kerc_interaction_residual_ablation: str = "none"
     kerc_verifier_ablation: str = "none"
+    kerc_decision_ablation: str = "none"
 
     def validate(self) -> None:
         if self.d_model % self.num_heads:
@@ -187,6 +190,7 @@ class CausalTransformerConfig:
             ("residual", self.kerc_residual_ablation),
             ("interaction residual", self.kerc_interaction_residual_ablation),
             ("verifier", self.kerc_verifier_ablation),
+            ("decision", self.kerc_decision_ablation),
         ):
             if value not in {"none", "zero"}:
                 raise ValueError(f"KERC {name} ablation must be none or zero")
@@ -211,6 +215,10 @@ class CausalTransformerConfig:
                 raise ValueError("KERC requires an independent verifier dimension")
             if self.kerc_verifier_output_dim <= 0:
                 raise ValueError("KERC requires positive verifier output dimensions")
+            if self.kerc_decision_bottleneck_dim <= 0:
+                raise ValueError("KERC requires a learned decision bottleneck")
+            if self.kerc_decision_output_dim < 3:
+                raise ValueError("KERC requires answer, clarification, and abstention decisions")
             ranges = (
                 (self.kerc_surface_token_start, self.kerc_surface_token_end, "surface"),
                 (self.kerc_kernel_token_start, self.kerc_kernel_token_end, "kernel"),
@@ -231,6 +239,8 @@ class CausalTransformerConfig:
                 self.kerc_residual_choice_count,
                 self.kerc_residual_bottleneck_dim,
                 self.kerc_verifier_dim,
+                self.kerc_decision_bottleneck_dim,
+                self.kerc_decision_output_dim,
                 self.kerc_surface_token_start,
                 self.kerc_surface_token_end,
                 self.kerc_kernel_token_start,
@@ -699,6 +709,16 @@ def build_model(
                     config.kerc_verifier_output_dim,
                     bias=True,
                 )
+                self.kerc_decision_encoder = nn.Linear(
+                    config.d_model,
+                    config.kerc_decision_bottleneck_dim,
+                    bias=False,
+                )
+                self.kerc_decision_classifier = nn.Linear(
+                    config.kerc_decision_bottleneck_dim,
+                    config.kerc_decision_output_dim,
+                    bias=True,
+                )
             if source_encoder_enabled:
                 self.source_layers = [
                     SourceEncoderBlock() for _ in range(config.source_encoder_layers)
@@ -1106,6 +1126,40 @@ def build_model(
             )
             return self.kerc_verifier_classifier(features) * has_separator[:, None]
 
+        def kerc_decision_logits(
+            self,
+            tokens: Any,
+            source_memory: Any | None,
+            source_mask: Any | None,
+        ) -> Any | None:
+            """Predict answer disposition from source and trusted objective only."""
+
+            if not kerc_enabled or source_memory is None or source_mask is None:
+                return None
+            batch = int(tokens.shape[0])
+            if config.kerc_decision_ablation == "zero":
+                return mx.zeros(
+                    (batch, config.kerc_decision_output_dim), dtype=mx.float32
+                )
+            stage_weights = self.kerc_stage_weights(tokens)
+            if stage_weights is None:
+                return None
+            denominator = mx.maximum(
+                mx.sum(source_mask, axis=1, keepdims=True), 1.0
+            )
+            source_summary = (
+                mx.sum(source_memory * source_mask[:, :, None], axis=1)
+                / denominator
+            )
+            stage_context = mx.matmul(
+                stage_weights, self.kerc_stage_embedding.weight
+            )
+            active = mx.sum(stage_weights, axis=-1, keepdims=True)
+            hidden = nn.silu(
+                self.kerc_decision_encoder(source_summary + stage_context)
+            )
+            return self.kerc_decision_classifier(hidden) * active
+
         def mtp_logits(self, hidden: Any) -> list[Any]:
             if not mtp_enabled:
                 return []
@@ -1360,6 +1414,13 @@ def build_model(
                             "residual_logits": kerc_residual_logits,
                             "verifier_logits": (
                                 self.kerc_verifier_logits(tokens)
+                                if cache is None
+                                else None
+                            ),
+                            "decision_logits": (
+                                self.kerc_decision_logits(
+                                    tokens, source_memory, source_mask
+                                )
                                 if cache is None
                                 else None
                             ),

@@ -13,6 +13,7 @@ import base64
 import copy
 import hashlib
 import json
+import math
 import random
 import re
 import time
@@ -882,6 +883,37 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
             raise ValueError(f"KERC semantic corpus diversity floor invalid: {key}")
     if int(corpus.get("maximum_source_characters") or 0) < 256:
         raise ValueError("KERC semantic corpus source-character cap is too small")
+    economics = corpus.get("residual_economics")
+    if (
+        not isinstance(economics, dict)
+        or economics.get("policy")
+        != "project_theseus_kerc_residual_economics_v1"
+        or not isinstance(economics.get("allocation_lambda_grid_bits"), list)
+        or not economics.get("allocation_lambda_grid_bits")
+        or any(
+            not math.isfinite(float(value)) or float(value) <= 0.0
+            for value in economics.get("allocation_lambda_grid_bits") or []
+        )
+        or not math.isfinite(
+            float(
+                economics.get(
+                    "maximum_dev_importance_weighted_structural_distortion", -1.0
+                )
+            )
+        )
+        or not 0.0
+        <= float(
+            economics.get(
+                "maximum_dev_importance_weighted_structural_distortion", -1.0
+            )
+        )
+        <= 1.0
+        or economics.get("importance_fit_split") != "private_train"
+        or economics.get("importance_calibration_split") != "private_dev"
+        or economics.get("importance_final_evaluation_split") != "private_eval"
+        or economics.get("utility_claim") is not False
+    ):
+        raise ValueError("KERC residual economics contract is invalid")
     for key in (
         "public_benchmark_payload_count",
         "external_inference_calls",

@@ -681,7 +681,8 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
             "surface_fidelity",
             "answer_decision_consistency",
         ],
-        "kerc_verifier_positive_labels": [1, 1, 1, 1, 1],
+            "kerc_verifier_positive_labels": [1, 1, 1, 1, 1],
+            "kerc_answer_disposition": "ANSWER",
         "kerc_verifier_negative": {
             "target": '{"program":"corrupted"}',
             "target_sha256": "sha256:"

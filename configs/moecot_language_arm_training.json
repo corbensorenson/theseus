@@ -118,6 +118,8 @@
     "kerc_residual_choice_count": 4,
     "kerc_residual_bottleneck_dim": 64,
     "kerc_verifier_dim": 64,
+    "kerc_decision_bottleneck_dim": 64,
+    "kerc_decision_output_dim": 4,
     "kerc_verifier_output_dim": 5
   },
   "controls": {
@@ -653,6 +655,15 @@
         "private_eval": 192
       },
       "maximum_source_characters": 2048,
+      "residual_economics": {
+        "policy": "project_theseus_kerc_residual_economics_v1",
+        "allocation_lambda_grid_bits": [64.0, 128.0, 256.0, 512.0, 1024.0, 2048.0, 4096.0, 8192.0, 16384.0],
+        "maximum_dev_importance_weighted_structural_distortion": 0.05,
+        "importance_fit_split": "private_train",
+        "importance_calibration_split": "private_dev",
+        "importance_final_evaluation_split": "private_eval",
+        "utility_claim": false
+      },
       "public_benchmark_payload_count": 0,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -662,6 +673,8 @@
     "batch_size": 2,
   "residual_auxiliary_weight": 0.25,
   "verifier_auxiliary_weight": 0.5,
+  "decision_auxiliary_weight": 0.25,
+  "decision_class_balance_maximum": 16.0,
   "verifier_class_balance_maximum": 16.0,
   "verifier_require_both_classes": true,
     "code_vocabulary": {

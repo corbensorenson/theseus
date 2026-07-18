@@ -19,6 +19,11 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
+from kerc_residual_economics import (
+    ResidualEconomicsFault,
+    validate_promotion_economics,
+)
+
 
 ONTOLOGY_VERSION = "1.1.0"
 QCSA_VERSION = "QCSA-VCM-1.0"
@@ -464,12 +469,19 @@ def _apply_hrl_operation(
         "privacy": str(operation.get("privacy") or "interaction_private"),
         "expiry": operation.get("expiry"),
     }
-    if op in {"DEFINE", "SET_STYLE", "BIND_ALIAS", "LOCK_TERM"}:
+    if op in {
+        "DEFINE",
+        "SET_STYLE",
+        "BIND_ALIAS",
+        "LOCK_TERM",
+        "PROMOTE_SHARED_RESIDUAL",
+    }:
         bucket_by_op = {
             "DEFINE": "terminology",
             "SET_STYLE": "style",
             "BIND_ALIAS": "aliases",
             "LOCK_TERM": "terminology",
+            "PROMOTE_SHARED_RESIDUAL": "terminology",
         }
         bucket = bucket_by_op[op]
         key = str(operation.get("key") or "")
@@ -477,6 +489,22 @@ def _apply_hrl_operation(
             raise HRLStateFault("VCM_HRL_GLOBAL_OPERATION_INVALID", _canonical(operation), path=path)
         if actor_authority == "document":
             raise HRLStateFault("VCM_HRL_DOCUMENT_GLOBAL_MUTATION_FORBIDDEN", op, path=path)
+        promotion_receipt = None
+        if op == "PROMOTE_SHARED_RESIDUAL":
+            try:
+                promotion_receipt = validate_promotion_economics(
+                    operation.get("economics")
+                    if isinstance(operation.get("economics"), dict)
+                    else {}
+                )
+            except ResidualEconomicsFault as exc:
+                raise HRLStateFault(exc.code, exc.detail, path=path) from exc
+            if promotion_receipt["should_promote"] is not True:
+                raise HRLStateFault(
+                    "VCM_HRL_RESIDUAL_PROMOTION_BEFORE_BREAK_EVEN",
+                    str(promotion_receipt["minimum_uses_strict_break_even"]),
+                    path=path,
+                )
         if op == "LOCK_TERM" and actor_authority not in {"user", "system"}:
             raise HRLStateFault("VCM_HRL_LOCK_AUTHORITY_INSUFFICIENT", actor_authority, path=path)
         target = state["global"][bucket]
@@ -484,6 +512,11 @@ def _apply_hrl_operation(
         target[key] = {
             "value": copy.deepcopy(operation["value"]),
             "locked": op == "LOCK_TERM" or bool(operation.get("locked")),
+            **(
+                {"promotion_economics": copy.deepcopy(promotion_receipt)}
+                if promotion_receipt is not None
+                else {}
+            ),
             **common,
         }
         return {"op": op, "path": f"global.{bucket}.{key}", "status": "applied"}

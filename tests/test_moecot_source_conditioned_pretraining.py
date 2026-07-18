@@ -31,6 +31,9 @@ from moecot_source_conditioned_pretraining import (  # noqa: E402
     validate_manifest,
 )
 import kernel_english_protocol as kernel  # noqa: E402
+from kerc_residual_economics import (  # noqa: E402
+    build_structural_rate_distortion_allocation,
+)
 import vcm_semantic_memory as memory  # noqa: E402
 from neural_seed_open_vocab import reserve_byte_fallback_tokens  # noqa: E402
 
@@ -227,6 +230,15 @@ def kernel_config(tmp_path: Path) -> dict:
                     "private_eval": 1,
                 },
                 "maximum_source_characters": 2048,
+                "residual_economics": {
+                    "policy": "project_theseus_kerc_residual_economics_v1",
+                    "allocation_lambda_grid_bits": [4096.0],
+                    "maximum_dev_importance_weighted_structural_distortion": 1.0,
+                    "importance_fit_split": "private_train",
+                    "importance_calibration_split": "private_dev",
+                    "importance_final_evaluation_split": "private_eval",
+                    "utility_claim": False,
+                },
                 "public_benchmark_payload_count": 0,
                 "external_inference_calls": 0,
                 "fallback_return_count": 0,
@@ -287,6 +299,36 @@ def kernel_record(split: str, index: int) -> dict:
         hrl_state=state,
         provenance={"source": "private_test_fixture"},
     )
+    importance = {
+        "policy": "project_theseus_kerc_calibrated_importance_policy_v1",
+        "policy_sha256": "sha256:" + "a" * 64,
+        "source_visible_features_sha256": "sha256:" + "b" * 64,
+        "scores": {
+            "semantic_importance": 1.0,
+            "surface_importance": 0.0,
+            "identity_anchoring": 0.0,
+        },
+        "allocation_importance": 1.0,
+        "target_fields_visible_to_policy": [],
+        "fallback_return_count": 0,
+    }
+    importance["receipt_sha256"] = kernel.stable_hash(importance)
+    residual = packet["residual"]
+    allocation = build_structural_rate_distortion_allocation(
+        kernel_program=packet["program"],
+        global_state=state["global"],
+        segment_residual=residual["segment_frame"],
+        token_residuals=residual["token_tags"],
+        exact_objects=packet["protected_objects"],
+        importance=importance["allocation_importance"],
+        lambda_value=4096.0,
+        exact_codec=residual["codec"],
+    )
+    packet = kernel.revise_kernel_packet_fidelity(
+        packet,
+        allocation["selected_fidelity"],
+        local_hrl_state=state,
+    )
     answer = {
         "claims": [
             {
@@ -346,9 +388,15 @@ def kernel_record(split: str, index: int) -> dict:
                 "token": 0,
                 "exact": 3,
             },
-            "record_fidelity_label": 1,
+            "record_fidelity_label": kernel.KERC_FIDELITY_LABELS[
+                allocation["selected_fidelity"]
+            ],
             "annotator_independent_of_model": True,
             "evidence_sha256": "sha256:" + "c" * 64,
+            "allocation_target_authority": "measured_structural_rate_distortion_with_calibrated_source_visible_importance",
+            "rate_distortion_optimality_claimed": False,
+            "importance": importance,
+            "rate_distortion_allocation": allocation,
         },
         "verification_receipt": {
             "policy": kernel.TRAINING_VERIFICATION_POLICY,

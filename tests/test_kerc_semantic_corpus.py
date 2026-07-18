@@ -17,7 +17,68 @@ if str(SCRIPTS) not in sys.path:
 import kerc_semantic_corpus as producer  # noqa: E402
 import kerc_semantic_corpus_verify as verifier  # noqa: E402
 import kernel_english_protocol as kernel  # noqa: E402
+from kerc_residual_economics import (  # noqa: E402
+    build_structural_rate_distortion_allocation,
+)
 import vcm_semantic_memory as memory  # noqa: E402
+
+
+def finalize_fixture_economics(record: dict) -> dict:
+    importance = {
+        "policy": "project_theseus_kerc_calibrated_importance_policy_v1",
+        "policy_sha256": "sha256:" + "9" * 64,
+        "source_visible_features_sha256": kernel.stable_hash(
+            {"fixture": record["provenance"]["source_id"]}
+        ),
+        "scores": {
+            "semantic_importance": 1.0,
+            "surface_importance": 1.0,
+            "identity_anchoring": 1.0,
+        },
+        "allocation_importance": 1.0,
+        "target_fields_visible_to_policy": [],
+        "fallback_return_count": 0,
+    }
+    importance["receipt_sha256"] = kernel.stable_hash(importance)
+    packet = record["kernel_packet"]
+    residual = packet["residual"]
+    allocation = build_structural_rate_distortion_allocation(
+        kernel_program=packet["program"],
+        global_state=record["hrl_state"]["global"],
+        segment_residual=residual["segment_frame"],
+        token_residuals=residual["token_tags"],
+        exact_objects=packet["protected_objects"],
+        importance=1.0,
+        lambda_value=512.0,
+    )
+    packet = kernel.revise_kernel_packet_fidelity(
+        packet,
+        allocation["selected_fidelity"],
+        local_hrl_state=record["hrl_state"],
+    )
+    record["kernel_packet"] = packet
+    record["residual_supervision"] = producer.residual_supervision(
+        record["provenance"]["source_id"],
+        packet=packet,
+        hrl_state=record["hrl_state"],
+        importance=importance,
+        allocation=allocation,
+    )
+    return record
+
+
+def test_bit_distribution_reports_tail_and_total_without_score_claims() -> None:
+    expected = {
+        "count": 4,
+        "total": 106,
+        "mean": 26.5,
+        "p50": 2,
+        "p95": 100,
+        "p99": 100,
+        "maximum": 100,
+    }
+    assert producer.bit_distribution([1, 2, 3, 100]) == expected
+    assert verifier.bit_distribution([1, 2, 3, 100]) == expected
 
 
 def source_contract(path: Path) -> dict:
@@ -128,6 +189,7 @@ def test_dolly_grounded_question_replays_unique_support_and_rejects_forgery(
         expected = independent[candidate["provenance"]["source_id"]]
         receipt = verifier.verify_dolly_grounded_record(candidate, source, expected)
         assert receipt["support_relation"] == "unique_contiguous_exact_span"
+        finalize_fixture_economics(candidate)
         candidate["verification_receipt"] = {
             "policy": kernel.TRAINING_VERIFICATION_POLICY,
             "receipt_id": "fixture-source-replay",
@@ -306,6 +368,7 @@ def test_oasst_replay_binds_context_and_two_human_realizations(tmp_path: Path) -
     )
 
     receipt = verifier.verify_oasst_record(candidate, source, expected)
+    finalize_fixture_economics(candidate)
     semantic_sha = kernel.training_semantic_payload_sha256(candidate)
     candidate["verification_receipt"] = {
         "policy": kernel.TRAINING_VERIFICATION_POLICY,
@@ -682,6 +745,7 @@ def test_masc_contextual_frame_supervision_is_hidden_from_compiler_input(
     expected["annotation"]["contextual_frame_ambiguity"] = prior
     receipt = verifier.verify_masc_record(candidate, source, expected)
     assert receipt["contextual_frame_ambiguity_bound"] is True
+    finalize_fixture_economics(candidate)
     candidate["verification_receipt"] = {
         "policy": kernel.TRAINING_VERIFICATION_POLICY,
         "receipt_id": "fixture-source-replay",

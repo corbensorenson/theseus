@@ -118,6 +118,14 @@ def fixture_stage() -> SimpleNamespace:
             dtype=np.float32,
         ),
         kerc_verifier_labels=verifier_labels,
+        kerc_decision_labels=np.asarray(
+            [value for value in (0, 2, 3, 0, 0) for _ in (0, 1)] + [0, 0],
+            dtype=np.int32,
+        ),
+        kerc_decision_loss_mask=np.asarray(
+            [value for _ in objectives for value in (1.0, 0.0)] + [0.0, 0.0],
+            dtype=np.float32,
+        ),
         kerc_coverage_labels=tuple(coverage),
     )
 
@@ -330,6 +338,21 @@ def test_failed_learning_is_inconclusive_not_architecture_falsification() -> Non
                 },
             },
         },
+        decision_learnability={
+            "passed": True,
+            "learnability_passed": True,
+            "gradient_path_present": True,
+            "optimizer_steps": 64,
+            "final": {
+                "observed_classes": ["ANSWER", "CLARIFY", "ABSTAIN"],
+                "unobserved_classes": ["PARTIAL"],
+                "macro_balanced_accuracy": 1.0,
+            },
+            "joint_compatibility": {
+                "passed": True,
+                "post_joint": {"macro_balanced_accuracy": 1.0},
+            },
+        },
         partial_file_count=0,
     )
     assert state == "INCONCLUSIVE_EXPERIMENT"
@@ -380,6 +403,21 @@ def test_lifecycle_failure_is_red() -> None:
                     "macro_balanced_accuracy": 1.0,
                     "minimum_channel_balanced_accuracy": 1.0,
                 },
+            },
+        },
+        decision_learnability={
+            "passed": True,
+            "learnability_passed": True,
+            "gradient_path_present": True,
+            "optimizer_steps": 64,
+            "final": {
+                "observed_classes": ["ANSWER", "CLARIFY", "ABSTAIN"],
+                "unobserved_classes": ["PARTIAL"],
+                "macro_balanced_accuracy": 1.0,
+            },
+            "joint_compatibility": {
+                "passed": True,
+                "post_joint": {"macro_balanced_accuracy": 1.0},
             },
         },
         partial_file_count=0,

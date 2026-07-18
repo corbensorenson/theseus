@@ -14,6 +14,9 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import kernel_english_protocol as kernel  # noqa: E402
+from kerc_residual_economics import (  # noqa: E402
+    build_structural_rate_distortion_allocation,
+)
 import vcm_semantic_memory as memory  # noqa: E402
 
 
@@ -113,6 +116,26 @@ def answer_packet(*, modality: str = "POSSIBLE") -> dict:
         "required_caveats": ["Approval remains uncertain."],
         "style": {"register": "technical_accessible"},
     }
+
+
+def fixture_importance_receipt(record: dict) -> dict:
+    receipt = {
+        "policy": "project_theseus_kerc_calibrated_importance_policy_v1",
+        "policy_sha256": "sha256:" + "9" * 64,
+        "source_visible_features_sha256": kernel.stable_hash(
+            {"fixture": record["provenance"]["source_id"]}
+        ),
+        "scores": {
+            "semantic_importance": 1.0,
+            "surface_importance": 1.0,
+            "identity_anchoring": 1.0,
+        },
+        "allocation_importance": 1.0,
+        "target_fields_visible_to_policy": [],
+        "fallback_return_count": 0,
+    }
+    receipt["receipt_sha256"] = kernel.stable_hash(receipt)
+    return receipt
 
 
 def test_contextual_answer_validation_rejects_unknown_handle() -> None:
@@ -390,18 +413,7 @@ def training_record(*, split: str = "private_train", with_interaction: bool = Fa
             },
             "optimizer_sampling_weight": 1.0,
         },
-        "residual_supervision": {
-            "policy": "project_theseus_kerc_residual_supervision_v1",
-            "labels_by_channel": {
-                "interaction": 1 if with_interaction else 0,
-                "segment": 0,
-                "token": 0,
-                "exact": 3,
-            },
-            "record_fidelity_label": 1,
-            "annotator_independent_of_model": True,
-            "evidence_sha256": "sha256:" + "b" * 64,
-        },
+        "residual_supervision": {},
         "verification_receipt": {
             "policy": kernel.TRAINING_VERIFICATION_POLICY,
             "receipt_id": f"receipt-{split}",
@@ -420,6 +432,42 @@ def training_record(*, split: str = "private_train", with_interaction: bool = Fa
         "deterministic_renderer_credit": 0,
         "candidate_generation_credit": 0,
     }
+    importance = fixture_importance_receipt(record)
+    residual = packet["residual"]
+    allocation = build_structural_rate_distortion_allocation(
+        kernel_program=packet["program"],
+        global_state=state["global"],
+        segment_residual=residual["segment_frame"],
+        token_residuals=residual["token_tags"],
+        exact_objects=packet["protected_objects"],
+        importance=1.0,
+        lambda_value=512.0,
+    )
+    packet = kernel.revise_kernel_packet_fidelity(
+        packet, allocation["selected_fidelity"], local_hrl_state=state
+    )
+    record["kernel_packet"] = packet
+    supervision = {
+        "policy": "project_theseus_kerc_residual_supervision_v1",
+        "labels_by_channel": {
+            "interaction": 1 if with_interaction else 0,
+            "segment": 0,
+            "token": 0,
+            "exact": 3,
+        },
+        "record_fidelity_label": kernel.KERC_FIDELITY_LABELS[
+            allocation["selected_fidelity"]
+        ],
+        "allocation_target_authority": "measured_structural_rate_distortion_with_calibrated_source_visible_importance",
+        "rate_distortion_optimality_claimed": False,
+        "importance": importance,
+        "rate_distortion_allocation": allocation,
+        "annotator_independent_of_model": True,
+    }
+    supervision["evidence_sha256"] = kernel.stable_hash(
+        {key: value for key, value in supervision.items() if key != "evidence_sha256"}
+    )
+    record["residual_supervision"] = supervision
     record["verification_receipt"]["semantic_payload_sha256"] = (
         kernel.training_semantic_payload_sha256(record)
     )
@@ -749,6 +797,62 @@ def test_packet_rejects_stale_hrl_and_roundtrip_verifier_fails_closed() -> None:
     assert mismatch["fallback_return_count"] == 0
 
 
+def test_roundtrip_hard_verifier_covers_every_paper_preservation_class() -> None:
+    state = memory.create_hierarchical_residual_state("hard-checks", scope=scope())
+    packet = kernel.build_kernel_packet(
+        SOURCE,
+        program(),
+        hrl_state=state,
+        explicit_spans=[
+            {
+                "start": 0,
+                "end": len("Dr. Alvarez"),
+                "object_type": "PERSON",
+                "copy_policy": "EXACT",
+            }
+        ],
+        provenance={"source": "private_test_fixture"},
+    )
+    intended = kernel.validate_answer_packet(answer_packet())
+    variants = {}
+    for name in (
+        "predicate",
+        "entity",
+        "number",
+        "polarity",
+        "modality",
+        "quantifier",
+        "temporal",
+        "attribution",
+        "quotation",
+        "required_term",
+        "required_caveat",
+        "decision",
+    ):
+        variants[name] = copy.deepcopy(intended)
+    variants["predicate"]["claims"][0]["predicate"] = "DENY"
+    variants["entity"]["claims"][0]["arguments"][0]["value"]["value"] = "@N1"
+    variants["number"]["claims"][0]["arguments"][1]["value"]["value"]["value"] += 1
+    variants["polarity"]["claims"][0]["polarity"] = "NEGATED"
+    variants["modality"]["claims"][0]["modality"] = "REQUIRED"
+    variants["quantifier"]["claims"][0]["quantifier"] = "FORALL"
+    variants["temporal"]["claims"][0]["temporal"] = {"tense": "past"}
+    variants["attribution"]["claims"][0]["attribution"] = {"speaker": "@Q1"}
+    variants["quotation"]["claims"][0]["arguments"][2]["value"]["value"] = "@E1"
+    variants["required_term"]["required_terms"] = []
+    variants["required_caveat"]["required_caveats"] = []
+    variants["decision"]["decision"]["confidence"] = 0.31
+
+    for name, reconstructed in variants.items():
+        receipt = kernel.verify_answer_roundtrip(
+            intended,
+            reconstructed,
+            protected_objects=packet["protected_objects"],
+        )
+        assert receipt["passes"] is False, name
+        assert receipt["hard_failure_count"] >= 1, name
+
+
 def test_training_record_compiles_four_matched_noncredit_views() -> None:
     record = kernel.validate_training_record(training_record())
     views = kernel.compile_training_views(record)
@@ -953,7 +1057,7 @@ def test_training_record_and_learned_outputs_fail_closed() -> None:
         }
     )
     with pytest.raises(
-        kernel.KernelProtocolFault, match="KERC_TRAINING_OBJECT_CONTENT_MISMATCH"
+        kernel.KernelProtocolFault, match="KERC_RESIDUAL_CODEC_REPLAY_MISMATCH"
     ):
         kernel.validate_training_record(rehashed_packet)
 

@@ -29,6 +29,7 @@ from kerc_checkpoint_schema import (
     validate_checkpoint_contract,
 )
 from kernel_english_protocol import (
+    ANSWER_DISPOSITION_ORDER,
     KERC_RESIDUAL_CHANNELS,
     KERC_VERIFIER_DIMENSIONS,
     TRAINING_OBJECTIVES,
@@ -318,6 +319,12 @@ def select_balanced_subset(
             stage.kerc_residual_loss_mask[selected], dtype=np.float32
         ),
         kerc_verifier_labels=np.asarray(stage.kerc_verifier_labels[selected], dtype=np.float32),
+        kerc_decision_labels=np.asarray(
+            stage.kerc_decision_labels[selected], dtype=np.int32
+        ),
+        kerc_decision_loss_mask=np.asarray(
+            stage.kerc_decision_loss_mask[selected], dtype=np.float32
+        ),
     )
     return subset, {
         "row_indices": selected,
@@ -367,6 +374,8 @@ def select_balanced_subset(
                 "residual": subset.kerc_residual_labels.tolist(),
                 "residual_loss_mask": subset.kerc_residual_loss_mask.tolist(),
                 "verifier": subset.kerc_verifier_labels.tolist(),
+                "decision": subset.kerc_decision_labels.tolist(),
+                "decision_loss_mask": subset.kerc_decision_loss_mask.tolist(),
             }
         ),
     }
@@ -403,6 +412,8 @@ def row_arrays(stage: Any, index: int) -> tuple[np.ndarray, ...]:
         stage.kerc_residual_labels[index : index + 1],
         stage.kerc_residual_loss_mask[index : index + 1],
         stage.kerc_verifier_labels[index : index + 1],
+        stage.kerc_decision_labels[index : index + 1],
+        stage.kerc_decision_loss_mask[index : index + 1],
     )
 
 
@@ -420,11 +431,14 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
     residual_target_rows: list[list[int]] = []
     verifier_prediction_rows: list[list[int]] = []
     verifier_target_rows: list[list[int]] = []
+    decision_prediction_rows: list[int] = []
+    decision_target_rows: list[int] = []
     mechanism_activity = {
         "stage_weights_maximum_absolute": 0.0,
         "residual_logits_maximum_absolute": 0.0,
         "interaction_residual_logits_maximum_absolute": 0.0,
         "verifier_logits_maximum_absolute": 0.0,
+        "decision_logits_maximum_absolute": 0.0,
     }
     residual_class_weights, _residual_weight_receipt = (
         balanced_categorical_class_weights(
@@ -443,6 +457,15 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
             require_both_classes=True,
         )
     )
+    decision_authority = np.asarray(stage.kerc_decision_loss_mask).astype(bool)
+    decision_class_weights, _decision_weight_receipt = (
+        balanced_categorical_class_weights(
+            stage.kerc_decision_labels[decision_authority][:, None],
+            class_count=len(ANSWER_DISPOSITION_ORDER),
+            maximum=16.0,
+            require_two_classes_per_feature=True,
+        )
+    )
     matrix_residual_class_weights = mx.array(
         residual_class_weights, dtype=mx.float32
     )
@@ -452,10 +475,14 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
     matrix_verifier_negative_weights = mx.array(
         verifier_negative_weights, dtype=mx.float32
     )
+    matrix_decision_class_weights = mx.array(
+        decision_class_weights[0], dtype=mx.float32
+    )
     mx.eval(
         matrix_residual_class_weights,
         matrix_verifier_positive_weights,
         matrix_verifier_negative_weights,
+        matrix_decision_class_weights,
     )
     model.eval()
     for index in range(len(stage.inputs)):
@@ -466,12 +493,15 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
             residual,
             residual_loss_mask,
             verifier,
+            decision,
+            decision_loss_mask,
         ) = row_arrays(stage, index)
         x = mx.array(inputs, dtype=mx.int32)
         y = mx.array(labels, dtype=mx.int32)
         m = mx.array(loss_mask, dtype=mx.float32)
         residual_target = mx.array(residual, dtype=mx.int32)
         verifier_target = mx.array(verifier, dtype=mx.float32)
+        decision_target = mx.array(decision, dtype=mx.int32)
         loss = causal_loss(
             model,
             x,
@@ -493,9 +523,19 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
             matrix_verifier_negative_weights,
             matrix_residual_class_weights,
             mx.array(residual_loss_mask, dtype=mx.float32),
+            decision_target,
+            0.25,
+            matrix_decision_class_weights,
+            mx.array(decision_loss_mask, dtype=mx.float32),
         )
         logits, _cache, aux = model(x, return_training_aux=True)
-        mx.eval(loss, logits, aux["kerc"]["residual_logits"], aux["kerc"]["verifier_logits"])
+        mx.eval(
+            loss,
+            logits,
+            aux["kerc"]["residual_logits"],
+            aux["kerc"]["verifier_logits"],
+            aux["kerc"]["decision_logits"],
+        )
         total_losses.append(float(loss.item()))
         logits_np = np.asarray(logits)
         labels_np = np.asarray(labels)
@@ -538,6 +578,14 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
         verifier_target_rows.extend((np.asarray(verifier) >= 0.5).astype(int).tolist())
         verifier_correct += int((verifier_predictions == (verifier >= 0.5)).sum())
         verifier_total += int(np.asarray(verifier).size)
+        decision_logits = np.asarray(aux["kerc"]["decision_logits"])
+        mechanism_activity["decision_logits_maximum_absolute"] = max(
+            mechanism_activity["decision_logits_maximum_absolute"],
+            float(np.max(np.abs(decision_logits))),
+        )
+        if bool(np.asarray(decision_loss_mask).astype(bool)[0]):
+            decision_prediction_rows.append(int(decision_logits.argmax(axis=-1)[0]))
+            decision_target_rows.append(int(np.asarray(decision)[0]))
     residual_predictions_array = np.asarray(residual_prediction_rows, dtype=np.int32)
     residual_targets_array = np.asarray(residual_target_rows, dtype=np.int32)
     residual_channels: dict[str, Any] = {}
@@ -589,6 +637,19 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
         for row in verifier_dimensions.values()
         if row["balanced_accuracy"] is not None
     ]
+    decision_predictions_array = np.asarray(
+        decision_prediction_rows, dtype=np.int32
+    )
+    decision_targets_array = np.asarray(decision_target_rows, dtype=np.int32)
+    decision_classes = sorted(int(value) for value in np.unique(decision_targets_array))
+    decision_recalls = {
+        ANSWER_DISPOSITION_ORDER[value]: float(
+            np.mean(
+                decision_predictions_array[decision_targets_array == value] == value
+            )
+        )
+        for value in decision_classes
+    }
     return {
         "mean_total_loss": float(np.mean(total_losses)),
         "token_accuracy": token_correct / max(1, token_total),
@@ -610,6 +671,14 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
         ),
         "verifier_dimensions": verifier_dimensions,
         "verifier_label_count": verifier_total,
+        "decision_accuracy": float(
+            np.mean(decision_predictions_array == decision_targets_array)
+        ),
+        "decision_macro_balanced_accuracy": float(
+            np.mean(list(decision_recalls.values()))
+        ),
+        "decision_recalls": decision_recalls,
+        "decision_label_count": len(decision_target_rows),
         "expected_token_logits": expected_token_logits,
         "verifier_logits": verifier_logits_rows,
         "mechanism_activity": mechanism_activity,
@@ -694,6 +763,245 @@ def gradient_family_receipt(gradients: Any, *, mlx_utils: Any, mx: Any) -> dict[
     return receipt
 
 
+def decision_gradient_family_receipt(
+    gradients: Any, *, mlx_utils: Any, mx: Any
+) -> dict[str, Any]:
+    groups = {
+        "decision_head": ("kerc_decision_encoder", "kerc_decision_classifier"),
+        "source_representation": (
+            "token_embedding",
+            "source_layers",
+            "source_final_norm",
+        ),
+    }
+    flattened = list(mlx_utils.tree_flatten(gradients))
+    mx.eval(*(value for _name, value in flattened))
+    receipt: dict[str, Any] = {}
+    for group, fragments in groups.items():
+        rows = [
+            (name, np.asarray(value, dtype=np.float64))
+            for name, value in flattened
+            if any(fragment in name for fragment in fragments)
+        ]
+        squared = sum(float(np.square(value).sum()) for _name, value in rows)
+        receipt[group] = {
+            "tensor_count": len(rows),
+            "l2_norm": float(np.sqrt(squared)),
+            "maximum_absolute": max(
+                (float(np.max(np.abs(value))) for _name, value in rows), default=0.0
+            ),
+        }
+    return receipt
+
+
+def evaluate_decision_head(model: Any, stage: Any, *, mx: Any) -> dict[str, Any]:
+    """Score source-conditioned dispositions only on authority-bearing rows."""
+
+    authority = np.asarray(stage.kerc_decision_loss_mask).astype(bool)
+    indices = np.flatnonzero(authority)
+    if not len(indices):
+        raise ValueError("decision learnability requires authoritative rows")
+    predictions: list[int] = []
+    targets: list[int] = []
+    model.eval()
+    for index in indices:
+        width = active_width(
+            stage.inputs[index : index + 1],
+            stage.labels[index : index + 1],
+            stage.loss_mask[index : index + 1],
+        )
+        x = mx.array(stage.inputs[index : index + 1, :width], dtype=mx.int32)
+        _logits, _cache, auxiliary = model(x, return_training_aux=True)
+        decision_logits = auxiliary["kerc"]["decision_logits"]
+        mx.eval(decision_logits)
+        predictions.append(int(np.asarray(decision_logits).argmax(axis=-1)[0]))
+        targets.append(int(stage.kerc_decision_labels[index]))
+    predicted = np.asarray(predictions, dtype=np.int32)
+    expected = np.asarray(targets, dtype=np.int32)
+    observed = sorted(int(value) for value in np.unique(expected))
+    recalls = {
+        ANSWER_DISPOSITION_ORDER[value]: float(
+            np.mean(predicted[expected == value] == value)
+        )
+        for value in observed
+    }
+    return {
+        "row_count": int(len(indices)),
+        "observed_class_indices": observed,
+        "observed_classes": [ANSWER_DISPOSITION_ORDER[value] for value in observed],
+        "unobserved_classes": [
+            name
+            for value, name in enumerate(ANSWER_DISPOSITION_ORDER)
+            if value not in observed
+        ],
+        "accuracy": float(np.mean(predicted == expected)),
+        "macro_balanced_accuracy": float(np.mean(list(recalls.values()))),
+        "recalls": recalls,
+        "claim_scope": "learnability on observed source-bound dispositions only",
+    }
+
+
+def decision_learnability_probe(
+    target: dict[str, Any],
+    copy_lookup: np.ndarray,
+    stage: Any,
+    config: dict[str, Any],
+    *,
+    mx: Any,
+    nn: Any,
+    optim: Any,
+    mlx_utils: Any,
+) -> dict[str, Any]:
+    """Overfit authoritative disposition labels without target-token supervision."""
+
+    probe = config["decision_learnability"]
+    authority = np.asarray(stage.kerc_decision_loss_mask).astype(bool)
+    indices = np.flatnonzero(authority)
+    labels = np.asarray(stage.kerc_decision_labels)[authority]
+    class_weights, class_weight_receipt = balanced_categorical_class_weights(
+        labels[:, None],
+        class_count=len(ANSWER_DISPOSITION_ORDER),
+        maximum=float(probe["class_balance_maximum"]),
+        require_two_classes_per_feature=True,
+    )
+    matrix_weights = mx.array(class_weights[0], dtype=mx.float32)
+    mx.eval(matrix_weights)
+    mx.random.seed(int(config["seed"]) + 1)
+    model = build_faithful_model(target, copy_lookup=copy_lookup, mx=mx, nn=nn)
+    optimizer = optim.AdamW(
+        learning_rate=float(probe["learning_rate"]),
+        weight_decay=float(probe["weight_decay"]),
+    )
+    loss_and_grad = nn.value_and_grad(model, causal_loss)
+    curve = [{"step": 0, **evaluate_decision_head(model, stage, mx=mx)}]
+    first_gradient = None
+    losses: list[float] = []
+    started = time.perf_counter()
+    completed = 0
+    model.train()
+    for step in range(1, int(probe["maximum_steps"]) + 1):
+        index = int(indices[(step - 1) % len(indices)])
+        (
+            inputs,
+            row_labels,
+            loss_mask,
+            _residual,
+            _residual_mask,
+            _verifier,
+            decision,
+            decision_mask,
+        ) = row_arrays(stage, index)
+        x = mx.array(inputs, dtype=mx.int32)
+        y = mx.array(row_labels, dtype=mx.int32)
+        zero_token_mask = mx.zeros_like(mx.array(loss_mask, dtype=mx.float32))
+        loss, gradients = loss_and_grad(
+            model,
+            x,
+            y,
+            zero_token_mask,
+            mx,
+            nn,
+            kerc_decision_labels=mx.array(decision, dtype=mx.int32),
+            kerc_decision_weight=float(probe["decision_weight"]),
+            kerc_decision_class_weights=matrix_weights,
+            kerc_decision_loss_mask=mx.array(decision_mask, dtype=mx.float32),
+        )
+        if first_gradient is None:
+            first_gradient = decision_gradient_family_receipt(
+                gradients, mlx_utils=mlx_utils, mx=mx
+            )
+        gradients, gradient_norm = optim.clip_grad_norm(
+            gradients, float(probe["gradient_clip_norm"])
+        )
+        optimizer.update(model, gradients)
+        mx.eval(model.parameters(), optimizer.state, loss, gradient_norm)
+        losses.append(float(loss.item()))
+        completed = step
+        if step % int(probe["evaluation_interval"]) == 0:
+            metrics = evaluate_decision_head(model, stage, mx=mx)
+            curve.append({"step": step, **metrics})
+            model.train()
+            if (
+                step >= int(probe["minimum_steps"])
+                and len(metrics["observed_classes"])
+                >= int(probe["minimum_observed_class_count"])
+                and metrics["macro_balanced_accuracy"]
+                >= float(probe["minimum_macro_balanced_accuracy"])
+            ):
+                break
+    final = curve[-1]
+    gradient_floor = float(probe["minimum_parameter_family_gradient_l2"])
+    gradient_path_present = bool(first_gradient) and all(
+        int(row["tensor_count"]) > 0 and float(row["l2_norm"]) > gradient_floor
+        for row in first_gradient.values()
+    )
+    observed_class_requirement_met = len(final["observed_classes"]) >= int(
+        probe["minimum_observed_class_count"]
+    )
+    decision_only_passed = (
+        observed_class_requirement_met
+        and final["macro_balanced_accuracy"]
+        >= float(probe["minimum_macro_balanced_accuracy"])
+    )
+    joint_training = train_steps(
+        model,
+        optimizer,
+        stage,
+        start_step=0,
+        steps=int(probe["joint_compatibility_steps"]),
+        gradient_clip=float(config["optimization"]["gradient_clip_norm"]),
+        residual_balance_maximum=float(
+            config["optimization"]["residual_class_balance_maximum"]
+        ),
+        verifier_balance_maximum=float(
+            config["optimization"]["verifier_class_balance_maximum"]
+        ),
+        mx=mx,
+        nn=nn,
+        optim=optim,
+    )
+    post_joint = evaluate_decision_head(model, stage, mx=mx)
+    joint_compatibility_passed = (
+        post_joint["macro_balanced_accuracy"]
+        >= float(probe["minimum_post_joint_macro_balanced_accuracy"])
+    )
+    learnability_passed = gradient_path_present and decision_only_passed
+    return {
+        "policy": "project_theseus_kerc_decision_learnability_probe_v1",
+        "authoritative_row_count": int(len(indices)),
+        "verifier_only_rows_used": 0,
+        "token_loss_weight": 0.0,
+        "residual_loss_weight": 0.0,
+        "verifier_loss_weight": 0.0,
+        "decision_loss_weight": float(probe["decision_weight"]),
+        "optimizer_steps": completed,
+        "maximum_steps": int(probe["maximum_steps"]),
+        "early_stopped": completed < int(probe["maximum_steps"]),
+        "first_loss": losses[0] if losses else None,
+        "final_loss": losses[-1] if losses else None,
+        "wall_seconds": time.perf_counter() - started,
+        "class_weights": class_weight_receipt,
+        "first_update_gradient_families": first_gradient or {},
+        "gradient_path_present": gradient_path_present,
+        "observed_class_requirement_met": observed_class_requirement_met,
+        "curve": curve,
+        "final": final,
+        "decision_only_passed": decision_only_passed,
+        "learnability_passed": learnability_passed,
+        "joint_compatibility": {
+            "training": joint_training,
+            "post_joint": post_joint,
+            "minimum_macro_balanced_accuracy": float(
+                probe["minimum_post_joint_macro_balanced_accuracy"]
+            ),
+            "passed": joint_compatibility_passed,
+        },
+        "passed": learnability_passed and joint_compatibility_passed,
+        "capability_claim": "NONE_LEARNABILITY_ONLY",
+        "negative_verdict_authority": "NONE",
+    }
+
+
 def residual_learnability_probe(
     target: dict[str, Any],
     copy_lookup: np.ndarray,
@@ -741,6 +1049,8 @@ def residual_learnability_probe(
             residual,
             residual_mask,
             _verifier,
+            _decision,
+            _decision_mask,
         ) = row_arrays(stage, index)
         x = mx.array(inputs, dtype=mx.int32)
         y = mx.array(row_labels, dtype=mx.int32)
@@ -858,6 +1168,7 @@ def one_update(
     verifier_positive_weights: Any,
     verifier_negative_weights: Any,
     residual_class_weights: Any,
+    decision_class_weights: Any,
     mx: Any,
     nn: Any,
     optim: Any,
@@ -869,6 +1180,8 @@ def one_update(
         residual,
         residual_loss_mask,
         verifier,
+        decision,
+        decision_loss_mask,
     ) = row_arrays(stage, index)
     x = mx.array(inputs, dtype=mx.int32)
     y = mx.array(labels, dtype=mx.int32)
@@ -894,6 +1207,10 @@ def one_update(
         verifier_negative_weights,
         residual_class_weights,
         mx.array(residual_loss_mask, dtype=mx.float32),
+        mx.array(decision, dtype=mx.int32),
+        0.25,
+        decision_class_weights,
+        mx.array(decision_loss_mask, dtype=mx.float32),
     )
     grads, norm = optim.clip_grad_norm(grads, gradient_clip)
     optimizer.update(model, grads)
@@ -944,10 +1261,23 @@ def train_steps(
     matrix_residual_class_weights = mx.array(
         residual_class_weights, dtype=mx.float32
     )
+    decision_authority = np.asarray(stage.kerc_decision_loss_mask).astype(bool)
+    decision_class_weights, decision_class_weight_receipt = (
+        balanced_categorical_class_weights(
+            stage.kerc_decision_labels[decision_authority][:, None],
+            class_count=len(ANSWER_DISPOSITION_ORDER),
+            maximum=16.0,
+            require_two_classes_per_feature=True,
+        )
+    )
+    matrix_decision_class_weights = mx.array(
+        decision_class_weights[0], dtype=mx.float32
+    )
     mx.eval(
         matrix_verifier_positive_weights,
         matrix_verifier_negative_weights,
         matrix_residual_class_weights,
+        matrix_decision_class_weights,
     )
     losses: list[float] = []
     target_positions = 0
@@ -965,6 +1295,7 @@ def train_steps(
             verifier_positive_weights=matrix_verifier_positive_weights,
             verifier_negative_weights=matrix_verifier_negative_weights,
             residual_class_weights=matrix_residual_class_weights,
+            decision_class_weights=matrix_decision_class_weights,
             mx=mx,
             nn=nn,
             optim=optim,
@@ -982,6 +1313,7 @@ def train_steps(
         "target_tokens_per_second": target_positions / max(elapsed, 1e-9),
         "verifier_class_weights": verifier_class_weight_receipt,
         "residual_class_weights": residual_class_weight_receipt,
+        "decision_class_weights": decision_class_weight_receipt,
     }
 
 
@@ -1284,6 +1616,7 @@ def classify_gates(
     rollback_logit_delta: float,
     trained_ablations: dict[str, Any],
     residual_learnability: dict[str, Any],
+    decision_learnability: dict[str, Any],
     partial_file_count: int,
 ) -> tuple[str, list[dict[str, Any]]]:
     accept = config["acceptance"]
@@ -1338,6 +1671,37 @@ def classify_gates(
             "residual_allocator_joint_objective_compatibility",
             bool(joint_compatibility.get("passed")),
             joint_compatibility.get("post_joint") or {},
+            "adequacy",
+        )
+    )
+    checks.append(
+        (
+            "answer_disposition_full_objective_learnability",
+            bool(decision_learnability.get("learnability_passed")),
+            {
+                "gradient_path_present": decision_learnability.get(
+                    "gradient_path_present"
+                ),
+                "optimizer_steps": decision_learnability.get("optimizer_steps"),
+                "observed_classes": (
+                    decision_learnability.get("final") or {}
+                ).get("observed_classes"),
+                "unobserved_classes": (
+                    decision_learnability.get("final") or {}
+                ).get("unobserved_classes"),
+                "macro_balanced_accuracy": (
+                    decision_learnability.get("final") or {}
+                ).get("macro_balanced_accuracy"),
+            },
+            "adequacy",
+        )
+    )
+    decision_joint = decision_learnability.get("joint_compatibility") or {}
+    checks.append(
+        (
+            "answer_disposition_joint_objective_compatibility",
+            bool(decision_joint.get("passed")),
+            decision_joint.get("post_joint") or {},
             "adequacy",
         )
     )
@@ -1445,6 +1809,17 @@ def run(config_path: Path) -> dict[str, Any]:
         base, metadata, vocab_size=int(target["vocab_size"])
     )
     learnability = residual_learnability_probe(
+        target,
+        copy_lookup,
+        subset,
+        config,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+    )
+    mx.clear_cache()
+    decision_learnability = decision_learnability_probe(
         target,
         copy_lookup,
         subset,
@@ -1729,6 +2104,7 @@ def run(config_path: Path) -> dict[str, Any]:
         rollback_logit_delta=rollback_logit_delta,
         trained_ablations=trained_ablations,
         residual_learnability=learnability,
+        decision_learnability=decision_learnability,
         partial_file_count=len(partial_files),
     )
     rss_after = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
@@ -1760,6 +2136,7 @@ def run(config_path: Path) -> dict[str, Any]:
             "resume_maximum_parameter_delta": resume_parameter_delta,
         },
         "residual_learnability": learnability,
+        "decision_learnability": decision_learnability,
         "interventions": interventions,
         "trained_mechanism_ablations": trained_ablations,
         "lifecycle": {

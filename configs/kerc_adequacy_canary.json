@@ -35,6 +35,21 @@
     "joint_compatibility_steps": 64,
     "minimum_post_joint_channel_balanced_accuracy": 0.75
   },
+  "decision_learnability": {
+    "maximum_steps": 256,
+    "minimum_steps": 64,
+    "evaluation_interval": 32,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.0,
+    "gradient_clip_norm": 1.0,
+    "decision_weight": 1.0,
+    "class_balance_maximum": 16.0,
+    "minimum_observed_class_count": 3,
+    "minimum_macro_balanced_accuracy": 0.99,
+    "minimum_parameter_family_gradient_l2": 1e-10,
+    "joint_compatibility_steps": 64,
+    "minimum_post_joint_macro_balanced_accuracy": 0.75
+  },
   "acceptance": {
     "maximum_final_to_initial_loss_ratio": 0.8,
     "minimum_token_accuracy_gain": 0.01,

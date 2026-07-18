@@ -24,6 +24,15 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
+from kerc_residual_economics import (
+    ALLOCATION_POLICY,
+    CODEC_POLICY,
+    PROMOTION_POLICY,
+    ResidualEconomicsFault,
+    build_residual_codec,
+    validate_residual_codec,
+    validate_structural_rate_distortion_allocation,
+)
 from vcm_semantic_memory import (
     HRLStateFault,
     create_hierarchical_residual_state,
@@ -34,7 +43,7 @@ from vcm_semantic_memory import (
 
 POLICY = "project_theseus_kernel_packet_protocol_v1"
 KERNEL_VERSION = "KE-1.0"
-PACKET_VERSION = "KPP-1.0"
+PACKET_VERSION = "KPP-1.1"
 HRL_VERSION = "HRL-1.0"
 CODEBOOK_VERSION = "KE-CODEBOOK-1.0"
 CODE_SPACES = ("V_S", "V_K", "V_P")
@@ -118,7 +127,8 @@ KERC_VERIFIER_DIMENSIONS = (
     "answer_decision_consistency",
 )
 ANSWER_DECISION_POLICY = "project_theseus_kernel_answer_decision_v1"
-ANSWER_DISPOSITIONS = {"ANSWER", "PARTIAL", "CLARIFY", "ABSTAIN"}
+ANSWER_DISPOSITION_ORDER = ("ANSWER", "PARTIAL", "CLARIFY", "ABSTAIN")
+ANSWER_DISPOSITIONS = set(ANSWER_DISPOSITION_ORDER)
 ANSWER_EVIDENCE_STATES = {
     "SUPPORTED",
     "PARTIALLY_SUPPORTED",
@@ -233,6 +243,15 @@ def kernel_training_contract() -> dict[str, Any]:
         "trusted_source_control_tokens": list(TRAINING_TASK_TAGS.values()),
         "residual_channels": list(KERC_RESIDUAL_CHANNELS),
         "residual_fidelity_labels": dict(KERC_FIDELITY_LABELS),
+        "residual_economics": {
+            "codec_policy": CODEC_POLICY,
+            "allocation_policy": ALLOCATION_POLICY,
+            "promotion_policy": PROMOTION_POLICY,
+            "codec_model": "adaptive_order1_byte_fsm_conditioned_arithmetic_v1",
+            "codec_channels": list(KERC_RESIDUAL_CHANNELS),
+            "fidelity_target_authority": "independently_measured_rate_distortion_required",
+            "bootstrap_fidelity_labels_are_optimality_evidence": False,
+        },
         "verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
         "semantic_supervision": {
             "policy": SEMANTIC_SUPERVISION_POLICY,
@@ -508,7 +527,6 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
                 "KERC_TRAINING_BOUNDARY_INVALID", key, path=f"record.{key}"
             )
 
-    residual_supervision = _validate_residual_supervision(record, packet=record.get("kernel_packet") or {})
     for key in (
         "fallback_return_count",
         "template_credit",
@@ -559,6 +577,7 @@ def validate_training_record(record: dict[str, Any]) -> dict[str, Any]:
         )
     packet = record.get("kernel_packet") if isinstance(record.get("kernel_packet"), dict) else {}
     packet_replay = validate_kernel_packet(packet, local_hrl_state=hrl_state)
+    residual_supervision = _validate_residual_supervision(record, packet=packet)
     expected_source = capture_source(source)
     if (packet.get("source") or {}).get("source_sha256") != expected_source["source_sha256"]:
         raise KernelProtocolFault(
@@ -1130,12 +1149,16 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                 "kerc_verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
                 "kerc_verifier_positive_labels": [1] * len(KERC_VERIFIER_DIMENSIONS),
                 "kerc_verifier_negative": verifier_negative,
+                "kerc_answer_disposition": str(
+                    record["answer_packet"]["decision"]["disposition"]
+                ),
                 "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
                 "evaluator_only_fields": [
                     "target",
                     "target_sha256",
                     "source_record_sha256",
                     "kerc_verifier_negative",
+                    "kerc_answer_disposition",
                     "realization_id",
                 ],
                 "public_benchmark": False,
@@ -1398,6 +1421,65 @@ def _validate_residual_supervision(
             "KERC_RESIDUAL_SUPERVISION_ANNOTATOR_INVALID",
             canonical_json(supervision),
             path="record.residual_supervision.annotator_independent_of_model",
+        )
+    if supervision.get("allocation_target_authority") != (
+        "measured_structural_rate_distortion_with_calibrated_source_visible_importance"
+    ) or supervision.get("rate_distortion_optimality_claimed") is not False:
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_ALLOCATION_AUTHORITY_INVALID",
+            canonical_json(supervision),
+            path="record.residual_supervision.allocation_target_authority",
+        )
+    importance = supervision.get("importance")
+    allocation = supervision.get("rate_distortion_allocation")
+    if not isinstance(importance, dict) or not isinstance(allocation, dict):
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_ECONOMICS_SUPERVISION_MISSING",
+            canonical_json(supervision),
+            path="record.residual_supervision",
+        )
+    importance_core = {
+        key: copy.deepcopy(value)
+        for key, value in importance.items()
+        if key != "receipt_sha256"
+    }
+    if (
+        importance.get("policy")
+        != "project_theseus_kerc_calibrated_importance_policy_v1"
+        or importance.get("receipt_sha256") != stable_hash(importance_core)
+        or importance.get("target_fields_visible_to_policy") != []
+    ):
+        raise KernelProtocolFault(
+            "KERC_IMPORTANCE_RECEIPT_INVALID",
+            canonical_json(importance),
+            path="record.residual_supervision.importance",
+        )
+    hrl_state = record.get("hrl_state") if isinstance(record.get("hrl_state"), dict) else {}
+    try:
+        validated_allocation = validate_structural_rate_distortion_allocation(
+            allocation,
+            kernel_program=packet.get("program") or {},
+            global_state=hrl_state.get("global") or {},
+            segment_residual=residual.get("segment_frame") or {},
+            token_residuals=residual.get("token_tags") or [],
+            exact_objects=packet.get("protected_objects") or {},
+            exact_codec=residual.get("codec") or None,
+        )
+    except ResidualEconomicsFault as exc:
+        raise KernelProtocolFault(
+            exc.code,
+            exc.detail,
+            path="record.residual_supervision.rate_distortion_allocation",
+        ) from exc
+    if (
+        validated_allocation["selected_fidelity"] != residual.get("fidelity")
+        or int(supervision.get("record_fidelity_label", -1))
+        != KERC_FIDELITY_LABELS[validated_allocation["selected_fidelity"]]
+    ):
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_ALLOCATION_PACKET_MISMATCH",
+            canonical_json(validated_allocation),
+            path="record.residual_supervision.rate_distortion_allocation",
         )
     return copy.deepcopy(supervision)
 
@@ -2301,6 +2383,13 @@ def build_kernel_packet(
         "exact_object_handles": sorted(protected["protected_objects"]),
         "missing_state_behavior": "reject_or_request_checkpoint_without_approximation",
     }
+    residual["codec"] = build_residual_codec(
+        kernel_program=validated["canonical_program"],
+        global_state=hrl_state["global"],
+        segment_residual=normalized_segment,
+        token_residuals=normalized_tags,
+        exact_objects=protected["protected_objects"],
+    )
     packet_core = {
         "policy": POLICY,
         "packet_version": PACKET_VERSION,
@@ -2343,6 +2432,29 @@ def build_kernel_packet(
     packet_core["packet_sha256"] = stable_hash(packet_core)
     validate_kernel_packet(packet_core, local_hrl_state=hrl_state)
     return packet_core
+
+
+def revise_kernel_packet_fidelity(
+    packet: dict[str, Any],
+    fidelity: str,
+    *,
+    local_hrl_state: dict[str, Any],
+) -> dict[str, Any]:
+    """Change only the declared residual fidelity and rebind packet identities."""
+
+    validate_kernel_packet(packet, local_hrl_state=local_hrl_state)
+    if fidelity not in FIDELITY_MODES:
+        raise KernelProtocolFault(
+            "KERC_FIDELITY_INVALID", fidelity, path="residual.fidelity"
+        )
+    revised = copy.deepcopy(packet)
+    revised["residual"]["fidelity"] = fidelity
+    revised.pop("packet_id", None)
+    revised.pop("packet_sha256", None)
+    revised["packet_id"] = "kpacket:" + stable_hash(revised).split(":", 1)[1][:24]
+    revised["packet_sha256"] = stable_hash(revised)
+    validate_kernel_packet(revised, local_hrl_state=local_hrl_state)
+    return revised
 
 
 def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str, Any]) -> dict[str, Any]:
@@ -2419,6 +2531,23 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
             source_character_length=int(source.get("character_length") or 0),
             path=f"packet.residual.token_tags[{index}].source_span",
         )
+    try:
+        codec_receipt = validate_residual_codec(
+            residual.get("codec") if isinstance(residual.get("codec"), dict) else {},
+            kernel_program=packet.get("program")
+            if isinstance(packet.get("program"), dict)
+            else {},
+            global_state=local_hrl_state.get("global")
+            if isinstance(local_hrl_state.get("global"), dict)
+            else {},
+            segment_residual=segment,
+            token_residuals=tags,
+            exact_objects=objects,
+        )
+    except ResidualEconomicsFault as exc:
+        raise KernelProtocolFault(
+            exc.code, exc.detail, path="packet.residual.codec"
+        ) from exc
     concepts = packet.get("concept_capsules") if isinstance(packet.get("concept_capsules"), dict) else {}
     expected_source_record_sha256 = stable_hash(
         {key: value for key, value in source.items() if key != "record_sha256"}
@@ -2466,6 +2595,7 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
         "program_sha256": validated["canonical_program"]["program_sha256"],
         "state_hash_match": True,
         "serialization_replay_match": True,
+        "residual_codec": codec_receipt,
         "semantic_equivalence_claimed": False,
         **NO_CHEAT,
     }
@@ -2712,6 +2842,7 @@ def verify_answer_roundtrip(
     reconstructed_constraints = _answer_constraints(reconstructed, protected_objects)
     failures = []
     for field in (
+        "claim_predicates",
         "entity_handles",
         "number_values",
         "claim_polarities",
@@ -2857,10 +2988,12 @@ def _answer_constraints(packet: dict[str, Any], objects: dict[str, dict[str, Any
     polarities = []
     modalities = []
     quantifiers = []
+    predicates = []
     temporal = []
     causal = []
     attributions = []
     for claim in packet["claims"]:
+        predicates.append((claim["claim_id"], claim["predicate"]))
         polarities.append((claim["claim_id"], claim["polarity"]))
         modalities.append((claim["claim_id"], claim["modality"]))
         quantifiers.append((claim["claim_id"], claim.get("quantifier", "NONE")))
@@ -2872,6 +3005,7 @@ def _answer_constraints(packet: dict[str, Any], objects: dict[str, dict[str, Any
     quote_handles = sorted(handle for handle in handles if objects.get(handle, {}).get("object_type") == "QUOTE")
     entity_handles = sorted(handle for handle in handles if objects.get(handle, {}).get("object_type") != "QUOTE")
     return {
+        "claim_predicates": sorted(predicates),
         "entity_handles": entity_handles,
         "number_values": sorted(numbers),
         "claim_polarities": sorted(polarities),

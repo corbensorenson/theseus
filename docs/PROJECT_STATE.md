@@ -37,8 +37,9 @@ share toward zero. Public benchmarks are calibration only.
   proxy remains `INCONCLUSIVE_IMPLEMENTATION`; the faithful candidate now has enough
   architecture mechanics to require the prospectively frozen matched experiment. The exact packet and
   VCM residual substrate now connect to an explicit MLX KERC candidate with trusted
-  source-only stage routing, separate Kernel/surface output paths, a learned four-level
-  residual allocator, independent verifier parameters with five content-bound decision
+  source-only stage routing, separate Kernel/surface output paths, a learned four-channel
+  residual classifier currently trained on explicitly bootstrap-only structural labels,
+  independent verifier parameters with five content-bound decision
   dimensions, content-bound four-channel
   residual labels, targeted verifier counterexamples that receive zero generator loss,
   and 384 withheld/shuffled source-grounded context interventions whose donor contexts
@@ -71,7 +72,7 @@ share toward zero. Public benchmarks are calibration only.
   The learned compiler never receives the evaluator-owned answer span. The current
   64-update Apple-MLX cold-start canary selects 16 real rows and covers all 21 objective,
   decision, interaction, residual, five-dimension verifier, and context-counterfactual
-  groups. Token accuracy is `0.354244` and verifier macro balanced accuracy is `0.784569`
+  groups. Token accuracy is `0.338462` and verifier macro balanced accuracy is `0.812261`
   with `1.0` minimum negative recall. Its residual allocator remains at the `0.5`
   balanced-accuracy baseline after only 64 mixed-objective updates; that observation is
   retained as an underpowered cold-start diagnostic rather than architecture evidence.
@@ -79,10 +80,12 @@ share toward zero. Public benchmarks are calibration only.
   zero residual-authority mask, so they cannot duplicate or contradict source-grounded
   residual supervision. A separate same-model, same-row residual-only learnability rung
   records nonzero residual-head and source-representation gradients and reaches `1.0`
-  balanced accuracy on every channel within 160 bounded updates. The allocator conditions
+  minimum channel balanced accuracy at step 128 of its 256-step bound. The allocator conditions
   explicitly on both source content and the trusted compiler/core/renderer stage so long
-  sources cannot wash out the stage signal. It retains `1.0` on all four channels after
-  64 additional canonical joint token/verifier/residual updates. The complete replay is
+  sources cannot wash out the stage signal. It reaches `1.0` on all four channels after
+  64 additional canonical joint token/verifier/residual/decision updates. A separate
+  disposition probe reaches and retains `1.0` over observed ANSWER/CLARIFY/ABSTAIN by
+  64 updates; PARTIAL is absent and unclaimed. The complete replay is
   GREEN with no hard or inconclusive mechanics gaps. This supports extractive
   grounding and counterfactual-support mechanics only, not context utility, a negative
   KERC verdict, broad entailment, truth, completeness,
@@ -107,6 +110,26 @@ share toward zero. Public benchmarks are calibration only.
   mechanics canary is GREEN, including residual-only learnability and post-joint
   compatibility. The checkpoint is not capability-qualified and the decision dimension
   is not calibrated.
+  Kernel packets now use protocol `KPP-1.1` and bind exact adaptive order-1 conditional
+  arithmetic-code receipts for interaction, segment, token, and exact-object residuals.
+  Every receipt carries condition/content identity, encoded and uncompressed bits, and
+  exact replay. VCM rejects shared-residual promotion until measured definition,
+  direct, and reference costs cross the strict paper-defined break-even threshold. A
+  four-candidate rate-distortion contract with protected minimum fidelity is now the
+  canonical corpus label authority; the retired `source_fidelity_v1` labels are rejected
+  by the training validator. A source-visible importance policy is fit on private-train,
+  temperature-calibrated on private-development, and evaluated once on source-group-
+  disjoint private-evaluation records. The independent verifier recomputes the policy,
+  every four-fidelity codec/distortion candidate, and the development-only lambda choice.
+  Held-out weak-tail recall is `0.997338` for semantic preservation, `1.0` for surface
+  preservation, and `0.975163` for identity anchoring. These are structural-preservation
+  labels, not downstream semantic utility. The selected lambda is `4096`; held-out
+  allocations span semantic (`992`), faithful (`2`), lexical (`236`), and exact (`858`).
+  Exact replay is GREEN, but the current finite-state wire is not efficient: held-out
+  residual bits are `5.114718x` source bits and Kernel-plus-residual wire bits are
+  `9.998350x` source bits. The canonical stage rebuild took `1365.17` seconds. No
+  rate-distortion utility, amortized-efficiency, runtime-latency, or KERC capability claim
+  is authorized from these mechanics.
   This carries no capability or negative-verdict authority: the prior
   target proves interaction representation, learning, replay, and causal mechanics, not
   interaction utility. The new dialogue, multiple-valid, withheld, and shuffled rows
@@ -155,8 +178,13 @@ share toward zero. Public benchmarks are calibration only.
   cleanup, source-replayed multi-turn/multiple-valid/explicit-decision materialization,
   deterministic 21-group canary coverage, train-only contextual FrameNet ambiguity,
   stage-conditioned residual learnability, post-joint compatibility, and sustained-batch
-  execution now pass. Next add unresolved ambiguity, broad entailment, protected-span
-  abstention, and calibrated verifier decisions; then
+  execution now pass. Exact residual coding, measured four-fidelity structural allocation,
+  development-only lambda calibration, source-visible calibrated importance, and strict
+  shared-residual promotion economics now independently replay as well. Next extend
+  allocation from record-level structural preservation to intervention-sensitive per-unit
+  decisions, reduce the measured `9.998350x` total wire overhead and 22.75-minute stage
+  build, add unresolved ambiguity, broad entailment, protected-span abstention, and
+  calibrated verifier decisions; then
   freeze strong matched controls and total-system accounting and rebuild the architecture
   package. Reflexive Router pre-training mechanics are complete:
   34 focused tests pass, the six-case assistant E2E executes a real tool-to-plan structured

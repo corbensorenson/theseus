@@ -27,6 +27,7 @@ import numpy as np
 
 from kerc_checkpoint_schema import CURRENT_SCHEMA, CURRENT_SCHEMA_VERSION, POLICY as KERC_CHECKPOINT_POLICY
 from kernel_english_protocol import (
+    ANSWER_DISPOSITION_ORDER,
     KERC_VERIFIER_DIMENSIONS,
     KernelProtocolFault,
     TRAINING_TASK_TAGS,
@@ -543,6 +544,7 @@ def model_accounting(
         for objective in TRAINING_TASK_TAGS
     ]
     kerc_model["kerc_verifier_output_dim"] = len(KERC_VERIFIER_DIMENSIONS)
+    kerc_model["kerc_decision_output_dim"] = len(ANSWER_DISPOSITION_ORDER)
     canonical_target_start = target_token_offset(base, source_vocab)
     kerc_model.update(
         {
@@ -671,6 +673,8 @@ def matched_encoder_decoder_config(
         "kerc_residual_bottleneck_dim",
         "kerc_verifier_dim",
         "kerc_verifier_output_dim",
+        "kerc_decision_bottleneck_dim",
+        "kerc_decision_output_dim",
     ):
         candidate.pop(key, None)
     candidate["ff_dim"] = 1
@@ -1569,6 +1573,8 @@ def materialize_target_supervision(
     kerc_residual_rows: list[list[int]] = []
     kerc_residual_loss_enabled: list[bool] = []
     kerc_verifier_rows: list[list[int]] = []
+    kerc_decision_rows: list[int] = []
+    kerc_decision_loss_enabled: list[bool] = []
     kerc_coverage_rows: list[tuple[str, ...]] = []
     kerc_model = str(target.get("role") or "") == "kerc_english_candidate"
     kerc_mode = kerc_model and artifact_field == "kernel_english_artifacts"
@@ -1674,6 +1680,7 @@ def materialize_target_supervision(
                         else {}
                     )
                     negative_labels = list(negative.get("labels") or [])
+                    disposition = answer_disposition_from_training_row(row)
                     if (
                         len(residual) != 4
                         or residual_channels != ["interaction", "segment", "token", "exact"]
@@ -1689,6 +1696,7 @@ def materialize_target_supervision(
                         )
                         or negative_labels.count(0) != 1
                         or negative.get("generator_loss_enabled") is not False
+                        or disposition not in ANSWER_DISPOSITION_ORDER
                     ):
                         raise ValueError(f"invalid KERC auxiliary supervision: {key}:{source_rows - 1}")
                     negative_answer = str(negative.get("target") or "")
@@ -1733,6 +1741,10 @@ def materialize_target_supervision(
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_residual_loss_enabled.append(True)
                     kerc_verifier_rows.append([1] * len(KERC_VERIFIER_DIMENSIONS))
+                    kerc_decision_rows.append(
+                        ANSWER_DISPOSITION_ORDER.index(disposition)
+                    )
+                    kerc_decision_loss_enabled.append(True)
                     base_coverage = kerc_training_coverage_labels(row, residual)
                     kerc_coverage_rows.append((*base_coverage, "verifier:positive"))
                     sequences.append(negative_sequence)
@@ -1742,6 +1754,10 @@ def materialize_target_supervision(
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_residual_loss_enabled.append(False)
                     kerc_verifier_rows.append([int(value) for value in negative_labels])
+                    kerc_decision_rows.append(
+                        ANSWER_DISPOSITION_ORDER.index(disposition)
+                    )
+                    kerc_decision_loss_enabled.append(False)
                     failed_dimension = str(negative.get("failed_dimension") or "")
                     if failed_dimension not in KERC_VERIFIER_DIMENSIONS:
                         raise ValueError(
@@ -1874,6 +1890,10 @@ def materialize_target_supervision(
                         kerc_verifier_rows.append(
                             [int(value) for value in counter_labels]
                         )
+                        kerc_decision_rows.append(
+                            ANSWER_DISPOSITION_ORDER.index(disposition)
+                        )
+                        kerc_decision_loss_enabled.append(False)
                         kerc_coverage_rows.append(
                             (
                                 *base_coverage,
@@ -2002,6 +2022,7 @@ def materialize_target_supervision(
         ),
         "kerc_context_counterfactuals_receive_generator_loss": False,
         "kerc_verifier_only_rows_receive_residual_loss": False,
+        "kerc_verifier_only_rows_receive_decision_loss": False,
         "kerc_residual_supervision_row_count": (
             sum(kerc_residual_loss_enabled) if kerc_mode else 0
         ),
@@ -2037,6 +2058,14 @@ def materialize_target_supervision(
         kerc_verifier_labels=(
             np.asarray(kerc_verifier_rows, dtype=np.float32) if kerc_mode else None
         ),
+        kerc_decision_labels=(
+            np.asarray(kerc_decision_rows, dtype=np.int32) if kerc_mode else None
+        ),
+        kerc_decision_loss_mask=(
+            np.asarray(kerc_decision_loss_enabled, dtype=np.float32)
+            if kerc_mode
+            else None
+        ),
         kerc_coverage_labels=(tuple(kerc_coverage_rows) if kerc_mode else None),
         receipt=receipt,
     )
@@ -2060,6 +2089,10 @@ def kerc_training_coverage_labels(
 
 def answer_disposition_from_training_row(row: dict[str, Any]) -> str:
     """Read a supervised decision label for sampler accounting, never generation."""
+
+    explicit = str(row.get("kerc_answer_disposition") or "")
+    if explicit in ANSWER_DISPOSITION_ORDER:
+        return explicit
 
     def visit(value: Any) -> str:
         if isinstance(value, dict):
@@ -3284,6 +3317,28 @@ def train_target(
                     "verifier_require_both_classes", True
                 )
             ),
+            kerc_decision_labels=(
+                kernel_english_stage.kerc_decision_labels
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else None
+            ),
+            kerc_decision_weight=(
+                float(config["kernel_english_training"]["decision_auxiliary_weight"])
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else 0.0
+            ),
+            kerc_decision_class_count=len(ANSWER_DISPOSITION_ORDER),
+            kerc_decision_balance_maximum=float(
+                (config.get("kernel_english_training") or {}).get(
+                    "decision_class_balance_maximum", 16.0
+                )
+            ),
+            kerc_decision_require_two_classes=True,
+            kerc_decision_loss_mask=(
+                kernel_english_stage.kerc_decision_loss_mask
+                if str(target.get("role") or "") == "kerc_english_candidate"
+                else None
+            ),
             coverage_labels=(
                 kernel_english_stage.kerc_coverage_labels
                 if str(target.get("role") or "") == "kerc_english_candidate"
@@ -3738,6 +3793,8 @@ def validate_config(config: dict[str, Any]) -> None:
                 "kerc_residual_bottleneck_dim",
                 "kerc_verifier_dim",
                 "kerc_verifier_output_dim",
+                "kerc_decision_bottleneck_dim",
+                "kerc_decision_output_dim",
             )
         }
         if kerc_model != dict(config.get("shared_trunk_model") or {}):
@@ -3749,6 +3806,9 @@ def validate_config(config: dict[str, Any]) -> None:
             or kerc_dimensions["kerc_verifier_dim"] <= 0
             or kerc_dimensions["kerc_verifier_output_dim"]
             != len(KERC_VERIFIER_DIMENSIONS)
+            or kerc_dimensions["kerc_decision_bottleneck_dim"] <= 0
+            or kerc_dimensions["kerc_decision_output_dim"]
+            != len(ANSWER_DISPOSITION_ORDER)
         ):
             raise ValueError("KERC English learned module dimensions are incomplete")
     if topology.get("expert_trainable_scope") not in {

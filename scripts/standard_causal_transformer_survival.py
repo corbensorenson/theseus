@@ -2794,6 +2794,10 @@ def causal_loss(
     kerc_verifier_negative_weights: Any | None = None,
     kerc_residual_class_weights: Any | None = None,
     kerc_residual_loss_mask: Any | None = None,
+    kerc_decision_labels: Any | None = None,
+    kerc_decision_weight: float = 0.0,
+    kerc_decision_class_weights: Any | None = None,
+    kerc_decision_loss_mask: Any | None = None,
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
@@ -2801,7 +2805,9 @@ def causal_loss(
     needs_plan = plan_labels is not None and plan_weight > 0.0
     needs_kerc = (
         kerc_residual_labels is not None and kerc_residual_weight > 0.0
-    ) or (kerc_verifier_labels is not None and kerc_verifier_weight > 0.0)
+    ) or (kerc_verifier_labels is not None and kerc_verifier_weight > 0.0) or (
+        kerc_decision_labels is not None and kerc_decision_weight > 0.0
+    )
     if needs_plan or copy_weight > 0.0 or mtp_weight > 0.0 or needs_kerc:
         logits, _cache, training_aux = model(inputs, return_training_aux=True)
         plan_logits = training_aux.get("plan_logits")
@@ -2902,6 +2908,36 @@ def causal_loss(
             verifier_element_loss = verifier_element_loss * class_weights
         verifier_loss = mx.mean(verifier_element_loss)
         body_loss = body_loss + float(kerc_verifier_weight) * verifier_loss
+    if kerc_decision_labels is not None and kerc_decision_weight > 0.0:
+        decision_logits = kerc_aux.get("decision_logits") if kerc_aux else None
+        if decision_logits is None:
+            raise ValueError("KERC decision labels require source-conditioned logits")
+        decision_targets = kerc_decision_labels.astype(mx.int32)
+        decision_element_loss = nn.losses.cross_entropy(
+            decision_logits, decision_targets
+        )
+        if kerc_decision_class_weights is not None:
+            if tuple(kerc_decision_class_weights.shape) != (
+                int(decision_logits.shape[-1]),
+            ):
+                raise ValueError("KERC decision class weights do not match logits")
+            decision_element_loss = decision_element_loss * mx.take(
+                kerc_decision_class_weights, decision_targets
+            )
+        if kerc_decision_loss_mask is None:
+            decision_authority = mx.ones(
+                (int(decision_logits.shape[0]),), dtype=mx.float32
+            )
+        else:
+            if tuple(kerc_decision_loss_mask.shape) != (
+                int(decision_logits.shape[0]),
+            ):
+                raise ValueError("KERC decision loss mask must be one value per row")
+            decision_authority = kerc_decision_loss_mask.astype(mx.float32)
+        decision_loss = mx.sum(
+            decision_element_loss * decision_authority
+        ) / mx.maximum(mx.sum(decision_authority), 1.0)
+        body_loss = body_loss + float(kerc_decision_weight) * decision_loss
     if plan_logits is None:
         return body_loss
     plan_targets = plan_labels.astype(mx.float32)
@@ -3082,6 +3118,12 @@ def train_phase(
     kerc_verifier_weight: float = 0.0,
     kerc_verifier_balance_maximum: float = 16.0,
     kerc_verifier_require_both_classes: bool = True,
+    kerc_decision_labels: np.ndarray | None = None,
+    kerc_decision_weight: float = 0.0,
+    kerc_decision_class_count: int = 0,
+    kerc_decision_balance_maximum: float = 16.0,
+    kerc_decision_require_two_classes: bool = True,
+    kerc_decision_loss_mask: np.ndarray | None = None,
     coverage_labels: tuple[tuple[str, ...], ...] | None = None,
     required_coverage_labels: tuple[str, ...] = (),
     phase_name: str,
@@ -3124,10 +3166,34 @@ def train_phase(
             raise ValueError(
                 "KERC verifier labels must be one nonempty dimension vector per sequence"
             )
+    if kerc_decision_labels is not None and (
+        np.asarray(kerc_decision_labels).shape != (len(inputs),)
+        or not np.issubdtype(np.asarray(kerc_decision_labels).dtype, np.integer)
+        or bool(np.any(np.asarray(kerc_decision_labels) < 0))
+        or int(kerc_decision_class_count) <= 0
+        or bool(
+            np.any(
+                np.asarray(kerc_decision_labels)
+                >= int(kerc_decision_class_count)
+            )
+        )
+    ):
+        raise ValueError("KERC decision labels must be valid categorical classes")
+    if kerc_decision_loss_mask is not None and (
+        kerc_decision_labels is None
+        or np.asarray(kerc_decision_loss_mask).shape != (len(inputs),)
+        or not np.isin(np.asarray(kerc_decision_loss_mask), [0.0, 1.0]).all()
+        or not bool(np.asarray(kerc_decision_loss_mask).astype(bool).any())
+    ):
+        raise ValueError(
+            "KERC decision loss mask must authorize at least one labeled row"
+        )
     if (kerc_residual_labels is None) != (float(kerc_residual_weight) == 0.0):
         raise ValueError("KERC residual labels and positive weight must be supplied together")
     if (kerc_verifier_labels is None) != (float(kerc_verifier_weight) == 0.0):
         raise ValueError("KERC verifier labels and positive weight must be supplied together")
+    if (kerc_decision_labels is None) != (float(kerc_decision_weight) == 0.0):
+        raise ValueError("KERC decision labels and positive weight must be supplied together")
     if kerc_residual_labels is None:
         residual_class_weights = None
         residual_class_weight_receipt = {
@@ -3167,6 +3233,29 @@ def train_phase(
             maximum=float(kerc_verifier_balance_maximum),
             require_both_classes=bool(kerc_verifier_require_both_classes),
         )
+    if kerc_decision_labels is None:
+        decision_class_weights = None
+        decision_class_weight_receipt = {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": "",
+        }
+    else:
+        decision_authority = (
+            np.asarray(kerc_decision_loss_mask).astype(bool)
+            if kerc_decision_loss_mask is not None
+            else np.ones(len(kerc_decision_labels), dtype=bool)
+        )
+        decision_weights, decision_class_weight_receipt = (
+            balanced_categorical_class_weights(
+                np.asarray(kerc_decision_labels)[decision_authority][:, None],
+                class_count=int(kerc_decision_class_count),
+                maximum=float(kerc_decision_balance_maximum),
+                require_two_classes_per_feature=bool(
+                    kerc_decision_require_two_classes
+                ),
+            )
+        )
+        decision_class_weights = decision_weights[0]
     prepared_plan_labels, plan_label_receipt = prepare_semantic_plan_labels(
         plan_labels,
         mode=plan_label_mode,
@@ -3232,10 +3321,17 @@ def train_phase(
         if residual_class_weights is not None
         else None
     )
+    matrix_decision_class_weights = (
+        mx.array(decision_class_weights, dtype=mx.float32)
+        if decision_class_weights is not None
+        else None
+    )
     if matrix_verifier_positive_weights is not None:
         mx.eval(matrix_verifier_positive_weights, matrix_verifier_negative_weights)
     if matrix_residual_class_weights is not None:
         mx.eval(matrix_residual_class_weights)
+    if matrix_decision_class_weights is not None:
+        mx.eval(matrix_decision_class_weights)
     order = list(range(len(inputs)))
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
     coverage_receipt = coverage_first_plan(
@@ -3325,6 +3421,21 @@ def train_phase(
                 if kerc_verifier_labels is not None
                 else None
             )
+            batch_kerc_decision = (
+                mx.array(
+                    np.asarray(kerc_decision_labels[indices]), dtype=mx.int32
+                )
+                if kerc_decision_labels is not None
+                else None
+            )
+            batch_kerc_decision_mask = (
+                mx.array(
+                    np.asarray(kerc_decision_loss_mask[indices]),
+                    dtype=mx.float32,
+                )
+                if kerc_decision_loss_mask is not None
+                else None
+            )
             loss, grads = loss_and_grad(
                 model,
                 x,
@@ -3346,6 +3457,10 @@ def train_phase(
                 matrix_verifier_negative_weights,
                 matrix_residual_class_weights,
                 batch_kerc_residual_mask,
+                batch_kerc_decision,
+                float(kerc_decision_weight),
+                matrix_decision_class_weights,
+                batch_kerc_decision_mask,
             )
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
@@ -3442,6 +3557,13 @@ def train_phase(
         ),
         "kerc_verifier_auxiliary_weight": float(kerc_verifier_weight),
         "kerc_verifier_class_weights": verifier_class_weight_receipt,
+        "kerc_decision_auxiliary_weight": float(kerc_decision_weight),
+        "kerc_decision_class_weights": decision_class_weight_receipt,
+        "kerc_decision_supervision_row_count": (
+            int(np.asarray(kerc_decision_loss_mask).sum())
+            if kerc_decision_loss_mask is not None
+            else (len(kerc_decision_labels) if kerc_decision_labels is not None else 0)
+        ),
         "kerc_residual_labels_sha256": (
             hashlib.sha256(np.asarray(kerc_residual_labels, dtype=np.int32).tobytes()).hexdigest()
             if kerc_residual_labels is not None
@@ -3457,6 +3579,20 @@ def train_phase(
         "kerc_verifier_labels_sha256": (
             hashlib.sha256(np.asarray(kerc_verifier_labels, dtype=np.float32).tobytes()).hexdigest()
             if kerc_verifier_labels is not None
+            else ""
+        ),
+        "kerc_decision_labels_sha256": (
+            hashlib.sha256(
+                np.asarray(kerc_decision_labels, dtype=np.int32).tobytes()
+            ).hexdigest()
+            if kerc_decision_labels is not None
+            else ""
+        ),
+        "kerc_decision_loss_mask_sha256": (
+            hashlib.sha256(
+                np.asarray(kerc_decision_loss_mask, dtype=np.float32).tobytes()
+            ).hexdigest()
+            if kerc_decision_loss_mask is not None
             else ""
         ),
         "coverage_first_sampling": {

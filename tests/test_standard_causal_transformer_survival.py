@@ -872,6 +872,8 @@ def test_kerc_configuration_requires_complete_modular_architecture() -> None:
             kerc_residual_choice_count=4,
             kerc_residual_bottleneck_dim=8,
             kerc_verifier_dim=8,
+            kerc_decision_bottleneck_dim=8,
+            kerc_decision_output_dim=4,
         ).validate()
     with pytest.raises(ValueError, match="copy-aware"):
         CausalTransformerConfig(
@@ -881,6 +883,8 @@ def test_kerc_configuration_requires_complete_modular_architecture() -> None:
             kerc_residual_choice_count=4,
             kerc_residual_bottleneck_dim=8,
             kerc_verifier_dim=8,
+            kerc_decision_bottleneck_dim=8,
+            kerc_decision_output_dim=4,
         ).validate()
     with pytest.raises(ValueError, match="trusted task tokens"):
         CausalTransformerConfig(**common, kerc_stage_adapter_dim=8).validate()
@@ -906,6 +910,8 @@ def test_kerc_verifier_zero_ablation_preserves_configured_output_contract() -> N
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
         kerc_verifier_output_dim=5,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
         kerc_verifier_ablation="zero",
         kerc_surface_token_start=20,
         kerc_surface_token_end=40,
@@ -950,6 +956,8 @@ def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
         kerc_residual_choice_count=4,
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
         kerc_surface_token_start=20,
         kerc_surface_token_end=40,
         kerc_kernel_token_start=40,
@@ -1047,6 +1055,8 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
         kerc_residual_choice_count=4,
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
         kerc_surface_token_start=20,
         kerc_surface_token_end=40,
         kerc_kernel_token_start=40,
@@ -1068,6 +1078,7 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
     )
     residual_labels = mx.array([[0, 1, 2, 3], [3, 2, 1, 0]], dtype=mx.int32)
     verifier_labels = mx.array([[0, 0, 0, 0], [1, 0, 1, 0]], dtype=mx.float32)
+    decision_labels = mx.array([0, 2], dtype=mx.int32)
     optimizer = optim.SGD(learning_rate=0.05)
     value_and_grad = nn.value_and_grad(model, causal_loss)
     before = {
@@ -1086,6 +1097,10 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
         kerc_residual_weight=0.5,
         kerc_verifier_labels=verifier_labels,
         kerc_verifier_weight=0.5,
+        kerc_decision_labels=decision_labels,
+        kerc_decision_weight=0.5,
+        kerc_decision_class_weights=mx.ones((4,), dtype=mx.float32),
+        kerc_decision_loss_mask=mx.ones((2,), dtype=mx.float32),
     )
     optimizer.update(model, gradients)
     mx.eval(model.parameters(), optimizer.state, loss)
@@ -1099,6 +1114,7 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
     changed = {name for name in before if not np.array_equal(before[name], after[name])}
     assert any("kerc_residual" in name for name in changed)
     assert any("kerc_verifier" in name for name in changed)
+    assert any("kerc_decision" in name for name in changed)
     assert any(
         "kerc_stage" in name or "kerc_kernel_output" in name
         or "kerc_surface_output" in name
@@ -1184,6 +1200,8 @@ def test_kerc_residual_loss_mask_removes_verifier_only_rows() -> None:
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
         kerc_verifier_output_dim=5,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
         kerc_surface_token_start=20,
         kerc_surface_token_end=40,
         kerc_kernel_token_start=40,

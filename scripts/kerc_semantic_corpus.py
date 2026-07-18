@@ -13,6 +13,7 @@ import base64
 import copy
 import hashlib
 import json
+import math
 import os
 import re
 import tempfile
@@ -30,7 +31,15 @@ from kernel_english_protocol import (
     TRAINING_RECORD_POLICY,
     build_kernel_packet,
     extract_protected_objects,
+    revise_kernel_packet_fidelity,
     stable_hash,
+)
+from kerc_importance_policy import fit_importance_policy, predict_importance
+from kerc_residual_economics import (
+    build_structural_rate_distortion_allocation,
+    calibrate_allocation_lambda,
+    reallocate_structural_receipt,
+    residual_wire_bytes,
 )
 from moecot_source_conditioned_pretraining import (
     KERC_SEMANTIC_CORPUS_POLICY,
@@ -167,8 +176,32 @@ def scope(identity: str) -> dict[str, Any]:
     }
 
 
+def bit_distribution(values: list[int]) -> dict[str, Any]:
+    if not values:
+        return {"count": 0, "total": 0, "mean": None, "p50": None, "p95": None, "p99": None, "maximum": None}
+    ordered = sorted(int(value) for value in values)
+
+    def percentile(fraction: float) -> int:
+        return ordered[min(len(ordered) - 1, math.ceil(fraction * len(ordered)) - 1)]
+
+    return {
+        "count": len(ordered),
+        "total": sum(ordered),
+        "mean": sum(ordered) / len(ordered),
+        "p50": percentile(0.50),
+        "p95": percentile(0.95),
+        "p99": percentile(0.99),
+        "maximum": ordered[-1],
+    }
+
+
 def residual_supervision(
-    identity: str, *, packet: dict[str, Any], hrl_state: dict[str, Any]
+    identity: str,
+    *,
+    packet: dict[str, Any],
+    hrl_state: dict[str, Any],
+    importance: dict[str, Any] | None = None,
+    allocation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     residual = packet["residual"]
     fidelity_labels = {"semantic": 0, "faithful": 1, "lexical": 2, "exact": 3}
@@ -178,13 +211,42 @@ def residual_supervision(
         "token": 2 if residual["token_tags"] else 0,
         "exact": 3 if residual["exact_object_handles"] else 0,
     }
+    finalized = isinstance(importance, dict) and isinstance(allocation, dict)
     return {
         "policy": "project_theseus_kerc_residual_supervision_v1",
         "labels_by_channel": labels,
         "record_fidelity_label": fidelity_labels[residual["fidelity"]],
+        "allocation_target_authority": (
+            "measured_structural_rate_distortion_with_calibrated_source_visible_importance"
+            if finalized
+            else "bootstrap_structural_label_only"
+        ),
+        "rate_distortion_optimality_claimed": False,
+        **(
+            {
+                "importance": copy.deepcopy(importance),
+                "rate_distortion_allocation": copy.deepcopy(allocation),
+            }
+            if finalized
+            else {}
+        ),
         "annotator_independent_of_model": True,
         "evidence_sha256": stable_hash(
-            {"identity": identity, "labels_by_channel": labels, "rule": "source_fidelity_v1"}
+            {
+                "identity": identity,
+                "labels_by_channel": labels,
+                "rule": (
+                    "measured_structural_rate_distortion_v1"
+                    if finalized
+                    else "source_fidelity_v1"
+                ),
+                "importance_receipt_sha256": (
+                    importance.get("receipt_sha256") if finalized else None
+                ),
+                "allocation_sha256": (
+                    allocation.get("allocation_sha256") if finalized else None
+                ),
+            }
         ),
     }
 
@@ -1953,6 +2015,86 @@ def produce(config_path: Path) -> dict[str, Any]:
             row["provenance"]["source_id"],
         )
     )
+    economics = corpus["residual_economics"]
+    importance_policy = fit_importance_policy(candidates)
+    provisional: list[tuple[dict[str, Any], dict[str, Any], dict[str, Any]]] = []
+    initial_lambda = float(economics["allocation_lambda_grid_bits"][0])
+    for record in candidates:
+        importance = predict_importance(record, importance_policy)
+        packet = record["kernel_packet"]
+        residual = packet["residual"]
+        allocation = build_structural_rate_distortion_allocation(
+            kernel_program=packet["program"],
+            global_state=record["hrl_state"]["global"],
+            segment_residual=residual["segment_frame"],
+            token_residuals=residual["token_tags"],
+            exact_objects=packet["protected_objects"],
+            importance=float(importance["allocation_importance"]),
+            lambda_value=initial_lambda,
+            exact_codec=residual["codec"],
+        )
+        provisional.append((record, importance, allocation))
+    lambda_calibration = calibrate_allocation_lambda(
+        [
+            allocation
+            for record, _importance, allocation in provisional
+            if record["split"] == "private_dev"
+        ],
+        lambda_grid=economics["allocation_lambda_grid_bits"],
+        maximum_importance_weighted_distortion=float(
+            economics["maximum_dev_importance_weighted_structural_distortion"]
+        ),
+    )
+    allocation_counts: dict[str, Counter[str]] = defaultdict(Counter)
+    for record, importance, provisional_allocation in provisional:
+        packet = record["kernel_packet"]
+        allocation = reallocate_structural_receipt(
+            provisional_allocation,
+            lambda_value=float(lambda_calibration["selected_lambda"]),
+        )
+        packet = revise_kernel_packet_fidelity(
+            packet,
+            allocation["selected_fidelity"],
+            local_hrl_state=record["hrl_state"],
+        )
+        record["kernel_packet"] = packet
+        record["residual_supervision"] = residual_supervision(
+            str(record["provenance"]["source_id"]),
+            packet=packet,
+            hrl_state=record["hrl_state"],
+            importance=importance,
+            allocation=allocation,
+        )
+        allocation_counts[str(record["split"])][
+            allocation["selected_fidelity"]
+        ] += 1
+    codec_bits: dict[str, dict[str, list[int]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    source_bits: dict[str, list[int]] = defaultdict(list)
+    kernel_bits: dict[str, list[int]] = defaultdict(list)
+    reasoning_wire_bits: dict[str, list[int]] = defaultdict(list)
+    encoded_storage_bytes: dict[str, list[int]] = defaultdict(list)
+    cleartext_residual_storage_bytes: dict[str, list[int]] = defaultdict(list)
+    packet_audit_storage_bytes: dict[str, list[int]] = defaultdict(list)
+    for record in candidates:
+        split = str(record["split"])
+        source_bits[split].append(len(record["source_text"].encode("utf-8")) * 8)
+        codec = record["kernel_packet"]["residual"]["codec"]
+        packet = record["kernel_packet"]
+        codec_bits[split]["total"].append(int(codec["total_encoded_bits"]))
+        kernel = len(residual_wire_bytes(packet["program"])) * 8
+        kernel_bits[split].append(kernel)
+        reasoning_wire_bits[split].append(kernel + int(codec["total_encoded_bits"]))
+        encoded_storage_bytes[split].append(int(codec["encoded_storage_bytes"]))
+        cleartext_residual_storage_bytes[split].append(
+            int(codec["cleartext_abi_storage_bytes"])
+        )
+        packet_audit_storage_bytes[split].append(len(canonical_json(packet).encode("utf-8")))
+        for channel in ("interaction", "segment", "token", "exact"):
+            codec_bits[split][channel].append(
+                int(codec["channels"][channel]["encoded_bits"])
+            )
     hard_gaps: list[str] = []
     for split, floor in corpus["minimum_source_groups_by_split"].items():
         if len(source_groups_by_split[split]) < int(floor):
@@ -2053,6 +2195,56 @@ def produce(config_path: Path) -> dict[str, Any]:
             "masc_by_split": {split: len(rows) for split, rows in masc_rows.items()},
             "oasst2_by_split": {split: len(rows) for split, rows in oasst_rows.items()},
             "oasst2_explicit_behavior": len(oasst_behavior_rows),
+        },
+        "residual_codec_accounting": {
+            "policy": "project_theseus_kerc_corpus_residual_bit_accounting_v1",
+            "codec_policy": "project_theseus_kerc_conditional_residual_codec_v1",
+            "by_split": {
+                split: {
+                    "source_bits": bit_distribution(source_bits[split]),
+                    "residual_bits": {
+                        channel: bit_distribution(codec_bits[split][channel])
+                        for channel in ("interaction", "segment", "token", "exact", "total")
+                    },
+                    "aggregate_residual_to_source_bit_ratio": (
+                        sum(codec_bits[split]["total"])
+                        / max(1, sum(source_bits[split]))
+                    ),
+                    "kernel_wire_bits": bit_distribution(kernel_bits[split]),
+                    "total_reasoning_wire_bits": bit_distribution(
+                        reasoning_wire_bits[split]
+                    ),
+                    "aggregate_total_reasoning_wire_to_source_bit_ratio": (
+                        sum(reasoning_wire_bits[split])
+                        / max(1, sum(source_bits[split]))
+                    ),
+                    "encoded_residual_storage_bytes": bit_distribution(
+                        encoded_storage_bytes[split]
+                    ),
+                    "cleartext_residual_abi_storage_bytes": bit_distribution(
+                        cleartext_residual_storage_bytes[split]
+                    ),
+                    "full_packet_audit_storage_bytes": bit_distribution(
+                        packet_audit_storage_bytes[split]
+                    ),
+                }
+                for split in ("private_train", "private_dev", "private_eval")
+            },
+            "cleartext_abi_copy_charged_to_wire_bits": False,
+            "cleartext_abi_copy_charged_to_storage": True,
+            "capability_or_efficiency_claim": False,
+        },
+        "importance_policy": importance_policy,
+        "rate_distortion_allocation": {
+            "policy": "project_theseus_kerc_corpus_rate_distortion_allocation_v1",
+            "lambda_calibration": lambda_calibration,
+            "lambda_bits": float(lambda_calibration["selected_lambda"]),
+            "selected_fidelity_counts_by_split": {
+                split: dict(allocation_counts[split])
+                for split in ("private_train", "private_dev", "private_eval")
+            },
+            "target_authority": "source_bound_structural_omission_not_semantic_utility",
+            "semantic_utility_claim": False,
         },
         "rejection_counts": {
             "dolly": dict(dolly_rejects),
