@@ -2697,7 +2697,7 @@ def _default_answer_decision(claims: list[dict[str, Any]]) -> dict[str, Any]:
         "evidence_status": "UNVERIFIED",
         "uncertainty_state": "RESOLVED",
         "confidence": min(float(claim.get("confidence", 0.0)) for claim in claims),
-        "controlling_claim_ids": [str(claim["claim_id"]) for claim in claims],
+        "controlling_claim_ids": sorted(str(claim["claim_id"]) for claim in claims),
         "unresolved_ambiguity_ids": [],
     }
 

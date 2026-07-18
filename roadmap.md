@@ -145,7 +145,7 @@ retirement/falsification receipt.
 
 | Order | Contract | Current disposition | Required before long training |
 |---:|---|---|---|
-| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN, K1a source-replayed multi-frame semantics GREEN, broader construct validity RED, utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. A separately accounted 256-row MASC stratum now carries 2-8 independently replayed manual frames per sentence through a bounded multi-frame ABI with multi-node programs and multi-claim answer packets, zero extra unique-source credit, and no invented inter-frame edges or complete-semantics claim. The rest of K1 remains open: scope, conditionals, negation, modality, quantification, time, causality, attribution, coreference, unresolved ambiguity, correction alternatives, concept capsules, macros, PARTIAL decisions, and typed nonliteral values remain absent or inadequate; 16,854 opaque byte-literal values remain. The neural head still predicts structural channel-presence labels rather than independently measured per-unit `q_i` targets; record-wide allocation uses omitted residual mass and one protected object can force the whole record to exact fidelity. Complete K1-K8 in the KERC section: broader decision-grade semantic data; per-unit packet/economics; real interaction amortization; coordinated compiler/core/renderer objectives; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
+| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN, K1a multi-frame and K1b decision-semantic raw-source replay GREEN, broader construct validity RED, utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. Two separately accounted 256-row MASC strata now carry either 2-8 manual frames or aligned committed-belief, MPQA subjectivity, and event annotations through bounded multi-node/multi-claim ABIs with zero extra unique-source credit. K1b contributes 3,666 typed nonliteral arguments for observed modality, polarity, temporal orientation, event, and subjectivity fields. It does not resolve cross-annotation links, lost event-coreference groups, scope, truth, or complete sentence semantics. The corpus now has 11,936 records, 512 multi-node/multi-root programs, 512 multi-claim answers, and 18,759 opaque byte literals. The neural head still predicts structural channel-presence labels rather than independently measured per-unit `q_i` targets; record-wide allocation uses omitted residual mass and one protected object can force the whole record to exact fidelity. Complete K1-K8 in the KERC section: broader decision-grade semantic data; per-unit packet/economics; real interaction amortization; coordinated compiler/core/renderer objectives; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
 | 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
 | 4 | Full-state data/update causality | `pretraining_wired_behavior_qualification_pending` | canonical admission owns a 13-kind content-addressed state inventory, distinct best/final authority, package replay, bounded update, deletion receipts, and exact rollback; learned forgetting/unlearning efficacy waits for training |
@@ -177,7 +177,7 @@ rebuilt; learned efficacy still requires the prospectively frozen joint campaign
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
 | Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the 57.315M package previously replayed, but its authority is invalidated by the KERC adequacy correction. No long optimizer run or new capability evidence exists yet | complete faithful KERC architecture/data/objective/checkpoint integration, add its matched English-arm alternative, rebuild the freeze package, then begin the unchanged joint campaign |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: `KPP-1.1`, exact object handling, VCM state replay, separate code spaces, shared-trunk stage adapters, arithmetic-code receipts, development-only lambda selection, and checkpoint/migration mechanics are real. The current 11,424-record stage is nevertheless a mechanics corpus, not a faithful semantic KERC corpus: all programs are single-node/single-root; all answers are single-claim; 14,738 answer arguments are opaque byte literals; correction lattices, concept capsules, macros, and interaction-global dictionaries are empty; and the hard round-trip projection does not compare opaque literal content. The residual head still learns channel-presence labels (`interaction` is keyed from segment state even though the coded global dictionary is empty), not per-unit rate-distortion decisions. Held-out residual bits are 5.114718x source, total Kernel-plus-residual wire is 9.998350x source, and no learned utility, amortization, or efficiency claim is authorized | execute K0-K8 in order. First repair construct validity and targets; then implement per-unit constrained economics and genuine multi-turn state; then complete coordinated objectives and independent verification; only then freeze and train the matched KERC/control campaign. Preserve the current reports as mechanics evidence and proxy negatives, not as a verdict |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: `KPP-1.1`, exact object handling, VCM state replay, separate code spaces, shared-trunk stage adapters, arithmetic-code receipts, development-only lambda selection, and checkpoint/migration mechanics are real. The current 11,936-record corpus now includes 512 independently replayed multi-node/multi-root and multi-claim records; 256 decision-semantic rows add 3,666 typed nonliteral arguments from manual committed-belief, MPQA subjectivity, and event layers. This is a construct-validity improvement, not complete semantics: 18,759 answer arguments remain opaque byte literals; correction lattices, concept capsules, macros, and interaction-global dictionaries are empty; cross-annotation links, event coreference, scope, causality, and truth remain unresolved; and the hard round-trip projection does not compare opaque literal content. The residual head still learns channel-presence labels (`interaction` is keyed from segment state even though the coded global dictionary is empty), not per-unit rate-distortion decisions. The corpus remains economically negative and no learned utility, amortization, or efficiency claim is authorized | execute K0-K8 in order. Finish K1 construct validity and cache the independent replay; then implement per-unit constrained economics and genuine multi-turn state; complete coordinated objectives and independent verification; only then freeze and train the matched KERC/control campaign. Preserve current reports as mechanics evidence and proxy negatives, not as a verdict |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -1735,6 +1735,24 @@ rejects changed alternatives, weights, or content identities. Development/evalua
 labels cannot influence the prior. These empirical weights are source-train frequencies,
 not calibrated probabilities; the stratum proves contextual sense supervision and
 replay only, not unresolved ambiguity, WordNet equivalence, or learned disambiguation.
+K1b adds a second separately accounted 256-row MASC stratum (`128/64/64`) selected
+deterministically from manual committed-belief, MPQA subjectivity, and event layers.
+The producer aligns raw GrAF spans to source sentences and emits typed
+`EPISTEMIC_STATUS`, `EVENT_*`, and `SUBJECTIVITY_*` nodes. Observed categorical,
+boolean, list, polarity, intensity, and temporal-orientation fields contribute `3,666`
+nonliteral typed arguments; source expressions and unclassified textual fields remain
+byte literals. The independent implementation reparses the raw annotation graphs,
+reconstructs selection and every expected record, and admits all `11,936` canonical
+rows with the same `sha256:b1a8a22075465a618aedfc605bd784fe6e36860c040a7c72392bb589c3df5a2b`
+candidate identity and zero verification failures. Its first full replay correctly
+rejected 28 multi-claim rows because default decision hashes were not idempotent above
+nine claims; claim-id canonicalization and a regression test now close that protocol
+fault. This evidence covers only the observed labels and spans. It does not recover
+lost event-coreference grouping, resolve source-declared cross-annotation links, establish
+scope or truth, provide complete sentence semantics, or demonstrate learned competence.
+Full materialization took about 21 minutes and independent replay about 18 minutes on
+this Mac, making content-addressed producer/verifier layer caches an immediate K1
+performance requirement rather than optional cleanup.
 Source-disjoint heldouts, per-objective authority, archive/revision/license hashes,
 and a verification ledger are mandatory. Duplicate reviewed replies, answer leakage,
 compiled-context overflow, and producer-only identity claims fail closed. The canonical
@@ -1873,7 +1891,7 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    and H1-H8 to `faithful`, `stronger_registered_alternative`, `approximate`,
    `fixture_only`, `inactive`, or `absent`, with source-bound code/test/evidence refs
    and explicit claim ceilings. `scripts/kerc_implementation_fidelity_gate.py` independently
-   scans all 11,680 corpus records and directly probes the channel-label and byte-literal
+   scans all 11,936 corpus records and directly probes the channel-label and byte-literal
    verifier behavior; the canonical roadmap gate consumes its result. The current map
    retains only three narrow faithful-mechanics classifications, records nine
    approximate/fixture mechanisms and four inactive/absent mechanisms, and keeps H1-H8
@@ -1890,8 +1908,8 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
 
 2. **K1 - decision-grade semantic representation and corpus.** Replace wrapper-shaped
    supervision with licensed, independently reviewed examples that actually populate
-   multi-node/multi-clause Kernel graphs, scope, conjunction/conditionals, negation,
-   modality, quantification, time, causality, attribution, coreference, unresolved
+   multi-node/multi-clause Kernel graphs, scope, conjunction/conditionals, compositional negation,
+   modality, quantification, temporal and causal graph relations, attribution links, coreference, unresolved
    ambiguity, correction alternatives, concept capsules, source alignment, typed values
    and units, and grammar-aware macros. Include adversarial near-equivalents and multiple
    valid graph/answer realizations. Opaque whole-answer byte literals may train only the
@@ -1905,13 +1923,24 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    documents where one licensed sentence has 2-8 manual FrameNet annotations. The
    producer emits one root/node/claim per manual frame through the registered
    `framenet_composite_v1` residual ABI. A separate verifier reparses raw GrAF, rebuilds
-   split membership and frame grouping, and admitted all 11,680 corpus rows with zero
+   split membership and frame grouping, and admitted the then-current 11,680 corpus rows with zero
    failures. Composite rows earn zero additional unique-source credit and explicitly
    deny inter-frame discourse-edge, truth, reasoning-utility, and complete-sentence-
    semantics claims. This closes the old all-single-node/all-single-claim corpus defect;
    it does not close K1 because FrameNet co-presence alone supplies none of the broader
    relations or learned semantic competence listed above. Tampered frame claims and
    source credit fail focused tests.
+   **K1b evidence (`GREEN`, 2026-07-18):** another source-disjoint `128/64/64`
+   MASC stratum binds manual committed-belief, MPQA subjectivity, and event annotations
+   to typed Kernel nodes and multi-claim answer packets. It contributes `3,666` typed
+   nonliteral arguments for observed modality, polarity, temporal orientation, event,
+   and subjectivity fields. The independent verifier reparses raw GrAF and reconstructs
+   selection, layer missingness, arguments, packet identities, and all `11,936` rows.
+   The first full replay rejected 28 records because default decision hashes were not
+   idempotent for ten or more claims; canonical claim ordering and a regression test
+   fixed the protocol defect, and the final replay is GREEN with zero failures. No
+   cross-annotation links, event-coreference groups, scope, truth, complete semantics,
+   or learned competence are claimed. The corpus still has `18,759` byte literals.
    Materialization and independent replay are still monolithic and slow. Add
    content-addressed caches for pinned raw-source parsing, split reconstruction, packet
    compilation, and economics, with dependency hashes and mutation tests proving that

@@ -807,6 +807,30 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         or not str(frame_ambiguity.get("claim_scope") or "")
     ):
         raise ValueError("KERC MASC contextual-frame ambiguity contract invalid")
+    composite_counts = sources["masc"].get("composite_semantic_records_by_split")
+    decision_counts = sources["masc"].get("decision_semantic_records_by_split")
+    if (
+        not isinstance(composite_counts, dict)
+        or tuple(composite_counts) != ("private_train", "private_dev", "private_eval")
+        or any(int(value) < 0 for value in composite_counts.values())
+        or int(sources["masc"].get("composite_semantic_minimum_frames") or 0) < 2
+        or int(sources["masc"].get("composite_semantic_maximum_frames") or 0)
+        < int(sources["masc"].get("composite_semantic_minimum_frames") or 0)
+        or int(sources["masc"].get("composite_semantic_unique_source_credit") or 0) != 0
+        or not str(sources["masc"].get("composite_semantic_claim_scope") or "")
+    ):
+        raise ValueError("KERC MASC composite-semantic contract invalid")
+    if (
+        not isinstance(decision_counts, dict)
+        or tuple(decision_counts) != ("private_train", "private_dev", "private_eval")
+        or any(int(value) < 0 for value in decision_counts.values())
+        or int(sources["masc"].get("decision_semantic_minimum_annotations") or 0) < 2
+        or int(sources["masc"].get("decision_semantic_maximum_annotations") or 0)
+        < int(sources["masc"].get("decision_semantic_minimum_annotations") or 0)
+        or int(sources["masc"].get("decision_semantic_unique_source_credit") or 0) != 0
+        or not str(sources["masc"].get("decision_semantic_claim_scope") or "")
+    ):
+        raise ValueError("KERC MASC decision-semantic contract invalid")
     behavior_counts = sources["oasst2"].get("explicit_behavior_records_by_split")
     if (
         not isinstance(behavior_counts, dict)

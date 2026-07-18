@@ -36,15 +36,15 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "3a6156a4d5f54df037f00976820d85ace43b35cda55822e1d168957f0b58e58d"
+      "sha256": "7df9ace8781de0e084b2f15891f75dada30186193b44c902f06ad0abab29cb7a"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "403daac49d4d99ff363495e6a516ec9e548ef12abfe9bb172eba0454e13ef8b4"
+      "sha256": "2044c0a41edf550f2d841e36cbd6511ec5e1dbdbe8176c9f8a7164411431f6a5"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "40e0a4e22e1c37dbbb815b5d3afcea8b49bd264aab0546d575c8f5a5c546aedc"
+      "sha256": "0c45f70218561af51fd39d039e8f26166d2e3c3dbbb91d084d0b48014c3b33e0"
     },
     {
       "path": "scripts/kerc_residual_economics.py",
@@ -56,35 +56,35 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "14dd8cd5efdcdf6b918f1430130e28dc8f67dc6ad859f29296b755b498d697cd"
+      "sha256": "bd56ca71f8e267638a2844e8360abf3a79aa22302164318c0c315539664a0578"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "44f3759f4b8b8c28038bf1fa31f77cf97f32406f9a8317fe01c591eca176646f"
+      "sha256": "b1a8a22075465a618aedfc605bd784fe6e36860c040a7c72392bb589c3df5a2b"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "3dbfd83035e75830da908fa6ad4c7afa3dcc0f0e0ca9638f0997e8bd38db4a65"
+      "sha256": "84dba93fe3f8b6289a8774036a42298275de93f744e9a0e4bc28d363b288dd30"
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "025c05e012af6abd519476a13813a334b7eb9fcb2c795af0309f3fb1dcf012cf"
+      "sha256": "760d96cb476809fe1a91404deaa4267d063c0cdc4f86bbdf17e051845b2b2d31"
     }
   ],
   "observed_corpus_contract": {
-    "record_count": 11680,
-    "multi_node_program_count": 256,
-    "multi_root_program_count": 256,
+    "record_count": 11936,
+    "multi_node_program_count": 512,
+    "multi_root_program_count": 512,
     "non_preserved_derivation_count": 0,
-    "multi_claim_answer_count": 256,
-    "byte_literal_value_count": 16854,
+    "multi_claim_answer_count": 512,
+    "byte_literal_value_count": 18759,
     "correction_alternative_count": 0,
     "concept_capsule_count": 0,
     "nonempty_macro_registry_count": 0,
     "nonempty_interaction_global_dictionary_count": 0,
     "partial_disposition_count": 0,
     "per_unit_allocation_receipt_count": 0,
-    "interaction_presence_label_with_empty_global_count": 6812
+    "interaction_presence_label_with_empty_global_count": 6809
   },
   "required_mechanism_ids": [
     "kerc.immutable_source_and_protected_objects",
@@ -131,7 +131,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/standard_causal_transformer_model.py"],
       "evidence_refs": ["tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A trainable stage route and separate code space exist. A separately accounted 256-row MASC stratum now preserves 2-8 independently replayed manual FrameNet annotations per sentence as multi-node/multi-root programs with zero additional unique-source credit, but it supplies no inter-frame discourse edges, scope, coreference, truth, complete sentence semantics, or learned competence evidence and still carries many role values as opaque bytes.",
+      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. The decision-semantic stratum contributes 3,666 typed nonliteral arguments for observed modality, polarity, temporal orientation, event, and subjectivity fields. It does not resolve cross-annotation links, lost event-coreference groups, scope, truth, complete sentence semantics, or learned competence; unsupported source fields remain opaque bytes.",
       "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
       "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
     },
@@ -171,7 +171,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
       "evidence_refs": ["tests/test_kernel_english_protocol.py"],
-      "current_finding": "Typed claims and decisions exist. The independently replayed MASC composite stratum adds 256 answer packets with 2-8 manual frame claims, but there are still no derivation edges, contradictions, quantities, evidence links, unresolved ambiguity, or PARTIAL decisions, and most semantic role content remains opaque byte literals.",
+      "current_finding": "Typed claims and decisions exist. The independently replayed MASC composite and decision-semantic strata add 512 multi-claim packets; the latter carries typed observed modality, polarity, temporal orientation, event, and subjectivity fields. There are still no derivation edges, contradictions, quantities, cross-annotation evidence links, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
       "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
       "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
     },

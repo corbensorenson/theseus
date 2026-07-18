@@ -35,31 +35,36 @@ share toward zero. Public benchmarks are calibration only.
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
 - **KERC disposition:** `partial`; protocol mechanics GREEN, construct validity RED,
   scientific result `INCONCLUSIVE_IMPLEMENTATION`. K0 now independently binds the paper,
-  implementation sources, independent verifier, and all 11,680 current corpus records.
-  K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations
-  over one licensed sentence, represented as multi-node/multi-root programs and
-  multi-claim answer packets through a bounded composite-frame ABI. Independent raw-GrAF
-  replay admitted all rows with zero failures; composite rows receive zero extra unique-
-  source credit and claim no invented inter-frame edges, complete sentence semantics,
-  truth, reasoning utility, or learned competence. Three narrow mechanisms
+  implementation sources, independent verifier, and all 11,936 current corpus records.
+  K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
+  K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
+  annotations. Together they produce 512 multi-node/multi-root programs and multi-claim
+  answer packets with zero extra unique-source credit. K1b contributes 3,666 typed
+  nonliteral arguments for observed modality, polarity, temporal orientation, event,
+  and subjectivity fields. Independent raw-GrAF replay admitted every row with zero
+  failures. Its first pass correctly rejected 28 rows due a multi-claim default-decision
+  hash instability; canonical claim ordering and a regression test now close that bug.
+  The strata claim no invented cross-annotation links, recovered event-coreference
+  groups, scope, complete sentence semantics, truth, reasoning utility, or learned
+  competence. Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Nine mechanisms are
   approximate or fixture-only; four are inactive or absent; H1-H8 remain inactive.
   Broader K1 remains open: the corpus has zero correction alternatives, concept capsules,
   learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, or
-  per-unit allocation receipts, and still contains 16,854 opaque byte-literal values.
-  Frame co-presence does not supply scope, conditionals, negation, modality,
-  quantification, time, causality, attribution, coreference, unresolved ambiguity, or
-  derivation edges. The four-channel neural result remains
+  per-unit allocation receipts, and still contains 18,759 opaque byte-literal values.
+  Observed decision labels do not supply compositional scope, conditionals, negation,
+  quantification, causal/temporal graph relations, attribution links, coreference,
+  unresolved ambiguity, or derivation edges. The four-channel neural result remains
   channel-presence learnability, not learned residual allocation. Direct probes show
   the interaction label activates from segment state without a global dictionary and
   the hard round-trip verifier accepts a changed opaque answer literal. Existing packet,
   VCM lifecycle, source isolation, no-cheat, code-space, stage-route, verifier-head,
   checkpoint, replay, migration, and MLX canaries remain valid within their narrow
   mechanics ceilings. Existing efficiency evidence remains negative for this exact
-  finite-state implementation: residual bits are `4.618882x` source bits and complete
-  Kernel-plus-residual wire is `9.879311x`. Full materialization and replay remain
-  monolithic multi-minute operations and now have a content-addressed incremental-cache
+  finite-state implementation: residual bits are `4.603579x` source bits and complete
+  Kernel-plus-residual wire is `10.292719x`. Full materialization takes about 21 minutes
+  and independent replay about 18 minutes on this Mac; both now have a content-addressed incremental-cache
   requirement in K1. The old keyword/linear proxy remains negative only for itself. K1-K7 must now
   establish nontrivial semantics, per-unit economics, real interaction amortization,
   coordinated learned stages, independent construct-valid verification, and adequacy
@@ -102,9 +107,9 @@ share toward zero. Public benchmarks are calibration only.
   execution now pass. Exact residual coding, measured four-fidelity structural allocation,
   development-only lambda calibration, source-visible calibrated importance, and strict
   shared-residual promotion economics now independently replay as well. Next extend
-  K1 beyond the source-replayed multi-frame stratum, extend allocation from record-level
+  K1 beyond the source-replayed multi-frame and observed decision-semantic strata, extend allocation from record-level
   structural preservation to intervention-sensitive per-unit decisions, reduce the
-  measured `9.879311x` total wire overhead and monolithic stage/replay cost, add unresolved
+  measured `10.292719x` total wire overhead and monolithic stage/replay cost, add unresolved
   ambiguity, broad entailment, protected-span abstention, and
   calibrated verifier decisions; then
   freeze strong matched controls and total-system accounting and rebuild the architecture

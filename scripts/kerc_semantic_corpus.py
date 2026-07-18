@@ -68,6 +68,16 @@ DOLLY_GROUNDED_QUESTION_POLICY = (
 MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY = (
     "project_theseus_kerc_masc_train_only_contextual_frame_ambiguity_v1"
 )
+MASC_DECISION_SEMANTICS_POLICY = (
+    "project_theseus_kerc_masc_decision_semantics_v1"
+)
+MASC_MPQA_SEMANTIC_LABELS = {
+    "agent",
+    "attitude",
+    "direct-subjective",
+    "expressive-subjectivity",
+    "target",
+}
 DOLLY_QUESTION_FORM_RE = re.compile(
     r"^(who|what|when|where|which|how(?:\s+(?:many|much|long|old|far))?)\b",
     re.IGNORECASE,
@@ -1305,6 +1315,136 @@ def parse_graf(path: Path) -> tuple[
     return dict(annotations), dict(edges), links
 
 
+def parse_direct_graf_annotations(path: Path) -> list[dict[str, Any]]:
+    """Read annotations whose nodes link directly to local character regions."""
+
+    root = ET.parse(path).getroot()
+    regions = {
+        str(region.get(XML_ID)): tuple(
+            int(value) for value in str(region.get("anchors") or "").split()
+        )
+        for region in root.findall(GRAF + "region")
+    }
+    links: dict[str, list[str]] = {}
+    for node in root.findall(GRAF + "node"):
+        link = node.find(GRAF + "link")
+        if link is not None:
+            links[str(node.get(XML_ID))] = str(link.get("targets") or "").split()
+    output: list[dict[str, Any]] = []
+    for annotation in root.findall(GRAF + "a"):
+        spans = [regions[target] for target in links.get(str(annotation.get("ref")), ()) if target in regions]
+        if not spans:
+            continue
+        fields: dict[str, str] = {}
+        feature_structure = annotation.find(GRAF + "fs")
+        if feature_structure is not None:
+            for field in feature_structure.findall(GRAF + "f"):
+                fields[str(field.get("name") or "")] = str(field.get("value") or "")
+        output.append(
+            {
+                "annotation_id": str(annotation.get(XML_ID) or ""),
+                "node_id": str(annotation.get("ref") or ""),
+                "label": str(annotation.get("label") or ""),
+                "fields": dict(sorted(fields.items())),
+                "start": min(start for start, _end in spans),
+                "end": max(end for _start, end in spans),
+            }
+        )
+    return output
+
+
+def masc_decision_semantic_instances(base: Path, root: Path) -> list[dict[str, Any]]:
+    """Join MASC's human epistemic, opinion, and event layers by source sentence."""
+
+    source_text = Path(str(base) + ".txt").read_text(encoding="utf-8", errors="replace")
+    document_id = str(base.relative_to(root)).replace(os.sep, "/")
+    sentence_rows = parse_direct_graf_annotations(Path(str(base) + "-s.xml"))
+    annotations: list[dict[str, Any]] = []
+    for layer in ("cb", "event", "mpqa"):
+        path = Path(str(base) + f"-{layer}.xml")
+        if not path.exists():
+            continue
+        for row in parse_direct_graf_annotations(path):
+            if layer == "cb" and row["label"] == "Not Applicable":
+                continue
+            if layer == "mpqa" and row["label"] not in MASC_MPQA_SEMANTIC_LABELS:
+                continue
+            annotations.append({"layer": layer, **row})
+    output: list[dict[str, Any]] = []
+    for sentence in sentence_rows:
+        start, end = int(sentence["start"]), int(sentence["end"])
+        members = [
+            {
+                **row,
+                "start": int(row["start"]) - start,
+                "end": int(row["end"]) - start,
+                "text": source_text[int(row["start"]):int(row["end"])],
+            }
+            for row in annotations
+            if start <= int(row["start"]) < int(row["end"]) <= end
+        ]
+        if not members:
+            continue
+        members.sort(
+            key=lambda row: (
+                row["start"], row["end"], row["layer"], row["label"], row["annotation_id"]
+            )
+        )
+        annotation = {
+            "policy": MASC_DECISION_SEMANTICS_POLICY,
+            "document_id": document_id,
+            "sentence_id": sentence["fields"].get("id", sentence["node_id"]),
+            "sentence_start": start,
+            "sentence_end": end,
+            "sentence": source_text[start:end],
+            "annotations": members,
+            "missingness": {
+                "cb": not any(row["layer"] == "cb" for row in members),
+                "event": not any(row["layer"] == "event" for row in members),
+                "mpqa": not any(row["layer"] == "mpqa" for row in members),
+                "event_coreference_grouping": True,
+                "complete_sentence_semantics": True,
+                "truth": True,
+            },
+        }
+        output.append(
+            {
+                "selection_key": stable_hash(annotation),
+                "document_id": document_id,
+                "annotation": annotation,
+            }
+        )
+    return output
+
+
+def load_masc_decision_semantic_candidates(
+    source: dict[str, Any], *, maximum_characters: int
+) -> dict[str, list[dict[str, Any]]]:
+    root = resolve(source["extracted_root"]) / "data"
+    dev_groups = set(source["document_groups"]["private_dev"])
+    eval_groups = set(source["document_groups"]["private_eval"])
+    selected: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for text_path in sorted(root.rglob("*.txt")):
+        base = Path(str(text_path)[:-4])
+        if not Path(str(base) + "-s.xml").exists() or not any(
+            Path(str(base) + f"-{layer}.xml").exists() for layer in ("cb", "event", "mpqa")
+        ):
+            continue
+        document_id = str(base.relative_to(root)).replace(os.sep, "/")
+        split = (
+            "private_dev" if document_id in dev_groups else
+            "private_eval" if document_id in eval_groups else
+            "private_train"
+        )
+        for row in masc_decision_semantic_instances(base, root):
+            if 0 < len(row["annotation"]["sentence"]) <= maximum_characters:
+                selected[split].append(row)
+    return {
+        split: sorted(rows, key=lambda row: row["selection_key"])
+        for split, rows in selected.items()
+    }
+
+
 def descendants(node: str, edges: dict[str, list[str]]) -> set[str]:
     output: set[str] = set()
     stack = [node]
@@ -1966,6 +2106,185 @@ def masc_composite_record(
     return record
 
 
+def semantic_concept(namespace: str, value: str) -> dict[str, str]:
+    normalized = re.sub(r"[^a-z0-9]+", ".", value.lower()).strip(".") or "unknown"
+    return {"type": "concept", "value": f"{namespace}.{normalized}"}
+
+
+def masc_decision_value(layer: str, field: str, value: str) -> dict[str, Any]:
+    lowered = value.strip().lower()
+    if lowered in {"true", "false"}:
+        return {"type": "boolean", "value": lowered == "true"}
+    if field == "nested-source":
+        return {
+            "type": "list",
+            "value": [semantic_concept("mpqa.source", part) for part in value.split(",") if part.strip()],
+        }
+    if field in {
+        "annotation-uncertain", "attitude-type", "attitude-uncertain", "contrast",
+        "es-uncertain", "expression-intensity", "implicit", "inferred", "insubstantial",
+        "intensity", "polarity", "repetition", "sarcastic", "subjective-uncertain",
+        "target-uncertain",
+    }:
+        return semantic_concept(f"{layer}.{safe_symbol(field, prefix='field').lower()}", value)
+    return byte_literal(value)
+
+
+def masc_decision_modality(annotation: dict[str, Any]) -> str:
+    label = str(annotation["label"])
+    if annotation["layer"] == "cb":
+        return "ASSERTED" if label.startswith("Committed Belief") else "POSSIBLE"
+    if any("uncertain" in key and value.lower() not in {"", "false", "no"} for key, value in annotation["fields"].items()):
+        return "POSSIBLE"
+    return "ASSERTED"
+
+
+def masc_decision_polarity(annotation: dict[str, Any]) -> str:
+    label = str(annotation["label"])
+    explicit = str(annotation["fields"].get("polarity") or "").lower()
+    if label.lower().startswith("not ") or explicit in {"negative", "neg", "both"}:
+        return "NEGATED"
+    if explicit in {"positive", "pos"}:
+        return "AFFIRMED"
+    return "UNKNOWN" if annotation["layer"] == "mpqa" else "AFFIRMED"
+
+
+def masc_decision_arguments(annotation: dict[str, Any]) -> list[dict[str, Any]]:
+    arguments = [
+        {"role": "ANNOTATION_KIND", "value": semantic_concept(annotation["layer"], annotation["label"])},
+        {"role": "SOURCE_EXPRESSION", "value": byte_literal(annotation["text"])},
+    ]
+    if annotation["layer"] == "cb":
+        arguments.append(
+            {
+                "role": "TEMPORAL_ORIENTATION",
+                "value": semantic_concept(
+                    "time", "future" if annotation["label"].endswith("Future") else "non_future"
+                ),
+            }
+        )
+    for field, value in sorted(annotation["fields"].items()):
+        if field == "id" or not value:
+            continue
+        arguments.append(
+            {
+                "role": safe_symbol(field, prefix="FIELD"),
+                "value": masc_decision_value(annotation["layer"], field, value),
+            }
+        )
+    return arguments
+
+
+def select_masc_decision_semantics(
+    candidates: dict[str, list[dict[str, Any]]],
+    counts: dict[str, int],
+    *,
+    minimum_annotations: int,
+    maximum_annotations: int,
+) -> dict[str, list[dict[str, Any]]]:
+    output: dict[str, list[dict[str, Any]]] = {}
+    for split, required in counts.items():
+        eligible = [
+            row for row in candidates.get(split, ())
+            if minimum_annotations <= len(row["annotation"]["annotations"]) <= maximum_annotations
+        ]
+        if len(eligible) < int(required):
+            raise ValueError(
+                f"insufficient MASC decision-semantic rows: {split}:{len(eligible)}:{required}"
+            )
+        output[split] = eligible[: int(required)]
+    return output
+
+
+def masc_decision_semantic_record(
+    row: dict[str, Any],
+    *,
+    split: str,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    annotation = copy.deepcopy(row["annotation"])
+    nodes: list[dict[str, Any]] = []
+    claims: list[dict[str, Any]] = []
+    token_tags: list[dict[str, Any]] = []
+    for index, item in enumerate(annotation["annotations"]):
+        predicate = (
+            "EPISTEMIC_STATUS" if item["layer"] == "cb" else
+            "EVENT_" + safe_symbol(item["label"], prefix="UNKNOWN") if item["layer"] == "event" else
+            "SUBJECTIVITY_" + safe_symbol(item["label"], prefix="UNKNOWN")
+        )
+        common = {
+            "predicate": predicate,
+            "modality": masc_decision_modality(item),
+            "polarity": masc_decision_polarity(item),
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "arguments": masc_decision_arguments(item),
+        }
+        nodes.append(
+            {
+                "node_id": f"k{index}",
+                "operator": predicate,
+                "modality": common["modality"],
+                "polarity": common["polarity"],
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [[int(item["start"]), int(item["end"])]],
+                "arguments": copy.deepcopy(common["arguments"]),
+            }
+        )
+        claims.append({"claim_id": f"claim-{index + 1}", **common})
+        token_tags.append(
+            {
+                "tag": f"{item['layer'].upper()}:{safe_symbol(item['label'], prefix='UNKNOWN')}",
+                "source_span": [int(item["start"]), int(item["end"])],
+                "authority": "licensed_manual_annotation",
+            }
+        )
+    annotation.update(
+        {
+            "semantic_claim_scope": source["decision_semantic_claim_scope"],
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "event_coreference_grouping_claimed": False,
+            "source_declared_cross_annotation_links_resolved": False,
+        }
+    )
+    identity = row["selection_key"].split(":", 1)[1]
+    record = base_record(
+        split=split,
+        source_text=annotation["sentence"],
+        surface_target=annotation["sentence"],
+        program={"roots": [node["node_id"] for node in nodes], "nodes": nodes},
+        answer_packet={
+            "claims": claims,
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "source_authored"},
+        },
+        source=source,
+        source_id="masc-decision:" + identity[:24],
+        source_group="masc-document:" + annotation["document_id"],
+        objectives={
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        },
+        producer_sha256=producer_sha256,
+        source_annotation=annotation,
+        exact_residual=True,
+        token_tags=token_tags,
+    )
+    record["semantic_supervision"]["unique_source_credit"] = int(
+        source["decision_semantic_unique_source_credit"]
+    )
+    record["semantic_supervision"]["decision_semantic_authority"] = (
+        "manual_masc_cb_mpqa_event_annotations"
+    )
+    return record
+
+
 def interaction_predecessors(
     rows: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
@@ -2152,6 +2471,15 @@ def produce(config_path: Path) -> dict[str, Any]:
         minimum_frames=int(corpus["masc"]["composite_semantic_minimum_frames"]),
         maximum_frames=int(corpus["masc"]["composite_semantic_maximum_frames"]),
     )
+    masc_decision_candidates = load_masc_decision_semantic_candidates(
+        corpus["masc"], maximum_characters=int(corpus["maximum_source_characters"])
+    )
+    masc_decision_selected = select_masc_decision_semantics(
+        masc_decision_candidates,
+        corpus["masc"]["decision_semantic_records_by_split"],
+        minimum_annotations=int(corpus["masc"]["decision_semantic_minimum_annotations"]),
+        maximum_annotations=int(corpus["masc"]["decision_semantic_maximum_annotations"]),
+    )
     oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
     oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
         corpus["oasst2"]
@@ -2239,6 +2567,16 @@ def produce(config_path: Path) -> dict[str, Any]:
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(rows[0]["sentence_identity"])
+        for row in masc_decision_selected[split]:
+            record = masc_decision_semantic_record(
+                row,
+                split=split,
+                source=corpus["masc"],
+                producer_sha256=producer_sha256,
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
         for row in oasst_selected[split]:
             record = oasst_record(
                 row,
@@ -2373,6 +2711,7 @@ def produce(config_path: Path) -> dict[str, Any]:
                 "dolly_grounded_question": len(dolly_grounded_selected[split]),
                 "masc": len(masc_selected[split]),
                 "masc_composite": len(masc_composite_selected[split]),
+                "masc_decision_semantics": len(masc_decision_selected[split]),
                 "oasst2": len(oasst_selected[split]),
                 "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
             }
@@ -2419,6 +2758,47 @@ def produce(config_path: Path) -> dict[str, Any]:
             "claim_scope": corpus["masc"]["composite_semantic_claim_scope"],
             "complete_sentence_semantics_claimed": False,
             "inter_frame_discourse_edges_claimed": False,
+        },
+        "masc_decision_semantics": {
+            "policy": MASC_DECISION_SEMANTICS_POLICY,
+            "record_count_by_split": {
+                split: len(rows) for split, rows in masc_decision_selected.items()
+            },
+            "annotation_count_by_split_and_layer": {
+                split: dict(
+                    Counter(
+                        item["layer"]
+                        for row in rows
+                        for item in row["annotation"]["annotations"]
+                    )
+                )
+                for split, rows in masc_decision_selected.items()
+            },
+            "missing_layer_record_count_by_split": {
+                split: {
+                    layer: sum(
+                        1 for row in rows if row["annotation"]["missingness"][layer]
+                    )
+                    for layer in ("cb", "event", "mpqa")
+                }
+                for split, rows in masc_decision_selected.items()
+            },
+            "typed_nonliteral_argument_count": sum(
+                1
+                for rows in masc_decision_selected.values()
+                for row in rows
+                for item in row["annotation"]["annotations"]
+                for argument in masc_decision_arguments(item)
+                if argument["value"]["type"] != "byte_literal"
+            ),
+            "unique_source_credit": int(
+                corpus["masc"]["decision_semantic_unique_source_credit"]
+            ),
+            "claim_scope": corpus["masc"]["decision_semantic_claim_scope"],
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "event_coreference_grouping_claimed": False,
+            "source_declared_cross_annotation_links_resolved": False,
         },
         "masc_interaction_record_count_by_split": {
             split: len(values) for split, values in masc_interactions.items()

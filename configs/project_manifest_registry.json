@@ -262,7 +262,7 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "8f995463b1e5a2dc457ea6c8c3cce40f5aed1362eea50d433e5e6f2a563a6217"
+          "sha256": "20f625d9c04a3a0decf51e3e36fce6a0abd91893f746ec9cc3290816a7f1c09e"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
@@ -274,11 +274,11 @@
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "2e4db285091b81570c6ff558cad85bc9907f6837dccec1aefa5ab777f8d9982b"
+          "sha256": "f8028239bac11b6b7a106037fe7331ad61167d516d41c5476139d4cbeeb20da1"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "df4d79c1b43af96a98bd0b6429452dc3438a8d86c8c38e26e5279b192746b3b8"
+          "sha256": "6b5b7ec8d4c82ea62fb0654bc16efa1a9d0d5367f153a265c1cc079f1cf94ab8"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
@@ -286,7 +286,7 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "3a6156a4d5f54df037f00976820d85ace43b35cda55822e1d168957f0b58e58d"
+          "sha256": "7df9ace8781de0e084b2f15891f75dada30186193b44c902f06ad0abab29cb7a"
         },
         "kerc_importance_policy": {
           "path": "scripts/kerc_importance_policy.py",
@@ -310,15 +310,15 @@
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "403daac49d4d99ff363495e6a516ec9e548ef12abfe9bb172eba0454e13ef8b4"
+          "sha256": "2044c0a41edf550f2d841e36cbd6511ec5e1dbdbe8176c9f8a7164411431f6a5"
         },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "40e0a4e22e1c37dbbb815b5d3afcea8b49bd264aab0546d575c8f5a5c546aedc"
+          "sha256": "0c45f70218561af51fd39d039e8f26166d2e3c3dbbb91d084d0b48014c3b33e0"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "7b03e8ebaefa22890298033f94fc58986998dbf862ebcb21096b51dccc12d661"
+          "sha256": "9315d1164bc3440040851a38700760ae07e24e06497a3375fc3f85b2c87ea5d2"
         },
         "kerc_importance_policy_tests": {
           "path": "tests/test_kerc_importance_policy.py",
@@ -350,7 +350,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "daa19d56f226f31cce06ff3c56f616b0c13cde468ebd02215b262d2bddb725e9"
+          "sha256": "7c80d9b1426023bd7f4965427c706ea1dac976ee1a5f8a8dc50d0ba25cc0592d"
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
@@ -5443,7 +5443,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0 now independently binds the KERC paper, implementation sources, independent verifier, and all 11,680 current corpus records. It classifies three narrow mechanisms as faithful mechanics, nine as approximate/fixture-only, four as inactive/absent, and all H1-H8 hypotheses as inactive. K1a independently reconstructs 256 source-disjoint MASC records with 2-8 manual frames per sentence through a bounded multi-frame ABI, producing multi-node/multi-root programs and multi-claim answer packets with zero extra unique-source credit and no invented inter-frame or complete-semantics claim. This repairs the old all-single-node/all-single-claim defect but not broader construct validity: correction alternatives, concept capsules, macros, nonempty interaction-global dictionaries, PARTIAL decisions, per-unit allocation, scope/causal/coreference relations, and typed nonliteral values remain absent or inadequate, while 16,854 opaque byte-literal values remain. Direct probes still confirm that the interaction label follows segment presence rather than a global dictionary and that changing opaque answer bytes passes the current hard round-trip projection. The residual head's 1.0 result remains channel-presence learnability, not learned allocation. The prior 11,424-record canonical stage is stale and must be rebuilt after K1 closes. Exact codec, packet-level structural controller, and checkpoint/migration/MLX mechanics remain valid within their narrow ceilings. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims are denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
+      "current_wall": "K0 now independently binds the KERC paper, implementation sources, independent verifier, and all 11,936 current corpus records. It classifies three narrow mechanisms as faithful mechanics, nine as approximate/fixture-only, four as inactive/absent, and all H1-H8 hypotheses as inactive. K1a independently reconstructs 256 MASC multi-frame rows; K1b independently reconstructs another 256 rows from manual committed-belief, MPQA subjectivity, and event layers. Together they produce 512 multi-node/multi-root programs and multi-claim answer packets with zero extra unique-source credit. K1b contributes 3,666 typed nonliteral observed modality, polarity, temporal-orientation, event, and subjectivity arguments. The first independent K1b replay caught a multi-claim decision-hash instability; canonical claim ordering and a regression test close it, and the final replay admits all rows with zero failures. This improves construct validity but does not resolve cross-annotation links, event-coreference grouping, scope, conditionals, compositional negation, quantification, causal/temporal graph relations, attribution links, coreference, complete semantics, truth, or learned competence; 18,759 opaque byte literals remain. Correction alternatives, concept capsules, macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation are still absent. Direct probes confirm that the interaction label follows segment presence without a global dictionary and that changing opaque answer bytes passes the hard round-trip projection. The residual head remains channel-presence learnability, not learned allocation. The prior 11,424-record canonical stage is stale and must be rebuilt after K1 closes. Full materialization and independent replay take about 21 and 18 minutes, so content-addressed independent layer caches are the immediate performance wall. Exact codec, packet-level structural controller, and checkpoint/migration/MLX mechanics remain valid within narrow ceilings. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims are denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

@@ -195,6 +195,35 @@ def test_clarification_and_abstention_dispositions_require_matching_claims() -> 
         kernel.validate_answer_packet(packet)
 
 
+def test_default_multi_claim_decision_is_hash_idempotent() -> None:
+    claims = []
+    for index in range(1, 17):
+        claims.append(
+            {
+                "claim_id": f"claim-{index}",
+                "predicate": "OBSERVE",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [],
+            }
+        )
+    packet = {
+        "claims": claims,
+        "required_terms": [],
+        "required_caveats": [],
+        "style": {"register": "plain"},
+    }
+    first = kernel.validate_answer_packet(packet)
+    second = kernel.validate_answer_packet(first)
+    assert first == second
+    assert first["answer_packet_sha256"] == second["answer_packet_sha256"]
+    assert first["decision"]["controlling_claim_ids"] == sorted(
+        claim["claim_id"] for claim in claims
+    )
+
+
 def test_unresolved_correction_cannot_be_laundered_as_resolved_answer() -> None:
     source = "Use teh file."
     lattice = kernel.build_correction_lattice(

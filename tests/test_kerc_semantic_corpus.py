@@ -1026,6 +1026,58 @@ def test_live_kerc_config_requires_bounded_composite_semantics() -> None:
     assert masc["composite_semantic_minimum_frames"] == 2
     assert masc["composite_semantic_maximum_frames"] == 8
     assert masc["composite_semantic_unique_source_credit"] == 0
+    assert masc["decision_semantic_records_by_split"] == {
+        "private_train": 128,
+        "private_dev": 64,
+        "private_eval": 64,
+    }
+    assert masc["decision_semantic_minimum_annotations"] == 2
+    assert masc["decision_semantic_maximum_annotations"] == 24
+    assert masc["decision_semantic_unique_source_credit"] == 0
+
+
+def test_masc_decision_semantics_replay_typed_annotations_and_reject_corruption() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    corpus = config["kernel_english_training"]["semantic_corpus_materialization"]
+    source = corpus["masc"]
+    candidates = producer.load_masc_decision_semantic_candidates(
+        source, maximum_characters=int(corpus["maximum_source_characters"])
+    )
+    selected = producer.select_masc_decision_semantics(
+        candidates,
+        source["decision_semantic_records_by_split"],
+        minimum_annotations=int(source["decision_semantic_minimum_annotations"]),
+        maximum_annotations=int(source["decision_semantic_maximum_annotations"]),
+    )
+    expected = verifier.independent_masc_decision_assignments(
+        source, int(corpus["maximum_source_characters"])
+    )
+    row = next(
+        item
+        for item in selected["private_eval"]
+        if any(annotation["layer"] == "event" for annotation in item["annotation"]["annotations"])
+    )
+    candidate = producer.masc_decision_semantic_record(
+        row,
+        split="private_eval",
+        source=source,
+        producer_sha256="sha256:" + "1" * 64,
+    )
+    expected_row = expected[candidate["provenance"]["source_id"]]
+    receipt = verifier.verify_masc_decision_record(candidate, source, expected_row)
+    assert receipt["typed_nonliteral_argument_count"] > 0
+    assert "event" in receipt["layers"]
+    assert candidate["semantic_supervision"]["unique_source_credit"] == 0
+    assert candidate["source_annotation"]["truth_claimed"] is False
+
+    forged = json.loads(json.dumps(candidate))
+    forged["kernel_packet"]["program"]["nodes"][0]["polarity"] = "NEGATED"
+    with pytest.raises(ValueError, match="Kernel node replay mismatch"):
+        verifier.verify_masc_decision_record(forged, source, expected_row)
 
 
 def test_residual_supervision_matches_packet_mechanics() -> None:

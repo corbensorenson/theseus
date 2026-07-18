@@ -65,6 +65,10 @@ MASC_ENTITY_TYPES = {
 MASC_CONTEXTUAL_FRAME_AMBIGUITY_POLICY = (
     "project_theseus_kerc_masc_train_only_contextual_frame_ambiguity_v1"
 )
+MASC_DECISION_SEMANTICS_POLICY = "project_theseus_kerc_masc_decision_semantics_v1"
+MASC_MPQA_SEMANTIC_LABELS = {
+    "agent", "attitude", "direct-subjective", "expressive-subjectivity", "target"
+}
 
 
 def resolve(path: str | Path) -> Path:
@@ -724,6 +728,141 @@ def parse_graf(path: Path) -> tuple[dict[str, list[tuple[str, dict[str, str]]]],
     return dict(annotations), dict(edges), links
 
 
+def independent_direct_annotations(path: Path) -> list[dict[str, Any]]:
+    tree = ET.parse(path).getroot()
+    regions: dict[str, tuple[int, int]] = {}
+    for region in tree.findall(GRAF + "region"):
+        values = str(region.get("anchors") or "").split()
+        if len(values) == 2:
+            regions[str(region.get(XML_ID))] = (int(values[0]), int(values[1]))
+    node_regions: dict[str, list[str]] = {}
+    for node in tree.findall(GRAF + "node"):
+        link = node.find(GRAF + "link")
+        node_regions[str(node.get(XML_ID))] = (
+            str(link.get("targets") or "").split() if link is not None else []
+        )
+    rows: list[dict[str, Any]] = []
+    for annotation in tree.findall(GRAF + "a"):
+        spans = [
+            regions[region]
+            for region in node_regions.get(str(annotation.get("ref")), [])
+            if region in regions
+        ]
+        if not spans:
+            continue
+        fields: dict[str, str] = {}
+        fs = annotation.find(GRAF + "fs")
+        for field in fs.findall(GRAF + "f") if fs is not None else ():
+            fields[str(field.get("name") or "")] = str(field.get("value") or "")
+        rows.append(
+            {
+                "annotation_id": str(annotation.get(XML_ID) or ""),
+                "node_id": str(annotation.get("ref") or ""),
+                "label": str(annotation.get("label") or ""),
+                "fields": dict(sorted(fields.items())),
+                "start": min(start for start, _end in spans),
+                "end": max(end for _start, end in spans),
+            }
+        )
+    return rows
+
+
+def independent_masc_decision_rows(base: Path, root: Path) -> list[dict[str, Any]]:
+    text = Path(str(base) + ".txt").read_text(encoding="utf-8", errors="replace")
+    document_id = str(base.relative_to(root)).replace(os.sep, "/")
+    all_annotations: list[dict[str, Any]] = []
+    for layer in ("cb", "event", "mpqa"):
+        path = Path(str(base) + f"-{layer}.xml")
+        if not path.exists():
+            continue
+        for row in independent_direct_annotations(path):
+            if layer == "cb" and row["label"] == "Not Applicable":
+                continue
+            if layer == "mpqa" and row["label"] not in MASC_MPQA_SEMANTIC_LABELS:
+                continue
+            all_annotations.append({"layer": layer, **row})
+    output: list[dict[str, Any]] = []
+    for sentence in independent_direct_annotations(Path(str(base) + "-s.xml")):
+        start, end = int(sentence["start"]), int(sentence["end"])
+        members = []
+        for raw in all_annotations:
+            if start <= int(raw["start"]) < int(raw["end"]) <= end:
+                members.append(
+                    {
+                        **raw,
+                        "start": int(raw["start"]) - start,
+                        "end": int(raw["end"]) - start,
+                        "text": text[int(raw["start"]):int(raw["end"])],
+                    }
+                )
+        if not members:
+            continue
+        members.sort(
+            key=lambda row: (
+                row["start"], row["end"], row["layer"], row["label"], row["annotation_id"]
+            )
+        )
+        annotation = {
+            "policy": MASC_DECISION_SEMANTICS_POLICY,
+            "document_id": document_id,
+            "sentence_id": sentence["fields"].get("id", sentence["node_id"]),
+            "sentence_start": start,
+            "sentence_end": end,
+            "sentence": text[start:end],
+            "annotations": members,
+            "missingness": {
+                "cb": not any(row["layer"] == "cb" for row in members),
+                "event": not any(row["layer"] == "event" for row in members),
+                "mpqa": not any(row["layer"] == "mpqa" for row in members),
+                "event_coreference_grouping": True,
+                "complete_sentence_semantics": True,
+                "truth": True,
+            },
+        }
+        output.append(
+            {
+                "selection_key": stable_hash(annotation),
+                "document_id": document_id,
+                "annotation": annotation,
+            }
+        )
+    return output
+
+
+def independent_masc_decision_assignments(
+    source: dict[str, Any], maximum_characters: int
+) -> dict[str, dict[str, Any]]:
+    root = resolve(source["extracted_root"]) / "data"
+    dev = set(source["document_groups"]["private_dev"])
+    evaluation = set(source["document_groups"]["private_eval"])
+    by_split: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for text_path in sorted(root.rglob("*.txt")):
+        base = Path(str(text_path)[:-4])
+        if not Path(str(base) + "-s.xml").exists() or not any(
+            Path(str(base) + f"-{layer}.xml").exists() for layer in ("cb", "event", "mpqa")
+        ):
+            continue
+        document_id = str(base.relative_to(root)).replace(os.sep, "/")
+        split = "private_dev" if document_id in dev else "private_eval" if document_id in evaluation else "private_train"
+        for row in independent_masc_decision_rows(base, root):
+            count = len(row["annotation"]["annotations"])
+            if (
+                0 < len(row["annotation"]["sentence"]) <= maximum_characters
+                and int(source["decision_semantic_minimum_annotations"])
+                <= count <= int(source["decision_semantic_maximum_annotations"])
+            ):
+                by_split[split].append(row)
+    output: dict[str, dict[str, Any]] = {}
+    for split, required in source["decision_semantic_records_by_split"].items():
+        rows = sorted(by_split.get(split, []), key=lambda row: row["selection_key"])
+        if len(rows) < int(required):
+            raise ValueError(f"MASC decision-semantic independent split is incomplete: {split}")
+        for row in rows[: int(required)]:
+            identity = row["selection_key"].split(":", 1)[1]
+            output["masc-decision:" + identity[:24]] = {"split": split, **row}
+    return output
+
+
 def descendants(root: str, edges: dict[str, list[str]]) -> set[str]:
     observed: set[str] = set()
     pending = [root]
@@ -1295,6 +1434,83 @@ def safe_symbol(value: str, prefix: str) -> str:
     return symbol[:96]
 
 
+def independent_semantic_concept(namespace: str, value: str) -> dict[str, str]:
+    normalized = re.sub(r"[^a-z0-9]+", ".", value.lower()).strip(".") or "unknown"
+    return {"type": "concept", "value": f"{namespace}.{normalized}"}
+
+
+def independent_decision_value(layer: str, field: str, value: str) -> dict[str, Any]:
+    lowered = value.strip().lower()
+    if lowered in {"true", "false"}:
+        return {"type": "boolean", "value": lowered == "true"}
+    if field == "nested-source":
+        return {
+            "type": "list",
+            "value": [
+                independent_semantic_concept("mpqa.source", part)
+                for part in value.split(",") if part.strip()
+            ],
+        }
+    categorical = {
+        "annotation-uncertain", "attitude-type", "attitude-uncertain", "contrast",
+        "es-uncertain", "expression-intensity", "implicit", "inferred", "insubstantial",
+        "intensity", "polarity", "repetition", "sarcastic", "subjective-uncertain",
+        "target-uncertain",
+    }
+    if field in categorical:
+        return independent_semantic_concept(
+            f"{layer}.{safe_symbol(field, 'field').lower()}", value
+        )
+    return encoded_literal(value)
+
+
+def independent_decision_modality(annotation: dict[str, Any]) -> str:
+    if annotation["layer"] == "cb":
+        return "ASSERTED" if annotation["label"].startswith("Committed Belief") else "POSSIBLE"
+    uncertain = any(
+        "uncertain" in key and value.lower() not in {"", "false", "no"}
+        for key, value in annotation["fields"].items()
+    )
+    return "POSSIBLE" if uncertain else "ASSERTED"
+
+
+def independent_decision_polarity(annotation: dict[str, Any]) -> str:
+    explicit = str(annotation["fields"].get("polarity") or "").lower()
+    if annotation["label"].lower().startswith("not ") or explicit in {"negative", "neg", "both"}:
+        return "NEGATED"
+    if explicit in {"positive", "pos"}:
+        return "AFFIRMED"
+    return "UNKNOWN" if annotation["layer"] == "mpqa" else "AFFIRMED"
+
+
+def independent_decision_arguments(annotation: dict[str, Any]) -> list[dict[str, Any]]:
+    output = [
+        {
+            "role": "ANNOTATION_KIND",
+            "value": independent_semantic_concept(annotation["layer"], annotation["label"]),
+        },
+        {"role": "SOURCE_EXPRESSION", "value": encoded_literal(annotation["text"])},
+    ]
+    if annotation["layer"] == "cb":
+        output.append(
+            {
+                "role": "TEMPORAL_ORIENTATION",
+                "value": independent_semantic_concept(
+                    "time", "future" if annotation["label"].endswith("Future") else "non_future"
+                ),
+            }
+        )
+    for field, value in sorted(annotation["fields"].items()):
+        if field != "id" and value:
+            output.append(
+                {
+                    "role": safe_symbol(field, "FIELD"),
+                    "value": independent_decision_value(annotation["layer"], field, value),
+                }
+            )
+    return output
+
+
 def verify_dolly_record(record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]) -> dict[str, Any]:
     annotation = record.get("source_annotation")
     if annotation != expected["annotation"]:
@@ -1673,6 +1889,118 @@ def expected_masc_arguments(
             }
         )
     return arguments
+
+
+def verify_masc_decision_record(
+    record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]
+) -> dict[str, Any]:
+    annotation = {
+        **expected["annotation"],
+        "semantic_claim_scope": source["decision_semantic_claim_scope"],
+        "complete_sentence_semantics_claimed": False,
+        "truth_claimed": False,
+        "event_coreference_grouping_claimed": False,
+        "source_declared_cross_annotation_links_resolved": False,
+    }
+    if record.get("source_annotation") != annotation:
+        raise ValueError("MASC decision-semantic raw annotation replay mismatch")
+    sentence = annotation["sentence"]
+    if (
+        record.get("split") != expected["split"]
+        or record.get("source_text") != sentence
+        or record.get("surface_target") != sentence
+        or record.get("provenance", {}).get("source_group")
+        != "masc-document:" + annotation["document_id"]
+    ):
+        raise ValueError("MASC decision-semantic split or source replay mismatch")
+    semantic = record.get("semantic_supervision") or {}
+    allowed = set(source["allowed_objectives"])
+    if semantic.get("objective_authority") != {
+        objective: objective in allowed for objective in TRAINING_OBJECTIVES
+    }:
+        raise ValueError("MASC decision-semantic objective authority mismatch")
+    if (
+        semantic.get("unique_source_credit")
+        != int(source["decision_semantic_unique_source_credit"])
+        or semantic.get("decision_semantic_authority")
+        != "manual_masc_cb_mpqa_event_annotations"
+    ):
+        raise ValueError("MASC decision-semantic source-credit mismatch")
+    nodes = record["kernel_packet"]["program"]["nodes"]
+    claims = record["answer_packet"]["claims"]
+    if len(nodes) != len(annotation["annotations"]) or len(claims) != len(nodes):
+        raise ValueError("MASC decision-semantic cardinality mismatch")
+    expected_tags = []
+    typed_nonliteral = 0
+    for index, item in enumerate(annotation["annotations"]):
+        predicate = (
+            "EPISTEMIC_STATUS" if item["layer"] == "cb" else
+            "EVENT_" + safe_symbol(item["label"], "UNKNOWN") if item["layer"] == "event" else
+            "SUBJECTIVITY_" + safe_symbol(item["label"], "UNKNOWN")
+        )
+        arguments = independent_decision_arguments(item)
+        typed_nonliteral += sum(arg["value"]["type"] != "byte_literal" for arg in arguments)
+        common = {
+            "predicate": predicate,
+            "modality": independent_decision_modality(item),
+            "polarity": independent_decision_polarity(item),
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "arguments": arguments,
+        }
+        expected_node = {
+            "node_id": f"k{index}",
+            "operator": predicate,
+            "modality": common["modality"],
+            "polarity": common["polarity"],
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "derivation": "preserved",
+            "source_spans": [[int(item["start"]), int(item["end"])]],
+            "arguments": arguments,
+        }
+        if nodes[index] != expected_node:
+            raise ValueError("MASC decision-semantic Kernel node replay mismatch")
+        if claims[index] != {"claim_id": f"claim-{index + 1}", **common}:
+            raise ValueError("MASC decision-semantic answer claim replay mismatch")
+        expected_tags.append(
+            {
+                "tag": f"{item['layer'].upper()}:{safe_symbol(item['label'], 'UNKNOWN')}",
+                "source_span": [int(item["start"]), int(item["end"])],
+                "authority": "licensed_manual_annotation",
+            }
+        )
+    if record["kernel_packet"]["program"]["roots"] != [f"k{i}" for i in range(len(nodes))]:
+        raise ValueError("MASC decision-semantic root replay mismatch")
+    if record["kernel_packet"]["residual"]["token_tags"] != sorted(
+        expected_tags, key=lambda row: (row["source_span"], row["tag"], row["authority"])
+    ):
+        raise ValueError("MASC decision-semantic token-tag replay mismatch")
+    source_id = record["provenance"]["source_id"]
+    state, deltas = independent_hrl_replay(
+        split=expected["split"],
+        source_id=source_id,
+        source_group="masc-document:" + annotation["document_id"],
+        source_text=sentence,
+        surface_target=sentence,
+        source_annotation=annotation,
+        interaction_annotation=None,
+        interaction_entries=[],
+        actor_id="licensed_source_context",
+        source=source,
+        valid_realizations=None,
+    )
+    if record.get("hrl_state") != state or record.get("hrl_deltas") != deltas:
+        raise ValueError("MASC decision-semantic VCM replay mismatch")
+    return {
+        "policy": MASC_DECISION_SEMANTICS_POLICY,
+        "annotation_count": len(nodes),
+        "typed_nonliteral_argument_count": typed_nonliteral,
+        "layers": sorted({item["layer"] for item in annotation["annotations"]}),
+        "claim_scope": source["decision_semantic_claim_scope"],
+        "complete_sentence_semantics_claimed": False,
+        "truth_claimed": False,
+    }
 
 
 def verify_masc_composite_record(
@@ -2083,6 +2411,9 @@ def verify(config_path: Path) -> dict[str, Any]:
     masc_composite_expected = independent_masc_composite_assignments(
         masc_expected, corpus["masc"]
     )
+    masc_decision_expected = independent_masc_decision_assignments(
+        corpus["masc"], maximum_characters
+    )
     expected = {
         **independent_dolly_assignments(
             corpus["dolly"],
@@ -2092,6 +2423,7 @@ def verify(config_path: Path) -> dict[str, Any]:
         **grounded_expected,
         **masc_expected,
         **masc_composite_expected,
+        **masc_decision_expected,
         **independent_oasst_assignments(
             corpus["oasst2"],
             reserved_groups={row["source_group"] for row in behavior_expected.values()},
@@ -2165,6 +2497,53 @@ def verify(config_path: Path) -> dict[str, Any]:
         != corpus["masc"]["composite_semantic_claim_scope"]
     ):
         raise ValueError("producer MASC composite telemetry mismatch")
+    expected_decision_counts = {
+        split: sum(1 for row in masc_decision_expected.values() if row["split"] == split)
+        for split in SPLITS
+    }
+    expected_decision_layers = {
+        split: dict(
+            Counter(
+                item["layer"]
+                for row in masc_decision_expected.values()
+                if row["split"] == split
+                for item in row["annotation"]["annotations"]
+            )
+        )
+        for split in SPLITS
+    }
+    expected_decision_missing = {
+        split: {
+            layer: sum(
+                1 for row in masc_decision_expected.values()
+                if row["split"] == split and row["annotation"]["missingness"][layer]
+            )
+            for layer in ("cb", "event", "mpqa")
+        }
+        for split in SPLITS
+    }
+    expected_typed_count = sum(
+        1
+        for row in masc_decision_expected.values()
+        for item in row["annotation"]["annotations"]
+        for argument in independent_decision_arguments(item)
+        if argument["value"]["type"] != "byte_literal"
+    )
+    producer_decisions = manifest.get("masc_decision_semantics") or {}
+    if (
+        producer_decisions.get("policy") != MASC_DECISION_SEMANTICS_POLICY
+        or producer_decisions.get("record_count_by_split") != expected_decision_counts
+        or producer_decisions.get("annotation_count_by_split_and_layer") != expected_decision_layers
+        or producer_decisions.get("missing_layer_record_count_by_split") != expected_decision_missing
+        or producer_decisions.get("typed_nonliteral_argument_count") != expected_typed_count
+        or producer_decisions.get("unique_source_credit") != 0
+        or producer_decisions.get("claim_scope") != corpus["masc"]["decision_semantic_claim_scope"]
+        or producer_decisions.get("complete_sentence_semantics_claimed") is not False
+        or producer_decisions.get("truth_claimed") is not False
+        or producer_decisions.get("event_coreference_grouping_claimed") is not False
+        or producer_decisions.get("source_declared_cross_annotation_links_resolved") is not False
+    ):
+        raise ValueError("producer MASC decision-semantic telemetry mismatch")
     raw_records = [
         json.loads(raw)
         for raw in candidate_path.read_text(encoding="utf-8").splitlines()
@@ -2231,6 +2610,8 @@ def verify(config_path: Path) -> dict[str, Any]:
                 if source_key == "dolly"
                 else verify_masc_composite_record(record, source, expected_row)
                 if source_id.startswith("masc-composite:")
+                else verify_masc_decision_record(record, source, expected_row)
+                if source_id.startswith("masc-decision:")
                 else verify_masc_record(record, source, expected_row)
                 if source_key == "masc"
                 else verify_oasst_behavior_record(record, source, expected_row)
@@ -2375,6 +2756,20 @@ def verify(config_path: Path) -> dict[str, Any]:
             "claim_scope": corpus["masc"]["composite_semantic_claim_scope"],
             "complete_sentence_semantics_claimed": False,
             "inter_frame_discourse_edges_claimed": False,
+            "independently_reconstructed_from_raw_graf": True,
+        },
+        "masc_decision_semantics": {
+            "policy": MASC_DECISION_SEMANTICS_POLICY,
+            "record_count_by_split": expected_decision_counts,
+            "annotation_count_by_split_and_layer": expected_decision_layers,
+            "missing_layer_record_count_by_split": expected_decision_missing,
+            "typed_nonliteral_argument_count": expected_typed_count,
+            "unique_source_credit": 0,
+            "claim_scope": corpus["masc"]["decision_semantic_claim_scope"],
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "event_coreference_grouping_claimed": False,
+            "source_declared_cross_annotation_links_resolved": False,
             "independently_reconstructed_from_raw_graf": True,
         },
         "verification_failures": dict(failures),

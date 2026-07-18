@@ -577,6 +577,15 @@
         "composite_semantic_maximum_frames": 8,
         "composite_semantic_unique_source_credit": 0,
         "composite_semantic_claim_scope": "manual FrameNet multi-frame structure over one source sentence; multiple annotated propositions are preserved without claiming inter-frame discourse edges, complete sentence semantics, truth, or reasoning utility",
+        "decision_semantic_records_by_split": {
+          "private_train": 128,
+          "private_dev": 64,
+          "private_eval": 64
+        },
+        "decision_semantic_minimum_annotations": 2,
+        "decision_semantic_maximum_annotations": 24,
+        "decision_semantic_unique_source_credit": 0,
+        "decision_semantic_claim_scope": "manual MASC committed-belief, MPQA subjectivity, and event annotations aligned to one source sentence; authority covers only the observed spans, labels, and source fields, not truth, complete sentence semantics, lost event-coreference grouping, or unresolved cross-annotation links",
         "allowed_objectives": [
           "surface_to_kernel_program_v1",
           "kernel_program_to_answer_packet_v1",
@@ -593,7 +602,8 @@
             "written/travel-guides/HistoryLasVegas",
             "written/journal/Article247_66",
             "written/letters/philanthropic-fundraising/110CYL070",
-            "written/email/enron/enron-thread-159550"
+            "written/email/enron/enron-thread-159550",
+            "written/newspaper/wsj/wsj_2465"
           ]
         },
         "contextual_frame_ambiguity": {
