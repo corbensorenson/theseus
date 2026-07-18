@@ -308,25 +308,25 @@
           "path": "tests/test_neural_seed_open_vocab.py",
           "sha256": "9e24ba0c912a6efa04658c11db570178bc886842eff86d72221e4663cd863aaa"
         },
-        "kerc_semantic_corpus_producer": {
-          "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "8e3cd439261a46098f68f897a7d5685876001c94d6ad42b3565563009bac6ae1"
-        },
-        "kerc_semantic_corpus_verifier": {
-          "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "9e64e20fc3fc7de96dc341b6459198a238f5140d983bac83a3b3d8f071f2eaaf"
-        },
-        "kerc_content_cache": {
-          "path": "scripts/kerc_content_cache.py",
-          "sha256": "d28b8aabc5cd1da284673ff504e60fb7bd3c76a91618a060fd0360cc1e1fc661"
+      "kerc_semantic_corpus_producer": {
+        "path": "scripts/kerc_semantic_corpus.py",
+        "sha256": "ad55bd2cfcd4900b3b345dbe5a0f16c027d08301f1729f885a9cd8db02a4144a"
+      },
+      "kerc_semantic_corpus_verifier": {
+        "path": "scripts/kerc_semantic_corpus_verify.py",
+        "sha256": "a180385326681229a826898e06c6b201212ae407190568a06d99fc3861d60edf"
+      },
+      "kerc_content_cache": {
+        "path": "scripts/kerc_content_cache.py",
+        "sha256": "d037e7d0ea8bbcf5351a89bce4856d7fc591c528b510130c0dc3e4c05459f8b8"
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
           "sha256": "8a2425490aaccfd518ceee2d4d11adcc72ac903e77f4495064c0b02dc13771f4"
         },
-        "kerc_content_cache_tests": {
-          "path": "tests/test_kerc_content_cache.py",
-          "sha256": "1943dac7a4f6d5498d49ee3a0d7482172374916a937ddd7e48e4f91e251658c2"
+      "kerc_content_cache_tests": {
+        "path": "tests/test_kerc_content_cache.py",
+        "sha256": "caeab88fe66bef74a56f93415619ea845688c8119770161b12b2a6b3a268ab6a"
         },
         "kerc_importance_policy_tests": {
           "path": "tests/test_kerc_importance_policy.py",
@@ -5453,7 +5453,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0 now independently binds the KERC paper, implementation sources, independent verifier, and all 11,936 current corpus records. It classifies three narrow mechanisms as faithful mechanics, nine as approximate/fixture-only, four as inactive/absent, and all H1-H8 hypotheses as inactive. K1a independently reconstructs 256 MASC multi-frame rows; K1b independently reconstructs another 256 rows from manual committed-belief, MPQA subjectivity, and event layers. Together they produce 512 multi-node/multi-root programs and multi-claim answer packets with zero extra unique-source credit. K1b contributes 3,666 typed nonliteral observed modality, polarity, temporal-orientation, event, and subjectivity arguments. The first independent K1b replay caught a multi-claim decision-hash instability; canonical claim ordering and a regression test close it, and the final replay admits all rows with zero failures. K1c adds separate exact-run cache receipts that bind actual sources, the complete extracted MASC tree, config, code, candidates, and outputs; cold/warm production is 1321.33s/1.86s and independent verification 1100.62s/1.93s. Mutations fail closed and semantic implementations remain independent, but changed inputs still need monolithic work, so selective layer/per-record caching remains open. Construct validity still lacks cross-annotation links, event-coreference grouping, scope, conditionals, compositional negation, quantification, causal/temporal graph relations, attribution links, coreference, complete semantics, truth, or learned competence; 18,759 opaque byte literals remain. Correction alternatives, concept capsules, macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation are still absent. Direct probes confirm that the interaction label follows segment presence without a global dictionary and that changing opaque answer bytes passes the hard round-trip projection. The residual head remains channel-presence learnability, not learned allocation. The prior 11,424-record canonical stage is stale and must be rebuilt after K1 closes. Exact codec, packet-level structural controller, and checkpoint/migration/MLX mechanics remain valid within narrow ceilings. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims are denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
+      "current_wall": "K0 now independently binds the KERC paper, implementation sources, independent verifier, and all 11,936 current corpus records. It classifies three narrow mechanisms as faithful mechanics, nine as approximate/fixture-only, four as inactive/absent, and all H1-H8 hypotheses as inactive. K1a independently reconstructs 256 MASC multi-frame rows; K1b independently reconstructs another 256 rows from manual committed-belief, MPQA subjectivity, and event layers. Together they produce 512 multi-node/multi-root programs and multi-claim answer packets with zero extra unique-source credit. K1b contributes 3,666 typed nonliteral observed modality, polarity, temporal-orientation, event, and subjectivity arguments. The first independent K1b replay caught a multi-claim decision-hash instability; canonical claim ordering and a regression test close it, and the final replay admits all rows with zero failures. K1c adds separate exact-run cache receipts that bind actual sources, the complete extracted MASC tree, config, code, candidates, and outputs; unchanged runs complete in 1.70s for production and 1.84s for independent verification. K1d adds namespace-separated, canonical, integrity-checked SQLite object caches with batched durable writes and selective dependency keys. A complete cold/selective-hit replay preserved byte-identical artifacts while production improved from 1151.89s to 802.88s with 11,936/11,936 structural-economics hits, and independent verification improved from 997.70s to 71.47s with 11,936/11,936 semantic-admission hits and zero producer authority reuse. Mutation tests prove one changed dependency yields one miss while unaffected records remain hits; corrupted or cross-namespace objects fail closed. Raw parsing, split reconstruction, packet compilation, aggregate calibration, and serialization remain uncached, so K1 incremental replay is partial rather than complete. Construct validity still lacks cross-annotation links, event-coreference grouping, scope, conditionals, compositional negation, quantification, causal/temporal graph relations, attribution links, coreference, complete semantics, truth, or learned competence; 18,759 opaque byte literals remain. Correction alternatives, concept capsules, macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation are still absent. Direct probes confirm that the interaction label follows segment presence without a global dictionary and that changing opaque answer bytes passes the hard round-trip projection. The residual head remains channel-presence learnability, not learned allocation. The prior 11,424-record canonical stage is stale and must be rebuilt after K1 closes. Exact codec, packet-level structural controller, and checkpoint/migration/MLX mechanics remain valid within narrow ceilings. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims are denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

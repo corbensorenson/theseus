@@ -36,8 +36,10 @@ from kernel_english_protocol import (
 )
 from kerc_importance_policy import fit_importance_policy, predict_importance
 from kerc_content_cache import (
+    ContentObjectCache,
     dependency_bindings,
     load_receipt,
+    object_key,
     publish_receipt,
 )
 from kerc_residual_economics import (
@@ -2454,6 +2456,7 @@ def produce(
     *,
     use_cache: bool = True,
     refresh_cache: bool = False,
+    bypass_run_cache: bool = False,
 ) -> dict[str, Any]:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     stage = validate_kernel_english_config(config)
@@ -2473,7 +2476,7 @@ def produce(
         "candidate_records": output_path,
         "producer_manifest": manifest_path,
     }
-    if cache_enabled and not refresh_cache:
+    if cache_enabled and not refresh_cache and not bypass_run_cache:
         cached = load_receipt(
             cache_root,
             role=str(cache_cfg["producer_role"]),
@@ -2482,6 +2485,16 @@ def produce(
             result_output_id="producer_manifest",
         )
         if cached is not None and cached.get("trigger_state") == "GREEN":
+            write_json_atomic(
+                cache_root / "telemetry" / "producer_last.json",
+                {
+                    "policy": "project_theseus_kerc_incremental_cache_telemetry_v1",
+                    "run_cache_hit": True,
+                    "structural_economics": {"hits": 0, "misses": 0},
+                    "candidate_records_sha256": cached["candidate_records"]["sha256"],
+                    "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
+                },
+            )
             return cached
     dolly_rows, dolly_rejects = load_dolly_candidates(
         corpus["dolly"], maximum_characters=int(corpus["maximum_source_characters"])
@@ -2661,21 +2674,71 @@ def produce(
     importance_policy = fit_importance_policy(candidates)
     provisional: list[tuple[dict[str, Any], dict[str, Any], dict[str, Any]]] = []
     initial_lambda = float(economics["allocation_lambda_grid_bits"][0])
-    for record in candidates:
-        importance = predict_importance(record, importance_policy)
-        packet = record["kernel_packet"]
-        residual = packet["residual"]
-        allocation = build_structural_rate_distortion_allocation(
-            kernel_program=packet["program"],
-            global_state=record["hrl_state"]["global"],
-            segment_residual=residual["segment_frame"],
-            token_residuals=residual["token_tags"],
-            exact_objects=packet["protected_objects"],
-            importance=float(importance["allocation_importance"]),
-            lambda_value=initial_lambda,
-            exact_codec=residual["codec"],
+    economics_cache_hits = 0
+    economics_cache_misses = 0
+    importance_implementation_sha256 = sha256_file(
+        ROOT / "scripts" / "kerc_importance_policy.py"
+    )
+    economics_implementation_sha256 = sha256_file(
+        ROOT / "scripts" / "kerc_residual_economics.py"
+    )
+    economics_store = (
+        ContentObjectCache(
+            cache_root / "producer_objects.sqlite3",
+            namespace=str(cache_cfg["producer_role"]) + ":structural_economics_v1",
         )
-        provisional.append((record, importance, allocation))
+        if cache_enabled
+        else None
+    )
+    try:
+        for record in candidates:
+            importance = predict_importance(record, importance_policy)
+            packet = record["kernel_packet"]
+            residual = packet["residual"]
+            allocation_dependencies = {
+                "kernel_program": packet["program"],
+                "global_state": record["hrl_state"]["global"],
+                "segment_residual": residual["segment_frame"],
+                "token_residuals": residual["token_tags"],
+                "exact_objects": packet["protected_objects"],
+                "exact_codec": residual["codec"],
+                "importance": importance,
+                "initial_lambda": initial_lambda,
+                "importance_policy_sha256": importance_policy["policy_sha256"],
+                "importance_implementation_sha256": importance_implementation_sha256,
+                "economics_implementation_sha256": economics_implementation_sha256,
+            }
+            allocation_key = object_key(
+                role=str(cache_cfg["producer_role"]),
+                layer="structural_economics_v1",
+                dependencies=allocation_dependencies,
+            )
+            cached_allocation = (
+                economics_store.get(allocation_key)
+                if economics_store is not None and not refresh_cache
+                else None
+            )
+            if isinstance(cached_allocation, dict):
+                allocation = cached_allocation
+                economics_cache_hits += 1
+            else:
+                allocation = build_structural_rate_distortion_allocation(
+                    kernel_program=packet["program"],
+                    global_state=record["hrl_state"]["global"],
+                    segment_residual=residual["segment_frame"],
+                    token_residuals=residual["token_tags"],
+                    exact_objects=packet["protected_objects"],
+                    importance=float(importance["allocation_importance"]),
+                    lambda_value=initial_lambda,
+                    exact_codec=residual["codec"],
+                )
+                economics_cache_misses += 1
+                if economics_store is not None:
+                    economics_store.put(allocation_key, allocation)
+            provisional.append((record, importance, allocation))
+    finally:
+        if economics_store is not None:
+            economics_store.close()
     lambda_calibration = calibrate_allocation_lambda(
         [
             allocation
@@ -2982,6 +3045,20 @@ def produce(
             outputs=cache_outputs,
             result_output_id="producer_manifest",
         )
+    write_json_atomic(
+        cache_root / "telemetry" / "producer_last.json",
+        {
+            "policy": "project_theseus_kerc_incremental_cache_telemetry_v1",
+            "run_cache_hit": False,
+            "structural_economics": {
+                "hits": economics_cache_hits,
+                "misses": economics_cache_misses,
+                "entry_count": economics_cache_hits + economics_cache_misses,
+            },
+            "candidate_records_sha256": report["candidate_records"]["sha256"],
+            "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
+        },
+    )
     return report
 
 
@@ -2990,11 +3067,13 @@ def main() -> int:
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
     parser.add_argument("--no-cache", action="store_true")
     parser.add_argument("--refresh-cache", action="store_true")
+    parser.add_argument("--bypass-run-cache", action="store_true")
     args = parser.parse_args()
     report = produce(
         resolve(args.config),
         use_cache=not args.no_cache,
         refresh_cache=args.refresh_cache,
+        bypass_run_cache=args.bypass_run_cache,
     )
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] == "GREEN" else 2

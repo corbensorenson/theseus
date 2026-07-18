@@ -1760,7 +1760,21 @@ independent verification, roughly `710x` and `570x` repeated-run speedups. Outpu
 receipt mutation and dependency changes fail closed. This does not complete the
 incremental requirement: any changed dependency still rebuilds the whole owner path;
 raw parse, split, packet, and economics layers still need separate producer/verifier
-keys and selective invalidation.
+keys and selective invalidation. K1d now closes two of those selective layers with
+namespace-separated canonical SQLite object caches and transaction-batched durable
+writes. Producer structural-economics keys bind the complete program, VCM/global state,
+all residual inputs, exact objects, codec, calibrated importance policy, lambda, and
+implementation identities. Independent-verifier semantic-admission keys bind the full
+candidate, independently reconstructed expected row, and verifier/protocol/economics
+implementations; producer authority is never reused. Full-corpus cold versus forced
+selective-hit replay preserved byte-identical outputs: production improved from
+`1151.89s` to `802.88s` with `11,936/11,936` hits and zero misses, while verification
+improved from `997.70s` to `71.47s` with `11,936/11,936` hits, zero misses, and zero
+producer authority reuse. Exact-run replay remains `1.70s/1.84s`. Corrupt and
+cross-namespace objects fail closed, and a dependency mutation retains two unaffected
+hits while recomputing exactly one changed object. This is not complete incremental
+replay: raw parsing, split reconstruction, packet compilation, aggregate calibration,
+and serialization remain measured open owners.
 Source-disjoint heldouts, per-objective authority, archive/revision/license hashes,
 and a verification ledger are mandatory. Duplicate reviewed replies, answer leakage,
 compiled-context overflow, and producer-only identity claims fail closed. The canonical

@@ -24,8 +24,10 @@ from typing import Any, Iterable
 import pyarrow.parquet as pq
 
 from kerc_content_cache import (
+    ContentObjectCache,
     dependency_bindings,
     load_receipt,
+    object_key,
     publish_receipt,
 )
 from kernel_english_protocol import (
@@ -2422,6 +2424,7 @@ def verify(
     *,
     use_cache: bool = True,
     refresh_cache: bool = False,
+    bypass_run_cache: bool = False,
 ) -> dict[str, Any]:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     stage = validate_kernel_english_config(config)
@@ -2458,7 +2461,7 @@ def verify(
         "verification_ledger": ledger_path,
         "verification_report": report_path,
     }
-    if cache_enabled and not refresh_cache:
+    if cache_enabled and not refresh_cache and not bypass_run_cache:
         cached = load_receipt(
             cache_root,
             role=str(cache_cfg["verifier_role"]),
@@ -2467,6 +2470,16 @@ def verify(
             result_output_id="verification_report",
         )
         if cached is not None and cached.get("trigger_state") == "GREEN":
+            write_json_atomic(
+                cache_root / "telemetry" / "verifier_last.json",
+                {
+                    "policy": "project_theseus_kerc_incremental_cache_telemetry_v1",
+                    "run_cache_hit": True,
+                    "semantic_admission": {"hits": 0, "misses": 0},
+                    "candidate_records_sha256": cached["candidate_records_sha256"],
+                    "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
+                },
+            )
             return cached
 
     maximum_characters = int(corpus["maximum_source_characters"])
@@ -2629,8 +2642,77 @@ def verify(
     failures: Counter[str] = Counter()
     seen_source_ids: set[str] = set()
     counts_by_split_and_objective: dict[str, Counter[str]] = {split: Counter() for split in SPLITS}
+    semantic_cache_hits = 0
+    semantic_cache_misses = 0
+    semantic_store = (
+        ContentObjectCache(
+            cache_root / "verifier_objects.sqlite3",
+            namespace=str(cache_cfg["verifier_role"]) + ":semantic_admission_v1",
+        )
+        if cache_enabled
+        else None
+    )
+    verifier_layer_dependencies = {
+        "verifier_sha256": verifier_sha256,
+        "kernel_protocol_sha256": sha256_file(
+            ROOT / "scripts" / "kernel_english_protocol.py"
+        ),
+        "importance_implementation_sha256": sha256_file(
+            ROOT / "scripts" / "kerc_importance_policy.py"
+        ),
+        "economics_implementation_sha256": sha256_file(
+            ROOT / "scripts" / "kerc_residual_economics.py"
+        ),
+    }
     for line_number, record in enumerate(raw_records, 1):
         try:
+            source_id = str(record.get("provenance", {}).get("source_id") or "")
+            if source_id in seen_source_ids:
+                raise ValueError("duplicate candidate source id")
+            expected_row = expected.get(source_id)
+            if expected_row is None:
+                raise ValueError("candidate absent from independent split reconstruction")
+            seen_source_ids.add(source_id)
+            semantic_key = object_key(
+                role=str(cache_cfg["verifier_role"]),
+                layer="semantic_admission_v1",
+                dependencies={
+                    **verifier_layer_dependencies,
+                    "candidate": record,
+                    "independent_expected_row": expected_row,
+                },
+            )
+            cached_semantic = (
+                semantic_store.get(semantic_key)
+                if semantic_store is not None and not refresh_cache
+                else None
+            )
+            if (
+                isinstance(cached_semantic, dict)
+                and isinstance(cached_semantic.get("canonical"), dict)
+                and isinstance(cached_semantic.get("receipt"), dict)
+                and cached_semantic["receipt"].get("accepted") is True
+                and cached_semantic["canonical"].get("verification_receipt")
+                == cached_semantic["receipt"]
+                and cached_semantic["canonical"].get("provenance", {}).get(
+                    "source_id"
+                )
+                == source_id
+            ):
+                canonical = cached_semantic["canonical"]
+                receipt = cached_semantic["receipt"]
+                canonical_records.append(canonical)
+                receipts.append(receipt)
+                for objective, authorized in canonical["semantic_supervision"][
+                    "objective_authority"
+                ].items():
+                    if authorized:
+                        counts_by_split_and_objective[canonical["split"]][
+                            objective
+                        ] += 1
+                semantic_cache_hits += 1
+                continue
+            semantic_cache_misses += 1
             expected_importance = predict_importance(record, importance_policy)
             supervision = record.get("residual_supervision") or {}
             if supervision.get("importance") != expected_importance:
@@ -2648,13 +2730,6 @@ def verify(
             )
             if expected_allocation["selected_fidelity"] != residual.get("fidelity"):
                 raise ValueError("candidate allocation fidelity mismatch")
-            source_id = str(record.get("provenance", {}).get("source_id") or "")
-            if source_id in seen_source_ids:
-                raise ValueError("duplicate candidate source id")
-            expected_row = expected.get(source_id)
-            if expected_row is None:
-                raise ValueError("candidate absent from independent split reconstruction")
-            seen_source_ids.add(source_id)
             dataset_id = str(record.get("provenance", {}).get("dataset_id") or "")
             source_key = (
                 "dolly"
@@ -2714,6 +2789,10 @@ def verify(
             canonical = validate_training_record(record)
             canonical_records.append(canonical)
             receipts.append(receipt)
+            if semantic_store is not None:
+                semantic_store.put(
+                    semantic_key, {"canonical": canonical, "receipt": receipt}
+                )
             for objective, authorized in canonical["semantic_supervision"]["objective_authority"].items():
                 if authorized:
                     counts_by_split_and_objective[canonical["split"]][objective] += 1
@@ -2721,6 +2800,8 @@ def verify(
             failures[str(getattr(exc, "code", type(exc).__name__))] += 1
             if sum(failures.values()) <= 10:
                 failures[f"sample:{line_number}:{str(exc)[:160]}"] += 0
+    if semantic_store is not None:
+        semantic_store.close()
 
     hard_gaps: list[str] = []
     if failures:
@@ -2857,6 +2938,21 @@ def verify(
             outputs=cache_outputs,
             result_output_id="verification_report",
         )
+    write_json_atomic(
+        cache_root / "telemetry" / "verifier_last.json",
+        {
+            "policy": "project_theseus_kerc_incremental_cache_telemetry_v1",
+            "run_cache_hit": False,
+            "semantic_admission": {
+                "hits": semantic_cache_hits,
+                "misses": semantic_cache_misses,
+                "entry_count": semantic_cache_hits + semantic_cache_misses,
+                "producer_authority_reused": False,
+            },
+            "candidate_records_sha256": report["candidate_records_sha256"],
+            "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
+        },
+    )
     return report
 
 
@@ -2865,11 +2961,13 @@ def main() -> int:
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
     parser.add_argument("--no-cache", action="store_true")
     parser.add_argument("--refresh-cache", action="store_true")
+    parser.add_argument("--bypass-run-cache", action="store_true")
     args = parser.parse_args()
     report = verify(
         resolve(args.config),
         use_cache=not args.no_cache,
         refresh_cache=args.refresh_cache,
+        bypass_run_cache=args.bypass_run_cache,
     )
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] == "GREEN" else 2

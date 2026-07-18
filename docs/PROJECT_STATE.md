@@ -64,10 +64,15 @@ share toward zero. Public benchmarks are calibration only.
   mechanics ceilings. Existing efficiency evidence remains negative for this exact
   finite-state implementation: residual bits are `4.603579x` source bits and complete
   Kernel-plus-residual wire is `10.292719x`. Separate source/code/output-bound exact-run
-  receipts reduce unchanged materialization from `1321.33s` to `1.86s` and independent
-  replay from `1100.62s` to `1.93s`, while mutations fail closed. Changed inputs still
-  require monolithic work, so selective raw-parse/split/packet/economics caches remain a
-  K1 requirement. The old keyword/linear proxy remains negative only for itself. K1-K7 must now
+  receipts now replay unchanged materialization in `1.70s` and independent verification
+  in `1.84s`. K1d adds separate, integrity-checked per-record caches: a forced full
+  producer replay preserves byte-identical artifacts and falls from `1151.89s` to
+  `802.88s` with `11,936/11,936` economics hits; independent verification falls from
+  `997.70s` to `71.47s` with `11,936/11,936` semantic-admission hits, zero misses, and
+  zero producer authority reuse. Corruption, namespace crossing, and changed-dependency
+  controls fail closed. Raw parsing, split reconstruction, packet compilation, aggregate
+  calibration, and serialization remain uncached, so selective replay is partial rather
+  than complete. The old keyword/linear proxy remains negative only for itself. K1-K7 must now
   establish nontrivial semantics, per-unit economics, real interaction amortization,
   coordinated learned stages, independent construct-valid verification, and adequacy
   before K8 may run the matched H1-H8 campaign. No learned-KERC, utility, efficiency,
