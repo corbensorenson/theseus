@@ -29,7 +29,13 @@ class KercImplementationFidelityTests(unittest.TestCase):
 
         self.assertEqual(report["trigger_state"], "GREEN")
         self.assertEqual(report["faults"], [])
-        self.assertEqual(report["summary"]["record_count"], 11424)
+        self.assertEqual(report["summary"]["record_count"], 11680)
+        self.assertEqual(
+            report["corpus_audit"]["observed"]["multi_node_program_count"], 256
+        )
+        self.assertEqual(
+            report["corpus_audit"]["observed"]["multi_claim_answer_count"], 256
+        )
         self.assertEqual(report["summary"]["hypothesis_evidence_active_count"], 0)
         self.assertFalse(report["summary"]["byte_literal_mutation_rejected"])
         self.assertFalse(report["summary"]["interaction_label_depends_on_global_dictionary"])

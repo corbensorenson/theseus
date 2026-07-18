@@ -2283,6 +2283,119 @@ def _validate_residual_spans(
     return [list(row) for row in unique]
 
 
+def _normalize_segment_frame(
+    segment_frame: dict[str, Any] | None,
+    *,
+    source_character_length: int,
+    path: str,
+) -> dict[str, Any]:
+    segment = copy.deepcopy(segment_frame or {})
+    if not segment:
+        return {}
+    single_fields = {"frame_name", "lexical_unit", "target_spans", "frame_roles"}
+    if set(segment) == single_fields:
+        if not str(segment["frame_name"]).strip():
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_NAME_MISSING", "", path=f"{path}.frame_name"
+            )
+        segment["target_spans"] = _validate_residual_spans(
+            segment["target_spans"],
+            source_character_length=source_character_length,
+            path=f"{path}.target_spans",
+        )
+        roles = segment["frame_roles"]
+        if not isinstance(roles, list) or not roles or any(
+            not isinstance(role, str) or not role.strip() for role in roles
+        ):
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_ROLES_INVALID",
+                canonical_json(roles),
+                path=f"{path}.frame_roles",
+            )
+        segment["frame_roles"] = sorted(set(roles))
+        return segment
+    if set(segment) != {"schema", "frames"} or segment.get("schema") != "framenet_composite_v1":
+        raise KernelProtocolFault(
+            "KERC_SEGMENT_FRAME_SCHEMA_INVALID",
+            canonical_json(segment),
+            path=path,
+        )
+    frames = segment.get("frames")
+    if not isinstance(frames, list) or not 2 <= len(frames) <= 8:
+        raise KernelProtocolFault(
+            "KERC_SEGMENT_FRAME_SET_CARDINALITY_INVALID",
+            canonical_json(frames),
+            path=f"{path}.frames",
+        )
+    frame_fields = {
+        "node_id",
+        "claim_id",
+        "annotation_set_node",
+        "annotation_set_id",
+        "frame_name",
+        "lexical_unit",
+        "target_spans",
+        "frame_roles",
+        "source_annotation_sha256",
+    }
+    node_ids: set[str] = set()
+    claim_ids: set[str] = set()
+    for index, frame in enumerate(frames):
+        frame_path = f"{path}.frames[{index}]"
+        if not isinstance(frame, dict) or set(frame) != frame_fields:
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_SET_ENTRY_SCHEMA_INVALID",
+                canonical_json(frame),
+                path=frame_path,
+            )
+        required_strings = (
+            "node_id",
+            "claim_id",
+            "annotation_set_node",
+            "frame_name",
+            "lexical_unit",
+        )
+        if any(not isinstance(frame[field], str) or not frame[field].strip() for field in required_strings):
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_SET_ENTRY_VALUE_INVALID",
+                canonical_json(frame),
+                path=frame_path,
+            )
+        if (
+            not isinstance(frame["source_annotation_sha256"], str)
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", frame["source_annotation_sha256"])
+        ):
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_SET_SOURCE_HASH_INVALID",
+                str(frame["source_annotation_sha256"]),
+                path=f"{frame_path}.source_annotation_sha256",
+            )
+        if frame["node_id"] in node_ids or frame["claim_id"] in claim_ids:
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_SET_ID_DUPLICATE",
+                canonical_json(frame),
+                path=frame_path,
+            )
+        node_ids.add(frame["node_id"])
+        claim_ids.add(frame["claim_id"])
+        frame["target_spans"] = _validate_residual_spans(
+            frame["target_spans"],
+            source_character_length=source_character_length,
+            path=f"{frame_path}.target_spans",
+        )
+        roles = frame["frame_roles"]
+        if not isinstance(roles, list) or not roles or any(
+            not isinstance(role, str) or not role.strip() for role in roles
+        ):
+            raise KernelProtocolFault(
+                "KERC_SEGMENT_FRAME_ROLES_INVALID",
+                canonical_json(roles),
+                path=f"{frame_path}.frame_roles",
+            )
+        frame["frame_roles"] = sorted(set(roles))
+    return segment
+
+
 def build_kernel_packet(
     source: str,
     program: dict[str, Any],
@@ -2317,38 +2430,11 @@ def build_kernel_packet(
         source_character_length=len(source),
     )
     serialization = serialize_kernel_program(validated["canonical_program"], macros=macros)
-    normalized_segment = copy.deepcopy(segment_frame or {})
-    if normalized_segment:
-        if set(normalized_segment) != {
-            "frame_name",
-            "lexical_unit",
-            "target_spans",
-            "frame_roles",
-        }:
-            raise KernelProtocolFault(
-                "KERC_SEGMENT_FRAME_SCHEMA_INVALID",
-                canonical_json(normalized_segment),
-                path="residual.segment_frame",
-            )
-        if not str(normalized_segment["frame_name"]).strip():
-            raise KernelProtocolFault(
-                "KERC_SEGMENT_FRAME_NAME_MISSING", "", path="residual.segment_frame.frame_name"
-            )
-        normalized_segment["target_spans"] = _validate_residual_spans(
-            normalized_segment["target_spans"],
-            source_character_length=len(source),
-            path="residual.segment_frame.target_spans",
-        )
-        roles = normalized_segment["frame_roles"]
-        if not isinstance(roles, list) or not roles or any(
-            not isinstance(role, str) or not role.strip() for role in roles
-        ):
-            raise KernelProtocolFault(
-                "KERC_SEGMENT_FRAME_ROLES_INVALID",
-                canonical_json(roles),
-                path="residual.segment_frame.frame_roles",
-            )
-        normalized_segment["frame_roles"] = sorted(set(roles))
+    normalized_segment = _normalize_segment_frame(
+        segment_frame,
+        source_character_length=len(source),
+        path="residual.segment_frame",
+    )
     normalized_tags: list[dict[str, Any]] = []
     for index, raw_tag in enumerate(token_tags):
         if not isinstance(raw_tag, dict) or set(raw_tag) != {"tag", "source_span", "authority"}:
@@ -2502,15 +2588,16 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
         raise KernelProtocolFault(
             "KERC_SEGMENT_FRAME_SCHEMA_INVALID", canonical_json(segment), path="packet.residual.segment_frame"
         )
-    if segment:
-        if set(segment) != {"frame_name", "lexical_unit", "target_spans", "frame_roles"}:
-            raise KernelProtocolFault(
-                "KERC_SEGMENT_FRAME_SCHEMA_INVALID", canonical_json(segment), path="packet.residual.segment_frame"
-            )
-        _validate_residual_spans(
-            segment.get("target_spans"),
-            source_character_length=int(source.get("character_length") or 0),
-            path="packet.residual.segment_frame.target_spans",
+    normalized_segment = _normalize_segment_frame(
+        segment,
+        source_character_length=int(source.get("character_length") or 0),
+        path="packet.residual.segment_frame",
+    )
+    if normalized_segment != segment:
+        raise KernelProtocolFault(
+            "KERC_SEGMENT_FRAME_NOT_CANONICAL",
+            canonical_json(segment),
+            path="packet.residual.segment_frame",
         )
     tags = residual.get("token_tags")
     if not isinstance(tags, list):

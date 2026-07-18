@@ -1007,6 +1007,84 @@ def independent_masc_assignments(source: dict[str, Any], maximum_characters: int
     return output
 
 
+def independent_masc_composite_assignments(
+    masc_rows: dict[str, dict[str, Any]],
+    source: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    minimum_frames = int(source["composite_semantic_minimum_frames"])
+    maximum_frames = int(source["composite_semantic_maximum_frames"])
+    if minimum_frames < 2 or maximum_frames < minimum_frames:
+        raise ValueError("MASC composite frame bounds are invalid")
+    output: dict[str, dict[str, Any]] = {}
+    for split, required in source["composite_semantic_records_by_split"].items():
+        by_sentence: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+        for row in masc_rows.values():
+            if row["split"] != split:
+                continue
+            annotation = row["annotation"]
+            by_sentence[
+                (annotation["document_id"], annotation["sentence_node"])
+            ].append(row)
+        groups = [
+            sorted(rows, key=lambda item: item["selection_key"])
+            for rows in by_sentence.values()
+            if minimum_frames <= len(rows) <= maximum_frames
+        ]
+        groups.sort(
+            key=lambda rows: stable_hash(
+                [row["selection_key"] for row in rows]
+            )
+        )
+        if len(groups) < int(required):
+            raise ValueError(
+                f"MASC independent composite reconstruction is incomplete: {split}"
+            )
+        for rows in groups[: int(required)]:
+            annotations = [row["annotation"] for row in rows]
+            source_ids = [row["source_id"] for row in rows]
+            identity = stable_hash(source_ids).split(":", 1)[1]
+            source_id = "masc-composite:" + identity[:24]
+            frame_receipts = [
+                {
+                    "node_id": f"k{index}",
+                    "claim_id": f"claim-{index + 1}",
+                    "annotation_set_node": annotation["annotation_set_node"],
+                    "annotation_set_id": annotation["annotation_set_id"],
+                    "frame_name": annotation["frame_name"],
+                    "lexical_unit": annotation["lexical_unit"],
+                    "target_spans": annotation["target_spans"],
+                    "frame_roles": sorted(
+                        {
+                            safe_symbol(element["role"], "ROLE")
+                            for element in annotation["frame_elements"]
+                        }
+                    ),
+                    "source_annotation_sha256": stable_hash(annotation),
+                }
+                for index, annotation in enumerate(annotations)
+            ]
+            output[source_id] = {
+                "source_id": source_id,
+                "split": split,
+                "component_rows": rows,
+                "annotation": {
+                    "source_kind": "masc_manual_framenet_composite",
+                    "document_id": annotations[0]["document_id"],
+                    "sentence_node": annotations[0]["sentence_node"],
+                    "sentence": annotations[0]["sentence"],
+                    "component_source_ids": source_ids,
+                    "frames": annotations,
+                    "frame_receipts": frame_receipts,
+                    "semantic_claim_scope": source[
+                        "composite_semantic_claim_scope"
+                    ],
+                    "complete_sentence_semantics_claimed": False,
+                    "inter_frame_discourse_edges_claimed": False,
+                },
+            }
+    return output
+
+
 def independent_interaction_predecessors(
     rows: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
@@ -1561,6 +1639,204 @@ def verify_oasst_behavior_record(
     }
 
 
+def expected_masc_arguments(
+    annotation: dict[str, Any],
+    protected_objects: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    arguments = [
+        {
+            "role": safe_symbol(element["role"], "ROLE"),
+            "value": expected_masc_value(
+                element,
+                sentence=annotation["sentence"],
+                protected_objects=protected_objects,
+            ),
+        }
+        for element in annotation["frame_elements"]
+    ]
+    contextual = annotation.get("contextual_frame_ambiguity")
+    if contextual is not None:
+        arguments.append(
+            {
+                "role": "CONTEXTUAL_FRAME_ALTERNATIVES",
+                "value": {
+                    "type": "ambiguity",
+                    "value": [
+                        {
+                            "value": alternative["value"],
+                            "probability": float(alternative["probability"]),
+                            "evidence": alternative["evidence"],
+                        }
+                        for alternative in contextual["alternatives"]
+                    ],
+                },
+            }
+        )
+    return arguments
+
+
+def verify_masc_composite_record(
+    record: dict[str, Any],
+    source: dict[str, Any],
+    expected: dict[str, Any],
+) -> dict[str, Any]:
+    annotation = record.get("source_annotation")
+    if annotation != expected["annotation"]:
+        raise ValueError("MASC composite raw-annotation replay mismatch")
+    sentence = annotation["sentence"]
+    if (
+        record.get("split") != expected["split"]
+        or record.get("source_text") != sentence
+        or record.get("surface_target") != sentence
+    ):
+        raise ValueError("MASC composite split or sentence replay mismatch")
+    semantic = record.get("semantic_supervision") or {}
+    allowed = set(source["allowed_objectives"])
+    if semantic.get("objective_authority") != {
+        objective: objective in allowed for objective in TRAINING_OBJECTIVES
+    }:
+        raise ValueError("MASC composite objective authority mismatch")
+    if (
+        semantic.get("unique_source_credit")
+        != int(source["composite_semantic_unique_source_credit"])
+        or semantic.get("composite_semantic_authority")
+        != "manual_framenet_multiple_annotations_same_source_sentence"
+    ):
+        raise ValueError("MASC composite source-credit contract mismatch")
+
+    frames = annotation["frames"]
+    protected_objects = record["kernel_packet"].get("protected_objects") or {}
+    expected_explicit = {
+        (span["start"], span["end"], span["object_type"], span["copy_policy"])
+        for span in (frames[0].get("protected_spans") or [])
+    }
+    observed_explicit = {
+        (
+            value["source_span"]["character_start"],
+            value["source_span"]["character_end"],
+            value["object_type"],
+            value["copy_policy"],
+        )
+        for value in protected_objects.values()
+        if value.get("protection_source") == "explicit_user_or_caller_span"
+    }
+    if observed_explicit != expected_explicit:
+        raise ValueError("MASC composite protected-object replay mismatch")
+
+    program = record["kernel_packet"]["program"]
+    claims = record["answer_packet"]["claims"]
+    expected_roots = [f"k{index}" for index in range(len(frames))]
+    if program.get("roots") != expected_roots:
+        raise ValueError("MASC composite root replay mismatch")
+    if len(program.get("nodes") or []) != len(frames) or len(claims) != len(frames):
+        raise ValueError("MASC composite frame cardinality mismatch")
+    for index, annotation_frame in enumerate(frames):
+        node = program["nodes"][index]
+        claim = claims[index]
+        predicate = "FRAME_" + safe_symbol(
+            annotation_frame["frame_name"], "UNKNOWN"
+        )
+        arguments = expected_masc_arguments(annotation_frame, protected_objects)
+        observed_node_arguments = [
+            {"role": value.get("role"), "value": observed_masc_value(value.get("value"))}
+            for value in node.get("arguments") or []
+        ]
+        observed_claim_arguments = [
+            {"role": value.get("role"), "value": observed_masc_value(value.get("value"))}
+            for value in claim.get("arguments") or []
+        ]
+        if (
+            node.get("node_id") != f"k{index}"
+            or node.get("operator") != predicate
+            or node.get("source_spans") != annotation_frame["target_spans"]
+            or node.get("derivation") != "preserved"
+            or observed_node_arguments != arguments
+        ):
+            raise ValueError("MASC composite kernel-node replay mismatch")
+        if (
+            claim.get("claim_id") != f"claim-{index + 1}"
+            or claim.get("predicate") != predicate
+            or observed_claim_arguments != arguments
+        ):
+            raise ValueError("MASC composite answer-claim replay mismatch")
+    expected_terms = [
+        {
+            "concept": independent_frame_concept(frame["frame_name"]),
+            "surface_policy": "source_licensed_frame",
+        }
+        for frame in frames
+    ]
+    if record["answer_packet"].get("required_terms") != expected_terms:
+        raise ValueError("MASC composite required-term replay mismatch")
+
+    expected_segment = {
+        "schema": "framenet_composite_v1",
+        "frames": annotation["frame_receipts"],
+    }
+    expected_tags = [
+        {
+            "tag": "FRAME_TARGET:" + safe_symbol(frame["frame_name"], "UNKNOWN"),
+            "source_span": list(span),
+            "authority": "licensed_manual_annotation",
+        }
+        for frame in frames
+        for span in frame["target_spans"]
+    ]
+    expected_tags.extend(
+        {
+            "tag": "FRAME_ROLE:" + safe_symbol(element["role"], "ROLE"),
+            "source_span": list(span),
+            "authority": "licensed_manual_annotation",
+        }
+        for frame in frames
+        for element in frame["frame_elements"]
+        for span in element["spans"]
+    )
+    expected_tags.extend(
+        {
+            "tag": "ENTITY:" + str(span["object_type"]),
+            "source_span": [int(span["start"]), int(span["end"])],
+            "authority": "licensed_manual_annotation",
+        }
+        for span in (frames[0].get("protected_spans") or [])
+    )
+    expected_tags.sort(key=lambda value: (value["source_span"], value["tag"]))
+    residual = record["kernel_packet"].get("residual") or {}
+    if residual.get("segment_frame") != expected_segment:
+        raise ValueError("MASC composite segment replay mismatch")
+    if residual.get("token_tags") != expected_tags:
+        raise ValueError("MASC composite token replay mismatch")
+    labels = (record.get("residual_supervision") or {}).get("labels_by_channel") or {}
+    if labels.get("interaction") != 0 or labels.get("segment") != 1 or labels.get("token") != 2:
+        raise ValueError("MASC composite residual labels mismatch")
+    if record.get("interaction_annotation") is not None:
+        raise ValueError("MASC composite received an invented interaction")
+    expected_state, expected_deltas = independent_hrl_replay(
+        split=expected["split"],
+        source_id=record["provenance"]["source_id"],
+        source_group=record["provenance"]["source_group"],
+        source_text=sentence,
+        surface_target=sentence,
+        source_annotation=annotation,
+        interaction_annotation=None,
+        interaction_entries=[],
+        actor_id="masc_manual_framenet",
+        source=source,
+        valid_realizations=None,
+    )
+    if record.get("hrl_state") != expected_state or record.get("hrl_deltas") != expected_deltas:
+        raise ValueError("MASC composite VCM replay mismatch")
+    return {
+        "document_id": annotation["document_id"],
+        "sentence_node": annotation["sentence_node"],
+        "component_source_ids": annotation["component_source_ids"],
+        "frame_count": len(frames),
+        "unique_source_credit": 0,
+        "complete_sentence_semantics_claimed": False,
+        "inter_frame_discourse_edges_claimed": False,
+    }
+
+
 def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]) -> dict[str, Any]:
     annotation = record.get("source_annotation")
     if annotation != expected["annotation"]:
@@ -1804,6 +2080,9 @@ def verify(config_path: Path) -> dict[str, Any]:
         for row in grounded_expected.values()
     }
     masc_expected = independent_masc_assignments(corpus["masc"], maximum_characters)
+    masc_composite_expected = independent_masc_composite_assignments(
+        masc_expected, corpus["masc"]
+    )
     expected = {
         **independent_dolly_assignments(
             corpus["dolly"],
@@ -1812,6 +2091,7 @@ def verify(config_path: Path) -> dict[str, Any]:
         ),
         **grounded_expected,
         **masc_expected,
+        **masc_composite_expected,
         **independent_oasst_assignments(
             corpus["oasst2"],
             reserved_groups={row["source_group"] for row in behavior_expected.values()},
@@ -1847,6 +2127,44 @@ def verify(config_path: Path) -> dict[str, Any]:
         or producer_frame_ambiguity.get("calibrated_probability_claimed") is not False
     ):
         raise ValueError("producer MASC contextual-frame ambiguity telemetry mismatch")
+    expected_composite_counts = {
+        split: sum(
+            1 for row in masc_composite_expected.values() if row["split"] == split
+        )
+        for split in SPLITS
+    }
+    expected_composite_frame_counts = {
+        split: dict(
+            Counter(
+                str(len(row["annotation"]["frames"]))
+                for row in masc_composite_expected.values()
+                if row["split"] == split
+            )
+        )
+        for split in SPLITS
+    }
+    producer_composites = manifest.get("masc_composite_semantics") or {}
+    expected_composite_total = sum(expected_composite_counts.values())
+    if (
+        producer_composites.get("policy")
+        != "project_theseus_kerc_masc_composite_semantics_v1"
+        or producer_composites.get("record_count_by_split")
+        != expected_composite_counts
+        or producer_composites.get("frame_count_distribution_by_split")
+        != expected_composite_frame_counts
+        or producer_composites.get("multi_node_program_count")
+        != expected_composite_total
+        or producer_composites.get("multi_root_program_count")
+        != expected_composite_total
+        or producer_composites.get("multi_claim_answer_count")
+        != expected_composite_total
+        or producer_composites.get("unique_source_credit") != 0
+        or producer_composites.get("complete_sentence_semantics_claimed") is not False
+        or producer_composites.get("inter_frame_discourse_edges_claimed") is not False
+        or producer_composites.get("claim_scope")
+        != corpus["masc"]["composite_semantic_claim_scope"]
+    ):
+        raise ValueError("producer MASC composite telemetry mismatch")
     raw_records = [
         json.loads(raw)
         for raw in candidate_path.read_text(encoding="utf-8").splitlines()
@@ -1911,6 +2229,8 @@ def verify(config_path: Path) -> dict[str, Any]:
                 if source_id.startswith("dolly-grounded:")
                 else verify_dolly_record(record, source, expected_row)
                 if source_key == "dolly"
+                else verify_masc_composite_record(record, source, expected_row)
+                if source_id.startswith("masc-composite:")
                 else verify_masc_record(record, source, expected_row)
                 if source_key == "masc"
                 else verify_oasst_behavior_record(record, source, expected_row)
@@ -2043,6 +2363,19 @@ def verify(config_path: Path) -> dict[str, Any]:
             "claim_scope": corpus["masc"]["contextual_frame_ambiguity"][
                 "claim_scope"
             ],
+        },
+        "masc_composite_semantics": {
+            "policy": "project_theseus_kerc_masc_composite_semantics_v1",
+            "record_count_by_split": expected_composite_counts,
+            "frame_count_distribution_by_split": expected_composite_frame_counts,
+            "multi_node_program_count": expected_composite_total,
+            "multi_root_program_count": expected_composite_total,
+            "multi_claim_answer_count": expected_composite_total,
+            "unique_source_credit": 0,
+            "claim_scope": corpus["masc"]["composite_semantic_claim_scope"],
+            "complete_sentence_semantics_claimed": False,
+            "inter_frame_discourse_edges_claimed": False,
+            "independently_reconstructed_from_raw_graf": True,
         },
         "verification_failures": dict(failures),
         "public_training_rows_written": 0,

@@ -36,11 +36,15 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "e4b402adc4a6f5eac62574a8feaba0f56adfd78a6c9ec40bfe6d4dff95bdc076"
+      "sha256": "3a6156a4d5f54df037f00976820d85ace43b35cda55822e1d168957f0b58e58d"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "8971bc8738d612925c72691a3e307a06b82b68d1b5a9f19bf4baf6e6511ba573"
+      "sha256": "403daac49d4d99ff363495e6a516ec9e548ef12abfe9bb172eba0454e13ef8b4"
+    },
+    {
+      "path": "scripts/kerc_semantic_corpus_verify.py",
+      "sha256": "40e0a4e22e1c37dbbb815b5d3afcea8b49bd264aab0546d575c8f5a5c546aedc"
     },
     {
       "path": "scripts/kerc_residual_economics.py",
@@ -52,20 +56,28 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "611450be40f0eaed77ab859553854b3196ac75b8ac516ce32b30c5336bb2de7f"
+      "sha256": "14dd8cd5efdcdf6b918f1430130e28dc8f67dc6ad859f29296b755b498d697cd"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "94b4c639457425eb9cfc695962af05a79e1adc92d7c41965d845d89cb536ed9a"
+      "sha256": "44f3759f4b8b8c28038bf1fa31f77cf97f32406f9a8317fe01c591eca176646f"
+    },
+    {
+      "path": "reports/runtime/kerc_semantic_corpus_verification.json",
+      "sha256": "3dbfd83035e75830da908fa6ad4c7afa3dcc0f0e0ca9638f0997e8bd38db4a65"
+    },
+    {
+      "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
+      "sha256": "025c05e012af6abd519476a13813a334b7eb9fcb2c795af0309f3fb1dcf012cf"
     }
   ],
   "observed_corpus_contract": {
-    "record_count": 11424,
-    "multi_node_program_count": 0,
-    "multi_root_program_count": 0,
+    "record_count": 11680,
+    "multi_node_program_count": 256,
+    "multi_root_program_count": 256,
     "non_preserved_derivation_count": 0,
-    "multi_claim_answer_count": 0,
-    "byte_literal_value_count": 14738,
+    "multi_claim_answer_count": 256,
+    "byte_literal_value_count": 16854,
     "correction_alternative_count": 0,
     "concept_capsule_count": 0,
     "nonempty_macro_registry_count": 0,
@@ -119,7 +131,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/standard_causal_transformer_model.py"],
       "evidence_refs": ["tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A trainable stage route and separate code space exist, but every canonical target program has one node and one root and largely wraps source or answer bytes.",
+      "current_finding": "A trainable stage route and separate code space exist. A separately accounted 256-row MASC stratum now preserves 2-8 independently replayed manual FrameNet annotations per sentence as multi-node/multi-root programs with zero additional unique-source credit, but it supplies no inter-frame discourse edges, scope, coreference, truth, complete sentence semantics, or learned competence evidence and still carries many role values as opaque bytes.",
       "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
       "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
     },
@@ -159,7 +171,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
       "evidence_refs": ["tests/test_kernel_english_protocol.py"],
-      "current_finding": "Typed claims and decisions exist, but every canonical answer has one claim and most answer content is carried as opaque byte literals.",
+      "current_finding": "Typed claims and decisions exist. The independently replayed MASC composite stratum adds 256 answer packets with 2-8 manual frame claims, but there are still no derivation edges, contradictions, quantities, evidence links, unresolved ambiguity, or PARTIAL decisions, and most semantic role content remains opaque byte literals.",
       "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
       "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
     },

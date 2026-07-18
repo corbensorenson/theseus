@@ -1545,6 +1545,78 @@ def load_masc_candidates(
     }, rejects
 
 
+def masc_annotation_with_prior(
+    row: dict[str, Any],
+    priors: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    annotation = copy.deepcopy(row["annotation"])
+    lexical_unit = str(annotation["lexical_unit"]).strip().lower()
+    prior = priors.get(lexical_unit)
+    if prior is not None and annotation["frame_name"] in {
+        alternative["frame_name"] for alternative in prior["alternatives"]
+    }:
+        annotation["contextual_frame_ambiguity"] = copy.deepcopy(prior)
+    return annotation
+
+
+def masc_semantic_value(
+    element: dict[str, Any],
+    *,
+    sentence: str,
+    protected_objects: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    spans = element["spans"]
+    if spans:
+        bounds = (min(value[0] for value in spans), max(value[1] for value in spans))
+        for handle, value in protected_objects.items():
+            source_span = value.get("source_span") or {}
+            if (
+                source_span.get("character_start") == bounds[0]
+                and source_span.get("character_end") == bounds[1]
+                and value.get("protection_source") == "explicit_user_or_caller_span"
+                and sentence[bounds[0] : bounds[1]] == element["text"]
+            ):
+                return {"type": "handle", "value": handle}
+    return byte_literal(element["text"])
+
+
+def masc_frame_arguments(
+    annotation: dict[str, Any],
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    arguments = [
+        {
+            "role": safe_symbol(element["role"], prefix="ROLE"),
+            "value": masc_semantic_value(
+                element,
+                sentence=annotation["sentence"],
+                protected_objects=protected_objects,
+            ),
+        }
+        for element in annotation["frame_elements"]
+    ]
+    contextual = annotation.get("contextual_frame_ambiguity")
+    if contextual is not None:
+        arguments.append(
+            {
+                "role": "CONTEXTUAL_FRAME_ALTERNATIVES",
+                "value": {
+                    "type": "ambiguity",
+                    "value": [
+                        {
+                            "value": copy.deepcopy(alternative["value"]),
+                            "probability": float(alternative["probability"]),
+                            "evidence": alternative["evidence"],
+                        }
+                        for alternative in contextual["alternatives"]
+                    ],
+                },
+            }
+        )
+    return arguments
+
+
 def masc_record(
     row: dict[str, Any],
     *,
@@ -1577,48 +1649,10 @@ def masc_record(
         annotation["sentence"],
         explicit_spans=explicit_spans,
     )
-    handles_by_span = {
-        (
-            value["source_span"]["character_start"],
-            value["source_span"]["character_end"],
-        ): handle
-        for handle, value in protected["protected_objects"].items()
-        if value["protection_source"] == "explicit_user_or_caller_span"
-    }
-
-    def semantic_value(element: dict[str, Any]) -> dict[str, Any]:
-        spans = element["spans"]
-        if spans:
-            bounds = (min(value[0] for value in spans), max(value[1] for value in spans))
-            handle = handles_by_span.get(bounds)
-            if handle is not None and annotation["sentence"][bounds[0] : bounds[1]] == element["text"]:
-                return {"type": "handle", "value": handle}
-        return byte_literal(element["text"])
-
-    arguments = [
-        {
-            "role": safe_symbol(element["role"], prefix="ROLE"),
-            "value": semantic_value(element),
-        }
-        for element in annotation["frame_elements"]
-    ]
-    if contextual_frame_ambiguity is not None:
-        arguments.append(
-            {
-                "role": "CONTEXTUAL_FRAME_ALTERNATIVES",
-                "value": {
-                    "type": "ambiguity",
-                    "value": [
-                        {
-                            "value": copy.deepcopy(alternative["value"]),
-                            "probability": float(alternative["probability"]),
-                            "evidence": alternative["evidence"],
-                        }
-                        for alternative in contextual_frame_ambiguity["alternatives"]
-                    ],
-                },
-            }
-        )
+    arguments = masc_frame_arguments(
+        annotation,
+        protected_objects=protected["protected_objects"],
+    )
     predicate = "FRAME_" + safe_symbol(annotation["frame_name"], prefix="UNKNOWN")
     program = {
         "roots": ["k0"],
@@ -1731,6 +1765,205 @@ def masc_record(
         ),
         interaction_actor_id="masc_manual_framenet",
     )
+
+
+def select_masc_composites(
+    selected: dict[str, list[dict[str, Any]]],
+    counts: dict[str, int],
+    *,
+    minimum_frames: int,
+    maximum_frames: int,
+) -> dict[str, list[list[dict[str, Any]]]]:
+    if minimum_frames < 2 or maximum_frames < minimum_frames:
+        raise ValueError("MASC composite frame bounds are invalid")
+    output: dict[str, list[list[dict[str, Any]]]] = {}
+    for split, required in counts.items():
+        by_sentence: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for row in selected[split]:
+            by_sentence[row["sentence_identity"]].append(row)
+        groups = [
+            sorted(rows, key=lambda item: item["selection_key"])
+            for rows in by_sentence.values()
+            if minimum_frames <= len(rows) <= maximum_frames
+        ]
+        groups.sort(
+            key=lambda rows: stable_hash(
+                [row["selection_key"] for row in rows]
+            )
+        )
+        if len(groups) < int(required):
+            raise ValueError(
+                f"insufficient MASC composite rows: {split}:{len(groups)}:{required}"
+            )
+        output[split] = groups[: int(required)]
+    return output
+
+
+def masc_composite_record(
+    rows: list[dict[str, Any]],
+    *,
+    split: str,
+    source: dict[str, Any],
+    producer_sha256: str,
+    frame_priors: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    annotations = [masc_annotation_with_prior(row, frame_priors) for row in rows]
+    sentence = annotations[0]["sentence"]
+    document_id = annotations[0]["document_id"]
+    sentence_node = annotations[0]["sentence_node"]
+    if any(
+        annotation["sentence"] != sentence
+        or annotation["document_id"] != document_id
+        or annotation["sentence_node"] != sentence_node
+        for annotation in annotations
+    ):
+        raise ValueError("MASC composite rows do not share one source sentence")
+    protected_spans = annotations[0].get("protected_spans") or []
+    if any((annotation.get("protected_spans") or []) != protected_spans for annotation in annotations[1:]):
+        raise ValueError("MASC composite protected spans disagree")
+    explicit_spans = [
+        {
+            "start": span["start"],
+            "end": span["end"],
+            "object_type": span["object_type"],
+            "copy_policy": span["copy_policy"],
+        }
+        for span in protected_spans
+    ]
+    protected = extract_protected_objects(sentence, explicit_spans=explicit_spans)
+    nodes: list[dict[str, Any]] = []
+    claims: list[dict[str, Any]] = []
+    token_tags: list[dict[str, Any]] = []
+    frame_receipts: list[dict[str, Any]] = []
+    for index, annotation in enumerate(annotations):
+        node_id = f"k{index}"
+        claim_id = f"claim-{index + 1}"
+        predicate = "FRAME_" + safe_symbol(annotation["frame_name"], prefix="UNKNOWN")
+        arguments = masc_frame_arguments(
+            annotation,
+            protected_objects=protected["protected_objects"],
+        )
+        common = {
+            "predicate": predicate,
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "arguments": copy.deepcopy(arguments),
+        }
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": common["predicate"],
+                "modality": common["modality"],
+                "polarity": common["polarity"],
+                "quantifier": common["quantifier"],
+                "confidence": common["confidence"],
+                "derivation": "preserved",
+                "source_spans": annotation["target_spans"],
+                "arguments": common["arguments"],
+            }
+        )
+        claims.append({"claim_id": claim_id, **common})
+        frame_receipts.append(
+            {
+                "node_id": node_id,
+                "claim_id": claim_id,
+                "annotation_set_node": annotation["annotation_set_node"],
+                "annotation_set_id": annotation["annotation_set_id"],
+                "frame_name": annotation["frame_name"],
+                "lexical_unit": annotation["lexical_unit"],
+                "target_spans": annotation["target_spans"],
+                "frame_roles": sorted(
+                    {
+                        safe_symbol(element["role"], prefix="ROLE")
+                        for element in annotation["frame_elements"]
+                    }
+                ),
+                "source_annotation_sha256": stable_hash(annotation),
+            }
+        )
+        token_tags.extend(
+            {
+                "tag": "FRAME_TARGET:" + safe_symbol(annotation["frame_name"], prefix="UNKNOWN"),
+                "source_span": list(span),
+                "authority": "licensed_manual_annotation",
+            }
+            for span in annotation["target_spans"]
+        )
+        token_tags.extend(
+            {
+                "tag": "FRAME_ROLE:" + safe_symbol(element["role"], prefix="ROLE"),
+                "source_span": list(span),
+                "authority": "licensed_manual_annotation",
+            }
+            for element in annotation["frame_elements"]
+            for span in element["spans"]
+        )
+    token_tags.extend(
+        {
+            "tag": "ENTITY:" + str(span["object_type"]),
+            "source_span": [int(span["start"]), int(span["end"])],
+            "authority": "licensed_manual_annotation",
+        }
+        for span in protected_spans
+    )
+    source_ids = ["masc-frame:" + row["selection_key"].split(":", 1)[1][:24] for row in rows]
+    composite_identity = stable_hash(source_ids).split(":", 1)[1]
+    source_annotation = {
+        "source_kind": "masc_manual_framenet_composite",
+        "document_id": document_id,
+        "sentence_node": sentence_node,
+        "sentence": sentence,
+        "component_source_ids": source_ids,
+        "frames": annotations,
+        "frame_receipts": frame_receipts,
+        "semantic_claim_scope": source["composite_semantic_claim_scope"],
+        "complete_sentence_semantics_claimed": False,
+        "inter_frame_discourse_edges_claimed": False,
+    }
+    record = base_record(
+        split=split,
+        source_text=sentence,
+        surface_target=sentence,
+        program={"roots": [node["node_id"] for node in nodes], "nodes": nodes},
+        answer_packet={
+            "claims": claims,
+            "required_terms": [
+                {
+                    "concept": frame_concept(annotation["frame_name"]),
+                    "surface_policy": "source_licensed_frame",
+                }
+                for annotation in annotations
+            ],
+            "required_caveats": [],
+            "style": {"register": "source_authored"},
+        },
+        source=source,
+        source_id="masc-composite:" + composite_identity[:24],
+        source_group="masc-document:" + document_id,
+        objectives={
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        },
+        producer_sha256=producer_sha256,
+        source_annotation=source_annotation,
+        exact_residual=True,
+        explicit_spans=explicit_spans,
+        segment_frame={
+            "schema": "framenet_composite_v1",
+            "frames": frame_receipts,
+        },
+        token_tags=token_tags,
+    )
+    record["semantic_supervision"]["unique_source_credit"] = int(
+        source["composite_semantic_unique_source_credit"]
+    )
+    record["semantic_supervision"]["composite_semantic_authority"] = (
+        "manual_framenet_multiple_annotations_same_source_sentence"
+    )
+    return record
 
 
 def interaction_predecessors(
@@ -1913,6 +2146,12 @@ def produce(config_path: Path) -> dict[str, Any]:
     masc_frame_priors = masc_contextual_frame_priors(
         masc_selected, corpus["masc"]["contextual_frame_ambiguity"]
     )
+    masc_composite_selected = select_masc_composites(
+        masc_selected,
+        corpus["masc"]["composite_semantic_records_by_split"],
+        minimum_frames=int(corpus["masc"]["composite_semantic_minimum_frames"]),
+        maximum_frames=int(corpus["masc"]["composite_semantic_maximum_frames"]),
+    )
     oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
     oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
         corpus["oasst2"]
@@ -1989,6 +2228,17 @@ def produce(config_path: Path) -> dict[str, Any]:
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(row["sentence_identity"])
             frame_counts[split][row["annotation"]["frame_name"]] += 1
+        for rows in masc_composite_selected[split]:
+            record = masc_composite_record(
+                rows,
+                split=split,
+                source=corpus["masc"],
+                producer_sha256=producer_sha256,
+                frame_priors=masc_frame_priors,
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(rows[0]["sentence_identity"])
         for row in oasst_selected[split]:
             record = oasst_record(
                 row,
@@ -2122,6 +2372,7 @@ def produce(config_path: Path) -> dict[str, Any]:
                 "dolly": len(dolly_selected[split]),
                 "dolly_grounded_question": len(dolly_grounded_selected[split]),
                 "masc": len(masc_selected[split]),
+                "masc_composite": len(masc_composite_selected[split]),
                 "oasst2": len(oasst_selected[split]),
                 "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
             }
@@ -2142,6 +2393,32 @@ def produce(config_path: Path) -> dict[str, Any]:
         },
         "masc_frame_counts": {
             split: dict(values) for split, values in frame_counts.items()
+        },
+        "masc_composite_semantics": {
+            "policy": "project_theseus_kerc_masc_composite_semantics_v1",
+            "record_count_by_split": {
+                split: len(groups)
+                for split, groups in masc_composite_selected.items()
+            },
+            "frame_count_distribution_by_split": {
+                split: dict(Counter(str(len(rows)) for rows in groups))
+                for split, groups in masc_composite_selected.items()
+            },
+            "multi_node_program_count": sum(
+                len(groups) for groups in masc_composite_selected.values()
+            ),
+            "multi_root_program_count": sum(
+                len(groups) for groups in masc_composite_selected.values()
+            ),
+            "multi_claim_answer_count": sum(
+                len(groups) for groups in masc_composite_selected.values()
+            ),
+            "unique_source_credit": int(
+                corpus["masc"]["composite_semantic_unique_source_credit"]
+            ),
+            "claim_scope": corpus["masc"]["composite_semantic_claim_scope"],
+            "complete_sentence_semantics_claimed": False,
+            "inter_frame_discourse_edges_claimed": False,
         },
         "masc_interaction_record_count_by_split": {
             split: len(values) for split, values in masc_interactions.items()

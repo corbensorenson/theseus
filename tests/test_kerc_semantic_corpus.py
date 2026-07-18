@@ -882,6 +882,152 @@ def test_independent_masc_replay_binds_and_rejects_forged_interaction_state(
         verifier.verify_masc_record(forged_label, source, expected)
 
 
+def test_masc_composite_semantics_are_multi_claim_independent_and_zero_credit(
+    tmp_path: Path,
+) -> None:
+    fn = write_masc_fixture(tmp_path)
+    first = verifier.independent_masc_document(fn, tmp_path / "data")[0]
+    second = json.loads(json.dumps(first))
+    second["annotation"]["annotation_set_node"] = "a-second"
+    second["annotation"]["annotation_set_id"] = "3"
+    second["annotation"]["frame_name"] = "Activity"
+    second["annotation"]["lexical_unit"] = "run.n"
+    second["selection_key"] = kernel.stable_hash(second["annotation"])
+    second["source_id"] = (
+        "masc-frame:" + second["selection_key"].split(":", 1)[1][:24]
+    )
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "2" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": [
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        ],
+        "composite_semantic_records_by_split": {
+            "private_train": 1,
+            "private_dev": 0,
+            "private_eval": 0,
+        },
+        "composite_semantic_minimum_frames": 2,
+        "composite_semantic_maximum_frames": 8,
+        "composite_semantic_unique_source_credit": 0,
+        "composite_semantic_claim_scope": (
+            "manual FrameNet multi-frame structure only; no complete semantics"
+        ),
+    }
+    rows = [first, second]
+    candidate = producer.masc_composite_record(
+        rows,
+        split="private_train",
+        source=source,
+        producer_sha256="sha256:" + "1" * 64,
+        frame_priors={},
+    )
+    individual_expected = {
+        row["source_id"]: {**row, "split": "private_train"} for row in rows
+    }
+    expected = verifier.independent_masc_composite_assignments(
+        individual_expected, source
+    )[candidate["provenance"]["source_id"]]
+
+    receipt = verifier.verify_masc_composite_record(candidate, source, expected)
+    assert receipt["frame_count"] == 2
+    assert len(candidate["kernel_packet"]["program"]["nodes"]) == 2
+    assert len(candidate["kernel_packet"]["program"]["roots"]) == 2
+    assert len(candidate["answer_packet"]["claims"]) == 2
+    assert candidate["semantic_supervision"]["unique_source_credit"] == 0
+    assert candidate["source_annotation"]["complete_sentence_semantics_claimed"] is False
+    assert candidate["source_annotation"]["inter_frame_discourse_edges_claimed"] is False
+
+    forged_claim = json.loads(json.dumps(candidate))
+    forged_claim["answer_packet"]["claims"][1]["predicate"] = "FORGED"
+    with pytest.raises(ValueError, match="answer-claim replay mismatch"):
+        verifier.verify_masc_composite_record(forged_claim, source, expected)
+    forged_credit = json.loads(json.dumps(candidate))
+    forged_credit["semantic_supervision"]["unique_source_credit"] = 1
+    with pytest.raises(ValueError, match="source-credit contract mismatch"):
+        verifier.verify_masc_composite_record(forged_credit, source, expected)
+
+
+def test_masc_composite_selection_and_record_reject_invalid_grouping(
+    tmp_path: Path,
+) -> None:
+    fn = write_masc_fixture(tmp_path)
+    first = verifier.independent_masc_document(fn, tmp_path / "data")[0]
+    second = json.loads(json.dumps(first))
+    second["selection_key"] = "sha256:" + "4" * 64
+    sentence_identity = kernel.stable_hash(
+        {
+            "document_id": first["annotation"]["document_id"],
+            "sentence_node": first["annotation"]["sentence_node"],
+        }
+    )
+    selected = {
+        "private_train": [
+            {**first, "sentence_identity": sentence_identity},
+            {**second, "sentence_identity": sentence_identity},
+        ],
+        "private_dev": [],
+        "private_eval": [],
+    }
+    groups = producer.select_masc_composites(
+        selected,
+        {"private_train": 1, "private_dev": 0, "private_eval": 0},
+        minimum_frames=2,
+        maximum_frames=8,
+    )
+    assert len(groups["private_train"]) == 1
+    with pytest.raises(ValueError, match="frame bounds are invalid"):
+        producer.select_masc_composites(
+            selected,
+            {"private_train": 1, "private_dev": 0, "private_eval": 0},
+            minimum_frames=1,
+            maximum_frames=8,
+        )
+
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "2" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": list(kernel.TRAINING_OBJECTIVES),
+        "composite_semantic_unique_source_credit": 0,
+        "composite_semantic_claim_scope": "fixture",
+    }
+    mixed = json.loads(json.dumps(second))
+    mixed["annotation"]["sentence"] = "Different sentence."
+    with pytest.raises(ValueError, match="do not share one source sentence"):
+        producer.masc_composite_record(
+            [first, mixed],
+            split="private_train",
+            source=source,
+            producer_sha256="sha256:" + "1" * 64,
+            frame_priors={},
+        )
+
+
+def test_live_kerc_config_requires_bounded_composite_semantics() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    masc = config["kernel_english_training"]["semantic_corpus_materialization"][
+        "masc"
+    ]
+    assert masc["composite_semantic_records_by_split"] == {
+        "private_train": 128,
+        "private_dev": 64,
+        "private_eval": 64,
+    }
+    assert masc["composite_semantic_minimum_frames"] == 2
+    assert masc["composite_semantic_maximum_frames"] == 8
+    assert masc["composite_semantic_unique_source_credit"] == 0
+
+
 def test_residual_supervision_matches_packet_mechanics() -> None:
     packet = {
         "residual": {

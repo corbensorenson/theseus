@@ -568,6 +568,15 @@
           "private_dev": 1024,
           "private_eval": 1024
         },
+        "composite_semantic_records_by_split": {
+          "private_train": 128,
+          "private_dev": 64,
+          "private_eval": 64
+        },
+        "composite_semantic_minimum_frames": 2,
+        "composite_semantic_maximum_frames": 8,
+        "composite_semantic_unique_source_credit": 0,
+        "composite_semantic_claim_scope": "manual FrameNet multi-frame structure over one source sentence; multiple annotated propositions are preserved without claiming inter-frame discourse edges, complete sentence semantics, truth, or reasoning utility",
         "allowed_objectives": [
           "surface_to_kernel_program_v1",
           "kernel_program_to_answer_packet_v1",
