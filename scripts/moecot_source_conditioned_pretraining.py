@@ -843,6 +843,71 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         or not str(sources["masc"].get("decision_semantic_claim_scope") or "")
     ):
         raise ValueError("KERC MASC decision-semantic contract invalid")
+    event_coreference = sources["masc"].get("event_coreference")
+    event_counts = (
+        event_coreference.get("records_by_split")
+        if isinstance(event_coreference, dict)
+        else None
+    )
+    event_mentions = (
+        event_coreference.get("mentions_by_split")
+        if isinstance(event_coreference, dict)
+        else None
+    )
+    event_document_map = (
+        event_coreference.get("document_map")
+        if isinstance(event_coreference, dict)
+        else None
+    )
+    rejected_event_groups = (
+        event_coreference.get("expected_rejected_groups")
+        if isinstance(event_coreference, dict)
+        else None
+    )
+    if (
+        not isinstance(event_coreference, dict)
+        or event_coreference.get("policy")
+        != "project_theseus_kerc_masc_manual_event_coreference_v1"
+        or event_coreference.get("alignment_contract")
+        != "complete_named_gate_group_dual_independent_token_alignment_v1"
+        or event_coreference.get("source_compaction_contract")
+        != "uniform_radius_mention_centered_source_windows_v1"
+        or not str(event_coreference.get("original_event_root") or "")
+        or not isinstance(event_document_map, dict)
+        or len(event_document_map) < 2
+        or len(set(event_document_map.values())) != len(event_document_map)
+        or any(
+            not str(filename).endswith(".xml") or not str(document_id)
+            for filename, document_id in event_document_map.items()
+        )
+        or not isinstance(event_counts, dict)
+        or tuple(event_counts) != ("private_train", "private_dev", "private_eval")
+        or any(int(value) < 0 for value in event_counts.values())
+        or sum(int(value) for value in event_counts.values())
+        != int(event_coreference.get("expected_admitted_group_count", -1))
+        or not isinstance(event_mentions, dict)
+        or tuple(event_mentions) != ("private_train", "private_dev", "private_eval")
+        or any(int(value) < 0 for value in event_mentions.values())
+        or sum(int(value) for value in event_mentions.values())
+        != int(event_coreference.get("expected_admitted_mention_count", -1))
+        or int(event_coreference.get("expected_observed_group_count") or 0)
+        < int(event_coreference.get("expected_admitted_group_count") or 0)
+        or int(event_coreference.get("expected_observed_mention_count") or 0)
+        < int(event_coreference.get("expected_admitted_mention_count") or 0)
+        or int(event_coreference.get("expected_rejected_group_count", -1))
+        != len(rejected_event_groups or [])
+        or not isinstance(rejected_event_groups, list)
+        or any(
+            not isinstance(row, dict)
+            or set(row) != {"document_id", "annotation_set_name"}
+            or not str(row["document_id"])
+            or not str(row["annotation_set_name"])
+            for row in rejected_event_groups
+        )
+        or int(event_coreference.get("unique_source_credit") or 0) != 0
+        or not str(event_coreference.get("claim_scope") or "")
+    ):
+        raise ValueError("KERC MASC event-coreference contract invalid")
     behavior_counts = sources["oasst2"].get("explicit_behavior_records_by_split")
     if (
         not isinstance(behavior_counts, dict)

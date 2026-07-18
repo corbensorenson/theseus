@@ -564,7 +564,7 @@
       "masc": {
         "archive_path": "resource_pantry/kerc/MASC-3.0.0.tgz",
         "extracted_root": "resource_pantry/kerc/MASC-3.0.0",
-        "dataset_id": "anc/MASC-3.0.0-FrameNet",
+        "dataset_id": "anc/MASC-3.0.0",
         "dataset_revision": "MASC-3.0.0",
         "source_url": "https://www.anc.org/MASC/download/MASC-3.0.0.tgz",
         "license_evidence_url": "https://anc.org/data/masc/about/",
@@ -593,6 +593,52 @@
         "decision_semantic_maximum_annotations": 24,
         "decision_semantic_unique_source_credit": 0,
         "decision_semantic_claim_scope": "manual MASC committed-belief, MPQA subjectivity, and event annotations aligned to one source sentence; authority covers only the observed spans, labels, and source fields, not truth, complete sentence semantics, lost event-coreference grouping, or unresolved cross-annotation links",
+        "event_coreference": {
+          "policy": "project_theseus_kerc_masc_manual_event_coreference_v1",
+          "alignment_contract": "complete_named_gate_group_dual_independent_token_alignment_v1",
+          "source_compaction_contract": "uniform_radius_mention_centered_source_windows_v1",
+          "original_event_root": "resource_pantry/kerc/MASC-3.0.0/original-annotations/event",
+          "document_map": {
+            "20000410_nyt-NEW.xml": "written/newspaper/nyt/20000410_nyt-NEW",
+            "20000415_apw_eng-NEW.xml": "written/newspaper/nyt/20000415_apw_eng-NEW",
+            "20000424_nyt-NEW.xml": "written/newspaper/nyt/20000424_nyt-NEW",
+            "602CZL285-1.xml": "written/letters/philanthropic-fundraising/602CZL285",
+            "A1.E1-NEW.xml": "written/newspaper/unknown/A1.E1-NEW",
+            "A1.E2-NEW.xml": "written/newspaper/unknown/A1.E2-NEW",
+            "ENRON-pearson-email-25jul02.xml": "written/email/enron/ENRON-pearson-email-25jul02",
+            "enron-thread-159550.xml": "written/email/enron/enron-thread-159550",
+            "sw2025-ms98-a-trans.ascii-1-NEW.xml": "spoken/telephone/sw2025-ms98-a-trans",
+            "wsj_1640.mrg-NEW.xml": "written/newspaper/wsj/wsj_1640.mrg-NEW",
+            "wsj_2465.xml": "written/newspaper/wsj/wsj_2465"
+          },
+          "expected_observed_group_count": 15,
+          "expected_observed_mention_count": 272,
+          "expected_admitted_group_count": 13,
+          "expected_admitted_mention_count": 215,
+          "records_by_split": {
+            "private_train": 8,
+            "private_dev": 3,
+            "private_eval": 2
+          },
+          "mentions_by_split": {
+            "private_train": 133,
+            "private_dev": 24,
+            "private_eval": 58
+          },
+          "expected_rejected_group_count": 2,
+          "expected_rejected_groups": [
+            {
+              "document_id": "written/email/enron/enron-thread-159550",
+              "annotation_set_name": "Paying Event"
+            },
+            {
+              "document_id": "written/newspaper/wsj/wsj_1640.mrg-NEW",
+              "annotation_set_name": "Theft Event"
+            }
+          ],
+          "unique_source_credit": 0,
+          "claim_scope": "manual named GATE event-coreference membership and independently aligned mention identity only; no co-occurrence inference, truth, causal, temporal, or complete-sentence-semantic claim"
+        },
         "allowed_objectives": [
           "surface_to_kernel_program_v1",
           "kernel_program_to_answer_packet_v1",

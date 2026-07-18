@@ -653,6 +653,104 @@ def test_kernel_packet_roundtrips_three_code_spaces_and_vcm_state() -> None:
     assert packet["fallback_return_count"] == 0
 
 
+def test_event_coreference_segment_requires_complete_typed_group() -> None:
+    source = "Alice arrived. She arrived again."
+    first = [6, 13]
+    second = [19, 26]
+    state = memory.create_hierarchical_residual_state(
+        "event-coreference", scope=scope("event-coreference")
+    )
+    event_type = "masc.event_type.arriving"
+    group_id = "masc.event_coreference.0123456789abcdef01234567"
+    member_nodes = [
+        {
+            "node_id": f"k{index}",
+            "operator": "EVENT_MENTION",
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "derivation": "preserved",
+            "source_spans": [span],
+            "arguments": [
+                {"role": "EVENT_TYPE", "value": {"type": "concept", "value": event_type}}
+            ],
+        }
+        for index, span in enumerate((first, second))
+    ]
+    group_node = {
+        "node_id": "k2",
+        "operator": "EVENT_COREFERENCE_GROUP",
+        "modality": "ASSERTED",
+        "polarity": "AFFIRMED",
+        "quantifier": "NONE",
+        "confidence": 1.0,
+        "derivation": "preserved",
+        "source_spans": [first, second],
+        "arguments": [
+            {"role": "GROUP_ID", "value": {"type": "concept", "value": group_id}},
+            {
+                "role": "MEMBERS",
+                "value": {
+                    "type": "list",
+                    "value": [
+                        {"type": "node_ref", "value": "k0"},
+                        {"type": "node_ref", "value": "k1"},
+                    ],
+                },
+            },
+        ],
+    }
+    segment = {
+        "schema": "event_coreference_group_v1",
+        "group_id": group_id,
+        "group_node_id": "k2",
+        "group_claim_id": "claim-3",
+        "mentions": [
+            {
+                "node_id": f"k{index}",
+                "claim_id": f"claim-{index + 1}",
+                "event_type": event_type,
+                "target_spans": [span],
+                "source_annotation_sha256": "sha256:" + str(index + 1) * 64,
+            }
+            for index, span in enumerate((first, second))
+        ],
+    }
+    packet = kernel.build_kernel_packet(
+        source,
+        {"roots": ["k2"], "nodes": [*member_nodes, group_node]},
+        hrl_state=state,
+        segment_frame=segment,
+    )
+    assert packet["residual"]["segment_frame"] == segment
+    assert kernel.validate_kernel_packet(packet, local_hrl_state=state)["state"] == "READY"
+
+    incomplete = copy.deepcopy(segment)
+    incomplete["mentions"] = incomplete["mentions"][:1]
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_EVENT_COREFERENCE_CARDINALITY_INVALID"
+    ):
+        kernel.build_kernel_packet(
+            source,
+            {"roots": ["k2"], "nodes": [*member_nodes, group_node]},
+            hrl_state=state,
+            segment_frame=incomplete,
+        )
+
+    duplicate = copy.deepcopy(segment)
+    duplicate["mentions"][1]["node_id"] = "k0"
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_EVENT_COREFERENCE_MENTION_VALUE_INVALID"
+    ):
+        kernel.build_kernel_packet(
+            source,
+            {"roots": ["k2"], "nodes": [*member_nodes, group_node]},
+            hrl_state=state,
+            segment_frame=duplicate,
+        )
+
+
 def test_kernel_program_rejects_unknown_handles_cycles_and_unsafe_macros() -> None:
     objects = protected()["protected_objects"]
     bad_handle = program()

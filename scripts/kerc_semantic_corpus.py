@@ -35,6 +35,12 @@ from kernel_english_protocol import (
     stable_hash,
 )
 from kerc_importance_policy import fit_importance_policy, predict_importance
+from kerc_masc_event_coreference import (
+    ALIGNMENT_CONTRACT as MASC_EVENT_COREFERENCE_ALIGNMENT_CONTRACT,
+    COMPACTION_CONTRACT as MASC_EVENT_COREFERENCE_COMPACTION_CONTRACT,
+    POLICY as MASC_EVENT_COREFERENCE_POLICY,
+    reconstruct_event_coreference_groups,
+)
 from kerc_content_cache import (
     ContentObjectCache,
     dependency_bindings,
@@ -107,6 +113,7 @@ def producer_cache_dependency_paths(
         "kernel_protocol": scripts / "kernel_english_protocol.py",
         "importance_policy": scripts / "kerc_importance_policy.py",
         "residual_economics": scripts / "kerc_residual_economics.py",
+        "masc_event_coreference_producer": scripts / "kerc_masc_event_coreference.py",
         "semantic_config_validator": scripts / "moecot_source_conditioned_pretraining.py",
         "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
         "dolly_source": resolve(corpus["dolly"]["path"]),
@@ -2314,6 +2321,204 @@ def masc_decision_semantic_record(
     return record
 
 
+def event_type_concept(value: str) -> str:
+    normalized = re.sub(r"[^a-z0-9]+", "_", value.casefold()).strip("_")
+    return "masc.event_type." + (normalized or "unknown")
+
+
+def masc_event_coreference_record(
+    row: dict[str, Any],
+    *,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    contract = source["event_coreference"]
+    annotation = copy.deepcopy(row["annotation"])
+    annotation["semantic_claim_scope"] = contract["claim_scope"]
+    members: list[dict[str, Any]] = []
+    claims: list[dict[str, Any]] = []
+    token_tags: list[dict[str, Any]] = []
+    segment_mentions: list[dict[str, Any]] = []
+    for index, mention in enumerate(annotation["mentions"]):
+        node_id = f"k{index}"
+        claim_id = f"claim-{index + 1}"
+        event_type = event_type_concept(mention["event_type"])
+        arguments = [
+            {
+                "role": "EVENT_TYPE",
+                "value": {"type": "concept", "value": event_type},
+            },
+            {
+                "role": "GROUP_ID",
+                "value": {
+                    "type": "concept",
+                    "value": annotation["group_concept"],
+                },
+            },
+        ]
+        common = {
+            "predicate": "EVENT_MENTION",
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "arguments": copy.deepcopy(arguments),
+        }
+        members.append(
+            {
+                "node_id": node_id,
+                "operator": "EVENT_MENTION",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": copy.deepcopy(mention["target_spans"]),
+                "arguments": arguments,
+            }
+        )
+        claims.append({"claim_id": claim_id, **common})
+        segment_mentions.append(
+            {
+                "node_id": node_id,
+                "claim_id": claim_id,
+                "event_type": event_type,
+                "target_spans": copy.deepcopy(mention["target_spans"]),
+                "source_annotation_sha256": mention[
+                    "source_annotation_sha256"
+                ],
+            }
+        )
+        for target_span in mention["target_spans"]:
+            token_tags.append(
+                {
+                    "tag": "EVENT_COREFERENCE:"
+                    + safe_symbol(annotation["annotation_set_name"], prefix="GROUP"),
+                    "source_span": copy.deepcopy(target_span),
+                    "authority": "licensed_manual_annotation",
+                }
+            )
+    group_node_id = f"k{len(members)}"
+    group_claim_id = f"claim-{len(claims) + 1}"
+    all_spans = sorted(
+        {
+            tuple(span)
+            for mention in annotation["mentions"]
+            for span in mention["target_spans"]
+        }
+    )
+    group_arguments = [
+        {
+            "role": "GROUP_ID",
+            "value": {"type": "concept", "value": annotation["group_concept"]},
+        },
+        {
+            "role": "MEMBERS",
+            "value": {
+                "type": "list",
+                "value": [
+                    {"type": "node_ref", "value": member["node_id"]}
+                    for member in members
+                ],
+            },
+        },
+    ]
+    members.append(
+        {
+            "node_id": group_node_id,
+            "operator": "EVENT_COREFERENCE_GROUP",
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "derivation": "preserved",
+            "source_spans": [list(span) for span in all_spans],
+            "arguments": group_arguments,
+        }
+    )
+    claims.append(
+        {
+            "claim_id": group_claim_id,
+            "predicate": "EVENT_COREFERENCE_GROUP",
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "arguments": [
+                {
+                    "role": "GROUP_ID",
+                    "value": {
+                        "type": "concept",
+                        "value": annotation["group_concept"],
+                    },
+                },
+                {
+                    "role": "MEMBER_EVENT_TYPES",
+                    "value": {
+                        "type": "list",
+                        "value": [
+                            {
+                                "type": "concept",
+                                "value": event_type_concept(mention["event_type"]),
+                            }
+                            for mention in annotation["mentions"]
+                        ],
+                    },
+                },
+                {
+                    "role": "MENTION_COUNT",
+                    "value": {
+                        "type": "number",
+                        "value": {
+                            "value": len(annotation["mentions"]),
+                            "unit": "event_mentions",
+                            "precision": "exact",
+                        },
+                    },
+                },
+            ],
+        }
+    )
+    record = base_record(
+        split=row["split"],
+        source_text=annotation["source_text"],
+        surface_target=annotation["source_text"],
+        program={"roots": [group_node_id], "nodes": members},
+        answer_packet={
+            "claims": claims,
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "source_authored"},
+        },
+        source=source,
+        source_id=row["source_id"],
+        source_group="masc-document:" + annotation["document_id"],
+        objectives={
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        },
+        producer_sha256=producer_sha256,
+        source_annotation=annotation,
+        exact_residual=True,
+        segment_frame={
+            "schema": "event_coreference_group_v1",
+            "group_id": annotation["group_concept"],
+            "group_node_id": group_node_id,
+            "group_claim_id": group_claim_id,
+            "mentions": segment_mentions,
+        },
+        token_tags=token_tags,
+    )
+    record["semantic_supervision"]["unique_source_credit"] = int(
+        contract["unique_source_credit"]
+    )
+    record["semantic_supervision"]["event_coreference_authority"] = (
+        "manual_named_gate_annotation_set_membership"
+    )
+    return record
+
+
 def interaction_predecessors(
     rows: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
@@ -2547,6 +2752,58 @@ def produce(
         minimum_annotations=int(corpus["masc"]["decision_semantic_minimum_annotations"]),
         maximum_annotations=int(corpus["masc"]["decision_semantic_maximum_annotations"]),
     )
+    event_coreference_contract = corpus["masc"]["event_coreference"]
+    masc_event_coreference_selected, masc_event_coreference_audit = (
+        reconstruct_event_coreference_groups(
+            original_event_root=resolve(
+                event_coreference_contract["original_event_root"]
+            ),
+            data_root=resolve(corpus["masc"]["extracted_root"]) / "data",
+            document_map=event_coreference_contract["document_map"],
+            private_dev_documents=set(
+                corpus["masc"]["document_groups"]["private_dev"]
+            ),
+            private_eval_documents=set(
+                corpus["masc"]["document_groups"]["private_eval"]
+            ),
+            maximum_characters=int(corpus["maximum_source_characters"]),
+        )
+    )
+    expected_rejected_event_groups = {
+        (row["document_id"], row["annotation_set_name"])
+        for row in event_coreference_contract["expected_rejected_groups"]
+    }
+    observed_rejected_event_groups = {
+        (row["document_id"], row["annotation_set_name"])
+        for row in masc_event_coreference_audit["rejected_groups"]
+    }
+    if (
+        masc_event_coreference_audit["policy"] != MASC_EVENT_COREFERENCE_POLICY
+        or event_coreference_contract["alignment_contract"]
+        != MASC_EVENT_COREFERENCE_ALIGNMENT_CONTRACT
+        or event_coreference_contract["source_compaction_contract"]
+        != MASC_EVENT_COREFERENCE_COMPACTION_CONTRACT
+        or masc_event_coreference_audit["alignment_implementation"]
+        != "producer_global_sequence_matcher_v1"
+        or masc_event_coreference_audit["observed_group_count"]
+        != int(event_coreference_contract["expected_observed_group_count"])
+        or masc_event_coreference_audit["observed_mention_count"]
+        != int(event_coreference_contract["expected_observed_mention_count"])
+        or masc_event_coreference_audit["admitted_group_count"]
+        != int(event_coreference_contract["expected_admitted_group_count"])
+        or masc_event_coreference_audit["admitted_mention_count"]
+        != int(event_coreference_contract["expected_admitted_mention_count"])
+        or masc_event_coreference_audit["record_count_by_split"]
+        != event_coreference_contract["records_by_split"]
+        or masc_event_coreference_audit["mention_count_by_split"]
+        != event_coreference_contract["mentions_by_split"]
+        or masc_event_coreference_audit["rejected_group_count"]
+        != int(event_coreference_contract["expected_rejected_group_count"])
+        or observed_rejected_event_groups != expected_rejected_event_groups
+        or masc_event_coreference_audit["partial_group_admission_count"] != 0
+        or masc_event_coreference_audit["cooccurrence_inferred_relation_count"] != 0
+    ):
+        raise ValueError("MASC event-coreference producer reconstruction mismatch")
     oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
     oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
         corpus["oasst2"]
@@ -2638,6 +2895,15 @@ def produce(
             record = masc_decision_semantic_record(
                 row,
                 split=split,
+                source=corpus["masc"],
+                producer_sha256=producer_sha256,
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
+        for row in masc_event_coreference_selected[split]:
+            record = masc_event_coreference_record(
+                row,
                 source=corpus["masc"],
                 producer_sha256=producer_sha256,
             )
@@ -2828,6 +3094,9 @@ def produce(
                 "masc": len(masc_selected[split]),
                 "masc_composite": len(masc_composite_selected[split]),
                 "masc_decision_semantics": len(masc_decision_selected[split]),
+                "masc_event_coreference": len(
+                    masc_event_coreference_selected[split]
+                ),
                 "oasst2": len(oasst_selected[split]),
                 "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
             }
@@ -2915,6 +3184,60 @@ def produce(
             "truth_claimed": False,
             "event_coreference_grouping_claimed": False,
             "source_declared_cross_annotation_links_resolved": False,
+        },
+        "masc_event_coreference": {
+            "policy": MASC_EVENT_COREFERENCE_POLICY,
+            "alignment_contract": MASC_EVENT_COREFERENCE_ALIGNMENT_CONTRACT,
+            "source_compaction_contract": MASC_EVENT_COREFERENCE_COMPACTION_CONTRACT,
+            "producer_alignment_implementation": masc_event_coreference_audit[
+                "alignment_implementation"
+            ],
+            "observed_group_count": masc_event_coreference_audit[
+                "observed_group_count"
+            ],
+            "observed_mention_count": masc_event_coreference_audit[
+                "observed_mention_count"
+            ],
+            "admitted_group_count": masc_event_coreference_audit[
+                "admitted_group_count"
+            ],
+            "admitted_mention_count": masc_event_coreference_audit[
+                "admitted_mention_count"
+            ],
+            "record_count_by_split": masc_event_coreference_audit[
+                "record_count_by_split"
+            ],
+            "mention_count_by_split": masc_event_coreference_audit[
+                "mention_count_by_split"
+            ],
+            "admitted_source_ids_by_split": {
+                split: [row["source_id"] for row in rows]
+                for split, rows in masc_event_coreference_selected.items()
+            },
+            "rejected_group_count": masc_event_coreference_audit[
+                "rejected_group_count"
+            ],
+            "rejected_groups": sorted(
+                [
+                    {
+                        "document_id": row["document_id"],
+                        "annotation_set_name": row["annotation_set_name"],
+                    }
+                    for row in masc_event_coreference_audit["rejected_groups"]
+                ],
+                key=lambda row: (row["document_id"], row["annotation_set_name"]),
+            ),
+            "partial_group_admission_count": 0,
+            "cooccurrence_inferred_relation_count": 0,
+            "unique_source_credit": int(
+                event_coreference_contract["unique_source_credit"]
+            ),
+            "claim_scope": event_coreference_contract["claim_scope"],
+            "complete_group_alignment_required": True,
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "causal_relation_claimed": False,
+            "temporal_relation_claimed": False,
         },
         "masc_interaction_record_count_by_split": {
             split: len(values) for split, values in masc_interactions.items()

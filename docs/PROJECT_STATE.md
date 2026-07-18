@@ -35,7 +35,7 @@ share toward zero. Public benchmarks are calibration only.
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
 - **KERC disposition:** `partial`; protocol mechanics GREEN, construct validity RED,
   scientific result `INCONCLUSIVE_IMPLEMENTATION`. K0 now independently binds the paper,
-  implementation sources, independent verifier, and all 11,936 current corpus records.
+  implementation sources, independent verifier, and all 11,949 current corpus records.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
   annotations. Together they produce 512 multi-node/multi-root programs and multi-claim
@@ -44,8 +44,14 @@ share toward zero. Public benchmarks are calibration only.
   and subjectivity fields. Independent raw-GrAF replay admitted every row with zero
   failures. Its first pass correctly rejected 28 rows due a multi-claim default-decision
   hash instability; canonical claim ordering and a regression test now close that bug.
-  The strata claim no invented cross-annotation links, recovered event-coreference
-  groups, scope, complete sentence semantics, truth, reasoning utility, or learned
+  K1e now adds 13 complete manual named event-coreference groups containing 215 aligned
+  mentions. Producer global sequence alignment and verifier local-context alignment
+  agree exactly; two incomplete groups are rejected in full, every admitted mention is
+  retained under the unchanged 2,048-character source bound, and partial-group admission,
+  inferred co-occurrence links, and extra source credit remain zero. The corpus now has
+  525 multi-node and multi-claim records, of which 512 are multi-root. This evidence does
+  not establish other cross-annotation links, general coreference, scope, complete
+  sentence semantics, truth, causal/temporal relations, reasoning utility, or learned
   competence. Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Nine mechanisms are
@@ -61,11 +67,11 @@ share toward zero. Public benchmarks are calibration only.
   the hard round-trip verifier accepts a changed opaque answer literal. Existing packet,
   VCM lifecycle, source isolation, no-cheat, code-space, stage-route, verifier-head,
   checkpoint, replay, migration, and MLX canaries remain valid within their narrow
-  mechanics ceilings. Existing efficiency evidence remains negative for this exact
-  finite-state implementation: residual bits are `4.603579x` source bits and complete
-  Kernel-plus-residual wire is `10.292719x`. Separate source/code/output-bound exact-run
-  receipts now replay unchanged materialization in `1.70s` and independent verification
-  in `1.84s`. K1d adds separate, integrity-checked per-record caches: a forced full
+  mechanics ceilings. Current private-evaluation efficiency remains negative for this
+  exact finite-state implementation: residual bits are `5.746725x` source bits and
+  complete Kernel-plus-residual wire is `11.565736x`. Separate source/code/output-bound
+  exact-run receipts now replay unchanged materialization in `2.16s` and independent
+  verification in `1.87s`. K1d adds separate, integrity-checked per-record caches: a forced full
   producer replay preserves byte-identical artifacts and falls from `1151.89s` to
   `802.88s` with `11,936/11,936` economics hits; independent verification falls from
   `997.70s` to `71.47s` with `11,936/11,936` semantic-admission hits, zero misses, and
@@ -114,9 +120,10 @@ share toward zero. Public benchmarks are calibration only.
   execution now pass. Exact residual coding, measured four-fidelity structural allocation,
   development-only lambda calibration, source-visible calibrated importance, and strict
   shared-residual promotion economics now independently replay as well. Next extend
-  K1 beyond the source-replayed multi-frame and observed decision-semantic strata, extend allocation from record-level
+  K1 beyond the source-replayed multi-frame, observed decision-semantic, and manual
+  event-coreference strata; extend allocation from record-level
   structural preservation to intervention-sensitive per-unit decisions, reduce the
-  measured `10.292719x` total wire overhead and monolithic stage/replay cost, add unresolved
+  measured `11.565736x` private-evaluation total wire overhead and monolithic stage/replay cost, add unresolved
   ambiguity, broad entailment, protected-span abstention, and
   calibrated verifier decisions; then
   freeze strong matched controls and total-system accounting and rebuild the architecture

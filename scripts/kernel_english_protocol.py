@@ -2314,6 +2314,96 @@ def _normalize_segment_frame(
             )
         segment["frame_roles"] = sorted(set(roles))
         return segment
+    if segment.get("schema") == "event_coreference_group_v1":
+        required = {
+            "schema",
+            "group_id",
+            "group_node_id",
+            "group_claim_id",
+            "mentions",
+        }
+        if set(segment) != required:
+            raise KernelProtocolFault(
+                "KERC_EVENT_COREFERENCE_SCHEMA_INVALID",
+                canonical_json(segment),
+                path=path,
+            )
+        if not re.fullmatch(
+            r"[a-z][a-z0-9_.:-]*", str(segment.get("group_id") or "")
+        ):
+            raise KernelProtocolFault(
+                "KERC_EVENT_COREFERENCE_GROUP_ID_INVALID",
+                str(segment.get("group_id")),
+                path=f"{path}.group_id",
+            )
+        if not re.fullmatch(r"k[0-9]+", str(segment.get("group_node_id") or "")):
+            raise KernelProtocolFault(
+                "KERC_EVENT_COREFERENCE_NODE_ID_INVALID",
+                str(segment.get("group_node_id")),
+                path=f"{path}.group_node_id",
+            )
+        if not str(segment.get("group_claim_id") or "").strip():
+            raise KernelProtocolFault(
+                "KERC_EVENT_COREFERENCE_CLAIM_ID_INVALID",
+                str(segment.get("group_claim_id")),
+                path=f"{path}.group_claim_id",
+            )
+        mentions = segment.get("mentions")
+        if not isinstance(mentions, list) or not 2 <= len(mentions) <= 128:
+            raise KernelProtocolFault(
+                "KERC_EVENT_COREFERENCE_CARDINALITY_INVALID",
+                canonical_json(mentions),
+                path=f"{path}.mentions",
+            )
+        mention_fields = {
+            "node_id",
+            "claim_id",
+            "event_type",
+            "target_spans",
+            "source_annotation_sha256",
+        }
+        node_ids = {str(segment["group_node_id"])}
+        claim_ids = {str(segment["group_claim_id"])}
+        normalized_mentions = []
+        for index, mention in enumerate(mentions):
+            mention_path = f"{path}.mentions[{index}]"
+            if not isinstance(mention, dict) or set(mention) != mention_fields:
+                raise KernelProtocolFault(
+                    "KERC_EVENT_COREFERENCE_MENTION_SCHEMA_INVALID",
+                    canonical_json(mention),
+                    path=mention_path,
+                )
+            node_id = str(mention.get("node_id") or "")
+            claim_id = str(mention.get("claim_id") or "")
+            event_type = str(mention.get("event_type") or "")
+            source_hash = str(mention.get("source_annotation_sha256") or "")
+            if (
+                not re.fullmatch(r"k[0-9]+", node_id)
+                or node_id in node_ids
+                or not claim_id.strip()
+                or claim_id in claim_ids
+                or not re.fullmatch(r"[a-z][a-z0-9_.:-]*", event_type)
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", source_hash)
+            ):
+                raise KernelProtocolFault(
+                    "KERC_EVENT_COREFERENCE_MENTION_VALUE_INVALID",
+                    canonical_json(mention),
+                    path=mention_path,
+                )
+            node_ids.add(node_id)
+            claim_ids.add(claim_id)
+            normalized_mention = copy.deepcopy(mention)
+            normalized_mention["target_spans"] = _validate_residual_spans(
+                mention["target_spans"],
+                source_character_length=source_character_length,
+                path=f"{mention_path}.target_spans",
+            )
+            normalized_mentions.append(normalized_mention)
+        segment["mentions"] = sorted(
+            normalized_mentions,
+            key=lambda row: (row["target_spans"], _node_sort_key(row["node_id"])),
+        )
+        return segment
     if set(segment) != {"schema", "frames"} or segment.get("schema") != "framenet_composite_v1":
         raise KernelProtocolFault(
             "KERC_SEGMENT_FRAME_SCHEMA_INVALID",

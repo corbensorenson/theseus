@@ -40,6 +40,12 @@ from kernel_english_protocol import (
     validate_training_record,
 )
 from kerc_importance_policy import fit_importance_policy, predict_importance
+from kerc_masc_event_coreference_verify import (
+    ALIGNMENT_CONTRACT as MASC_EVENT_COREFERENCE_ALIGNMENT_CONTRACT,
+    COMPACTION_CONTRACT as MASC_EVENT_COREFERENCE_COMPACTION_CONTRACT,
+    POLICY as MASC_EVENT_COREFERENCE_POLICY,
+    independently_reconstruct_event_coreference_groups,
+)
 from kerc_residual_economics import (
     calibrate_allocation_lambda,
     residual_wire_bytes,
@@ -99,6 +105,8 @@ def verifier_cache_dependency_paths(
         "kernel_protocol": scripts / "kernel_english_protocol.py",
         "importance_policy": scripts / "kerc_importance_policy.py",
         "residual_economics": scripts / "kerc_residual_economics.py",
+        "masc_event_coreference_verifier": scripts
+        / "kerc_masc_event_coreference_verify.py",
         "semantic_config_validator": scripts / "moecot_source_conditioned_pretraining.py",
         "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
         "candidate_records": candidate_path,
@@ -2039,6 +2047,233 @@ def verify_masc_decision_record(
     }
 
 
+def independent_event_type_concept(value: str) -> str:
+    normalized = re.sub(r"[^a-z0-9]+", "_", value.casefold()).strip("_")
+    return "masc.event_type." + (normalized or "unknown")
+
+
+def verify_masc_event_coreference_record(
+    record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]
+) -> dict[str, Any]:
+    contract = source["event_coreference"]
+    annotation = json.loads(json.dumps(expected["annotation"]))
+    annotation["semantic_claim_scope"] = contract["claim_scope"]
+    if record.get("source_annotation") != annotation:
+        raise ValueError("MASC event-coreference raw annotation replay mismatch")
+    source_text = annotation["source_text"]
+    if (
+        record.get("split") != expected["split"]
+        or record.get("source_text") != source_text
+        or record.get("surface_target") != source_text
+        or record.get("provenance", {}).get("source_id") != expected["source_id"]
+        or record.get("provenance", {}).get("source_group")
+        != "masc-document:" + annotation["document_id"]
+    ):
+        raise ValueError("MASC event-coreference source or split mismatch")
+    semantic = record.get("semantic_supervision") or {}
+    allowed = set(source["allowed_objectives"])
+    if semantic.get("objective_authority") != {
+        objective: objective in allowed for objective in TRAINING_OBJECTIVES
+    }:
+        raise ValueError("MASC event-coreference objective authority mismatch")
+    if (
+        semantic.get("unique_source_credit") != int(contract["unique_source_credit"])
+        or semantic.get("event_coreference_authority")
+        != "manual_named_gate_annotation_set_membership"
+    ):
+        raise ValueError("MASC event-coreference authority mismatch")
+    expected_nodes: list[dict[str, Any]] = []
+    expected_claims: list[dict[str, Any]] = []
+    expected_mentions: list[dict[str, Any]] = []
+    expected_tags: list[dict[str, Any]] = []
+    for index, mention in enumerate(annotation["mentions"]):
+        node_id = f"k{index}"
+        claim_id = f"claim-{index + 1}"
+        event_type = independent_event_type_concept(mention["event_type"])
+        arguments = [
+            {
+                "role": "EVENT_TYPE",
+                "value": {"type": "concept", "value": event_type},
+            },
+            {
+                "role": "GROUP_ID",
+                "value": {
+                    "type": "concept",
+                    "value": annotation["group_concept"],
+                },
+            },
+        ]
+        expected_nodes.append(
+            {
+                "node_id": node_id,
+                "operator": "EVENT_MENTION",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": mention["target_spans"],
+                "arguments": arguments,
+            }
+        )
+        expected_claims.append(
+            {
+                "claim_id": claim_id,
+                "predicate": "EVENT_MENTION",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": json.loads(json.dumps(arguments)),
+            }
+        )
+        expected_mentions.append(
+            {
+                "node_id": node_id,
+                "claim_id": claim_id,
+                "event_type": event_type,
+                "target_spans": mention["target_spans"],
+                "source_annotation_sha256": mention[
+                    "source_annotation_sha256"
+                ],
+            }
+        )
+        for target_span in mention["target_spans"]:
+            expected_tags.append(
+                {
+                    "tag": "EVENT_COREFERENCE:"
+                    + safe_symbol(annotation["annotation_set_name"], "GROUP"),
+                    "source_span": target_span,
+                    "authority": "licensed_manual_annotation",
+                }
+            )
+    group_node_id = f"k{len(expected_nodes)}"
+    group_claim_id = f"claim-{len(expected_claims) + 1}"
+    all_spans = sorted(
+        {
+            tuple(span)
+            for mention in annotation["mentions"]
+            for span in mention["target_spans"]
+        }
+    )
+    expected_nodes.append(
+        {
+            "node_id": group_node_id,
+            "operator": "EVENT_COREFERENCE_GROUP",
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "derivation": "preserved",
+            "source_spans": [list(span) for span in all_spans],
+            "arguments": [
+                {
+                    "role": "GROUP_ID",
+                    "value": {
+                        "type": "concept",
+                        "value": annotation["group_concept"],
+                    },
+                },
+                {
+                    "role": "MEMBERS",
+                    "value": {
+                        "type": "list",
+                        "value": [
+                            {"type": "node_ref", "value": f"k{index}"}
+                            for index in range(len(annotation["mentions"]))
+                        ],
+                    },
+                },
+            ],
+        }
+    )
+    expected_claims.append(
+        {
+            "claim_id": group_claim_id,
+            "predicate": "EVENT_COREFERENCE_GROUP",
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "arguments": [
+                {
+                    "role": "GROUP_ID",
+                    "value": {
+                        "type": "concept",
+                        "value": annotation["group_concept"],
+                    },
+                },
+                {
+                    "role": "MEMBER_EVENT_TYPES",
+                    "value": {
+                        "type": "list",
+                        "value": [
+                            {
+                                "type": "concept",
+                                "value": independent_event_type_concept(
+                                    mention["event_type"]
+                                ),
+                            }
+                            for mention in annotation["mentions"]
+                        ],
+                    },
+                },
+                {
+                    "role": "MENTION_COUNT",
+                    "value": {
+                        "type": "number",
+                        "value": {
+                            "value": len(annotation["mentions"]),
+                            "unit": "event_mentions",
+                            "precision": "exact",
+                        },
+                    },
+                },
+            ],
+        }
+    )
+    program = record["kernel_packet"]["program"]
+    if program["roots"] != [group_node_id] or program["nodes"] != expected_nodes:
+        raise ValueError("MASC event-coreference Kernel graph replay mismatch")
+    if record["answer_packet"]["claims"] != expected_claims:
+        raise ValueError("MASC event-coreference answer graph replay mismatch")
+    expected_segment = {
+        "schema": "event_coreference_group_v1",
+        "group_id": annotation["group_concept"],
+        "group_node_id": group_node_id,
+        "group_claim_id": group_claim_id,
+        "mentions": expected_mentions,
+    }
+    if record["kernel_packet"]["residual"]["segment_frame"] != expected_segment:
+        raise ValueError("MASC event-coreference residual group replay mismatch")
+    expected_tags.sort(key=lambda row: (row["source_span"], row["tag"]))
+    if record["kernel_packet"]["residual"]["token_tags"] != expected_tags:
+        raise ValueError("MASC event-coreference mention tag replay mismatch")
+    state, deltas = independent_hrl_replay(
+        split=expected["split"],
+        source_id=expected["source_id"],
+        source_group="masc-document:" + annotation["document_id"],
+        source_text=source_text,
+        surface_target=source_text,
+        source_annotation=annotation,
+        interaction_annotation=None,
+        interaction_entries=[],
+        actor_id="licensed_source_context",
+        source=source,
+        valid_realizations=None,
+    )
+    if record.get("hrl_state") != state or record.get("hrl_deltas") != deltas:
+        raise ValueError("MASC event-coreference VCM replay mismatch")
+    return {
+        "policy": MASC_EVENT_COREFERENCE_POLICY,
+        "group_concept": annotation["group_concept"],
+        "mention_count": len(annotation["mentions"]),
+        "complete_group_alignment": True,
+        "cooccurrence_inferred_relation_count": 0,
+        "claim_scope": contract["claim_scope"],
+    }
+
+
 def verify_masc_composite_record(
     record: dict[str, Any],
     source: dict[str, Any],
@@ -2498,6 +2733,63 @@ def verify(
     masc_decision_expected = independent_masc_decision_assignments(
         corpus["masc"], maximum_characters
     )
+    event_coreference_contract = corpus["masc"]["event_coreference"]
+    masc_event_rows, masc_event_audit = (
+        independently_reconstruct_event_coreference_groups(
+            original_event_root=resolve(
+                event_coreference_contract["original_event_root"]
+            ),
+            data_root=resolve(corpus["masc"]["extracted_root"]) / "data",
+            document_map=event_coreference_contract["document_map"],
+            private_dev_documents=set(
+                corpus["masc"]["document_groups"]["private_dev"]
+            ),
+            private_eval_documents=set(
+                corpus["masc"]["document_groups"]["private_eval"]
+            ),
+            maximum_characters=maximum_characters,
+        )
+    )
+    masc_event_expected = {
+        row["source_id"]: row
+        for rows in masc_event_rows.values()
+        for row in rows
+    }
+    expected_event_rejections = {
+        (row["document_id"], row["annotation_set_name"])
+        for row in event_coreference_contract["expected_rejected_groups"]
+    }
+    observed_event_rejections = {
+        (row["document_id"], row["annotation_set_name"])
+        for row in masc_event_audit["rejected_groups"]
+    }
+    if (
+        masc_event_audit["policy"] != MASC_EVENT_COREFERENCE_POLICY
+        or event_coreference_contract["alignment_contract"]
+        != MASC_EVENT_COREFERENCE_ALIGNMENT_CONTRACT
+        or event_coreference_contract["source_compaction_contract"]
+        != MASC_EVENT_COREFERENCE_COMPACTION_CONTRACT
+        or masc_event_audit["alignment_implementation"]
+        != "verifier_local_context_margin_v1"
+        or masc_event_audit["observed_group_count"]
+        != int(event_coreference_contract["expected_observed_group_count"])
+        or masc_event_audit["observed_mention_count"]
+        != int(event_coreference_contract["expected_observed_mention_count"])
+        or masc_event_audit["admitted_group_count"]
+        != int(event_coreference_contract["expected_admitted_group_count"])
+        or masc_event_audit["admitted_mention_count"]
+        != int(event_coreference_contract["expected_admitted_mention_count"])
+        or masc_event_audit["record_count_by_split"]
+        != event_coreference_contract["records_by_split"]
+        or masc_event_audit["mention_count_by_split"]
+        != event_coreference_contract["mentions_by_split"]
+        or masc_event_audit["rejected_group_count"]
+        != int(event_coreference_contract["expected_rejected_group_count"])
+        or observed_event_rejections != expected_event_rejections
+        or masc_event_audit["partial_group_admission_count"] != 0
+        or masc_event_audit["cooccurrence_inferred_relation_count"] != 0
+    ):
+        raise ValueError("independent MASC event-coreference reconstruction mismatch")
     expected = {
         **independent_dolly_assignments(
             corpus["dolly"],
@@ -2508,6 +2800,7 @@ def verify(
         **masc_expected,
         **masc_composite_expected,
         **masc_decision_expected,
+        **masc_event_expected,
         **independent_oasst_assignments(
             corpus["oasst2"],
             reserved_groups={row["source_group"] for row in behavior_expected.values()},
@@ -2628,6 +2921,61 @@ def verify(
         or producer_decisions.get("source_declared_cross_annotation_links_resolved") is not False
     ):
         raise ValueError("producer MASC decision-semantic telemetry mismatch")
+    producer_event_coreference = manifest.get("masc_event_coreference") or {}
+    expected_event_source_ids = {
+        split: [row["source_id"] for row in rows]
+        for split, rows in masc_event_rows.items()
+    }
+    expected_event_rejected_rows = sorted(
+        [
+            {
+                "document_id": document_id,
+                "annotation_set_name": annotation_set_name,
+            }
+            for document_id, annotation_set_name in observed_event_rejections
+        ],
+        key=lambda row: (row["document_id"], row["annotation_set_name"]),
+    )
+    if (
+        producer_event_coreference.get("policy")
+        != MASC_EVENT_COREFERENCE_POLICY
+        or producer_event_coreference.get("alignment_contract")
+        != MASC_EVENT_COREFERENCE_ALIGNMENT_CONTRACT
+        or producer_event_coreference.get("source_compaction_contract")
+        != MASC_EVENT_COREFERENCE_COMPACTION_CONTRACT
+        or producer_event_coreference.get("producer_alignment_implementation")
+        != "producer_global_sequence_matcher_v1"
+        or producer_event_coreference.get("observed_group_count")
+        != masc_event_audit["observed_group_count"]
+        or producer_event_coreference.get("observed_mention_count")
+        != masc_event_audit["observed_mention_count"]
+        or producer_event_coreference.get("admitted_group_count")
+        != masc_event_audit["admitted_group_count"]
+        or producer_event_coreference.get("admitted_mention_count")
+        != masc_event_audit["admitted_mention_count"]
+        or producer_event_coreference.get("record_count_by_split")
+        != masc_event_audit["record_count_by_split"]
+        or producer_event_coreference.get("mention_count_by_split")
+        != masc_event_audit["mention_count_by_split"]
+        or producer_event_coreference.get("admitted_source_ids_by_split")
+        != expected_event_source_ids
+        or producer_event_coreference.get("rejected_group_count")
+        != masc_event_audit["rejected_group_count"]
+        or producer_event_coreference.get("rejected_groups")
+        != expected_event_rejected_rows
+        or producer_event_coreference.get("partial_group_admission_count") != 0
+        or producer_event_coreference.get("cooccurrence_inferred_relation_count") != 0
+        or producer_event_coreference.get("unique_source_credit")
+        != int(event_coreference_contract["unique_source_credit"])
+        or producer_event_coreference.get("claim_scope")
+        != event_coreference_contract["claim_scope"]
+        or producer_event_coreference.get("complete_group_alignment_required") is not True
+        or producer_event_coreference.get("complete_sentence_semantics_claimed") is not False
+        or producer_event_coreference.get("truth_claimed") is not False
+        or producer_event_coreference.get("causal_relation_claimed") is not False
+        or producer_event_coreference.get("temporal_relation_claimed") is not False
+    ):
+        raise ValueError("producer MASC event-coreference telemetry mismatch")
     raw_records = [
         json.loads(raw)
         for raw in candidate_path.read_text(encoding="utf-8").splitlines()
@@ -2758,6 +3106,8 @@ def verify(
                 if source_id.startswith("masc-composite:")
                 else verify_masc_decision_record(record, source, expected_row)
                 if source_id.startswith("masc-decision:")
+                else verify_masc_event_coreference_record(record, source, expected_row)
+                if source_id.startswith("masc-event-coref:")
                 else verify_masc_record(record, source, expected_row)
                 if source_key == "masc"
                 else verify_oasst_behavior_record(record, source, expected_row)
@@ -2919,6 +3269,38 @@ def verify(
             "event_coreference_grouping_claimed": False,
             "source_declared_cross_annotation_links_resolved": False,
             "independently_reconstructed_from_raw_graf": True,
+        },
+        "masc_event_coreference": {
+            "policy": MASC_EVENT_COREFERENCE_POLICY,
+            "alignment_contract": MASC_EVENT_COREFERENCE_ALIGNMENT_CONTRACT,
+            "source_compaction_contract": MASC_EVENT_COREFERENCE_COMPACTION_CONTRACT,
+            "producer_alignment_implementation": producer_event_coreference[
+                "producer_alignment_implementation"
+            ],
+            "verifier_alignment_implementation": masc_event_audit[
+                "alignment_implementation"
+            ],
+            "alignment_implementations_independent": True,
+            "observed_group_count": masc_event_audit["observed_group_count"],
+            "observed_mention_count": masc_event_audit["observed_mention_count"],
+            "admitted_group_count": masc_event_audit["admitted_group_count"],
+            "admitted_mention_count": masc_event_audit["admitted_mention_count"],
+            "record_count_by_split": masc_event_audit["record_count_by_split"],
+            "mention_count_by_split": masc_event_audit["mention_count_by_split"],
+            "admitted_source_ids_by_split": expected_event_source_ids,
+            "rejected_group_count": masc_event_audit["rejected_group_count"],
+            "rejected_groups": expected_event_rejected_rows,
+            "partial_group_admission_count": 0,
+            "cooccurrence_inferred_relation_count": 0,
+            "unique_source_credit": int(
+                event_coreference_contract["unique_source_credit"]
+            ),
+            "claim_scope": event_coreference_contract["claim_scope"],
+            "complete_group_alignment_required": True,
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "causal_relation_claimed": False,
+            "temporal_relation_claimed": False,
         },
         "verification_failures": dict(failures),
         "public_training_rows_written": 0,

@@ -1039,6 +1039,12 @@ def test_live_kerc_config_requires_bounded_composite_semantics() -> None:
     assert masc["decision_semantic_minimum_annotations"] == 2
     assert masc["decision_semantic_maximum_annotations"] == 24
     assert masc["decision_semantic_unique_source_credit"] == 0
+    event_coreference = masc["event_coreference"]
+    assert event_coreference["source_compaction_contract"] == (
+        "uniform_radius_mention_centered_source_windows_v1"
+    )
+    assert sum(event_coreference["records_by_split"].values()) == 13
+    assert sum(event_coreference["mentions_by_split"].values()) == 215
 
 
 def test_masc_decision_semantics_replay_typed_annotations_and_reject_corruption() -> None:
@@ -1083,6 +1089,102 @@ def test_masc_decision_semantics_replay_typed_annotations_and_reject_corruption(
     forged["kernel_packet"]["program"]["nodes"][0]["polarity"] = "NEGATED"
     with pytest.raises(ValueError, match="Kernel node replay mismatch"):
         verifier.verify_masc_decision_record(forged, source, expected_row)
+
+
+def test_masc_event_coreference_replays_complete_group_and_rejects_tampering() -> None:
+    source_text = "The courier arrived. Later, the courier returned."
+    group_concept = "masc.event_coreference.0123456789abcdef01234567"
+    annotation = {
+        "policy": "project_theseus_kerc_masc_manual_event_coreference_v1",
+        "alignment_contract": "complete_named_gate_group_dual_independent_token_alignment_v1",
+        "source_compaction_contract": "uniform_radius_mention_centered_source_windows_v1",
+        "maximum_source_characters": 2048,
+        "document_id": "fixture/events",
+        "annotation_set_name": "Courier Event",
+        "group_concept": group_concept,
+        "source_text": source_text,
+        "source_text_sha256": kernel.stable_hash(source_text),
+        "original_annotation_filename": "fixture.xml",
+        "original_annotation_file_sha256": "sha256:" + "4" * 64,
+        "distributed_document_sha256": "sha256:" + "5" * 64,
+        "sentence_graph_sha256": "sha256:" + "6" * 64,
+        "excerpt_windows": [
+            {
+                "document_span": [0, len(source_text)],
+                "excerpt_span": [0, len(source_text)],
+                "source_window_sha256": kernel.stable_hash(source_text),
+            }
+        ],
+        "uniform_context_radius_characters": 0,
+        "mentions": [
+            {
+                "annotation_id": "event-1",
+                "event_type": "Arriving",
+                "source_text": "arrived",
+                "target_spans": [[12, 19]],
+                "source_annotation_sha256": "sha256:" + "7" * 64,
+            },
+            {
+                "annotation_id": "event-2",
+                "event_type": "Returning",
+                "source_text": "returned",
+                "target_spans": [[39, 47]],
+                "source_annotation_sha256": "sha256:" + "8" * 64,
+            },
+        ],
+        "complete_group_alignment": True,
+        "partial_group_admission": False,
+        "cooccurrence_inferred_relation": False,
+    }
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "2" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": [
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        ],
+        "event_coreference": {
+            "policy": "project_theseus_kerc_masc_manual_event_coreference_v1",
+            "unique_source_credit": 0,
+            "claim_scope": "manual event-coreference membership only",
+        },
+    }
+    row = {
+        "selection_key": kernel.stable_hash(annotation),
+        "source_id": "masc-event-coref:0123456789abcdef01234567",
+        "split": "private_eval",
+        "annotation": annotation,
+    }
+    candidate = producer.masc_event_coreference_record(
+        row,
+        source=source,
+        producer_sha256="sha256:" + "1" * 64,
+    )
+    receipt = verifier.verify_masc_event_coreference_record(candidate, source, row)
+    assert receipt["mention_count"] == 2
+    assert receipt["cooccurrence_inferred_relation_count"] == 0
+    assert candidate["semantic_supervision"]["unique_source_credit"] == 0
+    assert candidate["kernel_packet"]["program"]["roots"] == ["k2"]
+
+    forged_member = json.loads(json.dumps(candidate))
+    forged_member["kernel_packet"]["residual"]["segment_frame"]["mentions"][1][
+        "node_id"
+    ] = "k0"
+    with pytest.raises(ValueError, match="residual group replay mismatch"):
+        verifier.verify_masc_event_coreference_record(forged_member, source, row)
+
+    forged_credit = json.loads(json.dumps(candidate))
+    forged_credit["semantic_supervision"]["unique_source_credit"] = 1
+    with pytest.raises(ValueError, match="authority mismatch"):
+        verifier.verify_masc_event_coreference_record(forged_credit, source, row)
+
+    forged_annotation = json.loads(json.dumps(candidate))
+    forged_annotation["source_annotation"]["mentions"][0]["target_spans"] = [[0, 7]]
+    with pytest.raises(ValueError, match="raw annotation replay mismatch"):
+        verifier.verify_masc_event_coreference_record(forged_annotation, source, row)
 
 
 def test_residual_supervision_matches_packet_mechanics() -> None:
