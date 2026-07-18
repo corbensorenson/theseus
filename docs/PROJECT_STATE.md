@@ -1,5 +1,5 @@
 # Project State
-Last consolidated: 2026-07-17 UTC.
+Last consolidated: 2026-07-18 UTC.
 
 This is the bounded current-wall page. The machine contract is
 `configs/roadmap_implementation_matrix.json`, the forward plan is `roadmap.md`, and
@@ -33,117 +33,29 @@ share toward zero. Public benchmarks are calibration only.
   fallback returns. Every specialist clears its 20:1 owned-parameter floor; HTML/CSS
   is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
-- **KERC disposition:** `partial` / `INCONCLUSIVE_EXPERIMENT`. The old keyword/linear
-  proxy remains `INCONCLUSIVE_IMPLEMENTATION`; the faithful candidate now has enough
-  architecture mechanics to require the prospectively frozen matched experiment. The exact packet and
-  VCM residual substrate now connect to an explicit MLX KERC candidate with trusted
-  source-only stage routing, separate Kernel/surface output paths, a learned four-channel
-  residual classifier currently trained on explicitly bootstrap-only structural labels,
-  independent verifier parameters with five content-bound decision
-  dimensions, content-bound four-channel
-  residual labels, targeted verifier counterexamples that receive zero generator loss,
-  and 384 withheld/shuffled source-grounded context interventions whose donor contexts
-  are split-local, source-disjoint, answer-free, and checksum-rebuilt rather than stale,
-  train-only content-bound V_K/V_P codebook construction, disjoint compiler/core versus
-  surface logit support, joint auxiliary losses, cached decode, gradient-flow coverage,
-  and strict reload. Its private evaluation owner now runs the actual learned five-stage
-  compile/reason/render/recompile/reason chain and rejects malformed JSON, unresolved
-  answer handles, invalid packets, direct-surface bypass, fallback use, or structured
-  round-trip disagreement. The KERC candidate carries a `13,315`-symbol vocabulary while the
-  conventional control retains `8,195`; independent width matching leaves a `2,603`
-  parameter delta (`19,531,487` versus `19,534,090`). The live ten-target plan and
-  governed KERC stage are GREEN for mechanics readiness. Semantic admission distinguishes
-  decision-grade audited/licensed human gold from train-only parser silver and governed
-  OpenAI residual rows; weak rows cannot enter heldouts or satisfy gold floors, are
-  sampling-weighted in the MLX trainer, and are bounded by record-share/optimizer caps.
-  A content-addressed source catalog rejects public semantic benchmark payloads and binds
-  dataset revision, license, source identity, producer, evidence tier, and verification
-  method. A separate producer plus independent raw-source replayer admitted 11,424
-  source-bound rows: Dolly supports direct-surface training only, manual MASC
-  FrameNet annotations support compiler/reasoner/renderer objectives, and 1,064 bounded
-  OASST2 dialogue trees provide multi-turn VCM context plus 2,128 distinct reviewed
-  rank-0/rank-1 human answers. A reserved 24-record source-disjoint stratum adds only
-  explicit reviewed human clarification/abstention behavior; it does not claim those
-  responses were optimal, truthful, complete, or calibrated. A separate 96-record
-  (`64/16/16`) Dolly stratum covers six required question forms in every split and admits
-  only questions whose answer is one unique bounded exact span in source context. It
-  binds that context through VCM and independently replays the source, split, span,
-  Kernel program, answer decision, and interaction state across all four objectives.
-  The learned compiler never receives the evaluator-owned answer span. The current
-  64-update Apple-MLX cold-start canary selects 16 real rows and covers all 21 objective,
-  decision, interaction, residual, five-dimension verifier, and context-counterfactual
-  groups. Token accuracy is `0.338462` and verifier macro balanced accuracy is `0.812261`
-  with `1.0` minimum negative recall. Its residual allocator remains at the `0.5`
-  balanced-accuracy baseline after only 64 mixed-objective updates; that observation is
-  retained as an underpowered cold-start diagnostic rather than architecture evidence.
-  Verifier-only corruptions and context counterfactuals carry an explicit
-  zero residual-authority mask, so they cannot duplicate or contradict source-grounded
-  residual supervision. A separate same-model, same-row residual-only learnability rung
-  records nonzero residual-head and source-representation gradients and reaches `1.0`
-  minimum channel balanced accuracy at step 128 of its 256-step bound. The allocator conditions
-  explicitly on both source content and the trusted compiler/core/renderer stage so long
-  sources cannot wash out the stage signal. It reaches `1.0` on all four channels after
-  64 additional canonical joint token/verifier/residual/decision updates. A separate
-  disposition probe reaches and retains `1.0` over observed ANSWER/CLARIFY/ABSTAIN by
-  64 updates; PARTIAL is absent and unclaimed. The complete replay is
-  GREEN with no hard or inconclusive mechanics gaps. This supports extractive
-  grounding and counterfactual-support mechanics only, not context utility, a negative
-  KERC verdict, broad entailment, truth, completeness,
-  calibration, reasoning quality, or model capability. Selected private-train MASC rows
-  additionally fit a typed contextual FrameNet prior for 59 lexical units with at least
-  two manually annotated frames. It binds alternatives to 411 train, 178 development,
-  and 157 evaluation records. Independent raw-source replay reconstructs the prior from
-  private-train rows only, so heldout labels cannot influence it. These are empirical
-  source-train weights, not calibrated probabilities, and they do not establish unresolved
-  ambiguity, WordNet equivalence, or learned disambiguation. Duplicate replies, answer leakage, oversized compiled
-  contexts, and producer-only identity claims fail closed. Adjacent
-  human-authored document sentences add journaled, independently replayed VCM state to
-  1,997 train, 998 development, and 1,015 evaluation MASC records. The canonical stage
-  has 26,360 authorized views, 26,360 primary verifier corruptions, 384 verifier-only
-  context counterfactuals, source-disjoint heldouts,
-  zero derived-view unique-data credit, no unknown-token substitution, and no truncation
-  at a maximum sequence width of 4,243 tokens. The expanded full-size real-row MLX
-  adequacy canary covers all 21 required groups with zero omissions and
-  proves scoped stage, full-residual, interaction-only, and verifier causality plus
-  trained leave-one-mechanism-out controls. Optimizer reload is exact; resume, schema
-  migration, rollback, mismatch rejection, cleanup, and sustained execution pass. The
-  mechanics canary is GREEN, including residual-only learnability and post-joint
-  compatibility. The checkpoint is not capability-qualified and the decision dimension
-  is not calibrated.
-  Kernel packets now use protocol `KPP-1.1` and bind exact adaptive order-1 conditional
-  arithmetic-code receipts for interaction, segment, token, and exact-object residuals.
-  Every receipt carries condition/content identity, encoded and uncompressed bits, and
-  exact replay. VCM rejects shared-residual promotion until measured definition,
-  direct, and reference costs cross the strict paper-defined break-even threshold. A
-  four-candidate rate-distortion contract with protected minimum fidelity is now the
-  canonical corpus label authority; the retired `source_fidelity_v1` labels are rejected
-  by the training validator. A source-visible importance policy is fit on private-train,
-  temperature-calibrated on private-development, and evaluated once on source-group-
-  disjoint private-evaluation records. The independent verifier recomputes the policy,
-  every four-fidelity codec/distortion candidate, and the development-only lambda choice.
-  Held-out weak-tail recall is `0.997338` for semantic preservation, `1.0` for surface
-  preservation, and `0.975163` for identity anchoring. These are structural-preservation
-  labels, not downstream semantic utility. The selected lambda is `4096`; held-out
-  allocations span semantic (`992`), faithful (`2`), lexical (`236`), and exact (`858`).
-  Exact replay is GREEN, but the current finite-state wire is not efficient: held-out
-  residual bits are `5.114718x` source bits and Kernel-plus-residual wire bits are
-  `9.998350x` source bits. The canonical stage rebuild took `1365.17` seconds. No
-  rate-distortion utility, amortized-efficiency, runtime-latency, or KERC capability claim
-  is authorized from these mechanics.
-  This carries no capability or negative-verdict authority: the prior
-  target proves interaction representation, learning, replay, and causal mechanics, not
-  interaction utility. The new dialogue, multiple-valid, withheld, and shuffled rows
-  establish source authority, representability, and counterfactual testability only until
-  full context-present/context-withheld/shuffled/wrong-user utility controls run.
-  Unresolved ambiguity/broad-entailment, protected-span abstention, decision calibration,
-  calibrated verifier behavior, and the matched campaign remain open.
-  `p4-m8-kerc-runtime-001` trained a
-  TF-IDF/L2 logistic-regression intent classifier on 128 authored templates and used a
-  hand-coded keyword compiler and renderer. It did not implement or train the paper's
-  constrained compiler, Kernel reasoner, learned residual allocator, structured answer
-  generator, copy-aware learned renderer, or neural round-trip verifier. Its `0.5`
-  accuracy, `714`-byte packet cost, and attack escape reject only that proxy. They cannot
-  retire KERC or grant a general efficiency verdict.
+- **KERC disposition:** `partial`; protocol mechanics GREEN, construct validity RED,
+  scientific result `INCONCLUSIVE_IMPLEMENTATION`. K0 now independently binds the paper,
+  implementation sources, and all 11,424 current corpus records. Three narrow mechanisms
+  are faithful mechanics: the exact finite-state residual codec, packet-level structural
+  allocation, and checkpoint/migration/MLX state handling. Nine mechanisms are
+  approximate or fixture-only; four are inactive or absent; H1-H8 remain inactive.
+  The corpus has zero multi-node or multi-root programs, correction alternatives,
+  concept capsules, learned macros, nonempty interaction-global dictionaries, PARTIAL
+  decisions, or per-unit allocation receipts. Every answer packet is single-claim and
+  contains 14,738 opaque byte-literal values. The four-channel neural result is
+  channel-presence learnability, not learned residual allocation. Direct probes show
+  the interaction label activates from segment state without a global dictionary and
+  the hard round-trip verifier accepts a changed opaque answer literal. Existing packet,
+  VCM lifecycle, source isolation, no-cheat, code-space, stage-route, verifier-head,
+  checkpoint, replay, migration, and MLX canaries remain valid within their narrow
+  mechanics ceilings. Existing efficiency evidence remains negative for this exact
+  finite-state implementation: residual bits are `5.114718x` source bits, complete
+  Kernel-plus-residual wire is `9.998350x`, and stage materialization took `1365.17`
+  seconds. The old keyword/linear proxy remains negative only for itself. K1-K7 must now
+  establish nontrivial semantics, per-unit economics, real interaction amortization,
+  coordinated learned stages, independent construct-valid verification, and adequacy
+  before K8 may run the matched H1-H8 campaign. No learned-KERC, utility, efficiency,
+  amortization, semantic-equivalence, or broad-negative claim is authorized.
 - **QCSA disposition:** VCM now owns stable SOID/address/route indirection, three
   authoritative atlas facets, task/consumer/epoch-bound Semantic Address Certificates,
   authority-safe physical translation, and exact migration/rollback. The matched

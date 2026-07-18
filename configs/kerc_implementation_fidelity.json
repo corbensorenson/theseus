@@ -1,0 +1,275 @@
+{
+  "policy": "project_theseus_kerc_implementation_fidelity_v1",
+  "schema_version": "1.0.0",
+  "owner": "planned.kernel_english_hierarchical_residual_compiler_v1",
+  "purpose": "Independent K0 source-to-implementation map. It limits KERC claims to the mechanisms actually exercised by the current code, data, objectives, and evaluators.",
+  "paper": {
+    "path": "../AI_book/sources/raw/kernel_english_residual_compiler/kernel_english_hierarchical_residuals.md",
+    "sha256": "f560c61196cb2a114475ebd455f8643536e78c82dbbf6ec8dd712d993f2b6519",
+    "minimum_faithful_sections": [
+      "5_end_to_end_architecture",
+      "6_kernel_english_language",
+      "7_hierarchical_residual_ledger",
+      "8_dual_vocabulary_model",
+      "9_rate_compute_fidelity",
+      "10_complete_system_training",
+      "12_experimental_program"
+    ]
+  },
+  "allowed_statuses": [
+    "faithful",
+    "stronger_registered_alternative",
+    "approximate",
+    "fixture_only",
+    "inactive",
+    "absent"
+  ],
+  "claim_state": {
+    "mechanics": "PARTIAL_MECHANICS_EVIDENCE",
+    "construct_validity": "RED",
+    "learned_kerc": "NOT_CLAIMED",
+    "utility": "NOT_CLAIMED",
+    "efficiency": "NOT_CLAIMED",
+    "scientific_negative": "NOT_CLAIMED",
+    "required_failure_label_before_k7": "INCONCLUSIVE_IMPLEMENTATION"
+  },
+  "source_artifacts": [
+    {
+      "path": "scripts/kernel_english_protocol.py",
+      "sha256": "e4b402adc4a6f5eac62574a8feaba0f56adfd78a6c9ec40bfe6d4dff95bdc076"
+    },
+    {
+      "path": "scripts/kerc_semantic_corpus.py",
+      "sha256": "8971bc8738d612925c72691a3e307a06b82b68d1b5a9f19bf4baf6e6511ba573"
+    },
+    {
+      "path": "scripts/kerc_residual_economics.py",
+      "sha256": "d3127a7ab1ae09de5a693d26664fc42dbad47e68852e1fefcdc40588118b563c"
+    },
+    {
+      "path": "scripts/standard_causal_transformer_model.py",
+      "sha256": "bc0ae438ca2a889521aef3a6841946749d4006d12dc07b987604c1245ba21e34"
+    },
+    {
+      "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
+      "sha256": "611450be40f0eaed77ab859553854b3196ac75b8ac516ce32b30c5336bb2de7f"
+    },
+    {
+      "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
+      "sha256": "94b4c639457425eb9cfc695962af05a79e1adc92d7c41965d845d89cb536ed9a"
+    }
+  ],
+  "observed_corpus_contract": {
+    "record_count": 11424,
+    "multi_node_program_count": 0,
+    "multi_root_program_count": 0,
+    "non_preserved_derivation_count": 0,
+    "multi_claim_answer_count": 0,
+    "byte_literal_value_count": 14738,
+    "correction_alternative_count": 0,
+    "concept_capsule_count": 0,
+    "nonempty_macro_registry_count": 0,
+    "nonempty_interaction_global_dictionary_count": 0,
+    "partial_disposition_count": 0,
+    "per_unit_allocation_receipt_count": 0,
+    "interaction_presence_label_with_empty_global_count": 6812
+  },
+  "required_mechanism_ids": [
+    "kerc.immutable_source_and_protected_objects",
+    "kerc.uncertainty_preserving_lexical_hygiene",
+    "kerc.surface_to_kernel_compiler",
+    "kerc.concept_identity_and_binding",
+    "kerc.grammar_aware_macros",
+    "kerc.hierarchical_residual_ledger",
+    "kerc.structured_answer_packet",
+    "kerc.copy_aware_renderer",
+    "kerc.independent_roundtrip_verifier",
+    "kerc.exact_conditional_codec",
+    "kerc.packet_level_structural_allocation",
+    "kerc.learned_per_unit_allocator",
+    "kerc.interaction_amortization",
+    "kerc.coordinated_learned_architecture",
+    "kerc.checkpoint_migration_mlx",
+    "kerc.calibrated_answer_decision"
+  ],
+  "mechanisms": [
+    {
+      "id": "kerc.immutable_source_and_protected_objects",
+      "paper_sections": ["5.2", "5.3", "10.6"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/kernel_english_protocol.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py"],
+      "current_finding": "Immutable source and typed protected-object storage exist, but protected-span extraction is a deterministic regex baseline rather than a trained calibrated detector.",
+      "claim_ceiling": "Exact source/object protocol mechanics only; no learned protected-span recall, domain robustness, or abstention claim.",
+      "next_evidence": "Source-disjoint learned detector with span recall, weak tails, calibration, adversarial identifiers/quotes/code, abstention, and exact-object intervention tests."
+    },
+    {
+      "id": "kerc.uncertainty_preserving_lexical_hygiene",
+      "paper_sections": ["5.4", "10.5"],
+      "status": "fixture_only",
+      "implementation_refs": ["scripts/kernel_english_protocol.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py"],
+      "current_finding": "The correction-lattice schema preserves uncertainty, but the canonical corpus contains zero correction alternatives and does not train lexical correction or abstention.",
+      "claim_ceiling": "Schema and transaction behavior only.",
+      "next_evidence": "Licensed noisy/dialect/transcription/code-switch data with reviewed alternatives, calibrated preserve/correct/hypothesize/abstain targets, and overcorrection attacks."
+    },
+    {
+      "id": "kerc.surface_to_kernel_compiler",
+      "paper_sections": ["5.5", "10.4"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_moecot_source_conditioned_pretraining.py"],
+      "current_finding": "A trainable stage route and separate code space exist, but every canonical target program has one node and one root and largely wraps source or answer bytes.",
+      "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
+      "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
+    },
+    {
+      "id": "kerc.concept_identity_and_binding",
+      "paper_sections": ["5.6", "6.3", "6.10"],
+      "status": "inactive",
+      "implementation_refs": ["scripts/kernel_english_protocol.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py"],
+      "current_finding": "Concept capsule and pointer schemas exist, but the canonical corpus has no concept capsules and therefore does not exercise identity reuse or open-world definition handling.",
+      "claim_ceiling": "Typed ABI mechanics only.",
+      "next_evidence": "Cross-document concept identity, alias/coreference, unseen concept capsule, migration, collision, stale-definition, and wrong-identity interventions."
+    },
+    {
+      "id": "kerc.grammar_aware_macros",
+      "paper_sections": ["5.8", "6.12", "10.8"],
+      "status": "absent",
+      "implementation_refs": ["scripts/kernel_english_protocol.py"],
+      "evidence_refs": [],
+      "current_finding": "A compatibility hash exists, but no learned grammar-aware macro inventory is present or exercised by the canonical corpus.",
+      "claim_ceiling": "No macro-fusion, shortening, or compute claim.",
+      "next_evidence": "Train-only grammar-valid macro induction with deterministic expansion, heldout undertraining statistics, collision/migration tests, and equal-budget no-macro control."
+    },
+    {
+      "id": "kerc.hierarchical_residual_ledger",
+      "paper_sections": ["7.1", "7.2", "7.10", "7.11", "7.12"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_residual_economics.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_kerc_residual_economics.py"],
+      "current_finding": "Four typed residual channels, VCM lifecycle, replay, synchronization, and privacy fields exist; current supervision predicts channel presence and the corpus does not populate an interaction-global residual dictionary.",
+      "claim_ceiling": "Residual packet/lifecycle/codec mechanics only; no learned hierarchy value or interaction amortization claim.",
+      "next_evidence": "Per-unit source-bound residual decisions and real multi-turn shared dictionaries with context-present/withheld/shuffled/wrong-user causal controls."
+    },
+    {
+      "id": "kerc.structured_answer_packet",
+      "paper_sections": ["5.10", "6.6", "6.8"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py"],
+      "current_finding": "Typed claims and decisions exist, but every canonical answer has one claim and most answer content is carried as opaque byte literals.",
+      "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
+      "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
+    },
+    {
+      "id": "kerc.copy_aware_renderer",
+      "paper_sections": ["5.11", "8.2.3", "10.12"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_moecot_language_arm_training.py"],
+      "current_finding": "A trainable renderer route, surface vocabulary, and copy path exist, but no behavior-positive source-disjoint renderer evidence exists.",
+      "claim_ceiling": "Trainable route, shape, and checkpoint mechanics only; deterministic/literal rendering receives zero learned credit.",
+      "next_evidence": "Model-only paraphrase and faithful/lossless rendering with copy interventions, rare identifiers, quotations, style controls, and independent functional/human evaluation."
+    },
+    {
+      "id": "kerc.independent_roundtrip_verifier",
+      "paper_sections": ["5.12", "10.13"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_standard_causal_transformer_survival.py"],
+      "current_finding": "Hard structured checks and a separately parameterized classifier exist, but the hard projection ignores opaque byte-literal content and the learned verifier has not been independently calibrated on broad semantic corruptions.",
+      "claim_ceiling": "Listed structured-dimension mutation detection and verifier-head mechanics only; no semantic equivalence, truth, or verification-value claim.",
+      "next_evidence": "Reject byte-literal substitution plus independently produced hard negatives for scope, time, causality, attribution, quantity, caveat, ambiguity, and correlated compiler/recompiler error."
+    },
+    {
+      "id": "kerc.exact_conditional_codec",
+      "paper_sections": ["7.7", "9.3"],
+      "status": "faithful",
+      "implementation_refs": ["scripts/kerc_residual_economics.py"],
+      "evidence_refs": ["tests/test_kerc_residual_economics.py"],
+      "current_finding": "The adaptive order-1 arithmetic codec has exact encode/decode replay and explicit encoded/uncompressed bit receipts.",
+      "claim_ceiling": "Faithful finite-state codec mechanics and measured bit cost only; not a learned entropy model, compression win, or total-system efficiency result.",
+      "next_evidence": "Retain as the strong exact baseline; any learned challenger must include parameters, latency, memory, energy, synchronization, and recovery cost."
+    },
+    {
+      "id": "kerc.packet_level_structural_allocation",
+      "paper_sections": ["7.6", "9.7"],
+      "status": "faithful",
+      "implementation_refs": ["scripts/kerc_residual_economics.py", "scripts/kerc_importance_policy.py"],
+      "evidence_refs": ["tests/test_kerc_residual_economics.py", "tests/test_kerc_semantic_corpus.py"],
+      "current_finding": "Four packet-level fidelity candidates are selected using measured encoded bits, omitted packet-owned residual mass, calibrated source-visible structural importance, and protected minima.",
+      "claim_ceiling": "Faithful implementation of this narrow packet-level structural controller only; its distortion is not semantic utility and it is not the paper's learned per-unit allocator.",
+      "next_evidence": "Keep as a matched baseline for the per-unit learned constrained policy."
+    },
+    {
+      "id": "kerc.learned_per_unit_allocator",
+      "paper_sections": ["7.6", "10.11", "10.14"],
+      "status": "absent",
+      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": [],
+      "current_finding": "The current neural head predicts four record-level channel-presence labels. It has no source-bound per-unit q_i decisions, measured per-unit rates/distortions, constraints, or missing-signal masks.",
+      "claim_ceiling": "No learned residual allocation claim. Presence-label overfit is a mechanics diagnostic only.",
+      "next_evidence": "Typed units, candidate actions, causal importance features, measured rate/distortion, hard constraints, differentiable constrained training, intervention sensitivity, and policy-versus-oracle regret."
+    },
+    {
+      "id": "kerc.interaction_amortization",
+      "paper_sections": ["7.4", "7.5", "9.8", "9.9", "10.11.1"],
+      "status": "inactive",
+      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py"],
+      "current_finding": "Promotion economics and VCM state transitions exist, but the corpus uses independent records and has no nonempty coded interaction-global dictionary. The interaction target is currently derived from segment presence.",
+      "claim_ceiling": "Promotion transaction and break-even arithmetic mechanics only; no learned reuse, declining per-turn overhead, consistency, or causal utility claim.",
+      "next_evidence": "Coherent multi-turn episodes with repeated terminology, learned promote/local decisions, per-turn rate curves, expiry/deletion, wrong-user isolation, and context causal ablations."
+    },
+    {
+      "id": "kerc.coordinated_learned_architecture",
+      "paper_sections": ["8.2", "8.3", "10.1", "10.14"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/standard_causal_transformer_model.py", "scripts/moecot_source_conditioned_pretraining.py"],
+      "evidence_refs": ["tests/test_standard_causal_transformer_survival.py", "tests/test_moecot_source_conditioned_pretraining.py"],
+      "current_finding": "A shared trunk with stage adapters, code-space masks, auxiliary heads, and joint-loss plumbing exists. The stages are not independently capable modules and current targets do not exercise the complete KERC causal pipeline.",
+      "claim_ceiling": "Shared-trunk route, gradient, shape, and objective compatibility mechanics only.",
+      "next_evidence": "Representative-subset overfit and interventions for protected spans, compiler, core, per-unit allocator, answer head, renderer, and verifier under one versioned objective ledger."
+    },
+    {
+      "id": "kerc.checkpoint_migration_mlx",
+      "paper_sections": ["10.16"],
+      "status": "faithful",
+      "implementation_refs": ["scripts/kerc_checkpoint_schema.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_kerc_adequacy_canary.py", "tests/test_standard_causal_transformer_survival.py"],
+      "current_finding": "KERC tensors, optimizer state, schema identity, migration, rollback, resume, and bounded Apple-MLX execution are replayed.",
+      "claim_ceiling": "Checkpoint/state and bounded MLX mechanics only; no sustained throughput, energy, CUDA parity, or learned utility claim.",
+      "next_evidence": "Multi-seed full-shape resource replay with memory/energy telemetry and cropped/uncropped equivalence before the campaign."
+    },
+    {
+      "id": "kerc.calibrated_answer_decision",
+      "paper_sections": ["5.10", "10.14"],
+      "status": "approximate",
+      "implementation_refs": ["scripts/standard_causal_transformer_model.py", "scripts/kerc_semantic_corpus.py"],
+      "evidence_refs": ["tests/test_kerc_adequacy_canary.py"],
+      "current_finding": "The decision head can overfit observed ANSWER/CLARIFY/ABSTAIN mechanics, but PARTIAL is absent and the result is not source-disjoint calibration or selective-risk evidence.",
+      "claim_ceiling": "Observed-class learnability mechanics only.",
+      "next_evidence": "Source-disjoint PARTIAL, ambiguity, insufficient/conflicting evidence, calibration, selective-risk, class-balance, and decision-intervention evidence."
+    }
+  ],
+  "required_hypothesis_ids": ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8"],
+  "hypotheses": [
+    {"id": "H1", "status": "inactive", "claim": "Core sequence reduction", "claim_ceiling": "No evidence until the frozen matched campaign measures expanded/compact lengths and all residual/object/macro overhead."},
+    {"id": "H2", "status": "inactive", "claim": "Compute efficiency", "claim_ceiling": "No evidence until matched end-to-end quality and full FLOP/latency/energy/KV/lifecycle cost are measured."},
+    {"id": "H3", "status": "inactive", "claim": "Canonical learning efficiency", "claim_ceiling": "No evidence until matched raw bytes, FLOPs, tuning, seeds, source-disjoint utility, and uncertainty are measured."},
+    {"id": "H4", "status": "inactive", "claim": "Entity fidelity", "claim_ceiling": "Exact-object mechanics are not a learned fidelity win; no evidence until equal-budget rare-name/identifier/number/quotation comparisons run."},
+    {"id": "H5", "status": "inactive", "claim": "Residual hierarchy", "claim_ceiling": "No evidence until per-unit learned hierarchy beats token-only, global-only, and no-residual controls on rate and fidelity."},
+    {"id": "H6", "status": "inactive", "claim": "Interaction amortization", "claim_ceiling": "No evidence while the coded global dictionary is empty and no coherent multi-turn rate curve exists."},
+    {"id": "H7", "status": "inactive", "claim": "Verification value", "claim_ceiling": "No evidence until independent semantic verification reduces accepted errors under matched retry and total cost."},
+    {"id": "H8", "status": "inactive", "claim": "Robustness and transfer", "claim_ceiling": "No evidence until spelling/domain/OOD transfer is source-disjoint and compared against strong byte/dynamic-chunking controls without aggressive-correction hiding."}
+  ],
+  "integration": {
+    "roadmap_matrix": "configs/roadmap_implementation_matrix.json",
+    "registry": "configs/project_manifest_registry.json",
+    "gate": "scripts/kerc_implementation_fidelity_gate.py through scripts/roadmap_implementation_gate.py",
+    "report": "reports/kerc_implementation_fidelity_gate.json",
+    "rule": "Any KERC roadmap, registry, promotion, freeze, or negative-verdict claim must remain at or below this independently audited claim ceiling."
+  }
+}

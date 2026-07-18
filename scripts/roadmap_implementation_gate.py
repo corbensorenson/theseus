@@ -25,6 +25,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import report_evidence_store  # noqa: E402
+import kerc_implementation_fidelity_gate  # noqa: E402
 
 
 DEFAULT_MATRIX = ROOT / "configs" / "roadmap_implementation_matrix.json"
@@ -36,6 +37,7 @@ DEFAULT_PRE_TRAINING_MARKDOWN = ROOT / "reports" / "roadmap_pre_training_archite
 DEFAULT_CROSSWALK = ROOT / "reports" / "book_to_theseus_crosswalk.json"
 DEFAULT_PROJECT_STEWARD = ROOT / "configs" / "project_steward.json"
 DEFAULT_AI_BOOK_ROOT = ROOT.parent / "AI_book"
+DEFAULT_KERC_FIDELITY_OUT = ROOT / "reports" / "kerc_implementation_fidelity_gate.json"
 REQUIRED_PHASES = set(range(20))
 ALLOWED_PHASE_STATES = {"implemented", "wired", "partial", "missing", "frozen"}
 DONE_STATES = {"implemented", "wired"}
@@ -171,6 +173,10 @@ def main() -> int:
         started,
         ai_book_root=ai_book_root,
     )
+    report_evidence_store.write_json_report(
+        DEFAULT_KERC_FIDELITY_OUT,
+        report["kerc_implementation_fidelity"],
+    )
     crosswalk_path = resolve(args.crosswalk_out)
     crosswalk = build_book_to_theseus_crosswalk(
         matrix_path,
@@ -230,12 +236,14 @@ def build_report(
     phase_reports = [audit_phase(row, surfaces, abstractions, implementations) for row in phases]
     artifact_citation_report = audit_hive_artifact_citations()
     book_contract_report = audit_book_implementation_contract(matrix, ai_book_root)
+    kerc_fidelity_report = audit_kerc_fidelity_contract(matrix)
     hard_gaps: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
     hard_gaps.extend(audit_matrix_shape(matrix, phases))
     hard_gaps.extend(audit_non_cheat_scope(matrix))
     hard_gaps.extend(artifact_citation_report["hard_gaps"])
     hard_gaps.extend(book_contract_report["hard_gaps"])
+    hard_gaps.extend(kerc_fidelity_report["roadmap_hard_gaps"])
     warnings.extend(book_contract_report["warnings"])
     for row in phase_reports:
         hard_gaps.extend(row["hard_gaps"])
@@ -330,6 +338,12 @@ def build_report(
             "pre_training_architecture_ready": pre_training_readiness["ready"],
             "pre_training_architecture_blocker_count": pre_training_readiness["blocker_count"],
             "pre_training_architecture_warning_count": pre_training_readiness["warning_count"],
+            "kerc_fidelity_gate_state": kerc_fidelity_report["trigger_state"],
+            "kerc_fidelity_fault_count": kerc_fidelity_report["summary"]["fault_count"],
+            "kerc_faithful_mechanism_count": kerc_fidelity_report["summary"]["faithful_mechanism_count"],
+            "kerc_hypothesis_evidence_active_count": kerc_fidelity_report["summary"][
+                "hypothesis_evidence_active_count"
+            ],
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "rules": {
@@ -341,11 +355,75 @@ def build_report(
         },
         "phase_reports": phase_reports,
         "book_implementation_contract": book_contract_report,
+        "kerc_implementation_fidelity": {
+            key: value for key, value in kerc_fidelity_report.items() if key != "roadmap_hard_gaps"
+        },
         "pre_training_architecture_readiness": pre_training_readiness,
         "hive_artifact_citations": artifact_citation_report["reports"],
         "hard_gaps": hard_gaps,
         "warnings": warnings,
     }
+
+
+def audit_kerc_fidelity_contract(matrix: dict[str, Any]) -> dict[str, Any]:
+    binding = matrix.get("kerc_implementation_fidelity")
+    if not isinstance(binding, dict):
+        missing = gap("kerc_implementation_fidelity", "binding_missing", {})
+        return {
+            "policy": "project_theseus_kerc_implementation_fidelity_gate_v1",
+            "trigger_state": "RED",
+            "summary": {
+                "fault_count": 1,
+                "faithful_mechanism_count": 0,
+                "hypothesis_evidence_active_count": 0,
+            },
+            "faults": [missing],
+            "roadmap_hard_gaps": [missing],
+        }
+    contract_path = resolve(str(binding.get("contract") or ""))
+    if not contract_path.exists():
+        missing = gap(
+            "kerc_implementation_fidelity",
+            "contract_missing",
+            {"path": rel(contract_path)},
+        )
+        return {
+            "policy": "project_theseus_kerc_implementation_fidelity_gate_v1",
+            "trigger_state": "RED",
+            "summary": {
+                "fault_count": 1,
+                "faithful_mechanism_count": 0,
+                "hypothesis_evidence_active_count": 0,
+            },
+            "faults": [missing],
+            "roadmap_hard_gaps": [missing],
+        }
+    report = kerc_implementation_fidelity_gate.audit_contract(
+        read_json(contract_path),
+        contract_path=contract_path,
+    )
+    expected_policy = str(binding.get("required_policy") or "")
+    if expected_policy != report["contract"].get("policy"):
+        report["faults"].append(
+            {
+                "kind": "matrix_policy_binding_mismatch",
+                "evidence": {
+                    "expected": expected_policy,
+                    "observed": report["contract"].get("policy"),
+                },
+            }
+        )
+        report["summary"]["fault_count"] = len(report["faults"])
+        report["trigger_state"] = "RED"
+    roadmap_gaps = [
+        gap(
+            "kerc_implementation_fidelity",
+            "fidelity_contract_fault",
+            row,
+        )
+        for row in report["faults"]
+    ]
+    return {**report, "roadmap_hard_gaps": roadmap_gaps}
 
 
 def audit_hive_artifact_citations() -> dict[str, Any]:
@@ -2253,6 +2331,12 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "pre_training_architecture_ready": summary.get("pre_training_architecture_ready", False),
         "pre_training_architecture_blocker_count": summary.get("pre_training_architecture_blocker_count", 0),
         "pre_training_architecture_warning_count": summary.get("pre_training_architecture_warning_count", 0),
+        "kerc_fidelity_gate_state": summary.get("kerc_fidelity_gate_state", "RED"),
+        "kerc_fidelity_fault_count": summary.get("kerc_fidelity_fault_count", 0),
+        "kerc_faithful_mechanism_count": summary.get("kerc_faithful_mechanism_count", 0),
+        "kerc_hypothesis_evidence_active_count": summary.get(
+            "kerc_hypothesis_evidence_active_count", 0
+        ),
         "book_chapter_crosswalk_missing_required_field_count": summary.get("book_chapter_crosswalk_missing_required_field_count", 0),
         "book_chapter_invalid_phase_ref_count": summary.get("book_chapter_invalid_phase_ref_count", 0),
         "hard_gap_count": summary["hard_gap_count"],

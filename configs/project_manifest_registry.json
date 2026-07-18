@@ -5334,17 +5334,18 @@
       "surface_id": "neural_seed_and_decoder",
       "status": "experimental",
       "implementation_type": "independent_language_arm_mlx_training_runtime",
-      "backend": "python_mlx_apple_shared_trunk_language_experts_plus_fail_closed_five_stage_kerc_and_matched_surface_english_targets",
+      "backend": "python_mlx_apple_shared_trunk_language_experts_plus_fail_closed_kerc_mechanics_candidate_and_matched_surface_english_targets",
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 -m pytest -q tests/test_kerc_implementation_fidelity.py tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_implementation_fidelity_gate.py --gate && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "configs/moecot_language_arm_training.json",
         "configs/kerc_adequacy_canary.json",
+        "configs/kerc_implementation_fidelity.json",
         "configs/standard_causal_transformer_survival.json",
         "configs/neural_seed_functional_utility.json",
         "configs/neural_seed_functional_utility_freeze.json",
@@ -5364,6 +5365,7 @@
         "scripts/kerc_semantic_corpus.py",
         "scripts/kerc_semantic_corpus_verify.py",
         "scripts/kerc_adequacy_canary.py",
+        "scripts/kerc_implementation_fidelity_gate.py",
         "scripts/kerc_checkpoint_schema.py",
         "scripts/kernel_english_protocol.py",
         "scripts/vcm_semantic_memory.py",
@@ -5386,6 +5388,7 @@
         "tests/test_kerc_residual_economics.py",
         "tests/test_kerc_semantic_corpus.py",
         "tests/test_kerc_adequacy_canary.py",
+        "tests/test_kerc_implementation_fidelity.py",
         "tests/test_vcm_semantic_memory.py",
         "tests/test_moecot_language_tokenizer.py",
         "tests/test_moecot_language_vocabulary.py",
@@ -5401,6 +5404,7 @@
         "reports/moecot_kernel_english_stage.json",
         "reports/runtime/kerc_semantic_corpus_verification.json",
         "reports/kerc_adequacy_canary.json",
+        "reports/kerc_implementation_fidelity_gate.json",
         "reports/moecot_language_vocabulary.json"
       ],
       "attd_hooks": {
@@ -5422,7 +5426,8 @@
           "kerc_rate_distortion_candidate_or_lambda_calibration_changed",
           "kerc_importance_feature_authority_or_split_calibration_changed",
           "kerc_shared_residual_promotion_economics_changed",
-          "kerc_exact_roundtrip_constraint_inventory_changed"
+          "kerc_exact_roundtrip_constraint_inventory_changed",
+          "kerc_implementation_fidelity_or_claim_ceiling_changed"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
       },
@@ -5438,7 +5443,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "The 10.8M v8 models remain negative only for that exact regime; the post-v8 matched campaign is untrained. KERC now has an independently replayed 11,424-record governed corpus and GREEN 26,360-view canonical stage under KPP-1.1. Exact conditional arithmetic coding binds all four residual channels; four actual structural fidelity candidates are measured; lambda 4096 is selected on private-development only; a source-visible importance policy is trained/calibrated/evaluated on source-group-disjoint private splits; protected minima and strict VCM promotion break-even fail closed; hard round-trip checks include predicate, identity, number, polarity, modality, quantifier, temporal/causal direction, attribution, quotation, terminology, caveat, and decision consistency. The fresh Apple-MLX mechanics canary covers 21 groups, learns all residual channels to 1.0 by step 128 and observed ANSWER/CLARIFY/ABSTAIN dispositions to 1.0 by step 64, retains both after joint updates, and passes replay/resume/migration/rollback/ablation/resource checks. This grants no utility claim. Held-out residual bits are 5.114718 times source, total Kernel-plus-residual wire is 9.998350 times source, stage materialization takes 1365.17 seconds, importance is structural rather than semantic-utility supervision, allocation remains record-level, PARTIAL is unobserved, and no matched multi-seed behavior verdict or runtime route exists."
+      "current_wall": "K0 now independently binds the KERC paper, implementation sources, and all 11,424 current corpus records. It classifies three narrow mechanisms as faithful mechanics, nine as approximate/fixture-only, four as inactive/absent, and all H1-H8 hypotheses as inactive. The current corpus has zero multi-node or multi-root programs, zero correction alternatives, concept capsules, macros, nonempty interaction-global dictionaries, PARTIAL decisions, or per-unit allocation receipts; all answers are single-claim and contain 14,738 opaque byte-literal values. Direct probes confirm that the interaction label follows segment presence rather than a global dictionary and that changing opaque answer bytes passes the current hard round-trip projection. The residual head's 1.0 result is therefore channel-presence learnability, not learned allocation. Exact codec, packet-level structural controller, and checkpoint/migration/MLX mechanics remain valid within their narrow ceilings. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims are denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",
