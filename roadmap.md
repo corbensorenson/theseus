@@ -1743,7 +1743,7 @@ boolean, list, polarity, intensity, and temporal-orientation fields contribute `
 nonliteral typed arguments; source expressions and unclassified textual fields remain
 byte literals. The independent implementation reparses the raw annotation graphs,
 reconstructs selection and every expected record, and admits all `11,936` canonical
-rows with the same `sha256:b1a8a22075465a618aedfc605bd784fe6e36860c040a7c72392bb589c3df5a2b`
+rows with the same `sha256:c8502fbd5c2d4628aee41a1ad380d7b9f8797993ba2feb8a8ce318655a94ac49`
 candidate identity and zero verification failures. Its first full replay correctly
 rejected 28 multi-claim rows because default decision hashes were not idempotent above
 nine claims; claim-id canonicalization and a regression test now close that protocol
@@ -1752,7 +1752,15 @@ lost event-coreference grouping, resolve source-declared cross-annotation links,
 scope or truth, provide complete sentence semantics, or demonstrate learned competence.
 Full materialization took about 21 minutes and independent replay about 18 minutes on
 this Mac, making content-addressed producer/verifier layer caches an immediate K1
-performance requirement rather than optional cleanup.
+performance requirement rather than optional cleanup. K1c now adds separate exact-run
+cache receipts whose keys bind actual source files and the complete extracted MASC tree,
+configuration, owner code, protocol/economics/VCM dependencies, and every output hash.
+Cold/warm measurements are `1321.33s/1.86s` for production and `1100.62s/1.93s` for
+independent verification, roughly `710x` and `570x` repeated-run speedups. Output or
+receipt mutation and dependency changes fail closed. This does not complete the
+incremental requirement: any changed dependency still rebuilds the whole owner path;
+raw parse, split, packet, and economics layers still need separate producer/verifier
+keys and selective invalidation.
 Source-disjoint heldouts, per-objective authority, archive/revision/license hashes,
 and a verification ledger are mandatory. Duplicate reviewed replies, answer leakage,
 compiled-context overflow, and producer-only identity claims fail closed. The canonical
@@ -1941,12 +1949,16 @@ silently change the mechanism under the KERC name or handicap the paper-faithful
    fixed the protocol defect, and the final replay is GREEN with zero failures. No
    cross-annotation links, event-coreference groups, scope, truth, complete semantics,
    or learned competence are claimed. The corpus still has `18,759` byte literals.
-   Materialization and independent replay are still monolithic and slow. Add
-   content-addressed caches for pinned raw-source parsing, split reconstruction, packet
+   **K1c exact-run cache evidence (`GREEN`, 2026-07-18):** producer and verifier use
+   separate role receipts and retain independent semantic code. Exact unchanged runs
+   improve from `1321.33s` to `1.86s` and from `1100.62s` to `1.93s`; source, config,
+   code, candidate, output, or receipt mutations invalidate reuse. Changed inputs still
+   cause monolithic work. Extend the cache into pinned raw-source parsing, split reconstruction, packet
    compilation, and economics, with dependency hashes and mutation tests proving that
    changed source/config/protocol/verifier inputs invalidate only affected layers. A
-   cached run must preserve byte-identical outputs and independent replay; cache hits
-   cannot replace semantic verification or weaken producer/verifier independence.
+   cached run must preserve byte-identical outputs and independent replay; only a
+   previously completed independent verification transaction with the exact same bound
+   identities may be reused, and producer-owned artifacts cannot grant admission.
    Acceptance: every claimed construct has nontrivial train/dev/eval coverage, weak-tail
    counts, mutation tests, and an explicit missingness mask; no count of derived views is
    presented as unique semantic data.

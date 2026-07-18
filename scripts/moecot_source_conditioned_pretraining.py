@@ -747,6 +747,18 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
     corpus = corpus if isinstance(corpus, dict) else {}
     if corpus.get("policy") != KERC_SEMANTIC_CORPUS_POLICY:
         raise ValueError("KERC semantic corpus materialization policy mismatch")
+    content_cache = corpus.get("content_cache")
+    if (
+        not isinstance(content_cache, dict)
+        or content_cache.get("policy")
+        != "project_theseus_kerc_content_addressed_run_cache_v1"
+        or not isinstance(content_cache.get("enabled"), bool)
+        or not str(content_cache.get("root") or "")
+        or not str(content_cache.get("producer_role") or "")
+        or not str(content_cache.get("verifier_role") or "")
+        or content_cache.get("producer_role") == content_cache.get("verifier_role")
+    ):
+        raise ValueError("KERC content-addressed cache contract invalid")
     sources = {name: corpus.get(name) or {} for name in ("dolly", "masc", "oasst2")}
     for name, source in sources.items():
         path_key = "archive_path" if name == "masc" else "path"

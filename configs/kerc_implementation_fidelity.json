@@ -40,11 +40,15 @@
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "2044c0a41edf550f2d841e36cbd6511ec5e1dbdbe8176c9f8a7164411431f6a5"
+      "sha256": "8e3cd439261a46098f68f897a7d5685876001c94d6ad42b3565563009bac6ae1"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "0c45f70218561af51fd39d039e8f26166d2e3c3dbbb91d084d0b48014c3b33e0"
+      "sha256": "9e64e20fc3fc7de96dc341b6459198a238f5140d983bac83a3b3d8f071f2eaaf"
+    },
+    {
+      "path": "scripts/kerc_content_cache.py",
+      "sha256": "d28b8aabc5cd1da284673ff504e60fb7bd3c76a91618a060fd0360cc1e1fc661"
     },
     {
       "path": "scripts/kerc_residual_economics.py",
@@ -56,19 +60,19 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "bd56ca71f8e267638a2844e8360abf3a79aa22302164318c0c315539664a0578"
+      "sha256": "5fdffc0eb90c4f23dd36f332237954ec500b71caaa1bd50bbf26faf82a1b47b9"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "b1a8a22075465a618aedfc605bd784fe6e36860c040a7c72392bb589c3df5a2b"
+      "sha256": "c8502fbd5c2d4628aee41a1ad380d7b9f8797993ba2feb8a8ce318655a94ac49"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "84dba93fe3f8b6289a8774036a42298275de93f744e9a0e4bc28d363b288dd30"
+      "sha256": "b28d45acdf302a30ac774cc46f259451fa6a2582f6f26c8f0f2e43e08daf211f"
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "760d96cb476809fe1a91404deaa4267d063c0cdc4f86bbdf17e051845b2b2d31"
+      "sha256": "c69f5e6a4fc069661d58420fbc4214cd32d355bc8e3dc4268ab500e4dad61913"
     }
   ],
   "observed_corpus_contract": {

@@ -1018,6 +1018,11 @@ def test_live_kerc_config_requires_bounded_composite_semantics() -> None:
     masc = config["kernel_english_training"]["semantic_corpus_materialization"][
         "masc"
     ]
+    content_cache = config["kernel_english_training"][
+        "semantic_corpus_materialization"
+    ]["content_cache"]
+    assert content_cache["enabled"] is True
+    assert content_cache["producer_role"] != content_cache["verifier_role"]
     assert masc["composite_semantic_records_by_split"] == {
         "private_train": 128,
         "private_dev": 64,

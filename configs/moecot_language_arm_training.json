@@ -519,6 +519,13 @@
       "output_root": "data/training_data/kernel_english_governed_v1",
       "candidate_records_jsonl": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
       "producer_manifest_json": "runtime/kerc_semantic_corpus/producer_manifest.json",
+      "content_cache": {
+        "policy": "project_theseus_kerc_content_addressed_run_cache_v1",
+        "root": "runtime/kerc_semantic_corpus/content_cache",
+        "enabled": true,
+        "producer_role": "semantic_corpus_producer",
+        "verifier_role": "independent_semantic_corpus_verifier"
+      },
       "dolly": {
         "path": "resource_pantry/kerc/databricks-dolly-15k.jsonl",
         "dataset_id": "databricks/databricks-dolly-15k",

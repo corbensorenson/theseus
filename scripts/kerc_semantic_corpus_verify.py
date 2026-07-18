@@ -23,6 +23,11 @@ from typing import Any, Iterable
 
 import pyarrow.parquet as pq
 
+from kerc_content_cache import (
+    dependency_bindings,
+    load_receipt,
+    publish_receipt,
+)
 from kernel_english_protocol import (
     ANSWER_DECISION_POLICY,
     TRAINING_OBJECTIVES,
@@ -74,6 +79,35 @@ MASC_MPQA_SEMANTIC_LABELS = {
 def resolve(path: str | Path) -> Path:
     value = Path(path)
     return value if value.is_absolute() else ROOT / value
+
+
+def verifier_cache_dependency_paths(
+    config_path: Path,
+    corpus: dict[str, Any],
+    *,
+    candidate_path: Path,
+    manifest_path: Path,
+) -> dict[str, Path]:
+    scripts = ROOT / "scripts"
+    paths = {
+        "config": config_path.resolve(),
+        "verifier": Path(__file__).resolve(),
+        "producer": scripts / "kerc_semantic_corpus.py",
+        "cache_integrity": scripts / "kerc_content_cache.py",
+        "kernel_protocol": scripts / "kernel_english_protocol.py",
+        "importance_policy": scripts / "kerc_importance_policy.py",
+        "residual_economics": scripts / "kerc_residual_economics.py",
+        "semantic_config_validator": scripts / "moecot_source_conditioned_pretraining.py",
+        "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
+        "candidate_records": candidate_path,
+        "producer_manifest": manifest_path,
+        "dolly_source": resolve(corpus["dolly"]["path"]),
+        "masc_archive": resolve(corpus["masc"]["archive_path"]),
+        "masc_extracted_tree": resolve(corpus["masc"]["extracted_root"]),
+    }
+    for split, row in sorted(corpus["oasst2"]["files"].items()):
+        paths[f"oasst2_{split}_source"] = resolve(row["path"])
+    return paths
 
 
 def relative(path: Path) -> str:
@@ -2383,7 +2417,12 @@ def source_catalog(corpus: dict[str, Any]) -> dict[str, Any]:
     return {"policy": KERC_SOURCE_CATALOG_POLICY, "sources": sources}
 
 
-def verify(config_path: Path) -> dict[str, Any]:
+def verify(
+    config_path: Path,
+    *,
+    use_cache: bool = True,
+    refresh_cache: bool = False,
+) -> dict[str, Any]:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     stage = validate_kernel_english_config(config)
     corpus = stage["semantic_corpus_materialization"]
@@ -2397,6 +2436,38 @@ def verify(config_path: Path) -> dict[str, Any]:
     producer_path = ROOT / "scripts" / "kerc_semantic_corpus.py"
     if manifest.get("producer_sha256") != sha256_file(producer_path):
         raise ValueError("producer changed after candidate materialization")
+    output_root = resolve(corpus["output_root"])
+    records_path = output_root / "records.jsonl"
+    ledger_path = output_root / "verification_ledger.jsonl"
+    catalog_path = output_root / "semantic_source_catalog.json"
+    report_path = ROOT / "reports" / "runtime" / "kerc_semantic_corpus_verification.json"
+    cache_cfg = corpus["content_cache"]
+    cache_enabled = bool(use_cache and cache_cfg["enabled"])
+    cache_root = resolve(cache_cfg["root"])
+    cache_dependencies = dependency_bindings(
+        verifier_cache_dependency_paths(
+            config_path,
+            corpus,
+            candidate_path=candidate_path,
+            manifest_path=manifest_path,
+        )
+    )
+    cache_outputs = {
+        "canonical_records": records_path,
+        "semantic_source_catalog": catalog_path,
+        "verification_ledger": ledger_path,
+        "verification_report": report_path,
+    }
+    if cache_enabled and not refresh_cache:
+        cached = load_receipt(
+            cache_root,
+            role=str(cache_cfg["verifier_role"]),
+            dependencies=cache_dependencies,
+            outputs=cache_outputs,
+            result_output_id="verification_report",
+        )
+        if cached is not None and cached.get("trigger_state") == "GREEN":
+            return cached
 
     maximum_characters = int(corpus["maximum_source_characters"])
     behavior_expected = independent_oasst_behavior_assignments(corpus["oasst2"])
@@ -2698,10 +2769,6 @@ def verify(config_path: Path) -> dict[str, Any]:
     if allocation_report != manifest.get("rate_distortion_allocation"):
         hard_gaps.append("rate_distortion_allocation_replay_mismatch")
 
-    output_root = resolve(corpus["output_root"])
-    records_path = output_root / "records.jsonl"
-    ledger_path = output_root / "verification_ledger.jsonl"
-    catalog_path = output_root / "semantic_source_catalog.json"
     if hard_gaps:
         canonical_written = 0
         records_sha256 = ""
@@ -2781,16 +2848,29 @@ def verify(config_path: Path) -> dict[str, Any]:
         "score_semantics": "independent source replay and schema admission; not model capability",
         "hard_gaps": sorted(set(hard_gaps)),
     }
-    report_path = ROOT / "reports" / "runtime" / "kerc_semantic_corpus_verification.json"
     write_json_atomic(report_path, report)
+    if cache_enabled and report["trigger_state"] == "GREEN":
+        publish_receipt(
+            cache_root,
+            role=str(cache_cfg["verifier_role"]),
+            dependencies=cache_dependencies,
+            outputs=cache_outputs,
+            result_output_id="verification_report",
+        )
     return report
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
+    parser.add_argument("--no-cache", action="store_true")
+    parser.add_argument("--refresh-cache", action="store_true")
     args = parser.parse_args()
-    report = verify(resolve(args.config))
+    report = verify(
+        resolve(args.config),
+        use_cache=not args.no_cache,
+        refresh_cache=args.refresh_cache,
+    )
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] == "GREEN" else 2
 

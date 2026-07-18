@@ -123,6 +123,13 @@ def kernel_config(tmp_path: Path) -> dict:
                 "output_root": str(tmp_path / "kernel-output"),
                 "candidate_records_jsonl": str(tmp_path / "candidate-records.jsonl"),
                 "producer_manifest_json": str(tmp_path / "producer-manifest.json"),
+                "content_cache": {
+                    "policy": "project_theseus_kerc_content_addressed_run_cache_v1",
+                    "root": str(tmp_path / "content-cache"),
+                    "enabled": True,
+                    "producer_role": "fixture-producer",
+                    "verifier_role": "fixture-verifier",
+                },
                 "dolly": {
                     "path": str(tmp_path / "dolly.jsonl"),
                     "dataset_id": "fixture-dolly",

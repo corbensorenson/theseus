@@ -63,9 +63,11 @@ share toward zero. Public benchmarks are calibration only.
   checkpoint, replay, migration, and MLX canaries remain valid within their narrow
   mechanics ceilings. Existing efficiency evidence remains negative for this exact
   finite-state implementation: residual bits are `4.603579x` source bits and complete
-  Kernel-plus-residual wire is `10.292719x`. Full materialization takes about 21 minutes
-  and independent replay about 18 minutes on this Mac; both now have a content-addressed incremental-cache
-  requirement in K1. The old keyword/linear proxy remains negative only for itself. K1-K7 must now
+  Kernel-plus-residual wire is `10.292719x`. Separate source/code/output-bound exact-run
+  receipts reduce unchanged materialization from `1321.33s` to `1.86s` and independent
+  replay from `1100.62s` to `1.93s`, while mutations fail closed. Changed inputs still
+  require monolithic work, so selective raw-parse/split/packet/economics caches remain a
+  K1 requirement. The old keyword/linear proxy remains negative only for itself. K1-K7 must now
   establish nontrivial semantics, per-unit economics, real interaction amortization,
   coordinated learned stages, independent construct-valid verification, and adequacy
   before K8 may run the matched H1-H8 campaign. No learned-KERC, utility, efficiency,
