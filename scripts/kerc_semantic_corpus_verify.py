@@ -46,6 +46,12 @@ from kerc_masc_event_coreference_verify import (
     POLICY as MASC_EVENT_COREFERENCE_POLICY,
     independently_reconstruct_event_coreference_groups,
 )
+from kerc_masc_mpqa_relations_verify import (
+    COMPACTION_CONTRACT as MASC_MPQA_RELATION_COMPACTION_CONTRACT,
+    POLICY as MASC_MPQA_RELATION_POLICY,
+    RELATION_CONTRACT as MASC_MPQA_RELATION_CONTRACT,
+    independently_reconstruct_mpqa_relation_chains,
+)
 from kerc_residual_economics import (
     calibrate_allocation_lambda,
     residual_wire_bytes,
@@ -107,6 +113,8 @@ def verifier_cache_dependency_paths(
         "residual_economics": scripts / "kerc_residual_economics.py",
         "masc_event_coreference_verifier": scripts
         / "kerc_masc_event_coreference_verify.py",
+        "masc_mpqa_relation_verifier": scripts
+        / "kerc_masc_mpqa_relations_verify.py",
         "semantic_config_validator": scripts / "moecot_source_conditioned_pretraining.py",
         "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
         "candidate_records": candidate_path,
@@ -2274,6 +2282,273 @@ def verify_masc_event_coreference_record(
     }
 
 
+def independent_mpqa_member_concept(
+    member_type: str, member: dict[str, Any]
+) -> str:
+    identity = str(member.get("annotation_id") or member.get("annotation_line_id") or "")
+    fragment = re.sub(r"[^a-z0-9]+", "_", identity.lower()).strip("_")
+    if member_type == "source" and identity == "w":
+        return "mpqa.source.w"
+    receipt_suffix = str(member["source_annotation_sha256"]).partition(":")[2][:12]
+    return f"mpqa.{member_type}.{(fragment or 'unnamed')[:48]}.{receipt_suffix}"
+
+
+def independent_mpqa_span_status(member: dict[str, Any]) -> str:
+    if list(member.get("target_spans") or []):
+        return "explicit"
+    fields = member.get("fields") if isinstance(member.get("fields"), dict) else {}
+    identity = str(member.get("annotation_id") or "").lower()
+    if (
+        str(fields.get("implicit") or "").lower() == "true"
+        or identity in {"w", "implicit"}
+        or member.get("node_type") == "implicit-writer"
+    ):
+        return "declared_implicit"
+    return "zero_width_annotation"
+
+
+def verify_masc_mpqa_relation_record(
+    record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]
+) -> dict[str, Any]:
+    contract = source["mpqa_relations"]
+    annotation = json.loads(json.dumps(expected["annotation"]))
+    annotation.update(
+        {
+            "semantic_claim_scope": contract["claim_scope"],
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "causal_relation_claimed": False,
+            "temporal_relation_claimed": False,
+            "inferred_relation_count": 0,
+        }
+    )
+    if record.get("source_annotation") != annotation:
+        raise ValueError("MASC MPQA-relation raw annotation replay mismatch")
+    source_text = annotation["source_text"]
+    if (
+        record.get("split") != expected["split"]
+        or record.get("source_text") != source_text
+        or record.get("surface_target") != source_text
+        or record.get("provenance", {}).get("source_id") != expected["source_id"]
+        or record.get("provenance", {}).get("source_group")
+        != "masc-document:" + annotation["document_id"]
+    ):
+        raise ValueError("MASC MPQA-relation source or split mismatch")
+    semantic = record.get("semantic_supervision") or {}
+    allowed = {
+        "surface_to_kernel_program_v1",
+        "kernel_program_to_answer_packet_v1",
+        "answer_packet_to_surface_v1",
+    }
+    if semantic.get("objective_authority") != {
+        objective: objective in allowed for objective in TRAINING_OBJECTIVES
+    }:
+        raise ValueError("MASC MPQA-relation objective authority mismatch")
+    if (
+        semantic.get("unique_source_credit") != int(contract["unique_source_credit"])
+        or semantic.get("mpqa_relation_authority")
+        != "manual_complete_expression_attitude_target_source_links"
+    ):
+        raise ValueError("MASC MPQA-relation authority mismatch")
+
+    typed_members: list[tuple[str, dict[str, Any]]] = [
+        ("expression", annotation["expression"]),
+        *(("source", member) for member in annotation["source_chain"]),
+    ]
+    for attitude in annotation["attitudes"]:
+        typed_members.append(("attitude", attitude))
+        typed_members.extend(("target", target) for target in attitude["targets"])
+    unique_members: list[tuple[str, dict[str, Any]]] = []
+    seen_receipts: set[str] = set()
+    for member_type, member in typed_members:
+        receipt = str(member["source_annotation_sha256"])
+        if receipt not in seen_receipts:
+            seen_receipts.add(receipt)
+            unique_members.append((member_type, member))
+    receipt_to_node = {
+        str(member["source_annotation_sha256"]): f"k{index}"
+        for index, (_, member) in enumerate(unique_members)
+    }
+    concepts = {
+        str(member["source_annotation_sha256"]): independent_mpqa_member_concept(
+            member_type, member
+        )
+        for member_type, member in unique_members
+    }
+    outgoing: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    expected_edges = []
+    for edge in annotation["edges"]:
+        normalized = {
+            "edge_type": str(edge["edge_type"]),
+            "from_node_id": receipt_to_node[str(edge["from"])],
+            "to_node_id": receipt_to_node[str(edge["to"])],
+            "order": int(edge.get("order", -1)),
+            "source_field": str(edge["manual_field"]),
+        }
+        outgoing[normalized["from_node_id"]].append(normalized)
+        expected_edges.append(normalized)
+    expected_nodes = []
+    expected_claims = []
+    expected_members = []
+    expected_tags = []
+    for index, (member_type, member) in enumerate(unique_members):
+        node_id = f"k{index}"
+        claim_id = f"claim-{index + 1}"
+        receipt = str(member["source_annotation_sha256"])
+        concept_id = concepts[receipt]
+        span_status = independent_mpqa_span_status(member)
+        arguments = [
+            {
+                "role": "MEMBER_CONCEPT",
+                "value": {"type": "concept", "value": concept_id},
+            },
+            {
+                "role": "RELATION_ID",
+                "value": {"type": "concept", "value": annotation["relation_concept"]},
+            },
+            {
+                "role": "SPAN_STATUS",
+                "value": {
+                    "type": "concept",
+                    "value": "mpqa.span_status." + span_status,
+                },
+            },
+        ]
+        for edge in sorted(outgoing.get(node_id, []), key=canonical_json):
+            role = "LINK_" + safe_symbol(edge["edge_type"], "EDGE")
+            if edge["edge_type"] == "nested_source_member":
+                role += "_" + str(edge["order"])
+            arguments.append(
+                {
+                    "role": role,
+                    "value": {"type": "node_ref", "value": edge["to_node_id"]},
+                }
+            )
+        predicate = "MPQA_" + member_type.upper()
+        expected_nodes.append(
+            {
+                "node_id": node_id,
+                "operator": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": member["target_spans"],
+                "arguments": arguments,
+            }
+        )
+        expected_claims.append(
+            {
+                "claim_id": claim_id,
+                "predicate": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [
+                    {
+                        "role": "MEMBER_CONCEPT",
+                        "value": {"type": "concept", "value": concept_id},
+                    },
+                    {
+                        "role": "RELATION_ID",
+                        "value": {
+                            "type": "concept",
+                            "value": annotation["relation_concept"],
+                        },
+                    },
+                    {
+                        "role": "MEMBER_TYPE",
+                        "value": {
+                            "type": "concept",
+                            "value": "mpqa.member_type." + member_type,
+                        },
+                    },
+                    {
+                        "role": "SPAN_STATUS",
+                        "value": {
+                            "type": "concept",
+                            "value": "mpqa.span_status." + span_status,
+                        },
+                    },
+                ],
+            }
+        )
+        expected_members.append(
+            {
+                "node_id": node_id,
+                "claim_id": claim_id,
+                "member_type": member_type,
+                "concept_id": concept_id,
+                "target_spans": member["target_spans"],
+                "source_annotation_sha256": receipt,
+                "implicit": span_status == "declared_implicit",
+                "span_status": span_status,
+            }
+        )
+        for span in member["target_spans"]:
+            expected_tags.append(
+                {
+                    "tag": "MPQA_RELATION_" + member_type.upper(),
+                    "source_span": span,
+                    "authority": "licensed_manual_annotation",
+                }
+            )
+    expression_node = receipt_to_node[
+        str(annotation["expression"]["source_annotation_sha256"])
+    ]
+    program = record["kernel_packet"]["program"]
+    if program["roots"] != [expression_node] or program["nodes"] != expected_nodes:
+        raise ValueError("MASC MPQA-relation Kernel graph replay mismatch")
+    if record["answer_packet"]["claims"] != expected_claims:
+        raise ValueError("MASC MPQA-relation answer graph replay mismatch")
+    expected_members.sort(key=lambda row: int(row["node_id"][1:]))
+    expected_edges.sort(
+        key=lambda row: (
+            row["edge_type"],
+            int(row["from_node_id"][1:]),
+            row["order"],
+            int(row["to_node_id"][1:]),
+        )
+    )
+    expected_segment = {
+        "schema": "mpqa_relation_chain_v1",
+        "relation_id": annotation["relation_concept"],
+        "members": expected_members,
+        "edges": expected_edges,
+    }
+    if record["kernel_packet"]["residual"]["segment_frame"] != expected_segment:
+        raise ValueError("MASC MPQA-relation residual graph replay mismatch")
+    expected_tags.sort(key=lambda row: (row["source_span"], row["tag"], row["authority"]))
+    if record["kernel_packet"]["residual"]["token_tags"] != expected_tags:
+        raise ValueError("MASC MPQA-relation token-tag replay mismatch")
+    state, deltas = independent_hrl_replay(
+        split=expected["split"],
+        source_id=expected["source_id"],
+        source_group="masc-document:" + annotation["document_id"],
+        source_text=source_text,
+        surface_target=source_text,
+        source_annotation=annotation,
+        interaction_annotation=None,
+        interaction_entries=[],
+        actor_id="licensed_source_context",
+        source=source,
+        valid_realizations=None,
+    )
+    if record.get("hrl_state") != state or record.get("hrl_deltas") != deltas:
+        raise ValueError("MASC MPQA-relation VCM replay mismatch")
+    return {
+        "policy": MASC_MPQA_RELATION_POLICY,
+        "relation_id": annotation["relation_concept"],
+        "member_count": len(expected_members),
+        "edge_count": len(expected_edges),
+        "complete_relation_alignment": True,
+        "inferred_relation_count": 0,
+        "claim_scope": contract["claim_scope"],
+    }
+
+
 def verify_masc_composite_record(
     record: dict[str, Any],
     source: dict[str, Any],
@@ -2790,6 +3065,44 @@ def verify(
         or masc_event_audit["cooccurrence_inferred_relation_count"] != 0
     ):
         raise ValueError("independent MASC event-coreference reconstruction mismatch")
+    mpqa_relation_contract = corpus["masc"]["mpqa_relations"]
+    masc_mpqa_rows, masc_mpqa_audit = independently_reconstruct_mpqa_relation_chains(
+        original_mpqa_root=resolve(mpqa_relation_contract["original_mpqa_root"]),
+        private_dev_documents=set(mpqa_relation_contract["private_dev_documents"]),
+        private_eval_documents=set(mpqa_relation_contract["private_eval_documents"]),
+        maximum_characters=maximum_characters,
+    )
+    masc_mpqa_expected = {
+        row["source_id"]: row
+        for rows in masc_mpqa_rows.values()
+        for row in rows
+    }
+    if (
+        masc_mpqa_audit["policy"] != MASC_MPQA_RELATION_POLICY
+        or mpqa_relation_contract["relation_contract"]
+        != MASC_MPQA_RELATION_CONTRACT
+        or mpqa_relation_contract["source_compaction_contract"]
+        != MASC_MPQA_RELATION_COMPACTION_CONTRACT
+        or masc_mpqa_audit["parser_implementation"]
+        != "verifier_state_machine_attribute_parser_v1"
+        or masc_mpqa_audit["observed_linked_expression_count"]
+        != int(mpqa_relation_contract["expected_observed_linked_expression_count"])
+        or masc_mpqa_audit["admitted_relation_count"]
+        != int(mpqa_relation_contract["expected_admitted_relation_count"])
+        or masc_mpqa_audit["admitted_source_member_count"]
+        != int(mpqa_relation_contract["expected_admitted_source_member_count"])
+        or masc_mpqa_audit["admitted_attitude_count"]
+        != int(mpqa_relation_contract["expected_admitted_attitude_count"])
+        or masc_mpqa_audit["admitted_target_count"]
+        != int(mpqa_relation_contract["expected_admitted_target_count"])
+        or masc_mpqa_audit["record_count_by_split"]
+        != mpqa_relation_contract["records_by_split"]
+        or masc_mpqa_audit["rejection_reason_counts"]
+        != mpqa_relation_contract["expected_rejection_reason_counts"]
+        or masc_mpqa_audit["partial_relation_admission_count"] != 0
+        or masc_mpqa_audit["inferred_relation_count"] != 0
+    ):
+        raise ValueError("independent MASC MPQA-relation reconstruction mismatch")
     expected = {
         **independent_dolly_assignments(
             corpus["dolly"],
@@ -2801,6 +3114,7 @@ def verify(
         **masc_composite_expected,
         **masc_decision_expected,
         **masc_event_expected,
+        **masc_mpqa_expected,
         **independent_oasst_assignments(
             corpus["oasst2"],
             reserved_groups={row["source_group"] for row in behavior_expected.values()},
@@ -2976,6 +3290,69 @@ def verify(
         or producer_event_coreference.get("temporal_relation_claimed") is not False
     ):
         raise ValueError("producer MASC event-coreference telemetry mismatch")
+    producer_mpqa_relations = manifest.get("masc_mpqa_relations") or {}
+    expected_mpqa_source_ids = {
+        split: [row["source_id"] for row in rows]
+        for split, rows in masc_mpqa_rows.items()
+    }
+    expected_mpqa_span_status = dict(
+        Counter(
+            independent_mpqa_span_status(member)
+            for rows in masc_mpqa_rows.values()
+            for row in rows
+            for member in [
+                row["annotation"]["expression"],
+                *row["annotation"]["source_chain"],
+                *row["annotation"]["attitudes"],
+                *[
+                    target
+                    for attitude in row["annotation"]["attitudes"]
+                    for target in attitude["targets"]
+                ],
+            ]
+        )
+    )
+    if (
+        producer_mpqa_relations.get("policy") != MASC_MPQA_RELATION_POLICY
+        or producer_mpqa_relations.get("relation_contract")
+        != MASC_MPQA_RELATION_CONTRACT
+        or producer_mpqa_relations.get("source_compaction_contract")
+        != MASC_MPQA_RELATION_COMPACTION_CONTRACT
+        or producer_mpqa_relations.get("producer_parser_implementation")
+        != "producer_regex_attribute_parser_v1"
+        or producer_mpqa_relations.get("observed_linked_expression_count")
+        != masc_mpqa_audit["observed_linked_expression_count"]
+        or producer_mpqa_relations.get("admitted_relation_count")
+        != masc_mpqa_audit["admitted_relation_count"]
+        or producer_mpqa_relations.get("admitted_source_member_count")
+        != masc_mpqa_audit["admitted_source_member_count"]
+        or producer_mpqa_relations.get("admitted_attitude_count")
+        != masc_mpqa_audit["admitted_attitude_count"]
+        or producer_mpqa_relations.get("admitted_target_count")
+        != masc_mpqa_audit["admitted_target_count"]
+        or producer_mpqa_relations.get("record_count_by_split")
+        != masc_mpqa_audit["record_count_by_split"]
+        or producer_mpqa_relations.get("rejection_reason_counts")
+        != masc_mpqa_audit["rejection_reason_counts"]
+        or producer_mpqa_relations.get("admitted_source_ids_by_split")
+        != expected_mpqa_source_ids
+        or producer_mpqa_relations.get("span_status_count")
+        != expected_mpqa_span_status
+        or producer_mpqa_relations.get("partial_relation_admission_count") != 0
+        or producer_mpqa_relations.get("inferred_relation_count") != 0
+        or producer_mpqa_relations.get("unique_source_credit")
+        != int(mpqa_relation_contract["unique_source_credit"])
+        or producer_mpqa_relations.get("claim_scope")
+        != mpqa_relation_contract["claim_scope"]
+        or producer_mpqa_relations.get("complete_relation_alignment_required")
+        is not True
+        or producer_mpqa_relations.get("complete_sentence_semantics_claimed")
+        is not False
+        or producer_mpqa_relations.get("truth_claimed") is not False
+        or producer_mpqa_relations.get("causal_relation_claimed") is not False
+        or producer_mpqa_relations.get("temporal_relation_claimed") is not False
+    ):
+        raise ValueError("producer MASC MPQA-relation telemetry mismatch")
     raw_records = [
         json.loads(raw)
         for raw in candidate_path.read_text(encoding="utf-8").splitlines()
@@ -3108,6 +3485,8 @@ def verify(
                 if source_id.startswith("masc-decision:")
                 else verify_masc_event_coreference_record(record, source, expected_row)
                 if source_id.startswith("masc-event-coref:")
+                else verify_masc_mpqa_relation_record(record, source, expected_row)
+                if source_id.startswith("masc-mpqa-relation:")
                 else verify_masc_record(record, source, expected_row)
                 if source_key == "masc"
                 else verify_oasst_behavior_record(record, source, expected_row)
@@ -3301,6 +3680,51 @@ def verify(
             "truth_claimed": False,
             "causal_relation_claimed": False,
             "temporal_relation_claimed": False,
+        },
+        "masc_mpqa_relations": {
+            "policy": MASC_MPQA_RELATION_POLICY,
+            "relation_contract": MASC_MPQA_RELATION_CONTRACT,
+            "source_compaction_contract": MASC_MPQA_RELATION_COMPACTION_CONTRACT,
+            "producer_parser_implementation": producer_mpqa_relations[
+                "producer_parser_implementation"
+            ],
+            "verifier_parser_implementation": masc_mpqa_audit[
+                "parser_implementation"
+            ],
+            "parser_implementations_independent": True,
+            "observed_linked_expression_count": masc_mpqa_audit[
+                "observed_linked_expression_count"
+            ],
+            "admitted_relation_count": masc_mpqa_audit[
+                "admitted_relation_count"
+            ],
+            "admitted_source_member_count": masc_mpqa_audit[
+                "admitted_source_member_count"
+            ],
+            "admitted_attitude_count": masc_mpqa_audit[
+                "admitted_attitude_count"
+            ],
+            "admitted_target_count": masc_mpqa_audit[
+                "admitted_target_count"
+            ],
+            "record_count_by_split": masc_mpqa_audit["record_count_by_split"],
+            "rejection_reason_counts": masc_mpqa_audit[
+                "rejection_reason_counts"
+            ],
+            "admitted_source_ids_by_split": expected_mpqa_source_ids,
+            "span_status_count": expected_mpqa_span_status,
+            "partial_relation_admission_count": 0,
+            "inferred_relation_count": 0,
+            "unique_source_credit": int(
+                mpqa_relation_contract["unique_source_credit"]
+            ),
+            "claim_scope": mpqa_relation_contract["claim_scope"],
+            "complete_relation_alignment_required": True,
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "causal_relation_claimed": False,
+            "temporal_relation_claimed": False,
+            "independently_reconstructed_from_raw_mpqa": True,
         },
         "verification_failures": dict(failures),
         "public_training_rows_written": 0,

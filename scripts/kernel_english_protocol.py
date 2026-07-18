@@ -21,6 +21,7 @@ import json
 import math
 import re
 import unicodedata
+from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
@@ -2402,6 +2403,213 @@ def _normalize_segment_frame(
         segment["mentions"] = sorted(
             normalized_mentions,
             key=lambda row: (row["target_spans"], _node_sort_key(row["node_id"])),
+        )
+        return segment
+    if segment.get("schema") == "mpqa_relation_chain_v1":
+        required = {"schema", "relation_id", "members", "edges"}
+        if set(segment) != required:
+            raise KernelProtocolFault(
+                "KERC_MPQA_RELATION_SCHEMA_INVALID", canonical_json(segment), path=path
+            )
+        relation_id = str(segment.get("relation_id") or "")
+        if not re.fullmatch(r"[a-z][a-z0-9_.:-]*", relation_id):
+            raise KernelProtocolFault(
+                "KERC_MPQA_RELATION_ID_INVALID",
+                relation_id,
+                path=f"{path}.relation_id",
+            )
+        members = segment.get("members")
+        if not isinstance(members, list) or not 4 <= len(members) <= 128:
+            raise KernelProtocolFault(
+                "KERC_MPQA_RELATION_MEMBER_CARDINALITY_INVALID",
+                canonical_json(members),
+                path=f"{path}.members",
+            )
+        member_fields = {
+            "node_id",
+            "claim_id",
+            "member_type",
+            "concept_id",
+            "target_spans",
+            "source_annotation_sha256",
+            "implicit",
+            "span_status",
+        }
+        allowed_member_types = {"expression", "source", "attitude", "target"}
+        node_ids: set[str] = set()
+        claim_ids: set[str] = set()
+        members_by_node: dict[str, dict[str, Any]] = {}
+        member_type_counts: Counter[str] = Counter()
+        normalized_members = []
+        for index, member in enumerate(members):
+            member_path = f"{path}.members[{index}]"
+            if not isinstance(member, dict) or set(member) != member_fields:
+                raise KernelProtocolFault(
+                    "KERC_MPQA_RELATION_MEMBER_SCHEMA_INVALID",
+                    canonical_json(member),
+                    path=member_path,
+                )
+            node_id = str(member.get("node_id") or "")
+            claim_id = str(member.get("claim_id") or "")
+            member_type = str(member.get("member_type") or "")
+            concept_id = str(member.get("concept_id") or "")
+            source_hash = str(member.get("source_annotation_sha256") or "")
+            implicit = member.get("implicit")
+            span_status = str(member.get("span_status") or "")
+            if (
+                not re.fullmatch(r"k[0-9]+", node_id)
+                or node_id in node_ids
+                or not claim_id.strip()
+                or claim_id in claim_ids
+                or member_type not in allowed_member_types
+                or not re.fullmatch(r"[a-z][a-z0-9_.:-]*", concept_id)
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", source_hash)
+                or not isinstance(implicit, bool)
+                or span_status
+                not in {"explicit", "declared_implicit", "zero_width_annotation"}
+                or implicit != (span_status == "declared_implicit")
+                or (span_status == "declared_implicit" and member_type not in {"expression", "source"})
+            ):
+                raise KernelProtocolFault(
+                    "KERC_MPQA_RELATION_MEMBER_VALUE_INVALID",
+                    canonical_json(member),
+                    path=member_path,
+                )
+            normalized = copy.deepcopy(member)
+            normalized["target_spans"] = _validate_residual_spans(
+                member["target_spans"],
+                source_character_length=source_character_length,
+                path=f"{member_path}.target_spans",
+            )
+            if (
+                (span_status == "explicit" and not normalized["target_spans"])
+                or (
+                    span_status in {"declared_implicit", "zero_width_annotation"}
+                    and normalized["target_spans"]
+                )
+            ):
+                raise KernelProtocolFault(
+                    "KERC_MPQA_RELATION_MEMBER_SPAN_INVALID",
+                    canonical_json(member),
+                    path=f"{member_path}.target_spans",
+                )
+            node_ids.add(node_id)
+            claim_ids.add(claim_id)
+            members_by_node[node_id] = normalized
+            member_type_counts[member_type] += 1
+            normalized_members.append(normalized)
+        if (
+            member_type_counts["expression"] != 1
+            or member_type_counts["source"] < 1
+            or member_type_counts["attitude"] < 1
+            or member_type_counts["target"] < 1
+        ):
+            raise KernelProtocolFault(
+                "KERC_MPQA_RELATION_MEMBER_TYPES_INCOMPLETE",
+                canonical_json(member_type_counts),
+                path=f"{path}.members",
+            )
+        edges = segment.get("edges")
+        if not isinstance(edges, list) or not edges:
+            raise KernelProtocolFault(
+                "KERC_MPQA_RELATION_EDGES_INVALID",
+                canonical_json(edges),
+                path=f"{path}.edges",
+            )
+        edge_fields = {
+            "edge_type",
+            "from_node_id",
+            "to_node_id",
+            "order",
+            "source_field",
+        }
+        edge_rules = {
+            "nested_source_member": ("expression", "source", "nested-source"),
+            "attitude_link": ("expression", "attitude", "attitude-link"),
+            "target_link": ("attitude", "target", "target-link"),
+        }
+        normalized_edges = []
+        observed_edges: set[tuple[str, str, str, int]] = set()
+        incoming_nodes: set[str] = set()
+        source_orders: list[int] = []
+        for index, edge in enumerate(edges):
+            edge_path = f"{path}.edges[{index}]"
+            if not isinstance(edge, dict) or set(edge) != edge_fields:
+                raise KernelProtocolFault(
+                    "KERC_MPQA_RELATION_EDGE_SCHEMA_INVALID",
+                    canonical_json(edge),
+                    path=edge_path,
+                )
+            edge_type = str(edge.get("edge_type") or "")
+            from_node = str(edge.get("from_node_id") or "")
+            to_node = str(edge.get("to_node_id") or "")
+            source_field = str(edge.get("source_field") or "")
+            order = edge.get("order")
+            if (
+                edge_type not in edge_rules
+                or from_node not in members_by_node
+                or to_node not in members_by_node
+                or from_node == to_node
+                or not isinstance(order, int)
+            ):
+                raise KernelProtocolFault(
+                    "KERC_MPQA_RELATION_EDGE_VALUE_INVALID",
+                    canonical_json(edge),
+                    path=edge_path,
+                )
+            expected_from, expected_to, expected_field = edge_rules[edge_type]
+            if (
+                members_by_node[from_node]["member_type"] != expected_from
+                or members_by_node[to_node]["member_type"] != expected_to
+                or source_field != expected_field
+                or (edge_type == "nested_source_member" and order < 0)
+                or (edge_type != "nested_source_member" and order != -1)
+            ):
+                raise KernelProtocolFault(
+                    "KERC_MPQA_RELATION_EDGE_TYPE_INVALID",
+                    canonical_json(edge),
+                    path=edge_path,
+                )
+            identity = (edge_type, from_node, to_node, order)
+            if identity in observed_edges:
+                raise KernelProtocolFault(
+                    "KERC_MPQA_RELATION_EDGE_DUPLICATE",
+                    canonical_json(edge),
+                    path=edge_path,
+                )
+            observed_edges.add(identity)
+            incoming_nodes.add(to_node)
+            if edge_type == "nested_source_member":
+                source_orders.append(order)
+            normalized_edges.append(copy.deepcopy(edge))
+        expression_node = next(
+            node_id
+            for node_id, member in members_by_node.items()
+            if member["member_type"] == "expression"
+        )
+        if incoming_nodes != node_ids - {expression_node}:
+            raise KernelProtocolFault(
+                "KERC_MPQA_RELATION_GRAPH_INCOMPLETE",
+                canonical_json(sorted(node_ids - {expression_node} - incoming_nodes)),
+                path=f"{path}.edges",
+            )
+        if sorted(source_orders) != list(range(len(source_orders))):
+            raise KernelProtocolFault(
+                "KERC_MPQA_RELATION_SOURCE_ORDER_INVALID",
+                canonical_json(source_orders),
+                path=f"{path}.edges",
+            )
+        segment["members"] = sorted(
+            normalized_members, key=lambda row: _node_sort_key(row["node_id"])
+        )
+        segment["edges"] = sorted(
+            normalized_edges,
+            key=lambda row: (
+                row["edge_type"],
+                _node_sort_key(row["from_node_id"]),
+                row["order"],
+                _node_sort_key(row["to_node_id"]),
+            ),
         )
         return segment
     if set(segment) != {"schema", "frames"} or segment.get("schema") != "framenet_composite_v1":

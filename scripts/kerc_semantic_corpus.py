@@ -41,6 +41,12 @@ from kerc_masc_event_coreference import (
     POLICY as MASC_EVENT_COREFERENCE_POLICY,
     reconstruct_event_coreference_groups,
 )
+from kerc_masc_mpqa_relations import (
+    COMPACTION_CONTRACT as MASC_MPQA_RELATION_COMPACTION_CONTRACT,
+    POLICY as MASC_MPQA_RELATION_POLICY,
+    RELATION_CONTRACT as MASC_MPQA_RELATION_CONTRACT,
+    reconstruct_mpqa_relation_chains,
+)
 from kerc_content_cache import (
     ContentObjectCache,
     dependency_bindings,
@@ -114,6 +120,7 @@ def producer_cache_dependency_paths(
         "importance_policy": scripts / "kerc_importance_policy.py",
         "residual_economics": scripts / "kerc_residual_economics.py",
         "masc_event_coreference_producer": scripts / "kerc_masc_event_coreference.py",
+        "masc_mpqa_relation_producer": scripts / "kerc_masc_mpqa_relations.py",
         "semantic_config_validator": scripts / "moecot_source_conditioned_pretraining.py",
         "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
         "dolly_source": resolve(corpus["dolly"]["path"]),
@@ -2519,6 +2526,233 @@ def masc_event_coreference_record(
     return record
 
 
+def mpqa_member_concept(member_type: str, member: dict[str, Any]) -> str:
+    identity = str(member.get("annotation_id") or member.get("annotation_line_id") or "")
+    fragment = re.sub(r"[^a-z0-9]+", "_", identity.casefold()).strip("_")
+    if member_type == "source" and identity == "w":
+        return "mpqa.source.w"
+    digest = str(member["source_annotation_sha256"]).split(":", 1)[1][:12]
+    return f"mpqa.{member_type}.{(fragment or 'unnamed')[:48]}.{digest}"
+
+
+def mpqa_member_span_status(member: dict[str, Any]) -> str:
+    if member["target_spans"]:
+        return "explicit"
+    fields = member.get("fields") or {}
+    if (
+        str(fields.get("implicit") or "").casefold() == "true"
+        or str(member.get("annotation_id") or "").casefold() in {"w", "implicit"}
+        or member.get("node_type") == "implicit-writer"
+    ):
+        return "declared_implicit"
+    return "zero_width_annotation"
+
+
+def masc_mpqa_relation_record(
+    row: dict[str, Any],
+    *,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    contract = source["mpqa_relations"]
+    annotation = copy.deepcopy(row["annotation"])
+    annotation.update(
+        {
+            "semantic_claim_scope": contract["claim_scope"],
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "causal_relation_claimed": False,
+            "temporal_relation_claimed": False,
+            "inferred_relation_count": 0,
+        }
+    )
+    typed_members: list[tuple[str, dict[str, Any]]] = [
+        ("expression", annotation["expression"]),
+        *(("source", member) for member in annotation["source_chain"]),
+    ]
+    for attitude in annotation["attitudes"]:
+        typed_members.append(("attitude", attitude))
+        typed_members.extend(("target", target) for target in attitude["targets"])
+    unique_members: list[tuple[str, dict[str, Any]]] = []
+    seen_receipts: set[str] = set()
+    for member_type, member in typed_members:
+        receipt = str(member["source_annotation_sha256"])
+        if receipt in seen_receipts:
+            continue
+        seen_receipts.add(receipt)
+        unique_members.append((member_type, member))
+    receipt_to_node = {
+        str(member["source_annotation_sha256"]): f"k{index}"
+        for index, (_, member) in enumerate(unique_members)
+    }
+    concepts = {
+        str(member["source_annotation_sha256"]): mpqa_member_concept(
+            member_type, member
+        )
+        for member_type, member in unique_members
+    }
+    outgoing: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    segment_edges: list[dict[str, Any]] = []
+    for edge in annotation["edges"]:
+        from_node = receipt_to_node[str(edge["from"])]
+        to_node = receipt_to_node[str(edge["to"])]
+        order = int(edge.get("order", -1))
+        normalized = {
+            "edge_type": str(edge["edge_type"]),
+            "from_node_id": from_node,
+            "to_node_id": to_node,
+            "order": order,
+            "source_field": str(edge["manual_field"]),
+        }
+        segment_edges.append(normalized)
+        outgoing[from_node].append(normalized)
+    nodes: list[dict[str, Any]] = []
+    claims: list[dict[str, Any]] = []
+    segment_members: list[dict[str, Any]] = []
+    token_tags: list[dict[str, Any]] = []
+    for index, (member_type, member) in enumerate(unique_members):
+        node_id = f"k{index}"
+        claim_id = f"claim-{index + 1}"
+        receipt = str(member["source_annotation_sha256"])
+        concept_id = concepts[receipt]
+        span_status = mpqa_member_span_status(member)
+        arguments: list[dict[str, Any]] = [
+            {
+                "role": "MEMBER_CONCEPT",
+                "value": {"type": "concept", "value": concept_id},
+            },
+            {
+                "role": "RELATION_ID",
+                "value": {
+                    "type": "concept",
+                    "value": annotation["relation_concept"],
+                },
+            },
+            {
+                "role": "SPAN_STATUS",
+                "value": {
+                    "type": "concept",
+                    "value": "mpqa.span_status." + span_status,
+                },
+            },
+        ]
+        for edge in sorted(outgoing.get(node_id, []), key=canonical_json):
+            role = "LINK_" + safe_symbol(edge["edge_type"], prefix="EDGE")
+            if edge["edge_type"] == "nested_source_member":
+                role += "_" + str(edge["order"])
+            arguments.append(
+                {
+                    "role": role,
+                    "value": {"type": "node_ref", "value": edge["to_node_id"]},
+                }
+            )
+        predicate = "MPQA_" + member_type.upper()
+        common = {
+            "predicate": predicate,
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+        }
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": predicate,
+                **{key: value for key, value in common.items() if key != "predicate"},
+                "derivation": "preserved",
+                "source_spans": copy.deepcopy(member["target_spans"]),
+                "arguments": arguments,
+            }
+        )
+        claim_arguments = [
+            {
+                "role": "MEMBER_CONCEPT",
+                "value": {"type": "concept", "value": concept_id},
+            },
+            {
+                "role": "RELATION_ID",
+                "value": {
+                    "type": "concept",
+                    "value": annotation["relation_concept"],
+                },
+            },
+            {
+                "role": "MEMBER_TYPE",
+                "value": {
+                    "type": "concept",
+                    "value": "mpqa.member_type." + member_type,
+                },
+            },
+            {
+                "role": "SPAN_STATUS",
+                "value": {
+                    "type": "concept",
+                    "value": "mpqa.span_status." + span_status,
+                },
+            },
+        ]
+        claims.append({"claim_id": claim_id, **common, "arguments": claim_arguments})
+        segment_members.append(
+            {
+                "node_id": node_id,
+                "claim_id": claim_id,
+                "member_type": member_type,
+                "concept_id": concept_id,
+                "target_spans": copy.deepcopy(member["target_spans"]),
+                "source_annotation_sha256": receipt,
+                "implicit": span_status == "declared_implicit",
+                "span_status": span_status,
+            }
+        )
+        for target_span in member["target_spans"]:
+            token_tags.append(
+                {
+                    "tag": "MPQA_RELATION_" + member_type.upper(),
+                    "source_span": copy.deepcopy(target_span),
+                    "authority": "licensed_manual_annotation",
+                }
+            )
+    expression_receipt = str(annotation["expression"]["source_annotation_sha256"])
+    expression_node = receipt_to_node[expression_receipt]
+    record = base_record(
+        split=row["split"],
+        source_text=annotation["source_text"],
+        surface_target=annotation["source_text"],
+        program={"roots": [expression_node], "nodes": nodes},
+        answer_packet={
+            "claims": claims,
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "source_authored"},
+        },
+        source=source,
+        source_id=row["source_id"],
+        source_group="masc-document:" + annotation["document_id"],
+        objectives={
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        },
+        producer_sha256=producer_sha256,
+        source_annotation=annotation,
+        exact_residual=True,
+        segment_frame={
+            "schema": "mpqa_relation_chain_v1",
+            "relation_id": annotation["relation_concept"],
+            "members": segment_members,
+            "edges": segment_edges,
+        },
+        token_tags=token_tags,
+    )
+    record["semantic_supervision"]["unique_source_credit"] = int(
+        contract["unique_source_credit"]
+    )
+    record["semantic_supervision"]["mpqa_relation_authority"] = (
+        "manual_complete_expression_attitude_target_source_links"
+    )
+    return record
+
+
 def interaction_predecessors(
     rows: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
@@ -2804,6 +3038,47 @@ def produce(
         or masc_event_coreference_audit["cooccurrence_inferred_relation_count"] != 0
     ):
         raise ValueError("MASC event-coreference producer reconstruction mismatch")
+    mpqa_relation_contract = corpus["masc"]["mpqa_relations"]
+    masc_mpqa_relation_selected, masc_mpqa_relation_audit = (
+        reconstruct_mpqa_relation_chains(
+            original_mpqa_root=resolve(
+                mpqa_relation_contract["original_mpqa_root"]
+            ),
+            private_dev_documents=set(
+                mpqa_relation_contract["private_dev_documents"]
+            ),
+            private_eval_documents=set(
+                mpqa_relation_contract["private_eval_documents"]
+            ),
+            maximum_characters=int(corpus["maximum_source_characters"]),
+        )
+    )
+    if (
+        masc_mpqa_relation_audit["policy"] != MASC_MPQA_RELATION_POLICY
+        or mpqa_relation_contract["relation_contract"]
+        != MASC_MPQA_RELATION_CONTRACT
+        or mpqa_relation_contract["source_compaction_contract"]
+        != MASC_MPQA_RELATION_COMPACTION_CONTRACT
+        or masc_mpqa_relation_audit["parser_implementation"]
+        != "producer_regex_attribute_parser_v1"
+        or masc_mpqa_relation_audit["observed_linked_expression_count"]
+        != int(mpqa_relation_contract["expected_observed_linked_expression_count"])
+        or masc_mpqa_relation_audit["admitted_relation_count"]
+        != int(mpqa_relation_contract["expected_admitted_relation_count"])
+        or masc_mpqa_relation_audit["admitted_source_member_count"]
+        != int(mpqa_relation_contract["expected_admitted_source_member_count"])
+        or masc_mpqa_relation_audit["admitted_attitude_count"]
+        != int(mpqa_relation_contract["expected_admitted_attitude_count"])
+        or masc_mpqa_relation_audit["admitted_target_count"]
+        != int(mpqa_relation_contract["expected_admitted_target_count"])
+        or masc_mpqa_relation_audit["record_count_by_split"]
+        != mpqa_relation_contract["records_by_split"]
+        or masc_mpqa_relation_audit["rejection_reason_counts"]
+        != mpqa_relation_contract["expected_rejection_reason_counts"]
+        or masc_mpqa_relation_audit["partial_relation_admission_count"] != 0
+        or masc_mpqa_relation_audit["inferred_relation_count"] != 0
+    ):
+        raise ValueError("MASC MPQA-relation producer reconstruction mismatch")
     oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
     oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
         corpus["oasst2"]
@@ -2903,6 +3178,15 @@ def produce(
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
         for row in masc_event_coreference_selected[split]:
             record = masc_event_coreference_record(
+                row,
+                source=corpus["masc"],
+                producer_sha256=producer_sha256,
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
+        for row in masc_mpqa_relation_selected[split]:
+            record = masc_mpqa_relation_record(
                 row,
                 source=corpus["masc"],
                 producer_sha256=producer_sha256,
@@ -3097,6 +3381,7 @@ def produce(
                 "masc_event_coreference": len(
                     masc_event_coreference_selected[split]
                 ),
+                "masc_mpqa_relations": len(masc_mpqa_relation_selected[split]),
                 "oasst2": len(oasst_selected[split]),
                 "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
             }
@@ -3234,6 +3519,67 @@ def produce(
             ),
             "claim_scope": event_coreference_contract["claim_scope"],
             "complete_group_alignment_required": True,
+            "complete_sentence_semantics_claimed": False,
+            "truth_claimed": False,
+            "causal_relation_claimed": False,
+            "temporal_relation_claimed": False,
+        },
+        "masc_mpqa_relations": {
+            "policy": MASC_MPQA_RELATION_POLICY,
+            "relation_contract": MASC_MPQA_RELATION_CONTRACT,
+            "source_compaction_contract": MASC_MPQA_RELATION_COMPACTION_CONTRACT,
+            "producer_parser_implementation": masc_mpqa_relation_audit[
+                "parser_implementation"
+            ],
+            "observed_linked_expression_count": masc_mpqa_relation_audit[
+                "observed_linked_expression_count"
+            ],
+            "admitted_relation_count": masc_mpqa_relation_audit[
+                "admitted_relation_count"
+            ],
+            "admitted_source_member_count": masc_mpqa_relation_audit[
+                "admitted_source_member_count"
+            ],
+            "admitted_attitude_count": masc_mpqa_relation_audit[
+                "admitted_attitude_count"
+            ],
+            "admitted_target_count": masc_mpqa_relation_audit[
+                "admitted_target_count"
+            ],
+            "record_count_by_split": masc_mpqa_relation_audit[
+                "record_count_by_split"
+            ],
+            "rejection_reason_counts": masc_mpqa_relation_audit[
+                "rejection_reason_counts"
+            ],
+            "partial_relation_admission_count": 0,
+            "inferred_relation_count": 0,
+            "admitted_source_ids_by_split": {
+                split: [row["source_id"] for row in rows]
+                for split, rows in masc_mpqa_relation_selected.items()
+            },
+            "span_status_count": dict(
+                Counter(
+                    mpqa_member_span_status(member)
+                    for rows in masc_mpqa_relation_selected.values()
+                    for row in rows
+                    for member in [
+                        row["annotation"]["expression"],
+                        *row["annotation"]["source_chain"],
+                        *row["annotation"]["attitudes"],
+                        *[
+                            target
+                            for attitude in row["annotation"]["attitudes"]
+                            for target in attitude["targets"]
+                        ],
+                    ]
+                )
+            ),
+            "unique_source_credit": int(
+                mpqa_relation_contract["unique_source_credit"]
+            ),
+            "claim_scope": mpqa_relation_contract["claim_scope"],
+            "complete_relation_alignment_required": True,
             "complete_sentence_semantics_claimed": False,
             "truth_claimed": False,
             "causal_relation_claimed": False,

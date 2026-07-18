@@ -36,15 +36,15 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "c80296fac2d5926296ce2af1742b6ab31d11de681f8e2006458981e79441182e"
+      "sha256": "ccfd36d1ed719ff0964886acbef5365096e7b41375c97c97366c0e6aa29d7f43"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "2657e7a7b6d3549c22db9400bce9b4202af4eb0b6e1068cb3ae0249707e20ba4"
+      "sha256": "35f3a60897a3f8f790e6aa9c86fa6fa62003e73e7304a8e499d9abea5e281e88"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "735b2d04bafb8c994fd04cdd6f0b9c34fec017ec45df8f93d15616203d339985"
+      "sha256": "29f566f686a82a877c0095583404093a26f11e644cecb343f718775c50d873bd"
     },
     {
       "path": "scripts/kerc_masc_event_coreference.py",
@@ -53,6 +53,14 @@
     {
       "path": "scripts/kerc_masc_event_coreference_verify.py",
       "sha256": "9915747e4f4451a828131a84d82b962e963e77212dc5d13b816b4d73357b1822"
+    },
+    {
+      "path": "scripts/kerc_masc_mpqa_relations.py",
+      "sha256": "e001bfc52126915fdffb17c5867796dd9c55b8e0f4d6a8efe33c853af76a7d1a"
+    },
+    {
+      "path": "scripts/kerc_masc_mpqa_relations_verify.py",
+      "sha256": "ecb56f1a6f6ea01e985787d4e073b3112f262ddc475546a082d2bdc0658a1e7d"
     },
     {
       "path": "scripts/kerc_content_cache.py",
@@ -68,27 +76,27 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "029d17221045935f19b6d4c3d8cac207a618136a9a82624b39f3516a3ed3eeeb"
+      "sha256": "60ccc537270783417c044160ff794fa7f51321dfbbba8a83d66ab3e61f4c651e"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "ba8c2a5a1a76baf79478e3640aa667b9d9f4c182b246c9f67d6bbbaf6e8a3a12"
+      "sha256": "be1026c899356f7dbd57480b0859024552d68b3778ea66a642badce5dd5f4b12"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "5c64dfad1b2c45bcc80df5a7ce59fbd4bb6d7ec0cdd8b34076e235ccfa13c833"
+      "sha256": "89fbfb7f07a982fd0981ab9c65742ff3d989f535b32f80350dd6e7e3c1f612dd"
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "5b15a308bc69e206411d71d0811760e7cfdccc5197c39b492ddce90d5f4fc362"
+      "sha256": "4a919807cb780950bc7bc6342d0fdf41995e095fadf97a8ac493ca1874b2ede6"
     }
   ],
   "observed_corpus_contract": {
-    "record_count": 11949,
-    "multi_node_program_count": 525,
+    "record_count": 12795,
+    "multi_node_program_count": 1371,
     "multi_root_program_count": 512,
     "non_preserved_derivation_count": 0,
-    "multi_claim_answer_count": 525,
+    "multi_claim_answer_count": 1371,
     "byte_literal_value_count": 18759,
     "correction_alternative_count": 0,
     "concept_capsule_count": 0,
@@ -141,9 +149,9 @@
       "id": "kerc.surface_to_kernel_compiler",
       "paper_sections": ["5.5", "10.4"],
       "status": "approximate",
-      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/standard_causal_transformer_model.py"],
-      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A third 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent global and local-context alignment, bounded mention-centered source windows, whole-group rejection, and zero additional source credit. The decision-semantic stratum contributes 3,666 typed nonliteral arguments for observed modality, polarity, temporal orientation, event, and subjectivity fields. It still does not resolve other cross-annotation links, scope, truth, complete sentence semantics, or learned competence; unsupported source fields remain opaque bytes.",
+      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
+      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected, repeated source positions and zero-width annotations remain explicit in the ABI, inferred-link count is zero, and unique-source credit is zero. The decision-semantic stratum contributes 3,666 typed nonliteral arguments. Scope, truth, causal/temporal relations, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
       "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
       "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
     },
@@ -183,7 +191,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
       "evidence_refs": ["tests/test_kernel_english_protocol.py"],
-      "current_finding": "Typed claims and decisions exist. The independently replayed MASC composite, decision-semantic, and event-coreference strata add 525 multi-claim packets; 13 event-group packets preserve 215 manually grouped mentions, while the decision-semantic stratum carries typed observed modality, polarity, temporal orientation, event, and subjectivity fields. There are still no derivation edges, contradictions, quantities, broader cross-annotation evidence links, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
+      "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, and complete MPQA-relation strata now add 1,371 multi-claim packets. The 13 event-group packets preserve 215 manually grouped mentions; 846 MPQA packets preserve expression, source-chain, attitude, and target members plus manual link topology; the decision-semantic stratum carries typed observed modality, polarity, temporal orientation, event, and subjectivity fields. There are still no derivation proofs, contradictions, quantities, general scope, causal/temporal relation graphs, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
       "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
       "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
     },

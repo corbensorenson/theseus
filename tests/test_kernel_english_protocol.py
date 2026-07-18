@@ -751,6 +751,140 @@ def test_event_coreference_segment_requires_complete_typed_group() -> None:
         )
 
 
+def test_mpqa_relation_segment_requires_complete_typed_graph() -> None:
+    source = "Alice strongly likes reliable systems."
+    state = memory.create_hierarchical_residual_state(
+        "mpqa-relation", scope=scope("mpqa-relation")
+    )
+    member_types = ("expression", "source", "attitude", "target")
+    spans = ([6, 20], [0, 5], [15, 20], [21, 37])
+    nodes = [
+        {
+            "node_id": f"k{index}",
+            "operator": "MPQA_" + member_type.upper(),
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "derivation": "preserved",
+            "source_spans": [span],
+            "arguments": [
+                {
+                    "role": "CONCEPT",
+                    "value": {
+                        "type": "concept",
+                        "value": f"mpqa.{member_type}.fixture{index}",
+                    },
+                }
+            ],
+        }
+        for index, (member_type, span) in enumerate(zip(member_types, spans))
+    ]
+    segment = {
+        "schema": "mpqa_relation_chain_v1",
+        "relation_id": "masc.mpqa_relation.0123456789abcdef01234567",
+        "members": [
+            {
+                "node_id": f"k{index}",
+                "claim_id": f"claim-{index}",
+                "member_type": member_type,
+                "concept_id": f"mpqa.{member_type}.fixture{index}",
+                "target_spans": [span],
+                "source_annotation_sha256": "sha256:" + str(index + 1) * 64,
+                "implicit": False,
+                "span_status": "explicit",
+            }
+            for index, (member_type, span) in enumerate(zip(member_types, spans))
+        ],
+        "edges": [
+            {
+                "edge_type": "nested_source_member",
+                "from_node_id": "k0",
+                "to_node_id": "k1",
+                "order": 0,
+                "source_field": "nested-source",
+            },
+            {
+                "edge_type": "attitude_link",
+                "from_node_id": "k0",
+                "to_node_id": "k2",
+                "order": -1,
+                "source_field": "attitude-link",
+            },
+            {
+                "edge_type": "target_link",
+                "from_node_id": "k2",
+                "to_node_id": "k3",
+                "order": -1,
+                "source_field": "target-link",
+            },
+        ],
+    }
+    packet = kernel.build_kernel_packet(
+        source, {"roots": ["k0"], "nodes": nodes}, hrl_state=state, segment_frame=segment
+    )
+    normalized_segment = packet["residual"]["segment_frame"]
+    assert normalized_segment["relation_id"] == segment["relation_id"]
+    assert {edge["edge_type"] for edge in normalized_segment["edges"]} == {
+        "nested_source_member",
+        "attitude_link",
+        "target_link",
+    }
+    assert kernel.validate_kernel_packet(packet, local_hrl_state=state)["state"] == "READY"
+
+    implicit_expression = copy.deepcopy(segment)
+    implicit_expression["members"][0]["target_spans"] = []
+    implicit_expression["members"][0]["implicit"] = True
+    implicit_expression["members"][0]["span_status"] = "declared_implicit"
+    implicit_nodes = copy.deepcopy(nodes)
+    implicit_nodes[0]["source_spans"] = []
+    implicit_packet = kernel.build_kernel_packet(
+        source,
+        {"roots": ["k0"], "nodes": implicit_nodes},
+        hrl_state=state,
+        segment_frame=implicit_expression,
+    )
+    assert implicit_packet["residual"]["segment_frame"]["members"][0][
+        "implicit"
+    ] is True
+
+    missing_edge = copy.deepcopy(segment)
+    missing_edge["edges"] = missing_edge["edges"][:-1]
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_MPQA_RELATION_GRAPH_INCOMPLETE"
+    ):
+        kernel.build_kernel_packet(
+            source,
+            {"roots": ["k0"], "nodes": nodes},
+            hrl_state=state,
+            segment_frame=missing_edge,
+        )
+
+    duplicate_member = copy.deepcopy(segment)
+    duplicate_member["members"][1]["node_id"] = "k0"
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_MPQA_RELATION_MEMBER_VALUE_INVALID"
+    ):
+        kernel.build_kernel_packet(
+            source,
+            {"roots": ["k0"], "nodes": nodes},
+            hrl_state=state,
+            segment_frame=duplicate_member,
+        )
+
+    empty_explicit_span = copy.deepcopy(segment)
+    empty_explicit_span["members"][3]["target_spans"] = []
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_MPQA_RELATION_MEMBER_SPAN_INVALID"
+    ):
+        kernel.build_kernel_packet(
+            source,
+            {"roots": ["k0"], "nodes": nodes},
+            hrl_state=state,
+            segment_frame=empty_explicit_span,
+        )
+
+
 def test_kernel_program_rejects_unknown_handles_cycles_and_unsafe_macros() -> None:
     objects = protected()["protected_objects"]
     bad_handle = program()

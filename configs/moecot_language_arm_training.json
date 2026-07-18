@@ -639,6 +639,43 @@
           "unique_source_credit": 0,
           "claim_scope": "manual named GATE event-coreference membership and independently aligned mention identity only; no co-occurrence inference, truth, causal, temporal, or complete-sentence-semantic claim"
         },
+        "mpqa_relations": {
+          "policy": "project_theseus_kerc_masc_manual_mpqa_relation_v1",
+          "relation_contract": "complete_manual_mpqa_expression_attitude_target_source_chain_v1",
+          "source_compaction_contract": "uniform_radius_relation_member_source_windows_v1",
+          "original_mpqa_root": "resource_pantry/kerc/MASC-3.0.0/original-annotations/mpqa_opinion",
+          "private_dev_documents": [
+            "20000415_apw_eng-NEW",
+            "602CZL285-1",
+            "Article247_3500",
+            "HistoryJerusalem"
+          ],
+          "private_eval_documents": [
+            "110CYL070",
+            "Article247_66",
+            "enron-thread-159550",
+            "wsj_2465"
+          ],
+          "expected_observed_linked_expression_count": 1459,
+          "expected_admitted_relation_count": 846,
+          "expected_admitted_source_member_count": 1506,
+          "expected_admitted_attitude_count": 968,
+          "expected_admitted_target_count": 972,
+          "records_by_split": {
+            "private_train": 713,
+            "private_dev": 93,
+            "private_eval": 40
+          },
+          "expected_rejection_reason_counts": {
+            "ambiguous_or_missing_attitude": 67,
+            "ambiguous_or_missing_source_agent": 304,
+            "ambiguous_or_missing_target": 51,
+            "missing_source_chain": 1,
+            "missing_target_link": 190
+          },
+          "unique_source_credit": 0,
+          "claim_scope": "manual MPQA direct-subjective to attitude, attitude to target, and ordered nested-source membership from complete uniquely resolved raw annotation links; no inferred relation, proposition scope, truth, causality, temporality, complete sentence semantics, or learned competence"
+        },
         "allowed_objectives": [
           "surface_to_kernel_program_v1",
           "kernel_program_to_answer_packet_v1",

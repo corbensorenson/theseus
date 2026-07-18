@@ -908,6 +908,66 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         or not str(event_coreference.get("claim_scope") or "")
     ):
         raise ValueError("KERC MASC event-coreference contract invalid")
+    mpqa_relations = sources["masc"].get("mpqa_relations")
+    mpqa_relation_counts = (
+        mpqa_relations.get("records_by_split")
+        if isinstance(mpqa_relations, dict)
+        else None
+    )
+    mpqa_rejection_counts = (
+        mpqa_relations.get("expected_rejection_reason_counts")
+        if isinstance(mpqa_relations, dict)
+        else None
+    )
+    mpqa_dev_documents = (
+        mpqa_relations.get("private_dev_documents")
+        if isinstance(mpqa_relations, dict)
+        else None
+    )
+    mpqa_eval_documents = (
+        mpqa_relations.get("private_eval_documents")
+        if isinstance(mpqa_relations, dict)
+        else None
+    )
+    if (
+        not isinstance(mpqa_relations, dict)
+        or mpqa_relations.get("policy")
+        != "project_theseus_kerc_masc_manual_mpqa_relation_v1"
+        or mpqa_relations.get("relation_contract")
+        != "complete_manual_mpqa_expression_attitude_target_source_chain_v1"
+        or mpqa_relations.get("source_compaction_contract")
+        != "uniform_radius_relation_member_source_windows_v1"
+        or not str(mpqa_relations.get("original_mpqa_root") or "")
+        or not isinstance(mpqa_dev_documents, list)
+        or not mpqa_dev_documents
+        or len(set(mpqa_dev_documents)) != len(mpqa_dev_documents)
+        or any(not str(value) for value in mpqa_dev_documents)
+        or not isinstance(mpqa_eval_documents, list)
+        or not mpqa_eval_documents
+        or len(set(mpqa_eval_documents)) != len(mpqa_eval_documents)
+        or any(not str(value) for value in mpqa_eval_documents)
+        or set(mpqa_dev_documents) & set(mpqa_eval_documents)
+        or not isinstance(mpqa_relation_counts, dict)
+        or tuple(mpqa_relation_counts)
+        != ("private_train", "private_dev", "private_eval")
+        or any(int(value) < 0 for value in mpqa_relation_counts.values())
+        or sum(int(value) for value in mpqa_relation_counts.values())
+        != int(mpqa_relations.get("expected_admitted_relation_count", -1))
+        or int(mpqa_relations.get("expected_observed_linked_expression_count") or 0)
+        < int(mpqa_relations.get("expected_admitted_relation_count") or 0)
+        or int(mpqa_relations.get("expected_admitted_source_member_count") or 0) <= 0
+        or int(mpqa_relations.get("expected_admitted_attitude_count") or 0) <= 0
+        or int(mpqa_relations.get("expected_admitted_target_count") or 0) <= 0
+        or not isinstance(mpqa_rejection_counts, dict)
+        or not mpqa_rejection_counts
+        or any(not str(key) or int(value) < 0 for key, value in mpqa_rejection_counts.items())
+        or sum(int(value) for value in mpqa_rejection_counts.values())
+        != int(mpqa_relations.get("expected_observed_linked_expression_count", -1))
+        - int(mpqa_relations.get("expected_admitted_relation_count", -1))
+        or int(mpqa_relations.get("unique_source_credit") or 0) != 0
+        or not str(mpqa_relations.get("claim_scope") or "")
+    ):
+        raise ValueError("KERC MASC MPQA-relation contract invalid")
     behavior_counts = sources["oasst2"].get("explicit_behavior_records_by_split")
     if (
         not isinstance(behavior_counts, dict)

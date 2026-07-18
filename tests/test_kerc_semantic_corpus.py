@@ -1045,6 +1045,13 @@ def test_live_kerc_config_requires_bounded_composite_semantics() -> None:
     )
     assert sum(event_coreference["records_by_split"].values()) == 13
     assert sum(event_coreference["mentions_by_split"].values()) == 215
+    mpqa_relations = masc["mpqa_relations"]
+    assert mpqa_relations["relation_contract"] == (
+        "complete_manual_mpqa_expression_attitude_target_source_chain_v1"
+    )
+    assert sum(mpqa_relations["records_by_split"].values()) == 846
+    assert mpqa_relations["expected_observed_linked_expression_count"] == 1459
+    assert mpqa_relations["unique_source_credit"] == 0
 
 
 def test_masc_decision_semantics_replay_typed_annotations_and_reject_corruption() -> None:
@@ -1185,6 +1192,156 @@ def test_masc_event_coreference_replays_complete_group_and_rejects_tampering() -
     forged_annotation["source_annotation"]["mentions"][0]["target_spans"] = [[0, 7]]
     with pytest.raises(ValueError, match="raw annotation replay mismatch"):
         verifier.verify_masc_event_coreference_record(forged_annotation, source, row)
+
+
+def test_masc_mpqa_relation_replays_complete_graph_and_rejects_tampering() -> None:
+    source_text = "Alice strongly supports reliable systems."
+    expression_hash = "sha256:" + "1" * 64
+    source_hash = "sha256:" + "2" * 64
+    attitude_hash = "sha256:" + "3" * 64
+    target_hash = "sha256:" + "4" * 64
+    relation_id = "masc.mpqa_relation.0123456789abcdef01234567"
+    expression = {
+        "annotation_id": "expr-1",
+        "annotation_line_id": "10",
+        "node_type": "direct-subjective",
+        "source_text": "strongly supports",
+        "target_spans": [[6, 23]],
+        "fields": {
+            "attitude-link": "att-1",
+            "nested-source": "src-1",
+        },
+        "source_annotation_sha256": expression_hash,
+    }
+    source_member = {
+        "annotation_id": "src-1",
+        "annotation_line_id": "11",
+        "node_type": "agent",
+        "source_text": "Alice",
+        "target_spans": [[0, 5]],
+        "fields": {"id": "src-1"},
+        "source_annotation_sha256": source_hash,
+    }
+    target = {
+        "annotation_id": "target-1",
+        "annotation_line_id": "13",
+        "node_type": "target",
+        "source_text": "reliable systems",
+        "target_spans": [[24, 40]],
+        "fields": {"id": "target-1"},
+        "source_annotation_sha256": target_hash,
+    }
+    attitude = {
+        "annotation_id": "att-1",
+        "annotation_line_id": "12",
+        "node_type": "attitude",
+        "source_text": "supports",
+        "target_spans": [[15, 23]],
+        "fields": {"id": "att-1", "target-link": "target-1"},
+        "source_annotation_sha256": attitude_hash,
+        "targets": [target],
+    }
+    annotation = {
+        "policy": "project_theseus_kerc_masc_manual_mpqa_relation_v1",
+        "relation_contract": "complete_manual_mpqa_expression_attitude_target_source_chain_v1",
+        "document_id": "original-mpqa/fixture",
+        "original_annotation_file_sha256": "sha256:" + "5" * 64,
+        "original_source_file_sha256": "sha256:" + "6" * 64,
+        "relation_concept": relation_id,
+        "source_text": source_text,
+        "excerpt_windows": [
+            {
+                "document_span": [0, len(source_text)],
+                "excerpt_span": [0, len(source_text)],
+                "source_window_sha256": kernel.stable_hash(source_text),
+            }
+        ],
+        "source_compaction_contract": "uniform_radius_relation_member_source_windows_v1",
+        "maximum_source_characters": 2048,
+        "uniform_context_radius_characters": 0,
+        "expression": expression,
+        "source_chain": [source_member],
+        "attitudes": [attitude],
+        "edges": [
+            {
+                "edge_type": "attitude_link",
+                "from": expression_hash,
+                "to": attitude_hash,
+                "manual_field": "attitude-link",
+            },
+            {
+                "edge_type": "nested_source_member",
+                "from": expression_hash,
+                "to": source_hash,
+                "order": 0,
+                "manual_field": "nested-source",
+            },
+            {
+                "edge_type": "target_link",
+                "from": attitude_hash,
+                "to": target_hash,
+                "manual_field": "target-link",
+            },
+        ],
+        "complete_relation_alignment": True,
+        "missingness": {
+            "attribution_chain": False,
+            "attitude_target_relation": False,
+            "scope": True,
+            "truth": True,
+            "causal_relation": True,
+            "temporal_relation": True,
+            "complete_sentence_semantics": True,
+        },
+    }
+    source = {
+        "dataset_id": "fixture/masc",
+        "dataset_revision": "fixture-v1",
+        "content_sha256": "sha256:" + "7" * 64,
+        "license_spdx": "LicenseRef-MASC-Unrestricted",
+        "allowed_objectives": [
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+            "answer_packet_to_surface_v1",
+        ],
+        "mpqa_relations": {
+            "unique_source_credit": 0,
+            "claim_scope": "complete manual MPQA links only",
+        },
+    }
+    row = {
+        "selection_key": kernel.stable_hash(annotation),
+        "source_id": "masc-mpqa-relation:0123456789abcdef01234567",
+        "split": "private_eval",
+        "annotation": annotation,
+    }
+    candidate = producer.masc_mpqa_relation_record(
+        row, source=source, producer_sha256="sha256:" + "8" * 64
+    )
+    receipt = verifier.verify_masc_mpqa_relation_record(candidate, source, row)
+    assert receipt["member_count"] == 4
+    assert receipt["edge_count"] == 3
+    assert receipt["inferred_relation_count"] == 0
+    assert candidate["semantic_supervision"]["unique_source_credit"] == 0
+
+    forged_edge = json.loads(json.dumps(candidate))
+    forged_edge["kernel_packet"]["residual"]["segment_frame"]["edges"][0][
+        "to_node_id"
+    ] = "k3"
+    with pytest.raises(ValueError, match="residual graph replay mismatch"):
+        verifier.verify_masc_mpqa_relation_record(forged_edge, source, row)
+
+    forged_credit = json.loads(json.dumps(candidate))
+    forged_credit["semantic_supervision"]["unique_source_credit"] = 1
+    with pytest.raises(ValueError, match="authority mismatch"):
+        verifier.verify_masc_mpqa_relation_record(forged_credit, source, row)
+
+    forged_receipt = json.loads(json.dumps(candidate))
+    forged_receipt["source_annotation"]["expression"][
+        "source_annotation_sha256"
+    ] = "sha256:" + "9" * 64
+    with pytest.raises(ValueError, match="raw annotation replay mismatch"):
+        verifier.verify_masc_mpqa_relation_record(forged_receipt, source, row)
 
 
 def test_residual_supervision_matches_packet_mechanics() -> None:
