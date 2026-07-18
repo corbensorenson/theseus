@@ -16,6 +16,7 @@ import math
 import os
 import re
 import tempfile
+import time
 import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -25,6 +26,7 @@ import pyarrow.parquet as pq
 
 from kerc_content_cache import (
     ContentObjectCache,
+    cache_storage_telemetry,
     dependency_bindings,
     load_receipt,
     object_key,
@@ -56,6 +58,13 @@ from kerc_residual_economics import (
     calibrate_allocation_lambda,
     residual_wire_bytes,
     validate_structural_rate_distortion_allocation,
+)
+from kerc_source_family_identity import (
+    PRODUCER_FAMILY_ROOTS,
+    VERIFIER_FAMILY_ROOTS,
+    family_identity_receipts,
+    source_closure_receipt,
+    source_family,
 )
 from moecot_source_conditioned_pretraining import (
     KERC_SEMANTIC_CORPUS_POLICY,
@@ -108,6 +117,7 @@ def verifier_cache_dependency_paths(
         "verifier": Path(__file__).resolve(),
         "producer": scripts / "kerc_semantic_corpus.py",
         "cache_integrity": scripts / "kerc_content_cache.py",
+        "source_family_identity": scripts / "kerc_source_family_identity.py",
         "kernel_protocol": scripts / "kernel_english_protocol.py",
         "importance_policy": scripts / "kerc_importance_policy.py",
         "residual_economics": scripts / "kerc_residual_economics.py",
@@ -2903,6 +2913,129 @@ def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected:
     }
 
 
+def producer_family_identity_receipts_from_source() -> dict[str, dict[str, Any]]:
+    scripts = ROOT / "scripts"
+    common_external = {
+        "kernel_protocol": scripts / "kernel_english_protocol.py",
+        "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
+    }
+    family_external = {
+        "masc_event_coreference": {
+            "raw_relation_producer": scripts / "kerc_masc_event_coreference.py"
+        },
+        "masc_mpqa_relation": {
+            "raw_relation_producer": scripts / "kerc_masc_mpqa_relations.py"
+        },
+    }
+    return family_identity_receipts(
+        source_path=scripts / "kerc_semantic_corpus.py",
+        source_label="scripts/kerc_semantic_corpus.py",
+        role="candidate_record_producer",
+        family_roots=PRODUCER_FAMILY_ROOTS,
+        external_paths=common_external,
+        family_external_paths=family_external,
+    )
+
+
+def verifier_family_identity_receipts() -> dict[str, dict[str, Any]]:
+    scripts = ROOT / "scripts"
+    family_external = {
+        "masc_event_coreference": {
+            "raw_relation_verifier": scripts / "kerc_masc_event_coreference_verify.py"
+        },
+        "masc_mpqa_relation": {
+            "raw_relation_verifier": scripts / "kerc_masc_mpqa_relations_verify.py"
+        },
+    }
+    return family_identity_receipts(
+        source_path=Path(__file__).resolve(),
+        source_label="scripts/kerc_semantic_corpus_verify.py",
+        role="independent_record_verifier",
+        family_roots=VERIFIER_FAMILY_ROOTS,
+        external_paths={},
+        family_external_paths=family_external,
+    )
+
+
+def producer_finalization_identity_from_source() -> dict[str, Any]:
+    return source_closure_receipt(
+        source_path=ROOT / "scripts" / "kerc_semantic_corpus.py",
+        source_label="scripts/kerc_semantic_corpus.py",
+        role="candidate_record_finalization",
+        family="all_source_families",
+        root_function="finalize_candidate_record",
+        external_paths={
+            "kernel_protocol": ROOT / "scripts" / "kernel_english_protocol.py",
+            "residual_economics": ROOT / "scripts" / "kerc_residual_economics.py",
+        },
+    )
+
+
+def verify_candidate_common(
+    *,
+    record: dict[str, Any],
+    source: dict[str, Any],
+    expected_importance: dict[str, Any],
+    replay: dict[str, Any],
+    family: str,
+    producer_family_identity: str,
+    verifier_route_identity: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    supervision = record.get("residual_supervision") or {}
+    if supervision.get("importance") != expected_importance:
+        raise ValueError("candidate importance receipt replay mismatch")
+    packet = record.get("kernel_packet") or {}
+    residual = packet.get("residual") or {}
+    expected_allocation = validate_structural_rate_distortion_allocation(
+        supervision.get("rate_distortion_allocation") or {},
+        kernel_program=packet.get("program") or {},
+        global_state=(record.get("hrl_state") or {}).get("global") or {},
+        segment_residual=residual.get("segment_frame") or {},
+        token_residuals=residual.get("token_tags") or [],
+        exact_objects=packet.get("protected_objects") or {},
+        exact_codec=residual.get("codec") or None,
+    )
+    if expected_allocation["selected_fidelity"] != residual.get("fidelity"):
+        raise ValueError("candidate allocation fidelity mismatch")
+    provenance = record.get("provenance") or {}
+    if (
+        provenance.get("dataset_revision") != source["dataset_revision"]
+        or provenance.get("license_spdx") != source["license_spdx"]
+    ):
+        raise ValueError("candidate provenance mismatch")
+    semantic = record.get("semantic_supervision") or {}
+    if (
+        semantic.get("annotation_source_sha256") != source["content_sha256"]
+        or semantic.get("producer_artifact_sha256") != producer_family_identity
+    ):
+        raise ValueError("candidate semantic source binding mismatch")
+    source_id = str(provenance.get("source_id") or "")
+    evidence_sha256 = stable_hash(
+        {
+            "policy": VERIFIER_POLICY,
+            "verifier_route_identity": verifier_route_identity,
+            "source_content_sha256": source["content_sha256"],
+            "source_id": source_id,
+            "split": record["split"],
+            "family": family,
+            "replay": replay,
+        }
+    )
+    semantic_payload_sha256 = training_semantic_payload_sha256(record)
+    receipt = {
+        "policy": TRAINING_VERIFICATION_POLICY,
+        "receipt_id": "kerc-source-replay:" + evidence_sha256.split(":", 1)[1][:32],
+        "accepted": True,
+        "verifier_id": VERIFIER_ID,
+        "reviewer_independent_of_record_producer": True,
+        "method": "licensed_semantic_dataset_plus_independent_schema_review",
+        "evidence_sha256": evidence_sha256,
+        "semantic_payload_sha256": semantic_payload_sha256,
+    }
+    record["verification_receipt"] = receipt
+    return validate_training_record(record), receipt
+
+
 def source_catalog(corpus: dict[str, Any]) -> dict[str, Any]:
     sources = []
     for key in ("dolly", "masc", "oasst2"):
@@ -2936,6 +3069,9 @@ def verify(
     refresh_cache: bool = False,
     bypass_run_cache: bool = False,
 ) -> dict[str, Any]:
+    run_started = time.perf_counter()
+    phase_started = run_started
+    phase_runtime_ms: dict[str, int] = {}
     config = json.loads(config_path.read_text(encoding="utf-8"))
     stage = validate_kernel_english_config(config)
     corpus = stage["semantic_corpus_materialization"]
@@ -2949,6 +3085,12 @@ def verify(
     producer_path = ROOT / "scripts" / "kerc_semantic_corpus.py"
     if manifest.get("producer_sha256") != sha256_file(producer_path):
         raise ValueError("producer changed after candidate materialization")
+    producer_family_receipts = producer_family_identity_receipts_from_source()
+    if manifest.get("producer_family_identities") != producer_family_receipts:
+        raise ValueError("producer family identities do not replay from source")
+    producer_finalization_receipt = producer_finalization_identity_from_source()
+    if manifest.get("producer_finalization_identity") != producer_finalization_receipt:
+        raise ValueError("producer finalization identity does not replay from source")
     output_root = resolve(corpus["output_root"])
     records_path = output_root / "records.jsonl"
     ledger_path = output_root / "verification_ledger.jsonl"
@@ -2985,12 +3127,25 @@ def verify(
                 {
                     "policy": "project_theseus_kerc_incremental_cache_telemetry_v1",
                     "run_cache_hit": True,
-                    "semantic_admission": {"hits": 0, "misses": 0},
+                    "semantic_admission": {
+                        "hits": 0,
+                        "misses": 0,
+                        "hits_by_family": {},
+                        "misses_by_family": {},
+                    },
                     "candidate_records_sha256": cached["candidate_records_sha256"],
+                    "storage": cache_storage_telemetry(
+                        cache_root / "verifier_objects.sqlite3"
+                    ),
                     "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
                 },
             )
             return cached
+
+    phase_runtime_ms["configuration_and_run_cache"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
 
     maximum_characters = int(corpus["maximum_source_characters"])
     behavior_expected = independent_oasst_behavior_assignments(corpus["oasst2"])
@@ -3353,6 +3508,10 @@ def verify(
         or producer_mpqa_relations.get("temporal_relation_claimed") is not False
     ):
         raise ValueError("producer MASC MPQA-relation telemetry mismatch")
+    phase_runtime_ms["independent_source_reconstruction"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
     raw_records = [
         json.loads(raw)
         for raw in candidate_path.read_text(encoding="utf-8").splitlines()
@@ -3362,6 +3521,33 @@ def verify(
     if importance_policy != manifest.get("importance_policy"):
         raise ValueError("producer importance policy replay mismatch")
     verifier_sha256 = sha256_file(Path(__file__).resolve())
+    verifier_family_receipts = verifier_family_identity_receipts()
+    verifier_common_receipt = source_closure_receipt(
+        source_path=Path(__file__).resolve(),
+        source_label="scripts/kerc_semantic_corpus_verify.py",
+        role="independent_semantic_admission_common",
+        family="all_source_families",
+        root_function="verify_candidate_common",
+        external_paths={
+            "kernel_protocol": ROOT / "scripts" / "kernel_english_protocol.py",
+            "importance_policy": ROOT / "scripts" / "kerc_importance_policy.py",
+            "residual_economics": ROOT / "scripts" / "kerc_residual_economics.py",
+            "vcm_residual_lifecycle": ROOT / "scripts" / "vcm_semantic_memory.py",
+        },
+    )
+    verifier_route_identities = {
+        family: stable_hash(
+            {
+                "common": verifier_common_receipt["identity_sha256"],
+                "family": receipt["identity_sha256"],
+            }
+        )
+        for family, receipt in verifier_family_receipts.items()
+    }
+    phase_runtime_ms["candidate_load_and_identity_replay"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
     canonical_records: list[dict[str, Any]] = []
     receipts: list[dict[str, Any]] = []
     failures: Counter[str] = Counter()
@@ -3369,26 +3555,18 @@ def verify(
     counts_by_split_and_objective: dict[str, Counter[str]] = {split: Counter() for split in SPLITS}
     semantic_cache_hits = 0
     semantic_cache_misses = 0
+    semantic_cache_hits_by_family: Counter[str] = Counter()
+    semantic_cache_misses_by_family: Counter[str] = Counter()
     semantic_store = (
         ContentObjectCache(
             cache_root / "verifier_objects.sqlite3",
-            namespace=str(cache_cfg["verifier_role"]) + ":semantic_admission_v1",
+            namespace=str(cache_cfg["verifier_role"])
+            + ":"
+            + str(cache_cfg["verifier_semantic_layer"]),
         )
         if cache_enabled
         else None
     )
-    verifier_layer_dependencies = {
-        "verifier_sha256": verifier_sha256,
-        "kernel_protocol_sha256": sha256_file(
-            ROOT / "scripts" / "kernel_english_protocol.py"
-        ),
-        "importance_implementation_sha256": sha256_file(
-            ROOT / "scripts" / "kerc_importance_policy.py"
-        ),
-        "economics_implementation_sha256": sha256_file(
-            ROOT / "scripts" / "kerc_residual_economics.py"
-        ),
-    }
     for line_number, record in enumerate(raw_records, 1):
         try:
             source_id = str(record.get("provenance", {}).get("source_id") or "")
@@ -3398,11 +3576,30 @@ def verify(
             if expected_row is None:
                 raise ValueError("candidate absent from independent split reconstruction")
             seen_source_ids.add(source_id)
+            dataset_id = str(record.get("provenance", {}).get("dataset_id") or "")
+            source_key = (
+                "dolly"
+                if dataset_id == corpus["dolly"]["dataset_id"]
+                else "masc"
+                if dataset_id == corpus["masc"]["dataset_id"]
+                else "oasst2"
+                if dataset_id == corpus["oasst2"]["dataset_id"]
+                else ""
+            )
+            if not source_key:
+                raise ValueError("candidate dataset absent from frozen source contract")
+            family = source_family(dataset_key=source_key, source_id=source_id)
+            source = corpus[source_key]
+            producer_family_identity = producer_family_receipts[family][
+                "identity_sha256"
+            ]
+            verifier_route_identity = verifier_route_identities[family]
             semantic_key = object_key(
                 role=str(cache_cfg["verifier_role"]),
-                layer="semantic_admission_v1",
+                layer=str(cache_cfg["verifier_semantic_layer"]),
                 dependencies={
-                    **verifier_layer_dependencies,
+                    "producer_family_identity": producer_family_identity,
+                    "verifier_route_identity": verifier_route_identity,
                     "candidate": record,
                     "independent_expected_row": expected_row,
                 },
@@ -3436,86 +3633,24 @@ def verify(
                             objective
                         ] += 1
                 semantic_cache_hits += 1
+                semantic_cache_hits_by_family[family] += 1
                 continue
             semantic_cache_misses += 1
+            semantic_cache_misses_by_family[family] += 1
             expected_importance = predict_importance(record, importance_policy)
-            supervision = record.get("residual_supervision") or {}
-            if supervision.get("importance") != expected_importance:
-                raise ValueError("candidate importance receipt replay mismatch")
-            packet = record.get("kernel_packet") or {}
-            residual = packet.get("residual") or {}
-            expected_allocation = validate_structural_rate_distortion_allocation(
-                supervision.get("rate_distortion_allocation") or {},
-                kernel_program=packet.get("program") or {},
-                global_state=(record.get("hrl_state") or {}).get("global") or {},
-                segment_residual=residual.get("segment_frame") or {},
-                token_residuals=residual.get("token_tags") or [],
-                exact_objects=packet.get("protected_objects") or {},
-                exact_codec=residual.get("codec") or None,
+            family_verifier = globals().get(VERIFIER_FAMILY_ROOTS[family])
+            if not callable(family_verifier):
+                raise ValueError(f"source-family verifier unavailable: {family}")
+            replay = family_verifier(record, source, expected_row)
+            canonical, receipt = verify_candidate_common(
+                record=record,
+                source=source,
+                expected_importance=expected_importance,
+                replay=replay,
+                family=family,
+                producer_family_identity=producer_family_identity,
+                verifier_route_identity=verifier_route_identity,
             )
-            if expected_allocation["selected_fidelity"] != residual.get("fidelity"):
-                raise ValueError("candidate allocation fidelity mismatch")
-            dataset_id = str(record.get("provenance", {}).get("dataset_id") or "")
-            source_key = (
-                "dolly"
-                if dataset_id == corpus["dolly"]["dataset_id"]
-                else "masc"
-                if dataset_id == corpus["masc"]["dataset_id"]
-                else "oasst2"
-                if dataset_id == corpus["oasst2"]["dataset_id"]
-                else ""
-            )
-            if not source_key:
-                raise ValueError("candidate dataset absent from frozen source contract")
-            source = corpus[source_key]
-            provenance = record["provenance"]
-            if provenance.get("dataset_revision") != source["dataset_revision"] or provenance.get("license_spdx") != source["license_spdx"]:
-                raise ValueError("candidate provenance mismatch")
-            semantic = record.get("semantic_supervision") or {}
-            if semantic.get("annotation_source_sha256") != source["content_sha256"] or semantic.get("producer_artifact_sha256") != manifest["producer_sha256"]:
-                raise ValueError("candidate semantic source binding mismatch")
-            replay = (
-                verify_dolly_grounded_record(record, source, expected_row)
-                if source_id.startswith("dolly-grounded:")
-                else verify_dolly_record(record, source, expected_row)
-                if source_key == "dolly"
-                else verify_masc_composite_record(record, source, expected_row)
-                if source_id.startswith("masc-composite:")
-                else verify_masc_decision_record(record, source, expected_row)
-                if source_id.startswith("masc-decision:")
-                else verify_masc_event_coreference_record(record, source, expected_row)
-                if source_id.startswith("masc-event-coref:")
-                else verify_masc_mpqa_relation_record(record, source, expected_row)
-                if source_id.startswith("masc-mpqa-relation:")
-                else verify_masc_record(record, source, expected_row)
-                if source_key == "masc"
-                else verify_oasst_behavior_record(record, source, expected_row)
-                if source_id.startswith("oasst2-behavior:")
-                else verify_oasst_record(record, source, expected_row)
-            )
-            evidence_sha256 = stable_hash(
-                {
-                    "policy": VERIFIER_POLICY,
-                    "verifier_sha256": verifier_sha256,
-                    "source_content_sha256": source["content_sha256"],
-                    "source_id": source_id,
-                    "split": record["split"],
-                    "replay": replay,
-                }
-            )
-            semantic_payload_sha256 = training_semantic_payload_sha256(record)
-            receipt = {
-                "policy": TRAINING_VERIFICATION_POLICY,
-                "receipt_id": "kerc-source-replay:" + evidence_sha256.split(":", 1)[1][:32],
-                "accepted": True,
-                "verifier_id": VERIFIER_ID,
-                "reviewer_independent_of_record_producer": True,
-                "method": "licensed_semantic_dataset_plus_independent_schema_review",
-                "evidence_sha256": evidence_sha256,
-                "semantic_payload_sha256": semantic_payload_sha256,
-            }
-            record["verification_receipt"] = receipt
-            canonical = validate_training_record(record)
             canonical_records.append(canonical)
             receipts.append(receipt)
             if semantic_store is not None:
@@ -3531,6 +3666,11 @@ def verify(
                 failures[f"sample:{line_number}:{str(exc)[:160]}"] += 0
     if semantic_store is not None:
         semantic_store.close()
+
+    phase_runtime_ms["semantic_admission"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
 
     hard_gaps: list[str] = []
     if failures:
@@ -3579,6 +3719,11 @@ def verify(
     if allocation_report != manifest.get("rate_distortion_allocation"):
         hard_gaps.append("rate_distortion_allocation_replay_mismatch")
 
+    phase_runtime_ms["aggregate_replay_and_gates"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
+
     if hard_gaps:
         canonical_written = 0
         records_sha256 = ""
@@ -3592,6 +3737,9 @@ def verify(
         catalog = source_catalog(corpus)
         write_json_atomic(catalog_path, catalog)
         catalog_sha256 = sha256_file(catalog_path)
+    phase_runtime_ms["canonical_serialization"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
     report = {
         "policy": VERIFIER_POLICY,
         "trigger_state": "RED" if hard_gaps else "GREEN",
@@ -3599,6 +3747,13 @@ def verify(
         "producer_manifest_sha256": sha256_file(manifest_path),
         "candidate_records_sha256": sha256_file(candidate_path),
         "verifier_sha256": verifier_sha256,
+        "producer_family_identities": producer_family_receipts,
+        "producer_finalization_identity": producer_finalization_receipt,
+        "verifier_common_identity": verifier_common_receipt,
+        "verifier_family_identities": verifier_family_receipts,
+        "verifier_route_identities": verifier_route_identities,
+        "runtime_ms": round((time.perf_counter() - run_started) * 1000),
+        "phase_runtime_ms": phase_runtime_ms,
         "independent_expected_count": len(expected),
         "canonical_training_rows_written": canonical_written,
         "records": {"path": relative(records_path), "sha256": records_sha256},
@@ -3753,9 +3908,16 @@ def verify(
                 "hits": semantic_cache_hits,
                 "misses": semantic_cache_misses,
                 "entry_count": semantic_cache_hits + semantic_cache_misses,
+                "hits_by_family": dict(sorted(semantic_cache_hits_by_family.items())),
+                "misses_by_family": dict(
+                    sorted(semantic_cache_misses_by_family.items())
+                ),
                 "producer_authority_reused": False,
             },
             "candidate_records_sha256": report["candidate_records_sha256"],
+            "storage": cache_storage_telemetry(
+                cache_root / "verifier_objects.sqlite3"
+            ),
             "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
         },
     )

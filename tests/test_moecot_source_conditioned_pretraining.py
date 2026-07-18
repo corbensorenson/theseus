@@ -129,6 +129,12 @@ def kernel_config(tmp_path: Path) -> dict:
                     "enabled": True,
                     "producer_role": "fixture-producer",
                     "verifier_role": "fixture-verifier",
+                    "family_identity_policy": "project_theseus_kerc_source_family_identity_v1",
+                    "producer_candidate_layer": "candidate_record_v1",
+                    "producer_finalization_layer": "candidate_finalization_v1",
+                    "verifier_semantic_layer": "semantic_admission_v1",
+                    "common_change_invalidates_all_families": True,
+                    "family_local_change_invalidates_only_that_family": True,
                 },
                 "dolly": {
                     "path": str(tmp_path / "dolly.jsonl"),
@@ -780,6 +786,31 @@ def test_source_conditioned_manifest_binds_all_mutable_dependencies(
     supervision_rows.write_text('{"target_sha256":"changed"}\n', encoding="utf-8")
     gaps = validate_manifest(payload, cfg, full_config)
     assert "dependency_identity_mismatch:supervision_stage" in gaps
+
+
+def test_kerc_cache_requires_selective_family_invalidation_contract(
+    tmp_path: Path,
+) -> None:
+    cfg = kernel_config(tmp_path)
+    validate_kernel_english_config(cfg)
+    cache = cfg["kernel_english_training"]["semantic_corpus_materialization"][
+        "content_cache"
+    ]
+    for key, invalid in (
+        ("family_identity_policy", "wrong-policy"),
+        ("producer_candidate_layer", "whole-file-cache"),
+        ("producer_finalization_layer", "unchecked-finalization"),
+        ("verifier_semantic_layer", "shared-authority"),
+        ("common_change_invalidates_all_families", False),
+        ("family_local_change_invalidates_only_that_family", False),
+    ):
+        mutated = json.loads(json.dumps(cfg))
+        mutated["kernel_english_training"]["semantic_corpus_materialization"][
+            "content_cache"
+        ][key] = invalid
+        with pytest.raises(ValueError, match="content-addressed cache contract"):
+            validate_kernel_english_config(mutated)
+    assert cache["common_change_invalidates_all_families"] is True
 
 
 def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Path) -> None:

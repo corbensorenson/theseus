@@ -17,10 +17,91 @@ if str(SCRIPTS) not in sys.path:
 import kerc_semantic_corpus as producer  # noqa: E402
 import kerc_semantic_corpus_verify as verifier  # noqa: E402
 import kernel_english_protocol as kernel  # noqa: E402
+from kerc_content_cache import ContentObjectCache  # noqa: E402
 from kerc_residual_economics import (  # noqa: E402
     build_structural_rate_distortion_allocation,
 )
 import vcm_semantic_memory as memory  # noqa: E402
+
+
+def test_candidate_record_cache_is_content_and_family_identity_bound(
+    tmp_path: Path,
+) -> None:
+    build_count = 0
+
+    def build(identity: str) -> dict:
+        nonlocal build_count
+        build_count += 1
+        return {
+            "policy": kernel.TRAINING_RECORD_POLICY,
+            "provenance": {"source_id": "fixture:1"},
+            "semantic_supervision": {"producer_artifact_sha256": identity},
+            "residual_supervision": {},
+            "verification_receipt": {"accepted": False},
+            "external_inference": False,
+            "fallback_return_count": 0,
+            "template_credit": 0,
+        }
+
+    with ContentObjectCache(
+        tmp_path / "candidate.sqlite3", namespace="fixture:candidate_record_v1"
+    ) as store:
+        first, first_hit = producer.cached_candidate_record(
+            store=store,
+            role="fixture",
+            layer="candidate_record_v1",
+            family="fixture_family",
+            family_identity="sha256:" + "1" * 64,
+            inputs={"row": {"value": 1}},
+            expected_source_id="fixture:1",
+            refresh_cache=False,
+            build=lambda: build("sha256:" + "1" * 64),
+        )
+        second, second_hit = producer.cached_candidate_record(
+            store=store,
+            role="fixture",
+            layer="candidate_record_v1",
+            family="fixture_family",
+            family_identity="sha256:" + "1" * 64,
+            inputs={"row": {"value": 1}},
+            expected_source_id="fixture:1",
+            refresh_cache=False,
+            build=lambda: build("sha256:" + "1" * 64),
+        )
+        changed, changed_hit = producer.cached_candidate_record(
+            store=store,
+            role="fixture",
+            layer="candidate_record_v1",
+            family="fixture_family",
+            family_identity="sha256:" + "2" * 64,
+            inputs={"row": {"value": 1}},
+            expected_source_id="fixture:1",
+            refresh_cache=False,
+            build=lambda: build("sha256:" + "2" * 64),
+        )
+
+    assert first == second
+    assert first_hit is False
+    assert second_hit is True
+    assert changed_hit is False
+    assert changed["semantic_supervision"]["producer_artifact_sha256"] != first[
+        "semantic_supervision"
+    ]["producer_artifact_sha256"]
+    assert build_count == 2
+
+
+def test_verifier_recomputes_producer_family_identities_from_source() -> None:
+    produced = producer.producer_family_identity_receipts()
+    independently_replayed = verifier.producer_family_identity_receipts_from_source()
+
+    assert produced == independently_replayed
+    identities = [row["identity_sha256"] for row in produced.values()]
+    assert len(produced) == 9
+    assert len(set(identities)) == len(identities)
+    assert all(row["function_sources"] for row in produced.values())
+    assert producer.producer_finalization_identity_receipt() == (
+        verifier.producer_finalization_identity_from_source()
+    )
 
 
 def finalize_fixture_economics(record: dict) -> dict:
@@ -95,6 +176,93 @@ def source_contract(path: Path) -> dict:
         },
         "allowed_objectives": ["surface_direct_control_v1"],
     }
+
+
+def test_finalization_cache_skips_repeated_packet_decode_without_skipping_identity(
+    tmp_path: Path,
+) -> None:
+    source_path = tmp_path / "source.jsonl"
+    source_path.write_text("{}\n", encoding="utf-8")
+    source = source_contract(source_path)
+    row = {
+        "selection_key": kernel.stable_hash({"fixture": "finalization"}),
+        "prompt": "Explain the finalization cache contract.",
+        "target": "It reuses only an identity-bound validated packet.",
+        "category": "fixture",
+        "annotation": {
+            "context": "",
+            "category": "fixture",
+            "source_row_sha256": kernel.stable_hash({"row": 1}),
+        },
+    }
+
+    def candidate() -> dict:
+        return producer.dolly_record(
+            row,
+            split="private_train",
+            source=source,
+            producer_sha256="sha256:" + "1" * 64,
+        )
+
+    initial = candidate()
+    importance = {
+        "policy": "project_theseus_kerc_calibrated_importance_policy_v1",
+        "policy_sha256": "sha256:" + "2" * 64,
+        "source_visible_features_sha256": kernel.stable_hash({"fixture": 1}),
+        "scores": {
+            "semantic_importance": 1.0,
+            "surface_importance": 1.0,
+            "identity_anchoring": 1.0,
+        },
+        "allocation_importance": 1.0,
+        "target_fields_visible_to_policy": [],
+        "fallback_return_count": 0,
+    }
+    importance["receipt_sha256"] = kernel.stable_hash(importance)
+    residual = initial["kernel_packet"]["residual"]
+    provisional = build_structural_rate_distortion_allocation(
+        kernel_program=initial["kernel_packet"]["program"],
+        global_state=initial["hrl_state"]["global"],
+        segment_residual=residual["segment_frame"],
+        token_residuals=residual["token_tags"],
+        exact_objects=initial["kernel_packet"]["protected_objects"],
+        importance=1.0,
+        lambda_value=1.0,
+    )
+    with ContentObjectCache(
+        tmp_path / "finalization.sqlite3",
+        namespace="fixture:candidate_finalization_v1",
+    ) as store:
+        first, first_allocation, first_hit = producer.cached_finalized_candidate(
+            store=store,
+            role="fixture",
+            layer="candidate_finalization_v1",
+            finalization_identity="sha256:" + "3" * 64,
+            record=initial,
+            importance=importance,
+            provisional_allocation=provisional,
+            lambda_value=512.0,
+            refresh_cache=False,
+        )
+        second, second_allocation, second_hit = producer.cached_finalized_candidate(
+            store=store,
+            role="fixture",
+            layer="candidate_finalization_v1",
+            finalization_identity="sha256:" + "3" * 64,
+            record=candidate(),
+            importance=importance,
+            provisional_allocation=provisional,
+            lambda_value=512.0,
+            refresh_cache=False,
+        )
+
+    assert first_hit is False
+    assert second_hit is True
+    assert second == first
+    assert second_allocation == first_allocation
+    assert second["kernel_packet"]["residual"]["fidelity"] == second_allocation[
+        "selected_fidelity"
+    ]
 
 
 def test_dolly_replay_rejects_candidate_target_corruption(tmp_path: Path) -> None:

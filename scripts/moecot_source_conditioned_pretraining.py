@@ -757,6 +757,15 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         or not str(content_cache.get("producer_role") or "")
         or not str(content_cache.get("verifier_role") or "")
         or content_cache.get("producer_role") == content_cache.get("verifier_role")
+        or content_cache.get("family_identity_policy")
+        != "project_theseus_kerc_source_family_identity_v1"
+        or content_cache.get("producer_candidate_layer") != "candidate_record_v1"
+        or content_cache.get("producer_finalization_layer")
+        != "candidate_finalization_v1"
+        or content_cache.get("verifier_semantic_layer") != "semantic_admission_v1"
+        or content_cache.get("common_change_invalidates_all_families") is not True
+        or content_cache.get("family_local_change_invalidates_only_that_family")
+        is not True
     ):
         raise ValueError("KERC content-addressed cache contract invalid")
     sources = {name: corpus.get(name) or {} for name in ("dolly", "masc", "oasst2")}

@@ -17,10 +17,11 @@ import math
 import os
 import re
 import tempfile
+import time
 import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 import pyarrow.parquet as pq
 
@@ -49,6 +50,7 @@ from kerc_masc_mpqa_relations import (
 )
 from kerc_content_cache import (
     ContentObjectCache,
+    cache_storage_telemetry,
     dependency_bindings,
     load_receipt,
     object_key,
@@ -59,6 +61,11 @@ from kerc_residual_economics import (
     calibrate_allocation_lambda,
     reallocate_structural_receipt,
     residual_wire_bytes,
+)
+from kerc_source_family_identity import (
+    PRODUCER_FAMILY_ROOTS,
+    family_identity_receipts,
+    source_closure_receipt,
 )
 from moecot_source_conditioned_pretraining import (
     KERC_SEMANTIC_CORPUS_POLICY,
@@ -116,6 +123,7 @@ def producer_cache_dependency_paths(
         "config": config_path.resolve(),
         "producer": Path(__file__).resolve(),
         "cache_integrity": scripts / "kerc_content_cache.py",
+        "source_family_identity": scripts / "kerc_source_family_identity.py",
         "kernel_protocol": scripts / "kernel_english_protocol.py",
         "importance_policy": scripts / "kerc_importance_policy.py",
         "residual_economics": scripts / "kerc_residual_economics.py",
@@ -130,6 +138,190 @@ def producer_cache_dependency_paths(
     for split, row in sorted(corpus["oasst2"]["files"].items()):
         paths[f"oasst2_{split}_source"] = resolve(row["path"])
     return paths
+
+
+def producer_family_identity_receipts() -> dict[str, dict[str, Any]]:
+    scripts = ROOT / "scripts"
+    common_external = {
+        "kernel_protocol": scripts / "kernel_english_protocol.py",
+        "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
+    }
+    family_external = {
+        "masc_event_coreference": {
+            "raw_relation_producer": scripts / "kerc_masc_event_coreference.py"
+        },
+        "masc_mpqa_relation": {
+            "raw_relation_producer": scripts / "kerc_masc_mpqa_relations.py"
+        },
+    }
+    return family_identity_receipts(
+        source_path=Path(__file__).resolve(),
+        source_label="scripts/kerc_semantic_corpus.py",
+        role="candidate_record_producer",
+        family_roots=PRODUCER_FAMILY_ROOTS,
+        external_paths=common_external,
+        family_external_paths=family_external,
+    )
+
+
+def producer_finalization_identity_receipt() -> dict[str, Any]:
+    return source_closure_receipt(
+        source_path=Path(__file__).resolve(),
+        source_label="scripts/kerc_semantic_corpus.py",
+        role="candidate_record_finalization",
+        family="all_source_families",
+        root_function="finalize_candidate_record",
+        external_paths={
+            "kernel_protocol": ROOT / "scripts" / "kernel_english_protocol.py",
+            "residual_economics": ROOT / "scripts" / "kerc_residual_economics.py",
+        },
+    )
+
+
+def cached_candidate_record(
+    *,
+    store: ContentObjectCache | None,
+    role: str,
+    layer: str,
+    family: str,
+    family_identity: str,
+    inputs: dict[str, Any],
+    expected_source_id: str,
+    refresh_cache: bool,
+    build: Callable[[], dict[str, Any]],
+) -> tuple[dict[str, Any], bool]:
+    key = object_key(
+        role=role,
+        layer=layer,
+        dependencies={
+            "family": family,
+            "family_identity": family_identity,
+            "inputs": inputs,
+        },
+    )
+    cached = store.get(key) if store is not None and not refresh_cache else None
+    if (
+        isinstance(cached, dict)
+        and cached.get("policy") == TRAINING_RECORD_POLICY
+        and cached.get("provenance", {}).get("source_id") == expected_source_id
+        and cached.get("semantic_supervision", {}).get("producer_artifact_sha256")
+        == family_identity
+        and "importance" not in (cached.get("residual_supervision") or {})
+        and (cached.get("verification_receipt") or {}).get("accepted") is False
+        and cached.get("external_inference") is False
+        and cached.get("fallback_return_count") == 0
+        and cached.get("template_credit") == 0
+    ):
+        return cached, True
+    record = build()
+    if (
+        record.get("policy") != TRAINING_RECORD_POLICY
+        or record.get("provenance", {}).get("source_id") != expected_source_id
+        or record.get("semantic_supervision", {}).get("producer_artifact_sha256")
+        != family_identity
+        or "importance" in (record.get("residual_supervision") or {})
+        or record.get("external_inference") is not False
+        or record.get("fallback_return_count") != 0
+        or record.get("template_credit") != 0
+    ):
+        raise ValueError(f"candidate-record cache contract mismatch: {family}")
+    if store is not None:
+        store.put(key, record)
+    return record, False
+
+
+def finalize_candidate_record(
+    *,
+    record: dict[str, Any],
+    importance: dict[str, Any],
+    provisional_allocation: dict[str, Any],
+    lambda_value: float,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    allocation = reallocate_structural_receipt(
+        provisional_allocation,
+        lambda_value=lambda_value,
+    )
+    packet = revise_kernel_packet_fidelity(
+        record["kernel_packet"],
+        allocation["selected_fidelity"],
+        local_hrl_state=record["hrl_state"],
+    )
+    record["kernel_packet"] = packet
+    record["residual_supervision"] = residual_supervision(
+        str(record["provenance"]["source_id"]),
+        packet=packet,
+        hrl_state=record["hrl_state"],
+        importance=importance,
+        allocation=allocation,
+    )
+    return record, allocation
+
+
+def cached_finalized_candidate(
+    *,
+    store: ContentObjectCache | None,
+    role: str,
+    layer: str,
+    finalization_identity: str,
+    record: dict[str, Any],
+    importance: dict[str, Any],
+    provisional_allocation: dict[str, Any],
+    lambda_value: float,
+    refresh_cache: bool,
+) -> tuple[dict[str, Any], dict[str, Any], bool]:
+    candidate_sha256 = stable_hash(record)
+    dependencies = {
+        "finalization_identity": finalization_identity,
+        "candidate_sha256": candidate_sha256,
+        "source_id": record["provenance"]["source_id"],
+        "importance": importance,
+        "provisional_allocation": provisional_allocation,
+        "lambda_value": lambda_value,
+    }
+    key = object_key(role=role, layer=layer, dependencies=dependencies)
+    cached = store.get(key) if store is not None and not refresh_cache else None
+    if isinstance(cached, dict):
+        finalized = cached.get("record")
+        allocation = cached.get("allocation")
+        if (
+            cached.get("candidate_sha256") == candidate_sha256
+            and cached.get("finalization_identity") == finalization_identity
+            and isinstance(finalized, dict)
+            and isinstance(allocation, dict)
+            and finalized.get("provenance", {}).get("source_id")
+            == record["provenance"]["source_id"]
+            and finalized.get("residual_supervision", {}).get("importance")
+            == importance
+            and finalized.get("residual_supervision", {}).get(
+                "rate_distortion_allocation"
+            )
+            == allocation
+            and finalized.get("kernel_packet", {}).get("residual", {}).get(
+                "fidelity"
+            )
+            == allocation.get("selected_fidelity")
+            and finalized.get("external_inference") is False
+            and finalized.get("fallback_return_count") == 0
+            and finalized.get("template_credit") == 0
+        ):
+            return finalized, allocation, True
+    finalized, allocation = finalize_candidate_record(
+        record=record,
+        importance=importance,
+        provisional_allocation=provisional_allocation,
+        lambda_value=lambda_value,
+    )
+    if store is not None:
+        store.put(
+            key,
+            {
+                "candidate_sha256": candidate_sha256,
+                "finalization_identity": finalization_identity,
+                "record": finalized,
+                "allocation": allocation,
+            },
+        )
+    return finalized, allocation, False
 
 
 def relative(path: Path) -> str:
@@ -2897,6 +3089,9 @@ def produce(
     refresh_cache: bool = False,
     bypass_run_cache: bool = False,
 ) -> dict[str, Any]:
+    run_started = time.perf_counter()
+    phase_started = run_started
+    phase_runtime_ms: dict[str, int] = {}
     config = json.loads(config_path.read_text(encoding="utf-8"))
     stage = validate_kernel_english_config(config)
     corpus = stage["semantic_corpus_materialization"]
@@ -2930,11 +3125,30 @@ def produce(
                     "policy": "project_theseus_kerc_incremental_cache_telemetry_v1",
                     "run_cache_hit": True,
                     "structural_economics": {"hits": 0, "misses": 0},
+                    "candidate_records": {
+                        "hits_by_family": {},
+                        "misses_by_family": {},
+                        "hits": 0,
+                        "misses": 0,
+                        "entry_count": 0,
+                    },
+                    "candidate_finalization": {
+                        "hits": 0,
+                        "misses": 0,
+                        "entry_count": 0,
+                    },
                     "candidate_records_sha256": cached["candidate_records"]["sha256"],
+                    "storage": cache_storage_telemetry(
+                        cache_root / "producer_objects.sqlite3"
+                    ),
                     "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
                 },
             )
             return cached
+    phase_runtime_ms["configuration_and_run_cache"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
     dolly_rows, dolly_rejects = load_dolly_candidates(
         corpus["dolly"], maximum_characters=int(corpus["maximum_source_characters"])
     )
@@ -3105,6 +3319,49 @@ def produce(
         split: interaction_predecessors(rows)
         for split, rows in masc_selected.items()
     }
+    phase_runtime_ms["source_reconstruction_and_selection"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
+    producer_family_receipts = producer_family_identity_receipts()
+    producer_family_identities = {
+        family: receipt["identity_sha256"]
+        for family, receipt in producer_family_receipts.items()
+    }
+    candidate_store = (
+        ContentObjectCache(
+            cache_root / "producer_objects.sqlite3",
+            namespace=str(cache_cfg["producer_role"])
+            + ":"
+            + str(cache_cfg["producer_candidate_layer"]),
+        )
+        if cache_enabled
+        else None
+    )
+    candidate_cache_hits: Counter[str] = Counter()
+    candidate_cache_misses: Counter[str] = Counter()
+
+    def materialize_candidate(
+        *,
+        family: str,
+        inputs: dict[str, Any],
+        expected_source_id: str,
+        build: Callable[[], dict[str, Any]],
+    ) -> dict[str, Any]:
+        record, hit = cached_candidate_record(
+            store=candidate_store,
+            role=str(cache_cfg["producer_role"]),
+            layer=str(cache_cfg["producer_candidate_layer"]),
+            family=family,
+            family_identity=producer_family_identities[family],
+            inputs=inputs,
+            expected_source_id=expected_source_id,
+            refresh_cache=refresh_cache,
+            build=build,
+        )
+        (candidate_cache_hits if hit else candidate_cache_misses)[family] += 1
+        return record
+
     candidates: list[dict[str, Any]] = []
     source_groups_by_split: dict[str, set[str]] = defaultdict(set)
     source_sentences_by_split: dict[str, set[str]] = defaultdict(set)
@@ -3112,22 +3369,34 @@ def produce(
     frame_counts: dict[str, Counter[str]] = defaultdict(Counter)
     for split in ("private_train", "private_dev", "private_eval"):
         for row in dolly_selected[split]:
-            record = dolly_record(
-                row,
-                split=split,
-                source=corpus["dolly"],
-                producer_sha256=producer_sha256,
+            identity = row["selection_key"].split(":", 1)[1]
+            record = materialize_candidate(
+                family="dolly_direct",
+                inputs={"row": row, "split": split, "source": corpus["dolly"]},
+                expected_source_id="dolly:" + identity[:24],
+                build=lambda row=row, split=split: dolly_record(
+                    row,
+                    split=split,
+                    source=corpus["dolly"],
+                    producer_sha256=producer_family_identities["dolly_direct"],
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
             category_counts[split][row["category"]] += 1
         for row in dolly_grounded_selected[split]:
-            record = dolly_grounded_question_record(
-                row,
-                split=split,
-                source=corpus["dolly"],
-                producer_sha256=producer_sha256,
+            identity = row["selection_key"].split(":", 1)[1]
+            record = materialize_candidate(
+                family="dolly_grounded",
+                inputs={"row": row, "split": split, "source": corpus["dolly"]},
+                expected_source_id="dolly-grounded:" + identity[:24],
+                build=lambda row=row, split=split: dolly_grounded_question_record(
+                    row,
+                    split=split,
+                    source=corpus["dolly"],
+                    producer_sha256=producer_family_identities["dolly_grounded"],
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
@@ -3141,79 +3410,143 @@ def produce(
                 for alternative in frame_prior["alternatives"]
             }:
                 frame_prior = None
-            record = masc_record(
-                row,
-                split=split,
-                source=corpus["masc"],
-                producer_sha256=producer_sha256,
-                interaction_annotation=masc_interactions[split].get(
-                    row["selection_key"]
+            interaction = masc_interactions[split].get(row["selection_key"])
+            identity = row["selection_key"].split(":", 1)[1]
+            record = materialize_candidate(
+                family="masc_frame",
+                inputs={
+                    "row": row,
+                    "split": split,
+                    "source": corpus["masc"],
+                    "interaction_annotation": interaction,
+                    "contextual_frame_ambiguity": frame_prior,
+                },
+                expected_source_id="masc-frame:" + identity[:24],
+                build=lambda row=row, split=split, interaction=interaction, frame_prior=frame_prior: masc_record(
+                    row,
+                    split=split,
+                    source=corpus["masc"],
+                    producer_sha256=producer_family_identities["masc_frame"],
+                    interaction_annotation=interaction,
+                    contextual_frame_ambiguity=frame_prior,
                 ),
-                contextual_frame_ambiguity=frame_prior,
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(row["sentence_identity"])
             frame_counts[split][row["annotation"]["frame_name"]] += 1
         for rows in masc_composite_selected[split]:
-            record = masc_composite_record(
-                rows,
-                split=split,
-                source=corpus["masc"],
-                producer_sha256=producer_sha256,
-                frame_priors=masc_frame_priors,
+            component_ids = [
+                "masc-frame:" + row["selection_key"].split(":", 1)[1][:24]
+                for row in rows
+            ]
+            composite_identity = stable_hash(component_ids).split(":", 1)[1]
+            record = materialize_candidate(
+                family="masc_composite",
+                inputs={
+                    "rows": rows,
+                    "split": split,
+                    "source": corpus["masc"],
+                    "frame_priors": masc_frame_priors,
+                },
+                expected_source_id="masc-composite:" + composite_identity[:24],
+                build=lambda rows=rows, split=split: masc_composite_record(
+                    rows,
+                    split=split,
+                    source=corpus["masc"],
+                    producer_sha256=producer_family_identities["masc_composite"],
+                    frame_priors=masc_frame_priors,
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(rows[0]["sentence_identity"])
         for row in masc_decision_selected[split]:
-            record = masc_decision_semantic_record(
-                row,
-                split=split,
-                source=corpus["masc"],
-                producer_sha256=producer_sha256,
+            identity = row["selection_key"].split(":", 1)[1]
+            record = materialize_candidate(
+                family="masc_decision",
+                inputs={"row": row, "split": split, "source": corpus["masc"]},
+                expected_source_id="masc-decision:" + identity[:24],
+                build=lambda row=row, split=split: masc_decision_semantic_record(
+                    row,
+                    split=split,
+                    source=corpus["masc"],
+                    producer_sha256=producer_family_identities["masc_decision"],
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
         for row in masc_event_coreference_selected[split]:
-            record = masc_event_coreference_record(
-                row,
-                source=corpus["masc"],
-                producer_sha256=producer_sha256,
+            record = materialize_candidate(
+                family="masc_event_coreference",
+                inputs={"row": row, "source": corpus["masc"]},
+                expected_source_id=row["source_id"],
+                build=lambda row=row: masc_event_coreference_record(
+                    row,
+                    source=corpus["masc"],
+                    producer_sha256=producer_family_identities[
+                        "masc_event_coreference"
+                    ],
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
         for row in masc_mpqa_relation_selected[split]:
-            record = masc_mpqa_relation_record(
-                row,
-                source=corpus["masc"],
-                producer_sha256=producer_sha256,
+            record = materialize_candidate(
+                family="masc_mpqa_relation",
+                inputs={"row": row, "source": corpus["masc"]},
+                expected_source_id=row["source_id"],
+                build=lambda row=row: masc_mpqa_relation_record(
+                    row,
+                    source=corpus["masc"],
+                    producer_sha256=producer_family_identities[
+                        "masc_mpqa_relation"
+                    ],
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
         for row in oasst_selected[split]:
-            record = oasst_record(
-                row,
-                split=split,
-                source=corpus["oasst2"],
-                producer_sha256=producer_sha256,
+            identity = row["selection_key"].split(":", 1)[1]
+            record = materialize_candidate(
+                family="oasst_dialogue",
+                inputs={"row": row, "split": split, "source": corpus["oasst2"]},
+                expected_source_id="oasst2:" + identity[:24],
+                build=lambda row=row, split=split: oasst_record(
+                    row,
+                    split=split,
+                    source=corpus["oasst2"],
+                    producer_sha256=producer_family_identities["oasst_dialogue"],
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
         for row in oasst_behavior_selected[split]:
-            record = oasst_behavior_record(
-                row,
-                split=split,
-                source=corpus["oasst2"],
-                producer_sha256=producer_sha256,
+            identity = row["selection_key"].split(":", 1)[1]
+            record = materialize_candidate(
+                family="oasst_behavior",
+                inputs={"row": row, "split": split, "source": corpus["oasst2"]},
+                expected_source_id="oasst2-behavior:" + identity[:24],
+                build=lambda row=row, split=split: oasst_behavior_record(
+                    row,
+                    split=split,
+                    source=corpus["oasst2"],
+                    producer_sha256=producer_family_identities["oasst_behavior"],
+                ),
             )
             candidates.append(record)
             source_groups_by_split[split].add(record["provenance"]["source_group"])
             source_sentences_by_split[split].add(stable_hash(record["source_text"]))
+    if candidate_store is not None:
+        candidate_store.close()
+    phase_runtime_ms["candidate_record_materialization"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
     candidates.sort(
         key=lambda row: (
             ("private_train", "private_dev", "private_eval").index(row["split"]),
@@ -3289,6 +3622,10 @@ def produce(
     finally:
         if economics_store is not None:
             economics_store.close()
+    phase_runtime_ms["importance_and_structural_economics"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
     lambda_calibration = calibrate_allocation_lambda(
         [
             allocation
@@ -3300,29 +3637,46 @@ def produce(
             economics["maximum_dev_importance_weighted_structural_distortion"]
         ),
     )
+    finalization_receipt = producer_finalization_identity_receipt()
+    finalization_store = (
+        ContentObjectCache(
+            cache_root / "producer_objects.sqlite3",
+            namespace=str(cache_cfg["producer_role"])
+            + ":"
+            + str(cache_cfg["producer_finalization_layer"]),
+        )
+        if cache_enabled
+        else None
+    )
+    finalization_cache_hits = 0
+    finalization_cache_misses = 0
     allocation_counts: dict[str, Counter[str]] = defaultdict(Counter)
-    for record, importance, provisional_allocation in provisional:
-        packet = record["kernel_packet"]
-        allocation = reallocate_structural_receipt(
-            provisional_allocation,
-            lambda_value=float(lambda_calibration["selected_lambda"]),
-        )
-        packet = revise_kernel_packet_fidelity(
-            packet,
-            allocation["selected_fidelity"],
-            local_hrl_state=record["hrl_state"],
-        )
-        record["kernel_packet"] = packet
-        record["residual_supervision"] = residual_supervision(
-            str(record["provenance"]["source_id"]),
-            packet=packet,
-            hrl_state=record["hrl_state"],
-            importance=importance,
-            allocation=allocation,
-        )
-        allocation_counts[str(record["split"])][
-            allocation["selected_fidelity"]
-        ] += 1
+    finalized_candidates: list[dict[str, Any]] = []
+    try:
+        for record, importance, provisional_allocation in provisional:
+            record, allocation, hit = cached_finalized_candidate(
+                store=finalization_store,
+                role=str(cache_cfg["producer_role"]),
+                layer=str(cache_cfg["producer_finalization_layer"]),
+                finalization_identity=finalization_receipt["identity_sha256"],
+                record=record,
+                importance=importance,
+                provisional_allocation=provisional_allocation,
+                lambda_value=float(lambda_calibration["selected_lambda"]),
+                refresh_cache=refresh_cache,
+            )
+            if hit:
+                finalization_cache_hits += 1
+            else:
+                finalization_cache_misses += 1
+            finalized_candidates.append(record)
+            allocation_counts[str(record["split"])][
+                allocation["selected_fidelity"]
+            ] += 1
+    finally:
+        if finalization_store is not None:
+            finalization_store.close()
+    candidates = finalized_candidates
     codec_bits: dict[str, dict[str, list[int]]] = defaultdict(
         lambda: defaultdict(list)
     )
@@ -3360,12 +3714,23 @@ def produce(
     groups = list(source_groups_by_split.values())
     if any(groups[left] & groups[right] for left in range(len(groups)) for right in range(left + 1, len(groups))):
         hard_gaps.append("cross_split_source_group_overlap")
+    phase_runtime_ms["allocation_finalization_and_accounting"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
+    phase_started = time.perf_counter()
     row_count, output_sha256 = write_jsonl_atomic(output_path, candidates)
+    phase_runtime_ms["candidate_serialization"] = round(
+        (time.perf_counter() - phase_started) * 1000
+    )
     report = {
         "policy": PRODUCER_POLICY,
         "trigger_state": "RED" if hard_gaps else "GREEN",
         "config": relative(config_path),
         "producer_sha256": producer_sha256,
+        "producer_family_identities": producer_family_receipts,
+        "producer_finalization_identity": finalization_receipt,
+        "runtime_ms": round((time.perf_counter() - run_started) * 1000),
+        "phase_runtime_ms": phase_runtime_ms,
         "candidate_records": {
             "path": relative(output_path),
             "sha256": output_sha256,
@@ -3724,7 +4089,24 @@ def produce(
                 "misses": economics_cache_misses,
                 "entry_count": economics_cache_hits + economics_cache_misses,
             },
+            "candidate_records": {
+                "hits_by_family": dict(sorted(candidate_cache_hits.items())),
+                "misses_by_family": dict(sorted(candidate_cache_misses.items())),
+                "hits": sum(candidate_cache_hits.values()),
+                "misses": sum(candidate_cache_misses.values()),
+                "entry_count": sum(candidate_cache_hits.values())
+                + sum(candidate_cache_misses.values()),
+            },
+            "candidate_finalization": {
+                "hits": finalization_cache_hits,
+                "misses": finalization_cache_misses,
+                "entry_count": finalization_cache_hits
+                + finalization_cache_misses,
+            },
             "candidate_records_sha256": report["candidate_records"]["sha256"],
+            "storage": cache_storage_telemetry(
+                cache_root / "producer_objects.sqlite3"
+            ),
             "claim_scope": "cache execution telemetry only; not semantic or capability evidence",
         },
     )

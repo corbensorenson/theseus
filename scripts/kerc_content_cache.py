@@ -20,6 +20,7 @@ from typing import Any, Iterable, Mapping
 CACHE_POLICY = "project_theseus_kerc_content_addressed_run_cache_v1"
 CACHE_SCHEMA_VERSION = "1.0.0"
 OBJECT_CACHE_POLICY = "project_theseus_kerc_content_addressed_object_cache_v1"
+STORAGE_TELEMETRY_POLICY = "project_theseus_kerc_cache_storage_telemetry_v1"
 
 
 def canonical_json(value: Any) -> str:
@@ -211,6 +212,26 @@ class ContentObjectCache:
             "SELECT COUNT(*) FROM objects WHERE namespace = ?", (self.namespace,)
         ).fetchone()
         return int(row[0]) if row else 0
+
+
+def cache_storage_telemetry(path: Path) -> dict[str, Any]:
+    """Report physical SQLite storage without opening or trusting the cache."""
+
+    files = {
+        "database_bytes": path,
+        "wal_bytes": path.with_name(path.name + "-wal"),
+        "shared_memory_bytes": path.with_name(path.name + "-shm"),
+    }
+    sizes = {
+        label: candidate.stat().st_size if candidate.is_file() else 0
+        for label, candidate in files.items()
+    }
+    return {
+        "policy": STORAGE_TELEMETRY_POLICY,
+        **sizes,
+        "total_bytes": sum(sizes.values()),
+        "claim_scope": "physical cache cost only; not semantic or capability evidence",
+    }
 
 
 def _atomic_json(path: Path, payload: Any) -> None:

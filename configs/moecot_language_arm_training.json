@@ -524,7 +524,13 @@
         "root": "runtime/kerc_semantic_corpus/content_cache",
         "enabled": true,
         "producer_role": "semantic_corpus_producer",
-        "verifier_role": "independent_semantic_corpus_verifier"
+        "verifier_role": "independent_semantic_corpus_verifier",
+        "family_identity_policy": "project_theseus_kerc_source_family_identity_v1",
+        "producer_candidate_layer": "candidate_record_v1",
+        "producer_finalization_layer": "candidate_finalization_v1",
+        "verifier_semantic_layer": "semantic_admission_v1",
+        "common_change_invalidates_all_families": true,
+        "family_local_change_invalidates_only_that_family": true
       },
       "dolly": {
         "path": "resource_pantry/kerc/databricks-dolly-15k.jsonl",

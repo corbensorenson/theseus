@@ -33,6 +33,13 @@ share toward zero. Public benchmarks are calibration only.
   fallback returns. Every specialist clears its 20:1 owned-parameter floor; HTML/CSS
   is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
   finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
+- **Control-plane health:** RED for fleet/autonomy freshness, not for the current KERC
+  tranche. The current snapshot has 15 stale reports, including the autonomy watchdog,
+  service supervisor, and system-efficiency views. The project registry itself is GREEN
+  with zero unregistered active sources or governance violations; the roadmap gate is
+  YELLOW with zero hard gaps because faithful KERC and one queued capability obligation
+  remain open; ATT-D is YELLOW with every hard cap passing. Do not refresh unrelated
+  reports merely to recolor this state.
 - **KERC disposition:** `partial`; protocol mechanics GREEN, construct validity RED,
   scientific result `INCONCLUSIVE_IMPLEMENTATION`. K0 now independently binds the paper,
   implementation sources, independent verifier, and all 12,795 current corpus records.
@@ -77,14 +84,22 @@ share toward zero. Public benchmarks are calibration only.
   exact finite-state implementation: residual bits are `4.776774x` source bits and
   complete Kernel-plus-residual wire is `9.516255x`. Separate source/code/output-bound
   exact-run receipts now replay unchanged materialization in `2.16s` and independent
-  verification in `1.87s`. K1d adds separate, integrity-checked per-record caches: a forced full
-  producer replay preserves byte-identical artifacts and falls from `1151.89s` to
-  `802.88s` with `11,936/11,936` economics hits; independent verification falls from
-  `997.70s` to `71.47s` with `11,936/11,936` semantic-admission hits, zero misses, and
-  zero producer authority reuse. Corruption, namespace crossing, and changed-dependency
-  controls fail closed. Raw parsing, split reconstruction, packet compilation, aggregate
-  calibration, and serialization remain uncached, so selective replay is partial rather
-  than complete. The old keyword/linear proxy remains negative only for itself. K1-K7 must now
+  verification in `1.87s`. K1d first added separate, integrity-checked economics and
+  semantic-admission caches. K1g now binds nine producer and verifier source families to
+  independently recomputed transitive AST source closures, adds content-bound candidate and
+  finalization layers, and retains separate semantic-admission authority. The 12,795-record
+  warm producer replay is `65.089s` with `12,795/12,795` candidate, finalization, and
+  economics hits, a `12.335x` improvement over the prior `802.88s` selective-hit path.
+  Independent cold verification is `1,354.142s`; warm verification is `71.059s` with
+  `12,795/12,795` semantic hits, zero misses, and zero producer-authority reuse, a
+  `19.057x` improvement. A telemetry-only source edit outside every family closure preserves
+  every cached object and both output identities, while family-local, shared-dependency,
+  corruption, and namespace controls invalidate exactly their declared scope or fail closed.
+  Restart after an interrupted fill reuses 3,456 complete objects and finishes the remaining
+  9,339. The speed costs `2.369 GiB` of cache and peaks at about `2.64 GB` resident memory.
+  Raw parsing, split reconstruction, aggregate calibration, and serialization remain uncached,
+  so selective replay is still partial rather than complete. The old keyword/linear proxy
+  remains negative only for itself. K1-K7 must now
   establish nontrivial semantics, per-unit economics, real interaction amortization,
   coordinated learned stages, independent construct-valid verification, and adequacy
   before K8 may run the matched H1-H8 campaign. No learned-KERC, utility, efficiency,

@@ -40,11 +40,15 @@
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "35f3a60897a3f8f790e6aa9c86fa6fa62003e73e7304a8e499d9abea5e281e88"
+      "sha256": "7125b4d97881bf7f4ce54c1c13b3ad982fb6dcdc8ba89596625c9c450fd280fc"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "29f566f686a82a877c0095583404093a26f11e644cecb343f718775c50d873bd"
+      "sha256": "06b2bf346c2ee6ad2f2210cce77e6e684304b54e5fdf6b341947da119a72993b"
+    },
+    {
+      "path": "scripts/kerc_source_family_identity.py",
+      "sha256": "65fa105db87fb6a6514bea7b8ec8a61739c85ca3c0bf2b6dabe5cb8f9899c2ed"
     },
     {
       "path": "scripts/kerc_masc_event_coreference.py",
@@ -64,7 +68,7 @@
     },
     {
       "path": "scripts/kerc_content_cache.py",
-      "sha256": "d037e7d0ea8bbcf5351a89bce4856d7fc591c528b510130c0dc3e4c05459f8b8"
+      "sha256": "a6c981363a38ef03494df1ece8324dd71233dcba45b16c0944e0a8cf10eff1b2"
     },
     {
       "path": "scripts/kerc_residual_economics.py",
@@ -76,19 +80,23 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "60ccc537270783417c044160ff794fa7f51321dfbbba8a83d66ab3e61f4c651e"
+      "sha256": "e464daacfc0d1f4f48564b800ac941a164493f7946ec095c94b6d43bb24cf17e"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "be1026c899356f7dbd57480b0859024552d68b3778ea66a642badce5dd5f4b12"
+      "sha256": "a7809d5b4d5deb68ec12f21f42d330400e7c170dda9c5907b0ea05b93896dc70"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "89fbfb7f07a982fd0981ab9c65742ff3d989f535b32f80350dd6e7e3c1f612dd"
+      "sha256": "49f84cb95cd670d5c1a90dc5fbc41cde6005eb7711d3e44746f441edfb176985"
+    },
+    {
+      "path": "reports/kerc_selective_replay_k1g.json",
+      "sha256": "9f2b2f54bd23b242db37f393199869daf6a56fcb23e5de561c2fa795fcab12db"
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "4a919807cb780950bc7bc6342d0fdf41995e095fadf97a8ac493ca1874b2ede6"
+      "sha256": "6c8b7385c2e6629eadd971c8542b42494bda78fd4f218f65f101ba7efd5d5600"
     }
   ],
   "observed_corpus_contract": {
@@ -105,6 +113,28 @@
     "partial_disposition_count": 0,
     "per_unit_allocation_receipt_count": 0,
     "interaction_presence_label_with_empty_global_count": 6809
+  },
+  "incremental_replay_contract": {
+    "status": "partial_green",
+    "evidence": "reports/kerc_selective_replay_k1g.json",
+    "source_family_count": 9,
+    "candidate_record_count": 12795,
+    "producer_family_identity_independently_recomputed": true,
+    "verifier_family_identity_independently_recomputed": true,
+    "candidate_finalization_and_economics_warm_hits": 12795,
+    "semantic_admission_warm_hits": 12795,
+    "warm_miss_count": 0,
+    "producer_authority_reused_for_admission": false,
+    "producer_warm_runtime_ms": 65089,
+    "verifier_warm_runtime_ms": 71059,
+    "combined_cache_bytes": 2543378432,
+    "remaining_incremental_owners": [
+      "raw source parsing",
+      "split reconstruction and selection",
+      "aggregate importance calibration",
+      "candidate and canonical serialization"
+    ],
+    "claim_ceiling": "Replay performance, restartability, selective invalidation, integrity, and physical resource accounting only; no semantic, learned, utility, compression, or KERC-thesis claim."
   },
   "required_mechanism_ids": [
     "kerc.immutable_source_and_protected_objects",

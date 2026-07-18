@@ -1,0 +1,153 @@
+{
+  "policy": "project_theseus_kerc_selective_replay_evidence_v1",
+  "schema_version": "1.0.0",
+  "created_utc_date": "2026-07-18",
+  "trigger_state": "GREEN",
+  "claim_scope": "KERC corpus materialization and independent-verification replay performance, integrity, restartability, and physical resource cost only; no learned capability, semantic completeness, utility, compression, or KERC-thesis claim",
+  "environment": {
+    "operating_system": "macOS 15.0 build 24A5320a",
+    "architecture": "arm64",
+    "processor": "Apple M1",
+    "physical_memory_bytes": 17179869184,
+    "python": "3.9.23"
+  },
+  "bound_sources": {
+    "configs/moecot_language_arm_training.json": "sha256:8752d5ce80cbef42a9e48f8c5f7780afc8f49496ce3887714d514320e7af876b",
+    "scripts/kerc_content_cache.py": "sha256:a6c981363a38ef03494df1ece8324dd71233dcba45b16c0944e0a8cf10eff1b2",
+    "scripts/kerc_semantic_corpus.py": "sha256:7125b4d97881bf7f4ce54c1c13b3ad982fb6dcdc8ba89596625c9c450fd280fc",
+    "scripts/kerc_semantic_corpus_verify.py": "sha256:06b2bf346c2ee6ad2f2210cce77e6e684304b54e5fdf6b341947da119a72993b",
+    "scripts/kerc_source_family_identity.py": "sha256:65fa105db87fb6a6514bea7b8ec8a61739c85ca3c0bf2b6dabe5cb8f9899c2ed"
+  },
+  "final_artifacts": {
+    "candidate_records": {
+      "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
+      "row_count": 12795,
+      "sha256": "sha256:a7809d5b4d5deb68ec12f21f42d330400e7c170dda9c5907b0ea05b93896dc70"
+    },
+    "canonical_training_records": {
+      "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
+      "row_count": 12795,
+      "sha256": "sha256:6c8b7385c2e6629eadd971c8542b42494bda78fd4f218f65f101ba7efd5d5600"
+    },
+    "producer_manifest": {
+      "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
+      "sha256": "sha256:e464daacfc0d1f4f48564b800ac941a164493f7946ec095c94b6d43bb24cf17e"
+    },
+    "independent_verification": {
+      "path": "reports/runtime/kerc_semantic_corpus_verification.json",
+      "sha256": "sha256:49f84cb95cd670d5c1a90dc5fbc41cde6005eb7711d3e44746f441edfb176985",
+      "trigger_state": "GREEN",
+      "verification_failure_count": 0,
+      "public_training_rows_written": 0,
+      "producer_authority_reused": false
+    }
+  },
+  "source_families": {
+    "dolly_direct": 6144,
+    "dolly_grounded": 96,
+    "masc_composite": 256,
+    "masc_decision": 256,
+    "masc_event_coreference": 13,
+    "masc_frame": 4096,
+    "masc_mpqa_relation": 846,
+    "oasst_behavior": 24,
+    "oasst_dialogue": 1064
+  },
+  "runs": {
+    "producer_resumed_cold_fill": {
+      "runtime_ms": 984465,
+      "candidate_hits": 3456,
+      "candidate_misses": 9339,
+      "finalization_hits": 0,
+      "finalization_misses": 12795,
+      "economics_hits": 12795,
+      "economics_misses": 0,
+      "restartability_evidence": "A stopped partial fill retained 3,456 valid candidate objects; the restarted run reused exactly those objects and completed the remaining 9,339 without duplicate or digest drift.",
+      "stdout_sha256": "sha256:0f02d434816f81ad84b6338685172881b5cb417d2b43d9f1a8d2689afbc10e93"
+    },
+    "producer_warm_replay": {
+      "runtime_ms": 65089,
+      "wall_time_seconds": 66.45,
+      "candidate_hits": 12795,
+      "candidate_misses": 0,
+      "finalization_hits": 12795,
+      "finalization_misses": 0,
+      "economics_hits": 12795,
+      "economics_misses": 0,
+      "maximum_resident_set_bytes": 2487681024,
+      "stdout_sha256": "sha256:86ae8cecc697e337a93e29ec72b3a1aefea92b12fbeb86ebea5ebda5b619d192",
+      "time_receipt_sha256": "sha256:473dc0fd0cc743a4bc693f709ecddc7dfbf72352a4971009f7aa430db7a0e8dc"
+    },
+    "verifier_cold_admission": {
+      "runtime_ms": 1354142,
+      "wall_time_seconds": 1355.63,
+      "semantic_hits": 0,
+      "semantic_misses": 12795,
+      "producer_authority_reused": false,
+      "maximum_resident_set_bytes": 2055110656,
+      "stdout_sha256": "sha256:c3a24658a18afd57643b98d798d8ba5071fa4f6197360c548b8892d15eb6bb5f",
+      "time_receipt_sha256": "sha256:59f7e0705c32e2572141f3c692a521cfe166d5310755c80f13279f22dd88593a"
+    },
+    "verifier_warm_replay": {
+      "runtime_ms": 71059,
+      "wall_time_seconds": 73.38,
+      "semantic_hits": 12795,
+      "semantic_misses": 0,
+      "producer_authority_reused": false,
+      "maximum_resident_set_bytes": 2524954624,
+      "stdout_sha256": "sha256:5f2c24de9b04adf010d9c7e1b6d5811e195d9581358e732c8aa6e8bbe985d03e",
+      "time_receipt_sha256": "sha256:60d41dde21505892471e3ccf188496cc313665d24bd07cd85fdf38e9ade2dcd4"
+    },
+    "unrelated_observability_change_replay": {
+      "change": "Added physical storage telemetry outside every source-family producer closure, finalization closure, and semantic-admission closure.",
+      "producer_runtime_ms": 106737,
+      "verifier_runtime_ms": 82273,
+      "candidate_hits": 12795,
+      "finalization_hits": 12795,
+      "economics_hits": 12795,
+      "semantic_hits": 12795,
+      "total_misses": 0,
+      "candidate_digest_unchanged": true,
+      "canonical_row_count_unchanged": true,
+      "producer_authority_reused": false,
+      "producer_stdout_sha256": "sha256:e464daacfc0d1f4f48564b800ac941a164493f7946ec095c94b6d43bb24cf17e",
+      "verifier_stdout_sha256": "sha256:49f84cb95cd670d5c1a90dc5fbc41cde6005eb7711d3e44746f441edfb176985",
+      "producer_time_receipt_sha256": "sha256:35b32d2bc9e088f37a218d8f00ed56b9c7acc7475ec3c6fd5766f4f148757ce9",
+      "verifier_time_receipt_sha256": "sha256:bdccbe5a2eb30059a90b1338643690c34cff1a629eb61addf6f9d5274662add4"
+    }
+  },
+  "performance": {
+    "producer_prior_selective_hit_baseline_ms": 802880,
+    "producer_warm_runtime_ms": 65089,
+    "producer_speedup_over_prior_selective_hit": 12.33511,
+    "producer_speedup_over_resumed_cold_fill": 15.124906,
+    "verifier_cold_runtime_ms": 1354142,
+    "verifier_warm_runtime_ms": 71059,
+    "verifier_speedup": 19.056587
+  },
+  "physical_cost": {
+    "producer_cache_bytes": 856174592,
+    "verifier_cache_bytes": 1687203840,
+    "combined_cache_bytes": 2543378432,
+    "combined_cache_gib": 2.368706,
+    "maximum_observed_resident_set_bytes": 2639446016
+  },
+  "integrity": {
+    "candidate_family_identity_recomputed_from_source_ast": true,
+    "producer_family_identity_recomputed_by_verifier_without_importing_producer": true,
+    "family_local_source_change_invalidates_only_that_family": true,
+    "shared_dependency_change_invalidates_all_dependent_families": true,
+    "unrelated_source_change_preserves_family_objects": true,
+    "candidate_cache_binds_complete_inputs_and_provisional_state": true,
+    "finalization_cache_binds_candidate_hash_importance_allocation_lambda_and_source_closure": true,
+    "semantic_cache_binds_independent_expected_row_and_verifier_source_closures": true,
+    "corrupt_cache_rows_fail_closed": true,
+    "producer_cache_can_grant_semantic_admission": false
+  },
+  "remaining_incremental_owners": [
+    "raw source parsing",
+    "split reconstruction and selection",
+    "aggregate importance calibration",
+    "candidate and canonical serialization"
+  ]
+}

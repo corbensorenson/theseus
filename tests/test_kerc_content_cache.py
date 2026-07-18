@@ -14,6 +14,21 @@ if str(SCRIPTS) not in sys.path:
 import kerc_content_cache as cache  # noqa: E402
 
 
+def test_storage_telemetry_accounts_for_database_and_sidecars(tmp_path: Path) -> None:
+    path = tmp_path / "objects.sqlite3"
+    path.write_bytes(b"database")
+    path.with_name(path.name + "-wal").write_bytes(b"journal")
+
+    observed = cache.cache_storage_telemetry(path)
+
+    assert observed["policy"] == "project_theseus_kerc_cache_storage_telemetry_v1"
+    assert observed["database_bytes"] == 8
+    assert observed["wal_bytes"] == 7
+    assert observed["shared_memory_bytes"] == 0
+    assert observed["total_bytes"] == 15
+    assert "not semantic" in observed["claim_scope"]
+
+
 def write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
