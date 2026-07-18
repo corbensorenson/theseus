@@ -61,6 +61,13 @@ from kerc_gum_discourse_relations_verify import (
     SPLIT_CONTRACT as GUM_DISCOURSE_SPLIT_CONTRACT,
     independently_reconstruct_gum_discourse_relations,
 )
+from kerc_gum_entity_coreference_verify import (
+    COMPACTION_CONTRACT as GUM_ENTITY_COREFERENCE_COMPACTION_CONTRACT,
+    POLICY as GUM_ENTITY_COREFERENCE_POLICY,
+    RELATION_CONTRACT as GUM_ENTITY_COREFERENCE_RELATION_CONTRACT,
+    SPLIT_CONTRACT as GUM_ENTITY_COREFERENCE_SPLIT_CONTRACT,
+    independently_reconstruct_gum_entity_coreference,
+)
 from kerc_residual_economics import (
     calibrate_allocation_lambda,
     residual_wire_bytes,
@@ -132,6 +139,8 @@ def verifier_cache_dependency_paths(
         / "kerc_masc_event_coreference_verify.py",
         "masc_mpqa_relation_verifier": scripts
         / "kerc_masc_mpqa_relations_verify.py",
+        "gum_entity_coreference_verifier": scripts
+        / "kerc_gum_entity_coreference_verify.py",
         "semantic_config_validator": scripts / "moecot_source_conditioned_pretraining.py",
         "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
         "candidate_records": candidate_path,
@@ -1448,19 +1457,21 @@ def independent_hrl_replay(
     actor_id: str,
     source: dict[str, Any],
     valid_realizations: list[dict[str, Any]] | None,
+    concept_capsules: dict[str, dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    identity = stable_hash(
-        {
-            "split": split,
-            "source_id": source_id,
-            "source_group": source_group,
-            "source_text": source_text,
-            "surface_target": surface_target,
-            "source_annotation": source_annotation,
-            "interaction_annotation": interaction_annotation,
-            "valid_realizations": valid_realizations,
-        }
-    ).split(":", 1)[1]
+    identity_payload = {
+        "split": split,
+        "source_id": source_id,
+        "source_group": source_group,
+        "source_text": source_text,
+        "surface_target": surface_target,
+        "source_annotation": source_annotation,
+        "interaction_annotation": interaction_annotation,
+        "valid_realizations": valid_realizations,
+    }
+    if concept_capsules is not None:
+        identity_payload["concept_capsules"] = concept_capsules
+    identity = stable_hash(identity_payload).split(":", 1)[1]
     state = create_hierarchical_residual_state(
         "kerc-corpus-" + identity[:24],
         scope={
@@ -3175,6 +3186,365 @@ def verify_gum_discourse_record(
     }
 
 
+def verify_gum_entity_coreference_record(
+    record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]
+) -> dict[str, Any]:
+    """Independently bind a packet to complete human coreference topology."""
+
+    annotation = expected["annotation"]
+    if record.get("source_annotation") != annotation:
+        raise ValueError("GUM entity/coreference source annotation replay mismatch")
+    if (
+        record.get("split") != expected["split"]
+        or record.get("source_text") != expected["source_text"]
+        or record.get("surface_target") != expected["source_text"]
+        or record.get("provenance", {}).get("source_id") != expected["source_id"]
+        or record.get("provenance", {}).get("source_group") != expected["source_group"]
+        or record.get("provenance", {}).get("license_spdx")
+        != expected["license_spdx"]
+    ):
+        raise ValueError("GUM entity/coreference identity or license mismatch")
+    semantic = record.get("semantic_supervision") or {}
+    if (
+        semantic.get("objective_authority")
+        != {
+            "surface_direct_control_v1": False,
+            "surface_to_kernel_program_v1": True,
+            "kernel_program_to_answer_packet_v1": True,
+            "answer_packet_to_surface_v1": False,
+        }
+        or semantic.get("source_credit_unit") != "document"
+        or semantic.get("derived_view_unique_source_credit") != 0
+        or semantic.get("entity_coreference_authority")
+        != "human_source_declared_complete_identity_components_and_bridging_edges"
+        or semantic.get("concept_capsule_identity_authority")
+        != "human_source_declared_component"
+        or semantic.get("public_calibration_surface") is not False
+        or semantic.get("benchmark_payload_used") is not False
+    ):
+        raise ValueError("GUM entity/coreference semantic authority mismatch")
+
+    groups = annotation["groups"]
+    mentions = annotation["mentions"]
+    handle_by_group = {
+        group["group_id"]: f"@C{index}" for index, group in enumerate(groups)
+    }
+    group_by_mention = {
+        identity: group
+        for group in groups
+        for identity in group["mention_ids"]
+    }
+    expected_capsules = {}
+    for group in groups:
+        members = [
+            mention for mention in mentions if mention["mention_id"] in group["mention_ids"]
+        ]
+        expected_capsules[handle_by_group[group["group_id"]]] = {
+            "stable_identity": group["stable_identity"],
+            "provenance": {
+                "dataset_revision": source["dataset_revision"],
+                "document_id": annotation["document_id"],
+                "source_group_id": group["group_id"],
+                "source_annotation_sha256": stable_hash(
+                    [mention["source_annotation_sha256"] for mention in members]
+                ),
+            },
+            "entity_types": sorted(
+                {mention["attributes"]["entity_type"] for mention in members}
+            ),
+            "source_identity_values": sorted(
+                {
+                    mention["attributes"]["identity"]
+                    for mention in members
+                    if mention["attributes"]["identity"] != "_"
+                }
+            ),
+            "mention_count": len(members),
+        }
+    packet = record["kernel_packet"]
+    if packet.get("concept_capsules") != expected_capsules:
+        raise ValueError("GUM entity/coreference concept capsule mismatch")
+    program = packet["program"]
+    nodes = program["nodes"]
+    claims = record["answer_packet"]["claims"]
+
+    def node_header_matches(node: dict[str, Any], node_id: str, predicate: str) -> bool:
+        return {
+            key: node.get(key)
+            for key in (
+                "node_id",
+                "operator",
+                "modality",
+                "polarity",
+                "quantifier",
+                "confidence",
+                "derivation",
+            )
+        } == {
+            "node_id": node_id,
+            "operator": predicate,
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "derivation": "preserved",
+        }
+
+    def claim_header_matches(
+        claim: dict[str, Any], claim_id: str, predicate: str
+    ) -> bool:
+        return {
+            key: claim.get(key)
+            for key in (
+                "claim_id",
+                "predicate",
+                "modality",
+                "polarity",
+                "quantifier",
+                "confidence",
+            )
+        } == {
+            "claim_id": claim_id,
+            "predicate": predicate,
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+        }
+    expected_nodes = len(mentions) + len(groups) + len(annotation["relations"])
+    expected_claims = expected_nodes
+    if len(nodes) != expected_nodes or len(claims) != expected_claims:
+        raise ValueError("GUM entity/coreference graph cardinality mismatch")
+    node_by_mention = {
+        mention["mention_id"]: f"k{index}" for index, mention in enumerate(mentions)
+    }
+    expected_tags = []
+    for index, mention in enumerate(mentions):
+        node = nodes[index]
+        claim = claims[index]
+        group = group_by_mention[mention["mention_id"]]
+        handle = handle_by_group[group["group_id"]]
+        attributes = mention["attributes"]
+        expected_arguments = [
+            {"role": "IDENTITY", "value": {"type": "handle", "value": handle}},
+            {
+                "role": "ENTITY_TYPE",
+                "value": independent_semantic_concept(
+                    "gum.entity_type", attributes["entity_type"]
+                ),
+            },
+            {
+                "role": "INFORMATION_STATUS",
+                "value": independent_semantic_concept(
+                    "gum.information_status", attributes["information_status"]
+                ),
+            },
+            {
+                "role": "CENTERING",
+                "value": independent_semantic_concept(
+                    "gum.centering", attributes["centering"]
+                ),
+            },
+        ]
+        if (
+            node
+            != {
+                "node_id": f"k{index}",
+                "operator": "ENTITY_MENTION",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": mention["excerpt_spans"],
+                "arguments": expected_arguments,
+            }
+            or claim
+            != {
+                "claim_id": f"claim-{index + 1}",
+                "predicate": "ENTITY_MENTION",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": expected_arguments,
+            }
+        ):
+            raise ValueError("GUM entity mention graph mismatch")
+        for span in mention["excerpt_spans"]:
+            expected_tags.append(
+                {
+                    "tag": "ENTITY_MENTION:"
+                    + safe_symbol(attributes["entity_type"], "UNKNOWN"),
+                    "source_span": span,
+                    "authority": "licensed_manual_annotation",
+                }
+            )
+    roots = []
+    cursor = len(mentions)
+    claim_cursor = len(mentions)
+    for group in groups:
+        node = nodes[cursor]
+        claim = claims[claim_cursor]
+        roots.append(f"k{cursor}")
+        member_ids = group["mention_ids"]
+        handle = handle_by_group[group["group_id"]]
+        expected_spans = sorted(
+            span
+            for mention in mentions
+            if mention["mention_id"] in member_ids
+            for span in mention["excerpt_spans"]
+        )
+        if (
+            not node_header_matches(
+                node, f"k{cursor}", "ENTITY_IDENTITY_COMPONENT"
+            )
+            or node.get("source_spans") != expected_spans
+            or node.get("arguments")
+            != [
+                {"role": "IDENTITY", "value": {"type": "handle", "value": handle}},
+                {
+                    "role": "MEMBERS",
+                    "value": {
+                        "type": "list",
+                        "value": [
+                            {"type": "node_ref", "value": node_by_mention[identity]}
+                            for identity in member_ids
+                        ],
+                    },
+                },
+            ]
+            or not claim_header_matches(
+                claim, f"claim-{claim_cursor + 1}", "ENTITY_IDENTITY_COMPONENT"
+            )
+            or claim.get("arguments")
+            != [
+                {"role": "IDENTITY", "value": {"type": "handle", "value": handle}},
+                {
+                    "role": "MENTION_COUNT",
+                    "value": {
+                        "type": "number",
+                        "value": {
+                            "value": len(member_ids),
+                            "unit": "entity_mentions",
+                            "precision": "exact",
+                        },
+                    },
+                },
+            ]
+        ):
+            raise ValueError("GUM identity component graph mismatch")
+        cursor += 1
+        claim_cursor += 1
+    for relation in annotation["relations"]:
+        node = nodes[cursor]
+        claim = claims[claim_cursor]
+        roots.append(f"k{cursor}")
+        source_mention = relation["source_mention_id"]
+        target_mention = relation["target_mention_id"]
+        relation_concept = independent_semantic_concept(
+            "gum.entity_relation", relation["relation_type"]
+        )
+        spans = sorted(
+            span
+            for identity in (source_mention, target_mention)
+            for span in next(
+                mention["excerpt_spans"]
+                for mention in mentions
+                if mention["mention_id"] == identity
+            )
+        )
+        predicate = "ENTITY_RELATION_" + safe_symbol(
+            relation["relation_type"], "RELATION"
+        )
+        if (
+            not node_header_matches(node, f"k{cursor}", predicate)
+            or node.get("source_spans") != spans
+            or node.get("arguments")
+            != [
+                {
+                    "role": "SOURCE",
+                    "value": {
+                        "type": "node_ref",
+                        "value": node_by_mention[source_mention],
+                    },
+                },
+                {
+                    "role": "TARGET",
+                    "value": {
+                        "type": "node_ref",
+                        "value": node_by_mention[target_mention],
+                    },
+                },
+                {"role": "RELATION_TYPE", "value": relation_concept},
+            ]
+            or not claim_header_matches(
+                claim, f"claim-{claim_cursor + 1}", predicate
+            )
+            or claim.get("arguments")
+            != [
+                {
+                    "role": "SOURCE_IDENTITY",
+                    "value": {
+                        "type": "handle",
+                        "value": handle_by_group[
+                            group_by_mention[source_mention]["group_id"]
+                        ],
+                    },
+                },
+                {
+                    "role": "TARGET_IDENTITY",
+                    "value": {
+                        "type": "handle",
+                        "value": handle_by_group[
+                            group_by_mention[target_mention]["group_id"]
+                        ],
+                    },
+                },
+                {"role": "RELATION_TYPE", "value": relation_concept},
+            ]
+        ):
+            raise ValueError("GUM source-declared relation graph mismatch")
+        cursor += 1
+        claim_cursor += 1
+    if program["roots"] != roots:
+        raise ValueError("GUM entity/coreference roots mismatch")
+    expected_tags.sort(
+        key=lambda row: (row["source_span"], row["tag"], row["authority"])
+    )
+    if packet["residual"]["token_tags"] != expected_tags:
+        raise ValueError("GUM entity/coreference source alignment mismatch")
+    state, deltas = independent_hrl_replay(
+        split=expected["split"],
+        source_id=expected["source_id"],
+        source_group=expected["source_group"],
+        source_text=expected["source_text"],
+        surface_target=expected["source_text"],
+        source_annotation=annotation,
+        interaction_annotation=None,
+        interaction_entries=[],
+        actor_id="licensed_source_context",
+        source={**source, "license_spdx": expected["license_spdx"]},
+        valid_realizations=None,
+        concept_capsules=expected_capsules,
+    )
+    if record.get("hrl_state") != state or record.get("hrl_deltas") != deltas:
+        raise ValueError("GUM entity/coreference residual identity mismatch")
+    return {
+        "document_id": annotation["document_id"],
+        "record_kind": annotation["record_kind"],
+        "mention_count": len(mentions),
+        "group_count": len(groups),
+        "relation_count": len(annotation["relations"]),
+        "source_declared_only": True,
+        "common_source_binding": {
+            "dataset_revision": str(source["dataset_revision"]),
+            "license_spdx": str(expected["license_spdx"]),
+            "content_sha256": str(source["content_sha256"]),
+        },
+    }
+
+
 def producer_family_identity_receipts_from_source() -> dict[str, dict[str, Any]]:
     scripts = ROOT / "scripts"
     common_external = {
@@ -3190,6 +3560,9 @@ def producer_family_identity_receipts_from_source() -> dict[str, dict[str, Any]]
         },
         "gum_discourse": {
             "raw_relation_producer": scripts / "kerc_gum_discourse_relations.py"
+        },
+        "gum_entity_coreference": {
+            "raw_relation_producer": scripts / "kerc_gum_entity_coreference.py"
         },
     }
     return family_identity_receipts(
@@ -3214,6 +3587,10 @@ def verifier_family_identity_receipts() -> dict[str, dict[str, Any]]:
         "gum_discourse": {
             "raw_relation_verifier": scripts
             / "kerc_gum_discourse_relations_verify.py"
+        },
+        "gum_entity_coreference": {
+            "raw_relation_verifier": scripts
+            / "kerc_gum_entity_coreference_verify.py"
         },
     }
     return family_identity_receipts(
@@ -3578,6 +3955,75 @@ def verify(
         or gum_audit["inferred_relation_count"] != 0
     ):
         raise ValueError("independent GUM eRST reconstruction mismatch")
+    gum_entity_contract = gum_contract["entity_coreference"]
+    gum_entity_rows, gum_entity_audit = (
+        independently_reconstruct_gum_entity_coreference(
+            source_root=resolve(gum_contract["source_root"]),
+            allowed_genre_licenses=dict(gum_contract["allowed_genre_licenses"]),
+            private_dev_documents=set(gum_contract["private_dev_documents"]),
+            private_eval_documents=set(gum_contract["private_eval_documents"]),
+            expected_selected_source_sha256=gum_entity_contract["content_sha256"],
+            maximum_characters=maximum_characters,
+        )
+    )
+    gum_entity_expected = {
+        row["source_id"]: row for rows in gum_entity_rows.values() for row in rows
+    }
+    if (
+        gum_entity_audit["policy"] != GUM_ENTITY_COREFERENCE_POLICY
+        or gum_entity_audit["relation_contract"]
+        != GUM_ENTITY_COREFERENCE_RELATION_CONTRACT
+        or gum_entity_audit["split_contract"]
+        != GUM_ENTITY_COREFERENCE_SPLIT_CONTRACT
+        or gum_entity_audit["source_compaction_contract"]
+        != GUM_ENTITY_COREFERENCE_COMPACTION_CONTRACT
+        or gum_entity_audit["parser_implementation"]
+        != "verifier_csv_expat_union_find_v1"
+        or gum_entity_audit["selected_source_sha256"]
+        != gum_entity_contract["content_sha256"]
+        or gum_entity_audit["selected_document_count"]
+        != int(gum_entity_contract["expected_selected_document_count"])
+        or {
+            split: int(values["records"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["records_by_split"]
+        or {
+            split: int(values["identity_records"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["identity_records_by_split"]
+        or {
+            split: int(values["bridge_records"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["bridge_records_by_split"]
+        or any(
+            int(gum_entity_audit["cross_format_topology_by_split"][split]["mentions"])
+            != int(gum_entity_contract["mentions_by_split"][split])
+            or int(
+                gum_entity_audit["cross_format_topology_by_split"][split][
+                    "components"
+                ]
+            )
+            != int(gum_entity_contract["components_by_split"][split])
+            for split in SPLITS
+        )
+        or any(
+            int(
+                gum_entity_audit["cross_format_topology_by_split"][split][
+                    "component_membership_documents_agreeing"
+                ]
+            )
+            != int(gum_contract["documents_by_split"][split])
+            for split in SPLITS
+        )
+        or gum_entity_audit["rejected_record_count"] != 0
+        or gum_entity_audit["official_nontrain_document_admission_count"] != 0
+        or gum_entity_audit["partial_component_admission_count"] != 0
+        or gum_entity_audit["inferred_relation_count"] != 0
+    ):
+        raise ValueError("independent GUM entity/coreference reconstruction mismatch")
     expected = {
         **independent_dolly_assignments(
             corpus["dolly"],
@@ -3591,6 +4037,7 @@ def verify(
         **masc_event_expected,
         **masc_mpqa_expected,
         **gum_expected,
+        **gum_entity_expected,
         **independent_oasst_assignments(
             corpus["oasst2"],
             reserved_groups={row["source_group"] for row in behavior_expected.values()},
@@ -3871,6 +4318,42 @@ def verify(
         or producer_gum.get("truth_claimed") is not False
     ):
         raise ValueError("producer GUM eRST telemetry mismatch")
+    producer_gum_entity = manifest.get("gum_entity_coreference") or {}
+    if (
+        producer_gum_entity.get("policy") != GUM_ENTITY_COREFERENCE_POLICY
+        or producer_gum_entity.get("relation_contract")
+        != GUM_ENTITY_COREFERENCE_RELATION_CONTRACT
+        or producer_gum_entity.get("split_contract")
+        != GUM_ENTITY_COREFERENCE_SPLIT_CONTRACT
+        or producer_gum_entity.get("source_compaction_contract")
+        != GUM_ENTITY_COREFERENCE_COMPACTION_CONTRACT
+        or producer_gum_entity.get("parser_implementation")
+        != "producer_webanno_tsv_state_machine_v1"
+        or producer_gum_entity.get("selected_source_sha256")
+        != gum_entity_contract["content_sha256"]
+        or producer_gum_entity.get("selected_document_count")
+        != int(gum_entity_contract["expected_selected_document_count"])
+        or producer_gum_entity.get("counts_by_split")
+        != gum_entity_audit["counts_by_split"]
+        or producer_gum_entity.get("relation_type_count_by_split")
+        != gum_entity_audit["relation_type_count_by_split"]
+        or producer_gum_entity.get("component_size_distribution_by_split")
+        != gum_entity_audit["component_size_distribution_by_split"]
+        or producer_gum_entity.get("rejected_record_count") != 0
+        or producer_gum_entity.get("official_nontrain_document_admission_count") != 0
+        or producer_gum_entity.get("partial_component_admission_count") != 0
+        or producer_gum_entity.get("inferred_relation_count") != 0
+        or producer_gum_entity.get("claim_scope")
+        != gum_entity_contract["claim_scope"]
+        or producer_gum_entity.get("source_credit_unit") != "document"
+        or producer_gum_entity.get("derived_view_unique_source_credit") != 0
+        or producer_gum_entity.get("official_dev_test_quarantined") is not True
+        or producer_gum_entity.get("cross_format_topology_required") is not True
+        or producer_gum_entity.get("public_coreference_score_claimed") is not False
+        or producer_gum_entity.get("cross_document_identity_claimed") is not False
+        or producer_gum_entity.get("learned_competence_claimed") is not False
+    ):
+        raise ValueError("producer GUM entity/coreference telemetry mismatch")
     phase_runtime_ms["independent_source_reconstruction"] = round(
         (time.perf_counter() - phase_started) * 1000
     )
@@ -4263,6 +4746,25 @@ def verify(
             "public_gum_or_disrpt_score_claimed": False,
             "learned_competence_claimed": False,
             "independently_reconstructed_from_raw_rsd_and_xml": True,
+        },
+        "gum_entity_coreference": {
+            **gum_entity_audit,
+            "producer_parser_implementation": producer_gum_entity[
+                "parser_implementation"
+            ],
+            "verifier_parser_implementation": gum_entity_audit[
+                "parser_implementation"
+            ],
+            "parser_implementations_independent": True,
+            "cross_format_topology_required": True,
+            "claim_scope": gum_entity_contract["claim_scope"],
+            "source_credit_unit": "document",
+            "derived_view_unique_source_credit": 0,
+            "official_dev_test_quarantined": True,
+            "public_coreference_score_claimed": False,
+            "cross_document_identity_claimed": False,
+            "learned_competence_claimed": False,
+            "independently_reconstructed_from_raw_tsv_and_conllu": True,
         },
         "verification_failures": dict(failures),
         "public_training_rows_written": 0,

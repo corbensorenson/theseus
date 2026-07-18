@@ -334,7 +334,11 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
         calls.append(objective)
         if objective == "surface_to_kernel_program_v1":
             output = kernel.canonical_json(
-                {"kernel_version": kernel.KERNEL_VERSION, "program": learned_program}
+                {
+                    "kernel_version": kernel.KERNEL_VERSION,
+                    "concept_capsules": {},
+                    "program": learned_program,
+                }
             )
         elif objective == "kernel_program_to_answer_packet_v1":
             output = kernel.canonical_json(learned_answer)
@@ -1172,13 +1176,24 @@ def test_training_record_compiles_four_matched_noncredit_views() -> None:
         "source_span",
     }
     assert "object_sha256" not in compiler_prompt["protected_objects"]["@E1"]
+    assert compiler_prompt["concept_capsules"] == {}
     parsed = kernel.parse_learned_compiler_output(
         compiler_view["target"],
         protected_objects=record["kernel_packet"]["protected_objects"],
-        concept_capsules=record["kernel_packet"]["concept_capsules"],
+        concept_capsules={},
         source_character_length=len(SOURCE),
     )
     assert parsed["state"] == "READY"
+    assert all(
+        capsule["stable_identity"].startswith("local.concept.")
+        and capsule["provenance"]
+        == {
+            "source": "learned_compiler_output_v1",
+            "scope": "packet_local",
+            "registry_promotion_allowed": False,
+        }
+        for capsule in parsed["generated_concept_capsules"].values()
+    )
 
     answer_view = next(
         row
@@ -1329,10 +1344,70 @@ def test_training_record_and_learned_outputs_fail_closed() -> None:
             concept_capsules={},
             source_character_length=1,
         )
-    malformed = json.dumps({"kernel_version": kernel.KERNEL_VERSION, "program": {}})
+    malformed = json.dumps(
+        {
+            "kernel_version": kernel.KERNEL_VERSION,
+            "concept_capsules": {},
+            "program": {},
+        }
+    )
     with pytest.raises(kernel.KernelProtocolFault, match="KERC_PROGRAM_NODES_MISSING"):
         kernel.parse_learned_compiler_output(
             malformed,
+            protected_objects={},
+            concept_capsules={},
+            source_character_length=1,
+        )
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_LEARNED_COMPILER_CONCEPT_CAPSULES_MISSING",
+    ):
+        kernel.parse_learned_compiler_output(
+            json.dumps({"kernel_version": kernel.KERNEL_VERSION, "program": {}}),
+            protected_objects={},
+            concept_capsules={},
+            source_character_length=1,
+        )
+    external_capsule = {
+        "@C0": {
+            "stable_identity": "concept.external.1",
+            "provenance": {"source": "runtime_context"},
+        }
+    }
+    conflicting_capsule = {"@C0": {"type": "learned_candidate"}}
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_LEARNED_COMPILER_CONCEPT_COLLISION",
+    ):
+        kernel.parse_learned_compiler_output(
+            json.dumps(
+                {
+                    "kernel_version": kernel.KERNEL_VERSION,
+                    "concept_capsules": conflicting_capsule,
+                    "program": {},
+                }
+            ),
+            protected_objects={},
+            concept_capsules=external_capsule,
+            source_character_length=1,
+        )
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_LEARNED_CONCEPT_AUTHORITY_FORBIDDEN",
+    ):
+        kernel.parse_learned_compiler_output(
+            json.dumps(
+                {
+                    "kernel_version": kernel.KERNEL_VERSION,
+                    "concept_capsules": {
+                        "@C0": {
+                            "stable_identity": "forged.identity",
+                            "provenance": {"source": "learned_output"},
+                        }
+                    },
+                    "program": {},
+                }
+            ),
             protected_objects={},
             concept_capsules={},
             source_character_length=1,

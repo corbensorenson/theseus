@@ -993,6 +993,17 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         gum_documents = gum.get("documents_by_split")
         gum_records = gum.get("records_by_split")
         gum_secondary = gum.get("secondary_edges_by_split")
+        entity_coreference = gum.get("entity_coreference") or {}
+        entity_count_maps = [
+            entity_coreference.get(name)
+            for name in (
+                "records_by_split",
+                "identity_records_by_split",
+                "bridge_records_by_split",
+                "mentions_by_split",
+                "components_by_split",
+            )
+        ]
         if (
             not isinstance(gum_genres, dict)
             or set(gum_genres)
@@ -1035,8 +1046,33 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
                 "kernel_program_to_answer_packet_v1",
             }
             or not str(gum.get("claim_scope") or "")
+            or entity_coreference.get("policy")
+            != "project_theseus_kerc_gum_human_entity_coreference_v1"
+            or entity_coreference.get("relation_contract")
+            != "complete_source_declared_identity_component_or_bridge_endpoint_graph_v1"
+            or entity_coreference.get("source_compaction_contract")
+            != "uniform_sentence_bounded_mention_window_v1"
+            or not re.fullmatch(
+                r"sha256:[0-9a-f]{64}",
+                str(entity_coreference.get("content_sha256") or ""),
+            )
+            or int(entity_coreference.get("expected_selected_document_count") or 0)
+            != int(gum.get("expected_selected_document_count") or -1)
+            or any(
+                not isinstance(values, dict)
+                or tuple(values) != ("private_train", "private_dev", "private_eval")
+                or any(int(value) <= 0 for value in values.values())
+                for values in entity_count_maps
+            )
+            or any(
+                int(entity_coreference["records_by_split"][split])
+                != int(entity_coreference["identity_records_by_split"][split])
+                + int(entity_coreference["bridge_records_by_split"][split])
+                for split in ("private_train", "private_dev", "private_eval")
+            )
+            or not str(entity_coreference.get("claim_scope") or "")
         ):
-            raise ValueError("KERC GUM eRST discourse contract invalid")
+            raise ValueError("KERC GUM discourse/coreference contract invalid")
 
     gum = sources.get("gum")
     if gum is not None:

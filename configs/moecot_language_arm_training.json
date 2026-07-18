@@ -792,7 +792,40 @@
           "surface_to_kernel_program_v1",
           "kernel_program_to_answer_packet_v1"
         ],
-        "claim_scope": "human eRST primary discourse dependencies plus source-declared secondary edges over complete projected discourse units; authority covers relation label, direction, nuclearity where declared, source alignment, and signal count only, not truth, full proposition scope, complete sentence semantics, public GUM/DISRPT performance, or learned competence"
+        "claim_scope": "human eRST primary discourse dependencies plus source-declared secondary edges over complete projected discourse units; authority covers relation label, direction, nuclearity where declared, source alignment, and signal count only, not truth, full proposition scope, complete sentence semantics, public GUM/DISRPT performance, or learned competence",
+        "entity_coreference": {
+          "policy": "project_theseus_kerc_gum_human_entity_coreference_v1",
+          "relation_contract": "complete_source_declared_identity_component_or_bridge_endpoint_graph_v1",
+          "source_compaction_contract": "uniform_sentence_bounded_mention_window_v1",
+          "content_sha256": "sha256:d23b29d2dc73320fb14ab13fb6e53e4fde3d3ef6004d4b94c199e7932d4a9b96",
+          "expected_selected_document_count": 89,
+          "records_by_split": {
+            "private_train": 3891,
+            "private_dev": 794,
+            "private_eval": 676
+          },
+          "identity_records_by_split": {
+            "private_train": 2578,
+            "private_dev": 509,
+            "private_eval": 455
+          },
+          "bridge_records_by_split": {
+            "private_train": 1313,
+            "private_dev": 285,
+            "private_eval": 221
+          },
+          "mentions_by_split": {
+            "private_train": 17556,
+            "private_dev": 3641,
+            "private_eval": 2965
+          },
+          "components_by_split": {
+            "private_train": 9873,
+            "private_dev": 2008,
+            "private_eval": 1555
+          },
+          "claim_scope": "human GUM source-declared entity mentions, attributes, complete non-singleton coreference components, typed directed coreference links, and bridging links with complete endpoint components; native CoNLL independently confirms exact component membership and CoNLL-U confirms aggregate mention/component topology. This does not claim ontological identity, truth, complete sentence semantics, public coreference performance, cross-document identity, or learned competence"
+        }
       },
       "oasst2": {
         "dataset_id": "OpenAssistant/oasst2",

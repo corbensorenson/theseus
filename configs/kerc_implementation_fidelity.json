@@ -36,19 +36,19 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "9a3348a0accb53a2c694c7e948d59420761addc4981a729badb60a11115b0b5c"
+      "sha256": "421f5b6d251276f2ef3c68197c067cb73c808f729551229432464dcb325fcbdc"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "1073876f837b4290455fc2f55616b34762572a36d8acae776e273ba3c08c8a70"
+      "sha256": "5c4778d3defa4e91c39fe2eed1f10eb375b35764f94354ee646ee8f96e696955"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "ece3ed17f9065b150aae677903c330809c43488efd9c70eece04abd435c10d9f"
+      "sha256": "5e3fa4a904c3ee10c8e1f304f20a66886eea7ca7264aee64c162eea1af0094fb"
     },
     {
       "path": "scripts/kerc_source_family_identity.py",
-      "sha256": "eab3d3543f75dc5bba9b218ef2f9f1428dad26fb7df9c2becb8a14854a007fa1"
+      "sha256": "73e336616e96a8cc4dc04481d497d00b9c2cc017be7df0b330d6a23b6d1fc81a"
     },
     {
       "path": "scripts/kerc_gum_discourse_relations.py",
@@ -59,12 +59,20 @@
       "sha256": "28a1b25dd226246bcbf702871fc63abd601009b7bf20b0db51ff1c6895917d1f"
     },
     {
+      "path": "scripts/kerc_gum_entity_coreference.py",
+      "sha256": "d8f96ccaf3b7498bbb3790c433aa8901d13c773c759ea740cd7dc51c9e0a0b50"
+    },
+    {
+      "path": "scripts/kerc_gum_entity_coreference_verify.py",
+      "sha256": "c64a6144ffc2e7eb7999806f11dfb03a2feee36c4004a7db635458205403bc48"
+    },
+    {
       "path": "scripts/moecot_source_conditioned_pretraining.py",
-      "sha256": "dfc3560bdb16788a71907b1d3e1cbc60372a29ad8bcd130486858d2d796b29a4"
+      "sha256": "441c9e4dd23d27469218f793b9adf18db5a014ae43dc9f23ecd0719ab2c35a89"
     },
     {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "1e2a23503e35cf47ca8349b9e0bd1ff4d36cd002448ac30bf7c580cabed34b6f"
+      "sha256": "dda98ad38af1c192512b0ac85afc48a168d3255399e00ea0d11e5c386db87aaa"
     },
     {
       "path": "resource_pantry/kerc/gum-v12.1.0/LICENSE.md",
@@ -100,15 +108,15 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "3134ee02c1f60908d594f881f6078adb497d6b428dec4664ab99a083ba31d0d6"
+      "sha256": "e511ef819dd64bf60ac9f3cf8e6fc2ba4fc41dd856f08fd9ed4ca80d9d9d1ac3"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "110f6dd2b140a502f8f34654753573937f9ede032853c8f5937d0bed003a6f24"
+      "sha256": "66915f84a4bda83f584e298a6724d570c70f26be606f8f4de8b1cb2ed0ae481a"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "5fbf3cc48854db0d80cdcec6c65498c06cb568a38e30a26602152d7630591e26"
+      "sha256": "0673630212cd27c2776f750eeac30201a49191f98beff981e55693ad341cff56"
     },
     {
       "path": "reports/kerc_selective_replay_k1g.json",
@@ -116,18 +124,18 @@
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "5106377a97357213ff619419dc763d8be2547d7bd85cf6600433cae11c646a51"
+      "sha256": "84dff4be0218e8f5286c223e1c4915f1b2588fb4bc95c9e028bd173021cd2325"
     }
   ],
   "observed_corpus_contract": {
-    "record_count": 22580,
-    "multi_node_program_count": 11156,
-    "multi_root_program_count": 841,
+    "record_count": 27941,
+    "multi_node_program_count": 16517,
+    "multi_root_program_count": 6202,
     "non_preserved_derivation_count": 0,
-    "multi_claim_answer_count": 1700,
+    "multi_claim_answer_count": 7061,
     "byte_literal_value_count": 18759,
     "correction_alternative_count": 0,
-    "concept_capsule_count": 0,
+    "concept_capsule_count": 7180,
     "nonempty_macro_registry_count": 0,
     "nonempty_interaction_global_dictionary_count": 0,
     "partial_disposition_count": 0,
@@ -135,22 +143,23 @@
     "interaction_presence_label_with_empty_global_count": 6809
   },
   "incremental_replay_contract": {
-    "status": "partial_green_k1h_current_corpus_selective_and_warm_replay_evidence",
+    "status": "partial_green_k1i_current_corpus_full_independent_and_warm_replay_evidence",
     "evidence": "reports/runtime/kerc_semantic_corpus_verification.json",
-    "source_family_count": 10,
-    "candidate_record_count": 22580,
+    "source_family_count": 11,
+    "candidate_record_count": 27941,
     "producer_family_identity_independently_recomputed": true,
     "verifier_family_identity_independently_recomputed": true,
-    "candidate_finalization_and_economics_warm_hits": 22580,
-    "semantic_admission_warm_hits": 22580,
+    "candidate_finalization_and_economics_warm_hits": 27941,
+    "semantic_admission_warm_hits": 27941,
     "warm_miss_count": 0,
     "producer_authority_reused_for_admission": false,
-    "producer_selective_cold_runtime_ms": 1305450,
-    "verifier_selective_cold_runtime_ms": 2197806,
-    "producer_warm_runtime_ms": 152365,
-    "verifier_warm_runtime_ms": 176954,
-    "combined_cache_bytes": 4983504896,
-    "warm_measurement_record_count": 22580,
+    "producer_current_cold_runtime_ms": 5389173,
+    "verifier_current_cold_runtime_ms": 5404007,
+    "cold_rebuild_scope": "all candidate/finalization/economics and semantic-admission objects invalidated by current producer/verifier source closures",
+    "producer_warm_runtime_ms": 230925,
+    "verifier_warm_runtime_ms": 181282,
+    "combined_cache_bytes": 8402055168,
+    "warm_measurement_record_count": 27941,
     "current_warm_measurement_pending": false,
     "remaining_incremental_owners": [
       "raw source parsing",
@@ -203,21 +212,21 @@
       "id": "kerc.surface_to_kernel_compiler",
       "paper_sections": ["5.5", "10.4"],
       "status": "approximate",
-      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/kerc_gum_discourse_relations.py", "scripts/kerc_gum_discourse_relations_verify.py", "scripts/standard_causal_transformer_model.py"],
-      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_gum_discourse_relations.py", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected. K1h adds 9,785 licensed human GUM eRST relation neighborhoods from 89 official-train documents: producer ElementTree/tab parsing and verifier Expat/CSV state-machine parsing independently preserve source-declared primary and secondary edge topology, direction, nuclearity, source alignment, and signal counts across document-disjoint internal splits. All 32 admitted relation types occur in every split, 339 source-declared secondary edges are preserved, official GUM dev/test/test2 documents are excluded, and inferred links, partial admission, public score claims, and extra source credit are zero. Weak-tail counts of 4/5/5 are coverage evidence rather than adequacy. Proposition scope, truth, quantification, compositional negation, general coreference, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
+      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/kerc_gum_discourse_relations.py", "scripts/kerc_gum_discourse_relations_verify.py", "scripts/kerc_gum_entity_coreference.py", "scripts/kerc_gum_entity_coreference_verify.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_gum_discourse_relations.py", "tests/test_kerc_gum_entity_coreference.py", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
+      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected. K1h adds 9,785 licensed human GUM eRST relation neighborhoods from 89 official-train documents with independently replayed primary/secondary topology. K1i adds 5,361 source-declared GUM entity/coreference records: 3,542 complete non-singleton coreference components and 1,819 bridging links with complete endpoint components. Native CoNLL independently confirms exact component membership, CoNLL-U confirms 24,162 mentions and 13,436 components, official GUM heldouts are excluded, and partial admission, inferred links, public score claims, fallback/template credit, and extra source credit are zero. Source-derived concept capsules are compiler targets rather than source-visible inputs. Proposition scope, truth, quantification, compositional negation, cross-document/open-world identity, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
       "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
       "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
     },
     {
       "id": "kerc.concept_identity_and_binding",
       "paper_sections": ["5.6", "6.3", "6.10"],
-      "status": "inactive",
-      "implementation_refs": ["scripts/kernel_english_protocol.py"],
-      "evidence_refs": ["tests/test_kernel_english_protocol.py"],
-      "current_finding": "Concept capsule and pointer schemas exist, but the canonical corpus has no concept capsules and therefore does not exercise identity reuse or open-world definition handling.",
-      "claim_ceiling": "Typed ABI mechanics only.",
-      "next_evidence": "Cross-document concept identity, alias/coreference, unseen concept capsule, migration, collision, stale-definition, and wrong-identity interventions."
+      "status": "approximate",
+      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_gum_entity_coreference.py", "scripts/kerc_gum_entity_coreference_verify.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_kerc_gum_entity_coreference.py"],
+      "current_finding": "The canonical corpus now exercises 7,180 provenance-bound concept capsules across 5,361 GUM entity/coreference records. Stable handles denote document-local source-declared coreference components; producer TSV reconstruction and an independent native-CoNLL membership parser agree across all 89 admitted documents, while CoNLL-U independently confirms aggregate topology. Compiler prompts receive no source-derived capsule labels; the learned compiler must generate capsules beside the Kernel program, and missing or conflicting output fails closed.",
+      "claim_ceiling": "Bounded document-local source-declared coreference binding and leak-free learned-output ABI only; no ontological identity, cross-document registry resolution, open-world definition quality, migration success, or learned linking competence.",
+      "next_evidence": "Cross-document registry identity, aliases, unseen concept definitions, capsule reuse, promotion/migration, collision, stale-definition, wrong-identity, and model-generated linking interventions under source-disjoint evaluation."
     },
     {
       "id": "kerc.grammar_aware_macros",
@@ -245,7 +254,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
       "evidence_refs": ["tests/test_kernel_english_protocol.py"],
-      "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, complete MPQA-relation, and GUM eRST strata now produce 1,700 multi-claim packets and 11,156 multi-node programs. The 13 event-group packets preserve 215 manually grouped mentions; 846 MPQA packets preserve expression, source-chain, attitude, and target members plus manual link topology; 9,785 GUM records preserve bounded discourse-edge neighborhoods including 339 source-declared secondary edges; and the decision-semantic stratum carries typed observed modality, polarity, temporal orientation, event, and subjectivity fields. These are annotation-preservation targets, not truth or learned reasoning. There are still no derivation proofs, contradictions, quantities, general proposition scope, quantification, compositional negation, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
+      "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, complete MPQA-relation, GUM eRST, and GUM entity/coreference strata now produce 7,061 multi-claim packets and 16,517 multi-node programs. The entity/coreference stratum preserves 3,542 complete non-singleton source-declared components plus 1,819 bridge relations with complete endpoint components and 7,180 document-local capsules. These are annotation-preservation targets, not truth or learned reasoning. There are still no derivation proofs, contradictions, general quantities, complete proposition scope, quantification, compositional negation, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
       "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
       "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
     },

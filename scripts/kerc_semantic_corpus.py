@@ -55,6 +55,13 @@ from kerc_gum_discourse_relations import (
     SPLIT_CONTRACT as GUM_DISCOURSE_SPLIT_CONTRACT,
     reconstruct_gum_discourse_relations,
 )
+from kerc_gum_entity_coreference import (
+    COMPACTION_CONTRACT as GUM_ENTITY_COREFERENCE_COMPACTION_CONTRACT,
+    POLICY as GUM_ENTITY_COREFERENCE_POLICY,
+    RELATION_CONTRACT as GUM_ENTITY_COREFERENCE_RELATION_CONTRACT,
+    SPLIT_CONTRACT as GUM_ENTITY_COREFERENCE_SPLIT_CONTRACT,
+    reconstruct_gum_entity_coreference,
+)
 from kerc_content_cache import (
     ContentObjectCache,
     cache_storage_telemetry,
@@ -136,6 +143,8 @@ def producer_cache_dependency_paths(
         "residual_economics": scripts / "kerc_residual_economics.py",
         "masc_event_coreference_producer": scripts / "kerc_masc_event_coreference.py",
         "masc_mpqa_relation_producer": scripts / "kerc_masc_mpqa_relations.py",
+        "gum_entity_coreference_producer": scripts
+        / "kerc_gum_entity_coreference.py",
         "semantic_config_validator": scripts / "moecot_source_conditioned_pretraining.py",
         "vcm_residual_lifecycle": scripts / "vcm_semantic_memory.py",
         "dolly_source": resolve(corpus["dolly"]["path"]),
@@ -163,6 +172,9 @@ def producer_family_identity_receipts() -> dict[str, dict[str, Any]]:
         },
         "gum_discourse": {
             "raw_relation_producer": scripts / "kerc_gum_discourse_relations.py"
+        },
+        "gum_entity_coreference": {
+            "raw_relation_producer": scripts / "kerc_gum_entity_coreference.py"
         },
     }
     return family_identity_receipts(
@@ -541,19 +553,21 @@ def base_record(
     interaction_entries: list[dict[str, Any]] | None = None,
     interaction_actor_id: str = "licensed_source_context",
     valid_realizations: list[dict[str, Any]] | None = None,
+    concept_capsules: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    identity = stable_hash(
-        {
-            "split": split,
-            "source_id": source_id,
-            "source_group": source_group,
-            "source_text": source_text,
-            "surface_target": surface_target,
-            "source_annotation": source_annotation,
-            "interaction_annotation": interaction_annotation,
-            "valid_realizations": valid_realizations,
-        }
-    ).split(":", 1)[1]
+    identity_payload = {
+        "split": split,
+        "source_id": source_id,
+        "source_group": source_group,
+        "source_text": source_text,
+        "surface_target": surface_target,
+        "source_annotation": source_annotation,
+        "interaction_annotation": interaction_annotation,
+        "valid_realizations": valid_realizations,
+    }
+    if concept_capsules is not None:
+        identity_payload["concept_capsules"] = concept_capsules
+    identity = stable_hash(identity_payload).split(":", 1)[1]
     state = create_hierarchical_residual_state(
         "kerc-corpus-" + identity[:24], scope=scope(identity[:24])
     )
@@ -593,6 +607,7 @@ def base_record(
         explicit_spans=explicit_spans or [],
         segment_frame=segment_frame,
         token_tags=token_tags or [],
+        concept_capsules=concept_capsules or {},
         fidelity="exact" if exact_residual else "faithful",
     )
     return {
@@ -3186,6 +3201,299 @@ def gum_discourse_record(
     return record
 
 
+def gum_entity_coreference_record(
+    row: dict[str, Any],
+    *,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    """Compile one complete human entity/coreference neighborhood."""
+
+    annotation = copy.deepcopy(row["annotation"])
+    groups = annotation["groups"]
+    mentions = annotation["mentions"]
+    group_by_mention = {
+        mention_id: group
+        for group in groups
+        for mention_id in group["mention_ids"]
+    }
+    handle_by_group = {
+        group["group_id"]: f"@C{index}" for index, group in enumerate(groups)
+    }
+    capsules = {}
+    for group in groups:
+        group_mentions = [
+            mention for mention in mentions if mention["mention_id"] in group["mention_ids"]
+        ]
+        capsules[handle_by_group[group["group_id"]]] = {
+            "stable_identity": group["stable_identity"],
+            "provenance": {
+                "dataset_revision": source["dataset_revision"],
+                "document_id": annotation["document_id"],
+                "source_group_id": group["group_id"],
+                "source_annotation_sha256": stable_hash(
+                    [mention["source_annotation_sha256"] for mention in group_mentions]
+                ),
+            },
+            "entity_types": sorted(
+                {mention["attributes"]["entity_type"] for mention in group_mentions}
+            ),
+            "source_identity_values": sorted(
+                {
+                    mention["attributes"]["identity"]
+                    for mention in group_mentions
+                    if mention["attributes"]["identity"] != "_"
+                }
+            ),
+            "mention_count": len(group_mentions),
+        }
+    nodes = []
+    claims = []
+    token_tags = []
+    node_by_mention = {}
+    for index, mention in enumerate(mentions):
+        node_id = f"k{index}"
+        node_by_mention[mention["mention_id"]] = node_id
+        group = group_by_mention[mention["mention_id"]]
+        handle = handle_by_group[group["group_id"]]
+        attributes = mention["attributes"]
+        arguments = [
+            {"role": "IDENTITY", "value": {"type": "handle", "value": handle}},
+            {
+                "role": "ENTITY_TYPE",
+                "value": {
+                    "type": "concept",
+                    "value": "gum.entity_type."
+                    + re.sub(r"[^a-z0-9]+", ".", attributes["entity_type"].lower()).strip("."),
+                },
+            },
+            {
+                "role": "INFORMATION_STATUS",
+                "value": {
+                    "type": "concept",
+                    "value": "gum.information_status."
+                    + re.sub(r"[^a-z0-9]+", ".", attributes["information_status"].lower()).strip("."),
+                },
+            },
+            {
+                "role": "CENTERING",
+                "value": {
+                    "type": "concept",
+                    "value": "gum.centering."
+                    + re.sub(r"[^a-z0-9]+", ".", attributes["centering"].lower()).strip("."),
+                },
+            },
+        ]
+        common = {
+            "predicate": "ENTITY_MENTION",
+            "modality": "ASSERTED",
+            "polarity": "AFFIRMED",
+            "quantifier": "NONE",
+            "confidence": 1.0,
+            "arguments": copy.deepcopy(arguments),
+        }
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": "ENTITY_MENTION",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": copy.deepcopy(mention["excerpt_spans"]),
+                "arguments": copy.deepcopy(arguments),
+            }
+        )
+        claims.append({"claim_id": f"claim-{len(claims) + 1}", **common})
+        for span in mention["excerpt_spans"]:
+            token_tags.append(
+                {
+                    "tag": "ENTITY_MENTION:"
+                    + safe_symbol(attributes["entity_type"], prefix="UNKNOWN"),
+                    "source_span": copy.deepcopy(span),
+                    "authority": "licensed_manual_annotation",
+                }
+            )
+    roots = []
+    for group in groups:
+        node_id = f"k{len(nodes)}"
+        roots.append(node_id)
+        member_ids = group["mention_ids"]
+        handle = handle_by_group[group["group_id"]]
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": "ENTITY_IDENTITY_COMPONENT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": sorted(
+                    span
+                    for mention in mentions
+                    if mention["mention_id"] in member_ids
+                    for span in mention["excerpt_spans"]
+                ),
+                "arguments": [
+                    {"role": "IDENTITY", "value": {"type": "handle", "value": handle}},
+                    {
+                        "role": "MEMBERS",
+                        "value": {
+                            "type": "list",
+                            "value": [
+                                {
+                                    "type": "node_ref",
+                                    "value": node_by_mention[mention_id],
+                                }
+                                for mention_id in member_ids
+                            ],
+                        },
+                    },
+                ],
+            }
+        )
+        claims.append(
+            {
+                "claim_id": f"claim-{len(claims) + 1}",
+                "predicate": "ENTITY_IDENTITY_COMPONENT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [
+                    {"role": "IDENTITY", "value": {"type": "handle", "value": handle}},
+                    {
+                        "role": "MENTION_COUNT",
+                        "value": {
+                            "type": "number",
+                            "value": {
+                                "value": len(member_ids),
+                                "unit": "entity_mentions",
+                                "precision": "exact",
+                            },
+                        },
+                    },
+                ],
+            }
+        )
+    for relation in annotation["relations"]:
+        node_id = f"k{len(nodes)}"
+        roots.append(node_id)
+        relation_name = safe_symbol(relation["relation_type"], prefix="RELATION")
+        predicate = "ENTITY_RELATION_" + relation_name
+        source_mention = relation["source_mention_id"]
+        target_mention = relation["target_mention_id"]
+        spans = sorted(
+            copy.deepcopy(span)
+            for identity in (source_mention, target_mention)
+            for span in next(
+                mention["excerpt_spans"]
+                for mention in mentions
+                if mention["mention_id"] == identity
+            )
+        )
+        program_arguments = [
+            {
+                "role": "SOURCE",
+                "value": {"type": "node_ref", "value": node_by_mention[source_mention]},
+            },
+            {
+                "role": "TARGET",
+                "value": {"type": "node_ref", "value": node_by_mention[target_mention]},
+            },
+            {
+                "role": "RELATION_TYPE",
+                "value": {
+                    "type": "concept",
+                    "value": "gum.entity_relation."
+                    + re.sub(r"[^a-z0-9]+", ".", relation["relation_type"].lower()).strip("."),
+                },
+            },
+        ]
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": spans,
+                "arguments": program_arguments,
+            }
+        )
+        claims.append(
+            {
+                "claim_id": f"claim-{len(claims) + 1}",
+                "predicate": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [
+                    {
+                        "role": "SOURCE_IDENTITY",
+                        "value": {
+                            "type": "handle",
+                            "value": handle_by_group[
+                                group_by_mention[source_mention]["group_id"]
+                            ],
+                        },
+                    },
+                    {
+                        "role": "TARGET_IDENTITY",
+                        "value": {
+                            "type": "handle",
+                            "value": handle_by_group[
+                                group_by_mention[target_mention]["group_id"]
+                            ],
+                        },
+                    },
+                    copy.deepcopy(program_arguments[2]),
+                ],
+            }
+        )
+    row_source = {**source, "license_spdx": row["license_spdx"]}
+    record = base_record(
+        split=row["split"],
+        source_text=row["source_text"],
+        surface_target=row["source_text"],
+        program={"roots": roots, "nodes": nodes},
+        answer_packet={
+            "claims": claims,
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "source_authored"},
+        },
+        source=row_source,
+        source_id=row["source_id"],
+        source_group=row["source_group"],
+        objectives={
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+        },
+        producer_sha256=producer_sha256,
+        source_annotation=annotation,
+        exact_residual=False,
+        token_tags=token_tags,
+        concept_capsules=capsules,
+    )
+    record["semantic_supervision"].update(
+        {
+            "source_credit_unit": "document",
+            "derived_view_unique_source_credit": 0,
+            "entity_coreference_authority": (
+                "human_source_declared_complete_identity_components_and_bridging_edges"
+            ),
+            "concept_capsule_identity_authority": "human_source_declared_component",
+        }
+    )
+    return record
+
+
 def interaction_predecessors(
     rows: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
@@ -3571,6 +3879,60 @@ def produce(
         or gum_audit["inferred_relation_count"] != 0
     ):
         raise ValueError("GUM eRST producer reconstruction mismatch")
+    gum_entity_contract = gum_contract["entity_coreference"]
+    gum_entity_selected, gum_entity_audit = reconstruct_gum_entity_coreference(
+        source_root=resolve(gum_contract["source_root"]),
+        allowed_genre_licenses=dict(gum_contract["allowed_genre_licenses"]),
+        private_dev_documents=set(gum_contract["private_dev_documents"]),
+        private_eval_documents=set(gum_contract["private_eval_documents"]),
+        expected_selected_source_sha256=gum_entity_contract["content_sha256"],
+        maximum_characters=int(corpus["maximum_source_characters"]),
+    )
+    if (
+        gum_entity_audit["policy"] != GUM_ENTITY_COREFERENCE_POLICY
+        or gum_entity_audit["relation_contract"]
+        != GUM_ENTITY_COREFERENCE_RELATION_CONTRACT
+        or gum_entity_audit["split_contract"]
+        != GUM_ENTITY_COREFERENCE_SPLIT_CONTRACT
+        or gum_entity_audit["source_compaction_contract"]
+        != GUM_ENTITY_COREFERENCE_COMPACTION_CONTRACT
+        or gum_entity_audit["parser_implementation"]
+        != "producer_webanno_tsv_state_machine_v1"
+        or gum_entity_audit["selected_source_sha256"]
+        != gum_entity_contract["content_sha256"]
+        or gum_entity_audit["selected_document_count"]
+        != int(gum_entity_contract["expected_selected_document_count"])
+        or {
+            split: int(values["records"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["records_by_split"]
+        or {
+            split: int(values["identity_records"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["identity_records_by_split"]
+        or {
+            split: int(values["bridge_records"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["bridge_records_by_split"]
+        or {
+            split: int(values["mentions"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["mentions_by_split"]
+        or {
+            split: int(values["components"])
+            for split, values in gum_entity_audit["counts_by_split"].items()
+        }
+        != gum_entity_contract["components_by_split"]
+        or gum_entity_audit["rejected_record_count"] != 0
+        or gum_entity_audit["official_nontrain_document_admission_count"] != 0
+        or gum_entity_audit["partial_component_admission_count"] != 0
+        or gum_entity_audit["inferred_relation_count"] != 0
+    ):
+        raise ValueError("GUM entity/coreference producer reconstruction mismatch")
     oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
     oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
         corpus["oasst2"]
@@ -3796,6 +4158,22 @@ def produce(
                     row,
                     source=corpus["gum"],
                     producer_sha256=producer_family_identities["gum_discourse"],
+                ),
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
+        for row in gum_entity_selected[split]:
+            record = materialize_candidate(
+                family="gum_entity_coreference",
+                inputs={"row": row, "source": corpus["gum"]},
+                expected_source_id=row["source_id"],
+                build=lambda row=row: gum_entity_coreference_record(
+                    row,
+                    source=corpus["gum"],
+                    producer_sha256=producer_family_identities[
+                        "gum_entity_coreference"
+                    ],
                 ),
             )
             candidates.append(record)
@@ -4040,6 +4418,7 @@ def produce(
                 ),
                 "masc_mpqa_relations": len(masc_mpqa_relation_selected[split]),
                 "gum_erst_discourse": len(gum_selected[split]),
+                "gum_entity_coreference": len(gum_entity_selected[split]),
                 "oasst2": len(oasst_selected[split]),
                 "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
             }
@@ -4250,6 +4629,17 @@ def produce(
             "derived_view_unique_source_credit": 0,
             "official_dev_test_quarantined": True,
             "public_gum_or_disrpt_score_claimed": False,
+            "learned_competence_claimed": False,
+        },
+        "gum_entity_coreference": {
+            **gum_entity_audit,
+            "claim_scope": gum_entity_contract["claim_scope"],
+            "source_credit_unit": "document",
+            "derived_view_unique_source_credit": 0,
+            "official_dev_test_quarantined": True,
+            "cross_format_topology_required": True,
+            "public_coreference_score_claimed": False,
+            "cross_document_identity_claimed": False,
             "learned_competence_claimed": False,
         },
         "masc_interaction_record_count_by_split": {

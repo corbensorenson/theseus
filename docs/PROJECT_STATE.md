@@ -42,7 +42,7 @@ share toward zero. Public benchmarks are calibration only.
   reports merely to recolor this state.
 - **KERC disposition:** `partial`; protocol mechanics GREEN, construct validity RED,
   scientific result `INCONCLUSIVE_IMPLEMENTATION`. K0 now independently binds the paper,
-  implementation sources, independent verifier, and all 22,580 current corpus records.
+  implementation sources, independent verifier, and all 27,941 current corpus records.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
   annotations. Together they produce 512 multi-node/multi-root programs and multi-claim
@@ -74,12 +74,31 @@ share toward zero. Public benchmarks are calibration only.
   corpus now contains 11,156 multi-node programs, 841 multi-root programs, and 1,700
   multi-claim packets. Its 4/5/5 minimum relation counts establish weak-tail visibility,
   not adequacy; quantification, compositional negation, general coreference, temporal
-  truth, complete semantics, truth, and learned competence remain open. Three narrow mechanisms
+  truth, complete semantics, truth, and learned competence remain open. K1i adds 5,361
+  licensed human GUM entity/coreference records: 3,542 complete non-singleton
+  source-declared coreference components and 1,819 typed bridging links whose endpoint
+  components remain complete. Independent TSV reconstruction agrees byte-for-byte;
+  native CoNLL independently confirms exact mention-to-component membership in all
+  89 selected documents, and CoNLL-U confirms 24,162 mentions and 13,436 components.
+  The current corpus therefore has 27,941 records, 16,517 multi-node programs, 6,202
+  multi-root programs, 7,061 multi-claim packets, and 7,180 document-local concept
+  capsules. Compiler prompts contain no source-derived capsule labels. The learned
+  target contains only actionable capsule semantics, while source IDs, annotation
+  hashes, stable identity, and provenance remain in the evidence plane; validation
+  assigns packet-local non-promotable identities after model output. This closes one
+  bounded source-declared document-local reference family only. It does not establish
+  ontological or cross-document identity, open-world definition quality, capsule
+  migration, complete semantics, truth, utility, or learned linking competence. Full
+  cold producer/verifier replay took `5,389.173s`/`5,404.007s`; warm replay took
+  `230.925s`/`181.282s` with `27,941/27,941` candidate, finalization, economics, and
+  semantic-admission hits, zero misses, zero failures, zero producer-authority reuse,
+  and an unchanged candidate digest. The two object stores cost `8,402,055,168` bytes
+  (`7.825 GiB`). Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
-  allocation, and checkpoint/migration/MLX state handling. Nine mechanisms are
-  approximate or fixture-only; four are inactive or absent; H1-H8 remain inactive.
-  Broader K1 remains open: the corpus has zero correction alternatives, concept capsules,
-  learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, or
+  allocation, and checkpoint/migration/MLX state handling. Ten mechanisms are
+  approximate or fixture-only; three are inactive or absent; H1-H8 remain inactive.
+  Broader K1 remains open: the corpus has zero correction alternatives, learned macros,
+  nonempty interaction-global dictionaries, PARTIAL decisions, or
   per-unit allocation receipts, and still contains 18,759 opaque byte-literal values.
   Observed decision and discourse labels supply bounded condition, causal, contrast,
   attribution, and sequence topology, but not compositional proposition scope,
@@ -91,14 +110,14 @@ share toward zero. Public benchmarks are calibration only.
   VCM lifecycle, source isolation, no-cheat, code-space, stage-route, verifier-head,
   checkpoint, replay, migration, and MLX canaries remain valid within their narrow
   mechanics ceilings. Current private-evaluation efficiency remains negative for this
-  exact finite-state implementation: residual bits are `5.836541x` source bits and
-  complete Kernel-plus-residual wire is `13.094653x` on private evaluation. Separate source/code/output-bound
+  exact finite-state implementation: residual bits are `3.946595x` source bits and
+  complete Kernel-plus-residual wire is `12.236852x` on private evaluation. Separate source/code/output-bound
   exact-run receipts now replay unchanged materialization in `2.16s` and independent
   verification in `1.87s`. K1d first added separate, integrity-checked economics and
   semantic-admission caches. K1g historically bound nine producer and verifier source families to
   independently recomputed transitive AST source closures, adds content-bound candidate and
   finalization layers, and retains separate semantic-admission authority; K1h adds GUM as
-  the tenth independently keyed family. On the current 22,580-record corpus, a selective
+  the tenth independently keyed family. On the historical K1h 22,580-record corpus, a selective
   producer pass that rebuilt only 9,785 GUM records took `1,305.450s`; the subsequent warm
   producer replay took `152.365s` with `22,580/22,580` candidate, finalization, and
   economics hits, an `8.569x` improvement. Independent selective verification admitted
@@ -159,7 +178,7 @@ share toward zero. Public benchmarks are calibration only.
   event-coreference, bounded MPQA-attribution, and licensed human eRST discourse strata;
   extend allocation from record-level
   structural preservation to intervention-sensitive per-unit decisions, reduce the
-  measured `13.094653x` private-evaluation total wire overhead and monolithic stage/replay cost, add unresolved
+  measured `12.236852x` private-evaluation total wire overhead and monolithic stage/replay cost, add unresolved
   ambiguity, broad entailment, protected-span abstention, and
   calibrated verifier decisions; then
   freeze strong matched controls and total-system accounting and rebuild the architecture

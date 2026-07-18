@@ -813,6 +813,33 @@ def test_kerc_cache_requires_selective_family_invalidation_contract(
     assert cache["common_change_invalidates_all_families"] is True
 
 
+def test_kerc_gum_entity_coreference_contract_fails_closed(tmp_path: Path) -> None:
+    del tmp_path
+    cfg = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    validate_kernel_english_config(cfg)
+    for path, invalid in (
+        (("relation_contract",), "pairwise_proxy"),
+        (("source_compaction_contract",), "truncate_mentions"),
+        (("records_by_split", "private_eval"), 675),
+        (("bridge_records_by_split", "private_train"), 1312),
+        (("content_sha256",), "sha256:unbound"),
+    ):
+        mutated = json.loads(json.dumps(cfg))
+        contract = mutated["kernel_english_training"][
+            "semantic_corpus_materialization"
+        ]["gum"]["entity_coreference"]
+        if len(path) == 1:
+            contract[path[0]] = invalid
+        else:
+            contract[path[0]][path[1]] = invalid
+        with pytest.raises(
+            ValueError, match="GUM discourse/coreference contract invalid"
+        ):
+            validate_kernel_english_config(mutated)
+
+
 def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Path) -> None:
     cfg = kernel_config(tmp_path)
     validate_kernel_english_config(cfg)

@@ -906,6 +906,76 @@ def learned_protected_object_view(
     return output
 
 
+def learned_concept_capsule_view(
+    concept_capsules: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Expose capsule semantics without evidence-plane authority metadata.
+
+    Stable registry identities and provenance receipts are assigned and checked
+    outside the learned channel. Requiring a model to reproduce source IDs or
+    annotation hashes would create an impossible target; allowing it to mint
+    them would create an authority injection path.
+    """
+
+    output: dict[str, dict[str, Any]] = {}
+    for handle, capsule in sorted(concept_capsules.items()):
+        if not re.fullmatch(r"@C[0-9]+", str(handle)) or not isinstance(capsule, dict):
+            raise KernelProtocolFault(
+                "KERC_CONCEPT_CAPSULE_INVALID", str(handle), path="concept_capsules"
+            )
+        output[str(handle)] = {
+            str(key): copy.deepcopy(value)
+            for key, value in capsule.items()
+            if key not in {"stable_identity", "provenance"}
+        }
+    return output
+
+
+def materialize_learned_concept_capsules(
+    learned_capsules: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Attach local identity/provenance after validating learned capsule fields."""
+
+    if len(learned_capsules) > 64:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_CONCEPT_CAPSULE_BUDGET_EXCEEDED",
+            str(len(learned_capsules)),
+            path="compiler_output.concept_capsules",
+        )
+    output: dict[str, dict[str, Any]] = {}
+    for handle, capsule in sorted(learned_capsules.items()):
+        if not re.fullmatch(r"@C[0-9]+", str(handle)) or not isinstance(capsule, dict):
+            raise KernelProtocolFault(
+                "KERC_LEARNED_CONCEPT_CAPSULE_INVALID",
+                str(handle),
+                path="compiler_output.concept_capsules",
+            )
+        forbidden = sorted(set(capsule) & {"stable_identity", "provenance"})
+        if forbidden:
+            raise KernelProtocolFault(
+                "KERC_LEARNED_CONCEPT_AUTHORITY_FORBIDDEN",
+                canonical_json(forbidden),
+                path=f"compiler_output.concept_capsules.{handle}",
+            )
+        output[str(handle)] = {
+            "stable_identity": f"local.concept.{str(handle)[2:]}",
+            "provenance": {
+                "source": "learned_compiler_output_v1",
+                "scope": "packet_local",
+                "registry_promotion_allowed": False,
+            },
+            **copy.deepcopy(capsule),
+        }
+    if len(canonical_json(output).encode("utf-8")) > 65536:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_CONCEPT_CAPSULE_BUDGET_EXCEEDED",
+            str(len(canonical_json(output).encode("utf-8"))),
+            path="compiler_output.concept_capsules",
+        )
+    _validate_concept_capsules(output)
+    return output
+
+
 def learned_interaction_residual_view(hrl_state: dict[str, Any]) -> list[list[Any]]:
     """Expose bounded, segment-scoped VCM state without widening authority."""
 
@@ -1017,6 +1087,39 @@ def learned_residual_view(
     }
 
 
+def compiler_training_io(
+    *, packet: dict[str, Any], source_text: str, hrl_state: dict[str, Any]
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Return the leak-free compiler input and its source-derived target.
+
+    Packet concept semantics are annotation targets unless a separate runtime
+    context explicitly provides them. They must therefore be generated beside
+    the Kernel program, never exposed in the source-only compiler prompt.
+    Evidence-plane stable identities and provenance are stripped and attached
+    deterministically after learned output validation.
+    """
+
+    learned_objects = learned_protected_object_view(packet["protected_objects"])
+    compiler_input = {
+        "protected_objects": learned_objects,
+        "concept_capsules": {},
+        "source_character_length": packet["source"]["character_length"],
+        "masked_surface": _masked_surface_from_packet_objects(
+            source_text, packet["protected_objects"]
+        ),
+        "correction_lattice": packet["correction_lattice"],
+        "interaction": learned_interaction_residual_view(hrl_state),
+    }
+    compiler_target = {
+        "kernel_version": KERNEL_VERSION,
+        "concept_capsules": learned_concept_capsule_view(
+            packet["concept_capsules"]
+        ),
+        "program": packet["program"],
+    }
+    return compiler_input, compiler_target
+
+
 def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     """Compile matched learned objectives without multiplying unique-data credit."""
 
@@ -1025,21 +1128,16 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     learned_objects = learned_protected_object_view(packet["protected_objects"])
     protected_context = {
         "protected_objects": learned_objects,
-        "concept_capsules": packet["concept_capsules"],
+        "concept_capsules": learned_concept_capsule_view(
+            packet["concept_capsules"]
+        ),
         "source_character_length": packet["source"]["character_length"],
     }
-    compiler_input = {
-        **protected_context,
-        "masked_surface": _masked_surface_from_packet_objects(
-            record["source_text"], packet["protected_objects"]
-        ),
-        "correction_lattice": packet["correction_lattice"],
-        "interaction": learned_interaction_residual_view(record["hrl_state"]),
-    }
-    compiler_target = {
-        "kernel_version": KERNEL_VERSION,
-        "program": packet["program"],
-    }
+    compiler_input, compiler_target = compiler_training_io(
+        packet=packet,
+        source_text=record["source_text"],
+        hrl_state=record["hrl_state"],
+    )
     core_input = {
         **protected_context,
         "program": packet["program"],
@@ -1255,26 +1353,18 @@ def execute_learned_pipeline(
         compiler_text = run_stage(
             "surface_to_kernel_program_v1", canonical_json(front_end)
         )
-        compiler_output = parse_object(
-            "surface_to_kernel_program_v1", compiler_text
+        protected = extract_protected_objects(surface)
+        compiler_output = parse_learned_compiler_output(
+            compiler_text,
+            protected_objects=protected["protected_objects"],
+            concept_capsules={},
+            source_character_length=len(surface),
         )
-        if compiler_output.get("kernel_version") != KERNEL_VERSION:
-            raise KernelProtocolFault(
-                "KERC_LEARNED_COMPILER_VERSION_INVALID",
-                str(compiler_output.get("kernel_version")),
-                path="surface_to_kernel_program_v1.kernel_version",
-            )
-        program = compiler_output.get("program")
-        if not isinstance(program, dict):
-            raise KernelProtocolFault(
-                "KERC_LEARNED_COMPILER_PROGRAM_MISSING",
-                str(type(program)),
-                path="surface_to_kernel_program_v1.program",
-            )
         packet = build_kernel_packet(
             surface,
-            program,
+            compiler_output["canonical_program"],
             hrl_state=hrl_state,
+            concept_capsules=compiler_output["generated_concept_capsules"],
             residual_mode="OUTPUT_REALIZATION",
             fidelity="faithful",
             provenance={"source": "learned_kerc_pipeline_v1"},
@@ -1287,7 +1377,9 @@ def execute_learned_pipeline(
             "protected_objects": learned_protected_object_view(
                 packet["protected_objects"]
             ),
-            "concept_capsules": packet["concept_capsules"],
+            "concept_capsules": learned_concept_capsule_view(
+                packet["concept_capsules"]
+            ),
             "source_character_length": packet["source"]["character_length"],
             "program": packet["program"],
             "residual": learned_residual_view(
@@ -1791,12 +1883,30 @@ def parse_learned_compiler_output(
             str(decoded.get("kernel_version") if isinstance(decoded, dict) else type(decoded)),
             path="compiler_output.kernel_version",
         )
-    return validate_kernel_program(
+    learned_capsules = decoded.get("concept_capsules")
+    if not isinstance(learned_capsules, dict):
+        raise KernelProtocolFault(
+            "KERC_LEARNED_COMPILER_CONCEPT_CAPSULES_MISSING",
+            str(type(learned_capsules)),
+            path="compiler_output.concept_capsules",
+        )
+    generated = materialize_learned_concept_capsules(learned_capsules)
+    conflicts = set(concept_capsules) & set(generated)
+    if conflicts:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_COMPILER_CONCEPT_COLLISION",
+            canonical_json(sorted(conflicts)),
+            path="compiler_output.concept_capsules",
+        )
+    available = {**copy.deepcopy(concept_capsules), **copy.deepcopy(generated)}
+    validated = validate_kernel_program(
         decoded.get("program") if isinstance(decoded.get("program"), dict) else {},
         protected_objects=protected_objects,
-        concept_capsules=concept_capsules,
+        concept_capsules=available,
         source_character_length=source_character_length,
     )
+    validated["generated_concept_capsules"] = copy.deepcopy(generated)
+    return validated
 
 
 def parse_learned_answer_output(output: str) -> dict[str, Any]:
