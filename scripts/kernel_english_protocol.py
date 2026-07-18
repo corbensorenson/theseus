@@ -2315,6 +2315,195 @@ def _normalize_segment_frame(
             )
         segment["frame_roles"] = sorted(set(roles))
         return segment
+    if segment.get("schema") == "erst_discourse_graph_v1":
+        required = {"schema", "document_id", "anchor_edu_id", "units", "edges"}
+        if set(segment) != required:
+            raise KernelProtocolFault(
+                "KERC_ERST_DISCOURSE_SCHEMA_INVALID", canonical_json(segment), path=path
+            )
+        document_id = str(segment.get("document_id") or "")
+        anchor_edu_id = segment.get("anchor_edu_id")
+        if (
+            not re.fullmatch(r"GUM_[a-z0-9_]+", document_id)
+            or not isinstance(anchor_edu_id, int)
+            or anchor_edu_id <= 0
+        ):
+            raise KernelProtocolFault(
+                "KERC_ERST_DISCOURSE_IDENTITY_INVALID",
+                f"{document_id}:{anchor_edu_id}",
+                path=path,
+            )
+        units = segment.get("units")
+        unit_fields = {
+            "edu_id",
+            "node_id",
+            "target_spans",
+            "tree_depth",
+            "source_row_sha256",
+        }
+        if not isinstance(units, list) or not 2 <= len(units) <= 32:
+            raise KernelProtocolFault(
+                "KERC_ERST_DISCOURSE_UNIT_CARDINALITY_INVALID",
+                canonical_json(units),
+                path=f"{path}.units",
+            )
+        normalized_units = []
+        units_by_node: dict[str, dict[str, Any]] = {}
+        edu_ids: set[int] = set()
+        for index, unit in enumerate(units):
+            unit_path = f"{path}.units[{index}]"
+            if not isinstance(unit, dict) or set(unit) != unit_fields:
+                raise KernelProtocolFault(
+                    "KERC_ERST_DISCOURSE_UNIT_SCHEMA_INVALID",
+                    canonical_json(unit),
+                    path=unit_path,
+                )
+            edu_id = unit.get("edu_id")
+            node_id = str(unit.get("node_id") or "")
+            tree_depth = unit.get("tree_depth")
+            source_hash = str(unit.get("source_row_sha256") or "")
+            if (
+                not isinstance(edu_id, int)
+                or edu_id <= 0
+                or edu_id in edu_ids
+                or not re.fullmatch(r"k[0-9]+", node_id)
+                or node_id in units_by_node
+                or not isinstance(tree_depth, int)
+                or tree_depth < 0
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", source_hash)
+            ):
+                raise KernelProtocolFault(
+                    "KERC_ERST_DISCOURSE_UNIT_VALUE_INVALID",
+                    canonical_json(unit),
+                    path=unit_path,
+                )
+            normalized = copy.deepcopy(unit)
+            normalized["target_spans"] = _validate_residual_spans(
+                unit["target_spans"],
+                source_character_length=source_character_length,
+                path=f"{unit_path}.target_spans",
+            )
+            if len(normalized["target_spans"]) != 1:
+                raise KernelProtocolFault(
+                    "KERC_ERST_DISCOURSE_UNIT_SPAN_INVALID",
+                    canonical_json(unit["target_spans"]),
+                    path=f"{unit_path}.target_spans",
+                )
+            edu_ids.add(edu_id)
+            units_by_node[node_id] = normalized
+            normalized_units.append(normalized)
+        if anchor_edu_id not in edu_ids:
+            raise KernelProtocolFault(
+                "KERC_ERST_DISCOURSE_ANCHOR_UNKNOWN",
+                str(anchor_edu_id),
+                path=f"{path}.anchor_edu_id",
+            )
+        edges = segment.get("edges")
+        edge_fields = {
+            "edge_id",
+            "edge_order",
+            "node_id",
+            "edge_kind",
+            "child_node_id",
+            "parent_node_id",
+            "relation",
+            "nuclearity",
+            "source_annotation_sha256",
+            "signal_count",
+        }
+        if not isinstance(edges, list) or not 1 <= len(edges) <= 32:
+            raise KernelProtocolFault(
+                "KERC_ERST_DISCOURSE_EDGE_CARDINALITY_INVALID",
+                canonical_json(edges),
+                path=f"{path}.edges",
+            )
+        normalized_edges = []
+        observed_edge_ids: set[str] = set()
+        observed_node_ids = set(units_by_node)
+        primary_count = 0
+        for index, edge in enumerate(edges):
+            edge_path = f"{path}.edges[{index}]"
+            if not isinstance(edge, dict) or set(edge) != edge_fields:
+                raise KernelProtocolFault(
+                    "KERC_ERST_DISCOURSE_EDGE_SCHEMA_INVALID",
+                    canonical_json(edge),
+                    path=edge_path,
+                )
+            edge_id = str(edge.get("edge_id") or "")
+            node_id = str(edge.get("node_id") or "")
+            edge_kind = str(edge.get("edge_kind") or "")
+            child = str(edge.get("child_node_id") or "")
+            parent = str(edge.get("parent_node_id") or "")
+            relation = str(edge.get("relation") or "")
+            nuclearity = str(edge.get("nuclearity") or "")
+            source_hash = str(edge.get("source_annotation_sha256") or "")
+            edge_order = edge.get("edge_order")
+            signal_count = edge.get("signal_count")
+            if (
+                not re.fullmatch(r"edge-[0-9]+", edge_id)
+                or edge_id in observed_edge_ids
+                or not re.fullmatch(r"k[0-9]+", node_id)
+                or node_id in observed_node_ids
+                or edge_kind not in {"primary", "secondary"}
+                or child not in units_by_node
+                or parent not in units_by_node
+                or child == parent
+                or not re.fullmatch(r"[a-z][a-z0-9-]*(?:_[rm])?", relation)
+                or nuclearity
+                not in {"multinuclear", "satellite_nucleus", "secondary_unspecified"}
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", source_hash)
+                or not isinstance(edge_order, int)
+                or edge_order < 0
+                or not isinstance(signal_count, int)
+                or signal_count < 0
+            ):
+                raise KernelProtocolFault(
+                    "KERC_ERST_DISCOURSE_EDGE_VALUE_INVALID",
+                    canonical_json(edge),
+                    path=edge_path,
+                )
+            expected_nuclearity = (
+                "multinuclear"
+                if relation.endswith("_m")
+                else "satellite_nucleus"
+                if relation.endswith("_r")
+                else "secondary_unspecified"
+            )
+            if nuclearity != expected_nuclearity:
+                raise KernelProtocolFault(
+                    "KERC_ERST_DISCOURSE_NUCLEARITY_INVALID",
+                    f"{relation}:{nuclearity}",
+                    path=f"{edge_path}.nuclearity",
+                )
+            if edge_kind == "primary":
+                primary_count += 1
+                if edge_order != 0 or not relation.endswith(("_m", "_r")):
+                    raise KernelProtocolFault(
+                        "KERC_ERST_DISCOURSE_PRIMARY_INVALID",
+                        canonical_json(edge),
+                        path=edge_path,
+                    )
+            elif edge_order < 0 or relation.endswith(("_m", "_r")):
+                raise KernelProtocolFault(
+                    "KERC_ERST_DISCOURSE_SECONDARY_INVALID",
+                    canonical_json(edge),
+                    path=edge_path,
+                )
+            observed_edge_ids.add(edge_id)
+            observed_node_ids.add(node_id)
+            normalized_edges.append(copy.deepcopy(edge))
+        if primary_count != 1:
+            raise KernelProtocolFault(
+                "KERC_ERST_DISCOURSE_PRIMARY_COUNT_INVALID",
+                str(primary_count),
+                path=f"{path}.edges",
+            )
+        segment["units"] = sorted(normalized_units, key=lambda row: row["edu_id"])
+        segment["edges"] = sorted(
+            normalized_edges,
+            key=lambda row: (row["edge_kind"] != "primary", row["edge_order"], row["edge_id"]),
+        )
+        return segment
     if segment.get("schema") == "event_coreference_group_v1":
         required = {
             "schema",

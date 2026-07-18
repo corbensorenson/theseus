@@ -36,19 +36,39 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "ccfd36d1ed719ff0964886acbef5365096e7b41375c97c97366c0e6aa29d7f43"
+      "sha256": "9a3348a0accb53a2c694c7e948d59420761addc4981a729badb60a11115b0b5c"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "7125b4d97881bf7f4ce54c1c13b3ad982fb6dcdc8ba89596625c9c450fd280fc"
+      "sha256": "1073876f837b4290455fc2f55616b34762572a36d8acae776e273ba3c08c8a70"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "06b2bf346c2ee6ad2f2210cce77e6e684304b54e5fdf6b341947da119a72993b"
+      "sha256": "ece3ed17f9065b150aae677903c330809c43488efd9c70eece04abd435c10d9f"
     },
     {
       "path": "scripts/kerc_source_family_identity.py",
-      "sha256": "65fa105db87fb6a6514bea7b8ec8a61739c85ca3c0bf2b6dabe5cb8f9899c2ed"
+      "sha256": "eab3d3543f75dc5bba9b218ef2f9f1428dad26fb7df9c2becb8a14854a007fa1"
+    },
+    {
+      "path": "scripts/kerc_gum_discourse_relations.py",
+      "sha256": "66c1b897daca4901dcf32182118a79088bdc5b20f8ec29a6f44265d7266fce09"
+    },
+    {
+      "path": "scripts/kerc_gum_discourse_relations_verify.py",
+      "sha256": "28a1b25dd226246bcbf702871fc63abd601009b7bf20b0db51ff1c6895917d1f"
+    },
+    {
+      "path": "scripts/moecot_source_conditioned_pretraining.py",
+      "sha256": "dfc3560bdb16788a71907b1d3e1cbc60372a29ad8bcd130486858d2d796b29a4"
+    },
+    {
+      "path": "configs/moecot_language_arm_training.json",
+      "sha256": "1e2a23503e35cf47ca8349b9e0bd1ff4d36cd002448ac30bf7c580cabed34b6f"
+    },
+    {
+      "path": "resource_pantry/kerc/gum-v12.1.0/LICENSE.md",
+      "sha256": "54ce03d1784ed081d6e829d811d41d3f25e35041df1afec14417590b18a70257"
     },
     {
       "path": "scripts/kerc_masc_event_coreference.py",
@@ -80,15 +100,15 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "e464daacfc0d1f4f48564b800ac941a164493f7946ec095c94b6d43bb24cf17e"
+      "sha256": "3134ee02c1f60908d594f881f6078adb497d6b428dec4664ab99a083ba31d0d6"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "a7809d5b4d5deb68ec12f21f42d330400e7c170dda9c5907b0ea05b93896dc70"
+      "sha256": "110f6dd2b140a502f8f34654753573937f9ede032853c8f5937d0bed003a6f24"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "49f84cb95cd670d5c1a90dc5fbc41cde6005eb7711d3e44746f441edfb176985"
+      "sha256": "5fbf3cc48854db0d80cdcec6c65498c06cb568a38e30a26602152d7630591e26"
     },
     {
       "path": "reports/kerc_selective_replay_k1g.json",
@@ -96,15 +116,15 @@
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "6c8b7385c2e6629eadd971c8542b42494bda78fd4f218f65f101ba7efd5d5600"
+      "sha256": "5106377a97357213ff619419dc763d8be2547d7bd85cf6600433cae11c646a51"
     }
   ],
   "observed_corpus_contract": {
-    "record_count": 12795,
-    "multi_node_program_count": 1371,
-    "multi_root_program_count": 512,
+    "record_count": 22580,
+    "multi_node_program_count": 11156,
+    "multi_root_program_count": 841,
     "non_preserved_derivation_count": 0,
-    "multi_claim_answer_count": 1371,
+    "multi_claim_answer_count": 1700,
     "byte_literal_value_count": 18759,
     "correction_alternative_count": 0,
     "concept_capsule_count": 0,
@@ -115,19 +135,23 @@
     "interaction_presence_label_with_empty_global_count": 6809
   },
   "incremental_replay_contract": {
-    "status": "partial_green",
-    "evidence": "reports/kerc_selective_replay_k1g.json",
-    "source_family_count": 9,
-    "candidate_record_count": 12795,
+    "status": "partial_green_k1h_current_corpus_selective_and_warm_replay_evidence",
+    "evidence": "reports/runtime/kerc_semantic_corpus_verification.json",
+    "source_family_count": 10,
+    "candidate_record_count": 22580,
     "producer_family_identity_independently_recomputed": true,
     "verifier_family_identity_independently_recomputed": true,
-    "candidate_finalization_and_economics_warm_hits": 12795,
-    "semantic_admission_warm_hits": 12795,
+    "candidate_finalization_and_economics_warm_hits": 22580,
+    "semantic_admission_warm_hits": 22580,
     "warm_miss_count": 0,
     "producer_authority_reused_for_admission": false,
-    "producer_warm_runtime_ms": 65089,
-    "verifier_warm_runtime_ms": 71059,
-    "combined_cache_bytes": 2543378432,
+    "producer_selective_cold_runtime_ms": 1305450,
+    "verifier_selective_cold_runtime_ms": 2197806,
+    "producer_warm_runtime_ms": 152365,
+    "verifier_warm_runtime_ms": 176954,
+    "combined_cache_bytes": 4983504896,
+    "warm_measurement_record_count": 22580,
+    "current_warm_measurement_pending": false,
     "remaining_incremental_owners": [
       "raw source parsing",
       "split reconstruction and selection",
@@ -179,9 +203,9 @@
       "id": "kerc.surface_to_kernel_compiler",
       "paper_sections": ["5.5", "10.4"],
       "status": "approximate",
-      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/standard_causal_transformer_model.py"],
-      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected, repeated source positions and zero-width annotations remain explicit in the ABI, inferred-link count is zero, and unique-source credit is zero. The decision-semantic stratum contributes 3,666 typed nonliteral arguments. Scope, truth, causal/temporal relations, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
+      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/kerc_gum_discourse_relations.py", "scripts/kerc_gum_discourse_relations_verify.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_gum_discourse_relations.py", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
+      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected. K1h adds 9,785 licensed human GUM eRST relation neighborhoods from 89 official-train documents: producer ElementTree/tab parsing and verifier Expat/CSV state-machine parsing independently preserve source-declared primary and secondary edge topology, direction, nuclearity, source alignment, and signal counts across document-disjoint internal splits. All 32 admitted relation types occur in every split, 339 source-declared secondary edges are preserved, official GUM dev/test/test2 documents are excluded, and inferred links, partial admission, public score claims, and extra source credit are zero. Weak-tail counts of 4/5/5 are coverage evidence rather than adequacy. Proposition scope, truth, quantification, compositional negation, general coreference, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
       "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
       "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
     },
@@ -221,7 +245,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
       "evidence_refs": ["tests/test_kernel_english_protocol.py"],
-      "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, and complete MPQA-relation strata now add 1,371 multi-claim packets. The 13 event-group packets preserve 215 manually grouped mentions; 846 MPQA packets preserve expression, source-chain, attitude, and target members plus manual link topology; the decision-semantic stratum carries typed observed modality, polarity, temporal orientation, event, and subjectivity fields. There are still no derivation proofs, contradictions, quantities, general scope, causal/temporal relation graphs, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
+      "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, complete MPQA-relation, and GUM eRST strata now produce 1,700 multi-claim packets and 11,156 multi-node programs. The 13 event-group packets preserve 215 manually grouped mentions; 846 MPQA packets preserve expression, source-chain, attitude, and target members plus manual link topology; 9,785 GUM records preserve bounded discourse-edge neighborhoods including 339 source-declared secondary edges; and the decision-semantic stratum carries typed observed modality, polarity, temporal orientation, event, and subjectivity fields. These are annotation-preservation targets, not truth or learned reasoning. There are still no derivation proofs, contradictions, quantities, general proposition scope, quantification, compositional negation, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
       "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
       "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
     },

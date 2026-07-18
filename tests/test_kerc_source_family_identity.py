@@ -120,6 +120,10 @@ def test_source_family_uses_only_dataset_and_source_identity() -> None:
         == "masc_mpqa_relation"
     )
     assert (
+        source_family(dataset_key="gum", source_id="gum-erst:GUM_academic_art:2")
+        == "gum_discourse"
+    )
+    assert (
         source_family(dataset_key="oasst2", source_id="oasst2-behavior:1")
         == "oasst_behavior"
     )

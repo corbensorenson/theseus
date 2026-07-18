@@ -768,9 +768,18 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         is not True
     ):
         raise ValueError("KERC content-addressed cache contract invalid")
-    sources = {name: corpus.get(name) or {} for name in ("dolly", "masc", "oasst2")}
+    source_names = ["dolly", "masc", "oasst2"]
+    if isinstance(corpus.get("gum"), dict):
+        source_names.insert(2, "gum")
+    sources = {name: corpus.get(name) or {} for name in source_names}
     for name, source in sources.items():
-        path_key = "archive_path" if name == "masc" else "path"
+        path_key = (
+            "archive_path"
+            if name == "masc"
+            else "source_root"
+            if name == "gum"
+            else "path"
+        )
         source_path_ready = (
             isinstance(source.get("files"), dict)
             and tuple(source["files"]) == ("train", "validation")
@@ -977,6 +986,61 @@ def validate_kerc_semantic_corpus_config(cfg: dict[str, Any]) -> dict[str, Any]:
         or not str(mpqa_relations.get("claim_scope") or "")
     ):
         raise ValueError("KERC MASC MPQA-relation contract invalid")
+    def validate_gum(gum: dict[str, Any]) -> None:
+        gum_genres = gum.get("allowed_genre_licenses")
+        gum_dev = gum.get("private_dev_documents")
+        gum_eval = gum.get("private_eval_documents")
+        gum_documents = gum.get("documents_by_split")
+        gum_records = gum.get("records_by_split")
+        gum_secondary = gum.get("secondary_edges_by_split")
+        if (
+            not isinstance(gum_genres, dict)
+            or set(gum_genres)
+            != {"academic", "bio", "court", "interview", "news", "voyage"}
+            or any(not str(value) for value in gum_genres.values())
+            or not isinstance(gum_dev, list)
+            or len(gum_dev) != 12
+            or len(set(gum_dev)) != len(gum_dev)
+            or not isinstance(gum_eval, list)
+            or len(gum_eval) != 12
+            or len(set(gum_eval)) != len(gum_eval)
+            or set(gum_dev) & set(gum_eval)
+            or any(
+                not re.fullmatch(r"GUM_[a-z0-9_]+", str(value))
+                for value in [*gum_dev, *gum_eval]
+            )
+            or not isinstance(gum_documents, dict)
+            or tuple(gum_documents)
+            != ("private_train", "private_dev", "private_eval")
+            or sum(int(value) for value in gum_documents.values())
+            != int(gum.get("expected_selected_document_count", -1))
+            or int(gum_documents["private_dev"]) != len(gum_dev)
+            or int(gum_documents["private_eval"]) != len(gum_eval)
+            or not isinstance(gum_records, dict)
+            or tuple(gum_records)
+            != ("private_train", "private_dev", "private_eval")
+            or any(int(value) <= 0 for value in gum_records.values())
+            or not isinstance(gum_secondary, dict)
+            or tuple(gum_secondary)
+            != ("private_train", "private_dev", "private_eval")
+            or any(int(value) < 0 for value in gum_secondary.values())
+            or int(gum.get("minimum_relation_types_per_split") or 0) < 2
+            or int(gum.get("minimum_weak_tail_count_per_split") or 0) < 1
+            or gum.get("official_partitions_admitted") != ["train"]
+            or gum.get("official_partitions_quarantined")
+            != ["dev", "test", "test2"]
+            or set(gum.get("allowed_objectives") or [])
+            != {
+                "surface_to_kernel_program_v1",
+                "kernel_program_to_answer_packet_v1",
+            }
+            or not str(gum.get("claim_scope") or "")
+        ):
+            raise ValueError("KERC GUM eRST discourse contract invalid")
+
+    gum = sources.get("gum")
+    if gum is not None:
+        validate_gum(gum)
     behavior_counts = sources["oasst2"].get("explicit_behavior_records_by_split")
     if (
         not isinstance(behavior_counts, dict)
@@ -1126,6 +1190,16 @@ def load_kerc_semantic_source_catalog(
         )
         tiers = row.get("allowed_evidence_tiers")
         objectives = row.get("allowed_objectives")
+        license_matrix = row.get("per_record_license_matrix")
+        license_matrix_valid = (
+            license_matrix is None
+            or isinstance(license_matrix, dict)
+            and bool(license_matrix)
+            and all(
+                str(value).lower() in allowed_licenses
+                for value in license_matrix.values()
+            )
+        )
         if (
             not required
             or not isinstance(tiers, list)
@@ -1134,6 +1208,7 @@ def load_kerc_semantic_source_catalog(
             or not isinstance(objectives, list)
             or not objectives
             or any(str(objective) not in TRAINING_OBJECTIVES for objective in objectives)
+            or not license_matrix_valid
         ):
             gaps.append(f"kernel_semantic_source_catalog_contract_invalid:{dataset_id}")
             continue
@@ -1155,10 +1230,15 @@ def validate_kerc_record_source(
         for objective, authorized in (semantic.get("objective_authority") or {}).items()
         if authorized is True
     }
+    license_matrix = source.get("per_record_license_matrix")
+    admitted_licenses = (
+        {str(value).lower() for value in license_matrix.values()}
+        if isinstance(license_matrix, dict) and license_matrix
+        else {str(source.get("license_spdx") or "").lower()}
+    )
     checks = (
         str(provenance.get("dataset_revision") or "") == str(source.get("dataset_revision") or ""),
-        str(provenance.get("license_spdx") or "").lower()
-        == str(source.get("license_spdx") or "").lower(),
+        str(provenance.get("license_spdx") or "").lower() in admitted_licenses,
         str(semantic.get("evidence_tier") or "")
         in {str(value) for value in source.get("allowed_evidence_tiers") or []},
         str(semantic.get("annotation_source_sha256") or "")

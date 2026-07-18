@@ -90,7 +90,7 @@
     },
     {
       "id": "data_governance",
-      "patterns": ["scripts/*data*.py", "scripts/*source*.py", "configs/*source*.json", "configs/*data*.json"],
+      "patterns": ["scripts/*data*.py", "scripts/*source*.py", "scripts/kerc_*.py", "configs/*source*.json", "configs/*data*.json"],
       "criticality": 0.85
     },
     {

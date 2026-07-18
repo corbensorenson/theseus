@@ -48,6 +48,13 @@ from kerc_masc_mpqa_relations import (
     RELATION_CONTRACT as MASC_MPQA_RELATION_CONTRACT,
     reconstruct_mpqa_relation_chains,
 )
+from kerc_gum_discourse_relations import (
+    POLICY as GUM_DISCOURSE_POLICY,
+    PROJECTION_CONTRACT as GUM_DISCOURSE_PROJECTION_CONTRACT,
+    RELATION_CONTRACT as GUM_DISCOURSE_RELATION_CONTRACT,
+    SPLIT_CONTRACT as GUM_DISCOURSE_SPLIT_CONTRACT,
+    reconstruct_gum_discourse_relations,
+)
 from kerc_content_cache import (
     ContentObjectCache,
     cache_storage_telemetry,
@@ -134,6 +141,7 @@ def producer_cache_dependency_paths(
         "dolly_source": resolve(corpus["dolly"]["path"]),
         "masc_archive": resolve(corpus["masc"]["archive_path"]),
         "masc_extracted_tree": resolve(corpus["masc"]["extracted_root"]),
+        "gum_source_tree": resolve(corpus["gum"]["source_root"]),
     }
     for split, row in sorted(corpus["oasst2"]["files"].items()):
         paths[f"oasst2_{split}_source"] = resolve(row["path"])
@@ -152,6 +160,9 @@ def producer_family_identity_receipts() -> dict[str, dict[str, Any]]:
         },
         "masc_mpqa_relation": {
             "raw_relation_producer": scripts / "kerc_masc_mpqa_relations.py"
+        },
+        "gum_discourse": {
+            "raw_relation_producer": scripts / "kerc_gum_discourse_relations.py"
         },
     }
     return family_identity_receipts(
@@ -2945,6 +2956,236 @@ def masc_mpqa_relation_record(
     return record
 
 
+def gum_discourse_record(
+    row: dict[str, Any],
+    *,
+    source: dict[str, Any],
+    producer_sha256: str,
+) -> dict[str, Any]:
+    """Compile one human eRST edge neighborhood into typed Kernel topology."""
+
+    annotation = copy.deepcopy(row["annotation"])
+    units = sorted(annotation["units"], key=lambda unit: int(unit["edu_id"]))
+    unit_node_by_id = {
+        int(unit["edu_id"]): f"k{index}" for index, unit in enumerate(units)
+    }
+    nodes: list[dict[str, Any]] = []
+    segment_units: list[dict[str, Any]] = []
+    token_tags: list[dict[str, Any]] = []
+    document_concept = "gum.document." + re.sub(
+        r"[^a-z0-9]+", ".", annotation["document_id"].lower()
+    ).strip(".")
+    for index, unit in enumerate(units):
+        node_id = f"k{index}"
+        span = copy.deepcopy(unit["excerpt_span"])
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": "DISCOURSE_UNIT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [span],
+                "arguments": [
+                    {
+                        "role": "DOCUMENT",
+                        "value": {"type": "concept", "value": document_concept},
+                    },
+                    {
+                        "role": "EDU_ID",
+                        "value": {
+                            "type": "number",
+                            "value": {"value": int(unit["edu_id"]), "unit": "identifier"},
+                        },
+                    },
+                ],
+            }
+        )
+        segment_units.append(
+            {
+                "edu_id": int(unit["edu_id"]),
+                "node_id": node_id,
+                "target_spans": [span],
+                "tree_depth": int(unit["tree_depth"]),
+                "source_row_sha256": str(unit["source_row_sha256"]),
+            }
+        )
+        token_tags.append(
+            {
+                "tag": "ERST_DISCOURSE_UNIT",
+                "source_span": span,
+                "authority": "licensed_manual_annotation",
+            }
+        )
+    claims: list[dict[str, Any]] = []
+    segment_edges: list[dict[str, Any]] = []
+    roots: list[str] = []
+    for index, edge in enumerate(annotation["edges"]):
+        node_id = f"k{len(units) + index}"
+        roots.append(node_id)
+        child_node = unit_node_by_id[int(edge["child_edu_id"])]
+        parent_node = unit_node_by_id[int(edge["parent_edu_id"])]
+        relation = str(edge["relation"])
+        relation_base = relation.removesuffix("_m").removesuffix("_r")
+        nuclearity = (
+            "multinuclear"
+            if relation.endswith("_m")
+            else "satellite_nucleus"
+            if relation.endswith("_r")
+            else "secondary_unspecified"
+        )
+        predicate = "ERST_" + safe_symbol(relation_base, prefix="RELATION")
+        program_arguments = [
+            {"role": "CHILD", "value": {"type": "node_ref", "value": child_node}},
+            {"role": "PARENT", "value": {"type": "node_ref", "value": parent_node}},
+            {
+                "role": "RELATION",
+                "value": {
+                    "type": "concept",
+                    "value": "erst.relation." + relation_base.replace("-", "."),
+                },
+            },
+            {
+                "role": "NUCLEARITY",
+                "value": {"type": "concept", "value": "erst.nuclearity." + nuclearity},
+            },
+            {
+                "role": "EDGE_KIND",
+                "value": {
+                    "type": "concept",
+                    "value": "erst.edge_kind." + str(edge["edge_kind"]),
+                },
+            },
+        ]
+        answer_arguments = copy.deepcopy(program_arguments)
+        endpoint_concepts = {
+            "CHILD": (
+                f"erst.edu.{annotation['document_id'].lower()}."
+                f"{int(edge['child_edu_id'])}"
+            ),
+            "PARENT": (
+                f"erst.edu.{annotation['document_id'].lower()}."
+                f"{int(edge['parent_edu_id'])}"
+            ),
+        }
+        for argument in answer_arguments:
+            role = str(argument["role"])
+            if role in endpoint_concepts:
+                argument["value"] = {
+                    "type": "concept",
+                    "value": endpoint_concepts[role],
+                }
+        spans = sorted(
+            [
+                copy.deepcopy(
+                    next(
+                        unit["excerpt_span"]
+                        for unit in units
+                        if int(unit["edu_id"]) == int(edge["child_edu_id"])
+                    )
+                ),
+                copy.deepcopy(
+                    next(
+                        unit["excerpt_span"]
+                        for unit in units
+                        if int(unit["edu_id"]) == int(edge["parent_edu_id"])
+                    )
+                ),
+            ]
+        )
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": spans,
+                "arguments": copy.deepcopy(program_arguments),
+            }
+        )
+        claims.append(
+            {
+                "claim_id": f"claim-{index + 1}",
+                "predicate": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": copy.deepcopy(answer_arguments),
+            }
+        )
+        payload = str(edge["raw_signal_payload"])
+        signal_count = 0 if not payload else payload.count(";") + 1
+        segment_edges.append(
+            {
+                "edge_id": f"edge-{index}",
+                "edge_order": int(edge["edge_order"]),
+                "node_id": node_id,
+                "edge_kind": str(edge["edge_kind"]),
+                "child_node_id": child_node,
+                "parent_node_id": parent_node,
+                "relation": relation,
+                "nuclearity": nuclearity,
+                "source_annotation_sha256": str(edge["source_annotation_sha256"]),
+                "signal_count": signal_count,
+            }
+        )
+        child_span = next(
+            unit["excerpt_span"]
+            for unit in units
+            if int(unit["edu_id"]) == int(edge["child_edu_id"])
+        )
+        token_tags.append(
+            {
+                "tag": "ERST_RELATION:" + safe_symbol(relation_base, prefix="RELATION"),
+                "source_span": copy.deepcopy(child_span),
+                "authority": "licensed_manual_annotation",
+            }
+        )
+    row_source = {**source, "license_spdx": row["license_spdx"]}
+    record = base_record(
+        split=row["split"],
+        source_text=row["source_text"],
+        surface_target=row["source_text"],
+        program={"roots": roots, "nodes": nodes},
+        answer_packet={
+            "claims": claims,
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "source_authored"},
+        },
+        source=row_source,
+        source_id=row["source_id"],
+        source_group=row["source_group"],
+        objectives={
+            "surface_to_kernel_program_v1",
+            "kernel_program_to_answer_packet_v1",
+        },
+        producer_sha256=producer_sha256,
+        source_annotation=annotation,
+        exact_residual=False,
+        segment_frame={
+            "schema": "erst_discourse_graph_v1",
+            "document_id": annotation["document_id"],
+            "anchor_edu_id": int(annotation["anchor_edu_id"]),
+            "units": segment_units,
+            "edges": segment_edges,
+        },
+        token_tags=token_tags,
+    )
+    record["semantic_supervision"]["source_credit_unit"] = "document"
+    record["semantic_supervision"]["derived_view_unique_source_credit"] = 0
+    record["semantic_supervision"]["erst_relation_authority"] = (
+        "human_source_declared_primary_and_secondary_discourse_edges"
+    )
+    return record
+
+
 def interaction_predecessors(
     rows: list[dict[str, Any]],
 ) -> dict[str, dict[str, Any]]:
@@ -3293,6 +3534,43 @@ def produce(
         or masc_mpqa_relation_audit["inferred_relation_count"] != 0
     ):
         raise ValueError("MASC MPQA-relation producer reconstruction mismatch")
+    gum_contract = corpus["gum"]
+    gum_selected, gum_audit = reconstruct_gum_discourse_relations(
+        source_root=resolve(gum_contract["source_root"]),
+        allowed_genre_licenses=dict(gum_contract["allowed_genre_licenses"]),
+        private_dev_documents=set(gum_contract["private_dev_documents"]),
+        private_eval_documents=set(gum_contract["private_eval_documents"]),
+        expected_selected_source_sha256=gum_contract["content_sha256"],
+        maximum_characters=int(corpus["maximum_source_characters"]),
+    )
+    if (
+        gum_audit["policy"] != GUM_DISCOURSE_POLICY
+        or gum_audit["relation_contract"] != GUM_DISCOURSE_RELATION_CONTRACT
+        or gum_audit["split_contract"] != GUM_DISCOURSE_SPLIT_CONTRACT
+        or gum_audit["projection_contract"] != GUM_DISCOURSE_PROJECTION_CONTRACT
+        or gum_audit["parser_implementation"]
+        != "producer_elementtree_tab_parser_v1"
+        or gum_audit["selected_source_sha256"] != gum_contract["content_sha256"]
+        or gum_audit["selected_document_count"]
+        != int(gum_contract["expected_selected_document_count"])
+        or gum_audit["document_count_by_split"]
+        != gum_contract["documents_by_split"]
+        or gum_audit["record_count_by_split"] != gum_contract["records_by_split"]
+        or gum_audit["secondary_edge_count_by_split"]
+        != gum_contract["secondary_edges_by_split"]
+        or any(
+            int(value) < int(gum_contract["minimum_relation_types_per_split"])
+            for value in gum_audit["relation_type_count_by_split"].values()
+        )
+        or any(
+            int(value) < int(gum_contract["minimum_weak_tail_count_per_split"])
+            for value in gum_audit["minimum_relation_count_by_split"].values()
+        )
+        or gum_audit["official_nontrain_document_admission_count"] != 0
+        or gum_audit["partial_relation_admission_count"] != 0
+        or gum_audit["inferred_relation_count"] != 0
+    ):
+        raise ValueError("GUM eRST producer reconstruction mismatch")
     oasst_rows, oasst_rejects = load_oasst_candidates(corpus["oasst2"])
     oasst_behavior_rows, oasst_behavior_rejects = load_oasst_behavior_candidates(
         corpus["oasst2"]
@@ -3504,6 +3782,20 @@ def produce(
                     producer_sha256=producer_family_identities[
                         "masc_mpqa_relation"
                     ],
+                ),
+            )
+            candidates.append(record)
+            source_groups_by_split[split].add(record["provenance"]["source_group"])
+            source_sentences_by_split[split].add(stable_hash(record["source_text"]))
+        for row in gum_selected[split]:
+            record = materialize_candidate(
+                family="gum_discourse",
+                inputs={"row": row, "source": corpus["gum"]},
+                expected_source_id=row["source_id"],
+                build=lambda row=row: gum_discourse_record(
+                    row,
+                    source=corpus["gum"],
+                    producer_sha256=producer_family_identities["gum_discourse"],
                 ),
             )
             candidates.append(record)
@@ -3747,6 +4039,7 @@ def produce(
                     masc_event_coreference_selected[split]
                 ),
                 "masc_mpqa_relations": len(masc_mpqa_relation_selected[split]),
+                "gum_erst_discourse": len(gum_selected[split]),
                 "oasst2": len(oasst_selected[split]),
                 "oasst2_explicit_behavior": len(oasst_behavior_selected[split]),
             }
@@ -3949,6 +4242,15 @@ def produce(
             "truth_claimed": False,
             "causal_relation_claimed": False,
             "temporal_relation_claimed": False,
+        },
+        "gum_erst_discourse": {
+            **gum_audit,
+            "claim_scope": gum_contract["claim_scope"],
+            "source_credit_unit": "document",
+            "derived_view_unique_source_credit": 0,
+            "official_dev_test_quarantined": True,
+            "public_gum_or_disrpt_score_claimed": False,
+            "learned_competence_claimed": False,
         },
         "masc_interaction_record_count_by_split": {
             split: len(values) for split, values in masc_interactions.items()

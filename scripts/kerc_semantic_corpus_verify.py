@@ -54,6 +54,13 @@ from kerc_masc_mpqa_relations_verify import (
     RELATION_CONTRACT as MASC_MPQA_RELATION_CONTRACT,
     independently_reconstruct_mpqa_relation_chains,
 )
+from kerc_gum_discourse_relations_verify import (
+    POLICY as GUM_DISCOURSE_POLICY,
+    PROJECTION_CONTRACT as GUM_DISCOURSE_PROJECTION_CONTRACT,
+    RELATION_CONTRACT as GUM_DISCOURSE_RELATION_CONTRACT,
+    SPLIT_CONTRACT as GUM_DISCOURSE_SPLIT_CONTRACT,
+    independently_reconstruct_gum_discourse_relations,
+)
 from kerc_residual_economics import (
     calibrate_allocation_lambda,
     residual_wire_bytes,
@@ -132,6 +139,7 @@ def verifier_cache_dependency_paths(
         "dolly_source": resolve(corpus["dolly"]["path"]),
         "masc_archive": resolve(corpus["masc"]["archive_path"]),
         "masc_extracted_tree": resolve(corpus["masc"]["extracted_root"]),
+        "gum_source_tree": resolve(corpus["gum"]["source_root"]),
     }
     for split, row in sorted(corpus["oasst2"]["files"].items()):
         paths[f"oasst2_{split}_source"] = resolve(row["path"])
@@ -2913,6 +2921,260 @@ def verify_masc_record(record: dict[str, Any], source: dict[str, Any], expected:
     }
 
 
+def verify_gum_discourse_record(
+    record: dict[str, Any], source: dict[str, Any], expected: dict[str, Any]
+) -> dict[str, Any]:
+    """Rebuild typed eRST topology from independently parsed source evidence."""
+
+    annotation = expected["annotation"]
+    if record.get("source_annotation") != annotation:
+        raise ValueError("GUM source annotation replay mismatch")
+    if (
+        record.get("split") != expected["split"]
+        or record.get("source_text") != expected["source_text"]
+        or record.get("surface_target") != expected["source_text"]
+        or record.get("provenance", {}).get("source_id") != expected["source_id"]
+        or record.get("provenance", {}).get("source_group")
+        != expected["source_group"]
+        or record.get("provenance", {}).get("license_spdx")
+        != expected["license_spdx"]
+    ):
+        raise ValueError("GUM record identity or license mismatch")
+    supervision = record.get("semantic_supervision") or {}
+    expected_objectives = {
+        "surface_direct_control_v1": False,
+        "surface_to_kernel_program_v1": True,
+        "kernel_program_to_answer_packet_v1": True,
+        "answer_packet_to_surface_v1": False,
+    }
+    if (
+        supervision.get("objective_authority") != expected_objectives
+        or supervision.get("source_credit_unit") != "document"
+        or supervision.get("derived_view_unique_source_credit") != 0
+        or supervision.get("erst_relation_authority")
+        != "human_source_declared_primary_and_secondary_discourse_edges"
+        or supervision.get("public_calibration_surface") is not False
+        or supervision.get("benchmark_payload_used") is not False
+    ):
+        raise ValueError("GUM semantic authority mismatch")
+
+    units = sorted(annotation["units"], key=lambda row: int(row["edu_id"]))
+    unit_nodes = {
+        int(unit["edu_id"]): f"k{index}" for index, unit in enumerate(units)
+    }
+    document_concept = "gum.document." + re.sub(
+        r"[^a-z0-9]+", ".", annotation["document_id"].lower()
+    ).strip(".")
+    expected_nodes: list[dict[str, Any]] = []
+    expected_segment_units: list[dict[str, Any]] = []
+    expected_tags: list[dict[str, Any]] = []
+    for index, unit in enumerate(units):
+        node_id = f"k{index}"
+        span = list(unit["excerpt_span"])
+        expected_nodes.append(
+            {
+                "node_id": node_id,
+                "operator": "DISCOURSE_UNIT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [span],
+                "arguments": [
+                    {
+                        "role": "DOCUMENT",
+                        "value": {"type": "concept", "value": document_concept},
+                    },
+                    {
+                        "role": "EDU_ID",
+                        "value": {
+                            "type": "number",
+                            "value": {"value": int(unit["edu_id"]), "unit": "identifier"},
+                        },
+                    },
+                ],
+            }
+        )
+        expected_segment_units.append(
+            {
+                "edu_id": int(unit["edu_id"]),
+                "node_id": node_id,
+                "target_spans": [span],
+                "tree_depth": int(unit["tree_depth"]),
+                "source_row_sha256": str(unit["source_row_sha256"]),
+            }
+        )
+        expected_tags.append(
+            {
+                "tag": "ERST_DISCOURSE_UNIT",
+                "source_span": span,
+                "authority": "licensed_manual_annotation",
+            }
+        )
+    expected_claims: list[dict[str, Any]] = []
+    expected_segment_edges: list[dict[str, Any]] = []
+    roots: list[str] = []
+    for index, edge in enumerate(annotation["edges"]):
+        node_id = f"k{len(units) + index}"
+        roots.append(node_id)
+        child_node = unit_nodes[int(edge["child_edu_id"])]
+        parent_node = unit_nodes[int(edge["parent_edu_id"])]
+        relation = str(edge["relation"])
+        relation_base = relation.removesuffix("_m").removesuffix("_r")
+        nuclearity = (
+            "multinuclear"
+            if relation.endswith("_m")
+            else "satellite_nucleus"
+            if relation.endswith("_r")
+            else "secondary_unspecified"
+        )
+        predicate = "ERST_" + safe_symbol(relation_base, "RELATION")
+        program_arguments = [
+            {"role": "CHILD", "value": {"type": "node_ref", "value": child_node}},
+            {"role": "PARENT", "value": {"type": "node_ref", "value": parent_node}},
+            {
+                "role": "RELATION",
+                "value": {
+                    "type": "concept",
+                    "value": "erst.relation." + relation_base.replace("-", "."),
+                },
+            },
+            {
+                "role": "NUCLEARITY",
+                "value": {"type": "concept", "value": "erst.nuclearity." + nuclearity},
+            },
+            {
+                "role": "EDGE_KIND",
+                "value": {
+                    "type": "concept",
+                    "value": "erst.edge_kind." + str(edge["edge_kind"]),
+                },
+            },
+        ]
+        answer_arguments = json.loads(json.dumps(program_arguments))
+        endpoint_concepts = {
+            "CHILD": (
+                f"erst.edu.{str(annotation['document_id']).lower()}."
+                f"{int(edge['child_edu_id'])}"
+            ),
+            "PARENT": (
+                f"erst.edu.{str(annotation['document_id']).lower()}."
+                f"{int(edge['parent_edu_id'])}"
+            ),
+        }
+        for argument in answer_arguments:
+            role = str(argument["role"])
+            if role in endpoint_concepts:
+                argument["value"] = {
+                    "type": "concept",
+                    "value": endpoint_concepts[role],
+                }
+        spans = sorted(
+            [
+                list(
+                    next(
+                        unit["excerpt_span"]
+                        for unit in units
+                        if int(unit["edu_id"]) == int(edge["child_edu_id"])
+                    )
+                ),
+                list(
+                    next(
+                        unit["excerpt_span"]
+                        for unit in units
+                        if int(unit["edu_id"]) == int(edge["parent_edu_id"])
+                    )
+                ),
+            ]
+        )
+        expected_nodes.append(
+            {
+                "node_id": node_id,
+                "operator": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": spans,
+                "arguments": json.loads(json.dumps(program_arguments)),
+            }
+        )
+        expected_claims.append(
+            {
+                "claim_id": f"claim-{index + 1}",
+                "predicate": predicate,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": json.loads(json.dumps(answer_arguments)),
+            }
+        )
+        signal_payload = str(edge["raw_signal_payload"])
+        expected_segment_edges.append(
+            {
+                "edge_id": f"edge-{index}",
+                "edge_order": int(edge["edge_order"]),
+                "node_id": node_id,
+                "edge_kind": str(edge["edge_kind"]),
+                "child_node_id": child_node,
+                "parent_node_id": parent_node,
+                "relation": relation,
+                "nuclearity": nuclearity,
+                "source_annotation_sha256": str(edge["source_annotation_sha256"]),
+                "signal_count": 0
+                if not signal_payload
+                else signal_payload.count(";") + 1,
+            }
+        )
+        child_span = next(
+            unit["excerpt_span"]
+            for unit in units
+            if int(unit["edu_id"]) == int(edge["child_edu_id"])
+        )
+        expected_tags.append(
+            {
+                "tag": "ERST_RELATION:" + safe_symbol(relation_base, "RELATION"),
+                "source_span": list(child_span),
+                "authority": "licensed_manual_annotation",
+            }
+        )
+    program = record["kernel_packet"]["program"]
+    if program["roots"] != roots or program["nodes"] != expected_nodes:
+        raise ValueError("GUM Kernel graph topology mismatch")
+    if record["answer_packet"]["claims"] != expected_claims:
+        raise ValueError("GUM answer-packet relation topology mismatch")
+    expected_segment = {
+        "schema": "erst_discourse_graph_v1",
+        "document_id": annotation["document_id"],
+        "anchor_edu_id": int(annotation["anchor_edu_id"]),
+        "units": expected_segment_units,
+        "edges": expected_segment_edges,
+    }
+    if record["kernel_packet"]["residual"]["segment_frame"] != expected_segment:
+        raise ValueError("GUM eRST residual graph mismatch")
+    expected_tags.sort(
+        key=lambda row: (row["source_span"], row["tag"], row["authority"])
+    )
+    if record["kernel_packet"]["residual"]["token_tags"] != expected_tags:
+        raise ValueError("GUM eRST source alignment mismatch")
+    return {
+        "document_id": annotation["document_id"],
+        "anchor_edu_id": int(annotation["anchor_edu_id"]),
+        "genre": annotation["genre"],
+        "primary_relation": annotation["primary_relation"],
+        "edge_count": len(annotation["edges"]),
+        "source_declared_only": True,
+        "common_source_binding": {
+            "dataset_revision": str(source["dataset_revision"]),
+            "license_spdx": str(expected["license_spdx"]),
+            "content_sha256": str(source["content_sha256"]),
+        },
+    }
+
+
 def producer_family_identity_receipts_from_source() -> dict[str, dict[str, Any]]:
     scripts = ROOT / "scripts"
     common_external = {
@@ -2925,6 +3187,9 @@ def producer_family_identity_receipts_from_source() -> dict[str, dict[str, Any]]
         },
         "masc_mpqa_relation": {
             "raw_relation_producer": scripts / "kerc_masc_mpqa_relations.py"
+        },
+        "gum_discourse": {
+            "raw_relation_producer": scripts / "kerc_gum_discourse_relations.py"
         },
     }
     return family_identity_receipts(
@@ -2945,6 +3210,10 @@ def verifier_family_identity_receipts() -> dict[str, dict[str, Any]]:
         },
         "masc_mpqa_relation": {
             "raw_relation_verifier": scripts / "kerc_masc_mpqa_relations_verify.py"
+        },
+        "gum_discourse": {
+            "raw_relation_verifier": scripts
+            / "kerc_gum_discourse_relations_verify.py"
         },
     }
     return family_identity_receipts(
@@ -3038,7 +3307,7 @@ def verify_candidate_common(
 
 def source_catalog(corpus: dict[str, Any]) -> dict[str, Any]:
     sources = []
-    for key in ("dolly", "masc", "oasst2"):
+    for key in ("dolly", "masc", "gum", "oasst2"):
         source = corpus[key]
         sources.append(
             {
@@ -3056,6 +3325,17 @@ def source_catalog(corpus: dict[str, Any]) -> dict[str, Any]:
                 "allowed_objectives": sorted(
                     set(source["allowed_objectives"])
                     | set(source.get("grounded_question_allowed_objectives") or [])
+                ),
+                **(
+                    {
+                        "per_record_license_matrix": dict(
+                            source["allowed_genre_licenses"]
+                        ),
+                        "official_partitions_admitted": ["train"],
+                        "official_partitions_quarantined": ["dev", "test", "test2"],
+                    }
+                    if key == "gum"
+                    else {}
                 ),
             }
         )
@@ -3258,6 +3538,46 @@ def verify(
         or masc_mpqa_audit["inferred_relation_count"] != 0
     ):
         raise ValueError("independent MASC MPQA-relation reconstruction mismatch")
+    gum_contract = corpus["gum"]
+    gum_rows, gum_audit = independently_reconstruct_gum_discourse_relations(
+        source_root=resolve(gum_contract["source_root"]),
+        allowed_genre_licenses=dict(gum_contract["allowed_genre_licenses"]),
+        private_dev_documents=set(gum_contract["private_dev_documents"]),
+        private_eval_documents=set(gum_contract["private_eval_documents"]),
+        expected_selected_source_sha256=gum_contract["content_sha256"],
+        maximum_characters=maximum_characters,
+    )
+    gum_expected = {
+        row["source_id"]: row for rows in gum_rows.values() for row in rows
+    }
+    if (
+        gum_audit["policy"] != GUM_DISCOURSE_POLICY
+        or gum_audit["relation_contract"] != GUM_DISCOURSE_RELATION_CONTRACT
+        or gum_audit["split_contract"] != GUM_DISCOURSE_SPLIT_CONTRACT
+        or gum_audit["projection_contract"] != GUM_DISCOURSE_PROJECTION_CONTRACT
+        or gum_audit["parser_implementation"]
+        != "verifier_expat_csv_state_machine_v1"
+        or gum_audit["selected_source_sha256"] != gum_contract["content_sha256"]
+        or gum_audit["selected_document_count"]
+        != int(gum_contract["expected_selected_document_count"])
+        or gum_audit["document_count_by_split"]
+        != gum_contract["documents_by_split"]
+        or gum_audit["record_count_by_split"] != gum_contract["records_by_split"]
+        or gum_audit["secondary_edge_count_by_split"]
+        != gum_contract["secondary_edges_by_split"]
+        or any(
+            int(value) < int(gum_contract["minimum_relation_types_per_split"])
+            for value in gum_audit["relation_type_count_by_split"].values()
+        )
+        or any(
+            int(value) < int(gum_contract["minimum_weak_tail_count_per_split"])
+            for value in gum_audit["minimum_relation_count_by_split"].values()
+        )
+        or gum_audit["official_nontrain_document_admission_count"] != 0
+        or gum_audit["partial_relation_admission_count"] != 0
+        or gum_audit["inferred_relation_count"] != 0
+    ):
+        raise ValueError("independent GUM eRST reconstruction mismatch")
     expected = {
         **independent_dolly_assignments(
             corpus["dolly"],
@@ -3270,6 +3590,7 @@ def verify(
         **masc_decision_expected,
         **masc_event_expected,
         **masc_mpqa_expected,
+        **gum_expected,
         **independent_oasst_assignments(
             corpus["oasst2"],
             reserved_groups={row["source_group"] for row in behavior_expected.values()},
@@ -3508,6 +3829,48 @@ def verify(
         or producer_mpqa_relations.get("temporal_relation_claimed") is not False
     ):
         raise ValueError("producer MASC MPQA-relation telemetry mismatch")
+    producer_gum = manifest.get("gum_erst_discourse") or {}
+    if (
+        producer_gum.get("policy") != GUM_DISCOURSE_POLICY
+        or producer_gum.get("relation_contract") != GUM_DISCOURSE_RELATION_CONTRACT
+        or producer_gum.get("split_contract") != GUM_DISCOURSE_SPLIT_CONTRACT
+        or producer_gum.get("projection_contract")
+        != GUM_DISCOURSE_PROJECTION_CONTRACT
+        or producer_gum.get("producer_parser_implementation")
+        not in {None, "producer_elementtree_tab_parser_v1"}
+        or producer_gum.get("parser_implementation")
+        != "producer_elementtree_tab_parser_v1"
+        or producer_gum.get("selected_source_sha256")
+        != gum_audit["selected_source_sha256"]
+        or producer_gum.get("selected_document_count")
+        != gum_audit["selected_document_count"]
+        or producer_gum.get("document_count_by_split")
+        != gum_audit["document_count_by_split"]
+        or producer_gum.get("record_count_by_split")
+        != gum_audit["record_count_by_split"]
+        or producer_gum.get("genre_count_by_split")
+        != gum_audit["genre_count_by_split"]
+        or producer_gum.get("relation_count_by_split")
+        != gum_audit["relation_count_by_split"]
+        or producer_gum.get("secondary_edge_count_by_split")
+        != gum_audit["secondary_edge_count_by_split"]
+        or producer_gum.get("relation_type_count_by_split")
+        != gum_audit["relation_type_count_by_split"]
+        or producer_gum.get("minimum_relation_count_by_split")
+        != gum_audit["minimum_relation_count_by_split"]
+        or producer_gum.get("official_nontrain_document_admission_count") != 0
+        or producer_gum.get("partial_relation_admission_count") != 0
+        or producer_gum.get("inferred_relation_count") != 0
+        or producer_gum.get("claim_scope") != gum_contract["claim_scope"]
+        or producer_gum.get("source_credit_unit") != "document"
+        or producer_gum.get("derived_view_unique_source_credit") != 0
+        or producer_gum.get("official_dev_test_quarantined") is not True
+        or producer_gum.get("public_gum_or_disrpt_score_claimed") is not False
+        or producer_gum.get("learned_competence_claimed") is not False
+        or producer_gum.get("complete_sentence_semantics_claimed") is not False
+        or producer_gum.get("truth_claimed") is not False
+    ):
+        raise ValueError("producer GUM eRST telemetry mismatch")
     phase_runtime_ms["independent_source_reconstruction"] = round(
         (time.perf_counter() - phase_started) * 1000
     )
@@ -3582,6 +3945,8 @@ def verify(
                 if dataset_id == corpus["dolly"]["dataset_id"]
                 else "masc"
                 if dataset_id == corpus["masc"]["dataset_id"]
+                else "gum"
+                if dataset_id == corpus["gum"]["dataset_id"]
                 else "oasst2"
                 if dataset_id == corpus["oasst2"]["dataset_id"]
                 else ""
@@ -3642,9 +4007,10 @@ def verify(
             if not callable(family_verifier):
                 raise ValueError(f"source-family verifier unavailable: {family}")
             replay = family_verifier(record, source, expected_row)
+            verification_source = replay.get("common_source_binding", source)
             canonical, receipt = verify_candidate_common(
                 record=record,
-                source=source,
+                source=verification_source,
                 expected_importance=expected_importance,
                 replay=replay,
                 family=family,
@@ -3880,6 +4246,23 @@ def verify(
             "causal_relation_claimed": False,
             "temporal_relation_claimed": False,
             "independently_reconstructed_from_raw_mpqa": True,
+        },
+        "gum_erst_discourse": {
+            **gum_audit,
+            "producer_parser_implementation": producer_gum[
+                "parser_implementation"
+            ],
+            "verifier_parser_implementation": gum_audit[
+                "parser_implementation"
+            ],
+            "parser_implementations_independent": True,
+            "claim_scope": gum_contract["claim_scope"],
+            "source_credit_unit": "document",
+            "derived_view_unique_source_credit": 0,
+            "official_dev_test_quarantined": True,
+            "public_gum_or_disrpt_score_claimed": False,
+            "learned_competence_claimed": False,
+            "independently_reconstructed_from_raw_rsd_and_xml": True,
         },
         "verification_failures": dict(failures),
         "public_training_rows_written": 0,

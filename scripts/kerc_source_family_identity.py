@@ -33,6 +33,7 @@ PRODUCER_FAMILY_ROOTS = {
     "masc_decision": "masc_decision_semantic_record",
     "masc_event_coreference": "masc_event_coreference_record",
     "masc_mpqa_relation": "masc_mpqa_relation_record",
+    "gum_discourse": "gum_discourse_record",
     "oasst_dialogue": "oasst_record",
     "oasst_behavior": "oasst_behavior_record",
 }
@@ -45,6 +46,7 @@ VERIFIER_FAMILY_ROOTS = {
     "masc_decision": "verify_masc_decision_record",
     "masc_event_coreference": "verify_masc_event_coreference_record",
     "masc_mpqa_relation": "verify_masc_mpqa_relation_record",
+    "gum_discourse": "verify_gum_discourse_record",
     "oasst_dialogue": "verify_oasst_record",
     "oasst_behavior": "verify_oasst_behavior_record",
 }
@@ -236,6 +238,8 @@ def source_family(*, dataset_key: str, source_id: str) -> str:
         return "masc_event_coreference"
     if source_id.startswith("masc-mpqa-relation:"):
         return "masc_mpqa_relation"
+    if dataset_key == "gum" and source_id.startswith("gum-erst:"):
+        return "gum_discourse"
     if dataset_key == "masc":
         return "masc_frame"
     if source_id.startswith("oasst2-behavior:"):

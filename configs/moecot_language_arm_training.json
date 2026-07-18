@@ -374,9 +374,9 @@
       "answer_packet_to_surface_v1"
     ],
     "records_by_split": {
-      "private_train": 7248,
-      "private_dev": 2088,
-      "private_eval": 2088
+      "private_train": 14238,
+      "private_dev": 3621,
+      "private_eval": 3350
     },
     "semantic_supervision": {
       "policy": "project_theseus_kerc_semantic_supervision_program_v1",
@@ -461,6 +461,14 @@
           "public_benchmark_surface": false,
           "license_spdx": "LicenseRef-MASC-Unrestricted",
           "source_url": "https://www.anc.org/MASC/download/MASC-3.0.0.tgz"
+        },
+        {
+          "source_id": "gum_v12_1_human_erst_permissive_train_subset",
+          "intended_tier": "licensed_human_task_gold",
+          "disposition": "eligible_for_compiler_and_reasoner_relation_topology_after_dual_raw_source_replay; official development and test partitions quarantined",
+          "public_benchmark_surface": false,
+          "license_spdx": "LicenseRef-GUM-Permissive-Subset",
+          "source_url": "https://github.com/amir-zeldes/gum/tree/V12.1.0"
         },
         {
           "source_id": "openassistant_oasst2_reviewed_trees",
@@ -710,6 +718,82 @@
           "claim_scope": "manual FrameNet contextual sense selection with alternatives and empirical source-train priors; not unresolved ambiguity, calibrated probability, WordNet equivalence, or model utility"
         }
       },
+      "gum": {
+        "source_root": "resource_pantry/kerc/gum-v12.1.0",
+        "dataset_id": "amir-zeldes/gum-eRST-permissive-train-subset",
+        "dataset_revision": "V12.1.0@22fdf87f9c71c96bcc771461d06e689b1f90020d",
+        "source_url": "https://github.com/amir-zeldes/gum/tree/V12.1.0",
+        "license_evidence_url": "https://github.com/amir-zeldes/gum/blob/V12.1.0/LICENSE.md",
+        "content_sha256": "sha256:9da5b9801c82a89cda5100127da7ba80d0311a174ac73d8d7610a47b52024d98",
+        "license_spdx": "LicenseRef-GUM-Permissive-Subset",
+        "allowed_genre_licenses": {
+          "academic": "CC-BY-4.0",
+          "bio": "CC-BY-SA-3.0",
+          "court": "CC-BY-4.0",
+          "interview": "CC-BY-2.5",
+          "news": "CC-BY-2.5",
+          "voyage": "CC-BY-SA-3.0"
+        },
+        "private_dev_documents": [
+          "GUM_academic_art",
+          "GUM_academic_economics",
+          "GUM_bio_higuchi",
+          "GUM_bio_marbles",
+          "GUM_court_mental",
+          "GUM_court_property",
+          "GUM_interview_messina",
+          "GUM_interview_onion",
+          "GUM_news_lanterns",
+          "GUM_news_warming",
+          "GUM_voyage_chatham",
+          "GUM_voyage_sydfynske"
+        ],
+        "private_eval_documents": [
+          "GUM_academic_huh",
+          "GUM_academic_lighting",
+          "GUM_bio_bernoulli",
+          "GUM_bio_enfant",
+          "GUM_court_nullification",
+          "GUM_court_way",
+          "GUM_interview_licen",
+          "GUM_interview_shalev",
+          "GUM_news_defector",
+          "GUM_news_worship",
+          "GUM_voyage_cuba",
+          "GUM_voyage_merida"
+        ],
+        "expected_selected_document_count": 89,
+        "documents_by_split": {
+          "private_train": 65,
+          "private_dev": 12,
+          "private_eval": 12
+        },
+        "records_by_split": {
+          "private_train": 6990,
+          "private_dev": 1533,
+          "private_eval": 1262
+        },
+        "secondary_edges_by_split": {
+          "private_train": 242,
+          "private_dev": 47,
+          "private_eval": 50
+        },
+        "minimum_relation_types_per_split": 32,
+        "minimum_weak_tail_count_per_split": 4,
+        "official_partitions_admitted": [
+          "train"
+        ],
+        "official_partitions_quarantined": [
+          "dev",
+          "test",
+          "test2"
+        ],
+        "allowed_objectives": [
+          "surface_to_kernel_program_v1",
+          "kernel_program_to_answer_packet_v1"
+        ],
+        "claim_scope": "human eRST primary discourse dependencies plus source-declared secondary edges over complete projected discourse units; authority covers relation label, direction, nuclearity where declared, source alignment, and signal count only, not truth, full proposition scope, complete sentence semantics, public GUM/DISRPT performance, or learned competence"
+      },
       "oasst2": {
         "dataset_id": "OpenAssistant/oasst2",
         "dataset_revision": "179dd21fc55192153d94adb0e0ce8f69e222bf75",
@@ -806,13 +890,15 @@
       "bsd-2-clause",
       "bsd-3-clause",
       "cc-by-4.0",
+      "cc-by-2.5",
       "cc-by-sa-3.0",
       "cc-by-sa-4.0",
       "cc0-1.0",
       "isc",
       "mit",
       "unlicense",
-      "licenseref-masc-unrestricted"
+      "licenseref-masc-unrestricted",
+      "licenseref-gum-permissive-subset"
     ],
     "public_training_rows_written": 0,
     "public_benchmark_payload_count": 0,

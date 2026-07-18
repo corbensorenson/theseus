@@ -96,7 +96,7 @@ def test_verifier_recomputes_producer_family_identities_from_source() -> None:
 
     assert produced == independently_replayed
     identities = [row["identity_sha256"] for row in produced.values()]
-    assert len(produced) == 9
+    assert len(produced) == 10
     assert len(set(identities)) == len(identities)
     assert all(row["function_sources"] for row in produced.values())
     assert producer.producer_finalization_identity_receipt() == (

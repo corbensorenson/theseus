@@ -42,7 +42,7 @@ share toward zero. Public benchmarks are calibration only.
   reports merely to recolor this state.
 - **KERC disposition:** `partial`; protocol mechanics GREEN, construct validity RED,
   scientific result `INCONCLUSIVE_IMPLEMENTATION`. K0 now independently binds the paper,
-  implementation sources, independent verifier, and all 12,795 current corpus records.
+  implementation sources, independent verifier, and all 22,580 current corpus records.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
   annotations. Together they produce 512 multi-node/multi-root programs and multi-claim
@@ -63,17 +63,27 @@ share toward zero. Public benchmarks are calibration only.
   repeated source positions, declared implicit members, and zero-width annotations remain
   explicit; inferred links and extra source credit remain zero. This evidence does
   not establish general coreference, proposition scope, complete
-  sentence semantics, truth, causal/temporal relations, reasoning utility, or learned
-  competence. Three narrow mechanisms
+  sentence semantics, truth, temporal truth, reasoning utility, or learned competence.
+  K1h adds 9,785 licensed human GUM eRST edge neighborhoods from 89 permissively
+  licensed official-train documents. Producer ElementTree/tab parsing and independent
+  verifier Expat/CSV state-machine parsing preserve identical primary and source-declared
+  secondary topology over frozen 65/12/12 document-disjoint private splits. All 32
+  admitted relation types occur in every split, 339 secondary edges are preserved, and
+  official GUM dev/test/test2 documents, inferred relations, partial admission, public
+  score claims, fallback/template credit, and extra source credit remain excluded. The
+  corpus now contains 11,156 multi-node programs, 841 multi-root programs, and 1,700
+  multi-claim packets. Its 4/5/5 minimum relation counts establish weak-tail visibility,
+  not adequacy; quantification, compositional negation, general coreference, temporal
+  truth, complete semantics, truth, and learned competence remain open. Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Nine mechanisms are
   approximate or fixture-only; four are inactive or absent; H1-H8 remain inactive.
   Broader K1 remains open: the corpus has zero correction alternatives, concept capsules,
   learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, or
   per-unit allocation receipts, and still contains 18,759 opaque byte-literal values.
-  Observed decision labels do not supply compositional scope, conditionals, negation,
-  quantification, causal/temporal graph relations, attribution beyond the bounded MPQA
-  links, general coreference,
+  Observed decision and discourse labels supply bounded condition, causal, contrast,
+  attribution, and sequence topology, but not compositional proposition scope,
+  quantification, compositional negation, temporal truth, general coreference,
   unresolved ambiguity, or derivation edges. The four-channel neural result remains
   channel-presence learnability, not learned residual allocation. Direct probes show
   the interaction label activates from segment state without a global dictionary and
@@ -81,18 +91,22 @@ share toward zero. Public benchmarks are calibration only.
   VCM lifecycle, source isolation, no-cheat, code-space, stage-route, verifier-head,
   checkpoint, replay, migration, and MLX canaries remain valid within their narrow
   mechanics ceilings. Current private-evaluation efficiency remains negative for this
-  exact finite-state implementation: residual bits are `4.776774x` source bits and
-  complete Kernel-plus-residual wire is `9.516255x`. Separate source/code/output-bound
+  exact finite-state implementation: residual bits are `5.836541x` source bits and
+  complete Kernel-plus-residual wire is `13.094653x` on private evaluation. Separate source/code/output-bound
   exact-run receipts now replay unchanged materialization in `2.16s` and independent
   verification in `1.87s`. K1d first added separate, integrity-checked economics and
-  semantic-admission caches. K1g now binds nine producer and verifier source families to
+  semantic-admission caches. K1g historically bound nine producer and verifier source families to
   independently recomputed transitive AST source closures, adds content-bound candidate and
-  finalization layers, and retains separate semantic-admission authority. The 12,795-record
-  warm producer replay is `65.089s` with `12,795/12,795` candidate, finalization, and
-  economics hits, a `12.335x` improvement over the prior `802.88s` selective-hit path.
-  Independent cold verification is `1,354.142s`; warm verification is `71.059s` with
-  `12,795/12,795` semantic hits, zero misses, and zero producer-authority reuse, a
-  `19.057x` improvement. A telemetry-only source edit outside every family closure preserves
+  finalization layers, and retains separate semantic-admission authority; K1h adds GUM as
+  the tenth independently keyed family. On the current 22,580-record corpus, a selective
+  producer pass that rebuilt only 9,785 GUM records took `1,305.450s`; the subsequent warm
+  producer replay took `152.365s` with `22,580/22,580` candidate, finalization, and
+  economics hits, an `8.569x` improvement. Independent selective verification admitted
+  9,785 GUM records while reusing 12,795 unchanged admissions in `2,197.806s`; warm
+  verification took `176.954s` with `22,580/22,580` semantic hits, zero misses, zero
+  failures, and zero producer-authority reuse, a `12.420x` improvement. The two SQLite
+  object stores cost `4,983,504,896` bytes (`4.641 GiB`). A telemetry-only source edit
+  outside every family closure preserves
   every cached object and both output identities, while family-local, shared-dependency,
   corruption, and namespace controls invalidate exactly their declared scope or fail closed.
   Restart after an interrupted fill reuses 3,456 complete objects and finishes the remaining
@@ -142,9 +156,10 @@ share toward zero. Public benchmarks are calibration only.
   development-only lambda calibration, source-visible calibrated importance, and strict
   shared-residual promotion economics now independently replay as well. Next extend
   K1 beyond the source-replayed multi-frame, observed decision-semantic, manual
-  event-coreference, and bounded MPQA-attribution strata; extend allocation from record-level
+  event-coreference, bounded MPQA-attribution, and licensed human eRST discourse strata;
+  extend allocation from record-level
   structural preservation to intervention-sensitive per-unit decisions, reduce the
-  measured `9.516255x` private-evaluation total wire overhead and monolithic stage/replay cost, add unresolved
+  measured `13.094653x` private-evaluation total wire overhead and monolithic stage/replay cost, add unresolved
   ambiguity, broad entailment, protected-span abstention, and
   calibrated verifier decisions; then
   freeze strong matched controls and total-system accounting and rebuild the architecture
