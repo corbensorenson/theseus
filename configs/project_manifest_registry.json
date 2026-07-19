@@ -414,11 +414,11 @@
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
-          "sha256": "a9faace4fa197575557c2e968cf2bd3e9f5454611049aa720be78636d7e45472"
+          "sha256": "94900ef7053825bcb7635340e7fd8cc37dc85efae96afa345a393004282ed384"
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "b3fb0370b8343e5ea8dc73a4990884276c9d7af6e8a90887d26b4e205412ea24"
+          "sha256": "897162cb7cf0ec3709563ea742955f4d44290a4be4dbdfe28a1f32e6687f9c7a"
         },
         "kerc_autoregressive_qualification": {
           "path": "scripts/kerc_autoregressive_qualification.py",
@@ -426,7 +426,7 @@
         },
         "kerc_adequacy_tests": {
           "path": "tests/test_kerc_adequacy_canary.py",
-          "sha256": "91fbc9a626ec5d982fb532e2582694b8bfb81a79eabdff703a54d5e418f3b5ef"
+          "sha256": "bf7027f860dad509d8b27c7d6fc5ca613eec3af3c616f046dea0c386d89f163e"
         },
         "kerc_checkpoint_schema": {
           "path": "scripts/kerc_checkpoint_schema.py",
@@ -5563,7 +5563,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0-K1m independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, and two production-shaped autoregressive mechanics profiles while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 train/dev/eval records with zero raw-source or source-group overlap. It materializes 53,414 generator views, 53,414 verifier corruptions, and 384 generator-loss-disabled context counterfactuals from 18,033 unique raw sources / 4,721,570 raw bytes. Exact typed transports are invertible, iterative compiler and topological reasoner chunks carry only generated prior state, and encoded-length-only 8K/16K buckets retain every row without truncation. Protected-single and two-chunk hierarchical MLX profiles pass stage gradients, exact overfit, learned protected-span reconstruction, real no-fallback execution, causal prior-state interventions, and exact checkpoint reload; the hierarchical route executes all nine expected stages over eight prior-claim dependencies. The enclosing adequacy canary remains RED because continuous-versus-resumed training has one token-logit tolerance violation (5.75e-5) despite identical discrete outcomes and a 2.98e-7 parameter delta, and joint training forgets the sole CLARIFY row. Next repair the numerical-resume contract through preregistered fresh-process characterization and repair joint-objective decision retention without relaxing observed thresholds. Construct validity remains RED: per-unit residual allocation, interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. The wire remains economically negative. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
+      "current_wall": "K0-K1n independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, and two production-shaped autoregressive mechanics profiles while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 train/dev/eval records with zero raw-source or source-group overlap. It materializes 53,414 generator views, 53,414 verifier corruptions, and 384 generator-loss-disabled context counterfactuals from 18,033 unique raw sources / 4,721,570 raw bytes. Exact typed transports are invertible, iterative compiler and topological reasoner chunks carry only generated prior state, and encoded-length-only 8K/16K buckets retain every row without truncation. The canonical adequacy canary is GREEN with no hard or inconclusive gaps: protected-single and two-chunk hierarchical MLX profiles pass stage gradients, exact overfit, learned protected-span reconstruction, real no-fallback execution, causal prior-state interventions, exact checkpoint reload, and exact token recovery at 936 and 1,536 updates. Fresh-process continuation from an exact content-addressed checkpoint passes two calibration and two untouched validation seeds with identical discrete outcomes inside independently derived numerical envelopes. Plain 80-update joint training retains observed ANSWER/CLARIFY/ABSTAIN mechanics at 0.9333 macro balanced accuracy; matched rehearsal is not adopted because its decision gain costs 0.1806 token accuracy. Construct validity remains RED: per-unit residual allocation, interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. Next implement K2 per-unit packet/rate-distortion allocation without weakening the now-qualified K1 mechanics. The wire remains economically negative. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

@@ -13,10 +13,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from kerc_adequacy_canary import (  # noqa: E402
+    build_joint_rehearsal_schedule,
     classify_gates,
     compact_metrics,
     expected_logit_delta_by_objective,
+    load_resume_bundle,
     nested_logit_equivalence,
+    publish_resume_bundle,
     select_balanced_subset,
 )
 from kerc_checkpoint_schema import (  # noqa: E402
@@ -144,6 +147,59 @@ def fixture_stage() -> SimpleNamespace:
         ),
         kerc_coverage_labels=tuple(coverage),
     )
+
+
+def test_joint_rehearsal_is_class_balanced_and_preserves_every_stage_row() -> None:
+    stage = fixture_stage()
+
+    schedule, rehearsal_mask, receipt = build_joint_rehearsal_schedule(
+        stage, steps=64, rehearsal_fraction=0.25
+    )
+
+    assert len(schedule) == 64
+    assert sum(rehearsal_mask) == 16
+    assert receipt["base_update_count"] == 48
+    assert receipt["rehearsal_update_count"] == 16
+    assert receipt["minimum_row_update_count"] >= 4
+    assert set(receipt["rehearsal_updates_by_decision_class"]) == {
+        "ANSWER",
+        "CLARIFY",
+        "ABSTAIN",
+    }
+    assert max(receipt["rehearsal_updates_by_decision_class"].values()) - min(
+        receipt["rehearsal_updates_by_decision_class"].values()
+    ) <= 1
+
+
+def test_resume_bundle_is_content_bound_and_round_trips_subset(tmp_path: Path) -> None:
+    training = tmp_path / "training.json"
+    training.write_text(json.dumps({"policy": "test"}))
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"training_config": str(training)}))
+    stage = fixture_stage()
+    manifest = publish_resume_bundle(
+        config,
+        training_path=training,
+        plan={"plan_sha256": "plan", "stage": {"stage_signature": "stage"}},
+        target={"target_id": "english_kerc", "model": {"hidden_size": 8}},
+        subset=stage,
+        selection={"selected": [1, 2, 3]},
+        copy_lookup=np.arange(32, dtype=np.int32),
+        output_root=tmp_path / "bundle",
+    )
+
+    loaded = load_resume_bundle(config, manifest)
+
+    assert loaded["manifest"]["subset_row_count"] == len(stage.inputs)
+    assert np.array_equal(loaded["subset"].inputs, stage.inputs)
+    assert np.array_equal(loaded["copy_lookup"], np.arange(32, dtype=np.int32))
+    config.write_text(json.dumps({"training_config": str(training), "changed": True}))
+    try:
+        load_resume_bundle(config, manifest)
+    except ValueError as exc:
+        assert "config identity mismatch" in str(exc)
+    else:
+        raise AssertionError("tampered resume bundle config was accepted")
 
 
 def test_autoregressive_chain_selection_requires_exact_production_prompt_replay(
@@ -595,6 +651,7 @@ def test_failed_learning_is_inconclusive_not_architecture_falsification() -> Non
         second_phase={"target_tokens_per_second": 2.0},
         reload_delta=0.0,
         resume_equivalence={"equivalent": True, "discrete_outcomes_preserved": True},
+        fresh_process_resume={"state": "GREEN", "validation_passed": True},
         optimizer_reload_delta=0.0,
         interventions={
             "trusted_stage_token_removed": {
@@ -690,6 +747,7 @@ def test_lifecycle_failure_is_red() -> None:
         second_phase={"target_tokens_per_second": 2.0},
         reload_delta=0.0,
         resume_equivalence={"equivalent": True, "discrete_outcomes_preserved": True},
+        fresh_process_resume={"state": "RED", "validation_passed": False},
         optimizer_reload_delta=0.0,
         interventions={
             "trusted_stage_token_removed": {"delta_by_objective": {"a": 1e-3}},

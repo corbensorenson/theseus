@@ -18,9 +18,10 @@ share toward zero. Public benchmarks are calibration only.
   architecture/data stage is GREEN and exact-replayable after replacing the toy proxy.
   Its protected-single and two-chunk hierarchical MLX profiles now pass gradients, exact
   overfit, real no-fallback autoregressive execution, causal generated-state interventions,
-  protected-span reconstruction, and checkpoint reload. The enclosing adequacy canary is
-  still RED on numerical resume equivalence and joint-objective CLARIFY retention, so the
-  prior freeze package remains stale pending those owner repairs and cross-owner replay.
+  protected-span reconstruction, checkpoint reload, repeated fresh-process resume, and
+  joint-objective decision retention. The enclosing bounded mechanics canary is GREEN with
+  no hard or inconclusive gaps. The prior freeze package remains stale because K2-K7
+  construct-validity owners and final cross-owner replay are still open.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -43,14 +44,16 @@ share toward zero. Public benchmarks are calibration only.
   YELLOW with zero hard gaps because faithful KERC and one queued capability obligation
   remain open; ATT-D is YELLOW with every hard cap passing. Do not refresh unrelated
   reports merely to recolor this state.
-- **KERC disposition:** `partial`; architecture/data materialization and two bounded
-  production-shaped autoregressive mechanics profiles are GREEN, while the full adequacy
-  canary, construct validity, and learned utility remain RED/unclaimed. The hierarchical
+- **KERC disposition:** `partial`; architecture/data materialization and the bounded K1
+  production-shaped mechanics qualification are GREEN, while construct validity and learned
+  utility remain RED/unclaimed. The hierarchical
   profile learns a two-compiler/two-core chain and executes the exact nine-stage round trip
   with eight prior-claim dependencies and no fallback. Its state interventions are causal.
-  Resume preserves discrete outcomes with a `2.98e-7` parameter delta but exceeds the
-  frozen token-logit tolerance once (`5.75e-5`), and joint training forgets the sole
-  CLARIFY row. K0 now independently binds the paper,
+  Fresh-process resume preserves every discrete outcome across two calibration and two
+  untouched validation seeds; validation maxima stay inside independently derived envelopes.
+  Plain joint training retains observed ANSWER/CLARIFY/ABSTAIN mechanics at `0.9333` macro
+  balanced accuracy. Matched rehearsal reaches `1.0` decision macro accuracy but is not
+  adopted because it regresses token accuracy by `0.1806`. K0 now independently binds the paper,
   implementation sources, independent verifier, and all 27,941 current corpus records.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
@@ -235,13 +238,13 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** qualify the actual GREEN KERC stage before any long optimizer
-  campaign. Run bounded per-stage and end-to-end learnability, gradient-flow, overfit,
-  checkpoint/reload/resume, intervention, and no-fallback canaries against the exact compact
-  hierarchical route. Require generated compiler state and prior claims to affect downstream
-  predictions causally; require exact replay after checkpoint round trips; record failures as
-  owner-specific `INCONCLUSIVE_IMPLEMENTATION`, never as an architecture verdict. Then finish
-  the remaining faithful KERC pre-training boundary
+- **Immediate dependency:** implement K2's per-unit packet and rate-distortion contract on
+  top of the now-qualified K1 mechanics before any long optimizer campaign. Preserve stable
+  residual-unit identities, independently selectable fidelity, real payload/bit accounting,
+  intervention-sensitive allocation, and hard exact-object constraints. Require matched
+  no-residual, token-only, global-only, and learned-allocation controls before attributing a
+  benefit. Record inadequate mechanisms as owner-specific `INCONCLUSIVE_IMPLEMENTATION`,
+  never as an architecture verdict. Then finish the remaining faithful KERC pre-training boundary
   through the existing English-arm, Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,

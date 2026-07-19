@@ -22,6 +22,25 @@
     "residual_class_balance_maximum": 16.0,
     "verifier_class_balance_maximum": 16.0
   },
+  "fresh_process_resume_equivalence": {
+    "process_model": "continuous_process_publishes_step48_checkpoint_then_fresh_process_resumes_same_state",
+    "calibration_replica_count": 2,
+    "validation_replica_count": 2,
+    "calibration_safety_factor": 4.0,
+    "worker_timeout_seconds": 300,
+    "minimum_envelopes": {
+      "parameter_delta": 1e-6,
+      "optimizer_delta": 1e-6,
+      "token_logit_delta": 1e-5,
+      "verifier_logit_delta": 1e-6
+    },
+    "absolute_hard_ceilings": {
+      "parameter_delta": 1e-5,
+      "optimizer_delta": 1e-5,
+      "token_logit_delta": 1e-3,
+      "verifier_logit_delta": 1e-4
+    }
+  },
   "residual_learnability": {
     "maximum_steps": 256,
     "minimum_steps": 64,
@@ -32,7 +51,7 @@
     "residual_weight": 1.0,
     "minimum_macro_balanced_accuracy": 0.99,
     "minimum_parameter_family_gradient_l2": 1e-10,
-    "joint_compatibility_steps": 64,
+    "joint_compatibility_steps": 80,
     "minimum_post_joint_channel_balanced_accuracy": 0.75
   },
   "decision_learnability": {
@@ -48,7 +67,12 @@
     "minimum_macro_balanced_accuracy": 0.99,
     "minimum_parameter_family_gradient_l2": 1e-10,
     "joint_compatibility_steps": 64,
-    "minimum_post_joint_macro_balanced_accuracy": 0.75
+    "minimum_post_joint_macro_balanced_accuracy": 0.75,
+    "joint_rehearsal_fraction": 0.2,
+    "minimum_decision_macro_advantage_over_plain_joint": 0.0,
+    "maximum_token_accuracy_regression_vs_plain_joint": 0.05,
+    "maximum_residual_macro_regression_vs_plain_joint": 0.05,
+    "maximum_verifier_macro_regression_vs_plain_joint": 0.05
   },
   "autoregressive_pipeline": {
     "enabled": true,

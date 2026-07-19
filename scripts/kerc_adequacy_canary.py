@@ -15,6 +15,8 @@ import hashlib
 import json
 import os
 import resource
+import subprocess
+import sys
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -85,6 +87,73 @@ def write_json_atomic(path: Path, payload: Any) -> None:
         json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     os.replace(temporary, path)
+
+
+def prepare_canary_stage(config_path: Path) -> dict[str, Any]:
+    """Load the exact registered KERC target and deterministic adequacy subset."""
+
+    config = read_json(config_path)
+    if config.get("policy") != "project_theseus_kerc_adequacy_canary_v1":
+        raise ValueError("KERC adequacy policy mismatch")
+    boundaries = config.get("boundaries") or {}
+    if any(
+        int(boundaries.get(key) or 0)
+        for key in (
+            "public_training_rows_written",
+            "public_benchmark_payload_count",
+            "external_inference_calls",
+            "fallback_return_count",
+            "template_credit",
+        )
+    ):
+        raise ValueError("KERC adequacy canary boundary is not zero")
+    optimization = config["optimization"]
+    total_steps = int(optimization["steps_before_resume"]) + int(
+        optimization["steps_after_resume"]
+    )
+    if total_steps > int(optimization["maximum_total_steps"]):
+        raise ValueError("KERC adequacy update budget exceeds the frozen cap")
+
+    training_path = resolve(config["training_config"])
+    training = read_json(training_path)
+    plan = build_plan(training, config_path=training_path)
+    if plan["trigger_state"] != "GREEN":
+        raise ValueError("canonical MoECOT plan is not GREEN")
+    target = plan["targets"][config["target_id"]]
+    base = read_json(resolve(training["base_config"]))
+    metadata = read_json(resolve(training["stage_dir"]) / "stage_metadata_v1.json")
+    stage = materialize_target_supervision(
+        training,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field="kernel_english_artifacts",
+        receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
+        maximum_sequence_tokens=int(
+            training["kernel_english_training"]["maximum_sequence_tokens"]
+        ),
+        objective_filter=tuple(target["kernel_english_objectives"]),
+    )
+    subset, selection = select_balanced_subset(
+        stage,
+        task_token_ids=tuple(target["model"]["kerc_task_token_ids"]),
+        separator_id=int(target["model"]["source_target_separator_token_id"]),
+        positives_per_objective=int(config["subset"]["positive_rows_per_objective"]),
+    )
+    if len(subset.inputs) > int(config["subset"]["maximum_rows"]):
+        raise ValueError("KERC adequacy subset exceeds its frozen row cap")
+    return {
+        "config": config,
+        "training_path": training_path,
+        "training": training,
+        "plan": plan,
+        "target": target,
+        "base": base,
+        "metadata": metadata,
+        "stage": stage,
+        "subset": subset,
+        "selection": selection,
+    }
 
 
 def active_width(inputs: np.ndarray, labels: np.ndarray, mask: np.ndarray) -> int:
@@ -902,6 +971,72 @@ def evaluate_decision_head(model: Any, stage: Any, *, mx: Any) -> dict[str, Any]
     }
 
 
+def build_joint_rehearsal_schedule(
+    stage: Any, *, steps: int, rehearsal_fraction: float
+) -> tuple[tuple[int, ...], tuple[bool, ...], dict[str, Any]]:
+    """Interleave full-coverage joint rows with class-balanced decision rehearsal."""
+
+    if steps < len(stage.inputs) or not 0.0 < rehearsal_fraction < 0.5:
+        raise ValueError("joint rehearsal requires a bounded nontrivial schedule")
+    authority = np.asarray(stage.kerc_decision_loss_mask).astype(bool)
+    labels = np.asarray(stage.kerc_decision_labels)
+    by_class = {
+        int(label): [int(index) for index in np.flatnonzero(authority & (labels == label))]
+        for label in sorted(int(value) for value in np.unique(labels[authority]))
+    }
+    if len(by_class) < 2 or any(not rows for rows in by_class.values()):
+        raise ValueError("joint rehearsal requires multiple authoritative decision classes")
+    rehearsal_count = max(len(by_class), int(round(steps * rehearsal_fraction)))
+    base_count = steps - rehearsal_count
+    if base_count < len(stage.inputs):
+        raise ValueError("joint rehearsal would remove full stage coverage")
+    base = [index % len(stage.inputs) for index in range(base_count)]
+    class_offsets = {label: 0 for label in by_class}
+    rehearsal: list[int] = []
+    class_order = sorted(by_class)
+    for position in range(rehearsal_count):
+        label = class_order[position % len(class_order)]
+        rows = by_class[label]
+        offset = class_offsets[label]
+        rehearsal.append(rows[offset % len(rows)])
+        class_offsets[label] = offset + 1
+    schedule: list[int] = []
+    rehearsal_mask: list[bool] = []
+    base_offset = 0
+    rehearsal_offset = 0
+    for position in range(steps):
+        expected_rehearsal = ((position + 1) * rehearsal_count) // steps
+        if expected_rehearsal > rehearsal_offset:
+            schedule.append(rehearsal[rehearsal_offset])
+            rehearsal_mask.append(True)
+            rehearsal_offset += 1
+        else:
+            schedule.append(base[base_offset])
+            rehearsal_mask.append(False)
+            base_offset += 1
+    row_counts = {index: schedule.count(index) for index in range(len(stage.inputs))}
+    if any(count == 0 for count in row_counts.values()):
+        raise ValueError("joint rehearsal failed full stage coverage")
+    class_counts = {
+        ANSWER_DISPOSITION_ORDER[label]: sum(
+            1 for index in rehearsal if int(labels[index]) == label
+        )
+        for label in class_order
+    }
+    return tuple(schedule), tuple(rehearsal_mask), {
+        "policy": "project_theseus_kerc_joint_rehearsal_schedule_v1",
+        "total_update_count": steps,
+        "base_update_count": base_count,
+        "rehearsal_update_count": rehearsal_count,
+        "rehearsal_fraction": rehearsal_count / steps,
+        "minimum_row_update_count": min(row_counts.values()),
+        "maximum_row_update_count": max(row_counts.values()),
+        "rehearsal_updates_by_decision_class": class_counts,
+        "schedule_sha256": canonical_sha256(schedule),
+        "mode_schedule_sha256": canonical_sha256(rehearsal_mask),
+    }
+
+
 def decision_learnability_probe(
     target: dict[str, Any],
     copy_lookup: np.ndarray,
@@ -912,6 +1047,7 @@ def decision_learnability_probe(
     nn: Any,
     optim: Any,
     mlx_utils: Any,
+    output_root: Path,
 ) -> dict[str, Any]:
     """Overfit authoritative disposition labels without target-token supervision."""
 
@@ -1002,12 +1138,36 @@ def decision_learnability_probe(
     decision_only_passed = observed_class_requirement_met and final[
         "macro_balanced_accuracy"
     ] >= float(probe["minimum_macro_balanced_accuracy"])
-    joint_training = train_steps(
-        model,
-        optimizer,
+    joint_root = output_root / "decision_joint_retention"
+    joint_root.mkdir(parents=True, exist_ok=True)
+    joint_checkpoint = joint_root / "decision_overfit_weights.npz"
+    joint_optimizer = joint_root / "decision_overfit_optimizer.safetensors"
+    model.save_weights(str(joint_checkpoint))
+    publish_optimizer(mx, mlx_utils, optimizer, joint_optimizer)
+
+    def load_joint_candidate() -> tuple[Any, Any]:
+        candidate = build_faithful_model(
+            target, copy_lookup=copy_lookup, mx=mx, nn=nn
+        )
+        candidate.load_weights(str(joint_checkpoint), strict=True)
+        candidate_optimizer = optim.AdamW(
+            learning_rate=float(probe["learning_rate"]),
+            weight_decay=float(probe["weight_decay"]),
+        )
+        candidate_optimizer.state = mlx_utils.tree_unflatten(
+            list(mx.load(str(joint_optimizer)).items())
+        )
+        mx.eval(candidate.parameters(), candidate_optimizer.state)
+        return candidate, candidate_optimizer
+
+    joint_steps = int(probe["joint_compatibility_steps"])
+    plain_model, plain_optimizer = load_joint_candidate()
+    plain_training = train_steps(
+        plain_model,
+        plain_optimizer,
         stage,
         start_step=0,
-        steps=int(probe["joint_compatibility_steps"]),
+        steps=joint_steps,
         gradient_clip=float(config["optimization"]["gradient_clip_norm"]),
         residual_balance_maximum=float(
             config["optimization"]["residual_class_balance_maximum"]
@@ -1019,10 +1179,79 @@ def decision_learnability_probe(
         nn=nn,
         optim=optim,
     )
-    post_joint = evaluate_decision_head(model, stage, mx=mx)
-    joint_compatibility_passed = post_joint["macro_balanced_accuracy"] >= float(
-        probe["minimum_post_joint_macro_balanced_accuracy"]
+    plain_decision = evaluate_decision_head(plain_model, stage, mx=mx)
+    plain_overall = compact_metrics(evaluate_model(plain_model, stage, mx=mx, nn=nn))
+
+    rehearsal_schedule, rehearsal_mask, rehearsal_receipt = (
+        build_joint_rehearsal_schedule(
+            stage,
+            steps=joint_steps,
+            rehearsal_fraction=float(probe["joint_rehearsal_fraction"]),
+        )
     )
+    rehearsal_model, rehearsal_optimizer = load_joint_candidate()
+    rehearsal_training = train_joint_with_decision_rehearsal(
+        rehearsal_model,
+        rehearsal_optimizer,
+        stage,
+        row_schedule=rehearsal_schedule,
+        rehearsal_mask=rehearsal_mask,
+        gradient_clip=float(config["optimization"]["gradient_clip_norm"]),
+        residual_balance_maximum=float(
+            config["optimization"]["residual_class_balance_maximum"]
+        ),
+        verifier_balance_maximum=float(
+            config["optimization"]["verifier_class_balance_maximum"]
+        ),
+        decision_weight=float(probe["decision_weight"]),
+        decision_class_balance_maximum=float(probe["class_balance_maximum"]),
+        mx=mx,
+        nn=nn,
+        optim=optim,
+    )
+    post_joint = evaluate_decision_head(rehearsal_model, stage, mx=mx)
+    rehearsal_overall = compact_metrics(
+        evaluate_model(rehearsal_model, stage, mx=mx, nn=nn)
+    )
+    decision_advantage = float(post_joint["macro_balanced_accuracy"]) - float(
+        plain_decision["macro_balanced_accuracy"]
+    )
+    overall_regressions = {
+        "token_accuracy": float(plain_overall["token_accuracy"])
+        - float(rehearsal_overall["token_accuracy"]),
+        "residual_informative_macro_balanced_accuracy": float(
+            plain_overall["residual_informative_macro_balanced_accuracy"]
+        )
+        - float(rehearsal_overall["residual_informative_macro_balanced_accuracy"]),
+        "verifier_macro_balanced_accuracy": float(
+            plain_overall["verifier_macro_balanced_accuracy"]
+        )
+        - float(rehearsal_overall["verifier_macro_balanced_accuracy"]),
+    }
+    preservation_passed = bool(
+        overall_regressions["token_accuracy"]
+        <= float(probe["maximum_token_accuracy_regression_vs_plain_joint"])
+        and overall_regressions["residual_informative_macro_balanced_accuracy"]
+        <= float(probe["maximum_residual_macro_regression_vs_plain_joint"])
+        and overall_regressions["verifier_macro_balanced_accuracy"]
+        <= float(probe["maximum_verifier_macro_regression_vs_plain_joint"])
+    )
+    plain_joint_passed = bool(
+        plain_decision["macro_balanced_accuracy"]
+        >= float(probe["minimum_post_joint_macro_balanced_accuracy"])
+    )
+    rehearsal_joint_passed = bool(
+        post_joint["macro_balanced_accuracy"]
+        >= float(probe["minimum_post_joint_macro_balanced_accuracy"])
+        and decision_advantage
+        >= float(probe["minimum_decision_macro_advantage_over_plain_joint"])
+        and preservation_passed
+        and int(plain_training["optimizer_steps"])
+        == int(rehearsal_training["optimizer_steps"])
+    )
+    rehearsal_adopted = bool(not plain_joint_passed and rehearsal_joint_passed)
+    selected_post_joint = post_joint if rehearsal_adopted else plain_decision
+    joint_compatibility_passed = plain_joint_passed or rehearsal_joint_passed
     learnability_passed = gradient_path_present and decision_only_passed
     return {
         "policy": "project_theseus_kerc_decision_learnability_probe_v1",
@@ -1047,8 +1276,32 @@ def decision_learnability_probe(
         "decision_only_passed": decision_only_passed,
         "learnability_passed": learnability_passed,
         "joint_compatibility": {
-            "training": joint_training,
-            "post_joint": post_joint,
+            "policy": "conflict_measured_stratified_rehearsal_with_matched_updates_v1",
+            "plain_joint": {
+                "training": plain_training,
+                "decision": plain_decision,
+                "overall": plain_overall,
+            },
+            "rehearsal_joint": {
+                "training": rehearsal_training,
+                "decision": post_joint,
+                "overall": rehearsal_overall,
+                "schedule": rehearsal_receipt,
+            },
+            "post_joint": selected_post_joint,
+            "selected_policy": (
+                "decision_only_stratified_rehearsal"
+                if rehearsal_adopted
+                else "plain_joint_training"
+            ),
+            "plain_joint_passed": plain_joint_passed,
+            "rehearsal_joint_passed": rehearsal_joint_passed,
+            "rehearsal_adopted": rehearsal_adopted,
+            "decision_macro_advantage_over_plain_joint": decision_advantage,
+            "overall_regressions_vs_plain_joint": overall_regressions,
+            "nondecision_objectives_preserved": preservation_passed,
+            "matched_optimizer_steps": int(plain_training["optimizer_steps"])
+            == int(rehearsal_training["optimizer_steps"]),
             "minimum_macro_balanced_accuracy": float(
                 probe["minimum_post_joint_macro_balanced_accuracy"]
             ),
@@ -1286,6 +1539,7 @@ def train_steps(
     mx: Any,
     nn: Any,
     optim: Any,
+    row_schedule: tuple[int, ...] | None = None,
 ) -> dict[str, Any]:
     loss_and_grad = nn.value_and_grad(model, causal_loss)
     (
@@ -1337,7 +1591,11 @@ def train_steps(
     started = time.perf_counter()
     model.train()
     for offset in range(steps):
-        index = (start_step + offset) % len(stage.inputs)
+        index = (
+            int(row_schedule[(start_step + offset) % len(row_schedule)])
+            if row_schedule
+            else (start_step + offset) % len(stage.inputs)
+        )
         loss, positions = one_update(
             model,
             optimizer,
@@ -1367,6 +1625,129 @@ def train_steps(
         "verifier_class_weights": verifier_class_weight_receipt,
         "residual_class_weights": residual_class_weight_receipt,
         "decision_class_weights": decision_class_weight_receipt,
+    }
+
+
+def train_joint_with_decision_rehearsal(
+    model: Any,
+    optimizer: Any,
+    stage: Any,
+    *,
+    row_schedule: tuple[int, ...],
+    rehearsal_mask: tuple[bool, ...],
+    gradient_clip: float,
+    residual_balance_maximum: float,
+    verifier_balance_maximum: float,
+    decision_weight: float,
+    decision_class_balance_maximum: float,
+    mx: Any,
+    nn: Any,
+    optim: Any,
+) -> dict[str, Any]:
+    """Train matched full-joint updates with interleaved decision-only rehearsal."""
+
+    if len(row_schedule) != len(rehearsal_mask) or not row_schedule:
+        raise ValueError("joint rehearsal schedule identity mismatch")
+    loss_and_grad = nn.value_and_grad(model, causal_loss)
+    verifier_positive, verifier_negative, verifier_receipt = (
+        balanced_binary_class_weights(
+            stage.kerc_verifier_labels,
+            maximum=float(verifier_balance_maximum),
+            require_both_classes=True,
+        )
+    )
+    residual_weights, residual_receipt = balanced_categorical_class_weights(
+        stage.kerc_residual_labels[
+            np.asarray(stage.kerc_residual_loss_mask).astype(bool)
+        ],
+        class_count=4,
+        maximum=float(residual_balance_maximum),
+        require_two_classes_per_feature=True,
+    )
+    decision_authority = np.asarray(stage.kerc_decision_loss_mask).astype(bool)
+    decision_weights, decision_receipt = balanced_categorical_class_weights(
+        stage.kerc_decision_labels[decision_authority][:, None],
+        class_count=len(ANSWER_DISPOSITION_ORDER),
+        maximum=float(decision_class_balance_maximum),
+        require_two_classes_per_feature=True,
+    )
+    matrix_verifier_positive = mx.array(verifier_positive, dtype=mx.float32)
+    matrix_verifier_negative = mx.array(verifier_negative, dtype=mx.float32)
+    matrix_residual = mx.array(residual_weights, dtype=mx.float32)
+    matrix_decision = mx.array(decision_weights[0], dtype=mx.float32)
+    mx.eval(
+        matrix_verifier_positive,
+        matrix_verifier_negative,
+        matrix_residual,
+        matrix_decision,
+    )
+    losses: list[float] = []
+    base_positions = 0
+    started = time.perf_counter()
+    model.train()
+    for index, rehearsal in zip(row_schedule, rehearsal_mask):
+        if rehearsal:
+            (
+                inputs,
+                labels,
+                loss_mask,
+                _residual,
+                _residual_mask,
+                _verifier,
+                decision,
+                decision_mask,
+            ) = row_arrays(stage, int(index))
+            if not bool(np.asarray(decision_mask).astype(bool).any()):
+                raise ValueError("decision rehearsal selected a non-authoritative row")
+            loss, gradients = loss_and_grad(
+                model,
+                mx.array(inputs, dtype=mx.int32),
+                mx.array(labels, dtype=mx.int32),
+                mx.zeros_like(mx.array(loss_mask, dtype=mx.float32)),
+                mx,
+                nn,
+                kerc_decision_labels=mx.array(decision, dtype=mx.int32),
+                kerc_decision_weight=float(decision_weight),
+                kerc_decision_class_weights=matrix_decision,
+                kerc_decision_loss_mask=mx.array(decision_mask, dtype=mx.float32),
+            )
+            gradients, norm = optim.clip_grad_norm(gradients, gradient_clip)
+            optimizer.update(model, gradients)
+            mx.eval(model.parameters(), optimizer.state, loss, norm)
+            losses.append(float(loss.item()))
+        else:
+            loss, positions = one_update(
+                model,
+                optimizer,
+                loss_and_grad,
+                stage,
+                int(index),
+                gradient_clip=gradient_clip,
+                verifier_positive_weights=matrix_verifier_positive,
+                verifier_negative_weights=matrix_verifier_negative,
+                residual_class_weights=matrix_residual,
+                decision_class_weights=matrix_decision,
+                mx=mx,
+                nn=nn,
+                optim=optim,
+            )
+            losses.append(loss)
+            base_positions += positions
+    elapsed = time.perf_counter() - started
+    return {
+        "optimizer_steps": len(row_schedule),
+        "full_joint_update_count": int(len(row_schedule) - sum(rehearsal_mask)),
+        "decision_only_rehearsal_update_count": int(sum(rehearsal_mask)),
+        "target_positions": base_positions,
+        "first_loss": losses[0],
+        "final_loss": losses[-1],
+        "mean_loss": float(np.mean(losses)),
+        "wall_seconds": elapsed,
+        "target_tokens_per_second_on_full_joint_updates": base_positions
+        / max(elapsed, 1e-9),
+        "verifier_class_weights": verifier_receipt,
+        "residual_class_weights": residual_receipt,
+        "decision_class_weights": decision_receipt,
     }
 
 
@@ -1439,6 +1820,389 @@ def nested_logit_equivalence(
         "violation_count": len(violations),
         "absolute_tolerance": float(absolute_tolerance),
         "relative_tolerance": float(relative_tolerance),
+    }
+
+
+def _tensor_file_delta(left: Path, right: Path, *, mx: Any) -> float:
+    left_rows = dict(mx.load(str(left)))
+    right_rows = dict(mx.load(str(right)))
+    if left_rows.keys() != right_rows.keys():
+        return float("inf")
+    mx.eval(*left_rows.values(), *right_rows.values())
+    return max(
+        (
+            float(
+                np.max(
+                    np.abs(
+                        np.asarray(left_rows[name], dtype=np.float64)
+                        - np.asarray(right_rows[name], dtype=np.float64)
+                    )
+                )
+            )
+            for name in left_rows
+        ),
+        default=0.0,
+    )
+
+
+def publish_resume_bundle(
+    config_path: Path,
+    *,
+    training_path: Path,
+    plan: dict[str, Any],
+    target: dict[str, Any],
+    subset: Any,
+    selection: dict[str, Any],
+    copy_lookup: np.ndarray,
+    output_root: Path,
+) -> Path:
+    """Publish the exact bounded subset consumed by isolated resume workers."""
+
+    output_root.mkdir(parents=True, exist_ok=True)
+    arrays_path = output_root / "subset_arrays.npz"
+    temporary = arrays_path.with_name(arrays_path.name + f".partial-{os.getpid()}")
+    with temporary.open("wb") as handle:
+        np.savez_compressed(
+            handle,
+            inputs=np.asarray(subset.inputs),
+            labels=np.asarray(subset.labels),
+            mask=np.asarray(subset.mask),
+            loss_mask=np.asarray(subset.loss_mask),
+            sample_weights=np.asarray(subset.sample_weights),
+            kerc_residual_labels=np.asarray(subset.kerc_residual_labels),
+            kerc_residual_loss_mask=np.asarray(subset.kerc_residual_loss_mask),
+            kerc_verifier_labels=np.asarray(subset.kerc_verifier_labels),
+            kerc_decision_labels=np.asarray(subset.kerc_decision_labels),
+            kerc_decision_loss_mask=np.asarray(subset.kerc_decision_loss_mask),
+        )
+    os.replace(temporary, arrays_path)
+    copy_path = output_root / "source_to_target_copy_lookup.npy"
+    temporary_copy = copy_path.with_name(copy_path.name + f".partial-{os.getpid()}")
+    with temporary_copy.open("wb") as handle:
+        np.save(handle, np.asarray(copy_lookup, dtype=np.int32), allow_pickle=False)
+    os.replace(temporary_copy, copy_path)
+    manifest_path = output_root / "resume_bundle.json"
+    write_json_atomic(
+        manifest_path,
+        {
+            "policy": "project_theseus_kerc_resume_subset_bundle_v1",
+            "config_sha256": sha256_file(config_path),
+            "training_config_sha256": sha256_file(training_path),
+            "plan_sha256": plan["plan_sha256"],
+            "stage_signature": plan["stage"]["stage_signature"],
+            "target": target,
+            "target_contract_sha256": canonical_sha256(target),
+            "selection_sha256": canonical_sha256(selection),
+            "subset_row_count": int(len(subset.inputs)),
+            "arrays": str(arrays_path),
+            "arrays_sha256": sha256_file(arrays_path),
+            "copy_lookup": str(copy_path),
+            "copy_lookup_sha256": sha256_file(copy_path),
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        },
+    )
+    return manifest_path
+
+
+def load_resume_bundle(config_path: Path, bundle_path: Path) -> dict[str, Any]:
+    manifest = read_json(bundle_path)
+    if manifest.get("policy") != "project_theseus_kerc_resume_subset_bundle_v1":
+        raise ValueError("KERC resume bundle policy mismatch")
+    if manifest.get("config_sha256") != sha256_file(config_path):
+        raise ValueError("KERC resume bundle config identity mismatch")
+    training_path = resolve(read_json(config_path)["training_config"])
+    if manifest.get("training_config_sha256") != sha256_file(training_path):
+        raise ValueError("KERC resume bundle training identity mismatch")
+    arrays_path = Path(str(manifest["arrays"]))
+    copy_path = Path(str(manifest["copy_lookup"]))
+    if sha256_file(arrays_path) != manifest.get("arrays_sha256"):
+        raise ValueError("KERC resume bundle array identity mismatch")
+    if sha256_file(copy_path) != manifest.get("copy_lookup_sha256"):
+        raise ValueError("KERC resume bundle copy-map identity mismatch")
+    if canonical_sha256(manifest["target"]) != manifest.get("target_contract_sha256"):
+        raise ValueError("KERC resume bundle target identity mismatch")
+    with np.load(arrays_path, allow_pickle=False) as payload:
+        arrays = {name: np.asarray(payload[name]) for name in payload.files}
+    if int(len(arrays["inputs"])) != int(manifest["subset_row_count"]):
+        raise ValueError("KERC resume bundle row count mismatch")
+    return {
+        "manifest": manifest,
+        "target": manifest["target"],
+        "subset": SimpleNamespace(**arrays),
+        "copy_lookup": np.load(copy_path, allow_pickle=False),
+    }
+
+
+def run_resume_worker(
+    config_path: Path,
+    *,
+    mode: str,
+    output_root: Path,
+    seed: int,
+    bundle_path: Path,
+) -> dict[str, Any]:
+    """Execute one isolated continuous, checkpoint, or resumed MLX trajectory."""
+
+    if mode not in {"continuous", "resumed"}:
+        raise ValueError(f"unknown KERC resume worker mode: {mode}")
+    bundled = load_resume_bundle(config_path, bundle_path)
+    config = read_json(config_path)
+    target = bundled["target"]
+    subset = bundled["subset"]
+    optimization = config["optimization"]
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    copy_lookup = bundled["copy_lookup"]
+    checkpoint = output_root / "checkpoint_weights.npz"
+    checkpoint_optimizer = output_root / "checkpoint_optimizer.safetensors"
+    if mode == "resumed":
+        if not checkpoint.is_file() or not checkpoint_optimizer.is_file():
+            raise ValueError("resume worker checkpoint is missing")
+        model = build_faithful_model(target, copy_lookup=copy_lookup, mx=mx, nn=nn)
+        model.load_weights(str(checkpoint), strict=True)
+        optimizer = optim.AdamW(
+            learning_rate=float(optimization["learning_rate"]),
+            weight_decay=float(optimization["weight_decay"]),
+        )
+        optimizer.state = mlx_utils.tree_unflatten(
+            list(mx.load(str(checkpoint_optimizer)).items())
+        )
+        mx.eval(model.parameters(), optimizer.state)
+        first_phase = None
+    else:
+        mx.random.seed(seed)
+        model = build_faithful_model(target, copy_lookup=copy_lookup, mx=mx, nn=nn)
+        mx.eval(model.parameters())
+        optimizer = optim.AdamW(
+            learning_rate=float(optimization["learning_rate"]),
+            weight_decay=float(optimization["weight_decay"]),
+        )
+        first_phase = train_steps(
+            model,
+            optimizer,
+            subset,
+            start_step=0,
+            steps=int(optimization["steps_before_resume"]),
+            gradient_clip=float(optimization["gradient_clip_norm"]),
+            verifier_balance_maximum=float(
+                optimization["verifier_class_balance_maximum"]
+            ),
+            residual_balance_maximum=float(
+                optimization["residual_class_balance_maximum"]
+            ),
+            mx=mx,
+            nn=nn,
+            optim=optim,
+        )
+        model.save_weights(str(checkpoint))
+        publish_optimizer(mx, mlx_utils, optimizer, checkpoint_optimizer)
+
+    second_phase = train_steps(
+        model,
+        optimizer,
+        subset,
+        start_step=int(optimization["steps_before_resume"]),
+        steps=int(optimization["steps_after_resume"]),
+        gradient_clip=float(optimization["gradient_clip_norm"]),
+        verifier_balance_maximum=float(
+            optimization["verifier_class_balance_maximum"]
+        ),
+        residual_balance_maximum=float(
+            optimization["residual_class_balance_maximum"]
+        ),
+        mx=mx,
+        nn=nn,
+        optim=optim,
+    )
+    final_weights = output_root / f"{mode}_final_weights.npz"
+    final_optimizer = output_root / f"{mode}_final_optimizer.safetensors"
+    model.save_weights(str(final_weights))
+    publish_optimizer(mx, mlx_utils, optimizer, final_optimizer)
+    metrics = evaluate_model(model, subset, mx=mx, nn=nn)
+    return {
+        "policy": "project_theseus_kerc_resume_worker_v1",
+        "mode": mode,
+        "seed": seed,
+        "first_phase": first_phase,
+        "second_phase": second_phase,
+        "weights": str(final_weights),
+        "weights_sha256": sha256_file(final_weights),
+        "optimizer": str(final_optimizer),
+        "optimizer_sha256": sha256_file(final_optimizer),
+        "checkpoint": str(checkpoint),
+        "checkpoint_sha256": sha256_file(checkpoint),
+        "checkpoint_optimizer": str(checkpoint_optimizer),
+        "checkpoint_optimizer_sha256": sha256_file(checkpoint_optimizer),
+        "metrics": metrics,
+    }
+
+
+def fresh_process_resume_qualification(
+    config_path: Path,
+    config: dict[str, Any],
+    output_root: Path,
+    *,
+    training_path: Path,
+    plan: dict[str, Any],
+    target: dict[str, Any],
+    subset: Any,
+    selection: dict[str, Any],
+    copy_lookup: np.ndarray,
+    mx: Any,
+) -> dict[str, Any]:
+    """Calibrate and then validate restart equivalence in isolated processes."""
+
+    policy = config["fresh_process_resume_equivalence"]
+    calibration_count = int(policy["calibration_replica_count"])
+    validation_count = int(policy["validation_replica_count"])
+    base_seed = int(config["seed"])
+    trial_root = output_root / "fresh_process_resume"
+    bundle_path = publish_resume_bundle(
+        config_path,
+        training_path=training_path,
+        plan=plan,
+        target=target,
+        subset=subset,
+        selection=selection,
+        copy_lookup=copy_lookup,
+        output_root=trial_root / "bundle",
+    )
+    trials: list[dict[str, Any]] = []
+    for phase, count, offset in (
+        ("calibration", calibration_count, 0),
+        ("validation", validation_count, 1000),
+    ):
+        for replica in range(count):
+            seed = base_seed + offset + replica
+            root = trial_root / f"{phase}_{replica:02d}"
+            root.mkdir(parents=True, exist_ok=True)
+            reports: dict[str, Any] = {}
+            for mode in ("continuous", "resumed"):
+                report_path = root / f"{mode}.json"
+                command = [
+                    sys.executable,
+                    str(Path(__file__).resolve()),
+                    "--config",
+                    relative(config_path),
+                    "--resume-worker-mode",
+                    mode,
+                    "--resume-worker-root",
+                    str(root),
+                    "--resume-worker-bundle",
+                    str(bundle_path),
+                    "--resume-worker-seed",
+                    str(seed),
+                    "--out",
+                    str(report_path),
+                ]
+                completed = subprocess.run(
+                    command,
+                    cwd=ROOT,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=float(policy["worker_timeout_seconds"]),
+                )
+                if completed.returncode != 0:
+                    raise RuntimeError(
+                        f"KERC resume worker failed ({phase}/{replica}/{mode}): "
+                        f"{completed.stderr[-2000:]}"
+                    )
+                reports[mode] = read_json(report_path)
+            continuous = reports["continuous"]
+            resumed = reports["resumed"]
+            token_delta = nested_logit_delta(
+                continuous["metrics"]["expected_token_logits"],
+                resumed["metrics"]["expected_token_logits"],
+            )
+            verifier_delta = nested_logit_delta(
+                continuous["metrics"]["verifier_logits"],
+                resumed["metrics"]["verifier_logits"],
+            )
+            discrete_equal = all(
+                continuous["metrics"][key] == resumed["metrics"][key]
+                for key in (
+                    "token_accuracy",
+                    "residual_accuracy",
+                    "verifier_bit_accuracy",
+                    "residual_channels",
+                    "verifier_dimensions",
+                )
+            )
+            trials.append(
+                {
+                    "phase": phase,
+                    "replica": replica,
+                    "seed": seed,
+                    "parameter_delta": _tensor_file_delta(
+                        Path(continuous["weights"]),
+                        Path(resumed["weights"]),
+                        mx=mx,
+                    ),
+                    "optimizer_delta": _tensor_file_delta(
+                        Path(continuous["optimizer"]),
+                        Path(resumed["optimizer"]),
+                        mx=mx,
+                    ),
+                    "token_logit_delta": token_delta,
+                    "verifier_logit_delta": verifier_delta,
+                    "discrete_outcomes_equal": discrete_equal,
+                    "continuous_weights_sha256": continuous["weights_sha256"],
+                    "resumed_weights_sha256": resumed["weights_sha256"],
+                    "checkpoint_sha256": continuous["checkpoint_sha256"],
+                }
+            )
+    calibration = [row for row in trials if row["phase"] == "calibration"]
+    validation = [row for row in trials if row["phase"] == "validation"]
+    safety_factor = float(policy["calibration_safety_factor"])
+    dimensions = (
+        "parameter_delta",
+        "optimizer_delta",
+        "token_logit_delta",
+        "verifier_logit_delta",
+    )
+    envelopes = {
+        name: max(
+            float(policy["minimum_envelopes"][name]),
+            safety_factor * max(float(row[name]) for row in calibration),
+        )
+        for name in dimensions
+    }
+    ceiling_pass = all(
+        envelopes[name] <= float(policy["absolute_hard_ceilings"][name])
+        for name in dimensions
+    )
+    validation_pass = all(
+        row["discrete_outcomes_equal"]
+        and all(float(row[name]) <= envelopes[name] for name in dimensions)
+        for row in validation
+    )
+    calibration_discrete_pass = all(
+        row["discrete_outcomes_equal"] for row in calibration
+    )
+    passed = ceiling_pass and calibration_discrete_pass and validation_pass
+    return {
+        "policy": "project_theseus_kerc_fresh_process_resume_equivalence_v1",
+        "state": "GREEN" if passed else "RED",
+        "calibration_replica_count": calibration_count,
+        "validation_replica_count": validation_count,
+        "calibration_safety_factor": safety_factor,
+        "minimum_envelopes": policy["minimum_envelopes"],
+        "derived_envelopes": envelopes,
+        "absolute_hard_ceilings": policy["absolute_hard_ceilings"],
+        "calibration_discrete_outcomes_preserved": calibration_discrete_pass,
+        "validation_passed": validation_pass,
+        "hard_ceilings_passed": ceiling_pass,
+        "trials": trials,
+        "claim_scope": "fresh_process_float32_mlx_restart_mechanics_only",
+        "negative_verdict_authority": "NONE",
     }
 
 
@@ -1657,6 +2421,7 @@ def classify_gates(
     second_phase: dict[str, Any],
     reload_delta: float,
     resume_equivalence: dict[str, Any],
+    fresh_process_resume: dict[str, Any],
     optimizer_reload_delta: float,
     interventions: dict[str, Any],
     migration_rejection: bool,
@@ -1806,10 +2571,10 @@ def classify_gates(
     )
     checks.append(
         (
-            "optimizer_resume_equivalent",
-            resume_equivalence.get("equivalent") is True
-            and resume_equivalence.get("discrete_outcomes_preserved") is True,
-            resume_equivalence,
+            "fresh_process_optimizer_resume_equivalent",
+            fresh_process_resume.get("state") == "GREEN"
+            and fresh_process_resume.get("validation_passed") is True,
+            fresh_process_resume,
             "hard",
         )
     )
@@ -1997,69 +2762,48 @@ def classify_gates(
 
 def run(config_path: Path) -> dict[str, Any]:
     config_sha256 = sha256_file(config_path)
-    config = read_json(config_path)
-    if config.get("policy") != "project_theseus_kerc_adequacy_canary_v1":
-        raise ValueError("KERC adequacy policy mismatch")
+    prepared = prepare_canary_stage(config_path)
+    config = prepared["config"]
     boundaries = config.get("boundaries") or {}
-    if any(
-        int(boundaries.get(key) or 0)
-        for key in (
-            "public_training_rows_written",
-            "public_benchmark_payload_count",
-            "external_inference_calls",
-            "fallback_return_count",
-            "template_credit",
-        )
-    ):
-        raise ValueError("KERC adequacy canary boundary is not zero")
     optimization = config["optimization"]
     total_steps = int(optimization["steps_before_resume"]) + int(
         optimization["steps_after_resume"]
     )
-    if total_steps > int(optimization["maximum_total_steps"]):
-        raise ValueError("KERC adequacy update budget exceeds the frozen cap")
-
-    training_path = resolve(config["training_config"])
+    training_path = prepared["training_path"]
     training_config_sha256 = sha256_file(training_path)
-    training = read_json(training_path)
-    plan = build_plan(training, config_path=training_path)
-    if plan["trigger_state"] != "GREEN":
-        raise ValueError("canonical MoECOT plan is not GREEN")
-    target = plan["targets"][config["target_id"]]
-    base = read_json(resolve(training["base_config"]))
-    metadata = read_json(resolve(training["stage_dir"]) / "stage_metadata_v1.json")
-    stage = materialize_target_supervision(
-        training,
-        base,
-        target,
-        metadata=metadata,
-        artifact_field="kernel_english_artifacts",
-        receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
-        maximum_sequence_tokens=int(
-            training["kernel_english_training"]["maximum_sequence_tokens"]
-        ),
-        objective_filter=tuple(target["kernel_english_objectives"]),
-    )
-    subset, selection = select_balanced_subset(
-        stage,
-        task_token_ids=tuple(target["model"]["kerc_task_token_ids"]),
-        separator_id=int(target["model"]["source_target_separator_token_id"]),
-        positives_per_objective=int(config["subset"]["positive_rows_per_objective"]),
-    )
-    if len(subset.inputs) > int(config["subset"]["maximum_rows"]):
-        raise ValueError("KERC adequacy subset exceeds its frozen row cap")
+    training = prepared["training"]
+    plan = prepared["plan"]
+    target = prepared["target"]
+    base = prepared["base"]
+    metadata = prepared["metadata"]
+    subset = prepared["subset"]
+    selection = prepared["selection"]
 
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.optimizers as optim
     import mlx.utils as mlx_utils
 
+    output_root = resolve(config["output_root"])
+    output_root.mkdir(parents=True, exist_ok=True)
     mx.random.seed(int(config["seed"]))
     copy_lookup = build_source_to_target_lookup(
         base,
         metadata,
         vocab_size=int(target["vocab_size"]),
         identity_ranges=target_copy_identity_ranges(target),
+    )
+    fresh_process_resume = fresh_process_resume_qualification(
+        config_path,
+        config,
+        output_root,
+        training_path=training_path,
+        plan=plan,
+        target=target,
+        subset=subset,
+        selection=selection,
+        copy_lookup=copy_lookup,
+        mx=mx,
     )
     learnability = residual_learnability_probe(
         target,
@@ -2081,13 +2825,12 @@ def run(config_path: Path) -> dict[str, Any]:
         nn=nn,
         optim=optim,
         mlx_utils=mlx_utils,
+        output_root=output_root,
     )
     mx.clear_cache()
     # Each evidence phase owns an independent seed boundary. The learnability probe
     # must not perturb the frozen mixed-objective initialization.
     mx.random.seed(int(config["seed"]))
-    output_root = resolve(config["output_root"])
-    output_root.mkdir(parents=True, exist_ok=True)
     checkpoint = output_root / "kerc_adequacy_weights.npz"
     optimizer_path = output_root / "kerc_adequacy_optimizer.safetensors"
     initial_checkpoint = output_root / "kerc_adequacy_initial_weights.npz"
@@ -2358,6 +3101,7 @@ def run(config_path: Path) -> dict[str, Any]:
         second_phase=second_phase,
         reload_delta=reload_delta,
         resume_equivalence=resume_equivalence,
+        fresh_process_resume=fresh_process_resume,
         optimizer_reload_delta=optimizer_reload_delta,
         interventions=interventions,
         migration_rejection=migration_rejection,
@@ -2422,6 +3166,7 @@ def run(config_path: Path) -> dict[str, Any]:
             "checkpoint_reload_maximum_logit_delta": reload_delta,
             "optimizer_state_reload_maximum_tensor_delta": optimizer_reload_delta,
             "resume_equivalence": resume_equivalence,
+            "fresh_process_resume_equivalence": fresh_process_resume,
             "resume_maximum_parameter_delta": resume_parameter_delta,
         },
         "residual_learnability": learnability,
@@ -2477,9 +3222,28 @@ def main() -> int:
     parser.add_argument("--config", default=relative(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument(
+        "--resume-worker-mode", choices=("continuous", "resumed")
+    )
+    parser.add_argument("--resume-worker-root", default="")
+    parser.add_argument("--resume-worker-bundle", default="")
+    parser.add_argument("--resume-worker-seed", type=int, default=0)
     args = parser.parse_args()
     config_path = resolve(args.config)
     config = read_json(config_path)
+    if args.resume_worker_mode:
+        if not args.resume_worker_root or not args.resume_worker_bundle:
+            raise ValueError("resume worker root and bundle are required")
+        report = run_resume_worker(
+            config_path,
+            mode=args.resume_worker_mode,
+            output_root=resolve(args.resume_worker_root),
+            seed=int(args.resume_worker_seed),
+            bundle_path=resolve(args.resume_worker_bundle),
+        )
+        output = resolve(args.out)
+        write_json_atomic(output, report)
+        return 0
     if not args.execute:
         report = {
             "policy": config.get("policy"),

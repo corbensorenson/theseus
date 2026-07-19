@@ -2325,7 +2325,7 @@ paper mechanism.
    complete sentence semantics, truth, temporal truth, utility, SOTA, AGI, or ASI. The next
    gate is bounded learnability, gradients, overfit, checkpoint/reload/resume, causal
    intervention, and no-fallback replay on this exact stage before K2 or long training.
-   **K1m production-route adequacy result (`PARTIAL`, 2026-07-19):** two independently
+   **K1m production-route adequacy result (`SUPERSEDED_PARTIAL`, 2026-07-19):** two independently
    selected, source-bound Apple-MLX profiles now pass stage-gradient, exact teacher-forced
    overfit, learned protected-span declaration plus independent byte reconstruction, real
    no-fallback autoregressive execution, and exact checkpoint-reload gates. The stateful
@@ -2341,6 +2341,22 @@ paper mechanism.
    preregistered repeated fresh-process MLX numerical-equivalence characterization plus
    gradient-conflict/rehearsal repair for joint decision retention. This result grants no
    source-disjoint competence, utility, efficiency, KERC success, or negative verdict.
+   **K1n resume-and-retention closure (`GREEN`, 2026-07-19):** the canonical canary now
+   branches continuous and fresh-process MLX runs from the same content-addressed step-48
+   checkpoint and optimizer state. Two preregistered calibration seeds derive numerical
+   envelopes with a frozen `4x` safety factor and absolute hard ceilings; two untouched
+   validation seeds preserve every discrete outcome. Validation maxima are `2.8313e-7`
+   parameter delta, `9.8226e-9` optimizer delta, `1.0968e-5` token-logit delta, and
+   `5.9605e-8` verifier-logit delta. The protected-single and hierarchical profiles reach
+   exact teacher-forced recovery in `936` and `1,536` updates, then pass real no-fallback
+   autoregressive execution, exact checkpoint replay, and causal state interventions. Plain
+   `80`-update joint training retains observed ANSWER/CLARIFY/ABSTAIN mechanics at `0.9333`
+   macro balanced accuracy. A deterministic class-balanced rehearsal candidate reaches
+   `1.0` decision macro accuracy under the same update count but is not adopted because its
+   `0.1806` token-accuracy regression violates the frozen `0.05` preservation bound. The
+   enclosing report is GREEN with no hard or inconclusive gaps. This closes bounded K1
+   mechanics only; PARTIAL behavior, source-disjoint semantics, utility, efficiency,
+   interaction amortization, and the KERC thesis remain unclaimed. The next owner is K2.
    **K1 closure gate:** maintain a construct-by-domain-by-composition-depth coverage
    matrix, not one aggregate record count. Every claimed construct needs source-group-
    disjoint train/development/evaluation examples, adversarial minimal pairs, multiple

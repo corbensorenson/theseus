@@ -25,7 +25,7 @@
     "absent"
   ],
   "claim_state": {
-    "mechanics": "PARTIAL_MECHANICS_EVIDENCE",
+    "mechanics": "GREEN_BOUNDED_MECHANICS_EVIDENCE",
     "construct_validity": "RED",
     "learned_kerc": "NOT_CLAIMED",
     "utility": "NOT_CLAIMED",
@@ -430,7 +430,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/standard_causal_transformer_model.py", "scripts/moecot_source_conditioned_pretraining.py", "scripts/kerc_autoregressive_qualification.py"],
       "evidence_refs": ["tests/test_standard_causal_transformer_survival.py", "tests/test_moecot_source_conditioned_pretraining.py", "tests/test_kerc_adequacy_canary.py"],
-      "current_finding": "A shared trunk with stage adapters, typed code-space masks, auxiliary heads, joint-loss plumbing, and a no-fallback causal compiler/core/renderer execution route exists. Compiler chunks consume only visible source plus prior generated compiler state; reasoner chunks are topologically scheduled and consume direct predecessor stubs plus exact prior generated claims; answer assembly restores canonical claim order before the renderer and independent recompile-and-compare route. All 53,414 canonical views are materializable. Two source-bound MLX profiles now prove stage gradients, exact representative-subset overfit, real autoregressive execution, learned protected-span declarations followed by independent byte reconstruction, causal use of generated prior compiler/core state, and exact checkpoint reload. The two-chunk hierarchical profile executes all nine expected stages without fallback. The enclosing canary remains RED because resumed training has one tolerance violation despite identical discrete outcomes and a 2.98e-7 maximum parameter delta, and joint training forgets the sole CLARIFY example. No source-disjoint learned competence is claimed.",
+      "current_finding": "A shared trunk with stage adapters, typed code-space masks, auxiliary heads, joint-loss plumbing, and a no-fallback causal compiler/core/renderer execution route exists. Compiler chunks consume only visible source plus prior generated compiler state; reasoner chunks are topologically scheduled and consume direct predecessor stubs plus exact prior generated claims; answer assembly restores canonical claim order before the renderer and independent recompile-and-compare route. All 53,414 canonical views are materializable. Two source-bound MLX profiles now pass stage gradients, exact representative-subset overfit, real autoregressive execution, learned protected-span declarations followed by independent byte reconstruction, causal use of generated prior compiler/core state, exact checkpoint reload, and the enclosing bounded mechanics canary. The protected-single profile reaches exact token recovery in 936 updates and the two-chunk hierarchical profile reaches exact recovery in 1,536 updates while executing all nine expected stages without fallback. Fresh-process checkpoint branching passes two calibration and two untouched validation seeds with identical discrete outcomes inside independently derived numerical envelopes. Plain 80-update joint training retains observed ANSWER/CLARIFY/ABSTAIN mechanics at 0.9333 macro balanced accuracy. A matched class-balanced rehearsal candidate reaches 1.0 decision macro accuracy but is not adopted because it regresses token accuracy by 0.1806. No source-disjoint learned competence is claimed.",
       "claim_ceiling": "Shared-trunk route, gradient, shape, and objective compatibility mechanics only.",
       "next_evidence": "Representative-subset overfit and interventions for protected spans, compiler, core, per-unit allocator, answer head, renderer, and verifier under one versioned objective ledger."
     },
@@ -440,9 +440,9 @@
       "status": "faithful",
       "implementation_refs": ["scripts/kerc_checkpoint_schema.py", "scripts/standard_causal_transformer_model.py"],
       "evidence_refs": ["tests/test_kerc_adequacy_canary.py", "tests/test_standard_causal_transformer_survival.py"],
-      "current_finding": "KERC tensors, optimizer state, schema identity, migration, rollback, and bounded Apple-MLX execution replay. Checkpoint reload and optimizer-state reload are exact, and continuous-versus-resumed training preserves all discrete outcomes, but one token logit differs by 5.75e-5 and the maximum parameter delta is 2.98e-7; the frozen resume tolerance therefore remains RED.",
-      "claim_ceiling": "Checkpoint/state and bounded MLX mechanics with an explicit unresolved numerical-resume boundary only; no sustained throughput, energy, CUDA parity, or learned utility claim.",
-      "next_evidence": "Establish a preregistered float32/MLX numerical-equivalence envelope from repeated fresh-process replays, preserve exact discrete outcomes and optimizer reload, then run multi-seed full-shape resource replay with memory/energy telemetry and cropped/uncropped equivalence before the campaign."
+      "current_finding": "KERC tensors, optimizer state, schema identity, migration, rollback, and bounded Apple-MLX execution replay are integrated. Checkpoint and optimizer reload are exact. A causal branch now publishes one content-addressed step-48 checkpoint, then compares uninterrupted continuation with a fresh process that loads that exact state. Two calibration seeds derive envelopes with a frozen 4x safety factor and absolute hard ceilings; two untouched validation seeds preserve every discrete outcome. Validation maxima are 2.8313e-7 for parameters, 9.8226e-9 for optimizer state, 1.0968e-5 for token logits, and 5.9605e-8 for verifier logits, all inside the derived envelopes and hard ceilings.",
+      "claim_ceiling": "Exact checkpoint/optimizer reload plus bounded fresh-process float32 MLX restart mechanics only; no sustained throughput, energy, CUDA parity, source-disjoint competence, or learned utility claim.",
+      "next_evidence": "Run multi-seed full-shape resource replay with memory/energy telemetry and cropped/uncropped equivalence before the campaign."
     },
     {
       "id": "kerc.calibrated_answer_decision",
@@ -450,7 +450,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/standard_causal_transformer_model.py", "scripts/kerc_semantic_corpus.py"],
       "evidence_refs": ["tests/test_kerc_adequacy_canary.py"],
-      "current_finding": "The decision head can overfit observed ANSWER/CLARIFY/ABSTAIN mechanics, but PARTIAL is absent and the result is not source-disjoint calibration or selective-risk evidence.",
+      "current_finding": "The decision head can overfit observed ANSWER/CLARIFY/ABSTAIN mechanics. Under a matched 80-optimizer-update joint objective, the plain route retains 0.9333 macro balanced accuracy and passes the frozen 0.75 floor. A deterministic class-balanced rehearsal schedule reaches 1.0 decision macro accuracy under the same update budget, but is rejected because token accuracy regresses by 0.1806 and therefore fails the preregistered nondecision-preservation rule. PARTIAL remains absent and the result is not source-disjoint calibration or selective-risk evidence.",
       "claim_ceiling": "Observed-class learnability mechanics only.",
       "next_evidence": "Source-disjoint PARTIAL, ambiguity, insufficient/conflicting evidence, calibration, selective-risk, class-balance, and decision-intervention evidence."
     }
