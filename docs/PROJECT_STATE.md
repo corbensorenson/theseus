@@ -15,10 +15,12 @@ share toward zero. Public benchmarks are calibration only.
 
 - **Architecture readiness:** not ready for long training. Twelve of thirteen finite
   checkpoint-shaping contracts retain complete mechanics dispositions. KERC's canonical
-  architecture/data stage is now GREEN and exact-replayable after replacing the toy proxy
-  path, but its actual learned compiler/core/renderer still requires bounded mechanics and
-  causal adequacy qualification. The prior freeze package remains stale until that work and
-  a new independent cross-owner replay complete.
+  architecture/data stage is GREEN and exact-replayable after replacing the toy proxy.
+  Its protected-single and two-chunk hierarchical MLX profiles now pass gradients, exact
+  overfit, real no-fallback autoregressive execution, causal generated-state interventions,
+  protected-span reconstruction, and checkpoint reload. The enclosing adequacy canary is
+  still RED on numerical resume equivalence and joint-objective CLARIFY retention, so the
+  prior freeze package remains stale pending those owner repairs and cross-owner replay.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -41,8 +43,14 @@ share toward zero. Public benchmarks are calibration only.
   YELLOW with zero hard gaps because faithful KERC and one queued capability obligation
   remain open; ATT-D is YELLOW with every hard cap passing. Do not refresh unrelated
   reports merely to recolor this state.
-- **KERC disposition:** `partial`; architecture/data materialization GREEN, broader
-  construct validity RED, learned utility unclaimed. K0 now independently binds the paper,
+- **KERC disposition:** `partial`; architecture/data materialization and two bounded
+  production-shaped autoregressive mechanics profiles are GREEN, while the full adequacy
+  canary, construct validity, and learned utility remain RED/unclaimed. The hierarchical
+  profile learns a two-compiler/two-core chain and executes the exact nine-stage round trip
+  with eight prior-claim dependencies and no fallback. Its state interventions are causal.
+  Resume preserves discrete outcomes with a `2.98e-7` parameter delta but exceeds the
+  frozen token-logit tolerance once (`5.75e-5`), and joint training forgets the sole
+  CLARIFY row. K0 now independently binds the paper,
   implementation sources, independent verifier, and all 27,941 current corpus records.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event

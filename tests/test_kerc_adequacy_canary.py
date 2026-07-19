@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sys
+import hashlib
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -22,6 +24,17 @@ from kerc_checkpoint_schema import (  # noqa: E402
     rollback_checkpoint_contract,
     validate_checkpoint_contract,
 )
+from kerc_autoregressive_qualification import _select_chain  # noqa: E402
+from kernel_english_protocol import (  # noqa: E402
+    KERC_HIERARCHICAL_COMPILER_POLICY,
+    canonical_json,
+    compiler_input_from_source,
+    learned_answer_packet_view,
+    learned_prior_claim_context_view,
+    stable_hash,
+)
+from moecot_language_arm_training import RaggedRows  # noqa: E402
+import vcm_semantic_memory  # noqa: E402
 
 
 def fixture_stage() -> SimpleNamespace:
@@ -64,7 +77,9 @@ def fixture_stage() -> SimpleNamespace:
         verifier_labels[negative, pair_index] = 0.0
         base = [
             f"objective:{('surface_direct_control_v1', 'surface_to_kernel_program_v1', 'kernel_program_to_answer_packet_v1', 'answer_packet_to_surface_v1')[objective]}",
-            "interaction:present" if signatures[pair_index][0] else "interaction:absent",
+            "interaction:present"
+            if signatures[pair_index][0]
+            else "interaction:absent",
         ]
         base.extend(
             f"residual:{channel}:active"
@@ -74,7 +89,9 @@ def fixture_stage() -> SimpleNamespace:
             )
             if value
         )
-        base.append(f"decision:{('ANSWER', 'CLARIFY', 'ABSTAIN', 'ANSWER', 'ANSWER')[pair_index]}")
+        base.append(
+            f"decision:{('ANSWER', 'CLARIFY', 'ABSTAIN', 'ANSWER', 'ANSWER')[pair_index]}"
+        )
         coverage.append((*base, "verifier:positive"))
         coverage.append(
             (
@@ -113,8 +130,7 @@ def fixture_stage() -> SimpleNamespace:
             dtype=np.int32,
         ),
         kerc_residual_loss_mask=np.asarray(
-            [value for _signature in signatures for value in (1.0, 0.0)]
-            + [0.0, 0.0],
+            [value for _signature in signatures for value in (1.0, 0.0)] + [0.0, 0.0],
             dtype=np.float32,
         ),
         kerc_verifier_labels=verifier_labels,
@@ -128,6 +144,253 @@ def fixture_stage() -> SimpleNamespace:
         ),
         kerc_coverage_labels=tuple(coverage),
     )
+
+
+def test_autoregressive_chain_selection_requires_exact_production_prompt_replay(
+    tmp_path: Path,
+) -> None:
+    source = "A source-bound sentence."
+    state = vcm_semantic_memory.create_hierarchical_residual_state(
+        "kerc-autoregressive-qualification",
+        scope={
+            "user": "local-evaluation",
+            "project": "theseus",
+            "conversation": "kerc-autoregressive-qualification",
+            "privacy": "private_local",
+        },
+    )
+    compiler_prompt = canonical_json(
+        {
+            **compiler_input_from_source(source, hrl_state=state),
+            "hierarchical_compiler": {
+                "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                "chunk_index": 0,
+                "prior_node_count": 0,
+                "previous_program": None,
+                "accumulated_program_sha256": stable_hash([]),
+            },
+        }
+    )
+    source_id = "sha256:" + "a" * 64
+    rows = [
+        {
+            "objective": "surface_to_kernel_program_v1",
+            "source_record_sha256": source_id,
+            "row_id": "compiler",
+            "prompt": compiler_prompt,
+            "target": canonical_json(
+                {
+                    "hierarchical_compiler": {
+                        "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                        "chunk_index": 0,
+                        "continuation": False,
+                        "root_node_ids": ["k1"],
+                    },
+                    "protected_objects": [
+                        {
+                            "handle": "@X1",
+                            "object_type": "EXACT_TEXT",
+                            "copy_policy": "EXACT",
+                            "character_start": 2,
+                            "character_end": 14,
+                        }
+                    ],
+                }
+            ),
+        },
+        {
+            "objective": "kernel_program_to_answer_packet_v1",
+            "source_record_sha256": source_id,
+            "row_id": "core",
+            "prompt": "{}",
+            "target": "{}",
+        },
+        {
+            "objective": "answer_packet_to_surface_v1",
+            "source_record_sha256": source_id,
+            "row_id": "renderer",
+            "prompt": "{}",
+            "target": source,
+        },
+    ]
+    artifact = tmp_path / "chain.jsonl"
+    artifact.write_text(
+        "".join(json.dumps(row, separators=(",", ":")) + "\n" for row in rows)
+    )
+    target = {
+        "kernel_english_artifacts": {
+            "private_train": {
+                "path": str(artifact),
+                "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+                "row_count": 3,
+            }
+        }
+    }
+
+    selected = _select_chain(target)
+
+    assert selected["source"] == source
+    assert selected["candidate_count"] == 1
+    assert selected["protected_span_count"] == 1
+    assert selected["protected_object_types"] == ["EXACT_TEXT"]
+    assert [row["row_id"] for row in selected["rows"]] == [
+        "compiler",
+        "core",
+        "renderer",
+    ]
+
+
+def test_hierarchical_chain_selection_requires_continuation_and_dependency_state(
+    tmp_path: Path,
+) -> None:
+    source = "Alice confirms the result."
+    state = vcm_semantic_memory.create_hierarchical_residual_state(
+        "kerc-autoregressive-qualification",
+        scope={
+            "user": "local-evaluation",
+            "project": "theseus",
+            "conversation": "kerc-autoregressive-qualification",
+            "privacy": "private_local",
+        },
+    )
+    front_end = compiler_input_from_source(source, hrl_state=state)
+    protected = [
+        {
+            "handle": "@P1",
+            "object_type": "PERSON",
+            "copy_policy": "EXACT",
+            "character_start": 0,
+            "character_end": 5,
+        }
+    ]
+    program_0 = {"policy": "test_program", "tokens": ["node-0"]}
+    program_1 = {"policy": "test_program", "tokens": ["node-1"]}
+    claim_0 = {
+        "claim_id": "c0",
+        "predicate": "IDENTITY",
+        "modality": "ASSERTED",
+        "polarity": "AFFIRMED",
+        "quantifier": "NONE",
+        "confidence": 1.0,
+        "arguments": [],
+    }
+    claim_1 = {**claim_0, "claim_id": "c1", "predicate": "CONFIRM"}
+
+    def packet(claim: dict[str, object]) -> dict[str, object]:
+        return {
+            "claims": [claim],
+            "decision": {
+                "policy": "project_theseus_kernel_answer_decision_v1",
+                "disposition": "ANSWER",
+                "evidence_status": "SUPPORTED",
+                "uncertainty_state": "RESOLVED",
+                "confidence": 1.0,
+                "controlling_claim_ids": [claim["claim_id"]],
+                "unresolved_ambiguity_ids": [],
+            },
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {},
+        }
+
+    merged_packet = packet(claim_0)
+    merged_packet["claims"] = [claim_0, claim_1]
+    merged_packet["decision"]["controlling_claim_ids"] = ["c0", "c1"]
+    source_id = "sha256:" + "b" * 64
+    compiler_rows = []
+    for index, program in enumerate((program_0, program_1)):
+        prompt = canonical_json(
+            {
+                **front_end,
+                "hierarchical_compiler": {
+                    "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                    "chunk_index": index,
+                    "prior_node_count": index,
+                    "previous_program": None if index == 0 else program_0,
+                    "accumulated_program_sha256": stable_hash([]),
+                },
+            }
+        )
+        compiler_rows.append(
+            {
+                "objective": "surface_to_kernel_program_v1",
+                "source_record_sha256": source_id,
+                "row_id": f"compiler-{index}",
+                "prompt": prompt,
+                "target": canonical_json(
+                    {
+                        "kernel_version": "1.0",
+                        "protected_objects": protected,
+                        "program": program,
+                        "hierarchical_compiler": {
+                            "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                            "chunk_index": index,
+                            "continuation": index == 0,
+                            "root_node_ids": [f"k{index}"],
+                        },
+                    }
+                ),
+                "kerc_hierarchical_transport": {
+                    "chunk_index": index,
+                    "chunk_count": 2,
+                },
+            }
+        )
+    core_rows = []
+    for index, claim in enumerate((claim_0, claim_1)):
+        prior = [] if index == 0 else [claim_0]
+        core_rows.append(
+            {
+                "objective": "kernel_program_to_answer_packet_v1",
+                "source_record_sha256": source_id,
+                "row_id": f"core-{index}",
+                "prompt": canonical_json(
+                    {"prior_claims": learned_prior_claim_context_view(prior)}
+                ),
+                "target": canonical_json(learned_answer_packet_view(packet(claim))),
+                "kerc_hierarchical_transport": {
+                    "chunk_index": index,
+                    "chunk_count": 2,
+                },
+            }
+        )
+    renderer = {
+        "objective": "answer_packet_to_surface_v1",
+        "source_record_sha256": source_id,
+        "row_id": "renderer",
+        "prompt": canonical_json(
+            {"answer_packet": learned_answer_packet_view(merged_packet)}
+        ),
+        "target": source,
+    }
+    rows = [*compiler_rows, *core_rows, renderer]
+    artifact = tmp_path / "hierarchical-chain.jsonl"
+    artifact.write_text(
+        "".join(json.dumps(row, separators=(",", ":")) + "\n" for row in rows)
+    )
+    target = {
+        "kernel_english_artifacts": {
+            "private_train": {
+                "path": str(artifact),
+                "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+                "row_count": len(rows),
+            }
+        }
+    }
+
+    selected = _select_chain(target, profile="hierarchical_stateful")
+
+    assert selected["compiler_chunk_count"] == 2
+    assert selected["core_chunk_count"] == 2
+    assert selected["compiler_continuation_prompt_count"] == 1
+    assert selected["dependency_claim_count"] == 1
+    assert [row["row_id"] for row in selected["rows"]] == [
+        "compiler-0",
+        "compiler-1",
+        "core-0",
+        "core-1",
+        "renderer",
+    ]
 
 
 def test_compact_metrics_preserves_scalars_and_hides_diagnostic_vectors() -> None:
@@ -202,6 +465,30 @@ def test_balanced_subset_requires_exact_source_bound_corruption() -> None:
         "token",
         "exact",
     ]
+
+
+def test_balanced_subset_accepts_canonical_ragged_rows() -> None:
+    stage = fixture_stage()
+    for field, dtype in (
+        ("inputs", np.int32),
+        ("labels", np.int32),
+        ("mask", np.uint8),
+        ("loss_mask", np.float32),
+    ):
+        dense = getattr(stage, field)
+        rows = [row[: 6 + (index % 2)] for index, row in enumerate(dense)]
+        setattr(stage, field, RaggedRows(rows, dtype=dtype))
+
+    subset, receipt = select_balanced_subset(
+        stage,
+        task_token_ids=(10, 11, 12, 13),
+        separator_id=2,
+        positives_per_objective=1,
+    )
+
+    assert subset.inputs.shape == (12, 6)
+    assert receipt["positive_row_count"] == 5
+    assert receipt["missing_required_coverage"] == []
 
 
 def test_balanced_subset_rejects_missing_verifier_pair() -> None:
@@ -296,24 +583,52 @@ def test_failed_learning_is_inconclusive_not_architecture_falsification() -> Non
     state, gates = classify_gates(
         gate_fixture(),
         before={"mean_total_loss": 10.0, "token_accuracy": 0.0},
-        after={"mean_total_loss": 9.0, "token_accuracy": 0.0, "residual_informative_channel_count": 1, "residual_informative_macro_balanced_accuracy": 0.5, "verifier_macro_balanced_accuracy": 0.5, "verifier_minimum_negative_recall": 0.0},
+        after={
+            "mean_total_loss": 9.0,
+            "token_accuracy": 0.0,
+            "residual_informative_channel_count": 1,
+            "residual_informative_macro_balanced_accuracy": 0.5,
+            "verifier_macro_balanced_accuracy": 0.5,
+            "verifier_minimum_negative_recall": 0.0,
+        },
         first_phase={"target_tokens_per_second": 2.0},
         second_phase={"target_tokens_per_second": 2.0},
         reload_delta=0.0,
         resume_equivalence={"equivalent": True, "discrete_outcomes_preserved": True},
         optimizer_reload_delta=0.0,
         interventions={
-            "trusted_stage_token_removed": {"delta_by_objective": {name: 1e-3 for name in ("a", "b")}},
+            "trusted_stage_token_removed": {
+                "delta_by_objective": {name: 1e-3 for name in ("a", "b")}
+            },
             "hierarchical_residual_values_zeroed": {
-                "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3, "surface_direct_control_v1": 0.0, "kernel_program_to_answer_packet_v1": 0.0},
-                "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
-                "expected_inactive_objectives": ["surface_direct_control_v1", "kernel_program_to_answer_packet_v1"],
+                "delta_by_objective": {
+                    "surface_to_kernel_program_v1": 1e-3,
+                    "answer_packet_to_surface_v1": 1e-3,
+                    "surface_direct_control_v1": 0.0,
+                    "kernel_program_to_answer_packet_v1": 0.0,
+                },
+                "expected_active_objectives": [
+                    "surface_to_kernel_program_v1",
+                    "answer_packet_to_surface_v1",
+                ],
+                "expected_inactive_objectives": [
+                    "surface_direct_control_v1",
+                    "kernel_program_to_answer_packet_v1",
+                ],
             },
             "interaction_residual_values_zeroed": {
-                "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3},
-                "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
+                "delta_by_objective": {
+                    "surface_to_kernel_program_v1": 1e-3,
+                    "answer_packet_to_surface_v1": 1e-3,
+                },
+                "expected_active_objectives": [
+                    "surface_to_kernel_program_v1",
+                    "answer_packet_to_surface_v1",
+                ],
             },
-            "independent_verifier_classifier_zeroed": {"maximum_verifier_logit_delta": 1e-3},
+            "independent_verifier_classifier_zeroed": {
+                "maximum_verifier_logit_delta": 1e-3
+            },
         },
         migration_rejection=True,
         schema_migration_valid=True,
@@ -363,7 +678,14 @@ def test_lifecycle_failure_is_red() -> None:
     state, _gates = classify_gates(
         gate_fixture(),
         before={"mean_total_loss": 10.0, "token_accuracy": 0.0},
-        after={"mean_total_loss": 1.0, "token_accuracy": 0.5, "residual_informative_channel_count": 3, "residual_informative_macro_balanced_accuracy": 1.0, "verifier_macro_balanced_accuracy": 1.0, "verifier_minimum_negative_recall": 1.0},
+        after={
+            "mean_total_loss": 1.0,
+            "token_accuracy": 0.5,
+            "residual_informative_channel_count": 3,
+            "residual_informative_macro_balanced_accuracy": 1.0,
+            "verifier_macro_balanced_accuracy": 1.0,
+            "verifier_minimum_negative_recall": 1.0,
+        },
         first_phase={"target_tokens_per_second": 2.0},
         second_phase={"target_tokens_per_second": 2.0},
         reload_delta=0.0,
@@ -372,15 +694,34 @@ def test_lifecycle_failure_is_red() -> None:
         interventions={
             "trusted_stage_token_removed": {"delta_by_objective": {"a": 1e-3}},
             "hierarchical_residual_values_zeroed": {
-                "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3, "surface_direct_control_v1": 0.0, "kernel_program_to_answer_packet_v1": 0.0},
-                "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
-                "expected_inactive_objectives": ["surface_direct_control_v1", "kernel_program_to_answer_packet_v1"],
+                "delta_by_objective": {
+                    "surface_to_kernel_program_v1": 1e-3,
+                    "answer_packet_to_surface_v1": 1e-3,
+                    "surface_direct_control_v1": 0.0,
+                    "kernel_program_to_answer_packet_v1": 0.0,
+                },
+                "expected_active_objectives": [
+                    "surface_to_kernel_program_v1",
+                    "answer_packet_to_surface_v1",
+                ],
+                "expected_inactive_objectives": [
+                    "surface_direct_control_v1",
+                    "kernel_program_to_answer_packet_v1",
+                ],
             },
             "interaction_residual_values_zeroed": {
-                "delta_by_objective": {"surface_to_kernel_program_v1": 1e-3, "answer_packet_to_surface_v1": 1e-3},
-                "expected_active_objectives": ["surface_to_kernel_program_v1", "answer_packet_to_surface_v1"],
+                "delta_by_objective": {
+                    "surface_to_kernel_program_v1": 1e-3,
+                    "answer_packet_to_surface_v1": 1e-3,
+                },
+                "expected_active_objectives": [
+                    "surface_to_kernel_program_v1",
+                    "answer_packet_to_surface_v1",
+                ],
             },
-            "independent_verifier_classifier_zeroed": {"maximum_verifier_logit_delta": 1e-3},
+            "independent_verifier_classifier_zeroed": {
+                "maximum_verifier_logit_delta": 1e-3
+            },
         },
         migration_rejection=False,
         schema_migration_valid=True,
@@ -437,7 +778,9 @@ def checkpoint_binding() -> dict:
     }
 
 
-def test_checkpoint_schema_migrates_real_serialization_and_rolls_back(tmp_path: Path) -> None:
+def test_checkpoint_schema_migrates_real_serialization_and_rolls_back(
+    tmp_path: Path,
+) -> None:
     import mlx.core as mx
 
     legacy_checkpoint = tmp_path / "legacy.npz"
@@ -478,11 +821,13 @@ def test_checkpoint_schema_migrates_real_serialization_and_rolls_back(tmp_path: 
         rollback_optimizer=tmp_path / "rollback_optimizer.safetensors",
         binding=checkpoint_binding(),
     )
-    assert rollback["checkpoint_inventory_sha256"] == (
-        manifest["source"]["checkpoint_inventory"]["inventory_sha256"]
+    assert (
+        rollback["checkpoint_inventory_sha256"]
+        == (manifest["source"]["checkpoint_inventory"]["inventory_sha256"])
     )
-    assert rollback["optimizer_inventory_sha256"] == (
-        manifest["source"]["optimizer_inventory"]["inventory_sha256"]
+    assert (
+        rollback["optimizer_inventory_sha256"]
+        == (manifest["source"]["optimizer_inventory"]["inventory_sha256"])
     )
 
 

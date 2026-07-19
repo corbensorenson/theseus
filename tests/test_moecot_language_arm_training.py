@@ -39,6 +39,7 @@ from moecot_language_arm_training import (  # noqa: E402
     range_view,
     serialization_valid_local_ids,
     should_evaluate_target,
+    target_copy_identity_ranges,
     train_target,
     validate_config,
     validate_resume,
@@ -288,6 +289,23 @@ def test_retired_kerc_path_has_zero_optimizer_exposure(tmp_path: Path) -> None:
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
     cfg["kernel_english_training"] = canonical["kernel_english_training"]
+    active = cfg["kernel_english_training"]["disposition"]
+    cfg["kernel_english_training"]["disposition"] = {
+        "policy": active["policy"],
+        "state": "RETIRED_FROM_FIRST_LONG_RUN",
+        "retirement_scope": "full_compiler_core_renderer_training_path_only",
+        "evidence_scope": "bounded_authored_synthetic_campaign",
+        "broad_efficiency_gate_passed": False,
+        "full_kerc_training_enabled": False,
+        "general_kerc_falsification_claimed": False,
+        "learned_capability_claimed": False,
+        "retained_mechanisms": [
+            "protected_exact_object_path",
+            "scoped_interaction_glossary_residual",
+        ],
+        "evidence": active["superseded_proxy_evidence"],
+        "non_claims": active["non_claims"],
+    }
     cfg["kernel_english_training"]["required"] = False
     cfg["kernel_english_training"]["records_by_split"] = {
         "private_train": 0,
@@ -322,15 +340,16 @@ def test_arm_views_are_an_exact_non_overlapping_partition() -> None:
     tampered["arms"]["python"]["row_ranges"][0]["start"] = 1
     rejected = audit_arm_views(tampered, 10)
     assert rejected["state"] == "RED"
-    assert any(gap.startswith("arm_range_gap_or_overlap:python") for gap in rejected["hard_gaps"])
+    assert any(
+        gap.startswith("arm_range_gap_or_overlap:python")
+        for gap in rejected["hard_gaps"]
+    )
 
 
 def test_specialist_data_scaling_binds_each_parameter_owner() -> None:
     base = {
         "data_model_scaling_contract": {
-            "planning_basis": {
-                "minimum_unique_positions_per_active_parameter": 20.0
-            }
+            "planning_basis": {"minimum_unique_positions_per_active_parameter": 20.0}
         }
     }
     targets = {
@@ -625,7 +644,9 @@ def test_range_view_coalesces_adjacent_ranges_without_copy() -> None:
     assert view.tolist() == array[1:5].tolist()
 
 
-def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path) -> None:
+def test_exact_supervision_masks_only_target_and_never_truncates(
+    tmp_path: Path,
+) -> None:
     source_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3, "Fix": 4}
     target_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3, "done": 4}
     reserve_byte_fallback_tokens(source_vocab, max_vocab=270, stream="source")
@@ -650,7 +671,10 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
         },
     }
     base = {
-        "tokenization": {"max_sequence_tokens": 32, "shared_source_target_vocabulary": False}
+        "tokenization": {
+            "max_sequence_tokens": 32,
+            "shared_source_target_vocabulary": False,
+        }
     }
     training_config = {
         "training": {"termination_loss_weight": 4.0, "byte_boundary_loss_weight": 2.0}
@@ -669,7 +693,11 @@ def test_exact_supervision_masks_only_target_and_never_truncates(tmp_path: Path)
     assert stage.receipt["public_training_rows_written"] == 0
     assert stage.receipt["weighted_loss_positions"] > stage.receipt["target_positions"]
 
-    kerc_target = {**target, "target_id": "english_kerc", "role": "kerc_english_candidate"}
+    kerc_target = {
+        **target,
+        "target_id": "english_kerc",
+        "role": "kerc_english_candidate",
+    }
     ordinary_stage = materialize_target_supervision(
         training_config,
         base,
@@ -731,8 +759,8 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
             "surface_fidelity",
             "answer_decision_consistency",
         ],
-            "kerc_verifier_positive_labels": [1, 1, 1, 1, 1],
-            "kerc_answer_disposition": "ANSWER",
+        "kerc_verifier_positive_labels": [1, 1, 1, 1, 1],
+        "kerc_answer_disposition": "ANSWER",
         "kerc_verifier_negative": {
             "target": '{"program":"corrupted"}',
             "target_sha256": "sha256:"
@@ -807,9 +835,10 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.inputs.shape[0] == 4
     assert isinstance(stage.inputs, RaggedRows)
     assert stage.receipt["storage_layout"] == "ragged_rows_dynamic_batch_padding_v1"
-    assert stage.receipt["physical_array_bytes"] <= stage.receipt[
-        "dense_equivalent_array_bytes"
-    ]
+    assert (
+        stage.receipt["physical_array_bytes"]
+        <= stage.receipt["dense_equivalent_array_bytes"]
+    )
     assert int(stage.mask[0].sum()) > 0
     assert int(stage.mask[1].sum()) == 0
     assert int(stage.mask[2].sum()) == 0
@@ -845,9 +874,10 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
         "context_withheld": 1,
         "context_shuffled": 1,
     }
-    assert stage.receipt["dual_code_vocabulary_sha256"] == code_vocabulary[
-        "contract_sha256"
-    ]
+    assert (
+        stage.receipt["dual_code_vocabulary_sha256"]
+        == code_vocabulary["contract_sha256"]
+    )
     positive_ids = set(int(value) for value in stage.inputs[0])
     assert any(600 <= value < 1200 for value in positive_ids)
     assert any(value >= 1200 for value in positive_ids)
@@ -858,9 +888,9 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
 
     row["kerc_context_counterfactuals"][0]["generator_loss_enabled"] = True
     artifact.write_text(json.dumps(row) + "\n")
-    target["kernel_english_artifacts"]["private_train"]["sha256"] = (
-        hashlib.sha256(artifact.read_bytes()).hexdigest()
-    )
+    target["kernel_english_artifacts"]["private_train"]["sha256"] = hashlib.sha256(
+        artifact.read_bytes()
+    ).hexdigest()
     with pytest.raises(ValueError, match="context counterfactual contract"):
         materialize_target_supervision(
             {
@@ -879,7 +909,9 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
         )
 
 
-def test_kerc_dual_vocab_is_charged_only_to_candidate_and_surface_control_is_matched() -> None:
+def test_kerc_dual_vocab_is_charged_only_to_candidate_and_surface_control_is_matched() -> (
+    None
+):
     config = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
@@ -1008,24 +1040,33 @@ def test_target_only_loss_trains_source_encoder_and_cross_attention() -> None:
     labels = mx.array([[10, 11, 2, 20, 21, 3]], dtype=mx.int32)
     target_only_mask = mx.array([[0, 0, 0, 0, 1, 1]], dtype=mx.float32)
     loss_and_grad = nn.value_and_grad(model, causal_loss)
-    loss, gradients = loss_and_grad(
-        model, inputs, labels, target_only_mask, mx, nn
-    )
+    loss, gradients = loss_and_grad(model, inputs, labels, target_only_mask, mx, nn)
     mx.eval(loss, gradients)
     assert np.isfinite(float(loss.item()))
     gradient_mass = {
         name: float(mx.sum(mx.abs(value)).item())
         for name, value in mlx_utils.tree_flatten(gradients)
     }
-    assert sum(
-        value for name, value in gradient_mass.items() if name.startswith("source_layers.")
-    ) > 0.0
-    assert sum(
-        value for name, value in gradient_mass.items() if ".source_attention." in name
-    ) > 0.0
-    assert sum(
-        value for name, value in gradient_mass.items() if name.startswith("copy_")
-    ) > 0.0
+    assert (
+        sum(
+            value
+            for name, value in gradient_mass.items()
+            if name.startswith("source_layers.")
+        )
+        > 0.0
+    )
+    assert (
+        sum(
+            value
+            for name, value in gradient_mass.items()
+            if ".source_attention." in name
+        )
+        > 0.0
+    )
+    assert (
+        sum(value for name, value in gradient_mass.items() if name.startswith("copy_"))
+        > 0.0
+    )
 
 
 def test_source_target_lookup_uses_exact_token_identity_only() -> None:
@@ -1039,6 +1080,30 @@ def test_source_target_lookup_uses_exact_token_identity_only() -> None:
     target_offset = 6
     assert int(lookup[source_offset + 1]) == target_offset + 1
     assert int(lookup[source_offset + 2]) == -1
+
+    structured = build_source_to_target_lookup(
+        base,
+        metadata,
+        vocab_size=12,
+        identity_ranges=((9, 12),),
+    )
+    assert structured[9:12].tolist() == [9, 10, 11]
+
+
+def test_kerc_copy_identity_ranges_cover_all_shared_code_spaces() -> None:
+    target = {
+        "role": "kerc_english_candidate",
+        "model": {
+            "kerc_surface_token_start": 10,
+            "kerc_surface_token_end": 20,
+            "kerc_kernel_token_start": 20,
+            "kerc_kernel_token_end": 30,
+            "kerc_pointer_token_start": 30,
+            "kerc_pointer_token_end": 40,
+        },
+    }
+
+    assert target_copy_identity_ranges(target) == ((10, 20), (20, 30), (30, 40))
 
 
 def test_byte_span_grammar_never_forces_completion_or_allows_invalid_tokens() -> None:
@@ -1088,7 +1153,9 @@ def test_resume_rejects_tampered_checkpoint_optimizer_and_plan(tmp_path: Path) -
         validate_resume(receipt, plan, target, checkpoint, optimizer)
 
 
-def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(tmp_path: Path) -> None:
+def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(
+    tmp_path: Path,
+) -> None:
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.optimizers as optim
@@ -1112,7 +1179,9 @@ def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(tmp_pa
         dtype=np.int32,
     )
     mask = np.ones_like(inputs, dtype=np.uint8)
-    stage = SimpleNamespace(pretrain_inputs=inputs, pretrain_labels=labels, pretrain_mask=mask)
+    stage = SimpleNamespace(
+        pretrain_inputs=inputs, pretrain_labels=labels, pretrain_mask=mask
+    )
     checkpoint = tmp_path / "checkpoints" / "python" / "weights.npz"
     optimizer_path = checkpoint.parent / "optimizer.safetensors"
     receipt_path = checkpoint.parent / "training_receipt.json"
@@ -1167,10 +1236,15 @@ def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(tmp_pa
     assert second["optimizer_steps"] == 2
     assert second["optimizer_positions"] > first["optimizer_positions"]
     assert second["resume_base_checkpoint_sha256"] == first["checkpoint_sha256"]
-    assert json.loads(receipt_path.read_text())["optimizer_state_sha256"] == second["optimizer_state_sha256"]
+    assert (
+        json.loads(receipt_path.read_text())["optimizer_state_sha256"]
+        == second["optimizer_state_sha256"]
+    )
 
 
-def test_source_and_kernel_phases_are_accounted_separately_before_sft(tmp_path: Path) -> None:
+def test_source_and_kernel_phases_are_accounted_separately_before_sft(
+    tmp_path: Path,
+) -> None:
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.optimizers as optim
@@ -1298,9 +1372,13 @@ def test_stale_bounded_canary_does_not_poison_fresh_plan(tmp_path: Path) -> None
                 "parameter_count": 1,
                 "vocab_size": 8,
                 "checkpoint": str(checkpoint),
-                "checkpoint_sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+                "checkpoint_sha256": hashlib.sha256(
+                    checkpoint.read_bytes()
+                ).hexdigest(),
                 "optimizer_state": str(optimizer),
-                "optimizer_state_sha256": hashlib.sha256(optimizer.read_bytes()).hexdigest(),
+                "optimizer_state_sha256": hashlib.sha256(
+                    optimizer.read_bytes()
+                ).hexdigest(),
                 "optimizer_steps": 1,
                 "optimizer_positions": 10,
                 "complete": False,
@@ -1319,7 +1397,9 @@ def test_stale_bounded_canary_does_not_poison_fresh_plan(tmp_path: Path) -> None
     assert inventory["rows"][0]["state"] == "STALE_CANARY"
 
 
-def test_shared_trunk_and_expert_checkpoint_ownership_are_separate(tmp_path: Path) -> None:
+def test_shared_trunk_and_expert_checkpoint_ownership_are_separate(
+    tmp_path: Path,
+) -> None:
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.optimizers as optim
@@ -1339,14 +1419,10 @@ def test_shared_trunk_and_expert_checkpoint_ownership_are_separate(tmp_path: Pat
     trunk_count = int(parameter_count(trunk_model, mlx_utils))
     expert_total = int(parameter_count(expert_model, mlx_utils))
     expert_delta = expert_total - trunk_count
-    inputs = np.asarray(
-        [[1, 4, 5, 6], [1, 7, 8, 9]], dtype=np.int32
-    )
+    inputs = np.asarray([[1, 4, 5, 6], [1, 7, 8, 9]], dtype=np.int32)
     base_stage = SimpleNamespace(
         pretrain_inputs=inputs,
-        pretrain_labels=np.asarray(
-            [[4, 5, 6, 2], [7, 8, 9, 2]], dtype=np.int32
-        ),
+        pretrain_labels=np.asarray([[4, 5, 6, 2], [7, 8, 9, 2]], dtype=np.int32),
         pretrain_mask=np.ones_like(inputs, dtype=np.uint8),
     )
     root = tmp_path / "checkpoints"
@@ -1418,9 +1494,10 @@ def test_shared_trunk_and_expert_checkpoint_ownership_are_separate(tmp_path: Pat
         mlx_utils=mlx_utils,
     )
     assert expert_result["trainable_parameter_count"] == expert_delta
-    assert expert_result["shared_trunk_checkpoint_sha256"] == trunk_result[
-        "checkpoint_sha256"
-    ]
+    assert (
+        expert_result["shared_trunk_checkpoint_sha256"]
+        == trunk_result["checkpoint_sha256"]
+    )
     adapter_keys = set(mx.load(str(expert_checkpoint)))
     assert adapter_keys
     assert all(".expert_adapter." in key for key in adapter_keys)

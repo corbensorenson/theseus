@@ -151,15 +151,15 @@ def test_independent_gum_coreference_parsers_preserve_complete_topology(
         if row["annotation"]["record_kind"] == "bridge_relation"
     )
     assert len(bridge["annotation"]["groups"]) == 2
-    assert bridge["annotation"]["relations"][0]["relation_type"].startswith(
-        "bridge:"
-    )
+    assert bridge["annotation"]["relations"][0]["relation_type"].startswith("bridge:")
 
 
 def test_conllu_topology_and_component_mutations_fail_closed(tmp_path: Path) -> None:
     arguments, _source = fixture(tmp_path)
     conllu = arguments["source_root"] / "dep" / "GUM_academic_fixture.conllu"
-    conllu.write_text(CONLLU.replace("(3-organization", "(2-organization"), encoding="utf-8")
+    conllu.write_text(
+        CONLLU.replace("(3-organization", "(2-organization"), encoding="utf-8"
+    )
     arguments["expected_selected_source_sha256"] = selected_source_digest(
         arguments["source_root"], ["GUM_academic_fixture"]
     )
@@ -186,11 +186,7 @@ def test_conllu_topology_and_component_mutations_fail_closed(tmp_path: Path) -> 
 
     arguments, _source = fixture(tmp_path / "partial")
     tsv = (
-        arguments["source_root"]
-        / "coref"
-        / "gum"
-        / "tsv"
-        / "GUM_academic_fixture.tsv"
+        arguments["source_root"] / "coref" / "gum" / "tsv" / "GUM_academic_fixture.tsv"
     )
     tsv.write_text(TSV.replace("2-1[2_1]", "2-1[99_1]"), encoding="utf-8")
     arguments["expected_selected_source_sha256"] = selected_source_digest(
@@ -212,7 +208,9 @@ def test_coreference_record_binds_capsules_graph_and_independent_replay(
         if item["annotation"]["record_kind"] == "identity_component"
     )
     expected = next(
-        item for item in verified["private_train"] if item["source_id"] == row["source_id"]
+        item
+        for item in verified["private_train"]
+        if item["source_id"] == row["source_id"]
     )
     record = gum_entity_coreference_record(
         row, source=source, producer_sha256="sha256:" + "1" * 64
@@ -239,6 +237,8 @@ def test_coreference_record_binds_capsules_graph_and_independent_replay(
         protected_objects=record["kernel_packet"]["protected_objects"],
         concept_capsules={},
         source_character_length=len(record["source_text"]),
+        source=record["source_text"],
+        hrl_state=record["hrl_state"],
     )
     assert learned["generated_concept_capsules"]["@C0"]["stable_identity"] == (
         "local.concept.0"

@@ -200,14 +200,22 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
             if target_id not in models:
                 load_started = time.perf_counter()
                 target = (plan["targets"] or {})[target_id]
+                target_vocab_size = int(
+                    target.get("vocab_size") or plan["models"]["vocab_size"]
+                )
                 model = training.build_model(
                     training.CausalTransformerConfig(
-                        vocab_size=int(plan["models"]["vocab_size"]), **target["model"]
+                        vocab_size=target_vocab_size, **target["model"]
                     ),
                     mx=mx,
                     nn=nn,
                     state_role_lookup=None,
-                    source_to_target_lookup=training.build_source_to_target_lookup(base, metadata),
+                    source_to_target_lookup=training.build_source_to_target_lookup(
+                        base,
+                        metadata,
+                        vocab_size=target_vocab_size,
+                        identity_ranges=training.target_copy_identity_ranges(target),
+                    ),
                 )
                 checkpoint = resolve(str(target["checkpoint"]))
                 receipt = read_json(resolve(str(target["receipt"])))

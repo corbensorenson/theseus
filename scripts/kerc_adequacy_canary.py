@@ -28,6 +28,7 @@ from kerc_checkpoint_schema import (
     rollback_checkpoint_contract,
     validate_checkpoint_contract,
 )
+from kerc_autoregressive_qualification import run_autoregressive_qualification
 from kernel_english_protocol import (
     ANSWER_DISPOSITION_ORDER,
     KERC_RESIDUAL_CHANNELS,
@@ -41,6 +42,7 @@ from moecot_language_arm_training import (
     materialize_target_supervision,
     publish_optimizer,
     sha256_file,
+    target_copy_identity_ranges,
     validate_resume,
 )
 from standard_causal_transformer_model import CausalTransformerConfig, build_model
@@ -79,7 +81,9 @@ def canonical_sha256(value: Any) -> str:
 def write_json_atomic(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + f".partial-{os.getpid()}")
-    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     os.replace(temporary, path)
 
 
@@ -95,6 +99,21 @@ def source_identity(row: np.ndarray, separator_id: int) -> tuple[int, ...]:
     return tuple(int(value) for value in row[:stop])
 
 
+def stage_row(rows: Any, index: int) -> np.ndarray:
+    """Read one dense or ragged row without coercing the full corpus."""
+
+    return np.asarray(rows[int(index)])
+
+
+def stage_batch(rows: Any, indices: list[int]) -> np.ndarray:
+    """Read a padded mini-batch through the canonical row-store interface."""
+
+    try:
+        return np.asarray(rows[indices])
+    except (IndexError, TypeError):
+        return np.asarray(rows[indices, :])
+
+
 def select_balanced_subset(
     stage: Any,
     *,
@@ -106,25 +125,35 @@ def select_balanced_subset(
 
     if len(task_token_ids) != len(TRAINING_OBJECTIVES):
         raise ValueError("KERC task-token inventory does not match objective inventory")
-    positive = np.asarray(stage.mask).sum(axis=1) > 0
-    identities = [source_identity(row, separator_id) for row in np.asarray(stage.inputs)]
+    positive = np.asarray(
+        [
+            bool(stage_row(stage.mask, index).sum() > 0)
+            for index in range(len(stage.mask))
+        ],
+        dtype=bool,
+    )
+    identities = [
+        source_identity(stage_row(stage.inputs, index), separator_id)
+        for index in range(len(stage.inputs))
+    ]
     if positives_per_objective != 1:
-        raise ValueError("balanced KERC adequacy selection currently requires one positive per objective")
-    candidate_matrix: dict[
-        str, dict[int, dict[tuple[int, ...], tuple[int, int]]]
-    ] = {}
+        raise ValueError(
+            "balanced KERC adequacy selection currently requires one positive per objective"
+        )
+    candidate_matrix: dict[str, dict[int, dict[tuple[int, ...], tuple[int, int]]]] = {}
     for objective, token_id in zip(TRAINING_OBJECTIVES, task_token_ids):
         candidates = [
             index
-            for index, row in enumerate(np.asarray(stage.inputs))
+            for index in range(len(stage.inputs))
+            if (row := stage_row(stage.inputs, index)) is not None
             if positive[index] and bool(np.any(row == int(token_id)))
         ]
         candidates.sort(
             key=lambda index: (
                 active_width(
-                    stage.inputs[index : index + 1],
-                    stage.labels[index : index + 1],
-                    stage.loss_mask[index : index + 1],
+                    stage_batch(stage.inputs, [index]),
+                    stage_batch(stage.labels, [index]),
+                    stage_batch(stage.loss_mask, [index]),
                 ),
                 canonical_sha256(stage.inputs[index].tolist()),
             )
@@ -136,7 +165,7 @@ def select_balanced_subset(
                 negative >= len(identities)
                 or positive[negative]
                 or identities[negative] != identities[index]
-                or not bool(np.any(stage.inputs[negative] == int(token_id)))
+                or not bool(np.any(stage_row(stage.inputs, negative) == int(token_id)))
             ):
                 raise ValueError(
                     f"KERC row does not have one exact-source verifier pair: {objective}"
@@ -162,9 +191,9 @@ def select_balanced_subset(
                     signature_rows,
                     key=lambda pair: (
                         active_width(
-                            stage.inputs[pair[0] : pair[0] + 1],
-                            stage.labels[pair[0] : pair[0] + 1],
-                            stage.loss_mask[pair[0] : pair[0] + 1],
+                            stage_batch(stage.inputs, [pair[0]]),
+                            stage_batch(stage.labels, [pair[0]]),
+                            stage_batch(stage.loss_mask, [pair[0]]),
                         ),
                         canonical_sha256(stage.inputs[pair[0]].tolist()),
                     ),
@@ -182,9 +211,9 @@ def select_balanced_subset(
                         "signature": tuple(int(value) for value in signature),
                         "pair": tuple(int(value) for value in pair),
                         "width": active_width(
-                            stage.inputs[pair[0] : pair[0] + 1],
-                            stage.labels[pair[0] : pair[0] + 1],
-                            stage.loss_mask[pair[0] : pair[0] + 1],
+                            stage_batch(stage.inputs, [pair[0]]),
+                            stage_batch(stage.labels, [pair[0]]),
+                            stage_batch(stage.loss_mask, [pair[0]]),
                         ),
                     }
                 )
@@ -283,9 +312,9 @@ def select_balanced_subset(
                         len(group),
                         max(
                             active_width(
-                                stage.inputs[row_index : row_index + 1],
-                                stage.labels[row_index : row_index + 1],
-                                stage.loss_mask[row_index : row_index + 1],
+                                stage_batch(stage.inputs, [row_index]),
+                                stage_batch(stage.labels, [row_index]),
+                                stage_batch(stage.loss_mask, [row_index]),
                             )
                             for row_index in group
                         ),
@@ -300,25 +329,35 @@ def select_balanced_subset(
                 )
             group = min(candidates)[-1]
             selected.extend(index for index in group if index not in selected)
-            uncovered -= {
-                label for index in group for label in coverage_rows[index]
-            }
+            uncovered -= {label for index in group for label in coverage_rows[index]}
     if len(selected) != len(set(selected)):
         raise ValueError("KERC adequacy subset contains duplicate rows")
     width = active_width(
-        stage.inputs[selected], stage.labels[selected], stage.loss_mask[selected]
+        stage_batch(stage.inputs, selected),
+        stage_batch(stage.labels, selected),
+        stage_batch(stage.loss_mask, selected),
     )
     subset = SimpleNamespace(
-        inputs=np.asarray(stage.inputs[selected, :width], dtype=np.int32),
-        labels=np.asarray(stage.labels[selected, :width], dtype=np.int32),
-        mask=np.asarray(stage.mask[selected, :width], dtype=np.uint8),
-        loss_mask=np.asarray(stage.loss_mask[selected, :width], dtype=np.float32),
+        inputs=np.asarray(
+            stage_batch(stage.inputs, selected)[:, :width], dtype=np.int32
+        ),
+        labels=np.asarray(
+            stage_batch(stage.labels, selected)[:, :width], dtype=np.int32
+        ),
+        mask=np.asarray(stage_batch(stage.mask, selected)[:, :width], dtype=np.uint8),
+        loss_mask=np.asarray(
+            stage_batch(stage.loss_mask, selected)[:, :width], dtype=np.float32
+        ),
         sample_weights=np.asarray(stage.sample_weights[selected], dtype=np.float64),
-        kerc_residual_labels=np.asarray(stage.kerc_residual_labels[selected], dtype=np.int32),
+        kerc_residual_labels=np.asarray(
+            stage.kerc_residual_labels[selected], dtype=np.int32
+        ),
         kerc_residual_loss_mask=np.asarray(
             stage.kerc_residual_loss_mask[selected], dtype=np.float32
         ),
-        kerc_verifier_labels=np.asarray(stage.kerc_verifier_labels[selected], dtype=np.float32),
+        kerc_verifier_labels=np.asarray(
+            stage.kerc_verifier_labels[selected], dtype=np.float32
+        ),
         kerc_decision_labels=np.asarray(
             stage.kerc_decision_labels[selected], dtype=np.int32
         ),
@@ -363,8 +402,12 @@ def select_balanced_subset(
             }
         ),
         "row_count": len(selected),
-        "positive_row_count": int(np.asarray(subset.mask).sum(axis=1).astype(bool).sum()),
-        "verifier_only_row_count": int((np.asarray(subset.mask).sum(axis=1) == 0).sum()),
+        "positive_row_count": int(
+            np.asarray(subset.mask).sum(axis=1).astype(bool).sum()
+        ),
+        "verifier_only_row_count": int(
+            (np.asarray(subset.mask).sum(axis=1) == 0).sum()
+        ),
         "sequence_width": width,
         "content_sha256": canonical_sha256(
             {
@@ -466,9 +509,7 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
             require_two_classes_per_feature=True,
         )
     )
-    matrix_residual_class_weights = mx.array(
-        residual_class_weights, dtype=mx.float32
-    )
+    matrix_residual_class_weights = mx.array(residual_class_weights, dtype=mx.float32)
     matrix_verifier_positive_weights = mx.array(
         verifier_positive_weights, dtype=mx.float32
     )
@@ -544,7 +585,9 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
             predictions = logits_np.argmax(axis=-1)
             token_correct += int((predictions[active] == labels_np[active]).sum())
             token_total += int(active.sum())
-            target_logits = np.take_along_axis(logits_np, labels_np[..., None], axis=-1)[..., 0]
+            target_logits = np.take_along_axis(
+                logits_np, labels_np[..., None], axis=-1
+            )[..., 0]
             expected_token_logits.append(target_logits[active].astype(float).tolist())
         else:
             expected_token_logits.append([])
@@ -619,8 +662,16 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
         predicted_values = verifier_predictions_array[:, index]
         positive = target_values == 1
         negative = target_values == 0
-        positive_recall = float(np.mean(predicted_values[positive] == 1)) if bool(positive.any()) else None
-        negative_recall = float(np.mean(predicted_values[negative] == 0)) if bool(negative.any()) else None
+        positive_recall = (
+            float(np.mean(predicted_values[positive] == 1))
+            if bool(positive.any())
+            else None
+        )
+        negative_recall = (
+            float(np.mean(predicted_values[negative] == 0))
+            if bool(negative.any())
+            else None
+        )
         verifier_dimensions[dimension] = {
             "positive_count": int(positive.sum()),
             "negative_count": int(negative.sum()),
@@ -637,9 +688,7 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
         for row in verifier_dimensions.values()
         if row["balanced_accuracy"] is not None
     ]
-    decision_predictions_array = np.asarray(
-        decision_prediction_rows, dtype=np.int32
-    )
+    decision_predictions_array = np.asarray(decision_prediction_rows, dtype=np.int32)
     decision_targets_array = np.asarray(decision_target_rows, dtype=np.int32)
     decision_classes = sorted(int(value) for value in np.unique(decision_targets_array))
     decision_recalls = {
@@ -666,7 +715,11 @@ def evaluate_model(model: Any, stage: Any, *, mx: Any, nn: Any) -> dict[str, Any
             float(np.mean(informative_verifier)) if informative_verifier else None
         ),
         "verifier_minimum_negative_recall": min(
-            (row["negative_recall"] for row in verifier_dimensions.values() if row["negative_recall"] is not None),
+            (
+                row["negative_recall"]
+                for row in verifier_dimensions.values()
+                if row["negative_recall"] is not None
+            ),
             default=None,
         ),
         "verifier_dimensions": verifier_dimensions,
@@ -705,7 +758,9 @@ def evaluate_residual_allocator(model: Any, stage: Any, *, mx: Any) -> dict[str,
         _logits, _cache, auxiliary = model(x, return_training_aux=True)
         residual_logits = auxiliary["kerc"]["residual_logits"]
         mx.eval(residual_logits)
-        predictions.extend(np.asarray(residual_logits).argmax(axis=-1).astype(int).tolist())
+        predictions.extend(
+            np.asarray(residual_logits).argmax(axis=-1).astype(int).tolist()
+        )
         targets.extend(
             np.asarray(stage.kerc_residual_labels[index : index + 1])
             .astype(int)
@@ -738,10 +793,16 @@ def evaluate_residual_allocator(model: Any, stage: Any, *, mx: Any) -> dict[str,
     }
 
 
-def gradient_family_receipt(gradients: Any, *, mlx_utils: Any, mx: Any) -> dict[str, Any]:
+def gradient_family_receipt(
+    gradients: Any, *, mlx_utils: Any, mx: Any
+) -> dict[str, Any]:
     groups = {
         "residual_head": ("kerc_residual_encoder", "kerc_residual_allocator"),
-        "source_representation": ("token_embedding", "source_layers", "source_final_norm"),
+        "source_representation": (
+            "token_embedding",
+            "source_layers",
+            "source_final_norm",
+        ),
     }
     flattened = list(mlx_utils.tree_flatten(gradients))
     mx.eval(*(value for _name, value in flattened))
@@ -938,11 +999,9 @@ def decision_learnability_probe(
     observed_class_requirement_met = len(final["observed_classes"]) >= int(
         probe["minimum_observed_class_count"]
     )
-    decision_only_passed = (
-        observed_class_requirement_met
-        and final["macro_balanced_accuracy"]
-        >= float(probe["minimum_macro_balanced_accuracy"])
-    )
+    decision_only_passed = observed_class_requirement_met and final[
+        "macro_balanced_accuracy"
+    ] >= float(probe["minimum_macro_balanced_accuracy"])
     joint_training = train_steps(
         model,
         optimizer,
@@ -961,9 +1020,8 @@ def decision_learnability_probe(
         optim=optim,
     )
     post_joint = evaluate_decision_head(model, stage, mx=mx)
-    joint_compatibility_passed = (
-        post_joint["macro_balanced_accuracy"]
-        >= float(probe["minimum_post_joint_macro_balanced_accuracy"])
+    joint_compatibility_passed = post_joint["macro_balanced_accuracy"] >= float(
+        probe["minimum_post_joint_macro_balanced_accuracy"]
     )
     learnability_passed = gradient_path_present and decision_only_passed
     return {
@@ -1082,11 +1140,9 @@ def residual_learnability_probe(
             metrics = evaluate_residual_allocator(model, stage, mx=mx)
             curve.append({"step": step, **metrics})
             model.train()
-            if (
-                step >= int(probe["minimum_steps"])
-                and metrics["minimum_channel_balanced_accuracy"]
-                >= float(probe["minimum_macro_balanced_accuracy"])
-            ):
+            if step >= int(probe["minimum_steps"]) and metrics[
+                "minimum_channel_balanced_accuracy"
+            ] >= float(probe["minimum_macro_balanced_accuracy"]):
                 break
     final = curve[-1]
     gradient_floor = float(probe["minimum_parameter_family_gradient_l2"])
@@ -1114,10 +1170,9 @@ def residual_learnability_probe(
         optim=optim,
     )
     post_joint = evaluate_residual_allocator(model, stage, mx=mx)
-    joint_compatibility_passed = (
-        post_joint["minimum_channel_balanced_accuracy"]
-        >= float(probe["minimum_post_joint_channel_balanced_accuracy"])
-    )
+    joint_compatibility_passed = post_joint[
+        "minimum_channel_balanced_accuracy"
+    ] >= float(probe["minimum_post_joint_channel_balanced_accuracy"])
     learnability_passed = gradient_path_present and (
         residual_only_passed
         or post_joint["minimum_channel_balanced_accuracy"]
@@ -1258,9 +1313,7 @@ def train_steps(
             require_two_classes_per_feature=True,
         )
     )
-    matrix_residual_class_weights = mx.array(
-        residual_class_weights, dtype=mx.float32
-    )
+    matrix_residual_class_weights = mx.array(residual_class_weights, dtype=mx.float32)
     decision_authority = np.asarray(stage.kerc_decision_loss_mask).astype(bool)
     decision_class_weights, decision_class_weight_receipt = (
         balanced_categorical_class_weights(
@@ -1323,7 +1376,9 @@ def flatten_parameter_delta(left: Any, right: Any, *, mlx_utils: Any) -> float:
     if left_rows.keys() != right_rows.keys():
         raise ValueError("model parameter inventories differ after resume")
     return max(
-        float(np.max(np.abs(np.asarray(left_rows[name]) - np.asarray(right_rows[name]))))
+        float(
+            np.max(np.abs(np.asarray(left_rows[name]) - np.asarray(right_rows[name])))
+        )
         for name in left_rows
     )
 
@@ -1334,7 +1389,9 @@ def flattened_tree_delta(left: Any, right: Any, *, mlx_utils: Any) -> float:
     if left_rows.keys() != right_rows.keys():
         raise ValueError("serialized tree inventories differ")
     return max(
-        float(np.max(np.abs(np.asarray(left_rows[name]) - np.asarray(right_rows[name]))))
+        float(
+            np.max(np.abs(np.asarray(left_rows[name]) - np.asarray(right_rows[name])))
+        )
         for name in left_rows
     )
 
@@ -1356,8 +1413,7 @@ def nested_logit_equivalence(
     relative_tolerance: float,
 ) -> dict[str, Any]:
     if len(left) != len(right) or any(
-        len(left_row) != len(right_row)
-        for left_row, right_row in zip(left, right)
+        len(left_row) != len(right_row) for left_row, right_row in zip(left, right)
     ):
         return {
             "equivalent": False,
@@ -1393,11 +1449,7 @@ def compact_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
         "expected_token_logits": metrics.get("expected_token_logits") or [],
         "verifier_logits": metrics.get("verifier_logits") or [],
     }
-    return {
-        key: value
-        for key, value in metrics.items()
-        if key not in private
-    } | {
+    return {key: value for key, value in metrics.items() if key not in private} | {
         "diagnostic_vectors_sha256": canonical_sha256(private),
         "diagnostic_vectors_embedded": False,
     }
@@ -1418,9 +1470,7 @@ def train_mechanism_ablations(
     variants = {
         "without_stage_routing": {"kerc_stage_routing_ablation": "zero"},
         "without_hierarchical_residual": {"kerc_residual_ablation": "zero"},
-        "without_interaction_residual": {
-            "kerc_interaction_residual_ablation": "zero"
-        },
+        "without_interaction_residual": {"kerc_interaction_residual_ablation": "zero"},
         "without_independent_verifier": {"kerc_verifier_ablation": "zero"},
     }
     optimization = config["optimization"]
@@ -1483,7 +1533,9 @@ def expected_logit_delta_by_objective(
     changed: dict[str, Any],
     selection: dict[str, Any],
 ) -> dict[str, float]:
-    position = {row_index: local for local, row_index in enumerate(selection["row_indices"])}
+    position = {
+        row_index: local for local, row_index in enumerate(selection["row_indices"])
+    }
     deltas: dict[str, float] = {}
     for objective, pairs in selection["rows_by_objective"].items():
         if not pairs:
@@ -1536,9 +1588,7 @@ def intervention_receipts(
     choice_count = int(target["model"]["kerc_residual_choice_count"])
     interaction_model.kerc_residual_values.weight = mx.concatenate(
         [
-            mx.zeros_like(
-                interaction_model.kerc_residual_values.weight[:choice_count]
-            ),
+            mx.zeros_like(interaction_model.kerc_residual_values.weight[:choice_count]),
             interaction_model.kerc_residual_values.weight[choice_count:],
         ],
         axis=0,
@@ -1622,12 +1672,28 @@ def classify_gates(
     accept = config["acceptance"]
     checks: list[tuple[str, bool, Any, str]] = []
     loss_ratio = after["mean_total_loss"] / max(before["mean_total_loss"], 1e-12)
-    checks.append(("tiny_subset_loss_reduction", loss_ratio <= accept["maximum_final_to_initial_loss_ratio"], loss_ratio, "adequacy"))
+    checks.append(
+        (
+            "tiny_subset_loss_reduction",
+            loss_ratio <= accept["maximum_final_to_initial_loss_ratio"],
+            loss_ratio,
+            "adequacy",
+        )
+    )
     token_gain = after["token_accuracy"] - before["token_accuracy"]
-    checks.append(("tiny_subset_token_accuracy_gain", token_gain >= accept["minimum_token_accuracy_gain"], token_gain, "adequacy"))
+    checks.append(
+        (
+            "tiny_subset_token_accuracy_gain",
+            token_gain >= accept["minimum_token_accuracy_gain"],
+            token_gain,
+            "adequacy",
+        )
+    )
     residual_observed = {
         "informative_channel_count": after["residual_informative_channel_count"],
-        "macro_balanced_accuracy": after["residual_informative_macro_balanced_accuracy"],
+        "macro_balanced_accuracy": after[
+            "residual_informative_macro_balanced_accuracy"
+        ],
     }
     checks.append(
         (
@@ -1683,12 +1749,12 @@ def classify_gates(
                     "gradient_path_present"
                 ),
                 "optimizer_steps": decision_learnability.get("optimizer_steps"),
-                "observed_classes": (
-                    decision_learnability.get("final") or {}
-                ).get("observed_classes"),
-                "unobserved_classes": (
-                    decision_learnability.get("final") or {}
-                ).get("unobserved_classes"),
+                "observed_classes": (decision_learnability.get("final") or {}).get(
+                    "observed_classes"
+                ),
+                "unobserved_classes": (decision_learnability.get("final") or {}).get(
+                    "unobserved_classes"
+                ),
                 "macro_balanced_accuracy": (
                     decision_learnability.get("final") or {}
                 ).get("macro_balanced_accuracy"),
@@ -1709,42 +1775,217 @@ def classify_gates(
         "macro_balanced_accuracy": after["verifier_macro_balanced_accuracy"],
         "minimum_negative_recall": after["verifier_minimum_negative_recall"],
     }
-    checks.append(("verifier_learned", after["verifier_macro_balanced_accuracy"] is not None and after["verifier_macro_balanced_accuracy"] >= accept["minimum_verifier_macro_balanced_accuracy"] and after["verifier_minimum_negative_recall"] is not None and after["verifier_minimum_negative_recall"] >= accept["minimum_verifier_negative_recall"], verifier_observed, "adequacy"))
-    checks.append(("checkpoint_reload_equivalent", reload_delta <= accept["maximum_checkpoint_reload_logit_delta"], reload_delta, "hard"))
-    checks.append(("optimizer_state_reload_exact", optimizer_reload_delta <= accept["maximum_optimizer_state_reload_delta"], optimizer_reload_delta, "hard"))
-    checks.append(("optimizer_resume_equivalent", resume_equivalence.get("equivalent") is True and resume_equivalence.get("discrete_outcomes_preserved") is True, resume_equivalence, "hard"))
-    checks.append(("resume_mismatch_rejected", migration_rejection, migration_rejection, "hard"))
-    checks.append(("checkpoint_schema_migration_valid", schema_migration_valid, schema_migration_valid, "hard"))
-    checks.append(("unknown_checkpoint_schema_rejected", schema_unknown_rejection, schema_unknown_rejection, "hard"))
-    checks.append(("migration_behavior_equivalent", migration_logit_delta <= accept["maximum_checkpoint_migration_logit_delta"], migration_logit_delta, "hard"))
-    checks.append(("rollback_behavior_equivalent", rollback_logit_delta <= accept["maximum_checkpoint_rollback_logit_delta"], rollback_logit_delta, "hard"))
+    checks.append(
+        (
+            "verifier_learned",
+            after["verifier_macro_balanced_accuracy"] is not None
+            and after["verifier_macro_balanced_accuracy"]
+            >= accept["minimum_verifier_macro_balanced_accuracy"]
+            and after["verifier_minimum_negative_recall"] is not None
+            and after["verifier_minimum_negative_recall"]
+            >= accept["minimum_verifier_negative_recall"],
+            verifier_observed,
+            "adequacy",
+        )
+    )
+    checks.append(
+        (
+            "checkpoint_reload_equivalent",
+            reload_delta <= accept["maximum_checkpoint_reload_logit_delta"],
+            reload_delta,
+            "hard",
+        )
+    )
+    checks.append(
+        (
+            "optimizer_state_reload_exact",
+            optimizer_reload_delta <= accept["maximum_optimizer_state_reload_delta"],
+            optimizer_reload_delta,
+            "hard",
+        )
+    )
+    checks.append(
+        (
+            "optimizer_resume_equivalent",
+            resume_equivalence.get("equivalent") is True
+            and resume_equivalence.get("discrete_outcomes_preserved") is True,
+            resume_equivalence,
+            "hard",
+        )
+    )
+    checks.append(
+        ("resume_mismatch_rejected", migration_rejection, migration_rejection, "hard")
+    )
+    checks.append(
+        (
+            "checkpoint_schema_migration_valid",
+            schema_migration_valid,
+            schema_migration_valid,
+            "hard",
+        )
+    )
+    checks.append(
+        (
+            "unknown_checkpoint_schema_rejected",
+            schema_unknown_rejection,
+            schema_unknown_rejection,
+            "hard",
+        )
+    )
+    checks.append(
+        (
+            "migration_behavior_equivalent",
+            migration_logit_delta <= accept["maximum_checkpoint_migration_logit_delta"],
+            migration_logit_delta,
+            "hard",
+        )
+    )
+    checks.append(
+        (
+            "rollback_behavior_equivalent",
+            rollback_logit_delta <= accept["maximum_checkpoint_rollback_logit_delta"],
+            rollback_logit_delta,
+            "hard",
+        )
+    )
     required_ablations = set(config["required_trained_ablations"])
-    checks.append(("trained_mechanism_ablation_inventory", set(trained_ablations) == required_ablations, sorted(trained_ablations), "hard"))
+    checks.append(
+        (
+            "trained_mechanism_ablation_inventory",
+            set(trained_ablations) == required_ablations,
+            sorted(trained_ablations),
+            "hard",
+        )
+    )
     activity_limit = float(accept["maximum_disabled_mechanism_activity"])
     disabled_activity = {
-        "without_stage_routing": trained_ablations.get("without_stage_routing", {}).get("after", {}).get("mechanism_activity", {}).get("stage_weights_maximum_absolute"),
-        "without_hierarchical_residual": trained_ablations.get("without_hierarchical_residual", {}).get("after", {}).get("mechanism_activity", {}).get("residual_logits_maximum_absolute"),
-        "without_interaction_residual": trained_ablations.get("without_interaction_residual", {}).get("after", {}).get("mechanism_activity", {}).get("interaction_residual_logits_maximum_absolute"),
-        "without_independent_verifier": trained_ablations.get("without_independent_verifier", {}).get("after", {}).get("mechanism_activity", {}).get("verifier_logits_maximum_absolute"),
+        "without_stage_routing": trained_ablations.get("without_stage_routing", {})
+        .get("after", {})
+        .get("mechanism_activity", {})
+        .get("stage_weights_maximum_absolute"),
+        "without_hierarchical_residual": trained_ablations.get(
+            "without_hierarchical_residual", {}
+        )
+        .get("after", {})
+        .get("mechanism_activity", {})
+        .get("residual_logits_maximum_absolute"),
+        "without_interaction_residual": trained_ablations.get(
+            "without_interaction_residual", {}
+        )
+        .get("after", {})
+        .get("mechanism_activity", {})
+        .get("interaction_residual_logits_maximum_absolute"),
+        "without_independent_verifier": trained_ablations.get(
+            "without_independent_verifier", {}
+        )
+        .get("after", {})
+        .get("mechanism_activity", {})
+        .get("verifier_logits_maximum_absolute"),
     }
-    checks.append(("trained_ablations_remove_named_mechanism", all(value is not None and float(value) <= activity_limit for value in disabled_activity.values()), disabled_activity, "hard"))
-    checks.append(("temporary_artifacts_cleaned", partial_file_count == 0, partial_file_count, "hard"))
+    checks.append(
+        (
+            "trained_ablations_remove_named_mechanism",
+            all(
+                value is not None and float(value) <= activity_limit
+                for value in disabled_activity.values()
+            ),
+            disabled_activity,
+            "hard",
+        )
+    )
+    checks.append(
+        (
+            "temporary_artifacts_cleaned",
+            partial_file_count == 0,
+            partial_file_count,
+            "hard",
+        )
+    )
     required_interventions = set(config["required_interventions"])
-    checks.append(("causal_intervention_inventory", set(interventions) == required_interventions, sorted(interventions), "hard"))
+    checks.append(
+        (
+            "causal_intervention_inventory",
+            set(interventions) == required_interventions,
+            sorted(interventions),
+            "hard",
+        )
+    )
     minimum_delta = float(accept["minimum_active_intervention_logit_delta"])
     route_deltas = interventions["trusted_stage_token_removed"]["delta_by_objective"]
-    checks.append(("trusted_stage_route_is_causal", all(value > minimum_delta for value in route_deltas.values()), route_deltas, "adequacy"))
+    checks.append(
+        (
+            "trusted_stage_route_is_causal",
+            all(value > minimum_delta for value in route_deltas.values()),
+            route_deltas,
+            "adequacy",
+        )
+    )
     residual = interventions["hierarchical_residual_values_zeroed"]
-    checks.append(("residual_path_is_causal_when_active", all(residual["delta_by_objective"][name] > minimum_delta for name in residual["expected_active_objectives"]), residual["delta_by_objective"], "adequacy"))
+    checks.append(
+        (
+            "residual_path_is_causal_when_active",
+            all(
+                residual["delta_by_objective"][name] > minimum_delta
+                for name in residual["expected_active_objectives"]
+            ),
+            residual["delta_by_objective"],
+            "adequacy",
+        )
+    )
     inactive_max = float(accept["maximum_inactive_residual_intervention_logit_delta"])
-    checks.append(("residual_path_is_scoped_when_inactive", all(residual["delta_by_objective"][name] <= inactive_max for name in residual["expected_inactive_objectives"]), residual["delta_by_objective"], "hard"))
+    checks.append(
+        (
+            "residual_path_is_scoped_when_inactive",
+            all(
+                residual["delta_by_objective"][name] <= inactive_max
+                for name in residual["expected_inactive_objectives"]
+            ),
+            residual["delta_by_objective"],
+            "hard",
+        )
+    )
     interaction = interventions["interaction_residual_values_zeroed"]
-    checks.append(("interaction_residual_path_is_causal", all(interaction["delta_by_objective"][name] > minimum_delta for name in interaction["expected_active_objectives"]), interaction["delta_by_objective"], "adequacy"))
-    checks.append(("independent_verifier_is_causal", interventions["independent_verifier_classifier_zeroed"]["maximum_verifier_logit_delta"] > minimum_delta, interventions["independent_verifier_classifier_zeroed"], "adequacy"))
-    throughput = min(first_phase["target_tokens_per_second"], second_phase["target_tokens_per_second"])
-    checks.append(("multi_batch_mlx_throughput", throughput >= accept["minimum_target_tokens_per_second"], throughput, "adequacy"))
+    checks.append(
+        (
+            "interaction_residual_path_is_causal",
+            all(
+                interaction["delta_by_objective"][name] > minimum_delta
+                for name in interaction["expected_active_objectives"]
+            ),
+            interaction["delta_by_objective"],
+            "adequacy",
+        )
+    )
+    checks.append(
+        (
+            "independent_verifier_is_causal",
+            interventions["independent_verifier_classifier_zeroed"][
+                "maximum_verifier_logit_delta"
+            ]
+            > minimum_delta,
+            interventions["independent_verifier_classifier_zeroed"],
+            "adequacy",
+        )
+    )
+    throughput = min(
+        first_phase["target_tokens_per_second"],
+        second_phase["target_tokens_per_second"],
+    )
+    checks.append(
+        (
+            "multi_batch_mlx_throughput",
+            throughput >= accept["minimum_target_tokens_per_second"],
+            throughput,
+            "adequacy",
+        )
+    )
     rows = [
-        {"gate": name, "passed": bool(passed), "observed": observed, "severity": severity}
+        {
+            "gate": name,
+            "passed": bool(passed),
+            "observed": observed,
+            "severity": severity,
+        }
         for name, passed, observed, severity in checks
     ]
     if any(not row["passed"] and row["severity"] == "hard" for row in rows):
@@ -1755,24 +1996,31 @@ def classify_gates(
 
 
 def run(config_path: Path) -> dict[str, Any]:
+    config_sha256 = sha256_file(config_path)
     config = read_json(config_path)
     if config.get("policy") != "project_theseus_kerc_adequacy_canary_v1":
         raise ValueError("KERC adequacy policy mismatch")
     boundaries = config.get("boundaries") or {}
-    if any(int(boundaries.get(key) or 0) for key in (
-        "public_training_rows_written",
-        "public_benchmark_payload_count",
-        "external_inference_calls",
-        "fallback_return_count",
-        "template_credit",
-    )):
+    if any(
+        int(boundaries.get(key) or 0)
+        for key in (
+            "public_training_rows_written",
+            "public_benchmark_payload_count",
+            "external_inference_calls",
+            "fallback_return_count",
+            "template_credit",
+        )
+    ):
         raise ValueError("KERC adequacy canary boundary is not zero")
     optimization = config["optimization"]
-    total_steps = int(optimization["steps_before_resume"]) + int(optimization["steps_after_resume"])
+    total_steps = int(optimization["steps_before_resume"]) + int(
+        optimization["steps_after_resume"]
+    )
     if total_steps > int(optimization["maximum_total_steps"]):
         raise ValueError("KERC adequacy update budget exceeds the frozen cap")
 
     training_path = resolve(config["training_config"])
+    training_config_sha256 = sha256_file(training_path)
     training = read_json(training_path)
     plan = build_plan(training, config_path=training_path)
     if plan["trigger_state"] != "GREEN":
@@ -1787,7 +2035,9 @@ def run(config_path: Path) -> dict[str, Any]:
         metadata=metadata,
         artifact_field="kernel_english_artifacts",
         receipt_policy="project_theseus_moecot_kernel_english_arrays_v1",
-        maximum_sequence_tokens=int(training["kernel_english_training"]["maximum_sequence_tokens"]),
+        maximum_sequence_tokens=int(
+            training["kernel_english_training"]["maximum_sequence_tokens"]
+        ),
         objective_filter=tuple(target["kernel_english_objectives"]),
     )
     subset, selection = select_balanced_subset(
@@ -1806,7 +2056,10 @@ def run(config_path: Path) -> dict[str, Any]:
 
     mx.random.seed(int(config["seed"]))
     copy_lookup = build_source_to_target_lookup(
-        base, metadata, vocab_size=int(target["vocab_size"])
+        base,
+        metadata,
+        vocab_size=int(target["vocab_size"]),
+        identity_ranges=target_copy_identity_ranges(target),
     )
     learnability = residual_learnability_probe(
         target,
@@ -1862,12 +2115,8 @@ def run(config_path: Path) -> dict[str, Any]:
         start_step=0,
         steps=int(optimization["steps_before_resume"]),
         gradient_clip=float(optimization["gradient_clip_norm"]),
-        verifier_balance_maximum=float(
-            optimization["verifier_class_balance_maximum"]
-        ),
-        residual_balance_maximum=float(
-            optimization["residual_class_balance_maximum"]
-        ),
+        verifier_balance_maximum=float(optimization["verifier_class_balance_maximum"]),
+        residual_balance_maximum=float(optimization["residual_class_balance_maximum"]),
         mx=mx,
         nn=nn,
         optim=optim,
@@ -1902,12 +2151,8 @@ def run(config_path: Path) -> dict[str, Any]:
         start_step=int(optimization["steps_before_resume"]),
         steps=int(optimization["steps_after_resume"]),
         gradient_clip=float(optimization["gradient_clip_norm"]),
-        verifier_balance_maximum=float(
-            optimization["verifier_class_balance_maximum"]
-        ),
-        residual_balance_maximum=float(
-            optimization["residual_class_balance_maximum"]
-        ),
+        verifier_balance_maximum=float(optimization["verifier_class_balance_maximum"]),
+        residual_balance_maximum=float(optimization["residual_class_balance_maximum"]),
         mx=mx,
         nn=nn,
         optim=optim,
@@ -1919,17 +2164,15 @@ def run(config_path: Path) -> dict[str, Any]:
         start_step=int(optimization["steps_before_resume"]),
         steps=int(optimization["steps_after_resume"]),
         gradient_clip=float(optimization["gradient_clip_norm"]),
-        verifier_balance_maximum=float(
-            optimization["verifier_class_balance_maximum"]
-        ),
-        residual_balance_maximum=float(
-            optimization["residual_class_balance_maximum"]
-        ),
+        verifier_balance_maximum=float(optimization["verifier_class_balance_maximum"]),
+        residual_balance_maximum=float(optimization["residual_class_balance_maximum"]),
         mx=mx,
         nn=nn,
         optim=optim,
     )
-    resume_parameter_delta = flatten_parameter_delta(model, reloaded, mlx_utils=mlx_utils)
+    resume_parameter_delta = flatten_parameter_delta(
+        model, reloaded, mlx_utils=mlx_utils
+    )
     continuous_after = evaluate_model(model, subset, mx=mx, nn=nn)
     after = evaluate_model(reloaded, subset, mx=mx, nn=nn)
     absolute_tolerance = float(
@@ -1983,7 +2226,9 @@ def run(config_path: Path) -> dict[str, Any]:
         "plan_sha256": plan["plan_sha256"],
         "stage_signature": plan["stage"]["stage_signature"],
         "vocab_size": target["vocab_size"],
-        "kernel_code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"]["contract_sha256"],
+        "kernel_code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"][
+            "contract_sha256"
+        ],
     }
     migration_manifest = migrate_legacy_checkpoint(
         legacy_checkpoint=checkpoint,
@@ -2064,6 +2309,19 @@ def run(config_path: Path) -> dict[str, Any]:
         mx=mx,
         nn=nn,
     )
+    mx.clear_cache()
+    autoregressive_pipeline = run_autoregressive_qualification(
+        config,
+        training,
+        target,
+        base,
+        metadata,
+        output_root,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+    )
 
     valid_resume_receipt = {
         "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
@@ -2072,7 +2330,9 @@ def run(config_path: Path) -> dict[str, Any]:
         "stage_signature": plan["stage"]["stage_signature"],
         "row_ranges": target["row_ranges"],
         "vocab_size": target["vocab_size"],
-        "kernel_code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"]["contract_sha256"],
+        "kernel_code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"][
+            "contract_sha256"
+        ],
         "checkpoint_schema_policy": target["checkpoint_schema_policy"],
         "checkpoint_schema": target["checkpoint_schema"],
         "checkpoint_schema_version": target["checkpoint_schema_version"],
@@ -2080,7 +2340,10 @@ def run(config_path: Path) -> dict[str, Any]:
         "optimizer_state_sha256": sha256_file(optimizer_path),
     }
     validate_resume(valid_resume_receipt, plan, target, checkpoint, optimizer_path)
-    invalid_receipt = {**valid_resume_receipt, "kernel_code_vocabulary_sha256": "sha256:invalid"}
+    invalid_receipt = {
+        **valid_resume_receipt,
+        "kernel_code_vocabulary_sha256": "sha256:invalid",
+    }
     migration_rejection = False
     try:
         validate_resume(invalid_receipt, plan, target, checkpoint, optimizer_path)
@@ -2107,22 +2370,48 @@ def run(config_path: Path) -> dict[str, Any]:
         decision_learnability=decision_learnability,
         partial_file_count=len(partial_files),
     )
+    autoregressive_passed = autoregressive_pipeline.get("state") == "GREEN"
+    gates.append(
+        {
+            "gate": "real_autoregressive_compiler_core_renderer_route",
+            "passed": autoregressive_passed,
+            "observed": {
+                "state": autoregressive_pipeline.get("state"),
+                "gates": autoregressive_pipeline.get("gates"),
+            },
+            "severity": "adequacy",
+        }
+    )
+    if trigger_state != "RED" and not autoregressive_passed:
+        trigger_state = "INCONCLUSIVE_IMPLEMENTATION"
     rss_after = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+    if sha256_file(config_path) != config_sha256:
+        raise ValueError("KERC adequacy config changed during execution")
+    if sha256_file(training_path) != training_config_sha256:
+        raise ValueError("KERC training config changed during execution")
     return {
         "policy": config["policy"],
         "trigger_state": trigger_state,
         "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "config": relative(config_path),
-        "config_sha256": sha256_file(config_path),
+        "config_sha256": config_sha256,
         "implementation": relative(Path(__file__)),
         "implementation_sha256": sha256_file(Path(__file__)),
+        "autoregressive_qualification_implementation": relative(
+            ROOT / "scripts" / "kerc_autoregressive_qualification.py"
+        ),
+        "autoregressive_qualification_implementation_sha256": sha256_file(
+            ROOT / "scripts" / "kerc_autoregressive_qualification.py"
+        ),
         "training_config": relative(training_path),
-        "training_config_sha256": sha256_file(training_path),
+        "training_config_sha256": training_config_sha256,
         "plan_sha256": plan["plan_sha256"],
         "target_id": target["target_id"],
         "target_parameter_count": int(target["parameter_count"]),
         "stage_manifest_sha256": plan["kernel_english_training"]["manifest_sha256"],
-        "code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"]["contract_sha256"],
+        "code_vocabulary_sha256": target["kernel_code_vocabulary"]["payload"][
+            "contract_sha256"
+        ],
         "selection": selection,
         "before": compact_metrics(before),
         "after": compact_metrics(after),
@@ -2137,6 +2426,7 @@ def run(config_path: Path) -> dict[str, Any]:
         },
         "residual_learnability": learnability,
         "decision_learnability": decision_learnability,
+        "autoregressive_pipeline": autoregressive_pipeline,
         "interventions": interventions,
         "trained_mechanism_ablations": trained_ablations,
         "lifecycle": {
@@ -2167,10 +2457,14 @@ def run(config_path: Path) -> dict[str, Any]:
         },
         "gates": gates,
         "hard_gaps": [
-            row["gate"] for row in gates if not row["passed"] and row["severity"] == "hard"
+            row["gate"]
+            for row in gates
+            if not row["passed"] and row["severity"] == "hard"
         ],
         "inconclusive_gaps": [
-            row["gate"] for row in gates if not row["passed"] and row["severity"] == "adequacy"
+            row["gate"]
+            for row in gates
+            if not row["passed"] and row["severity"] == "adequacy"
         ],
         "capability_claim": "NONE_MECHANICS_ONLY",
         "negative_verdict_authority": "NONE",

@@ -645,7 +645,9 @@ def model_accounting(
         }
     )
     kerc_count = count(kerc_model, vocab_size=kerc_vocab_size)
-    surface_count_fn = lambda model: count(model, vocab_size=canonical_vocab_size)
+    def surface_count_fn(model: dict[str, Any]) -> int:
+        return count(model, vocab_size=canonical_vocab_size)
+
     surface_model, surface_count = matched_encoder_decoder_config(
         kerc_count,
         config["shared_trunk_model"],
@@ -780,9 +782,13 @@ def matched_encoder_decoder_config(
 
 
 def build_source_to_target_lookup(
-    base: dict[str, Any], metadata: dict[str, Any], *, vocab_size: int | None = None
+    base: dict[str, Any],
+    metadata: dict[str, Any],
+    *,
+    vocab_size: int | None = None,
+    identity_ranges: tuple[tuple[int, int], ...] = (),
 ) -> np.ndarray:
-    """Map exact source token identities into target IDs for learned copying."""
+    """Map source identities and explicitly shared structured IDs for copying."""
 
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
@@ -796,7 +802,29 @@ def build_source_to_target_lookup(
         target_id = target_vocab.get(token)
         if target_id is not None:
             lookup[source_offset + int(source_id)] = target_offset + int(target_id)
+    for start, end in identity_ranges:
+        start = int(start)
+        end = int(end)
+        if start < 0 or end <= start or end > vocab_size:
+            raise ValueError(f"copy identity range is outside the model vocabulary: {start}:{end}")
+        lookup[start:end] = np.arange(start, end, dtype=np.int32)
     return lookup
+
+
+def target_copy_identity_ranges(target: dict[str, Any]) -> tuple[tuple[int, int], ...]:
+    """Return global code spaces that are valid on both sides of a KERC stage."""
+
+    model = target.get("model") or {}
+    if str(target.get("role") or "") != "kerc_english_candidate":
+        return ()
+    ranges = (
+        (int(model["kerc_surface_token_start"]), int(model["kerc_surface_token_end"])),
+        (int(model["kerc_kernel_token_start"]), int(model["kerc_kernel_token_end"])),
+        (int(model["kerc_pointer_token_start"]), int(model["kerc_pointer_token_end"])),
+    )
+    if any(left_end != right_start for (_left_start, left_end), (right_start, _right_end) in zip(ranges, ranges[1:])):
+        raise ValueError("KERC copy identity ranges must be contiguous and non-overlapping")
+    return ranges
 
 
 def target_contracts(
@@ -1543,7 +1571,10 @@ def ensure_shared_trunk_migration(
         target.get("vocab_size") or plan["models"]["vocab_size"]
     )
     copy_lookup = build_source_to_target_lookup(
-        base, metadata, vocab_size=target_vocab_size
+        base,
+        metadata,
+        vocab_size=target_vocab_size,
+        identity_ranges=target_copy_identity_ranges(target),
     )
     model = build_model(
         CausalTransformerConfig(
@@ -2322,7 +2353,10 @@ def evaluate_target(
         nn=nn,
         state_role_lookup=None,
         source_to_target_lookup=build_source_to_target_lookup(
-            base, metadata, vocab_size=evaluated_vocab_size
+            base,
+            metadata,
+            vocab_size=evaluated_vocab_size,
+            identity_ranges=target_copy_identity_ranges(target),
         ),
     )
     checkpoint = resolve(str(target["checkpoint"]))
@@ -3136,6 +3170,7 @@ def train_target(
             read_json(resolve(str(config["base_config"]))),
             read_json(resolve(str(config["stage_dir"])) / "stage_metadata_v1.json"),
             vocab_size=trained_vocab_size,
+            identity_ranges=target_copy_identity_ranges(target),
         )
     model = build_model(
         CausalTransformerConfig(vocab_size=trained_vocab_size, **target["model"]),

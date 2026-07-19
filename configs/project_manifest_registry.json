@@ -262,15 +262,15 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "4b447c892b40bc23bdc9adb92a597e4b2132a6f46ba9d5bcc42694fb790d11cb"
+          "sha256": "479de7282d4d9955748356bf7f34d64234f937724b583004215058b6bb12fd59"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "9075ec322e3cded0eed934fb12d7f9755397f95f893ae0b36798d6ec6d85a4e5"
+          "sha256": "d9d8f7df9370f734b38785e878857bfe76c6822cdc102214ee7011fee108bd0b"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "20a63a76ea609796581a45fdc67b3e05f2ae3b1d1a2a25359d8cb2d6a7ac731e"
+          "sha256": "51ef0accc8aec2df86cd33291e5c44b4507b04dab902c1cdcaa4224f26f067f6"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
@@ -278,7 +278,7 @@
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "002b5e036bf055f3d7ff2c005a297d5574ca517d581bcf8de6ae4c7fbe947012"
+          "sha256": "1b4ae514b02aaa457fb5ce0a3649aa876ae13cc8b445fb47d7979ed0c5b730bf"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
@@ -286,7 +286,7 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "83f26d12aba5e6bed9b924c0137476dd4cdeb29ced0e10a3e8f9f57c3e782fc6"
+          "sha256": "baff9261a1b75e6b513a7ef96eaeaaec553b515939a545461bf9718e460e62e6"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -382,7 +382,7 @@
         },
         "kerc_gum_entity_coreference_tests": {
           "path": "tests/test_kerc_gum_entity_coreference.py",
-          "sha256": "dd64cf7ec3bab166c5644dda9b0b1c6c1aa4f1400074e6bc6661f9a74523c8b4"
+          "sha256": "5e3bc878cb4a43d249ea62580aa1a7919068aa9cbd0ee3948c8b628186afa0a2"
         },
         "kerc_masc_event_coreference_tests": {
           "path": "tests/test_kerc_masc_event_coreference.py",
@@ -414,15 +414,19 @@
         },
         "kerc_adequacy_config": {
           "path": "configs/kerc_adequacy_canary.json",
-          "sha256": "2629f28a5ce7009b353ed99fdf105f17f1951b289286db96a4724e078818dec9"
+          "sha256": "a9faace4fa197575557c2e968cf2bd3e9f5454611049aa720be78636d7e45472"
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "08571937260c6dabc16dd0c80a3544c617f0497a75821a4ad9eb29d254129f8c"
+          "sha256": "b3fb0370b8343e5ea8dc73a4990884276c9d7af6e8a90887d26b4e205412ea24"
+        },
+        "kerc_autoregressive_qualification": {
+          "path": "scripts/kerc_autoregressive_qualification.py",
+          "sha256": "4157367b55184ab371e4a92d7a232b0be109f67f9d9d870b01181a14ad5bdab6"
         },
         "kerc_adequacy_tests": {
           "path": "tests/test_kerc_adequacy_canary.py",
-          "sha256": "92cca20991420c6362168f4e07b6a424545b3e401a247003de7a76c0b106a06a"
+          "sha256": "91fbc9a626ec5d982fb532e2582694b8bfb81a79eabdff703a54d5e418f3b5ef"
         },
         "kerc_checkpoint_schema": {
           "path": "scripts/kerc_checkpoint_schema.py",
@@ -430,7 +434,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "9f1b9e11624ae2629d0d725051b227669489552a8550b1aa9b4fe3040d0775f4"
+          "sha256": "25062211592c08c890938c38627c64afad938f60ebc14a22b557499aa8cdf627"
         },
         "kerc_concept_registry_tests": {
           "path": "tests/test_kerc_concept_registry.py",
@@ -5466,6 +5470,7 @@
         "scripts/kerc_scoped_semantics_verify.py",
         "scripts/kerc_scoped_semantics_gate.py",
         "scripts/kerc_adequacy_canary.py",
+        "scripts/kerc_autoregressive_qualification.py",
         "scripts/kerc_implementation_fidelity_gate.py",
         "scripts/kerc_checkpoint_schema.py",
         "scripts/kernel_english_protocol.py",
@@ -5558,7 +5563,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0-K1l independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, and source-grounded semantic families while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 train/dev/eval records with zero raw-source or source-group overlap. It materializes 53,414 generator views, 53,414 verifier corruptions, and 384 generator-loss-disabled context counterfactuals from 18,033 unique raw sources / 4,721,570 raw bytes. Quota-aware selection meets every frozen objective floor and retains all 96 grounded question records without exposing answers or model outcomes. Exact compact typed program and answer transports are invertible; iterative compiler chunks and topologically scheduled reasoner chunks are bounded to eight target nodes, carry only prior generated state and direct predecessor context, and revalidate the exact merged program/answer. Encoded-length-only 8K/16K buckets retain all rows with zero truncation or drop; 347 of 107,212 materialized training examples use the single-row long bucket and receive zero capability credit. The cold stage takes 1,636.573 seconds; an exact content-addressed replay takes 1.58 seconds and revalidates dependency/output hashes. This closes the prior materialization/admissibility blocker and authorizes bounded learnability work, not a capability verdict. Construct validity remains RED: learned compiler/core/renderer competence, per-unit residual allocation, interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. The wire remains economically negative. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
+      "current_wall": "K0-K1m independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, and two production-shaped autoregressive mechanics profiles while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 train/dev/eval records with zero raw-source or source-group overlap. It materializes 53,414 generator views, 53,414 verifier corruptions, and 384 generator-loss-disabled context counterfactuals from 18,033 unique raw sources / 4,721,570 raw bytes. Exact typed transports are invertible, iterative compiler and topological reasoner chunks carry only generated prior state, and encoded-length-only 8K/16K buckets retain every row without truncation. Protected-single and two-chunk hierarchical MLX profiles pass stage gradients, exact overfit, learned protected-span reconstruction, real no-fallback execution, causal prior-state interventions, and exact checkpoint reload; the hierarchical route executes all nine expected stages over eight prior-claim dependencies. The enclosing adequacy canary remains RED because continuous-versus-resumed training has one token-logit tolerance violation (5.75e-5) despite identical discrete outcomes and a 2.98e-7 parameter delta, and joint training forgets the sole CLARIFY row. Next repair the numerical-resume contract through preregistered fresh-process characterization and repair joint-objective decision retention without relaxing observed thresholds. Construct validity remains RED: per-unit residual allocation, interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. The wire remains economically negative. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",
@@ -8300,6 +8305,7 @@
         "scripts/standard_causal_transformer_survival.py",
         "scripts/moecot_language_arm_training.py",
         "scripts/kerc_adequacy_canary.py",
+        "scripts/kerc_autoregressive_qualification.py",
         "scripts/kerc_checkpoint_schema.py",
         "scripts/standard_causal_transformer_conditioning.py",
         "scripts/standard_causal_transformer_model.py",

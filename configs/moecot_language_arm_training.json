@@ -307,18 +307,14 @@
     "required": true,
     "disposition": {
       "policy": "project_theseus_kerc_pretraining_disposition_v1",
-      "state": "RETIRED_FROM_FIRST_LONG_RUN",
-      "retirement_scope": "full_compiler_core_renderer_training_path_only",
-      "evidence_scope": "bounded_authored_synthetic_campaign",
-      "broad_efficiency_gate_passed": false,
-      "full_kerc_training_enabled": false,
+      "state": "CANDIDATE_REQUIRED",
+      "qualification_scope": "faithful_full_compiler_core_renderer_candidate",
+      "basis": "adequacy_audit_reopened_after_toy_proxy",
+      "full_kerc_training_enabled": true,
       "general_kerc_falsification_claimed": false,
       "learned_capability_claimed": false,
-      "retained_mechanisms": [
-        "protected_exact_object_path",
-        "scoped_interaction_glossary_residual"
-      ],
-      "evidence": {
+      "retained_mechanisms": [],
+      "superseded_proxy_evidence": {
         "campaign_id": "p4-m8-kerc-runtime-001",
         "source_project": "AI_book",
         "source_state": "content_addressed_local_campaign",

@@ -50,6 +50,37 @@
     "joint_compatibility_steps": 64,
     "minimum_post_joint_macro_balanced_accuracy": 0.75
   },
+  "autoregressive_pipeline": {
+    "enabled": true,
+    "selection": "two_independent_source_bound_profiles_single_protected_and_stateful_hierarchical_with_renderer_compatibility",
+    "maximum_steps": 768,
+    "minimum_steps": 96,
+    "evaluation_interval": 24,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "gradient_clip_norm": 1.0,
+    "minimum_stage_token_accuracy": 1.0,
+    "minimum_parameter_family_gradient_l2": 1e-10,
+    "minimum_state_intervention_logit_delta": 1e-7,
+    "decode_max_target_tokens": 256,
+    "beam_width": 1,
+    "branching_factor": 1,
+    "maximum_checkpoint_reload_logit_delta": 1e-06,
+    "profiles": {
+      "protected_single": {
+        "maximum_steps": 2048,
+        "minimum_steps": 96,
+        "evaluation_interval": 24,
+        "decode_max_target_tokens": 256
+      },
+      "hierarchical_stateful": {
+        "maximum_steps": 2048,
+        "minimum_steps": 160,
+        "evaluation_interval": 32,
+        "decode_max_target_tokens": 2048
+      }
+    }
+  },
   "acceptance": {
     "maximum_final_to_initial_loss_ratio": 0.8,
     "minimum_token_accuracy_gain": 0.01,

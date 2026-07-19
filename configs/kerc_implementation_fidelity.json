@@ -36,7 +36,11 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "83f26d12aba5e6bed9b924c0137476dd4cdeb29ced0e10a3e8f9f57c3e782fc6"
+      "sha256": "baff9261a1b75e6b513a7ef96eaeaaec553b515939a545461bf9718e460e62e6"
+    },
+    {
+      "path": "scripts/kerc_autoregressive_qualification.py",
+      "sha256": "4157367b55184ab371e4a92d7a232b0be109f67f9d9d870b01181a14ad5bdab6"
     },
     {
       "path": "scripts/kerc_scoped_semantics.py",
@@ -96,7 +100,7 @@
     },
     {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "4b447c892b40bc23bdc9adb92a597e4b2132a6f46ba9d5bcc42694fb790d11cb"
+      "sha256": "479de7282d4d9955748356bf7f34d64234f937724b583004215058b6bb12fd59"
     },
     {
       "path": "configs/kerc_concept_registry.json",
@@ -424,9 +428,9 @@
       "id": "kerc.coordinated_learned_architecture",
       "paper_sections": ["8.2", "8.3", "10.1", "10.14"],
       "status": "approximate",
-      "implementation_refs": ["scripts/standard_causal_transformer_model.py", "scripts/moecot_source_conditioned_pretraining.py"],
-      "evidence_refs": ["tests/test_standard_causal_transformer_survival.py", "tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A shared trunk with stage adapters, typed code-space masks, auxiliary heads, joint-loss plumbing, and a no-fallback causal compiler/core/renderer execution route exists. Compiler chunks consume only visible source plus prior generated compiler state; reasoner chunks are topologically scheduled and consume direct predecessor stubs plus exact prior generated claims; answer assembly restores canonical claim order before the renderer and independent recompile-and-compare route. All 53,414 canonical views are materializable, but the stages have not yet demonstrated source-disjoint learned competence.",
+      "implementation_refs": ["scripts/standard_causal_transformer_model.py", "scripts/moecot_source_conditioned_pretraining.py", "scripts/kerc_autoregressive_qualification.py"],
+      "evidence_refs": ["tests/test_standard_causal_transformer_survival.py", "tests/test_moecot_source_conditioned_pretraining.py", "tests/test_kerc_adequacy_canary.py"],
+      "current_finding": "A shared trunk with stage adapters, typed code-space masks, auxiliary heads, joint-loss plumbing, and a no-fallback causal compiler/core/renderer execution route exists. Compiler chunks consume only visible source plus prior generated compiler state; reasoner chunks are topologically scheduled and consume direct predecessor stubs plus exact prior generated claims; answer assembly restores canonical claim order before the renderer and independent recompile-and-compare route. All 53,414 canonical views are materializable. Two source-bound MLX profiles now prove stage gradients, exact representative-subset overfit, real autoregressive execution, learned protected-span declarations followed by independent byte reconstruction, causal use of generated prior compiler/core state, and exact checkpoint reload. The two-chunk hierarchical profile executes all nine expected stages without fallback. The enclosing canary remains RED because resumed training has one tolerance violation despite identical discrete outcomes and a 2.98e-7 maximum parameter delta, and joint training forgets the sole CLARIFY example. No source-disjoint learned competence is claimed.",
       "claim_ceiling": "Shared-trunk route, gradient, shape, and objective compatibility mechanics only.",
       "next_evidence": "Representative-subset overfit and interventions for protected spans, compiler, core, per-unit allocator, answer head, renderer, and verifier under one versioned objective ledger."
     },
@@ -436,9 +440,9 @@
       "status": "faithful",
       "implementation_refs": ["scripts/kerc_checkpoint_schema.py", "scripts/standard_causal_transformer_model.py"],
       "evidence_refs": ["tests/test_kerc_adequacy_canary.py", "tests/test_standard_causal_transformer_survival.py"],
-      "current_finding": "KERC tensors, optimizer state, schema identity, migration, rollback, resume, and bounded Apple-MLX execution are replayed.",
-      "claim_ceiling": "Checkpoint/state and bounded MLX mechanics only; no sustained throughput, energy, CUDA parity, or learned utility claim.",
-      "next_evidence": "Multi-seed full-shape resource replay with memory/energy telemetry and cropped/uncropped equivalence before the campaign."
+      "current_finding": "KERC tensors, optimizer state, schema identity, migration, rollback, and bounded Apple-MLX execution replay. Checkpoint reload and optimizer-state reload are exact, and continuous-versus-resumed training preserves all discrete outcomes, but one token logit differs by 5.75e-5 and the maximum parameter delta is 2.98e-7; the frozen resume tolerance therefore remains RED.",
+      "claim_ceiling": "Checkpoint/state and bounded MLX mechanics with an explicit unresolved numerical-resume boundary only; no sustained throughput, energy, CUDA parity, or learned utility claim.",
+      "next_evidence": "Establish a preregistered float32/MLX numerical-equivalence envelope from repeated fresh-process replays, preserve exact discrete outcomes and optimizer reload, then run multi-seed full-shape resource replay with memory/energy telemetry and cropped/uncropped equivalence before the campaign."
     },
     {
       "id": "kerc.calibrated_answer_decision",

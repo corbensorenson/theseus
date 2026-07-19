@@ -2325,6 +2325,22 @@ paper mechanism.
    complete sentence semantics, truth, temporal truth, utility, SOTA, AGI, or ASI. The next
    gate is bounded learnability, gradients, overfit, checkpoint/reload/resume, causal
    intervention, and no-fallback replay on this exact stage before K2 or long training.
+   **K1m production-route adequacy result (`PARTIAL`, 2026-07-19):** two independently
+   selected, source-bound Apple-MLX profiles now pass stage-gradient, exact teacher-forced
+   overfit, learned protected-span declaration plus independent byte reconstruction, real
+   no-fallback autoregressive execution, and exact checkpoint-reload gates. The stateful
+   profile contains two compiler chunks, two topologically scheduled core chunks, eight
+   prior-claim dependencies, and a renderer; its forward/recompile path executes all nine
+   expected stages and both removal interventions measurably change target logits. This
+   establishes production-shaped mechanics only. The enclosing canary remains `RED`:
+   continuous and resumed training preserve every discrete outcome and differ by at most
+   `2.98e-7` in parameters, but one token logit differs by `5.75e-5`, beyond the frozen
+   tolerance; after joint-objective training, the seven-row decision probe retains ANSWER
+   and ABSTAIN but forgets the sole CLARIFY row (`0.6667` macro balanced accuracy versus
+   the `0.75` floor). Do not relax either threshold after inspection. The next owner is a
+   preregistered repeated fresh-process MLX numerical-equivalence characterization plus
+   gradient-conflict/rehearsal repair for joint decision retention. This result grants no
+   source-disjoint competence, utility, efficiency, KERC success, or negative verdict.
    **K1 closure gate:** maintain a construct-by-domain-by-composition-depth coverage
    matrix, not one aggregate record count. Every claimed construct needs source-group-
    disjoint train/development/evaluation examples, adversarial minimal pairs, multiple

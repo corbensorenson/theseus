@@ -79,7 +79,9 @@ def kernel_config(tmp_path: Path) -> dict:
             "report": str(tmp_path / "kernel-report.json"),
             "records_jsonl": str(tmp_path / "records.jsonl"),
             "verification_ledger_jsonl": str(tmp_path / "verification-ledger.jsonl"),
-            "semantic_source_catalog_json": str(tmp_path / "semantic-source-catalog.json"),
+            "semantic_source_catalog_json": str(
+                tmp_path / "semantic-source-catalog.json"
+            ),
             "objective_order": list(kernel.TRAINING_OBJECTIVES),
             "records_by_split": {
                 "private_train": 1,
@@ -112,7 +114,8 @@ def kernel_config(tmp_path: Path) -> dict:
                         "maximum_optimizer_sampling_weight": float(
                             contract["maximum_optimizer_sampling_weight"]
                         ),
-                        "training_only": contract["allowed_splits"] == {"private_train"},
+                        "training_only": contract["allowed_splits"]
+                        == {"private_train"},
                     }
                     for tier, contract in kernel.SEMANTIC_EVIDENCE_TIERS.items()
                 },
@@ -176,7 +179,12 @@ def kernel_config(tmp_path: Path) -> dict:
                         "private_dev": 0,
                         "private_eval": 0,
                     },
-                    "grounded_question_required_forms": ["what", "who", "where", "when"],
+                    "grounded_question_required_forms": [
+                        "what",
+                        "who",
+                        "where",
+                        "when",
+                    ],
                     "grounded_question_claim_scope": "fixture extractive support only",
                     "grounded_question_allowed_objectives": list(
                         kernel.TRAINING_OBJECTIVES
@@ -659,7 +667,11 @@ def test_grounded_context_counterfactuals_remove_stale_hash_shortcuts() -> None:
             "program": program,
             "residual": {
                 "interaction": [
-                    ["document_context", "content", first["source_annotation"]["context"]],
+                    [
+                        "document_context",
+                        "content",
+                        first["source_annotation"]["context"],
+                    ],
                     ["question_contract", "context_sha256", first_hash],
                 ]
             },
@@ -705,16 +717,22 @@ def test_grounded_context_counterfactuals_remove_stale_hash_shortcuts() -> None:
     assert receipt["missing_donor_record_sha256"] == []
     for view in views["private_train"]:
         by_strategy = {
-            item["strategy"]: item
-            for item in view["kerc_context_counterfactuals"]
+            item["strategy"]: item for item in view["kerc_context_counterfactuals"]
         }
         withheld = json.loads(by_strategy["context_withheld"]["prompt"])
         interaction = withheld.get("interaction") or withheld["residual"]["interaction"]
-        assert ["document_context", "content", first["source_annotation"]["context"]] not in interaction
+        assert [
+            "document_context",
+            "content",
+            first["source_annotation"]["context"],
+        ] not in interaction
         shuffled = by_strategy["context_shuffled"]
         assert first_hash not in shuffled["prompt"]
         assert encoded_first_hash not in shuffled["prompt"]
-        assert first["surface_target"].casefold() not in donor["source_annotation"]["context"].casefold()
+        assert (
+            first["surface_target"].casefold()
+            not in donor["source_annotation"]["context"].casefold()
+        )
         if view["objective"] == "kernel_program_to_answer_packet_v1":
             shuffled_prompt = json.loads(shuffled["prompt"])
             unsigned_program = {
@@ -758,7 +776,7 @@ def test_denoising_rows_keep_target_out_of_prompt_and_preserve_provenance() -> N
     reserve_byte_fallback_tokens(source_vocab, max_vocab=270, stream="source")
     reserve_byte_fallback_tokens(target_vocab, max_vocab=270, stream="target")
     source = {
-        "text": "fn main() { let value = 42; println!(\"{}\", value); }\n" * 3,
+        "text": 'fn main() { let value = 42; println!("{}", value); }\n' * 3,
         "text_sha256": "a" * 64,
         "language": "rust",
         "repo": "example/repo",
@@ -783,8 +801,13 @@ def test_source_rejection_fails_closed_on_license_and_public_payloads() -> None:
         "public_benchmark_solutions_included": False,
     }
     assert source_rejection(clean, cfg) == ""
-    assert source_rejection({**clean, "license_spdx": "unknown"}, cfg) == "license_not_allowed"
-    assert source_rejection({**clean, "public_benchmark": True}, cfg).startswith("public_")
+    assert (
+        source_rejection({**clean, "license_spdx": "unknown"}, cfg)
+        == "license_not_allowed"
+    )
+    assert source_rejection({**clean, "public_benchmark": True}, cfg).startswith(
+        "public_"
+    )
 
 
 def test_source_conditioned_manifest_binds_all_mutable_dependencies(
@@ -795,7 +818,9 @@ def test_source_conditioned_manifest_binds_all_mutable_dependencies(
     stage = tmp_path / "stage"
     stage.mkdir()
     metadata = stage / "stage_metadata_v1.json"
-    metadata.write_text('{"source_vocab":{"a":1},"target_vocab":{"a":1}}\n', encoding="utf-8")
+    metadata.write_text(
+        '{"source_vocab":{"a":1},"target_vocab":{"a":1}}\n', encoding="utf-8"
+    )
     supervision = tmp_path / "supervision"
     (supervision / "private_train").mkdir(parents=True)
     supervision_manifest = supervision / "manifest.json"
@@ -841,10 +866,14 @@ def test_source_conditioned_manifest_binds_all_mutable_dependencies(
     assert "dependency_identity_mismatch:source_jsonl" in gaps
     source.write_text('{"text":"alpha"}\n', encoding="utf-8")
 
-    metadata.write_text('{"source_vocab":{"b":2},"target_vocab":{"a":1}}\n', encoding="utf-8")
+    metadata.write_text(
+        '{"source_vocab":{"b":2},"target_vocab":{"a":1}}\n', encoding="utf-8"
+    )
     gaps = validate_manifest(payload, cfg, full_config)
     assert "dependency_identity_mismatch:stage_metadata" in gaps
-    metadata.write_text('{"source_vocab":{"a":1},"target_vocab":{"a":1}}\n', encoding="utf-8")
+    metadata.write_text(
+        '{"source_vocab":{"a":1},"target_vocab":{"a":1}}\n', encoding="utf-8"
+    )
 
     supervision_rows.write_text('{"target_sha256":"changed"}\n', encoding="utf-8")
     gaps = validate_manifest(payload, cfg, full_config)
@@ -903,7 +932,9 @@ def test_kerc_gum_entity_coreference_contract_fails_closed(tmp_path: Path) -> No
             validate_kernel_english_config(mutated)
 
 
-def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Path) -> None:
+def test_kernel_stage_materializes_replays_and_cleans_atomic_files(
+    tmp_path: Path,
+) -> None:
     cfg = kernel_config(tmp_path)
     cfg["kernel_english_training"]["materialization_execution"].update(
         {"validation_workers": 2, "compilation_workers": 2}
@@ -931,9 +962,7 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
         "".join(json.dumps(row, sort_keys=True) + "\n" for row in records),
         encoding="utf-8",
     )
-    ledger_path = Path(
-        cfg["kernel_english_training"]["verification_ledger_jsonl"]
-    )
+    ledger_path = Path(cfg["kernel_english_training"]["verification_ledger_jsonl"])
     ledger_path.write_text(
         "".join(
             json.dumps(row["verification_receipt"], sort_keys=True) + "\n"
@@ -941,9 +970,7 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
         ),
         encoding="utf-8",
     )
-    catalog_path = Path(
-        cfg["kernel_english_training"]["semantic_source_catalog_json"]
-    )
+    catalog_path = Path(cfg["kernel_english_training"]["semantic_source_catalog_json"])
     catalog_path.write_text(
         json.dumps(
             {
@@ -985,7 +1012,9 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
         split: {objective: 1 for objective in kernel.TRAINING_OBJECTIVES}
         for split in ("private_train", "private_dev", "private_eval")
     }
-    assert all(value == 3 for value in report["compiled_view_count_by_objective"].values())
+    assert all(
+        value == 3 for value in report["compiled_view_count_by_objective"].values()
+    )
     codebook_path = Path(report["code_vocabulary"]["path"])
     if not codebook_path.is_absolute():
         codebook_path = ROOT / codebook_path
@@ -1021,8 +1050,13 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     assert encoded_receipt["unknown_token_count"] == 0
     assert decoded_receipt["state"] == "READY"
     assert decoded == compiler_view["target"]
-    assert inspect_kernel_english(cfg, tmp_path / "config.json")["trigger_state"] == "GREEN"
-    assert not list(Path(cfg["kernel_english_training"]["stage_root"]).glob("*.partial"))
+    assert (
+        inspect_kernel_english(cfg, tmp_path / "config.json")["trigger_state"]
+        == "GREEN"
+    )
+    assert not list(
+        Path(cfg["kernel_english_training"]["stage_root"]).glob("*.partial")
+    )
 
     manifest_path = Path(cfg["kernel_english_training"]["stage_root"]) / "manifest.json"
     manifest_mtime_ns = manifest_path.stat().st_mtime_ns
@@ -1037,7 +1071,9 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     train_path = Path(report["artifacts"]["english:private_train"]["path"])
     if not train_path.is_absolute():
         train_path = ROOT / train_path
-    train_path.write_text(train_path.read_text(encoding="utf-8") + "{}\n", encoding="utf-8")
+    train_path.write_text(
+        train_path.read_text(encoding="utf-8") + "{}\n", encoding="utf-8"
+    )
     replay = inspect_kernel_english(cfg, tmp_path / "config.json")
     assert replay["trigger_state"] == "RED"
     assert any("artifact_identity" in gap for gap in replay["hard_gaps"])
@@ -1163,9 +1199,7 @@ def test_kernel_selection_preserves_constraints_and_is_order_invariant(
             ),
         ],
         "private_dev": [
-            selection_record(
-                "private_dev", "dev", objectives=all_objectives
-            ),
+            selection_record("private_dev", "dev", objectives=all_objectives),
             selection_record(
                 "private_dev",
                 "cross-split-dev",
@@ -1174,9 +1208,7 @@ def test_kernel_selection_preserves_constraints_and_is_order_invariant(
             ),
         ],
         "private_eval": [
-            selection_record(
-                "private_eval", "eval", objectives=all_objectives
-            )
+            selection_record("private_eval", "eval", objectives=all_objectives)
         ],
     }
     cfg = selection_config(tmp_path)
@@ -1203,12 +1235,8 @@ def test_kernel_selection_preserves_constraints_and_is_order_invariant(
         for count in counts.values()
     )
     assert not {
-        row["raw_source_sha256"]
-        for rows in selected.values()
-        for row in rows
-    } & {
-        "sha256:" + hashlib.sha256(b"duplicate-source").hexdigest()
-    }
+        row["raw_source_sha256"] for rows in selected.values() for row in rows
+    } & {"sha256:" + hashlib.sha256(b"duplicate-source").hexdigest()}
 
 
 def test_kernel_selection_fails_closed_when_declared_floor_is_infeasible(
@@ -1241,7 +1269,9 @@ def test_kernel_selection_fails_closed_when_declared_floor_is_infeasible(
         select_kernel_records(candidates, cfg)
 
 
-def test_semantic_source_catalog_rejects_public_calibration_sources(tmp_path: Path) -> None:
+def test_semantic_source_catalog_rejects_public_calibration_sources(
+    tmp_path: Path,
+) -> None:
     cfg = kernel_config(tmp_path)["kernel_english_training"]
     catalog = tmp_path / "semantic-source-catalog.json"
     catalog.write_text(
@@ -1279,6 +1309,23 @@ def test_retired_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(
     canonical = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )["kernel_english_training"]
+    active = canonical["disposition"]
+    canonical["disposition"] = {
+        "policy": active["policy"],
+        "state": "RETIRED_FROM_FIRST_LONG_RUN",
+        "retirement_scope": "full_compiler_core_renderer_training_path_only",
+        "evidence_scope": "bounded_authored_synthetic_campaign",
+        "broad_efficiency_gate_passed": False,
+        "full_kerc_training_enabled": False,
+        "general_kerc_falsification_claimed": False,
+        "learned_capability_claimed": False,
+        "retained_mechanisms": [
+            "protected_exact_object_path",
+            "scoped_interaction_glossary_residual",
+        ],
+        "evidence": active["superseded_proxy_evidence"],
+        "non_claims": active["non_claims"],
+    }
     canonical["required"] = False
     canonical["records_by_split"] = {
         "private_train": 0,
@@ -1309,9 +1356,7 @@ def test_retired_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(
     }
     assert not Path(canonical["records_jsonl"]).exists()
     assert not Path(canonical["verification_ledger_jsonl"]).exists()
-    assert (
-        Path(canonical["stage_root"]) / "manifest.json"
-    ).is_file()
+    assert (Path(canonical["stage_root"]) / "manifest.json").is_file()
 
 
 def test_kernel_split_overlap_rejects_group_and_content_reuse() -> None:
