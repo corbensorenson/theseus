@@ -299,6 +299,130 @@ def test_dolly_replay_rejects_candidate_target_corruption(tmp_path: Path) -> Non
         verifier.verify_dolly_record(candidate, source, expected)
 
 
+def test_semantic_admission_process_pool_is_byte_equivalent_to_serial(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "dolly-parallel.jsonl"
+    rows = [
+        {
+            "instruction": f"Explain bounded admission fixture {index} clearly.",
+            "context": "",
+            "response": f"Bounded admission response {index} is independently authored.",
+            "category": "open_qa",
+        }
+        for index in range(3)
+    ]
+    path.write_text(
+        "".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8"
+    )
+    source = source_contract(path)
+    assignments = verifier.independent_dolly_assignments(source, 2048)
+    jobs = []
+    producer_identity = "sha256:" + "1" * 64
+    for line_number, expected in enumerate(assignments.values(), 1):
+        candidate = producer.dolly_record(
+            {
+                "selection_key": expected["selection_key"],
+                "prompt": expected["prompt"],
+                "target": expected["target"],
+                "annotation": expected["annotation"],
+                "category": expected["annotation"]["category"],
+            },
+            split=expected["split"],
+            source=source,
+            producer_sha256=producer_identity,
+        )
+        finalize_fixture_economics(candidate)
+        jobs.append(
+            {
+                "line_number": line_number,
+                "source_id": candidate["provenance"]["source_id"],
+                "family": "dolly_direct",
+                "semantic_key": f"fixture-{line_number}",
+                "record": candidate,
+                "source": source,
+                "expected_row": expected,
+                "expected_importance": candidate["residual_supervision"][
+                    "importance"
+                ],
+                "producer_family_identity": producer_identity,
+                "verifier_route_identity": "sha256:" + "2" * 64,
+            }
+        )
+
+    serial = list(
+        verifier.execute_semantic_admission_jobs(
+            jobs,
+            worker_count=1,
+            batch_size=1,
+        )
+    )
+    parallel = list(
+        verifier.execute_semantic_admission_jobs(
+            jobs,
+            worker_count=2,
+            batch_size=1,
+            max_in_flight_batches_per_worker=1,
+        )
+    )
+
+    serial.sort(key=lambda row: row["line_number"])
+    parallel.sort(key=lambda row: row["line_number"])
+    assert serial == parallel
+    assert all(row["accepted"] for row in parallel)
+    assert [row["line_number"] for row in parallel] == [1, 2, 3]
+    accepted = [
+        (row["line_number"], row["canonical"], row["receipt"])
+        for row in reversed(parallel)
+    ]
+    canonicals, receipts = verifier.order_semantic_admission_authority(accepted)
+    assert canonicals == [row["canonical"] for row in parallel]
+    assert receipts == [row["receipt"] for row in parallel]
+
+    with pytest.raises(ValueError, match="duplicate accepted"):
+        verifier.order_semantic_admission_authority([accepted[0], accepted[0]])
+
+
+def test_semantic_admission_auto_workers_respect_cpu_and_memory() -> None:
+    parallel = {
+        "enabled": True,
+        "default_workers": "auto",
+        "maximum_workers": 4,
+    }
+    resources = {
+        "minimum_logical_cpu_count": 2,
+        "parent_reserve_bytes": 6 * 1024**3,
+        "minimum_memory_bytes_per_worker": 1024**3,
+    }
+    large, large_receipt = verifier.resolve_semantic_worker_count(
+        parallel,
+        resources,
+        requested_workers=None,
+        logical_cpu_count=8,
+        total_memory_bytes=16 * 1024**3,
+    )
+    small, small_receipt = verifier.resolve_semantic_worker_count(
+        parallel,
+        resources,
+        requested_workers=None,
+        logical_cpu_count=4,
+        total_memory_bytes=8 * 1024**3,
+    )
+
+    assert large == 4
+    assert large_receipt["safe_workers"] == 4
+    assert small == 2
+    assert small_receipt["safe_workers"] == 2
+    with pytest.raises(ValueError, match="exceeds host resource"):
+        verifier.resolve_semantic_worker_count(
+            parallel,
+            resources,
+            requested_workers=4,
+            logical_cpu_count=4,
+            total_memory_bytes=8 * 1024**3,
+        )
+
+
 def test_dolly_grounded_question_replays_unique_support_and_rejects_forgery(
     tmp_path: Path,
 ) -> None:

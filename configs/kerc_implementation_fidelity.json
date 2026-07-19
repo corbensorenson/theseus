@@ -64,7 +64,11 @@
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "5e3fa4a904c3ee10c8e1f304f20a66886eea7ca7264aee64c162eea1af0094fb"
+      "sha256": "eaeeae53b96d6a4c4486f7cf3b762ec3e175e3119c192869046e6714f5a379e3"
+    },
+    {
+      "path": "configs/kerc_semantic_verifier_runtime.json",
+      "sha256": "ac9d813e7fa2495d9f1088d0e409148d3413543ad09a1f88be04da7d47556124"
     },
     {
       "path": "scripts/kerc_source_family_identity.py",
@@ -152,7 +156,11 @@
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "3438c7c2c3a28c0fd17b2f56ac1449c1769d83fccab28dbf29b3b6f8c7ec5618"
+      "sha256": "aa0a5adb1a3a6ee1ec5d09a8bf3540eff615193690082b26c9ee03f4b702a9de"
+    },
+    {
+      "path": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
+      "sha256": "aa0a5adb1a3a6ee1ec5d09a8bf3540eff615193690082b26c9ee03f4b702a9de"
     },
     {
       "path": "reports/kerc_selective_replay_k1g.json",
@@ -183,8 +191,8 @@
     "interaction_presence_label_with_empty_global_count": 6809
   },
   "incremental_replay_contract": {
-    "status": "partial_green_k1k_serialization_migrated_full_independent_and_top_level_warm_replay_evidence",
-    "evidence": "reports/runtime/kerc_semantic_corpus_verification.json",
+    "status": "partial_green_k1k_serialization_migrated_full_independent_parallel_and_top_level_replay_evidence",
+    "evidence": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
     "source_family_count": 11,
     "candidate_record_count": 27941,
     "producer_family_identity_independently_recomputed": true,
@@ -197,8 +205,21 @@
     "warm_miss_count": 0,
     "producer_authority_reused_for_admission": false,
     "producer_current_cold_runtime_ms": 3642746,
-    "verifier_current_cold_runtime_ms": 4982793,
-    "cold_rebuild_scope": "KE-SERIALIZATION-2.0 invalidated every Kernel-protocol-bound candidate/finalization and semantic-admission object; all 27,941 records were rebuilt and independently admitted",
+    "verifier_previous_serial_cold_runtime_ms": 4982793,
+    "verifier_previous_serial_semantic_admission_ms": 4878178,
+    "verifier_current_cold_runtime_ms": 1503943,
+    "verifier_current_cold_semantic_admission_ms": 1418771,
+    "verifier_cold_runtime_speedup_ratio": 3.313153,
+    "verifier_semantic_admission_speedup_ratio": 3.438312,
+    "verifier_current_worker_count": 4,
+    "verifier_worker_selection": "host_resource_derived",
+    "verifier_cache_publication": "single_writer_parent_process",
+    "verifier_current_cold_maximum_resident_bytes": 4786143232,
+    "verifier_current_cold_peak_footprint_bytes": 10342161792,
+    "verifier_process_level_swap_count": 0,
+    "canonical_and_ledger_byte_identity_preserved": true,
+    "parallel_completion_order_restored_before_aggregate_replay": true,
+    "cold_rebuild_scope": "all 27,941 semantic admissions were forcibly recomputed under bounded spawned workers; candidate, canonical, ledger, aggregate, and gate identities were independently replayed",
     "producer_warm_wall_runtime_ms": 3200,
     "verifier_warm_wall_runtime_ms": 9430,
     "combined_cache_bytes": 14234451968,
@@ -207,7 +228,7 @@
     "remaining_incremental_owners": [
       "raw source parsing",
       "split reconstruction and selection",
-      "aggregate importance calibration",
+      "aggregate importance and rate-distortion calibration",
       "candidate and canonical serialization"
     ],
     "claim_ceiling": "Replay performance, restartability, selective invalidation, integrity, and physical resource accounting only; no semantic, learned, utility, compression, or KERC-thesis claim."

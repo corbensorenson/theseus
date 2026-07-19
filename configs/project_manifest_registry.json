@@ -326,7 +326,11 @@
       },
       "kerc_semantic_corpus_verifier": {
         "path": "scripts/kerc_semantic_corpus_verify.py",
-        "sha256": "5e3fa4a904c3ee10c8e1f304f20a66886eea7ca7264aee64c162eea1af0094fb"
+        "sha256": "eaeeae53b96d6a4c4486f7cf3b762ec3e175e3119c192869046e6714f5a379e3"
+      },
+      "kerc_semantic_verifier_runtime": {
+        "path": "configs/kerc_semantic_verifier_runtime.json",
+        "sha256": "ac9d813e7fa2495d9f1088d0e409148d3413543ad09a1f88be04da7d47556124"
       },
       "kerc_source_family_identity": {
         "path": "scripts/kerc_source_family_identity.py",
@@ -370,7 +374,7 @@
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "635f813f2018851acbb62bcc61cfea41981c7c71268acf8d065218ccb9d9d3e6"
+          "sha256": "38c504203bda776596c9ae991df828d0fbf33fdf2ad52b591bd92fef431f2606"
         },
         "kerc_gum_discourse_tests": {
           "path": "tests/test_kerc_gum_discourse_relations.py",
@@ -5447,6 +5451,7 @@
         "scripts/kerc_source_family_identity.py",
         "scripts/kerc_semantic_corpus.py",
         "scripts/kerc_semantic_corpus_verify.py",
+        "configs/kerc_semantic_verifier_runtime.json",
         "scripts/kerc_masc_event_coreference.py",
         "scripts/kerc_masc_event_coreference_verify.py",
         "scripts/kerc_masc_mpqa_relations.py",
@@ -5507,6 +5512,7 @@
         "reports/moecot_source_conditioned_pretraining.json",
         "reports/moecot_kernel_english_stage.json",
         "reports/runtime/kerc_semantic_corpus_verification.json",
+        "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
         "reports/runtime/kerc_concept_registry_verification.json",
         "reports/kerc_scoped_semantics_k1k.json",
         "reports/kerc_selective_replay_k1g.json",
@@ -5551,7 +5557,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0 independently binds the KERC paper, implementation sources, independent verifier, and all 27,941 current corpus records. Three mechanisms are faithful mechanics, ten remain approximate/fixture-only, three are inactive/absent, and H1-H8 remain inactive. K1a/K1b preserve bounded manual multi-frame and decision-semantic annotations; K1e preserves 13 complete event-coreference groups; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 human GUM eRST neighborhoods; K1i preserves 5,361 complete document-local source-declared entity/coreference records and 7,180 concept capsules behind a leak-free compiler-target ABI; K1j adds exact deterministic lookup over 218,061 WordNet-derived relations, 174,480 stable identities, and 410,638 aliases with learned authority forbidden and ambiguous/unknown states preserved. K1k adds an explicit scoped-semantic ABI with exact ownership for 14 operators, independently verifies every route, distinguishes five modality/negation/role/quantifier interventions, rejects four topology/authority mutations, and upgrades Kernel serialization to exact root/argument/confidence/derivation/alignment decode-and-compare replay. This is fixture-backed ABI evidence only and writes zero training rows. The registry builds in 155.254s and independent full-source replay takes 76.655s while the canonical replay runs concurrently. Independent TSV reconstruction agrees byte-for-byte, native CoNLL confirms exact component membership in all 89 selected documents, CoNLL-U confirms 24,162 mentions and 13,436 components, and official heldouts remain quarantined. The corpus has 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, and 18,759 opaque byte literals. The complete 27,941-record corpus is migrated under KE-SERIALIZATION-2.0 and independently admitted with zero failures. Cold producer/verifier runtime is 3,642.746s/4,982.793s; exact top-level warm replay is 3.200s/9.430s with zero per-object work and an unchanged candidate digest. The two stores cost 13.257 GiB, and serial semantic admission is the next byte-equivalent bounded-parallel speed owner. Construct validity still lacks licensed non-benchmark proposition-level supervision, cross-document learned linking/open-world definitions, temporal truth, complete semantics, truth, or learned competence. Correction alternatives, learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation remain absent. The current private-evaluation wire remains economically negative at 3.946595x residual/source and 12.236852x total/source. The prior 11,424-record canonical stage is stale and must be rebuilt only after K1 closes. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims remain denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
+      "current_wall": "K0 independently binds the KERC paper, implementation sources, independent verifier, and all 27,941 current corpus records. Three mechanisms are faithful mechanics, ten remain approximate/fixture-only, three are inactive/absent, and H1-H8 remain inactive. K1a/K1b preserve bounded manual multi-frame and decision-semantic annotations; K1e preserves 13 complete event-coreference groups; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 human GUM eRST neighborhoods; K1i preserves 5,361 complete document-local source-declared entity/coreference records and 7,180 concept capsules behind a leak-free compiler-target ABI; K1j adds exact deterministic lookup over 218,061 WordNet-derived relations, 174,480 stable identities, and 410,638 aliases with learned authority forbidden and ambiguous/unknown states preserved. K1k adds an explicit scoped-semantic ABI with exact ownership for 14 operators, independently verifies every route, distinguishes five modality/negation/role/quantifier interventions, rejects four topology/authority mutations, and upgrades Kernel serialization to exact root/argument/confidence/derivation/alignment decode-and-compare replay. This is fixture-backed ABI evidence only and writes zero training rows. The registry builds in 155.254s and independent full-source replay takes 76.655s while the canonical replay runs concurrently. Independent TSV reconstruction agrees byte-for-byte, native CoNLL confirms exact component membership in all 89 selected documents, CoNLL-U confirms 24,162 mentions and 13,436 components, and official heldouts remain quarantined. The corpus has 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, and 18,759 opaque byte literals. The complete 27,941-record corpus is migrated under KE-SERIALIZATION-2.0 and independently admitted with zero failures. Cold production is 3,642.746s. Host-aware bounded spawned admission with parent-only cache publication and pre-aggregate candidate ordering reduces the exact current-source verifier from 4,982.793s to 1,503.943s (3.31x) and semantic admission from 4,878.178s to 1,418.771s (3.44x), preserving candidate/canonical/ledger/aggregate/gate identities with zero failures. The 16-GiB host selects four workers, an 8-GiB profile selects two, unsafe oversubscription rejects, and measured peak footprint is 10,342,161,792 bytes with zero process-level swaps. The two stores cost 13.257 GiB. Construct validity still lacks licensed non-benchmark proposition-level supervision, cross-document learned linking/open-world definitions, temporal truth, complete semantics, truth, or learned competence. Correction alternatives, learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation remain absent. The current private-evaluation wire remains economically negative at 3.946595x residual/source and 12.236852x total/source. The prior 11,424-record canonical stage is stale and must be rebuilt only after K1 closes. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims remain denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

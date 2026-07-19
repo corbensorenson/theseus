@@ -114,13 +114,16 @@ share toward zero. Public benchmarks are calibration only.
   only with zero training rows. This is authored-fixture ABI and replay evidence only,
   not semantic parsing, complete semantics, learned competence, utility, SOTA, AGI, or
   ASI evidence. All 27,941 corpus records are now migrated under the exact serialization
-  and independently admitted with zero failures. Cold producer/verifier runtime was
-  `3,642.746s`/`4,982.793s`; exact warm replay takes `3.200s`/`9.430s` through top-level
-  run-cache hits with zero misses or per-object work, zero producer-authority reuse, and
-  an unchanged candidate digest. The two object stores cost `14,234,451,968` bytes
-  (`13.257 GiB`). Semantic admission remains a serial performance owner; the next speed
-  change must preserve candidate, canonical-row, receipt-ledger, aggregate, and gate
-  identities under bounded parallelism and measured memory ceilings.
+  and independently admitted with zero failures. Cold production took `3,642.746s`.
+  The original serial independent verifier took `4,982.793s`; the current host-aware
+  four-worker cold replay takes `1,503.943s` (`3.31x` faster), and semantic admission
+  falls from `4,878.178s` to `1,418.771s` (`3.44x`). Candidate, canonical-row,
+  receipt-ledger, aggregate, and gate identities remain exact. Workers are spawned and
+  stateless, SQLite publication is parent-only, candidate order is restored before
+  aggregate calibration, and duplicate line authority rejects. This 16-GiB/8-logical-
+  CPU host selects four workers; the tested 8-GiB/4-logical-CPU profile selects two.
+  Peak footprint is `10,342,161,792` bytes with zero process-level swaps. The two object
+  stores cost `14,234,451,968` bytes (`13.257 GiB`).
   Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Ten mechanisms are

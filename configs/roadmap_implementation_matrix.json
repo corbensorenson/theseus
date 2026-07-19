@@ -147,6 +147,9 @@
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
     "roadmap_source": "roadmap.md#asi-stack-to-theseus-completion-program",
+    "shared_flagship_id": "ASI-THESEUS-FLAGSHIP-01",
+    "shared_flagship_gate_ids": ["T0", "T1", "T2", "T3", "T4", "T5", "T6"],
+    "shared_flagship_rule": "Book-derived work reaches primary execution only through the finite architecture closure, neural-seed behavior, real-use, joined-trace, matched-causal, and book-handoff gates. Other mapped concepts remain dependencies, integrity maintenance, or explicitly deferred obligations.",
     "authoritative_book_pin_unchanged": true,
     "live_book_intake": {
       "observed_chapter_count": 55,
@@ -896,7 +899,7 @@
         "K1h admits 9,785 licensed human GUM V12.1.0 eRST edge neighborhoods from 89 permissively licensed official-train documents. ElementTree/tab production and independent Expat/CSV state-machine verification reconstruct identical primary and source-declared secondary topology over document-disjoint 65/12/12 private splits; all 32 relation types occur in every split, 339 secondary edges are retained, official dev/test/test2 documents are quarantined, and inferred relation, partial admission, public-score claim, fallback, template credit, and derived unique-source credit are zero. Internal Kernel edge references are separated from stable source-derived answer EDU concepts. Two full-replay failures rejected aggregate-license substitution and answer-node references before the corrected independent replay admitted all 22,580 rows with zero verification or accounting gaps. Current warm producer/verifier replay takes 152.365s/176.954s with 22,580/22,580 independently keyed hits, zero misses, zero producer-authority reuse, and 4.641 GiB cache cost. The corpus contains 11,156 multi-node programs, 841 multi-root programs, and 1,700 multi-claim packets. Weak-tail counts of 4/5/5 establish coverage visibility, not adequacy; proposition scope, truth, quantification, compositional negation, general coreference, temporal truth, complete semantics, learned competence, utility, and the KERC thesis remain unclaimed",
         "K1i adds 5,361 licensed human GUM entity/coreference records from the same 89 official-train documents: 3,542 complete non-singleton source-declared coreference components and 1,819 typed bridging links with complete endpoint components. Independent TSV reconstruction agrees byte-for-byte; native CoNLL independently confirms exact component membership across all 65/12/12 split documents, and CoNLL-U confirms 24,162 mentions and 13,436 components. The records exercise 7,180 document-local concept capsules. Gold source IDs and annotation hashes remain in the evidence plane: compiler prompts receive no capsule labels, learned compiler targets contain only actionable capsule semantics, learned output cannot mint stable identity or provenance, and deterministic validation materializes local authority metadata before Kernel handle checking. Full cold producer/verifier replay takes 3,917.120s/6,341.007s; warm replay takes 3.470s/12.350s through exact top-level run-cache hits with zero misses or per-object work, zero failures, zero producer-authority reuse, an unchanged candidate digest, and 10.585 GiB combined cache cost. Partial admission, inferred relations, public-score claims, fallback/template credit, and extra source credit are zero. This closes one bounded document-local source-declared reference family only; ontological identity, cross-document registry resolution, open-world definitions, migration, truth, complete semantics, and learned linking competence remain unclaimed",
         "K1j adds a deterministic cross-document resolver over the pinned English WordNet-derived ConceptNet 5.7 graph without adding model-training rows. Full-source production indexes 218,061 licensed typed relations, 174,480 stable URI-derived identities, and 410,638 normalized aliases in a 352,411,648-byte SQLite artifact in 155.254s. Independent manual tab framing and separate URI/alias reconstruction replay the complete source in 76.655s while the canonical replay runs concurrently and compare every relation, identity, alias, digest, license, and database constraint without importing producer authority. Learned compiler output may request resolution by bounded surface with optional non-authoritative POS/sense hints but cannot mint or select stable identity or provenance. Authority attaches only when the normalized surface maps to one identity globally; hints never collapse ambiguity. Ambiguous and unknown states remain explicit and packet-local, tool faults fail closed, and registry evidence is excluded from learned capsule views. The canonical learned pipeline injects this resolver. This is deterministic lookup and ambiguity-preservation evidence only, not assertion truth, graph completeness, natural-context learned linking, migration, utility, or KERC promotion evidence",
-        "K1k repairs the canonical semantic ABI before adding more supervision. A source-independent scoped graph gives every proposition and nested scope exactly one owner and supports assertion, negation, possibility, necessity, question, conjunction, alternation, condition, consequence, contrast, continuation, explanation, attribution, and quotation. A separately implemented verifier reconstructs the expected Kernel topology without importing the producer. All 14 operator routes replay, five modality/negation/condition-direction/quantifier interventions remain identity-distinct, and four operator/role/root/identity mutations reject. KE-SERIALIZATION-2.0 now encodes and exactly decodes roots, typed arguments, confidence, derivation, and source alignments; packet validation compares the decoded canonical program with the authoritative program. Strict quantity, temporal, text, symbol, and ambiguity-evidence values fail closed. All 27,941 corpus records were then migrated and independently admitted with zero failures: cold producer/verifier runtime is 3,642.746s/4,982.793s, exact top-level warm replay is 3.200s/9.430s with zero per-object work, and the two stores cost 13.257 GiB. Semantic admission is the next bounded-parallel speed owner, with byte-identical candidate/canonical/ledger/aggregate/gate acceptance required. The scoped fixtures write zero training rows and do not establish semantic parsing, truth, complete semantics, learned competence, utility, efficiency, SOTA, AGI, or ASI. PMB remains calibration-only and no PMB split enters training",
+        "K1k repairs the canonical semantic ABI before adding more supervision. A source-independent scoped graph gives every proposition and nested scope exactly one owner and supports assertion, negation, possibility, necessity, question, conjunction, alternation, condition, consequence, contrast, continuation, explanation, attribution, and quotation. A separately implemented verifier reconstructs the expected Kernel topology without importing the producer. All 14 operator routes replay, five modality/negation/condition-direction/quantifier interventions remain identity-distinct, and four operator/role/root/identity mutations reject. KE-SERIALIZATION-2.0 now encodes and exactly decodes roots, typed arguments, confidence, derivation, and source alignments; packet validation compares the decoded canonical program with the authoritative program. Strict quantity, temporal, text, symbol, and ambiguity-evidence values fail closed. All 27,941 corpus records were migrated and independently admitted with zero failures. Host-aware bounded spawned workers keep cache publication in the parent and restore candidate-line order before aggregate replay. The exact current-source four-worker cold verifier reproduces candidate/canonical/ledger/aggregate/gate identities and improves total runtime from 4,982.793s to 1,503.943s (3.31x) and semantic admission from 4,878.178s to 1,418.771s (3.44x), with a 10,342,161,792-byte peak footprint and zero process-level swaps. A first parallel attempt correctly went RED on order-sensitive allocation calibration; regression coverage now rejects duplicate authority lines and restores source order. The two stores cost 13.257 GiB. The scoped fixtures write zero training rows and do not establish semantic parsing, truth, complete semantics, learned competence, utility, efficiency, SOTA, AGI, or ASI. PMB remains calibration-only and no PMB split enters training",
         "a distinct 96-record Dolly stratum covers what/who/where/when/how-many/which in every split and admits only natural questions whose answer is one unique bounded contiguous span in source context; rare forms are reserved across splits, all four learned objectives consume the records through VCM, evaluator-owned answer spans are excluded from compiler input, and independent raw-source replay reconstructs eligibility, split, span, Kernel program, answer decision, and interaction state; this is extractive-source support only and grants no broad-entailment, truth, completeness, calibration, reasoning, or utility claim",
         "selected private-train MASC rows fit typed contextual FrameNet alternatives for 59 lexical units with at least two human-annotated frames and bind them to 411 train, 178 development, and 157 evaluation records; the independent verifier separately reparses GrAF, reconstructs selection, fits only private-train counts, and rejects changed alternatives, weights, or identities; the weights are empirical source-train priors and grant no unresolved-ambiguity, calibrated-probability, WordNet-equivalence, or utility claim",
         "the canonical answer packet carries explicit disposition, evidence, uncertainty, confidence, controlling-claim, and unresolved-ambiguity fields; missing/inconsistent decisions and unresolved-correction certainty laundering fail closed, and a fifth independently parameterized verifier output receives targeted decision-consistency positives and corruptions",
@@ -3865,8 +3868,60 @@
     "policy": "one_active_flagship_lane_v1",
     "active_flagship_lane_id": "C1_correctness_rl_and_generator_survival_lane",
     "active_track_id": "C_capability_research_survival_lane",
+    "shared_book_flagship_id": "ASI-THESEUS-FLAGSHIP-01",
+    "shared_research_question": "Can a locally trained, source-disjoint Theseus student complete useful natural repository work through the governed stack, and does full governed admission improve the joint useful-safe-release frontier over simpler matched controls at acceptable total lifecycle cost?",
+    "critical_path": [
+      {
+        "id": "T0",
+        "state": "in_progress",
+        "depends_on": [],
+        "exit": "KERC reaches a faithful campaign-ready boundary or is explicitly excluded as INCONCLUSIVE_IMPLEMENTATION, followed by independent cross-owner replay and a content-addressed architecture freeze."
+      },
+      {
+        "id": "T1",
+        "state": "blocked_by_T0",
+        "depends_on": ["T0"],
+        "exit": "The five frozen arms and matched dense control finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
+      },
+      {
+        "id": "T2",
+        "state": "blocked_by_T1",
+        "depends_on": ["T1"],
+        "exit": "At least one lineage-bound arm produces nonzero model-only source-disjoint functional behavior, or the exact regime receives a decision-grade scoped negative."
+      },
+      {
+        "id": "T3",
+        "state": "ready_for_assisted_use_learned_credit_waits_for_T2",
+        "depends_on": [],
+        "exit": "At least one week or five distinct days of real low-risk use records accepted, missed, ignored, corrected, completed, failed, or abstained outcomes with time, verifier/human cost, effects, rollback, and component attribution."
+      },
+      {
+        "id": "T4",
+        "state": "blocked_by_T2_and_T3",
+        "depends_on": ["T2", "T3"],
+        "exit": "One natural happy path and one blocked or rollback path join intent, VCM, plan, route, candidate, verification, authority, observed effects, terminal acknowledgement, residuals, and dogfood outcomes without orphan or stale projection."
+      },
+      {
+        "id": "T5",
+        "state": "blocked_by_T4",
+        "depends_on": ["T4"],
+        "exit": "Full governance and simpler matched controls are compared on a frozen natural denominator with independent evaluation, uncertainty, weak tails, fair rescue, and total lifecycle accounting."
+      },
+      {
+        "id": "T6",
+        "state": "blocked_by_T5",
+        "depends_on": ["T5"],
+        "exit": "A public-safe book handoff binds exact commits, artifacts, estimand, effects, costs, residuals, non-claims, and maximum inference; broadened claims then require separate reproduction and transfer."
+      }
+    ],
+    "book_handoff_contract": {
+      "book_owns": ["claim identity", "competence standard", "preregistration", "evidence transition", "argument-exit language", "publication boundary"],
+      "theseus_owns": ["local student", "natural dogfood path", "runtime effects", "joined traces", "matched controls", "public-safe evidence pack"],
+      "forbidden_shared_state": ["hidden answers", "held-out outcomes", "private payloads", "implied support movement"],
+      "support_state_effect": "none_from_roadmap_or_handoff_alone"
+    },
     "rule": "Only the capability survival lane may drive new primary work. Its canonical target is the five-arm MoECOT language seed plus one mixed dense falsification control; other tracks may repair a demonstrated contract defect, maintain evidence, or support its governed data, router, and MLX dependencies, but cannot spawn competing architecture families.",
-    "why": "The general architecture prerequisites are ready while direct learned behavior remains zero, but the seed topology must reflect the book thesis before training: bounded language specialists rather than one monolith. Progress now means independent arm training plus a behavior-positive governed comparison, not another adjacent head or report family.",
+    "why": "Most general architecture contracts are wired, but the KERC adequacy correction has reopened one checkpoint-shaping boundary and the strict training-readiness gate remains RED. Direct learned behavior is also zero. Progress therefore means a faithful KERC include-or-exclude disposition, a new content-addressed freeze, independent arm training, and a behavior-positive governed comparison—not another adjacent head or report family.",
     "allowed_parallel_work": [
       "security or no-cheat regression fix",
       "registry/steward cleanup on existing surfaces",
@@ -3969,7 +4024,7 @@
   "book_reference_core_before_training": {
     "policy": "book_reference_core_before_training_focus_v1",
     "scope": "Architecture readiness record and active capability-slice selector; it is not a ban on governed training or fresh useful measurement.",
-    "rule": "The reference slices have reached prototype-backed or better and the architecture readiness gate is clear. Keep their contracts live, but direct primary work to the active C1 capability slice until the current model establishes positive direct behavior.",
+    "rule": "The reference slices have reached prototype-backed or better, but the strict architecture-readiness gate is currently RED because the KERC checkpoint-shaping boundary was reopened. Keep the completed contracts live, close that finite blocker, then direct primary work through the active C1 capability slice until the current model establishes positive direct behavior.",
     "architecture_readiness_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
     "architecture_readiness_rule": "Training, public calibration, and score-chasing are not the primary path while this strict readiness mode is RED. Normal roadmap YELLOW can still be acceptable for implementation work if hard_gap_count=0.",
     "required_slices": [

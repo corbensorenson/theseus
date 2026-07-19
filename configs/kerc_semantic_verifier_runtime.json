@@ -1,0 +1,22 @@
+{
+  "policy": "project_theseus_kerc_semantic_verifier_runtime_v1",
+  "parallelism": {
+    "enabled": true,
+    "execution_model": "bounded_spawn_process_pool_with_serial_parent_publication",
+    "default_workers": "auto",
+    "maximum_workers": 4,
+    "batch_size": 4,
+    "max_in_flight_batches_per_worker": 2,
+    "worker_shared_authority": false,
+    "worker_cache_writes": false,
+    "canonical_order_independent_of_completion_order": true
+  },
+  "resource_contract": {
+    "minimum_logical_cpu_count": 2,
+    "parent_reserve_bytes": 6442450944,
+    "minimum_memory_bytes_per_worker": 1073741824,
+    "maximum_parent_plus_worker_memory_bytes": 15032385536,
+    "oversubscription_forbidden": true
+  },
+  "claim_scope": "execution efficiency only; parallel completion cannot change semantic admission or capability evidence"
+}

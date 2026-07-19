@@ -1,9 +1,10 @@
 # Project Theseus Roadmap
 
-Consolidated 2026-07-16; bound to AI Stack commit
+Consolidated 2026-07-16 and reorganized 2026-07-18; bound to AI Stack commit
 `32635eb94ded42a5f54e528302685cab343993b7`. This
-roadmap lists only work that still needs doing. It is the forward plan; it is not
-an audit trail. Historical execution logs, dated
+roadmap is the forward plan. It retains only the current baseline and completion
+receipts needed to prevent repeated or contradictory work; it is not a chronological
+audit trail. Historical execution logs, dated
 book-mining/review passes, and per-experiment records were removed from this file
 during consolidation and remain in git history. The machine-readable coverage
 source of truth is `configs/roadmap_implementation_matrix.json`
@@ -16,15 +17,58 @@ improves without cheating.
 
 ## How To Read This Roadmap
 
-Precedence when sections disagree: the **Capability Plan v2** decides sequencing;
-the **Phases** decide mechanism; the **ASI Stack-to-Theseus Completion Program**
-decides book-derived coverage.
+Precedence when sections disagree: the **Critical Path and Shared Flagship** decides
+what may consume primary effort; the **Capability Plan v2** decides experiment
+sequencing; the **Phases** decide mechanism ownership; the **ASI Stack-to-Theseus
+Completion Program** decides book-derived coverage.
 When this file and `configs/roadmap_implementation_matrix.json` disagree, reconcile
 the matrix first (Phase 19), do not paper over drift in prose.
 
-Read order: Status at a Glance -> Non-Negotiable Rules -> Capability Plan v2 ->
-the Phase that owns the surface you are working on -> the Quality Bars a "done"
-module must meet.
+Read order: Critical Path and Shared Flagship -> Status at a Glance ->
+Non-Negotiable Rules -> Capability Plan v2 -> the Phase that owns the surface you
+are working on -> the Quality Bars a "done" module must meet.
+
+## Critical Path and Shared Flagship
+
+Theseus has a strong governance and evidence denominator but no useful learned
+behavior numerator yet. The current model-only functional result is `0/160`, the
+assistant product lane is still synthetic-test-backed, and the ASI Stack has no
+competence-qualified natural, non-authored flagship result. The next quality gain
+therefore comes from one causal chain, not another architecture family, dashboard,
+report family, or private benchmark.
+
+The shared program ID is **`ASI-THESEUS-FLAGSHIP-01`**. Its research question is:
+
+> Can a locally trained, source-disjoint Theseus student complete useful natural
+> repository work through the governed stack, and does full governed admission
+> improve the joint useful-safe-release frontier over simpler matched controls at
+> an acceptable total lifecycle cost?
+
+The book owns the claim identity, competence standard, preregistration, evidence
+transition, argument-exit language, and publication boundary. Theseus owns the local
+student, natural dogfood path, runtime/effect implementation, joined traces, matched
+controls, and public-safe evidence pack. The repositories may share stable IDs and
+digests; they may not share hidden answers, held-out outcomes, private payloads, or
+support states by implication.
+
+### Binding execution board
+
+| Gate | State | Exit condition | Work unlocked |
+|---|---|---|---|
+| `T0` — Finite architecture closure | `in_progress` | KERC reaches a faithful campaign-ready boundary or is explicitly excluded as `INCONCLUSIVE_IMPLEMENTATION`; the final package then passes independent cross-owner replay and produces a content-addressed freeze manifest. | Long optimizer spend. |
+| `T1` — Frozen neural-seed campaign | `blocked_by_T0` | Five arms and the matched dense control train from the frozen package with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage. | Frozen functional evaluation. |
+| `T2` — Honest behavioral numerator | `blocked_by_T1` | At least one lineage-bound arm produces nonzero, model-only, source-disjoint functional behavior; a zero result receives only the exact decision-grade scope earned. | Behavior-dependent search, routing, preference/RL, and fast-generation qualification. |
+| `T3` — Real daily-use lane | `ready_for_assisted_use`; learned credit waits for `T2` | At least one week or five distinct days of real low-risk use records accepted, missed, ignored, corrected, completed, failed, or abstained outcomes with time, verifier/human cost, effect, rollback, and component attribution. | Empirical product-usefulness and procedural-memory evidence. |
+| `T4` — Joined governed vertical | `blocked_by_T2_and_T3` | One natural happy path and one blocked or rollback path join intent, VCM, plan, route, candidate, verification, authority, effect observation, terminal acknowledgement, residual, and dogfood outcome without orphan or stale projection. | Book-importable implementation evidence. |
+| `T5` — Matched causal flagship | `blocked_by_T4` | Full governance, test-only, record-only, and appropriate ablations are compared on a frozen natural denominator with matched tuning, inference, verification, and lifecycle budgets, independent evaluation, uncertainty, weak tails, and a fair rescue ladder. | A bounded positive, exact negative, or inconclusive book transition. |
+| `T6` — Book handoff and independent challenge | `blocked_by_T5` | A public-safe pack binds exact commits, artifacts, estimand, effects, costs, residuals, non-claims, and maximum inference; the book updates the affected atoms and narrative case, then any broadened claim faces separate reproduction and transfer. | Broader architecture claims or an honest narrowing. |
+
+`T3` may collect assisted-product evidence before `T2`, but deterministic tools,
+retrieval, authored workflows, routers, teachers, and human corrections never become
+learned-generation credit. `T4` and `T5` require a behavior-positive student because a
+perfect governance trace around a zero-capability proposer cannot establish useful
+governed intelligence. All other roadmap work is either a dependency of these gates,
+continuous integrity maintenance, or deferred under the breadth freeze.
 
 ## Current Operating Decision: Architecture Before Long Training
 
@@ -146,7 +190,7 @@ retirement/falsification receipt.
 
 | Order | Contract | Current disposition | Required before long training |
 |---:|---|---|---|
-| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN; K1a-K1j source/replay/concept-registry evidence GREEN; K1k scoped-semantic ABI, exact serialization, and full corpus migration GREEN; broader construct validity RED; utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. K1e preserves 13 complete manual event-coreference groups with 215 aligned mentions; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 licensed eRST neighborhoods; K1i preserves 5,361 source-declared entity/coreference records and 7,180 concept capsules; K1j adds exact ambiguity-preserving lookup over 218,061 WordNet-derived relations. K1k adds exact proposition/scope ownership for 14 operators, independent structural reconstruction, five causal scope/role/quantifier interventions, four rejected topology/authority mutations, strict typed values, and `KE-SERIALIZATION-2.0` decode-and-compare replay over roots, arguments, confidence, derivation, and alignments. All 27,941 corpus records are now migrated and independently admitted with zero failures; cold producer/verifier runtime is 3,642.746s/4,982.793s, warm top-level replay is 3.200s/9.430s, and the two stores cost 13.257 GiB. K1k scope fixtures write zero training rows, and PMB remains calibration-only. The corpus still does not supply licensed non-benchmark proposition-level scope supervision, learned scope compilation, truth, temporal truth, complete semantics, natural-context learned cross-document linking, or utility. Complete K1-K8 in order: decision-grade source supervision; per-unit economics; real interaction amortization; coordinated learned compiler/core/renderer; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
+| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN; K1a-K1j source/replay/concept-registry evidence GREEN; K1k scoped-semantic ABI, exact serialization, full corpus migration, and bounded parallel admission GREEN; broader construct validity RED; utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. K1e preserves 13 complete manual event-coreference groups with 215 aligned mentions; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 licensed eRST neighborhoods; K1i preserves 5,361 source-declared entity/coreference records and 7,180 concept capsules; K1j adds exact ambiguity-preserving lookup over 218,061 WordNet-derived relations. K1k adds exact proposition/scope ownership for 14 operators, independent structural reconstruction, five causal scope/role/quantifier interventions, four rejected topology/authority mutations, strict typed values, and `KE-SERIALIZATION-2.0` decode-and-compare replay over roots, arguments, confidence, derivation, and alignments. All 27,941 corpus records are migrated and independently admitted with zero failures. A host-aware four-worker cold replay preserves candidate/canonical/ledger/aggregate identities and reduces verifier time from 4,982.793s to 1,503.943s (3.31x), with semantic admission improving 3.44x; smaller hosts scale down by CPU and memory contract. The two stores cost 13.257 GiB. K1k scope fixtures write zero training rows, and PMB remains calibration-only. The corpus still does not supply licensed non-benchmark proposition-level scope supervision, learned scope compilation, truth, temporal truth, complete semantics, natural-context learned cross-document linking, or utility. Complete K1-K8 in order: decision-grade source supervision; per-unit economics; real interaction amortization; coordinated learned compiler/core/renderer; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
 | 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
 | 4 | Full-state data/update causality | `pretraining_wired_behavior_qualification_pending` | canonical admission owns a 13-kind content-addressed state inventory, distinct best/final authority, package replay, bounded update, deletion receipts, and exact rollback; learned forgetting/unlearning efficacy waits for training |
@@ -280,39 +324,41 @@ zero-pass floor.
   freeze requires a concrete failure receipt showing that the frozen contract cannot
   represent, train, checkpoint, migrate, or execute the required behavior.
 
-## Implementation Standard (Beyond State of the Art)
+## Implementation and Evidence Standard
 
-Every mechanism on this roadmap is implemented as the strongest known version, not
-a toy, demo, or MVP. Reaching the frontier is only feasible if each layer is built
-to lead, so the standard for every phase, track, and surface is:
+Every mechanism selected for the active critical path must be strong enough to test
+the causal idea it represents. The roadmap still records a minimal honest slice and a
+mature or beyond-SOTA endpoint for every surface, but the mature endpoint is a research
+horizon, not a universal prerequisite that can block the neural seed forever.
 
-- **Name the SOTA baseline you match or beat.** Cite the best published or open
-  method for the mechanism and implement to meet or exceed it, or record exactly why
-  you cannot yet and what the gap is.
-- **Name the beyond-SOTA / mature endpoint, not just the MVP.** Every surface
-  declares two horizons: a minimal implementation that proves the interface, and a
-  mature endpoint that is genuinely ahead of the field. An MVP is only ever an
-  explicit, temporary stepping stone toward its named endpoint; shipping the MVP as
-  the finished surface is not "done."
-- **No placeholder passes as complete.** A happy-path fixture, stub, hardcoded
-  shortcut, or single-case smoke is never the deliverable. Done means robust,
-  adversarially tested, and ahead of the obvious approach.
-- **Prefer the harder correct design over the easy fragile one.** Where the book
-  names a mechanism, implement the full contract, not a narrowed subset that only
-  covers the demo.
-- **Efficiency and rigor are the edge, not scale alone.** Beyond-SOTA here means
-  best capability-per-active-parameter and best-governed, not biggest. Elegance that
-  skips baselines or verification is unproven, not beyond-SOTA.
-- **A negative claim must be harder to earn than a green smoke.** Each adoption or
-  retirement card records the exact implementation fidelity matrix, sanity tests,
-  matched-opportunity design, evaluator independence, power/sensitivity analysis,
-  confidence intervals, weak-tail effects, replication state, and maximum claim scope.
-  A toy, undertrained, or construct-invalid test is useful diagnostic evidence but
-  cannot close the idea it approximates.
+- **Name the relevant strong comparator.** Use the best reproducible published or
+  open method appropriate to the exact claim. If it cannot be run under comparable
+  conditions, record the gap instead of implying a win or making the whole roadmap
+  wait indefinitely.
+- **Separate the current envelope from the mature endpoint.** A surface may be done
+  for a bounded interface, safety, or evidence envelope while its broader performance
+  endpoint remains pending. The completed state must say exactly what it authorizes
+  and what it does not.
+- **No placeholder passes as mechanism evidence.** A schema, happy-path fixture,
+  stub, hardcoded shortcut, or single-case smoke may prove plumbing only. It cannot
+  establish usefulness, mechanism efficacy, governance efficacy, or a scientific
+  negative.
+- **Prefer the smallest faithful design.** Implement every causal stage needed by the
+  claim and omit ornamental machinery. Added complexity must earn its maintenance and
+  lifecycle cost against a simpler control.
+- **Measure the whole system.** Capability, safety, latency, compute, storage,
+  verification, human effort, migration, rollback, and residual debt stay in one
+  lifecycle accounting envelope; no route wins by moving cost off-ledger.
+- **A negative claim is harder to earn than a green smoke.** Each adoption or
+  retirement card records fidelity, learnability checks, matched opportunity,
+  evaluator independence, power/sensitivity, uncertainty, weak tails, replication,
+  and maximum claim scope. Toy, undertrained, inactive, or construct-invalid tests
+  are diagnostic or inconclusive, not architecture verdicts.
 
-Enforced by the Quality Bars (each module card names both horizons and the baseline
-it beats) and the falsification gates (a lever is not "done" until it beats its
-baseline on held-out evidence).
+The Quality Bars enforce the declared current envelope. The capability-per-active-
+parameter and governed-system frontiers remain ambitious mature targets that must be
+earned by held-out evidence, not definitions that make all intermediate work
+permanently incomplete.
 
 ## ASI-Trajectory Capability Plan v2
 
@@ -2212,13 +2258,21 @@ paper mechanism.
    and establishes no semantic parsing, truth, completeness, learned competence, public
    benchmark, utility, efficiency, SOTA, AGI, or ASI claim. PMB remains calibration-only.
    The complete `27,941`-record corpus is now migrated under this serialization revision.
-   Cold production took `3,642.746s`; independent admission took `4,982.793s`, wrote
-   `27,941` canonical rows and receipts with zero failures, and reproduced the aggregate
-   accounting. Exact top-level warm replay takes `3.200s`/`9.430s` with zero per-object
-   work and an unchanged candidate digest. The producer/verifier stores now cost
-   `14,234,451,968` bytes (`13.257 GiB`); semantic admission remains a serial performance
-   owner and must gain bounded deterministic parallelism under byte-identical replay and
-   measured memory limits. K1 still needs licensed non-
+   Cold production took `3,642.746s`. The original serial independent admission took
+   `4,982.793s`, of which `4,878.178s` was semantic admission. K1k now uses a bounded
+   spawned process pool with parent-only SQLite publication, candidate-line ordering
+   restored before aggregate replay, and a host resource receipt. On this 8-logical-CPU,
+   16-GiB Mac the exact current-source four-worker cold replay took `1,503.943s`, with
+   `1,418.771s` in semantic admission: `3.31x` and `3.44x` faster respectively. It wrote
+   all `27,941` canonical rows and receipts with zero failures and reproduced the exact
+   candidate, canonical, ledger, aggregate, and gate identities. Maximum resident size
+   was `4,786,143,232` bytes, peak footprint was `10,342,161,792` bytes, and the process
+   reported zero swaps. The policy selects four workers on this host and two on the
+   tested 8-GiB/4-logical-CPU profile; unsafe explicit oversubscription rejects. A first
+   parallel attempt exposed an order-sensitive rate-distortion calibration mismatch and
+   correctly went RED; candidate-line authority ordering plus duplicate-line rejection
+   now has a regression test. The producer/verifier stores cost `14,234,451,968` bytes
+   (`13.257 GiB`). K1 still needs licensed non-
    benchmark proposition-level supervision and source-disjoint weak-tail evidence before
    any learned scope/compiler result can be interpreted; an absent source is an open
    evidence cell, not permission to substitute a toy proxy or issue a negative verdict.
@@ -2851,6 +2905,10 @@ the exact book revision it names; the live book currently has 55 chapters, inclu
 Theseus crosswalk remains on the reviewed 54-chapter snapshot until a new explicit
 reconciliation transaction advances it.
 
+This coverage program is subordinate to `ASI-THESEUS-FLAGSHIP-01`. A package may
+protect or unblock gates `T0`–`T6`; it may not create a second capability flagship or
+claim completion merely because every chapter has an owner.
+
 The book is a design source, not an automatic implementation mandate. Every live
 chapter core is still `Design rationale` at `argument` support. A concept enters the
 Theseus execution path only when it serves the neural seed, governed teacher/data
@@ -2910,10 +2968,9 @@ Every work package below must use one of these states. A prose claim such as
   hand beside their canonical rows.
 - A changed source, schema, registered verifier, API, config, checkpoint, or canonical
   record invalidates every dependent projection and green report until regenerated.
-- Repair the current chapter-state histogram: canonical rows contain 36 partial, 11
-  wired, two pretraining-pending, two frozen-dependency, and three mapped-missing states,
-  while the retained summary currently folds the two pretraining-pending rows into the
-  partial count.
+- Preserve the current chapter-state histogram from canonical rows and its generated
+  summary: 38 partial, 11 wired, two pretraining-pending, two frozen-dependency, and
+  one mapped-missing state.
 - **Done:** mutation tests catch changed rows, stale API/verifier identity, omitted state,
   wrong counts, and a projection that claims fresher authority than its canonical input.
 
@@ -3530,9 +3587,11 @@ compaction policy is tied to module cards so evidence does not become endless
 duplicate report families.
 
 Implementation horizons: each module card names both a minimal implementation and a
-beyond-SOTA mature endpoint (per the Implementation Standard), cites the SOTA
-baseline the surface meets or beats, and marks the surface "done" only at its mature
-endpoint - never at the MVP.
+beyond-SOTA mature endpoint (per the Implementation Standard), cites the relevant
+strong comparator, and states which bounded envelope—plumbing, mechanics, executable,
+empirical, deployed, or transferred—is actually complete. A bounded completed slice
+does not complete the mature endpoint, and an unearned mature endpoint does not block
+unrelated critical-path work.
 
 ### Decision-Grade Negative Result
 A negative result may change a route or retire a mechanism only when its evidence pack

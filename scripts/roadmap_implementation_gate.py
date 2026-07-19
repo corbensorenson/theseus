@@ -593,6 +593,7 @@ def audit_book_implementation_contract(
     future_candidates = list_dicts(matrix.get("book_future_candidate_crosswalk"))
     planned_backlog = list_dicts(matrix.get("planned_codex_test_backlog"))
     flagship = dict_value(matrix.get("flagship_lane_governance"))
+    completion_program = dict_value(matrix.get("asi_stack_completion_program"))
     core = dict_value(matrix.get("book_reference_core_before_training"))
     core_slices = list_dicts(core.get("required_slices"))
     phases = {int_or(row.get("phase"), -1) for row in list_dicts(matrix.get("phases"))}
@@ -637,6 +638,89 @@ def audit_book_implementation_contract(
         hard_gaps.append(gap("book_implementation_contract", "active_flagship_lane_missing", {}))
     if active_track_id and active_track_id not in track_ids:
         hard_gaps.append(gap("book_implementation_contract", "active_flagship_track_missing", {"active_track_id": active_track_id}))
+
+    shared_flagship_id = str(flagship.get("shared_book_flagship_id") or "")
+    expected_shared_flagship_id = "ASI-THESEUS-FLAGSHIP-01"
+    if shared_flagship_id != expected_shared_flagship_id:
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "shared_book_flagship_identity_missing_or_drifted",
+                {"expected": expected_shared_flagship_id, "actual": shared_flagship_id},
+            )
+        )
+    if completion_program.get("shared_flagship_id") != shared_flagship_id:
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "completion_program_flagship_identity_drift",
+                {
+                    "flagship_lane_governance": shared_flagship_id,
+                    "asi_stack_completion_program": completion_program.get("shared_flagship_id"),
+                },
+            )
+        )
+
+    critical_path = list_dicts(flagship.get("critical_path"))
+    critical_path_ids = [str(row.get("id") or "") for row in critical_path]
+    expected_critical_path_ids = [f"T{index}" for index in range(7)]
+    if critical_path_ids != expected_critical_path_ids:
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "shared_flagship_critical_path_order_invalid",
+                {"expected": expected_critical_path_ids, "actual": critical_path_ids},
+            )
+        )
+    known_critical_path_ids = set(critical_path_ids)
+    invalid_dependencies = [
+        {"id": row.get("id"), "dependency": dependency}
+        for row in critical_path
+        for dependency in list_values(row.get("depends_on"))
+        if str(dependency) not in known_critical_path_ids
+    ]
+    missing_critical_path_fields = [
+        str(row.get("id") or "missing_id")
+        for row in critical_path
+        if not str(row.get("state") or "").strip()
+        or not str(row.get("exit") or "").strip()
+    ]
+    if invalid_dependencies or missing_critical_path_fields:
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "shared_flagship_critical_path_contract_invalid",
+                {
+                    "invalid_dependencies": invalid_dependencies,
+                    "missing_field_rows": missing_critical_path_fields,
+                },
+            )
+        )
+    if completion_program.get("shared_flagship_gate_ids") != critical_path_ids:
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "completion_program_flagship_gate_drift",
+                {
+                    "expected": critical_path_ids,
+                    "actual": completion_program.get("shared_flagship_gate_ids"),
+                },
+            )
+        )
+    handoff = dict_value(flagship.get("book_handoff_contract"))
+    if (
+        not list_values(handoff.get("book_owns"))
+        or not list_values(handoff.get("theseus_owns"))
+        or len(list_values(handoff.get("forbidden_shared_state"))) < 4
+        or handoff.get("support_state_effect") != "none_from_roadmap_or_handoff_alone"
+    ):
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "shared_flagship_book_handoff_contract_invalid",
+                {},
+            )
+        )
 
     active_slices = [row for row in core_slices if row.get("active") is True]
     if len(active_slices) != 1:
@@ -988,6 +1072,8 @@ def audit_book_implementation_contract(
             ),
             "active_flagship_lane_id": active_flagship_lane_id,
             "active_track_id": active_track_id,
+            "shared_book_flagship_id": shared_flagship_id,
+            "shared_flagship_critical_path_ids": critical_path_ids,
             "active_core_slice_count": len(active_slices),
             "support_state_ladder_ready": not missing_support_states and bool(support_ladder),
             "support_state_count": len(support_states),

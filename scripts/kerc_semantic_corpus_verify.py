@@ -10,11 +10,15 @@ from __future__ import annotations
 
 import argparse
 import base64
+import concurrent.futures
+import copy
 import hashlib
 import json
 import math
+import multiprocessing
 import os
 import re
+import sys
 import tempfile
 import time
 import xml.etree.ElementTree as ET
@@ -93,6 +97,7 @@ from vcm_semantic_memory import (
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
+DEFAULT_RUNTIME_CONFIG = ROOT / "configs" / "kerc_semantic_verifier_runtime.json"
 GRAF = "{http://www.xces.org/ns/GrAF/1.0/}"
 XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 VERIFIER_POLICY = "project_theseus_kerc_semantic_corpus_verifier_v1"
@@ -120,6 +125,7 @@ def resolve(path: str | Path) -> Path:
 
 def verifier_cache_dependency_paths(
     config_path: Path,
+    runtime_config_path: Path,
     corpus: dict[str, Any],
     *,
     candidate_path: Path,
@@ -128,6 +134,7 @@ def verifier_cache_dependency_paths(
     scripts = ROOT / "scripts"
     paths = {
         "config": config_path.resolve(),
+        "runtime_config": runtime_config_path.resolve(),
         "verifier": Path(__file__).resolve(),
         "producer": scripts / "kerc_semantic_corpus.py",
         "cache_integrity": scripts / "kerc_content_cache.py",
@@ -160,6 +167,96 @@ def relative(path: Path) -> str:
         return str(path.resolve().relative_to(ROOT))
     except ValueError:
         return str(path.resolve())
+
+
+def host_total_memory_bytes() -> int | None:
+    """Return physical memory without adding an optional runtime dependency."""
+
+    try:
+        if sys.platform == "win32":
+            import ctypes
+
+            class MemoryStatus(ctypes.Structure):
+                _fields_ = [
+                    ("length", ctypes.c_ulong),
+                    ("memory_load", ctypes.c_ulong),
+                    ("total_physical", ctypes.c_ulonglong),
+                    ("available_physical", ctypes.c_ulonglong),
+                    ("total_page_file", ctypes.c_ulonglong),
+                    ("available_page_file", ctypes.c_ulonglong),
+                    ("total_virtual", ctypes.c_ulonglong),
+                    ("available_virtual", ctypes.c_ulonglong),
+                    ("available_extended_virtual", ctypes.c_ulonglong),
+                ]
+
+            status = MemoryStatus()
+            status.length = ctypes.sizeof(status)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+                return int(status.total_physical)
+            return None
+        page_size = int(os.sysconf("SC_PAGE_SIZE"))
+        page_count = int(os.sysconf("SC_PHYS_PAGES"))
+        return page_size * page_count
+    except (AttributeError, OSError, TypeError, ValueError):
+        return None
+
+
+def resolve_semantic_worker_count(
+    parallel_cfg: dict[str, Any],
+    resource_cfg: dict[str, Any],
+    *,
+    requested_workers: int | None,
+    logical_cpu_count: int | None,
+    total_memory_bytes: int | None,
+) -> tuple[int, dict[str, Any]]:
+    enabled = bool(parallel_cfg.get("enabled", False))
+    maximum_workers = int(parallel_cfg.get("maximum_workers", 1))
+    minimum_cpu_count = int(resource_cfg.get("minimum_logical_cpu_count", 2))
+    parent_reserve = int(resource_cfg.get("parent_reserve_bytes", 0))
+    memory_per_worker = int(resource_cfg.get("minimum_memory_bytes_per_worker", 1))
+    if maximum_workers < 1 or minimum_cpu_count < 1 or memory_per_worker < 1:
+        raise ValueError("invalid semantic verifier resource contract")
+    cpu_count = max(1, int(logical_cpu_count or 1))
+    cpu_safe_workers = max(1, cpu_count // minimum_cpu_count)
+    memory_safe_workers = maximum_workers
+    if total_memory_bytes is not None:
+        memory_safe_workers = max(
+            1,
+            (int(total_memory_bytes) - parent_reserve) // memory_per_worker,
+        )
+    safe_workers = max(
+        1, min(maximum_workers, cpu_safe_workers, memory_safe_workers)
+    )
+    configured = parallel_cfg.get("default_workers", 1)
+    if requested_workers is None:
+        worker_count = (
+            safe_workers if configured == "auto" else int(configured)
+        )
+    else:
+        worker_count = int(requested_workers)
+    if not enabled:
+        worker_count = 1
+    if worker_count < 1 or worker_count > maximum_workers:
+        raise ValueError(
+            f"semantic admission workers must be between 1 and {maximum_workers}"
+        )
+    if worker_count > safe_workers:
+        raise ValueError(
+            "semantic admission worker request exceeds host resource contract"
+        )
+    return worker_count, {
+        "policy": "project_theseus_kerc_semantic_worker_resource_receipt_v1",
+        "parallelism_enabled": enabled,
+        "configured_default": configured,
+        "requested_workers": requested_workers,
+        "selected_workers": worker_count,
+        "maximum_workers": maximum_workers,
+        "safe_workers": safe_workers,
+        "logical_cpu_count": cpu_count,
+        "total_memory_bytes": total_memory_bytes,
+        "parent_reserve_bytes": parent_reserve,
+        "minimum_memory_bytes_per_worker": memory_per_worker,
+    }
 
 
 def bit_distribution(values: list[int]) -> dict[str, Any]:
@@ -3682,6 +3779,127 @@ def verify_candidate_common(
     return validate_training_record(record), receipt
 
 
+def verify_semantic_admission_job(job: dict[str, Any]) -> dict[str, Any]:
+    """Verify one cache-miss record without touching shared process state.
+
+    The worker returns data only. SQLite publication, aggregate accounting, and
+    canonical serialization remain single-writer responsibilities in the parent
+    process, which makes completion order irrelevant to the authoritative bytes.
+    """
+
+    line_number = int(job["line_number"])
+    family = str(job["family"])
+    try:
+        family_verifier = globals().get(VERIFIER_FAMILY_ROOTS[family])
+        if not callable(family_verifier):
+            raise ValueError(f"source-family verifier unavailable: {family}")
+        record = copy.deepcopy(job["record"])
+        replay = family_verifier(record, job["source"], job["expected_row"])
+        verification_source = replay.get("common_source_binding", job["source"])
+        canonical, receipt = verify_candidate_common(
+            record=record,
+            source=verification_source,
+            expected_importance=job["expected_importance"],
+            replay=replay,
+            family=family,
+            producer_family_identity=str(job["producer_family_identity"]),
+            verifier_route_identity=str(job["verifier_route_identity"]),
+        )
+        return {
+            "line_number": line_number,
+            "family": family,
+            "source_id": str(job["source_id"]),
+            "semantic_key": str(job["semantic_key"]),
+            "accepted": True,
+            "canonical": canonical,
+            "receipt": receipt,
+        }
+    except Exception as exc:
+        return {
+            "line_number": line_number,
+            "family": family,
+            "source_id": str(job.get("source_id") or ""),
+            "semantic_key": str(job.get("semantic_key") or ""),
+            "accepted": False,
+            "failure_code": str(getattr(exc, "code", type(exc).__name__)),
+            "failure_message": str(exc)[:160],
+        }
+
+
+def _verify_semantic_admission_batch(
+    batch: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    return [verify_semantic_admission_job(job) for job in batch]
+
+
+def execute_semantic_admission_jobs(
+    jobs: list[dict[str, Any]],
+    *,
+    worker_count: int,
+    batch_size: int,
+    max_in_flight_batches_per_worker: int = 2,
+) -> Iterable[dict[str, Any]]:
+    """Run admission jobs with bounded memory and deterministic authority.
+
+    Results may arrive out of order, but every result carries its original line
+    number. The caller sorts authoritative rows and failures before writing.
+    Spawned workers never inherit an open SQLite connection.
+    """
+
+    if worker_count < 1:
+        raise ValueError("semantic admission worker_count must be positive")
+    if batch_size < 1:
+        raise ValueError("semantic admission batch_size must be positive")
+    if max_in_flight_batches_per_worker < 1:
+        raise ValueError(
+            "semantic admission max_in_flight_batches_per_worker must be positive"
+        )
+    if worker_count == 1 or len(jobs) <= 1:
+        for job in jobs:
+            yield verify_semantic_admission_job(job)
+        return
+
+    batches = [
+        jobs[offset : offset + batch_size]
+        for offset in range(0, len(jobs), batch_size)
+    ]
+    pending: dict[concurrent.futures.Future[list[dict[str, Any]]], int] = {}
+    next_batch = 0
+    maximum_pending = worker_count * max_in_flight_batches_per_worker
+    context = multiprocessing.get_context("spawn")
+    with concurrent.futures.ProcessPoolExecutor(
+        max_workers=worker_count,
+        mp_context=context,
+    ) as executor:
+        while next_batch < len(batches) or pending:
+            while next_batch < len(batches) and len(pending) < maximum_pending:
+                future = executor.submit(
+                    _verify_semantic_admission_batch, batches[next_batch]
+                )
+                pending[future] = next_batch
+                next_batch += 1
+            completed, _ = concurrent.futures.wait(
+                pending,
+                return_when=concurrent.futures.FIRST_COMPLETED,
+            )
+            for future in completed:
+                pending.pop(future)
+                for result in future.result():
+                    yield result
+
+
+def order_semantic_admission_authority(
+    accepted_rows: list[tuple[int, dict[str, Any], dict[str, Any]]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Restore candidate order before any order-sensitive aggregate replay."""
+
+    ordered = sorted(accepted_rows, key=lambda row: row[0])
+    line_numbers = [row[0] for row in ordered]
+    if len(line_numbers) != len(set(line_numbers)):
+        raise ValueError("duplicate accepted semantic admission line number")
+    return [row[1] for row in ordered], [row[2] for row in ordered]
+
+
 def source_catalog(corpus: dict[str, Any]) -> dict[str, Any]:
     sources = []
     for key in ("dolly", "masc", "gum", "oasst2"):
@@ -3722,14 +3940,20 @@ def source_catalog(corpus: dict[str, Any]) -> dict[str, Any]:
 def verify(
     config_path: Path,
     *,
+    runtime_config_path: Path = DEFAULT_RUNTIME_CONFIG,
     use_cache: bool = True,
     refresh_cache: bool = False,
     bypass_run_cache: bool = False,
+    semantic_workers: int | None = None,
+    semantic_batch_size: int | None = None,
 ) -> dict[str, Any]:
     run_started = time.perf_counter()
     phase_started = run_started
     phase_runtime_ms: dict[str, int] = {}
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    runtime_config = json.loads(runtime_config_path.read_text(encoding="utf-8"))
+    if runtime_config.get("policy") != "project_theseus_kerc_semantic_verifier_runtime_v1":
+        raise ValueError("KERC semantic verifier runtime policy mismatch")
     stage = validate_kernel_english_config(config)
     corpus = stage["semantic_corpus_materialization"]
     if corpus.get("policy") != KERC_SEMANTIC_CORPUS_POLICY:
@@ -3756,9 +3980,29 @@ def verify(
     cache_cfg = corpus["content_cache"]
     cache_enabled = bool(use_cache and cache_cfg["enabled"])
     cache_root = resolve(cache_cfg["root"])
+    parallel_cfg = runtime_config.get("parallelism") or {}
+    resource_cfg = runtime_config.get("resource_contract") or {}
+    worker_count, worker_resource_receipt = resolve_semantic_worker_count(
+        parallel_cfg,
+        resource_cfg,
+        requested_workers=semantic_workers,
+        logical_cpu_count=os.cpu_count(),
+        total_memory_bytes=host_total_memory_bytes(),
+    )
+    batch_size = int(
+        parallel_cfg.get("batch_size", 4)
+        if semantic_batch_size is None
+        else semantic_batch_size
+    )
+    in_flight_batches = int(
+        parallel_cfg.get("max_in_flight_batches_per_worker", 2)
+    )
+    if batch_size < 1:
+        raise ValueError("semantic admission batch size must be positive")
     cache_dependencies = dependency_bindings(
         verifier_cache_dependency_paths(
             config_path,
+            runtime_config_path,
             corpus,
             candidate_path=candidate_path,
             manifest_path=manifest_path,
@@ -4394,8 +4638,7 @@ def verify(
         (time.perf_counter() - phase_started) * 1000
     )
     phase_started = time.perf_counter()
-    canonical_records: list[dict[str, Any]] = []
-    receipts: list[dict[str, Any]] = []
+    accepted_rows: list[tuple[int, dict[str, Any], dict[str, Any]]] = []
     failures: Counter[str] = Counter()
     seen_source_ids: set[str] = set()
     counts_by_split_and_objective: dict[str, Counter[str]] = {split: Counter() for split in SPLITS}
@@ -4413,6 +4656,8 @@ def verify(
         if cache_enabled
         else None
     )
+    semantic_jobs: list[dict[str, Any]] = []
+    ordered_failures: list[dict[str, Any]] = []
     for line_number, record in enumerate(raw_records, 1):
         try:
             source_id = str(record.get("provenance", {}).get("source_id") or "")
@@ -4471,8 +4716,7 @@ def verify(
             ):
                 canonical = cached_semantic["canonical"]
                 receipt = cached_semantic["receipt"]
-                canonical_records.append(canonical)
-                receipts.append(receipt)
+                accepted_rows.append((line_number, canonical, receipt))
                 for objective, authorized in canonical["semantic_supervision"][
                     "objective_authority"
                 ].items():
@@ -4486,38 +4730,77 @@ def verify(
             semantic_cache_misses += 1
             semantic_cache_misses_by_family[family] += 1
             expected_importance = predict_importance(record, importance_policy)
-            family_verifier = globals().get(VERIFIER_FAMILY_ROOTS[family])
-            if not callable(family_verifier):
-                raise ValueError(f"source-family verifier unavailable: {family}")
-            replay = family_verifier(record, source, expected_row)
-            verification_source = replay.get("common_source_binding", source)
-            canonical, receipt = verify_candidate_common(
-                record=record,
-                source=verification_source,
-                expected_importance=expected_importance,
-                replay=replay,
-                family=family,
-                producer_family_identity=producer_family_identity,
-                verifier_route_identity=verifier_route_identity,
+            semantic_jobs.append(
+                {
+                    "line_number": line_number,
+                    "source_id": source_id,
+                    "family": family,
+                    "semantic_key": semantic_key,
+                    "record": record,
+                    "source": source,
+                    "expected_row": expected_row,
+                    "expected_importance": expected_importance,
+                    "producer_family_identity": producer_family_identity,
+                    "verifier_route_identity": verifier_route_identity,
+                }
             )
-            canonical_records.append(canonical)
-            receipts.append(receipt)
-            if semantic_store is not None:
-                semantic_store.put(
-                    semantic_key, {"canonical": canonical, "receipt": receipt}
-                )
-            for objective, authorized in canonical["semantic_supervision"]["objective_authority"].items():
-                if authorized:
-                    counts_by_split_and_objective[canonical["split"]][objective] += 1
         except Exception as exc:
-            failures[str(getattr(exc, "code", type(exc).__name__))] += 1
-            if sum(failures.values()) <= 10:
-                failures[f"sample:{line_number}:{str(exc)[:160]}"] += 0
+            ordered_failures.append(
+                {
+                    "line_number": line_number,
+                    "failure_code": str(
+                        getattr(exc, "code", type(exc).__name__)
+                    ),
+                    "failure_message": str(exc)[:160],
+                }
+            )
+
+    for result in execute_semantic_admission_jobs(
+        semantic_jobs,
+        worker_count=worker_count,
+        batch_size=batch_size,
+        max_in_flight_batches_per_worker=in_flight_batches,
+    ):
+        if not result["accepted"]:
+            ordered_failures.append(result)
+            continue
+        canonical = result["canonical"]
+        receipt = result["receipt"]
+        accepted_rows.append(
+            (int(result["line_number"]), canonical, receipt)
+        )
+        if semantic_store is not None:
+            semantic_store.put(
+                result["semantic_key"],
+                {"canonical": canonical, "receipt": receipt},
+            )
+        for objective, authorized in canonical["semantic_supervision"][
+            "objective_authority"
+        ].items():
+            if authorized:
+                counts_by_split_and_objective[canonical["split"]][objective] += 1
+
+    for index, failure in enumerate(
+        sorted(ordered_failures, key=lambda row: int(row["line_number"]))
+    ):
+        failures[str(failure["failure_code"])] += 1
+        if index < 10:
+            failures[
+                f"sample:{failure['line_number']}:{failure['failure_message']}"
+            ] += 0
+    canonical_records, receipts = order_semantic_admission_authority(accepted_rows)
     if semantic_store is not None:
         semantic_store.close()
 
     phase_runtime_ms["semantic_admission"] = round(
         (time.perf_counter() - phase_started) * 1000
+    )
+    semantic_execution_mode = (
+        "cache_only_no_worker_jobs"
+        if not semantic_jobs
+        else "bounded_spawn_process_pool"
+        if worker_count > 1
+        else "serial"
     )
     phase_started = time.perf_counter()
 
@@ -4593,6 +4876,7 @@ def verify(
         "policy": VERIFIER_POLICY,
         "trigger_state": "RED" if hard_gaps else "GREEN",
         "config": relative(config_path),
+        "runtime_config": relative(runtime_config_path),
         "producer_manifest_sha256": sha256_file(manifest_path),
         "candidate_records_sha256": sha256_file(candidate_path),
         "verifier_sha256": verifier_sha256,
@@ -4603,6 +4887,17 @@ def verify(
         "verifier_route_identities": verifier_route_identities,
         "runtime_ms": round((time.perf_counter() - run_started) * 1000),
         "phase_runtime_ms": phase_runtime_ms,
+        "semantic_admission_execution": {
+            "mode": semantic_execution_mode,
+            "worker_count": worker_count,
+            "batch_size": batch_size,
+            "max_in_flight_batches_per_worker": in_flight_batches,
+            "cache_hit_count": semantic_cache_hits,
+            "worker_job_count": len(semantic_jobs),
+            "cache_publication": "single_writer_parent_process",
+            "authoritative_order": "split_then_record_sha256_and_receipt_id",
+            "resource_receipt": worker_resource_receipt,
+        },
         "independent_expected_count": len(expected),
         "canonical_training_rows_written": canonical_written,
         "records": {"path": relative(records_path), "sha256": records_sha256},
@@ -4798,6 +5093,10 @@ def verify(
                     sorted(semantic_cache_misses_by_family.items())
                 ),
                 "producer_authority_reused": False,
+                "mode": semantic_execution_mode,
+                "worker_count": worker_count,
+                "batch_size": batch_size,
+                "cache_publication": "single_writer_parent_process",
             },
             "candidate_records_sha256": report["candidate_records_sha256"],
             "storage": cache_storage_telemetry(
@@ -4812,15 +5111,21 @@ def verify(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
+    parser.add_argument("--runtime-config", default=str(DEFAULT_RUNTIME_CONFIG))
     parser.add_argument("--no-cache", action="store_true")
     parser.add_argument("--refresh-cache", action="store_true")
     parser.add_argument("--bypass-run-cache", action="store_true")
+    parser.add_argument("--semantic-workers", type=int)
+    parser.add_argument("--semantic-batch-size", type=int)
     args = parser.parse_args()
     report = verify(
         resolve(args.config),
+        runtime_config_path=resolve(args.runtime_config),
         use_cache=not args.no_cache,
         refresh_cache=args.refresh_cache,
         bypass_run_cache=args.bypass_run_cache,
+        semantic_workers=args.semantic_workers,
+        semantic_batch_size=args.semantic_batch_size,
     )
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] == "GREEN" else 2
