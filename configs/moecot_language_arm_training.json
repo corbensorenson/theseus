@@ -364,6 +364,20 @@
     },
     "stage_root": "data/training_data/moecot_kernel_english_v1",
     "report": "reports/moecot_kernel_english_stage.json",
+    "concept_registry": {
+      "policy": "project_theseus_kerc_concept_registry_binding_v1",
+      "config": "configs/kerc_concept_registry.json",
+      "producer": "scripts/kerc_concept_registry.py",
+      "independent_verifier": "scripts/kerc_concept_registry_verify.py",
+      "manifest": "runtime/kerc_concept_registry/manifest.json",
+      "verification_report": "reports/runtime/kerc_concept_registry_verification.json",
+      "required_for_resolution_requests": true,
+      "model_may_mint_identity_or_provenance": false,
+      "ambiguous_or_unresolved_is_explicit": true,
+      "external_inference_calls": 0,
+      "training_rows": 0,
+      "claim_scope": "deterministic English WordNet-derived concept lookup and ambiguity preservation only; no truth, completeness, learned-linking, utility, or KERC promotion claim"
+    },
     "records_jsonl": "data/training_data/kernel_english_governed_v1/records.jsonl",
     "verification_ledger_jsonl": "data/training_data/kernel_english_governed_v1/verification_ledger.jsonl",
     "semantic_source_catalog_json": "data/training_data/kernel_english_governed_v1/semantic_source_catalog.json",
@@ -481,7 +495,7 @@
         {
           "source_id": "conceptnet_5_7_assertions",
           "intended_tier": "local_parser_silver",
-          "disposition": "qualified_semantic_relation_source_but_not_decision_grade_surface_realization",
+          "disposition": "qualified_for_the_deterministic_ambiguity_preserving_concept_registry_from_the_english_wordnet_3_1_subset; not decision-grade surface realization and writes zero model-training rows",
           "public_benchmark_surface": false,
           "license_spdx": "CC-BY-SA-4.0",
           "source_url": "https://conceptnet.s3.amazonaws.com/downloads/2019/edges/conceptnet-assertions-5.7.0.csv.gz"

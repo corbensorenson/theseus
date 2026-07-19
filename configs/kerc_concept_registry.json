@@ -1,0 +1,56 @@
+{
+  "policy": "project_theseus_kerc_concept_registry_v1",
+  "source": {
+    "path": "resource_pantry/kerc/conceptnet-assertions-5.7.0.csv.gz",
+    "download_url": "https://s3.amazonaws.com/conceptnet/downloads/2019/edges/conceptnet-assertions-5.7.0.csv.gz",
+    "sha256": "accd65fe94038584295574ddc26e1500c1919c8c4532bf771811cafd0948af7e",
+    "assertion_count": 34074917,
+    "version": "ConceptNet 5.7.0",
+    "aggregate_license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "admission": {
+    "language": "en",
+    "dataset": "/d/wordnet/3.1",
+    "allowed_licenses": [
+      "cc:by/4.0"
+    ],
+    "allowed_relations": [
+      "/r/AtLocation",
+      "/r/Causes",
+      "/r/CreatedBy",
+      "/r/Entails",
+      "/r/HasContext",
+      "/r/IsA",
+      "/r/MannerOf",
+      "/r/PartOf",
+      "/r/RelatedTo",
+      "/r/SimilarTo",
+      "/r/Synonym",
+      "/r/UsedFor"
+    ],
+    "minimum_weight": 2.0,
+    "expected_edge_count": 218061
+  },
+  "registry": {
+    "path": "runtime/kerc_concept_registry/conceptnet_wordnet_3_1.sqlite3",
+    "manifest_path": "runtime/kerc_concept_registry/manifest.json",
+    "schema_version": "kerc-concept-registry-1.0",
+    "normalization": "unicode_nfkc_casefold_whitespace_v1",
+    "maximum_candidates": 32,
+    "maximum_relations_per_candidate": 64,
+    "busy_timeout_ms": 30000
+  },
+  "authority": {
+    "model_may_request_resolution": true,
+    "model_may_mint_stable_identity": false,
+    "model_may_mint_provenance": false,
+    "resolution_identity_basis": "exact_normalized_surface_has_one_global_identity",
+    "pos_and_sense_hints_are_non_authoritative": true,
+    "ambiguous_resolution_policy": "preserve_all_candidates_and_require_clarification_or_context",
+    "unresolved_policy": "retain_packet_local_nonpromotable_identity",
+    "tool_fault_policy": "fail_closed",
+    "runtime_serving_external_inference": false
+  },
+  "claim_ceiling": "Exact replay of the admitted English WordNet-derived ConceptNet relation graph and deterministic ambiguity-preserving lookup only. This is not evidence that every assertion is true, that the graph is complete, that a model learned the graph, that KERC improved utility, or that cross-document linking succeeds without a source-visible resolution request and independent evaluation."
+}

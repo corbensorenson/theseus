@@ -36,7 +36,7 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "421f5b6d251276f2ef3c68197c067cb73c808f729551229432464dcb325fcbdc"
+      "sha256": "fb237dfb373ce5a6bcecedbee354ffd58cb7f5c68f13d2ed18c0eac9e33b5e93"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
@@ -72,7 +72,23 @@
     },
     {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "dda98ad38af1c192512b0ac85afc48a168d3255399e00ea0d11e5c386db87aaa"
+      "sha256": "2f4da9be8dab1f74f5af82ead4256610519911c1bf09ba65a50acf851e9b981b"
+    },
+    {
+      "path": "configs/kerc_concept_registry.json",
+      "sha256": "50258c8282e7e756dfc8f3d7a002b355fe1b8ca940c08d6deca1fdaff0ae90f8"
+    },
+    {
+      "path": "scripts/kerc_concept_registry.py",
+      "sha256": "2e2a2fff4dc63af35840e8f3b7bec56eb78957c5c20a0df7de7772b68d08e4f6"
+    },
+    {
+      "path": "scripts/kerc_concept_registry_verify.py",
+      "sha256": "c364e3ec17fe127e3208176e201465a9e84fb4cb932a4379007c3e8842258ee3"
+    },
+    {
+      "path": "resource_pantry/kerc/conceptnet-assertions-5.7.0.csv.gz",
+      "sha256": "accd65fe94038584295574ddc26e1500c1919c8c4532bf771811cafd0948af7e"
     },
     {
       "path": "resource_pantry/kerc/gum-v12.1.0/LICENSE.md",
@@ -108,15 +124,15 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "e511ef819dd64bf60ac9f3cf8e6fc2ba4fc41dd856f08fd9ed4ca80d9d9d1ac3"
+      "sha256": "7df740f80dc66f3335f0b11aff9a95726bd847bd5c4d4a68e5de32b99791a2f6"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "66915f84a4bda83f584e298a6724d570c70f26be606f8f4de8b1cb2ed0ae481a"
+      "sha256": "5213e35a2e4697e7b2296c40534a776671e03ec13f129c860d7198a7cdf13bd8"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "0673630212cd27c2776f750eeac30201a49191f98beff981e55693ad341cff56"
+      "sha256": "f300c7306ae8147aabaadd0dfaca81454408285f6712f8b01694b47498483388"
     },
     {
       "path": "reports/kerc_selective_replay_k1g.json",
@@ -124,7 +140,7 @@
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "84dff4be0218e8f5286c223e1c4915f1b2588fb4bc95c9e028bd173021cd2325"
+      "sha256": "35063cd69aee44a1b2cc8005f17dfb776c351f1dc09b2cfb9735658b8588689a"
     }
   ],
   "observed_corpus_contract": {
@@ -143,22 +159,25 @@
     "interaction_presence_label_with_empty_global_count": 6809
   },
   "incremental_replay_contract": {
-    "status": "partial_green_k1i_current_corpus_full_independent_and_warm_replay_evidence",
+    "status": "partial_green_k1j_current_corpus_full_independent_and_top_level_warm_replay_evidence",
     "evidence": "reports/runtime/kerc_semantic_corpus_verification.json",
     "source_family_count": 11,
     "candidate_record_count": 27941,
     "producer_family_identity_independently_recomputed": true,
     "verifier_family_identity_independently_recomputed": true,
-    "candidate_finalization_and_economics_warm_hits": 27941,
-    "semantic_admission_warm_hits": 27941,
+    "producer_top_level_run_cache_hit": true,
+    "verifier_top_level_run_cache_hit": true,
+    "candidate_finalization_and_economics_warm_hits": 0,
+    "semantic_admission_warm_hits": 0,
+    "warm_per_object_work_bypassed_by_top_level_hit": true,
     "warm_miss_count": 0,
     "producer_authority_reused_for_admission": false,
-    "producer_current_cold_runtime_ms": 5389173,
-    "verifier_current_cold_runtime_ms": 5404007,
+    "producer_current_cold_runtime_ms": 3917120,
+    "verifier_current_cold_runtime_ms": 6341007,
     "cold_rebuild_scope": "all candidate/finalization/economics and semantic-admission objects invalidated by current producer/verifier source closures",
-    "producer_warm_runtime_ms": 230925,
-    "verifier_warm_runtime_ms": 181282,
-    "combined_cache_bytes": 8402055168,
+    "producer_warm_wall_runtime_ms": 3470,
+    "verifier_warm_wall_runtime_ms": 12350,
+    "combined_cache_bytes": 11365433344,
     "warm_measurement_record_count": 27941,
     "current_warm_measurement_pending": false,
     "remaining_incremental_owners": [
@@ -222,11 +241,11 @@
       "id": "kerc.concept_identity_and_binding",
       "paper_sections": ["5.6", "6.3", "6.10"],
       "status": "approximate",
-      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_gum_entity_coreference.py", "scripts/kerc_gum_entity_coreference_verify.py"],
-      "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_kerc_gum_entity_coreference.py"],
-      "current_finding": "The canonical corpus now exercises 7,180 provenance-bound concept capsules across 5,361 GUM entity/coreference records. Stable handles denote document-local source-declared coreference components; producer TSV reconstruction and an independent native-CoNLL membership parser agree across all 89 admitted documents, while CoNLL-U independently confirms aggregate topology. Compiler prompts receive no source-derived capsule labels; the learned compiler must generate capsules beside the Kernel program, and missing or conflicting output fails closed.",
-      "claim_ceiling": "Bounded document-local source-declared coreference binding and leak-free learned-output ABI only; no ontological identity, cross-document registry resolution, open-world definition quality, migration success, or learned linking competence.",
-      "next_evidence": "Cross-document registry identity, aliases, unseen concept definitions, capsule reuse, promotion/migration, collision, stale-definition, wrong-identity, and model-generated linking interventions under source-disjoint evaluation."
+      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_gum_entity_coreference.py", "scripts/kerc_gum_entity_coreference_verify.py", "scripts/kerc_concept_registry.py", "scripts/kerc_concept_registry_verify.py", "scripts/moecot_language_arm_training.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_kerc_gum_entity_coreference.py", "tests/test_kerc_concept_registry.py", "reports/runtime/kerc_concept_registry_verification.json"],
+      "current_finding": "The canonical corpus exercises 7,180 provenance-bound document-local capsules across 5,361 GUM entity/coreference records. K1j adds a deterministic cross-document registry over the pinned English WordNet-derived ConceptNet 5.7 graph: 218,061 source-declared edges, 174,480 stable URI-derived identities, and 410,638 normalized aliases. A separate parser independently replays every admitted edge, concept, alias, digest, license, and SQLite constraint. Learned compiler output may emit only a bounded surface request with optional non-authoritative POS/sense hints; it cannot mint or select stable identity or provenance. Deterministic resolution attaches identity only when the normalized surface maps to one global registry identity. Hints never collapse ambiguity, all ambiguous/unknown states remain explicit, registry faults fail closed, and the route writes zero model-training rows.",
+      "claim_ceiling": "Exact document-local coreference binding plus deterministic cross-document WordNet-derived relation lookup and ambiguity preservation. No assertion-truth, graph-completeness, open-world definition quality, learned linking, migration success, utility, or KERC promotion claim.",
+      "next_evidence": "Source-disjoint model-generated resolution requests in natural contexts; ambiguity clarification, unseen definitions, capsule reuse, alias and sense interventions, version migration, collision/stale-definition/wrong-identity attacks, and causal utility compared with registry-withheld and shuffled controls."
     },
     {
       "id": "kerc.grammar_aware_macros",

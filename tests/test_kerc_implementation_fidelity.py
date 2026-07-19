@@ -46,6 +46,43 @@ class KercImplementationFidelityTests(unittest.TestCase):
         self.assertFalse(report["summary"]["byte_literal_mutation_rejected"])
         self.assertFalse(report["summary"]["interaction_label_depends_on_global_dictionary"])
 
+    def test_cross_document_registry_evidence_is_exact_and_nonlearned(self) -> None:
+        manifest = json.loads(
+            (ROOT / "runtime/kerc_concept_registry/manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        verification = json.loads(
+            (
+                ROOT
+                / "reports/runtime/kerc_concept_registry_verification.json"
+            ).read_text(encoding="utf-8")
+        )
+
+        self.assertEqual(manifest["trigger_state"], "GREEN")
+        self.assertEqual(verification["trigger_state"], "GREEN")
+        self.assertEqual(verification["faults"], [])
+        self.assertFalse(verification["producer_authority_reused"])
+        self.assertEqual(manifest["registry"]["edge_count"], 218061)
+        self.assertEqual(manifest["registry"]["concept_count"], 174480)
+        self.assertEqual(manifest["registry"]["alias_count"], 410638)
+        self.assertEqual(
+            verification["observed"]["edge_digest"],
+            manifest["registry"]["edge_digest"],
+        )
+        self.assertEqual(
+            verification["observed"]["concept_digest"],
+            manifest["registry"]["concept_digest"],
+        )
+        self.assertEqual(
+            verification["observed"]["alias_digest"],
+            manifest["registry"]["alias_digest"],
+        )
+        self.assertEqual(manifest["training_row_count"], 0)
+        self.assertEqual(verification["training_row_count"], 0)
+        self.assertEqual(manifest["external_inference_calls"], 0)
+        self.assertEqual(verification["external_inference_calls"], 0)
+
     def test_per_unit_allocator_cannot_be_relabelled_faithful_without_units(self) -> None:
         contract = copy.deepcopy(self.contract)
         row = next(item for item in contract["mechanisms"] if item["id"] == "kerc.learned_per_unit_allocator")

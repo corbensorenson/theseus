@@ -926,15 +926,29 @@ def learned_concept_capsule_view(
         output[str(handle)] = {
             str(key): copy.deepcopy(value)
             for key, value in capsule.items()
-            if key not in {"stable_identity", "provenance"}
+            if key
+            not in {
+                "stable_identity",
+                "provenance",
+                "registry_resolution",
+                "registry_semantics",
+            }
         }
     return output
 
 
 def materialize_learned_concept_capsules(
     learned_capsules: dict[str, dict[str, Any]],
+    *,
+    concept_resolver: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
 ) -> dict[str, dict[str, Any]]:
-    """Attach local identity/provenance after validating learned capsule fields."""
+    """Attach local or registry identity after validating learned capsule fields.
+
+    A model can request registry resolution but cannot select a candidate or
+    mint authority fields. Only an unambiguous deterministic registry result
+    receives the pre-existing stable identity. Ambiguous and unresolved
+    requests retain packet-local identity and their explicit status.
+    """
 
     if len(learned_capsules) > 64:
         raise KernelProtocolFault(
@@ -950,22 +964,177 @@ def materialize_learned_concept_capsules(
                 str(handle),
                 path="compiler_output.concept_capsules",
             )
-        forbidden = sorted(set(capsule) & {"stable_identity", "provenance"})
+        forbidden = sorted(
+            set(capsule)
+            & {
+                "stable_identity",
+                "provenance",
+                "registry_resolution",
+                "registry_semantics",
+            }
+        )
         if forbidden:
             raise KernelProtocolFault(
                 "KERC_LEARNED_CONCEPT_AUTHORITY_FORBIDDEN",
                 canonical_json(forbidden),
                 path=f"compiler_output.concept_capsules.{handle}",
             )
-        output[str(handle)] = {
-            "stable_identity": f"local.concept.{str(handle)[2:]}",
-            "provenance": {
-                "source": "learned_compiler_output_v1",
-                "scope": "packet_local",
-                "registry_promotion_allowed": False,
-            },
-            **copy.deepcopy(capsule),
+        learned = copy.deepcopy(capsule)
+        resolution_request = learned.get("resolution_request")
+        identity = f"local.concept.{str(handle)[2:]}"
+        provenance: dict[str, Any] = {
+            "source": "learned_compiler_output_v1",
+            "scope": "packet_local",
+            "registry_promotion_allowed": False,
         }
+        registry_resolution: dict[str, Any] | None = None
+        registry_semantics: dict[str, Any] | None = None
+        if resolution_request is not None:
+            if not isinstance(resolution_request, dict):
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_RESOLUTION_REQUEST_INVALID",
+                    str(type(resolution_request)),
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                )
+            forbidden_request_fields = sorted(
+                set(resolution_request) - {"surface", "pos", "sense"}
+            )
+            surface = str(resolution_request.get("surface") or "").strip()
+            pos = str(resolution_request.get("pos") or "")
+            sense = str(resolution_request.get("sense") or "")
+            if (
+                forbidden_request_fields
+                or not surface
+                or len(surface.encode("utf-8")) > 512
+                or pos not in {"", "a", "n", "r", "s", "v"}
+                or len(sense.encode("utf-8")) > 256
+            ):
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_RESOLUTION_REQUEST_INVALID",
+                    canonical_json(
+                        {
+                            "forbidden_fields": forbidden_request_fields,
+                            "surface_present": bool(surface),
+                            "surface_bytes": len(surface.encode("utf-8")),
+                            "pos": pos,
+                            "sense_bytes": len(sense.encode("utf-8")),
+                        }
+                    ),
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                )
+            if concept_resolver is None:
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_REGISTRY_UNAVAILABLE",
+                    str(handle),
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                )
+            try:
+                resolution = concept_resolver(copy.deepcopy(resolution_request))
+            except Exception as exc:
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_REGISTRY_TOOL_FAULT",
+                    str(exc),
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                ) from exc
+            status = str(resolution.get("status") or "") if isinstance(resolution, dict) else ""
+            candidates = resolution.get("candidates") if isinstance(resolution, dict) else None
+            candidate_count = int(resolution.get("candidate_count", -1)) if isinstance(resolution, dict) else -1
+            candidates_truncated = bool(resolution.get("candidates_truncated")) if isinstance(resolution, dict) else False
+            authority_basis = str(resolution.get("authority_basis") or "") if isinstance(resolution, dict) else ""
+            if (
+                status not in {"RESOLVED", "AMBIGUOUS", "UNRESOLVED"}
+                or authority_basis
+                != "exact_normalized_surface_has_one_global_identity"
+                or not isinstance(candidates, list)
+                or len(candidates) > 32
+                or candidate_count < len(candidates)
+                or candidates_truncated != (candidate_count > len(candidates))
+                or (status == "RESOLVED" and (candidate_count != 1 or candidates_truncated))
+                or (status == "AMBIGUOUS" and candidate_count < 2)
+                or (status == "UNRESOLVED" and (candidate_count != 0 or candidates))
+            ):
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_REGISTRY_RESPONSE_INVALID",
+                    status,
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                )
+            candidate_identities: list[str] = []
+            for candidate in candidates:
+                candidate_identity = (
+                    str(candidate.get("stable_identity") or "")
+                    if isinstance(candidate, dict)
+                    else ""
+                )
+                if not re.fullmatch(r"conceptnet\.uri\.[0-9a-f]{64}", candidate_identity):
+                    raise KernelProtocolFault(
+                        "KERC_CONCEPT_REGISTRY_IDENTITY_INVALID",
+                        candidate_identity,
+                        path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                    )
+                candidate_identities.append(candidate_identity)
+            if len(candidate_identities) != len(set(candidate_identities)):
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_REGISTRY_RESPONSE_INVALID",
+                    "duplicate candidate identity",
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                )
+            selected_identity = str(resolution.get("selected_identity") or "")
+            if status == "RESOLVED":
+                if len(candidates) != 1 or selected_identity != str(candidates[0].get("stable_identity") or ""):
+                    raise KernelProtocolFault(
+                        "KERC_CONCEPT_REGISTRY_RESPONSE_INVALID",
+                        "resolved candidate mismatch",
+                        path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                    )
+                if not re.fullmatch(r"conceptnet\.uri\.[0-9a-f]{64}", selected_identity):
+                    raise KernelProtocolFault(
+                        "KERC_CONCEPT_REGISTRY_IDENTITY_INVALID",
+                        selected_identity,
+                        path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                    )
+                identity = selected_identity
+                registry_semantics = copy.deepcopy(candidates[0])
+                provenance = {
+                    "source": "kerc_concept_registry_v1",
+                    "scope": "cross_document_registered",
+                    "registry_promotion_allowed": False,
+                    "registry_schema_version": str(resolution.get("registry_schema_version") or ""),
+                }
+            elif selected_identity:
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_REGISTRY_RESPONSE_INVALID",
+                    "nonresolved response selected an identity",
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                )
+            registry_resolution = {
+                "status": status,
+                "request_sha256": stable_hash(resolution_request),
+                "candidate_count": candidate_count,
+                "candidates_truncated": candidates_truncated,
+                "candidate_identities": candidate_identities,
+                "authority_basis": authority_basis,
+                "non_authoritative_hint_match_count": int(
+                    resolution.get("non_authoritative_hint_match_count", 0)
+                ),
+                "external_inference_calls": int(resolution.get("external_inference_calls", -1)),
+            }
+            if registry_resolution["external_inference_calls"] != 0:
+                raise KernelProtocolFault(
+                    "KERC_CONCEPT_REGISTRY_EXTERNAL_INFERENCE_FORBIDDEN",
+                    str(registry_resolution["external_inference_calls"]),
+                    path=f"compiler_output.concept_capsules.{handle}.resolution_request",
+                )
+            provenance["resolution_status"] = status
+        materialized = {
+            "stable_identity": identity,
+            "provenance": provenance,
+            **learned,
+        }
+        if registry_resolution is not None:
+            materialized["registry_resolution"] = registry_resolution
+        if registry_semantics is not None:
+            materialized["registry_semantics"] = registry_semantics
+        output[str(handle)] = materialized
     if len(canonical_json(output).encode("utf-8")) > 65536:
         raise KernelProtocolFault(
             "KERC_LEARNED_CONCEPT_CAPSULE_BUDGET_EXCEEDED",
@@ -1299,6 +1468,7 @@ def execute_learned_pipeline(
     *,
     hrl_state: dict[str, Any],
     stage_executor: Callable[[str, str], tuple[str, dict[str, Any]]],
+    concept_resolver: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
 ) -> tuple[str, dict[str, Any]]:
     """Execute compiler, core, renderer, and learned round-trip verification.
 
@@ -1359,6 +1529,7 @@ def execute_learned_pipeline(
             protected_objects=protected["protected_objects"],
             concept_capsules={},
             source_character_length=len(surface),
+            concept_resolver=concept_resolver,
         )
         packet = build_kernel_packet(
             surface,
@@ -1868,6 +2039,7 @@ def parse_learned_compiler_output(
     protected_objects: dict[str, dict[str, Any]],
     concept_capsules: dict[str, dict[str, Any]],
     source_character_length: int,
+    concept_resolver: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Parse and independently validate a learned compiler result."""
 
@@ -1890,7 +2062,10 @@ def parse_learned_compiler_output(
             str(type(learned_capsules)),
             path="compiler_output.concept_capsules",
         )
-    generated = materialize_learned_concept_capsules(learned_capsules)
+    generated = materialize_learned_concept_capsules(
+        learned_capsules,
+        concept_resolver=concept_resolver,
+    )
     conflicts = set(concept_capsules) & set(generated)
     if conflicts:
         raise KernelProtocolFault(

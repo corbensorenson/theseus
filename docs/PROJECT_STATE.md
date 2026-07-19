@@ -86,14 +86,30 @@ share toward zero. Public benchmarks are calibration only.
   target contains only actionable capsule semantics, while source IDs, annotation
   hashes, stable identity, and provenance remain in the evidence plane; validation
   assigns packet-local non-promotable identities after model output. This closes one
-  bounded source-declared document-local reference family only. It does not establish
-  ontological or cross-document identity, open-world definition quality, capsule
-  migration, complete semantics, truth, utility, or learned linking competence. Full
-  cold producer/verifier replay took `5,389.173s`/`5,404.007s`; warm replay took
-  `230.925s`/`181.282s` with `27,941/27,941` candidate, finalization, economics, and
-  semantic-admission hits, zero misses, zero failures, zero producer-authority reuse,
-  and an unchanged candidate digest. The two object stores cost `8,402,055,168` bytes
-  (`7.825 GiB`). Three narrow mechanisms
+  bounded source-declared document-local reference family only. K1j now adds a
+  deterministic cross-document resolver over the pinned English WordNet-derived
+  ConceptNet 5.7 graph. Full-source production indexes 218,061 licensed relations,
+  174,480 stable URI-derived identities, and 410,638 normalized aliases in a
+  352,411,648-byte read-only SQLite artifact in `155.254s`. An independent manual tab
+  parser replays the complete source in `76.655s` while the canonical replay runs concurrently, rebuilds
+  and compares every relation, identity, alias, count, content digest, license, and
+  database constraint without importing producer authority. The learned compiler can
+  request resolution using a bounded surface plus optional non-authoritative POS/sense
+  hints; it cannot mint or choose identity or provenance. Registry authority attaches
+  only when the normalized surface maps to one global identity; hints never collapse
+  ambiguity. Ambiguous and
+  unknown lookup remains explicit and packet-local, and tool faults fail closed. Registry
+  evidence is removed from the learned capsule view, this route writes zero training
+  rows, and the canonical learned pipeline injects the resolver. This establishes exact
+  deterministic lookup and ambiguity preservation, not assertion truth, graph
+  completeness, ontological identity, open-world definition quality, capsule migration,
+  natural-context learned linking, complete semantics, truth, utility, or learned
+  competence. Full
+  cold producer/verifier replay took `3,917.120s`/`6,341.007s`; warm replay took
+  `3.470s`/`12.350s` through exact top-level run-cache hits with zero misses or
+  per-object work, zero failures, zero producer-authority reuse, and an unchanged
+  candidate digest. The two object stores cost `11,365,433,344` bytes (`10.585 GiB`).
+  Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Ten mechanisms are
   approximate or fixture-only; three are inactive or absent; H1-H8 remain inactive.

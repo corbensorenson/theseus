@@ -16,6 +16,7 @@ import json
 import os
 import random
 import shutil
+import sqlite3
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -26,6 +27,7 @@ from typing import Any
 import numpy as np
 
 from kerc_checkpoint_schema import CURRENT_SCHEMA, CURRENT_SCHEMA_VERSION, POLICY as KERC_CHECKPOINT_POLICY
+from kerc_concept_registry import ConceptRegistry
 from kernel_english_protocol import (
     ANSWER_DISPOSITION_ORDER,
     KERC_VERIFIER_DIMENSIONS,
@@ -2374,9 +2376,20 @@ def generate_kerc_pipeline_text(
             )
         return "", generation_fault("kerc_objective_not_routeable")
 
+    concept_registry: ConceptRegistry | None = None
+    concept_registry_fault = ""
     try:
+        try:
+            concept_registry = ConceptRegistry()
+        except (OSError, sqlite3.Error, ValueError) as exc:
+            concept_registry_fault = str(exc)
         text, receipt = execute_learned_pipeline(
-            prompt, hrl_state=hrl_state, stage_executor=execute_stage
+            prompt,
+            hrl_state=hrl_state,
+            stage_executor=execute_stage,
+            concept_resolver=(
+                concept_registry.resolve if concept_registry is not None else None
+            ),
         )
     except KernelProtocolFault as exc:
         return "", {
@@ -2384,13 +2397,20 @@ def generate_kerc_pipeline_text(
             "policy": "project_theseus_kerc_learned_pipeline_execution_v1",
             "fault": exc.record(),
             "direct_surface_route_used": False,
+            "concept_registry_available": concept_registry is not None,
+            "concept_registry_fault": concept_registry_fault,
         }
+    finally:
+        if concept_registry is not None:
+            concept_registry.close()
     return text, {
         **receipt,
         "decoder": "learned_kerc_five_stage_roundtrip_v1",
         "target_visible_to_generator": False,
         "byte_serialization_valid": True,
         "stop_reason": "validated_roundtrip",
+        "concept_registry_available": concept_registry is not None,
+        "concept_registry_fault": concept_registry_fault,
     }
 
 

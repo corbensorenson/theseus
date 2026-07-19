@@ -329,6 +329,33 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
         },
     }
     calls: list[str] = []
+    resolution_requests: list[dict] = []
+    registry_identity = "conceptnet.uri." + ("a" * 64)
+
+    def resolve_concept(request: dict) -> dict:
+        resolution_requests.append(request)
+        return {
+            "status": "RESOLVED",
+            "candidate_count": 1,
+            "candidates_truncated": False,
+            "candidates": [
+                {
+                    "stable_identity": registry_identity,
+                    "concept_uri": "/c/en/example/n/wn/cognition",
+                    "canonical_surface": "example",
+                    "pos": "n",
+                    "sense": "wn/cognition",
+                    "relation_count": 0,
+                    "relations_truncated": False,
+                    "relations": [],
+                }
+            ],
+            "selected_identity": registry_identity,
+            "authority_basis": "exact_normalized_surface_has_one_global_identity",
+            "non_authoritative_hint_match_count": 1,
+            "registry_schema_version": "kerc-concept-registry-1.0",
+            "external_inference_calls": 0,
+        }
 
     def execute(objective: str, _prompt: str) -> tuple[str, dict]:
         calls.append(objective)
@@ -336,7 +363,12 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
             output = kernel.canonical_json(
                 {
                     "kernel_version": kernel.KERNEL_VERSION,
-                    "concept_capsules": {},
+                    "concept_capsules": {
+                        "@C0": {
+                            "surface_forms": ["example"],
+                            "resolution_request": {"surface": "example", "pos": "n"},
+                        }
+                    },
                     "program": learned_program,
                 }
             )
@@ -349,7 +381,10 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
         return output, {"state": "GREEN", "fallback_return_count": 0}
 
     surface, receipt = kernel.execute_learned_pipeline(
-        source, hrl_state=state, stage_executor=execute
+        source,
+        hrl_state=state,
+        stage_executor=execute,
+        concept_resolver=resolve_concept,
     )
 
     assert surface == source
@@ -365,6 +400,10 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
     assert receipt["roundtrip"]["passes"] is True
     assert receipt["direct_surface_route_used"] is False
     assert receipt["fallback_return_count"] == 0
+    assert resolution_requests == [
+        {"surface": "example", "pos": "n"},
+        {"surface": "example", "pos": "n"},
+    ]
 
 
 def training_record(*, split: str = "private_train", with_interaction: bool = False) -> dict:

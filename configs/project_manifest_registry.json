@@ -262,11 +262,11 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "dda98ad38af1c192512b0ac85afc48a168d3255399e00ea0d11e5c386db87aaa"
+          "sha256": "2f4da9be8dab1f74f5af82ead4256610519911c1bf09ba65a50acf851e9b981b"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "650e92ca6c4129ef16afbbe78ed172021aa6b4f940ad43e8692b53442bf35f38"
+          "sha256": "105830709a2c27ccd79caee42491df8365e901dc9617939a59a1d0891b956416"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
@@ -286,7 +286,19 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "421f5b6d251276f2ef3c68197c067cb73c808f729551229432464dcb325fcbdc"
+          "sha256": "fb237dfb373ce5a6bcecedbee354ffd58cb7f5c68f13d2ed18c0eac9e33b5e93"
+        },
+        "kerc_concept_registry_config": {
+          "path": "configs/kerc_concept_registry.json",
+          "sha256": "50258c8282e7e756dfc8f3d7a002b355fe1b8ca940c08d6deca1fdaff0ae90f8"
+        },
+        "kerc_concept_registry_producer": {
+          "path": "scripts/kerc_concept_registry.py",
+          "sha256": "2e2a2fff4dc63af35840e8f3b7bec56eb78957c5c20a0df7de7772b68d08e4f6"
+        },
+        "kerc_concept_registry_verifier": {
+          "path": "scripts/kerc_concept_registry_verify.py",
+          "sha256": "c364e3ec17fe127e3208176e201465a9e84fb4cb932a4379007c3e8842258ee3"
         },
         "kerc_importance_policy": {
           "path": "scripts/kerc_importance_policy.py",
@@ -414,7 +426,11 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "5a801639d1a95dc0b55e9a7e7fdb2149d7457fdd6ba242614f536b960a2ad963"
+          "sha256": "8a151165f1396de23e588a6edf600194296edefb290592b1f07f58daddc45492"
+        },
+        "kerc_concept_registry_tests": {
+          "path": "tests/test_kerc_concept_registry.py",
+          "sha256": "c7ad7654f68bccf587cfafe8f11b3c0632ef21d01d4295d9a23c37e894074714"
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
@@ -5402,7 +5418,7 @@
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_kerc_implementation_fidelity.py tests/test_kerc_content_cache.py tests/test_kerc_source_family_identity.py tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kerc_masc_event_coreference.py tests/test_kerc_masc_mpqa_relations.py tests/test_kerc_gum_discourse_relations.py tests/test_kerc_gum_entity_coreference.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_implementation_fidelity_gate.py --gate && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 -m pytest -q tests/test_kerc_implementation_fidelity.py tests/test_kerc_content_cache.py tests/test_kerc_source_family_identity.py tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kerc_masc_event_coreference.py tests/test_kerc_masc_mpqa_relations.py tests/test_kerc_gum_discourse_relations.py tests/test_kerc_gum_entity_coreference.py tests/test_kerc_concept_registry.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_implementation_fidelity_gate.py --gate && python3 scripts/kerc_concept_registry_verify.py --gate && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
@@ -5410,6 +5426,7 @@
         "configs/moecot_language_arm_training.json",
         "configs/kerc_adequacy_canary.json",
         "configs/kerc_implementation_fidelity.json",
+        "configs/kerc_concept_registry.json",
         "configs/standard_causal_transformer_survival.json",
         "configs/neural_seed_functional_utility.json",
         "configs/neural_seed_functional_utility_freeze.json",
@@ -5438,6 +5455,8 @@
         "scripts/kerc_gum_discourse_relations_verify.py",
         "scripts/kerc_gum_entity_coreference.py",
         "scripts/kerc_gum_entity_coreference_verify.py",
+        "scripts/kerc_concept_registry.py",
+        "scripts/kerc_concept_registry_verify.py",
         "scripts/kerc_adequacy_canary.py",
         "scripts/kerc_implementation_fidelity_gate.py",
         "scripts/kerc_checkpoint_schema.py",
@@ -5467,6 +5486,7 @@
         "tests/test_kerc_masc_mpqa_relations.py",
         "tests/test_kerc_gum_discourse_relations.py",
         "tests/test_kerc_gum_entity_coreference.py",
+        "tests/test_kerc_concept_registry.py",
         "tests/test_kerc_adequacy_canary.py",
         "tests/test_kerc_implementation_fidelity.py",
         "tests/test_vcm_semantic_memory.py",
@@ -5483,6 +5503,7 @@
         "reports/moecot_source_conditioned_pretraining.json",
         "reports/moecot_kernel_english_stage.json",
         "reports/runtime/kerc_semantic_corpus_verification.json",
+        "reports/runtime/kerc_concept_registry_verification.json",
         "reports/kerc_selective_replay_k1g.json",
         "reports/kerc_adequacy_canary.json",
         "reports/kerc_implementation_fidelity_gate.json",
@@ -5524,7 +5545,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0 independently binds the KERC paper, implementation sources, independent verifier, and all 27,941 current corpus records. Three mechanisms are faithful mechanics, ten remain approximate/fixture-only, three are inactive/absent, and H1-H8 remain inactive. K1a/K1b preserve bounded manual multi-frame and decision-semantic annotations; K1e preserves 13 complete event-coreference groups; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 human GUM eRST neighborhoods; K1i preserves 5,361 complete document-local source-declared entity/coreference records and 7,180 concept capsules behind a leak-free compiler-target ABI. Independent TSV reconstruction agrees byte-for-byte, native CoNLL confirms exact component membership in all 89 selected documents, CoNLL-U confirms 24,162 mentions and 13,436 components, and official heldouts remain quarantined. The corpus has 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, and 18,759 opaque byte literals. Cold producer/verifier replay takes 5,389.173s/5,404.007s; warm replay takes 230.925s/181.282s with 27,941/27,941 hits, zero misses/failures, zero producer-authority reuse, an unchanged candidate digest, and 7.825 GiB cache cost. Raw parsing, split reconstruction, aggregate calibration, and serialization remain open incremental owners. Construct validity still lacks proposition scope, quantification, compositional negation, cross-document/open-world identity, temporal truth, complete semantics, truth, or learned competence. Correction alternatives, learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation remain absent. The current private-evaluation wire remains economically negative at 3.946595x residual/source and 12.236852x total/source. The prior 11,424-record canonical stage is stale and must be rebuilt only after K1 closes. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims remain denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
+      "current_wall": "K0 independently binds the KERC paper, implementation sources, independent verifier, and all 27,941 current corpus records. Three mechanisms are faithful mechanics, ten remain approximate/fixture-only, three are inactive/absent, and H1-H8 remain inactive. K1a/K1b preserve bounded manual multi-frame and decision-semantic annotations; K1e preserves 13 complete event-coreference groups; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 human GUM eRST neighborhoods; K1i preserves 5,361 complete document-local source-declared entity/coreference records and 7,180 concept capsules behind a leak-free compiler-target ABI; K1j adds exact deterministic lookup over 218,061 WordNet-derived relations, 174,480 stable identities, and 410,638 aliases with learned authority forbidden and ambiguous/unknown states preserved. The registry builds in 155.254s and independent full-source replay takes 76.655s while the canonical replay runs concurrently. Independent TSV reconstruction agrees byte-for-byte, native CoNLL confirms exact component membership in all 89 selected documents, CoNLL-U confirms 24,162 mentions and 13,436 components, and official heldouts remain quarantined. The corpus has 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, and 18,759 opaque byte literals. Cold producer/verifier replay takes 3,917.120s/6,341.007s; warm replay takes 3.470s/12.350s through exact top-level run-cache hits with zero misses or per-object work and zero failures, zero producer-authority reuse, an unchanged candidate digest, and 10.585 GiB cache cost. Raw parsing, split reconstruction, aggregate calibration, and serialization remain open incremental owners. Construct validity still lacks proposition scope, quantification, compositional negation, cross-document learned linking/open-world definitions, temporal truth, complete semantics, truth, or learned competence. Correction alternatives, learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation remain absent. The current private-evaluation wire remains economically negative at 3.946595x residual/source and 12.236852x total/source. The prior 11,424-record canonical stage is stale and must be rebuilt only after K1 closes. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims remain denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",
