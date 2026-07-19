@@ -392,6 +392,24 @@
       "private_dev": 3621,
       "private_eval": 3350
     },
+    "selection": {
+      "policy": "project_theseus_kerc_constraint_aware_selection_v1",
+      "ranking_seed": "kerc-stage-selection-2026-07-19",
+      "selection_visible_fields": [
+        "record_sha256",
+        "raw_source_sha256",
+        "split",
+        "semantic_supervision.claim_authority",
+        "semantic_supervision.objective_authority",
+        "interaction_annotation.kind"
+      ],
+      "answer_text_visible": false,
+      "model_outcomes_visible": false,
+      "exclude_raw_sources_present_in_multiple_splits": true,
+      "preserve_grounded_question_quota": true,
+      "preserve_decision_grade_objective_floors": true,
+      "fill_policy": "content_hash_rank_after_constraints"
+    },
     "semantic_supervision": {
       "policy": "project_theseus_kerc_semantic_supervision_program_v1",
       "tiers": {
@@ -971,8 +989,45 @@
       "fallback_return_count": 0,
       "template_credit": 0
     },
-    "maximum_sequence_tokens": 8192,
+    "maximum_sequence_tokens": 16384,
+    "sequence_buckets": {
+      "policy": "project_theseus_kerc_exact_sequence_buckets_v1",
+      "routing": "encoded_length_only_without_target_semantic_metadata",
+      "buckets": [
+        {
+          "bucket_id": "standard_8k",
+          "maximum_sequence_tokens": 8192,
+          "maximum_batch_size": 2
+        },
+        {
+          "bucket_id": "exact_high_fan_in_16k",
+          "maximum_sequence_tokens": 16384,
+          "maximum_batch_size": 1
+        }
+      ],
+      "truncation_allowed": false,
+      "row_drop_allowed": false,
+      "long_bucket_capability_credit": false
+    },
     "batch_size": 2,
+    "materialization_execution": {
+      "policy": "project_theseus_kerc_bounded_parallel_materialization_v1",
+      "validation_workers": 8,
+      "compilation_workers": 8,
+      "batch_rows": 256,
+      "deterministic_input_order": true,
+      "raw_line_content_binding_required": true,
+      "worker_failure_behavior": "reject_record_or_abort_stage_without_partial_trust"
+    },
+    "materialization_cache": {
+      "policy": "project_theseus_kerc_content_addressed_run_cache_v1",
+      "enabled": true,
+      "cache_root": "runtime/cache/kerc_stage_materialization_v1",
+      "role": "canonical_kerc_stage_materializer",
+      "exact_dependency_binding_required": true,
+      "output_identity_revalidation_required": true,
+      "cache_miss_behavior": "recompute_complete_stage_and_publish_atomic_receipt"
+    },
   "residual_auxiliary_weight": 0.25,
   "verifier_auxiliary_weight": 0.5,
   "decision_auxiliary_weight": 0.25,

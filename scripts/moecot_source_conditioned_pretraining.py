@@ -14,10 +14,12 @@ import copy
 import hashlib
 import json
 import math
+import os
 import random
 import re
 import time
-from collections import Counter
+from collections import Counter, defaultdict
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -53,6 +55,13 @@ from kernel_english_protocol import (
     validate_training_disposition,
     validate_training_record,
 )
+from kerc_content_cache import (
+    CACHE_POLICY,
+    cache_key as kerc_cache_key,
+    dependency_bindings,
+    load_receipt as load_kerc_cache_receipt,
+    publish_receipt as publish_kerc_cache_receipt,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,6 +71,12 @@ KERC_KERNEL_OBJECTIVES = {
     "surface_to_kernel_program_v1",
     "kernel_program_to_answer_packet_v1",
 }
+KERC_STRUCTURED_SOURCE_OBJECTIVES = {
+    "surface_to_kernel_program_v1",
+    "kernel_program_to_answer_packet_v1",
+    "answer_packet_to_surface_v1",
+}
+KERC_SEQUENCE_BUCKET_POLICY = "project_theseus_kerc_exact_sequence_buckets_v1"
 KERC_POINTER_TOKEN_RE = re.compile(
     r"(?:@[A-Z][A-Za-z0-9_]*|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\Z"
 )
@@ -81,12 +96,72 @@ KERC_POINTER_CONTROL_TOKENS = {
     "\r",
     "\t",
 }
+KERC_COMPACT_TOKEN_PREFIXES = (
+    "VERSION:",
+    "SERIALIZATION:",
+    "NODE_",
+    "OP:",
+    "MOD:",
+    "POL:",
+    "QUANT:",
+    "CONF:",
+    "DERIV:",
+    "SPANS:",
+    "ROLE:",
+    "HANDLE:",
+    "CONCEPT:",
+    "NUMBER:",
+    "QUANTITY:",
+    "TEMPORAL:",
+    "TEXT:",
+    "SYMBOL:",
+    "NODE_REF:",
+    "LIST_",
+    "AMBIG_",
+    "PROB:",
+    "EVIDENCE:",
+    "BYTE:",
+    "BOOL:",
+    "NULL",
+    "ROOT:",
+    "PROGRAM_END",
+    "ANSWER_VERSION:",
+    "CLAIM_",
+    "PRED:",
+    "DECISION_",
+    "DISPOSITION:",
+    "UNCERTAINTY:",
+    "CONTROLLING:",
+    "AMBIGUITY_ID:",
+    "REQUIRED_TERM:",
+    "REQUIRED_CAVEAT:",
+    "STYLE:",
+    "ANSWER_END",
+    "MACRO:",
+)
 KERC_SOURCE_CATALOG_POLICY = "project_theseus_kerc_semantic_source_catalog_v1"
 KERC_SEMANTIC_PROGRAM_POLICY = "project_theseus_kerc_semantic_supervision_program_v1"
 KERC_SEMANTIC_CORPUS_POLICY = "project_theseus_kerc_semantic_corpus_materialization_v1"
+KERC_SELECTION_POLICY = "project_theseus_kerc_constraint_aware_selection_v1"
+KERC_PARALLEL_MATERIALIZATION_POLICY = (
+    "project_theseus_kerc_bounded_parallel_materialization_v1"
+)
 KERC_CONTEXT_COUNTERFACTUAL_POLICY = (
     "project_theseus_kerc_grounded_context_counterfactual_v1"
 )
+
+
+class KercCodeToken(str):
+    """Lossless token text carrying its typed code-space through byte bounding."""
+
+    code_space: str
+
+    def __new__(cls, value: str, code_space: str) -> "KercCodeToken":
+        instance = str.__new__(cls, value)
+        instance.code_space = code_space
+        return instance
+
+
 KERC_CONTEXT_COUNTERFACTUAL_OBJECTIVES = {
     "surface_direct_control_v1",
     "kernel_program_to_answer_packet_v1",
@@ -340,9 +415,22 @@ def attach_grounded_context_counterfactuals(
 
 
 def kerc_code_tokens(text: str) -> list[str]:
-    """Losslessly tokenize typed Kernel/answer JSON while preserving handles."""
+    """Losslessly tokenize typed Kernel/answer JSON as structural atoms.
 
-    raw = bound_logical_tokens(exact_text_tokens(text))
+    Generic surface tokenization fragmented every quoted Kernel token into JSON
+    punctuation and word pieces. That made a 2,970-token Kernel program consume
+    tens of thousands of model positions. Quoted JSON atoms are already bounded
+    by the reversible byte codec, so keep each as one logical atom (or bounded
+    adjacent atoms) while preserving exact concatenation.
+    """
+
+    raw: list[KercCodeToken] = []
+    for atom in _exact_json_string_atoms(text):
+        space = _kerc_code_space_text(atom)
+        raw.extend(
+            KercCodeToken(piece, space)
+            for piece in bound_logical_tokens([atom])
+        )
     tokens: list[str] = []
     index = 0
     while index < len(raw):
@@ -351,14 +439,49 @@ def kerc_code_tokens(text: str) -> list[str]:
             and index + 1 < len(raw)
             and str(raw[index + 1]).replace("_", "").isalnum()
         ):
-            tokens.append("@" + str(raw[index + 1]))
+            tokens.append(
+                KercCodeToken("@" + str(raw[index + 1]), "V_P")
+            )
             index += 2
             continue
-        tokens.append(str(raw[index]))
+        tokens.append(raw[index])
         index += 1
     if "".join(tokens) != str(text):
         raise ValueError("KERC code tokenizer failed exact reconstruction")
     return tokens
+
+
+def _exact_json_string_atoms(text: str) -> list[str]:
+    atoms: list[str] = []
+    outside_start = 0
+    index = 0
+    while index < len(text):
+        if text[index] != '"':
+            index += 1
+            continue
+        if outside_start < index:
+            atoms.extend(exact_text_tokens(text[outside_start:index]))
+        string_start = index
+        index += 1
+        escaped = False
+        while index < len(text):
+            character = text[index]
+            index += 1
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                break
+        else:
+            raise ValueError("KERC code tokenizer encountered unterminated JSON string")
+        atoms.append(text[string_start:index])
+        outside_start = index
+    if outside_start < len(text):
+        atoms.extend(exact_text_tokens(text[outside_start:]))
+    if "".join(atoms) != text:
+        raise ValueError("KERC JSON atom tokenizer failed exact reconstruction")
+    return atoms
 
 
 def kerc_surface_tokens(text: str) -> list[str]:
@@ -371,7 +494,29 @@ def kerc_surface_tokens(text: str) -> list[str]:
 
 
 def kerc_code_space(token: str) -> str:
+    declared = getattr(token, "code_space", None)
+    if declared in {"V_K", "V_P", "V_S"}:
+        return str(declared)
+    return _kerc_code_space_text(str(token))
+
+
+def _kerc_code_space_text(token: str) -> str:
     value = str(token)
+    if len(value) >= 3 and value[0] == '"' and value[-1] == '"':
+        try:
+            decoded = json.loads(value)
+        except json.JSONDecodeError:
+            decoded = None
+        if (
+            isinstance(decoded, str)
+            and len(decoded) >= 2
+            and decoded[1:].startswith(KERC_COMPACT_TOKEN_PREFIXES)
+        ):
+            transport_space = {"K": "V_K", "P": "V_P", "S": "V_S"}.get(
+                decoded[0]
+            )
+            if transport_space:
+                return transport_space
     if (
         value in KERC_POINTER_CONTROL_TOKENS
         or value.isspace()
@@ -471,6 +616,32 @@ def encode_kerc_view_target(
         "encoded_tokens_by_space": by_space,
         "code_vocabulary_sha256": code_vocabulary.get("contract_sha256"),
         "failure_behavior": "reject_without_surface_or_template_fallback",
+    }
+
+
+def encode_kerc_view_source(
+    view: dict[str, Any],
+    *,
+    source_vocab: dict[str, int],
+    code_vocabulary: dict[str, Any],
+) -> tuple[list[int], dict[str, Any]]:
+    objective = str(view.get("objective") or "")
+    prompt = str(view.get("prompt") or "")
+    if objective not in KERC_STRUCTURED_SOURCE_OBJECTIVES:
+        return encode_tokens(kerc_surface_tokens(prompt), source_vocab, stream="source")
+    ids, receipt = encode_kerc_view_target(
+        {
+            "objective": "kernel_program_to_answer_packet_v1",
+            "target": prompt,
+        },
+        target_vocab={},
+        code_vocabulary=code_vocabulary,
+    )
+    return ids, {
+        **receipt,
+        "policy": "project_theseus_kerc_structured_source_encoding_v1",
+        "objective": objective,
+        "source_uses_dual_code_vocabulary": True,
     }
 
 
@@ -625,6 +796,27 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
     rows = cfg.get("records_by_split") or {}
     if tuple(rows) != ("private_train", "private_dev", "private_eval"):
         raise ValueError("KERC record split set/order mismatch")
+    selection = cfg.get("selection") if isinstance(cfg.get("selection"), dict) else {}
+    expected_selection_fields = [
+        "record_sha256",
+        "raw_source_sha256",
+        "split",
+        "semantic_supervision.claim_authority",
+        "semantic_supervision.objective_authority",
+        "interaction_annotation.kind",
+    ]
+    if (
+        selection.get("policy") != KERC_SELECTION_POLICY
+        or not str(selection.get("ranking_seed") or "")
+        or selection.get("selection_visible_fields") != expected_selection_fields
+        or selection.get("answer_text_visible") is not False
+        or selection.get("model_outcomes_visible") is not False
+        or selection.get("exclude_raw_sources_present_in_multiple_splits") is not True
+        or selection.get("preserve_grounded_question_quota") is not True
+        or selection.get("preserve_decision_grade_objective_floors") is not True
+        or selection.get("fill_policy") != "content_hash_rank_after_constraints"
+    ):
+        raise ValueError("KERC constraint-aware selection contract is incomplete")
     if full_kerc_enabled:
         if any(int(value or 0) <= 0 for value in rows.values()):
             raise ValueError("KERC record floors must be positive for every split")
@@ -640,8 +832,58 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("retired KERC stage must request zero records")
     if int(cfg.get("maximum_sequence_tokens") or 0) <= 0:
         raise ValueError("KERC maximum sequence tokens must be positive")
+    sequence_buckets = cfg.get("sequence_buckets") or {}
+    bucket_rows = sequence_buckets.get("buckets") or []
+    if (
+        sequence_buckets.get("policy") != KERC_SEQUENCE_BUCKET_POLICY
+        or sequence_buckets.get("routing")
+        != "encoded_length_only_without_target_semantic_metadata"
+        or not isinstance(bucket_rows, list)
+        or [row.get("bucket_id") for row in bucket_rows]
+        != ["standard_8k", "exact_high_fan_in_16k"]
+        or [int(row.get("maximum_sequence_tokens") or 0) for row in bucket_rows]
+        != [8192, int(cfg["maximum_sequence_tokens"])]
+        or [int(row.get("maximum_batch_size") or 0) for row in bucket_rows]
+        != [2, 1]
+        or sequence_buckets.get("truncation_allowed") is not False
+        or sequence_buckets.get("row_drop_allowed") is not False
+        or sequence_buckets.get("long_bucket_capability_credit") is not False
+    ):
+        raise ValueError("KERC exact sequence-bucket contract is incomplete")
     if not 1 <= int(cfg.get("batch_size") or 0) <= 16:
         raise ValueError("KERC batch size must be bounded")
+    execution = (
+        cfg.get("materialization_execution")
+        if isinstance(cfg.get("materialization_execution"), dict)
+        else {}
+    )
+    if (
+        execution.get("policy") != KERC_PARALLEL_MATERIALIZATION_POLICY
+        or not 1 <= int(execution.get("validation_workers") or 0) <= 32
+        or not 1 <= int(execution.get("compilation_workers") or 0) <= 32
+        or not 1 <= int(execution.get("batch_rows") or 0) <= 256
+        or execution.get("deterministic_input_order") is not True
+        or execution.get("raw_line_content_binding_required") is not True
+        or execution.get("worker_failure_behavior")
+        != "reject_record_or_abort_stage_without_partial_trust"
+    ):
+        raise ValueError("KERC bounded parallel materialization contract is incomplete")
+    cache = (
+        cfg.get("materialization_cache")
+        if isinstance(cfg.get("materialization_cache"), dict)
+        else {}
+    )
+    if (
+        cache.get("policy") != CACHE_POLICY
+        or not isinstance(cache.get("enabled"), bool)
+        or not str(cache.get("cache_root") or "")
+        or cache.get("role") != "canonical_kerc_stage_materializer"
+        or cache.get("exact_dependency_binding_required") is not True
+        or cache.get("output_identity_revalidation_required") is not True
+        or cache.get("cache_miss_behavior")
+        != "recompute_complete_stage_and_publish_atomic_receipt"
+    ):
+        raise ValueError("KERC content-addressed stage cache contract is incomplete")
     vocabulary = cfg.get("code_vocabulary") or {}
     if (
         vocabulary.get("policy") != "project_theseus_kerc_dual_code_vocabulary_v1"
@@ -1308,6 +1550,227 @@ def inspect_kernel_english(config: dict[str, Any], config_path: Path) -> dict[st
     }
 
 
+def _preflight_kernel_record_line(payload: tuple[int, str]) -> dict[str, Any]:
+    line_number, raw = payload
+    binding = stable_hash(raw.encode("utf-8"))
+    try:
+        record = validate_training_record(json.loads(raw))
+    except Exception as exc:
+        return {
+            "line_number": line_number,
+            "raw_line_sha256": binding,
+            "state": "REJECTED",
+            "fault_code": str(getattr(exc, "code", "KERC_RECORD_INVALID")),
+        }
+    try:
+        validate_kernel_record_learned_abi(record, line_number=line_number)
+    except Exception as exc:
+        return {
+            "line_number": line_number,
+            "raw_line_sha256": binding,
+            "state": "FATAL",
+            "fault_code": str(getattr(exc, "code", "KERC_LEARNED_ABI_INVALID")),
+            "detail": str(exc),
+        }
+    return {
+        "line_number": line_number,
+        "raw_line_sha256": binding,
+        "record_sha256": str(record["record_sha256"]),
+        "record_binding_sha256": stable_hash(record),
+        "record": record,
+        "state": "ACCEPTED",
+    }
+
+
+def _bounded_batches(rows: Any, batch_rows: int) -> Any:
+    batch: list[Any] = []
+    for row in rows:
+        batch.append(row)
+        if len(batch) == batch_rows:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+
+def iter_preflighted_kernel_records(
+    records_path: Path, execution: dict[str, Any]
+) -> Any:
+    workers = min(
+        int(execution["validation_workers"]), max(1, int(os.cpu_count() or 1))
+    )
+    batch_rows = int(execution["batch_rows"])
+
+    def source_rows() -> Any:
+        with records_path.open(encoding="utf-8") as records_handle:
+            for line_number, raw in enumerate(records_handle, 1):
+                if raw.strip():
+                    yield line_number, raw
+
+    executor = ProcessPoolExecutor(max_workers=workers) if workers > 1 else None
+    try:
+        for batch in _bounded_batches(source_rows(), batch_rows):
+            results = (
+                list(executor.map(_preflight_kernel_record_line, batch))
+                if executor is not None
+                else [_preflight_kernel_record_line(row) for row in batch]
+            )
+            if len(results) != len(batch):
+                raise ValueError("KERC validation worker batch cardinality mismatch")
+            for (line_number, raw), result in zip(batch, results):
+                observed_binding = stable_hash(raw.encode("utf-8"))
+                if (
+                    int(result.get("line_number") or -1) != line_number
+                    or result.get("raw_line_sha256") != observed_binding
+                ):
+                    raise ValueError(
+                        f"KERC validation worker content binding mismatch at line {line_number}"
+                    )
+                state = str(result.get("state") or "")
+                if state == "FATAL":
+                    raise ValueError(
+                        "KERC learned ABI worker rejected governed record at line "
+                        f"{line_number}: {result.get('fault_code')}:{result.get('detail')}"
+                    )
+                if state == "REJECTED":
+                    yield None, str(result.get("fault_code") or "KERC_RECORD_INVALID")
+                    continue
+                if state != "ACCEPTED":
+                    raise ValueError(
+                        f"KERC validation worker returned invalid state at line {line_number}"
+                    )
+                record = result.get("record")
+                if (
+                    not isinstance(record, dict)
+                    or str(record.get("record_sha256") or "")
+                    != result.get("record_sha256")
+                    or stable_hash(record) != result.get("record_binding_sha256")
+                ):
+                    raise ValueError(
+                        f"KERC validation worker record identity mismatch at line {line_number}"
+                    )
+                yield record, None
+    finally:
+        if executor is not None:
+            executor.shutdown(wait=True, cancel_futures=True)
+
+
+def _compile_kernel_record_worker(
+    payload: tuple[str, dict[str, Any]]
+) -> dict[str, Any]:
+    split, record = payload
+    record_binding = stable_hash(record)
+    return {
+        "split": split,
+        "record_sha256": str(record["record_sha256"]),
+        "record_binding_sha256": record_binding,
+        "views": compile_training_views(record),
+    }
+
+
+def compile_selected_kernel_views(
+    selected: dict[str, list[dict[str, Any]]], execution: dict[str, Any]
+) -> tuple[dict[str, list[dict[str, Any]]], dict[str, Any]]:
+    started = time.perf_counter()
+    workers = min(
+        int(execution["compilation_workers"]), max(1, int(os.cpu_count() or 1))
+    )
+    batch_rows = int(execution["batch_rows"])
+    ordered = [
+        (split, record)
+        for split, records in selected.items()
+        for record in records
+    ]
+    compiled = {split: [] for split in selected}
+    executor = ProcessPoolExecutor(max_workers=workers) if workers > 1 else None
+    try:
+        for batch in _bounded_batches(ordered, batch_rows):
+            results = (
+                list(executor.map(_compile_kernel_record_worker, batch))
+                if executor is not None
+                else [_compile_kernel_record_worker(row) for row in batch]
+            )
+            if len(results) != len(batch):
+                raise ValueError("KERC compilation worker batch cardinality mismatch")
+            for (split, record), result in zip(batch, results):
+                if (
+                    result.get("split") != split
+                    or result.get("record_sha256") != record["record_sha256"]
+                    or result.get("record_binding_sha256") != stable_hash(record)
+                ):
+                    raise ValueError(
+                        "KERC compilation worker content binding mismatch: "
+                        + str(record["record_sha256"])
+                    )
+                compiled[split].extend(result["views"])
+    finally:
+        if executor is not None:
+            executor.shutdown(wait=True, cancel_futures=True)
+    return compiled, {
+        "policy": KERC_PARALLEL_MATERIALIZATION_POLICY,
+        "validation_workers": min(
+            int(execution["validation_workers"]), max(1, int(os.cpu_count() or 1))
+        ),
+        "compilation_workers": workers,
+        "batch_rows": batch_rows,
+        "compiled_record_count": len(ordered),
+        "compiled_view_count": sum(len(rows) for rows in compiled.values()),
+        "compilation_seconds": round(time.perf_counter() - started, 6),
+        "deterministic_input_order": True,
+        "raw_line_content_binding_required": True,
+        "fallback_return_count": 0,
+    }
+
+
+def kernel_stage_cache_contract(
+    *,
+    cfg: dict[str, Any],
+    records_path: Path,
+    ledger_path: Path,
+    source_catalog_path: Path,
+    stage_metadata_path: Path,
+    stage_root: Path,
+) -> tuple[Path, str, list[dict[str, Any]], dict[str, Path]]:
+    cache = cfg["materialization_cache"]
+    dependencies = dependency_bindings(
+        {
+            "governed_records": records_path,
+            "verification_ledger": ledger_path,
+            "semantic_source_catalog": source_catalog_path,
+            "language_stage_metadata": stage_metadata_path,
+            "kernel_protocol_owner": ROOT / "scripts" / "kernel_english_protocol.py",
+            "stage_materializer_owner": Path(__file__).resolve(),
+            "language_tokenizer_owner": ROOT / "scripts" / "moecot_language_tokenizer.py",
+            "open_vocabulary_owner": ROOT / "scripts" / "neural_seed_open_vocab.py",
+            "cache_integrity_owner": ROOT / "scripts" / "kerc_content_cache.py",
+        }
+    )
+    encoded_config = canonical_json(cfg).encode("utf-8")
+    dependencies.append(
+        {
+            "id": "kernel_stage_config_contract",
+            "kind": "canonical_payload",
+            "path": "configs/moecot_language_arm_training.json#kernel_english_training",
+            "sha256": hashlib.sha256(encoded_config).hexdigest(),
+            "size_bytes": len(encoded_config),
+        }
+    )
+    dependencies.sort(key=lambda row: str(row["id"]))
+    outputs = {
+        "code_vocabulary": stage_root / "code_vocabulary_v1.json",
+        "manifest": stage_root / "manifest.json",
+        "private_train": stage_root / "private_train.jsonl",
+        "private_dev": stage_root / "private_dev.jsonl",
+        "private_eval": stage_root / "private_eval.jsonl",
+    }
+    return (
+        resolve(str(cache["cache_root"])),
+        str(cache["role"]),
+        dependencies,
+        outputs,
+    )
+
+
 def materialize_kernel_english(
     config: dict[str, Any], config_path: Path
 ) -> dict[str, Any]:
@@ -1325,6 +1788,7 @@ def materialize_kernel_english(
     records_path = resolve(cfg["records_jsonl"])
     ledger_path = resolve(cfg["verification_ledger_jsonl"])
     source_catalog_path = resolve(cfg["semantic_source_catalog_json"])
+    stage_metadata_path = resolve(config["stage_dir"]) / "stage_metadata_v1.json"
     missing = []
     if not records_path.is_file():
         missing.append("kernel_english_records_missing")
@@ -1332,6 +1796,8 @@ def materialize_kernel_english(
         missing.append("kernel_english_verification_ledger_missing")
     if not source_catalog_path.is_file():
         missing.append("kernel_english_semantic_source_catalog_missing")
+    if not stage_metadata_path.is_file():
+        missing.append("kernel_english_language_stage_metadata_missing")
     if missing:
         report = kernel_english_base_report(
             config_path,
@@ -1342,29 +1808,55 @@ def materialize_kernel_english(
         write_json_atomic(stage_root / "manifest.json", report)
         return report
 
+    cache_root, cache_role, cache_dependencies, cache_outputs = (
+        kernel_stage_cache_contract(
+            cfg=cfg,
+            records_path=records_path,
+            ledger_path=ledger_path,
+            source_catalog_path=source_catalog_path,
+            stage_metadata_path=stage_metadata_path,
+            stage_root=stage_root,
+        )
+    )
+    stage_cache_key = kerc_cache_key(
+        role=cache_role,
+        dependencies=cache_dependencies,
+    )
+    if cfg["materialization_cache"]["enabled"]:
+        cached_report = load_kerc_cache_receipt(
+            cache_root,
+            role=cache_role,
+            dependencies=cache_dependencies,
+            outputs=cache_outputs,
+            result_output_id="manifest",
+        )
+        if cached_report is not None:
+            cache_gaps = validate_kernel_english_manifest(cached_report, cfg)
+            if not cache_gaps:
+                return cached_report
+
     ledger, ledger_gaps = load_kernel_verification_ledger(ledger_path)
     source_catalog, source_catalog_gaps = load_kerc_semantic_source_catalog(
         source_catalog_path, cfg
     )
-    metadata = read_json(resolve(config["stage_dir"]) / "stage_metadata_v1.json")
+    metadata = read_json(stage_metadata_path)
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
-    selectors = {
-        split: BoundedRows(int(count))
-        for split, count in cfg["records_by_split"].items()
+    candidates: dict[str, list[dict[str, Any]]] = {
+        split: [] for split in cfg["records_by_split"]
     }
+    execution = cfg["materialization_execution"]
+    validation_started = time.perf_counter()
     rejection_counts: Counter[str] = Counter()
     candidate_count: Counter[str] = Counter()
-    for line_number, raw in enumerate(records_path.read_text(encoding="utf-8").splitlines(), 1):
-        if not raw.strip():
+    for record, validation_fault in iter_preflighted_kernel_records(
+        records_path, execution
+    ):
+        if validation_fault:
+            rejection_counts[validation_fault] += 1
             continue
-        try:
-            record = validate_training_record(json.loads(raw))
-        except Exception as exc:
-            code = str(getattr(exc, "code", "KERC_RECORD_INVALID"))
-            rejection_counts[code] += 1
-            continue
-        validate_kernel_record_learned_abi(record, line_number=line_number)
+        if record is None:
+            raise ValueError("KERC validator accepted an empty record")
         split = str(record["split"])
         candidate_count[split] += 1
         receipt = record["verification_receipt"]
@@ -1384,9 +1876,10 @@ def materialize_kernel_english(
         if source_gap:
             rejection_counts[source_gap] += 1
             continue
-        selectors[split].add(str(record["record_sha256"]).split(":", 1)[-1], record)
+        candidates[split].append(record)
+    validation_seconds = round(time.perf_counter() - validation_started, 6)
 
-    selected = {split: selector.rows() for split, selector in selectors.items()}
+    selected, selection_receipt = select_kernel_records(candidates, cfg)
     overlaps = kernel_english_split_overlap(selected)
     gaps = [*ledger_gaps, *source_catalog_gaps, *overlaps["hard_gaps"]]
     semantic_program = validate_kerc_semantic_program(cfg)
@@ -1457,17 +1950,19 @@ def materialize_kernel_english(
         split: Counter() for split in selected
     }
     encoded_length_stats: dict[str, Any] = {}
+    sequence_bucket_counts_by_split: dict[str, Counter[str]] = {
+        split: Counter() for split in selected
+    }
     all_source_hashes: set[str] = set()
     raw_source_bytes = 0
     verifier_corruption_count = 0
-    compiled_views = {
-        split: [
-            view
-            for record in records
-            for view in compile_training_views(record)
-        ]
-        for split, records in selected.items()
-    }
+    compiled_views, materialization_execution = compile_selected_kernel_views(
+        selected, execution
+    )
+    materialization_execution["validation_seconds"] = validation_seconds
+    materialization_execution["validated_candidate_count"] = sum(
+        candidate_count.values()
+    )
     context_counterfactuals = attach_grounded_context_counterfactuals(
         compiled_views, selected
     )
@@ -1514,8 +2009,10 @@ def materialize_kernel_english(
             all_source_hashes.add(str(record["raw_source_sha256"]))
             raw_source_bytes += len(str(record["source_text"]).encode("utf-8"))
         for view in compiled_views[split]:
-                source_body_ids, source_receipt = encode_tokens(
-                    kerc_surface_tokens(view["prompt"]), source_vocab, stream="source"
+                source_body_ids, source_receipt = encode_kerc_view_source(
+                    view,
+                    source_vocab=source_vocab,
+                    code_vocabulary=code_vocabulary,
                 )
                 trusted_prefix = list(view.get("trusted_source_prefix_tokens") or [])
                 if len(trusted_prefix) != 1 or trusted_prefix[0] not in source_vocab:
@@ -1564,10 +2061,12 @@ def materialize_kernel_english(
                 for counterfactual in view.get("kerc_context_counterfactuals") or []:
                     counterfactual_prompt = str(counterfactual.get("prompt") or "")
                     counterfactual_target = str(counterfactual.get("target") or "")
-                    counterfactual_source_ids, counterfactual_source_receipt = encode_tokens(
-                        kerc_surface_tokens(counterfactual_prompt),
-                        source_vocab,
-                        stream="source",
+                    counterfactual_source_ids, counterfactual_source_receipt = (
+                        encode_kerc_view_source(
+                            {**view, "prompt": counterfactual_prompt},
+                            source_vocab=source_vocab,
+                            code_vocabulary=code_vocabulary,
+                        )
                     )
                     counterfactual_target_ids, counterfactual_target_receipt = (
                         encode_kerc_view_target(
@@ -1607,8 +2106,20 @@ def materialize_kernel_english(
                 target_lengths.append(len(target_ids))
                 target_lengths.append(len(negative_ids))
                 sequence_lengths.extend((sequence_tokens, negative_sequence_tokens))
+                for observed_length in (sequence_tokens, negative_sequence_tokens):
+                    sequence_bucket_counts_by_split[split][
+                        "standard_8k"
+                        if observed_length <= 8192
+                        else "exact_high_fan_in_16k"
+                    ] += 1
                 target_lengths.extend(length[0] for length in counterfactual_lengths)
                 sequence_lengths.extend(length[1] for length in counterfactual_lengths)
+                for _, observed_length in counterfactual_lengths:
+                    sequence_bucket_counts_by_split[split][
+                        "standard_8k"
+                        if observed_length <= 8192
+                        else "exact_high_fan_in_16k"
+                    ] += 1
                 objective_counts[str(view["objective"])] += 1
                 objective_counts_by_split[split][str(view["objective"])] += 1
                 verifier_corruption_count += 1
@@ -1687,6 +2198,18 @@ def materialize_kernel_english(
         },
         "artifacts": artifacts,
         "candidate_record_count_by_split": dict(candidate_count),
+        "selection": selection_receipt,
+        "materialization_execution": materialization_execution,
+        "materialization_cache": {
+            "policy": CACHE_POLICY,
+            "enabled": bool(cfg["materialization_cache"]["enabled"]),
+            "role": cache_role,
+            "cache_key_sha256": stage_cache_key,
+            "dependency_count": len(cache_dependencies),
+            "exact_dependency_binding_required": True,
+            "output_identity_revalidation_required": True,
+            "cache_hit_authorizes_capability_claim": False,
+        },
         "selected_record_count_by_split": {
             split: len(records) for split, records in selected.items()
         },
@@ -1703,6 +2226,17 @@ def materialize_kernel_english(
         "context_counterfactuals": context_counterfactuals,
         "split_overlap_audit": overlaps,
         "encoded_length_stats": encoded_length_stats,
+        "sequence_buckets": {
+            "policy": KERC_SEQUENCE_BUCKET_POLICY,
+            "routing": "encoded_length_only_without_target_semantic_metadata",
+            "counts_by_split": {
+                split: dict(counts)
+                for split, counts in sequence_bucket_counts_by_split.items()
+            },
+            "truncation_count": 0,
+            "row_drop_count": 0,
+            "long_bucket_capability_credit": False,
+        },
         "rejection_counts": dict(rejection_counts),
         "failure_behavior": "reject_without_template_literal_tool_or_router_fallback",
         "score_semantics": "KERC learned-objective data readiness; not learned capability",
@@ -1717,6 +2251,14 @@ def materialize_kernel_english(
         "candidate_generation_credit": 0,
     }
     write_json_atomic(stage_root / "manifest.json", report)
+    if cfg["materialization_cache"]["enabled"] and not gaps:
+        publish_kerc_cache_receipt(
+            cache_root,
+            role=cache_role,
+            dependencies=cache_dependencies,
+            outputs=cache_outputs,
+            result_output_id="manifest",
+        )
     return report
 
 
@@ -1740,6 +2282,227 @@ def validate_kernel_record_learned_abi(
             "KERC learned ABI rejected governed record "
             f"at line {line_number} ({record.get('record_sha256')}): {exc}"
         ) from exc
+
+
+def select_kernel_records(
+    candidates: dict[str, list[dict[str, Any]]], cfg: dict[str, Any]
+) -> tuple[dict[str, list[dict[str, Any]]], dict[str, Any]]:
+    """Select a deterministic source-disjoint set while preserving declared strata.
+
+    Selection can inspect only immutable identities, split, provenance authority, the
+    per-objective authority mask, and the grounded-context kind. It cannot inspect
+    answer text, model output, verifier score, or public benchmark metadata.
+    """
+
+    selection = cfg["selection"]
+    seed = str(selection["ranking_seed"])
+    split_order = tuple(cfg["records_by_split"])
+    raw_source_splits: dict[str, set[str]] = defaultdict(set)
+    for split, records in candidates.items():
+        for record in records:
+            raw_source_splits[str(record["raw_source_sha256"])].add(split)
+    cross_split_raw_sources = {
+        identity for identity, splits in raw_source_splits.items() if len(splits) > 1
+    }
+    eligible = {
+        split: [
+            record
+            for record in candidates.get(split, [])
+            if str(record["raw_source_sha256"]) not in cross_split_raw_sources
+        ]
+        for split in split_order
+    }
+
+    grounded_quotas = (
+        (((cfg.get("semantic_corpus_materialization") or {}).get("dolly") or {}))
+        .get("grounded_question_records_by_split", {})
+    )
+    objective_floors = cfg["semantic_supervision"][
+        "minimum_decision_grade_records_by_split_and_objective"
+    ]
+
+    rank_cache: dict[str, str] = {}
+
+    def rank(record: dict[str, Any]) -> str:
+        identity = str(record["record_sha256"])
+        if identity not in rank_cache:
+            rank_cache[identity] = stable_hash(
+                {
+                    "policy": KERC_SELECTION_POLICY,
+                    "seed": seed,
+                    "record_sha256": identity,
+                }
+            )
+        return rank_cache[identity]
+
+    def grounded(record: dict[str, Any]) -> bool:
+        return (
+            (record.get("interaction_annotation") or {}).get("kind")
+            == "licensed_grounded_question_context"
+        )
+
+    def decision_grade_authority(record: dict[str, Any], objective: str) -> bool:
+        semantic = record.get("semantic_supervision") or {}
+        return (
+            semantic.get("claim_authority") == "decision_grade_reference"
+            and (semantic.get("objective_authority") or {}).get(objective) is True
+        )
+
+    selected: dict[str, list[dict[str, Any]]] = {}
+    objective_counts_by_split: dict[str, dict[str, int]] = {}
+    grounded_counts: dict[str, int] = {}
+    objective_priority_by_split: dict[str, list[str]] = {}
+    for split in split_order:
+        pool = sorted(eligible[split], key=rank)
+        requested = int(cfg["records_by_split"][split])
+        if len(pool) < requested:
+            raise ValueError(
+                f"KERC selection capacity infeasible: {split}:{len(pool)}:{requested}"
+            )
+        chosen: dict[str, dict[str, Any]] = {}
+
+        def admit(record: dict[str, Any]) -> None:
+            chosen.setdefault(str(record["record_sha256"]), record)
+
+        grounded_quota = int(grounded_quotas.get(split) or 0)
+        grounded_pool = [record for record in pool if grounded(record)]
+        if len(grounded_pool) < grounded_quota:
+            raise ValueError(
+                "KERC grounded selection quota infeasible: "
+                f"{split}:{len(grounded_pool)}:{grounded_quota}"
+            )
+        for record in grounded_pool[:grounded_quota]:
+            admit(record)
+
+        floors = {key: int(value) for key, value in objective_floors[split].items()}
+        margins = {
+            objective: sum(
+                decision_grade_authority(record, objective) for record in pool
+            )
+            - floor
+            for objective, floor in floors.items()
+        }
+        infeasible = {
+            objective: margin for objective, margin in margins.items() if margin < 0
+        }
+        if infeasible:
+            raise ValueError(
+                f"KERC objective selection floor infeasible: {split}:{infeasible}"
+            )
+        objective_priority = sorted(
+            floors,
+            key=lambda objective: (margins[objective], TRAINING_OBJECTIVES.index(objective)),
+        )
+        objective_priority_by_split[split] = objective_priority
+        for objective in objective_priority:
+            observed = sum(
+                decision_grade_authority(record, objective)
+                for record in chosen.values()
+            )
+            needed = floors[objective] - observed
+            if needed <= 0:
+                continue
+            options = [
+                record
+                for record in pool
+                if str(record["record_sha256"]) not in chosen
+                and decision_grade_authority(record, objective)
+            ]
+            unmet_objectives = {
+                other
+                for other in floors
+                if sum(
+                    decision_grade_authority(current, other)
+                    for current in chosen.values()
+                )
+                < floors[other]
+            }
+            options.sort(
+                key=lambda record: (
+                    -sum(
+                        decision_grade_authority(record, other)
+                        for other in unmet_objectives
+                    ),
+                    rank(record),
+                )
+            )
+            if len(options) < needed:
+                raise ValueError(
+                    "KERC objective selection floor became infeasible: "
+                    f"{split}:{objective}:{len(options)}:{needed}"
+                )
+            for record in options[:needed]:
+                admit(record)
+
+        if len(chosen) > requested:
+            raise ValueError(
+                f"KERC selection constraints exceed capacity: {split}:{len(chosen)}:{requested}"
+            )
+        for record in pool:
+            if len(chosen) >= requested:
+                break
+            admit(record)
+        if len(chosen) != requested:
+            raise ValueError(
+                f"KERC selection did not fill capacity: {split}:{len(chosen)}:{requested}"
+            )
+        rows = sorted(chosen.values(), key=rank)
+        selected[split] = rows
+        grounded_counts[split] = sum(grounded(record) for record in rows)
+        objective_counts_by_split[split] = {
+            objective: sum(
+                decision_grade_authority(record, objective) for record in rows
+            )
+            for objective in TRAINING_OBJECTIVES
+        }
+        for objective, floor in floors.items():
+            if objective_counts_by_split[split][objective] < floor:
+                raise ValueError(
+                    "KERC objective floor not preserved: "
+                    f"{split}:{objective}:{objective_counts_by_split[split][objective]}:{floor}"
+                )
+        if grounded_counts[split] < grounded_quota:
+            raise ValueError(
+                "KERC grounded quota not preserved: "
+                f"{split}:{grounded_counts[split]}:{grounded_quota}"
+            )
+
+    receipt = {
+        "policy": KERC_SELECTION_POLICY,
+        "ranking_seed": seed,
+        "selection_visible_fields": list(selection["selection_visible_fields"]),
+        "answer_text_visible": False,
+        "model_outcomes_visible": False,
+        "candidate_count_by_split": {
+            split: len(candidates.get(split, [])) for split in split_order
+        },
+        "eligible_count_by_split": {
+            split: len(eligible[split]) for split in split_order
+        },
+        "selected_count_by_split": {
+            split: len(selected[split]) for split in split_order
+        },
+        "cross_split_raw_source_exclusion_count": len(cross_split_raw_sources),
+        "cross_split_raw_source_excluded_record_count": sum(
+            str(record["raw_source_sha256"]) in cross_split_raw_sources
+            for records in candidates.values()
+            for record in records
+        ),
+        "cross_split_raw_source_sha256": sorted(cross_split_raw_sources),
+        "grounded_question_count_by_split": grounded_counts,
+        "decision_grade_objective_count_by_split": objective_counts_by_split,
+        "objective_priority_by_split": objective_priority_by_split,
+        "selection_sha256": stable_hash(
+            {
+                split: [record["record_sha256"] for record in selected[split]]
+                for split in split_order
+            }
+        ),
+        "public_benchmark_payload_count": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    return selected, receipt
 
 
 def kernel_english_split_overlap(
@@ -1803,6 +2566,8 @@ def validate_kernel_english_manifest(
     payload: dict[str, Any], cfg: dict[str, Any]
 ) -> list[str]:
     gaps: list[str] = []
+    if payload.get("trigger_state") != "GREEN" or payload.get("hard_gaps") != []:
+        gaps.append("kernel_stage_not_green")
     if payload.get("policy") != cfg["policy"]:
         gaps.append("kernel_stage_policy_mismatch")
     if payload.get("contract_sha256") != kernel_english_stage_contract_sha256(cfg):
@@ -1853,6 +2618,24 @@ def validate_kernel_english_manifest(
         or int(counterfactuals.get("candidate_generation_credit") or 0)
     ):
         gaps.append("kernel_stage_context_counterfactual_contract_invalid")
+    sequence_buckets = payload.get("sequence_buckets") or {}
+    bucket_counts = sequence_buckets.get("counts_by_split") or {}
+    observed_bucket_rows = sum(
+        int(value)
+        for counts in bucket_counts.values()
+        for value in (counts or {}).values()
+    )
+    if (
+        sequence_buckets.get("policy") != KERC_SEQUENCE_BUCKET_POLICY
+        or sequence_buckets.get("routing")
+        != "encoded_length_only_without_target_semantic_metadata"
+        or observed_bucket_rows
+        != 2 * expected_view_count + expected_counterfactual_count
+        or int(sequence_buckets.get("truncation_count") or 0)
+        or int(sequence_buckets.get("row_drop_count") or 0)
+        or sequence_buckets.get("long_bucket_capability_credit") is not False
+    ):
+        gaps.append("kernel_stage_sequence_bucket_contract_invalid")
     ledger = payload.get("verification_ledger") or {}
     ledger_path = resolve(str(ledger.get("path") or ""))
     if (

@@ -18,6 +18,7 @@ if str(SCRIPTS) not in sys.path:
 
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
+    RaggedRows,
     architecture_training_authority,
     audit_arm_views,
     audit_specialist_data_scaling,
@@ -72,6 +73,36 @@ def arm_views() -> dict:
         "mixed_dense_control": {"row_ranges": [{"start": 0, "stop": 10}]},
         "hidden_generalist_fallback": "forbidden",
     }
+
+
+def test_ragged_rows_isolates_long_sequences_without_dense_corpus_padding() -> None:
+    rows = [
+        np.arange(5, dtype=np.int32),
+        np.arange(9_001, dtype=np.int32),
+        np.arange(7, dtype=np.int32),
+        np.arange(12_000, dtype=np.int32),
+    ]
+    ragged = RaggedRows(rows, dtype=np.int32, standard_width=8_192)
+
+    order = ragged.length_bucketed_order(seed=17, probabilities=None)
+    batches = ragged.batch_indices(order, maximum_batch_size=2)
+
+    assert sorted(order) == [0, 1, 2, 3]
+    assert sum(batches, []) == order
+    assert sorted(len(batch) for batch in batches) == [1, 1, 2]
+    for batch in batches:
+        widths = [len(rows[index]) for index in batch]
+        assert len(batch) == 1 or max(widths) <= 8_192
+        materialized = ragged[batch]
+        assert materialized.shape == (len(batch), max(widths))
+        for row_index, source_index in enumerate(batch):
+            assert np.array_equal(
+                materialized[row_index, : len(rows[source_index])],
+                rows[source_index],
+            )
+
+    assert ragged.physical_bytes == sum(row.nbytes for row in rows)
+    assert ragged.physical_bytes < ragged.shape[0] * ragged.shape[1] * 4
 
 
 def tiny_config(tmp_path: Path) -> dict:
@@ -171,7 +202,26 @@ def tiny_config(tmp_path: Path) -> dict:
                 "kernel_program_to_answer_packet_v1",
                 "answer_packet_to_surface_v1",
             ],
-            "maximum_sequence_tokens": 128,
+            "maximum_sequence_tokens": 16384,
+            "sequence_buckets": {
+                "policy": "project_theseus_kerc_exact_sequence_buckets_v1",
+                "routing": "encoded_length_only_without_target_semantic_metadata",
+                "buckets": [
+                    {
+                        "bucket_id": "standard_8k",
+                        "maximum_sequence_tokens": 8192,
+                        "maximum_batch_size": 2,
+                    },
+                    {
+                        "bucket_id": "exact_high_fan_in_16k",
+                        "maximum_sequence_tokens": 16384,
+                        "maximum_batch_size": 1,
+                    },
+                ],
+                "truncation_allowed": False,
+                "row_drop_allowed": False,
+                "long_bucket_capability_credit": False,
+            },
             "batch_size": 1,
             "residual_auxiliary_weight": 0.25,
             "verifier_auxiliary_weight": 0.5,
@@ -755,6 +805,11 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     )
 
     assert stage.inputs.shape[0] == 4
+    assert isinstance(stage.inputs, RaggedRows)
+    assert stage.receipt["storage_layout"] == "ragged_rows_dynamic_batch_padding_v1"
+    assert stage.receipt["physical_array_bytes"] <= stage.receipt[
+        "dense_equivalent_array_bytes"
+    ]
     assert int(stage.mask[0].sum()) > 0
     assert int(stage.mask[1].sum()) == 0
     assert int(stage.mask[2].sum()) == 0
@@ -796,6 +851,10 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     positive_ids = set(int(value) for value in stage.inputs[0])
     assert any(600 <= value < 1200 for value in positive_ids)
     assert any(value >= 1200 for value in positive_ids)
+
+    order = stage.inputs.length_bucketed_order(seed=11, probabilities=None)
+    assert sorted(order) == [0, 1, 2, 3]
+    assert sum(stage.inputs.batch_indices(order, maximum_batch_size=2), []) == order
 
     row["kerc_context_counterfactuals"][0]["generator_loss_enabled"] = True
     artifact.write_text(json.dumps(row) + "\n")

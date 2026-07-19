@@ -52,6 +52,8 @@ from standard_causal_transformer_survival import (
 from moecot_language_tokenizer import exact_text_tokens
 from moecot_source_conditioned_pretraining import (
     KERC_KERNEL_OBJECTIVES,
+    KERC_SEQUENCE_BUCKET_POLICY,
+    KERC_STRUCTURED_SOURCE_OBJECTIVES,
     decode_kerc_global_target,
     encode_kerc_global_target,
     kerc_surface_tokens,
@@ -70,6 +72,88 @@ import vcm_semantic_memory
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
+
+
+class RaggedRows:
+    """Immutable row store that pads only the mini-batch selected by the trainer."""
+
+    def __init__(
+        self,
+        rows: list[np.ndarray],
+        *,
+        dtype: Any,
+        standard_width: int = 8192,
+    ) -> None:
+        self._rows = tuple(np.asarray(row, dtype=dtype) for row in rows)
+        self.dtype = np.dtype(dtype)
+        self.standard_width = int(standard_width)
+        self.shape = (
+            len(self._rows),
+            max((int(row.shape[0]) for row in self._rows), default=1),
+        )
+
+    def __len__(self) -> int:
+        return len(self._rows)
+
+    def __getitem__(self, index: Any) -> np.ndarray:
+        if isinstance(index, (int, np.integer)):
+            return self._rows[int(index)]
+        indices = [int(value) for value in index]
+        width = max((len(self._rows[value]) for value in indices), default=1)
+        batch = np.zeros((len(indices), width), dtype=self.dtype)
+        for row_index, source_index in enumerate(indices):
+            row = self._rows[source_index]
+            batch[row_index, : len(row)] = row
+        return batch
+
+    def sum(self) -> Any:
+        return sum((row.sum() for row in self._rows), start=0)
+
+    def length_bucketed_order(
+        self, *, seed: int, probabilities: np.ndarray | None
+    ) -> list[int]:
+        rng = np.random.default_rng(seed)
+        if probabilities is None:
+            sampled = list(range(len(self._rows)))
+            random.Random(seed).shuffle(sampled)
+        else:
+            sampled = rng.choice(
+                len(self._rows),
+                size=len(self._rows),
+                replace=True,
+                p=probabilities,
+            ).tolist()
+        buckets: dict[int, list[int]] = {}
+        for index in sampled:
+            width = len(self._rows[int(index)])
+            bucket = 0 if width <= self.standard_width else 1
+            buckets.setdefault(bucket, []).append(int(index))
+        bucket_order = sorted(buckets)
+        random.Random(seed ^ 0x4B455243).shuffle(bucket_order)
+        return [index for bucket in bucket_order for index in buckets[bucket]]
+
+    def batch_indices(
+        self, order: list[int], *, maximum_batch_size: int
+    ) -> list[list[int]]:
+        batches: list[list[int]] = []
+        index = 0
+        while index < len(order):
+            width = len(self._rows[order[index]])
+            size = 1 if width > self.standard_width else maximum_batch_size
+            batch = order[index : index + size]
+            if any(
+                (len(self._rows[row]) > self.standard_width) !=
+                (width > self.standard_width)
+                for row in batch
+            ):
+                batch = [order[index]]
+            batches.append(batch)
+            index += len(batch)
+        return batches
+
+    @property
+    def physical_bytes(self) -> int:
+        return sum(int(row.nbytes) for row in self._rows)
 SHARED_TRUNK_ID = "shared_trunk"
 CONTROL_IDS = ("dense_total_parameter", "dense_active_parameter")
 KERC_ENGLISH_ID = "english_kerc"
@@ -1615,11 +1699,25 @@ def materialize_target_supervision(
                     continue
                 prompt = str(row.get("prompt") or "")
                 answer = str(row.get("target") or "")
-                source_body_ids, source_receipt = encode_tokens(
-                    kerc_surface_tokens(prompt) if kerc_mode else exact_text_tokens(prompt),
-                    source_vocab,
-                    stream="source",
+                objective = str(row.get("objective") or "")
+                structured_source = (
+                    kerc_mode and objective in KERC_STRUCTURED_SOURCE_OBJECTIVES
                 )
+                if structured_source:
+                    source_body_ids, source_receipt = encode_kerc_global_target(
+                        prompt,
+                        code_vocabulary=code_vocabulary,
+                        kernel_offset=kernel_offset,
+                        pointer_offset=pointer_offset,
+                    )
+                else:
+                    source_body_ids, source_receipt = encode_tokens(
+                        kerc_surface_tokens(prompt)
+                        if kerc_mode
+                        else exact_text_tokens(prompt),
+                        source_vocab,
+                        stream="source",
+                    )
                 trusted_prefix = list(row.get("trusted_source_prefix_tokens") or [])
                 if trusted_prefix:
                     if (
@@ -1629,9 +1727,21 @@ def materialize_target_supervision(
                         != "internal_objective_route_only"
                     ):
                         raise ValueError(f"invalid trusted source-prefix contract: {key}")
+                trusted_source_ids = [
+                    source_token_offset(base, source_vocab)
+                    + int(source_vocab[token])
+                    for token in trusted_prefix
+                ]
                 source_ids = [
-                    *(int(source_vocab[token]) for token in trusted_prefix),
-                    *source_body_ids,
+                    *trusted_source_ids,
+                    *(
+                        source_body_ids
+                        if structured_source
+                        else [
+                            source_token_offset(base, source_vocab) + int(value)
+                            for value in source_body_ids
+                        ]
+                    ),
                 ]
                 kernel_objective = (
                     kerc_mode
@@ -1653,7 +1763,7 @@ def materialize_target_supervision(
                 ):
                     raise ValueError(f"frozen supervision row became unrepresentable: {key}")
                 sequence = [GLOBAL_BOS_ID]
-                sequence.extend(source_offset + int(value) for value in source_ids)
+                sequence.extend(int(value) for value in source_ids)
                 sequence.append(SOURCE_TARGET_SEPARATOR_ID)
                 sequence.append(target_offset + int(target_vocab["<bos>"]))
                 target_start = len(sequence)
@@ -1725,7 +1835,7 @@ def materialize_target_supervision(
                     ):
                         raise ValueError(f"invalid KERC verifier corruption: {key}:{source_rows - 1}")
                     negative_sequence = [GLOBAL_BOS_ID]
-                    negative_sequence.extend(source_offset + int(value) for value in source_ids)
+                    negative_sequence.extend(int(value) for value in source_ids)
                     negative_sequence.append(SOURCE_TARGET_SEPARATOR_ID)
                     negative_sequence.append(target_offset + int(target_vocab["<bos>"]))
                     negative_start = len(negative_sequence)
@@ -1831,14 +1941,33 @@ def materialize_target_supervision(
                                 "invalid KERC context counterfactual contract: "
                                 f"{key}:{source_rows - 1}:{strategy}"
                             )
-                        counter_source_body_ids, counter_source_receipt = encode_tokens(
-                            kerc_surface_tokens(counter_prompt),
-                            source_vocab,
-                            stream="source",
-                        )
+                        if structured_source:
+                            counter_source_body_ids, counter_source_receipt = (
+                                encode_kerc_global_target(
+                                    counter_prompt,
+                                    code_vocabulary=code_vocabulary,
+                                    kernel_offset=kernel_offset,
+                                    pointer_offset=pointer_offset,
+                                )
+                            )
+                        else:
+                            counter_source_body_ids, counter_source_receipt = (
+                                encode_tokens(
+                                    kerc_surface_tokens(counter_prompt),
+                                    source_vocab,
+                                    stream="source",
+                                )
+                            )
                         counter_source_ids = [
-                            *(int(source_vocab[token]) for token in trusted_prefix),
-                            *counter_source_body_ids,
+                            *trusted_source_ids,
+                            *(
+                                counter_source_body_ids
+                                if structured_source
+                                else [
+                                    source_offset + int(value)
+                                    for value in counter_source_body_ids
+                                ]
+                            ),
                         ]
                         if kernel_objective:
                             counter_target_ids, counter_target_receipt = (
@@ -1863,9 +1992,7 @@ def materialize_target_supervision(
                                 f"{key}:{source_rows - 1}:{strategy}"
                             )
                         counter_sequence = [GLOBAL_BOS_ID]
-                        counter_sequence.extend(
-                            source_offset + int(value) for value in counter_source_ids
-                        )
+                        counter_sequence.extend(int(value) for value in counter_source_ids)
                         counter_sequence.append(SOURCE_TARGET_SEPARATOR_ID)
                         counter_sequence.append(target_offset + int(target_vocab["<bos>"]))
                         counter_start = len(counter_sequence)
@@ -1949,27 +2076,9 @@ def materialize_target_supervision(
     materialized_width = max((len(sequence) - 1 for sequence in sequences), default=1)
     if materialized_width > max_sequence:
         raise ValueError("materialized supervision width exceeds its sequence contract")
-    inputs = np.zeros((len(sequences), materialized_width), dtype=np.int32)
-    labels = np.zeros((len(sequences), materialized_width), dtype=np.int32)
-    mask = np.zeros((len(sequences), materialized_width), dtype=np.uint8)
-    for index, (sequence, mask_start, generator_enabled) in enumerate(
-        zip(sequences, mask_starts, generator_loss_enabled)
-    ):
-        width = len(sequence) - 1
-        inputs[index, :width] = sequence[:-1]
-        labels[index, :width] = sequence[1:]
-        if generator_enabled:
-            mask[index, mask_start:width] = 1
-    loss_mask = mask.astype(np.float32)
     termination_id = target_offset + int(target_vocab["<eos>"])
     byte_begin_id = target_offset + int(target_vocab[TARGET_BYTE_BEGIN])
     byte_end_id = target_offset + int(target_vocab[TARGET_BYTE_END])
-    loss_mask[(mask == 1) & (labels == termination_id)] = float(
-        config["training"]["termination_loss_weight"]
-    )
-    loss_mask[
-        (mask == 1) & ((labels == byte_begin_id) | (labels == byte_end_id))
-    ] = float(config["training"]["byte_boundary_loss_weight"])
     code_boundary_ids: list[int] = []
     if kerc_mode:
         for vocab, offset in (
@@ -1980,9 +2089,52 @@ def materialize_target_supervision(
                 if token not in vocab:
                     raise ValueError("KERC code vocabulary is missing byte boundaries")
                 code_boundary_ids.append(offset + int(vocab[token]))
-        loss_mask[(mask == 1) & np.isin(labels, code_boundary_ids)] = float(
-            config["training"]["byte_boundary_loss_weight"]
+    input_rows: list[np.ndarray] = []
+    label_rows: list[np.ndarray] = []
+    mask_rows: list[np.ndarray] = []
+    loss_rows: list[np.ndarray] = []
+    for sequence, mask_start, generator_enabled in zip(
+        sequences, mask_starts, generator_loss_enabled
+    ):
+        row_inputs = np.asarray(sequence[:-1], dtype=np.int32)
+        row_labels = np.asarray(sequence[1:], dtype=np.int32)
+        row_mask = np.zeros(len(row_inputs), dtype=np.uint8)
+        if generator_enabled:
+            row_mask[mask_start:] = 1
+        row_loss = row_mask.astype(np.float32)
+        row_loss[(row_mask == 1) & (row_labels == termination_id)] = float(
+            config["training"]["termination_loss_weight"]
         )
+        row_loss[
+            (row_mask == 1)
+            & ((row_labels == byte_begin_id) | (row_labels == byte_end_id))
+        ] = float(config["training"]["byte_boundary_loss_weight"])
+        if code_boundary_ids:
+            row_loss[(row_mask == 1) & np.isin(row_labels, code_boundary_ids)] = float(
+                config["training"]["byte_boundary_loss_weight"]
+            )
+        input_rows.append(row_inputs)
+        label_rows.append(row_labels)
+        mask_rows.append(row_mask)
+        loss_rows.append(row_loss)
+    if kerc_mode:
+        inputs = RaggedRows(input_rows, dtype=np.int32)
+        labels = RaggedRows(label_rows, dtype=np.int32)
+        mask = RaggedRows(mask_rows, dtype=np.uint8)
+        loss_mask = RaggedRows(loss_rows, dtype=np.float32)
+    else:
+        inputs = np.zeros((len(sequences), materialized_width), dtype=np.int32)
+        labels = np.zeros((len(sequences), materialized_width), dtype=np.int32)
+        mask = np.zeros((len(sequences), materialized_width), dtype=np.uint8)
+        loss_mask = np.zeros((len(sequences), materialized_width), dtype=np.float32)
+        for index, (row_inputs, row_labels, row_mask, row_loss) in enumerate(
+            zip(input_rows, label_rows, mask_rows, loss_rows)
+        ):
+            width = len(row_inputs)
+            inputs[index, :width] = row_inputs
+            labels[index, :width] = row_labels
+            mask[index, :width] = row_mask
+            loss_mask[index, :width] = row_loss
     receipt = {
         "policy": receipt_policy,
         "target_id": target["target_id"],
@@ -2002,6 +2154,26 @@ def materialize_target_supervision(
         "staged_padding_columns_elided": max_sequence - materialized_width,
         "sequence_width_source": (
             "objective_override" if maximum_sequence_tokens is not None else "base_stage"
+        ),
+        "storage_layout": (
+            "ragged_rows_dynamic_batch_padding_v1" if kerc_mode else "dense_rows_v1"
+        ),
+        "physical_array_bytes": (
+            inputs.physical_bytes
+            + labels.physical_bytes
+            + mask.physical_bytes
+            + loss_mask.physical_bytes
+            if kerc_mode
+            else int(inputs.nbytes + labels.nbytes + mask.nbytes + loss_mask.nbytes)
+        ),
+        "dense_equivalent_array_bytes": int(
+            len(sequences)
+            * materialized_width
+            * (
+                np.dtype(np.int32).itemsize * 2
+                + np.dtype(np.uint8).itemsize
+                + np.dtype(np.float32).itemsize
+            )
         ),
         "content_digest": hashlib.sha256("\n".join(row_hashes).encode()).hexdigest(),
         "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
@@ -2357,6 +2529,9 @@ def generate_kerc_pipeline_text(
                 branching_factor=branching_factor,
                 length_penalty=length_penalty,
                 trusted_source_prefix_token=TRAINING_TASK_TAGS[objective],
+                structured_source=(
+                    objective in KERC_STRUCTURED_SOURCE_OBJECTIVES
+                ),
                 mx=mx,
             )
         if objective == "answer_packet_to_surface_v1":
@@ -2372,6 +2547,13 @@ def generate_kerc_pipeline_text(
                 branching_factor=branching_factor,
                 length_penalty=length_penalty,
                 trusted_source_prefix_tokens=(TRAINING_TASK_TAGS[objective],),
+                structured_source_code_vocabulary=code_vocabulary,
+                structured_source_kernel_offset=int(
+                    model_contract["kerc_kernel_token_start"]
+                ),
+                structured_source_pointer_offset=int(
+                    model_contract["kerc_pointer_token_start"]
+                ),
                 mx=mx,
             )
         return "", generation_fault("kerc_objective_not_routeable")
@@ -2431,25 +2613,41 @@ def generate_kerc_code_text(
     branching_factor: int,
     length_penalty: float,
     trusted_source_prefix_token: str,
+    structured_source: bool,
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Decode one grammar-serialized KERC code object in disjoint V_K/V_P."""
 
-    source_ids, source_receipt = encode_tokens(
-        kerc_surface_tokens(prompt), source_vocab, stream="source"
-    )
+    if structured_source:
+        source_ids, source_receipt = encode_kerc_global_target(
+            prompt,
+            code_vocabulary=code_vocabulary,
+            kernel_offset=kernel_offset,
+            pointer_offset=pointer_offset,
+        )
+    else:
+        source_ids, source_receipt = encode_tokens(
+            kerc_surface_tokens(prompt), source_vocab, stream="source"
+        )
     if int(source_receipt.get("unknown_token_count") or 0):
         return "", generation_fault("source_unrepresentable")
     if trusted_source_prefix_token not in source_vocab:
         return "", generation_fault("trusted_source_prefix_unrepresentable")
-    source_ids = [int(source_vocab[trusted_source_prefix_token]), *source_ids]
+    source_offset = source_token_offset(base, source_vocab)
+    source_ids = [
+        source_offset + int(source_vocab[trusted_source_prefix_token]),
+        *(
+            source_ids
+            if structured_source
+            else [source_offset + int(value) for value in source_ids]
+        ),
+    ]
     if len(source_ids) > max_source_tokens:
         return "", generation_fault("source_requires_truncation")
-    source_offset = source_token_offset(base, source_vocab)
     target_offset = target_token_offset(base, source_vocab)
     end_id = target_offset + int(target_vocab["<eos>"])
     prompt_ids = [GLOBAL_BOS_ID]
-    prompt_ids.extend(source_offset + int(value) for value in source_ids)
+    prompt_ids.extend(int(value) for value in source_ids)
     prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
     prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
     logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
@@ -2627,34 +2825,56 @@ def generate_model_text(
     branching_factor: int,
     length_penalty: float,
     trusted_source_prefix_tokens: tuple[str, ...] = (),
+    structured_source_code_vocabulary: dict[str, Any] | None = None,
+    structured_source_kernel_offset: int = 0,
+    structured_source_pointer_offset: int = 0,
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Generate from prompt only; the grammar constrains byte serialization, not meaning."""
 
-    prompt_tokens = (
-        kerc_surface_tokens(prompt)
-        if any(str(token).startswith("<KERC_TASK_") for token in trusted_source_prefix_tokens)
-        else exact_text_tokens(prompt)
-    )
-    source_ids, source_receipt = encode_tokens(
-        prompt_tokens, source_vocab, stream="source"
-    )
+    structured_source = bool(structured_source_code_vocabulary)
+    if structured_source:
+        source_ids, source_receipt = encode_kerc_global_target(
+            prompt,
+            code_vocabulary=structured_source_code_vocabulary or {},
+            kernel_offset=structured_source_kernel_offset,
+            pointer_offset=structured_source_pointer_offset,
+        )
+    else:
+        prompt_tokens = (
+            kerc_surface_tokens(prompt)
+            if any(
+                str(token).startswith("<KERC_TASK_")
+                for token in trusted_source_prefix_tokens
+            )
+            else exact_text_tokens(prompt)
+        )
+        source_ids, source_receipt = encode_tokens(
+            prompt_tokens, source_vocab, stream="source"
+        )
     if int(source_receipt.get("unknown_token_count") or 0):
         return "", generation_fault("source_unrepresentable")
     if any(token not in source_vocab for token in trusted_source_prefix_tokens):
         return "", generation_fault("trusted_source_prefix_unrepresentable")
     if len(trusted_source_prefix_tokens) > 1:
         return "", generation_fault("trusted_source_prefix_ambiguous")
+    source_offset = source_token_offset(base, source_vocab)
     source_ids = [
-        *(int(source_vocab[token]) for token in trusted_source_prefix_tokens),
-        *source_ids,
+        *(
+            source_offset + int(source_vocab[token])
+            for token in trusted_source_prefix_tokens
+        ),
+        *(
+            source_ids
+            if structured_source
+            else [source_offset + int(value) for value in source_ids]
+        ),
     ]
     if len(source_ids) > max_source_tokens:
         return "", generation_fault("source_requires_truncation")
-    source_offset = source_token_offset(base, source_vocab)
     target_offset = target_token_offset(base, source_vocab)
     prompt_ids = [GLOBAL_BOS_ID]
-    prompt_ids.extend(source_offset + int(value) for value in source_ids)
+    prompt_ids.extend(int(value) for value in source_ids)
     prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
     prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
     logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
@@ -3916,6 +4136,23 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("KERC batch size must be positive and no larger than the base batch")
     if int(kernel_cfg.get("maximum_sequence_tokens") or 0) <= 0:
         raise ValueError("KERC sequence budget must be positive")
+    sequence_buckets = kernel_cfg.get("sequence_buckets") or {}
+    bucket_rows = sequence_buckets.get("buckets") or []
+    if (
+        sequence_buckets.get("policy") != KERC_SEQUENCE_BUCKET_POLICY
+        or sequence_buckets.get("routing")
+        != "encoded_length_only_without_target_semantic_metadata"
+        or [row.get("bucket_id") for row in bucket_rows]
+        != ["standard_8k", "exact_high_fan_in_16k"]
+        or [int(row.get("maximum_sequence_tokens") or 0) for row in bucket_rows]
+        != [8192, int(kernel_cfg["maximum_sequence_tokens"])]
+        or [int(row.get("maximum_batch_size") or 0) for row in bucket_rows]
+        != [2, 1]
+        or sequence_buckets.get("truncation_allowed") is not False
+        or sequence_buckets.get("row_drop_allowed") is not False
+        or sequence_buckets.get("long_bucket_capability_credit") is not False
+    ):
+        raise ValueError("KERC sequence-bucket contract is incomplete")
     for key in ("residual_auxiliary_weight", "verifier_auxiliary_weight"):
         value = float(kernel_cfg.get(key) or 0.0)
         if not 0.0 < value <= 1.0:

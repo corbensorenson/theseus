@@ -60,6 +60,7 @@ DERIVATIONS = {
     "compiler_inference",
     "learned_reasoner",
     "tool_evidence",
+    "prior_chunk_claim",
 }
 MODALITIES = {
     "ASSERTED",
@@ -167,6 +168,17 @@ LEARNED_RESIDUAL_EXACT_TAG_CODES = {
     "MPQA_RELATION_ATTITUDE": "QA",
     "MPQA_RELATION_TARGET": "QT",
 }
+LEARNED_PROGRAM_TRANSPORT_POLICY = "project_theseus_kerc_learned_program_tokens_v1"
+LEARNED_ANSWER_TRANSPORT_POLICY = "project_theseus_kerc_learned_answer_tokens_v1"
+KERC_HIERARCHICAL_CORE_POLICY = "project_theseus_kerc_hierarchical_core_v1"
+KERC_CORE_CHUNK_MAX_NODES = 8
+KERC_HIERARCHICAL_COMPILER_POLICY = (
+    "project_theseus_kerc_hierarchical_compiler_v1"
+)
+KERC_COMPILER_CHUNK_MAX_NODES = 8
+KERC_PRIOR_CLAIM_CONTEXT_POLICY = (
+    "project_theseus_kerc_prior_claim_context_v1"
+)
 KERC_RESIDUAL_CHANNELS = ("interaction", "segment", "token", "exact")
 KERC_FIDELITY_LABELS = {"semantic": 0, "faithful": 1, "lexical": 2, "exact": 3}
 KERC_VERIFIER_DIMENSIONS = (
@@ -289,6 +301,32 @@ def kernel_training_contract() -> dict[str, Any]:
         "objective_order": list(TRAINING_OBJECTIVES),
         "task_tags": dict(TRAINING_TASK_TAGS),
         "task_mode_transport": "trusted_internal_source_prefix_token",
+        "learned_program_transport": LEARNED_PROGRAM_TRANSPORT_POLICY,
+        "learned_answer_transport": LEARNED_ANSWER_TRANSPORT_POLICY,
+        "hierarchical_compiler": {
+            "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+            "maximum_target_nodes_per_chunk": KERC_COMPILER_CHUNK_MAX_NODES,
+            "state_transport": (
+                "previous_compact_program_plus_integrity_bound_accumulated_state"
+            ),
+            "termination": "learned_continuation_bit_with_bounded_chunk_limit",
+            "final_program_validation": "exact_merged_program_revalidation",
+            "chunking_credit": 0,
+            "fallback_return_count": 0,
+        },
+        "hierarchical_core": {
+            "policy": KERC_HIERARCHICAL_CORE_POLICY,
+            "maximum_target_nodes_per_chunk": KERC_CORE_CHUNK_MAX_NODES,
+            "dependency_context": (
+                "topological_direct_predecessor_stubs_plus_exact_compact_prior_claims"
+            ),
+            "prior_claim_transport": KERC_PRIOR_CLAIM_CONTEXT_POLICY,
+            "answer_assembly": (
+                "validated_claim_disjoint_union_with_decision_union_and_canonical_order"
+            ),
+            "chunking_credit": 0,
+            "fallback_return_count": 0,
+        },
         "raw_text_may_select_task_mode": False,
         "trusted_source_control_tokens": list(TRAINING_TASK_TAGS.values()),
         "residual_channels": list(KERC_RESIDUAL_CHANNELS),
@@ -1342,6 +1380,366 @@ def learned_residual_view(
     }
 
 
+_LEARNED_SPACE_CODE = {"V_K": "K", "V_P": "P", "V_S": "S"}
+_LEARNED_CODE_SPACE = {code: space for space, code in _LEARNED_SPACE_CODE.items()}
+
+
+def _learned_token_view(rows: Sequence[dict[str, str]]) -> list[str]:
+    compact: list[str] = []
+    for index, row in enumerate(rows):
+        validated = _validate_token(row, path=f"learned_tokens[{index}]")
+        compact.append(
+            _LEARNED_SPACE_CODE[validated["space"]] + validated["token"]
+        )
+    return compact
+
+
+def _materialize_learned_token_view(
+    rows: Any, *, path: str, maximum_tokens: int = 16384
+) -> list[dict[str, str]]:
+    if not isinstance(rows, list) or not 1 <= len(rows) <= maximum_tokens:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_TOKEN_STREAM_INVALID", str(type(rows)), path=path
+        )
+    materialized: list[dict[str, str]] = []
+    for index, row in enumerate(rows):
+        if not isinstance(row, str) or len(row) < 2 or row[0] not in _LEARNED_CODE_SPACE:
+            raise KernelProtocolFault(
+                "KERC_LEARNED_TOKEN_INVALID", canonical_json(row), path=f"{path}[{index}]"
+            )
+        materialized.append(
+            _validate_token(
+                {"space": _LEARNED_CODE_SPACE[row[0]], "token": row[1:]},
+                path=f"{path}[{index}]",
+            )
+        )
+    return materialized
+
+
+def learned_kernel_program_view(packet: dict[str, Any]) -> dict[str, Any]:
+    """Project an authoritative program into its exact compact model ABI."""
+
+    serialization = packet.get("serialization") or {}
+    if serialization.get("macro_registry"):
+        raise KernelProtocolFault(
+            "KERC_LEARNED_PROGRAM_MACRO_UNSUPPORTED",
+            str(len(serialization.get("macro_registry") or [])),
+            path="packet.serialization.macro_registry",
+        )
+    expanded = serialization.get("expanded_tokens")
+    if not isinstance(expanded, list) or stable_hash(expanded) != serialization.get(
+        "expanded_sha256"
+    ):
+        raise KernelProtocolFault(
+            "KERC_LEARNED_PROGRAM_SERIALIZATION_INVALID",
+            str(serialization.get("expanded_sha256")),
+            path="packet.serialization",
+        )
+    return {
+        "policy": LEARNED_PROGRAM_TRANSPORT_POLICY,
+        "tokens": _learned_token_view(expanded),
+    }
+
+
+def learned_kernel_program_view_from_program(
+    canonical_program: dict[str, Any],
+) -> dict[str, Any]:
+    serialization = serialize_kernel_program(canonical_program)
+    return {
+        "policy": LEARNED_PROGRAM_TRANSPORT_POLICY,
+        "tokens": _learned_token_view(serialization["expanded_tokens"]),
+    }
+
+
+def materialize_learned_kernel_program(
+    view: Any,
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+    concept_capsules: dict[str, dict[str, Any]],
+    source_character_length: int,
+) -> dict[str, Any]:
+    """Decode learned program tokens and independently revalidate exact semantics."""
+
+    if (
+        not isinstance(view, dict)
+        or set(view) != {"policy", "tokens"}
+        or view.get("policy") != LEARNED_PROGRAM_TRANSPORT_POLICY
+    ):
+        raise KernelProtocolFault(
+            "KERC_LEARNED_PROGRAM_TRANSPORT_INVALID", canonical_json(view), path="program"
+        )
+    expanded = _materialize_learned_token_view(view["tokens"], path="program.tokens")
+    envelope = {
+        "policy": "project_theseus_kernel_three_code_space_serialization_v2",
+        "serialization_version": SERIALIZATION_VERSION,
+        "expanded_tokens": expanded,
+        "compact_tokens": expanded,
+        "macro_registry": [],
+        "expanded_sha256": stable_hash(expanded),
+        "compact_sha256": stable_hash(expanded),
+    }
+    return deserialize_kernel_program(
+        envelope,
+        protected_objects=protected_objects,
+        concept_capsules=concept_capsules,
+        source_character_length=source_character_length,
+    )["canonical_program"]
+
+
+def learned_answer_packet_view(packet: dict[str, Any]) -> dict[str, Any]:
+    """Encode a canonical answer as a compact, exact typed token stream."""
+
+    canonical = validate_answer_packet(packet, require_explicit_decision=True)
+    tokens: list[dict[str, str]] = [token("V_P", "ANSWER_VERSION:1")]
+    for claim in canonical["claims"]:
+        tokens.extend(
+            [
+                token("V_P", "CLAIM_BEGIN"),
+                token("V_P", f"CLAIM_ID:{claim['claim_id']}"),
+                token("V_K", f"PRED:{claim['predicate']}"),
+                token("V_K", f"MOD:{claim['modality']}"),
+                token("V_K", f"POL:{claim['polarity']}"),
+                token("V_K", f"QUANT:{claim['quantifier']}"),
+                token("V_P", f"CONF:{float(claim['confidence']):.17g}"),
+            ]
+        )
+        for argument in claim["arguments"]:
+            tokens.append(token("V_K", f"ROLE:{argument['role']}"))
+            tokens.extend(_serialize_value(argument["value"]))
+        claim_metadata = {
+            key: copy.deepcopy(value)
+            for key, value in claim.items()
+            if key
+            not in {
+                "claim_id",
+                "predicate",
+                "modality",
+                "polarity",
+                "quantifier",
+                "confidence",
+                "arguments",
+            }
+        }
+        if claim_metadata:
+            tokens.append(token("V_P", f"CLAIM_METADATA:{canonical_json(claim_metadata)}"))
+        tokens.append(token("V_P", "CLAIM_END"))
+    decision = canonical["decision"]
+    tokens.extend(
+        [
+            token("V_P", "DECISION_BEGIN"),
+            token("V_K", f"DISPOSITION:{decision['disposition']}"),
+            token("V_K", f"EVIDENCE:{decision['evidence_status']}"),
+            token("V_K", f"UNCERTAINTY:{decision['uncertainty_state']}"),
+            token("V_P", f"DECISION_CONF:{float(decision['confidence']):.17g}"),
+        ]
+    )
+    for claim_id in decision["controlling_claim_ids"]:
+        tokens.append(token("V_P", f"CONTROLLING:{claim_id}"))
+    for ambiguity_id in decision["unresolved_ambiguity_ids"]:
+        tokens.append(token("V_P", f"AMBIGUITY_ID:{ambiguity_id}"))
+    tokens.append(token("V_P", "DECISION_END"))
+    for term in canonical.get("required_terms") or []:
+        tokens.append(token("V_P", f"REQUIRED_TERM:{canonical_json(term)}"))
+    for caveat in canonical.get("required_caveats") or []:
+        tokens.append(token("V_P", f"REQUIRED_CAVEAT:{canonical_json(caveat)}"))
+    tokens.append(token("V_P", f"STYLE:{canonical_json(canonical.get('style') or {})}"))
+    tokens.append(token("V_P", "ANSWER_END"))
+    return {
+        "policy": LEARNED_ANSWER_TRANSPORT_POLICY,
+        "tokens": _learned_token_view(tokens),
+    }
+
+
+def learned_prior_claim_context_view(claims: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """Encode verified prior claims exactly without asserting a final decision."""
+
+    if not claims:
+        return {
+            "policy": KERC_PRIOR_CLAIM_CONTEXT_POLICY,
+            "claim_count": 0,
+            "transport": None,
+        }
+    claim_ids = [str(claim.get("claim_id") or "") for claim in claims]
+    context_packet = validate_answer_packet(
+        {
+            "claims": copy.deepcopy(list(claims)),
+            "decision": {
+                "policy": ANSWER_DECISION_POLICY,
+                "disposition": "ANSWER",
+                "evidence_status": "UNVERIFIED",
+                "uncertainty_state": "RESOLVED",
+                "confidence": min(float(claim["confidence"]) for claim in claims),
+                "controlling_claim_ids": claim_ids,
+                "unresolved_ambiguity_ids": [],
+            },
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "internal_dependency_context"},
+        },
+        require_explicit_decision=True,
+    )
+    return {
+        "policy": KERC_PRIOR_CLAIM_CONTEXT_POLICY,
+        "claim_count": len(claims),
+        "transport": learned_answer_packet_view(context_packet),
+        "final_decision_authority": False,
+    }
+
+
+def materialize_learned_answer_packet(view: Any) -> dict[str, Any]:
+    """Decode a learned answer stream and independently validate its packet."""
+
+    if (
+        not isinstance(view, dict)
+        or set(view) != {"policy", "tokens"}
+        or view.get("policy") != LEARNED_ANSWER_TRANSPORT_POLICY
+    ):
+        raise KernelProtocolFault(
+            "KERC_LEARNED_ANSWER_TRANSPORT_INVALID", canonical_json(view), path="answer"
+        )
+    materialized_tokens = _materialize_learned_token_view(
+        view["tokens"], path="answer.tokens"
+    )
+    if token("V_P", "DECISION_BEGIN") not in materialized_tokens:
+        raise KernelProtocolFault(
+            "KERC_ANSWER_DECISION_POLICY_INVALID",
+            "compact learned answer omitted decision contract",
+            path="answer.tokens",
+        )
+    cursor = _KernelTokenCursor(materialized_tokens)
+    cursor.expect("V_P", "ANSWER_VERSION:1")
+    claims: list[dict[str, Any]] = []
+    while cursor.peek() == {"space": "V_P", "token": "CLAIM_BEGIN"}:
+        cursor.take()
+        claim_id = cursor.expect_prefix("V_P", "CLAIM_ID:")
+        predicate = cursor.expect_prefix("V_K", "PRED:")
+        modality = cursor.expect_prefix("V_K", "MOD:")
+        polarity = cursor.expect_prefix("V_K", "POL:")
+        quantifier = cursor.expect_prefix("V_K", "QUANT:")
+        confidence_text = cursor.expect_prefix("V_P", "CONF:")
+        arguments: list[dict[str, Any]] = []
+        while cursor.peek()["space"] == "V_K" and cursor.peek()["token"].startswith(
+            "ROLE:"
+        ):
+            role = cursor.expect_prefix("V_K", "ROLE:")
+            arguments.append({"role": role, "value": _deserialize_value(cursor)})
+        metadata: dict[str, Any] = {}
+        if cursor.peek()["space"] == "V_P" and cursor.peek()["token"].startswith(
+            "CLAIM_METADATA:"
+        ):
+            encoded_metadata = cursor.expect_prefix("V_P", "CLAIM_METADATA:")
+            try:
+                decoded_metadata = json.loads(encoded_metadata)
+            except json.JSONDecodeError as exc:
+                raise KernelProtocolFault(
+                    "KERC_LEARNED_ANSWER_CLAIM_METADATA_INVALID",
+                    str(exc),
+                    path="answer.tokens",
+                ) from exc
+            if not isinstance(decoded_metadata, dict) or set(decoded_metadata) & {
+                "claim_id",
+                "predicate",
+                "modality",
+                "polarity",
+                "quantifier",
+                "confidence",
+                "arguments",
+            }:
+                raise KernelProtocolFault(
+                    "KERC_LEARNED_ANSWER_CLAIM_METADATA_INVALID",
+                    canonical_json(decoded_metadata),
+                    path="answer.tokens",
+                )
+            metadata = decoded_metadata
+        cursor.expect("V_P", "CLAIM_END")
+        try:
+            confidence = float(confidence_text)
+        except ValueError as exc:
+            raise KernelProtocolFault(
+                "KERC_LEARNED_ANSWER_CONFIDENCE_INVALID",
+                confidence_text,
+                path="answer.tokens",
+            ) from exc
+        claims.append(
+            {
+                **metadata,
+                "claim_id": claim_id,
+                "predicate": predicate,
+                "modality": modality,
+                "polarity": polarity,
+                "quantifier": quantifier,
+                "confidence": confidence,
+                "arguments": arguments,
+            }
+        )
+    cursor.expect("V_P", "DECISION_BEGIN")
+    decision = {
+        "policy": ANSWER_DECISION_POLICY,
+        "disposition": cursor.expect_prefix("V_K", "DISPOSITION:"),
+        "evidence_status": cursor.expect_prefix("V_K", "EVIDENCE:"),
+        "uncertainty_state": cursor.expect_prefix("V_K", "UNCERTAINTY:"),
+    }
+    confidence_text = cursor.expect_prefix("V_P", "DECISION_CONF:")
+    controlling: list[str] = []
+    ambiguity_ids: list[str] = []
+    while cursor.peek()["token"] != "DECISION_END":
+        current = cursor.peek()
+        if current["space"] == "V_P" and current["token"].startswith("CONTROLLING:"):
+            controlling.append(cursor.expect_prefix("V_P", "CONTROLLING:"))
+        elif current["space"] == "V_P" and current["token"].startswith("AMBIGUITY_ID:"):
+            ambiguity_ids.append(cursor.expect_prefix("V_P", "AMBIGUITY_ID:"))
+        else:
+            raise KernelProtocolFault(
+                "KERC_LEARNED_ANSWER_DECISION_TOKEN_INVALID",
+                canonical_json(current),
+                path="answer.tokens",
+            )
+    cursor.take()
+    try:
+        decision["confidence"] = float(confidence_text)
+    except ValueError as exc:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_ANSWER_CONFIDENCE_INVALID",
+            confidence_text,
+            path="answer.tokens",
+        ) from exc
+    decision["controlling_claim_ids"] = controlling
+    decision["unresolved_ambiguity_ids"] = ambiguity_ids
+    required_terms: list[Any] = []
+    required_caveats: list[Any] = []
+    while cursor.peek()["token"].startswith("REQUIRED_TERM:"):
+        required_terms.append(
+            json.loads(cursor.expect_prefix("V_P", "REQUIRED_TERM:"))
+        )
+    while cursor.peek()["token"].startswith("REQUIRED_CAVEAT:"):
+        required_caveats.append(
+            json.loads(cursor.expect_prefix("V_P", "REQUIRED_CAVEAT:"))
+        )
+    try:
+        style = json.loads(cursor.expect_prefix("V_P", "STYLE:"))
+    except json.JSONDecodeError as exc:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_ANSWER_STYLE_INVALID", str(exc), path="answer.tokens"
+        ) from exc
+    cursor.expect("V_P", "ANSWER_END")
+    if not cursor.done:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_ANSWER_TRAILING_TOKENS",
+            canonical_json(cursor.remaining()),
+            path="answer.tokens",
+        )
+    return validate_answer_packet(
+        {
+            "claims": claims,
+            "decision": decision,
+            "required_terms": required_terms,
+            "required_caveats": required_caveats,
+            "style": style,
+        },
+        require_explicit_decision=True,
+    )
+
+
 def compiler_training_io(
     *, packet: dict[str, Any], source_text: str, hrl_state: dict[str, Any]
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -1370,9 +1768,327 @@ def compiler_training_io(
         "concept_capsules": learned_concept_capsule_view(
             packet["concept_capsules"]
         ),
-        "program": packet["program"],
+        "program": learned_kernel_program_view(packet),
     }
     return compiler_input, compiler_target
+
+
+def _node_references(value: Any) -> set[str]:
+    references: set[str] = set()
+    if isinstance(value, dict):
+        if value.get("type") == "node_ref" and isinstance(value.get("value"), str):
+            references.add(str(value["value"]))
+        else:
+            for child in value.values():
+                references.update(_node_references(child))
+    elif isinstance(value, list):
+        for child in value:
+            references.update(_node_references(child))
+    return references
+
+
+def partition_kernel_program(
+    canonical_program: dict[str, Any], *, maximum_nodes: int = KERC_CORE_CHUNK_MAX_NODES
+) -> list[dict[str, Any]]:
+    """Build topological chunks with direct, causally available dependencies."""
+
+    nodes = list(canonical_program.get("nodes") or [])
+    if not nodes or maximum_nodes <= 0:
+        raise KernelProtocolFault(
+            "KERC_HIERARCHICAL_PROGRAM_INVALID", str(len(nodes)), path="program.nodes"
+        )
+    by_id = {str(node["node_id"]): node for node in nodes}
+    references_by_node: dict[str, set[str]] = {}
+    for node_id, node in by_id.items():
+        references = _node_references(node.get("arguments") or [])
+        unknown = references - set(by_id)
+        if unknown:
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_NODE_REFERENCE_UNKNOWN",
+                canonical_json(sorted(unknown)),
+                path=f"program.nodes.{node_id}",
+            )
+        references_by_node[node_id] = references
+
+    order = {str(node["node_id"]): index for index, node in enumerate(nodes)}
+    dependants: dict[str, list[str]] = {node_id: [] for node_id in by_id}
+    indegree = {node_id: len(references) for node_id, references in references_by_node.items()}
+    for node_id, references in references_by_node.items():
+        for dependency in references:
+            dependants[dependency].append(node_id)
+    ready = sorted(
+        (node_id for node_id, degree in indegree.items() if degree == 0),
+        key=order.__getitem__,
+    )
+    targets: list[str] = []
+    while ready:
+        current = ready.pop(0)
+        targets.append(current)
+        for dependant in sorted(dependants[current], key=order.__getitem__):
+            indegree[dependant] -= 1
+            if indegree[dependant] == 0:
+                ready.append(dependant)
+                ready.sort(key=order.__getitem__)
+    if len(targets) != len(nodes):
+        raise KernelProtocolFault(
+            "KERC_HIERARCHICAL_PROGRAM_CYCLE",
+            f"{len(targets)}:{len(nodes)}",
+            path="program.nodes",
+        )
+    packed = [
+        targets[index : index + maximum_nodes]
+        for index in range(0, len(targets), maximum_nodes)
+    ]
+    full_roots = set(str(value) for value in canonical_program.get("roots") or [])
+    fragments: list[dict[str, Any]] = []
+    for index, target_node_ids in enumerate(packed):
+        target_set = set(target_node_ids)
+        context_node_ids = sorted(
+            {
+                dependency
+                for node_id in target_node_ids
+                for dependency in references_by_node[node_id]
+                if dependency not in target_set
+            },
+            key=order.__getitem__,
+        )
+        prior_targets = {
+            node_id
+            for chunk in packed[:index]
+            for node_id in chunk
+        }
+        if not set(context_node_ids) <= prior_targets:
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_DEPENDENCY_NOT_CAUSALLY_AVAILABLE",
+                canonical_json(sorted(set(context_node_ids) - prior_targets)),
+                path=f"program.chunks[{index}]",
+            )
+        local_roots = [node_id for node_id in target_node_ids if node_id in full_roots]
+        if not local_roots:
+            referenced = {
+                target
+                for node_id in target_node_ids
+                for target in references_by_node[node_id]
+            }
+            local_roots = [
+                node_id for node_id in target_node_ids if node_id not in referenced
+            ]
+        if not local_roots:
+            local_roots = [target_node_ids[-1]]
+        context_stubs = []
+        for node_id in context_node_ids:
+            source_node = by_id[node_id]
+            context_stubs.append(
+                {
+                    **{
+                        key: copy.deepcopy(value)
+                        for key, value in source_node.items()
+                        if key != "arguments"
+                    },
+                    "derivation": "prior_chunk_claim",
+                    "arguments": [],
+                }
+            )
+        fragment_program = {
+            "record_type": "kernel_program",
+            "kernel_version": KERNEL_VERSION,
+            "roots": local_roots,
+            "nodes": [
+                *context_stubs,
+                *[copy.deepcopy(by_id[node_id]) for node_id in target_node_ids],
+            ],
+        }
+        fragment_program["program_sha256"] = stable_hash(fragment_program)
+        fragments.append(
+            {
+                "policy": KERC_HIERARCHICAL_CORE_POLICY,
+                "chunk_index": index,
+                "chunk_count": len(packed),
+                "node_ids": target_node_ids,
+                "context_node_ids": context_node_ids,
+                "claim_ordinals": [order[node_id] for node_id in target_node_ids],
+                "full_root_node_ids": [
+                    node_id for node_id in target_node_ids if node_id in full_roots
+                ],
+                "full_program_sha256": canonical_program["program_sha256"],
+                "program": fragment_program,
+            }
+        )
+    return fragments
+
+
+def partition_answer_for_program_fragments(
+    answer: dict[str, Any], fragments: Sequence[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Project one-to-one node/claim supervision into exactly mergeable packets."""
+
+    canonical = validate_answer_packet(answer, require_explicit_decision=True)
+    claims = canonical["claims"]
+    node_count = sum(len(fragment["node_ids"]) for fragment in fragments)
+    if len(claims) != node_count:
+        raise KernelProtocolFault(
+            "KERC_HIERARCHICAL_NODE_CLAIM_ALIGNMENT_UNAVAILABLE",
+            f"{node_count}:{len(claims)}",
+            path="answer.claims",
+        )
+    controlling = set(canonical["decision"]["controlling_claim_ids"])
+    packets: list[dict[str, Any]] = []
+    claim_by_node: dict[str, dict[str, Any]] = {}
+    claim_ordinals = [
+        ordinal for fragment in fragments for ordinal in fragment["claim_ordinals"]
+    ]
+    if sorted(claim_ordinals) != list(range(len(claims))):
+        raise KernelProtocolFault(
+            "KERC_HIERARCHICAL_NODE_CLAIM_ALIGNMENT_UNAVAILABLE",
+            f"{len(claim_ordinals)}:{len(claims)}",
+            path="answer.claims",
+        )
+    for fragment in fragments:
+        for node_id, ordinal in zip(fragment["node_ids"], fragment["claim_ordinals"]):
+            claim_by_node[str(node_id)] = claims[int(ordinal)]
+    for fragment in fragments:
+        local_claims = copy.deepcopy(
+            [claim_by_node[node_id] for node_id in fragment["node_ids"]]
+        )
+        nodes_by_id = {
+            str(node["node_id"]): node for node in fragment["program"]["nodes"]
+        }
+        local_nodes = [nodes_by_id[node_id] for node_id in fragment["node_ids"]]
+        if any(
+            claim["predicate"] != node["operator"]
+            for claim, node in zip(local_claims, local_nodes)
+        ):
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_NODE_CLAIM_ALIGNMENT_UNAVAILABLE",
+                str(fragment["chunk_index"]),
+                path="answer.claims",
+            )
+        local_controlling = [
+            claim["claim_id"]
+            for claim in local_claims
+            if claim["claim_id"] in controlling
+        ]
+        if not local_controlling:
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_DECISION_ALIGNMENT_UNAVAILABLE",
+                str(fragment["chunk_index"]),
+                path="answer.decision.controlling_claim_ids",
+            )
+        local = {
+            "claims": local_claims,
+            "decision": {
+                **copy.deepcopy(canonical["decision"]),
+                "controlling_claim_ids": local_controlling,
+            },
+            "required_terms": copy.deepcopy(canonical.get("required_terms") or []),
+            "required_caveats": copy.deepcopy(canonical.get("required_caveats") or []),
+            "style": copy.deepcopy(canonical.get("style") or {}),
+        }
+        packets.append(validate_answer_packet(local, require_explicit_decision=True))
+    return packets
+
+
+def dependency_claims_for_program_fragments(
+    answer: dict[str, Any], fragments: Sequence[dict[str, Any]]
+) -> list[list[dict[str, Any]]]:
+    """Expose only already-computed direct claims required by each chunk."""
+
+    canonical = validate_answer_packet(answer, require_explicit_decision=True)
+    claims = canonical["claims"]
+    claim_by_node: dict[str, dict[str, Any]] = {}
+    for fragment in fragments:
+        for node_id, ordinal in zip(fragment["node_ids"], fragment["claim_ordinals"]):
+            claim_by_node[str(node_id)] = claims[int(ordinal)]
+    contexts: list[list[dict[str, Any]]] = []
+    available: set[str] = set()
+    for fragment in fragments:
+        context_ids = [str(value) for value in fragment["context_node_ids"]]
+        if not set(context_ids) <= available:
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_DEPENDENCY_NOT_CAUSALLY_AVAILABLE",
+                canonical_json(sorted(set(context_ids) - available)),
+                path=f"answer_chunks[{fragment['chunk_index']}]",
+            )
+        contexts.append([copy.deepcopy(claim_by_node[node_id]) for node_id in context_ids])
+        available.update(str(value) for value in fragment["node_ids"])
+    return contexts
+
+
+def merge_hierarchical_answer_packets(
+    packets: Sequence[dict[str, Any]],
+    *,
+    expected_chunk_count: int,
+    claim_order: Sequence[str] | None = None,
+) -> dict[str, Any]:
+    """Losslessly assemble independently validated core chunks without fallback."""
+
+    if len(packets) != expected_chunk_count or not packets:
+        raise KernelProtocolFault(
+            "KERC_HIERARCHICAL_ANSWER_CHUNK_COUNT_INVALID",
+            f"{len(packets)}:{expected_chunk_count}",
+            path="answer_chunks",
+        )
+    canonical = [
+        validate_answer_packet(packet, require_explicit_decision=True)
+        for packet in packets
+    ]
+    first = canonical[0]
+    invariant_decision = {
+        key: value
+        for key, value in first["decision"].items()
+        if key not in {"controlling_claim_ids", "unresolved_ambiguity_ids"}
+    }
+    claims: list[dict[str, Any]] = []
+    controlling: set[str] = set()
+    ambiguities: set[str] = set()
+    observed_claim_ids: set[str] = set()
+    for packet in canonical:
+        if any(
+            packet.get(field) != first.get(field)
+            for field in ("required_terms", "required_caveats", "style")
+        ) or {
+            key: value
+            for key, value in packet["decision"].items()
+            if key not in {"controlling_claim_ids", "unresolved_ambiguity_ids"}
+        } != invariant_decision:
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_ANSWER_INVARIANT_MISMATCH",
+                packet["answer_packet_sha256"],
+                path="answer_chunks",
+            )
+        local_ids = {str(claim["claim_id"]) for claim in packet["claims"]}
+        if observed_claim_ids & local_ids:
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_ANSWER_CLAIM_COLLISION",
+                canonical_json(sorted(observed_claim_ids & local_ids)),
+                path="answer_chunks",
+            )
+        observed_claim_ids.update(local_ids)
+        claims.extend(copy.deepcopy(packet["claims"]))
+        controlling.update(packet["decision"]["controlling_claim_ids"])
+        ambiguities.update(packet["decision"]["unresolved_ambiguity_ids"])
+    if claim_order is not None:
+        requested = [str(value) for value in claim_order]
+        by_id = {str(claim["claim_id"]): claim for claim in claims}
+        if len(requested) != len(set(requested)) or set(requested) != set(by_id):
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_ANSWER_CLAIM_ORDER_INVALID",
+                canonical_json(requested),
+                path="answer_chunks",
+            )
+        claims = [by_id[claim_id] for claim_id in requested]
+    merged = {
+        "claims": claims,
+        "decision": {
+            **copy.deepcopy(invariant_decision),
+            "controlling_claim_ids": sorted(controlling),
+            "unresolved_ambiguity_ids": sorted(ambiguities),
+        },
+        "required_terms": copy.deepcopy(first.get("required_terms") or []),
+        "required_caveats": copy.deepcopy(first.get("required_caveats") or []),
+        "style": copy.deepcopy(first.get("style") or {}),
+    }
+    return validate_answer_packet(merged, require_explicit_decision=True)
 
 
 def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1395,13 +2111,12 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
     )
     core_input = {
         **protected_context,
-        "program": packet["program"],
+        "program": learned_kernel_program_view(packet),
         "residual": learned_residual_view(
             packet["residual"], hrl_state=record["hrl_state"]
         ),
     }
     renderer_input = {
-        "answer_packet": record["answer_packet"],
         "protected_objects": learned_objects,
         "residual": learned_residual_view(
             packet["residual"], hrl_state=record["hrl_state"]
@@ -1414,17 +2129,87 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
         if interaction
         else source
     )
-    rows: list[tuple[str, str, str, str]] = []
+    objective_authority = record["semantic_supervision"]["objective_authority"]
+    rows: list[tuple[str, str, str, str, dict[str, Any]]] = []
     for objective in TRAINING_OBJECTIVES:
+        if objective_authority[objective] is not True:
+            continue
         if objective == "surface_to_kernel_program_v1":
-            rows.append(
-                (
-                    objective,
-                    canonical_json(compiler_input),
-                    canonical_json(compiler_target),
-                    "compiler",
-                )
+            fragments = partition_kernel_program(
+                packet["program"], maximum_nodes=KERC_COMPILER_CHUNK_MAX_NODES
             )
+            prior_nodes: list[dict[str, Any]] = []
+            previous_program: dict[str, Any] | None = None
+            for fragment in fragments:
+                compiler_contract = {
+                    "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                    "chunk_index": fragment["chunk_index"],
+                    "prior_node_count": len(prior_nodes),
+                    "previous_program": copy.deepcopy(previous_program),
+                    "accumulated_program_sha256": stable_hash(prior_nodes),
+                }
+                visible = canonical_json(
+                    {
+                        **compiler_input,
+                        "hierarchical_compiler": compiler_contract,
+                    }
+                )
+                target = canonical_json(
+                    {
+                        "kernel_version": KERNEL_VERSION,
+                        "concept_capsules": (
+                            compiler_target["concept_capsules"]
+                            if fragment["chunk_index"] == 0
+                            else {}
+                        ),
+                        "program": learned_kernel_program_view_from_program(
+                            fragment["program"]
+                        ),
+                        "hierarchical_compiler": {
+                            "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                            "chunk_index": fragment["chunk_index"],
+                            "continuation": fragment["chunk_index"]
+                            < fragment["chunk_count"] - 1,
+                            "root_node_ids": fragment["full_root_node_ids"],
+                        },
+                    }
+                )
+                rows.append(
+                    (
+                        objective,
+                        visible,
+                        target,
+                        f"compiler:chunk-{fragment['chunk_index']}",
+                        {
+                            "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                            "chunk_index": fragment["chunk_index"],
+                            "chunk_count": fragment["chunk_count"],
+                            "prior_node_count": len(prior_nodes),
+                        },
+                    )
+                )
+                nodes_by_id = {
+                    str(node["node_id"]): node
+                    for node in fragment["program"]["nodes"]
+                }
+                prior_nodes.extend(
+                    {
+                        key: copy.deepcopy(nodes_by_id[node_id][key])
+                        for key in (
+                            "node_id",
+                            "operator",
+                            "modality",
+                            "polarity",
+                            "quantifier",
+                            "confidence",
+                            "source_spans",
+                        )
+                    }
+                    for node_id in fragment["node_ids"]
+                )
+                previous_program = learned_kernel_program_view_from_program(
+                    fragment["program"]
+                )
             continue
         for realization in record["valid_realizations"]:
             realization_id = str(realization["realization_id"])
@@ -1432,20 +2217,72 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
             if objective == "surface_direct_control_v1":
                 visible = direct_prompt
                 target = str(realization["surface_target"])
+                rows.append((objective, visible, target, realization_id, {}))
             elif objective == "kernel_program_to_answer_packet_v1":
-                visible = canonical_json(core_input)
-                target = canonical_json(answer_packet)
+                fragments = partition_kernel_program(packet["program"])
+                if len(fragments) == 1:
+                    visible = canonical_json(core_input)
+                    target = canonical_json(learned_answer_packet_view(answer_packet))
+                    rows.append((objective, visible, target, realization_id, {}))
+                else:
+                    partial_answers = partition_answer_for_program_fragments(
+                        answer_packet, fragments
+                    )
+                    dependency_contexts = dependency_claims_for_program_fragments(
+                        answer_packet, fragments
+                    )
+                    for fragment, partial_answer, dependency_claims in zip(
+                        fragments, partial_answers, dependency_contexts
+                    ):
+                        chunk_contract = {
+                            "policy": KERC_HIERARCHICAL_CORE_POLICY,
+                            "chunk_index": fragment["chunk_index"],
+                            "chunk_count": fragment["chunk_count"],
+                            "node_ids": fragment["node_ids"],
+                            "context_node_ids": fragment["context_node_ids"],
+                            "full_program_sha256": fragment[
+                                "full_program_sha256"
+                            ],
+                        }
+                        visible = canonical_json(
+                            {
+                                **protected_context,
+                                "program": learned_kernel_program_view_from_program(
+                                    fragment["program"]
+                                ),
+                                "residual": learned_residual_view(
+                                    packet["residual"], hrl_state=record["hrl_state"]
+                                ),
+                                "prior_claims": learned_prior_claim_context_view(
+                                    dependency_claims
+                                ),
+                                "hierarchical_core": chunk_contract,
+                            }
+                        )
+                        target = canonical_json(
+                            learned_answer_packet_view(partial_answer)
+                        )
+                        rows.append(
+                            (
+                                objective,
+                                visible,
+                                target,
+                                f"{realization_id}:chunk-{fragment['chunk_index']}",
+                                chunk_contract,
+                            )
+                        )
+                continue
             else:
                 visible = canonical_json(
-                    {**renderer_input, "answer_packet": answer_packet}
+                    {
+                        **renderer_input,
+                        "answer_packet": learned_answer_packet_view(answer_packet),
+                    }
                 )
                 target = str(realization["surface_target"])
-            rows.append((objective, visible, target, realization_id))
+                rows.append((objective, visible, target, realization_id, {}))
     compiled = []
-    objective_authority = record["semantic_supervision"]["objective_authority"]
-    for objective, visible, target, realization_id in rows:
-        if objective_authority[objective] is not True:
-            continue
+    for objective, visible, target, realization_id, hierarchical_transport in rows:
         prompt = visible
         trusted_prefix = [TRAINING_TASK_TAGS[objective]]
         identity = stable_hash(
@@ -1462,7 +2299,7 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
             objective,
             target,
             protected_objects=packet["protected_objects"],
-            record_identity=record["record_sha256"],
+            record_identity=f"{record['record_sha256']}:{realization_id}",
         )
         compiled.append(
             {
@@ -1505,6 +2342,9 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                 "kerc_verifier_negative": verifier_negative,
                 "kerc_answer_disposition": str(
                     record["answer_packet"]["decision"]["disposition"]
+                ),
+                "kerc_hierarchical_transport": copy.deepcopy(
+                    hierarchical_transport
                 ),
                 "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
                 "evaluator_only_fields": [
@@ -1606,22 +2446,146 @@ def execute_learned_pipeline(
 
     def compile_surface(surface: str) -> dict[str, Any]:
         front_end = compiler_input_from_source(surface, hrl_state=hrl_state)
-        compiler_text = run_stage(
-            "surface_to_kernel_program_v1", canonical_json(front_end)
-        )
         protected = extract_protected_objects(surface)
-        compiler_output = parse_learned_compiler_output(
-            compiler_text,
+        prior_nodes: list[dict[str, Any]] = []
+        canonical_nodes: list[dict[str, Any]] = []
+        generated_capsules: dict[str, dict[str, Any]] = {}
+        root_node_ids: list[str] = []
+        previous_program: dict[str, Any] | None = None
+        for chunk_index in range(256):
+            compiler_contract = {
+                "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+                "chunk_index": chunk_index,
+                "prior_node_count": len(prior_nodes),
+                "previous_program": copy.deepcopy(previous_program),
+                "accumulated_program_sha256": stable_hash(prior_nodes),
+            }
+            compiler_text = run_stage(
+                "surface_to_kernel_program_v1",
+                canonical_json(
+                    {
+                        **front_end,
+                        "hierarchical_compiler": compiler_contract,
+                    }
+                ),
+            )
+            decoded = parse_object("surface_to_kernel_program_v1", compiler_text)
+            hierarchy = decoded.get("hierarchical_compiler")
+            if (
+                not isinstance(hierarchy, dict)
+                or set(hierarchy)
+                != {"policy", "chunk_index", "continuation", "root_node_ids"}
+                or hierarchy.get("policy") != KERC_HIERARCHICAL_COMPILER_POLICY
+                or int(hierarchy.get("chunk_index", -1)) != chunk_index
+                or not isinstance(hierarchy.get("continuation"), bool)
+                or not isinstance(hierarchy.get("root_node_ids"), list)
+            ):
+                raise KernelProtocolFault(
+                    "KERC_HIERARCHICAL_COMPILER_CONTRACT_INVALID",
+                    canonical_json(hierarchy),
+                    path=f"compiler_chunks[{chunk_index}]",
+                )
+            compiler_output = parse_learned_compiler_output(
+                compiler_text,
+                protected_objects=protected["protected_objects"],
+                concept_capsules=generated_capsules,
+                source_character_length=len(surface),
+                concept_resolver=concept_resolver,
+            )
+            generated_capsules.update(
+                compiler_output["generated_concept_capsules"]
+            )
+            chunk_program = compiler_output["canonical_program"]
+            prior_by_id = {str(row["node_id"]): row for row in prior_nodes}
+            target_nodes: list[dict[str, Any]] = []
+            for node in chunk_program["nodes"]:
+                node_id = str(node["node_id"])
+                if node.get("derivation") == "prior_chunk_claim":
+                    prior = prior_by_id.get(node_id)
+                    observed = {
+                        key: copy.deepcopy(node[key])
+                        for key in (
+                            "node_id",
+                            "operator",
+                            "modality",
+                            "polarity",
+                            "quantifier",
+                            "confidence",
+                            "source_spans",
+                        )
+                    }
+                    if prior != observed or node.get("arguments") != []:
+                        raise KernelProtocolFault(
+                            "KERC_HIERARCHICAL_COMPILER_CONTEXT_STUB_INVALID",
+                            node_id,
+                            path=f"compiler_chunks[{chunk_index}]",
+                        )
+                    continue
+                if node_id in prior_by_id or any(
+                    node_id == str(existing["node_id"])
+                    for existing in canonical_nodes
+                ):
+                    raise KernelProtocolFault(
+                        "KERC_HIERARCHICAL_COMPILER_NODE_COLLISION",
+                        node_id,
+                        path=f"compiler_chunks[{chunk_index}]",
+                    )
+                target_nodes.append(copy.deepcopy(node))
+            if not target_nodes or len(target_nodes) > KERC_COMPILER_CHUNK_MAX_NODES:
+                raise KernelProtocolFault(
+                    "KERC_HIERARCHICAL_COMPILER_TARGET_COUNT_INVALID",
+                    str(len(target_nodes)),
+                    path=f"compiler_chunks[{chunk_index}]",
+                )
+            target_ids = {str(node["node_id"]) for node in target_nodes}
+            emitted_roots = [str(value) for value in hierarchy["root_node_ids"]]
+            if len(set(emitted_roots)) != len(emitted_roots) or not set(
+                emitted_roots
+            ) <= target_ids:
+                raise KernelProtocolFault(
+                    "KERC_HIERARCHICAL_COMPILER_ROOTS_INVALID",
+                    canonical_json(emitted_roots),
+                    path=f"compiler_chunks[{chunk_index}]",
+                )
+            canonical_nodes.extend(target_nodes)
+            root_node_ids.extend(emitted_roots)
+            prior_nodes.extend(
+                {
+                    key: copy.deepcopy(node[key])
+                    for key in (
+                        "node_id",
+                        "operator",
+                        "modality",
+                        "polarity",
+                        "quantifier",
+                        "confidence",
+                        "source_spans",
+                    )
+                }
+                for node in target_nodes
+            )
+            previous_program = learned_kernel_program_view_from_program(
+                chunk_program
+            )
+            if hierarchy["continuation"] is False:
+                break
+        else:
+            raise KernelProtocolFault(
+                "KERC_HIERARCHICAL_COMPILER_CHUNK_LIMIT",
+                "256",
+                path="compiler_chunks",
+            )
+        compiler_output = validate_kernel_program(
+            {"roots": root_node_ids, "nodes": canonical_nodes},
             protected_objects=protected["protected_objects"],
-            concept_capsules={},
+            concept_capsules=generated_capsules,
             source_character_length=len(surface),
-            concept_resolver=concept_resolver,
         )
         packet = build_kernel_packet(
             surface,
             compiler_output["canonical_program"],
             hrl_state=hrl_state,
-            concept_capsules=compiler_output["generated_concept_capsules"],
+            concept_capsules=generated_capsules,
             residual_mode="OUTPUT_REALIZATION",
             fidelity="faithful",
             provenance={"source": "learned_kerc_pipeline_v1"},
@@ -1630,7 +2594,7 @@ def execute_learned_pipeline(
         return packet
 
     def reason(packet: dict[str, Any]) -> dict[str, Any]:
-        core_input = {
+        common_input = {
             "protected_objects": learned_protected_object_view(
                 packet["protected_objects"]
             ),
@@ -1638,15 +2602,102 @@ def execute_learned_pipeline(
                 packet["concept_capsules"]
             ),
             "source_character_length": packet["source"]["character_length"],
-            "program": packet["program"],
             "residual": learned_residual_view(
                 packet["residual"], hrl_state=hrl_state
             ),
         }
-        answer_text = run_stage(
-            "kernel_program_to_answer_packet_v1", canonical_json(core_input)
+        fragments = partition_kernel_program(packet["program"])
+        partial_answers: list[dict[str, Any]] = []
+        claims_by_node: dict[str, dict[str, Any]] = {}
+        for fragment in fragments:
+            missing_dependency_claims = set(fragment["context_node_ids"]) - set(
+                claims_by_node
+            )
+            if missing_dependency_claims:
+                raise KernelProtocolFault(
+                    "KERC_HIERARCHICAL_DEPENDENCY_CLAIM_MISSING",
+                    canonical_json(sorted(missing_dependency_claims)),
+                    path=f"answer_chunks[{fragment['chunk_index']}]",
+                )
+            chunk_contract = {
+                "policy": KERC_HIERARCHICAL_CORE_POLICY,
+                "chunk_index": fragment["chunk_index"],
+                "chunk_count": fragment["chunk_count"],
+                "node_ids": fragment["node_ids"],
+                "context_node_ids": fragment["context_node_ids"],
+                "full_program_sha256": fragment["full_program_sha256"],
+            }
+            core_input = {
+                **common_input,
+                "program": (
+                    learned_kernel_program_view(packet)
+                    if len(fragments) == 1
+                    else learned_kernel_program_view_from_program(
+                        fragment["program"]
+                    )
+                ),
+                **(
+                    {
+                        "hierarchical_core": chunk_contract,
+                        "prior_claims": learned_prior_claim_context_view(
+                            [
+                                copy.deepcopy(claims_by_node[node_id])
+                                for node_id in fragment["context_node_ids"]
+                            ]
+                        ),
+                    }
+                    if len(fragments) > 1
+                    else {}
+                ),
+            }
+            answer_text = run_stage(
+                "kernel_program_to_answer_packet_v1", canonical_json(core_input)
+            )
+            partial = materialize_learned_answer_packet(
+                parse_object("kernel_program_to_answer_packet_v1", answer_text)
+            )
+            if len(fragments) > 1:
+                nodes_by_id = {
+                    str(node["node_id"]): node
+                    for node in fragment["program"]["nodes"]
+                }
+                expected_predicates = [
+                    nodes_by_id[node_id]["operator"]
+                    for node_id in fragment["node_ids"]
+                ]
+                observed_predicates = [
+                    claim["predicate"] for claim in partial["claims"]
+                ]
+                if observed_predicates != expected_predicates:
+                    raise KernelProtocolFault(
+                        "KERC_HIERARCHICAL_NODE_CLAIM_ALIGNMENT_INVALID",
+                        canonical_json(
+                            {
+                                "expected": expected_predicates,
+                                "observed": observed_predicates,
+                            }
+                        ),
+                        path="answer_chunks",
+                    )
+                claims_by_node.update(
+                    {
+                        node_id: copy.deepcopy(claim)
+                        for node_id, claim in zip(fragment["node_ids"], partial["claims"])
+                    }
+                )
+            partial_answers.append(partial)
+        answer = (
+            partial_answers[0]
+            if len(partial_answers) == 1
+            else merge_hierarchical_answer_packets(
+                partial_answers,
+                expected_chunk_count=len(fragments),
+                claim_order=[
+                    claims_by_node[str(node["node_id"])]["claim_id"]
+                    for node in packet["program"]["nodes"]
+                ],
+            )
         )
-        answer = parse_object("kernel_program_to_answer_packet_v1", answer_text)
         return validate_answer_packet_against_context(
             answer,
             protected_objects=packet["protected_objects"],
@@ -1658,7 +2709,7 @@ def execute_learned_pipeline(
     packet = compile_surface(source)
     intended_answer = reason(packet)
     renderer_input = {
-        "answer_packet": intended_answer,
+        "answer_packet": learned_answer_packet_view(intended_answer),
         "protected_objects": learned_protected_object_view(
             packet["protected_objects"]
         ),
@@ -1901,13 +2952,18 @@ def _structured_verifier_corruption(
     selector: int,
 ) -> tuple[str, str, str]:
     payload = json.loads(target)
-    container_key = "program" if objective == "surface_to_kernel_program_v1" else None
-    rows = (
-        payload.get(container_key, {}).get("nodes")
-        if container_key
-        else payload.get("claims")
+    view = payload.get("program") if objective == "surface_to_kernel_program_v1" else payload
+    expected_policy = (
+        LEARNED_PROGRAM_TRANSPORT_POLICY
+        if objective == "surface_to_kernel_program_v1"
+        else LEARNED_ANSWER_TRANSPORT_POLICY
     )
-    if not isinstance(rows, list) or not rows:
+    if (
+        not isinstance(view, dict)
+        or view.get("policy") != expected_policy
+        or not isinstance(view.get("tokens"), list)
+        or not view["tokens"]
+    ):
         raise KernelProtocolFault(
             "KERC_VERIFIER_STRUCTURED_TARGET_INVALID",
             objective,
@@ -1919,69 +2975,123 @@ def _structured_verifier_corruption(
     options = options[selector % len(options) :] + options[: selector % len(options)]
     for option in options:
         candidate = copy.deepcopy(payload)
-        candidate_rows = (
-            candidate["program"]["nodes"]
+        candidate_view = (
+            candidate["program"]
             if objective == "surface_to_kernel_program_v1"
-            else candidate["claims"]
+            else candidate
         )
-        first = candidate_rows[0]
+        candidate_tokens = candidate_view["tokens"]
         if option == 4:
-            decision = candidate.get("decision")
-            if not isinstance(decision, dict):
+            changed = _replace_compact_token_prefix(
+                candidate_tokens,
+                space="V_P",
+                prefix="DECISION_CONF:",
+                replacement=lambda value: "0" if float(value) > 0.0 else "1",
+            )
+            if not changed:
                 continue
-            confidence = float(decision.get("confidence", 0.5))
-            decision["confidence"] = 0.0 if confidence > 0.0 else 1.0
             return (
                 canonical_json(candidate),
                 "answer_decision_consistency",
                 "change_answer_decision_confidence",
             )
         if option == 0:
-            field = (
-                "operator"
-                if objective == "surface_to_kernel_program_v1"
-                else "predicate"
-            )
-            first[field] = "SEMANTIC_CONTRADICTION_" + str(
-                first.get(field) or "UNKNOWN"
-            )
+            prefix = "OP:" if objective == "surface_to_kernel_program_v1" else "PRED:"
+            if not _replace_compact_token_prefix(
+                candidate_tokens,
+                space="V_K",
+                prefix=prefix,
+                replacement=lambda value: "SEMANTIC_CONTRADICTION_" + value,
+            ):
+                continue
             return (
                 canonical_json(candidate),
                 "semantic_consistency",
                 "replace_first_predicate",
             )
         if option == 1:
-            observed = str(first.get("modality") or "ASSERTED")
-            first["modality"] = "POSSIBLE" if observed != "POSSIBLE" else "REQUIRED"
+            if not _replace_compact_token_prefix(
+                candidate_tokens,
+                space="V_K",
+                prefix="MOD:",
+                replacement=lambda value: "POSSIBLE" if value != "POSSIBLE" else "REQUIRED",
+            ):
+                continue
             return canonical_json(candidate), "semantic_consistency", "change_first_modality"
         if option == 2:
-            observed = str(first.get("polarity") or "AFFIRMED")
-            first["polarity"] = "NEGATED" if observed != "NEGATED" else "AFFIRMED"
+            if not _replace_compact_token_prefix(
+                candidate_tokens,
+                space="V_K",
+                prefix="POL:",
+                replacement=lambda value: "NEGATED" if value != "NEGATED" else "AFFIRMED",
+            ):
+                continue
             return canonical_json(candidate), "semantic_consistency", "flip_first_polarity"
         handles = sorted(protected_objects)
-        if len(handles) >= 2 and _replace_first_handle(first, handles):
+        if len(handles) >= 2 and _replace_compact_token_prefix(
+            candidate_tokens,
+            space="V_P",
+            prefix="HANDLE:",
+            replacement=lambda value: next(
+                (handle for handle in handles if handle != value), value
+            ),
+            require_change=True,
+        ):
             return (
                 canonical_json(candidate),
                 "protected_object_consistency",
                 "swap_first_protected_handle",
             )
-        if _increment_first_numeric_value(first):
+        if _replace_compact_json_number(candidate_tokens):
             return (
                 canonical_json(candidate),
                 "numeric_value_consistency",
                 "increment_first_numeric_value",
-            )
-        if _replace_first_byte_literal(first):
-            return (
-                canonical_json(candidate),
-                "semantic_consistency",
-                "replace_first_literal_value",
             )
     raise KernelProtocolFault(
         "KERC_VERIFIER_CORRUPTION_UNAVAILABLE",
         objective,
         path="training_view.kerc_verifier_negative",
     )
+
+
+def _replace_compact_token_prefix(
+    rows: list[Any],
+    *,
+    space: str,
+    prefix: str,
+    replacement: Callable[[str], str],
+    require_change: bool = False,
+) -> bool:
+    code = _LEARNED_SPACE_CODE[space]
+    for index, row in enumerate(rows):
+        encoded_prefix = code + prefix
+        if isinstance(row, str) and row.startswith(encoded_prefix):
+            observed = row[len(encoded_prefix) :]
+            changed = replacement(observed)
+            if require_change and changed == observed:
+                continue
+            rows[index] = encoded_prefix + changed
+            return True
+    return False
+
+
+def _replace_compact_json_number(rows: list[Any]) -> bool:
+    for index, row in enumerate(rows):
+        if not isinstance(row, str) or not row.startswith("P"):
+            continue
+        for prefix in ("NUMBER:", "QUANTITY:"):
+            encoded_prefix = "P" + prefix
+            if not row.startswith(encoded_prefix):
+                continue
+            try:
+                payload = json.loads(row[len(encoded_prefix) :])
+            except json.JSONDecodeError:
+                continue
+            if _increment_first_numeric_value(payload):
+                rows[index] = encoded_prefix + canonical_json(payload)
+                return True
+    return False
 
 
 def _surface_verifier_corruption(
@@ -2160,8 +3270,14 @@ def parse_learned_compiler_output(
             path="compiler_output.concept_capsules",
         )
     available = {**copy.deepcopy(concept_capsules), **copy.deepcopy(generated)}
+    canonical_program = materialize_learned_kernel_program(
+        decoded.get("program"),
+        protected_objects=protected_objects,
+        concept_capsules=available,
+        source_character_length=source_character_length,
+    )
     validated = validate_kernel_program(
-        decoded.get("program") if isinstance(decoded.get("program"), dict) else {},
+        canonical_program,
         protected_objects=protected_objects,
         concept_capsules=available,
         source_character_length=source_character_length,
@@ -2179,10 +3295,7 @@ def parse_learned_answer_output(output: str) -> dict[str, Any]:
         raise KernelProtocolFault(
             "KERC_LEARNED_ANSWER_OUTPUT_INVALID", str(exc), path="answer_output"
         ) from exc
-    return validate_answer_packet(
-        decoded if isinstance(decoded, dict) else {},
-        require_explicit_decision=True,
-    )
+    return materialize_learned_answer_packet(decoded)
 
 
 def _masked_surface_from_packet_objects(
@@ -2656,10 +3769,12 @@ def deserialize_kernel_program(
     cursor.expect("V_P", f"SERIALIZATION:{SERIALIZATION_VERSION}")
     nodes: list[dict[str, Any]] = []
     roots: list[str] = []
+    program_end_seen = False
     while not cursor.done:
         current = cursor.peek()
         if current == {"space": "V_P", "token": "PROGRAM_END"}:
             cursor.take()
+            program_end_seen = True
             break
         if current["space"] == "V_P" and current["token"].startswith("ROOT:"):
             roots.append(cursor.take()["token"].removeprefix("ROOT:"))
@@ -2699,6 +3814,12 @@ def deserialize_kernel_program(
                 "source_spans": source_spans,
                 "arguments": arguments,
             }
+        )
+    if not program_end_seen:
+        raise KernelProtocolFault(
+            "KERC_SERIALIZATION_PROGRAM_END_MISSING",
+            "typed program stream ended without PROGRAM_END",
+            path="serialization.expanded_tokens",
         )
     if not cursor.done:
         raise KernelProtocolFault(

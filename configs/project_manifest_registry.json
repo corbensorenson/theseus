@@ -262,31 +262,31 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "3ae38b95f3a8e6fdb504c2aeb426bc9723a7b577098775604af23724d60bdcd7"
+          "sha256": "4b447c892b40bc23bdc9adb92a597e4b2132a6f46ba9d5bcc42694fb790d11cb"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "105830709a2c27ccd79caee42491df8365e901dc9617939a59a1d0891b956416"
+          "sha256": "9075ec322e3cded0eed934fb12d7f9755397f95f893ae0b36798d6ec6d85a4e5"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "6ac968c6183dbf47d1f9a6211d3ce4c8718eb3e773a9bd30a2ea5e0e476d9fd1"
+          "sha256": "20a63a76ea609796581a45fdc67b3e05f2ae3b1d1a2a25359d8cb2d6a7ac731e"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "70a807fda0da6c3951588cce28d1597f698ef4129b02d967b9e3b206be2810e3"
+          "sha256": "08055d96c1b0e530b5ec5ee8f74c21cd2779bab4cbbf86fb24f32fe63bbfb577"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "7d6cbe65877081b037823bf5051686005defe1255474de44d497cdb607be7d14"
+          "sha256": "002b5e036bf055f3d7ff2c005a297d5574ca517d581bcf8de6ae4c7fbe947012"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "244be7a5b4dc64398f1ef499ee9b768bfca350a7e101dc737a8bafddb7292821"
+          "sha256": "fb7aa1d2bc2b3429357301239697a0057e4235142d7110982f4194c32a923b5c"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "ac28508c9870afaf145882a71a646fbad3de085b3e3f9e3e94d448275deb439d"
+          "sha256": "83f26d12aba5e6bed9b924c0137476dd4cdeb29ced0e10a3e8f9f57c3e782fc6"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -378,7 +378,7 @@
         },
         "kerc_gum_discourse_tests": {
           "path": "tests/test_kerc_gum_discourse_relations.py",
-          "sha256": "4e0f88daf4fddb834d059a3a8cd887772d34a44b692dd9c4bf11cb29da98fb5c"
+          "sha256": "24c8a783920a641a74b2e6de12f3b623a4abbc361769bbaa0fe64b1f5816a5d5"
         },
         "kerc_gum_entity_coreference_tests": {
           "path": "tests/test_kerc_gum_entity_coreference.py",
@@ -430,7 +430,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "035fb8dec2beed2359f912987b05851f20b6984d1556cab874eb7cf4567b96b1"
+          "sha256": "9f1b9e11624ae2629d0d725051b227669489552a8550b1aa9b4fe3040d0775f4"
         },
         "kerc_concept_registry_tests": {
           "path": "tests/test_kerc_concept_registry.py",
@@ -5558,7 +5558,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0 independently binds the KERC paper, implementation sources, independent verifier, and all 27,941 current corpus records. Three mechanisms are faithful mechanics, ten remain approximate/fixture-only, three are inactive/absent, and H1-H8 remain inactive. K1a/K1b preserve bounded manual multi-frame and decision-semantic annotations; K1e preserves 13 complete event-coreference groups; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 human GUM eRST neighborhoods; K1i preserves 5,361 complete document-local source-declared entity/coreference records and 7,180 concept capsules behind a leak-free compiler-target ABI; K1j adds exact deterministic lookup over 218,061 WordNet-derived relations, 174,480 stable identities, and 410,638 aliases with learned authority forbidden and ambiguous/unknown states preserved. K1k adds an explicit scoped-semantic ABI with exact ownership for 14 operators and exact full-program serialization. K1l adds 1,525 source-grounded two-proposition scope programs across seven direction-sensitive human eRST mappings, with independent raw-source reconstruction and 90 shared-endpoint multi-edge neighborhoods preserved as explicit exclusions. Exact scope programs reach the canonical compiler target and reasoner input without entering the source-only compiler view. Train/dev/eval counts are 1,127/204/194 with zero source-group overlap; dev/eval each retain five missing relation-by-genre cells. The corpus has 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, and 18,759 opaque byte literals. The complete 27,941-record corpus is independently admitted with zero failures. The latest selective verifier takes 658.590s, reuses 18,156 unrelated semantic admissions, and independently recomputes all 9,785 GUM discourse rows; canonical and ledger identities remain exact. The learned ABI now explicitly preserves all licensed tag families and all 256 composite FrameNet records. Its 6.498-second raw preflight covers the complete corpus. The first full current-corpus stage selects 21,209 records and writes 44,943 representable views, but remains RED after 5,519.207 seconds: hash-only selection misses five feasible objective floors and 24 grounded records, two raw sources cross fixed splits, and verbose program/answer transport pushes 1,232 positive plus four negative views beyond 8,192 tokens. This is INCONCLUSIVE_IMPLEMENTATION. The next repair is quota-aware source-disjoint selection, exact compact or hierarchical learned transport, and content-bound incremental replay. The content stores now cost 15,368,302,592 bytes, and the corrected warm producer path still peaks near 2.9 GB resident memory. Construct validity remains RED because K1l is bounded rather than complete and learned scope compilation, cross-document learned linking/open-world definitions, temporal truth, complete semantics, truth, and learned competence remain unproved. Correction alternatives, learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation remain absent. The current private-evaluation wire remains economically negative at 3.946595x residual/source and 12.236852x total/source. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims remain denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
+      "current_wall": "K0-K1l independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, and source-grounded semantic families while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 train/dev/eval records with zero raw-source or source-group overlap. It materializes 53,414 generator views, 53,414 verifier corruptions, and 384 generator-loss-disabled context counterfactuals from 18,033 unique raw sources / 4,721,570 raw bytes. Quota-aware selection meets every frozen objective floor and retains all 96 grounded question records without exposing answers or model outcomes. Exact compact typed program and answer transports are invertible; iterative compiler chunks and topologically scheduled reasoner chunks are bounded to eight target nodes, carry only prior generated state and direct predecessor context, and revalidate the exact merged program/answer. Encoded-length-only 8K/16K buckets retain all rows with zero truncation or drop; 347 of 107,212 materialized training examples use the single-row long bucket and receive zero capability credit. The cold stage takes 1,636.573 seconds; an exact content-addressed replay takes 1.58 seconds and revalidates dependency/output hashes. This closes the prior materialization/admissibility blocker and authorizes bounded learnability work, not a capability verdict. Construct validity remains RED: learned compiler/core/renderer competence, per-unit residual allocation, interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. The wire remains economically negative. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

@@ -3355,7 +3355,12 @@ def train_phase(
     epoch = 0
     model.train()
     while consumed < target_positions and steps < max_steps:
-        if probabilities is None:
+        if hasattr(inputs, "length_bucketed_order"):
+            order = inputs.length_bucketed_order(
+                seed=seed + epoch,
+                probabilities=probabilities,
+            )
+        elif probabilities is None:
             random.Random(seed + epoch).shuffle(order)
         else:
             order = np.random.default_rng(seed + epoch).choice(
@@ -3364,10 +3369,17 @@ def train_phase(
         if epoch == 0 and coverage_prefix:
             selected = set(coverage_prefix)
             order = coverage_prefix + [index for index in order if index not in selected]
-        for start in range(0, len(order), batch_size):
+        batches = (
+            inputs.batch_indices(order, maximum_batch_size=batch_size)
+            if hasattr(inputs, "batch_indices")
+            else [
+                order[start : start + batch_size]
+                for start in range(0, len(order), batch_size)
+            ]
+        )
+        for indices in batches:
             if consumed >= target_positions or steps >= max_steps:
                 break
-            indices = order[start : start + batch_size]
             if coverage_labels is not None:
                 for index in indices:
                     for label in coverage_labels[index]:

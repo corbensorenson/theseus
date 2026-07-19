@@ -32,6 +32,7 @@ from kernel_english_protocol import (  # noqa: E402
     KernelProtocolFault,
     _normalize_segment_frame,
     compiler_training_io,
+    materialize_learned_kernel_program,
 )
 
 
@@ -338,8 +339,14 @@ def test_human_single_edge_relations_compile_to_exact_scoped_roles(
         hrl_state=record["hrl_state"],
     )
     assert "program" not in compiler_input
-    assert compiler_target["program"] == record["kernel_packet"]["program"]
-    assert compiler_target["program"]["nodes"][-1]["operator"] == expected_operator
+    materialized_program = materialize_learned_kernel_program(
+        compiler_target["program"],
+        protected_objects=record["kernel_packet"]["protected_objects"],
+        concept_capsules=record["kernel_packet"]["concept_capsules"],
+        source_character_length=len(record["source_text"]),
+    )
+    assert materialized_program == record["kernel_packet"]["program"]
+    assert materialized_program["nodes"][-1]["operator"] == expected_operator
 
 
 def test_scoped_relation_direction_role_and_authority_mutations_reject() -> None:

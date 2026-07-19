@@ -22,8 +22,11 @@ from moecot_source_conditioned_pretraining import (  # noqa: E402
     denoising_rows,
     inspect_kernel_english,
     kernel_english_split_overlap,
+    kerc_code_space,
+    kerc_code_tokens,
     load_kerc_semantic_source_catalog,
     materialize_kernel_english,
+    select_kernel_records,
     source_rejection,
     source_conditioning_dependencies,
     validate_config,
@@ -82,6 +85,24 @@ def kernel_config(tmp_path: Path) -> dict:
                 "private_train": 1,
                 "private_dev": 1,
                 "private_eval": 1,
+            },
+            "selection": {
+                "policy": "project_theseus_kerc_constraint_aware_selection_v1",
+                "ranking_seed": "fixture-selection-v1",
+                "selection_visible_fields": [
+                    "record_sha256",
+                    "raw_source_sha256",
+                    "split",
+                    "semantic_supervision.claim_authority",
+                    "semantic_supervision.objective_authority",
+                    "interaction_annotation.kind",
+                ],
+                "answer_text_visible": False,
+                "model_outcomes_visible": False,
+                "exclude_raw_sources_present_in_multiple_splits": True,
+                "preserve_grounded_question_quota": True,
+                "preserve_decision_grade_objective_floors": True,
+                "fill_policy": "content_hash_rank_after_constraints",
             },
             "semantic_supervision": {
                 "policy": "project_theseus_kerc_semantic_supervision_program_v1",
@@ -327,8 +348,49 @@ def kernel_config(tmp_path: Path) -> dict:
                 "fallback_return_count": 0,
                 "template_credit": 0,
             },
-            "maximum_sequence_tokens": 20000,
+            "maximum_sequence_tokens": 16384,
+            "sequence_buckets": {
+                "policy": "project_theseus_kerc_exact_sequence_buckets_v1",
+                "routing": "encoded_length_only_without_target_semantic_metadata",
+                "buckets": [
+                    {
+                        "bucket_id": "standard_8k",
+                        "maximum_sequence_tokens": 8192,
+                        "maximum_batch_size": 2,
+                    },
+                    {
+                        "bucket_id": "exact_high_fan_in_16k",
+                        "maximum_sequence_tokens": 16384,
+                        "maximum_batch_size": 1,
+                    },
+                ],
+                "truncation_allowed": False,
+                "row_drop_allowed": False,
+                "long_bucket_capability_credit": False,
+            },
             "batch_size": 1,
+            "materialization_execution": {
+                "policy": "project_theseus_kerc_bounded_parallel_materialization_v1",
+                "validation_workers": 1,
+                "compilation_workers": 1,
+                "batch_rows": 2,
+                "deterministic_input_order": True,
+                "raw_line_content_binding_required": True,
+                "worker_failure_behavior": (
+                    "reject_record_or_abort_stage_without_partial_trust"
+                ),
+            },
+            "materialization_cache": {
+                "policy": "project_theseus_kerc_content_addressed_run_cache_v1",
+                "enabled": True,
+                "cache_root": str(tmp_path / "kernel-stage-cache"),
+                "role": "canonical_kerc_stage_materializer",
+                "exact_dependency_binding_required": True,
+                "output_identity_revalidation_required": True,
+                "cache_miss_behavior": (
+                    "recompute_complete_stage_and_publish_atomic_receipt"
+                ),
+            },
             "code_vocabulary": {
                 "policy": "project_theseus_kerc_dual_code_vocabulary_v1",
                 "fit_split": "private_train",
@@ -843,6 +905,9 @@ def test_kerc_gum_entity_coreference_contract_fails_closed(tmp_path: Path) -> No
 
 def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Path) -> None:
     cfg = kernel_config(tmp_path)
+    cfg["kernel_english_training"]["materialization_execution"].update(
+        {"validation_workers": 2, "compilation_workers": 2}
+    )
     validate_kernel_english_config(cfg)
     source_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3}
     target_vocab = dict(source_vocab)
@@ -910,6 +975,10 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     assert report["unique_raw_source_count"] == 3
     assert report["derived_view_unique_data_credit"] == 0
     assert report["derived_view_optimizer_exposure_count"] == 12
+    assert report["materialization_execution"]["validation_workers"] == 2
+    assert report["materialization_execution"]["compilation_workers"] == 2
+    assert report["materialization_execution"]["compiled_record_count"] == 3
+    assert report["materialization_execution"]["compiled_view_count"] == 12
     assert report["semantic_supervision"][
         "decision_grade_record_counts_by_split_and_objective"
     ] == {
@@ -955,6 +1024,16 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     assert inspect_kernel_english(cfg, tmp_path / "config.json")["trigger_state"] == "GREEN"
     assert not list(Path(cfg["kernel_english_training"]["stage_root"]).glob("*.partial"))
 
+    manifest_path = Path(cfg["kernel_english_training"]["stage_root"]) / "manifest.json"
+    manifest_mtime_ns = manifest_path.stat().st_mtime_ns
+    replayed_report = materialize_kernel_english(cfg, tmp_path / "config.json")
+    assert replayed_report == report
+    assert manifest_path.stat().st_mtime_ns == manifest_mtime_ns
+    cache_root = Path(
+        cfg["kernel_english_training"]["materialization_cache"]["cache_root"]
+    )
+    assert len(list(cache_root.rglob("*.json"))) == 1
+
     train_path = Path(report["artifacts"]["english:private_train"]["path"])
     if not train_path.is_absolute():
         train_path = ROOT / train_path
@@ -983,6 +1062,183 @@ def test_kernel_stage_preflights_learned_abi_before_bounded_selection() -> None:
         match=r"learned ABI rejected governed record at line 41.*UNDECLARED_ROLE",
     ):
         validate_kernel_record_learned_abi(record, line_number=41)
+
+
+def test_kernel_code_tokenizer_preserves_compact_transport_as_exact_atoms() -> None:
+    payload = kernel.canonical_json(
+        {
+            "policy": kernel.LEARNED_PROGRAM_TRANSPORT_POLICY,
+            "tokens": [
+                "PNODE_BEGIN",
+                "KOP:ENTITY_RELATION_COREF",
+                "PBYTE:YWJjZA==",
+                "PPROGRAM_END",
+            ],
+        }
+    )
+    tokens = kerc_code_tokens(payload)
+
+    assert "".join(tokens) == payload
+    assert '"KOP:ENTITY_RELATION_COREF"' in tokens
+    assert kerc_code_space('"KOP:ENTITY_RELATION_COREF"') == "V_K"
+    assert kerc_code_space('"PNODE_BEGIN"') == "V_P"
+    assert len(tokens) < 24
+
+
+def selection_record(
+    split: str,
+    identity: str,
+    *,
+    objectives: tuple[str, ...],
+    raw_source: str | None = None,
+    grounded: bool = False,
+) -> dict:
+    return {
+        "record_sha256": "sha256:" + hashlib.sha256(identity.encode()).hexdigest(),
+        "raw_source_sha256": "sha256:"
+        + hashlib.sha256((raw_source or identity).encode()).hexdigest(),
+        "split": split,
+        "semantic_supervision": {
+            "claim_authority": "decision_grade_reference",
+            "objective_authority": {
+                objective: objective in objectives
+                for objective in kernel.TRAINING_OBJECTIVES
+            },
+        },
+        "interaction_annotation": (
+            {"kind": "licensed_grounded_question_context"} if grounded else {}
+        ),
+    }
+
+
+def selection_config(tmp_path: Path) -> dict:
+    base = kernel_config(tmp_path)["kernel_english_training"]
+    base["records_by_split"] = {
+        "private_train": 3,
+        "private_dev": 1,
+        "private_eval": 1,
+    }
+    base["semantic_supervision"][
+        "minimum_decision_grade_records_by_split_and_objective"
+    ] = {
+        "private_train": {objective: 1 for objective in kernel.TRAINING_OBJECTIVES},
+        "private_dev": {objective: 1 for objective in kernel.TRAINING_OBJECTIVES},
+        "private_eval": {objective: 1 for objective in kernel.TRAINING_OBJECTIVES},
+    }
+    base["semantic_corpus_materialization"]["dolly"][
+        "grounded_question_records_by_split"
+    ] = {"private_train": 1, "private_dev": 0, "private_eval": 0}
+    return base
+
+
+def test_kernel_selection_preserves_constraints_and_is_order_invariant(
+    tmp_path: Path,
+) -> None:
+    compiler_pair = (
+        "surface_to_kernel_program_v1",
+        "kernel_program_to_answer_packet_v1",
+    )
+    all_objectives = tuple(kernel.TRAINING_OBJECTIVES)
+    candidates = {
+        "private_train": [
+            selection_record(
+                "private_train",
+                "grounded-direct",
+                objectives=("surface_direct_control_v1",),
+                grounded=True,
+            ),
+            selection_record(
+                "private_train",
+                "answer",
+                objectives=("answer_packet_to_surface_v1",),
+            ),
+            selection_record(
+                "private_train", "compiler-core", objectives=compiler_pair
+            ),
+            selection_record(
+                "private_train",
+                "cross-split-train",
+                raw_source="duplicate-source",
+                objectives=all_objectives,
+            ),
+        ],
+        "private_dev": [
+            selection_record(
+                "private_dev", "dev", objectives=all_objectives
+            ),
+            selection_record(
+                "private_dev",
+                "cross-split-dev",
+                raw_source="duplicate-source",
+                objectives=all_objectives,
+            ),
+        ],
+        "private_eval": [
+            selection_record(
+                "private_eval", "eval", objectives=all_objectives
+            )
+        ],
+    }
+    cfg = selection_config(tmp_path)
+
+    selected, receipt = select_kernel_records(candidates, cfg)
+    reversed_selected, reversed_receipt = select_kernel_records(
+        {split: list(reversed(rows)) for split, rows in candidates.items()}, cfg
+    )
+
+    assert receipt == reversed_receipt
+    assert {
+        split: [row["record_sha256"] for row in rows]
+        for split, rows in selected.items()
+    } == {
+        split: [row["record_sha256"] for row in rows]
+        for split, rows in reversed_selected.items()
+    }
+    assert receipt["cross_split_raw_source_exclusion_count"] == 1
+    assert receipt["cross_split_raw_source_excluded_record_count"] == 2
+    assert receipt["grounded_question_count_by_split"]["private_train"] == 1
+    assert all(
+        count >= 1
+        for counts in receipt["decision_grade_objective_count_by_split"].values()
+        for count in counts.values()
+    )
+    assert not {
+        row["raw_source_sha256"]
+        for rows in selected.values()
+        for row in rows
+    } & {
+        "sha256:" + hashlib.sha256(b"duplicate-source").hexdigest()
+    }
+
+
+def test_kernel_selection_fails_closed_when_declared_floor_is_infeasible(
+    tmp_path: Path,
+) -> None:
+    cfg = selection_config(tmp_path)
+    candidates = {
+        "private_train": [
+            selection_record(
+                "private_train",
+                f"train-{index}",
+                objectives=("surface_to_kernel_program_v1",),
+                grounded=index == 0,
+            )
+            for index in range(3)
+        ],
+        "private_dev": [
+            selection_record(
+                "private_dev", "dev", objectives=tuple(kernel.TRAINING_OBJECTIVES)
+            )
+        ],
+        "private_eval": [
+            selection_record(
+                "private_eval", "eval", objectives=tuple(kernel.TRAINING_OBJECTIVES)
+            )
+        ],
+    }
+
+    with pytest.raises(ValueError, match="objective selection floor infeasible"):
+        select_kernel_records(candidates, cfg)
 
 
 def test_semantic_source_catalog_rejects_public_calibration_sources(tmp_path: Path) -> None:

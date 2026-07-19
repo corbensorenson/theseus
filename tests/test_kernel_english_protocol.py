@@ -253,10 +253,237 @@ def test_contextual_answer_validation_rejects_unknown_handle() -> None:
 
 
 def test_learned_answer_requires_explicit_decision_contract() -> None:
+    canonical = kernel.validate_answer_packet(answer_packet())
+    view = kernel.learned_answer_packet_view(canonical)
+    decision_start = view["tokens"].index("PDECISION_BEGIN")
+    decision_end = view["tokens"].index("PDECISION_END")
+    del view["tokens"][decision_start : decision_end + 1]
     with pytest.raises(
         kernel.KernelProtocolFault, match="KERC_ANSWER_DECISION_POLICY_INVALID"
     ):
-        kernel.parse_learned_answer_output(kernel.canonical_json(answer_packet()))
+        kernel.parse_learned_answer_output(kernel.canonical_json(view))
+
+
+def test_compact_learned_program_and_answer_transports_are_exact_and_fail_closed() -> None:
+    record = kernel.validate_training_record(training_record())
+    packet = record["kernel_packet"]
+
+    program_view = kernel.learned_kernel_program_view(packet)
+    materialized_program = kernel.materialize_learned_kernel_program(
+        program_view,
+        protected_objects=packet["protected_objects"],
+        concept_capsules=packet["concept_capsules"],
+        source_character_length=len(record["source_text"]),
+    )
+    assert materialized_program == packet["program"]
+    assert len(kernel.canonical_json(program_view)) < len(
+        kernel.canonical_json(packet["program"])
+    )
+
+    canonical_answer = kernel.validate_answer_packet(
+        record["answer_packet"], require_explicit_decision=True
+    )
+    answer_view = kernel.learned_answer_packet_view(canonical_answer)
+    assert kernel.materialize_learned_answer_packet(answer_view) == canonical_answer
+    assert len(kernel.canonical_json(answer_view)) < len(
+        kernel.canonical_json(canonical_answer)
+    )
+
+    malformed_program = copy.deepcopy(program_view)
+    malformed_program["tokens"].pop()
+    with pytest.raises(kernel.KernelProtocolFault):
+        kernel.materialize_learned_kernel_program(
+            malformed_program,
+            protected_objects=packet["protected_objects"],
+            concept_capsules=packet["concept_capsules"],
+            source_character_length=len(record["source_text"]),
+        )
+
+    malformed_answer = copy.deepcopy(answer_view)
+    malformed_answer["tokens"][0] = "PANSWER_VERSION:forged"
+    with pytest.raises(kernel.KernelProtocolFault):
+        kernel.materialize_learned_answer_packet(malformed_answer)
+
+
+def test_hierarchical_core_partitions_dependencies_and_merges_exact_answer() -> None:
+    program = {
+        "roots": [f"k{index}" for index in range(65)],
+        "nodes": [
+            {
+                "node_id": f"k{index}",
+                "operator": "REPORT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [],
+                "arguments": [
+                    {
+                        "role": "VALUE",
+                        "value": {"type": "number", "value": {"value": index}},
+                    }
+                ],
+            }
+            for index in range(65)
+        ],
+    }
+    canonical_program = kernel.validate_kernel_program(
+        program,
+        protected_objects={},
+        concept_capsules={},
+        source_character_length=1,
+    )["canonical_program"]
+    answer = {
+        "claims": [
+            {
+                "claim_id": f"claim-{index + 1}",
+                "predicate": "REPORT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": [
+                    {
+                        "role": "VALUE",
+                        "value": {"type": "number", "value": {"value": index}},
+                    }
+                ],
+            }
+            for index in range(65)
+        ],
+        "decision": {
+            "policy": kernel.ANSWER_DECISION_POLICY,
+            "disposition": "ANSWER",
+            "evidence_status": "SUPPORTED",
+            "uncertainty_state": "RESOLVED",
+            "confidence": 1.0,
+            "controlling_claim_ids": [f"claim-{index + 1}" for index in range(65)],
+            "unresolved_ambiguity_ids": [],
+        },
+        "required_terms": [],
+        "required_caveats": [],
+        "style": {"register": "plain"},
+    }
+    canonical_answer = kernel.validate_answer_packet(
+        answer, require_explicit_decision=True
+    )
+
+    fragments = kernel.partition_kernel_program(canonical_program)
+    partials = kernel.partition_answer_for_program_fragments(
+        canonical_answer, fragments
+    )
+    merged = kernel.merge_hierarchical_answer_packets(
+        partials, expected_chunk_count=len(fragments)
+    )
+
+    assert [len(fragment["node_ids"]) for fragment in fragments] == [8] * 8 + [1]
+    assert merged == canonical_answer
+    assert all(
+        kernel.materialize_learned_kernel_program(
+            kernel.learned_kernel_program_view_from_program(fragment["program"]),
+            protected_objects={},
+            concept_capsules={},
+            source_character_length=1,
+        )
+        == fragment["program"]
+        for fragment in fragments
+    )
+
+    collision = copy.deepcopy(partials)
+    collision[1]["claims"][0]["claim_id"] = collision[0]["claims"][0]["claim_id"]
+    collision[1]["decision"]["controlling_claim_ids"][0] = collision[0]["claims"][0][
+        "claim_id"
+    ]
+    with pytest.raises(kernel.KernelProtocolFault):
+        kernel.merge_hierarchical_answer_packets(
+            collision, expected_chunk_count=len(fragments)
+        )
+
+
+def test_hierarchical_core_topologically_bounds_forward_dependency_context() -> None:
+    node_count = 40
+    program = {
+        "roots": ["k0"],
+        "nodes": [
+            {
+                "node_id": f"k{index}",
+                "operator": "REPORT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [],
+                "arguments": [
+                    {
+                        "role": "VALUE",
+                        "value": (
+                            {"type": "node_ref", "value": f"k{index + 1}"}
+                            if index + 1 < node_count
+                            else {"type": "number", "value": {"value": index}}
+                        ),
+                    }
+                ],
+            }
+            for index in range(node_count)
+        ],
+    }
+    canonical_program = kernel.validate_kernel_program(
+        program,
+        protected_objects={},
+        concept_capsules={},
+        source_character_length=1,
+    )["canonical_program"]
+    answer = kernel.validate_answer_packet(
+        {
+            "claims": [
+                {
+                    "claim_id": f"claim-{index}",
+                    "predicate": "REPORT",
+                    "modality": "ASSERTED",
+                    "polarity": "AFFIRMED",
+                    "quantifier": "NONE",
+                    "confidence": 1.0,
+                    "arguments": copy.deepcopy(node["arguments"]),
+                }
+                for index, node in enumerate(canonical_program["nodes"])
+            ],
+            "decision": {
+                "policy": kernel.ANSWER_DECISION_POLICY,
+                "disposition": "ANSWER",
+                "evidence_status": "SUPPORTED",
+                "uncertainty_state": "RESOLVED",
+                "confidence": 1.0,
+                "controlling_claim_ids": [f"claim-{index}" for index in range(node_count)],
+                "unresolved_ambiguity_ids": [],
+            },
+            "required_terms": [],
+            "required_caveats": [],
+            "style": {"register": "plain"},
+        },
+        require_explicit_decision=True,
+    )
+
+    fragments = kernel.partition_kernel_program(canonical_program, maximum_nodes=8)
+    partials = kernel.partition_answer_for_program_fragments(answer, fragments)
+    dependency_contexts = kernel.dependency_claims_for_program_fragments(
+        answer, fragments
+    )
+    claim_order = [claim["claim_id"] for claim in answer["claims"]]
+    merged = kernel.merge_hierarchical_answer_packets(
+        partials,
+        expected_chunk_count=len(fragments),
+        claim_order=claim_order,
+    )
+
+    assert len(fragments) == 5
+    assert all(len(fragment["node_ids"]) <= 8 for fragment in fragments)
+    assert all(len(fragment["context_node_ids"]) <= 1 for fragment in fragments)
+    assert all(len(fragment["program"]["nodes"]) <= 9 for fragment in fragments)
+    assert dependency_contexts[0] == []
+    assert all(len(context) == 1 for context in dependency_contexts[1:])
+    assert merged == answer
 
 
 def test_clarification_and_abstention_dispositions_require_matching_claims() -> None:
@@ -435,6 +662,15 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
     calls: list[str] = []
     resolution_requests: list[dict] = []
     registry_identity = "conceptnet.uri." + ("a" * 64)
+    learned_program_serialization = kernel.serialize_kernel_program(learned_program)
+    learned_program_transport = {
+        "policy": kernel.LEARNED_PROGRAM_TRANSPORT_POLICY,
+        "tokens": [
+            kernel._LEARNED_SPACE_CODE[row["space"]] + row["token"]
+            for row in learned_program_serialization["expanded_tokens"]
+        ],
+    }
+    learned_answer_transport = kernel.learned_answer_packet_view(learned_answer)
 
     def resolve_concept(request: dict) -> dict:
         resolution_requests.append(request)
@@ -461,9 +697,10 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
             "external_inference_calls": 0,
         }
 
-    def execute(objective: str, _prompt: str) -> tuple[str, dict]:
+    def execute(objective: str, prompt: str) -> tuple[str, dict]:
         calls.append(objective)
         if objective == "surface_to_kernel_program_v1":
+            compiler_contract = json.loads(prompt)["hierarchical_compiler"]
             output = kernel.canonical_json(
                 {
                     "kernel_version": kernel.KERNEL_VERSION,
@@ -473,11 +710,17 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
                             "resolution_request": {"surface": "example", "pos": "n"},
                         }
                     },
-                    "program": learned_program,
+                    "program": learned_program_transport,
+                    "hierarchical_compiler": {
+                        "policy": kernel.KERC_HIERARCHICAL_COMPILER_POLICY,
+                        "chunk_index": compiler_contract["chunk_index"],
+                        "continuation": False,
+                        "root_node_ids": ["k0"],
+                    },
                 }
             )
         elif objective == "kernel_program_to_answer_packet_v1":
-            output = kernel.canonical_json(learned_answer)
+            output = kernel.canonical_json(learned_answer_transport)
         elif objective == "answer_packet_to_surface_v1":
             output = source
         else:  # pragma: no cover - a new route must fail this fixture loudly
@@ -1494,7 +1737,9 @@ def test_training_record_and_learned_outputs_fail_closed() -> None:
             "program": {},
         }
     )
-    with pytest.raises(kernel.KernelProtocolFault, match="KERC_PROGRAM_NODES_MISSING"):
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="KERC_LEARNED_PROGRAM_TRANSPORT_INVALID"
+    ):
         kernel.parse_learned_compiler_output(
             malformed,
             protected_objects={},

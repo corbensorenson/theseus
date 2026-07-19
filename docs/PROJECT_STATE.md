@@ -1,5 +1,5 @@
 # Project State
-Last consolidated: 2026-07-18 UTC.
+Last consolidated: 2026-07-19 UTC.
 
 This is the bounded current-wall page. The machine contract is
 `configs/roadmap_implementation_matrix.json`, the forward plan is `roadmap.md`, and
@@ -14,10 +14,11 @@ share toward zero. Public benchmarks are calibration only.
 ## Current Verdict
 
 - **Architecture readiness:** not ready for long training. Twelve of thirteen finite
-  checkpoint-shaping contracts retain complete mechanics dispositions. KERC is reopened
-  after an evidence-adequacy audit found that its retirement used a toy proxy rather
-  than the proposed learned architecture. The previously GREEN freeze package is stale
-  and cannot authorize training until faithful KERC integration and a new replay.
+  checkpoint-shaping contracts retain complete mechanics dispositions. KERC's canonical
+  architecture/data stage is now GREEN and exact-replayable after replacing the toy proxy
+  path, but its actual learned compiler/core/renderer still requires bounded mechanics and
+  causal adequacy qualification. The prior freeze package remains stale until that work and
+  a new independent cross-owner replay complete.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -40,8 +41,8 @@ share toward zero. Public benchmarks are calibration only.
   YELLOW with zero hard gaps because faithful KERC and one queued capability obligation
   remain open; ATT-D is YELLOW with every hard cap passing. Do not refresh unrelated
   reports merely to recolor this state.
-- **KERC disposition:** `partial`; protocol mechanics GREEN, construct validity RED,
-  scientific result `INCONCLUSIVE_IMPLEMENTATION`. K0 now independently binds the paper,
+- **KERC disposition:** `partial`; architecture/data materialization GREEN, broader
+  construct validity RED, learned utility unclaimed. K0 now independently binds the paper,
   implementation sources, independent verifier, and all 27,941 current corpus records.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
@@ -138,21 +139,21 @@ share toward zero. Public benchmarks are calibration only.
   path still peaks near `2.9 GB` resident memory. This evidence is bounded scope
   supervision and learned-view projection, not a GREEN full canonical stage, complete semantics, truth, learned
   competence, utility, SOTA, AGI, or ASI.
-  The first full current-corpus stage audit now reaches every governed record after closing
-  two learned-ABI defects: all licensed semantic tag namespaces are explicit and fail closed,
-  and all `256` composite FrameNet records preserve their frames and union role vocabulary
-  instead of collapsing to an empty single-frame view. A raw-corpus ABI preflight covers all
-  `27,941` records in `6.498s`; focused protocol/stage tests pass `58/58`. The unchanged
-  canonical materializer then selects `14,238/3,621/3,350` records and publishes `44,943`
-  representable learned views, but remains RED after `5,519.207s`. The blockers are not
-  learned-quality results: the hash-only bounded sampler misses five feasible per-objective
-  source-authority floors and all `96` configured grounded records (`72` survive selection,
-  producing `288/384` counterfactuals), two duplicate raw sources cross fixed splits, and
-  the verbose learned program/answer ABI makes `1,232` positive plus four verifier-negative
-  views exceed the `8,192`-token contract. This is `INCONCLUSIVE_IMPLEMENTATION`, not a KERC
-  failure. The next owner repair is source-group/raw-source-disjoint constrained selection,
-  exact grounded/objective quota preservation, compact invertible program/answer views or a
-  faithful hierarchical long-record route, and content-bound incremental stage replay.
+  The repaired current-corpus stage is now GREEN. It validates all `27,941` candidates,
+  selects `14,238/3,621/3,350` raw-source- and source-group-disjoint train/dev/eval records,
+  meets every frozen objective floor, and retains all `96` grounded question records without
+  exposing answers or model outcomes. It writes `53,414` learned views, `53,414` verifier-
+  only compact-ABI corruptions, and `384` context counterfactuals from `18,033` unique raw
+  sources / `4,721,570` raw bytes. Exact typed compact program/answer transport, iterative
+  eight-node compiler chunks, topological eight-node reasoner chunks, and encoded-length-
+  only ragged `8K/16K` buckets produce zero truncation, row drop, fallback, public rows, or
+  external inference. Only `347/107,212` materialized rows use the single-row long bucket;
+  it receives zero capability credit. The cold stage takes `1,636.573s`; unchanged inputs
+  and outputs exact-replay in `1.58s` under content-addressed cache key
+  `89435e019dd7b5d75d195828ec8a6900e6627b51d1e70d82677c8f39f0f51004`.
+  This closes architecture/data materialization, not learned quality. The next owner is the
+  bounded learnability/gradient/overfit/checkpoint/reload/resume/intervention qualification
+  on this exact stage.
   Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Ten mechanisms are
@@ -226,14 +227,13 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** repair the RED current-corpus KERC stage before any optimizer
-  campaign. Replace hash-only sampling with deterministic constraint-aware selection that
-  preserves feasible objective and grounded-context quotas while enforcing raw-source and
-  source-group disjointness. Replace verbose learned program/answer transport with an exact
-  invertible compact ABI or a faithful hierarchical long-record route so no admitted view is
-  silently truncated; preserve excluded-tail accounting and equal treatment for controls.
-  Add content-bound selection/view caching and streaming/native hot paths against the
-  `5,519.207s` baseline. Then finish the remaining faithful KERC pre-training boundary
+- **Immediate dependency:** qualify the actual GREEN KERC stage before any long optimizer
+  campaign. Run bounded per-stage and end-to-end learnability, gradient-flow, overfit,
+  checkpoint/reload/resume, intervention, and no-fallback canaries against the exact compact
+  hierarchical route. Require generated compiler state and prior claims to affect downstream
+  predictions causally; require exact replay after checkpoint round trips; record failures as
+  owner-specific `INCONCLUSIVE_IMPLEMENTATION`, never as an architecture verdict. Then finish
+  the remaining faithful KERC pre-training boundary
   through the existing English-arm, Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,
